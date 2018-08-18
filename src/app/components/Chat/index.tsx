@@ -44,11 +44,19 @@ class Chat extends React.Component<IProps, IState> {
                 name: faker.name.findName(),
             });
         }
-        const conversation = [];
+        const conversation: any[] = [];
         for (let i = 0; i < 1000; i++) {
-            conversation.push({
+            const me = faker.random.boolean();
+            let avatar = false;
+            if (conversation.length > 0) {
+                if (conversation[conversation.length-1].me !== me) {
+                    avatar = true;
+                }
+            }
+            conversation.unshift({
+                avatar,
                 date: '10:23 PM',
-                me: faker.random.boolean(),
+                me,
                 message: faker.lorem.lines(3),
             });
         }
