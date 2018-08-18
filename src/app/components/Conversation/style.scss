@@ -1,0 +1,107 @@
+@import '../../../style/common';
+
+.chat {
+  padding: 0 17px 10px;
+  border-width: 1px 1px 0 0;
+  border-style: solid;
+  border-color: var(--light);
+  height: calc(100% - 48px);
+  &.active-chat {
+    display: flex;
+    .bubble {
+      transition-timing-function: cubic-bezier(.4, -.04, 1, 1);
+      @for $i from 1 through 10 {
+        &:nth-of-type(#{$i}) {
+          animation-duration: .15s * $i;
+        }
+      }
+    }
+  }
+}
+
+.conversation-start {
+  position: relative;
+  width: 100%;
+  margin-bottom: 27px;
+  text-align: center;
+  span {
+    font-size: 14px;
+    display: inline-block;
+    color: var(--grey);
+    &:before,&:after {
+      position: absolute;
+      top: 10px;
+      display: inline-block;
+      width: 30%;
+      height: 1px;
+      content: '';
+      background-color: var(--light);
+    }
+    &:before {
+      left: 0;
+    }
+    &:after {
+      right: 0;
+    }
+  }
+}
+
+.ReactVirtualized__Grid__innerScrollContainer {
+  width: 100% !important;
+}
+
+.bubble-wrapper {
+  display: inline-block;
+  width: 100%;
+  padding-bottom: 8px;
+}
+
+.bubble {
+  font-size: 12px;
+  line-height: 17px;
+  position: relative;
+  display: inline-block;
+  clear: both;
+  padding: 6px;
+  vertical-align: top;
+  border-radius: 5px;
+  max-width: 558px;
+  &.you {
+    float: left;
+    color: var(--black-text);
+    background-color: var(--message-chat);
+    align-self: flex-start;
+    animation-name: slideFromLeft;
+    text-align: left;
+    margin-left: 30px;
+  }
+  &.me {
+    float: right;
+    color: var(--white);
+    background-color: var(--green);
+    align-self: flex-end;
+    animation-name: slideFromRight;
+    text-align: right;
+  }
+}
+
+@keyframes slideFromLeft {
+  0% {
+    //transform: translateX(-200px);
+    opacity: 0;
+  }
+  100% {
+    //transform: translateX(0px);
+    opacity: 1;
+  }
+}
+@keyframes slideFromRight {
+  0% {
+    //transform: translateX(200px);
+    opacity: 0;
+  }
+  100% {
+    //transform: translateX(0);
+    opacity: 1;
+  }
+}
