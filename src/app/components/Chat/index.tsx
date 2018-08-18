@@ -1,4 +1,6 @@
 import * as React from 'react';
+import Textarea from 'react-textarea-autosize';
+
 import './style.css';
 
 interface IProps {
@@ -99,7 +101,7 @@ class Chat extends React.Component<IProps, IState> {
                                      alt=""/>
                                 <span className="name">Michael Jordan</span>
                                 <span className="time">2:09 PM</span>
-                                <span className="preview">Wasup for the third time like is 
+                                <span className="preview">Wasup for the third time like is
 you blind bitch</span>
                             </li>
                             <li className="person" data-chat="person6">
@@ -234,8 +236,13 @@ you blind bitch</span>
                             </div>
                         </div>
                         <div className="write">
+                            <div className="user">
+                                <span className="user-avatar"/>
+                            </div>
+                            <div className="input">
+                                <Textarea/>
+                            </div>
                             <a href="javascript:;" className="write-link attach"/>
-                            <input type="text"/>
                             <a href="javascript:;" className="write-link smiley"/>
                             <a href="javascript:;" className="write-link send"/>
                         </div>
