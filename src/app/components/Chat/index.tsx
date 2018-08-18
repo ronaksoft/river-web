@@ -241,10 +241,12 @@ you blind bitch</span>
                             </div>
                             <div className="input">
                                 <Textarea/>
+                                <div className="write-link">
+                                    <a href="javascript:;" className="attach"/>
+                                    <a href="javascript:;" className="smiley"/>
+                                    <a href="javascript:;" className="send"/>
+                                </div>
                             </div>
-                            <a href="javascript:;" className="write-link attach"/>
-                            <a href="javascript:;" className="write-link smiley"/>
-                            <a href="javascript:;" className="write-link send"/>
                         </div>
                     </div>
                     <div className="column-right"/>

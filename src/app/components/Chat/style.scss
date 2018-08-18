@@ -254,6 +254,7 @@ body {
             .input {
                 flex: 1;
                 margin: 8px 0;
+                position: relative;
                 textarea {
                     font-size: 12px;
                     line-height: 15px;
@@ -270,41 +271,40 @@ body {
                     @include font;
                 }
                 .write-link {
-                    &.attach {
+                    position: absolute;
+                    right: 16px;
+                    bottom: 0;
+                    a {
+                        height: 32px;
                         &:before {
                             display: inline-block;
                             float: left;
                             width: 20px;
-                            height: 42px;
+                            height: 32px;
+                            padding: 0 0 0 4px;
                             content: '';
+                            background-repeat: no-repeat;
+                            background-position: center;
+                            opacity: 0.5;
+                            transition: opacity 0.2s;
+                        }
+                        &:hover:before {
+                            opacity: 1;
+                        }
+                    }
+                    .attach {
+                        &:before {
                             background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/attachment.png');
-                            background-repeat: no-repeat;
-                            background-position: center;
                         }
                     }
-                    &.smiley {
+                    .smiley {
                         &:before {
-                            display: inline-block;
-                            float: left;
-                            width: 20px;
-                            height: 42px;
-                            content: '';
                             background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/smiley.png');
-                            background-repeat: no-repeat;
-                            background-position: center;
                         }
                     }
-                    &.send {
+                    .send {
                         &:before {
-                            display: inline-block;
-                            float: left;
-                            width: 20px;
-                            height: 42px;
-                            margin-left: 11px;
-                            content: '';
                             background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/send.png');
-                            background-repeat: no-repeat;
-                            background-position: center;
                         }
                     }
                 }

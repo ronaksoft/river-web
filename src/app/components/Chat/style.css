@@ -223,7 +223,8 @@ body {
           background-color: #00b0ff; }
       .container .column-center .write .input {
         flex: 1;
-        margin: 8px 0; }
+        margin: 8px 0;
+        position: relative; }
         .container .column-center .write .input textarea {
           font-size: 12px;
           line-height: 15px;
@@ -239,34 +240,31 @@ body {
           resize: none;
           font-family: 'Source Sans Pro', sans-serif;
           font-weight: 400; }
-        .container .column-center .write .input .write-link.attach:before {
-          display: inline-block;
-          float: left;
-          width: 20px;
-          height: 42px;
-          content: '';
-          background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/attachment.png");
-          background-repeat: no-repeat;
-          background-position: center; }
-        .container .column-center .write .input .write-link.smiley:before {
-          display: inline-block;
-          float: left;
-          width: 20px;
-          height: 42px;
-          content: '';
-          background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/smiley.png");
-          background-repeat: no-repeat;
-          background-position: center; }
-        .container .column-center .write .input .write-link.send:before {
-          display: inline-block;
-          float: left;
-          width: 20px;
-          height: 42px;
-          margin-left: 11px;
-          content: '';
-          background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/send.png");
-          background-repeat: no-repeat;
-          background-position: center; }
+        .container .column-center .write .input .write-link {
+          position: absolute;
+          right: 16px;
+          bottom: 0; }
+          .container .column-center .write .input .write-link a {
+            height: 32px; }
+            .container .column-center .write .input .write-link a:before {
+              display: inline-block;
+              float: left;
+              width: 20px;
+              height: 32px;
+              padding: 0 0 0 4px;
+              content: '';
+              background-repeat: no-repeat;
+              background-position: center;
+              opacity: 0.5;
+              transition: opacity 0.2s; }
+            .container .column-center .write .input .write-link a:hover:before {
+              opacity: 1; }
+          .container .column-center .write .input .write-link .attach:before {
+            background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/attachment.png"); }
+          .container .column-center .write .input .write-link .smiley:before {
+            background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/smiley.png"); }
+          .container .column-center .write .input .write-link .send:before {
+            background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/send.png"); }
     .container .column-center .bubble {
       font-size: 12px;
       line-height: 17px;
