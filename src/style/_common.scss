@@ -1,0 +1,52 @@
+@mixin font-bold {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 600;
+}
+@mixin font {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 400;
+}
+@mixin placeholder {
+  &::-webkit-input-placeholder {
+    @content;
+  }
+  &:-moz-placeholder {
+    @content;
+  }
+  &::-moz-placeholder {
+    @content;
+  }
+  &:-ms-input-placeholder {
+    @content;
+  }
+}
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+:root {
+  --white: #fff;
+  --black: #000;
+  --black-text: #323D47;
+  --bg: #f8f8f8;
+  --grey: #999;
+  --dark: #1a1a1a;
+  --light: #e6e6e6;
+  --wrapper: 1360px;
+  --blue: #00b0ff;
+  --green: #60BF70;
+  --message-chat: #EFEFF0;
+  --color-hover: rgba(50, 61, 71, 0.08);
+  --color-text-hover: rgba(50, 61, 71, 0.64);
+}
+
+body {
+  background-color: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  @include font;
+  background-size: cover;
+  background-repeat: no-repeat;
+}

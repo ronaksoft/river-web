@@ -24,7 +24,7 @@ body {
   font-family: 'Source Sans Pro', sans-serif;
   font-weight: 400;
   background-size: cover;
-  background-repeat: none; }
+  background-repeat: no-repeat; }
 
 .wrapper {
   position: relative;
@@ -91,65 +91,6 @@ body {
       background-repeat: no-repeat;
       background-position: top 12px left 14px;
       border-radius: 50%; }
-    .container .column-left .people {
-      margin-left: -1px;
-      border-right: 1px solid var(--light);
-      border-left: 1px solid var(--light);
-      width: calc(100% + 2px); }
-      .container .column-left .people .person {
-        position: relative;
-        width: 100%;
-        height: 64px;
-        padding: 8px;
-        cursor: pointer;
-        background-color: var(--white);
-        text-align: left; }
-        .container .column-left .people .person:after {
-          position: absolute;
-          bottom: 0;
-          left: 50%;
-          display: block;
-          width: 100%;
-          height: 1px;
-          content: '';
-          background-color: var(--light);
-          transform: translate(-50%, 0); }
-        .container .column-left .people .person img {
-          float: left;
-          width: 48px;
-          height: 48px;
-          margin-right: 12px;
-          border-radius: 50%; }
-        .container .column-left .people .person .name {
-          font-size: 12px;
-          line-height: 23px;
-          margin: 0 0 4px;
-          color: var(--dark);
-          font-family: 'Source Sans Pro', sans-serif;
-          font-weight: 600; }
-        .container .column-left .people .person .time {
-          font-size: 11px;
-          position: absolute;
-          top: 14px;
-          right: 8px;
-          padding: 0 0 5px 5px;
-          color: var(--grey);
-          background-color: var(--white); }
-        .container .column-left .people .person .preview {
-          font-size: 14px;
-          line-height: 17px;
-          display: inline-block;
-          overflow: hidden !important;
-          width: 70%;
-          white-space: nowrap;
-          text-overflow: ellipsis;
-          color: var(--grey); }
-        .container .column-left .people .person.active, .container .column-left .people .person:hover {
-          border: 0;
-          background-color: var(--color-hover); }
-          .container .column-left .people .person.active span, .container .column-left .people .person:hover span {
-            color: var(--color-text-hover);
-            background: transparent; }
   .container .column-center {
     position: relative;
     flex: 1;
