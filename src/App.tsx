@@ -5,18 +5,18 @@ import './App.css';
 // import Orderable from "./app/components/Orderable";
 // import OptimizedList from "./app/components/OptimizedList";
 import Chat from "./app/components/Chat"
-const getRandText = () => {
-    const rnd = Math.random() * 100;
-    let text = '';
-    for (let i = 0; i < rnd; i++) {
-        text += "A ";
-    }
-    return text;
-};
-const list: any[] = [];
-for (let i = 0; i < 1000; i++) {
-    list.push({value: getRandText()})
-}
+// const getRandText = () => {
+//     const rnd = Math.random() * 100;
+//     let text = '';
+//     for (let i = 0; i < rnd; i++) {
+//         text += "A ";
+//     }
+//     return text;
+// };
+// const list: any[] = [];
+// for (let i = 0; i < 1000; i++) {
+//     list.push({value: getRandText()})
+// }
 
 class App extends React.Component {
     public render() {
@@ -35,7 +35,7 @@ class App extends React.Component {
                 {/*<div className="kk-center">*/}
                     {/*<OptimizedList items={list}/>*/}
                 {/*</div>*/}
-                <Chat items={list}/>
+                <Chat/>
             </div>
         );
     }

@@ -9,7 +9,7 @@
   --grey: #999;
   --dark: #1a1a1a;
   --light: #e6e6e6;
-  --wrapper: 1360px;
+  --wrapper: 1200px;
   --blue: #00b0ff;
   --green: #60BF70;
   --message-chat: #EFEFF0;
@@ -108,6 +108,12 @@ body {
           color: var(--dark);
           font-family: 'Source Sans Pro', sans-serif;
           font-weight: 600; }
+      .container .column-center .top .buttons {
+        position: absolute;
+        top: 0;
+        right: 0;
+        float: right;
+        line-height: 0; }
     .container .column-center .conversation {
       width: 100%;
       height: calc(100% - 97px); }
@@ -176,6 +182,10 @@ body {
           .container .column-center .write .input .write-link .send:before {
             background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/send.png"); }
   .container .column-right {
-    width: 318px;
+    width: 0;
     height: 100%;
-    flex: none; }
+    flex: none;
+    overflow: hidden;
+    transition: width 0.2s; }
+    .container .column-right.active {
+      width: 318px; }

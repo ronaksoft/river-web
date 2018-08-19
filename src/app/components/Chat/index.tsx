@@ -2,36 +2,53 @@ import * as React from 'react';
 import Textarea from 'react-textarea-autosize';
 import People from './../People';
 import Conversation from './../Conversation'
-import * as faker from  'faker';
+import IconButton from '@material-ui/core/IconButton';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import * as faker from 'faker';
 
 import './style.css';
 
-interface IProps {
-    items: any;
-}
+// interface IProps {
+// }
 
 interface IState {
+    anchorEl: any;
     conversation: any[];
-    items: any;
     people: any[];
+    rightMenu: boolean;
 }
 
-class Chat extends React.Component<IProps, IState> {
+// const options = [
+//     {
+//         title: 'Contact Info',
+//     },
+//     {
+//         title: 'Delete Conversation',
+//         onClick: null,
+//     },
+//     {
+//         title: 'Mute',
+//     },
+//     {
+//         title: 'Media',
+//     },
+// ];
 
-    constructor(props: IProps) {
+class Chat extends React.Component<{}, IState> {
+    private rightMenu: any = null;
+    private conversation: any = null;
+
+    constructor(props: any) {
         super(props);
 
         this.state = {
+            anchorEl: null,
             conversation: [],
-            items: props.items,
             people: [],
+            rightMenu: false,
         };
-    }
-
-    public componentWillReceiveProps(newProps: IProps) {
-        this.setState({
-            items: newProps.items,
-        });
     }
 
     public componentDidMount() {
@@ -56,49 +73,18 @@ class Chat extends React.Component<IProps, IState> {
                 avatar: false,
                 date: '10:23 PM',
                 me,
-                message: faker.lorem.words(3),
+                message: faker.lorem.words(15),
             });
         }
         this.setState({
             conversation,
             people,
         });
-        // window.document.querySelector('.chat[data-chat=person2]').classList.add('active-chat');
-        // window.document.querySelector('.person[data-chat=person2]').classList.add('active');
-        //
-        // const friends = {
-        //     list: document.querySelector('ul.people'),
-        //     all: document.querySelectorAll('.left .person'),
-        //     name: ''
-        // };
-        //
-        // const chat = {
-        //     container: document.querySelector('.container .right'),
-        //     current: null,
-        //     person: null,
-        //     name: document.querySelector('.container .right .top .name')
-        // };
-        //
-        //
-        // friends.all.forEach(function (f) {
-        //     f.addEventListener('mousedown', function () {
-        //         f.classList.contains('active') || setActiveChat(f);
-        //     });
-        // });
-        //
-        // const setActiveChat = (f: any) => {
-        //     friends.list.querySelector('.active').classList.remove('active');
-        //     f.classList.add('active');
-        //     chat.current = chat.container.querySelector('.active-chat');
-        //     chat.person = f.getAttribute('data-chat');
-        //     chat.current.classList.remove('active-chat');
-        //     chat.container.querySelector('[data-chat="' + chat.person + '"]').classList.add('active-chat');
-        //     friends.name = f.querySelector('.name').innerText;
-        //     chat.name.innerHTML = friends.name;
-        // }
     }
 
     public render() {
+        const {anchorEl} = this.state;
+        const open = Boolean(anchorEl);
         return (
             <div className="wrapper">
                 <div className="container">
@@ -109,9 +95,40 @@ class Chat extends React.Component<IProps, IState> {
                         <People items={this.state.people}/>
                     </div>
                     <div className="column-center">
-                        <div className="top"><span>To: <span className="name">Dog Woofson</span></span></div>
+                        <div className="top">
+                            <span>To: <span className="name">Dog Woofson</span></span>
+                            <span className="buttons">
+                                <IconButton
+                                    aria-label="More"
+                                    aria-owns={anchorEl ? 'long-menu' : undefined}
+                                    aria-haspopup="true"
+                                    onClick={this.handleClick}
+                                >
+                                    <MoreVertIcon/>
+                                </IconButton>
+                                <Menu
+                                    id="long-menu"
+                                    anchorEl={anchorEl}
+                                    open={open}
+                                    onClose={this.handleClose}
+                                    PaperProps={{
+                                        style: {
+                                            fontSize: '12px',
+                                            transformOrigin: 'right top',
+                                            width: 170,
+                                        },
+                                    }}
+                                >
+                                  <MenuItem key={1}
+                                            onClick={this.toggleRightMenu}
+                                  >
+                                      {"Contact Info"}
+                                  </MenuItem>
+                                </Menu>
+                            </span>
+                        </div>
                         <div className="conversation">
-                            <Conversation items={this.state.conversation}/>
+                            <Conversation ref={this.conversationRefHandler} items={this.state.conversation}/>
                         </div>
                         <div className="write">
                             <div className="user">
@@ -127,11 +144,40 @@ class Chat extends React.Component<IProps, IState> {
                             </div>
                         </div>
                     </div>
-                    <div className="column-right"/>
+                    <div ref={this.rightMenuRefHandler} className="column-right"/>
                 </div>
             </div>
         );
     }
+
+    private handleClick = (event: any) => {
+        this.setState({
+            anchorEl: event.currentTarget,
+        });
+    };
+
+    private handleClose = () => {
+        this.setState({
+            anchorEl: null,
+        });
+    };
+
+    private toggleRightMenu = () => {
+        this.rightMenu.classList.toggle('active');
+        setTimeout(() => {
+           const instance =  this.conversation;
+            instance.list.recomputeRowHeights();
+            instance.forceUpdate();
+        }, 200);
+    };
+
+    private rightMenuRefHandler = (value: any) => {
+        this.rightMenu = value;
+    };
+
+    private conversationRefHandler = (value: any) => {
+        this.conversation = value;
+    };
 }
 
 export default Chat;

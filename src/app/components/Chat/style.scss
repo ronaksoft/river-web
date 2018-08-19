@@ -89,6 +89,13 @@
                     @include font-bold;
                 }
             }
+            .buttons {
+                position: absolute;
+                top: 0;
+                right: 0;
+                float: right;
+                line-height: 0;
+            }
         }
         .conversation {
             width: 100%;
@@ -177,8 +184,13 @@
         }
     }
     .column-right {
-        width: 318px;
+        width: 0;
         height: 100%;
         flex: none;
+        overflow: hidden;
+        transition: width 0.2s;
+        &.active {
+            width: 318px;
+        }
     }
 }

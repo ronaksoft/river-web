@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {List, CellMeasurer, CellMeasurerCache, AutoSizer} from 'react-virtualized';
-import './style.css'
+// import {debounce} from 'lodash';
+import './style.css';
 
 interface IProps {
     items: any[];
@@ -41,7 +42,7 @@ class Conversation extends React.Component<IProps, IState> {
         const {items} = this.state;
         return (
             <AutoSizer>
-                {({width, height}) => (
+                {({width, height}: any) => (
                     <List
                         ref={this.refHandler}
                         deferredMeasurementCache={this.cache}
