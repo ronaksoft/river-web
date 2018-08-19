@@ -23,7 +23,6 @@ class Conversation extends React.Component<IProps, IState> {
             items: props.items,
             scrollIndex: -1,
         };
-        window.console.log(this.list);
         this.cache = new CellMeasurerCache({
             fixedWidth: true,
             minHeight: 25,
@@ -31,11 +30,20 @@ class Conversation extends React.Component<IProps, IState> {
     }
 
     public componentWillReceiveProps(newProps: IProps) {
-        this.cache.clearAll();
-        this.setState({
-            items: newProps.items,
-            scrollIndex: newProps.items.length - 1,
-        });
+        if (this.state.items !== newProps.items) {
+            this.setState({
+                items: newProps.items,
+                scrollIndex: newProps.items.length - 1,
+            }, () => {
+                this.cache.clearAll();
+                this.list.recomputeRowHeights();
+                this.forceUpdate(() => {
+                    setTimeout(() => {
+                        this.list.scrollToRow(newProps.items.length - 1);
+                    }, 50);
+                });
+            });
+        }
     }
 
     public render() {

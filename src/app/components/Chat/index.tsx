@@ -10,73 +10,62 @@ import * as faker from 'faker';
 
 import './style.css';
 
-// interface IProps {
-// }
+interface IProps {
+    match?: any;
+    location?: any;
+}
 
 interface IState {
     anchorEl: any;
     conversation: any[];
     people: any[];
     rightMenu: boolean;
+    selectedConversationId: string;
+    inputVal: string;
 }
 
-// const options = [
-//     {
-//         title: 'Contact Info',
-//     },
-//     {
-//         title: 'Delete Conversation',
-//         onClick: null,
-//     },
-//     {
-//         title: 'Mute',
-//     },
-//     {
-//         title: 'Media',
-//     },
-// ];
-
-class Chat extends React.Component<{}, IState> {
+class Chat extends React.Component<IProps, IState> {
     private rightMenu: any = null;
     private conversation: any = null;
+    private idToIndex: any = {};
 
-    constructor(props: any) {
+    constructor(props: IProps) {
         super(props);
-
         this.state = {
             anchorEl: null,
             conversation: [],
+            inputVal: '',
             people: [],
             rightMenu: false,
+            selectedConversationId: props.match.params.id,
         };
     }
 
+    public componentWillReceiveProps(newProps: IProps) {
+        const conversation = this.getConversation();
+        this.setState({
+            conversation,
+            selectedConversationId: newProps.match.params.id,
+        });
+    }
+
     public componentDidMount() {
+        this.setState({
+            selectedConversationId: this.props.match.params.id,
+        });
         const people = [];
         for (let i = 0; i < 3000; i++) {
+            const id = i + 1000;
             people.push({
                 date: '10:23 PM',
-                id: faker.random.number(1000000),
+                id,
                 image: faker.image.avatar(),
                 message: faker.lorem.lines(),
                 name: faker.name.findName(),
             });
+            this.idToIndex[String(id)] = i;
         }
-        const conversation: any[] = [];
-        for (let i = 0; i < 1000; i++) {
-            const me = faker.random.boolean();
-            if (conversation.length > 0) {
-                if (conversation[0].me !== me) {
-                    conversation[0].avatar = faker.image.avatar();
-                }
-            }
-            conversation.unshift({
-                avatar: false,
-                date: '10:23 PM',
-                me,
-                message: faker.lorem.words(15),
-            });
-        }
+        const conversation = this.getConversation();
         this.setState({
             conversation,
             people,
@@ -97,7 +86,7 @@ class Chat extends React.Component<{}, IState> {
                     </div>
                     <div className="column-center">
                         <div className="top">
-                            <span>To: <span className="name">Dog Woofson</span></span>
+                            <span>To: <span className="name">{this.getName(this.state.selectedConversationId)}</span></span>
                             <span className="buttons">
                                 <IconButton
                                     aria-label="More"
@@ -112,13 +101,6 @@ class Chat extends React.Component<{}, IState> {
                                     anchorEl={anchorEl}
                                     open={open}
                                     onClose={this.handleClose}
-                                    PaperProps={{
-                                        style: {
-                                            fontSize: '12px',
-                                            transformOrigin: 'right top',
-                                            width: 170,
-                                        },
-                                    }}
                                 >
                                   <MenuItem key={1}
                                             onClick={this.toggleRightMenu}
@@ -136,7 +118,7 @@ class Chat extends React.Component<{}, IState> {
                                 <span className="user-avatar"/>
                             </div>
                             <div className="input">
-                                <Textarea maxRows={5} placeholder="Type your message here..."/>
+                                <Textarea maxRows={5} placeholder="Type your message here..." onKeyUp={this.sendMessage}/>
                                 <div className="write-link">
                                     <a href="javascript:;" className="attach"/>
                                     <a href="javascript:;" className="smiley"/>
@@ -169,10 +151,10 @@ class Chat extends React.Component<{}, IState> {
         });
         this.rightMenu.classList.toggle('active');
         setTimeout(() => {
-           const instance =  this.conversation;
-           instance.cache.clearAll();
-           instance.list.recomputeRowHeights();
-           instance.forceUpdate();
+            const instance = this.conversation;
+            instance.cache.clearAll();
+            instance.list.recomputeRowHeights();
+            instance.forceUpdate();
         }, 200);
     };
 
@@ -183,6 +165,65 @@ class Chat extends React.Component<{}, IState> {
     private conversationRefHandler = (value: any) => {
         this.conversation = value;
     };
+
+    private getConversation() {
+        const conversation: any[] = [];
+        for (let i = 0; i < 1000; i++) {
+            const me = faker.random.boolean();
+            if (conversation.length > 0) {
+                if (conversation[0].me !== me) {
+                    conversation[0].avatar = faker.image.avatar();
+                }
+            }
+            conversation.unshift({
+                avatar: false,
+                date: '10:23 PM',
+                me,
+                message: faker.lorem.words(15),
+            });
+        }
+        return conversation
+    }
+
+    private getName = (id: string) => {
+        if (this.idToIndex.hasOwnProperty(id)) {
+            return this.state.people[this.idToIndex[id]].name;
+        }
+        return '';
+    }
+
+    private sendMessage = (e: any) => {
+        if (e.which === 13) {
+            const conversation = this.state.conversation;
+            // if (conversation.length > 0) {
+            //     if (!conversation[0].me) {
+            //         conversation[0].avatar = faker.image.avatar();
+            //     }
+            // }
+            conversation.push({
+                avatar: false,
+                date: '10:23 PM',
+                me: true,
+                message: e.target.value,
+            });
+            e.target.value = '';
+            this.setState({
+                conversation,
+                inputVal: '',
+            }, () => {
+                const instance = this.conversation;
+                instance.forceUpdate(() => {
+                    setTimeout(() => {
+                        instance.list.scrollToRow(conversation.length - 1);
+                    }, 50);
+                });
+            });
+        } else {
+            this.setState({
+                inputVal: e.target.value,
+            });
+        }
+    }
 }
 
 export default Chat;
