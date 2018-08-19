@@ -73,7 +73,11 @@ class Conversation extends React.Component<IProps, IState> {
                 rowIndex={index}
                 parent={parent}>
                 <div style={style} key={index} className="bubble-wrapper">
-                    {(data.avatar && !data.me) && <b>Hey</b>}
+                    {(data.avatar && !data.me) && (
+                        <span className="avatar">
+                            <img src={data.avatar}/>
+                        </span>
+                    )}
                     <div className={"bubble " + (data.me ? 'me' : 'you')}>
                         {data.message}
                     </div>

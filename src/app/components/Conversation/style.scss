@@ -51,9 +51,25 @@
 }
 
 .bubble-wrapper {
+  position: relative;
   display: inline-block;
   width: 100%;
   padding-bottom: 8px;
+  .avatar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 32px;
+    width: 32px;
+    border-radius: 50%;
+    background-color: #cc0000;
+    overflow: hidden;
+    img {
+      height: 32px;
+      width: 32px;
+      object-fit: cover;
+    }
+  }
 }
 
 .bubble {
@@ -73,7 +89,7 @@
     align-self: flex-start;
     animation-name: slideFromLeft;
     text-align: left;
-    margin-left: 30px;
+    margin-left: 44px;
   }
   &.me {
     float: right;

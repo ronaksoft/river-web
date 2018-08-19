@@ -47,20 +47,18 @@ class Chat extends React.Component<IProps, IState> {
         const conversation: any[] = [];
         for (let i = 0; i < 1000; i++) {
             const me = faker.random.boolean();
-            let avatar = false;
             if (conversation.length > 0) {
-                if (conversation[conversation.length-1].me !== me) {
-                    avatar = true;
+                if (conversation[0].me !== me) {
+                    conversation[0].avatar = faker.image.avatar();
                 }
             }
             conversation.unshift({
-                avatar,
+                avatar: false,
                 date: '10:23 PM',
                 me,
-                message: faker.lorem.lines(3),
+                message: faker.lorem.words(3),
             });
         }
-        window.console.log(conversation);
         this.setState({
             conversation,
             people,
