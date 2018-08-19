@@ -25,7 +25,7 @@ class Conversation extends React.Component<IProps, IState> {
         };
         window.console.log(this.list);
         this.cache = new CellMeasurerCache({
-            fixedWidth: false,
+            fixedWidth: true,
             minHeight: 25,
         });
     }

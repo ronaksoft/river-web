@@ -163,12 +163,16 @@ class Chat extends React.Component<{}, IState> {
     };
 
     private toggleRightMenu = () => {
+        this.setState({
+            anchorEl: null,
+        });
         this.rightMenu.classList.toggle('active');
         setTimeout(() => {
            const instance =  this.conversation;
-            instance.list.recomputeRowHeights();
-            instance.forceUpdate();
-        }, 200);
+           instance.cache.clearAll();
+           instance.list.recomputeRowHeights();
+           instance.forceUpdate();
+        }, 150);
     };
 
     private rightMenuRefHandler = (value: any) => {
