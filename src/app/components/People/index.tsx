@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {List, CellMeasurer, CellMeasurerCache} from 'react-virtualized';
-import './style.css'
+import {Link} from 'react-router-dom';
+import './style.css';
 
 interface IProps {
     items: any[];
@@ -63,11 +64,15 @@ class People extends React.Component<IProps, IState> {
                 key={key}
                 rowIndex={index}
                 parent={parent}>
-                <div className="person" style={style} key={index} data-chat="person1">
-                    <img src={data.image} alt=""/>
-                    <span className="name">{data.name}</span>
-                    <span className="time">{data.date}</span>
-                    <span className="preview">{data.message}</span>
+                <div style={style} key={index}>
+                    <Link to={`/conversation/${data.id}`}>
+                        <div className="person">
+                            <img src={data.image} alt=""/>
+                            <span className="name">{data.name}</span>
+                            <span className="time">{data.date}</span>
+                            <span className="preview">{data.message}</span>
+                        </div>
+                    </Link>
                 </div>
             </CellMeasurer>
         );

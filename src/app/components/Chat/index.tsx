@@ -56,6 +56,7 @@ class Chat extends React.Component<{}, IState> {
         for (let i = 0; i < 3000; i++) {
             people.push({
                 date: '10:23 PM',
+                id: faker.random.number(1000000),
                 image: faker.image.avatar(),
                 message: faker.lorem.lines(),
                 name: faker.name.findName(),
@@ -172,7 +173,7 @@ class Chat extends React.Component<{}, IState> {
            instance.cache.clearAll();
            instance.list.recomputeRowHeights();
            instance.forceUpdate();
-        }, 150);
+        }, 200);
     };
 
     private rightMenuRefHandler = (value: any) => {
