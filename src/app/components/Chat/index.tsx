@@ -28,6 +28,7 @@ class Chat extends React.Component<IProps, IState> {
     private rightMenu: any = null;
     private conversation: any = null;
     private idToIndex: any = {};
+    private store: any = {};
 
     constructor(props: IProps) {
         super(props);
@@ -42,7 +43,13 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     public componentWillReceiveProps(newProps: IProps) {
-        const conversation = this.getConversation();
+        const selectedId = newProps.match.params.id;
+        let conversation;
+        if (!this.store.hasOwnProperty(selectedId)) {
+            conversation = this.getConversation();
+        } else {
+            conversation = this.store[selectedId];
+        }
         this.setState({
             conversation,
             selectedConversationId: newProps.match.params.id,
@@ -50,9 +57,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        this.setState({
-            selectedConversationId: this.props.match.params.id,
-        });
+        const selectedId = this.props.match.params.id;
         const people = [];
         for (let i = 0; i < 3000; i++) {
             const id = i + 1000;
@@ -66,9 +71,11 @@ class Chat extends React.Component<IProps, IState> {
             this.idToIndex[String(id)] = i;
         }
         const conversation = this.getConversation();
+        this.store[selectedId] = conversation;
         this.setState({
             conversation,
             people,
+            selectedConversationId: selectedId,
         });
     }
 
