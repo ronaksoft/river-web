@@ -118,7 +118,11 @@ class Chat extends React.Component<IProps, IState> {
                                 <span className="user-avatar"/>
                             </div>
                             <div className="input">
-                                <Textarea maxRows={5} placeholder="Type your message here..." onKeyUp={this.sendMessage}/>
+                                <Textarea maxRows={5}
+                                          placeholder="Type your message here..."
+                                          onKeyUp={this.sendMessage}
+                                          onKeyDown={this.inputKeyDown}
+                                />
                                 <div className="write-link">
                                     <a href="javascript:;" className="attach"/>
                                     <a href="javascript:;" className="smiley"/>
@@ -190,10 +194,10 @@ class Chat extends React.Component<IProps, IState> {
             return this.state.people[this.idToIndex[id]].name;
         }
         return '';
-    }
+    };
 
     private sendMessage = (e: any) => {
-        if (e.which === 13) {
+        if (e.key === 'Enter' && !e.shiftKey) {
             const conversation = this.state.conversation;
             // if (conversation.length > 0) {
             //     if (!conversation[0].me) {
@@ -212,16 +216,21 @@ class Chat extends React.Component<IProps, IState> {
                 inputVal: '',
             }, () => {
                 const instance = this.conversation;
-                instance.forceUpdate(() => {
-                    setTimeout(() => {
-                        instance.list.scrollToRow(conversation.length - 1);
-                    }, 50);
-                });
+                setTimeout(() => {
+                    instance.list.scrollToRow(conversation.length - 1);
+                }, 50);
             });
         } else {
             this.setState({
                 inputVal: e.target.value,
             });
+        }
+    };
+
+    private inputKeyDown = (e: any) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.stopPropagation();
+            e.preventDefault();
         }
     }
 }

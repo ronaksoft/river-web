@@ -72,6 +72,10 @@ class Conversation extends React.Component<IProps, IState> {
         this.list = value;
     };
 
+    private formatText(text: string) {
+        return text.split('\n').join('<br/>');
+    }
+
     private rowRender = ({index, key, parent, style}: any): any => {
         const data = this.state.items[index];
         return (
@@ -87,9 +91,8 @@ class Conversation extends React.Component<IProps, IState> {
                             <img src={data.avatar}/>
                         </span>
                     )}
-                    <div className={"bubble " + (data.me ? 'me' : 'you')}>
-                        {data.message}
-                    </div>
+                    <div className={"bubble " + (data.me ? 'me' : 'you')}
+                         dangerouslySetInnerHTML={{__html: this.formatText(data.message)}}/>
                 </div>
             </CellMeasurer>
         );
