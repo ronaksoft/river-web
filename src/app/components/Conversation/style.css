@@ -27,7 +27,7 @@ body {
   background-repeat: no-repeat; }
 
 .chat {
-  padding: 0 17px 10px;
+  padding: 0 17px 0;
   border-width: 1px 1px 0 0;
   border-style: solid;
   border-color: var(--light);

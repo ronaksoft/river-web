@@ -44,7 +44,7 @@ class Chat extends React.Component<IProps, IState> {
 
     public componentWillReceiveProps(newProps: IProps) {
         const selectedId = newProps.match.params.id;
-        let conversation;
+        let conversation: any[];
         if (!this.store.hasOwnProperty(selectedId)) {
             conversation = this.getConversation();
         } else {
@@ -53,6 +53,14 @@ class Chat extends React.Component<IProps, IState> {
         this.setState({
             conversation,
             selectedConversationId: newProps.match.params.id,
+        }, () => {
+            this.conversation.cache.clearAll();
+            this.conversation.list.recomputeRowHeights();
+            this.conversation.forceUpdate(() => {
+                setTimeout(() => {
+                    this.conversation.list.scrollToRow(conversation.length - 1);
+                }, 50);
+            });
         });
     }
 
@@ -93,7 +101,8 @@ class Chat extends React.Component<IProps, IState> {
                     </div>
                     <div className="column-center">
                         <div className="top">
-                            <span>To: <span className="name">{this.getName(this.state.selectedConversationId)}</span></span>
+                            <span>To: <span
+                                className="name">{this.getName(this.state.selectedConversationId)}</span></span>
                             <span className="buttons">
                                 <IconButton
                                     aria-label="More"
@@ -118,7 +127,8 @@ class Chat extends React.Component<IProps, IState> {
                             </span>
                         </div>
                         <div className="conversation">
-                            <Conversation ref={this.conversationRefHandler} items={this.state.conversation}/>
+                            <Conversation ref={this.conversationRefHandler}
+                                          items={this.state.conversation}/>
                         </div>
                         <div className="write">
                             <div className="user">
@@ -162,10 +172,13 @@ class Chat extends React.Component<IProps, IState> {
         });
         this.rightMenu.classList.toggle('active');
         setTimeout(() => {
-            const instance = this.conversation;
-            instance.cache.clearAll();
-            instance.list.recomputeRowHeights();
-            instance.forceUpdate();
+            this.conversation.cache.clearAll();
+            this.conversation.list.recomputeRowHeights();
+            this.conversation.forceUpdate(() => {
+                setTimeout(() => {
+                    this.conversation.list.scrollToRow(this.state.conversation.length - 1);
+                }, 50);
+            });
         }, 200);
     };
 
@@ -206,11 +219,6 @@ class Chat extends React.Component<IProps, IState> {
     private sendMessage = (e: any) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             const conversation = this.state.conversation;
-            // if (conversation.length > 0) {
-            //     if (!conversation[0].me) {
-            //         conversation[0].avatar = faker.image.avatar();
-            //     }
-            // }
             conversation.push({
                 avatar: false,
                 date: '10:23 PM',
@@ -222,9 +230,9 @@ class Chat extends React.Component<IProps, IState> {
                 conversation,
                 inputVal: '',
             }, () => {
-                const instance = this.conversation;
                 setTimeout(() => {
-                    instance.list.scrollToRow(conversation.length - 1);
+                    this.animateToEnd();
+                    this.conversation.list.recomputeRowHeights();
                 }, 50);
             });
         } else {
@@ -238,6 +246,19 @@ class Chat extends React.Component<IProps, IState> {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.stopPropagation();
             e.preventDefault();
+        }
+    };
+
+    private animateToEnd() {
+        const el = document.querySelector('.chat.active-chat');
+        if (el) {
+            const eldiv = el.querySelector('.chat.active-chat > div');
+            if (eldiv) {
+                el.scroll({
+                    behavior: 'smooth',
+                    top: eldiv.clientHeight,
+                });
+            }
         }
     }
 }

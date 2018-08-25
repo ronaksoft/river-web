@@ -5,6 +5,7 @@ import './style.css';
 
 interface IProps {
     items: any[];
+    rendered?: () => void;
 }
 
 interface IState {
@@ -15,6 +16,7 @@ interface IState {
 class Conversation extends React.Component<IProps, IState> {
     private list: any;
     private cache: any;
+    private listCount: number;
 
     constructor(props: IProps) {
         super(props);
@@ -27,6 +29,7 @@ class Conversation extends React.Component<IProps, IState> {
             fixedWidth: true,
             minHeight: 25,
         });
+        window.console.log(this.list);
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -34,14 +37,13 @@ class Conversation extends React.Component<IProps, IState> {
             this.setState({
                 items: newProps.items,
                 scrollIndex: newProps.items.length - 1,
-            }, () => {
-                this.cache.clearAll();
-                this.list.recomputeRowHeights();
-                this.forceUpdate(() => {
-                    setTimeout(() => {
-                        this.list.scrollToRow(newProps.items.length - 1);
-                    }, 50);
-                });
+            });
+            this.listCount = newProps.items.length;
+        } else if (this.state.items === newProps.items &&
+            newProps.items.length > 2 && this.listCount < newProps.items.length) {
+            this.listCount = newProps.items.length;
+            this.setState({
+                scrollIndex: this.listCount - 2,
             });
         }
     }
@@ -61,6 +63,7 @@ class Conversation extends React.Component<IProps, IState> {
                         width={width}
                         height={height}
                         scrollToIndex={this.state.scrollIndex}
+                        onRowsRendered={this.props.rendered}
                         className="chat active-chat"
                     />
                 )}
