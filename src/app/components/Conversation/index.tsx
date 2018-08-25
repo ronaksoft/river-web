@@ -41,10 +41,10 @@ class Conversation extends React.Component<IProps, IState> {
             this.listCount = newProps.items.length;
         } else if (this.state.items === newProps.items &&
             newProps.items.length > 2 && this.listCount < newProps.items.length) {
-            this.listCount = newProps.items.length;
             this.setState({
                 scrollIndex: this.listCount - 2,
             });
+            this.listCount = newProps.items.length;
         }
     }
 

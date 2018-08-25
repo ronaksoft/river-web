@@ -7,6 +7,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import * as faker from 'faker';
+import DB from './../../services/db';
 
 import './style.css';
 
@@ -29,6 +30,7 @@ class Chat extends React.Component<IProps, IState> {
     private conversation: any = null;
     private idToIndex: any = {};
     private store: any = {};
+    private db: DB;
 
     constructor(props: IProps) {
         super(props);
@@ -40,6 +42,8 @@ class Chat extends React.Component<IProps, IState> {
             rightMenu: false,
             selectedConversationId: props.match.params.id,
         };
+        this.db = DB.getInstance();
+        window.console.log(this.db);
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -232,7 +236,6 @@ class Chat extends React.Component<IProps, IState> {
             }, () => {
                 setTimeout(() => {
                     this.animateToEnd();
-                    this.conversation.list.recomputeRowHeights();
                 }, 50);
             });
         } else {
