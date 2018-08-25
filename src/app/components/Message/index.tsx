@@ -1,19 +1,19 @@
 import * as React from 'react';
 import {List, CellMeasurer, CellMeasurerCache, AutoSizer} from 'react-virtualized';
-// import {debounce} from 'lodash';
+import {IMessage} from '../../repository/message/interface';
 import './style.css';
 
 interface IProps {
-    items: any[];
+    items: IMessage[];
     rendered?: () => void;
 }
 
 interface IState {
-    items: any[];
+    items: IMessage[];
     scrollIndex: number;
 }
 
-class Conversation extends React.Component<IProps, IState> {
+class Message extends React.Component<IProps, IState> {
     private list: any;
     private cache: any;
     private listCount: number;
@@ -102,4 +102,4 @@ class Conversation extends React.Component<IProps, IState> {
     };
 }
 
-export default Conversation;
+export default Message;

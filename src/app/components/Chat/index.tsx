@@ -1,13 +1,15 @@
 import * as React from 'react';
 import Textarea from 'react-textarea-autosize';
 import People from './../People';
-import Conversation from './../Conversation'
+import {IMessage} from '../../repository/message/interface';
+import Message from '../Message'
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import * as faker from 'faker';
-import DB from './../../services/db';
+import MessageRepo from '../../repository/message';
+import UniqueId from '../../services/uniqueId';
 
 import './style.css';
 
@@ -18,62 +20,45 @@ interface IProps {
 
 interface IState {
     anchorEl: any;
-    conversation: any[];
-    people: any[];
+    conversations: any[];
+    inputVal: string;
+    messages: IMessage[];
     rightMenu: boolean;
     selectedConversationId: string;
-    inputVal: string;
 }
 
 class Chat extends React.Component<IProps, IState> {
     private rightMenu: any = null;
-    private conversation: any = null;
+    private message: any = null;
     private idToIndex: any = {};
-    private store: any = {};
-    private db: DB;
+    private messageRepo: MessageRepo;
+    private uniqueId: UniqueId;
 
     constructor(props: IProps) {
         super(props);
         this.state = {
             anchorEl: null,
-            conversation: [],
+            conversations: [],
             inputVal: '',
-            people: [],
+            messages: [],
             rightMenu: false,
             selectedConversationId: props.match.params.id,
         };
-        this.db = DB.getInstance();
-        window.console.log(this.db);
+        this.messageRepo = new MessageRepo();
+        this.uniqueId = UniqueId.getInstance();
     }
 
     public componentWillReceiveProps(newProps: IProps) {
         const selectedId = newProps.match.params.id;
-        let conversation: any[];
-        if (!this.store.hasOwnProperty(selectedId)) {
-            conversation = this.getConversation();
-        } else {
-            conversation = this.store[selectedId];
-        }
-        this.setState({
-            conversation,
-            selectedConversationId: newProps.match.params.id,
-        }, () => {
-            this.conversation.cache.clearAll();
-            this.conversation.list.recomputeRowHeights();
-            this.conversation.forceUpdate(() => {
-                setTimeout(() => {
-                    this.conversation.list.scrollToRow(conversation.length - 1);
-                }, 50);
-            });
-        });
+        this.getMessageByConversationId(selectedId, true);
     }
 
     public componentDidMount() {
         const selectedId = this.props.match.params.id;
-        const people = [];
+        const conversations: any[] = [];
         for (let i = 0; i < 3000; i++) {
             const id = i + 1000;
-            people.push({
+            conversations.push({
                 date: '10:23 PM',
                 id,
                 image: faker.image.avatar(),
@@ -82,12 +67,9 @@ class Chat extends React.Component<IProps, IState> {
             });
             this.idToIndex[String(id)] = i;
         }
-        const conversation = this.getConversation();
-        this.store[selectedId] = conversation;
+        this.getMessageByConversationId(selectedId);
         this.setState({
-            conversation,
-            people,
-            selectedConversationId: selectedId,
+            conversations,
         });
     }
 
@@ -101,7 +83,7 @@ class Chat extends React.Component<IProps, IState> {
                         <div className="top">
                             <span className="new-message">New message</span>
                         </div>
-                        <People items={this.state.people}/>
+                        <People items={this.state.conversations}/>
                     </div>
                     <div className="column-center">
                         <div className="top">
@@ -131,8 +113,7 @@ class Chat extends React.Component<IProps, IState> {
                             </span>
                         </div>
                         <div className="conversation">
-                            <Conversation ref={this.conversationRefHandler}
-                                          items={this.state.conversation}/>
+                            <Message ref={this.messageRefHandler} items={this.state.messages}/>
                         </div>
                         <div className="write">
                             <div className="user">
@@ -176,11 +157,11 @@ class Chat extends React.Component<IProps, IState> {
         });
         this.rightMenu.classList.toggle('active');
         setTimeout(() => {
-            this.conversation.cache.clearAll();
-            this.conversation.list.recomputeRowHeights();
-            this.conversation.forceUpdate(() => {
+            this.message.cache.clearAll();
+            this.message.list.recomputeRowHeights();
+            this.message.forceUpdate(() => {
                 setTimeout(() => {
-                    this.conversation.list.scrollToRow(this.state.conversation.length - 1);
+                    this.message.list.scrollToRow(this.state.messages.length - 1);
                 }, 50);
             });
         }, 200);
@@ -190,54 +171,60 @@ class Chat extends React.Component<IProps, IState> {
         this.rightMenu = value;
     };
 
-    private conversationRefHandler = (value: any) => {
-        this.conversation = value;
+    private messageRefHandler = (value: any) => {
+        this.message = value;
     };
 
-    private getConversation() {
-        const conversation: any[] = [];
-        for (let i = 0; i < 1000; i++) {
+    private getMessages(): IMessage[] {
+        const messages: IMessage[] = [];
+        for (let i = 0; i < 100; i++) {
             const me = faker.random.boolean();
-            if (conversation.length > 0) {
-                if (conversation[0].me !== me) {
-                    conversation[0].avatar = faker.image.avatar();
+            if (messages.length > 0) {
+                if (!messages[0].me && messages[0].me !== me) {
+                    messages[0].avatar = faker.image.avatar();
                 }
             }
-            conversation.unshift({
-                avatar: false,
-                date: '10:23 PM',
+            messages.unshift({
+                _id: this.uniqueId.getId('msg', 'msg_'),
+                avatar: undefined,
+                conversation_id: this.state.selectedConversationId,
                 me,
                 message: faker.lorem.words(15),
+                timestamp: new Date().getTime(),
             });
         }
-        return conversation
+        return messages;
     }
 
     private getName = (id: string) => {
         if (this.idToIndex.hasOwnProperty(id)) {
-            return this.state.people[this.idToIndex[id]].name;
+            return this.state.conversations[this.idToIndex[id]].name;
         }
         return '';
     };
 
     private sendMessage = (e: any) => {
         if (e.key === 'Enter' && !e.shiftKey) {
-            const conversation = this.state.conversation;
-            conversation.push({
-                avatar: false,
-                date: '10:23 PM',
+            const messages = this.state.messages;
+            const message: IMessage = {
+                _id: this.uniqueId.getId('msg', 'msg_'),
+                avatar: undefined,
+                conversation_id: this.state.selectedConversationId,
                 me: true,
                 message: e.target.value,
-            });
+                timestamp: new Date().getTime(),
+            };
+            messages.push(message);
             e.target.value = '';
             this.setState({
-                conversation,
                 inputVal: '',
+                messages,
             }, () => {
                 setTimeout(() => {
                     this.animateToEnd();
                 }, 50);
             });
+            this.messageRepo.createMessage(message);
         } else {
             this.setState({
                 inputVal: e.target.value,
@@ -263,6 +250,58 @@ class Chat extends React.Component<IProps, IState> {
                 });
             }
         }
+    }
+
+    private createFakeMessage() {
+        const messages = this.getMessages();
+        this.messageRepo.createMessages(messages).then((data: any) => {
+            window.console.log(data);
+        }).catch((err: any) => {
+            window.console.log(err);
+        });
+        return messages;
+    }
+
+    private getMessageByConversationId(conversationId: string, force?: boolean) {
+        let messages: IMessage[] = [];
+
+        const updateState = () => {
+            this.message.cache.clearAll();
+            this.message.list.recomputeRowHeights();
+            this.message.forceUpdate(() => {
+                setTimeout(() => {
+                    this.message.list.scrollToRow(messages.length - 1);
+                }, 50);
+            });
+        };
+
+        this.messageRepo.getMessages(conversationId).then((data) => {
+            window.console.log(data)
+            if (data.length === 0) {
+                messages = this.createFakeMessage();
+            } else {
+                messages = data;
+            }
+            this.setState({
+                messages,
+                selectedConversationId: conversationId,
+            }, () => {
+                if (force === true) {
+                    updateState();
+                }
+            });
+        }).catch((err: any) => {
+            window.console.warn(err);
+            messages = this.createFakeMessage();
+            this.setState({
+                messages,
+                selectedConversationId: conversationId,
+            }, () => {
+                if (force === true) {
+                    updateState();
+                }
+            });
+        });
     }
 }
 
