@@ -1,7 +1,7 @@
 @import '../../../style/common';
 
 .chat {
-  padding: 0 17px 0;
+  padding: 10px 17px 0;
   border-width: 1px 1px 0 0;
   border-style: solid;
   border-color: var(--light);
@@ -11,11 +11,11 @@
     display: flex;
     .bubble {
       transition-timing-function: cubic-bezier(.4, -.04, 1, 1);
-      @for $i from 1 through 10 {
-        &:nth-of-type(#{$i}) {
-          animation-duration: .15s * $i;
-        }
-      }
+      //@for $i from 1 through 10 {
+      //  &:nth-of-type(#{$i}) {
+      //    animation-duration: .15s * $i;
+      //  }
+      //}
     }
   }
 }

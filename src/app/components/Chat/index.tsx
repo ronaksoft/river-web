@@ -33,6 +33,7 @@ class Chat extends React.Component<IProps, IState> {
     private idToIndex: any = {};
     private messageRepo: MessageRepo;
     private uniqueId: UniqueId;
+    private isLodaing: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -139,7 +140,10 @@ class Chat extends React.Component<IProps, IState> {
                             </span>
                         </div>
                         <div className="conversation">
-                            <Message ref={this.messageRefHandler} items={this.state.messages}/>
+                            <Message ref={this.messageRefHandler}
+                                     items={this.state.messages}
+                                     onLoadMore={this.onMessageScroll}
+                            />
                         </div>
                         <div className="write">
                             <div className="user">
@@ -201,26 +205,26 @@ class Chat extends React.Component<IProps, IState> {
         this.message = value;
     }
 
-    private getMessages(conversationId: string): IMessage[] {
-        const messages: IMessage[] = [];
-        for (let i = 0; i < 100; i++) {
-            const me = faker.random.boolean();
-            if (messages.length > 0) {
-                if (!messages[0].me && messages[0].me !== me) {
-                    messages[0].avatar = faker.image.avatar();
-                }
-            }
-            messages.unshift({
-                _id: this.uniqueId.getId('msg', 'msg_'),
-                avatar: undefined,
-                conversation_id: conversationId,
-                me,
-                message: faker.lorem.words(15),
-                timestamp: new Date().getTime(),
-            });
-        }
-        return messages;
-    }
+    // private getMessages(conversationId: string): IMessage[] {
+    //     const messages: IMessage[] = [];
+    //     for (let i = 0; i < 100; i++) {
+    //         const me = faker.random.boolean();
+    //         if (messages.length > 0) {
+    //             if (!messages[0].me && messages[0].me !== me) {
+    //                 messages[0].avatar = faker.image.avatar();
+    //             }
+    //         }
+    //         messages.unshift({
+    //             _id: this.uniqueId.getId('msg', 'msg_'),
+    //             avatar: undefined,
+    //             conversation_id: conversationId,
+    //             me,
+    //             message: faker.lorem.words(15),
+    //             timestamp: new Date().getTime(),
+    //         });
+    //     }
+    //     return messages;
+    // }
 
     private getName = (id: string) => {
         if (this.idToIndex.hasOwnProperty(id)) {
@@ -277,16 +281,16 @@ class Chat extends React.Component<IProps, IState> {
             }
         }
     }
-
-    private createFakeMessage(conversationId: string) {
-        const messages = this.getMessages(conversationId);
-        this.messageRepo.createMessages(messages).then((data: any) => {
-            window.console.log('new', data);
-        }).catch((err: any) => {
-            window.console.log('new', err);
-        });
-        return messages;
-    }
+    //
+    // private createFakeMessage(conversationId: string) {
+    //     const messages = this.getMessages(conversationId);
+    //     this.messageRepo.createMessages(messages).then((data: any) => {
+    //         window.console.log('new', data);
+    //     }).catch((err: any) => {
+    //         window.console.log('new', err);
+    //     });
+    //     return messages;
+    // }
 
     private getMessageByConversationId(conversationId: string, force?: boolean) {
         let messages: IMessage[] = [];
@@ -301,12 +305,12 @@ class Chat extends React.Component<IProps, IState> {
             });
         };
 
-        this.messageRepo.getMessages(conversationId).then((data) => {
-            window.console.log(data);
+        this.messageRepo.getMessages({conversationId}).then((data) => {
             if (data.length === 0) {
-                messages = this.createFakeMessage(conversationId);
+                // messages = this.createFakeMessage(conversationId);
+                messages = [];
             } else {
-                messages = data;
+                messages = data.reverse();
             }
             this.setState({
                 messages,
@@ -318,7 +322,7 @@ class Chat extends React.Component<IProps, IState> {
             });
         }).catch((err: any) => {
             window.console.warn(err);
-            messages = this.createFakeMessage(conversationId);
+            // messages = this.createFakeMessage(conversationId);
             this.setState({
                 messages,
                 selectedConversationId: conversationId,
@@ -327,6 +331,33 @@ class Chat extends React.Component<IProps, IState> {
                     updateState();
                 }
             });
+        });
+    }
+
+    private onMessageScroll = () => {
+        if (this.isLodaing) {
+            return;
+        }
+        this.messageRepo.getMessages({
+            before: this.state.messages[0].timestamp,
+            conversationId: this.state.selectedConversationId
+        }).then((data) => {
+            if (data.length === 0) {
+                return;
+            }
+            const messages = this.state.messages;
+            messages.unshift.apply(messages, data.reverse());
+            this.setState({
+                messages,
+            }, () => {
+                this.message.cache.clearAll();
+                this.message.list.recomputeRowHeights();
+                this.message.forceUpdate(() => {
+                    this.isLodaing = false;
+                });
+            });
+        }).catch(() => {
+            this.isLodaing = false;
         });
     }
 }

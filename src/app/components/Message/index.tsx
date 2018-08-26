@@ -6,6 +6,7 @@ import './style.css';
 interface IProps {
     items: IMessage[];
     rendered?: () => void;
+    onLoadMore?: () => any;
 }
 
 interface IState {
@@ -18,6 +19,7 @@ class Message extends React.Component<IProps, IState> {
     private list: any;
     private cache: any;
     private listCount: number;
+    private topOfList: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -42,14 +44,22 @@ class Message extends React.Component<IProps, IState> {
                 this.fitList();
             });
             this.listCount = newProps.items.length;
+            this.topOfList = false;
         } else if (this.state.items === newProps.items &&
             newProps.items.length > 2 && this.listCount < newProps.items.length) {
-            this.setState({
-                scrollIndex: this.listCount - 2,
-            }, () => {
-                this.fitList();
-            });
+            if (!this.topOfList) {
+                this.setState({
+                    scrollIndex: this.listCount - 2,
+                }, () => {
+                    this.fitList();
+                });
+            } else {
+                this.setState({
+                    scrollIndex: (newProps.items.length - this.listCount) + 2,
+                });
+            }
             this.listCount = newProps.items.length;
+            this.topOfList = false;
         }
     }
 
@@ -69,6 +79,7 @@ class Message extends React.Component<IProps, IState> {
                         height={height}
                         scrollToIndex={this.state.scrollIndex}
                         onRowsRendered={this.props.rendered}
+                        onScroll={this.onScroll}
                         style={this.state.listStyle}
                         className="chat active-chat"
                     />
@@ -127,6 +138,22 @@ class Message extends React.Component<IProps, IState> {
                 },
             });
         }, 50);
+    }
+
+    private onScroll = (params: any) => {
+        window.console.log(params);
+        if (params.clientHeight < params.scrollHeight && params.scrollTop > 200) {
+            this.topOfList = false;
+        }
+        if (this.topOfList) {
+            return;
+        }
+        if (params.clientHeight < params.scrollHeight && params.scrollTop < 2) {
+            this.topOfList = true;
+            if (typeof this.props.onLoadMore === 'function') {
+                this.props.onLoadMore();
+            }
+        }
     }
 }
 
