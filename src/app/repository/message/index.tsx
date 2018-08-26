@@ -11,28 +11,25 @@ export default class Conversation {
     }
 
     public createMessage(msg: IMessage) {
-        const document: any = msg;
-        document.col = 'msg';
-        this.db.put(document);
+        this.db.put(msg);
     }
 
     public createMessages(msgs: IMessage[]) {
-        let documents: any = msgs;
-        documents = documents.map((document: any) => {
-            document.col = 'msg';
-            return document;
-        });
-        return this.db.bulkDocs(documents);
+        return this.db.bulkDocs(msgs);
     }
 
     public getMessages(conversationId: string): Promise<IMessage[]> {
         return this.db.find({
+            limit: 5,
             selector: {
-                _id: {$exists: true},
-                conversation_id: conversationId,
+                $and: [
+                    {conversation_id: conversationId},
+                    {timestamp: {'$exists': true}},
+                ],
             },
             sort: [
-                {_id: 'desc'},
+                {conversation_id: 'asc'},
+                {timestamp: 'desc'},
             ],
         }).then((result: any) => {
             return result.docs;
