@@ -53,7 +53,7 @@ class People extends React.Component<IProps, IState> {
 
     private refHandler = (value: any) => {
         this.list = value;
-    };
+    }
 
     private rowRender = ({index, key, parent, style}: any): any => {
         const data = this.state.items[index];
@@ -76,7 +76,7 @@ class People extends React.Component<IProps, IState> {
                 </div>
             </CellMeasurer>
         );
-    };
+    }
 }
 
 export default People;
