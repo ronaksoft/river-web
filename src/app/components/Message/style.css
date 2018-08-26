@@ -31,7 +31,8 @@ body {
   border-width: 1px 1px 0 0;
   border-style: solid;
   border-color: var(--light);
-  height: calc(100% - 48px); }
+  height: calc(100% - 48px);
+  transition: padding-right 1s; }
   .chat.active-chat {
     display: flex; }
     .chat.active-chat .bubble {
