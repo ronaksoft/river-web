@@ -14,7 +14,7 @@ export default class UniqueId {
     }
 
     public setLastId(domain: string, lastId: number) {
-        this.lastId[domain] = lastId
+        this.lastId[domain] = lastId;
     }
 
     public getId(domain: string, prefix ?: string): string {
