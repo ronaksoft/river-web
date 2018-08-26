@@ -11,6 +11,7 @@ interface IProps {
 interface IState {
     items: IMessage[];
     scrollIndex: number;
+    listStyle?: React.CSSProperties;
 }
 
 class Message extends React.Component<IProps, IState> {
@@ -37,12 +38,16 @@ class Message extends React.Component<IProps, IState> {
             this.setState({
                 items: newProps.items,
                 scrollIndex: newProps.items.length - 1,
+            }, () => {
+                this.fitList();
             });
             this.listCount = newProps.items.length;
         } else if (this.state.items === newProps.items &&
             newProps.items.length > 2 && this.listCount < newProps.items.length) {
             this.setState({
                 scrollIndex: this.listCount - 2,
+            }, () => {
+                this.fitList();
             });
             this.listCount = newProps.items.length;
         }
@@ -64,6 +69,7 @@ class Message extends React.Component<IProps, IState> {
                         height={height}
                         scrollToIndex={this.state.scrollIndex}
                         onRowsRendered={this.props.rendered}
+                        style={this.state.listStyle}
                         className="chat active-chat"
                     />
                 )}
@@ -73,7 +79,7 @@ class Message extends React.Component<IProps, IState> {
 
     private refHandler = (value: any) => {
         this.list = value;
-    };
+    }
 
     private formatText(text: string) {
         return text.split('\n').join('<br/>');
@@ -99,7 +105,29 @@ class Message extends React.Component<IProps, IState> {
                 </div>
             </CellMeasurer>
         );
-    };
+    }
+
+    private fitList() {
+        setTimeout(() => {
+            const list = document.querySelector('.chat.active-chat > div');
+            if (list) {
+                const diff = this.list.props.height - list.clientHeight;
+                if (diff > 0) {
+                    this.setState({
+                        listStyle: {
+                            paddingTop: diff + 'px',
+                        },
+                    });
+                    return;
+                }
+            }
+            this.setState({
+                listStyle: {
+                    paddingTop: '10px',
+                },
+            });
+        }, 50);
+    }
 }
 
 export default Message;
