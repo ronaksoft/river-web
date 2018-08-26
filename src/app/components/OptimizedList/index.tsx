@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {List} from 'react-virtualized';
-import 'react-virtualized/styles.css'
+
+import 'react-virtualized/styles.css';
 
 interface IProps {
     items: any;
@@ -39,18 +40,18 @@ class OptimizedList extends React.Component<IProps, IState> {
 
     private refHandler = (value: any) => {
         this.List = value;
-    };
+    }
 
     private getHeight = (params: any): any => {
         return this.state.items[params.index].height;
-    };
+    }
 
     private rowRender = ({index, key, style}: any): any => {
         const data = this.state.items[index];
         return (
             <div key={key} style={style}>{data.value}</div>
         );
-    };
+    }
 }
 
 export default OptimizedList;

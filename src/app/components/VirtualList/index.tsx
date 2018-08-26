@@ -70,7 +70,7 @@ class VirtualList extends React.Component<IProps, IState> {
 
     private refHandler = (value: any) => {
         this.list = value;
-    };
+    }
     //
     // private getHeight = (params: any): any => {
     //     return this.state.items[params.index].height;
@@ -88,7 +88,7 @@ class VirtualList extends React.Component<IProps, IState> {
                 <SortableItem key={key} style={style} index={index} data={data}/>
             </CellMeasurer>
         );
-    };
+    }
 }
 
 export default VirtualList;
