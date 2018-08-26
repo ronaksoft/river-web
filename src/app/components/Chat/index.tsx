@@ -2,7 +2,7 @@ import * as React from 'react';
 import Textarea from 'react-textarea-autosize';
 import People from './../People';
 import {IMessage} from '../../repository/message/interface';
-import Message from '../Message'
+import Message from '../Message';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -46,6 +46,32 @@ class Chat extends React.Component<IProps, IState> {
         };
         this.messageRepo = new MessageRepo();
         this.uniqueId = UniqueId.getInstance();
+
+        // setInterval(() => {
+        //     const messages = this.state.messages;
+        //     const message: IMessage = {
+        //         _id: this.uniqueId.getId('msg', 'msg_'),
+        //         avatar: undefined,
+        //         conversation_id: this.state.selectedConversationId,
+        //         me: false,
+        //         message: faker.lorem.words(15),
+        //         timestamp: new Date().getTime(),
+        //     };
+        //     if (messages.length > 0) {
+        //         if (!message.me && messages[messages.length-1].me !== message.me) {
+        //             messages[messages.length-1].avatar = faker.image.avatar();
+        //         }
+        //     }
+        //     messages.push(message);
+        //     this.setState({
+        //         messages,
+        //     }, () => {
+        //         setTimeout(() => {
+        //             this.animateToEnd();
+        //         }, 50);
+        //     });
+        //     this.messageRepo.createMessage(message);
+        // }, 3000);
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -143,13 +169,13 @@ class Chat extends React.Component<IProps, IState> {
         this.setState({
             anchorEl: event.currentTarget,
         });
-    };
+    }
 
     private handleClose = () => {
         this.setState({
             anchorEl: null,
         });
-    };
+    }
 
     private toggleRightMenu = () => {
         this.setState({
@@ -165,17 +191,17 @@ class Chat extends React.Component<IProps, IState> {
                 }, 50);
             });
         }, 200);
-    };
+    }
 
     private rightMenuRefHandler = (value: any) => {
         this.rightMenu = value;
-    };
+    }
 
     private messageRefHandler = (value: any) => {
         this.message = value;
-    };
+    }
 
-    private getMessages(): IMessage[] {
+    private getMessages(conversationId: string): IMessage[] {
         const messages: IMessage[] = [];
         for (let i = 0; i < 100; i++) {
             const me = faker.random.boolean();
@@ -187,7 +213,7 @@ class Chat extends React.Component<IProps, IState> {
             messages.unshift({
                 _id: this.uniqueId.getId('msg', 'msg_'),
                 avatar: undefined,
-                conversation_id: this.state.selectedConversationId,
+                conversation_id: conversationId,
                 me,
                 message: faker.lorem.words(15),
                 timestamp: new Date().getTime(),
@@ -201,7 +227,7 @@ class Chat extends React.Component<IProps, IState> {
             return this.state.conversations[this.idToIndex[id]].name;
         }
         return '';
-    };
+    }
 
     private sendMessage = (e: any) => {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -230,14 +256,14 @@ class Chat extends React.Component<IProps, IState> {
                 inputVal: e.target.value,
             });
         }
-    };
+    }
 
     private inputKeyDown = (e: any) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.stopPropagation();
             e.preventDefault();
         }
-    };
+    }
 
     private animateToEnd() {
         const el = document.querySelector('.chat.active-chat');
@@ -252,12 +278,12 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private createFakeMessage() {
-        const messages = this.getMessages();
+    private createFakeMessage(conversationId: string) {
+        const messages = this.getMessages(conversationId);
         this.messageRepo.createMessages(messages).then((data: any) => {
-            window.console.log(data);
+            window.console.log('new', data);
         }).catch((err: any) => {
-            window.console.log(err);
+            window.console.log('new', err);
         });
         return messages;
     }
@@ -276,9 +302,9 @@ class Chat extends React.Component<IProps, IState> {
         };
 
         this.messageRepo.getMessages(conversationId).then((data) => {
-            window.console.log(data)
+            window.console.log(data);
             if (data.length === 0) {
-                messages = this.createFakeMessage();
+                messages = this.createFakeMessage(conversationId);
             } else {
                 messages = data;
             }
@@ -292,7 +318,7 @@ class Chat extends React.Component<IProps, IState> {
             });
         }).catch((err: any) => {
             window.console.warn(err);
-            messages = this.createFakeMessage();
+            messages = this.createFakeMessage(conversationId);
             this.setState({
                 messages,
                 selectedConversationId: conversationId,
