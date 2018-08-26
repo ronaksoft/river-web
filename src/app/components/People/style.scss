@@ -60,9 +60,17 @@
       text-overflow: ellipsis;
       color: var(--grey);
     }
-    &.active, &:hover {
+    &:hover {
       border: 0;
       background-color: var(--color-hover);
+      span {
+        color: var(--color-text-hover);
+        background: transparent;
+      }
+    }
+    &.active {
+      border: 0;
+      background-color: var(--light-blue);
       span {
         color: var(--color-text-hover);
         background: transparent;

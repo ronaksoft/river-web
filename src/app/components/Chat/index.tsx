@@ -48,31 +48,31 @@ class Chat extends React.Component<IProps, IState> {
         this.messageRepo = new MessageRepo();
         this.uniqueId = UniqueId.getInstance();
 
-        // setInterval(() => {
-        //     const messages = this.state.messages;
-        //     const message: IMessage = {
-        //         _id: this.uniqueId.getId('msg', 'msg_'),
-        //         avatar: undefined,
-        //         conversation_id: this.state.selectedConversationId,
-        //         me: false,
-        //         message: faker.lorem.words(15),
-        //         timestamp: new Date().getTime(),
-        //     };
-        //     if (messages.length > 0) {
-        //         if (!message.me && messages[messages.length-1].me !== message.me) {
-        //             messages[messages.length-1].avatar = faker.image.avatar();
-        //         }
-        //     }
-        //     messages.push(message);
-        //     this.setState({
-        //         messages,
-        //     }, () => {
-        //         setTimeout(() => {
-        //             this.animateToEnd();
-        //         }, 50);
-        //     });
-        //     this.messageRepo.createMessage(message);
-        // }, 3000);
+        setInterval(() => {
+            const messages = this.state.messages;
+            const message: IMessage = {
+                _id: this.uniqueId.getId('msg', 'msg_'),
+                avatar: undefined,
+                conversation_id: this.state.selectedConversationId,
+                me: false,
+                message: faker.lorem.words(15),
+                timestamp: new Date().getTime(),
+            };
+            if (messages.length > 0) {
+                if (!message.me && messages[messages.length-1].me !== message.me) {
+                    message.avatar = faker.image.avatar();
+                }
+            }
+            messages.push(message);
+            this.setState({
+                messages,
+            }, () => {
+                setTimeout(() => {
+                    this.animateToEnd();
+                }, 50);
+            });
+            this.messageRepo.createMessage(message);
+        }, 3000);
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -84,7 +84,7 @@ class Chat extends React.Component<IProps, IState> {
         const selectedId = this.props.match.params.id;
         const conversations: any[] = [];
         for (let i = 0; i < 3000; i++) {
-            const id = i + 1000;
+            const id = String(i + 1000);
             conversations.push({
                 date: '10:23 PM',
                 id,
@@ -110,7 +110,7 @@ class Chat extends React.Component<IProps, IState> {
                         <div className="top">
                             <span className="new-message">New message</span>
                         </div>
-                        <People items={this.state.conversations}/>
+                        <People items={this.state.conversations} selectedId={this.state.selectedConversationId}/>
                     </div>
                     <div className="column-center">
                         <div className="top">

@@ -5,10 +5,12 @@ import './style.css';
 
 interface IProps {
     items: any[];
+    selectedId: string;
 }
 
 interface IState {
     items: any[];
+    selectedId: string;
 }
 
 class People extends React.Component<IProps, IState> {
@@ -20,6 +22,7 @@ class People extends React.Component<IProps, IState> {
 
         this.state = {
             items: props.items,
+            selectedId: props.selectedId,
         };
         window.console.log(this.list);
         this.cache = new CellMeasurerCache({
@@ -31,6 +34,9 @@ class People extends React.Component<IProps, IState> {
     public componentWillReceiveProps(newProps: IProps) {
         this.setState({
             items: newProps.items,
+            selectedId: newProps.selectedId,
+        }, () => {
+            this.list.recomputeRowHeights();
         });
     }
 
@@ -66,7 +72,7 @@ class People extends React.Component<IProps, IState> {
                 parent={parent}>
                 <div style={style} key={index}>
                     <Link to={`/conversation/${data.id}`}>
-                        <div className="person">
+                        <div className={'person' + (data.id === this.state.selectedId ? ' active' : '')}>
                             <img src={data.image} alt=""/>
                             <span className="name">{data.name}</span>
                             <span className="time">{data.date}</span>
