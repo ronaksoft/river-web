@@ -18,17 +18,24 @@ export default class Conversation {
         return this.db.bulkDocs(msgs);
     }
 
-    public getMessages(conversationId: string): Promise<IMessage[]> {
+    public getMessages({conversationId, skip, before, after}: any): Promise<IMessage[]> {
+        const q: any = [
+            {conversation_id: conversationId},
+            {timestamp: {'$exists': true}},
+        ];
+        if (before) {
+            q.push({timestamp: {'$lt': before}});
+        }
+        if (after) {
+            q.push({timestamp: {'$gt': after}});
+        }
         return this.db.find({
-            limit: 5,
+            limit: (skip || 30),
             selector: {
-                $and: [
-                    {conversation_id: conversationId},
-                    {timestamp: {'$exists': true}},
-                ],
+                $and: q,
             },
             sort: [
-                {conversation_id: 'asc'},
+                {conversation_id: 'desc'},
                 {timestamp: 'desc'},
             ],
         }).then((result: any) => {
