@@ -31,7 +31,7 @@ export default class DB {
         });
         this.db.createIndex({
             index: {
-                fields: ['timestamp'],
+                fields: ['conversation_id', 'timestamp'],
             }
         }).then((result: any) => {
             window.console.warn(result);
