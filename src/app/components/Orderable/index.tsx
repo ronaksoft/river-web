@@ -50,7 +50,7 @@ class Orderable extends React.Component<IProps, IState> {
 
     private refHandler = (value: any) => {
         this.SortableList = value;
-    };
+    }
 
     private onSortEnd = ({oldIndex, newIndex}: any) => {
         if (oldIndex !== newIndex) {
@@ -66,7 +66,7 @@ class Orderable extends React.Component<IProps, IState> {
             instance.list.recomputeRowHeights();
             instance.forceUpdate();
         }
-    };
+    }
 
 }
 
