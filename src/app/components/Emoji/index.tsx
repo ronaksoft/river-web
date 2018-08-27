@@ -35,6 +35,7 @@ class Emoji extends React.Component<IProps, IState> {
     public render() {
         const { anchorEl } = this.state;
         const open = Boolean(anchorEl);
+        window.console.log(open);
         return (
             <Menu
                 id="emoji-menu"
@@ -42,6 +43,14 @@ class Emoji extends React.Component<IProps, IState> {
                 open={open}
                 anchorEl={anchorEl}
                 onClose={this.onClose}
+                anchorOrigin={{
+                    horizontal: 'right',
+                    vertical: 'bottom',
+                }}
+                transformOrigin={{
+                    horizontal: 'right',
+                    vertical: 'center',
+                }}
             >
                 <Picker custom={[]} onSelect={this.addEmoji} showPreview={false}/>
             </Menu>
