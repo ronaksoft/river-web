@@ -32,7 +32,6 @@ class Message extends React.Component<IProps, IState> {
             fixedWidth: true,
             minHeight: 25,
         });
-        window.console.log(this.list);
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -45,8 +44,7 @@ class Message extends React.Component<IProps, IState> {
             });
             this.listCount = newProps.items.length;
             this.topOfList = false;
-        } else if (this.state.items === newProps.items &&
-            newProps.items.length > 2 && this.listCount < newProps.items.length) {
+        } else if (this.state.items === newProps.items && this.listCount < newProps.items.length) {
             if (!this.topOfList) {
                 this.setState({
                     scrollIndex: this.listCount - 2,
@@ -141,7 +139,6 @@ class Message extends React.Component<IProps, IState> {
     }
 
     private onScroll = (params: any) => {
-        window.console.log(params);
         if (params.clientHeight < params.scrollHeight && params.scrollTop > 200) {
             this.topOfList = false;
         }

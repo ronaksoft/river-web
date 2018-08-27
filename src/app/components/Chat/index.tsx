@@ -6,10 +6,11 @@ import Message from '../Message';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import {MoreVert as MoreVertIcon, Attachment} from '@material-ui/icons';
 import * as faker from 'faker';
 import MessageRepo from '../../repository/message';
 import UniqueId from '../../services/uniqueId';
+import Uploader from '../Uploader';
 
 import './style.css';
 
@@ -25,6 +26,7 @@ interface IState {
     messages: IMessage[];
     rightMenu: boolean;
     selectedConversationId: string;
+    toggleAttachment: boolean;
 }
 
 class Chat extends React.Component<IProps, IState> {
@@ -33,7 +35,7 @@ class Chat extends React.Component<IProps, IState> {
     private idToIndex: any = {};
     private messageRepo: MessageRepo;
     private uniqueId: UniqueId;
-    private isLodaing: boolean = false;
+    private isLoading: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -44,35 +46,38 @@ class Chat extends React.Component<IProps, IState> {
             messages: [],
             rightMenu: false,
             selectedConversationId: props.match.params.id,
+            toggleAttachment: false,
         };
         this.messageRepo = new MessageRepo();
         this.uniqueId = UniqueId.getInstance();
 
-        setInterval(() => {
-            const messages = this.state.messages;
-            const message: IMessage = {
-                _id: this.uniqueId.getId('msg', 'msg_'),
-                avatar: undefined,
-                conversation_id: this.state.selectedConversationId,
-                me: false,
-                message: faker.lorem.words(15),
-                timestamp: new Date().getTime(),
-            };
-            if (messages.length > 0) {
-                if (!message.me && messages[messages.length-1].me !== message.me) {
-                    message.avatar = faker.image.avatar();
-                }
-            }
-            messages.push(message);
-            this.setState({
-                messages,
-            }, () => {
-                setTimeout(() => {
-                    this.animateToEnd();
-                }, 50);
-            });
-            this.messageRepo.createMessage(message);
-        }, 3000);
+        // setInterval(() => {
+        //     const messages = this.state.messages;
+        //     const message: IMessage = {
+        //         _id: this.uniqueId.getId('msg', 'msg_'),
+        //         avatar: undefined,
+        //         conversation_id: this.state.selectedConversationId,
+        //         me: false,
+        //         message: faker.lorem.words(15),
+        //         timestamp: new Date().getTime(),
+        //     };
+        //     if (messages.length > 0) {
+        //         if (!message.me && messages[messages.length-1].me !== message.me) {
+        //             message.avatar = faker.image.avatar();
+        //         }
+        //     } else {
+        //         message.avatar = faker.image.avatar();
+        //     }
+        //     messages.push(message);
+        //     this.setState({
+        //         messages,
+        //     }, () => {
+        //         setTimeout(() => {
+        //             this.animateToEnd();
+        //         }, 50);
+        //     });
+        //     this.messageRepo.createMessage(message);
+        // }, 3000);
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -118,6 +123,13 @@ class Chat extends React.Component<IProps, IState> {
                                 className="name">{this.getName(this.state.selectedConversationId)}</span></span>
                             <span className="buttons">
                                 <IconButton
+                                    aria-label="Attachment"
+                                    aria-haspopup="true"
+                                    onClick={this.toggleAttachment}
+                                >
+                                    <Attachment/>
+                                </IconButton>
+                                <IconButton
                                     aria-label="More"
                                     aria-owns={anchorEl ? 'long-menu' : undefined}
                                     aria-haspopup="true"
@@ -139,11 +151,14 @@ class Chat extends React.Component<IProps, IState> {
                                 </Menu>
                             </span>
                         </div>
-                        <div className="conversation">
+                        <div className="conversation" hidden={this.state.toggleAttachment}>
                             <Message ref={this.messageRefHandler}
                                      items={this.state.messages}
                                      onLoadMore={this.onMessageScroll}
                             />
+                        </div>
+                        <div className="conversation" hidden={!this.state.toggleAttachment}>
+                            <Uploader/>
                         </div>
                         <div className="write">
                             <div className="user">
@@ -156,7 +171,6 @@ class Chat extends React.Component<IProps, IState> {
                                           onKeyDown={this.inputKeyDown}
                                 />
                                 <div className="write-link">
-                                    <a href="javascript:;" className="attach"/>
                                     <a href="javascript:;" className="smiley"/>
                                     <a href="javascript:;" className="send"/>
                                 </div>
@@ -178,6 +192,12 @@ class Chat extends React.Component<IProps, IState> {
     private handleClose = () => {
         this.setState({
             anchorEl: null,
+        });
+    }
+
+    private toggleAttachment = () => {
+        this.setState({
+            toggleAttachment: !this.state.toggleAttachment,
         });
     }
 
@@ -335,7 +355,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private onMessageScroll = () => {
-        if (this.isLodaing) {
+        if (this.isLoading) {
             return;
         }
         this.messageRepo.getMessages({
@@ -353,11 +373,11 @@ class Chat extends React.Component<IProps, IState> {
                 this.message.cache.clearAll();
                 this.message.list.recomputeRowHeights();
                 this.message.forceUpdate(() => {
-                    this.isLodaing = false;
+                    this.isLoading = false;
                 });
             });
         }).catch(() => {
-            this.isLodaing = false;
+            this.isLoading = false;
         });
     }
 }

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {List, CellMeasurer, CellMeasurerCache} from 'react-virtualized';
 import {Link} from 'react-router-dom';
+import * as _ from 'lodash';
 import './style.css';
 
 interface IProps {
@@ -11,6 +12,7 @@ interface IProps {
 interface IState {
     items: any[];
     selectedId: string;
+    scrollIndex: number;
 }
 
 class People extends React.Component<IProps, IState> {
@@ -22,6 +24,7 @@ class People extends React.Component<IProps, IState> {
 
         this.state = {
             items: props.items,
+            scrollIndex: -1,
             selectedId: props.selectedId,
         };
         window.console.log(this.list);
@@ -32,12 +35,24 @@ class People extends React.Component<IProps, IState> {
     }
 
     public componentWillReceiveProps(newProps: IProps) {
-        this.setState({
-            items: newProps.items,
-            selectedId: newProps.selectedId,
-        }, () => {
-            this.list.recomputeRowHeights();
-        });
+        if (this.state.items !== newProps.items) {
+            this.setState({
+                items: newProps.items,
+                scrollIndex: -1,
+                selectedId: newProps.selectedId,
+            }, () => {
+                this.list.recomputeRowHeights();
+            });
+        } else {
+            // @ts-ignore
+            const index = _.findIndex(this.state.items, {id: newProps.selectedId});
+            this.setState({
+                scrollIndex: index,
+                selectedId: newProps.selectedId,
+            }, () => {
+                this.list.recomputeRowHeights();
+            });
+        }
     }
 
     public render() {
@@ -50,6 +65,7 @@ class People extends React.Component<IProps, IState> {
                 rowRenderer={this.rowRender}
                 rowCount={items.length}
                 overscanRowCount={0}
+                scrollToIndex={this.state.scrollIndex}
                 width={318}
                 height={550}
                 className="people"
