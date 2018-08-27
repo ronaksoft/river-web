@@ -11,6 +11,7 @@ import * as faker from 'faker';
 import MessageRepo from '../../repository/message';
 import UniqueId from '../../services/uniqueId';
 import Uploader from '../Uploader';
+import Emoji from '../Emoji';
 
 import './style.css';
 
@@ -22,6 +23,7 @@ interface IProps {
 interface IState {
     anchorEl: any;
     conversations: any[];
+    emojiAnchorEl: any;
     inputVal: string;
     messages: IMessage[];
     rightMenu: boolean;
@@ -32,6 +34,7 @@ interface IState {
 class Chat extends React.Component<IProps, IState> {
     private rightMenu: any = null;
     private message: any = null;
+    private textarea: any = null;
     private idToIndex: any = {};
     private messageRepo: MessageRepo;
     private uniqueId: UniqueId;
@@ -42,6 +45,7 @@ class Chat extends React.Component<IProps, IState> {
         this.state = {
             anchorEl: null,
             conversations: [],
+            emojiAnchorEl: null,
             inputVal: '',
             messages: [],
             rightMenu: false,
@@ -165,13 +169,23 @@ class Chat extends React.Component<IProps, IState> {
                                 <span className="user-avatar"/>
                             </div>
                             <div className="input">
-                                <Textarea maxRows={5}
-                                          placeholder="Type your message here..."
-                                          onKeyUp={this.sendMessage}
-                                          onKeyDown={this.inputKeyDown}
+                                <Textarea
+                                    inputRef={this.textareaRefHandler}
+                                    maxRows={5}
+                                    placeholder="Type your message here..."
+                                    onKeyUp={this.sendMessage}
+                                    onKeyDown={this.inputKeyDown}
                                 />
                                 <div className="write-link">
-                                    <a href="javascript:;" className="smiley"/>
+                                    <a href="javascript:;"
+                                       className="smiley"
+                                       aria-owns="emoji-menu"
+                                       aria-haspopup="true"
+                                       onClick={this.emojiHandleClick}>
+                                        <Emoji anchorEl={this.state.emojiAnchorEl}
+                                               onSelect={this.emojiSelect}
+                                               onClose={this.emojiHandleClose}/>
+                                    </a>
                                     <a href="javascript:;" className="send"/>
                                 </div>
                             </div>
@@ -223,6 +237,10 @@ class Chat extends React.Component<IProps, IState> {
 
     private messageRefHandler = (value: any) => {
         this.message = value;
+    }
+
+    private textareaRefHandler = (value: any) => {
+        this.textarea = value;
     }
 
     // private getMessages(conversationId: string): IMessage[] {
@@ -301,6 +319,7 @@ class Chat extends React.Component<IProps, IState> {
             }
         }
     }
+
     //
     // private createFakeMessage(conversationId: string) {
     //     const messages = this.getMessages(conversationId);
@@ -379,6 +398,22 @@ class Chat extends React.Component<IProps, IState> {
         }).catch(() => {
             this.isLoading = false;
         });
+    }
+
+    private emojiHandleClick = (event: any) => {
+        this.setState({
+            emojiAnchorEl: event.currentTarget,
+        });
+    }
+
+    private emojiHandleClose = () => {
+        this.setState({
+            emojiAnchorEl: null,
+        });
+    }
+
+    private emojiSelect = (data: any) => {
+        this.textarea.value += data.native;
     }
 }
 

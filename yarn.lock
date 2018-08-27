@@ -72,6 +72,12 @@
   version "0.0.30"
   resolved "https://registry.yarnpkg.com/@types/debug/-/debug-0.0.30.tgz#dc1e40f7af3b9c815013a7860e6252f6352a84df"
 
+"@types/emoji-mart@^2.8.0":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@types/emoji-mart/-/emoji-mart-2.8.0.tgz#96009f694a9d3919246a38c6b93d01e04f956388"
+  dependencies:
+    "@types/react" "*"
+
 "@types/faker@^4.1.3":
   version "4.1.3"
   resolved "https://registry.yarnpkg.com/@types/faker/-/faker-4.1.3.tgz#544398268b37248300dc428316daa6a7521bbd19"
@@ -2552,6 +2558,10 @@ elliptic@^6.0.0:
     inherits "^2.0.1"
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.0"
+
+emoji-mart@^2.8.1:
+  version "2.8.1"
+  resolved "https://registry.yarnpkg.com/emoji-mart/-/emoji-mart-2.8.1.tgz#4ffcb807237989a953085c80a6553d21f1effc62"
 
 emojis-list@^2.0.0:
   version "2.1.0"

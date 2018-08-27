@@ -163,6 +163,7 @@ body {
           right: 16px;
           bottom: 0; }
           .container .column-center .write .input .write-link a {
+            position: relative;
             height: 32px; }
             .container .column-center .write .input .write-link a:before {
               display: inline-block;

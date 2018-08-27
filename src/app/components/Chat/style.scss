@@ -148,6 +148,7 @@
                     right: 16px;
                     bottom: 0;
                     a {
+                        position: relative;
                         height: 32px;
                         &:before {
                             display: inline-block;
