@@ -19,7 +19,7 @@ class Uploader extends React.Component<IProps, IState> {
 
         this.state = {
             items: [],
-            selected: -1,
+            selected: 0,
         };
     }
 
@@ -42,7 +42,7 @@ class Uploader extends React.Component<IProps, IState> {
                         className="uploader-dropzone"
                         // disableClick={true}
                     >
-                        hii
+                        {this.state.items.length && <img src={this.state.items[selected].preview}/>}
                     </Dropzone>
                 </div>
                 <div className="attachments-slide-container">
