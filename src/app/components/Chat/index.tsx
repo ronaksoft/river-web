@@ -157,10 +157,10 @@ class Chat extends React.Component<IProps, IState> {
                                      onLoadMore={this.onMessageScroll}
                             />
                         </div>
-                        <div className="conversation" hidden={!this.state.toggleAttachment}>
+                        <div className="attachments" hidden={!this.state.toggleAttachment}>
                             <Uploader/>
                         </div>
-                        <TextInput onMessage={this.onMessage}/>
+                        {!this.state.toggleAttachment && <TextInput onMessage={this.onMessage}/>}
                     </div>
                     <div ref={this.rightMenuRefHandler} className="column-right"/>
                 </div>

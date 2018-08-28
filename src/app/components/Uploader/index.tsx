@@ -1,43 +1,25 @@
 import * as React from 'react';
-// @ts-ignore
-import Gallery from 'react-fine-uploader';
-// @ts-ignore
-import FineUploaderTraditional from 'fine-uploader-wrappers';
+import Dropzone, {ImageFile} from 'react-dropzone';
+
 import './style.css';
+import {DragEvent} from "react";
 
 interface IProps {
     items?: any[];
 }
 
 interface IState {
-    items?: any[];
+    items: any[];
+    selected: number;
 }
-
-const uploader = new FineUploaderTraditional({
-    options: {
-        autoUpload: false,
-        chunking: {
-            enabled: true
-        },
-        deleteFile: {
-            enabled: true,
-            endpoint: '/uploads'
-        },
-        request: {
-            endpoint: '/uploads'
-        },
-        retry: {
-            enableAuto: true
-        },
-    }
-});
 
 class Uploader extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
 
         this.state = {
-            items: props.items,
+            items: [],
+            selected: -1,
         };
     }
 
@@ -51,9 +33,52 @@ class Uploader extends React.Component<IProps, IState> {
     // }
 
     public render() {
+        const {selected} = this.state;
         return (
-            <Gallery uploader={uploader} disable-status={true} />
+            <div className="uploader-container">
+                <div className="attachment-preview-container">
+                    <Dropzone
+                        onDrop={this.onDrop}
+                        className="uploader-dropzone"
+                        // disableClick={true}
+                    >
+                        hii
+                    </Dropzone>
+                </div>
+                <div className="attachments-slide-container">
+                    {this.state.items.length > 0 ?
+                        (
+                            <div>
+                                {this.state.items.map((file, index) => {
+                                    return (
+                                        <div key={index}
+                                             className={'item' + (selected === index ? ' selected' : '')}
+                                             onClick={this.selectImage.bind(this, index)}
+                                        >
+                                            <div className="preview"
+                                                 style={{backgroundImage: 'url(' + file.preview + ')'}}/>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        ) : null
+                    }
+                </div>
+            </div>
         );
+    }
+
+    private onDrop = (accepted: ImageFile[], rejected: ImageFile[], event: DragEvent<HTMLDivElement>) => {
+        window.console.log(accepted, rejected, event);
+        this.setState({
+            items: accepted,
+        });
+    }
+
+    private selectImage = (index: number) => {
+        this.setState({
+            selected: index,
+        });
     }
 }
 
