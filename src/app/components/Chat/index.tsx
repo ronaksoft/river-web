@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Textarea from 'react-textarea-autosize';
 import People from './../People';
 import {IMessage} from '../../repository/message/interface';
 import Message from '../Message';
@@ -11,7 +10,7 @@ import * as faker from 'faker';
 import MessageRepo from '../../repository/message';
 import UniqueId from '../../services/uniqueId';
 import Uploader from '../Uploader';
-import Emoji from '../Emoji';
+import TextInput from '../TextInput';
 
 import './style.css';
 
@@ -23,7 +22,6 @@ interface IProps {
 interface IState {
     anchorEl: any;
     conversations: any[];
-    emojiAnchorEl: any;
     inputVal: string;
     messages: IMessage[];
     rightMenu: boolean;
@@ -34,7 +32,6 @@ interface IState {
 class Chat extends React.Component<IProps, IState> {
     private rightMenu: any = null;
     private message: any = null;
-    private textarea: any = null;
     private idToIndex: any = {};
     private messageRepo: MessageRepo;
     private uniqueId: UniqueId;
@@ -45,7 +42,6 @@ class Chat extends React.Component<IProps, IState> {
         this.state = {
             anchorEl: null,
             conversations: [],
-            emojiAnchorEl: null,
             inputVal: '',
             messages: [],
             rightMenu: false,
@@ -164,32 +160,7 @@ class Chat extends React.Component<IProps, IState> {
                         <div className="conversation" hidden={!this.state.toggleAttachment}>
                             <Uploader/>
                         </div>
-                        <div className="write">
-                            <div className="user">
-                                <span className="user-avatar"/>
-                            </div>
-                            <div className="input">
-                                <Textarea
-                                    inputRef={this.textareaRefHandler}
-                                    maxRows={5}
-                                    placeholder="Type your message here..."
-                                    onKeyUp={this.sendMessage}
-                                    onKeyDown={this.inputKeyDown}
-                                />
-                                <div className="write-link">
-                                    <a href="javascript:;"
-                                       className="smiley"
-                                       aria-owns="emoji-menu"
-                                       aria-haspopup="true"
-                                       onClick={this.emojiHandleClick}>
-                                        <Emoji anchorEl={this.state.emojiAnchorEl}
-                                               onSelect={this.emojiSelect}
-                                               onClose={this.emojiHandleClose}/>
-                                    </a>
-                                    <a href="javascript:;" className="send"/>
-                                </div>
-                            </div>
-                        </div>
+                        <TextInput onMessage={this.onMessage}/>
                     </div>
                     <div ref={this.rightMenuRefHandler} className="column-right"/>
                 </div>
@@ -239,10 +210,6 @@ class Chat extends React.Component<IProps, IState> {
         this.message = value;
     }
 
-    private textareaRefHandler = (value: any) => {
-        this.textarea = value;
-    }
-
     // private getMessages(conversationId: string): IMessage[] {
     //     const messages: IMessage[] = [];
     //     for (let i = 0; i < 100; i++) {
@@ -269,42 +236,6 @@ class Chat extends React.Component<IProps, IState> {
             return this.state.conversations[this.idToIndex[id]].name;
         }
         return '';
-    }
-
-    private sendMessage = (e: any) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            const messages = this.state.messages;
-            const message: IMessage = {
-                _id: this.uniqueId.getId('msg', 'msg_'),
-                avatar: undefined,
-                conversation_id: this.state.selectedConversationId,
-                me: true,
-                message: e.target.value,
-                timestamp: new Date().getTime(),
-            };
-            messages.push(message);
-            e.target.value = '';
-            this.setState({
-                inputVal: '',
-                messages,
-            }, () => {
-                setTimeout(() => {
-                    this.animateToEnd();
-                }, 50);
-            });
-            this.messageRepo.createMessage(message);
-        } else {
-            this.setState({
-                inputVal: e.target.value,
-            });
-        }
-    }
-
-    private inputKeyDown = (e: any) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.stopPropagation();
-            e.preventDefault();
-        }
     }
 
     private animateToEnd() {
@@ -400,20 +331,26 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private emojiHandleClick = (event: any) => {
+    private onMessage = (text: string) => {
+        const messages = this.state.messages;
+        const message: IMessage = {
+            _id: this.uniqueId.getId('msg', 'msg_'),
+            avatar: undefined,
+            conversation_id: this.state.selectedConversationId,
+            me: true,
+            message: text,
+            timestamp: new Date().getTime(),
+        };
+        messages.push(message);
         this.setState({
-            emojiAnchorEl: event.currentTarget,
+            inputVal: '',
+            messages,
+        }, () => {
+            setTimeout(() => {
+                this.animateToEnd();
+            }, 50);
         });
-    }
-
-    private emojiHandleClose = () => {
-        this.setState({
-            emojiAnchorEl: null,
-        });
-    }
-
-    private emojiSelect = (data: any) => {
-        this.textarea.value += data.native;
+        this.messageRepo.createMessage(message);
     }
 }
 
