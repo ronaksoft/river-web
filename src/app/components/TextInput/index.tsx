@@ -1,6 +1,9 @@
 import * as React from 'react';
 import Textarea from 'react-textarea-autosize';
-import Emoji from '../Emoji';
+import {Picker} from 'emoji-mart';
+import PopUpMenu from '../PopUpMenu';
+
+import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
 
 interface IProps {
@@ -47,9 +50,9 @@ class TextInput extends React.Component<IProps, IState> {
                            aria-owns="emoji-menu"
                            aria-haspopup="true"
                            onClick={this.emojiHandleClick}/>
-                        <Emoji anchorEl={this.state.emojiAnchorEl}
-                               onSelect={this.emojiSelect}
-                        />
+                        <PopUpMenu anchorEl={this.state.emojiAnchorEl} onClose={this.emojiHandleClose}>
+                            <Picker custom={[]} onSelect={this.emojiSelect} showPreview={false}/>
+                        </PopUpMenu>
                         <a href="javascript:;" className="send"/>
                     </div>
                 </div>
@@ -90,6 +93,12 @@ class TextInput extends React.Component<IProps, IState> {
 
     private emojiSelect = (data: any) => {
         this.textarea.value += data.native;
+    }
+
+    private emojiHandleClose = () => {
+        this.setState({
+            emojiAnchorEl: null,
+        });
     }
 }
 

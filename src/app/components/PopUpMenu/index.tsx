@@ -1,19 +1,16 @@
 import * as React from 'react';
-import {Picker} from 'emoji-mart';
-
-import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
 
 interface IProps {
-    onSelect?: (data: any) => void;
     anchorEl: any;
+    onClose: () => void;
 }
 
 interface IState {
     anchorEl: any;
 }
 
-class Emoji extends React.Component<IProps, IState> {
+class PopUpMenu extends React.Component<IProps, IState> {
     private eventReferences: any[] = [];
     private inArea: boolean = false;
 
@@ -41,9 +38,9 @@ class Emoji extends React.Component<IProps, IState> {
         const open = Boolean(this.state.anchorEl);
         const pos = this.getPosition(this.state.anchorEl);
         return (
-            <div className="emoji-container" hidden={!open} style={pos}>
-                <div className="emoji-wrapper" onMouseEnter={this.onEnter} onMouseLeave={this.onLeave}>
-                    <Picker custom={[]} onSelect={this.addEmoji} showPreview={false}/>
+            <div className="kk-pop-up-menu-container" hidden={!open} style={pos}>
+                <div className="kk-pop-up-menu-wrapper" onMouseEnter={this.onEnter} onMouseLeave={this.onLeave}>
+                    {this.props.children}
                 </div>
             </div>
         );
@@ -57,12 +54,6 @@ class Emoji extends React.Component<IProps, IState> {
             left: el.offsetLeft,
             top: el.offsetTop,
         };
-    }
-
-    private addEmoji = (data: any) => {
-        if (typeof this.props.onSelect === 'function') {
-            this.props.onSelect(data);
-        }
     }
 
     private onEnter = () => {
@@ -92,8 +83,11 @@ class Emoji extends React.Component<IProps, IState> {
             }, () => {
                 this.removeClickEvent();
             });
+            if (typeof this.props.onClose === 'function') {
+                this.props.onClose();
+            }
         }
     }
 }
 
-export default Emoji;
+export default PopUpMenu;
