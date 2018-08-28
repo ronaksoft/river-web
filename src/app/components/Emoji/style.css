@@ -27,5 +27,10 @@ body {
   background-size: cover;
   background-repeat: no-repeat; }
 
-#emoji-menu ul {
-  padding: 0 !important; }
+.emoji-container {
+  position: absolute; }
+  .emoji-container .emoji-wrapper {
+    display: inline-block;
+    transform: translate(-100%, -100%);
+    box-shadow: 0 5px 5px 2px rgba(0, 0, 0, 0.2);
+    border-radius: 5px; }

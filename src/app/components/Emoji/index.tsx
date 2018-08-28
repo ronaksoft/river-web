@@ -1,15 +1,12 @@
 import * as React from 'react';
 import {Picker} from 'emoji-mart';
-import Menu from '@material-ui/core/Menu';
-import Fade from '@material-ui/core/Fade';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
 
 interface IProps {
-    anchorEl: any;
     onSelect?: (data: any) => void;
-    onClose?: (event: any) => void;
+    anchorEl: any;
 }
 
 interface IState {
@@ -17,61 +14,84 @@ interface IState {
 }
 
 class Emoji extends React.Component<IProps, IState> {
+    private eventReferences: any[] = [];
+    private inArea: boolean = false;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
-            anchorEl: props.anchorEl,
+            anchorEl: null,
         };
     }
 
     public componentWillReceiveProps(newProps: IProps) {
         this.setState({
             anchorEl: newProps.anchorEl,
+        }, () => {
+            if (newProps.anchorEl) {
+                this.addClickEvent();
+            } else {
+                this.removeClickEvent();
+            }
         });
     }
 
     public render() {
-        const { anchorEl } = this.state;
-        const open = Boolean(anchorEl);
-        window.console.log(open);
+        const open = Boolean(this.state.anchorEl);
+        const pos = this.getPosition(this.state.anchorEl);
         return (
-            <Menu
-                id="emoji-menu"
-                TransitionComponent={Fade}
-                open={open}
-                anchorEl={anchorEl}
-                onClose={this.onClose}
-                anchorOrigin={{
-                    horizontal: 'right',
-                    vertical: 'bottom',
-                }}
-                transformOrigin={{
-                    horizontal: 'right',
-                    vertical: 'center',
-                }}
-            >
-                <Picker custom={[]} onSelect={this.addEmoji} showPreview={false}/>
-            </Menu>
+            <div className="emoji-container" hidden={!open} style={pos}>
+                <div className="emoji-wrapper" onMouseEnter={this.onEnter} onMouseLeave={this.onLeave}>
+                    <Picker custom={[]} onSelect={this.addEmoji} showPreview={false}/>
+                </div>
+            </div>
         );
     }
 
+    private getPosition(el: any) {
+        if (!el) {
+            return;
+        }
+        return {
+            left: el.offsetLeft,
+            top: el.offsetTop,
+        };
+    }
+
     private addEmoji = (data: any) => {
-        this.setState({
-            anchorEl: null,
-        });
         if (typeof this.props.onSelect === 'function') {
             this.props.onSelect(data);
         }
     }
 
-    private onClose = (event: any) => {
-        this.setState({
-            anchorEl: null,
+    private onEnter = () => {
+        this.inArea = true;
+    }
+
+    private onLeave = () => {
+        this.inArea = false;
+    }
+
+    private addClickEvent() {
+        const fn = this.onArea.bind(this);
+        this.eventReferences.push(fn);
+        document.addEventListener('click', fn);
+    }
+
+    private removeClickEvent() {
+        this.eventReferences.forEach((fn) => {
+            document.removeEventListener('click', fn);
         });
-        if (typeof this.props.onClose === 'function') {
-            this.props.onClose(event);
+    }
+
+    private onArea() {
+        if (!this.inArea && this.state.anchorEl) {
+            this.setState({
+                anchorEl: null,
+            }, () => {
+                this.removeClickEvent();
+            });
         }
     }
 }
