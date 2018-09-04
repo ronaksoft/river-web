@@ -44,7 +44,7 @@ class Uploader extends React.Component<IProps, IState> {
                     >
                         <div className="slider-attachment">
                             {this.state.items.length && (
-                            <div className="slider">
+                            <div className="slide">
                                 <img src={this.state.items[selected].preview}/>
                             </div>)}
                         </div>
