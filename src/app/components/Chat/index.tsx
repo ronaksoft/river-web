@@ -11,6 +11,7 @@ import MessageRepo from '../../repository/message';
 import UniqueId from '../../services/uniqueId';
 import Uploader from '../Uploader';
 import TextInput from '../TextInput';
+import {trimStart} from 'lodash';
 
 import './style.css';
 
@@ -332,6 +333,9 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private onMessage = (text: string) => {
+        if (trimStart(text).length === 0) {
+            return;
+        }
         const messages = this.state.messages;
         const message: IMessage = {
             _id: this.uniqueId.getId('msg', 'msg_'),
