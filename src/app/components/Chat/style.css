@@ -118,7 +118,9 @@ body {
         line-height: 0; }
     .container .column-center .conversation {
       width: 100%;
-      height: calc(100% - 97px); }
+      height: calc(100% - 97px);
+      background-image: url(../../../asset/image/pattern.png);
+      background-color: rgba(168, 144, 106, 0.3); }
     .container .column-center .attachments {
       width: 100%;
       height: calc(100% - 47px); }
