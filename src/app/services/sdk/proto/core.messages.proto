@@ -1,0 +1,90 @@
+syntax = "proto2";
+package msg;
+import "core.types.proto";
+
+
+// MessageEnvelope
+// This type of message will be used to contain another ProtoBuffer Message inside
+message MessageEnvelope {
+    required int64 Constructor = 1;
+    required fixed64 RequestID = 2;
+    required bytes Message = 4;
+}
+
+// MessageContainer
+// This type of message will be used to send multi messages inside a single container message
+message MessageContainer {
+    required int32 Length = 1;
+    repeated MessageEnvelope Envelopes = 2;
+}
+
+// UpdateEnvelope
+message UpdateEnvelope {
+    required int64 Constructor = 1;
+    required bytes Update = 2;
+    required int32 UCount = 3;
+    required int64 UpdateID = 4;
+}
+
+// UpdateContainer
+// It is very similar to MessageContainer but holding a list of Updates
+message UpdateContainer {
+    required int32 Length = 1;
+    repeated UpdateEnvelope Updates = 2;
+    required int64 MinUpdateID = 3;
+    required int64 MaxUpdateID = 4;
+    repeated User Users = 5;
+}
+
+// ProtoMessage
+// If AuthID == 0 then Payload is a MessageEnvelop otherwise Payload is a ProtoEncryptedPayload
+message ProtoMessage {
+    required int64 AuthID = 1;
+    required bytes MessageKey = 2; // 32 bytes
+    required bytes Payload = 3;
+}
+
+// ProtoMessageEncryptedPayload
+message ProtoEncryptedPayload {
+    required int64 ServerSalt = 1;
+    required uint64 MessageID = 2;
+    required int64 SessionID = 3;
+    required MessageEnvelope Envelope = 4;
+}
+
+// Error
+message Error {
+    required string Code = 1;
+    required string Items = 2;
+}
+
+// Ack
+message Ack {
+}
+
+// Bool
+message Bool {
+    required bool Result = 1;
+}
+
+// WorkerRequest
+// This type of message is used to deliver messages from API servers to Worker Servers
+message WorkerRequest {
+    required int64 UserID = 1;
+    required int64 AuthID = 2;
+    required MessageEnvelope Envelope = 3;
+}
+
+// APIPushMessage
+// This type of message will be used when sending a message to API servers.
+message APIPushMessage {
+    required uint64 ConnectionID = 1;
+    required int64 AuthID = 2;
+    required APIPushAction Action = 3;
+}
+
+enum APIPushAction {
+    NewMessage = 0;
+    NewUpdate = 1;
+    Expired = 2;
+}
