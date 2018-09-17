@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Dropzone, {ImageFile} from 'react-dropzone';
+import Dropzone, {FileWithPreview} from 'react-dropzone';
 
 import './style.css';
 import {DragEvent} from "react";
@@ -10,7 +10,9 @@ interface IProps {
 
 interface IState {
     items: any[];
+    lastSelected: number;
     selected: number;
+    show: boolean;
 }
 
 class Uploader extends React.Component<IProps, IState> {
@@ -19,7 +21,9 @@ class Uploader extends React.Component<IProps, IState> {
 
         this.state = {
             items: [],
+            lastSelected: 0,
             selected: 0,
+            show: true,
         };
     }
 
@@ -33,7 +37,7 @@ class Uploader extends React.Component<IProps, IState> {
     // }
 
     public render() {
-        const {selected} = this.state;
+        const {selected, lastSelected} = this.state;
         return (
             <div className="uploader-container">
                 <div className="attachment-preview-container">
@@ -43,37 +47,38 @@ class Uploader extends React.Component<IProps, IState> {
                         // disableClick={true}
                     >
                         <div className="slider-attachment">
-                            {this.state.items.length && (
-                            <div className="slide">
-                                <img src={this.state.items[selected].preview}/>
-                            </div>)}
+                            {this.state.items.length > 0 && this.state.show && (
+                                <div className={'slide' + (selected > lastSelected ? ' left' : ' right')}>
+                                    <img className="front" src={this.state.items[selected].preview}/>
+                                    {lastSelected !== selected && (
+                                        <img className="back" src={this.state.items[lastSelected].preview}/>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </Dropzone>
                 </div>
                 <div className="attachments-slide-container">
-                    {this.state.items.length > 0 ?
-                        (
-                            <div>
-                                {this.state.items.map((file, index) => {
-                                    return (
-                                        <div key={index}
-                                             className={'item' + (selected === index ? ' selected' : '')}
-                                             onClick={this.selectImage.bind(this, index)}
-                                        >
-                                            <div className="preview"
-                                                 style={{backgroundImage: 'url(' + file.preview + ')'}}/>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        ) : null
-                    }
+                    <div>
+                        {this.state.items.map((file, index) => {
+                            return (
+                                <div key={index}
+                                     className={'item' + (selected === index ? ' selected' : '')}
+                                     onClick={this.selectImage.bind(this, index)}
+                                >
+                                    <div className="preview"
+                                         style={{backgroundImage: 'url(' + file.preview + ')'}}/>
+                                </div>
+                            );
+                        })}
+                        <div key="add-file" className="item add-file"/>
+                    </div>
                 </div>
             </div>
         );
     }
 
-    private onDrop = (accepted: ImageFile[], rejected: ImageFile[], event: DragEvent<HTMLDivElement>) => {
+    private onDrop = (accepted: FileWithPreview[], rejected: FileWithPreview[], event: DragEvent<HTMLDivElement>) => {
         window.console.log(accepted, rejected, event);
         this.setState({
             items: accepted,
@@ -81,8 +86,17 @@ class Uploader extends React.Component<IProps, IState> {
     }
 
     private selectImage = (index: number) => {
+        if (this.state.selected === index) {
+            return;
+        }
         this.setState({
+            lastSelected: this.state.selected,
             selected: index,
+            show: false,
+        }, () => {
+            this.setState({
+                show: true,
+            });
         });
     }
 }

@@ -1,15 +1,23 @@
 {
-  "extends": ["tslint:recommended", "tslint-react", "tslint-config-prettier"],
+  "extends": [
+    "tslint:recommended",
+    "tslint-react",
+    "tslint-config-prettier"
+  ],
   "rules": {
     "ordered-imports": false,
     "no-default-export": false,
-    "semicolon": [true, "always"]
+    "semicolon": [
+      true,
+      "always"
+    ]
   },
   "linterOptions": {
     "exclude": [
       "config/**/*.js",
       "node_modules/**/*.ts",
-      "coverage/lcov-report/*.js"
+      "coverage/lcov-report/*.js",
+      "src/app/services/sdk/messages/*js"
     ]
   }
 }
