@@ -1,12 +1,12 @@
 @import '../../../style/common';
 
 .chat {
-  padding: 10px 17px 0;
+  padding: 460px 17px 0;
   border-width: 1px 1px 0 0;
   border-style: solid;
   border-color: var(--light);
   height: calc(100% - 48px);
-  transition: padding-right 1s;
+  transition: padding-top 1s;
   &.active-chat {
     display: flex;
     .bubble {

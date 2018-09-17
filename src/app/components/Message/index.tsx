@@ -118,6 +118,14 @@ class Message extends React.Component<IProps, IState> {
 
     private fitList() {
         setTimeout(() => {
+            if (this.state.items.length === 0) {
+                this.setState({
+                    listStyle: {
+                        paddingTop: '460px',
+                    },
+                });
+                return;
+            }
             const list = document.querySelector('.chat.active-chat > div');
             if (list) {
                 const diff = this.list.props.height - list.clientHeight;
