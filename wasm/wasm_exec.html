@@ -1,0 +1,59 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Go wasm</title>
+</head>
+
+<body>
+<script src="wasm_exec.js"></script>
+<script>
+    if (!WebAssembly.instantiateStreaming) { // polyfill
+        WebAssembly.instantiateStreaming = async (resp, importObject) => {
+            const source = await (await resp).arrayBuffer();
+            return await WebAssembly.instantiate(source, importObject);
+        };
+    }
+    let run;
+    (async function () {
+        const go = new Go();
+        const {instance} = await WebAssembly.instantiateStreaming(fetch("test.wasm"), go.importObject);
+        run = go.run(instance);
+    })();
+
+    const dhKey = "mg5wqzSWheIYOg0dnHeDZQ4w0CMGJGIH7sXuaUTNz4VAUrxTvwcmNBipR59ojZDfatmGSMk40roQz7lUEHmJ6lO8Zy6HIrszAiBZzCzORlZYPMDiUN1Q6sYjkvoW0fyTkBXFaRijDmOduSjUNNGsehU17xcBLQRUrIKvhCBgE3fUfHW6tFOlgQvy4vh1eYzlnQK/JY4EnuDlGLqN040QbZufH2VWrlPt1WETUuzqPdAtZsu6ut/LC5wwGnzbHEs/snOsb1dONpqbU8dFI7dL2jJqRItosY+wF9+oCpLiV3bL1UTTf+b33VXEyxCuIfJEy45f7jr/JujSWsaysmOm0Q==";
+    const dh = new TextEncoder().encode(dhKey);
+
+    let encrypt;
+
+    function setEncrypt(callback) {
+        encrypt = callback;
+        document.querySelector('#encryptButton').disabled = false;
+    }
+
+    let decrypt;
+
+    function setDecrypt(callback) {
+        decrypt = callback;
+        document.querySelector('#decryptButton').disabled = false;
+    }
+
+    function runE() {
+        encrypt(dh, document.querySelector('#encryptInput').value);
+    }
+
+    function runD() {
+        decrypt(dh, document.querySelector('#decryptInput').value);
+    }
+</script>
+<div>
+    <input id="encryptInput" type="text" value="Hello Wasm!">
+    <button onClick="runE();" id="encryptButton" disabled>Encrypt</button>
+</div>
+<div>
+    <input id="decryptInput" type="text" value="Hello Wasm!">
+    <button onClick="runD();" id="decryptButton" disabled>Decrypt</button>
+</div>
+</body>
+
+</html>
