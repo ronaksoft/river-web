@@ -150,12 +150,17 @@ func _Encrypt(dhKey, plain []byte) (encrypted []byte, err error) {
 		return nil, err
 	}
 
-	return _AES256GCMEncrypt(
+	encrypted, err = _AES256GCMEncrypt(
 		aesKey[:32],
 		aesIV[:12],
 		plain,
 	)
+	if err != nil {
+		return
+	}
 
+	encrypted = append(msgKey, encrypted...)
+	return
 }
 
 // _Decrypt
@@ -272,7 +277,7 @@ func main() {
 	decCB := js.NewCallback(decrypt)
 	defer decCB.Release()
 	setDecrypt := js.Global().Get("setDecrypt")
-	setDecrypt.Invoke(encCB)
+	setDecrypt.Invoke(decCB)
 
 	beforeUnloadCb := js.NewEventCallback(0, beforeUnload)
 	defer beforeUnloadCb.Release()
@@ -289,24 +294,30 @@ func setDH(args []js.Value) {
 
 func encrypt(args []js.Value) {
 	plain := []byte(args[0].String())
+	fmt.Println(string(plain))
 	no++
 	enc, err := _Encrypt(dh, plain)
 	if err == nil {
+		cb := js.Global().Get("decCB")
+		cb.Invoke(string(enc))
 		fmt.Println(enc)
+		fmt.Println(string(enc))
 	}
-	fmt.Printf("Enc Message no %d", no)
 }
 
 func decrypt(args []js.Value) {
 	enc := []byte(args[0].String())
+	fmt.Println(string(enc))
 	msgKey := enc[0:32]
 	enc = enc[32:]
 	no++
 	plain, err := _Decrypt(dh, msgKey, enc)
 	if err == nil {
-		fmt.Println(plain)
+		fmt.Println(string(plain))
+	} else {
+		fmt.Println(err.Error())
 	}
-	fmt.Printf("Dec Message no %d", no)
+	//fmt.Printf("Dec Message no %d", no)
 }
 
 func beforeUnload(event js.Value) {

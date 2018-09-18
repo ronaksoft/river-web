@@ -21,14 +21,21 @@
         run = go.run(instance);
     })();
 
-    const dhKey = "mg5wqzSWheIYOg0dnHeDZQ4w0CMGJGIH7sXuaUTNz4VAUrxTvwcmNBipR59ojZDfatmGSMk40roQz7lUEHmJ6lO8Zy6HIrszAiBZzCzORlZYPMDiUN1Q6sYjkvoW0fyTkBXFaRijDmOduSjUNNGsehU17xcBLQRUrIKvhCBgE3fUfHW6tFOlgQvy4vh1eYzlnQK/JY4EnuDlGLqN040QbZufH2VWrlPt1WETUuzqPdAtZsu6ut/LC5wwGnzbHEs/snOsb1dONpqbU8dFI7dL2jJqRItosY+wF9+oCpLiV3bL1UTTf+b33VXEyxCuIfJEy45f7jr/JujSWsaysmOm0Q==";
-    const dh = new TextEncoder().encode(dhKey);
+    function setDH(callback) {
+        const dhKey = "mg5wqzSWheIYOg0dnHeDZQ4w0CMGJGIH7sXuaUTNz4VAUrxTvwcmNBipR59ojZDfatmGSMk40roQz7lUEHmJ6lO8Zy6HIrszAiBZzCzORlZYPMDiUN1Q6sYjkvoW0fyTkBXFaRijDmOduSjUNNGsehU17xcBLQRUrIKvhCBgE3fUfHW6tFOlgQvy4vh1eYzlnQK/JY4EnuDlGLqN040QbZufH2VWrlPt1WETUuzqPdAtZsu6ut/LC5wwGnzbHEs/snOsb1dONpqbU8dFI7dL2jJqRItosY+wF9+oCpLiV3bL1UTTf+b33VXEyxCuIfJEy45f7jr/JujSWsaysmOm0Q==";
+        const dh = new TextEncoder().encode(dhKey);
+        callback(dh);
+    }
 
     let encrypt;
 
     function setEncrypt(callback) {
         encrypt = callback;
         document.querySelector('#encryptButton').disabled = false;
+    }
+
+    function decCB(item) {
+        document.querySelector('#decryptInput').value = item;
     }
 
     let decrypt;
@@ -39,11 +46,13 @@
     }
 
     function runE() {
-        encrypt(dh, document.querySelector('#encryptInput').value);
+        encrypt(document.querySelector('#encryptInput').value);
     }
 
     function runD() {
-        decrypt(dh, document.querySelector('#decryptInput').value);
+        var enc = new TextEncoder();
+        console.log(enc.encode(document.querySelector('#decryptInput').value));
+        decrypt(document.querySelector('#decryptInput').value);
     }
 </script>
 <div>
