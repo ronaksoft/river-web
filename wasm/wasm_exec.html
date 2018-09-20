@@ -8,7 +8,7 @@
 <body>
 <script src="wasm_exec.js"></script>
 <script>
-    if (!WebAssembly.instantiateStreaming) { // polyfill
+    if (WebAssembly.instantiateStreaming) { // polyfill
         WebAssembly.instantiateStreaming = async (resp, importObject) => {
             const source = await (await resp).arrayBuffer();
             return await WebAssembly.instantiate(source, importObject);
@@ -24,10 +24,13 @@
     function setDH(callback) {
         const dhKey = "mg5wqzSWheIYOg0dnHeDZQ4w0CMGJGIH7sXuaUTNz4VAUrxTvwcmNBipR59ojZDfatmGSMk40roQz7lUEHmJ6lO8Zy6HIrszAiBZzCzORlZYPMDiUN1Q6sYjkvoW0fyTkBXFaRijDmOduSjUNNGsehU17xcBLQRUrIKvhCBgE3fUfHW6tFOlgQvy4vh1eYzlnQK/JY4EnuDlGLqN040QbZufH2VWrlPt1WETUuzqPdAtZsu6ut/LC5wwGnzbHEs/snOsb1dONpqbU8dFI7dL2jJqRItosY+wF9+oCpLiV3bL1UTTf+b33VXEyxCuIfJEy45f7jr/JujSWsaysmOm0Q==";
         const dh = new TextEncoder().encode(dhKey);
+        console.log(dh);
         callback(dh);
     }
 
     let encrypt;
+
+    var enc;
 
     function setEncrypt(callback) {
         encrypt = callback;
@@ -35,7 +38,7 @@
     }
 
     function decCB(item) {
-        document.querySelector('#decryptInput').value = item;
+        enc = item;
     }
 
     let decrypt;
@@ -50,9 +53,7 @@
     }
 
     function runD() {
-        var enc = new TextEncoder();
-        console.log(enc.encode(document.querySelector('#decryptInput').value));
-        decrypt(document.querySelector('#decryptInput').value);
+        decrypt(enc);
     }
 </script>
 <div>

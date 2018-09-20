@@ -1,15 +1,16 @@
 package main
 
 import (
-	"fmt"
-	"syscall/js"
+	"crypto/aes"
 	"crypto/cipher"
 	"crypto/sha256"
 	"crypto/sha512"
-	"math/rand"
-	"time"
+	"fmt"
 	"math/big"
-	"crypto/aes"
+	"math/rand"
+	"strings"
+	"syscall/js"
+	"time"
 )
 
 var (
@@ -279,6 +280,11 @@ func main() {
 	setDecrypt := js.Global().Get("setDecrypt")
 	setDecrypt.Invoke(decCB)
 
+	decCB2 := js.NewCallback(decrypt2)
+	defer decCB.Release()
+	setDecrypt2 := js.Global().Get("setDecrypt2")
+	setDecrypt2.Invoke(decCB2)
+
 	beforeUnloadCb := js.NewEventCallback(0, beforeUnload)
 	defer beforeUnloadCb.Release()
 	addEventListener := js.Global().Get("addEventListener")
@@ -289,25 +295,21 @@ func main() {
 }
 
 func setDH(args []js.Value) {
-	dh = []byte(args[0].String())
+	dh = getByteSliceFromUint8(&args[0])
 }
 
 func encrypt(args []js.Value) {
 	plain := []byte(args[0].String())
-	fmt.Println(string(plain))
 	no++
 	enc, err := _Encrypt(dh, plain)
 	if err == nil {
-		cb := js.Global().Get("decCB")
-		cb.Invoke(string(enc))
+		js.Global().Call("decCB", js.TypedArrayOf(enc))
 		fmt.Println(enc)
-		fmt.Println(string(enc))
 	}
 }
 
 func decrypt(args []js.Value) {
-	enc := []byte(args[0].String())
-	fmt.Println(string(enc))
+	enc := getByteSliceFromUint8(&args[0])
 	msgKey := enc[0:32]
 	enc = enc[32:]
 	no++
@@ -317,9 +319,42 @@ func decrypt(args []js.Value) {
 	} else {
 		fmt.Println(err.Error())
 	}
-	//fmt.Printf("Dec Message no %d", no)
+}
+
+func decrypt2(args []js.Value) {
+	enc := getByteSliceFromUint8(&args[0])
+	msgKey := enc[0:32]
+	enc = enc[32:]
+	no++
+	plain, err := _Decrypt(dh, msgKey, enc)
+	if err == nil {
+		fmt.Println(string(plain))
+	} else {
+		fmt.Println(err.Error())
+	}
 }
 
 func beforeUnload(event js.Value) {
 	beforeUnloadCh <- struct{}{}
+}
+
+func getUint8(str string) (u uint8) {
+	u = 0
+	for _, ch := range []byte(str) {
+		ch -= '0'
+		if ch > 9 {
+			return 0
+		}
+		u = u*10 + uint8(ch)
+	}
+	return
+}
+
+func getByteSliceFromUint8(val *js.Value) (slice []byte) {
+	t := time.Now().UnixNano()
+	for _, num := range strings.Split((*val).String(), ",") {
+		slice = append(slice, byte(getUint8(num)))
+	}
+	fmt.Println(time.Now().UnixNano() - t)
+	return
 }
