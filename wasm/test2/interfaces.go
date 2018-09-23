@@ -2,17 +2,17 @@ package main
 
 import (
 	"git.ronaksoftware.com/customers/river/messages"
-	"github.com/monnand/dhkx"
-	"encoding/binary"
 	"fmt"
-	"sync"
 	"go.uber.org/zap"
-	"math/big"
-	"crypto/rand"
-	"crypto/rsa"
 	"time"
 	"syscall/js"
 	"encoding/hex"
+	"encoding/binary"
+	"sync"
+	"math/big"
+	"github.com/monnand/dhkx"
+	"crypto/rand"
+	"crypto/rsa"
 )
 
 var (
@@ -50,6 +50,8 @@ func (r *River) CreateAuthKey() (err error) {
 	req1 := new(msg.InitConnect)
 	req1.ClientNonce = _RandomUint64()
 	req1Bytes, _ := req1.Marshal()
+
+	fmt.Println(req1Bytes)
 	waitGroup := new(sync.WaitGroup)
 	waitGroup.Add(1)
 
@@ -222,8 +224,8 @@ func (r *River) executeRemoteCommand(requestID uint64, constructor int64, comman
 	msg.RequestID = requestID
 	msg.Constructor = constructor
 	msg.Message = commandBytes
-	r.send(msg)
 	r.MessageQueue[requestID] = &successCB
+	r.send(msg)
 }
 
 func (r *River) send(msgEnvelope *msg.MessageEnvelope) {
