@@ -23,14 +23,13 @@
 
     function setDH(callback) {
         const dhKey = "mg5wqzSWheIYOg0dnHeDZQ4w0CMGJGIH7sXuaUTNz4VAUrxTvwcmNBipR59ojZDfatmGSMk40roQz7lUEHmJ6lO8Zy6HIrszAiBZzCzORlZYPMDiUN1Q6sYjkvoW0fyTkBXFaRijDmOduSjUNNGsehU17xcBLQRUrIKvhCBgE3fUfHW6tFOlgQvy4vh1eYzlnQK/JY4EnuDlGLqN040QbZufH2VWrlPt1WETUuzqPdAtZsu6ut/LC5wwGnzbHEs/snOsb1dONpqbU8dFI7dL2jJqRItosY+wF9+oCpLiV3bL1UTTf+b33VXEyxCuIfJEy45f7jr/JujSWsaysmOm0Q==";
-        const dh = new TextEncoder().encode(dhKey);
-        console.log(dh);
-        callback(dh);
+        // const dh = new TextEncoder().encode(dhKey);
+        // console.log(dh);
+        callback(dhKey);
     }
 
     let encrypt;
-
-    var enc;
+    let enc;
 
     function setEncrypt(callback) {
         encrypt = callback;
@@ -53,7 +52,16 @@
     }
 
     function runD() {
-        decrypt(enc);
+        decrypt(Uint8ToBase64(enc));
+    }
+
+    function Uint8ToBase64(u8a) {
+        const CHUNK_SZ = 0x8000;
+        const c = [];
+        for (let i = 0; i < u8a.length; i += CHUNK_SZ) {
+            c.push(String.fromCharCode.apply(null, u8a.subarray(i, i + CHUNK_SZ)));
+        }
+        return btoa(c.join(''));
     }
 </script>
 <div>
