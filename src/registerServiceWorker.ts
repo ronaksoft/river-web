@@ -19,6 +19,8 @@ const isLocalhost = Boolean(
     )
 );
 
+// import Go from './bin/go_wasm_exec';
+
 export default function register() {
     if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
         // The URL constructor is available in all browsers that support SW.
@@ -54,7 +56,7 @@ export default function register() {
             }
         });
     }
-    console.log("erferre");
+    // setWASM();
 }
 
 function registerValidSW(swUrl: string) {
@@ -114,6 +116,91 @@ function checkValidServiceWorker(swUrl: string) {
             );
         });
 }
+
+// function setWASM() {
+//     // @ts-ignore
+//     if (WebAssembly.instantiateStreaming) { // polyfill
+//         // @ts-ignore
+//         WebAssembly.instantiateStreaming = async (resp, importObject) => {
+//             const source = await (await resp).arrayBuffer();
+//             return await WebAssembly.instantiate(source, importObject);
+//         };
+//     }
+//
+//     let run: any;
+//     let instance;
+//     let socket: WebSocket;
+//     // @ts-ignore
+//     let fnCall: (data: any) => void;
+//     let receive: (data: any) => void;
+//
+//     (async () => {
+//         // @ts-ignore
+//         const go = new Go();
+//         // @ts-ignore
+//         const t = await WebAssembly.instantiateStreaming(fetch("test.wasm"), go.importObject);
+//         instance = t.instance;
+//         run = go.run(instance);
+//         window.console.log(run);
+//     })();
+//
+//     socket = new WebSocket('ws://river.im');
+//     socket.binaryType = 'arraybuffer';
+//
+//     // Connection opened
+//     socket.addEventListener('open', (event) => {
+//         // socket.send('Hello Server!');
+//     });
+//
+//     // Listen for messages
+//     socket.addEventListener('message', (event) => {
+//         receive(Uint8ToBase64(new Uint8Array(event.data)));
+//     });
+//
+//     // @ts-ignore
+//     function wsSend(buffer) {
+//         socket.send(buffer);
+//     }
+//
+//     // @ts-ignore
+//     function saveConnInfo(data) {
+//         localStorage.setItem('river.conn.info', data);
+//     }
+//
+//     // @ts-ignore
+//     function loadConnInfo(callback) {
+//         callback(localStorage.getItem('river.conn.info'));
+//     }
+//
+//     // @ts-ignore
+//     function initSDK(callback) {
+//         callback();
+//     }
+//
+//     // @ts-ignore
+//     function setFnCall(callback) {
+//         fnCall = callback;
+//     }
+//
+//     // @ts-ignore
+//     function fnCalllback(reqId, constructor, data) {
+//         console.log(reqId, constructor, data);
+//     }
+//
+//     // @ts-ignore
+//     function setReceive(callback) {
+//         receive = callback;
+//     }
+//
+//     function Uint8ToBase64(u8a: Uint8Array): string {
+//         const CHUNK_SZ = 0x8000;
+//         const c = [];
+//         for (let i = 0; i < u8a.length; i += CHUNK_SZ) {
+//             c.push(String.fromCharCode.apply(null, u8a.subarray(i, i + CHUNK_SZ)));
+//         }
+//         return btoa(c.join(''));
+//     }
+// }
 
 export function unregister() {
     if ('serviceWorker' in navigator) {

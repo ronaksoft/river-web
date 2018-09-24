@@ -25,6 +25,7 @@
     "pouchdb-find": "^7.0.0",
     "protobufjs": "^6.8.8",
     "react": "^16.4.2",
+    "react-async-script-loader": "^0.3.0",
     "react-dom": "^16.4.2",
     "react-dropzone": "^5.0.1",
     "react-fine-uploader": "^1.1.1",
