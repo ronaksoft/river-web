@@ -10,16 +10,6 @@ import (
 	"time"
 )
 
-var (
-	no             int
-	dh             []byte
-	beforeUnloadCh = make(chan struct{})
-)
-
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
-
 const (
 	DIGITS        = "0123456789"
 	ALPHANUMERICS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
@@ -148,17 +138,12 @@ func _Encrypt(dhKey, plain []byte) (encrypted []byte, err error) {
 		return nil, err
 	}
 
-	encrypted, err = _AES256GCMEncrypt(
+	return _AES256GCMEncrypt(
 		aesKey[:32],
 		aesIV[:12],
 		plain,
 	)
-	if err != nil {
-		return
-	}
 
-	encrypted = append(msgKey, encrypted...)
-	return
 }
 
 // _Decrypt

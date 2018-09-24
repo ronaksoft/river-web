@@ -4,34 +4,41 @@ import (
 	"syscall/js"
 	"fmt"
 	"encoding/base64"
+	"git.ronaksoftware.com/customers/river/messages"
+	"math/rand"
+	"time"
 )
 
 var river *River
 
+var (
+	no             int
+	beforeUnloadCh = make(chan struct{})
+	connInfo       string
+)
+
 func main() {
+	rand.Seed(time.Now().UnixNano())
 	initLog()
 	river = new(River)
-	river.Start()
 
-	dhCB := js.NewCallback(setDH)
-	defer dhCB.Release()
-	setDH := js.Global().Get("setDH")
-	setDH.Invoke(dhCB)
+	loadCB := js.NewCallback(func(args []js.Value) {
+		connInfo = args[0].String()
+	})
+	defer loadCB.Release()
+	js.Global().Get("loadConnInfo").Invoke(loadCB)
 
-	encCB := js.NewCallback(encrypt)
-	defer encCB.Release()
-	setEncrypt := js.Global().Get("setEncrypt")
-	setEncrypt.Invoke(encCB)
+	initCB := js.NewCallback(initSDK)
+	defer initCB.Release()
+	js.Global().Get("initSDK").Invoke(initCB)
 
-	decCB := js.NewCallback(decrypt)
-	defer decCB.Release()
-	setDecrypt := js.Global().Get("setDecrypt")
-	setDecrypt.Invoke(decCB)
+	fnCB := js.NewCallback(fnCall)
+	defer fnCB.Release()
+	js.Global().Get("setFnCall").Invoke(fnCB)
 
 	receiveCB := js.NewCallback(wsReceive)
 	defer receiveCB.Release()
-	setReceive := js.Global().Get("setReceive")
-	setReceive.Invoke(receiveCB)
+	js.Global().Get("setReceive").Invoke(receiveCB)
 
 	beforeUnloadCb := js.NewEventCallback(0, beforeUnload)
 	defer beforeUnloadCb.Release()
@@ -42,32 +49,17 @@ func main() {
 	fmt.Println("Bye Wasm !")
 }
 
-func setDH(args []js.Value) {
-	//dh = getByteSliceFromUint8(&args[0])
-	dh, _ = base64.StdEncoding.DecodeString(args[0].String())
-	river.CreateAuthKey()
+func initSDK(args []js.Value) {
+	river.Start(connInfo)
 }
 
-func encrypt(args []js.Value) {
-	plain := []byte(args[0].String())
-	no++
-	enc, err := _Encrypt(dh, plain)
+func fnCall(args []js.Value) {
+	enc, err := base64.StdEncoding.DecodeString(args[0].String())
 	if err == nil {
-		js.Global().Call("decCB", js.TypedArrayOf(enc))
-		fmt.Println(string(enc))
-	}
-}
-
-func decrypt(args []js.Value) {
-	enc, _ := base64.StdEncoding.DecodeString(args[0].String())
-	msgKey := enc[0:32]
-	enc = enc[32:]
-	no++
-	plain, err := _Decrypt(dh, msgKey, enc)
-	if err == nil {
-		fmt.Println(string(plain))
-	} else {
-		fmt.Println(err.Error())
+		reqId := _RandomUint64()
+		river.ExecuteRemoteCommand(reqId, msg.C_AuthCheckPhone, enc, nil, func(m *msg.MessageEnvelope) {
+			js.Global().Call("fnCallback", m.RequestID, m.Constructor, js.TypedArrayOf(m.Message))
+		})
 	}
 }
 

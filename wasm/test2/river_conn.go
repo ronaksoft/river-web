@@ -1,5 +1,10 @@
 package main
 
+import (
+	"go.uber.org/zap"
+	"syscall/js"
+)
+
 // easyjson:json
 // publicKey
 type publicKey struct {
@@ -56,9 +61,9 @@ type RiverConnection struct {
 }
 
 // NewRiverConnection
-func NewRiverConnection(r *River) *RiverConnection {
+func NewRiverConnection(connInfo string) *RiverConnection {
 	rc := new(RiverConnection)
-	if err := rc.Load(); err != nil {
+	if err := rc.Load(connInfo); err != nil {
 		rc.Save()
 	}
 	return rc
@@ -67,28 +72,22 @@ func NewRiverConnection(r *River) *RiverConnection {
 // Save
 func (v *RiverConnection) Save() {
 	_LOG.Debug("RiverConnection Save")
-	//if bytes, err := v.MarshalJSON(); err != nil {
-	//    _LOG.Info(err.Error(),
-	//        zap.String(_LK_FUNC_NAME, "RiverConnection::Save"),
-	//    )
-	//} else if err := _Model.System.SaveString(_CN_CONN_INFO, string(bytes)); err != nil {
-	//    _LOG.Info(err.Error(),
-	//        zap.String(_LK_FUNC_NAME, "RiverConnection::Save"),
-	//    )
-	//}
+	if bytes, err := v.MarshalJSON(); err != nil {
+		_LOG.Info(err.Error(),
+			zap.String(_LK_FUNC_NAME, "RiverConnection::Save"),
+		)
+	} else {
+		js.Global().Call("saveConnInfo", string(bytes))
+	}
 }
 
 // Load
-func (v *RiverConnection) Load() error {
-	_LOG.Debug("RiverConnection Load")
-	//if kv, err := _Model.System.LoadString(_CN_CONN_INFO); err != nil {
-	//    _LOG.Info(err.Error())
-	//    return err
-	//} else if err := v.UnmarshalJSON([]byte(kv)); err != nil {
-	//    _LOG.Error(err.Error(),
-	//        zap.String(_LK_FUNC_NAME, "RiverConnection::Load"),
-	//    )
-	//    return err
-	//}
+func (v *RiverConnection) Load(connInfo string) error {
+	if err := v.UnmarshalJSON([]byte(connInfo)); err != nil {
+		_LOG.Error(err.Error(),
+			zap.String(_LK_FUNC_NAME, "RiverConnection::Load"),
+		)
+		return err
+	}
 	return nil
 }
