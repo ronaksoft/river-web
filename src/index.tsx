@@ -4,8 +4,6 @@ import App from './App';
 import './index.css';
 import {HashRouter} from 'react-router-dom';
 import registerServiceWorker from './registerServiceWorker';
-// @ts-ignore
-import scriptLoader from 'react-async-script-loader';
 
 ReactDOM.render((
         <HashRouter>
@@ -16,9 +14,3 @@ ReactDOM.render((
 );
 registerServiceWorker();
 
-scriptLoader(
-    [
-        '/bin/wasm_exec.js',
-        '/bin/bindings.js'
-    ]
-);

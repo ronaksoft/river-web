@@ -289,7 +289,6 @@ func (r *River) receive(message *[]byte) {
 			return
 		}
 		r.messageHandler(receivedEncryptedPayload.Envelope)
-		fmt.Println(receivedEncryptedPayload.Envelope.RequestID)
 	}
 }
 

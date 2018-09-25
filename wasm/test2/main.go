@@ -54,10 +54,11 @@ func initSDK(args []js.Value) {
 }
 
 func fnCall(args []js.Value) {
-	enc, err := base64.StdEncoding.DecodeString(args[0].String())
+	reqId := uint64(args[0].Int())
+	constructor := int64(args[1].Int())
+	enc, err := base64.StdEncoding.DecodeString(args[2].String())
 	if err == nil {
-		reqId := _RandomUint64()
-		river.ExecuteRemoteCommand(reqId, msg.C_AuthCheckPhone, enc, nil, func(m *msg.MessageEnvelope) {
+		river.ExecuteRemoteCommand(reqId, constructor, enc, nil, func(m *msg.MessageEnvelope) {
 			js.Global().Call("fnCallback", m.RequestID, m.Constructor, js.TypedArrayOf(m.Message))
 		})
 	}
