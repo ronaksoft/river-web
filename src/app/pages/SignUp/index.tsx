@@ -12,6 +12,7 @@ interface IProps {
 
 interface IState {
     anchorEl: any;
+    confirmCode: boolean;
     phone: string;
 }
 
@@ -22,6 +23,7 @@ class Chat extends React.Component<IProps, IState> {
         super(props);
         this.state = {
             anchorEl: null,
+            confirmCode: false,
             phone: '',
         };
         this.sdk = SDK.getInstance();
@@ -44,11 +46,8 @@ class Chat extends React.Component<IProps, IState> {
                 <div className="container-login100">
                     <div className="wrap-login100 p-t-50 p-b-90">
                         <div className="login100-form validate-form flex-sb flex-w">
-                            {/*<span className="login100-form-title p-b-51">*/}
-                            {/*Login*/}
-                            {/*</span>*/}
                             <ReactPhoneInput defaultCountry={'ir'} value={this.state.phone}
-                                             onChange={this.handleOnChange}/>
+                                             onChange={this.handleOnChange} onKeyDown={this.sendCodeKeyDown}/>
                             {/*<div className="wrap-input100 validate-input m-b-16">*/}
                             {/*<input className="input100" type="text" placeholder="Username"/>*/}
                             {/*<span className="focus-input100"/>*/}
@@ -57,11 +56,11 @@ class Chat extends React.Component<IProps, IState> {
                                 {/*<input className="input100" type="password" placeholder="Password"/>*/}
                                 {/*<span className="focus-input100"/>*/}
                             {/*</div>*/}
-                            <div className="container-login100-form-btn m-t-17">
+                            {!this.state.confirmCode && <div className="container-login100-form-btn m-t-17">
                                 <button className="login100-form-btn" onClick={this.sendCode}>
                                     Send Code
                                 </button>
-                            </div>
+                            </div>}
                         </div>
                     </div>
                 </div>
@@ -78,7 +77,16 @@ class Chat extends React.Component<IProps, IState> {
     private sendCode = () => {
         this.sdk.sendCode(this.state.phone).then((data) => {
             window.console.log(data);
+            this.setState({
+                confirmCode: true,
+            });
         });
+    }
+
+    private sendCodeKeyDown = (e: any) => {
+        if (e.key === 'Enter') {
+            this.sendCode();
+        }
     }
 }
 
