@@ -27,111 +27,312 @@ body {
   background-size: cover;
   background-repeat: no-repeat; }
 
-.wrapper {
-  position: relative;
-  width: var(--wrapper);
-  height: 800px;
+.m-b-16 {
+  margin-bottom: 16px; }
+
+.p-b-51 {
+  padding-bottom: 51px; }
+
+input {
+  outline: none;
+  border: none; }
+
+.limiter {
+  width: 100%;
   margin: 0 auto; }
 
-@media screen and (max-width: 1280px) {
-  .wrapper {
-    width: 100%; } }
-
-.container {
-  display: flex;
-  position: relative;
-  top: 50%;
-  left: 50%;
+.container-login100 {
   width: 100%;
-  height: 75%;
-  background-color: var(--white);
-  transform: translate(-50%, -50%); }
-  .container .column-left {
-    width: 318px;
-    height: 100%;
-    flex: none;
-    border: 1px solid var(--light);
-    background-color: var(--white); }
-    .container .column-left .top {
-      position: relative;
-      width: 100%;
-      height: 48px;
-      display: flex;
-      align-items: center;
-      padding: 0 17px; }
-      .container .column-left .top:after {
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        display: block;
-        width: 80%;
-        height: 1px;
-        content: '';
-        background-color: var(--light);
-        transform: translate(-50%, 0); }
-      .container .column-left .top .new-message {
-        color: var(--green); }
-    .container .column-left input {
-      float: left;
-      width: 188px;
-      height: 42px;
-      padding: 0 15px;
-      border: 1px solid var(--light);
-      background-color: #eceff1;
-      border-radius: 21px;
-      font-family: 'Source Sans Pro', sans-serif;
-      font-weight: 400; }
-      .container .column-left input:focus {
-        outline: none; }
-    .container .column-left a.search {
-      display: block;
-      float: left;
-      width: 42px;
-      height: 42px;
-      margin-left: 10px;
-      border: 1px solid var(--light);
-      background-color: var(--blue);
-      background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/name-type.png");
-      background-repeat: no-repeat;
-      background-position: top 12px left 14px;
-      border-radius: 50%; }
-  .container .column-center {
+  min-height: 100vh;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+  background-position: center;
+  background-size: 50%;
+  background-image: url(../../../asset/image/pattern.png);
+  background-color: rgba(168, 144, 106, 0.3); }
+
+.wrap-login100 {
+  width: 390px;
+  border-radius: 10px;
+  position: relative; }
+
+/*==================================================================
+[ Form ]*/
+.login100-form {
+  width: 100%; }
+
+.login100-form-title {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 600;
+  font-size: 30px;
+  color: #14c261;
+  line-height: 1.2;
+  text-transform: uppercase;
+  text-align: center;
+  width: 100%;
+  display: block; }
+
+/*------------------------------------------------------------------
+[ Input ]*/
+.wrap-input100 {
+  width: 100%;
+  position: relative;
+  background-color: rgba(255, 255, 255, 0.7);
+  border: 1px solid transparent;
+  border-radius: 3px; }
+
+/*---------------------------------------------*/
+.input100 {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 400;
+  color: #0f954b;
+  line-height: 1.2;
+  font-size: 18px;
+  display: block;
+  width: 100%;
+  background: transparent;
+  height: 62px;
+  padding: 0 20px 0 38px; }
+
+/*------------------------------------------------------------------
+[ Focus Input ]*/
+.focus-input100 {
+  position: absolute;
+  display: block;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  top: -1px;
+  left: -1px;
+  pointer-events: none;
+  border: 1px solid #14d769;
+  border-radius: 3px;
+  visibility: hidden;
+  opacity: 0;
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  transition: all 0.4s;
+  -webkit-transform: scaleX(1.1) scaleY(1.3);
+  -moz-transform: scaleX(1.1) scaleY(1.3);
+  -ms-transform: scaleX(1.1) scaleY(1.3);
+  -o-transform: scaleX(1.1) scaleY(1.3);
+  transform: scaleX(1.1) scaleY(1.3); }
+
+.input100:focus + .focus-input100 {
+  visibility: visible;
+  opacity: 1;
+  -webkit-transform: scale(1);
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  -o-transform: scale(1);
+  transform: scale(1); }
+
+.eff-focus-selection {
+  visibility: visible;
+  opacity: 1;
+  -webkit-transform: scale(1);
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  -o-transform: scale(1);
+  transform: scale(1); }
+
+/*==================================================================
+[ Restyle Checkbox ]*/
+.input-checkbox100 {
+  display: none; }
+
+.label-checkbox100 {
+  font-family: Ubuntu-Regular;
+  font-size: 16px;
+  color: #999999;
+  line-height: 1.2;
+  display: block;
+  position: relative;
+  padding-left: 26px;
+  cursor: pointer; }
+
+.label-checkbox100::before {
+  content: "\f00c";
+  font-family: FontAwesome;
+  font-size: 13px;
+  color: transparent;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  background: #fff;
+  border: 2px solid #14d769;
+  left: 0;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
+  transform: translateY(-50%); }
+
+.input-checkbox100:checked + .label-checkbox100::before {
+  color: #14d769; }
+
+/*------------------------------------------------------------------
+[ Button ]*/
+.container-login100-form-btn {
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  flex-wrap: wrap; }
+
+.login100-form-btn {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 400;
+  font-size: 20px;
+  color: #fff;
+  line-height: 1.2;
+  text-transform: uppercase;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px;
+  width: 100%;
+  height: 62px;
+  background-color: #14d769;
+  border-radius: 3px;
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  transition: all 0.4s; }
+
+.login100-form-btn:hover {
+  background-color: #0f954b; }
+
+/*------------------------------------------------------------------
+[ Alert validate ]*/
+.validate-input {
+  position: relative; }
+
+.alert-validate::before {
+  content: attr(data-validate);
+  position: absolute;
+  max-width: 70%;
+  background-color: #fff;
+  border: 1px solid #c80000;
+  border-radius: 3px;
+  padding: 4px 25px 5px 10px;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
+  transform: translateY(-50%);
+  right: 12px;
+  pointer-events: none;
+  font-family: Ubuntu-Regular;
+  color: #c80000;
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: left;
+  visibility: hidden;
+  opacity: 0;
+  -webkit-transition: opacity 0.4s;
+  -o-transition: opacity 0.4s;
+  -moz-transition: opacity 0.4s;
+  transition: opacity 0.4s; }
+
+.alert-validate::after {
+  content: "\f12a";
+  font-family: FontAwesome;
+  display: block;
+  position: absolute;
+  color: #c80000;
+  font-size: 18px;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
+  transform: translateY(-50%);
+  right: 18px; }
+
+.alert-validate:hover:before {
+  visibility: visible;
+  opacity: 1; }
+
+@media (max-width: 992px) {
+  .alert-validate::before {
+    visibility: visible;
+    opacity: 1; } }
+
+.react-tel-input {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: row-reverse; }
+  .react-tel-input input[type=tel] {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 400;
     position: relative;
+    font-size: 16px;
+    letter-spacing: .01rem;
+    z-index: 0;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-left: 15px;
+    margin-left: 0;
+    background-color: rgba(255, 255, 255, 0.7);
+    border: 1px solid #cacaca;
+    line-height: 25px;
+    height: 62px;
+    width: 320px;
+    outline: none;
+    border-left: none;
+    border-radius: 0 5px 5px 0; }
+  .react-tel-input .flag-dropdown {
+    position: static;
+    background-color: rgba(255, 255, 255, 0.7);
+    border: 1px solid #cacaca;
     flex: 1;
-    height: 100%;
-    overflow: hidden; }
-    .container .column-center .top {
-      width: 100%;
-      height: 47px;
-      padding: 15px 29px;
-      background-color: #eceff1;
-      text-align: left; }
-      .container .column-center .top span {
-        font-size: 15px;
-        color: var(--grey); }
-        .container .column-center .top span .name {
-          color: var(--dark);
-          font-family: 'Source Sans Pro', sans-serif;
-          font-weight: 600; }
-      .container .column-center .top .buttons {
-        position: absolute;
-        top: 0;
-        right: 0;
-        float: right;
-        line-height: 0; }
-    .container .column-center .conversation {
-      width: 100%;
-      height: calc(100% - 97px);
-      background-image: url(../../../asset/image/pattern.png);
-      background-color: rgba(168, 144, 106, 0.3); }
-    .container .column-center .attachments {
-      width: 100%;
-      height: calc(100% - 47px); }
-  .container .column-right {
-    width: 0;
-    height: 100%;
-    flex: none;
-    overflow: hidden;
-    transition: width 0.2s; }
-    .container .column-right.active {
-      width: 318px; }
+    border-right: 1px solid #ddd;
+    border-radius: 5px 0 0 5px; }
+    .react-tel-input .flag-dropdown:hover {
+      background-color: rgba(255, 255, 255, 0.7); }
+      .react-tel-input .flag-dropdown:hover .selected-flag {
+        background-color: transparent; }
+    .react-tel-input .flag-dropdown .selected-flag {
+      z-index: 13;
+      position: relative;
+      width: auto;
+      height: 100%;
+      padding: 0;
+      border-radius: 0;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center; }
+      .react-tel-input .flag-dropdown .selected-flag .arrow {
+        border-top: 4px solid #ababab; }
+        .react-tel-input .flag-dropdown .selected-flag .arrow.up {
+          border-top: none;
+          border-bottom: 4px solid #ababab; }
+  .react-tel-input .flag {
+    transform: scale(1.5); }
+  .react-tel-input .country-list .country {
+    padding: 7px 10px;
+    text-align: left; }
+  .react-tel-input .country-list .country-name {
+    margin-right: 6px;
+    margin-left: 6px; }

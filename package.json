@@ -29,6 +29,7 @@
     "react-dom": "^16.4.2",
     "react-dropzone": "^5.0.1",
     "react-fine-uploader": "^1.1.1",
+    "react-phone-input-2": "^2.6.0",
     "react-router-dom": "^4.3.1",
     "react-scripts-ts": "2.17.0",
     "react-sortable-hoc": "^0.8.3",

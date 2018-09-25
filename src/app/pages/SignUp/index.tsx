@@ -1,18 +1,7 @@
 import * as React from 'react';
-import People from './../People';
-import {IMessage} from '../../repository/message/interface';
-import Message from '../Message';
-import IconButton from '@material-ui/core/IconButton';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import {MoreVert as MoreVertIcon, Attachment} from '@material-ui/icons';
-import * as faker from 'faker';
-import MessageRepo from '../../repository/message';
-import UniqueId from '../../services/uniqueId';
-import Uploader from '../Uploader';
-import TextInput from '../TextInput';
-import {trimStart} from 'lodash';
 import SDK from '../../services/sdk';
+// @ts-ignore
+import ReactPhoneInput from 'react-phone-input-2';
 
 import './style.css';
 
@@ -23,349 +12,73 @@ interface IProps {
 
 interface IState {
     anchorEl: any;
-    conversations: any[];
-    inputVal: string;
-    messages: IMessage[];
-    rightMenu: boolean;
-    selectedConversationId: string;
-    toggleAttachment: boolean;
+    phone: string;
 }
 
 class Chat extends React.Component<IProps, IState> {
-    private rightMenu: any = null;
-    private message: any = null;
-    private idToIndex: any = {};
-    private messageRepo: MessageRepo;
-    private uniqueId: UniqueId;
-    private isLoading: boolean = false;
     private sdk: SDK;
 
     constructor(props: IProps) {
         super(props);
         this.state = {
             anchorEl: null,
-            conversations: [],
-            inputVal: '',
-            messages: [],
-            rightMenu: false,
-            selectedConversationId: props.match.params.id,
-            toggleAttachment: false,
+            phone: '',
         };
-        this.messageRepo = new MessageRepo();
-        this.uniqueId = UniqueId.getInstance();
         this.sdk = SDK.getInstance();
-
-        // setInterval(() => {
-        //     const messages = this.state.messages;
-        //     const message: IMessage = {
-        //         _id: this.uniqueId.getId('msg', 'msg_'),
-        //         avatar: undefined,
-        //         conversation_id: this.state.selectedConversationId,
-        //         me: false,
-        //         message: faker.lorem.words(15),
-        //         timestamp: new Date().getTime(),
-        //     };
-        //     if (messages.length > 0) {
-        //         if (!message.me && messages[messages.length-1].me !== message.me) {
-        //             message.avatar = faker.image.avatar();
-        //         }
-        //     } else {
-        //         message.avatar = faker.image.avatar();
-        //     }
-        //     messages.push(message);
-        //     this.setState({
-        //         messages,
-        //     }, () => {
-        //         setTimeout(() => {
-        //             this.animateToEnd();
-        //         }, 50);
-        //     });
-        //     this.messageRepo.createMessage(message);
-        // }, 3000);
+        window.console.log(this.sdk);
     }
 
     public componentWillReceiveProps(newProps: IProps) {
-        const selectedId = newProps.match.params.id;
-        this.getMessageByConversationId(selectedId, true);
+        window.console.log(newProps);
     }
 
     public componentDidMount() {
-        const selectedId = this.props.match.params.id;
-        const conversations: any[] = [];
-        for (let i = 0; i < 3000; i++) {
-            const id = String(i + 1000);
-            conversations.push({
-                date: '10:23 PM',
-                id,
-                image: faker.image.avatar(),
-                message: faker.lorem.lines(),
-                name: faker.name.findName(),
-            });
-            this.idToIndex[String(id)] = i;
-        }
-        this.getMessageByConversationId(selectedId);
-        this.setState({
-            conversations,
-        });
-        window.addEventListener('wasm_init', () => {
-            // this.sdk.sendCode().then((data) => {
-            //     window.console.log(data);
-            // });
-            this.sdk.checkPhone('09372505241').then((data) => {
-                window.console.log(data);
-            });
-        });
+        window.console.log("wrfwr");
     }
 
     public render() {
-        const {anchorEl} = this.state;
-        const open = Boolean(anchorEl);
+        // const {anchorEl} = this.state;
+        // const open = Boolean(anchorEl);
         return (
-            <div className="wrapper">
-                <div className="container">
-                    <div className="column-left">
-                        <div className="top">
-                            <span className="new-message">New message</span>
+            <div className="limiter">
+                <div className="container-login100">
+                    <div className="wrap-login100 p-t-50 p-b-90">
+                        <div className="login100-form validate-form flex-sb flex-w">
+                            {/*<span className="login100-form-title p-b-51">*/}
+                            {/*Login*/}
+                            {/*</span>*/}
+                            <ReactPhoneInput defaultCountry={'ir'} value={this.state.phone}
+                                             onChange={this.handleOnChange}/>
+                            {/*<div className="wrap-input100 validate-input m-b-16">*/}
+                            {/*<input className="input100" type="text" placeholder="Username"/>*/}
+                            {/*<span className="focus-input100"/>*/}
+                            {/*</div>*/}
+                            {/*<div className="wrap-input100 validate-input m-b-16">*/}
+                                {/*<input className="input100" type="password" placeholder="Password"/>*/}
+                                {/*<span className="focus-input100"/>*/}
+                            {/*</div>*/}
+                            <div className="container-login100-form-btn m-t-17">
+                                <button className="login100-form-btn" onClick={this.sendCode}>
+                                    Send Code
+                                </button>
+                            </div>
                         </div>
-                        <People items={this.state.conversations} selectedId={this.state.selectedConversationId}/>
                     </div>
-                    <div className="column-center">
-                        <div className="top">
-                            <span>To: <span
-                                className="name">{this.getName(this.state.selectedConversationId)}</span></span>
-                            <span className="buttons">
-                                <IconButton
-                                    aria-label="Attachment"
-                                    aria-haspopup="true"
-                                    onClick={this.toggleAttachment}
-                                >
-                                    <Attachment/>
-                                </IconButton>
-                                <IconButton
-                                    aria-label="More"
-                                    aria-owns={anchorEl ? 'long-menu' : undefined}
-                                    aria-haspopup="true"
-                                    onClick={this.handleClick}
-                                >
-                                    <MoreVertIcon/>
-                                </IconButton>
-                                <Menu
-                                    id="long-menu"
-                                    anchorEl={anchorEl}
-                                    open={open}
-                                    onClose={this.handleClose}
-                                >
-                                  <MenuItem key={1}
-                                            onClick={this.toggleRightMenu}
-                                  >
-                                      {"Contact Info"}
-                                  </MenuItem>
-                                </Menu>
-                            </span>
-                        </div>
-                        <div className="conversation" hidden={this.state.toggleAttachment}>
-                            <Message ref={this.messageRefHandler}
-                                     items={this.state.messages}
-                                     onLoadMore={this.onMessageScroll}
-                            />
-                        </div>
-                        <div className="attachments" hidden={!this.state.toggleAttachment}>
-                            <Uploader/>
-                        </div>
-                        {!this.state.toggleAttachment && <TextInput onMessage={this.onMessage}/>}
-                    </div>
-                    <div ref={this.rightMenuRefHandler} className="column-right"/>
                 </div>
             </div>
         );
     }
 
-    private handleClick = (event: any) => {
+    private handleOnChange = (value: any) => {
         this.setState({
-            anchorEl: event.currentTarget,
+            phone: value,
         });
     }
 
-    private handleClose = () => {
-        this.setState({
-            anchorEl: null,
+    private sendCode = () => {
+        this.sdk.sendCode(this.state.phone).then((data) => {
+            window.console.log(data);
         });
-    }
-
-    private toggleAttachment = () => {
-        this.setState({
-            toggleAttachment: !this.state.toggleAttachment,
-        });
-    }
-
-    private toggleRightMenu = () => {
-        this.setState({
-            anchorEl: null,
-        });
-        this.rightMenu.classList.toggle('active');
-        setTimeout(() => {
-            this.message.cache.clearAll();
-            this.message.list.recomputeRowHeights();
-            this.message.forceUpdate(() => {
-                setTimeout(() => {
-                    this.message.list.scrollToRow(this.state.messages.length - 1);
-                }, 50);
-            });
-        }, 200);
-    }
-
-    private rightMenuRefHandler = (value: any) => {
-        this.rightMenu = value;
-    }
-
-    private messageRefHandler = (value: any) => {
-        this.message = value;
-    }
-
-    // private getMessages(conversationId: string): IMessage[] {
-    //     const messages: IMessage[] = [];
-    //     for (let i = 0; i < 100; i++) {
-    //         const me = faker.random.boolean();
-    //         if (messages.length > 0) {
-    //             if (!messages[0].me && messages[0].me !== me) {
-    //                 messages[0].avatar = faker.image.avatar();
-    //             }
-    //         }
-    //         messages.unshift({
-    //             _id: this.uniqueId.getId('msg', 'msg_'),
-    //             avatar: undefined,
-    //             conversation_id: conversationId,
-    //             me,
-    //             message: faker.lorem.words(15),
-    //             timestamp: new Date().getTime(),
-    //         });
-    //     }
-    //     return messages;
-    // }
-
-    private getName = (id: string) => {
-        if (this.idToIndex.hasOwnProperty(id)) {
-            return this.state.conversations[this.idToIndex[id]].name;
-        }
-        return '';
-    }
-
-    private animateToEnd() {
-        const el = document.querySelector('.chat.active-chat');
-        if (el) {
-            const eldiv = el.querySelector('.chat.active-chat > div');
-            if (eldiv) {
-                el.scroll({
-                    behavior: 'smooth',
-                    top: eldiv.clientHeight,
-                });
-            }
-        }
-    }
-
-    //
-    // private createFakeMessage(conversationId: string) {
-    //     const messages = this.getMessages(conversationId);
-    //     this.messageRepo.createMessages(messages).then((data: any) => {
-    //         window.console.log('new', data);
-    //     }).catch((err: any) => {
-    //         window.console.log('new', err);
-    //     });
-    //     return messages;
-    // }
-
-    private getMessageByConversationId(conversationId: string, force?: boolean) {
-        let messages: IMessage[] = [];
-
-        const updateState = () => {
-            this.message.cache.clearAll();
-            this.message.list.recomputeRowHeights();
-            this.message.forceUpdate(() => {
-                setTimeout(() => {
-                    this.message.list.scrollToRow(messages.length - 1);
-                }, 50);
-            });
-        };
-
-        this.messageRepo.getMessages({conversationId}).then((data) => {
-            if (data.length === 0) {
-                // messages = this.createFakeMessage(conversationId);
-                messages = [];
-            } else {
-                messages = data.reverse();
-            }
-            this.setState({
-                messages,
-                selectedConversationId: conversationId,
-            }, () => {
-                if (force === true) {
-                    updateState();
-                }
-            });
-        }).catch((err: any) => {
-            window.console.warn(err);
-            // messages = this.createFakeMessage(conversationId);
-            this.setState({
-                messages,
-                selectedConversationId: conversationId,
-            }, () => {
-                if (force === true) {
-                    updateState();
-                }
-            });
-        });
-    }
-
-    private onMessageScroll = () => {
-        if (this.isLoading) {
-            return;
-        }
-        this.messageRepo.getMessages({
-            before: this.state.messages[0].timestamp,
-            conversationId: this.state.selectedConversationId
-        }).then((data) => {
-            if (data.length === 0) {
-                return;
-            }
-            const messages = this.state.messages;
-            messages.unshift.apply(messages, data.reverse());
-            this.setState({
-                messages,
-            }, () => {
-                this.message.cache.clearAll();
-                this.message.list.recomputeRowHeights();
-                this.message.forceUpdate(() => {
-                    this.isLoading = false;
-                });
-            });
-        }).catch(() => {
-            this.isLoading = false;
-        });
-    }
-
-    private onMessage = (text: string) => {
-        if (trimStart(text).length === 0) {
-            return;
-        }
-        const messages = this.state.messages;
-        const message: IMessage = {
-            _id: this.uniqueId.getId('msg', 'msg_'),
-            avatar: undefined,
-            conversation_id: this.state.selectedConversationId,
-            me: true,
-            message: text,
-            timestamp: new Date().getTime(),
-        };
-        messages.push(message);
-        this.setState({
-            inputVal: '',
-            messages,
-        }, () => {
-            setTimeout(() => {
-                this.animateToEnd();
-            }, 50);
-        });
-        this.messageRepo.createMessage(message);
     }
 }
 

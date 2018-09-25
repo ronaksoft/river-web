@@ -22,7 +22,7 @@ export default class SDK {
     public sendCode(phone: string): Promise<any> {
         const data = new AuthSendCode;
         data.setPhone(phone);
-        return this.server.send(C_MSG.AuthSentCode, data.serializeBinary());
+        return this.server.send(C_MSG.AuthSendCode, data.serializeBinary());
     }
 
     public checkPhone(phone: string): Promise<any> {

@@ -1,18 +1,18 @@
 import * as React from 'react';
-import People from './../People';
+import People from '../../components/People/index';
 import {IMessage} from '../../repository/message/interface';
-import Message from '../Message';
+import Message from '../../components/Message/index';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import {MoreVert as MoreVertIcon, Attachment} from '@material-ui/icons';
 import * as faker from 'faker';
-import MessageRepo from '../../repository/message';
-import UniqueId from '../../services/uniqueId';
-import Uploader from '../Uploader';
-import TextInput from '../TextInput';
+import MessageRepo from '../../repository/message/index';
+import UniqueId from '../../services/uniqueId/index';
+import Uploader from '../../components/Uploader/index';
+import TextInput from '../../components/TextInput/index';
 import {trimStart} from 'lodash';
-import SDK from '../../services/sdk';
+import SDK from '../../services/sdk/index';
 
 import './style.css';
 
