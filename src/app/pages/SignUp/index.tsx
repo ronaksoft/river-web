@@ -1,22 +1,31 @@
 import * as React from 'react';
+import {} from 'react-router-dom';
 import SDK from '../../services/sdk';
 // @ts-ignore
 import ReactPhoneInput from 'react-phone-input-2';
+import Snackbar from '@material-ui/core/Snackbar';
 
 import './style.css';
 import {Refresh} from "@material-ui/icons";
+import {C_ERR, C_ERR_ITEM} from "../../services/sdk/const";
 
 interface IProps {
     match?: any;
     location?: any;
+    history?: any;
 }
 
 interface IState {
     anchorEl: any;
     code: string;
-    confirmCode: boolean;
+    fName: string;
+    lName: string;
+    loading: boolean;
     phone?: string;
     phoneHash?: string;
+    snackOpen: boolean;
+    snackText: string;
+    step: string;
     tries: number;
 }
 
@@ -28,9 +37,14 @@ class Chat extends React.Component<IProps, IState> {
         this.state = {
             anchorEl: null,
             code: '',
-            confirmCode: false,
+            fName: '',
+            lName: '',
+            loading: false,
             phone: '',
             phoneHash: '',
+            snackOpen: false,
+            snackText: '',
+            step: 'phone',
             tries: 0,
         };
         this.sdk = SDK.getInstance();
@@ -44,53 +58,89 @@ class Chat extends React.Component<IProps, IState> {
     public componentDidMount() {
         window.addEventListener('wasm_init', () => {
             const info = this.sdk.getConnInfo();
-            if (info.UserID) {
+            if (info && info.UserID) {
                 this.sdk.recall(info.UserID).then((data) => {
                     window.console.log(data);
+                }).catch((err) => {
+                    window.console.log(err);
                 });
             }
+            this.focus('f-code');
         });
     }
 
     public render() {
         // const {anchorEl} = this.state;
         // const open = Boolean(anchorEl);
+        const {step} = this.state;
         return (
             <div className="limiter">
                 <div className="container-login100">
                     <div className="wrap-login100 p-t-50 p-b-90">
                         <div className="login100-form validate-form flex-sb flex-w">
-                            <ReactPhoneInput defaultCountry={'ir'} value={this.state.phone}
+                            <ReactPhoneInput defaultCountry={'ir'} value={this.state.phone} inputClass="f-phone"
+                                             disabled={this.state.loading || step === 'code'}
                                              onChange={this.handleOnChange} onKeyDown={this.sendCodeKeyDown}/>
                             {/*<div className="wrap-input100 validate-input m-b-16">*/}
                             {/*<input className="input100" type="text" placeholder="Username"/>*/}
                             {/*<span className="focus-input100"/>*/}
                             {/*</div>*/}
-                            {this.state.confirmCode && <div className="wrap-input100 validate-input m-b-16">
-                                <input className="input100 code" type="text" placeholder="____"
-                                       value={this.state.code} onChange={this.codeOnChange}
-                                       onKeyDown={this.confirmKeyDown}/>
-                            </div>}
-                            {(this.state.tries > 0 && this.state.confirmCode) &&
+                            {(this.state.tries > 0 && (step === 'code' || step === 'register')) &&
                             <div className="try-another-phone" onClick={this.tryAnotherPhone}>
                                 <Refresh/>
                                 <label>
                                     Try another phone
                                 </label>
                             </div>}
+                            {step === 'code' && <div className="wrap-input100 validate-input m-b-16">
+                                <input className="input100 code f-code" type="text" placeholder="____"
+                                       value={this.state.code} onChange={this.codeOnChange}
+                                       onKeyDown={this.confirmKeyDown}/>
+                            </div>}
+                            {step === 'register' &&
+                            <div className="wrap-input100 validate-input m-b-16">
+                                <input className="input100 f-fname" type="text" placeholder="First Name"
+                                       autoComplete="off" onKeyDown={this.registerKeyDown}
+                                       value={this.state.fName} onChange={this.fNameOnChange}/>
+                                <span className="focus-input100"/>
+                            </div>}
+                            {step === 'register' &&
+                            <div className="wrap-input100 validate-input m-b-16">
+                                <input className="input100 f-lname" type="text" placeholder="Last Name"
+                                       autoComplete="off" onKeyDown={this.registerKeyDown}
+                                       value={this.state.lName} onChange={this.lNameOnChange}/>
+                                <span className="focus-input100"/>
+                            </div>}
                             <div className="container-login100-form-btn m-t-17">
-                                {!this.state.confirmCode &&
-                                <button className="login100-form-btn" onClick={this.sendCode}>
+                                {step === 'phone' &&
+                                <button className="login100-form-btn" onClick={this.sendCode}
+                                        disabled={this.state.loading}>
                                     Send Code
                                 </button>}
-                                {this.state.confirmCode &&
-                                <button className="login100-form-btn" onClick={this.confirmCode}>
+                                {step === 'code' &&
+                                <button className="login100-form-btn" onClick={this.confirmCode}
+                                        disabled={this.state.loading}>
                                     Confirm Code
+                                </button>}
+                                {step === 'register' &&
+                                <button className="login100-form-btn" onClick={this.register}
+                                        disabled={this.state.loading}>
+                                    Register
                                 </button>}
                             </div>
                         </div>
                     </div>
                 </div>
+                <Snackbar
+                    anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+                    open={this.state.snackOpen}
+                    onClose={this.handleCloseSnack}
+                    ContentProps={{
+                        'aria-describedby': 'message-id',
+                    }}
+                    autoHideDuration={6000}
+                    message={<span id="message-id">{this.state.snackText}</span>}
+                />
             </div>
         );
     }
@@ -105,12 +155,21 @@ class Chat extends React.Component<IProps, IState> {
         if (!this.state.phone) {
             return;
         }
+        this.setState({
+            loading: true,
+        });
         this.sdk.sendCode(this.state.phone).then((data) => {
-            window.console.log(data);
             this.setState({
-                confirmCode: true,
+                loading: false,
                 phone: '+' + data.phone,
                 phoneHash: data.phonecodehash,
+                step: 'code',
+            }, () => {
+                this.focus('f-code');
+            });
+        }).catch(() => {
+            this.setState({
+                loading: false,
             });
         });
     }
@@ -139,10 +198,14 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private confirmCode = () => {
-        if (!this.state.phone || !this.state.phoneHash || this.state.code.length < 4) {
+        const {phone, phoneHash, code} = this.state;
+        if (!phone || !phoneHash || code.length < 4) {
             return;
         }
-        this.sdk.login(this.state.phone.slice(1), this.state.code, this.state.phoneHash).then((res) => {
+        this.setState({
+            loading: true,
+        });
+        this.sdk.login(phone.slice(1), code, phoneHash).then((res) => {
             const info = this.sdk.getConnInfo();
             info.UserID = res.user.id;
             info.FirstName = res.user.firstname;
@@ -150,13 +213,32 @@ class Chat extends React.Component<IProps, IState> {
             info.Phone = this.state.phone;
             this.sdk.setConnInfo(info);
             this.setState({
+                loading: false,
                 tries: this.state.tries + 1,
             });
+            this.props.history.push('/conversation/null');
         }).catch((err) => {
-            window.console.log(err);
             this.setState({
+                loading: false,
                 tries: this.state.tries + 1,
             });
+            if (err.code === C_ERR.ERR_CODE_INVALID && err.items === C_ERR_ITEM.ERR_ITEM_PHONE_CODE) {
+                this.setState({
+                    snackOpen: true,
+                    snackText: 'Code is incorrect!',
+                });
+                return;
+            }
+            if (err.code === C_ERR.ERR_CODE_UNAVAILABLE && err.items === C_ERR_ITEM.ERR_ITEM_PHONE) {
+                this.setState({
+                    fName: '',
+                    lName: '',
+                    step: 'register',
+                }, () => {
+                    this.focus('f-fname');
+                });
+                return;
+            }
         });
     }
 
@@ -169,11 +251,79 @@ class Chat extends React.Component<IProps, IState> {
     private tryAnotherPhone = () => {
         this.setState({
             code: '____',
-            confirmCode: false,
             phone: '+98',
             phoneHash: '',
+            step: 'phone',
             tries: 0,
+        }, () => {
+            this.focus('f-phone');
         });
+    }
+
+    private handleCloseSnack = () => {
+        this.setState({
+            snackOpen: false,
+        });
+    }
+
+    private fNameOnChange = (e: any) => {
+        this.setState({
+            fName: e.target.value,
+        });
+    }
+
+    private lNameOnChange = (e: any) => {
+        this.setState({
+            lName: e.target.value,
+        });
+    }
+
+    private register = () => {
+        const {phone, phoneHash, code, fName, lName} = this.state;
+        if (!phone || !phoneHash || code.length < 4) {
+            return;
+        }
+        this.setState({
+            loading: true,
+        });
+        this.sdk.register(phone, code, phoneHash, fName, lName).then((res) => {
+            const info = this.sdk.getConnInfo();
+            info.UserID = res.user.id;
+            info.FirstName = res.user.firstname;
+            info.LastName = res.user.lastname;
+            info.Phone = this.state.phone;
+            this.sdk.setConnInfo(info);
+            this.setState({
+                loading: false,
+                tries: this.state.tries + 1,
+            });
+            this.props.history.push('/conversation/null');
+        }).catch((err) => {
+            this.setState({
+                loading: false,
+                tries: this.state.tries + 1,
+            });
+            if (err.code === C_ERR.ERR_CODE_INVALID && err.items === C_ERR_ITEM.ERR_ITEM_PHONE_CODE) {
+                this.setState({
+                    snackOpen: true,
+                    snackText: 'Code is incorrect!',
+                });
+                return;
+            }
+        });
+    }
+
+    private registerKeyDown = (e: any) => {
+        if (e.key === 'Enter') {
+            this.register();
+        }
+    }
+
+    private focus(className: string) {
+        const elem: any = document.querySelector('.' + className);
+        if (elem) {
+            elem.focus();
+        }
     }
 }
 

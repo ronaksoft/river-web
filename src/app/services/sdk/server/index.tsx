@@ -15,7 +15,7 @@ export default class Server {
     /**
      * @name Server#reqId
      * @private
-     * @type {object}
+     * @type {number}
      * @memberof Server
      */
     private reqId: number;
@@ -32,6 +32,9 @@ export default class Server {
         this.reqId = 0;
         window.addEventListener('fnCallbackEvent', (event: any) => {
             this.response(event.detail);
+        });
+        window.addEventListener('fnErrorEvent', (event: any) => {
+            this.error(event.detail);
         });
     }
 
@@ -92,6 +95,20 @@ export default class Server {
                 this.messageListeners[reqId].resolve(res.toObject());
             }
             delete this.messageListeners[reqId];
+        }
+    }
+
+    private error({reqId, constructor, data}: any) {
+        const res = Presenter.getMessage(constructor, data);
+        if (res) {
+            if (constructor === C_MSG.Error) {
+                const resp = res.toObject();
+                if (resp.items === "AUTH") {
+                    // localStorage.removeItem('river.conn.info');
+                    // window.location.reload();
+                    window.console.log("wfef");
+                }
+            }
         }
     }
 }

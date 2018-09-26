@@ -70,7 +70,8 @@ body {
         background-color: var(--light);
         transform: translate(-50%, 0); }
       .container .column-left .top .new-message {
-        color: var(--green); }
+        color: var(--green);
+        cursor: pointer; }
     .container .column-left input {
       float: left;
       width: 188px;

@@ -7,9 +7,11 @@ if (WebAssembly.instantiateStreaming) { // polyfill
 
 let run;
 let instance;
-let socket;
-let fnCall;
-let receive;
+
+
+let socket = null;
+let fnCall = null;
+let receive = null;
 
 (async function () {
     const go = new Go();
@@ -18,31 +20,20 @@ let receive;
     run = go.run(instance);
 })();
 
-socket = new WebSocket('ws://river.im');
-socket.binaryType = 'arraybuffer';
-initEvents();
-
-function initEvents() {
-    // Connection opened
-    socket.addEventListener('open', function (event) {
-        // socket.send('Hello Server!');
-    });
-
-    // Listen for messages
-    socket.addEventListener('message', (event) => {
-        receive(Uint8ToBase64(new Uint8Array(event.data)));
-    });
-
-    // Listen for messages
-    socket.addEventListener('close', () => {
-        socket = new WebSocket('ws://river.im');
-        socket.binaryType = 'arraybuffer';
-        initEvents();
-    });
-}
-
 function wsSend(buffer) {
     socket.send(buffer);
+}
+
+function wsError(reqId, constructor, data) {
+    const fnCallbackEvent = new CustomEvent('fnErrorEvent', {
+        bubbles: true,
+        detail: {
+            reqId: reqId,
+            constructor: constructor,
+            data: data
+        }
+    });
+    window.dispatchEvent(fnCallbackEvent);
 }
 
 function saveConnInfo(data) {
@@ -95,3 +86,25 @@ function Uint8ToBase64(u8a) {
     }
     return btoa(c.join(''));
 }
+
+const initWebSocket = () => {
+    socket = new WebSocket('ws://new.river.im');
+    socket.binaryType = 'arraybuffer';
+
+    // Connection opened
+    socket.onopen = () => {
+        console.log('Hello Server!', new Date());
+    };
+
+    // Listen for messages
+    socket.onmessage = (event) => {
+        receive(Uint8ToBase64(new Uint8Array(event.data)));
+    };
+
+    // Listen for messages
+    socket.onclose = () => {
+        initWebSocket();
+    };
+};
+
+initWebSocket();

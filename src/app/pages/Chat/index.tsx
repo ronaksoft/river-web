@@ -15,6 +15,8 @@ import {trimStart} from 'lodash';
 import SDK from '../../services/sdk/index';
 
 import './style.css';
+import NewMessage from "../../components/NewMessage";
+import {PhoneContact} from "../../services/sdk/messages/core.types_pb";
 
 interface IProps {
     match?: any;
@@ -26,6 +28,7 @@ interface IState {
     conversations: any[];
     inputVal: string;
     messages: IMessage[];
+    openNewMessage: boolean;
     rightMenu: boolean;
     selectedConversationId: string;
     toggleAttachment: boolean;
@@ -47,6 +50,7 @@ class Chat extends React.Component<IProps, IState> {
             conversations: [],
             inputVal: '',
             messages: [],
+            openNewMessage: false,
             rightMenu: false,
             selectedConversationId: props.match.params.id,
             toggleAttachment: false,
@@ -109,7 +113,7 @@ class Chat extends React.Component<IProps, IState> {
         });
         window.addEventListener('wasm_init', () => {
             const info = this.sdk.getConnInfo();
-            if (info.UserID) {
+            if (info && info.UserID) {
                 this.sdk.recall(info.UserID).then((data) => {
                     window.console.log(data);
                 });
@@ -125,7 +129,7 @@ class Chat extends React.Component<IProps, IState> {
                 <div className="container">
                     <div className="column-left">
                         <div className="top">
-                            <span className="new-message">New message</span>
+                            <span className="new-message" onClick={this.onNewMessageOpen}>New message</span>
                         </div>
                         <People items={this.state.conversations} selectedId={this.state.selectedConversationId}/>
                     </div>
@@ -176,6 +180,7 @@ class Chat extends React.Component<IProps, IState> {
                     </div>
                     <div ref={this.rightMenuRefHandler} className="column-right"/>
                 </div>
+                <NewMessage open={this.state.openNewMessage} onClose={this.onNewMessageClose} onMessage={this.onNewMessage}/>
             </div>
         );
     }
@@ -366,6 +371,27 @@ class Chat extends React.Component<IProps, IState> {
             }, 50);
         });
         this.messageRepo.createMessage(message);
+    }
+
+    private onNewMessageOpen = () => {
+        this.setState({
+            openNewMessage: true,
+        });
+    }
+
+    private onNewMessageClose = () => {
+        this.setState({
+            openNewMessage: false,
+        });
+    }
+
+    private onNewMessage = (phone: string, text: string) => {
+        window.console.log(phone, text);
+        const contacts: PhoneContact.AsObject[] = [];
+        this.sdk.contactImport(true, contacts).then((data) => {
+            window.console.log(data);
+        });
+
     }
 }
 
