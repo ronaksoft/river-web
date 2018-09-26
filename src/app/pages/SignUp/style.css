@@ -41,6 +41,12 @@ input {
   width: 100%;
   margin: 0 auto; }
 
+@keyframes bg-move {
+  from {
+    background-position: 0% 0%; }
+  to {
+    background-position: 100% 200%; } }
+
 .container-login100 {
   width: 100%;
   min-height: 100vh;
@@ -52,7 +58,11 @@ input {
   background-position: center;
   background-size: 50%;
   background-image: url(../../../asset/image/pattern.png);
-  background-color: rgba(168, 144, 106, 0.3); }
+  background-color: rgba(168, 144, 106, 0.3);
+  animation-name: bg-move;
+  animation-duration: 50s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear; }
 
 .wrap-login100 {
   width: 390px;
@@ -96,6 +106,9 @@ input {
   background: transparent;
   height: 62px;
   padding: 0 20px 0 38px; }
+  .input100.code {
+    text-align: center;
+    letter-spacing: 30px; }
 
 /*------------------------------------------------------------------
 [ Focus Input ]*/
@@ -138,50 +151,6 @@ input {
   -ms-transform: scale(1);
   -o-transform: scale(1);
   transform: scale(1); }
-
-/*==================================================================
-[ Restyle Checkbox ]*/
-.input-checkbox100 {
-  display: none; }
-
-.label-checkbox100 {
-  font-family: Ubuntu-Regular;
-  font-size: 16px;
-  color: #999999;
-  line-height: 1.2;
-  display: block;
-  position: relative;
-  padding-left: 26px;
-  cursor: pointer; }
-
-.label-checkbox100::before {
-  content: "\f00c";
-  font-family: FontAwesome;
-  font-size: 13px;
-  color: transparent;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  border-radius: 3px;
-  background: #fff;
-  border: 2px solid #14d769;
-  left: 0;
-  top: 50%;
-  -webkit-transform: translateY(-50%);
-  -moz-transform: translateY(-50%);
-  -ms-transform: translateY(-50%);
-  -o-transform: translateY(-50%);
-  transform: translateY(-50%); }
-
-.input-checkbox100:checked + .label-checkbox100::before {
-  color: #14d769; }
 
 /*------------------------------------------------------------------
 [ Button ]*/
@@ -272,6 +241,16 @@ input {
 .alert-validate:hover:before {
   visibility: visible;
   opacity: 1; }
+
+.try-another-phone {
+  color: #5252a3;
+  text-align: left;
+  line-height: 24px;
+  display: block;
+  margin-top: -8px;
+  cursor: pointer; }
+  .try-another-phone label {
+    vertical-align: top; }
 
 @media (max-width: 992px) {
   .alert-validate::before {

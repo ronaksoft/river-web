@@ -108,12 +108,12 @@ class Chat extends React.Component<IProps, IState> {
             conversations,
         });
         window.addEventListener('wasm_init', () => {
-            // this.sdk.sendCode().then((data) => {
-            //     window.console.log(data);
-            // });
-            this.sdk.checkPhone('09372505241').then((data) => {
-                window.console.log(data);
-            });
+            const info = this.sdk.getConnInfo();
+            if (info.UserID) {
+                this.sdk.recall(info.UserID).then((data) => {
+                    window.console.log(data);
+                });
+            }
         });
     }
 

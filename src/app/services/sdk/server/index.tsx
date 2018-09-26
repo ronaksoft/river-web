@@ -1,5 +1,5 @@
 import {C_MSG} from '../const';
-import Presenter from '../presenter';
+import Presenter from '../presenters';
 
 export default class Server {
     public static getInstance() {
@@ -83,6 +83,7 @@ export default class Server {
     }
 
     private response({reqId, constructor, data}: any) {
+        window.console.log(constructor);
         const res = Presenter.getMessage(constructor, data);
         if (res) {
             if (constructor === C_MSG.Error) {
@@ -90,6 +91,7 @@ export default class Server {
             } else {
                 this.messageListeners[reqId].resolve(res.toObject());
             }
+            delete this.messageListeners[reqId];
         }
     }
 }

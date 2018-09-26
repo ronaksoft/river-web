@@ -18,6 +18,15 @@ input {
   margin: 0 auto;
 }
 
+@keyframes bg-move {
+  from {
+    background-position: 0% 0%;
+  }
+  to {
+    background-position: 100% 200%;
+  }
+}
+
 .container-login100 {
   width: 100%;
   min-height: 100vh;
@@ -31,15 +40,17 @@ input {
   background-size: 50%;
   background-image: url(../../../asset/image/pattern.png);
   background-color: rgba(168, 144, 106, 0.3);
+  animation-name: bg-move;
+  animation-duration: 50s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
 }
-
 
 .wrap-login100 {
   width: 390px;
   border-radius: 10px;
   position: relative;
 }
-
 
 /*==================================================================
 [ Form ]*/
@@ -59,8 +70,6 @@ input {
   display: block;
 }
 
-
-
 /*------------------------------------------------------------------
 [ Input ]*/
 
@@ -71,7 +80,6 @@ input {
   border: 1px solid transparent;
   border-radius: 3px;
 }
-
 
 /*---------------------------------------------*/
 .input100 {
@@ -85,7 +93,12 @@ input {
   background: transparent;
   height: 62px;
   padding: 0 20px 0 38px;
+  &.code {
+    text-align: center;
+    letter-spacing: 30px;
+  }
 }
+
 /*------------------------------------------------------------------
 [ Focus Input ]*/
 
@@ -137,59 +150,6 @@ input {
   transform: scale(1);
 }
 
-
-/*==================================================================
-[ Restyle Checkbox ]*/
-
-.input-checkbox100 {
-  display: none;
-}
-
-.label-checkbox100 {
-  font-family: Ubuntu-Regular;
-  font-size: 16px;
-  color: #999999;
-  line-height: 1.2;
-
-  display: block;
-  position: relative;
-  padding-left: 26px;
-  cursor: pointer;
-}
-
-.label-checkbox100::before {
-  content: "\f00c";
-  font-family: FontAwesome;
-  font-size: 13px;
-  color: transparent;
-
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  border-radius: 3px;
-  background: #fff;
-  border: 2px solid #14d769;
-  left: 0;
-  top: 50%;
-  -webkit-transform: translateY(-50%);
-  -moz-transform: translateY(-50%);
-  -ms-transform: translateY(-50%);
-  -o-transform: translateY(-50%);
-  transform: translateY(-50%);
-}
-
-.input-checkbox100:checked + .label-checkbox100::before {
-  color: #14d769;
-}
-
-
 /*------------------------------------------------------------------
 [ Button ]*/
 .container-login100-form-btn {
@@ -231,7 +191,6 @@ input {
 .login100-form-btn:hover {
   background-color: #0f954b;
 }
-
 
 /*------------------------------------------------------------------
 [ Alert validate ]*/
@@ -293,6 +252,18 @@ input {
   opacity: 1;
 }
 
+.try-another-phone {
+  color: #5252a3;
+  text-align: left;
+  line-height: 24px;
+  display: block;
+  margin-top: -8px;
+  cursor: pointer;
+  label {
+    vertical-align: top;
+  }
+}
+
 @media (max-width: 992px) {
   .alert-validate::before {
     visibility: visible;
@@ -310,8 +281,8 @@ input {
     font-size: 16px;
     letter-spacing: .01rem;
     z-index: 0;
-    margin-top: 0!important;
-    margin-bottom: 0!important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
     padding-left: 15px;
     margin-left: 0;
     background-color: rgba(255, 255, 255, 0.7);
@@ -359,7 +330,7 @@ input {
   .flag {
     transform: scale(1.5);
   }
-  .country-list{
+  .country-list {
     .country {
       padding: 7px 10px;
       text-align: left;

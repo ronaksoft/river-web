@@ -20,16 +20,26 @@ let receive;
 
 socket = new WebSocket('ws://river.im');
 socket.binaryType = 'arraybuffer';
+initEvents();
 
-// Connection opened
-socket.addEventListener('open', function (event) {
-    // socket.send('Hello Server!');
-});
+function initEvents() {
+    // Connection opened
+    socket.addEventListener('open', function (event) {
+        // socket.send('Hello Server!');
+    });
 
-// Listen for messages
-socket.addEventListener('message', (event) => {
-    receive(Uint8ToBase64(new Uint8Array(event.data)));
-});
+    // Listen for messages
+    socket.addEventListener('message', (event) => {
+        receive(Uint8ToBase64(new Uint8Array(event.data)));
+    });
+
+    // Listen for messages
+    socket.addEventListener('close', () => {
+        socket = new WebSocket('ws://river.im');
+        socket.binaryType = 'arraybuffer';
+        initEvents();
+    });
+}
 
 function wsSend(buffer) {
     socket.send(buffer);
