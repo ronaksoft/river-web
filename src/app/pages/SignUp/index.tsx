@@ -216,8 +216,8 @@ class Chat extends React.Component<IProps, IState> {
                 loading: false,
                 tries: this.state.tries + 1,
             });
-            this.props.history.push('/conversation/null');
             window.console.log(res);
+            this.props.history.push('/conversation/null');
         }).catch((err) => {
             this.setState({
                 loading: false,
@@ -298,6 +298,7 @@ class Chat extends React.Component<IProps, IState> {
                 loading: false,
                 tries: this.state.tries + 1,
             });
+            window.console.log(res);
             this.props.history.push('/conversation/null');
         }).catch((err) => {
             this.setState({

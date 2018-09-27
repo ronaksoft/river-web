@@ -116,6 +116,7 @@ export default class SDK {
             arr.push(contact);
         });
         data.setContactsList(arr);
+        data.setReplace(replace);
         return this.server.send(C_MSG.AuthRecall, data.serializeBinary());
     }
 }
