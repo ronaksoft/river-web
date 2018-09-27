@@ -56,7 +56,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        window.addEventListener('wasm_init', () => {
+        window.addEventListener('wasmInit', () => {
             const info = this.sdk.getConnInfo();
             if (info && info.UserID) {
                 this.sdk.recall(info.UserID).then((data) => {
@@ -217,6 +217,7 @@ class Chat extends React.Component<IProps, IState> {
                 tries: this.state.tries + 1,
             });
             this.props.history.push('/conversation/null');
+            window.console.log(res);
         }).catch((err) => {
             this.setState({
                 loading: false,
@@ -310,6 +311,10 @@ class Chat extends React.Component<IProps, IState> {
                 });
                 return;
             }
+            this.setState({
+                snackOpen: true,
+                snackText: `Error! Code:${err.code} Items${err.items}`,
+            });
         });
     }
 

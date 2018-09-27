@@ -40,6 +40,10 @@ func main() {
 	defer receiveCB.Release()
 	js.Global().Get("setReceive").Invoke(receiveCB)
 
+	wsOpenCB := js.NewCallback(wsOpen)
+	defer wsOpenCB.Release()
+	js.Global().Get("setWsOpen").Invoke(wsOpenCB)
+
 	beforeUnloadCb := js.NewEventCallback(0, beforeUnload)
 	defer beforeUnloadCb.Release()
 	addEventListener := js.Global().Get("addEventListener")
@@ -69,6 +73,10 @@ func wsReceive(args []js.Value) {
 	if err == nil {
 		river.receive(&enc)
 	}
+}
+
+func wsOpen(args []js.Value) {
+	river.RetryLast()
 }
 
 func beforeUnload(event js.Value) {

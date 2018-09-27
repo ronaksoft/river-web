@@ -40,11 +40,12 @@ input {
   background-size: 50%;
   background-image: url(../../../asset/image/pattern.png);
   background-color: rgba(168, 144, 106, 0.3);
-  animation-name: bg-move;
-  animation-duration: 50s;
-  animation-iteration-count: infinite;
-  animation-timing-function: linear;
 }
+/*animation-name: bg-move;
+animation-duration: 50s;
+animation-iteration-count: infinite;
+animation-timing-function: linear;
+animation-play-state: paused;*/
 
 .wrap-login100 {
   width: 390px;

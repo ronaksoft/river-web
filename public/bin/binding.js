@@ -12,6 +12,7 @@ let instance;
 let socket = null;
 let fnCall = null;
 let receive = null;
+let wsOpen = null;
 
 (async function () {
     const go = new Go();
@@ -50,7 +51,7 @@ function initSDK(callback) {
 
 function setFnCall(callback) {
     fnCall = callback;
-    const event = new CustomEvent('wasm_init');
+    const event = new CustomEvent('wasmInit');
     setTimeout(function () {
         window.dispatchEvent(event);
     }, 50);
@@ -77,6 +78,9 @@ window.addEventListener('fnCallEvent', (event) => {
 function setReceive(callback) {
     receive = callback;
 }
+function setWsOpen(callback) {
+    wsOpen = callback;
+}
 
 function Uint8ToBase64(u8a) {
     const CHUNK_SZ = 0x8000;
@@ -94,6 +98,11 @@ const initWebSocket = () => {
     // Connection opened
     socket.onopen = () => {
         console.log('Hello Server!', new Date());
+        const event = new CustomEvent('wsOpen');
+        window.dispatchEvent(event);
+        if (wsOpen) {
+            wsOpen();
+        }
     };
 
     // Listen for messages

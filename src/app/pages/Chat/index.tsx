@@ -111,14 +111,14 @@ class Chat extends React.Component<IProps, IState> {
         this.setState({
             conversations,
         });
-        window.addEventListener('wasm_init', () => {
-            const info = this.sdk.getConnInfo();
-            if (info && info.UserID) {
-                this.sdk.recall(info.UserID).then((data) => {
-                    window.console.log(data);
-                });
-            }
-        });
+        // window.addEventListener('wasmInit', () => {
+        //     const info = this.sdk.getConnInfo();
+        //     if (info && info.UserID) {
+        //         this.sdk.recall(info.UserID).then((data) => {
+        //             window.console.log(data);
+        //         });
+        //     }
+        // });
     }
 
     public render() {
@@ -388,6 +388,12 @@ class Chat extends React.Component<IProps, IState> {
     private onNewMessage = (phone: string, text: string) => {
         window.console.log(phone, text);
         const contacts: PhoneContact.AsObject[] = [];
+        contacts.push({
+            clientid: 1,
+            firstname: "wrf",
+            lastname: "wfer",
+            phone,
+        });
         this.sdk.contactImport(true, contacts).then((data) => {
             window.console.log(data);
         });

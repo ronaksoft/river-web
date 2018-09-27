@@ -28,6 +28,8 @@ export default class Server {
      */
     private messageListeners: object = {};
 
+    private sentQueue: number[] = [];
+
     public constructor() {
         this.reqId = 0;
         window.addEventListener('fnCallbackEvent', (event: any) => {
@@ -35,6 +37,9 @@ export default class Server {
         });
         window.addEventListener('fnErrorEvent', (event: any) => {
             this.error(event.detail);
+        });
+        window.addEventListener('wsOpen', () => {
+            this.flushSentQueue();
         });
     }
 
@@ -46,7 +51,7 @@ export default class Server {
         let internalReject = null;
 
         this.reqId++;
-        const payload: any = {
+        const request: any = {
             constructor,
             data,
             reqId: this.reqId,
@@ -55,18 +60,20 @@ export default class Server {
         const promise = new Promise((res, rej) => {
             internalResolve = res;
             internalReject = rej;
-            this.sendRequest(payload);
+            this.sendRequest(request);
         });
 
         /**
          * Add request to the queue manager
          */
         this.messageListeners[this.reqId] = {
-            payload,
             reject: internalReject,
+            request,
             resolve: internalResolve,
             state: 0,
         };
+
+        this.sentQueue.push(this.reqId);
 
         return promise;
     }
@@ -95,6 +102,10 @@ export default class Server {
                 this.messageListeners[reqId].resolve(res.toObject());
             }
             delete this.messageListeners[reqId];
+            const index = this.sentQueue.indexOf(reqId);
+            if (index > -1) {
+                this.sentQueue.splice(index, 1);
+            }
         }
     }
 
@@ -106,9 +117,16 @@ export default class Server {
                 if (resp.items === "AUTH") {
                     // localStorage.removeItem('river.conn.info');
                     // window.location.reload();
-                    window.console.log("wfef");
+                    // window.console.log("wfef");
+                    window.console.log(resp);
                 }
             }
         }
+    }
+
+    private flushSentQueue() {
+        this.sentQueue.forEach((reqId) => {
+            this.sendRequest(this.messageListeners[reqId].request);
+        });
     }
 }

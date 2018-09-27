@@ -28,6 +28,7 @@ type River struct {
 	// Connection Info
 	ConnInfo     *RiverConnection
 	MessageQueue map[uint64]*MessageHandler
+	LastMsg      *msg.MessageEnvelope
 
 	// Authorization Keys
 	authID     int64
@@ -257,6 +258,9 @@ func (r *River) send(msgEnvelope *msg.MessageEnvelope) {
 		_LOG.Warn(err.Error())
 		return
 	}
+	if msgEnvelope.Constructor == msg.C_InitConnect || msgEnvelope.Constructor == msg.C_InitCompleteAuth {
+	    r.LastMsg = msgEnvelope
+	}
 	js.Global().Call("wsSend", js.TypedArrayOf(b))
 }
 
@@ -316,8 +320,7 @@ func (r *River) messageHandler(m *msg.MessageEnvelope) {
 	default:
 		if val, ok := r.MessageQueue[m.RequestID]; ok {
 			(*val)(m)
-		}
-		if m.Constructor == msg.C_Error {
+		} else if m.Constructor == msg.C_Error {
 			error := new(msg.Error)
 			error.Unmarshal(m.Message)
 			if error.Code == "E01" {
@@ -325,4 +328,10 @@ func (r *River) messageHandler(m *msg.MessageEnvelope) {
 			}
 		}
 	}
+}
+
+func (r *River) RetryLast() {
+    if r.LastMsg != nil {
+        r.send(r.LastMsg)
+    }
 }
