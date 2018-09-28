@@ -5,7 +5,7 @@ import Message from '../../components/Message/index';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import {MoreVert as MoreVertIcon, Attachment} from '@material-ui/icons';
+import {Attachment, MoreVert as MoreVertIcon} from '@material-ui/icons';
 import * as faker from 'faker';
 import MessageRepo from '../../repository/message/index';
 import UniqueId from '../../services/uniqueId/index';
@@ -16,7 +16,7 @@ import SDK from '../../services/sdk/index';
 
 import './style.css';
 import NewMessage from "../../components/NewMessage";
-import {PhoneContact} from "../../services/sdk/messages/core.types_pb";
+import {InputPeer, PeerType, PhoneContact} from "../../services/sdk/messages/core.types_pb";
 
 interface IProps {
     match?: any;
@@ -91,6 +91,11 @@ class Chat extends React.Component<IProps, IState> {
     public componentWillReceiveProps(newProps: IProps) {
         const selectedId = newProps.match.params.id;
         this.getMessageByConversationId(selectedId, true);
+        this.sdk.getDialogs(0, 100).then((res) => {
+            window.console.log(res);
+        }).catch((err) => {
+            window.console.log(err);
+        });
     }
 
     public componentDidMount() {
@@ -111,14 +116,19 @@ class Chat extends React.Component<IProps, IState> {
         this.setState({
             conversations,
         });
-        // window.addEventListener('wasmInit', () => {
-        //     const info = this.sdk.getConnInfo();
-        //     if (info && info.UserID) {
-        //         this.sdk.recall(info.UserID).then((data) => {
-        //             window.console.log(data);
-        //         });
-        //     }
-        // });
+        window.addEventListener('wasmInit', () => {
+            // const info = this.sdk.getConnInfo();
+            // if (info && info.UserID) {
+            //     this.sdk.recall(info.UserID).then((data) => {
+            //         window.console.log(data);
+            //     });
+            // }
+            this.sdk.getContacts().then((res) => {
+                window.console.log(res);
+            }).catch((err) => {
+                window.console.log(err);
+            });
+        });
     }
 
     public render() {
@@ -395,7 +405,23 @@ class Chat extends React.Component<IProps, IState> {
             phone,
         });
         this.sdk.contactImport(true, contacts).then((data) => {
-            window.console.log(data);
+            data.usersList.forEach((user) => {
+                const peer = new InputPeer();
+                peer.setType(PeerType.PEERUSER);
+                if (user.accesshash) {
+                    peer.setAccesshash(user.accesshash);
+                }
+                if (user.id) {
+                    peer.setId(user.id);
+                }
+                this.sdk.sendMessage(text, peer).then((msg) => {
+                    window.console.log(msg);
+                }).catch((err) => {
+                    window.console.log(err);
+                });
+            });
+        }).catch((err) => {
+            window.console.log(err);
         });
 
     }

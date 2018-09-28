@@ -10,8 +10,9 @@ import {
 import Server from './server';
 import {C_MSG} from "./const";
 import {IConnInfo} from "./interface";
-import {ContactsImport, ContactsImported} from "./messages/api.contacts_pb";
-import {PhoneContact} from "./messages/core.types_pb";
+import {ContactsGet, ContactsImport, ContactsImported, ContactsMany} from "./messages/api.contacts_pb";
+import {InputPeer, PhoneContact} from "./messages/core.types_pb";
+import {MessagesDialogs, MessagesGetDialogs, MessagesSend, MessagesSent} from "./messages/api.messages_pb";
 
 export default class SDK {
     public static getInstance() {
@@ -28,17 +29,29 @@ export default class SDK {
     private connInfo: IConnInfo;
 
     private clientId: number;
+    // private msgId: number;
 
     public constructor() {
         this.server = Server.getInstance();
         const s = localStorage.getItem('river.conn.info');
         if (s) {
             this.connInfo = JSON.parse(s);
+        } else {
+            this.connInfo = {
+                AuthID: 0,
+                AuthKey: '',
+                FirstName: '',
+                LastName: '',
+                Phone: '',
+                UserID: 0,
+                Username: ''
+            };
         }
         const id = localStorage.getItem('river.conn.client.id');
         if (id) {
             this.clientId = parseInt(id, 10);
         }
+        // this.msgId = 0;
     }
 
     public getConnInfo(): IConnInfo {
@@ -117,6 +130,31 @@ export default class SDK {
         });
         data.setContactsList(arr);
         data.setReplace(replace);
-        return this.server.send(C_MSG.AuthRecall, data.serializeBinary());
+        return this.server.send(C_MSG.ContactsImport, data.serializeBinary());
+    }
+
+    public getContacts(): Promise<ContactsMany.AsObject> {
+        const data = new ContactsGet();
+        data.setMd5hash('');
+        return this.server.send(C_MSG.ContactsGet, data.serializeBinary());
+    }
+
+    public getDialogs(skip: number, limit: number): Promise<MessagesDialogs.AsObject> {
+        const data = new MessagesGetDialogs();
+        data.setOffset(skip);
+        data.setLimit(limit);
+        return this.server.send(C_MSG.MessagesGetDialogs, data.serializeBinary());
+    }
+
+    public sendMessage(body: string, peer: InputPeer, replyTo?: number): Promise<MessagesSent.AsObject> {
+        const data = new MessagesSend();
+        // this.msgId++;
+        data.setRandomid(parseInt(Math.random().toFixed(length).split('.')[1], 10));
+        data.setBody(body);
+        data.setPeer(peer);
+        if (replyTo) {
+            data.setReplyto(replyTo);
+        }
+        return this.server.send(C_MSG.MessagesSend, data.serializeBinary());
     }
 }

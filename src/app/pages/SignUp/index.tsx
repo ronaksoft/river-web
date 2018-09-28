@@ -205,7 +205,9 @@ class Chat extends React.Component<IProps, IState> {
         this.setState({
             loading: true,
         });
+        window.console.log(phone);
         this.sdk.login(phone.slice(1), code, phoneHash).then((res) => {
+            window.console.log(res);
             const info = this.sdk.getConnInfo();
             info.UserID = res.user.id;
             info.FirstName = res.user.firstname;
@@ -216,9 +218,9 @@ class Chat extends React.Component<IProps, IState> {
                 loading: false,
                 tries: this.state.tries + 1,
             });
-            window.console.log(res);
             this.props.history.push('/conversation/null');
         }).catch((err) => {
+            window.console.log(err);
             this.setState({
                 loading: false,
                 tries: this.state.tries + 1,

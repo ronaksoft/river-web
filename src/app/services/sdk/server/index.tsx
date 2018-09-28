@@ -89,17 +89,25 @@ export default class Server {
             bubbles: true,
             detail: request,
         });
+        window.console.log(request.constructor, request.reqId);
         window.dispatchEvent(fnCallbackEvent);
     }
 
     private response({reqId, constructor, data}: any) {
-        window.console.log(constructor);
+        window.console.log(constructor, reqId);
+        if (!this.messageListeners[reqId]) {
+            return;
+        }
         const res = Presenter.getMessage(constructor, data);
         if (res) {
             if (constructor === C_MSG.Error) {
-                this.messageListeners[reqId].reject(res.toObject());
+                if (this.messageListeners[reqId].reject) {
+                    this.messageListeners[reqId].reject(res.toObject());
+                }
             } else {
-                this.messageListeners[reqId].resolve(res.toObject());
+                if (this.messageListeners[reqId].resolve) {
+                    this.messageListeners[reqId].resolve(res.toObject());
+                }
             }
             delete this.messageListeners[reqId];
             const index = this.sentQueue.indexOf(reqId);
