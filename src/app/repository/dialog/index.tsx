@@ -1,7 +1,7 @@
 import DB from '../../services/db/dialog';
 import {IDialog} from './interface';
 
-export default class Conversation {
+export default class Dialog {
     private dbService: DB;
     private db: any;
 
@@ -20,7 +20,7 @@ export default class Conversation {
 
     public getDialogs({skip, before, after}: any): Promise<IDialog[]> {
         const q: any = [
-            {last_update: {'$exists': true}},
+            {last_update: {'$gt': true}},
         ];
         if (before) {
             q.push({last_update: {'$lt': before}});
@@ -39,5 +39,14 @@ export default class Conversation {
         }).then((result: any) => {
             return result.docs;
         });
+    }
+
+    public importBulk(dialogs: IDialog[]): Promise<any> {
+        dialogs = dialogs.map((dialog) => {
+            dialog._id = dialog.peerid;
+            dialog.last_update = Date.now();
+            return dialog;
+        });
+        return this.createDialogs(dialogs);
     }
 }

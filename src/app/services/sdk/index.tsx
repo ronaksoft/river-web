@@ -13,6 +13,9 @@ import {IConnInfo} from "./interface";
 import {ContactsGet, ContactsImport, ContactsImported, ContactsMany} from "./messages/api.contacts_pb";
 import {InputPeer, PhoneContact} from "./messages/core.types_pb";
 import {MessagesDialogs, MessagesGetDialogs, MessagesSend, MessagesSent} from "./messages/api.messages_pb";
+// import MessageRepo from "../../repository/message";
+// import UserRepo from "../../repository/user";
+// import DialogRepo from "../../repository/dialog";
 
 export default class SDK {
     public static getInstance() {
@@ -30,6 +33,9 @@ export default class SDK {
 
     private clientId: number;
     // private msgId: number;
+    // private messageRepo: MessageRepo;
+    // private dialogRepo: DialogRepo;
+    // private userRepor: UserRepo;
 
     public constructor() {
         this.server = Server.getInstance();
@@ -52,6 +58,9 @@ export default class SDK {
             this.clientId = parseInt(id, 10);
         }
         // this.msgId = 0;
+        // this.messageRepo = new MessageRepo();
+        // this.dialogRepo = new DialogRepo();
+        // this.userRepor = new UserRepo();
     }
 
     public getConnInfo(): IConnInfo {

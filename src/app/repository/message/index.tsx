@@ -1,7 +1,7 @@
 import UserMessageDB from '../../services/db/user_message';
 import {IMessage} from './interface';
 
-export default class Conversation {
+export default class Message {
     private dbService: UserMessageDB;
     private db: any;
 
@@ -69,5 +69,13 @@ export default class Conversation {
         }).then((result: any) => {
             return result.docs;
         });
+    }
+
+    public importBulk(msgs: IMessage[]): Promise<any> {
+        msgs = msgs.map((msg) => {
+            msg._id = msg.id;
+            return msg;
+        });
+        return this.createMessages(msgs);
     }
 }

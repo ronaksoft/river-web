@@ -1,7 +1,7 @@
 import DB from '../../services/db/user';
 import {IUser} from './interface';
 
-export default class Conversation {
+export default class User {
     private dbService: DB;
     private db: any;
 

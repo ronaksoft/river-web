@@ -7,6 +7,7 @@ if (WebAssembly.instantiateStreaming) { // polyfill
 
 let run;
 let instance;
+let fistTimeLoad = true;
 
 
 let socket = null;
@@ -38,6 +39,7 @@ function wsError(reqId, constructor, data) {
 }
 
 function saveConnInfo(data) {
+    window.console.log(data);
     localStorage.setItem('river.conn.info', data);
 }
 
@@ -102,6 +104,9 @@ const initWebSocket = () => {
         window.dispatchEvent(event);
         if (wsOpen) {
             wsOpen();
+        }
+        if (fistTimeLoad) {
+            fistTimeLoad = false;
         }
     };
 

@@ -6,8 +6,9 @@ import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import {Attachment, MoreVert as MoreVertIcon} from '@material-ui/icons';
-import * as faker from 'faker';
+// import * as faker from 'faker';
 import MessageRepo from '../../repository/message/index';
+import DialogRepo from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
 import Uploader from '../../components/Uploader/index';
 import TextInput from '../../components/TextInput/index';
@@ -18,6 +19,7 @@ import './style.css';
 import NewMessage from "../../components/NewMessage";
 import {InputPeer, PeerType, PhoneContact} from "../../services/sdk/messages/core.types_pb";
 import {IConnInfo} from "../../services/sdk/interface";
+import {IDialog} from "../../repository/dialog/interface";
 
 interface IProps {
     match?: any;
@@ -26,7 +28,7 @@ interface IProps {
 
 interface IState {
     anchorEl: any;
-    conversations: any[];
+    dialogs: IDialog[];
     inputVal: string;
     messages: IMessage[];
     openNewMessage: boolean;
@@ -40,6 +42,7 @@ class Chat extends React.Component<IProps, IState> {
     private message: any = null;
     private idToIndex: any = {};
     private messageRepo: MessageRepo;
+    private dialogRepo: DialogRepo;
     // private uniqueId: UniqueId;
     private isLoading: boolean = false;
     private sdk: SDK;
@@ -49,15 +52,16 @@ class Chat extends React.Component<IProps, IState> {
         super(props);
         this.state = {
             anchorEl: null,
-            conversations: [],
+            dialogs: [],
             inputVal: '',
             messages: [],
             openNewMessage: false,
             rightMenu: false,
-            selectedConversationId: props.match.params.id,
+            selectedConversationId: props.match.params.id === 'null' ? -1 : props.match.params.id,
             toggleAttachment: false,
         };
         this.messageRepo = new MessageRepo();
+        this.dialogRepo = new DialogRepo();
         // this.uniqueId = UniqueId.getInstance();
         this.sdk = SDK.getInstance();
         this.connInfo = this.sdk.getConnInfo();
@@ -98,32 +102,15 @@ class Chat extends React.Component<IProps, IState> {
             });
         } else {
             this.getMessageByConversationId(parseInt(selectedId, 10), true);
-            this.sdk.getDialogs(0, 100).then((res) => {
-                window.console.log(res);
-            }).catch((err) => {
-                window.console.log(err);
-            });
         }
     }
 
     public componentDidMount() {
         const selectedId = this.props.match.params.id;
-        const conversations: any[] = [];
-        for (let i = 0; i < 3000; i++) {
-            const id = String(i + 1000);
-            conversations.push({
-                date: '10:23 PM',
-                id,
-                image: faker.image.avatar(),
-                message: faker.lorem.lines(),
-                name: faker.name.findName(),
-            });
-            this.idToIndex[String(id)] = i;
+        if (selectedId !== 'null') {
+            this.getMessageByConversationId(selectedId);
         }
-        this.getMessageByConversationId(selectedId);
-        this.setState({
-            conversations,
-        });
+
         window.addEventListener('wasmInit', () => {
             // const info = this.sdk.getConnInfo();
             // if (info && info.UserID) {
@@ -135,6 +122,28 @@ class Chat extends React.Component<IProps, IState> {
                 window.console.log(res);
             }).catch((err) => {
                 window.console.log(err);
+            });
+
+            this.sdk.getDialogs(0, 100).then((res) => {
+                this.dialogRepo.importBulk(res.dialogsList).then((res1) => {
+                    window.console.log(res1);
+                }).catch((err1) => {
+                    window.console.log(err1);
+                });
+                this.messageRepo.importBulk(res.messagesList).then((res1) => {
+                    window.console.log(res1);
+                }).catch((err1) => {
+                    window.console.log(err1);
+                });
+                window.console.log(res);
+            }).catch((err) => {
+                window.console.log(err);
+            });
+        });
+
+        this.dialogRepo.getDialogs({}).then((res) => {
+            this.setState({
+                dialogs: res
             });
         });
     }
@@ -149,7 +158,7 @@ class Chat extends React.Component<IProps, IState> {
                         <div className="top">
                             <span className="new-message" onClick={this.onNewMessageOpen}>New message</span>
                         </div>
-                        <Dialog items={this.state.conversations} selectedId={this.state.selectedConversationId}/>
+                        <Dialog items={this.state.dialogs} selectedId={this.state.selectedConversationId}/>
                     </div>
                     {this.state.selectedConversationId !== -1 && <div className="column-center">
                         <div className="top">
@@ -206,7 +215,8 @@ class Chat extends React.Component<IProps, IState> {
                     </div>}
                     <div ref={this.rightMenuRefHandler} className="column-right"/>
                 </div>
-                <NewMessage open={this.state.openNewMessage} onClose={this.onNewMessageClose} onMessage={this.onNewMessage}/>
+                <NewMessage open={this.state.openNewMessage} onClose={this.onNewMessageClose}
+                            onMessage={this.onNewMessage}/>
             </div>
         );
     }
@@ -276,7 +286,7 @@ class Chat extends React.Component<IProps, IState> {
 
     private getName = (id: number) => {
         if (this.idToIndex.hasOwnProperty(id)) {
-            return this.state.conversations[this.idToIndex[id]].name;
+            return this.state.dialogs[this.idToIndex[id]]._id;
         }
         return '';
     }

@@ -113,7 +113,7 @@ func (r *River) CreateAuthKey(callback Callback) (err error) {
 }
 
 func (r *River) createAuthKeyStep2(clientNonce, serverNonce, serverPubFP, serverDHFP, serverPQ uint64, callback *Callback) (err error) {
-	t := time.Now().UnixNano()
+	t := time.Now().Unix()
 	// 2. Send InitCompleteAuth
 	req2 := new(msg.InitCompleteAuth)
 	req2.ServerNonce = serverNonce
@@ -165,7 +165,7 @@ func (r *River) createAuthKeyStep2(clientNonce, serverNonce, serverPubFP, server
 	req2.EncryptedPayload = encrypted
 	req2Bytes, _ := req2.Marshal()
 	_LOG.Info("2nd Step Started :: InitConnect")
-	_LOG.Info("Duration:", zap.Int64("time(ns)", time.Now().UnixNano()-t))
+	_LOG.Info("Duration:", zap.Int64("time(s)", time.Now().Unix()-t))
 
 	r.ExecuteRemoteCommand(
 		_RandomUint64(),
@@ -208,6 +208,7 @@ func (r *River) createAuthKeyStep2(clientNonce, serverNonce, serverPubFP, server
 					err = ErrAuthFailed
 					return
 				}
+				fmt.Println(r.ConnInfo)
 				r.ConnInfo.Save()
 				cb := *callback
 				cb()
