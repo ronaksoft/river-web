@@ -1,0 +1,42 @@
+@import '../../../style/common';
+
+.dialog-wrapper {
+  height: 64px;
+  width: 100%;
+  img {
+    float: left;
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    margin-right: 12px;
+    border-radius: 50%;
+  }
+  .name {
+    display: inline-block;
+    min-width: 200px;
+    font-size: 12px;
+    line-height: 23px;
+    margin: 0 0 4px;
+    color: var(--dark);
+    @include font-bold;
+  }
+  .time {
+    font-size: 11px;
+    position: absolute;
+    top: 14px;
+    right: 8px;
+    padding: 0 0 5px 5px;
+    color: var(--grey);
+    background-color: var(--white);
+  }
+  .preview {
+    font-size: 14px;
+    line-height: 17px;
+    display: inline-block;
+    overflow: hidden !important;
+    width: 70%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--grey);
+  }
+}

@@ -7,6 +7,10 @@ export default class UniqueId {
         return this.instance;
     }
 
+    public static getRandomId(): number {
+        return parseInt(Math.random().toFixed(10).split('.')[1], 10);
+    }
+
     private static instance: UniqueId;
     private lastId: any = {};
 

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import People from '../../components/People/index';
+import Dialog from '../../components/Dialog/index';
 import {IMessage} from '../../repository/message/interface';
 import Message from '../../components/Message/index';
 import IconButton from '@material-ui/core/IconButton';
@@ -17,6 +17,7 @@ import SDK from '../../services/sdk/index';
 import './style.css';
 import NewMessage from "../../components/NewMessage";
 import {InputPeer, PeerType, PhoneContact} from "../../services/sdk/messages/core.types_pb";
+import {IConnInfo} from "../../services/sdk/interface";
 
 interface IProps {
     match?: any;
@@ -30,7 +31,7 @@ interface IState {
     messages: IMessage[];
     openNewMessage: boolean;
     rightMenu: boolean;
-    selectedConversationId: string;
+    selectedConversationId: number;
     toggleAttachment: boolean;
 }
 
@@ -39,9 +40,10 @@ class Chat extends React.Component<IProps, IState> {
     private message: any = null;
     private idToIndex: any = {};
     private messageRepo: MessageRepo;
-    private uniqueId: UniqueId;
+    // private uniqueId: UniqueId;
     private isLoading: boolean = false;
     private sdk: SDK;
+    private connInfo: IConnInfo;
 
     constructor(props: IProps) {
         super(props);
@@ -56,9 +58,9 @@ class Chat extends React.Component<IProps, IState> {
             toggleAttachment: false,
         };
         this.messageRepo = new MessageRepo();
-        this.uniqueId = UniqueId.getInstance();
+        // this.uniqueId = UniqueId.getInstance();
         this.sdk = SDK.getInstance();
-
+        this.connInfo = this.sdk.getConnInfo();
         // setInterval(() => {
         //     const messages = this.state.messages;
         //     const message: IMessage = {
@@ -92,10 +94,10 @@ class Chat extends React.Component<IProps, IState> {
         const selectedId = newProps.match.params.id;
         if (selectedId === 'null') {
             this.setState({
-                selectedConversationId: selectedId,
+                selectedConversationId: -1,
             });
         } else {
-            this.getMessageByConversationId(selectedId, true);
+            this.getMessageByConversationId(parseInt(selectedId, 10), true);
             this.sdk.getDialogs(0, 100).then((res) => {
                 window.console.log(res);
             }).catch((err) => {
@@ -147,9 +149,9 @@ class Chat extends React.Component<IProps, IState> {
                         <div className="top">
                             <span className="new-message" onClick={this.onNewMessageOpen}>New message</span>
                         </div>
-                        <People items={this.state.conversations} selectedId={this.state.selectedConversationId}/>
+                        <Dialog items={this.state.conversations} selectedId={this.state.selectedConversationId}/>
                     </div>
-                    {this.state.selectedConversationId !== 'null' && <div className="column-center">
+                    {this.state.selectedConversationId !== -1 && <div className="column-center">
                         <div className="top">
                             <span>To: <span
                                 className="name">{this.getName(this.state.selectedConversationId)}</span></span>
@@ -194,7 +196,7 @@ class Chat extends React.Component<IProps, IState> {
                         </div>
                         {!this.state.toggleAttachment && <TextInput onMessage={this.onMessage}/>}
                     </div>}
-                    {this.state.selectedConversationId === 'null' && <div className="column-center">
+                    {this.state.selectedConversationId === -1 && <div className="column-center">
                         <div className="start-messaging">
                             <div className="start-messaging-header"/>
                             <div className="start-messaging-img"/>
@@ -272,7 +274,7 @@ class Chat extends React.Component<IProps, IState> {
     //     return messages;
     // }
 
-    private getName = (id: string) => {
+    private getName = (id: number) => {
         if (this.idToIndex.hasOwnProperty(id)) {
             return this.state.conversations[this.idToIndex[id]].name;
         }
@@ -303,7 +305,7 @@ class Chat extends React.Component<IProps, IState> {
     //     return messages;
     // }
 
-    private getMessageByConversationId(conversationId: string, force?: boolean) {
+    private getMessageByConversationId(conversationId: number, force?: boolean) {
         let messages: IMessage[] = [];
 
         const updateState = () => {
@@ -350,7 +352,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         this.messageRepo.getMessages({
-            before: this.state.messages[0].timestamp,
+            before: this.state.messages[0].id,
             conversationId: this.state.selectedConversationId
         }).then((data) => {
             if (data.length === 0) {
@@ -378,12 +380,12 @@ class Chat extends React.Component<IProps, IState> {
         }
         const messages = this.state.messages;
         const message: IMessage = {
-            _id: this.uniqueId.getId('msg', 'msg_'),
-            avatar: undefined,
-            conversation_id: this.state.selectedConversationId,
+            _id: UniqueId.getRandomId(),
+            body: text,
+            createdon: new Date().getTime(),
             me: true,
-            message: text,
-            timestamp: new Date().getTime(),
+            peerid: this.state.selectedConversationId,
+            senderid: this.connInfo.UserID,
         };
         messages.push(message);
         this.setState({
@@ -413,13 +415,14 @@ class Chat extends React.Component<IProps, IState> {
         window.console.log(phone, text);
         const contacts: PhoneContact.AsObject[] = [];
         contacts.push({
-            clientid: 1,
-            firstname: "wrf",
-            lastname: "wfer",
+            clientid: UniqueId.getRandomId(),
+            firstname: "Ehsan",
+            lastname: "Musa",
             phone,
         });
         this.sdk.contactImport(true, contacts).then((data) => {
             data.usersList.forEach((user) => {
+                window.console.log(user);
                 const peer = new InputPeer();
                 peer.setType(PeerType.PEERUSER);
                 if (user.accesshash) {

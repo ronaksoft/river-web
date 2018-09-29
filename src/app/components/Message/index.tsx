@@ -90,7 +90,8 @@ class Message extends React.Component<IProps, IState> {
         this.list = value;
     }
 
-    private formatText(text: string) {
+    private formatText(text: string | undefined) {
+        text = text || '';
         return text.split('\n').join('<br/>');
     }
 
@@ -104,13 +105,13 @@ class Message extends React.Component<IProps, IState> {
                 rowIndex={index}
                 parent={parent}>
                 <div style={style} key={index} className="bubble-wrapper">
-                    {(data.avatar && !data.me) && (
+                    {(data.senderid && !data.me) && (
                         <span className="avatar">
-                            <img src={data.avatar}/>
+                            <img src={String(data.senderid)}/>
                         </span>
                     )}
                     <div className={"bubble " + (data.me ? 'me' : 'you')}
-                         dangerouslySetInnerHTML={{__html: this.formatText(data.message)}}/>
+                         dangerouslySetInnerHTML={{__html: this.formatText(data.body)}}/>
                 </div>
             </CellMeasurer>
         );

@@ -149,7 +149,7 @@ export default class SDK {
     public sendMessage(body: string, peer: InputPeer, replyTo?: number): Promise<MessagesSent.AsObject> {
         const data = new MessagesSend();
         // this.msgId++;
-        data.setRandomid(parseInt(Math.random().toFixed(length).split('.')[1], 10));
+        data.setRandomid(parseInt(Math.random().toFixed(10).split('.')[1], 10));
         data.setBody(body);
         data.setPeer(peer);
         if (replyTo) {

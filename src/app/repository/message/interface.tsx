@@ -1,10 +1,8 @@
-interface IMessage {
-    _id: string;
-    avatar: string | undefined;
-    conversation_id: string;
-    me: boolean;
-    message: string;
-    timestamp: number;
+import {UserMessage} from "../../services/sdk/messages/core.types_pb";
+
+interface IMessage extends UserMessage.AsObject {
+    _id?: number;
+    me?: boolean;
 }
 
 export {IMessage};

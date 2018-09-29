@@ -1,12 +1,12 @@
-import DB from './../../services/db';
+import UserMessageDB from '../../services/db/user_message';
 import {IMessage} from './interface';
 
 export default class Conversation {
-    private dbService: DB;
+    private dbService: UserMessageDB;
     private db: any;
 
     public constructor() {
-        this.dbService = DB.getInstance();
+        this.dbService = UserMessageDB.getInstance();
         this.db = this.dbService.getDB();
     }
 
@@ -18,16 +18,44 @@ export default class Conversation {
         return this.db.bulkDocs(msgs);
     }
 
-    public getMessages({conversationId, skip, before, after}: any): Promise<IMessage[]> {
+    public getMessages({peerId, skip, before, after}: any): Promise<IMessage[]> {
         const q: any = [
-            {conversation_id: conversationId},
-            {timestamp: {'$exists': true}},
+            {peerid: peerId},
         ];
         if (before) {
-            q.push({timestamp: {'$lt': before}});
+            q.push({_id: {'$lt': before}});
         }
         if (after) {
-            q.push({timestamp: {'$gt': after}});
+            q.push({_id: {'$gt': after}});
+        }
+        return this.db.find({
+            limit: (skip || 30),
+            selector: {
+                $and: q,
+            },
+            sort: [
+                {peerid: 'desc'},
+                {_id: 'desc'},
+            ],
+        }).then((result: any) => {
+            return result.docs;
+        });
+    }
+
+    public getMessage(id: number): Promise<IMessage> {
+        return this.db.get(id);
+    }
+
+    public getMessagesWithTimestamp({peerId, skip, before, after}: any): Promise<IMessage[]> {
+        const q: any = [
+            {peerid: peerId},
+            {createdon: {'$exists': true}},
+        ];
+        if (before) {
+            q.push({createdon: {'$lt': before}});
+        }
+        if (after) {
+            q.push({createdon: {'$gt': after}});
         }
         return this.db.find({
             limit: (skip || 30),
@@ -36,7 +64,7 @@ export default class Conversation {
             },
             sort: [
                 {conversation_id: 'desc'},
-                {timestamp: 'desc'},
+                {createdon: 'desc'},
             ],
         }).then((result: any) => {
             return result.docs;

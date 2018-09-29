@@ -3,19 +3,21 @@ import {List, CellMeasurer, CellMeasurerCache} from 'react-virtualized';
 import {Link} from 'react-router-dom';
 import * as _ from 'lodash';
 import './style.css';
+import {IDialog} from "../../repository/dialog/interface";
+import DialogMessage from "../DialogMessage";
 
 interface IProps {
-    items: any[];
-    selectedId: string;
+    items: IDialog[];
+    selectedId: number;
 }
 
 interface IState {
-    items: any[];
-    selectedId: string;
+    items: IDialog[];
+    selectedId: number;
     scrollIndex: number;
 }
 
-class People extends React.Component<IProps, IState> {
+class Dialog extends React.Component<IProps, IState> {
     private list: any;
     private cache: any;
 
@@ -87,12 +89,9 @@ class People extends React.Component<IProps, IState> {
                 rowIndex={index}
                 parent={parent}>
                 <div style={style} key={index}>
-                    <Link to={`/conversation/${data.id}`}>
-                        <div className={'person' + (data.id === this.state.selectedId ? ' active' : '')}>
-                            <img src={data.image} alt=""/>
-                            <span className="name">{data.name}</span>
-                            <span className="time">{data.date}</span>
-                            <span className="preview">{data.message}</span>
+                    <Link to={`/conversation/${data.peerid}`}>
+                        <div className={'dialog' + (data.peerid === this.state.selectedId ? ' active' : '')}>
+                            <DialogMessage messageId={data.topmessageid || -1}/>
                         </div>
                     </Link>
                 </div>
@@ -101,4 +100,4 @@ class People extends React.Component<IProps, IState> {
     }
 }
 
-export default People;
+export default Dialog;
