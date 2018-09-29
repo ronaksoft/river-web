@@ -90,12 +90,18 @@ class Chat extends React.Component<IProps, IState> {
 
     public componentWillReceiveProps(newProps: IProps) {
         const selectedId = newProps.match.params.id;
-        this.getMessageByConversationId(selectedId, true);
-        this.sdk.getDialogs(0, 100).then((res) => {
-            window.console.log(res);
-        }).catch((err) => {
-            window.console.log(err);
-        });
+        if (selectedId === 'null') {
+            this.setState({
+                selectedConversationId: selectedId,
+            });
+        } else {
+            this.getMessageByConversationId(selectedId, true);
+            this.sdk.getDialogs(0, 100).then((res) => {
+                window.console.log(res);
+            }).catch((err) => {
+                window.console.log(err);
+            });
+        }
     }
 
     public componentDidMount() {
@@ -143,7 +149,7 @@ class Chat extends React.Component<IProps, IState> {
                         </div>
                         <People items={this.state.conversations} selectedId={this.state.selectedConversationId}/>
                     </div>
-                    <div className="column-center">
+                    {this.state.selectedConversationId !== 'null' && <div className="column-center">
                         <div className="top">
                             <span>To: <span
                                 className="name">{this.getName(this.state.selectedConversationId)}</span></span>
@@ -187,7 +193,15 @@ class Chat extends React.Component<IProps, IState> {
                             <Uploader/>
                         </div>
                         {!this.state.toggleAttachment && <TextInput onMessage={this.onMessage}/>}
-                    </div>
+                    </div>}
+                    {this.state.selectedConversationId === 'null' && <div className="column-center">
+                        <div className="start-messaging">
+                            <div className="start-messaging-header"/>
+                            <div className="start-messaging-img"/>
+                            <div className="start-messaging-title">Choose a chat to start messaging!</div>
+                            <div className="start-messaging-footer"/>
+                        </div>
+                    </div>}
                     <div ref={this.rightMenuRefHandler} className="column-right"/>
                 </div>
                 <NewMessage open={this.state.openNewMessage} onClose={this.onNewMessageClose} onMessage={this.onNewMessage}/>

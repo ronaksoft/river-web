@@ -85,7 +85,7 @@
     overflow: hidden;
     .top {
       width: 100%;
-      height: 47px;
+      height: 48px;
       padding: 15px 29px;
       background-color: #eceff1;
       text-align: left;
@@ -107,13 +107,41 @@
     }
     .conversation {
       width: 100%;
-      height: calc(100% - 97px);
+      height: calc(100% - 98px);
       background-image: url(../../../asset/image/pattern.png);
       background-color: rgba(168, 144, 106, 0.3);
     }
     .attachments {
       width: 100%;
-      height: calc(100% - 47px);
+      height: calc(100% - 48px);
+    }
+    .start-messaging {
+      width: 100%;
+      height: 100%;
+      background-image: url(../../../asset/image/pattern.png);
+      background-color: rgba(168, 144, 106, 0.3);
+      .start-messaging-header {
+        height: 48px;
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+      .start-messaging-img {
+        width: 100%;
+        height: calc(100% - 150px);
+        background-image: url(../../../asset/image/start-messaging.svg);
+        background-position: center center;
+        background-size: contain;
+        background-repeat: no-repeat;
+      }
+      .start-messaging-title {
+        @include font-bold;
+        font-size: 20px;
+        height: 50px;
+        color: #90908F;
+      }
+      .start-messaging-footer {
+        height: 50px;
+        background-color: rgba(255, 255, 255, 0.2);
+      }
     }
   }
   .column-right {

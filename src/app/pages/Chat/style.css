@@ -103,7 +103,7 @@ body {
     overflow: hidden; }
     .container .column-center .top {
       width: 100%;
-      height: 47px;
+      height: 48px;
       padding: 15px 29px;
       background-color: #eceff1;
       text-align: left; }
@@ -122,12 +122,36 @@ body {
         line-height: 0; }
     .container .column-center .conversation {
       width: 100%;
-      height: calc(100% - 97px);
+      height: calc(100% - 98px);
       background-image: url(../../../asset/image/pattern.png);
       background-color: rgba(168, 144, 106, 0.3); }
     .container .column-center .attachments {
       width: 100%;
-      height: calc(100% - 47px); }
+      height: calc(100% - 48px); }
+    .container .column-center .start-messaging {
+      width: 100%;
+      height: 100%;
+      background-image: url(../../../asset/image/pattern.png);
+      background-color: rgba(168, 144, 106, 0.3); }
+      .container .column-center .start-messaging .start-messaging-header {
+        height: 48px;
+        background-color: rgba(255, 255, 255, 0.2); }
+      .container .column-center .start-messaging .start-messaging-img {
+        width: 100%;
+        height: calc(100% - 150px);
+        background-image: url(../../../asset/image/start-messaging.svg);
+        background-position: center center;
+        background-size: contain;
+        background-repeat: no-repeat; }
+      .container .column-center .start-messaging .start-messaging-title {
+        font-family: 'Source Sans Pro', sans-serif;
+        font-weight: 600;
+        font-size: 20px;
+        height: 50px;
+        color: #90908F; }
+      .container .column-center .start-messaging .start-messaging-footer {
+        height: 50px;
+        background-color: rgba(255, 255, 255, 0.2); }
   .container .column-right {
     width: 0;
     height: 100%;
