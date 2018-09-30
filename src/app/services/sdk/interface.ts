@@ -5,7 +5,7 @@ export interface IConnInfo {
      * @type {number}
      * @memberof IConnInfo
      */
-    AuthID: number;
+    AuthID: string;
     /**
      * @prop AuthKey
      * @desc AuthKey of connection
@@ -40,7 +40,7 @@ export interface IConnInfo {
      * @type {string}
      * @memberof IConnInfo
      */
-    UserID?: number;
+    UserID?: string;
     /**
      * @prop Username
      * @desc Current connection's Username

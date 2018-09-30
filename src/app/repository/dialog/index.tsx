@@ -43,7 +43,7 @@ export default class Dialog {
 
     public importBulk(dialogs: IDialog[]): Promise<any> {
         dialogs = dialogs.map((dialog) => {
-            dialog._id = dialog.peerid;
+            dialog._id = String(dialog.peerid);
             dialog.last_update = Date.now();
             return dialog;
         });

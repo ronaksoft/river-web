@@ -39,7 +39,6 @@ function wsError(reqId, constructor, data) {
 }
 
 function saveConnInfo(data) {
-    window.console.log(data);
     localStorage.setItem('river.conn.info', data);
 }
 

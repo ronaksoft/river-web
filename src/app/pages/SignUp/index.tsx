@@ -59,7 +59,7 @@ class Chat extends React.Component<IProps, IState> {
         window.addEventListener('wasmInit', () => {
             const info = this.sdk.getConnInfo();
             if (info && info.UserID) {
-                this.sdk.recall(info.UserID).then((data) => {
+                this.sdk.recall(parseInt(info.UserID, 10)).then((data) => {
                     window.console.log(data);
                 }).catch((err) => {
                     window.console.log(err);
@@ -208,8 +208,9 @@ class Chat extends React.Component<IProps, IState> {
         window.console.log(phone);
         this.sdk.login(phone.slice(1), code, phoneHash).then((res) => {
             window.console.log(res);
-            const info = this.sdk.getConnInfo();
-            info.UserID = res.user.id;
+            const info = this.sdk.loadConnInfo();
+            window.console.log(info);
+            info.UserID = String(res.user.id);
             info.FirstName = res.user.firstname;
             info.LastName = res.user.lastname;
             info.Phone = this.state.phone;
@@ -290,7 +291,7 @@ class Chat extends React.Component<IProps, IState> {
             loading: true,
         });
         this.sdk.register(phone, code, phoneHash, fName, lName).then((res) => {
-            const info = this.sdk.getConnInfo();
+            const info = this.sdk.loadConnInfo();
             info.UserID = res.user.id;
             info.FirstName = res.user.firstname;
             info.LastName = res.user.lastname;
@@ -300,7 +301,6 @@ class Chat extends React.Component<IProps, IState> {
                 loading: false,
                 tries: this.state.tries + 1,
             });
-            window.console.log(res);
             this.props.history.push('/conversation/null');
         }).catch((err) => {
             this.setState({

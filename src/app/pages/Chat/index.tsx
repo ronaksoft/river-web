@@ -112,33 +112,35 @@ class Chat extends React.Component<IProps, IState> {
         }
 
         window.addEventListener('wasmInit', () => {
-            // const info = this.sdk.getConnInfo();
-            // if (info && info.UserID) {
-            //     this.sdk.recall(info.UserID).then((data) => {
-            //         window.console.log(data);
+            setTimeout(() => {
+            const info = this.sdk.getConnInfo();
+                if (info && info.UserID) {
+                    this.sdk.recall(parseInt(info.UserID, 10)).then((data) => {
+                        window.console.log(data);
+                    });
+                }
+            }, 2000);
+            // this.sdk.getContacts().then((res) => {
+            //     window.console.log(res);
+            // }).catch((err) => {
+            //     window.console.log(err);
+            // });
+            //
+            // this.sdk.getDialogs(0, 100).then((res) => {
+            //     this.dialogRepo.importBulk(res.dialogsList).then((res1) => {
+            //         window.console.log(res1);
+            //     }).catch((err1) => {
+            //         window.console.log(err1);
             //     });
-            // }
-            this.sdk.getContacts().then((res) => {
-                window.console.log(res);
-            }).catch((err) => {
-                window.console.log(err);
-            });
-
-            this.sdk.getDialogs(0, 100).then((res) => {
-                this.dialogRepo.importBulk(res.dialogsList).then((res1) => {
-                    window.console.log(res1);
-                }).catch((err1) => {
-                    window.console.log(err1);
-                });
-                this.messageRepo.importBulk(res.messagesList).then((res1) => {
-                    window.console.log(res1);
-                }).catch((err1) => {
-                    window.console.log(err1);
-                });
-                window.console.log(res);
-            }).catch((err) => {
-                window.console.log(err);
-            });
+            //     this.messageRepo.importBulk(res.messagesList).then((res1) => {
+            //         window.console.log(res1);
+            //     }).catch((err1) => {
+            //         window.console.log(err1);
+            //     });
+            //     window.console.log(res);
+            // }).catch((err) => {
+            //     window.console.log(err);
+            // });
         });
 
         this.dialogRepo.getDialogs({}).then((res) => {
@@ -390,12 +392,12 @@ class Chat extends React.Component<IProps, IState> {
         }
         const messages = this.state.messages;
         const message: IMessage = {
-            _id: UniqueId.getRandomId(),
+            _id: String(UniqueId.getRandomId()),
             body: text,
             createdon: new Date().getTime(),
             me: true,
             peerid: this.state.selectedConversationId,
-            senderid: this.connInfo.UserID,
+            senderid: parseInt(this.connInfo.UserID || '0', 10),
         };
         messages.push(message);
         this.setState({
@@ -422,7 +424,6 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private onNewMessage = (phone: string, text: string) => {
-        window.console.log(phone, text);
         const contacts: PhoneContact.AsObject[] = [];
         contacts.push({
             clientid: UniqueId.getRandomId(),
@@ -447,6 +448,22 @@ class Chat extends React.Component<IProps, IState> {
                     window.console.log(err);
                 });
             });
+        }).catch((err) => {
+            window.console.log(err);
+        });
+
+        this.sdk.getDialogs(0, 100).then((res) => {
+            this.dialogRepo.importBulk(res.dialogsList).then((res1) => {
+                window.console.log(res1);
+            }).catch((err1) => {
+                window.console.log(err1);
+            });
+            this.messageRepo.importBulk(res.messagesList).then((res1) => {
+                window.console.log(res1);
+            }).catch((err1) => {
+                window.console.log(err1);
+            });
+            window.console.log(res);
         }).catch((err) => {
             window.console.log(err);
         });

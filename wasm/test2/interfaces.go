@@ -208,8 +208,9 @@ func (r *River) createAuthKeyStep2(clientNonce, serverNonce, serverPubFP, server
 					err = ErrAuthFailed
 					return
 				}
-				fmt.Println(r.ConnInfo)
 				r.ConnInfo.Save()
+				r.authKey = r.ConnInfo.AuthKey[:]
+				r.authID = r.ConnInfo.AuthID
 				cb := *callback
 				cb()
 			case msg.C_Error:
@@ -260,7 +261,7 @@ func (r *River) send(msgEnvelope *msg.MessageEnvelope) {
 		return
 	}
 	if msgEnvelope.Constructor == msg.C_InitConnect || msgEnvelope.Constructor == msg.C_InitCompleteAuth {
-	    r.LastMsg = msgEnvelope
+		r.LastMsg = msgEnvelope
 	}
 	js.Global().Call("wsSend", js.TypedArrayOf(b))
 }
@@ -332,7 +333,7 @@ func (r *River) messageHandler(m *msg.MessageEnvelope) {
 }
 
 func (r *River) RetryLast() {
-    if r.LastMsg != nil {
-        r.send(r.LastMsg)
-    }
+	if r.LastMsg != nil {
+		r.send(r.LastMsg)
+	}
 }

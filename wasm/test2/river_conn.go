@@ -3,6 +3,8 @@ package main
 import (
 	"go.uber.org/zap"
 	"syscall/js"
+	"encoding/json"
+	"strconv"
 )
 
 // easyjson:json
@@ -60,6 +62,18 @@ type RiverConnection struct {
 	LastName  string
 }
 
+// easyjson:json
+// RiverConnection
+type RiverConnectionJS struct {
+	AuthID    string
+	AuthKey   [256]byte
+	UserID    string
+	Username  string
+	Phone     string
+	FirstName string
+	LastName  string
+}
+
 // NewRiverConnection
 func NewRiverConnection(connInfo string) *RiverConnection {
 	rc := new(RiverConnection)
@@ -72,7 +86,16 @@ func NewRiverConnection(connInfo string) *RiverConnection {
 // Save
 func (v *RiverConnection) Save() {
 	_LOG.Debug("RiverConnection Save")
-	if bytes, err := v.MarshalJSON(); err != nil {
+	var vv = RiverConnectionJS{
+		AuthKey:   v.AuthKey,
+		AuthID:    strconv.FormatInt(v.AuthID, 10),
+		Username:  v.Username,
+		FirstName: v.FirstName,
+		LastName:  v.LastName,
+		Phone:     v.Phone,
+		UserID:    strconv.FormatInt(v.UserID, 10),
+	}
+	if bytes, err := json.Marshal(vv); err != nil {
 		_LOG.Info(err.Error(),
 			zap.String(_LK_FUNC_NAME, "RiverConnection::Save"),
 		)
@@ -83,11 +106,19 @@ func (v *RiverConnection) Save() {
 
 // Load
 func (v *RiverConnection) Load(connInfo string) error {
-	if err := v.UnmarshalJSON([]byte(connInfo)); err != nil {
+	var vv = RiverConnectionJS{}
+	if err := json.Unmarshal([]byte(connInfo), &vv); err != nil {
 		_LOG.Error(err.Error(),
 			zap.String(_LK_FUNC_NAME, "RiverConnection::Load"),
 		)
 		return err
 	}
+	v.AuthKey = vv.AuthKey
+	v.AuthID, _ = strconv.ParseInt(vv.AuthID, 10, 64)
+	v.FirstName = vv.FirstName
+	v.LastName = vv.LastName
+	v.Phone = vv.Phone
+	v.Username = vv.Username
+	v.UserID, _ = strconv.ParseInt(vv.UserID, 10, 64)
 	return nil
 }

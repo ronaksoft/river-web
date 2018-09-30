@@ -44,12 +44,12 @@ export default class SDK {
             this.connInfo = JSON.parse(s);
         } else {
             this.connInfo = {
-                AuthID: 0,
+                AuthID: '0',
                 AuthKey: '',
                 FirstName: '',
                 LastName: '',
                 Phone: '',
-                UserID: 0,
+                UserID: '0',
                 Username: ''
             };
         }
@@ -71,6 +71,14 @@ export default class SDK {
         this.connInfo = info;
         const s = JSON.stringify(info);
         localStorage.setItem('river.conn.info', s);
+    }
+
+    public loadConnInfo(): IConnInfo {
+        const s = localStorage.getItem('river.conn.info');
+        if (s) {
+            this.connInfo = this.connInfo = JSON.parse(s);
+        }
+        return this.connInfo;
     }
 
     public getClientId(): number {

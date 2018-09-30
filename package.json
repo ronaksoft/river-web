@@ -20,6 +20,7 @@
     "fine-uploader": "^5.16.2",
     "fine-uploader-wrappers": "^1.0.1",
     "google-protobuf": "^3.6.1",
+    "json-bigint": "^0.3.0",
     "lodash": "^4.17.10",
     "pouchdb": "^7.0.0",
     "pouchdb-find": "^7.0.0",

@@ -73,7 +73,7 @@ export default class Message {
 
     public importBulk(msgs: IMessage[]): Promise<any> {
         msgs = msgs.map((msg) => {
-            msg._id = msg.id;
+            msg._id = String(msg.id);
             return msg;
         });
         return this.createMessages(msgs);
