@@ -1,5 +1,6 @@
 import DB from '../../services/db/dialog';
 import {IDialog} from './interface';
+import {differenceBy, intersectionBy} from 'lodash';
 
 export default class Dialog {
     private dbService: DB;
@@ -47,6 +48,22 @@ export default class Dialog {
             dialog.last_update = Date.now();
             return dialog;
         });
-        return this.createDialogs(dialogs);
+        return this.upsert(dialogs);
+    }
+
+    public upsert(dialogs: IDialog[]): Promise<any> {
+        const ids = dialogs.map((dialog) => {
+            return dialog._id;
+        });
+        return this.db.find({
+            selector: {
+                _id: {'$in': ids}
+            },
+        }).then((result: any) => {
+            const createItems: IDialog[] = differenceBy(dialogs, result.docs, '_id');
+            // @ts-ignore
+            const updateItems: IDialog[] = intersectionBy(result.docs, dialogs, '_id');
+            return this.createDialogs([...createItems, ...updateItems]);
+        });
     }
 }

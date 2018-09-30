@@ -112,31 +112,29 @@ class Chat extends React.Component<IProps, IState> {
         }
 
         window.addEventListener('wasmInit', () => {
-            setTimeout(() => {
             const info = this.sdk.getConnInfo();
-                if (info && info.UserID) {
-                    this.sdk.recall(parseInt(info.UserID, 10)).then((data) => {
-                        window.console.log(data);
-                    });
-                }
-            }, 2000);
-            this.sdk.getContacts().then((res) => {
-                window.console.log(res);
-            }).catch((err) => {
-                window.console.log(err);
-            });
-
+            if (info && info.UserID) {
+                this.sdk.recall(parseInt(info.UserID, 10)).then((data) => {
+                    window.console.log(data);
+                });
+            }
+            // this.sdk.getContacts().then((res) => {
+            //     window.console.log(res);
+            // }).catch((err) => {
+            //     window.console.log(err);
+            // });
+            //
             this.sdk.getDialogs(0, 100).then((res) => {
                 this.dialogRepo.importBulk(res.dialogsList).then((res1) => {
                     window.console.log(res1);
                 }).catch((err1) => {
                     window.console.log(err1);
                 });
-                this.messageRepo.importBulk(res.messagesList).then((res1) => {
-                    window.console.log(res1);
-                }).catch((err1) => {
-                    window.console.log(err1);
-                });
+                // this.messageRepo.importBulk(res.messagesList).then((res1) => {
+                //     window.console.log(res1);
+                // }).catch((err1) => {
+                //     window.console.log(err1);
+                // });
                 window.console.log(res);
             }).catch((err) => {
                 window.console.log(err);
@@ -329,8 +327,6 @@ class Chat extends React.Component<IProps, IState> {
                 }, 50);
             });
         };
-
-        window.console.log(dialogId);
 
         this.messageRepo.getMessages({peerId: dialogId}).then((data) => {
             if (data.length === 0) {
