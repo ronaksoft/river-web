@@ -7,23 +7,25 @@ if (WebAssembly.instantiateStreaming) { // polyfill
 
 let run;
 let instance;
-let fistTimeLoad = true;
-
 
 let socket = null;
 let fnCall = null;
 let receive = null;
 let wsOpen = null;
+let connected = false;
 
 (async function () {
     const go = new Go();
     const t = await WebAssembly.instantiateStreaming(fetch("bin/test.wasm"), go.importObject);
     instance = t.instance;
     run = go.run(instance);
+    initWebSocket();
 })();
 
 function wsSend(buffer) {
-    socket.send(buffer);
+    if (connected) {
+        socket.send(buffer);
+    }
 }
 
 function wsError(reqId, constructor, data) {
@@ -104,9 +106,7 @@ const initWebSocket = () => {
         if (wsOpen) {
             wsOpen();
         }
-        if (fistTimeLoad) {
-            fistTimeLoad = false;
-        }
+        connected = true;
     };
 
     // Listen for messages
@@ -117,7 +117,6 @@ const initWebSocket = () => {
     // Listen for messages
     socket.onclose = () => {
         initWebSocket();
+        connected = false;
     };
 };
-
-initWebSocket();

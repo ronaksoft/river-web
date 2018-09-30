@@ -43,7 +43,7 @@ export default class Message {
     }
 
     public getMessage(id: number): Promise<IMessage> {
-        return this.db.get(id);
+        return this.db.get(String(id));
     }
 
     public getMessagesWithTimestamp({peerId, skip, before, after}: any): Promise<IMessage[]> {

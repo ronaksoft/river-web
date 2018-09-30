@@ -33,7 +33,7 @@ interface IState {
     messages: IMessage[];
     openNewMessage: boolean;
     rightMenu: boolean;
-    selectedConversationId: number;
+    selectedDialogId: number;
     toggleAttachment: boolean;
 }
 
@@ -57,7 +57,7 @@ class Chat extends React.Component<IProps, IState> {
             messages: [],
             openNewMessage: false,
             rightMenu: false,
-            selectedConversationId: props.match.params.id === 'null' ? -1 : props.match.params.id,
+            selectedDialogId: props.match.params.id === 'null' ? -1 : props.match.params.id,
             toggleAttachment: false,
         };
         this.messageRepo = new MessageRepo();
@@ -70,7 +70,7 @@ class Chat extends React.Component<IProps, IState> {
         //     const message: IMessage = {
         //         _id: this.uniqueId.getId('msg', 'msg_'),
         //         avatar: undefined,
-        //         conversation_id: this.state.selectedConversationId,
+        //         conversation_id: this.state.selectedDialogId,
         //         me: false,
         //         message: faker.lorem.words(15),
         //         timestamp: new Date().getTime(),
@@ -98,17 +98,17 @@ class Chat extends React.Component<IProps, IState> {
         const selectedId = newProps.match.params.id;
         if (selectedId === 'null') {
             this.setState({
-                selectedConversationId: -1,
+                selectedDialogId: -1,
             });
         } else {
-            this.getMessageByConversationId(parseInt(selectedId, 10), true);
+            this.getMessagesByDialogId(parseInt(selectedId, 10), true);
         }
     }
 
     public componentDidMount() {
         const selectedId = this.props.match.params.id;
         if (selectedId !== 'null') {
-            this.getMessageByConversationId(selectedId);
+            this.getMessagesByDialogId(selectedId);
         }
 
         window.addEventListener('wasmInit', () => {
@@ -120,27 +120,27 @@ class Chat extends React.Component<IProps, IState> {
                     });
                 }
             }, 2000);
-            // this.sdk.getContacts().then((res) => {
-            //     window.console.log(res);
-            // }).catch((err) => {
-            //     window.console.log(err);
-            // });
-            //
-            // this.sdk.getDialogs(0, 100).then((res) => {
-            //     this.dialogRepo.importBulk(res.dialogsList).then((res1) => {
-            //         window.console.log(res1);
-            //     }).catch((err1) => {
-            //         window.console.log(err1);
-            //     });
-            //     this.messageRepo.importBulk(res.messagesList).then((res1) => {
-            //         window.console.log(res1);
-            //     }).catch((err1) => {
-            //         window.console.log(err1);
-            //     });
-            //     window.console.log(res);
-            // }).catch((err) => {
-            //     window.console.log(err);
-            // });
+            this.sdk.getContacts().then((res) => {
+                window.console.log(res);
+            }).catch((err) => {
+                window.console.log(err);
+            });
+
+            this.sdk.getDialogs(0, 100).then((res) => {
+                this.dialogRepo.importBulk(res.dialogsList).then((res1) => {
+                    window.console.log(res1);
+                }).catch((err1) => {
+                    window.console.log(err1);
+                });
+                this.messageRepo.importBulk(res.messagesList).then((res1) => {
+                    window.console.log(res1);
+                }).catch((err1) => {
+                    window.console.log(err1);
+                });
+                window.console.log(res);
+            }).catch((err) => {
+                window.console.log(err);
+            });
         });
 
         this.dialogRepo.getDialogs({}).then((res) => {
@@ -160,12 +160,12 @@ class Chat extends React.Component<IProps, IState> {
                         <div className="top">
                             <span className="new-message" onClick={this.onNewMessageOpen}>New message</span>
                         </div>
-                        <Dialog items={this.state.dialogs} selectedId={this.state.selectedConversationId}/>
+                        <Dialog items={this.state.dialogs} selectedId={this.state.selectedDialogId}/>
                     </div>
-                    {this.state.selectedConversationId !== -1 && <div className="column-center">
+                    {this.state.selectedDialogId !== -1 && <div className="column-center">
                         <div className="top">
                             <span>To: <span
-                                className="name">{this.getName(this.state.selectedConversationId)}</span></span>
+                                className="name">{this.getName(this.state.selectedDialogId)}</span></span>
                             <span className="buttons">
                                 <IconButton
                                     aria-label="Attachment"
@@ -207,7 +207,7 @@ class Chat extends React.Component<IProps, IState> {
                         </div>
                         {!this.state.toggleAttachment && <TextInput onMessage={this.onMessage}/>}
                     </div>}
-                    {this.state.selectedConversationId === -1 && <div className="column-center">
+                    {this.state.selectedDialogId === -1 && <div className="column-center">
                         <div className="start-messaging">
                             <div className="start-messaging-header"/>
                             <div className="start-messaging-img"/>
@@ -317,7 +317,7 @@ class Chat extends React.Component<IProps, IState> {
     //     return messages;
     // }
 
-    private getMessageByConversationId(conversationId: number, force?: boolean) {
+    private getMessagesByDialogId(dialogId: number, force?: boolean) {
         let messages: IMessage[] = [];
 
         const updateState = () => {
@@ -330,16 +330,18 @@ class Chat extends React.Component<IProps, IState> {
             });
         };
 
-        this.messageRepo.getMessages({conversationId}).then((data) => {
+        window.console.log(dialogId);
+
+        this.messageRepo.getMessages({peerId: dialogId}).then((data) => {
             if (data.length === 0) {
-                // messages = this.createFakeMessage(conversationId);
+                // messages = this.createFakeMessage(dialogId);
                 messages = [];
             } else {
                 messages = data.reverse();
             }
             this.setState({
                 messages,
-                selectedConversationId: conversationId,
+                selectedDialogId: dialogId,
             }, () => {
                 if (force === true) {
                     updateState();
@@ -347,10 +349,10 @@ class Chat extends React.Component<IProps, IState> {
             });
         }).catch((err: any) => {
             window.console.warn(err);
-            // messages = this.createFakeMessage(conversationId);
+            // messages = this.createFakeMessage(dialogId);
             this.setState({
                 messages,
-                selectedConversationId: conversationId,
+                selectedDialogId: dialogId,
             }, () => {
                 if (force === true) {
                     updateState();
@@ -365,7 +367,7 @@ class Chat extends React.Component<IProps, IState> {
         }
         this.messageRepo.getMessages({
             before: this.state.messages[0].id,
-            conversationId: this.state.selectedConversationId
+            conversationId: this.state.selectedDialogId
         }).then((data) => {
             if (data.length === 0) {
                 return;
@@ -396,7 +398,7 @@ class Chat extends React.Component<IProps, IState> {
             body: text,
             createdon: new Date().getTime(),
             me: true,
-            peerid: this.state.selectedConversationId,
+            peerid: this.state.selectedDialogId,
             senderid: parseInt(this.connInfo.UserID || '0', 10),
         };
         messages.push(message);
@@ -451,23 +453,6 @@ class Chat extends React.Component<IProps, IState> {
         }).catch((err) => {
             window.console.log(err);
         });
-
-        this.sdk.getDialogs(0, 100).then((res) => {
-            this.dialogRepo.importBulk(res.dialogsList).then((res1) => {
-                window.console.log(res1);
-            }).catch((err1) => {
-                window.console.log(err1);
-            });
-            this.messageRepo.importBulk(res.messagesList).then((res1) => {
-                window.console.log(res1);
-            }).catch((err1) => {
-                window.console.log(err1);
-            });
-            window.console.log(res);
-        }).catch((err) => {
-            window.console.log(err);
-        });
-
     }
 }
 

@@ -5,6 +5,8 @@ import './style.css';
 import {IUser} from "../../repository/user/interface";
 import {IMessage} from "../../repository/message/interface";
 import MessageRepo from "../../repository/message";
+import * as faker from 'faker';
+import TimeUtililty from "../../services/utilities/time";
 
 interface IProps {
     messageId: number;
@@ -27,10 +29,16 @@ class DialogMessage extends React.Component<IProps, IState> {
         };
 
         this.messageRepo = new MessageRepo();
+    }
+
+    public componentDidMount() {
         this.getMessage();
     }
 
     public componentWillReceiveProps(newProps: IProps) {
+        if (this.state.messageId === newProps.messageId) {
+            return;
+        }
         this.setState({
             messageId: newProps.messageId,
         }, () => {
@@ -43,8 +51,8 @@ class DialogMessage extends React.Component<IProps, IState> {
         return (
             <div className="dialog-wrapper">
                 {user && <img src={user.avatar} alt=""/>}
-                {user && <span className="name">{user.avatar}</span>}
-                {message && <span className="time">{message.createdon}</span>}
+                {user && <span className="name">{user.firstname + ' ' + user.lastname}</span>}
+                {message && <span className="time">{TimeUtililty.dynamic(message.createdon)}</span>}
                 {message && <span className="preview">{message.body}</span>}
             </div>
         );
@@ -55,6 +63,16 @@ class DialogMessage extends React.Component<IProps, IState> {
             this.setState({
                 message,
             });
+        }).catch((err) => {
+            window.console.log(err);
+        });
+        const user: IUser = {
+            avatar: faker.image.avatar(),
+            firstname: faker.name.firstName(),
+            lastname: faker.name.lastName(),
+        };
+        this.setState({
+            user,
         });
     }
 }
