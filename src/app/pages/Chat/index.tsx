@@ -340,7 +340,7 @@ class Chat extends React.Component<IProps, IState> {
         peer.setAccesshash(dialogs[index].accesshash || 0);
         peer.setId(dialogs[index].peerid || 0);
 
-        this.messageRepo.getMany({peer}).then((data) => {
+        this.messageRepo.getMany({peer, limit: 20}).then((data) => {
             window.console.log(data);
             if (data.length === 0) {
                 // messages = this.createFakeMessage(dialogId);
@@ -348,6 +348,12 @@ class Chat extends React.Component<IProps, IState> {
             } else {
                 messages = data.reverse();
             }
+            messages = messages.map((msg) => {
+                if (msg.senderid === this.connInfo.UserID) {
+                    msg.me = true;
+                }
+                return msg;
+            });
             this.setState({
                 messages,
                 selectedDialogId: dialogId,
@@ -358,15 +364,6 @@ class Chat extends React.Component<IProps, IState> {
             });
         }).catch((err: any) => {
             window.console.warn(err);
-            // messages = this.createFakeMessage(dialogId);
-            this.setState({
-                messages,
-                selectedDialogId: dialogId,
-            }, () => {
-                if (force === true) {
-                    updateState();
-                }
-            });
         });
     }
 
@@ -420,6 +417,20 @@ class Chat extends React.Component<IProps, IState> {
             }, 50);
         });
         this.messageRepo.create(message);
+        const {dialogs} = this.state;
+        const index = findIndex(dialogs, {peerid: this.state.selectedDialogId});
+        if (index === -1) {
+            return;
+        }
+        const peer = new InputPeer();
+        peer.setType(PeerType.PEERUSER);
+        peer.setAccesshash(dialogs[index].accesshash || 0);
+        peer.setId(dialogs[index].peerid || 0);
+        this.sdk.sendMessage(text, peer).then((msg) => {
+            window.console.log(msg);
+        }).catch((err) => {
+            window.console.log(err);
+        });
     }
 
     private onNewMessageOpen = () => {

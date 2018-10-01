@@ -122,3 +122,7 @@ const initWebSocket = () => {
         initWebSocket();
     };
 };
+
+// setInterval(() => {
+//     wsSend(new Uint8Array([9]));
+// }, 5000);

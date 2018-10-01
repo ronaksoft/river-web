@@ -31,17 +31,15 @@ export default class MessageRepo {
             this.getManyCache({peerId: peer.getId(), limit, before, after}).then((res) => {
                 const len = res.length;
                 if (len < limit) {
-                    let maxId = null;
+                    let minId = null;
                     if (len > 0) {
-                        maxId = res[res.length-1].id;
+                        minId = (res[0].id || 0) + 1;
                     }
                     const lim = limit - len;
-                    this.sdk.getMessageHistory(peer, {maxId, limit: lim}).then((remoteRes) => {
-                        window.console.log(remoteRes);
+                    this.sdk.getMessageHistory(peer, {minId, limit: lim}).then((remoteRes) => {
                         this.importBulk(remoteRes.messagesList);
                         this.userRepo.importBulk(remoteRes.usersList);
-                        resolve([...res, ...remoteRes.messagesList]);
-                        return;
+                        resolve([...remoteRes.messagesList, ...res]);
                     }).catch((err2) => {
                         reject(err2);
                     });
@@ -49,12 +47,10 @@ export default class MessageRepo {
                     resolve(res);
                 }
             }).catch((err) => {
-                this.sdk.getMessageHistory(peer, {before, limit}).then((remoteRes) => {
-                    window.console.log(remoteRes);
+                this.sdk.getMessageHistory(peer, {minId: before, limit}).then((remoteRes) => {
                     this.importBulk(remoteRes.messagesList);
                     this.userRepo.importBulk(remoteRes.usersList);
                     resolve(remoteRes.messagesList);
-                    return;
                 }).catch((err2) => {
                     reject(err2);
                 });
@@ -63,9 +59,9 @@ export default class MessageRepo {
     }
 
     public getManyCache({peerId, limit, before, after}: any): Promise<IMessage[]> {
-        window.console.log(peerId);
         const q: any = [
             {peerid: peerId},
+            {id: {'$gt': 0}}
         ];
         if (before) {
             q.push({_id: {'$lt': before}});
@@ -73,14 +69,15 @@ export default class MessageRepo {
         if (after) {
             q.push({_id: {'$gt': after}});
         }
+        window.console.log(q);
         return this.db.find({
             limit: (limit || 30),
             selector: {
                 $and: q,
             },
             sort: [
-                {peerid: 'desc'},
-                {_id: 'desc'},
+                // {peerid: 'desc'},
+                {id: 'desc'},
             ],
         }).then((result: any) => {
             return result.docs;

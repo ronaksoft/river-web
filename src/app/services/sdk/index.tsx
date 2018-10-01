@@ -185,15 +185,9 @@ export default class SDK {
         const data = new MessagesGetHistory();
         // this.msgId++;
         data.setPeer(peer);
-        if (limit > 0) {
-            data.setLimit(limit);
-        }
-        if (minId > 0) {
-            data.setMinid(minId);
-        }
-        if (maxId > 0) {
-            data.setMaxid(maxId);
-        }
+        data.setLimit(limit || 0);
+        data.setMinid(minId || 0);
+        data.setMaxid(maxId || 0);
         return this.server.send(C_MSG.MessagesGetHistory, data.serializeBinary());
     }
 }

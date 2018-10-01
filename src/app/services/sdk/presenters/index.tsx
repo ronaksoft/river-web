@@ -2,7 +2,7 @@ import {C_MSG} from '../const';
 import {AuthSentCode, AuthCheckedPhone, AuthAuthorization, AuthRecalled} from '../messages/api.auth_pb';
 import {ContactsImported, ContactsMany} from '../messages/api.contacts_pb';
 import {Bool, Error} from '../messages/core.messages_pb';
-import {MessagesDialogs, MessagesSent} from '../messages/api.messages_pb';
+import {MessagesDialogs, MessagesMany, MessagesSent} from '../messages/api.messages_pb';
 import {Dialog} from '../messages/core.types_pb';
 import {
     UpdateNewMessage,
@@ -34,6 +34,8 @@ export default class UniqueId {
                 return Dialog.deserializeBinary(data);
             case C_MSG.MessagesSent:
                 return MessagesSent.deserializeBinary(data);
+            case C_MSG.MessagesMany:
+                return MessagesMany.deserializeBinary(data);
             case C_MSG.Bool:
                 return Bool.deserializeBinary(data);
             default:

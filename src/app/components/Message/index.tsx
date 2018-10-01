@@ -112,6 +112,7 @@ class Message extends React.Component<IProps, IState> {
                     )}
                     <div className={"bubble " + (data.me ? 'me' : 'you')}
                          dangerouslySetInnerHTML={{__html: this.formatText(data.body)}}/>
+                    {data._id}
                 </div>
             </CellMeasurer>
         );
