@@ -1,8 +1,8 @@
 import DB from '../../services/db/dialog';
 import {IDialog} from './interface';
-import {differenceBy, intersectionBy} from 'lodash';
+import {differenceBy, find, merge} from 'lodash';
 
-export default class Dialog {
+export default class DialogRepo {
     private dbService: DB;
     private db: any;
 
@@ -11,15 +11,15 @@ export default class Dialog {
         this.db = this.dbService.getDB();
     }
 
-    public createDialog(dialog: IDialog) {
+    public create(dialog: IDialog) {
         this.db.put(dialog);
     }
 
-    public createDialogs(dialogs: IDialog[]) {
+    public createMany(dialogs: IDialog[]) {
         return this.db.bulkDocs(dialogs);
     }
 
-    public getDialogs({skip, before, after}: any): Promise<IDialog[]> {
+    public getMany({skip, before, after}: any): Promise<IDialog[]> {
         const q: any = [
             {last_update: {'$gt': true}},
         ];
@@ -62,8 +62,12 @@ export default class Dialog {
         }).then((result: any) => {
             const createItems: IDialog[] = differenceBy(dialogs, result.docs, '_id');
             // @ts-ignore
-            const updateItems: IDialog[] = intersectionBy(result.docs, dialogs, '_id');
-            return this.createDialogs([...createItems, ...updateItems]);
+            const updateItems: IDialog[] = result.docs;
+            updateItems.map((dialog: IDialog) => {
+                const t = find(dialogs, {_id: dialog._id});
+                return merge(t, dialog);
+            });
+            return this.createMany([...createItems, ...updateItems]);
         });
     }
 }

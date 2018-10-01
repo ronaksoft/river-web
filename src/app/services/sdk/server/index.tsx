@@ -30,6 +30,8 @@ export default class Server {
 
     private sentQueue: number[] = [];
 
+    private isConnected: boolean = false;
+
     public constructor() {
         this.reqId = 0;
         window.addEventListener('fnCallbackEvent', (event: any) => {
@@ -39,7 +41,11 @@ export default class Server {
             this.error(event.detail);
         });
         window.addEventListener('wsOpen', () => {
+            this.isConnected = true;
             this.flushSentQueue();
+        });
+        window.addEventListener('wsClose', () => {
+            this.isConnected = false;
         });
     }
 
@@ -55,12 +61,15 @@ export default class Server {
             constructor,
             data,
             reqId: this.reqId,
+            timeout: null,
         };
 
         const promise = new Promise((res, rej) => {
             internalResolve = res;
             internalReject = rej;
-            this.sendRequest(request);
+            if (this.isConnected) {
+                this.sendRequest(request);
+            }
         });
 
         /**
@@ -90,6 +99,9 @@ export default class Server {
             detail: request,
         });
         window.console.log(request.constructor, request.reqId);
+        request.timeout = setTimeout(() => {
+            this.dispatchTimeout(request.reqId);
+        }, 10000);
         window.dispatchEvent(fnCallbackEvent);
     }
 
@@ -109,11 +121,8 @@ export default class Server {
                     this.messageListeners[reqId].resolve(res.toObject());
                 }
             }
-            delete this.messageListeners[reqId];
-            const index = this.sentQueue.indexOf(reqId);
-            if (index > -1) {
-                this.sentQueue.splice(index, 1);
-            }
+            clearTimeout(this.messageListeners[reqId].request.timeout);
+            this.cleanQueue(reqId);
         }
     }
 
@@ -136,5 +145,24 @@ export default class Server {
         this.sentQueue.forEach((reqId) => {
             this.sendRequest(this.messageListeners[reqId].request);
         });
+    }
+
+    private dispatchTimeout(reqId: number) {
+        if (!this.messageListeners[reqId]) {
+            return;
+        }
+        const item = this.messageListeners[reqId];
+        item.reject({
+            err: 'timeout',
+        });
+        this.cleanQueue(reqId);
+    }
+
+    private cleanQueue(reqId: number) {
+        delete this.messageListeners[reqId];
+        const index = this.sentQueue.indexOf(reqId);
+        if (index > -1) {
+            this.sentQueue.splice(index, 1);
+        }
     }
 }

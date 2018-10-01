@@ -12,7 +12,13 @@ import {C_MSG} from "./const";
 import {IConnInfo} from "./interface";
 import {ContactsGet, ContactsImport, ContactsImported, ContactsMany} from "./messages/api.contacts_pb";
 import {InputPeer, PhoneContact} from "./messages/core.types_pb";
-import {MessagesDialogs, MessagesGetDialogs, MessagesSend, MessagesSent} from "./messages/api.messages_pb";
+import {
+    MessagesDialogs,
+    MessagesGetDialogs,
+    MessagesGetHistory, MessagesMany,
+    MessagesSend,
+    MessagesSent
+} from "./messages/api.messages_pb";
 // import MessageRepo from "../../repository/message";
 // import UserRepo from "../../repository/user";
 // import DialogRepo from "../../repository/dialog";
@@ -49,7 +55,7 @@ export default class SDK {
                 FirstName: '',
                 LastName: '',
                 Phone: '',
-                UserID: '0',
+                UserID: 0,
                 Username: ''
             };
         }
@@ -173,5 +179,21 @@ export default class SDK {
             data.setReplyto(replyTo);
         }
         return this.server.send(C_MSG.MessagesSend, data.serializeBinary());
+    }
+
+    public getMessageHistory(peer: InputPeer, {limit, minId, maxId}: any): Promise<MessagesMany.AsObject> {
+        const data = new MessagesGetHistory();
+        // this.msgId++;
+        data.setPeer(peer);
+        if (limit > 0) {
+            data.setLimit(limit);
+        }
+        if (minId > 0) {
+            data.setMinid(minId);
+        }
+        if (maxId > 0) {
+            data.setMaxid(maxId);
+        }
+        return this.server.send(C_MSG.MessagesGetHistory, data.serializeBinary());
     }
 }

@@ -67,7 +67,7 @@ type RiverConnection struct {
 type RiverConnectionJS struct {
 	AuthID    string
 	AuthKey   [256]byte
-	UserID    string
+	UserID    int64
 	Username  string
 	Phone     string
 	FirstName string
@@ -93,7 +93,7 @@ func (v *RiverConnection) Save() {
 		FirstName: v.FirstName,
 		LastName:  v.LastName,
 		Phone:     v.Phone,
-		UserID:    strconv.FormatInt(v.UserID, 10),
+		UserID:    v.UserID,
 	}
 	if bytes, err := json.Marshal(vv); err != nil {
 		_LOG.Info(err.Error(),
@@ -119,6 +119,6 @@ func (v *RiverConnection) Load(connInfo string) error {
 	v.LastName = vv.LastName
 	v.Phone = vv.Phone
 	v.Username = vv.Username
-	v.UserID, _ = strconv.ParseInt(vv.UserID, 10, 64)
+	v.UserID = vv.UserID
 	return nil
 }

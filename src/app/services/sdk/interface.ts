@@ -40,7 +40,7 @@ export interface IConnInfo {
      * @type {string}
      * @memberof IConnInfo
      */
-    UserID?: string;
+    UserID?: number;
     /**
      * @prop Username
      * @desc Current connection's Username

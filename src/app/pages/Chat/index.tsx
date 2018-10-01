@@ -6,13 +6,13 @@ import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import {Attachment, MoreVert as MoreVertIcon} from '@material-ui/icons';
-// import * as faker from 'faker';
+import * as faker from 'faker';
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
 import Uploader from '../../components/Uploader/index';
 import TextInput from '../../components/TextInput/index';
-import {trimStart} from 'lodash';
+import {trimStart, findIndex} from 'lodash';
 import SDK from '../../services/sdk/index';
 
 import './style.css';
@@ -90,7 +90,7 @@ class Chat extends React.Component<IProps, IState> {
         //             this.animateToEnd();
         //         }, 50);
         //     });
-        //     this.messageRepo.createMessage(message);
+        //     this.messageRepo.create(message);
         // }, 3000);
     }
 
@@ -114,8 +114,10 @@ class Chat extends React.Component<IProps, IState> {
         window.addEventListener('wasmInit', () => {
             const info = this.sdk.getConnInfo();
             if (info && info.UserID) {
-                this.sdk.recall(parseInt(info.UserID, 10)).then((data) => {
+                this.sdk.recall(info.UserID).then((data) => {
                     window.console.log(data);
+                }).catch((err) => {
+                    window.console.log(err);
                 });
             }
             // this.sdk.getContacts().then((res) => {
@@ -124,24 +126,24 @@ class Chat extends React.Component<IProps, IState> {
             //     window.console.log(err);
             // });
             //
-            this.sdk.getDialogs(0, 100).then((res) => {
-                this.dialogRepo.importBulk(res.dialogsList).then((res1) => {
-                    window.console.log(res1);
-                }).catch((err1) => {
-                    window.console.log(err1);
-                });
-                // this.messageRepo.importBulk(res.messagesList).then((res1) => {
-                //     window.console.log(res1);
-                // }).catch((err1) => {
-                //     window.console.log(err1);
-                // });
-                window.console.log(res);
-            }).catch((err) => {
-                window.console.log(err);
-            });
+            // this.sdk.getDialogs(0, 100).then((res) => {
+            //     this.dialogRepo.importBulk(res.dialogsList).then((res1) => {
+            //         window.console.log(res1);
+            //     }).catch((err1) => {
+            //         window.console.log(err1);
+            //     });
+            //     // this.messageRepo.importBulk(res.messagesList).then((res1) => {
+            //     //     window.console.log(res1);
+            //     // }).catch((err1) => {
+            //     //     window.console.log(err1);
+            //     // });
+            //     window.console.log(res);
+            // }).catch((err) => {
+            //     window.console.log(err);
+            // });
         });
 
-        this.dialogRepo.getDialogs({}).then((res) => {
+        this.dialogRepo.getMany({}).then((res) => {
             this.setState({
                 dialogs: res
             });
@@ -263,7 +265,7 @@ class Chat extends React.Component<IProps, IState> {
         this.message = value;
     }
 
-    // private getMessages(conversationId: string): IMessage[] {
+    // private getMany(conversationId: string): IMessage[] {
     //     const messages: IMessage[] = [];
     //     for (let i = 0; i < 100; i++) {
     //         const me = faker.random.boolean();
@@ -306,8 +308,8 @@ class Chat extends React.Component<IProps, IState> {
 
     //
     // private createFakeMessage(conversationId: string) {
-    //     const messages = this.getMessages(conversationId);
-    //     this.messageRepo.createMessages(messages).then((data: any) => {
+    //     const messages = this.getMany(conversationId);
+    //     this.messageRepo.createMany(messages).then((data: any) => {
     //         window.console.log('new', data);
     //     }).catch((err: any) => {
     //         window.console.log('new', err);
@@ -328,7 +330,18 @@ class Chat extends React.Component<IProps, IState> {
             });
         };
 
-        this.messageRepo.getMessages({peerId: dialogId}).then((data) => {
+        const {dialogs} = this.state;
+        const index = findIndex(dialogs, {peerid: dialogId});
+        if (index === -1) {
+            return;
+        }
+        const peer = new InputPeer();
+        peer.setType(PeerType.PEERUSER);
+        peer.setAccesshash(dialogs[index].accesshash || 0);
+        peer.setId(dialogs[index].peerid || 0);
+
+        this.messageRepo.getMany({peer}).then((data) => {
+            window.console.log(data);
             if (data.length === 0) {
                 // messages = this.createFakeMessage(dialogId);
                 messages = [];
@@ -361,7 +374,7 @@ class Chat extends React.Component<IProps, IState> {
         if (this.isLoading) {
             return;
         }
-        this.messageRepo.getMessages({
+        this.messageRepo.getMany({
             before: this.state.messages[0].id,
             conversationId: this.state.selectedDialogId
         }).then((data) => {
@@ -395,7 +408,7 @@ class Chat extends React.Component<IProps, IState> {
             createdon: new Date().getTime(),
             me: true,
             peerid: this.state.selectedDialogId,
-            senderid: parseInt(this.connInfo.UserID || '0', 10),
+            senderid: this.connInfo.UserID,
         };
         messages.push(message);
         this.setState({
@@ -406,7 +419,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.animateToEnd();
             }, 50);
         });
-        this.messageRepo.createMessage(message);
+        this.messageRepo.create(message);
     }
 
     private onNewMessageOpen = () => {
@@ -425,8 +438,8 @@ class Chat extends React.Component<IProps, IState> {
         const contacts: PhoneContact.AsObject[] = [];
         contacts.push({
             clientid: UniqueId.getRandomId(),
-            firstname: "Ehsan",
-            lastname: "Musa",
+            firstname: faker.name.firstName(),
+            lastname: faker.name.lastName(),
             phone,
         });
         this.sdk.contactImport(true, contacts).then((data) => {

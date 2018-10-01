@@ -59,7 +59,7 @@ class Chat extends React.Component<IProps, IState> {
         window.addEventListener('wasmInit', () => {
             const info = this.sdk.getConnInfo();
             if (info && info.UserID) {
-                this.sdk.recall(parseInt(info.UserID, 10)).then((data) => {
+                this.sdk.recall(info.UserID).then((data) => {
                     window.console.log(data);
                 }).catch((err) => {
                     window.console.log(err);
@@ -210,7 +210,7 @@ class Chat extends React.Component<IProps, IState> {
             window.console.log(res);
             const info = this.sdk.loadConnInfo();
             window.console.log(info);
-            info.UserID = String(res.user.id);
+            info.UserID = res.user.id;
             info.FirstName = res.user.firstname;
             info.LastName = res.user.lastname;
             info.Phone = this.state.phone;

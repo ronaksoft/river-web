@@ -59,7 +59,7 @@ class DialogMessage extends React.Component<IProps, IState> {
     }
 
     private getMessage() {
-        this.messageRepo.getMessage(this.state.messageId).then((message) => {
+        this.messageRepo.get(this.state.messageId).then((message) => {
             this.setState({
                 message,
             });

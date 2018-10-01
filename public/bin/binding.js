@@ -101,12 +101,12 @@ const initWebSocket = () => {
     // Connection opened
     socket.onopen = () => {
         console.log('Hello Server!', new Date());
+        connected = true;
         const event = new CustomEvent('wsOpen');
         window.dispatchEvent(event);
         if (wsOpen) {
             wsOpen();
         }
-        connected = true;
     };
 
     // Listen for messages
@@ -116,7 +116,9 @@ const initWebSocket = () => {
 
     // Listen for messages
     socket.onclose = () => {
-        initWebSocket();
         connected = false;
+        const event = new CustomEvent('wsClose');
+        window.dispatchEvent(event);
+        initWebSocket();
     };
 };
