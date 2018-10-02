@@ -16,7 +16,9 @@ build:mobile:
     - cd /var/lib/app
     - yarn install
     - npm run build
+    - mkdir -p $BUILD_DIR/app
     - cp -r ./build/* $BUILD_DIR/app
+    - cp ./nginx.conf $BUILD_DIR/app/
 
   artifacts:
     untracked: true
