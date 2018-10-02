@@ -5,7 +5,7 @@ stages:
 variables:
   BUILD_DIR: $CI_PROJECT_DIR/build
 
-image: "registry.ronaksoftware.com/base/node:builder"
+image: "yarnpkg/node-yarn"
 
 build:mobile:
   stage: build
