@@ -38,6 +38,13 @@ wasmWorker.onmessage = (e) => {
             });
             window.dispatchEvent(fnCallbackEvent);
             break;
+        case 'fnUpdate':
+            const fnUpdateEvent = new CustomEvent('fnUpdate', {
+                bubbles: true,
+                detail: d.data,
+            });
+            window.dispatchEvent(fnUpdateEvent);
+            break;
         case 'wsSend':
             if (connected) {
                 socket.send(Uint8Array.from(atob(d.data), c => c.charCodeAt(0)));
@@ -127,5 +134,7 @@ const initWebSocket = () => {
 };
 
 setInterval(() => {
-    wsSend(new Uint8Array([9]));
+    if (connected) {
+        socket.send(new Uint8Array([9]));
+    }
 }, 5000);
