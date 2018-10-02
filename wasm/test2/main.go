@@ -26,7 +26,7 @@ func main() {
 		connInfo = args[0].String()
 	})
 	defer loadCB.Release()
-	js.Global().Get("loadConnInfo").Invoke(loadCB)
+	js.Global().Get("setLoadConnInfo").Invoke(loadCB)
 
 	initCB := js.NewCallback(initSDK)
 	defer initCB.Release()
@@ -44,10 +44,10 @@ func main() {
 	defer wsOpenCB.Release()
 	js.Global().Get("setWsOpen").Invoke(wsOpenCB)
 
-	beforeUnloadCb := js.NewEventCallback(0, beforeUnload)
-	defer beforeUnloadCb.Release()
-	addEventListener := js.Global().Get("addEventListener")
-	addEventListener.Invoke("beforeunload", beforeUnloadCb)
+	//beforeUnloadCb := js.NewEventCallback(0, beforeUnload)
+	//defer beforeUnloadCb.Release()
+	//addEventListener := js.Global().Get("addEventListener")
+	//addEventListener.Invoke("beforeunload", beforeUnloadCb)
 
 	<-beforeUnloadCh
 	fmt.Println("Bye Wasm !")

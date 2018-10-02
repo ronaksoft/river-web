@@ -1,3 +1,38 @@
+const wasmWorker = new Worker('bin/worker.js');
+wasmWorker.onerror = (e) => {
+    console.log(e);
+};
+wasmWorker.onmessage = (e) => {
+    const d = e.data;
+    switch (d.cmd) {
+        case 'init':
+
+            break;
+        case 'saveConnInfo':
+            localStorage.setItem('river.conn.info', d.data);
+            break;
+        case 'wsOpen':
+            wsOpen(d.data);
+            break;
+        case 'fnCall':
+            wsOpen(d.data);
+            break;
+    }
+};
+
+workerMessage = (cmd, data) => {
+    wasmWorker.postMessage({
+        cmd,
+        data,
+    });
+};
+
+fetch('bin/test.wasm').then((response) => {
+    return response.arrayBuffer();
+}).then((bytes) => {
+    workerMessage('init', bytes);
+});
+
 if (WebAssembly.instantiateStreaming) { // polyfill
     WebAssembly.instantiateStreaming = async (resp, importObject) => {
         const source = await (await resp).arrayBuffer();
@@ -9,17 +44,14 @@ let run;
 let instance;
 
 let socket = null;
-let fnCall = null;
-let receive = null;
-let wsOpen = null;
 let connected = false;
 
 (async function () {
-    const go = new Go();
-    const t = await WebAssembly.instantiateStreaming(fetch("bin/test.wasm"), go.importObject);
-    instance = t.instance;
-    run = go.run(instance);
-    initWebSocket();
+    // const go = new Go();
+    // const t = await WebAssembly.instantiateStreaming(fetch('bin/test.wasm'), go.importObject);
+    // instance = t.instance;
+    // run = go.run(instance);
+    // initWebSocket();
 })();
 
 function wsSend(buffer) {
@@ -54,10 +86,6 @@ function initSDK(callback) {
 
 function setFnCall(callback) {
     fnCall = callback;
-    const event = new CustomEvent('wasmInit');
-    setTimeout(function () {
-        window.dispatchEvent(event);
-    }, 50);
 }
 
 function fnCallback(reqId, constructor, data) {
@@ -75,15 +103,12 @@ function fnCallback(reqId, constructor, data) {
 window.addEventListener('fnCallEvent', (event) => {
     // console.log(event.detail);
     const data = event.detail;
-    fnCall(data.reqId, data.constructor, Uint8ToBase64(data.data))
+    workerMessage('fnCall', {
+        reqId: data.reqId,
+        constructor: data.constructor,
+        payload: Uint8ToBase64(data.data)
+    });
 });
-
-function setReceive(callback) {
-    receive = callback;
-}
-function setWsOpen(callback) {
-    wsOpen = callback;
-}
 
 function Uint8ToBase64(u8a) {
     const CHUNK_SZ = 0x8000;
@@ -105,13 +130,13 @@ const initWebSocket = () => {
         const event = new CustomEvent('wsOpen');
         window.dispatchEvent(event);
         if (wsOpen) {
-            wsOpen();
+            workerMessage('wsOpen');
         }
     };
 
     // Listen for messages
     socket.onmessage = (event) => {
-        receive(Uint8ToBase64(new Uint8Array(event.data)));
+        workerMessage('receive', Uint8ToBase64(new Uint8Array(event.data)));
     };
 
     // Listen for messages
