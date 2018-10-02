@@ -12,6 +12,7 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"encoding/binary"
+	"encoding/base64"
 )
 
 var (
@@ -263,7 +264,7 @@ func (r *River) send(msgEnvelope *msg.MessageEnvelope) {
 	if msgEnvelope.Constructor == msg.C_InitConnect || msgEnvelope.Constructor == msg.C_InitCompleteAuth {
 		r.LastMsg = msgEnvelope
 	}
-	js.Global().Call("wsSend", js.TypedArrayOf(b))
+	js.Global().Call("wsSend", base64.StdEncoding.EncodeToString(b))
 }
 
 func (r *River) receive(message *[]byte) {

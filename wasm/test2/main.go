@@ -30,7 +30,7 @@ func main() {
 
 	initCB := js.NewCallback(initSDK)
 	defer initCB.Release()
-	js.Global().Get("initSDK").Invoke(initCB)
+	js.Global().Get("setInitSDK").Invoke(initCB)
 
 	fnCB := js.NewCallback(fnCall)
 	defer fnCB.Release()
@@ -61,9 +61,10 @@ func fnCall(args []js.Value) {
 	reqId := uint64(args[0].Int())
 	constructor := int64(args[1].Int())
 	enc, err := base64.StdEncoding.DecodeString(args[2].String())
+	fmt.Println(reqId, constructor, enc)
 	if err == nil {
 		river.ExecuteRemoteCommand(reqId, constructor, enc, nil, func(m *msg.MessageEnvelope) {
-			js.Global().Call("fnCallback", m.RequestID, m.Constructor, js.TypedArrayOf(m.Message))
+			js.Global().Call("fnCallback", m.RequestID, m.Constructor, base64.StdEncoding.EncodeToString(m.Message))
 		})
 	}
 }

@@ -1,23 +1,66 @@
+const Base64Binary = {
+    _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+
+    /* will return a  Uint8Array type */
+    decodeArrayBuffer: function (input) {
+        var bytes = (input.length / 4) * 3;
+        var ab = new ArrayBuffer(bytes);
+        this.decode(input, ab);
+
+        return ab;
+    },
+
+    removePaddingChars: function (input) {
+        var lkey = this._keyStr.indexOf(input.charAt(input.length - 1));
+        if (lkey == 64) {
+            return input.substring(0, input.length - 1);
+        }
+        return input;
+    },
+
+    decode: function (input, arrayBuffer) {
+        //get last chars to see if are valid
+        input = this.removePaddingChars(input);
+        input = this.removePaddingChars(input);
+
+        var bytes = parseInt((input.length / 4) * 3, 10);
+
+        var uarray;
+        var chr1, chr2, chr3;
+        var enc1, enc2, enc3, enc4;
+        var i = 0;
+        var j = 0;
+
+        if (arrayBuffer)
+            uarray = new Uint8Array(arrayBuffer);
+        else
+            uarray = new Uint8Array(bytes);
+
+        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+
+        for (i = 0; i < bytes; i += 3) {
+            //get the 3 octects in 4 ascii chars
+            enc1 = this._keyStr.indexOf(input.charAt(j++));
+            enc2 = this._keyStr.indexOf(input.charAt(j++));
+            enc3 = this._keyStr.indexOf(input.charAt(j++));
+            enc4 = this._keyStr.indexOf(input.charAt(j++));
+
+            chr1 = (enc1 << 2) | (enc2 >> 4);
+            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+            chr3 = ((enc3 & 3) << 6) | enc4;
+
+            uarray[i] = chr1;
+            if (enc3 != 64) uarray[i + 1] = chr2;
+            if (enc4 != 64) uarray[i + 2] = chr3;
+        }
+
+        return uarray;
+    }
+};
+
 const wasmWorker = new Worker('bin/worker.js');
 wasmWorker.onerror = (e) => {
     console.log(e);
-};
-wasmWorker.onmessage = (e) => {
-    const d = e.data;
-    switch (d.cmd) {
-        case 'init':
-
-            break;
-        case 'saveConnInfo':
-            localStorage.setItem('river.conn.info', d.data);
-            break;
-        case 'wsOpen':
-            wsOpen(d.data);
-            break;
-        case 'fnCall':
-            wsOpen(d.data);
-            break;
-    }
 };
 
 workerMessage = (cmd, data) => {
@@ -27,66 +70,58 @@ workerMessage = (cmd, data) => {
     });
 };
 
+wasmWorker.onmessage = (e) => {
+    const d = e.data;
+    switch (d.cmd) {
+        case 'saveConnInfo':
+            localStorage.setItem('river.conn.info', d.data);
+            break;
+        case 'loadConnInfo':
+            workerMessage('loadConnInfo', localStorage.getItem('river.conn.info'));
+            workerMessage('initSDK', {});
+            initWebSocket();
+            break;
+        case 'fnCallback':
+            const fnCallbackEvent = new CustomEvent('fnCallbackEvent', {
+                bubbles: true,
+                detail: {
+                    reqId: d.data.reqId,
+                    constructor: d.data.constructor,
+                    data: Uint8Array.from(atob(d.data), c => c.charCodeAt(0))
+                }
+            });
+            window.dispatchEvent(fnCallbackEvent);
+            break;
+        case 'wsSend':
+            if (connected) {
+                socket.send(Uint8Array.from(atob(d.data), c => c.charCodeAt(0)));
+            }
+            break;
+        case 'wsError':
+            const fnErrorEvent = new CustomEvent('fnErrorEvent', {
+                bubbles: true,
+                detail: {
+                    reqId: d.data.reqId,
+                    constructor: d.data.constructor,
+                    data: d.data.data
+                }
+            });
+            window.dispatchEvent(fnErrorEvent);
+            break;
+    }
+};
+
 fetch('bin/test.wasm').then((response) => {
     return response.arrayBuffer();
 }).then((bytes) => {
     workerMessage('init', bytes);
 });
 
-if (WebAssembly.instantiateStreaming) { // polyfill
-    WebAssembly.instantiateStreaming = async (resp, importObject) => {
-        const source = await (await resp).arrayBuffer();
-        return await WebAssembly.instantiate(source, importObject);
-    };
-}
-
 let run;
 let instance;
-
 let socket = null;
 let connected = false;
 
-(async function () {
-    // const go = new Go();
-    // const t = await WebAssembly.instantiateStreaming(fetch('bin/test.wasm'), go.importObject);
-    // instance = t.instance;
-    // run = go.run(instance);
-    // initWebSocket();
-})();
-
-function wsSend(buffer) {
-    if (connected) {
-        socket.send(buffer);
-    }
-}
-
-function wsError(reqId, constructor, data) {
-    const fnCallbackEvent = new CustomEvent('fnErrorEvent', {
-        bubbles: true,
-        detail: {
-            reqId: reqId,
-            constructor: constructor,
-            data: data
-        }
-    });
-    window.dispatchEvent(fnCallbackEvent);
-}
-
-function saveConnInfo(data) {
-    localStorage.setItem('river.conn.info', data);
-}
-
-function loadConnInfo(callback) {
-    callback(localStorage.getItem('river.conn.info'))
-}
-
-function initSDK(callback) {
-    callback();
-}
-
-function setFnCall(callback) {
-    fnCall = callback;
-}
 
 function fnCallback(reqId, constructor, data) {
     const fnCallbackEvent = new CustomEvent('fnCallbackEvent', {
@@ -101,7 +136,6 @@ function fnCallback(reqId, constructor, data) {
 }
 
 window.addEventListener('fnCallEvent', (event) => {
-    // console.log(event.detail);
     const data = event.detail;
     workerMessage('fnCall', {
         reqId: data.reqId,
@@ -129,9 +163,7 @@ const initWebSocket = () => {
         connected = true;
         const event = new CustomEvent('wsOpen');
         window.dispatchEvent(event);
-        if (wsOpen) {
-            workerMessage('wsOpen');
-        }
+        workerMessage('wsOpen');
     };
 
     // Listen for messages

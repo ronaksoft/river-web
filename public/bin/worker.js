@@ -1,6 +1,7 @@
 importScripts('wasm_exec.js');
 
 let run;
+let initSDK = null;
 let loadConnInfo = null;
 let fnCall = null;
 let receive = null;
@@ -23,14 +24,31 @@ self.onmessage = function (e) {
                 run = go.run(res.instance);
             });
             break;
+        case 'initSDK':
+            if (initSDK) {
+                initSDK();
+            }
+            break;
         case 'receive':
-            receive(d.data);
+            if (receive) {
+                receive(d.data);
+            }
             break;
         case 'wsOpen':
-            wsOpen(d.data);
+            if (wsOpen) {
+                wsOpen(d.data);
+            }
             break;
         case 'fnCall':
-            wsOpen(d.data);
+            console.log(d);
+            if (fnCall) {
+                fnCall(d.data.reqId, d.data.constructor, d.data.payload);
+            }
+            break;
+        case 'loadConnInfo':
+            if (loadConnInfo) {
+                loadConnInfo(d.data);
+            }
             break;
     }
 };
@@ -41,11 +59,19 @@ saveConnInfo = (data) => {
 
 setLoadConnInfo = (callback) => {
     loadConnInfo = callback;
+    workerMessage('loadConnInfo', {});
 };
 
-initSDK = (callback) => {
-    callback();
-    workerMessage('initSDK', {});
+setInitSDK = (callback) => {
+    initSDK = callback;
+};
+
+wsSend = (b64) => {
+    workerMessage('wsSend', b64);
+};
+
+wsError = (reqId, constructor, data) => {
+    workerMessage('wsError', {reqId, constructor, data});
 };
 
 setReceive = (callback) => {
@@ -61,8 +87,7 @@ setFnCall = (callback) => {
 };
 
 fnCallback = (reqId, constructor, data) => {
-    wasmWorker.postMessage({
-        cmd: 'fnCallback',
+    workerMessage('fnCallback', {
         reqId,
         constructor,
         data,
