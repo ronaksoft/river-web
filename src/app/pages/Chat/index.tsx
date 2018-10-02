@@ -112,38 +112,24 @@ class Chat extends React.Component<IProps, IState> {
         }
 
         window.addEventListener('wasmInit', () => {
-            const info = this.sdk.getConnInfo();
-            if (info && info.UserID) {
-                this.sdk.recall(info.UserID).then((data) => {
-                    window.console.log(data);
-                }).catch((err) => {
-                    window.console.log(err);
+            this.dialogRepo.getMany({limit: 100}).then((res) => {
+                this.setState({
+                    dialogs: res
                 });
-            }
-            // this.sdk.getContacts().then((res) => {
-            //     window.console.log(res);
-            // }).catch((err) => {
-            //     window.console.log(err);
-            // });
-            //
-            // this.sdk.getDialogs(0, 100).then((res) => {
-            //     this.dialogRepo.importBulk(res.dialogsList).then((res1) => {
-            //         window.console.log(res1);
-            //     }).catch((err1) => {
-            //         window.console.log(err1);
-            //     });
-            //     // this.messageRepo.importBulk(res.messagesList).then((res1) => {
-            //     //     window.console.log(res1);
-            //     // }).catch((err1) => {
-            //     //     window.console.log(err1);
-            //     // });
-            //     window.console.log(res);
-            // }).catch((err) => {
-            //     window.console.log(err);
-            // });
+            }).catch((err) => {
+                window.console.log(err);
+            });
         });
 
-        this.dialogRepo.getMany({}).then((res) => {
+        window.addEventListener('wsOpen', () => {
+            this.sdk.recall(0).then((data) => {
+                window.console.log(data);
+            }).catch((err) => {
+                window.console.log(err);
+            });
+        });
+
+        this.dialogRepo.getManyCache({}).then((res) => {
             this.setState({
                 dialogs: res
             });

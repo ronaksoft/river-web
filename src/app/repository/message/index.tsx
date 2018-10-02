@@ -47,6 +47,7 @@ export default class MessageRepo {
                     resolve(res);
                 }
             }).catch((err) => {
+                window.console.log(err);
                 this.sdk.getMessageHistory(peer, {minId: before, limit}).then((remoteRes) => {
                     this.importBulk(remoteRes.messagesList);
                     this.userRepo.importBulk(remoteRes.usersList);

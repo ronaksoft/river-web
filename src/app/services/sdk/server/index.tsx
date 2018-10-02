@@ -1,5 +1,6 @@
 import {C_MSG} from '../const';
 import Presenter from '../presenters';
+import {UpdateContainer} from '../messages/core.messages_pb';
 
 export default class Server {
     public static getInstance() {
@@ -36,6 +37,9 @@ export default class Server {
         this.reqId = 0;
         window.addEventListener('fnCallbackEvent', (event: any) => {
             this.response(event.detail);
+        });
+        window.addEventListener('fnUpdate', (event: any) => {
+            this.update(event.detail);
         });
         window.addEventListener('fnErrorEvent', (event: any) => {
             this.error(event.detail);
@@ -98,19 +102,21 @@ export default class Server {
             bubbles: true,
             detail: request,
         });
-        window.console.log(request.constructor, request.reqId);
+        window.console.warn(request.constructor, request.reqId);
         request.timeout = setTimeout(() => {
             this.dispatchTimeout(request.reqId);
-        }, 10000);
+        }, 30000);
         window.dispatchEvent(fnCallbackEvent);
     }
 
     private response({reqId, constructor, data}: any) {
-        window.console.log(constructor, reqId);
+        window.console.warn(constructor, reqId);
         if (!this.messageListeners[reqId]) {
             return;
         }
-        const res = Presenter.getMessage(constructor, data);
+        // @ts-ignore
+        const arr = Uint8Array.from(atob(data), c => c.charCodeAt(0));
+        const res = Presenter.getMessage(constructor, arr);
         if (res) {
             if (constructor === C_MSG.Error) {
                 if (this.messageListeners[reqId].reject) {
@@ -127,15 +133,14 @@ export default class Server {
     }
 
     private error({reqId, constructor, data}: any) {
-        const res = Presenter.getMessage(constructor, data);
+        // @ts-ignore
+        const arr = Uint8Array.from(atob(data), c => c.charCodeAt(0));
+        const res = Presenter.getMessage(constructor, arr);
         if (res) {
             if (constructor === C_MSG.Error) {
                 const resp = res.toObject();
                 if (resp.items === "AUTH") {
-                    // localStorage.removeItem('river.conn.info');
-                    // window.location.reload();
-                    // window.console.log("wfef");
-                    window.console.log(resp);
+                    window.console.log(reqId, resp);
                 }
             }
         }
@@ -164,5 +169,12 @@ export default class Server {
         if (index > -1) {
             this.sentQueue.splice(index, 1);
         }
+    }
+
+    private update(bytes: any) {
+        // @ts-ignore
+        const arr = Uint8Array.from(atob(bytes), c => c.charCodeAt(0));
+        const data = UpdateContainer.deserializeBinary(arr);
+        window.console.log(data);
     }
 }

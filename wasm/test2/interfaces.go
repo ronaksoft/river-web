@@ -319,7 +319,7 @@ func (r *River) messageHandler(m *msg.MessageEnvelope) {
 			zap.Int64("MIN_UPDATE_ID", x.MinUpdateID),
 			zap.Int64("MAX_UPDATE_ID", x.MaxUpdateID),
 		)
-		//r.wsOnUpdate(x)
+		js.Global().Call("fnUpdate", base64.StdEncoding.EncodeToString(m.Message))
 	default:
 		if val, ok := r.MessageQueue[m.RequestID]; ok {
 			(*val)(m)
@@ -327,7 +327,7 @@ func (r *River) messageHandler(m *msg.MessageEnvelope) {
 			error := new(msg.Error)
 			error.Unmarshal(m.Message)
 			if error.Code == "E01" {
-				js.Global().Call("wsError", m.RequestID, m.Constructor, js.TypedArrayOf(m.Message))
+				js.Global().Call("wsError", m.RequestID, m.Constructor, base64.StdEncoding.EncodeToString(m.Message))
 			}
 		}
 	}

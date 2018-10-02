@@ -40,7 +40,6 @@ self.onmessage = function (e) {
             }
             break;
         case 'fnCall':
-            console.log(d);
             if (fnCall) {
                 fnCall(d.data.reqId, d.data.constructor, d.data.payload);
             }
@@ -68,6 +67,10 @@ setInitSDK = (callback) => {
 
 wsSend = (b64) => {
     workerMessage('wsSend', b64);
+};
+
+fnUpdate = (b64) => {
+    workerMessage('fnUpdate', b64);
 };
 
 wsError = (reqId, constructor, data) => {

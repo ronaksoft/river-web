@@ -164,8 +164,8 @@ export default class SDK {
 
     public getDialogs(skip: number, limit: number): Promise<MessagesDialogs.AsObject> {
         const data = new MessagesGetDialogs();
-        data.setOffset(skip);
-        data.setLimit(limit);
+        data.setOffset(skip || 0);
+        data.setLimit(limit || 0);
         return this.server.send(C_MSG.MessagesGetDialogs, data.serializeBinary());
     }
 

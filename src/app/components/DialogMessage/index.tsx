@@ -5,8 +5,8 @@ import './style.css';
 import {IUser} from "../../repository/user/interface";
 import {IMessage} from "../../repository/message/interface";
 import MessageRepo from "../../repository/message";
-import * as faker from 'faker';
 import TimeUtililty from "../../services/utilities/time";
+import UserRepo from '../../repository/user';
 
 interface IProps {
     messageId: number;
@@ -20,6 +20,7 @@ interface IState {
 
 class DialogMessage extends React.Component<IProps, IState> {
     private messageRepo: MessageRepo;
+    private userRepo: UserRepo;
 
     constructor(props: IProps) {
         super(props);
@@ -29,6 +30,7 @@ class DialogMessage extends React.Component<IProps, IState> {
         };
 
         this.messageRepo = new MessageRepo();
+        this.userRepo = new UserRepo();
     }
 
     public componentDidMount() {
@@ -63,16 +65,15 @@ class DialogMessage extends React.Component<IProps, IState> {
             this.setState({
                 message,
             });
+            this.userRepo.get(message.senderid || 0).then((user) => {
+                this.setState({
+                    user,
+                });
+            }).catch((err) => {
+                window.console.log(err);
+            });
         }).catch((err) => {
             window.console.log(err);
-        });
-        const user: IUser = {
-            avatar: faker.image.avatar(),
-            firstname: faker.name.firstName(),
-            lastname: faker.name.lastName(),
-        };
-        this.setState({
-            user,
         });
     }
 }

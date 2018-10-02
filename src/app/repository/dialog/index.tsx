@@ -1,14 +1,23 @@
 import DB from '../../services/db/dialog';
 import {IDialog} from './interface';
 import {differenceBy, find, merge} from 'lodash';
+import SDK from '../../services/sdk';
+import UserRepo from '../user';
+import MessageRepo from '../message';
 
 export default class DialogRepo {
     private dbService: DB;
     private db: any;
+    private sdk: SDK;
+    private messageRepo: MessageRepo;
+    private userRepo: UserRepo;
 
     public constructor() {
         this.dbService = DB.getInstance();
         this.db = this.dbService.getDB();
+        this.sdk = SDK.getInstance();
+        this.messageRepo = new MessageRepo();
+        this.userRepo = new UserRepo();
     }
 
     public create(dialog: IDialog) {
@@ -19,21 +28,25 @@ export default class DialogRepo {
         return this.db.bulkDocs(dialogs);
     }
 
-    public getMany({skip, before, after}: any): Promise<IDialog[]> {
+    public getMany({skip, limit}: any): Promise<IDialog[]> {
+        return this.sdk.getDialogs(skip || 0, limit || 30).then((remoteRes) => {
+            this.importBulk(remoteRes.dialogsList);
+            this.messageRepo.importBulk(remoteRes.messagesList);
+            this.userRepo.importBulk(remoteRes.usersList);
+            return remoteRes.dialogsList;
+        });
+    }
+
+    public getManyCache({skip, limit}: any): Promise<IDialog[]> {
         const q: any = [
             {last_update: {'$gt': true}},
         ];
-        if (before) {
-            q.push({last_update: {'$lt': before}});
-        }
-        if (after) {
-            q.push({last_update: {'$gt': after}});
-        }
         return this.db.find({
-            limit: (skip || 30),
+            limit: (limit || 30),
             selector: {
                 $and: q,
             },
+            skip: (skip || 0),
             sort: [
                 {last_update: 'desc'},
             ],
