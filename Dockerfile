@@ -13,4 +13,4 @@ COPY ./run.sh .
 RUN chmod +x run.sh
 CMD  /bin/sh run.sh
 
-COPY ./build /ronak/app
+COPY . /ronak/app

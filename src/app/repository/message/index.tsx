@@ -140,7 +140,7 @@ export default class MessageRepo {
             const updateItems: IMessage[] = result.docs;
             updateItems.map((msg: IMessage) => {
                 const t = find(msgs, {_id: msg._id});
-                return merge(t, msg);
+                return merge(msg, t);
             });
             return this.createMany([...createItems, ...updateItems]);
         });

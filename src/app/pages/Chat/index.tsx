@@ -54,7 +54,7 @@ class Chat extends React.Component<IProps, IState> {
     private updateManager: UpdateManager;
     private connInfo: IConnInfo;
     private eventReferences: any[] = [];
-    private dialogMap: { [key: number]: IDialog } = {};
+    private dialogMap: { [key: number]: number } = {};
     private typingTimeout: any = null;
 
     constructor(props: IProps) {
@@ -139,8 +139,8 @@ class Chat extends React.Component<IProps, IState> {
         });
 
         this.dialogRepo.getManyCache({}).then((res) => {
-            res.forEach((dialog) => {
-                this.dialogMap[dialog.peerid || 0] = dialog;
+            res.forEach((dialog, index) => {
+                this.dialogMap[dialog.peerid || 0] = index;
             });
 
             this.setState({
@@ -160,6 +160,7 @@ class Chat extends React.Component<IProps, IState> {
             message.me = (this.connInfo.UserID === message.senderid);
             this.pushMessage(message);
             this.messageRepo.importBulk([data.message]);
+            this.updateDialogs(data.message, data.accesshash || 0);
         }));
 
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUserTyping, (data: UpdateUserTyping.AsObject) => {
@@ -176,7 +177,6 @@ class Chat extends React.Component<IProps, IState> {
                     isTyping: false,
                 });
             }, 5000);
-            window.console.log(data);
         }));
     }
 
@@ -387,7 +387,7 @@ class Chat extends React.Component<IProps, IState> {
                 if (msg.senderid === this.connInfo.UserID) {
                     msg.me = true;
                 }
-                if (key > 0 && msg.me !== messages[key-1].me) {
+                if (key > 0 && msg.me !== messages[key - 1].me) {
                     msg.avatar = true;
                 }
                 return msg;
@@ -463,7 +463,7 @@ class Chat extends React.Component<IProps, IState> {
 
     private pushMessage = (message: IMessage) => {
         const messages = this.state.messages;
-        if (messages.length > 0 && message.me !== messages[messages.length-1].me) {
+        if (messages.length > 0 && message.me !== messages[messages.length - 1].me) {
             message.avatar = true;
         }
         messages.push(message);
@@ -520,7 +520,6 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private onTyping = (typing: boolean) => {
-        window.console.log(typing);
         const peer = this.getPeerByDialogId(this.state.selectedDialogId);
         if (peer === null) {
             return;
@@ -543,11 +542,46 @@ class Chat extends React.Component<IProps, IState> {
         if (!this.dialogMap.hasOwnProperty(id)) {
             return null;
         }
+        const index = this.dialogMap[id];
+        const {dialogs} = this.state;
         const peer = new InputPeer();
         peer.setType(PeerType.PEERUSER);
-        peer.setAccesshash(this.dialogMap[id].accesshash || 0);
-        peer.setId(this.dialogMap[id].peerid || 0);
+        peer.setAccesshash(dialogs[index].accesshash || 0);
+        peer.setId(dialogs[index].peerid || 0);
         return peer;
+    }
+
+    private updateDialogs(msg: IMessage, accessHash: number) {
+        const id = msg.peerid || 0;
+        const {dialogs} = this.state;
+        if (this.dialogMap.hasOwnProperty(id)) {
+            const index = this.dialogMap[id];
+            dialogs[index].topmessageid = msg.id;
+            dialogs[index].last_update = msg.createdon;
+        } else {
+            const dialog: IDialog = {
+                _id: String(msg.id),
+                accesshash: accessHash,
+                last_update: msg.createdon,
+                peerid: msg.peerid,
+                peertype: msg.peertype,
+                topmessageid: msg.id,
+                unreadcount: 0,
+            };
+            dialogs.push(dialog);
+        }
+        dialogs.sort((i1, i2) => {
+            if (!i1.last_update || !i2.last_update) {
+                return 0;
+            }
+            return i2.last_update - i1.last_update;
+        });
+        dialogs.forEach((d, i) => {
+            this.dialogMap[d.peerid || 0] = i;
+        });
+        this.setState({
+            dialogs,
+        });
     }
 }
 

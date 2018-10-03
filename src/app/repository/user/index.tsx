@@ -68,7 +68,7 @@ export default class UserRepo {
             const updateItems: IUser[] = result.docs;
             updateItems.map((user: IUser) => {
                 const t = find(users, {_id: user._id});
-                return merge(t, user);
+                return merge(user, t);
             });
             return this.createMany([...createItems, ...updateItems]);
         });

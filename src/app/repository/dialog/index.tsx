@@ -78,7 +78,7 @@ export default class DialogRepo {
             const updateItems: IDialog[] = result.docs;
             updateItems.map((dialog: IDialog) => {
                 const t = find(dialogs, {_id: dialog._id});
-                return merge(t, dialog);
+                return merge(dialog, t);
             });
             return this.createMany([...createItems, ...updateItems]);
         });
