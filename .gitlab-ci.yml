@@ -1,0 +1,41 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  BUILD_DIR: $CI_PROJECT_DIR/build
+
+image: "yarnpkg/node-yarn"
+
+build:mobile:
+  stage: build
+  only:
+      - master
+  script:
+    - cp -a ./. /var/lib/app
+    - cd /var/lib/app
+    - yarn install
+    - npm run build
+    - mkdir -p $BUILD_DIR/app
+    - cp -r ./build/* $BUILD_DIR/app
+    - cp ./nginx.conf $BUILD_DIR/app/
+
+  artifacts:
+    untracked: true
+    expire_in: 1 hour
+
+deploy:production:
+  image: gitlab/dind
+  stage: deploy
+  only:
+    - master
+  services:
+    - docker:dind
+  variables:
+    IMAGE_TAG: "1.0"
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker build --pull -t $CI_REGISTRY_IMAGE:$IMAGE_TAG .
+    - docker push $CI_REGISTRY_IMAGE:$IMAGE_TAG
+  dependencies:
+    - build:mobile
