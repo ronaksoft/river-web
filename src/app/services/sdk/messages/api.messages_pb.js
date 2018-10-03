@@ -2382,7 +2382,8 @@ proto.msg.MessagesSent.prototype.toObject = function(opt_includeInstance) {
 proto.msg.MessagesSent.toObject = function(includeInstance, msg) {
   var f, obj = {
     messageid: jspb.Message.getField(msg, 1),
-    randomid: jspb.Message.getField(msg, 2)
+    randomid: jspb.Message.getField(msg, 2),
+    createdon: jspb.Message.getField(msg, 3)
   };
 
   if (includeInstance) {
@@ -2427,6 +2428,10 @@ proto.msg.MessagesSent.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {number} */ (reader.readInt64());
       msg.setRandomid(value);
       break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setCreatedon(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -2467,6 +2472,13 @@ proto.msg.MessagesSent.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeInt64(
       2,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeInt64(
+      3,
       f
     );
   }
@@ -2528,6 +2540,35 @@ proto.msg.MessagesSent.prototype.clearRandomid = function() {
  */
 proto.msg.MessagesSent.prototype.hasRandomid = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * required int64 CreatedOn = 3;
+ * @return {number}
+ */
+proto.msg.MessagesSent.prototype.getCreatedon = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.MessagesSent.prototype.setCreatedon = function(value) {
+  jspb.Message.setField(this, 3, value);
+};
+
+
+proto.msg.MessagesSent.prototype.clearCreatedon = function() {
+  jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.MessagesSent.prototype.hasCreatedon = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 

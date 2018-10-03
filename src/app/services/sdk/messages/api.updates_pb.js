@@ -1119,7 +1119,9 @@ proto.msg.UpdateNewMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
     ucount: jspb.Message.getField(msg, 100),
     updateid: jspb.Message.getField(msg, 101),
-    message: (f = msg.getMessage()) && core_types_pb.UserMessage.toObject(includeInstance, f)
+    message: (f = msg.getMessage()) && core_types_pb.UserMessage.toObject(includeInstance, f),
+    sender: (f = msg.getSender()) && core_types_pb.User.toObject(includeInstance, f),
+    accesshash: jspb.Message.getField(msg, 3)
   };
 
   if (includeInstance) {
@@ -1168,6 +1170,15 @@ proto.msg.UpdateNewMessage.deserializeBinaryFromReader = function(msg, reader) {
       var value = new core_types_pb.UserMessage;
       reader.readMessage(value,core_types_pb.UserMessage.deserializeBinaryFromReader);
       msg.setMessage(value);
+      break;
+    case 2:
+      var value = new core_types_pb.User;
+      reader.readMessage(value,core_types_pb.User.deserializeBinaryFromReader);
+      msg.setSender(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setAccesshash(value);
       break;
     default:
       reader.skipField();
@@ -1218,6 +1229,21 @@ proto.msg.UpdateNewMessage.serializeBinaryToWriter = function(message, writer) {
       1,
       f,
       core_types_pb.UserMessage.serializeBinaryToWriter
+    );
+  }
+  f = message.getSender();
+  if (f != null) {
+    writer.writeMessage(
+      2,
+      f,
+      core_types_pb.User.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeUint64(
+      3,
+      f
     );
   }
 };
@@ -1308,6 +1334,65 @@ proto.msg.UpdateNewMessage.prototype.clearMessage = function() {
  */
 proto.msg.UpdateNewMessage.prototype.hasMessage = function() {
   return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * required User Sender = 2;
+ * @return {!proto.msg.User}
+ */
+proto.msg.UpdateNewMessage.prototype.getSender = function() {
+  return /** @type{!proto.msg.User} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.User, 2, 1));
+};
+
+
+/** @param {!proto.msg.User} value */
+proto.msg.UpdateNewMessage.prototype.setSender = function(value) {
+  jspb.Message.setWrapperField(this, 2, value);
+};
+
+
+proto.msg.UpdateNewMessage.prototype.clearSender = function() {
+  jspb.Message.setField(this, 2, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateNewMessage.prototype.hasSender = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional uint64 AccessHash = 3;
+ * @return {number}
+ */
+proto.msg.UpdateNewMessage.prototype.getAccesshash = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.UpdateNewMessage.prototype.setAccesshash = function(value) {
+  jspb.Message.setField(this, 3, value);
+};
+
+
+proto.msg.UpdateNewMessage.prototype.clearAccesshash = function() {
+  jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateNewMessage.prototype.hasAccesshash = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 

@@ -4,10 +4,20 @@ import {differenceBy, find, merge} from 'lodash';
 import * as faker from "faker";
 
 export default class UserRepo {
+    public static getInstance() {
+        if (!this.instance) {
+            this.instance = new UserRepo();
+        }
+
+        return this.instance;
+    }
+
+    private static instance: UserRepo;
+
     private dbService: DB;
     private db: any;
 
-    public constructor() {
+    private constructor() {
         this.dbService = DB.getInstance();
         this.db = this.dbService.getDB();
     }
@@ -21,7 +31,14 @@ export default class UserRepo {
     }
 
     public get(id: number): Promise<IUser> {
-        return this.db.get(String(id));
+        const user = this.dbService.getUser(id);
+        if (user) {
+            return Promise.resolve(user);
+        }
+        return this.db.get(String(id)).then((u: IUser) => {
+            this.dbService.setUser(u);
+            return u;
+        });
     }
 
     public importBulk(users: IUser[]): Promise<any> {
@@ -34,6 +51,7 @@ export default class UserRepo {
 
     public upsert(users: IUser[]): Promise<any> {
         const ids = users.map((user) => {
+            this.dbService.setUser(user);
             return user._id;
         });
         return this.db.find({

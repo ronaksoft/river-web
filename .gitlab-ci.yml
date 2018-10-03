@@ -3,7 +3,7 @@ stages:
   - deploy
 
 variables:
-  BUILD_DIR: $CI_PROJECT_DIR/build
+  BUILD_DIR: $CI_PROJECT_DIR
 
 image: "yarnpkg/node-yarn"
 

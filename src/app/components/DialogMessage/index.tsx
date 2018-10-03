@@ -30,7 +30,7 @@ class DialogMessage extends React.Component<IProps, IState> {
         };
 
         this.messageRepo = new MessageRepo();
-        this.userRepo = new UserRepo();
+        this.userRepo = UserRepo.getInstance();
     }
 
     public componentDidMount() {

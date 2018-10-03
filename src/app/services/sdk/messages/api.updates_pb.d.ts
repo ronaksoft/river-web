@@ -167,6 +167,16 @@ export class UpdateNewMessage extends jspb.Message {
   getMessage(): core_types_pb.UserMessage;
   setMessage(value?: core_types_pb.UserMessage): void;
 
+  hasSender(): boolean;
+  clearSender(): void;
+  getSender(): core_types_pb.User;
+  setSender(value?: core_types_pb.User): void;
+
+  hasAccesshash(): boolean;
+  clearAccesshash(): void;
+  getAccesshash(): number | undefined;
+  setAccesshash(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateNewMessage.AsObject;
   static toObject(includeInstance: boolean, msg: UpdateNewMessage): UpdateNewMessage.AsObject;
@@ -182,6 +192,8 @@ export namespace UpdateNewMessage {
     ucount?: number,
     updateid?: number,
     message: core_types_pb.UserMessage.AsObject,
+    sender: core_types_pb.User.AsObject,
+    accesshash?: number,
   }
 }
 

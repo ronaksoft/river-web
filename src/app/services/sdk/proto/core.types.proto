@@ -65,6 +65,17 @@ message ContactUser {
 
 }
 
+enum MessageType {
+    MessageTypeNormal = 0;
+    MessageTypeSystem = 1;
+}
+
+enum MessageAction {
+    ActionNone = 0;
+    ActionJoined = 1;
+    ActionLeft = 2;
+}
+
 // UserMessage
 message UserMessage {
     required int64 ID = 1;
@@ -76,13 +87,13 @@ message UserMessage {
     required int64 FwdChannelID = 7;
     required int64 FwdChannelMessageID = 8;
     required int32 Flags = 9;
-    required int64 MessageType = 10;
+    required MessageType MessageType = 10;
     required string Body = 11;
     required int64 SenderID = 12;
     required bool ContentRead = 13;
     required bool Inbox = 14;
     optional int64 ReplyTo = 15;
-    optional int32 MessageAction = 16;
+    optional MessageAction Action = 16;
 }
 
 // RSAPublicKey

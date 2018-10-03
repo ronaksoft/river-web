@@ -14,7 +14,7 @@ export default class MessageRepo {
         this.dbService = UserMessageDB.getInstance();
         this.db = this.dbService.getDB();
         this.sdk = SDK.getInstance();
-        this.userRepo = new UserRepo();
+        this.userRepo = UserRepo.getInstance();
     }
 
     public create(msg: IMessage) {

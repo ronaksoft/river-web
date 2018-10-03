@@ -12,7 +12,7 @@ import DialogRepo from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
 import Uploader from '../../components/Uploader/index';
 import TextInput from '../../components/TextInput/index';
-import {findIndex, trimStart} from 'lodash';
+import {trimStart} from 'lodash';
 import SDK from '../../services/sdk/index';
 
 import './style.css';
@@ -23,10 +23,12 @@ import {IDialog} from "../../repository/dialog/interface";
 import UpdateManager from '../../services/sdk/server/updateManager';
 import {C_MSG} from '../../services/sdk/const';
 import {UpdateNewMessage, UpdateUserTyping} from '../../services/sdk/messages/api.updates_pb';
+import UserName from '../../components/UserName';
 
 interface IProps {
     match?: any;
     location?: any;
+    history?: any;
 }
 
 interface IState {
@@ -38,12 +40,13 @@ interface IState {
     rightMenu: boolean;
     selectedDialogId: number;
     toggleAttachment: boolean;
+    isTyping: boolean;
 }
 
 class Chat extends React.Component<IProps, IState> {
     private rightMenu: any = null;
     private message: any = null;
-    private idToIndex: any = {};
+    // private idToIndex: any = {};
     private messageRepo: MessageRepo;
     private dialogRepo: DialogRepo;
     private isLoading: boolean = false;
@@ -52,6 +55,7 @@ class Chat extends React.Component<IProps, IState> {
     private connInfo: IConnInfo;
     private eventReferences: any[] = [];
     private dialogMap: { [key: number]: IDialog } = {};
+    private typingTimeout: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -59,6 +63,7 @@ class Chat extends React.Component<IProps, IState> {
             anchorEl: null,
             dialogs: [],
             inputVal: '',
+            isTyping: false,
             messages: [],
             openNewMessage: false,
             rightMenu: false,
@@ -112,6 +117,9 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
+        if (this.connInfo.AuthID === '0') {
+            this.props.history.push('/signup');
+        }
         window.addEventListener('wasmInit', () => {
             this.dialogRepo.getMany({limit: 100}).then((res) => {
                 this.setState({
@@ -155,6 +163,19 @@ class Chat extends React.Component<IProps, IState> {
         }));
 
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUserTyping, (data: UpdateUserTyping.AsObject) => {
+            const isTyping = data.userid === this.state.selectedDialogId && data.action === TypingAction.TYPING;
+            window.console.log(isTyping);
+            if (this.state.isTyping !== isTyping) {
+                this.setState({
+                    isTyping,
+                });
+            }
+            clearTimeout(this.typingTimeout);
+            this.typingTimeout = setTimeout(() => {
+                this.setState({
+                    isTyping: false,
+                });
+            }, 5000);
             window.console.log(data);
         }));
     }
@@ -168,7 +189,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {anchorEl} = this.state;
+        const {anchorEl, isTyping} = this.state;
         const open = Boolean(anchorEl);
         return (
             <div className="wrapper">
@@ -181,8 +202,9 @@ class Chat extends React.Component<IProps, IState> {
                     </div>
                     {this.state.selectedDialogId !== -1 && <div className="column-center">
                         <div className="top">
-                            <span>To: <span
-                                className="name">{this.getName(this.state.selectedDialogId)}</span></span>
+                            {!isTyping &&
+                            <span>To: <UserName id={this.state.selectedDialogId} className="name"/></span>}
+                            {isTyping && <span>isTyping...</span>}
                             <span className="buttons">
                                 <IconButton
                                     aria-label="Attachment"
@@ -223,7 +245,7 @@ class Chat extends React.Component<IProps, IState> {
                             <Uploader/>
                         </div>
                         {!this.state.toggleAttachment &&
-                        <TextInput onMessage={this.onMessage} onTyping={this.onTyping}/>}
+                        <TextInput onMessage={this.onMessage} onTyping={this.onTyping} userId={this.connInfo.UserID}/>}
                     </div>}
                     {this.state.selectedDialogId === -1 && <div className="column-center">
                         <div className="start-messaging">
@@ -304,12 +326,12 @@ class Chat extends React.Component<IProps, IState> {
     //     return messages;
     // }
 
-    private getName = (id: number) => {
-        if (this.idToIndex.hasOwnProperty(id)) {
-            return this.state.dialogs[this.idToIndex[id]]._id;
-        }
-        return '';
-    }
+    // private getName = (id: number) => {
+    //     if (this.idToIndex.hasOwnProperty(id)) {
+    //         return this.state.dialogs[this.idToIndex[id]]._id;
+    //     }
+    //     return '';
+    // }
 
     private animateToEnd() {
         const el = document.querySelector('.chat.active-chat');
@@ -336,6 +358,11 @@ class Chat extends React.Component<IProps, IState> {
     // }
 
     private getMessagesByDialogId(dialogId: number, force?: boolean) {
+        const peer = this.getPeerByDialogId(dialogId);
+        if (peer === null) {
+            return;
+        }
+
         let messages: IMessage[] = [];
 
         const updateState = () => {
@@ -348,18 +375,6 @@ class Chat extends React.Component<IProps, IState> {
             });
         };
 
-        // if (this.dialogMap.hasOwnProperty())
-
-        const {dialogs} = this.state;
-        const index = findIndex(dialogs, {peerid: dialogId});
-        if (index === -1) {
-            return;
-        }
-        const peer = new InputPeer();
-        peer.setType(PeerType.PEERUSER);
-        peer.setAccesshash(dialogs[index].accesshash || 0);
-        peer.setId(dialogs[index].peerid || 0);
-
         this.messageRepo.getMany({peer, limit: 20}).then((data) => {
             window.console.log(data);
             if (data.length === 0) {
@@ -368,9 +383,12 @@ class Chat extends React.Component<IProps, IState> {
             } else {
                 messages = data.reverse();
             }
-            messages = messages.map((msg) => {
+            messages = messages.map((msg, key) => {
                 if (msg.senderid === this.connInfo.UserID) {
                     msg.me = true;
+                }
+                if (key > 0 && msg.me !== messages[key-1].me) {
+                    msg.avatar = true;
                 }
                 return msg;
             });
@@ -418,6 +436,12 @@ class Chat extends React.Component<IProps, IState> {
         if (trimStart(text).length === 0) {
             return;
         }
+
+        const peer = this.getPeerByDialogId(this.state.selectedDialogId);
+        if (peer === null) {
+            return;
+        }
+
         const message: IMessage = {
             _id: String(UniqueId.getRandomId()),
             body: text,
@@ -427,15 +451,7 @@ class Chat extends React.Component<IProps, IState> {
             senderid: this.connInfo.UserID,
         };
         this.pushMessage(message);
-        const {dialogs} = this.state;
-        const index = findIndex(dialogs, {peerid: this.state.selectedDialogId});
-        if (index === -1) {
-            return;
-        }
-        const peer = new InputPeer();
-        peer.setType(PeerType.PEERUSER);
-        peer.setAccesshash(dialogs[index].accesshash || 0);
-        peer.setId(dialogs[index].peerid || 0);
+
         this.sdk.sendMessage(text, peer).then((msg) => {
             this.messageRepo.remove(message._id || '');
             message.id = msg.messageid;
@@ -447,6 +463,9 @@ class Chat extends React.Component<IProps, IState> {
 
     private pushMessage = (message: IMessage) => {
         const messages = this.state.messages;
+        if (messages.length > 0 && message.me !== messages[messages.length-1].me) {
+            message.avatar = true;
+        }
         messages.push(message);
         this.setState({
             inputVal: '',
@@ -502,15 +521,10 @@ class Chat extends React.Component<IProps, IState> {
 
     private onTyping = (typing: boolean) => {
         window.console.log(typing);
-        const {dialogs} = this.state;
-        const index = findIndex(dialogs, {peerid: this.state.selectedDialogId});
-        if (index === -1) {
+        const peer = this.getPeerByDialogId(this.state.selectedDialogId);
+        if (peer === null) {
             return;
         }
-        const peer = new InputPeer();
-        peer.setType(PeerType.PEERUSER);
-        peer.setAccesshash(dialogs[index].accesshash || 0);
-        peer.setId(dialogs[index].peerid || 0);
 
         let action: TypingAction;
         if (typing) {
@@ -523,6 +537,17 @@ class Chat extends React.Component<IProps, IState> {
         }).catch((err) => {
             window.console.debug(err);
         });
+    }
+
+    private getPeerByDialogId(id: number): InputPeer | null {
+        if (!this.dialogMap.hasOwnProperty(id)) {
+            return null;
+        }
+        const peer = new InputPeer();
+        peer.setType(PeerType.PEERUSER);
+        peer.setAccesshash(this.dialogMap[id].accesshash || 0);
+        peer.setId(this.dialogMap[id].peerid || 0);
+        return peer;
     }
 }
 

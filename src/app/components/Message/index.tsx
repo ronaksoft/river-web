@@ -2,6 +2,7 @@ import * as React from 'react';
 import {List, CellMeasurer, CellMeasurerCache, AutoSizer} from 'react-virtualized';
 import {IMessage} from '../../repository/message/interface';
 import './style.css';
+import UserAvatar from '../UserAvatar';
 
 interface IProps {
     items: IMessage[];
@@ -105,14 +106,12 @@ class Message extends React.Component<IProps, IState> {
                 rowIndex={index}
                 parent={parent}>
                 <div style={style} key={index} className="bubble-wrapper">
-                    {(data.senderid && !data.me) && (
-                        <span className="avatar">
-                            <img src={String(data.senderid)}/>
-                        </span>
+                    {(data.avatar && data.senderid && !data.me) && (
+                        <UserAvatar id={data.senderid} className="avatar" />
                     )}
                     <div className={"bubble " + (data.me ? 'me' : 'you')}
                          dangerouslySetInnerHTML={{__html: this.formatText(data.body)}}/>
-                    {data._id}
+                    {/*{data._id}*/}
                 </div>
             </CellMeasurer>
         );

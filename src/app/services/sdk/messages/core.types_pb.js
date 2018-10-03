@@ -16,6 +16,8 @@ goog.exportSymbol('proto.msg.DHGroup', null, global);
 goog.exportSymbol('proto.msg.Dialog', null, global);
 goog.exportSymbol('proto.msg.InputFile', null, global);
 goog.exportSymbol('proto.msg.InputPeer', null, global);
+goog.exportSymbol('proto.msg.MessageAction', null, global);
+goog.exportSymbol('proto.msg.MessageType', null, global);
 goog.exportSymbol('proto.msg.Peer', null, global);
 goog.exportSymbol('proto.msg.PeerType', null, global);
 goog.exportSymbol('proto.msg.PhoneContact', null, global);
@@ -1603,7 +1605,7 @@ proto.msg.UserMessage.toObject = function(includeInstance, msg) {
     contentread: jspb.Message.getField(msg, 13),
     inbox: jspb.Message.getField(msg, 14),
     replyto: jspb.Message.getField(msg, 15),
-    messageaction: jspb.Message.getField(msg, 16)
+    action: jspb.Message.getField(msg, 16)
   };
 
   if (includeInstance) {
@@ -1677,7 +1679,7 @@ proto.msg.UserMessage.deserializeBinaryFromReader = function(msg, reader) {
       msg.setFlags(value);
       break;
     case 10:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {!proto.msg.MessageType} */ (reader.readEnum());
       msg.setMessagetype(value);
       break;
     case 11:
@@ -1701,8 +1703,8 @@ proto.msg.UserMessage.deserializeBinaryFromReader = function(msg, reader) {
       msg.setReplyto(value);
       break;
     case 16:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setMessageaction(value);
+      var value = /** @type {!proto.msg.MessageAction} */ (reader.readEnum());
+      msg.setAction(value);
       break;
     default:
       reader.skipField();
@@ -1796,9 +1798,9 @@ proto.msg.UserMessage.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 10));
+  f = /** @type {!proto.msg.MessageType} */ (jspb.Message.getField(message, 10));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeEnum(
       10,
       f
     );
@@ -1838,9 +1840,9 @@ proto.msg.UserMessage.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 16));
+  f = /** @type {!proto.msg.MessageAction} */ (jspb.Message.getField(message, 16));
   if (f != null) {
-    writer.writeInt32(
+    writer.writeEnum(
       16,
       f
     );
@@ -2110,15 +2112,15 @@ proto.msg.UserMessage.prototype.hasFlags = function() {
 
 
 /**
- * required int64 MessageType = 10;
- * @return {number}
+ * required MessageType MessageType = 10;
+ * @return {!proto.msg.MessageType}
  */
 proto.msg.UserMessage.prototype.getMessagetype = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 10, 0));
+  return /** @type {!proto.msg.MessageType} */ (jspb.Message.getFieldWithDefault(this, 10, 0));
 };
 
 
-/** @param {number} value */
+/** @param {!proto.msg.MessageType} value */
 proto.msg.UserMessage.prototype.setMessagetype = function(value) {
   jspb.Message.setField(this, 10, value);
 };
@@ -2288,21 +2290,21 @@ proto.msg.UserMessage.prototype.hasReplyto = function() {
 
 
 /**
- * optional int32 MessageAction = 16;
- * @return {number}
+ * optional MessageAction Action = 16;
+ * @return {!proto.msg.MessageAction}
  */
-proto.msg.UserMessage.prototype.getMessageaction = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 16, 0));
+proto.msg.UserMessage.prototype.getAction = function() {
+  return /** @type {!proto.msg.MessageAction} */ (jspb.Message.getFieldWithDefault(this, 16, 0));
 };
 
 
-/** @param {number} value */
-proto.msg.UserMessage.prototype.setMessageaction = function(value) {
+/** @param {!proto.msg.MessageAction} value */
+proto.msg.UserMessage.prototype.setAction = function(value) {
   jspb.Message.setField(this, 16, value);
 };
 
 
-proto.msg.UserMessage.prototype.clearMessageaction = function() {
+proto.msg.UserMessage.prototype.clearAction = function() {
   jspb.Message.setField(this, 16, undefined);
 };
 
@@ -2311,7 +2313,7 @@ proto.msg.UserMessage.prototype.clearMessageaction = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.msg.UserMessage.prototype.hasMessageaction = function() {
+proto.msg.UserMessage.prototype.hasAction = function() {
   return jspb.Message.getField(this, 16) != null;
 };
 
@@ -3328,6 +3330,23 @@ proto.msg.PeerType = {
   PEERUSER: 1,
   PEERCHAT: 2,
   PEERCHANNEL: 3
+};
+
+/**
+ * @enum {number}
+ */
+proto.msg.MessageType = {
+  MESSAGETYPENORMAL: 0,
+  MESSAGETYPESYSTEM: 1
+};
+
+/**
+ * @enum {number}
+ */
+proto.msg.MessageAction = {
+  ACTIONNONE: 0,
+  ACTIONJOINED: 1,
+  ACTIONLEFT: 2
 };
 
 goog.object.extend(exports, proto.msg);

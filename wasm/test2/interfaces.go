@@ -323,6 +323,7 @@ func (r *River) messageHandler(m *msg.MessageEnvelope) {
 	default:
 		if val, ok := r.MessageQueue[m.RequestID]; ok {
 			(*val)(m)
+			delete(r.MessageQueue, m.RequestID)
 		} else if m.Constructor == msg.C_Error {
 			error := new(msg.Error)
 			error.Unmarshal(m.Message)

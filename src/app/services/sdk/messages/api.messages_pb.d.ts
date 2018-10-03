@@ -337,6 +337,11 @@ export class MessagesSent extends jspb.Message {
   getRandomid(): number | undefined;
   setRandomid(value: number): void;
 
+  hasCreatedon(): boolean;
+  clearCreatedon(): void;
+  getCreatedon(): number | undefined;
+  setCreatedon(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesSent.AsObject;
   static toObject(includeInstance: boolean, msg: MessagesSent): MessagesSent.AsObject;
@@ -351,6 +356,7 @@ export namespace MessagesSent {
   export type AsObject = {
     messageid?: number,
     randomid?: number,
+    createdon?: number,
   }
 }
 

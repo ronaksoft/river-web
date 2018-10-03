@@ -17,7 +17,7 @@ export default class DialogRepo {
         this.db = this.dbService.getDB();
         this.sdk = SDK.getInstance();
         this.messageRepo = new MessageRepo();
-        this.userRepo = new UserRepo();
+        this.userRepo = UserRepo.getInstance();
     }
 
     public create(dialog: IDialog) {

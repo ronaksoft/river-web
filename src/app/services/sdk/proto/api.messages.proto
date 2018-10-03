@@ -92,6 +92,7 @@ message MessagesSetTyping {
 message MessagesSent {
     required int64 MessageID = 1;
     required int64 RandomID = 2;
+    required int64 CreatedOn = 3;
 }
 
 // MessagesMany
