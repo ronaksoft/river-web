@@ -1,5 +1,3 @@
-
-
 const wasmWorker = new Worker('bin/worker.js');
 wasmWorker.onerror = (e) => {
     console.log(e);
@@ -74,7 +72,9 @@ let run;
 let instance;
 let socket = null;
 let connected = false;
+let pingCounter = 0;
 
+const ping = new Uint8Array([0x50, 0x49, 0x4e, 0x47]);
 
 function fnCallback(reqId, constructor, data) {
     const fnCallbackEvent = new CustomEvent('fnCallbackEvent', {
@@ -113,6 +113,7 @@ const initWebSocket = () => {
     // Connection opened
     socket.onopen = () => {
         console.log('Hello Server!', new Date());
+        pingCounter = 0;
         connected = true;
         const event = new CustomEvent('wsOpen');
         window.dispatchEvent(event);
@@ -121,7 +122,14 @@ const initWebSocket = () => {
 
     // Listen for messages
     socket.onmessage = (event) => {
-        workerMessage('receive', Uint8ToBase64(new Uint8Array(event.data)));
+        if (checkPong(event.data)) {
+            pingCounter = 0;
+            if (pingCounter > 4) {
+                console.log('server ping is week');
+            }
+        } else {
+            workerMessage('receive', Uint8ToBase64(new Uint8Array(event.data)));
+        }
     };
 
     // Listen for messages
@@ -133,8 +141,18 @@ const initWebSocket = () => {
     };
 };
 
+checkPong = (data) => {
+    if (data.byteLength === 4) {
+        if (String.fromCharCode.apply(null, new Uint8Array(data)) === 'PONG') {
+            return true;
+        }
+    }
+    return false
+};
+
 setInterval(() => {
     if (connected) {
-        socket.send(new Uint8Array([9]));
+        socket.send(ping);
+        pingCounter++;
     }
-}, 5000);
+}, 10000);

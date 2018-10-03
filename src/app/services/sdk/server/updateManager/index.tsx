@@ -9,6 +9,16 @@ import {
 } from '../../messages/api.updates_pb';
 
 export default class UpdateManager {
+    public static getInstance() {
+        if (!this.instance) {
+            this.instance = new UpdateManager();
+        }
+
+        return this.instance;
+    }
+
+    private static instance: UpdateManager;
+
     private fnQueue: any = {};
     private fnIndex: number = 0;
 
@@ -71,7 +81,7 @@ export default class UpdateManager {
         if (!this.fnQueue[eventConstructor]) {
             return;
         }
-        const keys = Object.keys(this.fnQueue);
+        const keys = Object.keys(this.fnQueue[eventConstructor]);
         keys.forEach((key) => {
             const fn = this.fnQueue[eventConstructor][key];
             if (fn) {

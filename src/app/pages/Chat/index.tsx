@@ -20,6 +20,9 @@ import NewMessage from "../../components/NewMessage";
 import {InputPeer, PeerType, PhoneContact} from "../../services/sdk/messages/core.types_pb";
 import {IConnInfo} from "../../services/sdk/interface";
 import {IDialog} from "../../repository/dialog/interface";
+import UpdateManager from '../../services/sdk/server/updateManager';
+import {C_MSG} from '../../services/sdk/const';
+import {UpdateNewMessage} from '../../services/sdk/messages/api.updates_pb';
 
 interface IProps {
     match?: any;
@@ -42,12 +45,12 @@ class Chat extends React.Component<IProps, IState> {
     private message: any = null;
     private idToIndex: any = {};
     private messageRepo: MessageRepo;
-    // @ts-ignore
     private dialogRepo: DialogRepo;
-    // private uniqueId: UniqueId;
     private isLoading: boolean = false;
     private sdk: SDK;
+    private updateManager: UpdateManager;
     private connInfo: IConnInfo;
+    private eventReferences: any[] = [];
 
     constructor(props: IProps) {
         super(props);
@@ -66,6 +69,7 @@ class Chat extends React.Component<IProps, IState> {
         // this.uniqueId = UniqueId.getInstance();
         this.sdk = SDK.getInstance();
         this.connInfo = this.sdk.getConnInfo();
+        this.updateManager = UpdateManager.getInstance();
         // setInterval(() => {
         //     const messages = this.state.messages;
         //     const message: IMessage = {
@@ -107,36 +111,51 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        const selectedId = this.props.match.params.id;
-        if (selectedId !== 'null') {
-            this.getMessagesByDialogId(selectedId);
-        }
-
-        // window.addEventListener('wasmInit', () => {
-        //     this.dialogRepo.getMany({limit: 100}).then((res) => {
-        //         this.setState({
-        //             dialogs: res
-        //         });
-        //     }).catch((err) => {
-        //         window.console.log(err);
-        //     });
-        // });
-
-        window.addEventListener('wsOpen', () => {
-            setInterval(() => {
-                this.sdk.recall(0).then((data) => {
-                    window.console.log(data);
-                }).catch((err) => {
-                    window.console.log(err);
+        window.addEventListener('wasmInit', () => {
+            this.dialogRepo.getMany({limit: 100}).then((res) => {
+                this.setState({
+                    dialogs: res
                 });
-            }, 1000);
+            }).catch((err) => {
+                window.console.log(err);
+            });
         });
 
-        // this.dialogRepo.getManyCache({}).then((res) => {
-        //     this.setState({
-        //         dialogs: res
-        //     });
-        // });
+        window.addEventListener('wsOpen', () => {
+            this.sdk.recall(0).then((data) => {
+                window.console.log(data);
+            }).catch((err) => {
+                window.console.log(err);
+            });
+        });
+
+        this.dialogRepo.getManyCache({}).then((res) => {
+            this.setState({
+                dialogs: res
+            }, () => {
+                const selectedId = this.props.match.params.id;
+                if (selectedId !== 'null') {
+                    this.getMessagesByDialogId(parseInt(selectedId, 10), true);
+                }
+            });
+        });
+
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNewMessage, (data: UpdateNewMessage.AsObject) => {
+            window.console.log(data);
+            const message: IMessage = data.message;
+            message._id = String(message.id);
+            message.me = (this.connInfo.UserID === message.senderid);
+            this.pushMessage(message);
+            this.messageRepo.importBulk([data.message]);
+        }));
+    }
+
+    public componentWillUnmount() {
+        this.eventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
+        });
     }
 
     public render() {
@@ -387,7 +406,6 @@ class Chat extends React.Component<IProps, IState> {
         if (trimStart(text).length === 0) {
             return;
         }
-        const messages = this.state.messages;
         const message: IMessage = {
             _id: String(UniqueId.getRandomId()),
             body: text,
@@ -396,16 +414,7 @@ class Chat extends React.Component<IProps, IState> {
             peerid: this.state.selectedDialogId,
             senderid: this.connInfo.UserID,
         };
-        messages.push(message);
-        this.setState({
-            inputVal: '',
-            messages,
-        }, () => {
-            setTimeout(() => {
-                this.animateToEnd();
-            }, 50);
-        });
-        this.messageRepo.create(message);
+        this.pushMessage(message);
         const {dialogs} = this.state;
         const index = findIndex(dialogs, {peerid: this.state.selectedDialogId});
         if (index === -1) {
@@ -420,6 +429,20 @@ class Chat extends React.Component<IProps, IState> {
         }).catch((err) => {
             window.console.log(err);
         });
+    }
+
+    private pushMessage = (message: IMessage) => {
+        const messages = this.state.messages;
+        messages.push(message);
+        this.setState({
+            inputVal: '',
+            messages,
+        }, () => {
+            setTimeout(() => {
+                this.animateToEnd();
+            }, 50);
+        });
+        this.messageRepo.create(message);
     }
 
     private onNewMessageOpen = () => {

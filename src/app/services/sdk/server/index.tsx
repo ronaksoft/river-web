@@ -57,7 +57,7 @@ export default class Server {
         });
 
         this.updateThrottler();
-        this.updateManager = new UpdateManager();
+        this.updateManager = UpdateManager.getInstance();
     }
 
     /**
