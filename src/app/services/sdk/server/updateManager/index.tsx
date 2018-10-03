@@ -78,6 +78,7 @@ export default class UpdateManager {
     }
 
     private callHandlers(eventConstructor: number, payload: any) {
+        window.console.log(eventConstructor);
         if (!this.fnQueue[eventConstructor]) {
             return;
         }

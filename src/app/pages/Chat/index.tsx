@@ -12,17 +12,17 @@ import DialogRepo from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
 import Uploader from '../../components/Uploader/index';
 import TextInput from '../../components/TextInput/index';
-import {trimStart, findIndex} from 'lodash';
+import {findIndex, trimStart} from 'lodash';
 import SDK from '../../services/sdk/index';
 
 import './style.css';
 import NewMessage from "../../components/NewMessage";
-import {InputPeer, PeerType, PhoneContact} from "../../services/sdk/messages/core.types_pb";
+import {InputPeer, PeerType, PhoneContact, TypingAction} from "../../services/sdk/messages/core.types_pb";
 import {IConnInfo} from "../../services/sdk/interface";
 import {IDialog} from "../../repository/dialog/interface";
 import UpdateManager from '../../services/sdk/server/updateManager';
 import {C_MSG} from '../../services/sdk/const';
-import {UpdateNewMessage} from '../../services/sdk/messages/api.updates_pb';
+import {UpdateNewMessage, UpdateUserTyping} from '../../services/sdk/messages/api.updates_pb';
 
 interface IProps {
     match?: any;
@@ -51,6 +51,7 @@ class Chat extends React.Component<IProps, IState> {
     private updateManager: UpdateManager;
     private connInfo: IConnInfo;
     private eventReferences: any[] = [];
+    private dialogMap: { [key: number]: IDialog } = {};
 
     constructor(props: IProps) {
         super(props);
@@ -130,6 +131,10 @@ class Chat extends React.Component<IProps, IState> {
         });
 
         this.dialogRepo.getManyCache({}).then((res) => {
+            res.forEach((dialog) => {
+                this.dialogMap[dialog.peerid || 0] = dialog;
+            });
+
             this.setState({
                 dialogs: res
             }, () => {
@@ -147,6 +152,10 @@ class Chat extends React.Component<IProps, IState> {
             message.me = (this.connInfo.UserID === message.senderid);
             this.pushMessage(message);
             this.messageRepo.importBulk([data.message]);
+        }));
+
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUserTyping, (data: UpdateUserTyping.AsObject) => {
+            window.console.log(data);
         }));
     }
 
@@ -213,7 +222,8 @@ class Chat extends React.Component<IProps, IState> {
                         <div className="attachments" hidden={!this.state.toggleAttachment}>
                             <Uploader/>
                         </div>
-                        {!this.state.toggleAttachment && <TextInput onMessage={this.onMessage}/>}
+                        {!this.state.toggleAttachment &&
+                        <TextInput onMessage={this.onMessage} onTyping={this.onTyping}/>}
                     </div>}
                     {this.state.selectedDialogId === -1 && <div className="column-center">
                         <div className="start-messaging">
@@ -338,6 +348,8 @@ class Chat extends React.Component<IProps, IState> {
             });
         };
 
+        // if (this.dialogMap.hasOwnProperty())
+
         const {dialogs} = this.state;
         const index = findIndex(dialogs, {peerid: dialogId});
         if (index === -1) {
@@ -425,7 +437,9 @@ class Chat extends React.Component<IProps, IState> {
         peer.setAccesshash(dialogs[index].accesshash || 0);
         peer.setId(dialogs[index].peerid || 0);
         this.sdk.sendMessage(text, peer).then((msg) => {
-            window.console.log(msg);
+            this.messageRepo.remove(message._id || '');
+            message.id = msg.messageid;
+            this.messageRepo.importBulk([message]);
         }).catch((err) => {
             window.console.log(err);
         });
@@ -467,7 +481,6 @@ class Chat extends React.Component<IProps, IState> {
         });
         this.sdk.contactImport(true, contacts).then((data) => {
             data.usersList.forEach((user) => {
-                window.console.log(user);
                 const peer = new InputPeer();
                 peer.setType(PeerType.PEERUSER);
                 if (user.accesshash) {
@@ -484,6 +497,31 @@ class Chat extends React.Component<IProps, IState> {
             });
         }).catch((err) => {
             window.console.log(err);
+        });
+    }
+
+    private onTyping = (typing: boolean) => {
+        window.console.log(typing);
+        const {dialogs} = this.state;
+        const index = findIndex(dialogs, {peerid: this.state.selectedDialogId});
+        if (index === -1) {
+            return;
+        }
+        const peer = new InputPeer();
+        peer.setType(PeerType.PEERUSER);
+        peer.setAccesshash(dialogs[index].accesshash || 0);
+        peer.setId(dialogs[index].peerid || 0);
+
+        let action: TypingAction;
+        if (typing) {
+            action = TypingAction.TYPING;
+        } else {
+            action = TypingAction.CANCEL;
+        }
+        this.sdk.typing(peer, action).then((data) => {
+            window.console.debug(data);
+        }).catch((err) => {
+            window.console.debug(err);
         });
     }
 }

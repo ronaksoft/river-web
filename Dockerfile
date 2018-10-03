@@ -1,6 +1,7 @@
 FROM alpine
 
 # Create app directory
+RUN mkdir -p /run/nginx
 RUN mkdir -p /ronak/app
 WORKDIR /ronak/app
 RUN apk update

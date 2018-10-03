@@ -59,13 +59,13 @@ class Chat extends React.Component<IProps, IState> {
         window.addEventListener('wasmInit', () => {
             const info = this.sdk.getConnInfo();
             if (info && info.UserID) {
-                this.sdk.recall(info.UserID).then((data) => {
-                    window.console.log(data);
+                this.sdk.recall(info.UserID).then(() => {
+                    this.props.history.push('/conversation/null');
                 }).catch((err) => {
                     window.console.log(err);
                 });
             }
-            this.focus('f-code');
+            this.focus('f-phone');
         });
     }
 

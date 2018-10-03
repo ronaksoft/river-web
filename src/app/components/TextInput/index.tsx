@@ -2,6 +2,7 @@ import * as React from 'react';
 import Textarea from 'react-textarea-autosize';
 import {Picker} from 'emoji-mart';
 import PopUpMenu from '../PopUpMenu';
+import {throttle} from 'lodash';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
@@ -9,6 +10,7 @@ import './style.css';
 interface IProps {
     onMessage: (text: string) => void;
     ref?: (ref: any) => void;
+    onTyping?: (typing: boolean) => void;
 }
 
 interface IState {
@@ -17,6 +19,7 @@ interface IState {
 
 class TextInput extends React.Component<IProps, IState> {
     private textarea: any = null;
+    private typingThrottle: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -69,6 +72,29 @@ class TextInput extends React.Component<IProps, IState> {
             this.setState({
                 emojiAnchorEl: null,
             });
+        }
+        if (this.props.onTyping) {
+            if (e.target.value.length === 0) {
+                this.props.onTyping(false);
+                if (this.typingThrottle !== null) {
+                    this.typingThrottle.cancel();
+                }
+                this.typingThrottle = null;
+            } else {
+                if (this.typingThrottle === null) {
+                    this.typingThrottle = throttle(() => {
+                        if (this.props.onTyping) {
+                            this.props.onTyping(true);
+                        } else {
+                            if (this.typingThrottle !== null) {
+                                this.typingThrottle.cancel();
+                            }
+                        }
+                    }, 5000);
+                } else {
+                    this.typingThrottle();
+                }
+            }
         }
     }
 

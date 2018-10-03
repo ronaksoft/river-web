@@ -12,7 +12,7 @@ var (
 )
 
 func initLog() {
-	_LOG_LEVEL = zap.NewAtomicLevelAt(zap.DebugLevel)
+	_LOG_LEVEL = zap.NewAtomicLevelAt(zap.InfoLevel)
 	logConfig := zap.NewProductionConfig()
 	logConfig.Encoding = "console"
 	logConfig.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder

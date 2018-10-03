@@ -145,4 +145,10 @@ export default class MessageRepo {
             return this.createMany([...createItems, ...updateItems]);
         });
     }
+
+    public remove(id: string): Promise<any> {
+        return this.db.get(id).then((result: any) => {
+            return this.db.remove(result._id, result._rev);
+        });
+    }
 }

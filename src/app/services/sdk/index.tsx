@@ -2,7 +2,9 @@ import {
     AuthAuthorization,
     AuthCheckedPhone,
     AuthCheckPhone,
-    AuthLogin, AuthRecall, AuthRecalled,
+    AuthLogin,
+    AuthRecall,
+    AuthRecalled,
     AuthRegister,
     AuthSendCode,
     AuthSentCode
@@ -11,13 +13,15 @@ import Server from './server';
 import {C_MSG} from "./const";
 import {IConnInfo} from "./interface";
 import {ContactsGet, ContactsImport, ContactsImported, ContactsMany} from "./messages/api.contacts_pb";
-import {InputPeer, PhoneContact} from "./messages/core.types_pb";
+import {InputPeer, PhoneContact, TypingAction} from "./messages/core.types_pb";
 import {
     MessagesDialogs,
     MessagesGetDialogs,
-    MessagesGetHistory, MessagesMany,
+    MessagesGetHistory,
+    MessagesMany,
     MessagesSend,
-    MessagesSent
+    MessagesSent,
+    MessagesSetTyping
 } from "./messages/api.messages_pb";
 // import MessageRepo from "../../repository/message";
 // import UserRepo from "../../repository/user";
@@ -183,11 +187,17 @@ export default class SDK {
 
     public getMessageHistory(peer: InputPeer, {limit, minId, maxId}: any): Promise<MessagesMany.AsObject> {
         const data = new MessagesGetHistory();
-        // this.msgId++;
         data.setPeer(peer);
         data.setLimit(limit || 0);
         data.setMinid(minId || 0);
         data.setMaxid(maxId || 0);
         return this.server.send(C_MSG.MessagesGetHistory, data.serializeBinary());
+    }
+
+    public typing(peer: InputPeer, type: TypingAction): Promise<MessagesMany.AsObject> {
+        const data = new MessagesSetTyping();
+        data.setPeer(peer);
+        data.setAction(type);
+        return this.server.send(C_MSG.MessagesSetTyping, data.serializeBinary());
     }
 }
