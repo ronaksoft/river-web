@@ -1,6 +1,6 @@
 import {C_MSG} from '../const';
 import Presenter from '../presenters';
-import {UpdateContainer} from '../messages/core.messages_pb';
+import UpdateManager from './updateManager';
 
 export default class Server {
     public static getInstance() {
@@ -31,6 +31,10 @@ export default class Server {
 
     private sentQueue: number[] = [];
 
+    private updateQueue: any[] = [];
+
+    private updateManager: UpdateManager;
+
     private isConnected: boolean = false;
 
     public constructor() {
@@ -51,6 +55,9 @@ export default class Server {
         window.addEventListener('wsClose', () => {
             this.isConnected = false;
         });
+
+        this.updateThrottler();
+        this.updateManager = new UpdateManager();
     }
 
     /**
@@ -172,9 +179,19 @@ export default class Server {
     }
 
     private update(bytes: any) {
-        // @ts-ignore
-        const arr = Uint8Array.from(atob(bytes), c => c.charCodeAt(0));
-        const data = UpdateContainer.deserializeBinary(arr);
-        window.console.log(data);
+        this.updateQueue.push(bytes);
+    }
+
+    private updateThrottler() {
+        this.dispatchUpdate();
+        setInterval(() => {
+            this.dispatchUpdate();
+        }, 50);
+    }
+
+    private dispatchUpdate() {
+        if (this.updateQueue.length > 0) {
+            this.updateManager.parseUpdate(this.updateQueue.pop());
+        }
     }
 }

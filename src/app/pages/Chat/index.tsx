@@ -42,6 +42,7 @@ class Chat extends React.Component<IProps, IState> {
     private message: any = null;
     private idToIndex: any = {};
     private messageRepo: MessageRepo;
+    // @ts-ignore
     private dialogRepo: DialogRepo;
     // private uniqueId: UniqueId;
     private isLoading: boolean = false;
@@ -111,29 +112,31 @@ class Chat extends React.Component<IProps, IState> {
             this.getMessagesByDialogId(selectedId);
         }
 
-        window.addEventListener('wasmInit', () => {
-            this.dialogRepo.getMany({limit: 100}).then((res) => {
-                this.setState({
-                    dialogs: res
-                });
-            }).catch((err) => {
-                window.console.log(err);
-            });
-        });
+        // window.addEventListener('wasmInit', () => {
+        //     this.dialogRepo.getMany({limit: 100}).then((res) => {
+        //         this.setState({
+        //             dialogs: res
+        //         });
+        //     }).catch((err) => {
+        //         window.console.log(err);
+        //     });
+        // });
 
         window.addEventListener('wsOpen', () => {
-            this.sdk.recall(0).then((data) => {
-                window.console.log(data);
-            }).catch((err) => {
-                window.console.log(err);
-            });
+            setInterval(() => {
+                this.sdk.recall(0).then((data) => {
+                    window.console.log(data);
+                }).catch((err) => {
+                    window.console.log(err);
+                });
+            }, 1000);
         });
 
-        this.dialogRepo.getManyCache({}).then((res) => {
-            this.setState({
-                dialogs: res
-            });
-        });
+        // this.dialogRepo.getManyCache({}).then((res) => {
+        //     this.setState({
+        //         dialogs: res
+        //     });
+        // });
     }
 
     public render() {
