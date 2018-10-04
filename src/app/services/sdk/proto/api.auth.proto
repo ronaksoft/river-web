@@ -27,13 +27,6 @@ message AuthLogin {
     required string PhoneCode = 3;
 }
 
-// AuthLogout
-// @Function
-// @Return: Bool
-message AuthLogout {
-
-}
-
 // AuthCheckPhone
 // @Function
 // @Return: AuthCheckedPhone

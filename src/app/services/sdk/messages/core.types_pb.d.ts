@@ -269,8 +269,8 @@ export class UserMessage extends jspb.Message {
 
   hasMessagetype(): boolean;
   clearMessagetype(): void;
-  getMessagetype(): MessageType | undefined;
-  setMessagetype(value: MessageType): void;
+  getMessagetype(): number | undefined;
+  setMessagetype(value: number): void;
 
   hasBody(): boolean;
   clearBody(): void;
@@ -297,10 +297,10 @@ export class UserMessage extends jspb.Message {
   getReplyto(): number | undefined;
   setReplyto(value: number): void;
 
-  hasAction(): boolean;
-  clearAction(): void;
-  getAction(): MessageAction | undefined;
-  setAction(value: MessageAction): void;
+  hasMessageaction(): boolean;
+  clearMessageaction(): void;
+  getMessageaction(): number | undefined;
+  setMessageaction(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UserMessage.AsObject;
@@ -323,13 +323,13 @@ export namespace UserMessage {
     fwdchannelid?: number,
     fwdchannelmessageid?: number,
     flags?: number,
-    messagetype?: MessageType,
+    messagetype?: number,
     body?: string,
     senderid?: number,
     contentread?: boolean,
     inbox?: boolean,
     replyto?: number,
-    action?: MessageAction,
+    messageaction?: number,
   }
 }
 
@@ -488,16 +488,5 @@ export enum PeerType {
   PEERUSER = 1,
   PEERCHAT = 2,
   PEERCHANNEL = 3,
-}
-
-export enum MessageType {
-  MESSAGETYPENORMAL = 0,
-  MESSAGETYPESYSTEM = 1,
-}
-
-export enum MessageAction {
-  ACTIONNONE = 0,
-  ACTIONJOINED = 1,
-  ACTIONLEFT = 2,
 }
 

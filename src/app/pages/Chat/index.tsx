@@ -12,7 +12,7 @@ import DialogRepo from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
 import Uploader from '../../components/Uploader/index';
 import TextInput from '../../components/TextInput/index';
-import {trimStart} from 'lodash';
+import {trimStart, throttle} from 'lodash';
 import SDK from '../../services/sdk/index';
 
 import './style.css';
@@ -56,6 +56,7 @@ class Chat extends React.Component<IProps, IState> {
     private eventReferences: any[] = [];
     private dialogMap: { [key: number]: number } = {};
     private typingTimeout: any = null;
+    private dialogsSortThrottle: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -76,6 +77,7 @@ class Chat extends React.Component<IProps, IState> {
         this.sdk = SDK.getInstance();
         this.connInfo = this.sdk.getConnInfo();
         this.updateManager = UpdateManager.getInstance();
+        this.dialogsSortThrottle = throttle(this.dialogsSort, 500);
         // setInterval(() => {
         //     const messages = this.state.messages;
         //     const message: IMessage = {
@@ -152,6 +154,17 @@ class Chat extends React.Component<IProps, IState> {
                 }
             });
         });
+
+        // this.dialogRepo.getMany({limit: 100}).then((dialogs) => {
+        //     dialogs.forEach((dialog, index) => {
+        //         this.dialogMap[dialog.peerid || 0] = index;
+        //     });
+        //     this.setState({
+        //         dialogs,
+        //     });
+        // }).catch((err) => {
+        //     window.console.log(err);
+        // });
 
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNewMessage, (data: UpdateNewMessage.AsObject) => {
             window.console.log(data);
@@ -456,6 +469,7 @@ class Chat extends React.Component<IProps, IState> {
             this.messageRepo.remove(message._id || '');
             message.id = msg.messageid;
             this.messageRepo.importBulk([message]);
+            this.updateDialogs(msg, 0);
         }).catch((err) => {
             window.console.log(err);
         });
@@ -554,10 +568,14 @@ class Chat extends React.Component<IProps, IState> {
     private updateDialogs(msg: IMessage, accessHash: number) {
         const id = msg.peerid || 0;
         const {dialogs} = this.state;
+        const preview = (msg.body || '').substr(0, 64);
+        let toUpdateDialog: IDialog;
         if (this.dialogMap.hasOwnProperty(id)) {
             const index = this.dialogMap[id];
             dialogs[index].topmessageid = msg.id;
+            dialogs[index].preview = preview;
             dialogs[index].last_update = msg.createdon;
+            toUpdateDialog = dialogs[index];
         } else {
             const dialog: IDialog = {
                 _id: String(msg.id),
@@ -565,11 +583,23 @@ class Chat extends React.Component<IProps, IState> {
                 last_update: msg.createdon,
                 peerid: msg.peerid,
                 peertype: msg.peertype,
+                preview,
                 topmessageid: msg.id,
                 unreadcount: 0,
+                user_id: msg.peerid,
             };
+            toUpdateDialog = dialog;
             dialogs.push(dialog);
         }
+
+        this.dialogsSort(dialogs);
+
+        if (accessHash > -1) {
+            this.dialogRepo.importBulk([toUpdateDialog]);
+        }
+    }
+
+    private dialogsSort(dialogs: IDialog[]) {
         dialogs.sort((i1, i2) => {
             if (!i1.last_update || !i2.last_update) {
                 return 0;

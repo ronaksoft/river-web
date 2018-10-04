@@ -2,79 +2,50 @@ import * as React from 'react';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
-import {IUser} from "../../repository/user/interface";
-import {IMessage} from "../../repository/message/interface";
-import MessageRepo from "../../repository/message";
 import TimeUtililty from "../../services/utilities/time";
-import UserRepo from '../../repository/user';
+import UserAvatar from "../UserAvatar";
+import UserName from "../UserName";
+import {IDialog} from "../../repository/dialog/interface";
 
 interface IProps {
-    messageId: number;
+    dialog: IDialog;
 }
 
 interface IState {
-    user?: IUser;
-    messageId: number;
-    message?: IMessage;
+    dialog: IDialog;
 }
 
 class DialogMessage extends React.Component<IProps, IState> {
-    private messageRepo: MessageRepo;
-    private userRepo: UserRepo;
-
     constructor(props: IProps) {
         super(props);
 
         this.state = {
-            messageId: props.messageId,
+            dialog: props.dialog,
         };
-
-        this.messageRepo = new MessageRepo();
-        this.userRepo = UserRepo.getInstance();
     }
 
-    public componentDidMount() {
-        this.getMessage();
-    }
+    // public componentDidMount() {
+    // }
 
     public componentWillReceiveProps(newProps: IProps) {
-        if (this.state.messageId === newProps.messageId) {
+        if (this.state.dialog === newProps.dialog) {
             return;
         }
         this.setState({
-            messageId: newProps.messageId,
-        }, () => {
-            this.getMessage();
+            dialog: newProps.dialog,
         });
     }
 
     public render() {
-        const {user, message} = this.state;
+        const {dialog} = this.state;
         return (
             <div className="dialog-wrapper">
-                {user && <img src={user.avatar} alt=""/>}
-                {user && <span className="name">{user.firstname + ' ' + user.lastname}</span>}
-                {message && <span className="time">{TimeUtililty.dynamic(message.createdon)}</span>}
-                {message && <span className="preview">{message.body}</span>}
+                <UserAvatar id={dialog.user_id || 0}/>
+                <UserName id={dialog.user_id || 0} className="name"/>
+                <span className="time">{TimeUtililty.dynamic(dialog.last_update)}</span>
+                <span className="preview">{dialog.preview}</span>
             </div>
         );
-    }
-
-    private getMessage() {
-        this.messageRepo.get(this.state.messageId).then((message) => {
-            this.setState({
-                message,
-            });
-            this.userRepo.get(message.senderid || 0).then((user) => {
-                this.setState({
-                    user,
-                });
-            }).catch((err) => {
-                window.console.log(err);
-            });
-        }).catch((err) => {
-            window.console.log(err);
-        });
     }
 }
 

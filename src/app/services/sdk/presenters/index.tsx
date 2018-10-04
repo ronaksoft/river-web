@@ -7,7 +7,7 @@ import {Dialog} from '../messages/core.types_pb';
 import {
     UpdateNewMessage,
     UpdateReadHistoryInbox,
-    UpdateReadHistoryOutbox,
+    UpdateReadHistoryOutbox, UpdateState,
     UpdateUserTyping
 } from '../messages/api.updates_pb';
 
@@ -38,6 +38,8 @@ export default class UniqueId {
                 return MessagesMany.deserializeBinary(data);
             case C_MSG.Bool:
                 return Bool.deserializeBinary(data);
+            case C_MSG.UpdateState:
+                return UpdateState.deserializeBinary(data);
             default:
                 return null;
         }

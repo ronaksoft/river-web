@@ -91,7 +91,7 @@ class Dialog extends React.Component<IProps, IState> {
                 <div style={style} key={index}>
                     <Link to={`/conversation/${data.peerid}`}>
                         <div className={'dialog' + (data.peerid === this.state.selectedId ? ' active' : '')}>
-                            <DialogMessage messageId={data.topmessageid || -1}/>
+                            <DialogMessage dialog={data}/>
                         </div>
                     </Link>
                 </div>

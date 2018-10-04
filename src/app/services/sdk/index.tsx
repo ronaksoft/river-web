@@ -23,6 +23,7 @@ import {
     MessagesSent,
     MessagesSetTyping
 } from "./messages/api.messages_pb";
+import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from './messages/api.updates_pb';
 // import MessageRepo from "../../repository/message";
 // import UserRepo from "../../repository/user";
 // import DialogRepo from "../../repository/dialog";
@@ -199,5 +200,17 @@ export default class SDK {
         data.setPeer(peer);
         data.setAction(type);
         return this.server.send(C_MSG.MessagesSetTyping, data.serializeBinary());
+    }
+
+    public getUpdateState(): Promise<UpdateState.AsObject> {
+        const data = new UpdateGetState();
+        return this.server.send(C_MSG.UpdateGetState, data.serializeBinary());
+    }
+
+    public getUpdateDifference(from: number, limit: number): Promise<UpdateDifference.AsObject> {
+        const data = new UpdateGetDifference();
+        data.setFrom(from);
+        data.setLimit(limit);
+        return this.server.send(C_MSG.UpdateGetDifference, data.serializeBinary());
     }
 }

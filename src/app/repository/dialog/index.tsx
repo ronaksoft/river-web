@@ -4,6 +4,7 @@ import {differenceBy, find, merge} from 'lodash';
 import SDK from '../../services/sdk';
 import UserRepo from '../user';
 import MessageRepo from '../message';
+import {IMessage} from "../message/interface";
 
 export default class DialogRepo {
     private dbService: DB;
@@ -30,9 +31,13 @@ export default class DialogRepo {
 
     public getMany({skip, limit}: any): Promise<IDialog[]> {
         return this.sdk.getDialogs(skip || 0, limit || 30).then((remoteRes) => {
-            this.importBulk(remoteRes.dialogsList);
             this.messageRepo.importBulk(remoteRes.messagesList);
+            const messageMap: { [key: number]: IMessage } = {};
+            remoteRes.messagesList.forEach((msg) => {
+                messageMap[msg.id || 0] = msg;
+            });
             this.userRepo.importBulk(remoteRes.usersList);
+            this.importBulk(remoteRes.dialogsList, messageMap);
             return remoteRes.dialogsList;
         });
     }
@@ -55,10 +60,18 @@ export default class DialogRepo {
         });
     }
 
-    public importBulk(dialogs: IDialog[]): Promise<any> {
+    public importBulk(dialogs: IDialog[], messageMap?: { [key: number]: IMessage }): Promise<any> {
         dialogs = dialogs.map((dialog) => {
             dialog._id = String(dialog.peerid);
-            dialog.last_update = Date.now();
+            if (messageMap &&
+                dialog.topmessageid) {
+                const msg = messageMap[dialog.topmessageid || 0];
+                if (msg) {
+                    dialog.preview = (msg.body || '').substr(0, 64);
+                    dialog.last_update = msg.createdon;
+                    dialog.user_id = msg.peerid;
+                }
+            }
             return dialog;
         });
         return this.upsert(dialogs);
