@@ -133,36 +133,37 @@ class Chat extends React.Component<IProps, IState> {
             // }).catch((err) => {
             //     window.console.log(err);
             // });
-
-            this.checkSync().then(() => {
-                window.console.log('updating in progress');
-            }).catch((err) => {
-                window.console.log(err);
-                // this.dialogRepo.getMany({limit: 100}).then((dialogs) => {
-                //     dialogs.forEach((dialog, index) => {
-                //         this.dialogMap[dialog.peerid || 0] = index;
-                //     });
-                //     this.setState({
-                //         dialogs,
-                //     });
-                // }).catch((err) => {
-                //     window.console.log(err);
-                // });
-            });
+            this.sdk.recall(0);
         });
 
-        // window.addEventListener('wsOpen', () => {
-        //     this.sdk.recall(0).then((data) => {
-        //         window.console.log(data);
-        //     }).catch((err) => {
-        //         window.console.log(err);
-        //     });
-        // });
+        window.addEventListener('wsOpen', () => {
+            this.sdk.recall(0).then((data) => {
+                window.console.log(data);
+                this.checkSync().then(() => {
+                    window.console.log('updating in progress');
+                }).catch((err) => {
+                    window.console.log(err);
+                    // this.dialogRepo.getMany({limit: 100}).then((dialogs) => {
+                    //     dialogs.forEach((dialog, index) => {
+                    //         this.dialogMap[dialog.peerid || 0] = index;
+                    //     });
+                    //     this.setState({
+                    //         dialogs,
+                    //     });
+                    // }).catch((err) => {
+                    //     window.console.log(err);
+                    // });
+                });
+            }).catch((err) => {
+                window.console.log(err);
+            });
+        });
 
         window.addEventListener('Dialog_DB_Updated', () => {
             this.dialogRepo.getManyCache({}).then((res) => {
                 this.dialogsSortThrottle(res);
             });
+            window.console.log('Dialog_DB_Updated');
         });
 
         window.addEventListener('Message_DB_Updated', () => {
@@ -658,7 +659,7 @@ class Chat extends React.Component<IProps, IState> {
                     });
                 } else {
                     resolve(lastId);
-                    this.syncThemAll(lastId, 100);
+                    this.syncThemAll(lastId, 20);
                 }
             }).catch(reject);
         });

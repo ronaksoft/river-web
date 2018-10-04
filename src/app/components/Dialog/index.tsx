@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {List, CellMeasurer, CellMeasurerCache} from 'react-virtualized';
+import {List} from 'react-virtualized';
 import {Link} from 'react-router-dom';
 import * as _ from 'lodash';
 import './style.css';
@@ -19,7 +19,6 @@ interface IState {
 
 class Dialog extends React.Component<IProps, IState> {
     private list: any;
-    private cache: any;
 
     constructor(props: IProps) {
         super(props);
@@ -30,10 +29,6 @@ class Dialog extends React.Component<IProps, IState> {
             selectedId: props.selectedId,
         };
         window.console.log(this.list);
-        this.cache = new CellMeasurerCache({
-            fixedWidth: true,
-            minHeight: 25,
-        });
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -62,8 +57,7 @@ class Dialog extends React.Component<IProps, IState> {
         return (
             <List
                 ref={this.refHandler}
-                deferredMeasurementCache={this.cache}
-                rowHeight={this.cache.rowHeight}
+                rowHeight={64}
                 rowRenderer={this.rowRender}
                 rowCount={items.length}
                 overscanRowCount={0}
@@ -82,20 +76,13 @@ class Dialog extends React.Component<IProps, IState> {
     private rowRender = ({index, key, parent, style}: any): any => {
         const data = this.state.items[index];
         return (
-            <CellMeasurer
-                cache={this.cache}
-                columnIndex={0}
-                key={key}
-                rowIndex={index}
-                parent={parent}>
-                <div style={style} key={index}>
-                    <Link to={`/conversation/${data.peerid}`}>
-                        <div className={'dialog' + (data.peerid === this.state.selectedId ? ' active' : '')}>
-                            <DialogMessage dialog={data}/>
-                        </div>
-                    </Link>
-                </div>
-            </CellMeasurer>
+            <div style={style} key={index}>
+                <Link to={`/conversation/${data.peerid}`}>
+                    <div className={'dialog' + (data.peerid === this.state.selectedId ? ' active' : '')}>
+                        <DialogMessage dialog={data}/>
+                    </div>
+                </Link>
+            </div>
         );
     }
 }

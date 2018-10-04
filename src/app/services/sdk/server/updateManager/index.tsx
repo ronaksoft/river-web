@@ -70,7 +70,10 @@ export default class UpdateManager {
 
     private response(update: UpdateEnvelope) {
         const data = update.getUpdate_asU8();
-        this.setLastUpdateId(update.getUpdateid() || 0);
+        const updateId = update.getUpdateid();
+        if (updateId && updateId > 0) {
+            this.setLastUpdateId(updateId);
+        }
         switch (update.getConstructor()) {
             case C_MSG.UpdateNewMessage:
                 this.callHandlers(C_MSG.UpdateNewMessage, UpdateNewMessage.deserializeBinary(data).toObject());

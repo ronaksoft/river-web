@@ -69,7 +69,7 @@ export default class SyncManager {
 
     private updateMany(envelopes: UpdateEnvelope[]) {
         let lastId = 0;
-        const dialogs: { [key: number]: IDialog } = {};
+        let dialogs: { [key: number]: IDialog } = {};
         const messages: { [key: number]: IMessage } = {};
         const users: { [key: number]: IUser } = {};
         envelopes.forEach((envelope) => {
@@ -82,7 +82,7 @@ export default class SyncManager {
                     const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
                     users[updateNewMessage.sender.id || 0] = updateNewMessage.sender;
                     messages[updateNewMessage.message.id || 0] = updateNewMessage.message;
-                    this.updateDialog(dialogs, {
+                    dialogs = this.updateDialog(dialogs, {
                         last_update: updateNewMessage.message.createdon,
                         peerid: updateNewMessage.message.peerid,
                         preview: (updateNewMessage.message.body || '').substr(0, 64),
@@ -90,14 +90,14 @@ export default class SyncManager {
                     break;
                 case C_MSG.UpdateReadHistoryInbox:
                     const updateReadHistoryInbox = UpdateReadHistoryInbox.deserializeBinary(data).toObject();
-                    this.updateDialog(dialogs, {
+                    dialogs = this.updateDialog(dialogs, {
                         peerid: updateReadHistoryInbox.peer.id,
                         readinboxmaxid: updateReadHistoryInbox.maxid,
                     });
                     break;
                 case C_MSG.UpdateReadHistoryOutbox:
                     const updateReadHistoryOutbox = UpdateReadHistoryOutbox.deserializeBinary(data).toObject();
-                    this.updateDialog(dialogs, {
+                    dialogs = this.updateDialog(dialogs, {
                         peerid: updateReadHistoryOutbox.peer.id,
                         readoutboxmaxid: updateReadHistoryOutbox.maxid
                     });
@@ -123,6 +123,7 @@ export default class SyncManager {
         } else {
             dialogs[dialog.peerid || 0] = dialog;
         }
+        return dialogs;
     }
 
     private updateDialogDB(dialogs: { [key: number]: IDialog }) {

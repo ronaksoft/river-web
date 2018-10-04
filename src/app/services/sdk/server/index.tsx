@@ -129,6 +129,10 @@ export default class Server {
                 if (this.messageListeners[reqId].reject) {
                     this.messageListeners[reqId].reject(res.toObject());
                 }
+            } else if (constructor === C_MSG.UpdateDifference) {
+                if (this.messageListeners[reqId].resolve) {
+                    this.messageListeners[reqId].resolve(res);
+                }
             } else {
                 if (this.messageListeners[reqId].resolve) {
                     this.messageListeners[reqId].resolve(res.toObject());
@@ -160,13 +164,15 @@ export default class Server {
     }
 
     private dispatchTimeout(reqId: number) {
-        if (!this.messageListeners[reqId]) {
+        const item = this.messageListeners[reqId];
+        if (!item) {
             return;
         }
-        const item = this.messageListeners[reqId];
-        item.reject({
-            err: 'timeout',
-        });
+        if (item.reject) {
+            item.reject({
+                err: 'timeout',
+            });
+        }
         this.cleanQueue(reqId);
     }
 
