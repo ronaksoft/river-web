@@ -5,6 +5,7 @@ import {Bool, Error} from '../messages/core.messages_pb';
 import {MessagesDialogs, MessagesMany, MessagesSent} from '../messages/api.messages_pb';
 import {Dialog} from '../messages/core.types_pb';
 import {
+    UpdateDifference,
     UpdateNewMessage,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox, UpdateState,
@@ -40,6 +41,8 @@ export default class UniqueId {
                 return Bool.deserializeBinary(data);
             case C_MSG.UpdateState:
                 return UpdateState.deserializeBinary(data);
+            case C_MSG.UpdateDifference:
+                return UpdateDifference.deserializeBinary(data);
             default:
                 return null;
         }

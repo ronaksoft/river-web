@@ -114,12 +114,12 @@ export default class MessageRepo {
         });
     }
 
-    public importBulk(msgs: IMessage[]) {
+    public importBulk(msgs: IMessage[]): Promise<any> {
         msgs = msgs.map((msg) => {
             msg._id = String(msg.id);
             return msg;
         });
-        this.upsert(msgs).then((data) => {
+        return this.upsert(msgs).then((data) => {
             window.console.log(data);
         }).catch((err) => {
             window.console.log(err);

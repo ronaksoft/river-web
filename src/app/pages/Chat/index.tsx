@@ -24,6 +24,7 @@ import UpdateManager from '../../services/sdk/server/updateManager';
 import {C_MSG} from '../../services/sdk/const';
 import {UpdateNewMessage, UpdateUserTyping} from '../../services/sdk/messages/api.updates_pb';
 import UserName from '../../components/UserName';
+import SyncManager from '../../services/sdk/syncManager';
 
 interface IProps {
     match?: any;
@@ -52,6 +53,7 @@ class Chat extends React.Component<IProps, IState> {
     private isLoading: boolean = false;
     private sdk: SDK;
     private updateManager: UpdateManager;
+    private syncManager: SyncManager;
     private connInfo: IConnInfo;
     private eventReferences: any[] = [];
     private dialogMap: { [key: number]: number } = {};
@@ -77,6 +79,7 @@ class Chat extends React.Component<IProps, IState> {
         this.sdk = SDK.getInstance();
         this.connInfo = this.sdk.getConnInfo();
         this.updateManager = UpdateManager.getInstance();
+        this.syncManager = SyncManager.getInstance();
         this.dialogsSortThrottle = throttle(this.dialogsSort, 500);
         // setInterval(() => {
         //     const messages = this.state.messages;
@@ -123,21 +126,51 @@ class Chat extends React.Component<IProps, IState> {
             this.props.history.push('/signup');
         }
         window.addEventListener('wasmInit', () => {
-            this.dialogRepo.getMany({limit: 100}).then((res) => {
-                this.setState({
-                    dialogs: res
-                });
+            // this.dialogRepo.getMany({limit: 100}).then((res) => {
+            //     this.setState({
+            //         dialogs: res
+            //     });
+            // }).catch((err) => {
+            //     window.console.log(err);
+            // });
+
+            this.checkSync().then(() => {
+                window.console.log('updating in progress');
             }).catch((err) => {
                 window.console.log(err);
+                // this.dialogRepo.getMany({limit: 100}).then((dialogs) => {
+                //     dialogs.forEach((dialog, index) => {
+                //         this.dialogMap[dialog.peerid || 0] = index;
+                //     });
+                //     this.setState({
+                //         dialogs,
+                //     });
+                // }).catch((err) => {
+                //     window.console.log(err);
+                // });
             });
         });
 
-        window.addEventListener('wsOpen', () => {
-            this.sdk.recall(0).then((data) => {
-                window.console.log(data);
-            }).catch((err) => {
-                window.console.log(err);
+        // window.addEventListener('wsOpen', () => {
+        //     this.sdk.recall(0).then((data) => {
+        //         window.console.log(data);
+        //     }).catch((err) => {
+        //         window.console.log(err);
+        //     });
+        // });
+
+        window.addEventListener('Dialog_DB_Updated', () => {
+            this.dialogRepo.getManyCache({}).then((res) => {
+                this.dialogsSortThrottle(res);
             });
+        });
+
+        window.addEventListener('Message_DB_Updated', () => {
+            window.console.log('Message_DB_Updated');
+        });
+
+        window.addEventListener('User_DB_Updated', () => {
+            window.console.log('User_DB_Updated');
         });
 
         this.dialogRepo.getManyCache({}).then((res) => {
@@ -611,6 +644,38 @@ class Chat extends React.Component<IProps, IState> {
         });
         this.setState({
             dialogs,
+        });
+    }
+
+    private checkSync(): Promise<any> {
+        const lastId = this.syncManager.getLastUpdateId();
+        return new Promise((resolve, reject) => {
+            this.sdk.getUpdateState().then((res) => {
+                window.console.log(res);
+                if ((res.updateid || 0) - lastId > 1000) {
+                    reject({
+                        err: 'too late',
+                    });
+                } else {
+                    resolve(lastId);
+                    this.syncThemAll(lastId, 100);
+                }
+            }).catch(reject);
+        });
+    }
+
+    private syncThemAll(lastId: number, limit: number) {
+        let tries = 0;
+        this.sdk.getUpdateDifference(lastId, limit).then((res) => {
+            tries = 0;
+            this.syncManager.applyUpdate(res).then((id) => {
+                this.syncThemAll(id, limit);
+            });
+        }).catch((err) => {
+            tries++;
+            if (err.err === 'timeout' && tries < 3) {
+                this.syncThemAll(lastId, limit);
+            }
         });
     }
 }

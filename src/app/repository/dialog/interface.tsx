@@ -6,6 +6,7 @@ interface IDialog extends Dialog.AsObject {
     last_update?: number;
     preview?: string;
     user_id?: number;
+    unread_counter?: number;
 }
 
 export {IDialog};

@@ -24,9 +24,6 @@ import {
     MessagesSetTyping
 } from "./messages/api.messages_pb";
 import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from './messages/api.updates_pb';
-// import MessageRepo from "../../repository/message";
-// import UserRepo from "../../repository/user";
-// import DialogRepo from "../../repository/dialog";
 
 export default class SDK {
     public static getInstance() {
@@ -43,10 +40,6 @@ export default class SDK {
     private connInfo: IConnInfo;
 
     private clientId: number;
-    // private msgId: number;
-    // private messageRepo: MessageRepo;
-    // private dialogRepo: DialogRepo;
-    // private userRepor: UserRepo;
 
     public constructor() {
         this.server = Server.getInstance();
@@ -207,7 +200,7 @@ export default class SDK {
         return this.server.send(C_MSG.UpdateGetState, data.serializeBinary());
     }
 
-    public getUpdateDifference(from: number, limit: number): Promise<UpdateDifference.AsObject> {
+    public getUpdateDifference(from: number, limit: number): Promise<UpdateDifference> {
         const data = new UpdateGetDifference();
         data.setFrom(from);
         data.setLimit(limit);

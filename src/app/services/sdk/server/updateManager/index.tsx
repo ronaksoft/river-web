@@ -21,9 +21,11 @@ export default class UpdateManager {
 
     private fnQueue: any = {};
     private fnIndex: number = 0;
+    private lastUpdateId: number = 0;
 
     public constructor() {
         window.console.log('Update manager started');
+        this.getLastUpdateId();
     }
 
     public parseUpdate(bytes: string) {
@@ -50,9 +52,25 @@ export default class UpdateManager {
         };
     }
 
+    public getLastUpdateId(): number {
+        const data = localStorage.getItem('river.last_update_id');
+        if (data) {
+            this.lastUpdateId = JSON.parse(data).lastId;
+            return this.lastUpdateId;
+        }
+        return 0;
+    }
+
+    private setLastUpdateId(id: number) {
+        this.lastUpdateId = id;
+        localStorage.setItem('river.last_update_id', JSON.stringify({
+            lastId: this.lastUpdateId,
+        }));
+    }
+
     private response(update: UpdateEnvelope) {
-        // @ts-ignore
-        const data: Uint8Array = update.getUpdate();
+        const data = update.getUpdate_asU8();
+        this.setLastUpdateId(update.getUpdateid() || 0);
         switch (update.getConstructor()) {
             case C_MSG.UpdateNewMessage:
                 this.callHandlers(C_MSG.UpdateNewMessage, UpdateNewMessage.deserializeBinary(data).toObject());
