@@ -18,10 +18,10 @@ wasmWorker.onmessage = (e) => {
             break;
         case 'loadConnInfo':
             workerMessage('loadConnInfo', localStorage.getItem('river.conn.info'));
-            workerMessage('initSDK', {});
             initWebSocket();
             const event = new CustomEvent('wasmInit');
-            setTimeout(function () {
+            setTimeout(() => {
+                workerMessage('initSDK', {});
                 window.dispatchEvent(event);
             }, 50);
             break;
@@ -62,7 +62,7 @@ wasmWorker.onmessage = (e) => {
     }
 };
 
-fetch('bin/test.wasm').then((response) => {
+fetch('bin/river.wasm').then((response) => {
     return response.arrayBuffer();
 }).then((bytes) => {
     workerMessage('init', bytes);
@@ -125,9 +125,6 @@ const initWebSocket = () => {
     socket.onmessage = (event) => {
         if (checkPong(event.data)) {
             pingCounter = 0;
-            if (pingCounter > 4) {
-                console.log('server ping is week');
-            }
         } else {
             workerMessage('receive', Uint8ToBase64(new Uint8Array(event.data)));
         }
@@ -155,5 +152,8 @@ setInterval(() => {
     if (connected) {
         socket.send(ping);
         pingCounter++;
+        if (pingCounter > 4) {
+            console.log('server ping is week');
+        }
     }
 }, 10000);
