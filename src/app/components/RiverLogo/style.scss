@@ -1,0 +1,92 @@
+@import '../../../style/common';
+
+.write {
+  display: flex;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border: 1px solid var(--light);
+  border-width: 1px 1px 1px 0;
+  background-color: #F4F4F5;
+  .user {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .user-avatar {
+      height: 32px;
+      width: 32px;
+      border-radius: 50%;
+      background-color: #e6e6e6;
+      overflow: hidden;
+      box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.3) inset;
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+  }
+  .input {
+    flex: 1;
+    margin: 8px 0;
+    position: relative;
+    z-index: 1;
+    textarea {
+      font-size: 12px;
+      line-height: 15px;
+      float: left;
+      width: calc(100% - 8px);
+      height: 30px;
+      padding: 7px 10px 8px;
+      color: var(--dark);
+      border: 1px solid rgba(50, 61, 71, 0.16);
+      border-radius: 3px;
+      outline: none;
+      background-color: #fff;
+      resize: none;
+      @include font;
+    }
+    .write-link {
+      position: absolute;
+      right: 16px;
+      bottom: 0;
+      a {
+        position: relative;
+        height: 32px;
+        &:before {
+          display: inline-block;
+          float: left;
+          width: 20px;
+          height: 32px;
+          padding: 0 0 0 4px;
+          content: '';
+          background-repeat: no-repeat;
+          background-position: center;
+          opacity: 0.5;
+          transition: opacity 0.2s;
+        }
+        &:hover:before {
+          opacity: 1;
+        }
+      }
+      .attach {
+        &:before {
+          background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/attachment.png');
+        }
+      }
+      .smiley {
+        &:before {
+          background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/smiley.png');
+        }
+      }
+      .send {
+        &:before {
+          background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/send.png');
+        }
+      }
+    }
+  }
+}
