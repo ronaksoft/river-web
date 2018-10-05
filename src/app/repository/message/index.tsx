@@ -9,8 +9,10 @@ export default class MessageRepo {
     private db: any;
     private sdk: SDK;
     private userRepo: UserRepo;
+    private userId: number;
 
     public constructor() {
+        this.userId = SDK.getInstance().getConnInfo().UserID || 0;
         this.dbService = UserMessageDB.getInstance();
         this.db = this.dbService.getDB();
         this.sdk = SDK.getInstance();
@@ -117,6 +119,7 @@ export default class MessageRepo {
     public importBulk(msgs: IMessage[]): Promise<any> {
         msgs = msgs.map((msg) => {
             msg._id = String(msg.id);
+            msg.me = (msg.senderid === this.userId);
             return msg;
         });
         return this.upsert(msgs).then((data) => {

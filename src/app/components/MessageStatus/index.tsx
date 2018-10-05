@@ -33,9 +33,6 @@ class MessageStatus extends React.Component<IProps, IState> {
     // }
 
     public componentWillReceiveProps(newProps: IProps) {
-        if (this.state.readId !== newProps.readId) {
-            return;
-        }
         this.setState({
             id: newProps.id || 0,
             readId: newProps.readId || 0,

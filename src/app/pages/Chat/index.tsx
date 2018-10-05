@@ -22,9 +22,15 @@ import {IConnInfo} from "../../services/sdk/interface";
 import {IDialog} from "../../repository/dialog/interface";
 import UpdateManager from '../../services/sdk/server/updateManager';
 import {C_MSG} from '../../services/sdk/const';
-import {UpdateNewMessage, UpdateUserTyping} from '../../services/sdk/messages/api.updates_pb';
+import {
+    UpdateNewMessage,
+    UpdateReadHistoryInbox,
+    UpdateReadHistoryOutbox,
+    UpdateUserTyping
+} from '../../services/sdk/messages/api.updates_pb';
 import UserName from '../../components/UserName';
 import SyncManager from '../../services/sdk/syncManager';
+import UserRepo from '../../repository/user';
 
 interface IProps {
     history?: any;
@@ -48,9 +54,9 @@ interface IState {
 class Chat extends React.Component<IProps, IState> {
     private rightMenu: any = null;
     private message: any = null;
-    // private idToIndex: any = {};
     private messageRepo: MessageRepo;
     private dialogRepo: DialogRepo;
+    private userRepo: UserRepo;
     private isLoading: boolean = false;
     private sdk: SDK;
     private updateManager: UpdateManager;
@@ -75,11 +81,12 @@ class Chat extends React.Component<IProps, IState> {
             selectedDialogId: props.match.params.id === 'null' ? -1 : props.match.params.id,
             toggleAttachment: false,
         };
-        this.messageRepo = new MessageRepo();
-        this.dialogRepo = new DialogRepo();
-        // this.uniqueId = UniqueId.getInstance();
         this.sdk = SDK.getInstance();
         this.connInfo = this.sdk.getConnInfo();
+        this.messageRepo = new MessageRepo();
+        this.dialogRepo = new DialogRepo();
+        this.userRepo = UserRepo.getInstance();
+        // this.uniqueId = UniqueId.getInstance();
         this.updateManager = UpdateManager.getInstance();
         this.syncManager = SyncManager.getInstance();
         this.dialogsSortThrottle = throttle(this.dialogsSort, 500);
@@ -134,22 +141,18 @@ class Chat extends React.Component<IProps, IState> {
                     window.console.log('updating in progress');
                 }).catch((err) => {
                     window.console.log(err);
-                    // this.dialogRepo.getMany({limit: 100}).then((dialogs) => {
-                    //     dialogs.forEach((dialog, index) => {
-                    //         this.dialogMap[dialog.peerid || 0] = index;
-                    //     });
-                    //     this.setState({
-                    //         dialogs,
-                    //     });
-                    // }).catch((err) => {
-                    //     window.console.log(err);
-                    // });
+                    this.dialogRepo.getMany({limit: 100}).then((dialogs) => {
+                        this.dialogsSortThrottle(dialogs);
+                    }).catch((err2) => {
+                        window.console.log(err2);
+                    });
                 });
             }).catch((err) => {
                 window.console.log(err);
             });
         });
 
+        // TODO: destroy
         window.addEventListener('Dialog_DB_Updated', () => {
             this.dialogRepo.getManyCache({}).then((res) => {
                 this.dialogsSortThrottle(res);
@@ -157,10 +160,12 @@ class Chat extends React.Component<IProps, IState> {
             window.console.log('Dialog_DB_Updated');
         });
 
+        // TODO: destroy
         window.addEventListener('Message_DB_Updated', () => {
             window.console.log('Message_DB_Updated');
         });
 
+        // TODO: destroy
         window.addEventListener('User_DB_Updated', () => {
             window.console.log('User_DB_Updated');
         });
@@ -181,30 +186,28 @@ class Chat extends React.Component<IProps, IState> {
             });
         });
 
-        // this.dialogRepo.getMany({limit: 100}).then((dialogs) => {
-        //     dialogs.forEach((dialog, index) => {
-        //         this.dialogMap[dialog.peerid || 0] = index;
-        //     });
-        //     this.setState({
-        //         dialogs,
-        //     });
-        // }).catch((err) => {
-        //     window.console.log(err);
-        // });
-
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNewMessage, (data: UpdateNewMessage.AsObject) => {
-            window.console.log(data);
             const message: IMessage = data.message;
             message._id = String(message.id);
             message.me = (this.connInfo.UserID === message.senderid);
-            this.pushMessage(message);
+            if (data.sender.id === this.state.selectedDialogId) {
+                this.pushMessage(message);
+                const peer = this.getPeerByDialogId(this.state.selectedDialogId);
+                if (peer) {
+                    this.sdk.setMessagesReadHistory(peer, data.message.id || 0);
+                    window.console.log('inbox', peer, data.message.id);
+                }
+            }
             this.messageRepo.importBulk([data.message]);
+            this.userRepo.importBulk([data.sender]);
             this.updateDialogs(data.message, data.accesshash || 0);
         }));
 
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUserTyping, (data: UpdateUserTyping.AsObject) => {
+            if (data.userid !== this.state.selectedDialogId) {
+                return;
+            }
             const isTyping = data.userid === this.state.selectedDialogId && data.action === TypingAction.TYPING;
-            window.console.log(isTyping);
             if (this.state.isTyping !== isTyping) {
                 this.setState({
                     isTyping,
@@ -216,6 +219,21 @@ class Chat extends React.Component<IProps, IState> {
                     isTyping: false,
                 });
             }, 5000);
+        }));
+
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateReadHistoryInbox, (data: UpdateReadHistoryInbox.AsObject) => {
+            window.console.log('inbox', data);
+            this.updateDialogsCounter(data.peer.id || 0, {maxInbox: data.maxid});
+        }));
+
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateReadHistoryOutbox, (data: UpdateReadHistoryOutbox.AsObject) => {
+            window.console.log('inbox', data);
+            this.updateDialogsCounter(data.peer.id || 0, {maxOutbox: data.maxid});
+            if (data.peer.id === this.state.selectedDialogId) {
+                this.setState({
+                    maxReadId: data.maxid || 0,
+                });
+            }
         }));
     }
 
@@ -414,8 +432,6 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
-        window.console.log('peer', peer.getId(), peer.getAccesshash());
-
         let messages: IMessage[] = [];
 
         const updateState = () => {
@@ -429,7 +445,7 @@ class Chat extends React.Component<IProps, IState> {
         };
 
         this.messageRepo.getMany({peer, limit: 20}).then((data) => {
-            window.console.log(data);
+            let maxId = 0;
             if (data.length === 0) {
                 // messages = this.createFakeMessage(dialogId);
                 messages = [];
@@ -437,20 +453,28 @@ class Chat extends React.Component<IProps, IState> {
                 messages = data.reverse();
             }
             messages = messages.map((msg, key) => {
-                if (msg.senderid === this.connInfo.UserID) {
-                    msg.me = true;
+                if (msg.id && msg.id > maxId) {
+                    maxId = msg.id;
                 }
-                if (key > 0 && msg.me !== messages[key - 1].me) {
+                if (key > 0 && msg.senderid !== messages[key - 1].senderid) {
                     msg.avatar = true;
                 }
                 return msg;
             });
+            let maxReadId = 0;
+            if (this.dialogMap.hasOwnProperty(dialogId)) {
+                maxReadId = this.state.dialogs[this.dialogMap[dialogId]].readoutboxmaxid || 0;
+            }
             this.setState({
+                maxReadId,
                 messages,
                 selectedDialogId: dialogId,
             }, () => {
                 if (force === true) {
                     updateState();
+                }
+                if (messages.length > 0) {
+                    this.sdk.setMessagesReadHistory(peer, maxId);
                 }
             });
         }).catch((err: any) => {
@@ -499,7 +523,7 @@ class Chat extends React.Component<IProps, IState> {
         const message: IMessage = {
             _id: String(id),
             body: text,
-            createdon: Date.now()/1000,
+            createdon: Date.now() / 1000,
             id,
             me: true,
             peerid: this.state.selectedDialogId,
@@ -634,10 +658,21 @@ class Chat extends React.Component<IProps, IState> {
             dialogs.push(dialog);
         }
 
-        this.dialogsSort(dialogs);
+        this.dialogsSortThrottle(dialogs);
 
         if (accessHash > -1) {
             this.dialogRepo.importBulk([toUpdateDialog]);
+        }
+    }
+
+    private updateDialogsCounter(peerid: number, {maxInbox, maxOutbox}: any) {
+        const {dialogs} = this.state;
+        if (this.dialogMap.hasOwnProperty(peerid)) {
+            const index = this.dialogMap[peerid];
+            dialogs[index].readinboxmaxid = maxInbox;
+            dialogs[index].readoutboxmaxid = maxOutbox;
+            this.dialogsSortThrottle(dialogs);
+            this.dialogRepo.importBulk([dialogs[index]]);
         }
     }
 

@@ -67,6 +67,8 @@ class Message extends React.Component<IProps, IState> {
         if (this.state.readId !== newProps.readId) {
             this.setState({
                 readId: newProps.readId,
+            }, () => {
+                this.list.forceUpdateGrid();
             });
         }
     }
@@ -123,7 +125,6 @@ class Message extends React.Component<IProps, IState> {
                         <MessageStatus status={data.me || false} id={data.id} readId={this.state.readId}
                                        time={data.createdon || 0}/>
                     </div>
-                    {/*{data._id}*/}
                 </div>
             </CellMeasurer>
         );

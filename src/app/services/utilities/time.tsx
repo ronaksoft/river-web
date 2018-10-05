@@ -61,7 +61,7 @@ class TimeUntiles {
     }
 
     public TimeParse(timestamp: number) {
-        return moment(timestamp).format('hh:mm a');
+        return moment(timestamp * 1000).format('hh:mm a');
     }
 
     /**

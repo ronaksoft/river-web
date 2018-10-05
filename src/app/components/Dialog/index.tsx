@@ -44,10 +44,12 @@ class Dialog extends React.Component<IProps, IState> {
             // @ts-ignore
             const index = _.findIndex(this.state.items, {id: newProps.selectedId});
             this.setState({
+                items: newProps.items,
                 scrollIndex: index,
                 selectedId: newProps.selectedId,
             }, () => {
                 this.list.recomputeRowHeights();
+                this.list.forceUpdateGrid();
             });
         }
     }
