@@ -83,9 +83,14 @@ export default class SyncManager {
                     users[updateNewMessage.sender.id || 0] = updateNewMessage.sender;
                     messages[updateNewMessage.message.id || 0] = updateNewMessage.message;
                     dialogs = this.updateDialog(dialogs, {
+                        accesshash: updateNewMessage.accesshash,
                         last_update: updateNewMessage.message.createdon,
                         peerid: updateNewMessage.message.peerid,
+                        peertype: updateNewMessage.message.peertype,
                         preview: (updateNewMessage.message.body || '').substr(0, 64),
+                        topmessageid: updateNewMessage.message.id,
+                        unreadcount: 0,
+                        user_id: updateNewMessage.message.peerid,
                     });
                     break;
                 case C_MSG.UpdateReadHistoryInbox:
@@ -128,42 +133,55 @@ export default class SyncManager {
 
     private updateDialogDB(dialogs: { [key: number]: IDialog }) {
         const data: IDialog[] = [];
-        Object.keys(dialogs).forEach((key) => {
+        const keys = Object.keys(dialogs);
+        keys.forEach((key) => {
             data.push(dialogs[key]);
         });
         if (data.length > 0) {
             this.dialogRepo.importBulk(data).then(() => {
-                this.broadcastEvent('Dialog_DB_Updated');
+                this.broadcastEvent('Dialog_DB_Updated', {ids: keys});
             });
         }
     }
 
     private updateMessageDB(messages: { [key: number]: IMessage }) {
         const data: IMessage[] = [];
-        Object.keys(messages).forEach((key) => {
+        const keys = Object.keys(messages);
+        const peerIds: number[] = [];
+        keys.forEach((key) => {
             data.push(messages[key]);
+            if (!peerIds[messages[key].peerid]) {
+                peerIds.push(messages[key].peerid);
+            }
         });
         if (data.length > 0) {
             this.messageRepo.importBulk(data).then(() => {
-                this.broadcastEvent('Message_DB_Updated');
+                this.broadcastEvent('Message_DB_Updated', {
+                    ids: keys,
+                    peerids: peerIds,
+                });
             });
         }
     }
 
     private updateUserDB(users: { [key: number]: IUser }) {
         const data: IUser[] = [];
-        Object.keys(users).forEach((key) => {
+        const keys = Object.keys(users);
+        keys.forEach((key) => {
             data.push(users[key]);
         });
         if (data.length > 0) {
             this.userRepo.importBulk(data).then(() => {
-                this.broadcastEvent('User_DB_Updated');
+                this.broadcastEvent('User_DB_Updated', {ids: keys});
             });
         }
     }
 
-    private broadcastEvent(name: string) {
-        const event = new CustomEvent(name, {});
+    private broadcastEvent(name: string, data: any) {
+        const event = new CustomEvent(name, {
+            bubbles: true,
+            detail: data,
+        });
         window.dispatchEvent(event);
     }
 }

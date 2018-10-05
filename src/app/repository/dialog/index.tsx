@@ -94,6 +94,8 @@ export default class DialogRepo {
                 return merge(dialog, t);
             });
             return this.createMany([...createItems, ...updateItems]);
+        }).catch((err: any) => {
+            window.console.log('ewrferf', err);
         });
     }
 }

@@ -175,6 +175,7 @@ class Chat extends React.Component<IProps, IState> {
         });
 
         this.dialogRepo.getManyCache({}).then((res) => {
+            window.console.log(res);
             res.forEach((dialog, index) => {
                 this.dialogMap[dialog.peerid || 0] = index;
             });
@@ -652,7 +653,6 @@ class Chat extends React.Component<IProps, IState> {
         const lastId = this.syncManager.getLastUpdateId();
         return new Promise((resolve, reject) => {
             this.sdk.getUpdateState().then((res) => {
-                window.console.log(res);
                 if ((res.updateid || 0) - lastId > 1000) {
                     reject({
                         err: 'too late',
@@ -669,6 +669,7 @@ class Chat extends React.Component<IProps, IState> {
         let tries = 0;
         this.sdk.getUpdateDifference(lastId, limit).then((res) => {
             tries = 0;
+            window.console.log('checkSync', res.toObject());
             this.syncManager.applyUpdate(res).then((id) => {
                 this.syncThemAll(id, limit);
             });
