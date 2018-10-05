@@ -28,6 +28,9 @@ table {
   border-spacing: 0; }
 
 /* end of reset */
+*:focus {
+  outline: none; }
+
 .App {
   text-align: center; }
 

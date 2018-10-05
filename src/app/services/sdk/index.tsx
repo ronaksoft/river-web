@@ -18,12 +18,13 @@ import {
     MessagesDialogs,
     MessagesGetDialogs,
     MessagesGetHistory,
-    MessagesMany,
+    MessagesMany, MessagesReadHistory,
     MessagesSend,
     MessagesSent,
     MessagesSetTyping
 } from "./messages/api.messages_pb";
 import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from './messages/api.updates_pb';
+import {Bool} from './messages/core.messages_pb';
 
 export default class SDK {
     public static getInstance() {
@@ -193,6 +194,13 @@ export default class SDK {
         data.setPeer(peer);
         data.setAction(type);
         return this.server.send(C_MSG.MessagesSetTyping, data.serializeBinary());
+    }
+
+    public setMessagesReadHistory(peer: InputPeer, maxId: number): Promise<Bool> {
+        const data = new MessagesReadHistory();
+        data.setPeer(peer);
+        data.setMaxid(maxId);
+        return this.server.send(C_MSG.MessagesReadHistory, data.serializeBinary());
     }
 
     public getUpdateState(): Promise<UpdateState.AsObject> {

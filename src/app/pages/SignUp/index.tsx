@@ -48,7 +48,6 @@ class Chat extends React.Component<IProps, IState> {
             tries: 0,
         };
         this.sdk = SDK.getInstance();
-        window.console.log(this.sdk);
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -60,11 +59,13 @@ class Chat extends React.Component<IProps, IState> {
             this.sdk.recall(0);
         });
         window.addEventListener('wsOpen', () => {
-            this.sdk.recall(0).then(() => {
-                this.props.history.push('/conversation/null');
-            }).catch((err) => {
-                window.console.log(err);
-            });
+            if ((this.sdk.getConnInfo().UserID || 0) > 0) {
+                this.sdk.recall(0).then(() => {
+                    this.props.history.push('/conversation/null');
+                }).catch((err) => {
+                    window.console.log(err);
+                });
+            }
             this.focus('f-phone');
         });
     }

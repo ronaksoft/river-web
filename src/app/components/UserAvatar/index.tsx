@@ -15,8 +15,8 @@ interface IState {
 
 class UserAvatar extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
-    // @ts-ignore
-    private failCount: number = 0;
+    private tryTimeout: any = null;
+    private tryCount: number = 0;
 
     constructor(props: IProps) {
         super(props);
@@ -37,7 +37,8 @@ class UserAvatar extends React.Component<IProps, IState> {
 
     public componentWillReceiveProps(newProps: IProps) {
         if (this.state.id !== newProps.id) {
-            this.failCount = 0;
+            this.tryTimeout = 0;
+            clearTimeout(this.tryTimeout);
             this.setState({
                 id: newProps.id,
             }, () => {
@@ -69,7 +70,12 @@ class UserAvatar extends React.Component<IProps, IState> {
                 user,
             });
         }).catch(() => {
-            this.failCount++;
+            if (this.tryCount < 10) {
+                this.tryCount++;
+                this.tryTimeout = setTimeout(() => {
+                    this.getUser();
+                }, 1000);
+            }
         });
     }
 }

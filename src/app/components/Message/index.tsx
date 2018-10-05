@@ -3,15 +3,18 @@ import {List, CellMeasurer, CellMeasurerCache, AutoSizer} from 'react-virtualize
 import {IMessage} from '../../repository/message/interface';
 import './style.css';
 import UserAvatar from '../UserAvatar';
+import MessageStatus from '../MessageStatus';
 
 interface IProps {
     items: IMessage[];
+    readId: number;
     rendered?: () => void;
     onLoadMore?: () => any;
 }
 
 interface IState {
     items: IMessage[];
+    readId: number;
     scrollIndex: number;
     listStyle?: React.CSSProperties;
 }
@@ -27,6 +30,7 @@ class Message extends React.Component<IProps, IState> {
 
         this.state = {
             items: props.items,
+            readId: props.readId,
             scrollIndex: -1,
         };
         this.cache = new CellMeasurerCache({
@@ -59,6 +63,11 @@ class Message extends React.Component<IProps, IState> {
             }
             this.listCount = newProps.items.length;
             this.topOfList = false;
+        }
+        if (this.state.readId !== newProps.readId) {
+            this.setState({
+                readId: newProps.readId,
+            });
         }
     }
 
@@ -107,10 +116,13 @@ class Message extends React.Component<IProps, IState> {
                 parent={parent}>
                 <div style={style} key={index} className="bubble-wrapper">
                     {(data.avatar && data.senderid && !data.me) && (
-                        <UserAvatar id={data.senderid} className="avatar" />
+                        <UserAvatar id={data.senderid} className="avatar"/>
                     )}
-                    <div className={"bubble " + (data.me ? 'me' : 'you')}
-                         dangerouslySetInnerHTML={{__html: this.formatText(data.body)}}/>
+                    <div className={"bubble " + (data.me ? 'me' : 'you')}>
+                        <div dangerouslySetInnerHTML={{__html: this.formatText(data.body)}}/>
+                        <MessageStatus status={data.me || false} id={data.id} readId={this.state.readId}
+                                       time={data.createdon || 0}/>
+                    </div>
                     {/*{data._id}*/}
                 </div>
             </CellMeasurer>

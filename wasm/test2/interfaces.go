@@ -24,6 +24,7 @@ type TimeoutCallback func()
 type Callback func()
 
 //type MessageQ map[uint64]*MessageHandler
+var authTryCount = 0
 
 type River struct {
 	// Connection Info
@@ -47,11 +48,18 @@ func (r *River) Start(connInfo string) {
 	}
 
 	if r.ConnInfo.AuthID == 0 {
-		river.CreateAuthKey(func() {
+		authErr := river.CreateAuthKey(func() {
 			_LOG.Info("Auth initialized")
 			r.authID = r.ConnInfo.AuthID
 			r.authKey = r.ConnInfo.AuthKey[:]
 		})
+		if (authErr != nil) {
+			authTryCount++
+			if (authTryCount < 10) {
+				r.Start(connInfo)
+				return
+			}
+		}
 	} else {
 		r.authID = r.ConnInfo.AuthID
 		r.authKey = r.ConnInfo.AuthKey[:]

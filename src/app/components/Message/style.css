@@ -89,10 +89,11 @@ body {
   position: relative;
   display: inline-block;
   clear: both;
-  padding: 6px;
+  padding: 3px 6px 15px 6px;
   vertical-align: top;
   border-radius: 5px;
-  max-width: 558px; }
+  max-width: 558px;
+  min-width: 75px; }
   .bubble.you {
     float: left;
     color: var(--black-text);

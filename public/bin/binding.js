@@ -10,6 +10,12 @@ workerMessage = (cmd, data) => {
     });
 };
 
+fetch('bin/river.wasm').then((response) => {
+    return response.arrayBuffer();
+}).then((bytes) => {
+    workerMessage('init', bytes);
+});
+
 wasmWorker.onmessage = (e) => {
     const d = e.data;
     switch (d.cmd) {
@@ -61,12 +67,6 @@ wasmWorker.onmessage = (e) => {
             break;
     }
 };
-
-fetch('bin/river.wasm').then((response) => {
-    return response.arrayBuffer();
-}).then((bytes) => {
-    workerMessage('init', bytes);
-});
 
 let run;
 let instance;

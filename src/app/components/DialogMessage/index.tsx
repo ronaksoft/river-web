@@ -1,11 +1,10 @@
 import * as React from 'react';
 
-import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
-import TimeUtililty from "../../services/utilities/time";
 import UserAvatar from "../UserAvatar";
 import UserName from "../UserName";
 import {IDialog} from "../../repository/dialog/interface";
+import LiveDate from '../LiveDate';
 
 interface IProps {
     dialog: IDialog;
@@ -42,7 +41,7 @@ class DialogMessage extends React.Component<IProps, IState> {
             <div className="dialog-wrapper">
                 <UserAvatar id={dialog.user_id || 0}/>
                 <UserName id={dialog.user_id || 0} className="name"/>
-                <span className="time">{TimeUtililty.dynamic(dialog.last_update)}</span>
+                <LiveDate className="time" time={dialog.last_update || 0}/>
                 <span className="preview">{dialog.preview}</span>
             </div>
         );

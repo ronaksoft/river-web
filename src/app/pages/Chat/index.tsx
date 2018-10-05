@@ -27,21 +27,22 @@ import UserName from '../../components/UserName';
 import SyncManager from '../../services/sdk/syncManager';
 
 interface IProps {
-    match?: any;
-    location?: any;
     history?: any;
+    location?: any;
+    match?: any;
 }
 
 interface IState {
     anchorEl: any;
     dialogs: IDialog[];
     inputVal: string;
+    isTyping: boolean;
+    maxReadId: number;
     messages: IMessage[];
     openNewMessage: boolean;
     rightMenu: boolean;
     selectedDialogId: number;
     toggleAttachment: boolean;
-    isTyping: boolean;
 }
 
 class Chat extends React.Component<IProps, IState> {
@@ -67,6 +68,7 @@ class Chat extends React.Component<IProps, IState> {
             dialogs: [],
             inputVal: '',
             isTyping: false,
+            maxReadId: 0,
             messages: [],
             openNewMessage: false,
             rightMenu: false,
@@ -110,19 +112,8 @@ class Chat extends React.Component<IProps, IState> {
         // }, 3000);
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
-        const selectedId = newProps.match.params.id;
-        if (selectedId === 'null') {
-            this.setState({
-                selectedDialogId: -1,
-            });
-        } else {
-            this.getMessagesByDialogId(parseInt(selectedId, 10), true);
-        }
-    }
-
     public componentDidMount() {
-        if (this.connInfo.AuthID === '0') {
+        if (this.connInfo.AuthID === '0' || this.connInfo.UserID === 0) {
             this.props.history.push('/signup');
         }
         window.addEventListener('wasmInit', () => {
@@ -228,6 +219,17 @@ class Chat extends React.Component<IProps, IState> {
         }));
     }
 
+    public componentWillReceiveProps(newProps: IProps) {
+        const selectedId = newProps.match.params.id;
+        if (selectedId === 'null') {
+            this.setState({
+                selectedDialogId: -1,
+            });
+        } else {
+            this.getMessagesByDialogId(parseInt(selectedId, 10), true);
+        }
+    }
+
     public componentWillUnmount() {
         this.eventReferences.forEach((canceller) => {
             if (typeof canceller === 'function') {
@@ -287,6 +289,7 @@ class Chat extends React.Component<IProps, IState> {
                             <Message ref={this.messageRefHandler}
                                      items={this.state.messages}
                                      onLoadMore={this.onMessageScroll}
+                                     readId={this.state.maxReadId}
                             />
                         </div>
                         <div className="attachments" hidden={!this.state.toggleAttachment}>
@@ -411,6 +414,8 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
+        window.console.log('peer', peer.getId(), peer.getAccesshash());
+
         let messages: IMessage[] = [];
 
         const updateState = () => {
@@ -490,10 +495,12 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
+        const id = -UniqueId.getRandomId();
         const message: IMessage = {
-            _id: String(UniqueId.getRandomId()),
+            _id: String(id),
             body: text,
-            createdon: new Date().getTime(),
+            createdon: Date.now()/1000,
+            id,
             me: true,
             peerid: this.state.selectedDialogId,
             senderid: this.connInfo.UserID,
@@ -669,7 +676,7 @@ class Chat extends React.Component<IProps, IState> {
         let tries = 0;
         this.sdk.getUpdateDifference(lastId, limit).then((res) => {
             tries = 0;
-            window.console.log('checkSync', res.toObject());
+            // window.console.log('checkSync', res.toObject());
             this.syncManager.applyUpdate(res).then((id) => {
                 this.syncThemAll(id, limit);
             });
