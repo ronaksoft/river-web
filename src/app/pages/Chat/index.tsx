@@ -504,7 +504,7 @@ class Chat extends React.Component<IProps, IState> {
             this.messageRepo.remove(message._id || '');
             message.id = msg.messageid;
             this.messageRepo.importBulk([message]);
-            this.updateDialogs(msg, 0);
+            this.updateDialogs(message, 0);
         }).catch((err) => {
             window.console.log(err);
         });
