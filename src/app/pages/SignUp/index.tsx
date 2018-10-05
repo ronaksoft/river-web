@@ -29,7 +29,7 @@ interface IState {
     tries: number;
 }
 
-class Chat extends React.Component<IProps, IState> {
+class SignUp extends React.Component<IProps, IState> {
     private sdk: SDK;
 
     constructor(props: IProps) {
@@ -78,14 +78,10 @@ class Chat extends React.Component<IProps, IState> {
             <div className="limiter">
                 <div className="container-login100">
                     <div className="wrap-login100 p-t-50 p-b-90">
-                        <div className="login100-form validate-form flex-sb flex-w">
+                        <div className="login100-form river-form flex-sb flex-w">
                             <ReactPhoneInput defaultCountry={'ir'} value={this.state.phone} inputClass="f-phone"
                                              disabled={this.state.loading || step === 'code'}
                                              onChange={this.handleOnChange} onKeyDown={this.sendCodeKeyDown}/>
-                            {/*<div className="wrap-input100 validate-input m-b-16">*/}
-                            {/*<input className="input100" type="text" placeholder="Username"/>*/}
-                            {/*<span className="focus-input100"/>*/}
-                            {/*</div>*/}
                             {(this.state.tries > 0 && (step === 'code' || step === 'register')) &&
                             <div className="try-another-phone" onClick={this.tryAnotherPhone}>
                                 <Refresh/>
@@ -206,11 +202,8 @@ class Chat extends React.Component<IProps, IState> {
         this.setState({
             loading: true,
         });
-        window.console.log(phone);
         this.sdk.login(phone.slice(1), code, phoneHash).then((res) => {
-            window.console.log(res);
             const info = this.sdk.loadConnInfo();
-            window.console.log(info);
             info.UserID = res.user.id;
             info.FirstName = res.user.firstname;
             info.LastName = res.user.lastname;
@@ -221,6 +214,7 @@ class Chat extends React.Component<IProps, IState> {
                 tries: this.state.tries + 1,
             });
             this.props.history.push('/conversation/null');
+            this.dispatchWSOpenEvent();
         }).catch((err) => {
             window.console.log(err);
             this.setState({
@@ -303,6 +297,7 @@ class Chat extends React.Component<IProps, IState> {
                 tries: this.state.tries + 1,
             });
             this.props.history.push('/conversation/null');
+            this.dispatchWSOpenEvent();
         }).catch((err) => {
             this.setState({
                 loading: false,
@@ -334,6 +329,13 @@ class Chat extends React.Component<IProps, IState> {
             elem.focus();
         }
     }
+
+    private dispatchWSOpenEvent() {
+        setTimeout(() => {
+            const event = new CustomEvent('wsOpen');
+            window.dispatchEvent(event);
+        }, 100);
+    }
 }
 
-export default Chat;
+export default SignUp;

@@ -54,12 +54,12 @@ body {
     .people .dialog:hover {
       border: 0;
       background-color: var(--color-hover); }
-      .people .dialog:hover span {
+      .people .dialog:hover > span {
         color: var(--color-text-hover);
         background: transparent; }
     .people .dialog.active {
       border: 0;
       background-color: var(--light-blue); }
-      .people .dialog.active span {
+      .people .dialog.active > span {
         color: var(--color-text-hover);
         background: transparent; }

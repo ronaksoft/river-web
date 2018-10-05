@@ -34,6 +34,8 @@ body {
   border-color: var(--light);
   height: calc(100% - 48px);
   transition: padding-top 1s; }
+  .chat.no-transition {
+    transition: none; }
   .chat.active-chat {
     display: flex; }
     .chat.active-chat .bubble {
@@ -76,7 +78,10 @@ body {
     height: 32px;
     width: 32px;
     border-radius: 50%;
-    background-color: #cc0000;
+    background-color: #ccc;
+    background-position: center center;
+    background-size: cover;
+    background-image: url(../../../asset/image/user.png);
     overflow: hidden; }
     .bubble-wrapper .avatar img {
       height: 32px;

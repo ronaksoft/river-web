@@ -82,6 +82,8 @@ class NewMessage extends React.Component<IProps, IState> {
     private handleClose = () => {
         this.setState({
             open: false,
+            phone: '',
+            text: '',
         });
         this.props.onClose();
     }

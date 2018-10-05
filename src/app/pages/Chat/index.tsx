@@ -31,6 +31,7 @@ import {
 import UserName from '../../components/UserName';
 import SyncManager from '../../services/sdk/syncManager';
 import UserRepo from '../../repository/user';
+import RiverLogo from '../../components/RiverLogo';
 
 interface IProps {
     history?: any;
@@ -90,33 +91,6 @@ class Chat extends React.Component<IProps, IState> {
         this.updateManager = UpdateManager.getInstance();
         this.syncManager = SyncManager.getInstance();
         this.dialogsSortThrottle = throttle(this.dialogsSort, 500);
-        // setInterval(() => {
-        //     const messages = this.state.messages;
-        //     const message: IMessage = {
-        //         _id: this.uniqueId.getId('msg', 'msg_'),
-        //         avatar: undefined,
-        //         conversation_id: this.state.selectedDialogId,
-        //         me: false,
-        //         message: faker.lorem.words(15),
-        //         timestamp: new Date().getTime(),
-        //     };
-        //     if (messages.length > 0) {
-        //         if (!message.me && messages[messages.length-1].me !== message.me) {
-        //             message.avatar = faker.image.avatar();
-        //         }
-        //     } else {
-        //         message.avatar = faker.image.avatar();
-        //     }
-        //     messages.push(message);
-        //     this.setState({
-        //         messages,
-        //     }, () => {
-        //         setTimeout(() => {
-        //             this.animateToEnd();
-        //         }, 50);
-        //     });
-        //     this.messageRepo.create(message);
-        // }, 3000);
     }
 
     public componentDidMount() {
@@ -195,7 +169,6 @@ class Chat extends React.Component<IProps, IState> {
                 const peer = this.getPeerByDialogId(this.state.selectedDialogId);
                 if (peer) {
                     this.sdk.setMessagesReadHistory(peer, data.message.id || 0);
-                    window.console.log('inbox', peer, data.message.id);
                 }
             }
             this.messageRepo.importBulk([data.message]);
@@ -222,12 +195,10 @@ class Chat extends React.Component<IProps, IState> {
         }));
 
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateReadHistoryInbox, (data: UpdateReadHistoryInbox.AsObject) => {
-            window.console.log('inbox', data);
             this.updateDialogsCounter(data.peer.id || 0, {maxInbox: data.maxid});
         }));
 
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateReadHistoryOutbox, (data: UpdateReadHistoryOutbox.AsObject) => {
-            window.console.log('inbox', data);
             this.updateDialogsCounter(data.peer.id || 0, {maxOutbox: data.maxid});
             if (data.peer.id === this.state.selectedDialogId) {
                 this.setState({
@@ -260,20 +231,24 @@ class Chat extends React.Component<IProps, IState> {
         const {anchorEl, isTyping} = this.state;
         const open = Boolean(anchorEl);
         return (
-            <div className="wrapper">
-                <div className="container">
-                    <div className="column-left">
-                        <div className="top">
-                            <span className="new-message" onClick={this.onNewMessageOpen}>New message</span>
+            <div className="bg">
+                <div className="wrapper">
+                    <div className="container">
+                        <div className="column-left">
+                            <div className="top">
+                                <span className="new-message" onClick={this.onNewMessageOpen}>
+                                    <RiverLogo height={24} width={24}/>
+                                    <span>New message</span>
+                                </span>
+                            </div>
+                            <Dialog items={this.state.dialogs} selectedId={this.state.selectedDialogId}/>
                         </div>
-                        <Dialog items={this.state.dialogs} selectedId={this.state.selectedDialogId}/>
-                    </div>
-                    {this.state.selectedDialogId !== -1 && <div className="column-center">
-                        <div className="top">
-                            {!isTyping &&
-                            <span>To: <UserName id={this.state.selectedDialogId} className="name"/></span>}
-                            {isTyping && <span>isTyping...</span>}
-                            <span className="buttons">
+                        {this.state.selectedDialogId !== -1 && <div className="column-center">
+                            <div className="top">
+                                {!isTyping &&
+                                <span>To: <UserName id={this.state.selectedDialogId} className="name"/></span>}
+                                {isTyping && <span>isTyping...</span>}
+                                <span className="buttons">
                                 <IconButton
                                     aria-label="Attachment"
                                     aria-haspopup="true"
@@ -302,32 +277,34 @@ class Chat extends React.Component<IProps, IState> {
                                   </MenuItem>
                                 </Menu>
                             </span>
-                        </div>
-                        <div className="conversation" hidden={this.state.toggleAttachment}>
-                            <Message ref={this.messageRefHandler}
-                                     items={this.state.messages}
-                                     onLoadMore={this.onMessageScroll}
-                                     readId={this.state.maxReadId}
-                            />
-                        </div>
-                        <div className="attachments" hidden={!this.state.toggleAttachment}>
-                            <Uploader/>
-                        </div>
-                        {!this.state.toggleAttachment &&
-                        <TextInput onMessage={this.onMessage} onTyping={this.onTyping} userId={this.connInfo.UserID}/>}
-                    </div>}
-                    {this.state.selectedDialogId === -1 && <div className="column-center">
-                        <div className="start-messaging">
-                            <div className="start-messaging-header"/>
-                            <div className="start-messaging-img"/>
-                            <div className="start-messaging-title">Choose a chat to start messaging!</div>
-                            <div className="start-messaging-footer"/>
-                        </div>
-                    </div>}
-                    <div ref={this.rightMenuRefHandler} className="column-right"/>
+                            </div>
+                            <div className="conversation" hidden={this.state.toggleAttachment}>
+                                <Message ref={this.messageRefHandler}
+                                         items={this.state.messages}
+                                         onLoadMore={this.onMessageScroll}
+                                         readId={this.state.maxReadId}
+                                />
+                            </div>
+                            <div className="attachments" hidden={!this.state.toggleAttachment}>
+                                <Uploader/>
+                            </div>
+                            {!this.state.toggleAttachment &&
+                            <TextInput onMessage={this.onMessage} onTyping={this.onTyping}
+                                       userId={this.connInfo.UserID}/>}
+                        </div>}
+                        {this.state.selectedDialogId === -1 && <div className="column-center">
+                            <div className="start-messaging">
+                                <div className="start-messaging-header"/>
+                                <div className="start-messaging-img"/>
+                                <div className="start-messaging-title">Choose a chat to start messaging!</div>
+                                <div className="start-messaging-footer"/>
+                            </div>
+                        </div>}
+                        <div ref={this.rightMenuRefHandler} className="column-right"/>
+                    </div>
+                    <NewMessage open={this.state.openNewMessage} onClose={this.onNewMessageClose}
+                                onMessage={this.onNewMessage}/>
                 </div>
-                <NewMessage open={this.state.openNewMessage} onClose={this.onNewMessageClose}
-                            onMessage={this.onNewMessage}/>
             </div>
         );
     }
@@ -374,34 +351,6 @@ class Chat extends React.Component<IProps, IState> {
         this.message = value;
     }
 
-    // private getMany(conversationId: string): IMessage[] {
-    //     const messages: IMessage[] = [];
-    //     for (let i = 0; i < 100; i++) {
-    //         const me = faker.random.boolean();
-    //         if (messages.length > 0) {
-    //             if (!messages[0].me && messages[0].me !== me) {
-    //                 messages[0].avatar = faker.image.avatar();
-    //             }
-    //         }
-    //         messages.unshift({
-    //             _id: this.uniqueId.getId('msg', 'msg_'),
-    //             avatar: undefined,
-    //             conversation_id: conversationId,
-    //             me,
-    //             message: faker.lorem.words(15),
-    //             timestamp: new Date().getTime(),
-    //         });
-    //     }
-    //     return messages;
-    // }
-
-    // private getName = (id: number) => {
-    //     if (this.idToIndex.hasOwnProperty(id)) {
-    //         return this.state.dialogs[this.idToIndex[id]]._id;
-    //     }
-    //     return '';
-    // }
-
     private animateToEnd() {
         const el = document.querySelector('.chat.active-chat');
         if (el) {
@@ -414,17 +363,6 @@ class Chat extends React.Component<IProps, IState> {
             }
         }
     }
-
-    //
-    // private createFakeMessage(conversationId: string) {
-    //     const messages = this.getMany(conversationId);
-    //     this.messageRepo.createMany(messages).then((data: any) => {
-    //         window.console.log('new', data);
-    //     }).catch((err: any) => {
-    //         window.console.log('new', err);
-    //     });
-    //     return messages;
-    // }
 
     private getMessagesByDialogId(dialogId: number, force?: boolean) {
         const peer = this.getPeerByDialogId(dialogId);
@@ -447,12 +385,11 @@ class Chat extends React.Component<IProps, IState> {
         this.messageRepo.getMany({peer, limit: 20}).then((data) => {
             let maxId = 0;
             if (data.length === 0) {
-                // messages = this.createFakeMessage(dialogId);
                 messages = [];
             } else {
                 messages = data.reverse();
             }
-            messages = messages.map((msg, key) => {
+            messages.map((msg, key) => {
                 if (msg.id && msg.id > maxId) {
                     maxId = msg.id;
                 }
@@ -486,15 +423,26 @@ class Chat extends React.Component<IProps, IState> {
         if (this.isLoading) {
             return;
         }
+        const peer = this.getPeerByDialogId(this.state.selectedDialogId);
+        if (peer === null) {
+            return;
+        }
         this.messageRepo.getMany({
             before: this.state.messages[0].id,
-            conversationId: this.state.selectedDialogId
+            limit: 20,
+            peer,
         }).then((data) => {
             if (data.length === 0) {
                 return;
             }
             const messages = this.state.messages;
             messages.unshift.apply(messages, data.reverse());
+            messages.map((msg, key) => {
+                if (key > 0 && msg.senderid !== messages[key - 1].senderid) {
+                    msg.avatar = true;
+                }
+                return msg;
+            });
             this.setState({
                 messages,
             }, () => {
@@ -588,6 +536,17 @@ class Chat extends React.Component<IProps, IState> {
                 if (user.id) {
                     peer.setId(user.id);
                 }
+                const dialogs = this.state.dialogs;
+                const dialog: IDialog = {
+                    accesshash: user.accesshash,
+                    last_update: Date.now()/1000,
+                    peerid: user.id,
+                    peertype: PeerType.PEERUSER,
+                    preview: text.substr(0, 64),
+                    user_id: user.id,
+                };
+                dialogs.push(dialog);
+                this.dialogsSortThrottle(dialogs);
                 this.sdk.sendMessage(text, peer).then((msg) => {
                     window.console.log(msg);
                 }).catch((err) => {
@@ -711,7 +670,6 @@ class Chat extends React.Component<IProps, IState> {
         let tries = 0;
         this.sdk.getUpdateDifference(lastId, limit).then((res) => {
             tries = 0;
-            // window.console.log('checkSync', res.toObject());
             this.syncManager.applyUpdate(res).then((id) => {
                 this.syncThemAll(id, limit);
             });

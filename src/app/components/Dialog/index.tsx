@@ -28,7 +28,6 @@ class Dialog extends React.Component<IProps, IState> {
             scrollIndex: -1,
             selectedId: props.selectedId,
         };
-        window.console.log(this.list);
     }
 
     public componentWillReceiveProps(newProps: IProps) {

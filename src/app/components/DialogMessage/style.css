@@ -28,15 +28,24 @@ body {
   background-repeat: no-repeat; }
 
 .dialog-wrapper {
-  height: 64px;
+  height: 48px;
   width: 100%; }
-  .dialog-wrapper img {
-    float: left;
+  .dialog-wrapper .avatar {
     width: 48px;
     height: 48px;
-    object-fit: cover;
+    border-radius: 50%;
+    float: left;
     margin-right: 12px;
-    border-radius: 50%; }
+    background-color: #ccc;
+    background-position: center center;
+    background-size: cover;
+    background-image: url(../../../asset/image/user.png); }
+    .dialog-wrapper .avatar img {
+      float: left;
+      width: 48px;
+      height: 48px;
+      object-fit: cover;
+      border-radius: 50%; }
   .dialog-wrapper .name {
     display: inline-block;
     min-width: 200px;
@@ -52,8 +61,7 @@ body {
     top: 14px;
     right: 8px;
     padding: 0 0 5px 5px;
-    color: var(--grey);
-    background-color: var(--white); }
+    color: var(--grey); }
   .dialog-wrapper .preview {
     font-size: 14px;
     line-height: 17px;

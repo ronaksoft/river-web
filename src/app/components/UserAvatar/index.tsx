@@ -54,7 +54,7 @@ class UserAvatar extends React.Component<IProps, IState> {
     public render() {
         const {user, className} = this.state;
         return (
-            <span className={className}><img src={user.avatar}/></span>
+            <span className={className}>{(user && user.avatar) && <img src={user.avatar}/>}</span>
         );
     }
 

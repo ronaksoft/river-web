@@ -3,11 +3,13 @@ import {Route, Switch, Redirect} from 'react-router-dom';
 
 import Chat from '../pages/Chat';
 import SignUp from './../pages/SignUp';
+import Loading from './../pages/Loading';
 
 export default (
     <Switch>
         <Route path="/conversation/:id" component={Chat}/>
         <Route path="/signup" component={SignUp}/>
-        <Redirect from="/" to="/signup"/>
+        <Route path="/loading" component={Loading}/>
+        <Redirect from="/" to="/loading"/>
     </Switch>
 );

@@ -14,9 +14,10 @@ interface IProps {
 
 interface IState {
     items: IMessage[];
+    listStyle?: React.CSSProperties;
+    noTransition: boolean;
     readId: number;
     scrollIndex: number;
-    listStyle?: React.CSSProperties;
 }
 
 class Message extends React.Component<IProps, IState> {
@@ -30,6 +31,7 @@ class Message extends React.Component<IProps, IState> {
 
         this.state = {
             items: props.items,
+            noTransition: false,
             readId: props.readId,
             scrollIndex: -1,
         };
@@ -43,9 +45,13 @@ class Message extends React.Component<IProps, IState> {
         if (this.state.items !== newProps.items) {
             this.setState({
                 items: newProps.items,
+                noTransition: true,
                 scrollIndex: newProps.items.length - 1,
             }, () => {
                 this.fitList();
+                this.setState({
+                    noTransition: false,
+                });
             });
             this.listCount = newProps.items.length;
             this.topOfList = false;
@@ -91,7 +97,7 @@ class Message extends React.Component<IProps, IState> {
                         onRowsRendered={this.props.rendered}
                         onScroll={this.onScroll}
                         style={this.state.listStyle}
-                        className="chat active-chat"
+                        className={'chat active-chat' + (this.state.noTransition? ' no-transition': '')}
                     />
                 )}
             </AutoSizer>
@@ -157,6 +163,12 @@ class Message extends React.Component<IProps, IState> {
                     paddingTop: '10px',
                 },
             });
+            setTimeout(() => {
+                const el = document.querySelector('.chat.active-chat');
+                if (el) {
+                    el.scrollTo({top: 10000});
+                }
+            }, 1000);
         }, 50);
     }
 

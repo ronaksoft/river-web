@@ -39,8 +39,8 @@ class DialogMessage extends React.Component<IProps, IState> {
         const {dialog} = this.state;
         return (
             <div className="dialog-wrapper">
-                <UserAvatar id={dialog.user_id || 0}/>
-                <UserName id={dialog.user_id || 0} className="name"/>
+                <UserAvatar className="avatar" id={dialog.user_id || 0}/>
+                <UserName className="name" id={dialog.user_id || 0} />
                 <LiveDate className="time" time={dialog.last_update || 0}/>
                 <span className="preview">{dialog.preview}</span>
             </div>

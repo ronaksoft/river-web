@@ -77,6 +77,10 @@ wsError = (reqId, constructor, data) => {
     workerMessage('wsError', {reqId, constructor, data});
 };
 
+authProgress = (progress) => {
+    workerMessage('authProgress', {progress});
+};
+
 setReceive = (callback) => {
     receive = callback;
 };

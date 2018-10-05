@@ -36,10 +36,8 @@ input {
   align-items: center;
   padding: 15px;
 
-  background-position: center;
-  background-size: 50%;
-  background-image: url(../../../asset/image/pattern.png);
-  background-color: rgba(168, 144, 106, 0.3);
+  background-color: #21352e;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cpolygon fill='%23000' fill-opacity='.1' points='120 0 120 60 90 30 60 0 0 0 0 0 60 60 0 120 60 120 90 90 120 60 120 0'/%3E%3C/svg%3E");
 }
 /*animation-name: bg-move;
 animation-duration: 50s;
@@ -48,7 +46,7 @@ animation-timing-function: linear;
 animation-play-state: paused;*/
 
 .wrap-login100 {
-  width: 390px;
+  width: 400px;
   border-radius: 10px;
   position: relative;
 }
@@ -58,6 +56,9 @@ animation-play-state: paused;*/
 
 .login100-form {
   width: 100%;
+  background: #8d8d8d26;
+  padding: 10px;
+  border-radius: 5px;
 }
 
 .login100-form-title {
@@ -196,73 +197,75 @@ animation-play-state: paused;*/
   }
 }
 
-.react-tel-input {
-  margin-bottom: 16px;
-  display: flex;
-  flex-direction: row-reverse;
-  input[type=tel] {
-    @include font;
-    position: relative;
-    font-size: 16px;
-    letter-spacing: .01rem;
-    z-index: 0;
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-    padding-left: 15px;
-    margin-left: 0;
-    background-color: rgba(255, 255, 255, 0.7);
-    border: 1px solid #cacaca;
-    line-height: 25px;
-    height: 62px;
-    width: 320px;
-    outline: none;
-    border-left: none;
-    border-radius: 0 5px 5px 0;
-  }
-  .flag-dropdown {
-    position: static;
-    background-color: rgba(255, 255, 255, 0.7);
-    border: 1px solid #cacaca;
-    flex: 1;
-    border-right: 1px solid #ddd;
-    border-radius: 5px 0 0 5px;
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.7);
-      .selected-flag {
-        background-color: transparent;
-      }
-    }
-    .selected-flag {
-      z-index: 13;
+.river-form {
+  .react-tel-input {
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: row-reverse;
+    input[type=tel] {
+      @include font;
       position: relative;
-      width: auto;
-      height: 100%;
-      padding: 0;
-      border-radius: 0;
-      text-align: center;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      .arrow {
-        border-top: 4px solid #ababab;
-        &.up {
-          border-top: none;
-          border-bottom: 4px solid #ababab;
+      font-size: 16px;
+      letter-spacing: .01rem;
+      z-index: 0;
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+      padding-left: 15px;
+      margin-left: 0;
+      background-color: rgba(255, 255, 255, 0.7);
+      border: 1px solid #cacaca;
+      line-height: 25px;
+      height: 62px;
+      width: 320px;
+      outline: none;
+      border-left: none;
+      border-radius: 0 5px 5px 0;
+    }
+    .flag-dropdown {
+      position: static;
+      background-color: rgba(255, 255, 255, 0.7);
+      border: 1px solid #cacaca;
+      flex: 1;
+      border-right: 1px solid #ddd;
+      border-radius: 5px 0 0 5px;
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.7);
+        .selected-flag {
+          background-color: transparent;
+        }
+      }
+      .selected-flag {
+        z-index: 13;
+        position: relative;
+        width: auto;
+        height: 100%;
+        padding: 0;
+        border-radius: 0;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .arrow {
+          border-top: 4px solid #ababab;
+          &.up {
+            border-top: none;
+            border-bottom: 4px solid #ababab;
+          }
         }
       }
     }
-  }
-  .flag {
-    transform: scale(1.5);
-  }
-  .country-list {
-    .country {
-      padding: 7px 10px;
-      text-align: left;
+    .flag {
+      transform: scale(1.5);
     }
-    .country-name {
-      margin-right: 6px;
-      margin-left: 6px;
+    .country-list {
+      .country {
+        padding: 7px 10px;
+        text-align: left;
+      }
+      .country-name {
+        margin-right: 6px;
+        margin-left: 6px;
+      }
     }
   }
 }

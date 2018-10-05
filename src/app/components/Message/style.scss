@@ -7,6 +7,9 @@
   border-color: var(--light);
   height: calc(100% - 48px);
   transition: padding-top 1s;
+  &.no-transition {
+    transition: none;
+  }
   &.active-chat {
     display: flex;
     .bubble {
@@ -29,7 +32,7 @@
     font-size: 14px;
     display: inline-block;
     color: var(--grey);
-    &:before,&:after {
+    &:before, &:after {
       position: absolute;
       top: 10px;
       display: inline-block;
@@ -63,7 +66,10 @@
     height: 32px;
     width: 32px;
     border-radius: 50%;
-    background-color: #cc0000;
+    background-color: #ccc;
+    background-position: center center;
+    background-size: cover;
+    background-image: url(../../../asset/image/user.png);
     overflow: hidden;
     img {
       height: 32px;
@@ -113,6 +119,7 @@
     opacity: 1;
   }
 }
+
 @keyframes slideFromRight {
   0% {
     //transform: translateX(200px);

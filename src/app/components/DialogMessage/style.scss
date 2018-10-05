@@ -1,15 +1,25 @@
 @import '../../../style/common';
 
 .dialog-wrapper {
-  height: 64px;
+  height: 48px;
   width: 100%;
-  img {
-    float: left;
+  .avatar {
     width: 48px;
     height: 48px;
-    object-fit: cover;
-    margin-right: 12px;
     border-radius: 50%;
+    float: left;
+    margin-right: 12px;
+    background-color: #ccc;
+    background-position: center center;
+    background-size: cover;
+    background-image: url(../../../asset/image/user.png);
+    img {
+      float: left;
+      width: 48px;
+      height: 48px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
   }
   .name {
     display: inline-block;
@@ -27,7 +37,6 @@
     right: 8px;
     padding: 0 0 5px 5px;
     color: var(--grey);
-    background-color: var(--white);
   }
   .preview {
     font-size: 14px;

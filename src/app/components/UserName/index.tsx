@@ -54,7 +54,7 @@ class UserName extends React.Component<IProps, IState> {
     public render() {
         const {user, className} = this.state;
         return (
-            <span className={className}>{user.id ? `${user.firstname} ${user.lastname}` : ''}</span>
+            <span className={className}>{(user && user.id) ? `${user.firstname} ${user.lastname}` : ''}</span>
         );
     }
 

@@ -28,7 +28,7 @@
     &:hover {
       border: 0;
       background-color: var(--color-hover);
-      span {
+      > span {
         color: var(--color-text-hover);
         background: transparent;
       }
@@ -36,7 +36,7 @@
     &.active {
       border: 0;
       background-color: var(--light-blue);
-      span {
+      > span {
         color: var(--color-text-hover);
         background: transparent;
       }

@@ -65,6 +65,12 @@ wasmWorker.onmessage = (e) => {
             });
             window.dispatchEvent(fnErrorEvent);
             break;
+        case 'authProgress':
+            const authProgress = new CustomEvent('authProgress', {
+                bubbles: true,
+                detail: d.data,
+            });
+            window.dispatchEvent(authProgress);
     }
 };
 

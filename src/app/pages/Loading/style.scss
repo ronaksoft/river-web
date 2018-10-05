@@ -1,270 +1,39 @@
 @import '../../../style/common';
 
-.m-b-16 {
-  margin-bottom: 16px;
-}
-
-.p-b-51 {
-  padding-bottom: 51px;
-}
-
-input {
-  outline: none;
-  border: none;
-}
-
-.limiter {
-  width: 100%;
-  margin: 0 auto;
-}
-
-@keyframes bg-move {
-  from {
-    background-position: 0% 0%;
-  }
-  to {
-    background-position: 100% 200%;
-  }
-}
-
-.container-login100 {
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  padding: 15px;
-
-  background-position: center;
-  background-size: 50%;
-  background-image: url(../../../asset/image/pattern.png);
-  background-color: rgba(168, 144, 106, 0.3);
-}
-/*animation-name: bg-move;
-animation-duration: 50s;
-animation-iteration-count: infinite;
-animation-timing-function: linear;
-animation-play-state: paused;*/
-
-.wrap-login100 {
-  width: 390px;
-  border-radius: 10px;
-  position: relative;
-}
-
-/*==================================================================
-[ Form ]*/
-
-.login100-form {
-  width: 100%;
-}
-
-.login100-form-title {
-  @include font-bold;
-  font-size: 30px;
-  color: #14c261;
-  line-height: 1.2;
-  text-transform: uppercase;
-  text-align: center;
-  width: 100%;
-  display: block;
-}
-
-/*------------------------------------------------------------------
-[ Input ]*/
-
-.wrap-input100 {
-  width: 100%;
-  position: relative;
-  background-color: rgba(255, 255, 255, 0.7);
-  border: 1px solid transparent;
-  border-radius: 3px;
-}
-
-/*---------------------------------------------*/
-.input100 {
-  @include font;
-  color: #0f954b;
-  line-height: 1.2;
-  font-size: 18px;
-
-  display: block;
-  width: 100%;
-  background: transparent;
-  height: 62px;
-  padding: 0 20px 0 38px;
-  &.code {
-    text-align: center;
-    letter-spacing: 30px;
-  }
-}
-
-/*------------------------------------------------------------------
-[ Focus Input ]*/
-
-.focus-input100 {
-  position: absolute;
-  display: block;
-  width: calc(100% + 2px);
-  height: calc(100% + 2px);
-  top: -1px;
-  left: -1px;
-  pointer-events: none;
-  border: 1px solid #14d769;
-  border-radius: 3px;
-  visibility: hidden;
-  opacity: 0;
-  transition: all 0.4s;
-  transform: scaleX(1.1) scaleY(1.3);
-}
-
-.input100:focus + .focus-input100 {
-  visibility: visible;
-  opacity: 1;
-  transform: scale(1);
-}
-
-.eff-focus-selection {
-  visibility: visible;
-  opacity: 1;
-  transform: scale(1);
-}
-
-/*------------------------------------------------------------------
-[ Button ]*/
-.container-login100-form-btn {
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.login100-form-btn {
-  @include font;
-  font-size: 20px;
-  color: #fff;
-  line-height: 1.2;
-  text-transform: uppercase;
+.loading-page {
+  height: 100vh;
+  width: 100vw;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0 20px;
-  width: 100%;
-  height: 62px;
-  background-color: #14d769;
-  border: 0;
-  border-radius: 3px;
-  transition: all 0.4s;
-  -webkit-appearance: none;
-}
-
-.login100-form-btn:hover {
-  background-color: #0f954b;
-}
-
-@keyframes button-disabled {
-  from {
-    background-color: #0fee8e;
-  }
-  to {
-    background-color: #11c96a;
-  }
-}
-
-.login100-form-btn[disabled] {
-  animation-name: button-disabled;
-  animation-iteration-count: infinite;
-  animation-duration: 0.5s;
-}
-
-.try-another-phone {
-  color: #5252a3;
-  text-align: left;
-  line-height: 24px;
-  display: block;
-  margin-top: -8px;
-  cursor: pointer;
-  label {
-    vertical-align: top;
-  }
-}
-
-@media (max-width: 992px) {
-  .alert-validate::before {
-    visibility: visible;
-    opacity: 1;
-  }
-}
-
-.river-form {
-  .react-tel-input {
-    margin-bottom: 16px;
+  background-color: #21352e;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cpolygon fill='%23000' fill-opacity='.1' points='120 0 120 60 90 30 60 0 0 0 0 0 60 60 0 120 60 120 90 90 120 60 120 0'/%3E%3C/svg%3E");
+  .loading-area {
+    position: relative;
     display: flex;
-    flex-direction: row-reverse;
-    input[type=tel] {
+    height: 400px;
+    width: 400px;
+    background: #fff;
+    border-radius: 50%;
+    .rc-progress-circle {
+      height: 400px;
+      width: 400px;
+    }
+    .loading-text {
       @include font;
-      position: relative;
-      font-size: 16px;
-      letter-spacing: .01rem;
-      z-index: 0;
-      margin-top: 0 !important;
-      margin-bottom: 0 !important;
-      padding-left: 15px;
-      margin-left: 0;
-      background-color: rgba(255, 255, 255, 0.7);
-      border: 1px solid #cacaca;
-      line-height: 25px;
-      height: 62px;
-      width: 320px;
-      outline: none;
-      border-left: none;
-      border-radius: 0 5px 5px 0;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 20px;
+      line-height: 40px;
+      font-weight: 100;
     }
-    .flag-dropdown {
-      position: static;
-      background-color: rgba(255, 255, 255, 0.7);
-      border: 1px solid #cacaca;
-      flex: 1;
-      border-right: 1px solid #ddd;
-      border-radius: 5px 0 0 5px;
-      &:hover {
-        background-color: rgba(255, 255, 255, 0.7);
-        .selected-flag {
-          background-color: transparent;
-        }
-      }
-      .selected-flag {
-        z-index: 13;
-        position: relative;
-        width: auto;
-        height: 100%;
-        padding: 0;
-        border-radius: 0;
-        text-align: center;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        .arrow {
-          border-top: 4px solid #ababab;
-          &.up {
-            border-top: none;
-            border-bottom: 4px solid #ababab;
-          }
-        }
-      }
-    }
-    .flag {
-      transform: scale(1.5);
-    }
-    .country-list {
-      .country {
-        padding: 7px 10px;
-        text-align: left;
-      }
-      .country-name {
-        margin-right: 6px;
-        margin-left: 6px;
-      }
+    .logo {
+      position: absolute;
+      top: 70%;
+      left: 50%;
+      transform: translateX(-50%);
     }
   }
 }

@@ -33,15 +33,22 @@ export default class MessageRepo {
             this.getManyCache({peerId: peer.getId(), limit, before, after}).then((res) => {
                 const len = res.length;
                 if (len < limit) {
-                    let minId = null;
+                    let maxId = null;
+                    if (before !== undefined) {
+                        maxId = before - 1;
+                    }
                     if (len > 0) {
-                        minId = (res[0].id || 0) + 1;
+                        maxId = (res[len - 1].id || 0) - 1;
+                    }
+                    if (maxId === 0) {
+                        resolve(res);
+                        return;
                     }
                     const lim = limit - len;
-                    this.sdk.getMessageHistory(peer, {minId, limit: lim}).then((remoteRes) => {
+                    this.sdk.getMessageHistory(peer, {maxId, limit: lim}).then((remoteRes) => {
                         this.importBulk(remoteRes.messagesList);
                         this.userRepo.importBulk(remoteRes.usersList);
-                        resolve([...remoteRes.messagesList, ...res]);
+                        resolve([...res, ...remoteRes.messagesList]);
                     }).catch((err2) => {
                         reject(err2);
                     });
@@ -66,11 +73,11 @@ export default class MessageRepo {
             {peerid: peerId},
             {id: {'$gt': 0}}
         ];
-        if (before) {
-            q.push({_id: {'$lt': before}});
+        if (before !== null && before !== undefined) {
+            q.push({id: {'$lt': before}});
         }
-        if (after) {
-            q.push({_id: {'$gt': after}});
+        if (after !== null && before !== undefined) {
+            q.push({id: {'$gt': after}});
         }
         window.console.log(q);
         return this.db.find({
@@ -79,7 +86,6 @@ export default class MessageRepo {
                 $and: q,
             },
             sort: [
-                // {peerid: 'desc'},
                 {id: 'desc'},
             ],
         }).then((result: any) => {

@@ -36,13 +36,6 @@ export default class UserMessageDB {
         }).then((result: any) => {
             // window.console.warn(result);
         });
-        // this.db.createIndex({
-        //     index: {
-        //         fields: ['peerid', 'createdon'],
-        //     }
-        // }).then((result: any) => {
-        //     // window.console.warn(result);
-        // });
     }
 
     public getDB() {
