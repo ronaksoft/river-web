@@ -294,7 +294,7 @@ class Chat extends React.Component<IProps, IState> {
         } else if (this.state.isTyping) {
             return (<span><UserName id={this.state.selectedDialogId} className="name"/> is typing...</span>);
         } else if (placeholder !== true) {
-            return (<span>To: <UserName id={this.state.selectedDialogId} className="name"/></span>);
+            return (<span><UserName id={this.state.selectedDialogId} className="name"/></span>);
         } else {
             return '';
         }

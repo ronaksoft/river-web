@@ -51,10 +51,6 @@ class SignUp extends React.Component<IProps, IState> {
         this.sdk = SDK.getInstance();
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
-        window.console.log(newProps);
-    }
-
     public componentDidMount() {
         window.addEventListener('wasmInit', this.wasmInitHandler);
         window.addEventListener('wsOpen', this.wsOpenHandler);
