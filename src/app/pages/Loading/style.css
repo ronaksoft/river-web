@@ -55,6 +55,10 @@ body {
       font-size: 20px;
       line-height: 40px;
       font-weight: 100; }
+      .loading-page .loading-area .loading-text .info {
+        color: #00a24d;
+        font-size: 15px;
+        white-space: nowrap; }
     .loading-page .loading-area .logo {
       position: absolute;
       top: 70%;

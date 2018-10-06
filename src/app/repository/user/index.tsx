@@ -1,7 +1,7 @@
 import DB from '../../services/db/user';
 import {IUser} from './interface';
 import {differenceBy, find, merge} from 'lodash';
-import * as faker from "faker";
+// import * as faker from "faker";
 
 export default class UserRepo {
     public static getInstance() {
@@ -59,11 +59,11 @@ export default class UserRepo {
                 _id: {'$in': ids}
             },
         }).then((result: any) => {
-            let createItems: IUser[] = differenceBy(users, result.docs, '_id');
-            createItems = createItems.map((item) => {
-                item.avatar = faker.image.avatar();
-                return item;
-            });
+            const createItems: IUser[] = differenceBy(users, result.docs, '_id');
+            // createItems = createItems.map((item) => {
+            //     item.avatar = faker.image.avatar();
+            //     return item;
+            // });
             // @ts-ignore
             const updateItems: IUser[] = result.docs;
             updateItems.map((user: IUser) => {

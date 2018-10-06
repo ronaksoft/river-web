@@ -21,7 +21,7 @@ var (
 
 type MessageHandler func(m *msg.MessageEnvelope)
 type TimeoutCallback func()
-type Callback func()
+type Callback func(time int64)
 
 //type MessageQ map[uint64]*MessageHandler
 var authTryCount = 0
@@ -42,7 +42,7 @@ func AuthProgress(progress int) {
 	js.Global().Call("authProgress", progress)
 }
 
-func (r *River) Start(connInfo string) {
+func (r *River) Start(connInfo string, callback *Callback) {
 	r.ConnInfo = NewRiverConnection(connInfo)
 	r.MessageQueue = make(map[uint64]*MessageHandler)
 
@@ -55,15 +55,17 @@ func (r *River) Start(connInfo string) {
 	AuthProgress(1)
 
 	if r.ConnInfo.AuthID == 0 {
-		authErr := river.CreateAuthKey(func() {
+		authErr := river.CreateAuthKey(func(time int64) {
 			_LOG.Info("Auth initialized")
 			r.authID = r.ConnInfo.AuthID
 			r.authKey = r.ConnInfo.AuthKey[:]
+			cb := *callback
+			cb(time)
 		})
 		if (authErr != nil) {
 			authTryCount++
 			if (authTryCount < 10) {
-				r.Start(connInfo)
+				r.Start(connInfo, callback)
 				return
 			}
 		}
@@ -72,6 +74,8 @@ func (r *River) Start(connInfo string) {
 		r.authID = r.ConnInfo.AuthID
 		r.authKey = r.ConnInfo.AuthKey[:]
 		AuthProgress(100)
+		cb := *callback
+		cb(-1)
 	}
 }
 
@@ -134,6 +138,7 @@ func (r *River) CreateAuthKey(callback Callback) (err error) {
 
 func (r *River) createAuthKeyStep2(clientNonce, serverNonce, serverPubFP, serverDHFP, serverPQ uint64, callback *Callback) (err error) {
 	AuthProgress(17)
+	var duration int64 = 0
 	t := time.Now().Unix()
 	// 2. Send InitCompleteAuth
 	req2 := new(msg.InitCompleteAuth)
@@ -196,7 +201,8 @@ func (r *River) createAuthKeyStep2(clientNonce, serverNonce, serverPubFP, server
 	req2.EncryptedPayload = encrypted
 	req2Bytes, _ := req2.Marshal()
 	_LOG.Info("2nd Step Started :: InitConnect")
-	_LOG.Info("Duration:", zap.Int64("time(s)", time.Now().Unix()-t))
+	duration = time.Now().Unix() - t
+	_LOG.Info("Duration:", zap.Int64("time(s)", duration))
 
 	AuthProgress(75)
 	r.ExecuteRemoteCommand(
@@ -246,7 +252,7 @@ func (r *River) createAuthKeyStep2(clientNonce, serverNonce, serverPubFP, server
 				r.authKey = r.ConnInfo.AuthKey[:]
 				r.authID = r.ConnInfo.AuthID
 				cb := *callback
-				cb()
+				cb(duration)
 				AuthProgress(100)
 			case msg.C_Error:
 				err = ServerError(res.Message)

@@ -43,6 +43,7 @@ interface IState {
     anchorEl: any;
     dialogs: IDialog[];
     inputVal: string;
+    isConnecting: boolean;
     isTyping: boolean;
     maxReadId: number;
     messages: IMessage[];
@@ -74,6 +75,7 @@ class Chat extends React.Component<IProps, IState> {
             anchorEl: null,
             dialogs: [],
             inputVal: '',
+            isConnecting: true,
             isTyping: false,
             maxReadId: 0,
             messages: [],
@@ -97,52 +99,12 @@ class Chat extends React.Component<IProps, IState> {
         if (this.connInfo.AuthID === '0' || this.connInfo.UserID === 0) {
             this.props.history.push('/signup');
         }
-        window.addEventListener('wasmInit', () => {
-            // this.dialogRepo.getMany({limit: 100}).then((res) => {
-            //     this.setState({
-            //         dialogs: res
-            //     });
-            // }).catch((err) => {
-            //     window.console.log(err);
-            // });
-            this.sdk.recall(0);
-        });
 
-        window.addEventListener('wsOpen', () => {
-            this.sdk.recall(0).then((data) => {
-                window.console.log(data);
-                this.checkSync().then(() => {
-                    window.console.log('updating in progress');
-                }).catch((err) => {
-                    window.console.log(err);
-                    this.dialogRepo.getMany({limit: 100}).then((dialogs) => {
-                        this.dialogsSortThrottle(dialogs);
-                    }).catch((err2) => {
-                        window.console.log(err2);
-                    });
-                });
-            }).catch((err) => {
-                window.console.log(err);
-            });
-        });
-
-        // TODO: destroy
-        window.addEventListener('Dialog_DB_Updated', () => {
-            this.dialogRepo.getManyCache({}).then((res) => {
-                this.dialogsSortThrottle(res);
-            });
-            window.console.log('Dialog_DB_Updated');
-        });
-
-        // TODO: destroy
-        window.addEventListener('Message_DB_Updated', () => {
-            window.console.log('Message_DB_Updated');
-        });
-
-        // TODO: destroy
-        window.addEventListener('User_DB_Updated', () => {
-            window.console.log('User_DB_Updated');
-        });
+        window.addEventListener('wasmInit', this.wasmInitHandler);
+        window.addEventListener('wsOpen', this.wsOpenHandler);
+        window.addEventListener('Dialog_DB_Updated', this.dialogDBUpdatedHandler);
+        window.addEventListener('Message_DB_Updated', this.messageDBUpdatedHandler);
+        window.addEventListener('User_DB_Updated', this.userDBUpdatedHandler);
 
         this.dialogRepo.getManyCache({}).then((res) => {
             window.console.log(res);
@@ -225,6 +187,12 @@ class Chat extends React.Component<IProps, IState> {
                 canceller();
             }
         });
+
+        window.removeEventListener('wasmInit', this.wasmInitHandler);
+        window.removeEventListener('wsOpen', this.wsOpenHandler);
+        window.removeEventListener('Dialog_DB_Updated', this.dialogDBUpdatedHandler);
+        window.removeEventListener('Message_DB_Updated', this.messageDBUpdatedHandler);
+        window.removeEventListener('User_DB_Updated', this.userDBUpdatedHandler);
     }
 
     public render() {
@@ -679,6 +647,43 @@ class Chat extends React.Component<IProps, IState> {
                 this.syncThemAll(lastId, limit);
             }
         });
+    }
+
+    private wasmInitHandler = () => {
+        window.console.log('wasmInitHandler');
+    }
+
+    private wsOpenHandler = () => {
+        this.sdk.recall(0).then((data) => {
+            window.console.log(data);
+            this.checkSync().then(() => {
+                window.console.log('updating in progress');
+            }).catch((err) => {
+                window.console.log(err);
+                this.dialogRepo.getMany({limit: 100}).then((dialogs) => {
+                    this.dialogsSortThrottle(dialogs);
+                }).catch((err2) => {
+                    window.console.log(err2);
+                });
+            });
+        }).catch((err) => {
+            window.console.log(err);
+        });
+    }
+
+    private dialogDBUpdatedHandler = () => {
+        this.dialogRepo.getManyCache({}).then((res) => {
+            this.dialogsSortThrottle(res);
+        });
+        window.console.log('Dialog_DB_Updated');
+    }
+
+    private messageDBUpdatedHandler = () => {
+        window.console.log('Message_DB_Updated');
+    }
+
+    private userDBUpdatedHandler = () => {
+        window.console.log('Message_DB_Updated');
     }
 }
 

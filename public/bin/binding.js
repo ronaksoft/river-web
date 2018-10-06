@@ -16,6 +16,13 @@ fetch('bin/river.wasm').then((response) => {
     workerMessage('init', bytes);
 });
 
+let started = false;
+let run;
+let instance;
+let socket = null;
+let connected = false;
+let pingCounter = 0;
+
 wasmWorker.onmessage = (e) => {
     const d = e.data;
     switch (d.cmd) {
@@ -25,9 +32,9 @@ wasmWorker.onmessage = (e) => {
         case 'loadConnInfo':
             workerMessage('loadConnInfo', localStorage.getItem('river.conn.info'));
             initWebSocket();
-            const event = new CustomEvent('wasmInit');
+            workerMessage('initSDK', {});
             setTimeout(() => {
-                workerMessage('initSDK', {});
+                const event = new CustomEvent('wasmInit');
                 window.dispatchEvent(event);
             }, 50);
             break;
@@ -71,14 +78,21 @@ wasmWorker.onmessage = (e) => {
                 detail: d.data,
             });
             window.dispatchEvent(authProgress);
+            break;
+        case 'fnStarted':
+            if (!started && connected) {
+                const event = new CustomEvent('wsOpen');
+                window.dispatchEvent(event);
+            }
+            started = true;
+            const fnStarted = new CustomEvent('fnStarted', {
+                bubbles: true,
+                detail: d.data,
+            });
+            window.dispatchEvent(fnStarted);
+            break;
     }
 };
-
-let run;
-let instance;
-let socket = null;
-let connected = false;
-let pingCounter = 0;
 
 const ping = new Uint8Array([0x50, 0x49, 0x4e, 0x47]);
 
@@ -122,8 +136,10 @@ const initWebSocket = () => {
         console.log('Hello Server!', new Date());
         pingCounter = 0;
         connected = true;
-        const event = new CustomEvent('wsOpen');
-        window.dispatchEvent(event);
+        if (started) {
+            const event = new CustomEvent('wsOpen');
+            window.dispatchEvent(event);
+        }
         workerMessage('wsOpen');
     };
 

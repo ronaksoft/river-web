@@ -13,6 +13,7 @@ interface IProps {
 
 interface IState {
     limit: number;
+    msg: string;
     percent: number;
 }
 
@@ -24,39 +25,41 @@ class Loading extends React.Component<IProps, IState> {
         super(props);
         this.state = {
             limit: 0,
+            msg: '',
             percent: 0,
         };
         this.sdk = SDK.getInstance();
     }
 
     public componentDidMount() {
-        window.addEventListener('wasmInit', () => {
-            this.sdk.recall(0);
-        });
-        window.addEventListener('authProgress', (event: any) => {
-            const percent = event.detail.progress;
-            this.setState({
-                limit: percent,
-            }, () => {
-                this.increase();
-                if (percent >= 100) {
-                    if ((this.sdk.getConnInfo().UserID || 0) > 0) {
-                        this.props.history.push('/conversation/null');
-                    } else {
-                        this.props.history.push('/signup');
-                    }
-                }
-            });
-        });
+        window.addEventListener('wasmInit', this.wasmInitHandler);
+        window.addEventListener('authProgress', this.authProgressHandler);
+        window.addEventListener('fnStarted', this.fnStartedHandler);
+        this.sdk.loadConnInfo();
+        if ((this.sdk.getConnInfo().UserID || 0) > 0) {
+            this.props.history.push('/conversation/null');
+        } else if (this.sdk.getConnInfo().AuthID !== '0') {
+            this.props.history.push('/signup');
+        }
+    }
+
+    public componentWillUnmount() {
+        window.removeEventListener('wasmInit', this.wasmInitHandler);
+        window.removeEventListener('authProgress', this.authProgressHandler);
+        window.removeEventListener('fnStarted', this.fnStartedHandler);
     }
 
     public render() {
-        const {percent} = this.state;
+        const {percent, msg} = this.state;
         return (
             <div className="loading-page">
                 <div className="loading-area">
-                    <Circle percent={percent} strokeWidth="4" strokeColor="#D3D3D3" />
-                    <div className="loading-text">Securing connection<br/> Please wait</div>
+                    <Circle percent={percent} strokeWidth="1" strokeColor="#008c3d"/>
+                    <div className="loading-text">
+                        Securing connection<br/> Please wait <br/>
+                        {msg === '' && <span className="info">It might take up to 60 seconds!</span>}
+                        {msg !== '' && <span className="info">{msg}</span>}
+                    </div>
                     <div className="logo">
                         <RiverLogo height={64} width={64}/>
                     </div>
@@ -72,8 +75,43 @@ class Loading extends React.Component<IProps, IState> {
             clearTimeout(this.tm);
             return;
         }
-        this.setState({ percent });
+        this.setState({percent});
         this.tm = setTimeout(this.increase, 10);
+    }
+
+    private wasmInitHandler = () => {
+        this.sdk.recall(0);
+    }
+
+    private authProgressHandler = (event: any) => {
+        const percent = event.detail.progress;
+        this.setState({
+            limit: percent + 5,
+        }, () => {
+            this.increase();
+        });
+    }
+
+    private fnStartedHandler = (event: any) => {
+        const duration = event.detail.duration;
+        if (duration === -1) {
+            if ((this.sdk.getConnInfo().UserID || 0) > 0) {
+                this.props.history.push('/conversation/null');
+            } else {
+                this.props.history.push('/signup');
+            }
+        } else {
+            this.setState({
+                msg: `It took ${duration} seconds to secure your connection`,
+            });
+            setTimeout(() => {
+                if ((this.sdk.getConnInfo().UserID || 0) > 0) {
+                    this.props.history.push('/conversation/null');
+                } else {
+                    this.props.history.push('/signup');
+                }
+            }, 3000);
+        }
     }
 }
 

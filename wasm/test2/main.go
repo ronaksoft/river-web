@@ -54,7 +54,10 @@ func main() {
 }
 
 func initSDK(args []js.Value) {
-	river.Start(connInfo)
+	var cb Callback = func(duration int64) {
+		js.Global().Call("fnStarted", duration)
+	}
+	river.Start(connInfo, &cb)
 }
 
 func fnCall(args []js.Value) {

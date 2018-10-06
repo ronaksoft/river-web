@@ -55,19 +55,17 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        window.addEventListener('wasmInit', () => {
-            this.sdk.recall(0);
-        });
-        window.addEventListener('wsOpen', () => {
-            if ((this.sdk.getConnInfo().UserID || 0) > 0) {
-                this.sdk.recall(0).then(() => {
-                    this.props.history.push('/conversation/null');
-                }).catch((err) => {
-                    window.console.log(err);
-                });
-            }
-            this.focus('f-phone');
-        });
+        window.addEventListener('wasmInit', this.wasmInitHandler);
+        window.addEventListener('wsOpen', this.wsOpenHandler);
+        this.sdk.loadConnInfo();
+        if (this.sdk.getConnInfo().AuthID === '0') {
+            this.props.history.push('/loading');
+        }
+    }
+
+    public componentWillUnmount() {
+        window.removeEventListener('wasmInit', this.wasmInitHandler);
+        window.removeEventListener('wsOpen', this.wsOpenHandler);
     }
 
     public render() {
@@ -335,6 +333,24 @@ class SignUp extends React.Component<IProps, IState> {
             const event = new CustomEvent('wsOpen');
             window.dispatchEvent(event);
         }, 100);
+    }
+
+    private wasmInitHandler = () => {
+        if (parseInt(this.sdk.getConnInfo().AuthID, 10) === 0) {
+            this.props.history.push('/loading');
+        }
+    }
+
+    private wsOpenHandler = () => {
+        if ((this.sdk.getConnInfo().UserID || 0) > 0) {
+            this.sdk.recall(0).then(() => {
+                this.props.history.push('/conversation/null');
+                return;
+            }).catch((err) => {
+                window.console.log(err);
+            });
+        }
+        this.focus('f-phone');
     }
 }
 
