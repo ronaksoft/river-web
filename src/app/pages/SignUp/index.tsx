@@ -8,6 +8,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import './style.css';
 import {Refresh} from "@material-ui/icons";
 import {C_ERR, C_ERR_ITEM} from "../../services/sdk/const";
+import RiverLogo from '../../components/RiverLogo';
 
 interface IProps {
     match?: any;
@@ -75,6 +76,15 @@ class SignUp extends React.Component<IProps, IState> {
         return (
             <div className="limiter">
                 <div className="container-login100">
+                    <div className="top-logo">
+                        <RiverLogo height={110} width={100}/>
+                    </div>
+                    <div className="top-title">Sign in to River</div>
+                    <div className="top-desc">
+                        {step === 'phone' && <span>Please enter your phone number</span>}
+                        {step === 'code' && <span>Please enter the code sent to your number</span>}
+                        {step === 'register' && <span>Please fill in your contact info</span>}
+                    </div>
                     <div className="wrap-login100 p-t-50 p-b-90">
                         <div className="login100-form river-form flex-sb flex-w">
                             <ReactPhoneInput defaultCountry={'ir'} value={this.state.phone} inputClass="f-phone"

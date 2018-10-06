@@ -143,7 +143,7 @@ class Chat extends React.Component<IProps, IState> {
             this.notify(
                 `Message from ${data.sender.firstname} ${data.sender.lastname}`,
                 (data.message.body || '').substr(0, 64));
-            this.updateDialogsCounter(data.message.peerid || 0, {unreadCounter: 1});
+            this.updateDialogsCounter(data.message.peerid || 0, {unreadCounterIncrease: 1});
         }));
 
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUserTyping, (data: UpdateUserTyping.AsObject) => {
@@ -167,7 +167,7 @@ class Chat extends React.Component<IProps, IState> {
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateReadHistoryInbox, (data: UpdateReadHistoryInbox.AsObject) => {
             this.updateDialogsCounter(data.peer.id || 0, {maxInbox: data.maxid});
             this.messageRepo.getUnreadCount(data.peer.id || 0, data.maxid || 0).then((res) => {
-                this.updateDialogsCounter(data.peer.id || 0, {unreadCounter: 0});
+                this.updateDialogsCounter(data.peer.id || 0, {unreadCounter: res});
             });
         }));
 
@@ -617,21 +617,22 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private updateDialogsCounter(peerid: number, {maxInbox, maxOutbox, unreadCounter}: any) {
+    private updateDialogsCounter(peerid: number, {maxInbox, maxOutbox, unreadCounter, unreadCounterIncrease}: any) {
         const {dialogs} = this.state;
         if (this.dialogMap.hasOwnProperty(peerid)) {
             const index = this.dialogMap[peerid];
             dialogs[index].readinboxmaxid = maxInbox;
             dialogs[index].readoutboxmaxid = maxOutbox;
-            if (unreadCounter === 1) {
+            if (unreadCounterIncrease === 1) {
                 if (dialogs[index].unreadcount) {
                     // @ts-ignore
-                    dialogs[index].unreadcount += unreadCounter;
+                    dialogs[index].unreadcount++;
                 } else {
-                    dialogs[index].unreadcount = unreadCounter;
+                    dialogs[index].unreadcount = 1;
                 }
-            } else if (unreadCounter === 0) {
-                dialogs[index].unreadcount = 0;
+            }
+            if (unreadCounter !== null && unreadCounter !== undefined) {
+                dialogs[index].unreadcount = unreadCounter;
             }
             this.dialogsSortThrottle(dialogs);
             this.dialogRepo.importBulk([dialogs[index]]);
@@ -731,8 +732,8 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private messageDBUpdatedHandler = (event: any) => {
-        const data = event.datail;
-        if (data.peerids.indexOf(this.state.selectedDialogId) > -1) {
+        const data = event.detail;
+        if (data.peerids && data.peerids.indexOf(this.state.selectedDialogId) > -1) {
             this.getMessagesByDialogId(this.state.selectedDialogId);
         }
         window.console.log('Message_DB_Updated');
