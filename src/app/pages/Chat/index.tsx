@@ -140,6 +140,10 @@ class Chat extends React.Component<IProps, IState> {
             this.messageRepo.importBulk([data.message]);
             this.userRepo.importBulk([data.sender]);
             this.updateDialogs(data.message, data.accesshash || 0);
+            this.notify(
+                `Message from ${data.sender.firstname} ${data.sender.lastname}`,
+                (data.message.body || '').substr(0, 64));
+            this.updateDialogsCounter(data.message.peerid || 0, {unreadCounter: 1});
         }));
 
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUserTyping, (data: UpdateUserTyping.AsObject) => {
@@ -162,6 +166,9 @@ class Chat extends React.Component<IProps, IState> {
 
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateReadHistoryInbox, (data: UpdateReadHistoryInbox.AsObject) => {
             this.updateDialogsCounter(data.peer.id || 0, {maxInbox: data.maxid});
+            this.messageRepo.getUnreadCount(data.peer.id || 0, data.maxid || 0).then((res) => {
+                this.updateDialogsCounter(data.peer.id || 0, {unreadCounter: 0});
+            });
         }));
 
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateReadHistoryOutbox, (data: UpdateReadHistoryOutbox.AsObject) => {
@@ -377,7 +384,8 @@ class Chat extends React.Component<IProps, IState> {
                 if (msg.id && msg.id > maxId) {
                     maxId = msg.id;
                 }
-                if (key > 0 && msg.senderid !== messages[key - 1].senderid) {
+                if (key > 0 && msg.senderid !== messages[key - 1].senderid ||
+                    key === 0 && msg.senderid !== this.connInfo.UserID) {
                     msg.avatar = true;
                 }
                 return msg;
@@ -422,7 +430,8 @@ class Chat extends React.Component<IProps, IState> {
             const messages = this.state.messages;
             messages.unshift.apply(messages, data.reverse());
             messages.map((msg, key) => {
-                if (key > 0 && msg.senderid !== messages[key - 1].senderid) {
+                if (key > 0 && msg.senderid !== messages[key - 1].senderid ||
+                    key === 0 && msg.senderid !== this.connInfo.UserID) {
                     msg.avatar = true;
                 }
                 return msg;
@@ -523,7 +532,7 @@ class Chat extends React.Component<IProps, IState> {
                 const dialogs = this.state.dialogs;
                 const dialog: IDialog = {
                     accesshash: user.accesshash,
-                    last_update: Date.now()/1000,
+                    last_update: Date.now() / 1000,
                     peerid: user.id,
                     peertype: PeerType.PEERUSER,
                     preview: text.substr(0, 64),
@@ -608,12 +617,22 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private updateDialogsCounter(peerid: number, {maxInbox, maxOutbox}: any) {
+    private updateDialogsCounter(peerid: number, {maxInbox, maxOutbox, unreadCounter}: any) {
         const {dialogs} = this.state;
         if (this.dialogMap.hasOwnProperty(peerid)) {
             const index = this.dialogMap[peerid];
             dialogs[index].readinboxmaxid = maxInbox;
             dialogs[index].readoutboxmaxid = maxOutbox;
+            if (unreadCounter === 1) {
+                if (dialogs[index].unreadcount) {
+                    // @ts-ignore
+                    dialogs[index].unreadcount += unreadCounter;
+                } else {
+                    dialogs[index].unreadcount = unreadCounter;
+                }
+            } else if (unreadCounter === 0) {
+                dialogs[index].unreadcount = 0;
+            }
             this.dialogsSortThrottle(dialogs);
             this.dialogRepo.importBulk([dialogs[index]]);
         }
@@ -711,12 +730,27 @@ class Chat extends React.Component<IProps, IState> {
         window.console.log('Dialog_DB_Updated');
     }
 
-    private messageDBUpdatedHandler = () => {
+    private messageDBUpdatedHandler = (event: any) => {
+        const data = event.datail;
+        if (data.peerids.indexOf(this.state.selectedDialogId) > -1) {
+            this.getMessagesByDialogId(this.state.selectedDialogId);
+        }
         window.console.log('Message_DB_Updated');
     }
 
     private userDBUpdatedHandler = () => {
         window.console.log('Message_DB_Updated');
+    }
+
+    private notify = (title: string, body: string) => {
+        if (Notification.permission === 'granted') {
+            const options = {
+                body,
+                icon: '/android-icon-192x192.png',
+            };
+            const notification = new Notification(title, options);
+            window.console.log(notification);
+        }
     }
 }
 

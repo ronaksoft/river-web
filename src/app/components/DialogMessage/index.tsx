@@ -40,9 +40,11 @@ class DialogMessage extends React.Component<IProps, IState> {
         return (
             <div className="dialog-wrapper">
                 <UserAvatar className="avatar" id={dialog.user_id || 0}/>
-                <UserName className="name" id={dialog.user_id || 0} />
+                <UserName className="name" id={dialog.user_id || 0}/>
                 <LiveDate className="time" time={dialog.last_update || 0}/>
                 <span className="preview">{dialog.preview}</span>
+                {(dialog.unreadcount && dialog.unreadcount) ? (
+                    <span className="unread">{dialog.unreadcount}</span>) : ''}
             </div>
         );
     }

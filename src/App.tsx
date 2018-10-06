@@ -4,6 +4,12 @@ import Routes from './app/routes';
 
 class App extends React.Component {
 
+    public componentDidMount() {
+        Notification.requestPermission().then((result) => {
+            window.console.log(result);
+        });
+    }
+
     public render() {
         return (
             <div className="App">

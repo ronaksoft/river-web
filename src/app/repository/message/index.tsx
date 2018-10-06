@@ -159,4 +159,17 @@ export default class MessageRepo {
             return this.db.remove(result._id, result._rev);
         });
     }
+
+    public getUnreadCount(peerid: number, minId: number): Promise<any> {
+        return this.db.find({
+            selector: {
+                $and: [
+                    {peerid},
+                    {id: {'$gt': minId}},
+                ]
+            },
+        }).then((result: any) => {
+            return result.docs.length;
+        });
+    }
 }

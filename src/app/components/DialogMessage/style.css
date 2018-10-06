@@ -71,3 +71,19 @@ body {
     white-space: nowrap;
     text-overflow: ellipsis;
     color: var(--grey); }
+  .dialog-wrapper .unread {
+    font-size: 11px;
+    position: absolute;
+    top: 30px;
+    right: 14px;
+    height: 16px;
+    min-width: 16px;
+    max-width: 32px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-align: center;
+    line-height: 16px;
+    padding: 0 3px;
+    background-color: var(--green);
+    color: #fff;
+    border-radius: 50%; }
