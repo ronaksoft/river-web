@@ -127,6 +127,9 @@ class Chat extends React.Component<IProps, IState> {
         });
 
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNewMessage, (data: UpdateNewMessage.AsObject) => {
+            if (this.state.isUpdating) {
+                return;
+            }
             const message: IMessage = data.message;
             message._id = String(message.id);
             message.me = (this.connInfo.UserID === message.senderid);
@@ -147,6 +150,9 @@ class Chat extends React.Component<IProps, IState> {
         }));
 
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUserTyping, (data: UpdateUserTyping.AsObject) => {
+            if (this.state.isUpdating) {
+                return;
+            }
             if (data.userid !== this.state.selectedDialogId) {
                 return;
             }
@@ -165,6 +171,9 @@ class Chat extends React.Component<IProps, IState> {
         }));
 
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateReadHistoryInbox, (data: UpdateReadHistoryInbox.AsObject) => {
+            if (this.state.isUpdating) {
+                return;
+            }
             this.updateDialogsCounter(data.peer.id || 0, {maxInbox: data.maxid});
             this.messageRepo.getUnreadCount(data.peer.id || 0, data.maxid || 0).then((res) => {
                 this.updateDialogsCounter(data.peer.id || 0, {unreadCounter: res});
@@ -172,6 +181,9 @@ class Chat extends React.Component<IProps, IState> {
         }));
 
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateReadHistoryOutbox, (data: UpdateReadHistoryOutbox.AsObject) => {
+            if (this.state.isUpdating) {
+                return;
+            }
             this.updateDialogsCounter(data.peer.id || 0, {maxOutbox: data.maxid});
             if (data.peer.id === this.state.selectedDialogId) {
                 this.setState({
@@ -665,8 +677,14 @@ class Chat extends React.Component<IProps, IState> {
                         err: 'too late',
                     });
                 } else {
-                    resolve(lastId);
-                    this.syncThemAll(lastId + 1, 20);
+                    if ((res.updateid || 0) - lastId > 0) {
+                        resolve(lastId);
+                        this.syncThemAll(lastId + 1, 20);
+                    } else {
+                        reject({
+                            err: 'too late',
+                        });
+                    }
                 }
             }).catch(reject);
         });
@@ -681,6 +699,17 @@ class Chat extends React.Component<IProps, IState> {
             }).catch(() => {
                 this.setState({
                     isUpdating: false,
+                });
+                this.checkSync().then(() => {
+                    this.setState({
+                        isUpdating: true,
+                    });
+                }).catch(() => {
+                    if (this.state.isUpdating) {
+                        this.setState({
+                            isUpdating: false,
+                        });
+                    }
                 });
             });
         }).catch((err) => {
