@@ -12,11 +12,17 @@ export default class MessageRepo {
     private userId: number;
 
     public constructor() {
+        SDK.getInstance().loadConnInfo();
         this.userId = SDK.getInstance().getConnInfo().UserID || 0;
         this.dbService = UserMessageDB.getInstance();
         this.db = this.dbService.getDB();
         this.sdk = SDK.getInstance();
         this.userRepo = UserRepo.getInstance();
+    }
+
+    public loadConnInfo() {
+        SDK.getInstance().loadConnInfo();
+        this.userId = SDK.getInstance().getConnInfo().UserID || 0;
     }
 
     public create(msg: IMessage) {

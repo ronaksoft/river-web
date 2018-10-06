@@ -107,6 +107,7 @@ class Chat extends React.Component<IProps, IState> {
         window.addEventListener('wasmInit', this.wasmInitHandler);
         window.addEventListener('wsOpen', this.wsOpenHandler);
         window.addEventListener('wsClose', this.wsCloseHandler);
+        window.addEventListener('fnStarted', this.fnStartedHandler);
         window.addEventListener('Dialog_DB_Updated', this.dialogDBUpdatedHandler);
         window.addEventListener('Message_DB_Updated', this.messageDBUpdatedHandler);
         window.addEventListener('User_DB_Updated', this.userDBUpdatedHandler);
@@ -213,6 +214,7 @@ class Chat extends React.Component<IProps, IState> {
 
         window.removeEventListener('wasmInit', this.wasmInitHandler);
         window.removeEventListener('wsOpen', this.wsOpenHandler);
+        window.removeEventListener('fnStarted', this.fnStartedHandler);
         window.removeEventListener('Dialog_DB_Updated', this.dialogDBUpdatedHandler);
         window.removeEventListener('Message_DB_Updated', this.messageDBUpdatedHandler);
         window.removeEventListener('User_DB_Updated', this.userDBUpdatedHandler);
@@ -753,11 +755,14 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
+    private fnStartedHandler = () => {
+        this.messageRepo.loadConnInfo();
+    }
+
     private dialogDBUpdatedHandler = () => {
         this.dialogRepo.getManyCache({}).then((res) => {
             this.dialogsSortThrottle(res);
         });
-        window.console.log('Dialog_DB_Updated');
     }
 
     private messageDBUpdatedHandler = (event: any) => {
@@ -765,7 +770,6 @@ class Chat extends React.Component<IProps, IState> {
         if (data.peerids && data.peerids.indexOf(this.state.selectedDialogId) > -1) {
             this.getMessagesByDialogId(this.state.selectedDialogId);
         }
-        window.console.log('Message_DB_Updated');
     }
 
     private userDBUpdatedHandler = () => {
