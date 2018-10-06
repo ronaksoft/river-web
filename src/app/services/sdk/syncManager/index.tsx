@@ -140,6 +140,7 @@ export default class SyncManager {
             data.push(dialogs[key]);
         });
         if (data.length > 0) {
+            // TODO: check
             this.dialogRepo.importBulk(data).then(() => {
                 this.broadcastEvent('Dialog_DB_Updated', {ids: keys});
             });
