@@ -24,6 +24,7 @@ message UpdateEnvelope {
     required bytes Update = 2;
     required int32 UCount = 3;
     required int64 UpdateID = 4;
+    required int64 Timestamp = 5;
 }
 
 // UpdateContainer

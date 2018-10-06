@@ -92,7 +92,7 @@ animation-play-state: paused;*/
 .wrap-input100 {
   width: 100%;
   position: relative;
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: #fff;
   border: 1px solid transparent;
   border-radius: 3px; }
 
@@ -209,7 +209,7 @@ animation-play-state: paused;*/
     margin-bottom: 0 !important;
     padding-left: 15px;
     margin-left: 0;
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: #fff;
     border: 1px solid #cacaca;
     line-height: 25px;
     height: 62px;
@@ -219,13 +219,13 @@ animation-play-state: paused;*/
     border-radius: 0 5px 5px 0; }
   .river-form .react-tel-input .flag-dropdown {
     position: static;
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: #fff;
     border: 1px solid #cacaca;
     flex: 1;
     border-right: 1px solid #ddd;
     border-radius: 5px 0 0 5px; }
     .river-form .react-tel-input .flag-dropdown:hover {
-      background-color: rgba(255, 255, 255, 0.7); }
+      background-color: #fff; }
       .river-form .react-tel-input .flag-dropdown:hover .selected-flag {
         background-color: transparent; }
     .river-form .react-tel-input .flag-dropdown .selected-flag {

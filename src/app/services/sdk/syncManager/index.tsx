@@ -50,12 +50,14 @@ export default class SyncManager {
     }
 
     public applyUpdate(data: UpdateDifference): Promise<number> {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             this.updateMany(data.getUpdatesList());
             if (data.getMore()) {
                 setTimeout(() => {
-                    resolve(data.getMaxupdateid());
+                    resolve((data.getMaxupdateid() || 0) + 1);
                 }, 500);
+            } else {
+                reject();
             }
         });
     }

@@ -49,9 +49,12 @@ class Message extends React.Component<IProps, IState> {
                 scrollIndex: newProps.items.length - 1,
             }, () => {
                 this.fitList();
-                this.setState({
-                    noTransition: false,
-                });
+                window.console.log('noTransition');
+                setTimeout(() => {
+                    this.setState({
+                        noTransition: false,
+                    });
+                }, 1000);
             });
             this.listCount = newProps.items.length;
             this.topOfList = false;

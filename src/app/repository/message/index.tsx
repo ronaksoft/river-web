@@ -79,7 +79,6 @@ export default class MessageRepo {
         if (after !== null && before !== undefined) {
             q.push({id: {'$gt': after}});
         }
-        window.console.log(q);
         return this.db.find({
             limit: (limit || 30),
             selector: {

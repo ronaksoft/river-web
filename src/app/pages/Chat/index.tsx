@@ -45,6 +45,7 @@ interface IState {
     inputVal: string;
     isConnecting: boolean;
     isTyping: boolean;
+    isUpdating: boolean;
     maxReadId: number;
     messages: IMessage[];
     openNewMessage: boolean;
@@ -77,6 +78,7 @@ class Chat extends React.Component<IProps, IState> {
             inputVal: '',
             isConnecting: true,
             isTyping: false,
+            isUpdating: false,
             maxReadId: 0,
             messages: [],
             openNewMessage: false,
@@ -85,6 +87,7 @@ class Chat extends React.Component<IProps, IState> {
             toggleAttachment: false,
         };
         this.sdk = SDK.getInstance();
+        this.sdk.loadConnInfo();
         this.connInfo = this.sdk.getConnInfo();
         this.messageRepo = new MessageRepo();
         this.dialogRepo = new DialogRepo();
@@ -98,16 +101,17 @@ class Chat extends React.Component<IProps, IState> {
     public componentDidMount() {
         if (this.connInfo.AuthID === '0' || this.connInfo.UserID === 0) {
             this.props.history.push('/signup');
+            return;
         }
 
         window.addEventListener('wasmInit', this.wasmInitHandler);
         window.addEventListener('wsOpen', this.wsOpenHandler);
+        window.addEventListener('wsClose', this.wsCloseHandler);
         window.addEventListener('Dialog_DB_Updated', this.dialogDBUpdatedHandler);
         window.addEventListener('Message_DB_Updated', this.messageDBUpdatedHandler);
         window.addEventListener('User_DB_Updated', this.userDBUpdatedHandler);
 
         this.dialogRepo.getManyCache({}).then((res) => {
-            window.console.log(res);
             res.forEach((dialog, index) => {
                 this.dialogMap[dialog.peerid || 0] = index;
             });
@@ -196,7 +200,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {anchorEl, isTyping} = this.state;
+        const {anchorEl} = this.state;
         const open = Boolean(anchorEl);
         return (
             <div className="bg">
@@ -213,9 +217,7 @@ class Chat extends React.Component<IProps, IState> {
                         </div>
                         {this.state.selectedDialogId !== -1 && <div className="column-center">
                             <div className="top">
-                                {!isTyping &&
-                                <span>To: <UserName id={this.state.selectedDialogId} className="name"/></span>}
-                                {isTyping && <span>isTyping...</span>}
+                                {this.getChatTitle()}
                                 <span className="buttons">
                                 <IconButton
                                     aria-label="Attachment"
@@ -228,7 +230,7 @@ class Chat extends React.Component<IProps, IState> {
                                     aria-label="More"
                                     aria-owns={anchorEl ? 'long-menu' : undefined}
                                     aria-haspopup="true"
-                                    onClick={this.handleClick}
+                                    onClick={this.handleContactInfoClick}
                                 >
                                     <MoreVertIcon/>
                                 </IconButton>
@@ -236,7 +238,7 @@ class Chat extends React.Component<IProps, IState> {
                                     id="long-menu"
                                     anchorEl={anchorEl}
                                     open={open}
-                                    onClose={this.handleClose}
+                                    onClose={this.handleContactInfoClose}
                                 >
                                   <MenuItem key={1}
                                             onClick={this.toggleRightMenu}
@@ -262,7 +264,7 @@ class Chat extends React.Component<IProps, IState> {
                         </div>}
                         {this.state.selectedDialogId === -1 && <div className="column-center">
                             <div className="start-messaging">
-                                <div className="start-messaging-header"/>
+                                <div className="start-messaging-header">{this.getChatTitle(true)}</div>
                                 <div className="start-messaging-img"/>
                                 <div className="start-messaging-title">Choose a chat to start messaging!</div>
                                 <div className="start-messaging-footer"/>
@@ -277,13 +279,27 @@ class Chat extends React.Component<IProps, IState> {
         );
     }
 
-    private handleClick = (event: any) => {
+    private getChatTitle(placeholder?: boolean) {
+        if (this.state.isConnecting) {
+            return (<span>Connecting...</span>);
+        } else if (this.state.isUpdating) {
+            return (<span>Updating...</span>);
+        } else if (this.state.isTyping) {
+            return (<span><UserName id={this.state.selectedDialogId} className="name"/> is typing...</span>);
+        } else if (placeholder !== true) {
+            return (<span>To: <UserName id={this.state.selectedDialogId} className="name"/></span>);
+        } else {
+            return '';
+        }
+    }
+
+    private handleContactInfoClick = (event: any) => {
         this.setState({
             anchorEl: event.currentTarget,
         });
     }
 
-    private handleClose = () => {
+    private handleContactInfoClose = () => {
         this.setState({
             anchorEl: null,
         });
@@ -610,11 +626,13 @@ class Chat extends React.Component<IProps, IState> {
             }
             return i2.last_update - i1.last_update;
         });
-        dialogs.forEach((d, i) => {
-            this.dialogMap[d.peerid || 0] = i;
-        });
+        this.dialogMap = {};
         this.setState({
             dialogs,
+        }, () => {
+            dialogs.forEach((d, i) => {
+                this.dialogMap[d.peerid || 0] = i;
+            });
         });
     }
 
@@ -628,7 +646,7 @@ class Chat extends React.Component<IProps, IState> {
                     });
                 } else {
                     resolve(lastId);
-                    this.syncThemAll(lastId, 20);
+                    this.syncThemAll(lastId + 1, 20);
                 }
             }).catch(reject);
         });
@@ -640,6 +658,10 @@ class Chat extends React.Component<IProps, IState> {
             tries = 0;
             this.syncManager.applyUpdate(res).then((id) => {
                 this.syncThemAll(id, limit);
+            }).catch(() => {
+                this.setState({
+                    isUpdating: false,
+                });
             });
         }).catch((err) => {
             tries++;
@@ -654,10 +676,15 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private wsOpenHandler = () => {
+        this.setState({
+            isConnecting: false,
+        });
         this.sdk.recall(0).then((data) => {
             window.console.log(data);
             this.checkSync().then(() => {
-                window.console.log('updating in progress');
+                this.setState({
+                    isUpdating: true,
+                });
             }).catch((err) => {
                 window.console.log(err);
                 this.dialogRepo.getMany({limit: 100}).then((dialogs) => {
@@ -668,6 +695,12 @@ class Chat extends React.Component<IProps, IState> {
             });
         }).catch((err) => {
             window.console.log(err);
+        });
+    }
+
+    private wsCloseHandler = () => {
+        this.setState({
+            isConnecting: true,
         });
     }
 

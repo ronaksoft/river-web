@@ -46,7 +46,10 @@ body {
       height: 32px;
       width: 32px;
       border-radius: 50%;
-      background-color: #e6e6e6;
+      background-color: #ccc;
+      background-position: center center;
+      background-size: cover;
+      background-image: url(../../../asset/image/user.png);
       overflow: hidden;
       box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.3) inset; }
       .write .user .user-avatar img {
@@ -54,10 +57,11 @@ body {
         height: 100%;
         object-fit: cover; }
   .write .input {
+    position: relative;
     flex: 1;
     margin: 8px 0;
-    position: relative;
-    z-index: 1; }
+    z-index: 2;
+    display: flex; }
     .write .input textarea {
       font-size: 12px;
       line-height: 15px;

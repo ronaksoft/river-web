@@ -45,13 +45,13 @@ class TextInput extends React.Component<IProps, IState> {
                     <UserAvatar id={this.state.userId} className="user-avatar"/>
                 </div>
                 <div className="input">
-                                <Textarea
-                                    inputRef={this.textareaRefHandler}
-                                    maxRows={5}
-                                    placeholder="Type your message here..."
-                                    onKeyUp={this.sendMessage}
-                                    onKeyDown={this.inputKeyDown}
-                                />
+                    <Textarea
+                        inputRef={this.textareaRefHandler}
+                        maxRows={5}
+                        placeholder="Type your message here..."
+                        onKeyUp={this.sendMessage}
+                        onKeyDown={this.inputKeyDown}
+                    />
                     <div className="write-link">
                         <a href="javascript:;"
                            className="smiley"
@@ -59,7 +59,7 @@ class TextInput extends React.Component<IProps, IState> {
                            aria-haspopup="true"
                            onClick={this.emojiHandleClick}/>
                         <PopUpMenu anchorEl={this.state.emojiAnchorEl} onClose={this.emojiHandleClose}>
-                            <Picker custom={[]} onSelect={this.emojiSelect} showPreview={false}/>
+                            <Picker custom={[]} onSelect={this.emojiSelect} native={true} showPreview={false}/>
                         </PopUpMenu>
                         <a href="javascript:;" className="send"/>
                     </div>

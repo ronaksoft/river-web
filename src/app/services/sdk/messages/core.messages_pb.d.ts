@@ -91,6 +91,11 @@ export class UpdateEnvelope extends jspb.Message {
   getUpdateid(): number | undefined;
   setUpdateid(value: number): void;
 
+  hasTimestamp(): boolean;
+  clearTimestamp(): void;
+  getTimestamp(): number | undefined;
+  setTimestamp(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateEnvelope.AsObject;
   static toObject(includeInstance: boolean, msg: UpdateEnvelope): UpdateEnvelope.AsObject;
@@ -107,6 +112,7 @@ export namespace UpdateEnvelope {
     update: Uint8Array | string,
     ucount?: number,
     updateid?: number,
+    timestamp?: number,
   }
 }
 

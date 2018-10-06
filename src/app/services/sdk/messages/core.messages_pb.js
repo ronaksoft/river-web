@@ -545,7 +545,8 @@ proto.msg.UpdateEnvelope.toObject = function(includeInstance, msg) {
     constructor: jspb.Message.getField(msg, 1),
     update: msg.getUpdate_asB64(),
     ucount: jspb.Message.getField(msg, 3),
-    updateid: jspb.Message.getField(msg, 4)
+    updateid: jspb.Message.getField(msg, 4),
+    timestamp: jspb.Message.getField(msg, 5)
   };
 
   if (includeInstance) {
@@ -597,6 +598,10 @@ proto.msg.UpdateEnvelope.deserializeBinaryFromReader = function(msg, reader) {
     case 4:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setUpdateid(value);
+      break;
+    case 5:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setTimestamp(value);
       break;
     default:
       reader.skipField();
@@ -652,6 +657,13 @@ proto.msg.UpdateEnvelope.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeInt64(
       4,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 5));
+  if (f != null) {
+    writer.writeInt64(
+      5,
       f
     );
   }
@@ -795,6 +807,35 @@ proto.msg.UpdateEnvelope.prototype.clearUpdateid = function() {
  */
 proto.msg.UpdateEnvelope.prototype.hasUpdateid = function() {
   return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * required int64 Timestamp = 5;
+ * @return {number}
+ */
+proto.msg.UpdateEnvelope.prototype.getTimestamp = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.UpdateEnvelope.prototype.setTimestamp = function(value) {
+  jspb.Message.setField(this, 5, value);
+};
+
+
+proto.msg.UpdateEnvelope.prototype.clearTimestamp = function() {
+  jspb.Message.setField(this, 5, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateEnvelope.prototype.hasTimestamp = function() {
+  return jspb.Message.getField(this, 5) != null;
 };
 
 
