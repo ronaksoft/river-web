@@ -128,6 +128,9 @@ export default class MessageRepo {
     }
 
     public importBulk(msgs: IMessage[]): Promise<any> {
+        if (this.userId === 0) {
+            this.loadConnInfo();
+        }
         msgs = msgs.map((msg) => {
             msg._id = String(msg.id);
             msg.me = (msg.senderid === this.userId);

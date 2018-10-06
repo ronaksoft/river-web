@@ -78,7 +78,7 @@ class SignUp extends React.Component<IProps, IState> {
                     <div className="top-title">Sign in to River</div>
                     <div className="top-desc">
                         {step === 'phone' && <span>Please enter your phone number</span>}
-                        {step === 'code' && <span>Please enter the code sent to your number</span>}
+                        {step === 'code' && <span>Please enter the code sent to your phone</span>}
                         {step === 'register' && <span>Please fill in your contact info</span>}
                     </div>
                     <div className="wrap-login100 p-t-50 p-b-90">
