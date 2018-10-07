@@ -53,6 +53,7 @@ export const C_MSG = {
     MessagesSendMedia: 368782731,
     MessagesSent: 451707196,
     MessagesSetTyping: 4206615049,
+    OutOfSync: 23742374,
     Peer: 2315870261,
     PhoneContact: 258550882,
     ProtoEncryptedPayload: 2152660586,

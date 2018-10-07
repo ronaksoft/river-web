@@ -49,6 +49,13 @@ export default class SyncManager {
         return 0;
     }
 
+    public setLastUpdateId(id: number) {
+        this.lastUpdateId = id;
+        localStorage.setItem('river.last_update_id', JSON.stringify({
+            lastId: this.lastUpdateId,
+        }));
+    }
+
     public applyUpdate(data: UpdateDifference): Promise<number> {
         return new Promise((resolve, reject) => {
             this.updateMany(data.getUpdatesList());
@@ -60,13 +67,6 @@ export default class SyncManager {
                 reject();
             }
         });
-    }
-
-    private setLastUpdateId(id: number) {
-        this.lastUpdateId = id;
-        localStorage.setItem('river.last_update_id', JSON.stringify({
-            lastId: this.lastUpdateId,
-        }));
     }
 
     private updateMany(envelopes: UpdateEnvelope[]) {

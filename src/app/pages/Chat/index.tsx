@@ -127,6 +127,20 @@ class Chat extends React.Component<IProps, IState> {
             });
         });
 
+        this.eventReferences.push(this.updateManager.listen(C_MSG.OutOfSync, () => {
+            this.checkSync().then(() => {
+                this.setState({
+                    isUpdating: true,
+                });
+            }).catch(() => {
+                if (this.state.isUpdating) {
+                    this.setState({
+                        isUpdating: false,
+                    });
+                }
+            });
+        }));
+
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNewMessage, (data: UpdateNewMessage.AsObject) => {
             if (this.state.isUpdating) {
                 return;
@@ -684,7 +698,7 @@ class Chat extends React.Component<IProps, IState> {
                         this.syncThemAll(lastId + 1, 20);
                     } else {
                         reject({
-                            err: 'too late',
+                            err: 'too soon',
                         });
                     }
                 }
@@ -740,6 +754,9 @@ class Chat extends React.Component<IProps, IState> {
                 window.console.log(err);
                 this.dialogRepo.getMany({limit: 100}).then((dialogs) => {
                     this.dialogsSortThrottle(dialogs);
+                    this.sdk.getUpdateState().then((res) => {
+                        this.syncManager.setLastUpdateId(res.updateid || 0);
+                    });
                 }).catch((err2) => {
                     window.console.log(err2);
                 });

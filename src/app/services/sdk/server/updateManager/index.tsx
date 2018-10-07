@@ -33,6 +33,16 @@ export default class UpdateManager {
         const arr = Uint8Array.from(atob(bytes), c => c.charCodeAt(0));
         const data = UpdateContainer.deserializeBinary(arr);
         const updates = data.getUpdatesList();
+        const currentUpdateId = this.getLastUpdateId();
+        const minId = data.getMinupdateid();
+        const maxId = data.getMaxupdateid();
+        if (currentUpdateId + 1 !== minId && (minId || 0) > currentUpdateId) {
+            this.callHandlers(C_MSG.OutOfSync, {});
+            return;
+        }
+        if (maxId && maxId !== 0) {
+            this.setLastUpdateId(maxId);
+        }
         updates.forEach((update) => {
             this.response(update);
         });
@@ -70,10 +80,6 @@ export default class UpdateManager {
 
     private response(update: UpdateEnvelope) {
         const data = update.getUpdate_asU8();
-        const updateId = update.getUpdateid();
-        if (updateId && updateId > 0) {
-            this.setLastUpdateId(updateId);
-        }
         switch (update.getConstructor()) {
             case C_MSG.UpdateNewMessage:
                 this.callHandlers(C_MSG.UpdateNewMessage, UpdateNewMessage.deserializeBinary(data).toObject());
@@ -99,7 +105,6 @@ export default class UpdateManager {
     }
 
     private callHandlers(eventConstructor: number, payload: any) {
-        window.console.log(eventConstructor);
         if (!this.fnQueue[eventConstructor]) {
             return;
         }
