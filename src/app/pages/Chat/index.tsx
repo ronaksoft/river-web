@@ -754,23 +754,7 @@ class Chat extends React.Component<IProps, IState> {
             const lastId = this.syncManager.getLastUpdateId();
             // Checks if it is the first time to sync
             if (lastId === 0) {
-                this.setState({
-                    isUpdating: true,
-                });
-                this.dialogRepo.getSnapshot({}).then((res) => {
-                    this.dialogsSortThrottle(res.dialogs);
-                    this.syncManager.setLastUpdateId(res.updateid || 0);
-                    this.setState({
-                        isUpdating: false,
-                    }, () => {
-                        this.wsOpenHandler();
-                    });
-                }).catch(() => {
-                    this.setState({
-                        isUpdating: false,
-                    });
-                });
-                return;
+                this.snapshot();
             }
             // Normal syncing
             this.checkSync().then(() => {
@@ -779,18 +763,31 @@ class Chat extends React.Component<IProps, IState> {
                 });
             }).catch((err) => {
                 window.console.log(err);
-                this.dialogRepo.getMany({limit: 100}).then((dialogs) => {
-                    this.dialogsSortThrottle(dialogs);
-                    this.sdk.getUpdateState().then((res) => {
-                        this.syncManager.setLastUpdateId(res.updateid || 0);
-                    });
-                }).catch((err2) => {
-                    window.console.log(err2);
-                });
+                this.snapshot();
             });
         }).catch((err) => {
             window.console.log(err);
         });
+    }
+
+    private snapshot () {
+        this.setState({
+            isUpdating: true,
+        });
+        this.dialogRepo.getSnapshot({}).then((res) => {
+            this.dialogsSortThrottle(res.dialogs);
+            this.syncManager.setLastUpdateId(res.updateid || 0);
+            this.setState({
+                isUpdating: false,
+            }, () => {
+                this.wsOpenHandler();
+            });
+        }).catch(() => {
+            this.setState({
+                isUpdating: false,
+            });
+        });
+        return;
     }
 
     private wsCloseHandler = () => {
