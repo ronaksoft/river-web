@@ -56,11 +56,11 @@ body {
   .message-status .time {
     line-height: 10px; }
 
-.bubble.me .message-status {
+.me .bubble .message-status {
   color: #eee; }
-  .bubble.me .message-status .icon.pending {
+  .me .bubble .message-status .icon.pending {
     background-image: url(../../../asset/image/pending-w.svg); }
-  .bubble.me .message-status .icon.check {
+  .me .bubble .message-status .icon.check {
     background-image: url(../../../asset/image/check-w.svg); }
-  .bubble.me .message-status .icon.double-check {
+  .me .bubble .message-status .icon.double-check {
     background-image: url(../../../asset/image/double-check-w.svg); }

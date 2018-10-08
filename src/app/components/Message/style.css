@@ -70,7 +70,7 @@ body {
   position: relative;
   display: inline-block;
   width: 100%;
-  padding-bottom: 8px; }
+  padding-bottom: 2px; }
   .bubble-wrapper .avatar {
     position: absolute;
     top: 0;
@@ -87,19 +87,18 @@ body {
       height: 32px;
       width: 32px;
       object-fit: cover; }
-
-.bubble {
-  font-size: 12px;
-  line-height: 17px;
-  position: relative;
-  display: inline-block;
-  clear: both;
-  padding: 3px 6px 15px 6px;
-  vertical-align: top;
-  border-radius: 5px;
-  max-width: 558px;
-  min-width: 75px; }
-  .bubble.you {
+  .bubble-wrapper .bubble {
+    font-size: 12px;
+    line-height: 17px;
+    position: relative;
+    display: inline-block;
+    clear: both;
+    padding: 3px 6px 15px 6px;
+    vertical-align: top;
+    border-radius: 5px;
+    max-width: 558px;
+    min-width: 75px; }
+  .bubble-wrapper.you .bubble {
     float: left;
     color: var(--black-text);
     background-color: var(--message-chat);
@@ -107,7 +106,7 @@ body {
     animation-name: slideFromLeft;
     text-align: left;
     margin-left: 44px; }
-  .bubble.me {
+  .bubble-wrapper.me .bubble {
     float: right;
     color: var(--white);
     background-color: var(--green);

@@ -124,11 +124,11 @@ class Message extends React.Component<IProps, IState> {
                 key={key}
                 rowIndex={index}
                 parent={parent}>
-                <div style={style} key={index} className="bubble-wrapper">
+                <div style={style} key={index} className={'bubble-wrapper ' + (data.me ? 'me' : 'you')}>
                     {(data.avatar && data.senderid && !data.me) && (
                         <UserAvatar id={data.senderid} className="avatar"/>
                     )}
-                    <div className={"bubble " + (data.me ? 'me' : 'you')}>
+                    <div className="bubble ">
                         <div dangerouslySetInnerHTML={{__html: this.formatText(data.body)}}/>
                         <MessageStatus status={data.me || false} id={data.id} readId={this.state.readId}
                                        time={data.createdon || 0}/>

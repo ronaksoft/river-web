@@ -58,7 +58,7 @@
   position: relative;
   display: inline-block;
   width: 100%;
-  padding-bottom: 8px;
+  padding-bottom: 2px;
   .avatar {
     position: absolute;
     top: 0;
@@ -77,20 +77,19 @@
       object-fit: cover;
     }
   }
-}
-
-.bubble {
-  font-size: 12px;
-  line-height: 17px;
-  position: relative;
-  display: inline-block;
-  clear: both;
-  padding: 3px 6px 15px 6px;
-  vertical-align: top;
-  border-radius: 5px;
-  max-width: 558px;
-  min-width: 75px;
-  &.you {
+  .bubble {
+    font-size: 12px;
+    line-height: 17px;
+    position: relative;
+    display: inline-block;
+    clear: both;
+    padding: 3px 6px 15px 6px;
+    vertical-align: top;
+    border-radius: 5px;
+    max-width: 558px;
+    min-width: 75px;
+  }
+  &.you .bubble {
     float: left;
     color: var(--black-text);
     background-color: var(--message-chat);
@@ -99,7 +98,7 @@
     text-align: left;
     margin-left: 44px;
   }
-  &.me {
+  &.me .bubble {
     float: right;
     color: var(--white);
     background-color: var(--green);
@@ -108,6 +107,11 @@
     text-align: right;
   }
 }
+
+//.me + .you,
+//.you + .me {
+//  padding-top: 6px;
+//}
 
 @keyframes slideFromLeft {
   0% {
