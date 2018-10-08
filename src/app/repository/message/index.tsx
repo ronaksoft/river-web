@@ -137,7 +137,7 @@ export default class MessageRepo {
             return msg;
         });
         return this.upsert(msgs).then((data) => {
-            window.console.log(data);
+            // window.console.log(data);
         }).catch((err) => {
             window.console.log(err);
         });

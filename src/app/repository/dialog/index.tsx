@@ -36,11 +36,11 @@ export default class DialogRepo {
 
     public getSnapshot({limit, skip, dialogs}: any): Promise<IDialogWithUpdateId> {
         limit = limit || 50;
-        skip = limit || 0;
+        skip = skip || 0;
         dialogs = dialogs || [];
         return new Promise((resolve, reject) => {
             // @ts-ignore
-            this.getManyForSnappshot({skip, limit}).then((remoteRes) => {
+            this.getManyForSnapshot({skip, limit}).then((remoteRes) => {
                 dialogs.push.apply(dialogs, remoteRes.dialogs);
                 if (remoteRes.dialogs.length === limit) {
                     skip += limit;
@@ -68,7 +68,7 @@ export default class DialogRepo {
         });
     }
 
-    public getManyForSnappshot({skip, limit}: any): Promise<IDialogWithUpdateId> {
+    public getManyForSnapshot({skip, limit}: any): Promise<IDialogWithUpdateId> {
         return this.sdk.getDialogs(skip || 0, limit || 30).then((remoteRes) => {
             this.messageRepo.importBulk(remoteRes.messagesList);
             const messageMap: { [key: number]: IMessage } = {};
