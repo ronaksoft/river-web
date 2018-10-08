@@ -64,7 +64,9 @@ export default class SyncManager {
                     resolve((data.getMaxupdateid() || 0) + 1);
                 }, 500);
             } else {
-                reject();
+                reject({
+                    code: -1,
+                });
             }
         });
     }

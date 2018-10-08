@@ -616,15 +616,15 @@ proto.msg.UpdateDifference.prototype.hasMinupdateid = function() {
 
 /**
  * repeated UpdateEnvelope Updates = 4;
- * @return {!Array<!proto.msg.UpdateEnvelope>}
+ * @return {!Array.<!proto.msg.UpdateEnvelope>}
  */
 proto.msg.UpdateDifference.prototype.getUpdatesList = function() {
-  return /** @type{!Array<!proto.msg.UpdateEnvelope>} */ (
+  return /** @type{!Array.<!proto.msg.UpdateEnvelope>} */ (
     jspb.Message.getRepeatedWrapperField(this, core_messages_pb.UpdateEnvelope, 4));
 };
 
 
-/** @param {!Array<!proto.msg.UpdateEnvelope>} value */
+/** @param {!Array.<!proto.msg.UpdateEnvelope>} value */
 proto.msg.UpdateDifference.prototype.setUpdatesList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 4, value);
 };
@@ -647,15 +647,15 @@ proto.msg.UpdateDifference.prototype.clearUpdatesList = function() {
 
 /**
  * repeated User Users = 5;
- * @return {!Array<!proto.msg.User>}
+ * @return {!Array.<!proto.msg.User>}
  */
 proto.msg.UpdateDifference.prototype.getUsersList = function() {
-  return /** @type{!Array<!proto.msg.User>} */ (
+  return /** @type{!Array.<!proto.msg.User>} */ (
     jspb.Message.getRepeatedWrapperField(this, core_types_pb.User, 5));
 };
 
 
-/** @param {!Array<!proto.msg.User>} value */
+/** @param {!Array.<!proto.msg.User>} value */
 proto.msg.UpdateDifference.prototype.setUsersList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 5, value);
 };
@@ -1177,7 +1177,7 @@ proto.msg.UpdateNewMessage.deserializeBinaryFromReader = function(msg, reader) {
       msg.setSender(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readFixed64());
       msg.setAccesshash(value);
       break;
     default:
@@ -1241,7 +1241,7 @@ proto.msg.UpdateNewMessage.serializeBinaryToWriter = function(message, writer) {
   }
   f = /** @type {number} */ (jspb.Message.getField(message, 3));
   if (f != null) {
-    writer.writeUint64(
+    writer.writeFixed64(
       3,
       f
     );
@@ -1368,7 +1368,7 @@ proto.msg.UpdateNewMessage.prototype.hasSender = function() {
 
 
 /**
- * optional uint64 AccessHash = 3;
+ * optional fixed64 AccessHash = 3;
  * @return {number}
  */
 proto.msg.UpdateNewMessage.prototype.getAccesshash = function() {

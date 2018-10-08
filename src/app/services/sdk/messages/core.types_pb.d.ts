@@ -129,6 +129,34 @@ export namespace InputPeer {
   }
 }
 
+export class InputUser extends jspb.Message {
+  hasUserid(): boolean;
+  clearUserid(): void;
+  getUserid(): number | undefined;
+  setUserid(value: number): void;
+
+  hasAccesshash(): boolean;
+  clearAccesshash(): void;
+  getAccesshash(): number | undefined;
+  setAccesshash(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): InputUser.AsObject;
+  static toObject(includeInstance: boolean, msg: InputUser): InputUser.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: InputUser, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): InputUser;
+  static deserializeBinaryFromReader(message: InputUser, reader: jspb.BinaryReader): InputUser;
+}
+
+export namespace InputUser {
+  export type AsObject = {
+    userid?: number,
+    accesshash?: number,
+  }
+}
+
 export class User extends jspb.Message {
   hasId(): boolean;
   clearId(): void;
@@ -441,6 +469,40 @@ export namespace PhoneContact {
   }
 }
 
+export class NotifySettings extends jspb.Message {
+  hasFlags(): boolean;
+  clearFlags(): void;
+  getFlags(): number | undefined;
+  setFlags(value: number): void;
+
+  hasMuteuntil(): boolean;
+  clearMuteuntil(): void;
+  getMuteuntil(): number | undefined;
+  setMuteuntil(value: number): void;
+
+  hasSound(): boolean;
+  clearSound(): void;
+  getSound(): string | undefined;
+  setSound(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): NotifySettings.AsObject;
+  static toObject(includeInstance: boolean, msg: NotifySettings): NotifySettings.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: NotifySettings, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): NotifySettings;
+  static deserializeBinaryFromReader(message: NotifySettings, reader: jspb.BinaryReader): NotifySettings;
+}
+
+export namespace NotifySettings {
+  export type AsObject = {
+    flags?: number,
+    muteuntil?: number,
+    sound?: string,
+  }
+}
+
 export class InputFile extends jspb.Message {
   hasFileid(): boolean;
   clearFileid(): void;
@@ -488,5 +550,10 @@ export enum PeerType {
   PEERUSER = 1,
   PEERCHAT = 2,
   PEERCHANNEL = 3,
+}
+
+export enum NotifyFlags {
+  SHOWPREVIEW = 1,
+  SILENT = 2,
 }
 

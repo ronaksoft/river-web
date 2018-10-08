@@ -1,8 +1,5 @@
 syntax = "proto2";
 package msg;
-//import "github.com/gogo/protobuf/gogoproto/gogo.proto";
-//option (gogoproto.unmarshaler_all) = true;
-//option (gogoproto.sizer_all) = true;
 
 // TypingAction
 enum TypingAction {
@@ -44,6 +41,12 @@ enum PeerType {
     PeerUser = 1;
     PeerChat = 2;
     PeerChannel = 3;
+}
+
+// InputPeer
+message InputUser {
+    required int64 UserID = 1;
+    required fixed64 AccessHash = 2;
 }
 
 // User
@@ -105,6 +108,20 @@ message PhoneContact {
     required string FirstName = 2;
     required string LastName = 3;
     required string Phone = 4;
+}
+
+// NotifyFlags
+enum NotifyFlags {
+    ShowPreview = 1;
+    Silent = 2;
+}
+
+// NotifySettings
+message NotifySettings {
+    required fixed32 Flags = 1;
+    optional int64 MuteUntil = 2;
+    optional string Sound = 3;
+
 }
 
 // InputFile

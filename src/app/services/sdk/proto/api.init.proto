@@ -1,9 +1,5 @@
 syntax = "proto2";
 package msg;
-//import "github.com/gogo/protobuf/gogoproto/gogo.proto";
-//option (gogoproto.unmarshaler_all) = true;
-//option (gogoproto.sizer_all) = true;
-
 
 // InitDB
 message InitDB {

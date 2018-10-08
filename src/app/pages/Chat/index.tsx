@@ -128,6 +128,9 @@ class Chat extends React.Component<IProps, IState> {
         });
 
         this.eventReferences.push(this.updateManager.listen(C_MSG.OutOfSync, () => {
+            if (this.state.isUpdating) {
+                return;
+            }
             this.checkSync().then(() => {
                 this.setState({
                     isUpdating: true,
@@ -688,6 +691,7 @@ class Chat extends React.Component<IProps, IState> {
         const lastId = this.syncManager.getLastUpdateId();
         return new Promise((resolve, reject) => {
             this.sdk.getUpdateState().then((res) => {
+                window.console.log('checkSync', lastId, res.updateid);
                 if ((res.updateid || 0) - lastId > 1000) {
                     reject({
                         err: 'too late',
@@ -695,7 +699,7 @@ class Chat extends React.Component<IProps, IState> {
                 } else {
                     if ((res.updateid || 0) - lastId > 0) {
                         resolve(lastId);
-                        this.syncThemAll(lastId + 1, 20);
+                        this.syncThemAll(lastId + 1, 50);
                     } else {
                         reject({
                             err: 'too soon',
@@ -712,21 +716,24 @@ class Chat extends React.Component<IProps, IState> {
             tries = 0;
             this.syncManager.applyUpdate(res).then((id) => {
                 this.syncThemAll(id, limit);
-            }).catch(() => {
+            }).catch((err2) => {
+                window.console.log(err2);
                 this.setState({
                     isUpdating: false,
                 });
-                this.checkSync().then(() => {
-                    this.setState({
-                        isUpdating: true,
-                    });
-                }).catch(() => {
-                    if (this.state.isUpdating) {
+                if (err2.code === -1) {
+                    this.checkSync().then(() => {
                         this.setState({
-                            isUpdating: false,
+                            isUpdating: true,
                         });
-                    }
-                });
+                    }).catch(() => {
+                        if (this.state.isUpdating) {
+                            this.setState({
+                                isUpdating: false,
+                            });
+                        }
+                    });
+                }
             });
         }).catch((err) => {
             tries++;
@@ -744,8 +751,7 @@ class Chat extends React.Component<IProps, IState> {
         this.setState({
             isConnecting: false,
         });
-        this.sdk.recall(0).then((data) => {
-            window.console.log(data);
+        this.sdk.recall(0).then(() => {
             this.checkSync().then(() => {
                 this.setState({
                     isUpdating: true,

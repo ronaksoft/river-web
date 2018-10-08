@@ -1055,7 +1055,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.msg.MessagesGet.repeatedFields_ = [1];
+proto.msg.MessagesGet.repeatedFields_ = [2];
 
 
 
@@ -1086,7 +1086,8 @@ proto.msg.MessagesGet.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.MessagesGet.toObject = function(includeInstance, msg) {
   var f, obj = {
-    messagesidsList: jspb.Message.getRepeatedField(msg, 1)
+    peer: (f = msg.getPeer()) && core_types_pb.InputPeer.toObject(includeInstance, f),
+    messagesidsList: jspb.Message.getRepeatedField(msg, 2)
   };
 
   if (includeInstance) {
@@ -1124,6 +1125,11 @@ proto.msg.MessagesGet.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
+      var value = new core_types_pb.InputPeer;
+      reader.readMessage(value,core_types_pb.InputPeer.deserializeBinaryFromReader);
+      msg.setPeer(value);
+      break;
+    case 2:
       var value = /** @type {number} */ (reader.readInt64());
       msg.addMessagesids(value);
       break;
@@ -1156,10 +1162,18 @@ proto.msg.MessagesGet.prototype.serializeBinary = function() {
  */
 proto.msg.MessagesGet.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = message.getPeer();
+  if (f != null) {
+    writer.writeMessage(
+      1,
+      f,
+      core_types_pb.InputPeer.serializeBinaryToWriter
+    );
+  }
   f = message.getMessagesidsList();
   if (f.length > 0) {
     writer.writeRepeatedInt64(
-      1,
+      2,
       f
     );
   }
@@ -1167,17 +1181,47 @@ proto.msg.MessagesGet.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * repeated int64 MessagesIDs = 1;
- * @return {!Array<number>}
+ * required InputPeer Peer = 1;
+ * @return {!proto.msg.InputPeer}
  */
-proto.msg.MessagesGet.prototype.getMessagesidsList = function() {
-  return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 1));
+proto.msg.MessagesGet.prototype.getPeer = function() {
+  return /** @type{!proto.msg.InputPeer} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 1, 1));
 };
 
 
-/** @param {!Array<number>} value */
+/** @param {!proto.msg.InputPeer} value */
+proto.msg.MessagesGet.prototype.setPeer = function(value) {
+  jspb.Message.setWrapperField(this, 1, value);
+};
+
+
+proto.msg.MessagesGet.prototype.clearPeer = function() {
+  jspb.Message.setField(this, 1, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.MessagesGet.prototype.hasPeer = function() {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * repeated int64 MessagesIDs = 2;
+ * @return {!Array.<number>}
+ */
+proto.msg.MessagesGet.prototype.getMessagesidsList = function() {
+  return /** @type {!Array.<number>} */ (jspb.Message.getRepeatedField(this, 2));
+};
+
+
+/** @param {!Array.<number>} value */
 proto.msg.MessagesGet.prototype.setMessagesidsList = function(value) {
-  jspb.Message.setField(this, 1, value || []);
+  jspb.Message.setField(this, 2, value || []);
 };
 
 
@@ -1186,7 +1230,7 @@ proto.msg.MessagesGet.prototype.setMessagesidsList = function(value) {
  * @param {number=} opt_index
  */
 proto.msg.MessagesGet.prototype.addMessagesids = function(value, opt_index) {
-  jspb.Message.addToRepeatedField(this, 1, value, opt_index);
+  jspb.Message.addToRepeatedField(this, 2, value, opt_index);
 };
 
 
@@ -1893,7 +1937,8 @@ proto.msg.MessagesDialogs.toObject = function(includeInstance, msg) {
     core_types_pb.User.toObject, includeInstance),
     messagesList: jspb.Message.toObjectList(msg.getMessagesList(),
     core_types_pb.UserMessage.toObject, includeInstance),
-    count: jspb.Message.getField(msg, 4)
+    count: jspb.Message.getField(msg, 4),
+    updateid: jspb.Message.getField(msg, 5)
   };
 
   if (includeInstance) {
@@ -1948,6 +1993,10 @@ proto.msg.MessagesDialogs.deserializeBinaryFromReader = function(msg, reader) {
     case 4:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setCount(value);
+      break;
+    case 5:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setUpdateid(value);
       break;
     default:
       reader.skipField();
@@ -2009,20 +2058,27 @@ proto.msg.MessagesDialogs.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = /** @type {number} */ (jspb.Message.getField(message, 5));
+  if (f != null) {
+    writer.writeInt64(
+      5,
+      f
+    );
+  }
 };
 
 
 /**
  * repeated Dialog Dialogs = 1;
- * @return {!Array<!proto.msg.Dialog>}
+ * @return {!Array.<!proto.msg.Dialog>}
  */
 proto.msg.MessagesDialogs.prototype.getDialogsList = function() {
-  return /** @type{!Array<!proto.msg.Dialog>} */ (
+  return /** @type{!Array.<!proto.msg.Dialog>} */ (
     jspb.Message.getRepeatedWrapperField(this, core_types_pb.Dialog, 1));
 };
 
 
-/** @param {!Array<!proto.msg.Dialog>} value */
+/** @param {!Array.<!proto.msg.Dialog>} value */
 proto.msg.MessagesDialogs.prototype.setDialogsList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
@@ -2045,15 +2101,15 @@ proto.msg.MessagesDialogs.prototype.clearDialogsList = function() {
 
 /**
  * repeated User Users = 2;
- * @return {!Array<!proto.msg.User>}
+ * @return {!Array.<!proto.msg.User>}
  */
 proto.msg.MessagesDialogs.prototype.getUsersList = function() {
-  return /** @type{!Array<!proto.msg.User>} */ (
+  return /** @type{!Array.<!proto.msg.User>} */ (
     jspb.Message.getRepeatedWrapperField(this, core_types_pb.User, 2));
 };
 
 
-/** @param {!Array<!proto.msg.User>} value */
+/** @param {!Array.<!proto.msg.User>} value */
 proto.msg.MessagesDialogs.prototype.setUsersList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 2, value);
 };
@@ -2076,15 +2132,15 @@ proto.msg.MessagesDialogs.prototype.clearUsersList = function() {
 
 /**
  * repeated UserMessage Messages = 3;
- * @return {!Array<!proto.msg.UserMessage>}
+ * @return {!Array.<!proto.msg.UserMessage>}
  */
 proto.msg.MessagesDialogs.prototype.getMessagesList = function() {
-  return /** @type{!Array<!proto.msg.UserMessage>} */ (
+  return /** @type{!Array.<!proto.msg.UserMessage>} */ (
     jspb.Message.getRepeatedWrapperField(this, core_types_pb.UserMessage, 3));
 };
 
 
-/** @param {!Array<!proto.msg.UserMessage>} value */
+/** @param {!Array.<!proto.msg.UserMessage>} value */
 proto.msg.MessagesDialogs.prototype.setMessagesList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 3, value);
 };
@@ -2131,6 +2187,35 @@ proto.msg.MessagesDialogs.prototype.clearCount = function() {
  */
 proto.msg.MessagesDialogs.prototype.hasCount = function() {
   return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * required int64 UpdateID = 5;
+ * @return {number}
+ */
+proto.msg.MessagesDialogs.prototype.getUpdateid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.MessagesDialogs.prototype.setUpdateid = function(value) {
+  jspb.Message.setField(this, 5, value);
+};
+
+
+proto.msg.MessagesDialogs.prototype.clearUpdateid = function() {
+  jspb.Message.setField(this, 5, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.MessagesDialogs.prototype.hasUpdateid = function() {
+  return jspb.Message.getField(this, 5) != null;
 };
 
 
@@ -2726,15 +2811,15 @@ proto.msg.MessagesMany.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * repeated UserMessage Messages = 1;
- * @return {!Array<!proto.msg.UserMessage>}
+ * @return {!Array.<!proto.msg.UserMessage>}
  */
 proto.msg.MessagesMany.prototype.getMessagesList = function() {
-  return /** @type{!Array<!proto.msg.UserMessage>} */ (
+  return /** @type{!Array.<!proto.msg.UserMessage>} */ (
     jspb.Message.getRepeatedWrapperField(this, core_types_pb.UserMessage, 1));
 };
 
 
-/** @param {!Array<!proto.msg.UserMessage>} value */
+/** @param {!Array.<!proto.msg.UserMessage>} value */
 proto.msg.MessagesMany.prototype.setMessagesList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
@@ -2757,15 +2842,15 @@ proto.msg.MessagesMany.prototype.clearMessagesList = function() {
 
 /**
  * repeated User Users = 2;
- * @return {!Array<!proto.msg.User>}
+ * @return {!Array.<!proto.msg.User>}
  */
 proto.msg.MessagesMany.prototype.getUsersList = function() {
-  return /** @type{!Array<!proto.msg.User>} */ (
+  return /** @type{!Array.<!proto.msg.User>} */ (
     jspb.Message.getRepeatedWrapperField(this, core_types_pb.User, 2));
 };
 
 
-/** @param {!Array<!proto.msg.User>} value */
+/** @param {!Array.<!proto.msg.User>} value */
 proto.msg.MessagesMany.prototype.setUsersList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 2, value);
 };

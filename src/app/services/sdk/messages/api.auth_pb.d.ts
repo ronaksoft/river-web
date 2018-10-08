@@ -84,6 +84,28 @@ export namespace AuthLogin {
   }
 }
 
+export class AuthLogout extends jspb.Message {
+  clearAuthidsList(): void;
+  getAuthidsList(): Array<number>;
+  setAuthidsList(value: Array<number>): void;
+  addAuthids(value: number, index?: number): number;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AuthLogout.AsObject;
+  static toObject(includeInstance: boolean, msg: AuthLogout): AuthLogout.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AuthLogout, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AuthLogout;
+  static deserializeBinaryFromReader(message: AuthLogout, reader: jspb.BinaryReader): AuthLogout;
+}
+
+export namespace AuthLogout {
+  export type AsObject = {
+    authidsList: Array<number>,
+  }
+}
+
 export class AuthCheckPhone extends jspb.Message {
   hasPhone(): boolean;
   clearPhone(): void;

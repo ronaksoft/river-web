@@ -1,9 +1,6 @@
 syntax = "proto2";
 package msg;
 import "core.types.proto";
-//import "github.com/gogo/protobuf/gogoproto/gogo.proto";
-//option (gogoproto.unmarshaler_all) = true;
-//option (gogoproto.sizer_all) = true;
 
 // MessageSend
 // @Function
@@ -46,7 +43,8 @@ message MessagesReadHistory {
 // @Function
 // Returns:     MessagesMany
 message MessagesGet {
-    repeated int64 MessagesIDs = 1;
+    required InputPeer Peer = 1;
+    repeated int64 MessagesIDs = 2;
 }
 
 // MessagesGetHistory
@@ -80,6 +78,7 @@ message MessagesDialogs {
     repeated User Users = 2;
     repeated UserMessage Messages = 3;
     required int32 Count = 4;
+    required int64 UpdateID = 5;
 }
 
 // MessagesSetTyping

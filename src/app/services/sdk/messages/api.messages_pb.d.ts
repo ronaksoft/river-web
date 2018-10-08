@@ -147,6 +147,11 @@ export namespace MessagesReadHistory {
 }
 
 export class MessagesGet extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.InputPeer;
+  setPeer(value?: core_types_pb.InputPeer): void;
+
   clearMessagesidsList(): void;
   getMessagesidsList(): Array<number>;
   setMessagesidsList(value: Array<number>): void;
@@ -164,6 +169,7 @@ export class MessagesGet extends jspb.Message {
 
 export namespace MessagesGet {
   export type AsObject = {
+    peer: core_types_pb.InputPeer.AsObject,
     messagesidsList: Array<number>,
   }
 }
@@ -279,6 +285,11 @@ export class MessagesDialogs extends jspb.Message {
   getCount(): number | undefined;
   setCount(value: number): void;
 
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesDialogs.AsObject;
   static toObject(includeInstance: boolean, msg: MessagesDialogs): MessagesDialogs.AsObject;
@@ -295,6 +306,7 @@ export namespace MessagesDialogs {
     usersList: Array<core_types_pb.User.AsObject>,
     messagesList: Array<core_types_pb.UserMessage.AsObject>,
     count?: number,
+    updateid?: number,
   }
 }
 

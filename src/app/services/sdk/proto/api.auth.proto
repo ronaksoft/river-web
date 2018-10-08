@@ -2,14 +2,9 @@ syntax = "proto2";
 package msg;
 import "core.types.proto";
 
-//import "github.com/gogo/protobuf/gogoproto/gogo.proto";
-//option (gogoproto.unmarshaler_all) = true;
-//option (gogoproto.sizer_all) = true;
-
-
 // AuthRegister
 // @Function
-// @Return: AuthAthorization
+// @Return: AuthAuthorization
 message AuthRegister {
     required string Phone = 1;
     required string FirstName = 2;
@@ -25,6 +20,13 @@ message AuthLogin {
     required string Phone = 1;
     required string PhoneCodeHash = 2;
     required string PhoneCode = 3;
+}
+
+// AuthLogout
+// @Function
+// @Return: Bool
+message AuthLogout {
+    repeated int64 AuthIDs = 1 ;
 }
 
 // AuthCheckPhone

@@ -466,15 +466,15 @@ proto.msg.MessageContainer.prototype.hasLength = function() {
 
 /**
  * repeated MessageEnvelope Envelopes = 2;
- * @return {!Array<!proto.msg.MessageEnvelope>}
+ * @return {!Array.<!proto.msg.MessageEnvelope>}
  */
 proto.msg.MessageContainer.prototype.getEnvelopesList = function() {
-  return /** @type{!Array<!proto.msg.MessageEnvelope>} */ (
+  return /** @type{!Array.<!proto.msg.MessageEnvelope>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.msg.MessageEnvelope, 2));
 };
 
 
-/** @param {!Array<!proto.msg.MessageEnvelope>} value */
+/** @param {!Array.<!proto.msg.MessageEnvelope>} value */
 proto.msg.MessageContainer.prototype.setEnvelopesList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 2, value);
 };
@@ -1058,15 +1058,15 @@ proto.msg.UpdateContainer.prototype.hasLength = function() {
 
 /**
  * repeated UpdateEnvelope Updates = 2;
- * @return {!Array<!proto.msg.UpdateEnvelope>}
+ * @return {!Array.<!proto.msg.UpdateEnvelope>}
  */
 proto.msg.UpdateContainer.prototype.getUpdatesList = function() {
-  return /** @type{!Array<!proto.msg.UpdateEnvelope>} */ (
+  return /** @type{!Array.<!proto.msg.UpdateEnvelope>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.msg.UpdateEnvelope, 2));
 };
 
 
-/** @param {!Array<!proto.msg.UpdateEnvelope>} value */
+/** @param {!Array.<!proto.msg.UpdateEnvelope>} value */
 proto.msg.UpdateContainer.prototype.setUpdatesList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 2, value);
 };
@@ -1147,15 +1147,15 @@ proto.msg.UpdateContainer.prototype.hasMaxupdateid = function() {
 
 /**
  * repeated User Users = 5;
- * @return {!Array<!proto.msg.User>}
+ * @return {!Array.<!proto.msg.User>}
  */
 proto.msg.UpdateContainer.prototype.getUsersList = function() {
-  return /** @type{!Array<!proto.msg.User>} */ (
+  return /** @type{!Array.<!proto.msg.User>} */ (
     jspb.Message.getRepeatedWrapperField(this, core_types_pb.User, 5));
 };
 
 
-/** @param {!Array<!proto.msg.User>} value */
+/** @param {!Array.<!proto.msg.User>} value */
 proto.msg.UpdateContainer.prototype.setUsersList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 5, value);
 };
