@@ -691,7 +691,6 @@ class Chat extends React.Component<IProps, IState> {
         const lastId = this.syncManager.getLastUpdateId();
         return new Promise((resolve, reject) => {
             this.sdk.getUpdateState().then((res) => {
-                window.console.log('checkSync', lastId, res.updateid);
                 if ((res.updateid || 0) - lastId > 1000) {
                     reject({
                         err: 'too late',
@@ -752,6 +751,28 @@ class Chat extends React.Component<IProps, IState> {
             isConnecting: false,
         });
         this.sdk.recall(0).then(() => {
+            const lastId = this.syncManager.getLastUpdateId();
+            // Checks if it is the first time to sync
+            if (lastId === 0) {
+                this.setState({
+                    isUpdating: true,
+                });
+                this.dialogRepo.getSnapshot({}).then((res) => {
+                    this.dialogsSortThrottle(res.dialogs);
+                    this.syncManager.setLastUpdateId(res.updateid || 0);
+                    this.setState({
+                        isUpdating: false,
+                    }, () => {
+                        this.wsOpenHandler();
+                    });
+                }).catch(() => {
+                    this.setState({
+                        isUpdating: false,
+                    });
+                });
+                return;
+            }
+            // Normal syncing
             this.checkSync().then(() => {
                 this.setState({
                     isUpdating: true,

@@ -6,6 +6,11 @@ import UserRepo from '../user';
 import MessageRepo from '../message';
 import {IMessage} from "../message/interface";
 
+interface IDialogWithUpdateId {
+    dialogs: IDialog[];
+    updateid: number;
+}
+
 export default class DialogRepo {
     private dbService: DB;
     private db: any;
@@ -29,6 +34,27 @@ export default class DialogRepo {
         return this.db.bulkDocs(dialogs);
     }
 
+    public getSnapshot({limit, skip, dialogs}: any): Promise<IDialogWithUpdateId> {
+        limit = limit || 50;
+        skip = limit || 0;
+        dialogs = dialogs || [];
+        return new Promise((resolve, reject) => {
+            // @ts-ignore
+            this.getManyForSnappshot({skip, limit}).then((remoteRes) => {
+                dialogs.push.apply(dialogs, remoteRes.dialogs);
+                if (remoteRes.dialogs.length === limit) {
+                    skip += limit;
+                    return this.getSnapshot({limit, skip, dialogs});
+                } else {
+                    resolve({
+                        dialogs,
+                        updateid: remoteRes.updateid,
+                    });
+                }
+            }).catch(reject);
+        });
+    }
+
     public getMany({skip, limit}: any): Promise<IDialog[]> {
         return this.sdk.getDialogs(skip || 0, limit || 30).then((remoteRes) => {
             this.messageRepo.importBulk(remoteRes.messagesList);
@@ -39,6 +65,22 @@ export default class DialogRepo {
             this.userRepo.importBulk(remoteRes.usersList);
             this.importBulk(remoteRes.dialogsList, messageMap);
             return remoteRes.dialogsList;
+        });
+    }
+
+    public getManyForSnappshot({skip, limit}: any): Promise<IDialogWithUpdateId> {
+        return this.sdk.getDialogs(skip || 0, limit || 30).then((remoteRes) => {
+            this.messageRepo.importBulk(remoteRes.messagesList);
+            const messageMap: { [key: number]: IMessage } = {};
+            remoteRes.messagesList.forEach((msg) => {
+                messageMap[msg.id || 0] = msg;
+            });
+            this.userRepo.importBulk(remoteRes.usersList);
+            this.importBulk(remoteRes.dialogsList, messageMap);
+            return {
+                dialogs: remoteRes.dialogsList,
+                updateid: remoteRes.updateid || 0,
+            };
         });
     }
 

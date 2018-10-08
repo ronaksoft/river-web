@@ -23,6 +23,13 @@ export default class UserMessageDB {
         }).then((result: any) => {
             // window.console.warn(result);
         });
+        this.db.createIndex({
+            index: {
+                fields: ['_id'],
+            }
+        }).then((result: any) => {
+            // window.console.warn(result);
+        });
     }
 
     public getDB() {

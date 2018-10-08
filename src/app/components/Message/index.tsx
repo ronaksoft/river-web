@@ -49,7 +49,6 @@ class Message extends React.Component<IProps, IState> {
                 scrollIndex: newProps.items.length - 1,
             }, () => {
                 this.fitList();
-                window.console.log('noTransition');
                 setTimeout(() => {
                     this.setState({
                         noTransition: false,
@@ -172,7 +171,7 @@ class Message extends React.Component<IProps, IState> {
                     el.scrollTo({top: 10000});
                 }
             }, 1000);
-        }, 50);
+        }, 100);
     }
 
     private onScroll = (params: any) => {

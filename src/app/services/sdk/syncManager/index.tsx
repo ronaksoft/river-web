@@ -62,7 +62,7 @@ export default class SyncManager {
             if (data.getMore()) {
                 setTimeout(() => {
                     resolve((data.getMaxupdateid() || 0) + 1);
-                }, 500);
+                }, 200);
             } else {
                 reject({
                     code: -1,
@@ -93,7 +93,6 @@ export default class SyncManager {
                         peertype: updateNewMessage.message.peertype,
                         preview: (updateNewMessage.message.body || '').substr(0, 64),
                         topmessageid: updateNewMessage.message.id,
-                        unreadcount: 0,
                         user_id: updateNewMessage.message.peerid,
                     });
                     break;
