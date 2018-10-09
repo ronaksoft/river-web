@@ -35,9 +35,9 @@ export default class SyncManager {
     public constructor() {
         window.console.log('Sync manager started');
         this.getLastUpdateId();
-        this.dialogRepo = new DialogRepo();
-        this.messageRepo = new MessageRepo();
         this.userRepo = UserRepo.getInstance();
+        this.dialogRepo = DialogRepo.getInstance();
+        this.messageRepo = new MessageRepo();
     }
 
     public getLastUpdateId(): number {

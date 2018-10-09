@@ -22,6 +22,7 @@ export default class UpdateManager {
     private fnQueue: any = {};
     private fnIndex: number = 0;
     private lastUpdateId: number = 0;
+    private rndMsgMap: {[key:number]:boolean} = {};
 
     public constructor() {
         window.console.log('Update manager started');
@@ -36,6 +37,7 @@ export default class UpdateManager {
         const currentUpdateId = this.getLastUpdateId();
         const minId = data.getMinupdateid();
         const maxId = data.getMaxupdateid();
+        window.console.log('on update, current:', currentUpdateId, 'min:', minId, 'max:', maxId);
         if (currentUpdateId + 1 !== minId && (minId || 0) > currentUpdateId) {
             this.callHandlers(C_MSG.OutOfSync, {});
             return;
@@ -81,8 +83,20 @@ export default class UpdateManager {
     private response(update: UpdateEnvelope) {
         const data = update.getUpdate_asU8();
         switch (update.getConstructor()) {
+            case C_MSG.UpdateMessageID:
+                const updateMessageId = UpdateMessageID.deserializeBinary(data).toObject();
+                this.rndMsgMap[updateMessageId.messageid || 0] = true;
+                window.console.log('UpdateMessageID', updateMessageId.messageid);
+                break;
             case C_MSG.UpdateNewMessage:
-                this.callHandlers(C_MSG.UpdateNewMessage, UpdateNewMessage.deserializeBinary(data).toObject());
+                const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
+                window.console.log('UpdateNewMessage', updateNewMessage.message.id);
+                if (!this.rndMsgMap[updateNewMessage.message.id || 0]) {
+                    this.callHandlers(C_MSG.UpdateNewMessage, updateNewMessage);
+                } else {
+                    window.console.log('UpdateNewMessage drop on', updateNewMessage.message.id);
+                    delete this.rndMsgMap[updateNewMessage.message.id || 0];
+                }
                 break;
             case C_MSG.UpdateReadHistoryInbox:
                 this.callHandlers(C_MSG.UpdateReadHistoryInbox, UpdateReadHistoryInbox.deserializeBinary(data).toObject());
@@ -95,9 +109,6 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateMessageEdited:
                 this.callHandlers(C_MSG.UpdateMessageEdited, UpdateMessageEdited.deserializeBinary(data).toObject());
-                break;
-            case C_MSG.UpdateMessageID:
-                this.callHandlers(C_MSG.UpdateMessageID, UpdateMessageID.deserializeBinary(data).toObject());
                 break;
             default:
                 break;

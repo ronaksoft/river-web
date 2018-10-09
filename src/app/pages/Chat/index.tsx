@@ -90,8 +90,8 @@ class Chat extends React.Component<IProps, IState> {
         this.sdk.loadConnInfo();
         this.connInfo = this.sdk.getConnInfo();
         this.messageRepo = new MessageRepo();
-        this.dialogRepo = new DialogRepo();
         this.userRepo = UserRepo.getInstance();
+        this.dialogRepo = DialogRepo.getInstance();
         // this.uniqueId = UniqueId.getInstance();
         this.updateManager = UpdateManager.getInstance();
         this.syncManager = SyncManager.getInstance();
@@ -131,6 +131,7 @@ class Chat extends React.Component<IProps, IState> {
             if (this.state.isUpdating) {
                 return;
             }
+            window.console.log('snapshot!');
             this.checkSync().then(() => {
                 this.setState({
                     isUpdating: true,
@@ -164,7 +165,9 @@ class Chat extends React.Component<IProps, IState> {
             this.notify(
                 `Message from ${data.sender.firstname} ${data.sender.lastname}`,
                 (data.message.body || '').substr(0, 64));
-            this.updateDialogsCounter(data.message.peerid || 0, {unreadCounterIncrease: 1});
+            if (data.message.senderid !== this.connInfo.UserID) {
+                this.updateDialogsCounter(data.message.peerid || 0, {unreadCounterIncrease: 1});
+            }
         }));
 
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUserTyping, (data: UpdateUserTyping.AsObject) => {
@@ -430,6 +433,9 @@ class Chat extends React.Component<IProps, IState> {
                 messages,
                 selectedDialogId: dialogId,
             }, () => {
+                if (messages.length>0) {
+                    window.console.log('maxReadId', maxReadId, 'maxId', maxId);
+                }
                 if (force === true) {
                     updateState();
                 }
@@ -644,7 +650,7 @@ class Chat extends React.Component<IProps, IState> {
         this.dialogsSortThrottle(dialogs);
 
         if (accessHash > -1) {
-            this.dialogRepo.importBulk([toUpdateDialog]);
+            this.dialogRepo.lazyUpsert([toUpdateDialog]);
         }
     }
 
@@ -666,7 +672,7 @@ class Chat extends React.Component<IProps, IState> {
                 dialogs[index].unreadcount = unreadCounter;
             }
             this.dialogsSortThrottle(dialogs);
-            this.dialogRepo.importBulk([dialogs[index]]);
+            this.dialogRepo.lazyUpsert([dialogs[index]]);
         }
     }
 
@@ -771,6 +777,7 @@ class Chat extends React.Component<IProps, IState> {
         }).catch((err) => {
             window.console.log(err);
             if (err.err !== 'too_soon') {
+                window.console.log('here');
                 this.snapshot();
             }
         });

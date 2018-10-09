@@ -1,6 +1,6 @@
 import DB from '../../services/db/dialog';
 import {IDialog} from './interface';
-import {differenceBy, find, merge} from 'lodash';
+import {throttle,differenceBy, find, merge} from 'lodash';
 import SDK from '../../services/sdk';
 import UserRepo from '../user';
 import MessageRepo from '../message';
@@ -12,11 +12,23 @@ interface IDialogWithUpdateId {
 }
 
 export default class DialogRepo {
+    public static getInstance() {
+        if (!this.instance) {
+            this.instance = new DialogRepo();
+        }
+
+        return this.instance;
+    }
+
+    private static instance: DialogRepo;
+
     private dbService: DB;
     private db: any;
     private sdk: SDK;
     private messageRepo: MessageRepo;
     private userRepo: UserRepo;
+    private lazyMap: {[key:number]:IDialog} = {};
+    private updateThtottle: any = null;
 
     public constructor() {
         this.dbService = DB.getInstance();
@@ -24,6 +36,7 @@ export default class DialogRepo {
         this.sdk = SDK.getInstance();
         this.messageRepo = new MessageRepo();
         this.userRepo = UserRepo.getInstance();
+        this.updateThtottle = throttle(this.insertToDb, 1000);
     }
 
     public create(dialog: IDialog) {
@@ -131,6 +144,7 @@ export default class DialogRepo {
             const createItems: IDialog[] = differenceBy(dialogs, result.docs, '_id');
             // @ts-ignore
             const updateItems: IDialog[] = result.docs;
+            window.console.log(updateItems);
             updateItems.map((dialog: IDialog) => {
                 const t = find(dialogs, {_id: dialog._id});
                 return merge(dialog, t);
@@ -139,5 +153,30 @@ export default class DialogRepo {
         }).catch((err: any) => {
             window.console.log('ewrferf', err);
         });
+    }
+
+    public lazyUpsert(dialogs: IDialog[]) {
+        dialogs.forEach((dialog) => {
+            this.updateMap(dialog);
+        });
+        this.updateThtottle();
+    }
+
+    private updateMap = (dialog: IDialog) => {
+        if (!this.lazyMap.hasOwnProperty(dialog.peerid || 0)) {
+            const t = this.lazyMap[dialog.peerid || 0];
+            this.lazyMap[dialog.peerid || 0] = merge(dialog, t);
+        } else {
+            dialog._id = String(dialog.peerid);
+            this.lazyMap[dialog.peerid || 0] = dialog;
+        }
+    }
+
+    private insertToDb = () => {
+        const dialogs: IDialog[] = [];
+        Object.keys(this.lazyMap).forEach((key) => {
+            dialogs.push(this.lazyMap[key]);
+        });
+        this.upsert(dialogs);
     }
 }

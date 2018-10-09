@@ -171,7 +171,7 @@ class Message extends React.Component<IProps, IState> {
                     el.scrollTo({top: 10000});
                 }
             }, 1000);
-        }, 100);
+        }, 10);
     }
 
     private onScroll = (params: any) => {
