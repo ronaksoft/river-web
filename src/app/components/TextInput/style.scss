@@ -92,5 +92,10 @@
         }
       }
     }
+    &.rtl .write-link {
+      right: auto;
+      left: 10px;
+      bottom: 0;
+    }
   }
 }

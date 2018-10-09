@@ -103,3 +103,7 @@ body {
         background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/smiley.png"); }
       .write .input .write-link .send:before {
         background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/send.png"); }
+    .write .input.rtl .write-link {
+      right: auto;
+      left: 10px;
+      bottom: 0; }

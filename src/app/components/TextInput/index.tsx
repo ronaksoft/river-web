@@ -7,6 +7,7 @@ import {throttle} from 'lodash';
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
 import UserAvatar from '../UserAvatar';
+import RTLDetector from "../../services/utilities/rtl_detector";
 
 interface IProps {
     userId?: number;
@@ -17,6 +18,7 @@ interface IProps {
 
 interface IState {
     emojiAnchorEl: any;
+    rtl: boolean;
     userId: number;
 }
 
@@ -24,18 +26,22 @@ class TextInput extends React.Component<IProps, IState> {
     private textarea: any = null;
     private typingThrottle: any = null;
     private typingTimeout: any = null;
+    private rtlDetector: RTLDetector;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
             emojiAnchorEl: null,
+            rtl: false,
             userId: props.userId || 0,
         };
 
         if (this.props.ref) {
             this.props.ref(this);
         }
+
+        this.rtlDetector = RTLDetector.getInstance();
     }
 
     public render() {
@@ -44,13 +50,14 @@ class TextInput extends React.Component<IProps, IState> {
                 <div className="user">
                     <UserAvatar id={this.state.userId} className="user-avatar"/>
                 </div>
-                <div className="input">
+                <div className={'input '+ (this.state.rtl ? 'rtl' : 'ltr')}>
                     <Textarea
                         inputRef={this.textareaRefHandler}
                         maxRows={5}
                         placeholder="Type your message here..."
                         onKeyUp={this.sendMessage}
                         onKeyDown={this.inputKeyDown}
+                        style={{direction: (this.state.rtl ? 'rtl' : 'ltr')}}
                     />
                     <div className="write-link">
                         <a href="javascript:;"
@@ -61,11 +68,28 @@ class TextInput extends React.Component<IProps, IState> {
                         <PopUpMenu anchorEl={this.state.emojiAnchorEl} onClose={this.emojiHandleClose}>
                             <Picker custom={[]} onSelect={this.emojiSelect} native={true} showPreview={false}/>
                         </PopUpMenu>
-                        <a href="javascript:;" className="send"/>
+                        <a href="javascript:;" className="send" onClick={this.submitMessage}/>
                     </div>
                 </div>
             </div>
         );
+    }
+
+    private submitMessage = () => {
+        if (this.props.onMessage) {
+            this.props.onMessage(this.textarea.value);
+        }
+        this.textarea.value = '';
+        this.setState({
+            emojiAnchorEl: null,
+        });
+        if (this.props.onTyping) {
+            this.props.onTyping(false);
+            if (this.typingThrottle !== null) {
+                this.typingThrottle.cancel();
+            }
+            this.typingThrottle = null;
+        }
     }
 
     private sendMessage = (e: any) => {
@@ -121,6 +145,10 @@ class TextInput extends React.Component<IProps, IState> {
             e.stopPropagation();
             e.preventDefault();
         }
+        const rtl = this.rtlDetector.direction(e.target.value);
+        this.setState({
+            rtl,
+        });
     }
 
     private emojiHandleClick = (event: any) => {
