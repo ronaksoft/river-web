@@ -5,6 +5,7 @@ RUN mkdir -p /run/nginx
 RUN mkdir -p /ronak/app
 WORKDIR /ronak/app
 RUN apk update
+RUN apk add gettext
 RUN apk add nginx
 EXPOSE 80
 EXPOSE 443

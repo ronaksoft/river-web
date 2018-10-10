@@ -1,6 +1,6 @@
 import UserMessageDB from '../../services/db/user_message';
 import {IMessage} from './interface';
-import {differenceBy, find, merge} from 'lodash';
+import {differenceBy, find, merge, cloneDeep} from 'lodash';
 import SDK from "../../services/sdk";
 import UserRepo from '../user';
 
@@ -144,7 +144,9 @@ export default class MessageRepo {
     }
 
     public upsert(msgs: IMessage[]): Promise<any> {
-        const ids = msgs.map((msg) => {
+        const tempMsgs = cloneDeep(msgs);
+        const ids = tempMsgs.map((msg) => {
+            msg.avatar = undefined;
             return msg._id;
         });
         return this.db.find({
@@ -152,11 +154,11 @@ export default class MessageRepo {
                 _id: {'$in': ids}
             },
         }).then((result: any) => {
-            const createItems: IMessage[] = differenceBy(msgs, result.docs, '_id');
+            const createItems: IMessage[] = differenceBy(tempMsgs, result.docs, '_id');
             // @ts-ignore
             const updateItems: IMessage[] = result.docs;
             updateItems.map((msg: IMessage) => {
-                const t = find(msgs, {_id: msg._id});
+                const t = find(tempMsgs, {_id: msg._id});
                 return merge(msg, t);
             });
             return this.createMany([...createItems, ...updateItems]);

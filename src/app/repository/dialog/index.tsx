@@ -1,6 +1,6 @@
 import DB from '../../services/db/dialog';
 import {IDialog} from './interface';
-import {throttle,differenceBy, find, merge} from 'lodash';
+import {throttle, differenceBy, find, merge, uniqBy, cloneDeep} from 'lodash';
 import SDK from '../../services/sdk';
 import UserRepo from '../user';
 import MessageRepo from '../message';
@@ -27,8 +27,8 @@ export default class DialogRepo {
     private sdk: SDK;
     private messageRepo: MessageRepo;
     private userRepo: UserRepo;
-    private lazyMap: {[key:number]:IDialog} = {};
-    private updateThtottle: any = null;
+    private lazyMap: { [key: number]: IDialog } = {};
+    private readonly updateThrottle: any = null;
 
     public constructor() {
         this.dbService = DB.getInstance();
@@ -36,7 +36,7 @@ export default class DialogRepo {
         this.sdk = SDK.getInstance();
         this.messageRepo = new MessageRepo();
         this.userRepo = UserRepo.getInstance();
-        this.updateThtottle = throttle(this.insertToDb, 1000);
+        this.updateThrottle = throttle(this.insertToDb, 5000);
     }
 
     public create(dialog: IDialog) {
@@ -133,6 +133,8 @@ export default class DialogRepo {
     }
 
     public upsert(dialogs: IDialog[]): Promise<any> {
+        let tempDialogs = cloneDeep(dialogs);
+        tempDialogs = uniqBy(tempDialogs, '_id');
         const ids = dialogs.map((dialog) => {
             return dialog._id;
         });
@@ -141,17 +143,16 @@ export default class DialogRepo {
                 _id: {'$in': ids}
             },
         }).then((result: any) => {
-            const createItems: IDialog[] = differenceBy(dialogs, result.docs, '_id');
+            const createItems: IDialog[] = differenceBy(tempDialogs, result.docs, '_id');
             // @ts-ignore
             const updateItems: IDialog[] = result.docs;
-            window.console.log(updateItems);
             updateItems.map((dialog: IDialog) => {
-                const t = find(dialogs, {_id: dialog._id});
+                const t = find(tempDialogs, {_id: dialog._id});
                 return merge(dialog, t);
             });
             return this.createMany([...createItems, ...updateItems]);
         }).catch((err: any) => {
-            window.console.log('ewrferf', err);
+            window.console.log('dialog upsert', err);
         });
     }
 
@@ -159,7 +160,7 @@ export default class DialogRepo {
         dialogs.forEach((dialog) => {
             this.updateMap(dialog, messageMap);
         });
-        this.updateThtottle();
+        this.updateThrottle();
     }
 
     private updateMap = (dialog: IDialog, messageMap?: { [key: number]: IMessage }) => {
@@ -186,6 +187,8 @@ export default class DialogRepo {
         Object.keys(this.lazyMap).forEach((key) => {
             dialogs.push(this.lazyMap[key]);
         });
-        this.upsert(dialogs);
+        this.upsert(dialogs).then(() => {
+            this.lazyMap = {};
+        });
     }
 }

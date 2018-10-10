@@ -672,7 +672,7 @@ proto.msg.AuthLogout.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.addAuthids(value);
       break;
     default:
@@ -706,7 +706,7 @@ proto.msg.AuthLogout.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getAuthidsList();
   if (f.length > 0) {
-    writer.writeRepeatedInt64(
+    writer.writeRepeatedInt64String(
       1,
       f
     );
@@ -716,21 +716,21 @@ proto.msg.AuthLogout.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * repeated int64 AuthIDs = 1;
- * @return {!Array.<number>}
+ * @return {!Array.<string>}
  */
 proto.msg.AuthLogout.prototype.getAuthidsList = function() {
-  return /** @type {!Array.<number>} */ (jspb.Message.getRepeatedField(this, 1));
+  return /** @type {!Array.<string>} */ (jspb.Message.getRepeatedField(this, 1));
 };
 
 
-/** @param {!Array.<number>} value */
+/** @param {!Array.<string>} value */
 proto.msg.AuthLogout.prototype.setAuthidsList = function(value) {
   jspb.Message.setField(this, 1, value || []);
 };
 
 
 /**
- * @param {!number} value
+ * @param {!string} value
  * @param {number=} opt_index
  */
 proto.msg.AuthLogout.prototype.addAuthids = function(value, opt_index) {

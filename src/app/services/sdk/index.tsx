@@ -2,7 +2,7 @@ import {
     AuthAuthorization,
     AuthCheckedPhone,
     AuthCheckPhone,
-    AuthLogin,
+    AuthLogin, AuthLogout,
     AuthRecall,
     AuthRecalled,
     AuthRegister,
@@ -76,6 +76,17 @@ export default class SDK {
         this.connInfo = info;
         const s = JSON.stringify(info);
         localStorage.setItem('river.conn.info', s);
+    }
+
+    public resetConnInfo() {
+        this.loadConnInfo();
+        const info = this.getConnInfo();
+        info.UserID = 0;
+        info.FirstName = '';
+        info.LastName = '';
+        info.Phone = '';
+        info.Username = '';
+        this.setConnInfo(info);
     }
 
     public loadConnInfo(): IConnInfo {
@@ -213,5 +224,11 @@ export default class SDK {
         data.setFrom(from);
         data.setLimit(limit);
         return this.server.send(C_MSG.UpdateGetDifference, data.serializeBinary());
+    }
+
+    public logout(authId: string): Promise<Bool> {
+        const data = new AuthLogout();
+        data.setAuthidsList([authId]);
+        return this.server.send(C_MSG.AuthLogout, data.serializeBinary());
     }
 }

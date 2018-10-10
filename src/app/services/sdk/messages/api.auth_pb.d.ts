@@ -87,7 +87,7 @@ export namespace AuthLogin {
 export class AuthLogout extends jspb.Message {
   clearAuthidsList(): void;
   getAuthidsList(): Array<number>;
-  setAuthidsList(value: Array<number>): void;
+  setAuthidsList(value: Array<string>): void;
   addAuthids(value: number, index?: number): number;
 
   serializeBinary(): Uint8Array;
@@ -102,7 +102,7 @@ export class AuthLogout extends jspb.Message {
 
 export namespace AuthLogout {
   export type AsObject = {
-    authidsList: Array<number>,
+    authidsList: Array<string>,
   }
 }
 

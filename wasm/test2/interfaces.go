@@ -344,8 +344,11 @@ func (r *River) messageHandler(m *msg.MessageEnvelope) {
 	switch m.Constructor {
 	case msg.C_MessageContainer:
 		x := new(msg.MessageContainer)
-		x.Unmarshal(m.Message)
-		_LOG.Debug("MessageContainer received",
+		ee := x.Unmarshal(m.Message)
+		if ee != nil {
+			_LOG.Info("Error", zap.String("err", ee.Error()))
+		}
+		_LOG.Debug("kk-MessageContainer received",
 			zap.Int32("LENGTH", x.Length),
 		)
 		for _, envelope := range x.Envelopes {

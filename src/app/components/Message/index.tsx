@@ -37,8 +37,25 @@ class Message extends React.Component<IProps, IState> {
         };
         this.cache = new CellMeasurerCache({
             fixedWidth: true,
-            minHeight: 25,
+            minHeight: 35,
         });
+    }
+
+    public componentDidMount() {
+        this.setState({
+            items: this.props.items,
+            noTransition: true,
+            scrollIndex: this.props.items.length - 1,
+        }, () => {
+            this.fitList();
+            setTimeout(() => {
+                this.setState({
+                    noTransition: false,
+                });
+            }, 1000);
+        });
+        this.listCount = this.props.items.length;
+        this.topOfList = false;
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -128,7 +145,7 @@ class Message extends React.Component<IProps, IState> {
                     {(data.avatar && data.senderid && !data.me) && (
                         <UserAvatar id={data.senderid} className="avatar"/>
                     )}
-                    <div className="bubble ">
+                    <div className="bubble">
                         <div dangerouslySetInnerHTML={{__html: this.formatText(data.body)}}/>
                         <MessageStatus status={data.me || false} id={data.id} readId={this.state.readId}
                                        time={data.createdon || 0}/>
@@ -138,7 +155,7 @@ class Message extends React.Component<IProps, IState> {
         );
     }
 
-    private fitList() {
+    private fitList(once?: boolean) {
         setTimeout(() => {
             if (this.state.items.length === 0) {
                 this.setState({
@@ -164,13 +181,22 @@ class Message extends React.Component<IProps, IState> {
                 listStyle: {
                     paddingTop: '10px',
                 },
-            });
-            setTimeout(() => {
-                const el = document.querySelector('.chat.active-chat');
-                if (el) {
-                    el.scrollTo({top: 10000});
+            }, ()=> {
+                if (once !== true) {
+                    this.fitList(true);
                 }
-            }, 1000);
+            });
+            if (once !== true) {
+                setTimeout(() => {
+                    const el = document.querySelector('.chat.active-chat');
+                    if (el) {
+                        el.scroll({
+                            behavior: 'instant',
+                            top: 10000,
+                        });
+                    }
+                }, 1000);
+            }
         }, 10);
     }
 

@@ -64,7 +64,7 @@ class Dialog extends React.Component<IProps, IState> {
                 overscanRowCount={0}
                 scrollToIndex={this.state.scrollIndex}
                 width={318}
-                height={550}
+                height={502}
                 className="people"
             />
         );

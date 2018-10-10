@@ -5,7 +5,7 @@ import Message from '../../components/Message/index';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import {Attachment, MoreVert as MoreVertIcon} from '@material-ui/icons';
+import {Attachment, MoreVert as MoreVertIcon, Settings, ExitToApp} from '@material-ui/icons';
 import * as faker from 'faker';
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
@@ -32,6 +32,7 @@ import UserName from '../../components/UserName';
 import SyncManager from '../../services/sdk/syncManager';
 import UserRepo from '../../repository/user';
 import RiverLogo from '../../components/RiverLogo';
+import MainRepo from "../../repository";
 
 interface IProps {
     history?: any;
@@ -60,6 +61,7 @@ class Chat extends React.Component<IProps, IState> {
     private messageRepo: MessageRepo;
     private dialogRepo: DialogRepo;
     private userRepo: UserRepo;
+    private mainRepo: MainRepo;
     private isLoading: boolean = false;
     private sdk: SDK;
     private updateManager: UpdateManager;
@@ -92,6 +94,7 @@ class Chat extends React.Component<IProps, IState> {
         this.messageRepo = new MessageRepo();
         this.userRepo = UserRepo.getInstance();
         this.dialogRepo = DialogRepo.getInstance();
+        this.mainRepo = MainRepo.getInstance();
         // this.uniqueId = UniqueId.getInstance();
         this.updateManager = UpdateManager.getInstance();
         this.syncManager = SyncManager.getInstance();
@@ -167,7 +170,7 @@ class Chat extends React.Component<IProps, IState> {
             this.notify(
                 `Message from ${data.sender.firstname} ${data.sender.lastname}`,
                 (data.message.body || '').substr(0, 64));
-            if (data.message.senderid !== this.connInfo.UserID) {
+            if (data.message.senderid !== this.connInfo.UserID && data.message.peerid !== this.state.selectedDialogId) {
                 this.updateDialogsCounter(data.message.peerid || 0, {unreadCounterIncrease: 1});
             }
         }));
@@ -198,9 +201,13 @@ class Chat extends React.Component<IProps, IState> {
                 return;
             }
             this.updateDialogsCounter(data.peer.id || 0, {maxInbox: data.maxid});
-            this.messageRepo.getUnreadCount(data.peer.id || 0, data.maxid || 0).then((res) => {
-                this.updateDialogsCounter(data.peer.id || 0, {unreadCounter: res});
-            });
+            if (data.peer.id !== this.state.selectedDialogId) {
+                this.messageRepo.getUnreadCount(data.peer.id || 0, data.maxid || 0).then((res) => {
+                    this.updateDialogsCounter(data.peer.id || 0, {unreadCounter: res});
+                });
+            } else {
+                this.updateDialogsCounter(data.peer.id || 0, {unreadCounter: 0});
+            }
         }));
 
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateReadHistoryOutbox, (data: UpdateReadHistoryOutbox.AsObject) => {
@@ -257,6 +264,17 @@ class Chat extends React.Component<IProps, IState> {
                                 </span>
                             </div>
                             <Dialog items={this.state.dialogs} selectedId={this.state.selectedDialogId}/>
+                            <div className="setting">
+                                <a>
+                                    <Settings/>
+                                </a>
+                                <a onClick={this.logOutHandler}>
+                                    <ExitToApp/>
+                                </a>
+                                <div className="version">
+                                    v0.23
+                                </div>
+                            </div>
                         </div>
                         {this.state.selectedDialogId !== -1 && <div className="column-center">
                             <div className="top">
@@ -423,6 +441,8 @@ class Chat extends React.Component<IProps, IState> {
                 if (key > 0 && msg.senderid !== messages[key - 1].senderid ||
                     key === 0 && msg.senderid !== this.connInfo.UserID) {
                     msg.avatar = true;
+                } else {
+                    msg.avatar = false;
                 }
                 return msg;
             });
@@ -472,6 +492,8 @@ class Chat extends React.Component<IProps, IState> {
                 if (key > 0 && msg.senderid !== messages[key - 1].senderid ||
                     key === 0 && msg.senderid !== this.connInfo.UserID) {
                     msg.avatar = true;
+                } else {
+                    msg.avatar = false;
                 }
                 return msg;
             });
@@ -847,6 +869,20 @@ class Chat extends React.Component<IProps, IState> {
             const notification = new Notification(title, options);
             window.console.log(notification);
         }
+    }
+
+    private logOutHandler = () => {
+        this.sdk.logout(this.connInfo.AuthID).then((res) => {
+            window.console.log(res);
+            this.sdk.resetConnInfo();
+            this.mainRepo.destroyDB().then(() => {
+                this.syncManager.setLastUpdateId(0);
+                window.location.href = '/';
+                // window.location.reload();
+            });
+        }).catch((err) => {
+            window.console.log(err);
+        });
     }
 }
 

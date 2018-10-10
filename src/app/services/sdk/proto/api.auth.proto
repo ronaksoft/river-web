@@ -26,7 +26,7 @@ message AuthLogin {
 // @Function
 // @Return: Bool
 message AuthLogout {
-    repeated int64 AuthIDs = 1 ;
+    repeated int64 AuthIDs = 1 [jstype = JS_STRING];
 }
 
 // AuthCheckPhone
