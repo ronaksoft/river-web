@@ -36,6 +36,7 @@ class MessageStatus extends React.Component<IProps, IState> {
         this.setState({
             id: newProps.id || 0,
             readId: newProps.readId || 0,
+            status: newProps.status,
         });
     }
 

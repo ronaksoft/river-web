@@ -76,7 +76,7 @@ export default class DialogRepo {
                 messageMap[msg.id || 0] = msg;
             });
             this.userRepo.importBulk(remoteRes.usersList);
-            this.importBulk(remoteRes.dialogsList, messageMap);
+            this.lazyUpsert(remoteRes.dialogsList, messageMap);
             return remoteRes.dialogsList;
         });
     }
@@ -89,7 +89,7 @@ export default class DialogRepo {
                 messageMap[msg.id || 0] = msg;
             });
             this.userRepo.importBulk(remoteRes.usersList);
-            this.importBulk(remoteRes.dialogsList, messageMap);
+            this.lazyUpsert(remoteRes.dialogsList, messageMap);
             return {
                 dialogs: remoteRes.dialogsList,
                 updateid: remoteRes.updateid || 0,
@@ -155,14 +155,23 @@ export default class DialogRepo {
         });
     }
 
-    public lazyUpsert(dialogs: IDialog[]) {
+    public lazyUpsert(dialogs: IDialog[], messageMap?: { [key: number]: IMessage }) {
         dialogs.forEach((dialog) => {
-            this.updateMap(dialog);
+            this.updateMap(dialog, messageMap);
         });
         this.updateThtottle();
     }
 
-    private updateMap = (dialog: IDialog) => {
+    private updateMap = (dialog: IDialog, messageMap?: { [key: number]: IMessage }) => {
+        if (messageMap &&
+            dialog.topmessageid) {
+            const msg = messageMap[dialog.topmessageid || 0];
+            if (msg) {
+                dialog.preview = (msg.body || '').substr(0, 64);
+                dialog.last_update = msg.createdon;
+                dialog.user_id = msg.peerid;
+            }
+        }
         if (!this.lazyMap.hasOwnProperty(dialog.peerid || 0)) {
             const t = this.lazyMap[dialog.peerid || 0];
             this.lazyMap[dialog.peerid || 0] = merge(dialog, t);

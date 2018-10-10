@@ -117,6 +117,8 @@ class Chat extends React.Component<IProps, IState> {
                 this.dialogMap[dialog.peerid || 0] = index;
             });
 
+            window.console.log(res);
+
             this.setState({
                 dialogs: res
             }, () => {
@@ -658,8 +660,12 @@ class Chat extends React.Component<IProps, IState> {
         const {dialogs} = this.state;
         if (this.dialogMap.hasOwnProperty(peerid)) {
             const index = this.dialogMap[peerid];
-            dialogs[index].readinboxmaxid = maxInbox;
-            dialogs[index].readoutboxmaxid = maxOutbox;
+            if (maxInbox && dialogs[index].readinboxmaxid && maxInbox > (dialogs[index].readinboxmaxid || 0)) {
+                dialogs[index].readinboxmaxid = maxInbox;
+            }
+            if (maxOutbox && dialogs[index].readoutboxmaxid && maxOutbox > (dialogs[index].readoutboxmaxid || 0)) {
+                dialogs[index].readoutboxmaxid = maxOutbox;
+            }
             if (unreadCounterIncrease === 1) {
                 if (dialogs[index].unreadcount) {
                     // @ts-ignore
@@ -793,7 +799,9 @@ class Chat extends React.Component<IProps, IState> {
             this.setState({
                 isUpdating: false,
             }, () => {
-                this.startSyncing();
+                if (res.dialogs.length > 0) {
+                    this.startSyncing();
+                }
             });
         }).catch(() => {
             this.setState({
