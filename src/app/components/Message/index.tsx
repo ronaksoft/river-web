@@ -116,7 +116,7 @@ class Message extends React.Component<IProps, IState> {
                         onRowsRendered={this.props.rendered}
                         onScroll={this.onScroll}
                         style={this.state.listStyle}
-                        className={'chat active-chat' + (this.state.noTransition? ' no-transition': '')}
+                        className={'chat active-chat' + (this.state.noTransition ? ' no-transition' : '')}
                     />
                 )}
             </AutoSizer>
@@ -141,10 +141,12 @@ class Message extends React.Component<IProps, IState> {
                 key={key}
                 rowIndex={index}
                 parent={parent}>
-                <div style={style} key={index} className={'bubble-wrapper ' + (data.me ? 'me' : 'you')}>
+                <div style={style} key={index}
+                     className={'bubble-wrapper ' + (data.me ? 'me' : 'you') + (data.avatar ? ' avatar' : '')}>
                     {(data.avatar && data.senderid && !data.me) && (
                         <UserAvatar id={data.senderid} className="avatar"/>
                     )}
+                    {(data.avatar && data.senderid) && (<div className="arrow"/>)}
                     <div className="bubble">
                         <div dangerouslySetInnerHTML={{__html: this.formatText(data.body)}}/>
                         <MessageStatus status={data.me || false} id={data.id} readId={this.state.readId}
@@ -181,7 +183,7 @@ class Message extends React.Component<IProps, IState> {
                 listStyle: {
                     paddingTop: '10px',
                 },
-            }, ()=> {
+            }, () => {
                 if (once !== true) {
                     this.fitList(true);
                 }
