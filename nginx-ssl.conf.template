@@ -45,15 +45,30 @@ http {
             root   /ronak/app;
             index  index.html;
         }
+    }
+}
 
-        location /ws {
-            proxy_pass http://new.river.im;
-            # this magic is needed for WebSocket
-            proxy_http_version  1.1;
-            proxy_set_header    Upgrade $http_upgrade;
-            proxy_set_header    Connection "upgrade";
-            proxy_set_header    Host $http_host;
-            proxy_set_header    X-Real-IP $remote_addr;
-        }
+server {
+    listen       443 ssl default_server;
+
+    ssl on;
+    ssl_certificate ${NST_TLS_CERT_FILE};
+    ssl_certificate_key ${NST_TLS_KEY_FILE};
+    ssl_protocols TLSv1.2;
+    ssl_ciphers EECDH+CHACHA20:EECDH+AES128:RSA+AES128:EECDH+AES256:RSA+AES256:!MD5;
+    ssl_prefer_server_ciphers on;
+    ssl_session_cache shared:SSL:10m;
+
+    location /ws {
+        # redirect all HTTP traffic to localhost:8080
+        proxy_pass http://new.river.im;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+        # WebSocket support (nginx 1.4)
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
     }
 }

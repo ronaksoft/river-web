@@ -128,8 +128,11 @@ function Uint8ToBase64(u8a) {
 
 const initWebSocket = () => {
     // socket = new WebSocket('ws://192.168.1.110');
-    // socket = new WebSocket('wss://' + window.location.hostname + '/ws');
-    socket = new WebSocket('ws://new.river.im');
+    if (window.location.protocol === 'https') {
+        socket = new WebSocket('wss://' + window.location.hostname + '/ws');
+    } else {
+        socket = new WebSocket('ws://new.river.im');
+    }
     socket.binaryType = 'arraybuffer';
 
     // Connection opened
