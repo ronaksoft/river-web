@@ -157,7 +157,7 @@ export default class DialogRepo {
     }
 
     public lazyUpsert(dialogs: IDialog[], messageMap?: { [key: number]: IMessage }) {
-        dialogs.forEach((dialog) => {
+        cloneDeep(dialogs).forEach((dialog) => {
             this.updateMap(dialog, messageMap);
         });
         this.updateThrottle();
