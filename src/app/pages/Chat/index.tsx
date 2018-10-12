@@ -5,7 +5,7 @@ import Message from '../../components/Message/index';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import {Attachment, MoreVert as MoreVertIcon, Settings, ExitToApp} from '@material-ui/icons';
+import {Attachment, MoreVert as MoreVertIcon, /*Settings,*/ ExitToApp} from '@material-ui/icons';
 import * as faker from 'faker';
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
@@ -56,6 +56,7 @@ interface IState {
 }
 
 class Chat extends React.Component<IProps, IState> {
+    private isInChat: boolean = true;
     private rightMenu: any = null;
     private message: any = null;
     private messageRepo: MessageRepo;
@@ -107,6 +108,8 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
+        window.addEventListener('focus', this.windowFocusHandler);
+        window.addEventListener('blur', this.windowBlurHandler);
         window.addEventListener('wasmInit', this.wasmInitHandler);
         window.addEventListener('wsOpen', this.wsOpenHandler);
         window.addEventListener('wsClose', this.wsCloseHandler);
@@ -130,6 +133,10 @@ class Chat extends React.Component<IProps, IState> {
                     this.getMessagesByDialogId(parseInt(selectedId, 10), true);
                 }
             });
+
+            this.isLoading = false;
+        }).catch(() => {
+            this.isLoading = false;
         });
 
         this.eventReferences.push(this.updateManager.listen(C_MSG.OutOfSync, () => {
@@ -167,9 +174,11 @@ class Chat extends React.Component<IProps, IState> {
             this.messageRepo.importBulk([data.message]);
             this.userRepo.importBulk([data.sender]);
             this.updateDialogs(data.message, data.accesshash || 0);
-            this.notify(
-                `Message from ${data.sender.firstname} ${data.sender.lastname}`,
-                (data.message.body || '').substr(0, 64));
+            if (!this.isInChat && data.message.senderid !== this.connInfo.UserID) {
+                this.notify(
+                    `Message from ${data.sender.firstname} ${data.sender.lastname}`,
+                    (data.message.body || '').substr(0, 64));
+            }
             if (data.message.senderid !== this.connInfo.UserID && data.message.peerid !== this.state.selectedDialogId) {
                 this.updateDialogsCounter(data.message.peerid || 0, {unreadCounterIncrease: 1});
             }
@@ -241,6 +250,8 @@ class Chat extends React.Component<IProps, IState> {
             }
         });
 
+        window.removeEventListener('focus', this.windowFocusHandler);
+        window.removeEventListener('blur', this.windowBlurHandler);
         window.removeEventListener('wasmInit', this.wasmInitHandler);
         window.removeEventListener('wsOpen', this.wsOpenHandler);
         window.removeEventListener('fnStarted', this.fnStartedHandler);
@@ -265,9 +276,9 @@ class Chat extends React.Component<IProps, IState> {
                             </div>
                             <Dialog items={this.state.dialogs} selectedId={this.state.selectedDialogId}/>
                             <div className="setting">
-                                <a>
+                                {/*<a>
                                     <Settings/>
-                                </a>
+                                </a>*/}
                                 <a onClick={this.logOutHandler}>
                                     <ExitToApp/>
                                 </a>
@@ -438,12 +449,7 @@ class Chat extends React.Component<IProps, IState> {
                 if (msg.id && msg.id > maxId) {
                     maxId = msg.id;
                 }
-                if (key > 0 && msg.senderid !== messages[key - 1].senderid ||
-                    key === 0 && msg.senderid !== this.connInfo.UserID) {
-                    msg.avatar = true;
-                } else {
-                    msg.avatar = false;
-                }
+                msg.avatar = (key > 0 && msg.senderid !== messages[key - 1].senderid || key === 0 && msg.senderid !== this.connInfo.UserID);
                 return msg;
             });
             let maxReadId = 0;
@@ -451,11 +457,12 @@ class Chat extends React.Component<IProps, IState> {
                 maxReadId = this.state.dialogs[this.dialogMap[dialogId]].readoutboxmaxid || 0;
             }
             this.setState({
+                isTyping: false,
                 maxReadId,
                 messages,
                 selectedDialogId: dialogId,
             }, () => {
-                if (messages.length>0) {
+                if (messages.length > 0) {
                     window.console.log('maxReadId', maxReadId, 'maxId', maxId);
                 }
                 if (force === true) {
@@ -489,12 +496,7 @@ class Chat extends React.Component<IProps, IState> {
             const messages = this.state.messages;
             messages.unshift.apply(messages, data.reverse());
             messages.map((msg, key) => {
-                if (key > 0 && msg.senderid !== messages[key - 1].senderid ||
-                    key === 0 && msg.senderid !== this.connInfo.UserID) {
-                    msg.avatar = true;
-                } else {
-                    msg.avatar = false;
-                }
+                msg.avatar = (key > 0 && msg.senderid !== messages[key - 1].senderid || key === 0 && msg.senderid !== this.connInfo.UserID);
                 return msg;
             });
             this.setState({
@@ -805,13 +807,12 @@ class Chat extends React.Component<IProps, IState> {
         }).catch((err) => {
             window.console.log(err);
             if (err.err !== 'too_soon') {
-                window.console.log('here');
                 this.snapshot();
             }
         });
     }
 
-    private snapshot () {
+    private snapshot() {
         this.setState({
             isUpdating: true,
         });
@@ -883,6 +884,14 @@ class Chat extends React.Component<IProps, IState> {
         }).catch((err) => {
             window.console.log(err);
         });
+    }
+
+    private windowFocusHandler = () => {
+        this.isInChat = true;
+    }
+
+    private windowBlurHandler = () => {
+        this.isInChat = false;
     }
 }
 

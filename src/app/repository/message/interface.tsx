@@ -5,6 +5,7 @@ interface IMessage extends UserMessage.AsObject {
     _rev?: string;
     me?: boolean;
     avatar?: boolean;
+    rtl?: boolean;
 }
 
 export {IMessage};

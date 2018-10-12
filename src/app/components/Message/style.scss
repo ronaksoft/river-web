@@ -10,17 +10,17 @@
   &.no-transition {
     transition: none;
   }
-  &.active-chat {
-    display: flex;
-    .bubble {
-      transition-timing-function: cubic-bezier(.4, -.04, 1, 1);
-      //@for $i from 1 through 10 {
-      //  &:nth-of-type(#{$i}) {
-      //    animation-duration: .15s * $i;
-      //  }
-      //}
-    }
-  }
+  //&.active-chat {
+  //  display: flex;
+  //  .bubble {
+  //    transition-timing-function: cubic-bezier(.4, -.04, 1, 1);
+  //    //@for $i from 1 through 10 {
+  //    //  &:nth-of-type(#{$i}) {
+  //    //    animation-duration: .15s * $i;
+  //    //  }
+  //    //}
+  //  }
+  //}
 }
 
 .conversation-start {
@@ -120,7 +120,13 @@
     border-radius: 5px;
     max-width: 558px;
     min-width: 75px;
-    box-shadow: 0 2px 0px 0px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.1);
+    .inner {
+      direction: ltr;
+      &.rtl {
+        direction: rtl;
+      }
+    }
   }
   &.you {
     &.avatar {

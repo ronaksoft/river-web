@@ -27,6 +27,7 @@ class TextInput extends React.Component<IProps, IState> {
     private typingThrottle: any = null;
     private typingTimeout: any = null;
     private rtlDetector: RTLDetector;
+    private rtlDetectorThrottle: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -42,6 +43,7 @@ class TextInput extends React.Component<IProps, IState> {
         }
 
         this.rtlDetector = RTLDetector.getInstance();
+        this.rtlDetectorThrottle = throttle(this.detectRTL, 1000);
     }
 
     public render() {
@@ -93,6 +95,7 @@ class TextInput extends React.Component<IProps, IState> {
     }
 
     private sendMessage = (e: any) => {
+        this.rtlDetectorThrottle(e.target.value);
         if (e.key === 'Enter' && !e.shiftKey) {
             if (this.props.onMessage) {
                 this.props.onMessage(e.target.value);
@@ -145,10 +148,6 @@ class TextInput extends React.Component<IProps, IState> {
             e.stopPropagation();
             e.preventDefault();
         }
-        const rtl = this.rtlDetector.direction(e.target.value);
-        this.setState({
-            rtl,
-        });
     }
 
     private emojiHandleClick = (event: any) => {
@@ -166,6 +165,13 @@ class TextInput extends React.Component<IProps, IState> {
     private emojiHandleClose = () => {
         this.setState({
             emojiAnchorEl: null,
+        });
+    }
+
+    private detectRTL = (text: string) => {
+        const rtl = this.rtlDetector.direction(text);
+        this.setState({
+            rtl,
         });
     }
 }

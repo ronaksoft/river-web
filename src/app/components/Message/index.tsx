@@ -52,7 +52,7 @@ class Message extends React.Component<IProps, IState> {
                 this.setState({
                     noTransition: false,
                 });
-            }, 1000);
+            }, 50);
         });
         this.listCount = this.props.items.length;
         this.topOfList = false;
@@ -70,7 +70,7 @@ class Message extends React.Component<IProps, IState> {
                     this.setState({
                         noTransition: false,
                     });
-                }, 1000);
+                }, 50);
             });
             this.listCount = newProps.items.length;
             this.topOfList = false;
@@ -148,7 +148,8 @@ class Message extends React.Component<IProps, IState> {
                     )}
                     {(data.avatar && data.senderid) && (<div className="arrow"/>)}
                     <div className="bubble">
-                        <div dangerouslySetInnerHTML={{__html: this.formatText(data.body)}}/>
+                        <div className={'inner' + (data.rtl ? ' rtl' : '')}
+                             dangerouslySetInnerHTML={{__html: this.formatText(data.body)}}/>
                         <MessageStatus status={data.me || false} id={data.id} readId={this.state.readId}
                                        time={data.createdon || 0}/>
                     </div>
@@ -157,7 +158,7 @@ class Message extends React.Component<IProps, IState> {
         );
     }
 
-    private fitList(once?: boolean) {
+    private fitList() {
         setTimeout(() => {
             if (this.state.items.length === 0) {
                 this.setState({
@@ -183,22 +184,16 @@ class Message extends React.Component<IProps, IState> {
                 listStyle: {
                     paddingTop: '10px',
                 },
-            }, () => {
-                if (once !== true) {
-                    this.fitList(true);
-                }
             });
-            if (once !== true) {
-                setTimeout(() => {
-                    const el = document.querySelector('.chat.active-chat');
-                    if (el) {
-                        el.scroll({
-                            behavior: 'instant',
-                            top: 10000,
-                        });
-                    }
-                }, 1000);
-            }
+            setTimeout(() => {
+                const el = document.querySelector('.chat.active-chat');
+                if (el) {
+                    el.scroll({
+                        behavior: 'instant',
+                        top: 1000000,
+                    });
+                }
+            }, 52);
         }, 10);
     }
 

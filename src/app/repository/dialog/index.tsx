@@ -1,6 +1,6 @@
 import DB from '../../services/db/dialog';
 import {IDialog} from './interface';
-import {throttle, differenceBy, find, merge, uniqBy, cloneDeep} from 'lodash';
+import {throttle, differenceBy, find, merge, uniqBy, clone, cloneDeep} from 'lodash';
 import SDK from '../../services/sdk';
 import UserRepo from '../user';
 import MessageRepo from '../message';
@@ -157,8 +157,8 @@ export default class DialogRepo {
     }
 
     public lazyUpsert(dialogs: IDialog[], messageMap?: { [key: number]: IMessage }) {
-        cloneDeep(dialogs).forEach((dialog) => {
-            this.updateMap(dialog, messageMap);
+        clone(dialogs).forEach((dialog) => {
+            this.updateMap(dialog, cloneDeep(messageMap));
         });
         this.updateThrottle();
     }
@@ -173,7 +173,7 @@ export default class DialogRepo {
                 dialog.user_id = msg.peerid;
             }
         }
-        if (!this.lazyMap.hasOwnProperty(dialog.peerid || 0)) {
+        if (this.lazyMap.hasOwnProperty(dialog.peerid || 0)) {
             const t = this.lazyMap[dialog.peerid || 0];
             this.lazyMap[dialog.peerid || 0] = merge(dialog, t);
         } else {

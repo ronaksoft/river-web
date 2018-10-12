@@ -3,6 +3,7 @@ import {IMessage} from './interface';
 import {differenceBy, find, merge, cloneDeep} from 'lodash';
 import SDK from "../../services/sdk";
 import UserRepo from '../user';
+import RTLDetector from '../../services/utilities/rtl_detector';
 
 export default class MessageRepo {
     private dbService: UserMessageDB;
@@ -10,6 +11,7 @@ export default class MessageRepo {
     private sdk: SDK;
     private userRepo: UserRepo;
     private userId: number;
+    private rtlDetector: RTLDetector;
 
     public constructor() {
         SDK.getInstance().loadConnInfo();
@@ -18,6 +20,7 @@ export default class MessageRepo {
         this.db = this.dbService.getDB();
         this.sdk = SDK.getInstance();
         this.userRepo = UserRepo.getInstance();
+        this.rtlDetector = RTLDetector.getInstance();
     }
 
     public loadConnInfo() {
@@ -134,6 +137,7 @@ export default class MessageRepo {
         msgs = msgs.map((msg) => {
             msg._id = String(msg.id);
             msg.me = (msg.senderid === this.userId);
+            msg.rtl = this.rtlDetector.direction(msg.body || '');
             return msg;
         });
         return this.upsert(msgs).then((data) => {
