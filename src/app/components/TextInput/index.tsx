@@ -3,6 +3,7 @@ import Textarea from 'react-textarea-autosize';
 import {Picker} from 'emoji-mart';
 import PopUpMenu from '../PopUpMenu';
 import {throttle} from 'lodash';
+import {SentimentSatisfiedRounded, SendRounded} from '@material-ui/icons';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
@@ -66,11 +67,15 @@ class TextInput extends React.Component<IProps, IState> {
                            className="smiley"
                            aria-owns="emoji-menu"
                            aria-haspopup="true"
-                           onClick={this.emojiHandleClick}/>
+                           onClick={this.emojiHandleClick}>
+                            <SentimentSatisfiedRounded/>
+                        </a>
                         <PopUpMenu anchorEl={this.state.emojiAnchorEl} onClose={this.emojiHandleClose}>
                             <Picker custom={[]} onSelect={this.emojiSelect} native={true} showPreview={false}/>
                         </PopUpMenu>
-                        <a href="javascript:;" className="send" onClick={this.submitMessage}/>
+                        <a href="javascript:;" className="send" onClick={this.submitMessage}>
+                            <SendRounded/>
+                        </a>
                     </div>
                 </div>
             </div>

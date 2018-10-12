@@ -126,7 +126,8 @@ body {
     .bubble-wrapper .bubble .inner {
       direction: ltr; }
       .bubble-wrapper .bubble .inner.rtl {
-        direction: rtl; }
+        direction: rtl;
+        text-align: right; }
   .bubble-wrapper.you.avatar {
     padding-top: 6px; }
   .bubble-wrapper.you .bubble {

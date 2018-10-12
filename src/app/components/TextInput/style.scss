@@ -55,46 +55,29 @@
     }
     .write-link {
       position: absolute;
-      right: 16px;
+      right: 12px;
       bottom: 0;
+      height: 32px;
       a {
         position: relative;
         height: 32px;
-        &:before {
-          display: inline-block;
-          float: left;
-          width: 20px;
+        margin: 0 2px;
+        display: inline-block;
+        svg {
+          fill: var(--light);
+          font-size: 20px;
           height: 32px;
-          padding: 0 0 0 4px;
-          content: '';
-          background-repeat: no-repeat;
-          background-position: center;
-          opacity: 0.5;
-          transition: opacity 0.2s;
         }
-        &:hover:before {
-          opacity: 1;
-        }
-      }
-      .attach {
-        &:before {
-          background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/attachment.png');
-        }
-      }
-      .smiley {
-        &:before {
-          background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/smiley.png');
-        }
-      }
-      .send {
-        &:before {
-          background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/send.png');
+        &:hover {
+          svg {
+            fill: var(--grey);
+          }
         }
       }
     }
     &.rtl .write-link {
       right: auto;
-      left: 10px;
+      left: 6px;
       bottom: 0;
     }
   }

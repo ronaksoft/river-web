@@ -283,7 +283,7 @@ class Chat extends React.Component<IProps, IState> {
                                     <ExitToApp/>
                                 </a>
                                 <div className="version">
-                                    v0.23
+                                    v0.23.1
                                 </div>
                             </div>
                         </div>
@@ -394,7 +394,7 @@ class Chat extends React.Component<IProps, IState> {
             this.message.forceUpdate(() => {
                 setTimeout(() => {
                     this.message.list.scrollToRow(this.state.messages.length - 1);
-                }, 50);
+                }, 100);
             });
         }, 200);
     }
@@ -434,7 +434,7 @@ class Chat extends React.Component<IProps, IState> {
             this.message.forceUpdate(() => {
                 setTimeout(() => {
                     this.message.list.scrollToRow(messages.length - 1);
-                }, 50);
+                }, 100);
             });
         };
 
@@ -557,7 +557,7 @@ class Chat extends React.Component<IProps, IState> {
         }, () => {
             setTimeout(() => {
                 this.animateToEnd();
-            }, 50);
+            }, 100);
         });
         this.messageRepo.create(message);
     }

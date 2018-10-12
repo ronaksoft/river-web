@@ -65,7 +65,7 @@ class Message extends React.Component<IProps, IState> {
                 noTransition: true,
                 scrollIndex: newProps.items.length - 1,
             }, () => {
-                this.fitList();
+                this.fitList(true);
                 setTimeout(() => {
                     this.setState({
                         noTransition: false,
@@ -158,7 +158,7 @@ class Message extends React.Component<IProps, IState> {
         );
     }
 
-    private fitList() {
+    private fitList(forceScroll?: boolean) {
         setTimeout(() => {
             if (this.state.items.length === 0) {
                 this.setState({
@@ -185,15 +185,17 @@ class Message extends React.Component<IProps, IState> {
                     paddingTop: '10px',
                 },
             });
-            setTimeout(() => {
-                const el = document.querySelector('.chat.active-chat');
-                if (el) {
-                    el.scroll({
-                        behavior: 'instant',
-                        top: 1000000,
-                    });
-                }
-            }, 52);
+            if (forceScroll === true) {
+                setTimeout(() => {
+                    const el = document.querySelector('.chat.active-chat');
+                    if (el) {
+                        el.scroll({
+                            behavior: 'instant',
+                            top: 1000000,
+                        });
+                    }
+                }, 52);
+            }
         }, 10);
     }
 

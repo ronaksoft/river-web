@@ -96,6 +96,9 @@
         transform: translateY(-50%);
         font-size: 12px;
         color: var(--light);
+        &:hover {
+          color: var(--grey);
+        }
       }
     }
     input {
@@ -110,19 +113,6 @@
       &:focus {
         outline: none;
       }
-    }
-    a.search {
-      display: block;
-      float: left;
-      width: 42px;
-      height: 42px;
-      margin-left: 10px;
-      border: 1px solid var(--light);
-      background-color: var(--blue);
-      background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/name-type.png');
-      background-repeat: no-repeat;
-      background-position: top 12px left 14px;
-      border-radius: 50%;
     }
   }
   .column-center {

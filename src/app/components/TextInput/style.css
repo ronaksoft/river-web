@@ -79,31 +79,21 @@ body {
       font-weight: 400; }
     .write .input .write-link {
       position: absolute;
-      right: 16px;
-      bottom: 0; }
+      right: 12px;
+      bottom: 0;
+      height: 32px; }
       .write .input .write-link a {
         position: relative;
-        height: 32px; }
-        .write .input .write-link a:before {
-          display: inline-block;
-          float: left;
-          width: 20px;
-          height: 32px;
-          padding: 0 0 0 4px;
-          content: '';
-          background-repeat: no-repeat;
-          background-position: center;
-          opacity: 0.5;
-          transition: opacity 0.2s; }
-        .write .input .write-link a:hover:before {
-          opacity: 1; }
-      .write .input .write-link .attach:before {
-        background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/attachment.png"); }
-      .write .input .write-link .smiley:before {
-        background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/smiley.png"); }
-      .write .input .write-link .send:before {
-        background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/382994/send.png"); }
+        height: 32px;
+        margin: 0 2px;
+        display: inline-block; }
+        .write .input .write-link a svg {
+          fill: var(--light);
+          font-size: 20px;
+          height: 32px; }
+        .write .input .write-link a:hover svg {
+          fill: var(--grey); }
     .write .input.rtl .write-link {
       right: auto;
-      left: 10px;
+      left: 6px;
       bottom: 0; }
