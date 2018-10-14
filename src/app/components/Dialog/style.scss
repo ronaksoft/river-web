@@ -1,11 +1,11 @@
 @import '../../../style/common';
 
-.people {
+.dialog-container {
   margin-left: -1px;
   border-right: 1px solid var(--light);
   border-left: 1px solid var(--light);
   width: calc(100% + 2px);
-  height: 64px;
+  height: 502px;
   .dialog {
     position: relative;
     width: 100%;

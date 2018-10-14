@@ -3,8 +3,8 @@ import {List} from 'react-virtualized';
 import {Link} from 'react-router-dom';
 import * as _ from 'lodash';
 import './style.css';
-import {IDialog} from "../../repository/dialog/interface";
-import DialogMessage from "../DialogMessage";
+import {IDialog} from '../../repository/dialog/interface';
+import DialogMessage from '../DialogMessage';
 
 interface IProps {
     items: IDialog[];
@@ -65,7 +65,7 @@ class Dialog extends React.Component<IProps, IState> {
                 scrollToIndex={this.state.scrollIndex}
                 width={318}
                 height={502}
-                className="people"
+                className="dialog-container"
             />
         );
     }

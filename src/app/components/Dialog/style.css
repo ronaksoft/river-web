@@ -27,13 +27,13 @@ body {
   background-size: cover;
   background-repeat: no-repeat; }
 
-.people {
+.dialog-container {
   margin-left: -1px;
   border-right: 1px solid var(--light);
   border-left: 1px solid var(--light);
   width: calc(100% + 2px);
-  height: 64px; }
-  .people .dialog {
+  height: 502px; }
+  .dialog-container .dialog {
     position: relative;
     width: 100%;
     height: 64px;
@@ -41,7 +41,7 @@ body {
     cursor: pointer;
     background-color: var(--white);
     text-align: left; }
-    .people .dialog:after {
+    .dialog-container .dialog:after {
       position: absolute;
       bottom: 0;
       left: 50%;
@@ -51,15 +51,15 @@ body {
       content: '';
       background-color: var(--light);
       transform: translate(-50%, 0); }
-    .people .dialog:hover {
+    .dialog-container .dialog:hover {
       border: 0;
       background-color: var(--color-hover); }
-      .people .dialog:hover > span {
+      .dialog-container .dialog:hover > span {
         color: var(--color-text-hover);
         background: transparent; }
-    .people .dialog.active {
+    .dialog-container .dialog.active {
       border: 0;
       background-color: var(--light-blue); }
-      .people .dialog.active > span {
+      .dialog-container .dialog.active > span {
         color: var(--color-text-hover);
         background: transparent; }

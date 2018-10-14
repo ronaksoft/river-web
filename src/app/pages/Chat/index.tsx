@@ -5,7 +5,7 @@ import Message from '../../components/Message/index';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import {Attachment, MoreVert as MoreVertIcon, /*Settings,*/ ExitToApp} from '@material-ui/icons';
+import {Attachment, MoreVert as MoreVertIcon, Settings, ExitToApp} from '@material-ui/icons';
 import * as faker from 'faker';
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
@@ -14,12 +14,10 @@ import Uploader from '../../components/Uploader/index';
 import TextInput from '../../components/TextInput/index';
 import {trimStart, throttle} from 'lodash';
 import SDK from '../../services/sdk/index';
-
-import './style.css';
-import NewMessage from "../../components/NewMessage";
-import {InputPeer, PeerType, PhoneContact, TypingAction} from "../../services/sdk/messages/core.types_pb";
-import {IConnInfo} from "../../services/sdk/interface";
-import {IDialog} from "../../repository/dialog/interface";
+import NewMessage from '../../components/NewMessage';
+import {InputPeer, PeerType, PhoneContact, TypingAction} from '../../services/sdk/messages/core.types_pb';
+import {IConnInfo} from '../../services/sdk/interface';
+import {IDialog} from '../../repository/dialog/interface';
 import UpdateManager from '../../services/sdk/server/updateManager';
 import {C_MSG} from '../../services/sdk/const';
 import {
@@ -32,7 +30,10 @@ import UserName from '../../components/UserName';
 import SyncManager from '../../services/sdk/syncManager';
 import UserRepo from '../../repository/user';
 import RiverLogo from '../../components/RiverLogo';
-import MainRepo from "../../repository";
+import MainRepo from '../../repository';
+
+import './style.css';
+import SettingMenu from "../../components/SettingMenu";
 
 interface IProps {
     history?: any;
@@ -52,6 +53,7 @@ interface IState {
     openNewMessage: boolean;
     rightMenu: boolean;
     selectedDialogId: string;
+    settingMenu: boolean;
     toggleAttachment: boolean;
 }
 
@@ -87,6 +89,7 @@ class Chat extends React.Component<IProps, IState> {
             openNewMessage: false,
             rightMenu: false,
             selectedDialogId: props.match.params.id === 'null' ? -1 : props.match.params.id,
+            settingMenu: false,
             toggleAttachment: false,
         };
         this.sdk = SDK.getInstance();
@@ -261,7 +264,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {anchorEl} = this.state;
+        const {anchorEl, settingMenu} = this.state;
         const open = Boolean(anchorEl);
         return (
             <div className="bg">
@@ -274,11 +277,14 @@ class Chat extends React.Component<IProps, IState> {
                                     <span>New message</span>
                                 </span>
                             </div>
-                            <Dialog items={this.state.dialogs} selectedId={this.state.selectedDialogId}/>
+                            {!settingMenu &&
+                            <Dialog items={this.state.dialogs} selectedId={this.state.selectedDialogId}/>}
+                            {settingMenu &&
+                            <SettingMenu/>}
                             <div className="setting">
-                                {/*<a>
+                                <a onClick={this.settingMenuHandler}>
                                     <Settings/>
-                                </a>*/}
+                                </a>
                                 <a onClick={this.logOutHandler}>
                                     <ExitToApp/>
                                 </a>
@@ -729,6 +735,7 @@ class Chat extends React.Component<IProps, IState> {
         const lastId = this.syncManager.getLastUpdateId();
         return new Promise((resolve, reject) => {
             this.sdk.getUpdateState().then((res) => {
+                window.console.log(res);
                 if ((res.updateid || 0) - lastId > 1000) {
                     reject({
                         err: 'too_late',
@@ -894,6 +901,12 @@ class Chat extends React.Component<IProps, IState> {
 
     private windowBlurHandler = () => {
         this.isInChat = false;
+    }
+
+    private settingMenuHandler = () => {
+        this.setState({
+            settingMenu: !this.state.settingMenu,
+        });
     }
 }
 

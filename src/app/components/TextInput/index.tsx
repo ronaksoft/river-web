@@ -8,7 +8,7 @@ import {SentimentSatisfiedRounded, SendRounded} from '@material-ui/icons';
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
 import UserAvatar from '../UserAvatar';
-import RTLDetector from "../../services/utilities/rtl_detector";
+import RTLDetector from '../../services/utilities/rtl_detector';
 
 interface IProps {
     onMessage: (text: string) => void;

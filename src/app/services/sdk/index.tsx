@@ -10,10 +10,10 @@ import {
     AuthSentCode
 } from './messages/api.auth_pb';
 import Server from './server';
-import {C_MSG} from "./const";
-import {IConnInfo} from "./interface";
-import {ContactsGet, ContactsImport, ContactsImported, ContactsMany} from "./messages/api.contacts_pb";
-import {InputPeer, PhoneContact, TypingAction} from "./messages/core.types_pb";
+import {C_MSG} from './const';
+import {IConnInfo} from './interface';
+import {ContactsGet, ContactsImport, ContactsImported, ContactsMany} from './messages/api.contacts_pb';
+import {InputPeer, PhoneContact, TypingAction} from './messages/core.types_pb';
 import {
     MessagesDialogs,
     MessagesGetDialogs,
@@ -22,7 +22,7 @@ import {
     MessagesSend,
     MessagesSent,
     MessagesSetTyping
-} from "./messages/api.messages_pb";
+} from './messages/api.messages_pb';
 import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from './messages/api.updates_pb';
 import {Bool} from './messages/core.messages_pb';
 

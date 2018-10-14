@@ -196,3 +196,7 @@ body {
     transition: width 0.2s; }
     .container .column-right.active {
       width: 318px; }
+
+html[theme="dark"] .container .column-center .conversation {
+  background-image: none;
+  background-color: #021D33; }

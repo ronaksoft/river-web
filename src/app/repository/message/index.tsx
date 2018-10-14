@@ -1,7 +1,7 @@
 import UserMessageDB from '../../services/db/user_message';
 import {IMessage} from './interface';
 import {differenceBy, find, merge, cloneDeep} from 'lodash';
-import SDK from "../../services/sdk";
+import SDK from '../../services/sdk';
 import UserRepo from '../user';
 import RTLDetector from '../../services/utilities/rtl_detector';
 

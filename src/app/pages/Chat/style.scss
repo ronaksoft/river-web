@@ -198,3 +198,10 @@
     }
   }
 }
+
+html[theme="dark"] {
+  .container .column-center .conversation {
+    background-image: none;
+    background-color: #021D33;
+  }
+}

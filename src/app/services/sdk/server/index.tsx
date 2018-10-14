@@ -1,4 +1,4 @@
-import {C_MSG} from '../const';
+import {C_MSG, C_MSG_NAME} from '../const';
 import Presenter from '../presenters';
 import UpdateManager from './updateManager';
 
@@ -109,7 +109,7 @@ export default class Server {
             bubbles: true,
             detail: request,
         });
-        window.console.warn(request.constructor, request.reqId);
+        window.console.warn(C_MSG_NAME[request.constructor], request.reqId);
         request.timeout = setTimeout(() => {
             this.dispatchTimeout(request.reqId);
         }, 30000);
@@ -117,7 +117,7 @@ export default class Server {
     }
 
     private response({reqId, constructor, data}: any) {
-        window.console.warn(constructor, reqId);
+        window.console.warn(C_MSG_NAME[constructor], reqId);
         if (!this.messageListeners[reqId]) {
             return;
         }

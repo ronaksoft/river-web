@@ -1,4 +1,4 @@
-import {C_MSG} from '../../const';
+import {C_MSG, C_MSG_NAME} from '../../const';
 import {UpdateContainer, UpdateEnvelope} from '../../messages/core.messages_pb';
 import {
     UpdateMessageEdited, UpdateMessageID,
@@ -82,6 +82,7 @@ export default class UpdateManager {
 
     private response(update: UpdateEnvelope) {
         const data = update.getUpdate_asU8();
+        window.console.info(C_MSG_NAME[update.getConstructor() || 0], update.getUpdateid());
         switch (update.getConstructor()) {
             case C_MSG.UpdateMessageID:
                 const updateMessageId = UpdateMessageID.deserializeBinary(data).toObject();

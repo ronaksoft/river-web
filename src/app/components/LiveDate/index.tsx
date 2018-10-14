@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import TimeUtililty from "../../services/utilities/time";
+import TimeUtililty from '../../services/utilities/time';
 
 interface IProps {
     className?: string;

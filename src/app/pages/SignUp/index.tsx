@@ -6,7 +6,7 @@ import ReactPhoneInput from 'react-phone-input-2';
 import Snackbar from '@material-ui/core/Snackbar';
 
 import './style.css';
-import {Refresh} from "@material-ui/icons";
+import {Refresh} from '@material-ui/icons';
 import {C_ERR, C_ERR_ITEM} from "../../services/sdk/const";
 import RiverLogo from '../../components/RiverLogo';
 

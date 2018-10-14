@@ -10,17 +10,6 @@
   &.no-transition {
     transition: none;
   }
-  //&.active-chat {
-  //  display: flex;
-  //  .bubble {
-  //    transition-timing-function: cubic-bezier(.4, -.04, 1, 1);
-  //    //@for $i from 1 through 10 {
-  //    //  &:nth-of-type(#{$i}) {
-  //    //    animation-duration: .15s * $i;
-  //    //  }
-  //    //}
-  //  }
-  //}
 }
 
 .conversation-start {
@@ -159,24 +148,31 @@
   }
 }
 
-@keyframes slideFromLeft {
-  0% {
-    //transform: translateX(-200px);
-    opacity: 0;
-  }
-  100% {
-    //transform: translateX(0px);
-    opacity: 1;
-  }
-}
-
-@keyframes slideFromRight {
-  0% {
-    //transform: translateX(200px);
-    opacity: 0;
-  }
-  100% {
-    //transform: translateX(0);
-    opacity: 1;
+html[theme="dark"] {
+  .bubble-wrapper {
+    &.me {
+      .bubble {
+        background-color: #133048;
+        color: #eee;
+      }
+      .arrow {
+        &:after {
+          background-color: #133048;
+          color: #eee;
+        }
+      }
+    }
+    &.you {
+      .bubble {
+        background-color: #133048;
+        color: #eee;
+      }
+      .arrow {
+        &:after {
+          background-color: #133048;
+          color: #eee;
+        }
+      }
+    }
   }
 }

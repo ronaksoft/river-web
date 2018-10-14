@@ -4,7 +4,7 @@ import {throttle, differenceBy, find, merge, uniqBy, clone, cloneDeep} from 'lod
 import SDK from '../../services/sdk';
 import UserRepo from '../user';
 import MessageRepo from '../message';
-import {IMessage} from "../message/interface";
+import {IMessage} from '../message/interface';
 
 interface IDialogWithUpdateId {
     dialogs: IDialog[];

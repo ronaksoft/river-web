@@ -1,9 +1,9 @@
 import * as React from 'react';
 
 import './style.css';
-import UserAvatar from "../UserAvatar";
-import UserName from "../UserName";
-import {IDialog} from "../../repository/dialog/interface";
+import UserAvatar from '../UserAvatar';
+import UserName from '../UserName';
+import {IDialog} from '../../repository/dialog/interface';
 import LiveDate from '../LiveDate';
 
 interface IProps {

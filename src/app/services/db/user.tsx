@@ -1,6 +1,6 @@
 import PouchDB from 'pouchdb';
 import PouchDBFind from 'pouchdb-find';
-import {IUser} from "../../repository/user/interface";
+import {IUser} from '../../repository/user/interface';
 
 export default class UserDB {
     public static getInstance() {

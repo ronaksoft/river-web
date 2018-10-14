@@ -1,0 +1,11 @@
+@import '../../../style/common';
+
+.setting-menu {
+  margin-left: -1px;
+  border-right: 1px solid var(--light);
+  border-left: 1px solid var(--light);
+  width: calc(100% + 2px);
+  height: 502px;
+  padding: 0 10px;
+  text-align: left;
+}

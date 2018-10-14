@@ -2,7 +2,7 @@ import * as React from 'react';
 import Dropzone, {FileWithPreview} from 'react-dropzone';
 
 import './style.css';
-import {DragEvent} from "react";
+import {DragEvent} from 'react';
 
 interface IProps {
     items?: any[];
