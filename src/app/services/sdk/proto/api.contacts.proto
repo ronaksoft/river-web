@@ -21,7 +21,7 @@ message ContactsGet {
 // @Function
 // @Returns: Bool
 message ContactsDelete {
-    repeated int64 UserIDs = 1 ;
+    repeated int64 UserIDs = 1 [jstype = JS_STRING];
 }
 
 // ContactsImported

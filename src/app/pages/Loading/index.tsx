@@ -80,7 +80,7 @@ class Loading extends React.Component<IProps, IState> {
     }
 
     private wasmInitHandler = () => {
-        this.sdk.recall(0);
+        // this.sdk.recall('0');
     }
 
     private authProgressHandler = (event: any) => {

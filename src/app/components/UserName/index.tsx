@@ -4,12 +4,12 @@ import UserRepo from '../../repository/user';
 
 interface IProps {
     className?: string;
-    id: number;
+    id: string;
 }
 
 interface IState {
     className: string;
-    id: number;
+    id: string;
     user: IUser;
 }
 
@@ -59,7 +59,7 @@ class UserName extends React.Component<IProps, IState> {
     }
 
     private getUser(data?: any) {
-        if (!this.state || this.state.id === 0) {
+        if (!this.state || this.state.id === '') {
             return;
         }
         if (data && data.details.ids.indexOf(this.state.id) === -1) {

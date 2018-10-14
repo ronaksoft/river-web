@@ -86,9 +86,9 @@ export namespace AuthLogin {
 
 export class AuthLogout extends jspb.Message {
   clearAuthidsList(): void;
-  getAuthidsList(): Array<number>;
+  getAuthidsList(): Array<string>;
   setAuthidsList(value: Array<string>): void;
-  addAuthids(value: number, index?: number): number;
+  addAuthids(value: string, index?: number): string;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AuthLogout.AsObject;
@@ -153,8 +153,8 @@ export namespace AuthSendCode {
 export class AuthRecall extends jspb.Message {
   hasClientid(): boolean;
   clearClientid(): void;
-  getClientid(): number | undefined;
-  setClientid(value: number): void;
+  getClientid(): string | undefined;
+  setClientid(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AuthRecall.AsObject;
@@ -168,15 +168,20 @@ export class AuthRecall extends jspb.Message {
 
 export namespace AuthRecall {
   export type AsObject = {
-    clientid?: number,
+    clientid?: string,
   }
 }
 
 export class AuthRecalled extends jspb.Message {
   hasClientid(): boolean;
   clearClientid(): void;
-  getClientid(): number | undefined;
-  setClientid(value: number): void;
+  getClientid(): string | undefined;
+  setClientid(value: string): void;
+
+  hasTimestamp(): boolean;
+  clearTimestamp(): void;
+  getTimestamp(): number | undefined;
+  setTimestamp(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AuthRecalled.AsObject;
@@ -190,7 +195,8 @@ export class AuthRecalled extends jspb.Message {
 
 export namespace AuthRecalled {
   export type AsObject = {
-    clientid?: number,
+    clientid?: string,
+    timestamp?: number,
   }
 }
 

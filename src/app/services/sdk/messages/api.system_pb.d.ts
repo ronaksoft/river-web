@@ -49,8 +49,8 @@ export class SystemClientLog extends jspb.Message {
 
   hasUserid(): boolean;
   clearUserid(): void;
-  getUserid(): number | undefined;
-  setUserid(value: number): void;
+  getUserid(): string | undefined;
+  setUserid(value: string): void;
 
   hasText(): boolean;
   clearText(): void;
@@ -71,7 +71,7 @@ export namespace SystemClientLog {
   export type AsObject = {
     deviceid?: string,
     deviceos?: string,
-    userid?: number,
+    userid?: string,
     text?: string,
   }
 }

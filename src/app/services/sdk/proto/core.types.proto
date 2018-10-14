@@ -12,27 +12,27 @@ enum TypingAction {
 
 // Dialog
 message Dialog {
-    required int64 PeerID = 1;
+    required int64 PeerID = 1 [jstype = JS_STRING];//
     required int32 PeerType = 2;
     required int64 TopMessageID = 3;
     required int64 ReadInboxMaxID = 4;
     required int64 ReadOutboxMaxID = 5;
     required int32 UnreadCount = 6;
-    required fixed64 AccessHash = 7;
+    required fixed64 AccessHash = 7 [jstype = JS_STRING];//
 }
 
 // Peer
 message Peer {
-    required int64 ID = 1;
+    required int64 ID = 1 [jstype = JS_STRING];//
     required int32 Type = 2;
-    required fixed64 AccessHash = 3;
+    required fixed64 AccessHash = 3 [jstype = JS_STRING];//
 }
 
 // InputPeer
 message InputPeer {
-    required int64 ID = 1;
+    required int64 ID = 1 [jstype = JS_STRING];//
     required PeerType Type = 2;
-    required fixed64 AccessHash = 3;
+    required fixed64 AccessHash = 3 [jstype = JS_STRING];//
 }
 
 // PeerType
@@ -45,46 +45,46 @@ enum PeerType {
 
 // InputPeer
 message InputUser {
-    required int64 UserID = 1;
-    required fixed64 AccessHash = 2;
+    required int64 UserID = 1 [jstype = JS_STRING];//
+    required fixed64 AccessHash = 2 [jstype = JS_STRING];//
 }
 
 // User
 message User {
-    required int64 ID = 1;
+    required int64 ID = 1 [jstype = JS_STRING];//
     required string FirstName = 2;
     required string LastName = 3;
 }
 
 // ContactUser
 message ContactUser {
-    required int64 ID = 1;
+    required int64 ID = 1 [jstype = JS_STRING];//
     required string FirstName = 2;
     required string LastName = 3;
-    required fixed64 AccessHash = 4;
+    required fixed64 AccessHash = 4 [jstype = JS_STRING];//
     required string Phone = 5;
     required string Username = 6;
-    required int64 ClientID = 7;
+    required int64 ClientID = 7 [jstype = JS_STRING];//
 
 }
 
 // UserMessage
 message UserMessage {
     required int64 ID = 1;
-    required int64 PeerID = 2;
+    required int64 PeerID = 2 [jstype = JS_STRING];//
     required int32 PeerType = 3;
     required int64 CreatedOn = 4;
     required int64 EditedOn = 5;
-    required int64 FwdSenderID = 6;
-    required int64 FwdChannelID = 7;
-    required int64 FwdChannelMessageID = 8;
+    required int64 FwdSenderID = 6 [jstype = JS_STRING];//
+    required int64 FwdChannelID = 7 [jstype = JS_STRING];//
+    required int64 FwdChannelMessageID = 8 [jstype = JS_STRING];//
     required int32 Flags = 9;
     required int64 MessageType = 10;
     required string Body = 11;
-    required int64 SenderID = 12;
+    required int64 SenderID = 12 [jstype = JS_STRING];//
     required bool ContentRead = 13;
     required bool Inbox = 14;
-    optional int64 ReplyTo = 15;
+    optional int64 ReplyTo = 15 [jstype = JS_STRING];//
     optional int32 MessageAction = 16;
 }
 
@@ -104,7 +104,7 @@ message DHGroup {
 
 // PhoneContact
 message PhoneContact {
-    required int64 ClientID = 1;
+    required int64 ClientID = 1 [jstype = JS_STRING];
     required string FirstName = 2;
     required string LastName = 3;
     required string Phone = 4;
@@ -126,7 +126,7 @@ message NotifySettings {
 
 // InputFile
 message InputFile {
-    required int64 FileID = 1;
+    required int64 FileID = 1 [jstype = JS_STRING];
     required int32 TotalParts = 2;
     required string FileName = 3;
 }

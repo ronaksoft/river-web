@@ -11,16 +11,16 @@ import UserAvatar from '../UserAvatar';
 import RTLDetector from "../../services/utilities/rtl_detector";
 
 interface IProps {
-    userId?: number;
     onMessage: (text: string) => void;
-    ref?: (ref: any) => void;
     onTyping?: (typing: boolean) => void;
+    ref?: (ref: any) => void;
+    userId?: string;
 }
 
 interface IState {
     emojiAnchorEl: any;
     rtl: boolean;
-    userId: number;
+    userId: string;
 }
 
 class TextInput extends React.Component<IProps, IState> {
@@ -36,7 +36,7 @@ class TextInput extends React.Component<IProps, IState> {
         this.state = {
             emojiAnchorEl: null,
             rtl: false,
-            userId: props.userId || 0,
+            userId: props.userId || '',
         };
 
         if (this.props.ref) {

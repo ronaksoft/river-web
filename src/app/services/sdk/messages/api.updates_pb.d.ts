@@ -174,8 +174,8 @@ export class UpdateNewMessage extends jspb.Message {
 
   hasAccesshash(): boolean;
   clearAccesshash(): void;
-  getAccesshash(): number | undefined;
-  setAccesshash(value: number): void;
+  getAccesshash(): string | undefined;
+  setAccesshash(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateNewMessage.AsObject;
@@ -193,7 +193,7 @@ export namespace UpdateNewMessage {
     updateid?: number,
     message: core_types_pb.UserMessage.AsObject,
     sender: core_types_pb.User.AsObject,
-    accesshash?: number,
+    accesshash?: string,
   }
 }
 
@@ -319,8 +319,8 @@ export class UpdateUserTyping extends jspb.Message {
 
   hasUserid(): boolean;
   clearUserid(): void;
-  getUserid(): number | undefined;
-  setUserid(value: number): void;
+  getUserid(): string | undefined;
+  setUserid(value: string): void;
 
   hasAction(): boolean;
   clearAction(): void;
@@ -340,7 +340,7 @@ export class UpdateUserTyping extends jspb.Message {
 export namespace UpdateUserTyping {
   export type AsObject = {
     ucount?: number,
-    userid?: number,
+    userid?: string,
     action?: core_types_pb.TypingAction,
   }
 }
@@ -353,8 +353,8 @@ export class UpdateUserStatus extends jspb.Message {
 
   hasUserid(): boolean;
   clearUserid(): void;
-  getUserid(): number | undefined;
-  setUserid(value: number): void;
+  getUserid(): string | undefined;
+  setUserid(value: string): void;
 
   hasStatus(): boolean;
   clearStatus(): void;
@@ -374,7 +374,7 @@ export class UpdateUserStatus extends jspb.Message {
 export namespace UpdateUserStatus {
   export type AsObject = {
     ucount?: number,
-    userid?: number,
+    userid?: string,
     status?: number,
   }
 }

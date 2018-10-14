@@ -4,7 +4,7 @@ import (
 	"syscall/js"
 	"fmt"
 	"encoding/base64"
-	"git.ronaksoftware.com/customers/river/messages"
+	"git.ronaksoftware.com/customers/river/messages/ext"
 	"math/rand"
 	"time"
 )

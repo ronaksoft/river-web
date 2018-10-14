@@ -54,7 +54,7 @@ export default class SDK {
                 FirstName: '',
                 LastName: '',
                 Phone: '',
-                UserID: 0,
+                UserID: '0',
                 Username: ''
             };
         }
@@ -81,7 +81,7 @@ export default class SDK {
     public resetConnInfo() {
         this.loadConnInfo();
         const info = this.getConnInfo();
-        info.UserID = 0;
+        info.UserID = '0';
         info.FirstName = '';
         info.LastName = '';
         info.Phone = '';
@@ -136,7 +136,7 @@ export default class SDK {
         return this.server.send(C_MSG.AuthLogin, data.serializeBinary());
     }
 
-    public recall(clientId: number): Promise<AuthRecalled.AsObject> {
+    public recall(clientId: string): Promise<AuthRecalled.AsObject> {
         const data = new AuthRecall();
         data.setClientid(clientId);
         return this.server.send(C_MSG.AuthRecall, data.serializeBinary());
@@ -179,7 +179,7 @@ export default class SDK {
         return this.server.send(C_MSG.MessagesGetDialogs, data.serializeBinary());
     }
 
-    public sendMessage(body: string, peer: InputPeer, replyTo?: number): Promise<MessagesSent.AsObject> {
+    public sendMessage(body: string, peer: InputPeer, replyTo?: string): Promise<MessagesSent.AsObject> {
         const data = new MessagesSend();
         // this.msgId++;
         data.setRandomid(parseInt(Math.random().toFixed(10).split('.')[1], 10));

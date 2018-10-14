@@ -117,7 +117,7 @@ proto.msg.Dialog.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setPeerid(value);
       break;
     case 2:
@@ -141,7 +141,7 @@ proto.msg.Dialog.deserializeBinaryFromReader = function(msg, reader) {
       msg.setUnreadcount(value);
       break;
     case 7:
-      var value = /** @type {number} */ (reader.readFixed64());
+      var value = /** @type {string} */ (reader.readFixed64String());
       msg.setAccesshash(value);
       break;
     default:
@@ -173,9 +173,9 @@ proto.msg.Dialog.prototype.serializeBinary = function() {
  */
 proto.msg.Dialog.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       1,
       f
     );
@@ -215,9 +215,9 @@ proto.msg.Dialog.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 7));
+  f = /** @type {string} */ (jspb.Message.getField(message, 7));
   if (f != null) {
-    writer.writeFixed64(
+    writer.writeFixed64String(
       7,
       f
     );
@@ -227,14 +227,14 @@ proto.msg.Dialog.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * required int64 PeerID = 1;
- * @return {number}
+ * @return {string}
  */
 proto.msg.Dialog.prototype.getPeerid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.Dialog.prototype.setPeerid = function(value) {
   jspb.Message.setField(this, 1, value);
 };
@@ -401,14 +401,14 @@ proto.msg.Dialog.prototype.hasUnreadcount = function() {
 
 /**
  * required fixed64 AccessHash = 7;
- * @return {number}
+ * @return {string}
  */
 proto.msg.Dialog.prototype.getAccesshash = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.Dialog.prototype.setAccesshash = function(value) {
   jspb.Message.setField(this, 7, value);
 };
@@ -515,7 +515,7 @@ proto.msg.Peer.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setId(value);
       break;
     case 2:
@@ -523,7 +523,7 @@ proto.msg.Peer.deserializeBinaryFromReader = function(msg, reader) {
       msg.setType(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readFixed64());
+      var value = /** @type {string} */ (reader.readFixed64String());
       msg.setAccesshash(value);
       break;
     default:
@@ -555,9 +555,9 @@ proto.msg.Peer.prototype.serializeBinary = function() {
  */
 proto.msg.Peer.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       1,
       f
     );
@@ -569,9 +569,9 @@ proto.msg.Peer.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
   if (f != null) {
-    writer.writeFixed64(
+    writer.writeFixed64String(
       3,
       f
     );
@@ -581,14 +581,14 @@ proto.msg.Peer.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * required int64 ID = 1;
- * @return {number}
+ * @return {string}
  */
 proto.msg.Peer.prototype.getId = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.Peer.prototype.setId = function(value) {
   jspb.Message.setField(this, 1, value);
 };
@@ -639,14 +639,14 @@ proto.msg.Peer.prototype.hasType = function() {
 
 /**
  * required fixed64 AccessHash = 3;
- * @return {number}
+ * @return {string}
  */
 proto.msg.Peer.prototype.getAccesshash = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.Peer.prototype.setAccesshash = function(value) {
   jspb.Message.setField(this, 3, value);
 };
@@ -753,7 +753,7 @@ proto.msg.InputPeer.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setId(value);
       break;
     case 2:
@@ -761,7 +761,7 @@ proto.msg.InputPeer.deserializeBinaryFromReader = function(msg, reader) {
       msg.setType(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readFixed64());
+      var value = /** @type {string} */ (reader.readFixed64String());
       msg.setAccesshash(value);
       break;
     default:
@@ -793,9 +793,9 @@ proto.msg.InputPeer.prototype.serializeBinary = function() {
  */
 proto.msg.InputPeer.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       1,
       f
     );
@@ -807,9 +807,9 @@ proto.msg.InputPeer.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
   if (f != null) {
-    writer.writeFixed64(
+    writer.writeFixed64String(
       3,
       f
     );
@@ -819,14 +819,14 @@ proto.msg.InputPeer.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * required int64 ID = 1;
- * @return {number}
+ * @return {string}
  */
 proto.msg.InputPeer.prototype.getId = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.InputPeer.prototype.setId = function(value) {
   jspb.Message.setField(this, 1, value);
 };
@@ -877,14 +877,14 @@ proto.msg.InputPeer.prototype.hasType = function() {
 
 /**
  * required fixed64 AccessHash = 3;
- * @return {number}
+ * @return {string}
  */
 proto.msg.InputPeer.prototype.getAccesshash = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.InputPeer.prototype.setAccesshash = function(value) {
   jspb.Message.setField(this, 3, value);
 };
@@ -990,11 +990,11 @@ proto.msg.InputUser.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setUserid(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readFixed64());
+      var value = /** @type {string} */ (reader.readFixed64String());
       msg.setAccesshash(value);
       break;
     default:
@@ -1026,16 +1026,16 @@ proto.msg.InputUser.prototype.serializeBinary = function() {
  */
 proto.msg.InputUser.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
+  f = /** @type {string} */ (jspb.Message.getField(message, 2));
   if (f != null) {
-    writer.writeFixed64(
+    writer.writeFixed64String(
       2,
       f
     );
@@ -1045,14 +1045,14 @@ proto.msg.InputUser.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * required int64 UserID = 1;
- * @return {number}
+ * @return {string}
  */
 proto.msg.InputUser.prototype.getUserid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.InputUser.prototype.setUserid = function(value) {
   jspb.Message.setField(this, 1, value);
 };
@@ -1074,14 +1074,14 @@ proto.msg.InputUser.prototype.hasUserid = function() {
 
 /**
  * required fixed64 AccessHash = 2;
- * @return {number}
+ * @return {string}
  */
 proto.msg.InputUser.prototype.getAccesshash = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.InputUser.prototype.setAccesshash = function(value) {
   jspb.Message.setField(this, 2, value);
 };
@@ -1188,7 +1188,7 @@ proto.msg.User.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setId(value);
       break;
     case 2:
@@ -1228,9 +1228,9 @@ proto.msg.User.prototype.serializeBinary = function() {
  */
 proto.msg.User.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       1,
       f
     );
@@ -1254,14 +1254,14 @@ proto.msg.User.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * required int64 ID = 1;
- * @return {number}
+ * @return {string}
  */
 proto.msg.User.prototype.getId = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.User.prototype.setId = function(value) {
   jspb.Message.setField(this, 1, value);
 };
@@ -1430,7 +1430,7 @@ proto.msg.ContactUser.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setId(value);
       break;
     case 2:
@@ -1442,7 +1442,7 @@ proto.msg.ContactUser.deserializeBinaryFromReader = function(msg, reader) {
       msg.setLastname(value);
       break;
     case 4:
-      var value = /** @type {number} */ (reader.readFixed64());
+      var value = /** @type {string} */ (reader.readFixed64String());
       msg.setAccesshash(value);
       break;
     case 5:
@@ -1454,7 +1454,7 @@ proto.msg.ContactUser.deserializeBinaryFromReader = function(msg, reader) {
       msg.setUsername(value);
       break;
     case 7:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setClientid(value);
       break;
     default:
@@ -1486,9 +1486,9 @@ proto.msg.ContactUser.prototype.serializeBinary = function() {
  */
 proto.msg.ContactUser.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       1,
       f
     );
@@ -1507,9 +1507,9 @@ proto.msg.ContactUser.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 4));
+  f = /** @type {string} */ (jspb.Message.getField(message, 4));
   if (f != null) {
-    writer.writeFixed64(
+    writer.writeFixed64String(
       4,
       f
     );
@@ -1528,9 +1528,9 @@ proto.msg.ContactUser.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 7));
+  f = /** @type {string} */ (jspb.Message.getField(message, 7));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       7,
       f
     );
@@ -1540,14 +1540,14 @@ proto.msg.ContactUser.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * required int64 ID = 1;
- * @return {number}
+ * @return {string}
  */
 proto.msg.ContactUser.prototype.getId = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.ContactUser.prototype.setId = function(value) {
   jspb.Message.setField(this, 1, value);
 };
@@ -1627,14 +1627,14 @@ proto.msg.ContactUser.prototype.hasLastname = function() {
 
 /**
  * required fixed64 AccessHash = 4;
- * @return {number}
+ * @return {string}
  */
 proto.msg.ContactUser.prototype.getAccesshash = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.ContactUser.prototype.setAccesshash = function(value) {
   jspb.Message.setField(this, 4, value);
 };
@@ -1714,14 +1714,14 @@ proto.msg.ContactUser.prototype.hasUsername = function() {
 
 /**
  * required int64 ClientID = 7;
- * @return {number}
+ * @return {string}
  */
 proto.msg.ContactUser.prototype.getClientid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.ContactUser.prototype.setClientid = function(value) {
   jspb.Message.setField(this, 7, value);
 };
@@ -1845,7 +1845,7 @@ proto.msg.UserMessage.deserializeBinaryFromReader = function(msg, reader) {
       msg.setId(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setPeerid(value);
       break;
     case 3:
@@ -1861,15 +1861,15 @@ proto.msg.UserMessage.deserializeBinaryFromReader = function(msg, reader) {
       msg.setEditedon(value);
       break;
     case 6:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setFwdsenderid(value);
       break;
     case 7:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setFwdchannelid(value);
       break;
     case 8:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setFwdchannelmessageid(value);
       break;
     case 9:
@@ -1885,7 +1885,7 @@ proto.msg.UserMessage.deserializeBinaryFromReader = function(msg, reader) {
       msg.setBody(value);
       break;
     case 12:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setSenderid(value);
       break;
     case 13:
@@ -1897,7 +1897,7 @@ proto.msg.UserMessage.deserializeBinaryFromReader = function(msg, reader) {
       msg.setInbox(value);
       break;
     case 15:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setReplyto(value);
       break;
     case 16:
@@ -1940,9 +1940,9 @@ proto.msg.UserMessage.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
+  f = /** @type {string} */ (jspb.Message.getField(message, 2));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       2,
       f
     );
@@ -1968,23 +1968,23 @@ proto.msg.UserMessage.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 6));
+  f = /** @type {string} */ (jspb.Message.getField(message, 6));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       6,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 7));
+  f = /** @type {string} */ (jspb.Message.getField(message, 7));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       7,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 8));
+  f = /** @type {string} */ (jspb.Message.getField(message, 8));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       8,
       f
     );
@@ -2010,9 +2010,9 @@ proto.msg.UserMessage.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 12));
+  f = /** @type {string} */ (jspb.Message.getField(message, 12));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       12,
       f
     );
@@ -2031,9 +2031,9 @@ proto.msg.UserMessage.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 15));
+  f = /** @type {string} */ (jspb.Message.getField(message, 15));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       15,
       f
     );
@@ -2079,14 +2079,14 @@ proto.msg.UserMessage.prototype.hasId = function() {
 
 /**
  * required int64 PeerID = 2;
- * @return {number}
+ * @return {string}
  */
 proto.msg.UserMessage.prototype.getPeerid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.UserMessage.prototype.setPeerid = function(value) {
   jspb.Message.setField(this, 2, value);
 };
@@ -2195,14 +2195,14 @@ proto.msg.UserMessage.prototype.hasEditedon = function() {
 
 /**
  * required int64 FwdSenderID = 6;
- * @return {number}
+ * @return {string}
  */
 proto.msg.UserMessage.prototype.getFwdsenderid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.UserMessage.prototype.setFwdsenderid = function(value) {
   jspb.Message.setField(this, 6, value);
 };
@@ -2224,14 +2224,14 @@ proto.msg.UserMessage.prototype.hasFwdsenderid = function() {
 
 /**
  * required int64 FwdChannelID = 7;
- * @return {number}
+ * @return {string}
  */
 proto.msg.UserMessage.prototype.getFwdchannelid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.UserMessage.prototype.setFwdchannelid = function(value) {
   jspb.Message.setField(this, 7, value);
 };
@@ -2253,14 +2253,14 @@ proto.msg.UserMessage.prototype.hasFwdchannelid = function() {
 
 /**
  * required int64 FwdChannelMessageID = 8;
- * @return {number}
+ * @return {string}
  */
 proto.msg.UserMessage.prototype.getFwdchannelmessageid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.UserMessage.prototype.setFwdchannelmessageid = function(value) {
   jspb.Message.setField(this, 8, value);
 };
@@ -2369,14 +2369,14 @@ proto.msg.UserMessage.prototype.hasBody = function() {
 
 /**
  * required int64 SenderID = 12;
- * @return {number}
+ * @return {string}
  */
 proto.msg.UserMessage.prototype.getSenderid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 12, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 12, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.UserMessage.prototype.setSenderid = function(value) {
   jspb.Message.setField(this, 12, value);
 };
@@ -2460,14 +2460,14 @@ proto.msg.UserMessage.prototype.hasInbox = function() {
 
 /**
  * optional int64 ReplyTo = 15;
- * @return {number}
+ * @return {string}
  */
 proto.msg.UserMessage.prototype.getReplyto = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 15, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 15, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.UserMessage.prototype.setReplyto = function(value) {
   jspb.Message.setField(this, 15, value);
 };
@@ -3080,7 +3080,7 @@ proto.msg.PhoneContact.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setClientid(value);
       break;
     case 2:
@@ -3124,9 +3124,9 @@ proto.msg.PhoneContact.prototype.serializeBinary = function() {
  */
 proto.msg.PhoneContact.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       1,
       f
     );
@@ -3157,14 +3157,14 @@ proto.msg.PhoneContact.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * required int64 ClientID = 1;
- * @return {number}
+ * @return {string}
  */
 proto.msg.PhoneContact.prototype.getClientid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.PhoneContact.prototype.setClientid = function(value) {
   jspb.Message.setField(this, 1, value);
 };
@@ -3596,7 +3596,7 @@ proto.msg.InputFile.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setFileid(value);
       break;
     case 2:
@@ -3636,9 +3636,9 @@ proto.msg.InputFile.prototype.serializeBinary = function() {
  */
 proto.msg.InputFile.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       1,
       f
     );
@@ -3662,14 +3662,14 @@ proto.msg.InputFile.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * required int64 FileID = 1;
- * @return {number}
+ * @return {string}
  */
 proto.msg.InputFile.prototype.getFileid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.InputFile.prototype.setFileid = function(value) {
   jspb.Message.setField(this, 1, value);
 };

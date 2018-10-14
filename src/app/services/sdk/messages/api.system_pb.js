@@ -345,7 +345,7 @@ proto.msg.SystemClientLog.deserializeBinaryFromReader = function(msg, reader) {
       msg.setDeviceos(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setUserid(value);
       break;
     case 4:
@@ -395,9 +395,9 @@ proto.msg.SystemClientLog.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       3,
       f
     );
@@ -472,14 +472,14 @@ proto.msg.SystemClientLog.prototype.hasDeviceos = function() {
 
 /**
  * required int64 UserID = 3;
- * @return {number}
+ * @return {string}
  */
 proto.msg.SystemClientLog.prototype.getUserid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.SystemClientLog.prototype.setUserid = function(value) {
   jspb.Message.setField(this, 3, value);
 };

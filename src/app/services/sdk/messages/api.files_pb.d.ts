@@ -6,8 +6,8 @@ import * as jspb from "google-protobuf";
 export class FileSavePart extends jspb.Message {
   hasFileid(): boolean;
   clearFileid(): void;
-  getFileid(): number | undefined;
-  setFileid(value: number): void;
+  getFileid(): string | undefined;
+  setFileid(value: string): void;
 
   hasPartid(): boolean;
   clearPartid(): void;
@@ -38,7 +38,7 @@ export class FileSavePart extends jspb.Message {
 
 export namespace FileSavePart {
   export type AsObject = {
-    fileid?: number,
+    fileid?: string,
     partid?: number,
     totalparts?: number,
     bytes: Uint8Array | string,
@@ -82,18 +82,18 @@ export namespace FileGet {
 export class FileLocation extends jspb.Message {
   hasPartitionid(): boolean;
   clearPartitionid(): void;
-  getPartitionid(): number | undefined;
-  setPartitionid(value: number): void;
+  getPartitionid(): string | undefined;
+  setPartitionid(value: string): void;
 
   hasFileid(): boolean;
   clearFileid(): void;
-  getFileid(): number | undefined;
-  setFileid(value: number): void;
+  getFileid(): string | undefined;
+  setFileid(value: string): void;
 
   hasAccesshash(): boolean;
   clearAccesshash(): void;
-  getAccesshash(): number | undefined;
-  setAccesshash(value: number): void;
+  getAccesshash(): string | undefined;
+  setAccesshash(value: string): void;
 
   hasTotalparts(): boolean;
   clearTotalparts(): void;
@@ -112,9 +112,9 @@ export class FileLocation extends jspb.Message {
 
 export namespace FileLocation {
   export type AsObject = {
-    partitionid?: number,
-    fileid?: number,
-    accesshash?: number,
+    partitionid?: string,
+    fileid?: string,
+    accesshash?: string,
     totalparts?: number,
   }
 }

@@ -30,7 +30,7 @@ export default class UserRepo {
         return this.db.bulkDocs(users);
     }
 
-    public get(id: number): Promise<IUser> {
+    public get(id: string): Promise<IUser> {
         const user = this.dbService.getUser(id);
         if (user) {
             return Promise.resolve(user);

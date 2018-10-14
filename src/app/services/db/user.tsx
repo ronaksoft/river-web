@@ -13,7 +13,7 @@ export default class UserDB {
 
     private static instance: UserDB;
     private db: any;
-    private users: { [key: number]: IUser } = {};
+    private users: { [key: string]: IUser } = {};
 
     private constructor() {
         PouchDB.plugin(PouchDBFind);
@@ -28,7 +28,7 @@ export default class UserDB {
         this.users[user.id || 0] = user;
     }
 
-    public getUser(id: number): IUser | null {
+    public getUser(id: string): IUser | null {
         return this.users[id];
     }
 

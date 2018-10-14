@@ -8,12 +8,12 @@ import DialogMessage from "../DialogMessage";
 
 interface IProps {
     items: IDialog[];
-    selectedId: number;
+    selectedId: string;
 }
 
 interface IState {
     items: IDialog[];
-    selectedId: number;
+    selectedId: string;
     scrollIndex: number;
 }
 

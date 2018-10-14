@@ -5,7 +5,7 @@ interface IDialog extends Dialog.AsObject {
     _rev?: string;
     last_update?: number;
     preview?: string;
-    user_id?: number;
+    user_id?: string;
 }
 
 export {IDialog};

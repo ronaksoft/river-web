@@ -104,7 +104,7 @@ proto.msg.FileSavePart.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setFileid(value);
       break;
     case 2:
@@ -148,9 +148,9 @@ proto.msg.FileSavePart.prototype.serializeBinary = function() {
  */
 proto.msg.FileSavePart.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       1,
       f
     );
@@ -181,14 +181,14 @@ proto.msg.FileSavePart.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * required int64 FileID = 1;
- * @return {number}
+ * @return {string}
  */
 proto.msg.FileSavePart.prototype.getFileid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.FileSavePart.prototype.setFileid = function(value) {
   jspb.Message.setField(this, 1, value);
 };
@@ -648,15 +648,15 @@ proto.msg.FileLocation.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setPartitionid(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setFileid(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readFixed64());
+      var value = /** @type {string} */ (reader.readFixed64String());
       msg.setAccesshash(value);
       break;
     case 4:
@@ -692,23 +692,23 @@ proto.msg.FileLocation.prototype.serializeBinary = function() {
  */
 proto.msg.FileLocation.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       1,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
+  f = /** @type {string} */ (jspb.Message.getField(message, 2));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
   if (f != null) {
-    writer.writeFixed64(
+    writer.writeFixed64String(
       3,
       f
     );
@@ -725,14 +725,14 @@ proto.msg.FileLocation.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * required int64 PartitionID = 1;
- * @return {number}
+ * @return {string}
  */
 proto.msg.FileLocation.prototype.getPartitionid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.FileLocation.prototype.setPartitionid = function(value) {
   jspb.Message.setField(this, 1, value);
 };
@@ -754,14 +754,14 @@ proto.msg.FileLocation.prototype.hasPartitionid = function() {
 
 /**
  * required int64 FileID = 2;
- * @return {number}
+ * @return {string}
  */
 proto.msg.FileLocation.prototype.getFileid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.FileLocation.prototype.setFileid = function(value) {
   jspb.Message.setField(this, 2, value);
 };
@@ -783,14 +783,14 @@ proto.msg.FileLocation.prototype.hasFileid = function() {
 
 /**
  * required fixed64 AccessHash = 3;
- * @return {number}
+ * @return {string}
  */
 proto.msg.FileLocation.prototype.getAccesshash = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.FileLocation.prototype.setAccesshash = function(value) {
   jspb.Message.setField(this, 3, value);
 };

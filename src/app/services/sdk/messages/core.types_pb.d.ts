@@ -6,8 +6,8 @@ import * as jspb from "google-protobuf";
 export class Dialog extends jspb.Message {
   hasPeerid(): boolean;
   clearPeerid(): void;
-  getPeerid(): number | undefined;
-  setPeerid(value: number): void;
+  getPeerid(): string | undefined;
+  setPeerid(value: string): void;
 
   hasPeertype(): boolean;
   clearPeertype(): void;
@@ -36,8 +36,8 @@ export class Dialog extends jspb.Message {
 
   hasAccesshash(): boolean;
   clearAccesshash(): void;
-  getAccesshash(): number | undefined;
-  setAccesshash(value: number): void;
+  getAccesshash(): string | undefined;
+  setAccesshash(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Dialog.AsObject;
@@ -51,21 +51,21 @@ export class Dialog extends jspb.Message {
 
 export namespace Dialog {
   export type AsObject = {
-    peerid?: number,
+    peerid?: string,
     peertype?: number,
     topmessageid?: number,
     readinboxmaxid?: number,
     readoutboxmaxid?: number,
     unreadcount?: number,
-    accesshash?: number,
+    accesshash?: string,
   }
 }
 
 export class Peer extends jspb.Message {
   hasId(): boolean;
   clearId(): void;
-  getId(): number | undefined;
-  setId(value: number): void;
+  getId(): string | undefined;
+  setId(value: string): void;
 
   hasType(): boolean;
   clearType(): void;
@@ -74,8 +74,8 @@ export class Peer extends jspb.Message {
 
   hasAccesshash(): boolean;
   clearAccesshash(): void;
-  getAccesshash(): number | undefined;
-  setAccesshash(value: number): void;
+  getAccesshash(): string | undefined;
+  setAccesshash(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Peer.AsObject;
@@ -89,17 +89,17 @@ export class Peer extends jspb.Message {
 
 export namespace Peer {
   export type AsObject = {
-    id?: number,
+    id?: string,
     type?: number,
-    accesshash?: number,
+    accesshash?: string,
   }
 }
 
 export class InputPeer extends jspb.Message {
   hasId(): boolean;
   clearId(): void;
-  getId(): number | undefined;
-  setId(value: number): void;
+  getId(): string | undefined;
+  setId(value: string): void;
 
   hasType(): boolean;
   clearType(): void;
@@ -108,8 +108,8 @@ export class InputPeer extends jspb.Message {
 
   hasAccesshash(): boolean;
   clearAccesshash(): void;
-  getAccesshash(): number | undefined;
-  setAccesshash(value: number): void;
+  getAccesshash(): string | undefined;
+  setAccesshash(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): InputPeer.AsObject;
@@ -123,22 +123,22 @@ export class InputPeer extends jspb.Message {
 
 export namespace InputPeer {
   export type AsObject = {
-    id?: number,
+    id?: string,
     type?: PeerType,
-    accesshash?: number,
+    accesshash?: string,
   }
 }
 
 export class InputUser extends jspb.Message {
   hasUserid(): boolean;
   clearUserid(): void;
-  getUserid(): number | undefined;
-  setUserid(value: number): void;
+  getUserid(): string | undefined;
+  setUserid(value: string): void;
 
   hasAccesshash(): boolean;
   clearAccesshash(): void;
-  getAccesshash(): number | undefined;
-  setAccesshash(value: number): void;
+  getAccesshash(): string | undefined;
+  setAccesshash(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): InputUser.AsObject;
@@ -152,16 +152,16 @@ export class InputUser extends jspb.Message {
 
 export namespace InputUser {
   export type AsObject = {
-    userid?: number,
-    accesshash?: number,
+    userid?: string,
+    accesshash?: string,
   }
 }
 
 export class User extends jspb.Message {
   hasId(): boolean;
   clearId(): void;
-  getId(): number | undefined;
-  setId(value: number): void;
+  getId(): string | undefined;
+  setId(value: string): void;
 
   hasFirstname(): boolean;
   clearFirstname(): void;
@@ -185,7 +185,7 @@ export class User extends jspb.Message {
 
 export namespace User {
   export type AsObject = {
-    id?: number,
+    id?: string,
     firstname?: string,
     lastname?: string,
   }
@@ -194,8 +194,8 @@ export namespace User {
 export class ContactUser extends jspb.Message {
   hasId(): boolean;
   clearId(): void;
-  getId(): number | undefined;
-  setId(value: number): void;
+  getId(): string | undefined;
+  setId(value: string): void;
 
   hasFirstname(): boolean;
   clearFirstname(): void;
@@ -209,8 +209,8 @@ export class ContactUser extends jspb.Message {
 
   hasAccesshash(): boolean;
   clearAccesshash(): void;
-  getAccesshash(): number | undefined;
-  setAccesshash(value: number): void;
+  getAccesshash(): string | undefined;
+  setAccesshash(value: string): void;
 
   hasPhone(): boolean;
   clearPhone(): void;
@@ -224,8 +224,8 @@ export class ContactUser extends jspb.Message {
 
   hasClientid(): boolean;
   clearClientid(): void;
-  getClientid(): number | undefined;
-  setClientid(value: number): void;
+  getClientid(): string | undefined;
+  setClientid(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ContactUser.AsObject;
@@ -239,13 +239,13 @@ export class ContactUser extends jspb.Message {
 
 export namespace ContactUser {
   export type AsObject = {
-    id?: number,
+    id?: string,
     firstname?: string,
     lastname?: string,
-    accesshash?: number,
+    accesshash?: string,
     phone?: string,
     username?: string,
-    clientid?: number,
+    clientid?: string,
   }
 }
 
@@ -257,8 +257,8 @@ export class UserMessage extends jspb.Message {
 
   hasPeerid(): boolean;
   clearPeerid(): void;
-  getPeerid(): number | undefined;
-  setPeerid(value: number): void;
+  getPeerid(): string | undefined;
+  setPeerid(value: string): void;
 
   hasPeertype(): boolean;
   clearPeertype(): void;
@@ -277,18 +277,18 @@ export class UserMessage extends jspb.Message {
 
   hasFwdsenderid(): boolean;
   clearFwdsenderid(): void;
-  getFwdsenderid(): number | undefined;
-  setFwdsenderid(value: number): void;
+  getFwdsenderid(): string | undefined;
+  setFwdsenderid(value: string): void;
 
   hasFwdchannelid(): boolean;
   clearFwdchannelid(): void;
-  getFwdchannelid(): number | undefined;
-  setFwdchannelid(value: number): void;
+  getFwdchannelid(): string | undefined;
+  setFwdchannelid(value: string): void;
 
   hasFwdchannelmessageid(): boolean;
   clearFwdchannelmessageid(): void;
-  getFwdchannelmessageid(): number | undefined;
-  setFwdchannelmessageid(value: number): void;
+  getFwdchannelmessageid(): string | undefined;
+  setFwdchannelmessageid(value: string): void;
 
   hasFlags(): boolean;
   clearFlags(): void;
@@ -307,8 +307,8 @@ export class UserMessage extends jspb.Message {
 
   hasSenderid(): boolean;
   clearSenderid(): void;
-  getSenderid(): number | undefined;
-  setSenderid(value: number): void;
+  getSenderid(): string | undefined;
+  setSenderid(value: string): void;
 
   hasContentread(): boolean;
   clearContentread(): void;
@@ -322,8 +322,8 @@ export class UserMessage extends jspb.Message {
 
   hasReplyto(): boolean;
   clearReplyto(): void;
-  getReplyto(): number | undefined;
-  setReplyto(value: number): void;
+  getReplyto(): string | undefined;
+  setReplyto(value: string): void;
 
   hasMessageaction(): boolean;
   clearMessageaction(): void;
@@ -343,20 +343,20 @@ export class UserMessage extends jspb.Message {
 export namespace UserMessage {
   export type AsObject = {
     id?: number,
-    peerid?: number,
+    peerid?: string,
     peertype?: number,
     createdon?: number,
     editedon?: number,
-    fwdsenderid?: number,
-    fwdchannelid?: number,
-    fwdchannelmessageid?: number,
+    fwdsenderid?: string,
+    fwdchannelid?: string,
+    fwdchannelmessageid?: string,
     flags?: number,
     messagetype?: number,
     body?: string,
-    senderid?: number,
+    senderid?: string,
     contentread?: boolean,
     inbox?: boolean,
-    replyto?: number,
+    replyto?: string,
     messageaction?: number,
   }
 }
@@ -432,8 +432,8 @@ export namespace DHGroup {
 export class PhoneContact extends jspb.Message {
   hasClientid(): boolean;
   clearClientid(): void;
-  getClientid(): number | undefined;
-  setClientid(value: number): void;
+  getClientid(): string | undefined;
+  setClientid(value: string): void;
 
   hasFirstname(): boolean;
   clearFirstname(): void;
@@ -462,7 +462,7 @@ export class PhoneContact extends jspb.Message {
 
 export namespace PhoneContact {
   export type AsObject = {
-    clientid?: number,
+    clientid?: string,
     firstname?: string,
     lastname?: string,
     phone?: string,
@@ -506,8 +506,8 @@ export namespace NotifySettings {
 export class InputFile extends jspb.Message {
   hasFileid(): boolean;
   clearFileid(): void;
-  getFileid(): number | undefined;
-  setFileid(value: number): void;
+  getFileid(): string | undefined;
+  setFileid(value: string): void;
 
   hasTotalparts(): boolean;
   clearTotalparts(): void;
@@ -531,7 +531,7 @@ export class InputFile extends jspb.Message {
 
 export namespace InputFile {
   export type AsObject = {
-    fileid?: number,
+    fileid?: string,
     totalparts?: number,
     filename?: string,
   }

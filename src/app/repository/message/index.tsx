@@ -10,12 +10,12 @@ export default class MessageRepo {
     private db: any;
     private sdk: SDK;
     private userRepo: UserRepo;
-    private userId: number;
+    private userId: string;
     private rtlDetector: RTLDetector;
 
     public constructor() {
         SDK.getInstance().loadConnInfo();
-        this.userId = SDK.getInstance().getConnInfo().UserID || 0;
+        this.userId = SDK.getInstance().getConnInfo().UserID || '0';
         this.dbService = UserMessageDB.getInstance();
         this.db = this.dbService.getDB();
         this.sdk = SDK.getInstance();
@@ -25,7 +25,7 @@ export default class MessageRepo {
 
     public loadConnInfo() {
         SDK.getInstance().loadConnInfo();
-        this.userId = SDK.getInstance().getConnInfo().UserID || 0;
+        this.userId = SDK.getInstance().getConnInfo().UserID || '0';
     }
 
     public create(msg: IMessage) {
@@ -131,7 +131,7 @@ export default class MessageRepo {
     }
 
     public importBulk(msgs: IMessage[]): Promise<any> {
-        if (this.userId === 0) {
+        if (this.userId === '0') {
             this.loadConnInfo();
         }
         msgs = msgs.map((msg) => {
@@ -175,7 +175,7 @@ export default class MessageRepo {
         });
     }
 
-    public getUnreadCount(peerid: number, minId: number): Promise<any> {
+    public getUnreadCount(peerid: string, minId: number): Promise<any> {
         return this.db.find({
             selector: {
                 $and: [

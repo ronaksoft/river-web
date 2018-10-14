@@ -22,8 +22,8 @@ export class MessagesSend extends jspb.Message {
 
   hasReplyto(): boolean;
   clearReplyto(): void;
-  getReplyto(): number | undefined;
-  setReplyto(value: number): void;
+  getReplyto(): string | undefined;
+  setReplyto(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesSend.AsObject;
@@ -40,7 +40,7 @@ export namespace MessagesSend {
     randomid?: number,
     peer: core_types_pb.InputPeer.AsObject,
     body?: string,
-    replyto?: number,
+    replyto?: string,
   }
 }
 
@@ -62,8 +62,8 @@ export class MessagesEdit extends jspb.Message {
 
   hasMessageid(): boolean;
   clearMessageid(): void;
-  getMessageid(): number | undefined;
-  setMessageid(value: number): void;
+  getMessageid(): string | undefined;
+  setMessageid(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesEdit.AsObject;
@@ -80,7 +80,7 @@ export namespace MessagesEdit {
     randomid?: number,
     peer: core_types_pb.InputPeer.AsObject,
     body?: string,
-    messageid?: number,
+    messageid?: string,
   }
 }
 

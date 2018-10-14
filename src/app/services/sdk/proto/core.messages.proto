@@ -67,25 +67,3 @@ message Ack {
 message Bool {
     required bool Result = 1;
 }
-
-// WorkerRequest
-// This type of message is used to deliver messages from API servers to Worker Servers
-message WorkerRequest {
-    required int64 UserID = 1;
-    required int64 AuthID = 2;
-    required MessageEnvelope Envelope = 3;
-}
-
-// APIPushMessage
-// This type of message will be used when sending a message to API servers.
-message APIPushMessage {
-    required uint64 ConnectionID = 1;
-    required int64 AuthID = 2;
-    required APIPushAction Action = 3;
-}
-
-enum APIPushAction {
-    NewMessage = 0;
-    NewUpdate = 1;
-    Expired = 2;
-}

@@ -56,9 +56,9 @@ export namespace ContactsGet {
 
 export class ContactsDelete extends jspb.Message {
   clearUseridsList(): void;
-  getUseridsList(): Array<number>;
-  setUseridsList(value: Array<number>): void;
-  addUserids(value: number, index?: number): number;
+  getUseridsList(): Array<string>;
+  setUseridsList(value: Array<string>): void;
+  addUserids(value: string, index?: number): string;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ContactsDelete.AsObject;
@@ -72,7 +72,7 @@ export class ContactsDelete extends jspb.Message {
 
 export namespace ContactsDelete {
   export type AsObject = {
-    useridsList: Array<number>,
+    useridsList: Array<string>,
   }
 }
 

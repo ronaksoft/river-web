@@ -1,7 +1,7 @@
 package main
 
 import (
-	"git.ronaksoftware.com/customers/river/messages"
+	"git.ronaksoftware.com/customers/river/messages/ext"
 	"go.uber.org/zap"
 	"time"
 	"syscall/js"

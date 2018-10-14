@@ -125,7 +125,7 @@ proto.msg.MessagesSend.deserializeBinaryFromReader = function(msg, reader) {
       msg.setBody(value);
       break;
     case 6:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setReplyto(value);
       break;
     default:
@@ -179,9 +179,9 @@ proto.msg.MessagesSend.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 6));
+  f = /** @type {string} */ (jspb.Message.getField(message, 6));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       6,
       f
     );
@@ -279,14 +279,14 @@ proto.msg.MessagesSend.prototype.hasBody = function() {
 
 /**
  * optional int64 ReplyTo = 6;
- * @return {number}
+ * @return {string}
  */
 proto.msg.MessagesSend.prototype.getReplyto = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.MessagesSend.prototype.setReplyto = function(value) {
   jspb.Message.setField(this, 6, value);
 };
@@ -407,7 +407,7 @@ proto.msg.MessagesEdit.deserializeBinaryFromReader = function(msg, reader) {
       msg.setBody(value);
       break;
     case 4:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setMessageid(value);
       break;
     default:
@@ -461,9 +461,9 @@ proto.msg.MessagesEdit.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 4));
+  f = /** @type {string} */ (jspb.Message.getField(message, 4));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       4,
       f
     );
@@ -561,14 +561,14 @@ proto.msg.MessagesEdit.prototype.hasBody = function() {
 
 /**
  * required int64 MessageID = 4;
- * @return {number}
+ * @return {string}
  */
 proto.msg.MessagesEdit.prototype.getMessageid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.MessagesEdit.prototype.setMessageid = function(value) {
   jspb.Message.setField(this, 4, value);
 };

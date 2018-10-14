@@ -18,7 +18,7 @@ message SystemGetDHGroups {
 message SystemClientLog {
     required string DeviceID = 1;
     required string DeviceOS = 2;
-    required int64 UserID = 3;
+    required int64 UserID = 3 [jstype = JS_STRING];
     required string Text = 4;
 
 }

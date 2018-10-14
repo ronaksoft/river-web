@@ -1177,7 +1177,7 @@ proto.msg.UpdateNewMessage.deserializeBinaryFromReader = function(msg, reader) {
       msg.setSender(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readFixed64());
+      var value = /** @type {string} */ (reader.readFixed64String());
       msg.setAccesshash(value);
       break;
     default:
@@ -1239,9 +1239,9 @@ proto.msg.UpdateNewMessage.serializeBinaryToWriter = function(message, writer) {
       core_types_pb.User.serializeBinaryToWriter
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
   if (f != null) {
-    writer.writeFixed64(
+    writer.writeFixed64String(
       3,
       f
     );
@@ -1369,14 +1369,14 @@ proto.msg.UpdateNewMessage.prototype.hasSender = function() {
 
 /**
  * optional fixed64 AccessHash = 3;
- * @return {number}
+ * @return {string}
  */
 proto.msg.UpdateNewMessage.prototype.getAccesshash = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.UpdateNewMessage.prototype.setAccesshash = function(value) {
   jspb.Message.setField(this, 3, value);
 };
@@ -2292,7 +2292,7 @@ proto.msg.UpdateUserTyping.deserializeBinaryFromReader = function(msg, reader) {
       msg.setUcount(value);
       break;
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setUserid(value);
       break;
     case 2:
@@ -2335,9 +2335,9 @@ proto.msg.UpdateUserTyping.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       1,
       f
     );
@@ -2383,14 +2383,14 @@ proto.msg.UpdateUserTyping.prototype.hasUcount = function() {
 
 /**
  * required int64 UserID = 1;
- * @return {number}
+ * @return {string}
  */
 proto.msg.UpdateUserTyping.prototype.getUserid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.UpdateUserTyping.prototype.setUserid = function(value) {
   jspb.Message.setField(this, 1, value);
 };
@@ -2530,7 +2530,7 @@ proto.msg.UpdateUserStatus.deserializeBinaryFromReader = function(msg, reader) {
       msg.setUcount(value);
       break;
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setUserid(value);
       break;
     case 2:
@@ -2573,9 +2573,9 @@ proto.msg.UpdateUserStatus.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       1,
       f
     );
@@ -2621,14 +2621,14 @@ proto.msg.UpdateUserStatus.prototype.hasUcount = function() {
 
 /**
  * required int64 UserID = 1;
- * @return {number}
+ * @return {string}
  */
 proto.msg.UpdateUserStatus.prototype.getUserid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.UpdateUserStatus.prototype.setUserid = function(value) {
   jspb.Message.setField(this, 1, value);
 };

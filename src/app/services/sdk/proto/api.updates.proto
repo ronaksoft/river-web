@@ -38,13 +38,14 @@ message UpdateMessageID {
     required int64 MessageID = 1;
     required int64 RandomID = 2;
 }
+
 // UpdateNewMessage
 message UpdateNewMessage {
     required int32 UCount = 100;
     required int64 UpdateID = 101;
     required UserMessage Message = 1;
     required User Sender = 2;
-    optional fixed64 AccessHash = 3;
+    optional fixed64 AccessHash = 3 [jstype = JS_STRING];
 }
 
 // UpdateMessageEdited
@@ -73,13 +74,13 @@ message UpdateReadHistoryOutbox {
 // UpdateUserTyping
 message UpdateUserTyping {
     required int32 UCount = 100;
-    required int64 UserID = 1;
+    required int64 UserID = 1 [jstype = JS_STRING];
     required TypingAction Action = 2;
 }
 
 // UpdateUserStatus
 message UpdateUserStatus {
     required int32 UCount = 100;
-    required int64 UserID = 1;
+    required int64 UserID = 1 [jstype = JS_STRING];
     required int32 Status = 2;
 }

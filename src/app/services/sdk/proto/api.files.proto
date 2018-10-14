@@ -5,7 +5,7 @@ package msg;
 // @Function
 // @Returns: Bool
 message FileSavePart {
-    required int64 FileID = 1;
+    required int64 FileID = 1 [jstype = JS_STRING];
     required int32 PartID = 2;
     required int32 TotalParts = 3;
     required bytes Bytes = 4;
@@ -22,9 +22,9 @@ message FileGet {
 
 // FileLocation
 message FileLocation {
-    required int64 PartitionID = 1;
-    required int64 FileID = 2;
-    required fixed64 AccessHash = 3;
+    required int64 PartitionID = 1 [jstype = JS_STRING];
+    required int64 FileID = 2 [jstype = JS_STRING];
+    required fixed64 AccessHash = 3 [jstype = JS_STRING];
     required int32 TotalParts = 4;
 }
 

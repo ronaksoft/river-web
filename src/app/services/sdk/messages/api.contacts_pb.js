@@ -476,7 +476,7 @@ proto.msg.ContactsDelete.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.addUserids(value);
       break;
     default:
@@ -510,7 +510,7 @@ proto.msg.ContactsDelete.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getUseridsList();
   if (f.length > 0) {
-    writer.writeRepeatedInt64(
+    writer.writeRepeatedInt64String(
       1,
       f
     );
@@ -520,21 +520,21 @@ proto.msg.ContactsDelete.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * repeated int64 UserIDs = 1;
- * @return {!Array.<number>}
+ * @return {!Array.<string>}
  */
 proto.msg.ContactsDelete.prototype.getUseridsList = function() {
-  return /** @type {!Array.<number>} */ (jspb.Message.getRepeatedField(this, 1));
+  return /** @type {!Array.<string>} */ (jspb.Message.getRepeatedField(this, 1));
 };
 
 
-/** @param {!Array.<number>} value */
+/** @param {!Array.<string>} value */
 proto.msg.ContactsDelete.prototype.setUseridsList = function(value) {
   jspb.Message.setField(this, 1, value || []);
 };
 
 
 /**
- * @param {!number} value
+ * @param {!string} value
  * @param {number=} opt_index
  */
 proto.msg.ContactsDelete.prototype.addUserids = function(value, opt_index) {

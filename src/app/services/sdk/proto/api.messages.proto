@@ -9,7 +9,7 @@ message MessagesSend {
     required int64 RandomID = 1;
     required InputPeer Peer = 2;
     required string Body = 5;
-    optional int64 ReplyTo = 6;
+    optional int64 ReplyTo = 6 [jstype = JS_STRING];
 }
 
 // MessagesEdit
@@ -19,7 +19,7 @@ message MessagesEdit {
     required int64 RandomID = 1;
     required InputPeer Peer = 2;
     required string Body = 3;
-    required int64 MessageID = 4;
+    required int64 MessageID = 4 [jstype = JS_STRING];
 }
 
 // MessageSendMedia
@@ -90,7 +90,7 @@ message MessagesSetTyping {
 // MessagesSent
 message MessagesSent {
     required int64 MessageID = 1;
-    required int64 RandomID = 2;
+    required int64 RandomID = 2 ;
     required int64 CreatedOn = 3;
 }
 
