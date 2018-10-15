@@ -58,6 +58,10 @@ export default class SyncManager {
 
     public applyUpdate(data: UpdateDifference): Promise<number> {
         return new Promise((resolve, reject) => {
+            const lastUpdateId = data.getMaxupdateid() || 0;
+            if (lastUpdateId > 0) {
+                this.setLastUpdateId(lastUpdateId);
+            }
             this.updateMany(data.getUpdatesList());
             if (data.getMore()) {
                 setTimeout(() => {
@@ -72,15 +76,11 @@ export default class SyncManager {
     }
 
     private updateMany(envelopes: UpdateEnvelope[]) {
-        let lastId = 0;
         let dialogs: { [key: number]: IDialog } = {};
         const messages: { [key: number]: IMessage } = {};
         const users: { [key: number]: IUser } = {};
         envelopes.forEach((envelope) => {
             const data = envelope.getUpdate_asU8();
-            if ((envelope.getUpdateid() || 0) > lastId) {
-                lastId = envelope.getUpdateid() || 0;
-            }
             switch (envelope.getConstructor()) {
                 case C_MSG.UpdateNewMessage:
                     const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
@@ -118,7 +118,7 @@ export default class SyncManager {
                     break;
             }
         });
-        this.setLastUpdateId(lastId || 0);
+        // }
         this.updateDialogDB(dialogs);
         this.updateMessageDB(messages);
         this.updateUserDB(users);

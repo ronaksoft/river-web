@@ -1,4 +1,4 @@
-import {C_MSG, C_MSG_NAME} from '../../const';
+import {C_MSG} from '../../const';
 import {UpdateContainer, UpdateEnvelope} from '../../messages/core.messages_pb';
 import {
     UpdateMessageEdited, UpdateMessageID,
@@ -46,6 +46,9 @@ export default class UpdateManager {
             this.setLastUpdateId(maxId);
         }
         updates.forEach((update) => {
+            this.responseUpdateMessageID(update);
+        });
+        updates.forEach((update) => {
             this.response(update);
         });
     }
@@ -80,22 +83,28 @@ export default class UpdateManager {
         }));
     }
 
-    private response(update: UpdateEnvelope) {
+    private responseUpdateMessageID(update: UpdateEnvelope) {
         const data = update.getUpdate_asU8();
-        window.console.info(C_MSG_NAME[update.getConstructor() || 0], update.getUpdateid());
         switch (update.getConstructor()) {
             case C_MSG.UpdateMessageID:
                 const updateMessageId = UpdateMessageID.deserializeBinary(data).toObject();
                 this.rndMsgMap[updateMessageId.messageid || 0] = true;
-                window.console.log('UpdateMessageID', updateMessageId.messageid);
+                window.console.log('UpdateMessageID', 'msg id:', updateMessageId.messageid);
                 break;
+        }
+    }
+
+    private response(update: UpdateEnvelope) {
+        const data = update.getUpdate_asU8();
+        switch (update.getConstructor()) {
             case C_MSG.UpdateNewMessage:
                 const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
-                window.console.log('UpdateNewMessage', updateNewMessage.message.id);
+                window.console.log('UpdateNewMessage', 'msg id:', updateNewMessage.message.id);
                 if (!this.rndMsgMap[updateNewMessage.message.id || 0]) {
                     this.callHandlers(C_MSG.UpdateNewMessage, updateNewMessage);
                 } else {
-                    window.console.log('UpdateNewMessage drop on', updateNewMessage.message.id);
+                    window.console.log('UpdateNewMessage drop on', 'msg id:', updateNewMessage.message.id);
+                    this.callHandlers(C_MSG.UpdateNewMessageDrop, updateNewMessage);
                     delete this.rndMsgMap[updateNewMessage.message.id || 0];
                 }
                 break;

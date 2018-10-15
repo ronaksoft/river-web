@@ -55,9 +55,11 @@ export default class MessageRepo {
                     }
                     const lim = limit - len;
                     this.sdk.getMessageHistory(peer, {maxId, limit: lim}).then((remoteRes) => {
-                        this.importBulk(remoteRes.messagesList);
                         this.userRepo.importBulk(remoteRes.usersList);
-                        resolve([...res, ...remoteRes.messagesList]);
+                        return this.transform(remoteRes.messagesList);
+                    }).then((remoteRes) => {
+                        this.importBulk(remoteRes, true);
+                        resolve([...res, ...remoteRes]);
                     }).catch((err2) => {
                         reject(err2);
                     });
@@ -67,9 +69,11 @@ export default class MessageRepo {
             }).catch((err) => {
                 window.console.log(err);
                 this.sdk.getMessageHistory(peer, {minId: before, limit}).then((remoteRes) => {
-                    this.importBulk(remoteRes.messagesList);
                     this.userRepo.importBulk(remoteRes.usersList);
-                    resolve(remoteRes.messagesList);
+                    return this.transform(remoteRes.messagesList);
+                }).then((remoteRes) => {
+                    this.importBulk(remoteRes, true);
+                    resolve(remoteRes);
                 }).catch((err2) => {
                     reject(err2);
                 });
@@ -130,17 +134,24 @@ export default class MessageRepo {
         });
     }
 
-    public importBulk(msgs: IMessage[]): Promise<any> {
-        if (this.userId === '0') {
-            this.loadConnInfo();
-        }
-        msgs = msgs.map((msg) => {
+    public transform(msgs: IMessage[]) {
+        return msgs.map((msg) => {
             msg._id = String(msg.id);
             msg.me = (msg.senderid === this.userId);
             msg.rtl = this.rtlDetector.direction(msg.body || '');
             return msg;
         });
-        return this.upsert(msgs).then((data) => {
+    }
+
+    public importBulk(msgs: IMessage[], noTransform?: boolean): Promise<any> {
+        if (this.userId === '0' || this.userId === '') {
+            this.loadConnInfo();
+        }
+        let tempMsgs = cloneDeep(msgs);
+        if (noTransform !== true) {
+            tempMsgs = this.transform(tempMsgs);
+        }
+        return this.upsert(tempMsgs).then((data) => {
             // window.console.log(data);
         }).catch((err) => {
             window.console.log(err);
@@ -148,8 +159,7 @@ export default class MessageRepo {
     }
 
     public upsert(msgs: IMessage[]): Promise<any> {
-        const tempMsgs = cloneDeep(msgs);
-        const ids = tempMsgs.map((msg) => {
+        const ids = msgs.map((msg) => {
             msg.avatar = undefined;
             return msg._id;
         });
@@ -158,11 +168,11 @@ export default class MessageRepo {
                 _id: {'$in': ids}
             },
         }).then((result: any) => {
-            const createItems: IMessage[] = differenceBy(tempMsgs, result.docs, '_id');
+            const createItems: IMessage[] = differenceBy(msgs, result.docs, '_id');
             // @ts-ignore
             const updateItems: IMessage[] = result.docs;
             updateItems.map((msg: IMessage) => {
-                const t = find(tempMsgs, {_id: msg._id});
+                const t = find(msgs, {_id: msg._id});
                 return merge(msg, t);
             });
             return this.createMany([...createItems, ...updateItems]);

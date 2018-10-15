@@ -73,6 +73,7 @@ export const C_MSG = {
     UpdateMessageEdited: 1825079988,
     UpdateMessageID: 2139063022,
     UpdateNewMessage: 3426925183,
+    UpdateNewMessageDrop: 342692518374,
     UpdateReadHistoryInbox: 1529128378,
     UpdateReadHistoryOutbox: 510866108,
     UpdateState: 1837585836,

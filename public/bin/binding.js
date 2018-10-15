@@ -178,8 +178,9 @@ setInterval(() => {
     if (connected) {
         socket.send(ping);
         pingCounter++;
-        if (pingCounter > 4) {
+        if (pingCounter > 2) {
             console.log('server ping is week');
+            socket.close();
         }
     }
 }, 10000);
