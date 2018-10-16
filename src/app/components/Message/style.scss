@@ -99,9 +99,9 @@
     }
   }
   .bubble {
+    position: relative;
     font-size: 12px;
     line-height: 17px;
-    position: relative;
     display: inline-block;
     clear: both;
     padding: 3px 6px 15px 6px;
@@ -109,6 +109,7 @@
     border-radius: 5px;
     max-width: 558px;
     min-width: 75px;
+    min-height: 35px;
     box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.1);
     .inner {
       direction: ltr;
@@ -116,6 +117,23 @@
         direction: rtl;
         text-align: right;
       }
+    }
+    .more {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      height: 20px;
+      width: 16px;
+      display: none;
+      cursor: pointer;
+      background-color: inherit;
+      svg {
+        height: 20px;
+        font-size: 20px;
+      }
+    }
+    &:hover .more {
+      display: block;
     }
   }
   &.you {
@@ -144,6 +162,17 @@
       animation-name: slideFromRight;
       text-align: right;
       margin-right: 10px;
+    }
+  }
+}
+
+.context-menu {
+  ul {
+    padding: 6px 0 !important;
+    min-width: 100px;
+    .context-item {
+      padding: 3px 12px;
+      font-size: 13px;
     }
   }
 }

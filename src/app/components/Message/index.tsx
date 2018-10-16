@@ -4,17 +4,23 @@ import {IMessage} from '../../repository/message/interface';
 import './style.css';
 import UserAvatar from '../UserAvatar';
 import MessageStatus from '../MessageStatus';
+import {MoreVert} from '@material-ui/icons';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 interface IProps {
+    contextMenu?: (cmd: string, id: IMessage) => void;
     items: IMessage[];
+    onLoadMore?: () => any;
     readId: number;
     rendered?: () => void;
-    onLoadMore?: () => any;
 }
 
 interface IState {
     items: IMessage[];
     listStyle?: React.CSSProperties;
+    moreAnchorEl: any;
+    moreIndex: number;
     noTransition: boolean;
     readId: number;
     scrollIndex: number;
@@ -31,6 +37,8 @@ class Message extends React.Component<IProps, IState> {
 
         this.state = {
             items: props.items,
+            moreAnchorEl: null,
+            moreIndex: -1,
             noTransition: false,
             readId: props.readId,
             scrollIndex: -1,
@@ -44,6 +52,8 @@ class Message extends React.Component<IProps, IState> {
     public componentDidMount() {
         this.setState({
             items: this.props.items,
+            moreAnchorEl: null,
+            moreIndex: -1,
             noTransition: true,
             scrollIndex: this.props.items.length - 1,
         }, () => {
@@ -62,6 +72,8 @@ class Message extends React.Component<IProps, IState> {
         if (this.state.items !== newProps.items) {
             this.setState({
                 items: newProps.items,
+                moreAnchorEl: null,
+                moreIndex: -1,
                 noTransition: true,
                 scrollIndex: newProps.items.length - 1,
             }, () => {
@@ -99,28 +111,93 @@ class Message extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {items} = this.state;
+        const {items, moreAnchorEl} = this.state;
         return (
             <AutoSizer>
                 {({width, height}: any) => (
-                    <List
-                        ref={this.refHandler}
-                        deferredMeasurementCache={this.cache}
-                        rowHeight={this.cache.rowHeight}
-                        rowRenderer={this.rowRender}
-                        rowCount={items.length}
-                        overscanRowCount={5}
-                        width={width}
-                        height={height}
-                        scrollToIndex={this.state.scrollIndex}
-                        onRowsRendered={this.props.rendered}
-                        onScroll={this.onScroll}
-                        style={this.state.listStyle}
-                        className={'chat active-chat' + (this.state.noTransition ? ' no-transition' : '')}
-                    />
+                    <div>
+                        <List
+                            ref={this.refHandler}
+                            deferredMeasurementCache={this.cache}
+                            rowHeight={this.cache.rowHeight}
+                            rowRenderer={this.rowRender}
+                            rowCount={items.length}
+                            overscanRowCount={5}
+                            width={width}
+                            height={height}
+                            scrollToIndex={this.state.scrollIndex}
+                            onRowsRendered={this.props.rendered}
+                            onScroll={this.onScroll}
+                            style={this.state.listStyle}
+                            className={'chat active-chat' + (this.state.noTransition ? ' no-transition' : '')}
+                        />
+                        <Menu
+                            id="simple-menu"
+                            anchorEl={moreAnchorEl}
+                            open={Boolean(moreAnchorEl)}
+                            onClose={this.moreCloseHandler}
+                            className="context-menu"
+                        >
+                            {this.contextMenuItem()}
+                        </Menu>
+                    </div>
                 )}
             </AutoSizer>
         );
+    }
+
+    private contextMenuItem() {
+        const {items, moreIndex} = this.state;
+        if (!items[moreIndex]) {
+            return '';
+        }
+        const menuItem = {
+            1: {
+                cmd: 'reply',
+                title: 'Reply',
+            },
+            2: {
+                cmd: 'forward',
+                title: 'Forward',
+            },
+            3: {
+                cmd: 'edit',
+                title: 'Edit',
+            },
+            4: {
+                cmd: 'remove',
+                title: 'Remove',
+            },
+            5: {
+                cmd: 'cancel',
+                title: 'Cancel',
+            },
+        };
+        const menuTypes = {
+            1: [1, 2, 3, 4],
+            2: [1, 2],
+            3: [1, 2],
+        };
+        const menuItems: any[] = [];
+        const id = items[moreIndex].id;
+        const me = items[moreIndex].me;
+        if (id && id < 0) {
+            menuTypes[3].forEach((key) => {
+                menuItems.push(menuItem[key]);
+            });
+        } else if (me === true && id && id > 0) {
+            menuTypes[1].forEach((key) => {
+                menuItems.push(menuItem[key]);
+            });
+        } else if (me === false && id && id > 0) {
+            menuTypes[2].forEach((key) => {
+                menuItems.push(menuItem[key]);
+            });
+        }
+        return menuItems.map((item, index) => {
+            return (<MenuItem key={index} onClick={this.moreCmdHandler.bind(this, item.cmd, moreIndex)}
+                              className="context-item">{item.title}</MenuItem>);
+        });
     }
 
     private refHandler = (value: any) => {
@@ -141,17 +218,20 @@ class Message extends React.Component<IProps, IState> {
                 key={key}
                 rowIndex={index}
                 parent={parent}>
-                <div style={style} key={index}
+                <div style={style} key={data.id}
                      className={'bubble-wrapper ' + (data.me ? 'me' : 'you') + (data.avatar ? ' avatar' : '')}>
                     {(data.avatar && data.senderid && !data.me) && (
                         <UserAvatar id={data.senderid} className="avatar"/>
                     )}
                     {(data.avatar && data.senderid) && (<div className="arrow"/>)}
-                    <div className="bubble">
+                    <div className={'bubble b_' + data._id}>
                         <div className={'inner' + (data.rtl ? ' rtl' : '')}
                              dangerouslySetInnerHTML={{__html: this.formatText(data.body)}}/>
                         <MessageStatus status={data.me || false} id={data.id} readId={this.state.readId}
                                        time={data.createdon || 0}/>
+                        <div className="more" onClick={this.contextMenuHandler.bind(this, index)}>
+                            <MoreVert/>
+                        </div>
                     </div>
                 </div>
             </CellMeasurer>
@@ -212,6 +292,31 @@ class Message extends React.Component<IProps, IState> {
                 this.props.onLoadMore();
             }
         }
+    }
+
+    private contextMenuHandler = (index: number, e: any) => {
+        if (index === -1) {
+            return;
+        }
+        this.setState({
+            moreAnchorEl: e.currentTarget,
+            moreIndex: index,
+        });
+    }
+
+    private moreCloseHandler = () => {
+        this.setState({
+            moreAnchorEl: null,
+        });
+    }
+
+    private moreCmdHandler = (cmd: string, index: number) => {
+        if (this.props.contextMenu && index > -1) {
+            this.props.contextMenu(cmd, this.state.items[index]);
+        }
+        this.setState({
+            moreAnchorEl: null,
+        });
     }
 }
 

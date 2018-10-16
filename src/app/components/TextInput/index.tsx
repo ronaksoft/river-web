@@ -3,22 +3,32 @@ import Textarea from 'react-textarea-autosize';
 import {Picker} from 'emoji-mart';
 import PopUpMenu from '../PopUpMenu';
 import {throttle} from 'lodash';
-import {SentimentSatisfiedRounded, SendRounded} from '@material-ui/icons';
+import {SentimentSatisfiedRounded, SendRounded, ClearRounded} from '@material-ui/icons';
+import {IconButton} from '@material-ui/core';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
 import UserAvatar from '../UserAvatar';
 import RTLDetector from '../../services/utilities/rtl_detector';
+import {IMessage} from "../../repository/message/interface";
+import UserName from "../UserName";
+import {C_MSG_MODE} from "./consts";
 
 interface IProps {
-    onMessage: (text: string) => void;
+    clearPreviewMessage?: () => void;
+    onMessage: (text: string, {mode, id, message}?: any) => void;
     onTyping?: (typing: boolean) => void;
+    previewMessage?: IMessage;
+    previewMessageMode?: number;
     ref?: (ref: any) => void;
     userId?: string;
+    text?: string;
 }
 
 interface IState {
     emojiAnchorEl: any;
+    previewMessage: IMessage | null;
+    previewMessageMode: number;
     rtl: boolean;
     userId: string;
 }
@@ -35,6 +45,8 @@ class TextInput extends React.Component<IProps, IState> {
 
         this.state = {
             emojiAnchorEl: null,
+            previewMessage: this.props.previewMessage || null,
+            previewMessageMode: this.props.previewMessageMode || C_MSG_MODE.Normal,
             rtl: false,
             userId: props.userId || '',
         };
@@ -47,35 +59,72 @@ class TextInput extends React.Component<IProps, IState> {
         this.rtlDetectorThrottle = throttle(this.detectRTL, 1000);
     }
 
+    public componentWillReceiveProps(newProps: IProps) {
+        this.setState({
+            previewMessage: newProps.previewMessage || null,
+            previewMessageMode: newProps.previewMessageMode || C_MSG_MODE.Normal,
+        });
+        if (newProps.previewMessageMode === C_MSG_MODE.Edit && newProps.previewMessage) {
+            this.textarea.value = newProps.previewMessage.body;
+        }
+    }
+
     public render() {
+        const {previewMessage, previewMessageMode} = this.state;
         return (
             <div className="write">
-                <div className="user">
-                    <UserAvatar id={this.state.userId} className="user-avatar"/>
-                </div>
-                <div className={'input '+ (this.state.rtl ? 'rtl' : 'ltr')}>
-                    <Textarea
-                        inputRef={this.textareaRefHandler}
-                        maxRows={5}
-                        placeholder="Type your message here..."
-                        onKeyUp={this.sendMessage}
-                        onKeyDown={this.inputKeyDown}
-                        style={{direction: (this.state.rtl ? 'rtl' : 'ltr')}}
-                    />
-                    <div className="write-link">
-                        <a href="javascript:;"
-                           className="smiley"
-                           aria-owns="emoji-menu"
-                           aria-haspopup="true"
-                           onClick={this.emojiHandleClick}>
-                            <SentimentSatisfiedRounded/>
-                        </a>
-                        <PopUpMenu anchorEl={this.state.emojiAnchorEl} onClose={this.emojiHandleClose}>
-                            <Picker custom={[]} onSelect={this.emojiSelect} native={true} showPreview={false}/>
-                        </PopUpMenu>
-                        <a href="javascript:;" className="send" onClick={this.submitMessage}>
-                            <SendRounded/>
-                        </a>
+                {previewMessage && <div className="previews">
+                    <div className="preview-container">
+                        <div className="preview-message-wrapper">
+                            <span className="preview-bar"/>
+                            {Boolean(previewMessageMode === C_MSG_MODE.Reply) && <div className="preview-message">
+                                <UserName className="preview-message-user" id={previewMessage.senderid || ''}/>
+                                <div className="preview-message-body">
+                                    <div className={'inner ' + (previewMessage.rtl ? 'rtl' : 'ltr')}
+                                    >{previewMessage.body}</div>
+                                </div>
+                            </div>}
+                            {Boolean(previewMessageMode === C_MSG_MODE.Edit) && <div className="preview-message">
+                                <div className="preview-message-user">Edit message</div>
+                            </div>}
+                        </div>
+                    </div>
+                    <div className="preview-clear">
+                        <span onClick={this.clearPreviewMessage}>
+                            <IconButton aria-label="Delete" className="btn-clear">
+                                <ClearRounded/>
+                            </IconButton>
+                        </span>
+                    </div>
+                </div>}
+                <div className="inputs">
+                    <div className="user">
+                        <UserAvatar id={this.state.userId} className="user-avatar"/>
+                    </div>
+                    <div className={'input ' + (this.state.rtl ? 'rtl' : 'ltr')}>
+                        <Textarea
+                            inputRef={this.textareaRefHandler}
+                            maxRows={5}
+                            placeholder="Type your message here..."
+                            onKeyUp={this.sendMessage}
+                            onKeyDown={this.inputKeyDown}
+                            style={{direction: (this.state.rtl ? 'rtl' : 'ltr')}}
+                        />
+                        <div className="write-link">
+                            <a href="javascript:;"
+                               className="smiley"
+                               aria-owns="emoji-menu"
+                               aria-haspopup="true"
+                               onClick={this.emojiHandleClick}>
+                                <SentimentSatisfiedRounded/>
+                            </a>
+                            <PopUpMenu anchorEl={this.state.emojiAnchorEl} onClose={this.emojiHandleClose}>
+                                <Picker custom={[]} onSelect={this.emojiSelect} native={true} showPreview={false}/>
+                            </PopUpMenu>
+                            <a href="javascript:;" className="send" onClick={this.submitMessage}>
+                                <SendRounded/>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -178,6 +227,16 @@ class TextInput extends React.Component<IProps, IState> {
         this.setState({
             rtl,
         });
+    }
+
+    private clearPreviewMessage = () => {
+        this.setState({
+            previewMessage: null,
+            previewMessageMode: C_MSG_MODE.Normal,
+        });
+        if (this.props.clearPreviewMessage) {
+            this.props.clearPreviewMessage();
+        }
     }
 }
 

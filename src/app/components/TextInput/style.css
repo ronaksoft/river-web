@@ -35,65 +35,133 @@ body {
   right: 0;
   border: 1px solid var(--light);
   border-width: 1px 1px 1px 0;
-  background-color: #F4F4F5; }
-  .write .user {
-    width: 48px;
-    height: 48px;
+  background-color: #F4F4F5;
+  flex-direction: column; }
+  .write .inputs {
     display: flex;
-    align-items: center;
-    justify-content: center; }
-    .write .user .user-avatar {
-      height: 32px;
-      width: 32px;
-      border-radius: 50%;
-      background-color: #ccc;
-      background-position: center center;
-      background-size: cover;
-      background-image: url(../../../asset/image/user.png);
-      overflow: hidden;
-      box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.3) inset; }
-      .write .user .user-avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover; }
-  .write .input {
-    position: relative;
-    flex: 1;
-    margin: 8px 0;
-    z-index: 2;
-    display: flex; }
-    .write .input textarea {
-      font-size: 12px;
-      line-height: 15px;
-      float: left;
-      width: calc(100% - 8px);
-      height: 30px;
-      padding: 7px 10px 8px;
-      color: var(--dark);
-      border: 1px solid rgba(50, 61, 71, 0.16);
-      border-radius: 3px;
-      outline: none;
-      background-color: #fff;
-      resize: none;
-      font-family: 'Source Sans Pro', sans-serif;
-      font-weight: 400; }
-    .write .input .write-link {
-      position: absolute;
-      right: 12px;
-      bottom: 0;
-      height: 32px; }
-      .write .input .write-link a {
-        position: relative;
+    min-height: 50px; }
+    .write .inputs .user {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center; }
+      .write .inputs .user .user-avatar {
         height: 32px;
-        margin: 0 2px;
-        display: inline-block; }
-        .write .input .write-link a svg {
-          fill: var(--light);
-          font-size: 20px;
-          height: 32px; }
-        .write .input .write-link a:hover svg {
-          fill: var(--grey); }
-    .write .input.rtl .write-link {
-      right: auto;
-      left: 6px;
-      bottom: 0; }
+        width: 32px;
+        border-radius: 50%;
+        background-color: #ccc;
+        background-position: center center;
+        background-size: cover;
+        background-image: url(../../../asset/image/user.png);
+        overflow: hidden;
+        box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.3) inset; }
+        .write .inputs .user .user-avatar img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover; }
+    .write .inputs .input {
+      position: relative;
+      flex: 1;
+      margin: 8px 0;
+      z-index: 2;
+      display: flex; }
+      .write .inputs .input textarea {
+        font-size: 12px;
+        line-height: 15px;
+        float: left;
+        width: calc(100% - 8px);
+        height: 30px;
+        padding: 7px 10px 8px;
+        color: var(--dark);
+        border: 1px solid rgba(50, 61, 71, 0.16);
+        border-radius: 3px;
+        outline: none;
+        background-color: #fff;
+        resize: none;
+        margin: 0;
+        font-family: 'Source Sans Pro', sans-serif;
+        font-weight: 400; }
+      .write .inputs .input .write-link {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        height: 32px;
+        transform: translateY(-50%); }
+        .write .inputs .input .write-link a {
+          position: relative;
+          height: 32px;
+          margin: 0 2px;
+          display: inline-block; }
+          .write .inputs .input .write-link a svg {
+            fill: var(--light);
+            font-size: 20px;
+            height: 32px; }
+          .write .inputs .input .write-link a:hover svg {
+            fill: var(--grey); }
+      .write .inputs .input.rtl .write-link {
+        right: auto;
+        left: 6px;
+        bottom: 0; }
+  .write .previews {
+    padding: 8px 0 0;
+    display: flex; }
+    .write .previews .preview-container {
+      display: flex;
+      overflow: hidden;
+      margin-left: 48px;
+      background-color: rgba(0, 0, 0, 0.05);
+      border-top-right-radius: 5px;
+      border-bottom-right-radius: 5px;
+      flex: 1; }
+      .write .previews .preview-container .preview-message-wrapper {
+        display: flex;
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+        width: 100%; }
+        .write .previews .preview-container .preview-message-wrapper .preview-bar {
+          flex: none;
+          width: 4px;
+          border-top-left-radius: 7.5px;
+          border-bottom-left-radius: 7.5px;
+          background-color: #35cd96 !important; }
+        .write .previews .preview-container .preview-message-wrapper .preview-message {
+          padding: 8px 12px 9px 11px;
+          min-height: 42px;
+          max-height: 82px;
+          display: flex;
+          align-items: center;
+          overflow: hidden;
+          flex-grow: 1;
+          flex-direction: column; }
+          .write .previews .preview-container .preview-message-wrapper .preview-message .preview-message-user {
+            color: #35cd96;
+            font-size: 13px;
+            font-family: 'Source Sans Pro', sans-serif;
+            font-weight: 600;
+            text-align: left;
+            justify-content: left;
+            width: 100%; }
+          .write .previews .preview-container .preview-message-wrapper .preview-message .preview-message-body {
+            text-align: left;
+            width: 100%;
+            padding: 3px 0 0;
+            font-size: 13px;
+            font-weight: 100; }
+            .write .previews .preview-container .preview-message-wrapper .preview-message .preview-message-body .inner {
+              line-height: 1.2em; }
+              .write .previews .preview-container .preview-message-wrapper .preview-message .preview-message-body .inner.rtl {
+                direction: rtl; }
+              .write .previews .preview-container .preview-message-wrapper .preview-message .preview-message-body .inner.ltr {
+                direction: ltr; }
+    .write .previews .preview-clear {
+      width: 48px;
+      display: flex;
+      justify-content: center;
+      align-items: center; }
+      .write .previews .preview-clear .btn-clear {
+        height: 32px;
+        width: 32px; }
+        .write .previews .preview-clear .btn-clear svg {
+          font-size: 16px; }

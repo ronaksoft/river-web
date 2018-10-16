@@ -128,11 +128,11 @@ function Uint8ToBase64(u8a) {
 
 const initWebSocket = () => {
     // socket = new WebSocket('ws://192.168.1.110');
-    if (window.location.protocol === 'https:') {
-        socket = new WebSocket('wss://' + window.location.host + '/ws');
-    } else {
-        socket = new WebSocket('ws://new.river.im');
-    }
+    // if (window.location.protocol === 'https:') {
+    //     socket = new WebSocket('wss://' + window.location.host + '/ws');
+    // } else {
+    //     socket = new WebSocket('ws://new.river.im');
+    // }
     socket.binaryType = 'arraybuffer';
 
     // Connection opened
@@ -181,6 +181,7 @@ setInterval(() => {
         if (pingCounter > 2) {
             console.log('server ping is week');
             socket.close();
+            initWebSocket()
         }
     }
 }, 10000);

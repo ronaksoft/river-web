@@ -34,6 +34,7 @@ import MainRepo from '../../repository';
 
 import './style.css';
 import SettingMenu from "../../components/SettingMenu";
+import {C_MSG_MODE} from "../../components/TextInput/consts";
 
 interface IProps {
     history?: any;
@@ -54,6 +55,8 @@ interface IState {
     rightMenu: boolean;
     selectedDialogId: string;
     settingMenu: boolean;
+    textInputMessage?: IMessage;
+    textInputMessageMode: number;
     toggleAttachment: boolean;
 }
 
@@ -90,6 +93,7 @@ class Chat extends React.Component<IProps, IState> {
             rightMenu: false,
             selectedDialogId: props.match.params.id,
             settingMenu: false,
+            textInputMessageMode: C_MSG_MODE.Normal,
             toggleAttachment: false,
         };
         this.sdk = SDK.getInstance();
@@ -272,7 +276,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {anchorEl, settingMenu} = this.state;
+        const {anchorEl, settingMenu, textInputMessage, textInputMessageMode} = this.state;
         const open = Boolean(anchorEl);
         return (
             <div className="bg">
@@ -339,14 +343,17 @@ class Chat extends React.Component<IProps, IState> {
                                          items={this.state.messages}
                                          onLoadMore={this.onMessageScroll}
                                          readId={this.state.maxReadId}
+                                         contextMenu={this.messageContextMenuHandler}
                                 />
                             </div>
                             <div className="attachments" hidden={!this.state.toggleAttachment}>
                                 <Uploader/>
                             </div>
                             {!this.state.toggleAttachment &&
-                            <TextInput onMessage={this.onMessage} onTyping={this.onTyping}
-                                       userId={this.connInfo.UserID}/>}
+                            <TextInput onMessage={this.onMessageHandler} onTyping={this.onTyping}
+                                       userId={this.connInfo.UserID} previewMessage={textInputMessage}
+                                       clearPreviewMessage={this.clearPreviewMessageHandler}
+                                       previewMessageMode={textInputMessageMode}/>}
                         </div>}
                         {this.state.selectedDialogId === 'null' && <div className="column-center">
                             <div className="start-messaging">
@@ -529,7 +536,7 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private onMessage = (text: string) => {
+    private onMessageHandler = (text: string) => {
         if (trimStart(text).length === 0) {
             return;
         }
@@ -566,10 +573,6 @@ class Chat extends React.Component<IProps, IState> {
 
     private pushMessage = (message: IMessage) => {
         const messages = this.state.messages;
-        if (messages.length > 0 && messages[messages.length - 1].avatar &&
-            message.senderid === messages[messages.length - 1].senderid) {
-            messages[messages.length - 1].avatar = false;
-        }
         if (messages.length > 0 && message.senderid !== messages[messages.length - 1].senderid) {
             message.avatar = true;
         }
@@ -607,6 +610,7 @@ class Chat extends React.Component<IProps, IState> {
         });
         this.sdk.contactImport(true, contacts).then((data) => {
             data.usersList.forEach((user) => {
+                this.userRepo.importBulk([user]);
                 const peer = new InputPeer();
                 peer.setType(PeerType.PEERUSER);
                 if (user.accesshash) {
@@ -936,6 +940,33 @@ class Chat extends React.Component<IProps, IState> {
             }
         }
         return false;
+    }
+
+    private messageContextMenuHandler = (cmd: string, message: IMessage) => {
+        switch (cmd) {
+            case 'reply':
+                this.setState({
+                    textInputMessage: message,
+                    textInputMessageMode: C_MSG_MODE.Reply,
+                });
+                break;
+            case 'edit':
+                this.setState({
+                    textInputMessage: message,
+                    textInputMessageMode: C_MSG_MODE.Edit,
+                });
+                break;
+            default:
+                window.console.log(cmd, message);
+                break;
+        }
+    }
+
+    private clearPreviewMessageHandler = () => {
+        this.setState({
+            textInputMessage: undefined,
+            textInputMessageMode: C_MSG_MODE.Normal,
+        });
     }
 }
 
