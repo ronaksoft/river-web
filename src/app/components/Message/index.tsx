@@ -7,6 +7,7 @@ import MessageStatus from '../MessageStatus';
 import {MoreVert} from '@material-ui/icons';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import MessagePreview from "../MessagePreview";
 
 interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
@@ -225,6 +226,7 @@ class Message extends React.Component<IProps, IState> {
                     )}
                     {(data.avatar && data.senderid) && (<div className="arrow"/>)}
                     <div className={'bubble b_' + data._id}>
+                        <MessagePreview message={data}/>
                         <div className={'inner' + (data.rtl ? ' rtl' : '')}
                              dangerouslySetInnerHTML={{__html: this.formatText(data.body)}}/>
                         <MessageStatus status={data.me || false} id={data.id} readId={this.state.readId}

@@ -1,6 +1,7 @@
 import DB from '../../services/db/user';
 import {IUser} from './interface';
 import {differenceBy, find, merge} from 'lodash';
+import SDK from "../../services/sdk";
 // import * as faker from "faker";
 
 export default class UserRepo {
@@ -16,10 +17,16 @@ export default class UserRepo {
 
     private dbService: DB;
     private db: any;
+    private sdk: SDK;
 
     private constructor() {
         this.dbService = DB.getInstance();
         this.db = this.dbService.getDB();
+        this.sdk = SDK.getInstance();
+    }
+
+    public getCurrentUserId(): string {
+        return this.sdk.getConnInfo().UserID || '';
     }
 
     public create(user: IUser) {

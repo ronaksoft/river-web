@@ -37,7 +37,7 @@ export default class SyncManager {
         this.getLastUpdateId();
         this.userRepo = UserRepo.getInstance();
         this.dialogRepo = DialogRepo.getInstance();
-        this.messageRepo = new MessageRepo();
+        this.messageRepo = MessageRepo.getInstance();
     }
 
     public getLastUpdateId(): number {

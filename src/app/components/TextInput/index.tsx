@@ -2,7 +2,7 @@ import * as React from 'react';
 import Textarea from 'react-textarea-autosize';
 import {Picker} from 'emoji-mart';
 import PopUpMenu from '../PopUpMenu';
-import {throttle} from 'lodash';
+import {throttle, cloneDeep} from 'lodash';
 import {SentimentSatisfiedRounded, SendRounded, ClearRounded} from '@material-ui/icons';
 import {IconButton} from '@material-ui/core';
 
@@ -16,7 +16,7 @@ import {C_MSG_MODE} from "./consts";
 
 interface IProps {
     clearPreviewMessage?: () => void;
-    onMessage: (text: string, {mode, id, message}?: any) => void;
+    onMessage: (text: string, {mode, message}?: any) => void;
     onTyping?: (typing: boolean) => void;
     previewMessage?: IMessage;
     previewMessageMode?: number;
@@ -63,6 +63,7 @@ class TextInput extends React.Component<IProps, IState> {
         this.setState({
             previewMessage: newProps.previewMessage || null,
             previewMessageMode: newProps.previewMessageMode || C_MSG_MODE.Normal,
+            userId: newProps.userId || '',
         });
         if (newProps.previewMessageMode === C_MSG_MODE.Edit && newProps.previewMessage) {
             this.textarea.value = newProps.previewMessage.body;
@@ -75,10 +76,11 @@ class TextInput extends React.Component<IProps, IState> {
             <div className="write">
                 {previewMessage && <div className="previews">
                     <div className="preview-container">
-                        <div className="preview-message-wrapper">
+                        <div
+                            className={'preview-message-wrapper ' + this.getPreviewCN(previewMessageMode, previewMessage.senderid || '')}>
                             <span className="preview-bar"/>
                             {Boolean(previewMessageMode === C_MSG_MODE.Reply) && <div className="preview-message">
-                                <UserName className="preview-message-user" id={previewMessage.senderid || ''}/>
+                                <UserName className="preview-message-user" id={previewMessage.senderid || ''} you={true}/>
                                 <div className="preview-message-body">
                                     <div className={'inner ' + (previewMessage.rtl ? 'rtl' : 'ltr')}
                                     >{previewMessage.body}</div>
@@ -131,6 +133,17 @@ class TextInput extends React.Component<IProps, IState> {
         );
     }
 
+    private getPreviewCN(mode: number, senderid: string) {
+        if (mode === C_MSG_MODE.Edit) {
+            return 'edit';
+        } else if (mode === C_MSG_MODE.Reply && senderid === this.props.userId) {
+            return 'reply-you';
+        } else if (mode === C_MSG_MODE.Reply && senderid !== this.props.userId) {
+            return 'reply';
+        }
+        return '';
+    }
+
     private submitMessage = () => {
         if (this.props.onMessage) {
             this.props.onMessage(this.textarea.value);
@@ -149,10 +162,20 @@ class TextInput extends React.Component<IProps, IState> {
     }
 
     private sendMessage = (e: any) => {
+        const {previewMessage, previewMessageMode} = this.state;
         this.rtlDetectorThrottle(e.target.value);
         if (e.key === 'Enter' && !e.shiftKey) {
             if (this.props.onMessage) {
-                this.props.onMessage(e.target.value);
+                if (previewMessageMode === C_MSG_MODE.Normal) {
+                    this.props.onMessage(e.target.value);
+                } else if (previewMessageMode !== C_MSG_MODE.Normal) {
+                    const message = cloneDeep(previewMessage);
+                    this.props.onMessage(e.target.value, {
+                        message,
+                        mode: previewMessageMode,
+                    });
+                    this.clearPreviewMessage();
+                }
             }
             e.target.value = '';
             this.setState({

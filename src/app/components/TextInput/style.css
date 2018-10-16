@@ -125,10 +125,10 @@ body {
           width: 4px;
           border-top-left-radius: 7.5px;
           border-bottom-left-radius: 7.5px;
-          background-color: #35cd96 !important; }
+          background-color: #35cd96; }
         .write .previews .preview-container .preview-message-wrapper .preview-message {
           padding: 8px 12px 9px 11px;
-          min-height: 42px;
+          min-height: 32px;
           max-height: 82px;
           display: flex;
           align-items: center;
@@ -155,6 +155,14 @@ body {
                 direction: rtl; }
               .write .previews .preview-container .preview-message-wrapper .preview-message .preview-message-body .inner.ltr {
                 direction: ltr; }
+        .write .previews .preview-container .preview-message-wrapper.edit .preview-bar {
+          background-color: #b30000; }
+        .write .previews .preview-container .preview-message-wrapper.edit .preview-message .preview-message-user {
+          color: #b30000; }
+        .write .previews .preview-container .preview-message-wrapper.reply-you .preview-bar {
+          background-color: #6bcbef; }
+        .write .previews .preview-container .preview-message-wrapper.reply-you .preview-message .preview-message-user {
+          color: #6bcbef; }
     .write .previews .preview-clear {
       width: 48px;
       display: flex;

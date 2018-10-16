@@ -99,7 +99,7 @@ class Chat extends React.Component<IProps, IState> {
         this.sdk = SDK.getInstance();
         this.sdk.loadConnInfo();
         this.connInfo = this.sdk.getConnInfo();
-        this.messageRepo = new MessageRepo();
+        this.messageRepo = MessageRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.dialogRepo = DialogRepo.getInstance();
         this.mainRepo = MainRepo.getInstance();
@@ -301,7 +301,7 @@ class Chat extends React.Component<IProps, IState> {
                                     <ExitToApp/>
                                 </a>
                                 <div className="version">
-                                    v0.23.1
+                                    v0.23.3
                                 </div>
                             </div>
                         </div>
@@ -352,8 +352,8 @@ class Chat extends React.Component<IProps, IState> {
                             {!this.state.toggleAttachment &&
                             <TextInput onMessage={this.onMessageHandler} onTyping={this.onTyping}
                                        userId={this.connInfo.UserID} previewMessage={textInputMessage}
-                                       clearPreviewMessage={this.clearPreviewMessageHandler}
-                                       previewMessageMode={textInputMessageMode}/>}
+                                       previewMessageMode={textInputMessageMode}
+                                       clearPreviewMessage={this.clearPreviewMessageHandler}/>}
                         </div>}
                         {this.state.selectedDialogId === 'null' && <div className="column-center">
                             <div className="start-messaging">
@@ -536,7 +536,7 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private onMessageHandler = (text: string) => {
+    private onMessageHandler = (text: string, param?: any) => {
         if (trimStart(text).length === 0) {
             return;
         }
@@ -546,29 +546,38 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
-        const id = -UniqueId.getRandomId();
-        const message: IMessage = {
-            _id: String(id),
-            body: text,
-            createdon: Date.now() / 1000,
-            id,
-            me: true,
-            peerid: this.state.selectedDialogId,
-            senderid: this.connInfo.UserID,
-        };
-        this.pushMessage(message);
+        if (param && param.mode === C_MSG_MODE.Edit) {
+            window.console.log('edit');
+        } else {
+            const id = -UniqueId.getRandomId();
+            const message: IMessage = {
+                _id: String(id),
+                body: text,
+                createdon: Date.now() / 1000,
+                id,
+                me: true,
+                peerid: this.state.selectedDialogId,
+                senderid: this.connInfo.UserID,
+            };
 
-        this.sdk.sendMessage(text, peer).then((msg) => {
-            this.messageRepo.remove(message._id || '');
-            message.id = msg.messageid;
-            message._id = String(msg.messageid);
-            this.messageRepo.importBulk([message]);
-            this.updateDialogs(message, '0');
-            // Force update messages
-            this.message.list.forceUpdateGrid();
-        }).catch((err) => {
-            window.console.log(err);
-        });
+            if (param && param.mode === C_MSG_MODE.Reply) {
+                message.replyto = param.message.id;
+            }
+
+            this.pushMessage(message);
+
+            this.sdk.sendMessage(text, peer).then((msg) => {
+                this.messageRepo.remove(message._id || '');
+                message.id = msg.messageid;
+                message._id = String(msg.messageid);
+                this.messageRepo.importBulk([message]);
+                this.updateDialogs(message, '0');
+                // Force update messages
+                this.message.list.forceUpdateGrid();
+            }).catch((err) => {
+                window.console.log(err);
+            });
+        }
     }
 
     private pushMessage = (message: IMessage) => {

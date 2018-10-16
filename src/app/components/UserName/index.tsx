@@ -5,12 +5,14 @@ import UserRepo from '../../repository/user';
 interface IProps {
     className?: string;
     id: string;
+    you?: boolean;
 }
 
 interface IState {
     className: string;
     id: string;
     user: IUser;
+    you: boolean;
 }
 
 class UserName extends React.Component<IProps, IState> {
@@ -24,7 +26,8 @@ class UserName extends React.Component<IProps, IState> {
         this.state = {
             className: props.className || '',
             id: props.id,
-            user: {}
+            user: {},
+            you: props.you || false,
         };
 
         this.userRepo = UserRepo.getInstance();
@@ -63,6 +66,16 @@ class UserName extends React.Component<IProps, IState> {
             return;
         }
         if (data && data.details.ids.indexOf(this.state.id) === -1) {
+            return;
+        }
+        if (this.state.you && this.userRepo.getCurrentUserId() === this.state.id) {
+            this.setState({
+                user: {
+                    firstname: 'You',
+                    id: this.userRepo.getCurrentUserId(),
+                    lastname: '',
+                },
+            });
             return;
         }
         this.userRepo.get(this.state.id).then((user) => {

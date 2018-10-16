@@ -6,6 +6,16 @@ import UserRepo from '../user';
 import RTLDetector from '../../services/utilities/rtl_detector';
 
 export default class MessageRepo {
+    public static getInstance() {
+        if (!this.instance) {
+            this.instance = new MessageRepo();
+        }
+
+        return this.instance;
+    }
+
+    private static instance: MessageRepo;
+
     private dbService: UserMessageDB;
     private db: any;
     private sdk: SDK;
@@ -13,7 +23,7 @@ export default class MessageRepo {
     private userId: string;
     private rtlDetector: RTLDetector;
 
-    public constructor() {
+    private constructor() {
         SDK.getInstance().loadConnInfo();
         this.userId = SDK.getInstance().getConnInfo().UserID || '0';
         this.dbService = UserMessageDB.getInstance();
@@ -26,6 +36,10 @@ export default class MessageRepo {
     public loadConnInfo() {
         SDK.getInstance().loadConnInfo();
         this.userId = SDK.getInstance().getConnInfo().UserID || '0';
+    }
+
+    public getCurrentUserId(): string {
+        return this.userId;
     }
 
     public create(msg: IMessage) {
@@ -105,7 +119,8 @@ export default class MessageRepo {
         });
     }
 
-    public get(id: number): Promise<IMessage> {
+    public get(id: string): Promise<IMessage> {
+        window.console.log(id);
         return this.db.get(String(id));
     }
 
