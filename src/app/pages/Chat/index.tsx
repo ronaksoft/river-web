@@ -166,6 +166,7 @@ class Chat extends React.Component<IProps, IState> {
             if (this.state.isUpdating) {
                 return;
             }
+            window.console.log(data);
             const message: IMessage = data.message;
             message._id = String(message.id);
             message.me = (this.connInfo.UserID === message.senderid);

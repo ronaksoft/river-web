@@ -177,7 +177,7 @@ class Message extends React.Component<IProps, IState> {
         const menuTypes = {
             1: [1, 2, 3, 4],
             2: [1, 2],
-            3: [1, 2],
+            3: [5],
         };
         const menuItems: any[] = [];
         const id = items[moreIndex].id;
