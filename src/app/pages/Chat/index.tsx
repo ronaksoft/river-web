@@ -53,6 +53,7 @@ interface IState {
     maxReadId: number;
     messages: IMessage[];
     openNewMessage: boolean;
+    peer: InputPeer | null;
     rightMenu: boolean;
     selectedDialogId: string;
     settingMenu: boolean;
@@ -91,6 +92,7 @@ class Chat extends React.Component<IProps, IState> {
             maxReadId: 0,
             messages: [],
             openNewMessage: false,
+            peer: null,
             rightMenu: false,
             selectedDialogId: props.match.params.id,
             settingMenu: false,
@@ -139,7 +141,12 @@ class Chat extends React.Component<IProps, IState> {
             }, () => {
                 const selectedId = this.props.match.params.id;
                 if (selectedId !== 'null') {
-                    this.getMessagesByDialogId(selectedId, true);
+                    const peer = this.getPeerByDialogId(selectedId);
+                    this.setState({
+                        peer,
+                    }, () => {
+                        this.getMessagesByDialogId(selectedId, true);
+                    });
                 }
             });
 
@@ -173,16 +180,13 @@ class Chat extends React.Component<IProps, IState> {
                 return;
             }
             const message: IMessage = data.message;
+            window.console.log(message);
             message._id = String(message.id);
             message.me = (this.connInfo.UserID === message.senderid);
             if (data.message.peerid === this.state.selectedDialogId) {
                 this.pushMessage(message);
-                if (this.canSendReadHistory(message.id || 0)) {
-                    const peer = this.getPeerByDialogId(this.state.selectedDialogId);
-                    if (peer) {
-                        this.sdk.setMessagesReadHistory(peer, data.message.id || 0);
-                    }
-                }
+                const {peer} = this.state;
+                this.sendReadHistory(peer, message.id || 0);
             }
             this.messageRepo.lazyUpsert([data.message]);
             this.userRepo.importBulk([data.sender]);
@@ -202,6 +206,7 @@ class Chat extends React.Component<IProps, IState> {
             if (this.state.isUpdating) {
                 return;
             }
+            window.console.log(data.message);
             this.messageRepo.lazyUpsert([data.message]);
             this.userRepo.importBulk([data.sender]);
         }));
@@ -277,10 +282,16 @@ class Chat extends React.Component<IProps, IState> {
         const selectedId = newProps.match.params.id;
         if (selectedId === 'null') {
             this.setState({
+                peer: null,
                 selectedDialogId: 'null',
             });
         } else {
-            this.getMessagesByDialogId(selectedId, true);
+            const peer = this.getPeerByDialogId(selectedId);
+            this.setState({
+                peer,
+            }, () => {
+                this.getMessagesByDialogId(selectedId, true);
+            });
         }
     }
 
@@ -302,7 +313,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {anchorEl, settingMenu, textInputMessage, textInputMessageMode} = this.state;
+        const {anchorEl, settingMenu, textInputMessage, textInputMessageMode, peer, selectedDialogId} = this.state;
         const open = Boolean(anchorEl);
         return (
             <div className="bg">
@@ -316,7 +327,7 @@ class Chat extends React.Component<IProps, IState> {
                                 </span>
                             </div>
                             {!settingMenu &&
-                            <Dialog items={this.state.dialogs} selectedId={this.state.selectedDialogId}/>}
+                            <Dialog items={this.state.dialogs} selectedId={selectedDialogId}/>}
                             {settingMenu &&
                             <SettingMenu/>}
                             <div className="setting">
@@ -331,7 +342,7 @@ class Chat extends React.Component<IProps, IState> {
                                 </div>
                             </div>
                         </div>
-                        {this.state.selectedDialogId !== 'null' && <div className="column-center">
+                        {selectedDialogId !== 'null' && <div className="column-center">
                             <div className="top">
                                 {this.getChatTitle()}
                                 <span className="buttons">
@@ -370,6 +381,7 @@ class Chat extends React.Component<IProps, IState> {
                                          onLoadMore={this.onMessageScroll}
                                          readId={this.state.maxReadId}
                                          contextMenu={this.messageContextMenuHandler}
+                                         peer={peer}
                                 />
                             </div>
                             <div className="attachments" hidden={!this.state.toggleAttachment}>
@@ -381,7 +393,7 @@ class Chat extends React.Component<IProps, IState> {
                                        previewMessageMode={textInputMessageMode}
                                        clearPreviewMessage={this.clearPreviewMessageHandler}/>}
                         </div>}
-                        {this.state.selectedDialogId === 'null' && <div className="column-center">
+                        {selectedDialogId === 'null' && <div className="column-center">
                             <div className="start-messaging">
                                 <div className="start-messaging-header">{this.getChatTitle(true)}</div>
                                 <div className="start-messaging-img"/>
@@ -468,7 +480,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private getMessagesByDialogId(dialogId: string, force?: boolean) {
-        const peer = this.getPeerByDialogId(dialogId);
+        const {peer} = this.state;
         if (peer === null) {
             return;
         }
@@ -485,7 +497,7 @@ class Chat extends React.Component<IProps, IState> {
             });
         };
 
-        this.messageRepo.getMany({peer, limit: 20}).then((data) => {
+        this.messageRepo.getMany({peer, limit: 25}).then((data) => {
             let maxId = 0;
             if (data.length === 0) {
                 messages = [];
@@ -503,11 +515,14 @@ class Chat extends React.Component<IProps, IState> {
             if (this.dialogMap.hasOwnProperty(dialogId)) {
                 maxReadId = this.state.dialogs[this.dialogMap[dialogId]].readoutboxmaxid || 0;
             }
+            window.console.log(messages);
             this.setState({
                 isTyping: false,
                 maxReadId,
                 messages,
                 selectedDialogId: dialogId,
+                textInputMessage: undefined,
+                textInputMessageMode: C_MSG_MODE.Normal,
             }, () => {
                 if (messages.length > 0) {
                     window.console.log('maxReadId', maxReadId, 'maxId', maxId);
@@ -516,9 +531,7 @@ class Chat extends React.Component<IProps, IState> {
                     updateState();
                 }
                 if (messages.length > 0) {
-                    if (this.canSendReadHistory(maxId)) {
-                        this.sdk.setMessagesReadHistory(peer, maxId);
-                    }
+                    this.sendReadHistory(peer, maxId);
                 }
             });
         }).catch((err: any) => {
@@ -530,7 +543,7 @@ class Chat extends React.Component<IProps, IState> {
         if (this.isLoading) {
             return;
         }
-        const peer = this.getPeerByDialogId(this.state.selectedDialogId);
+        const {peer} = this.state;
         if (peer === null) {
             return;
         }
@@ -567,7 +580,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
-        const peer = this.getPeerByDialogId(this.state.selectedDialogId);
+        const {peer} = this.state;
         if (peer === null) {
             return;
         }
@@ -599,13 +612,15 @@ class Chat extends React.Component<IProps, IState> {
                 senderid: this.connInfo.UserID,
             };
 
+            let replyTo;
             if (param && param.mode === C_MSG_MODE.Reply) {
                 message.replyto = param.message.id;
+                replyTo = param.message.id;
             }
 
             this.pushMessage(message);
 
-            this.sdk.sendMessage(text, peer).then((msg) => {
+            this.sdk.sendMessage(text, peer, replyTo).then((msg) => {
                 this.messageRepo.remove(message._id || '');
                 message.id = msg.messageid;
                 message._id = String(msg.messageid);
@@ -633,7 +648,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.animateToEnd();
             }, 100);
         });
-        this.messageRepo.create(message);
+        this.messageRepo.lazyUpsert([message]);
     }
 
     private onNewMessageOpen = () => {
@@ -690,7 +705,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private onTyping = (typing: boolean) => {
-        const peer = this.getPeerByDialogId(this.state.selectedDialogId);
+        const {peer} = this.state;
         if (peer === null) {
             return;
         }
@@ -979,15 +994,17 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private canSendReadHistory(msgId: number): boolean {
+    private sendReadHistory(peer: InputPeer | null, msgId: number) {
+        if (!peer || !this.isInChat) {
+            return;
+        }
         const {selectedDialogId, dialogs} = this.state;
         if (this.dialogMap.hasOwnProperty(selectedDialogId)) {
             const dialog = dialogs[this.dialogMap[selectedDialogId]];
             if ((dialog.readinboxmaxid || 0) < msgId) {
-                return true;
+                this.sdk.setMessagesReadHistory(peer, msgId);
             }
         }
-        return false;
     }
 
     private messageContextMenuHandler = (cmd: string, message: IMessage) => {

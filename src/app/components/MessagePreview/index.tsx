@@ -4,14 +4,18 @@ import './style.css';
 import {IMessage} from "../../repository/message/interface";
 import UserName from "../UserName";
 import MessageRepo from "../../repository/message";
+import {InputPeer} from "../../services/sdk/messages/core.types_pb";
 
 interface IProps {
     message: IMessage;
+    peer: InputPeer | null;
 }
 
 interface IState {
+    error: boolean;
     message: IMessage;
-    previewMessage?: IMessage;
+    peer: InputPeer | null;
+    previewMessage?: IMessage | null;
 }
 
 class MessagePreview extends React.Component<IProps, IState> {
@@ -22,7 +26,9 @@ class MessagePreview extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
+            error: false,
             message: props.message,
+            peer: props.peer,
         };
 
         this.messageRepo = MessageRepo.getInstance();
@@ -48,9 +54,26 @@ class MessagePreview extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {message, previewMessage} = this.state;
+        const {message, previewMessage, error} = this.state;
         if (!message.replyto || message.replyto === 0) {
             return '';
+        }
+        if (!previewMessage && error) {
+            return (
+                <div className="message-preview">
+                    <div className="preview-container">
+                        <div className="preview-message-wrapper reply-you">
+                            <span className="preview-bar"/>
+                            <div className="preview-message">
+                                <span className="preview-message-user">Error</span>
+                                <div className="preview-message-body">
+                                    <div className="inner ltr">Replied message</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
         }
         if (!previewMessage) {
             return (<div className="message-preview"/>);
@@ -83,12 +106,18 @@ class MessagePreview extends React.Component<IProps, IState> {
     }
 
     private getMessage() {
-        this.messageRepo.get(this.state.message.replyto || 0).then((message) => {
+        const {message, peer} = this.state;
+        this.messageRepo.get(message.replyto || 0, peer).then((res) => {
             this.setState({
-                previewMessage: message,
+                error: false,
+                previewMessage: res,
             });
         }).catch((err) => {
             window.console.log(err);
+            this.setState({
+                error: true,
+                previewMessage: null,
+            });
         });
     }
 }

@@ -9,7 +9,7 @@ message MessagesSend {
     required int64 RandomID = 1;
     required InputPeer Peer = 2;
     required string Body = 5;
-    optional int64 ReplyTo = 6 [jstype = JS_STRING];
+    optional int64 ReplyTo = 6;
 }
 
 // MessagesEdit

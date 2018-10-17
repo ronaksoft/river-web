@@ -89,15 +89,13 @@
     }
   }
   .previews {
-    padding: 8px 0 0;
     display: flex;
+    transition: height 0.1s;
+    overflow: hidden;
+    height: 0;
     .preview-container {
-      display: flex;
+      margin: 8px 0 0 48px;
       overflow: hidden;
-      margin-left: 48px;
-      background-color: rgba(0, 0, 0, 0.05);
-      border-top-right-radius: 5px;
-      border-bottom-right-radius: 5px;
       flex: 1;
       .preview-message-wrapper {
         display: flex;
@@ -105,6 +103,9 @@
         z-index: 1;
         overflow: hidden;
         width: 100%;
+        background-color: rgba(0, 0, 0, 0.05);
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
         .preview-bar {
           flex: none;
           width: 4px;
@@ -133,10 +134,14 @@
             text-align: left;
             width: 100%;
             padding: 3px 0 0;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 100;
             .inner {
               line-height: 1.2em;
+              max-height: 2.4em;
+              white-space: normal;
+              overflow: hidden;
+              text-overflow: ellipsis;
               &.rtl {
                 direction: rtl;
               }
@@ -165,6 +170,7 @@
       }
     }
     .preview-clear {
+      margin: 8px 0 0;
       width: 48px;
       display: flex;
       justify-content: center;
@@ -173,7 +179,7 @@
         height: 32px;
         width: 32px;
         svg {
-          font-size: 16px;
+          font-size: 20px;
         }
       }
     }

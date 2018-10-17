@@ -125,7 +125,7 @@ proto.msg.MessagesSend.deserializeBinaryFromReader = function(msg, reader) {
       msg.setBody(value);
       break;
     case 6:
-      var value = /** @type {string} */ (reader.readInt64String());
+      var value = /** @type {number} */ (reader.readInt64());
       msg.setReplyto(value);
       break;
     default:
@@ -179,9 +179,9 @@ proto.msg.MessagesSend.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 6));
+  f = /** @type {number} */ (jspb.Message.getField(message, 6));
   if (f != null) {
-    writer.writeInt64String(
+    writer.writeInt64(
       6,
       f
     );
@@ -279,14 +279,14 @@ proto.msg.MessagesSend.prototype.hasBody = function() {
 
 /**
  * optional int64 ReplyTo = 6;
- * @return {string}
+ * @return {number}
  */
 proto.msg.MessagesSend.prototype.getReplyto = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, "0"));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
 };
 
 
-/** @param {string} value */
+/** @param {number} value */
 proto.msg.MessagesSend.prototype.setReplyto = function(value) {
   jspb.Message.setField(this, 6, value);
 };

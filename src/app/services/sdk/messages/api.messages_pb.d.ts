@@ -22,8 +22,8 @@ export class MessagesSend extends jspb.Message {
 
   hasReplyto(): boolean;
   clearReplyto(): void;
-  getReplyto(): string | undefined;
-  setReplyto(value: string): void;
+  getReplyto(): number | undefined;
+  setReplyto(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesSend.AsObject;
@@ -40,7 +40,7 @@ export namespace MessagesSend {
     randomid?: number,
     peer: core_types_pb.InputPeer.AsObject,
     body?: string,
-    replyto?: string,
+    replyto?: number,
   }
 }
 

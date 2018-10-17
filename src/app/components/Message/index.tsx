@@ -8,11 +8,13 @@ import {MoreVert} from '@material-ui/icons';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MessagePreview from "../MessagePreview";
+import {InputPeer} from "../../services/sdk/messages/core.types_pb";
 
 interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
     items: IMessage[];
     onLoadMore?: () => any;
+    peer: InputPeer | null;
     readId: number;
     rendered?: () => void;
 }
@@ -23,6 +25,7 @@ interface IState {
     moreAnchorEl: any;
     moreIndex: number;
     noTransition: boolean;
+    peer: InputPeer | null;
     readId: number;
     scrollIndex: number;
 }
@@ -41,6 +44,7 @@ class Message extends React.Component<IProps, IState> {
             moreAnchorEl: null,
             moreIndex: -1,
             noTransition: false,
+            peer: props.peer,
             readId: props.readId,
             scrollIndex: -1,
         };
@@ -51,20 +55,12 @@ class Message extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        this.setState({
-            items: this.props.items,
-            moreAnchorEl: null,
-            moreIndex: -1,
-            noTransition: true,
-            scrollIndex: this.props.items.length - 1,
-        }, () => {
-            this.fitList();
-            setTimeout(() => {
-                this.setState({
-                    noTransition: false,
-                });
-            }, 50);
-        });
+        this.fitList();
+        setTimeout(() => {
+            this.setState({
+                noTransition: false,
+            });
+        }, 50);
         this.listCount = this.props.items.length;
         this.topOfList = false;
     }
@@ -76,6 +72,7 @@ class Message extends React.Component<IProps, IState> {
                 moreAnchorEl: null,
                 moreIndex: -1,
                 noTransition: true,
+                peer: newProps.peer,
                 scrollIndex: newProps.items.length - 1,
             }, () => {
                 this.fitList(true);
@@ -225,9 +222,10 @@ class Message extends React.Component<IProps, IState> {
                         <UserAvatar id={data.senderid} className="avatar"/>
                     )}
                     {(data.avatar && data.senderid) && (<div className="arrow"/>)}
-                    <div className={'bubble b_' + data._id + ((data.editedon || 0) > 0 ? ' edited' : '')}>
-                        <MessagePreview message={data}/>
-                        <div className={'inner' + (data.rtl ? ' rtl' : '')}
+                    <div className={'bubble b_' + data._id + ((data.editedon || 0) > 0 ? ' edited' : '')}
+                         onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}>
+                        <MessagePreview message={data} peer={this.state.peer}/>
+                        <div className={'inner ' + (data.rtl ? 'rtl' : 'ltr')}
                              dangerouslySetInnerHTML={{__html: this.formatText(data.body)}}/>
                         <MessageStatus status={data.me || false} id={data.id} readId={this.state.readId}
                                        time={data.createdon || 0} editedTime={data.editedon || 0}/>

@@ -104,22 +104,23 @@ body {
         left: 6px;
         bottom: 0; }
   .write .previews {
-    padding: 8px 0 0;
-    display: flex; }
+    display: flex;
+    transition: height 0.1s;
+    overflow: hidden;
+    height: 0; }
     .write .previews .preview-container {
-      display: flex;
+      margin: 8px 0 0 48px;
       overflow: hidden;
-      margin-left: 48px;
-      background-color: rgba(0, 0, 0, 0.05);
-      border-top-right-radius: 5px;
-      border-bottom-right-radius: 5px;
       flex: 1; }
       .write .previews .preview-container .preview-message-wrapper {
         display: flex;
         position: relative;
         z-index: 1;
         overflow: hidden;
-        width: 100%; }
+        width: 100%;
+        background-color: rgba(0, 0, 0, 0.05);
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px; }
         .write .previews .preview-container .preview-message-wrapper .preview-bar {
           flex: none;
           width: 4px;
@@ -147,10 +148,14 @@ body {
             text-align: left;
             width: 100%;
             padding: 3px 0 0;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 100; }
             .write .previews .preview-container .preview-message-wrapper .preview-message .preview-message-body .inner {
-              line-height: 1.2em; }
+              line-height: 1.2em;
+              max-height: 2.4em;
+              white-space: normal;
+              overflow: hidden;
+              text-overflow: ellipsis; }
               .write .previews .preview-container .preview-message-wrapper .preview-message .preview-message-body .inner.rtl {
                 direction: rtl; }
               .write .previews .preview-container .preview-message-wrapper .preview-message .preview-message-body .inner.ltr {
@@ -164,6 +169,7 @@ body {
         .write .previews .preview-container .preview-message-wrapper.reply-you .preview-message .preview-message-user {
           color: #6bcbef; }
     .write .previews .preview-clear {
+      margin: 8px 0 0;
       width: 48px;
       display: flex;
       justify-content: center;
@@ -172,4 +178,4 @@ body {
         height: 32px;
         width: 32px; }
         .write .previews .preview-clear .btn-clear svg {
-          font-size: 16px; }
+          font-size: 20px; }

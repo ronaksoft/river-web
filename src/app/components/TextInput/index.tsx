@@ -28,6 +28,7 @@ interface IProps {
 interface IState {
     emojiAnchorEl: any;
     previewMessage: IMessage | null;
+    previewMessageHeight: number;
     previewMessageMode: number;
     rtl: boolean;
     userId: string;
@@ -46,6 +47,7 @@ class TextInput extends React.Component<IProps, IState> {
         this.state = {
             emojiAnchorEl: null,
             previewMessage: this.props.previewMessage || null,
+            previewMessageHeight: 0,
             previewMessageMode: this.props.previewMessageMode || C_MSG_MODE.Normal,
             rtl: false,
             userId: props.userId || '',
@@ -64,6 +66,8 @@ class TextInput extends React.Component<IProps, IState> {
             previewMessage: newProps.previewMessage || null,
             previewMessageMode: newProps.previewMessageMode || C_MSG_MODE.Normal,
             userId: newProps.userId || '',
+        }, () => {
+            this.animatePreviewMessage();
         });
         if (newProps.previewMessageMode === C_MSG_MODE.Edit && newProps.previewMessage) {
             this.textarea.value = newProps.previewMessage.body;
@@ -71,10 +75,10 @@ class TextInput extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {previewMessage, previewMessageMode} = this.state;
+        const {previewMessage, previewMessageMode, previewMessageHeight} = this.state;
         return (
             <div className="write">
-                {previewMessage && <div className="previews">
+                {previewMessage && <div className="previews" style={{height: previewMessageHeight + 'px'}}>
                     <div className="preview-container">
                         <div
                             className={'preview-message-wrapper ' + this.getPreviewCN(previewMessageMode, previewMessage.senderid || '')}>
@@ -254,12 +258,39 @@ class TextInput extends React.Component<IProps, IState> {
 
     private clearPreviewMessage = () => {
         this.setState({
-            previewMessage: null,
-            previewMessageMode: C_MSG_MODE.Normal,
+            previewMessageHeight: 0,
         });
-        if (this.props.clearPreviewMessage) {
-            this.props.clearPreviewMessage();
-        }
+        setTimeout(() => {
+            this.setState({
+                previewMessage: null,
+                previewMessageMode: C_MSG_MODE.Normal,
+            });
+            if (this.props.clearPreviewMessage) {
+                this.props.clearPreviewMessage();
+            }
+        }, 102);
+    }
+
+    private animatePreviewMessage() {
+        setTimeout(() => {
+            const el = document.querySelector('.write .previews .preview-message-wrapper');
+            if (el && this.state.previewMessage) {
+                const targetEl = document.querySelector('.write .previews');
+                if (targetEl) {
+                    this.setState({
+                        previewMessageHeight: (el.clientHeight + 8)
+                    });
+                } else {
+                    this.setState({
+                        previewMessageHeight: 0,
+                    });
+                }
+            } else {
+                this.setState({
+                    previewMessageHeight: 0,
+                });
+            }
+        }, 50);
     }
 }
 

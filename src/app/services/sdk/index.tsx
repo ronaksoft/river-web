@@ -179,13 +179,14 @@ export default class SDK {
         return this.server.send(C_MSG.MessagesGetDialogs, data.serializeBinary());
     }
 
-    public sendMessage(body: string, peer: InputPeer, replyTo?: string): Promise<MessagesSent.AsObject> {
+    public sendMessage(body: string, peer: InputPeer, replyTo?: number): Promise<MessagesSent.AsObject> {
         const data = new MessagesSend();
         // this.msgId++;
         data.setRandomid(parseInt(Math.random().toFixed(10).split('.')[1], 10));
         data.setBody(body);
         data.setPeer(peer);
         if (replyTo) {
+            window.console.log(replyTo);
             data.setReplyto(replyTo);
         }
         return this.server.send(C_MSG.MessagesSend, data.serializeBinary());

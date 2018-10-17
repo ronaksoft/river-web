@@ -129,6 +129,9 @@ body {
       .bubble-wrapper .bubble .inner.rtl {
         direction: rtl;
         text-align: right; }
+      .bubble-wrapper .bubble .inner.ltr {
+        direction: ltr;
+        text-align: left; }
     .bubble-wrapper .bubble .more {
       position: absolute;
       top: 3px;

@@ -5,6 +5,7 @@ import SDK from '../../services/sdk';
 import UserRepo from '../user';
 import RTLDetector from '../../services/utilities/rtl_detector';
 import {IDialog} from "../dialog/interface";
+import {InputPeer} from "../../services/sdk/messages/core.types_pb";
 
 export default class MessageRepo {
     public static getInstance() {
@@ -102,7 +103,8 @@ export default class MessageRepo {
     public getManyCache({peerId, limit, before, after}: any): Promise<IMessage[]> {
         const q: any = [
             {peerid: peerId},
-            {id: {'$gt': 0}}
+            {id: {'$gt': 0}},
+            {temp: {'$ne': true}},
         ];
         if (before !== null && before !== undefined) {
             q.push({id: {'$lt': before}});
@@ -123,32 +125,28 @@ export default class MessageRepo {
         });
     }
 
-    public get(id: number): Promise<IMessage> {
-        return this.db.get(String(id));
-    }
-
-    public getMessagesWithTimestamp({peerId, skip, before, after}: any): Promise<IMessage[]> {
-        const q: any = [
-            {peerid: peerId},
-            {createdon: {'$exists': true}},
-        ];
-        if (before) {
-            q.push({createdon: {'$lt': before}});
-        }
-        if (after) {
-            q.push({createdon: {'$gt': after}});
-        }
-        return this.db.find({
-            limit: (skip || 30),
-            selector: {
-                $and: q,
-            },
-            sort: [
-                {conversation_id: 'desc'},
-                {createdon: 'desc'},
-            ],
-        }).then((result: any) => {
-            return result.docs;
+    public get(id: number, peer?: InputPeer | null): Promise<IMessage> {
+        return new Promise((resolve, reject) => {
+            this.db.get(String(id)).then((res: IMessage) => {
+                resolve(res);
+            }).catch(() => {
+                if (peer) {
+                    this.sdk.getMessageHistory(peer, {minId: id, maxId: id}).then((remoteRes) => {
+                        window.console.log(id, remoteRes);
+                        if (remoteRes.messagesList.length === 0) {
+                            reject();
+                        } else {
+                            const message = remoteRes.messagesList[0];
+                            this.lazyUpsert([message], true);
+                            resolve(message);
+                        }
+                    }).catch((err) => {
+                        reject(err);
+                    });
+                } else {
+                    reject();
+                }
+            });
         });
     }
 
@@ -216,19 +214,20 @@ export default class MessageRepo {
         });
     }
 
-    public lazyUpsert(messages: IMessage[]) {
+    public lazyUpsert(messages: IMessage[], temp?: boolean) {
         if (this.userId === '0' || this.userId === '') {
             this.loadConnInfo();
         }
-        clone(messages).forEach((dialog) => {
-            this.updateMap(dialog);
+        clone(messages).forEach((message) => {
+            this.updateMap(message, temp);
         });
         this.updateThrottle();
     }
 
-    private updateMap = (message: IMessage) => {
+    private updateMap = (message: IMessage, temp?: boolean) => {
         message.me = (message.senderid === this.userId);
         message.rtl = this.rtlDetector.direction(message.body || '');
+        message.temp = (temp === true);
         if (this.lazyMap.hasOwnProperty(message.id || 0)) {
             const t = this.lazyMap[message.id || 0];
             this.lazyMap[message.id || 0] = merge(message, t);
