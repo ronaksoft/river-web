@@ -12,7 +12,7 @@
   --wrapper: 1200px;
   --blue: #00b0ff;
   --light-blue: rgba(54, 115, 249, 0.2);
-  --green: #60BF70;
+  --green: #dcf8c6;
   --message-chat: #EFEFF0;
   --color-hover: rgba(50, 61, 71, 0.08);
   --color-text-hover: rgba(50, 61, 71, 0.64); }
@@ -71,16 +71,17 @@ body {
           padding: 1px 0 0;
           font-size: 13px;
           font-weight: 100; }
-          .message-preview .preview-container .preview-message-wrapper .preview-message .preview-message-body .inner {
+          .message-preview .preview-container .preview-message-wrapper .preview-message .preview-message-body > .inner {
             line-height: 1.2em;
             height: 15px;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap; }
-            .message-preview .preview-container .preview-message-wrapper .preview-message .preview-message-body .inner.rtl {
+            white-space: nowrap;
+            padding: 0; }
+            .message-preview .preview-container .preview-message-wrapper .preview-message .preview-message-body > .inner.rtl {
               direction: rtl;
               text-align: right; }
-            .message-preview .preview-container .preview-message-wrapper .preview-message .preview-message-body .inner.ltr {
+            .message-preview .preview-container .preview-message-wrapper .preview-message .preview-message-body > .inner.ltr {
               direction: ltr;
               text-align: left; }
       .message-preview .preview-container .preview-message-wrapper.reply-you .preview-bar {
@@ -89,16 +90,13 @@ body {
         color: #6bcbef; }
 
 .me .message-preview .preview-container .preview-message-wrapper.reply-you .preview-bar {
-  background-color: #3d6f84; }
+  background-color: #6bcbef; }
 
 .me .message-preview .preview-container .preview-message-wrapper.reply-you .preview-message .preview-message-user {
-  color: #3d6f84; }
+  color: #6bcbef; }
 
 .me .message-preview .preview-container .preview-message-wrapper.reply .preview-bar {
-  background-color: #24855f; }
+  background-color: #35cd96; }
 
 .me .message-preview .preview-container .preview-message-wrapper.reply .preview-message .preview-message-user {
-  color: #24855f; }
-
-.me .message-preview .preview-container .preview-message-wrapper .preview-message {
-  background-color: rgba(255, 255, 255, 0.15); }
+  color: #35cd96; }

@@ -12,7 +12,7 @@
   --wrapper: 1200px;
   --blue: #00b0ff;
   --light-blue: rgba(54, 115, 249, 0.2);
-  --green: #60BF70;
+  --green: #dcf8c6;
   --message-chat: #EFEFF0;
   --color-hover: rgba(50, 61, 71, 0.08);
   --color-text-hover: rgba(50, 61, 71, 0.64); }
@@ -29,7 +29,7 @@ body {
 
 .message-status {
   position: absolute;
-  bottom: 3px;
+  bottom: 6px;
   right: 3px;
   display: inline-block;
   height: 10px;
@@ -41,9 +41,9 @@ body {
   white-space: nowrap; }
   .message-status .icon {
     display: inline-block;
-    height: 10px;
-    width: 10px;
-    margin: 0 0 0 3px;
+    height: 13px;
+    width: 13px;
+    margin: -2px 0 -2px 3px;
     vertical-align: bottom;
     background-size: contain;
     background-repeat: no-repeat;
@@ -60,10 +60,10 @@ body {
     padding: 0 3px 0 5px; }
 
 .me .bubble .message-status {
-  color: #eee; }
+  color: #555; }
   .me .bubble .message-status .icon.pending {
-    background-image: url(../../../asset/image/pending-w.svg); }
+    background-image: url(../../../asset/image/pending.svg); }
   .me .bubble .message-status .icon.check {
-    background-image: url(../../../asset/image/check-w.svg); }
+    background-image: url(../../../asset/image/check.svg); }
   .me .bubble .message-status .icon.double-check {
-    background-image: url(../../../asset/image/double-check-w.svg); }
+    background-image: url(../../../asset/image/double-check.svg); }

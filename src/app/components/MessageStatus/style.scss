@@ -2,7 +2,7 @@
 
 .message-status {
   position: absolute;
-  bottom: 3px;
+  bottom: 6px;
   right: 3px;
   display: inline-block;
   height: 10px;
@@ -14,9 +14,9 @@
   white-space: nowrap;
   .icon {
     display: inline-block;
-    height: 10px;
-    width: 10px;
-    margin: 0 0 0 3px;
+    height: 13px;
+    width: 13px;
+    margin: -2px 0 -2px 3px;
     vertical-align: bottom;
     background-size: contain;
     background-repeat: no-repeat;
@@ -40,16 +40,16 @@
 }
 
 .me .bubble .message-status {
-  color: #eee;
+  color: #555;
   .icon {
     &.pending {
-      background-image: url(../../../asset/image/pending-w.svg);
+      background-image: url(../../../asset/image/pending.svg);
     }
     &.check {
-      background-image: url(../../../asset/image/check-w.svg);
+      background-image: url(../../../asset/image/check.svg);
     }
     &.double-check {
-      background-image: url(../../../asset/image/double-check-w.svg);
+      background-image: url(../../../asset/image/double-check.svg);
     }
   }
 }

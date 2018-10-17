@@ -180,7 +180,6 @@ class Chat extends React.Component<IProps, IState> {
                 return;
             }
             const message: IMessage = data.message;
-            window.console.log(message);
             message._id = String(message.id);
             message.me = (this.connInfo.UserID === message.senderid);
             if (data.message.peerid === this.state.selectedDialogId) {
@@ -206,7 +205,6 @@ class Chat extends React.Component<IProps, IState> {
             if (this.state.isUpdating) {
                 return;
             }
-            window.console.log(data.message);
             this.messageRepo.lazyUpsert([data.message]);
             this.userRepo.importBulk([data.sender]);
         }));
@@ -511,11 +509,11 @@ class Chat extends React.Component<IProps, IState> {
                 msg.avatar = (key > 0 && msg.senderid !== messages[key - 1].senderid || key === 0 && msg.senderid !== this.connInfo.UserID);
                 return msg;
             });
+            window.console.log(messages);
             let maxReadId = 0;
             if (this.dialogMap.hasOwnProperty(dialogId)) {
                 maxReadId = this.state.dialogs[this.dialogMap[dialogId]].readoutboxmaxid || 0;
             }
-            window.console.log(messages);
             this.setState({
                 isTyping: false,
                 maxReadId,
@@ -819,7 +817,6 @@ class Chat extends React.Component<IProps, IState> {
         const lastId = this.syncManager.getLastUpdateId();
         return new Promise((resolve, reject) => {
             this.sdk.getUpdateState().then((res) => {
-                window.console.log(res);
                 if ((res.updateid || 0) - lastId > 1000) {
                     reject({
                         err: 'too_late',
@@ -899,7 +896,6 @@ class Chat extends React.Component<IProps, IState> {
                 isUpdating: true,
             });
         }).catch((err) => {
-            window.console.log(err);
             if (err.err !== 'too_soon') {
                 this.snapshot();
             }
@@ -952,7 +948,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private userDBUpdatedHandler = () => {
-        window.console.log('Message_DB_Updated');
+        window.console.log('User_DB_Updated');
     }
 
     private notify = (title: string, body: string) => {
@@ -961,14 +957,13 @@ class Chat extends React.Component<IProps, IState> {
                 body,
                 icon: '/android-icon-192x192.png',
             };
+            // @ts-ignore
             const notification = new Notification(title, options);
-            window.console.log(notification);
         }
     }
 
     private logOutHandler = () => {
         this.sdk.logout(this.connInfo.AuthID).then((res) => {
-            window.console.log(res);
             this.sdk.resetConnInfo();
             this.mainRepo.destroyDB().then(() => {
                 this.syncManager.setLastUpdateId(0);

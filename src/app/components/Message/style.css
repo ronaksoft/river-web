@@ -12,7 +12,7 @@
   --wrapper: 1200px;
   --blue: #00b0ff;
   --light-blue: rgba(54, 115, 249, 0.2);
-  --green: #60BF70;
+  --green: #dcf8c6;
   --message-chat: #EFEFF0;
   --color-hover: rgba(50, 61, 71, 0.08);
   --color-text-hover: rgba(50, 61, 71, 0.64); }
@@ -113,23 +113,24 @@ body {
       object-fit: cover; }
   .bubble-wrapper .bubble {
     position: relative;
-    font-size: 12px;
+    font-size: 14px;
     line-height: 17px;
     display: inline-block;
     clear: both;
-    padding: 3px 6px 15px 6px;
+    padding: 3px 3px 15px 3px;
     vertical-align: top;
     border-radius: 5px;
     max-width: 558px;
     min-width: 75px;
     min-height: 35px;
     box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.1); }
-    .bubble-wrapper .bubble .inner {
-      direction: ltr; }
-      .bubble-wrapper .bubble .inner.rtl {
+    .bubble-wrapper .bubble > .inner {
+      direction: ltr;
+      padding: 4px 70px 0 4px; }
+      .bubble-wrapper .bubble > .inner.rtl {
         direction: rtl;
         text-align: right; }
-      .bubble-wrapper .bubble .inner.ltr {
+      .bubble-wrapper .bubble > .inner.ltr {
         direction: ltr;
         text-align: left; }
     .bubble-wrapper .bubble .more {
@@ -163,7 +164,7 @@ body {
     padding-top: 6px; }
   .bubble-wrapper.me .bubble {
     float: right;
-    color: var(--white);
+    color: var(--black-text);
     background-color: var(--green);
     align-self: flex-end;
     animation-name: slideFromRight;

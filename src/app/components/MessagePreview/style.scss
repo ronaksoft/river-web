@@ -45,12 +45,13 @@
           padding: 1px 0 0;
           font-size: 13px;
           font-weight: 100;
-          .inner {
+          > .inner {
             line-height: 1.2em;
             height: 15px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            padding: 0;
             &.rtl {
               direction: rtl;
               text-align: right;
@@ -64,10 +65,10 @@
       }
       &.reply-you {
         .preview-bar {
-          background-color: #6bcbef
+          background-color: #6bcbef;
         }
         .preview-message .preview-message-user {
-          color: #6bcbef
+          color: #6bcbef;
         }
       }
     }
@@ -77,21 +78,21 @@
 .me .message-preview .preview-container .preview-message-wrapper {
   &.reply-you {
     .preview-bar {
-      background-color: #3d6f84
+      background-color: #6bcbef;
     }
     .preview-message .preview-message-user {
-      color: #3d6f84
+      color: #6bcbef;
     }
   }
   &.reply {
     .preview-bar {
-      background-color: #24855f
+      background-color: #35cd96
     }
     .preview-message .preview-message-user {
-      color: #24855f
+      color: #35cd96;
     }
   }
-  .preview-message {
-    background-color: rgba(255, 255, 255, 0.15);
-  }
+  //.preview-message {
+  //  background-color: rgba(255, 255, 255, 0.15);
+  //}
 }
