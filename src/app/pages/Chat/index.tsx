@@ -12,7 +12,7 @@ import DialogRepo from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
 import Uploader from '../../components/Uploader/index';
 import TextInput from '../../components/TextInput/index';
-import {trimStart, throttle} from 'lodash';
+import {trimStart, throttle, findIndex} from 'lodash';
 import SDK from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
 import {InputPeer, PeerType, PhoneContact, TypingAction} from '../../services/sdk/messages/core.types_pb';
@@ -21,6 +21,7 @@ import {IDialog} from '../../repository/dialog/interface';
 import UpdateManager from '../../services/sdk/server/updateManager';
 import {C_MSG} from '../../services/sdk/const';
 import {
+    UpdateMessageEdited,
     UpdateNewMessage,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox,
@@ -63,7 +64,7 @@ interface IState {
 class Chat extends React.Component<IProps, IState> {
     private isInChat: boolean = true;
     private rightMenu: any = null;
-    private message: any = null;
+    private messageComponent: any = null;
     private messageRepo: MessageRepo;
     private dialogRepo: DialogRepo;
     private userRepo: UserRepo;
@@ -115,6 +116,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
+        // Global event listeners
         window.addEventListener('focus', this.windowFocusHandler);
         window.addEventListener('blur', this.windowBlurHandler);
         window.addEventListener('wasmInit', this.wasmInitHandler);
@@ -125,7 +127,9 @@ class Chat extends React.Component<IProps, IState> {
         window.addEventListener('Message_DB_Updated', this.messageDBUpdatedHandler);
         window.addEventListener('User_DB_Updated', this.userDBUpdatedHandler);
 
+        // Get latest cached dialogs
         this.dialogRepo.getManyCache({}).then((res) => {
+            // Map indexes in order to to find them with O(1)
             res.forEach((dialog, index) => {
                 this.dialogMap[dialog.peerid || ''] = index;
             });
@@ -144,6 +148,7 @@ class Chat extends React.Component<IProps, IState> {
             this.isLoading = false;
         });
 
+        // Update: Out of sync (internal)
         this.eventReferences.push(this.updateManager.listen(C_MSG.OutOfSync, () => {
             if (this.state.isUpdating) {
                 return;
@@ -162,11 +167,11 @@ class Chat extends React.Component<IProps, IState> {
             });
         }));
 
+        // Update: New Message Received
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNewMessage, (data: UpdateNewMessage.AsObject) => {
             if (this.state.isUpdating) {
                 return;
             }
-            window.console.log(data);
             const message: IMessage = data.message;
             message._id = String(message.id);
             message.me = (this.connInfo.UserID === message.senderid);
@@ -179,7 +184,7 @@ class Chat extends React.Component<IProps, IState> {
                     }
                 }
             }
-            this.messageRepo.importBulk([data.message]);
+            this.messageRepo.lazyUpsert([data.message]);
             this.userRepo.importBulk([data.sender]);
             this.updateDialogs(data.message, data.accesshash || '0');
             if (!this.isInChat && data.message.senderid !== this.connInfo.UserID) {
@@ -192,14 +197,32 @@ class Chat extends React.Component<IProps, IState> {
             }
         }));
 
+        // Update: Message Dropped (internal)
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNewMessageDrop, (data: UpdateNewMessage.AsObject) => {
             if (this.state.isUpdating) {
                 return;
             }
-            this.messageRepo.importBulk([data.message]);
+            this.messageRepo.lazyUpsert([data.message]);
             this.userRepo.importBulk([data.sender]);
         }));
 
+        // Update: Message Edited
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateMessageEdited, (data: UpdateMessageEdited.AsObject) => {
+            if (this.state.isUpdating) {
+                return;
+            }
+            this.messageRepo.lazyUpsert([data.message]);
+            if (this.state.selectedDialogId === data.message.peerid) {
+                const {messages} = this.state;
+                const index = findIndex(messages, {id: data.message.id});
+                if (index > -1) {
+                    messages[index] = data.message;
+                    this.messageComponent.list.forceUpdateGrid();
+                }
+            }
+        }));
+
+        // Update: User is typing
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUserTyping, (data: UpdateUserTyping.AsObject) => {
             if (this.state.isUpdating) {
                 return;
@@ -221,6 +244,7 @@ class Chat extends React.Component<IProps, IState> {
             }, 5000);
         }));
 
+        // Update: Read Inbox History
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateReadHistoryInbox, (data: UpdateReadHistoryInbox.AsObject) => {
             if (this.state.isUpdating) {
                 return;
@@ -235,6 +259,7 @@ class Chat extends React.Component<IProps, IState> {
             }
         }));
 
+        // Update: Read Outbox History
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateReadHistoryOutbox, (data: UpdateReadHistoryOutbox.AsObject) => {
             if (this.state.isUpdating) {
                 return;
@@ -411,11 +436,11 @@ class Chat extends React.Component<IProps, IState> {
         });
         this.rightMenu.classList.toggle('active');
         setTimeout(() => {
-            this.message.cache.clearAll();
-            this.message.list.recomputeRowHeights();
-            this.message.forceUpdate(() => {
+            this.messageComponent.cache.clearAll();
+            this.messageComponent.list.recomputeRowHeights();
+            this.messageComponent.forceUpdate(() => {
                 setTimeout(() => {
-                    this.message.list.scrollToRow(this.state.messages.length - 1);
+                    this.messageComponent.list.scrollToRow(this.state.messages.length - 1);
                 }, 100);
             });
         }, 200);
@@ -426,7 +451,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private messageRefHandler = (value: any) => {
-        this.message = value;
+        this.messageComponent = value;
     }
 
     private animateToEnd() {
@@ -451,11 +476,11 @@ class Chat extends React.Component<IProps, IState> {
         let messages: IMessage[] = [];
 
         const updateState = () => {
-            this.message.cache.clearAll();
-            this.message.list.recomputeRowHeights();
-            this.message.forceUpdate(() => {
+            this.messageComponent.cache.clearAll();
+            this.messageComponent.list.recomputeRowHeights();
+            this.messageComponent.forceUpdate(() => {
                 setTimeout(() => {
-                    this.message.list.scrollToRow(messages.length - 1);
+                    this.messageComponent.list.scrollToRow(messages.length - 1);
                 }, 100);
             });
         };
@@ -526,9 +551,9 @@ class Chat extends React.Component<IProps, IState> {
             this.setState({
                 messages,
             }, () => {
-                this.message.cache.clearAll();
-                this.message.list.recomputeRowHeights();
-                this.message.forceUpdate(() => {
+                this.messageComponent.cache.clearAll();
+                this.messageComponent.list.recomputeRowHeights();
+                this.messageComponent.forceUpdate(() => {
                     this.isLoading = false;
                 });
             });
@@ -548,7 +573,20 @@ class Chat extends React.Component<IProps, IState> {
         }
 
         if (param && param.mode === C_MSG_MODE.Edit) {
-            window.console.log('edit');
+            const {messages} = this.state;
+            const message: IMessage = param.message;
+            message.body = text;
+            message.editedon = Date.now() / 1000;
+            this.sdk.editMessage(message.id || 0, text, peer).then(() => {
+                const index = findIndex(messages, {id: message.id});
+                if (index > -1) {
+                    messages[index] = message;
+                    this.messageComponent.list.forceUpdateGrid();
+                }
+                this.messageRepo.lazyUpsert([message]);
+            }).catch((err) => {
+                window.console.log(err);
+            });
         } else {
             const id = -UniqueId.getRandomId();
             const message: IMessage = {
@@ -571,10 +609,10 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageRepo.remove(message._id || '');
                 message.id = msg.messageid;
                 message._id = String(msg.messageid);
-                this.messageRepo.importBulk([message]);
+                this.messageRepo.lazyUpsert([message]);
                 this.updateDialogs(message, '0');
                 // Force update messages
-                this.message.list.forceUpdateGrid();
+                this.messageComponent.list.forceUpdateGrid();
             }).catch((err) => {
                 window.console.log(err);
             });

@@ -1897,7 +1897,7 @@ proto.msg.UserMessage.deserializeBinaryFromReader = function(msg, reader) {
       msg.setInbox(value);
       break;
     case 15:
-      var value = /** @type {string} */ (reader.readInt64String());
+      var value = /** @type {number} */ (reader.readInt64());
       msg.setReplyto(value);
       break;
     case 16:
@@ -2031,9 +2031,9 @@ proto.msg.UserMessage.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 15));
+  f = /** @type {number} */ (jspb.Message.getField(message, 15));
   if (f != null) {
-    writer.writeInt64String(
+    writer.writeInt64(
       15,
       f
     );
@@ -2460,14 +2460,14 @@ proto.msg.UserMessage.prototype.hasInbox = function() {
 
 /**
  * optional int64 ReplyTo = 15;
- * @return {string}
+ * @return {number}
  */
 proto.msg.UserMessage.prototype.getReplyto = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 15, "0"));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 15, 0));
 };
 
 
-/** @param {string} value */
+/** @param {number} value */
 proto.msg.UserMessage.prototype.setReplyto = function(value) {
   jspb.Message.setField(this, 15, value);
 };

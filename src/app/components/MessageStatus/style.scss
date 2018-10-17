@@ -6,11 +6,12 @@
   right: 3px;
   display: inline-block;
   height: 10px;
-  width: 70px;
+  min-width: 70px;
   line-height: 0;
   text-align: right;
   color: #555;
   font-size: 10px;
+  white-space: nowrap;
   .icon {
     display: inline-block;
     height: 10px;
@@ -32,6 +33,9 @@
   }
   .time {
     line-height: 10px;
+  }
+  .edited {
+    padding: 0 3px 0 5px;
   }
 }
 

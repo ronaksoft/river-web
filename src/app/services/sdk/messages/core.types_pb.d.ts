@@ -322,8 +322,8 @@ export class UserMessage extends jspb.Message {
 
   hasReplyto(): boolean;
   clearReplyto(): void;
-  getReplyto(): string | undefined;
-  setReplyto(value: string): void;
+  getReplyto(): number | undefined;
+  setReplyto(value: number): void;
 
   hasMessageaction(): boolean;
   clearMessageaction(): void;
@@ -356,7 +356,7 @@ export namespace UserMessage {
     senderid?: string,
     contentread?: boolean,
     inbox?: boolean,
-    replyto?: string,
+    replyto?: number,
     messageaction?: number,
   }
 }

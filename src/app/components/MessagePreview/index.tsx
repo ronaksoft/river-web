@@ -30,7 +30,7 @@ class MessagePreview extends React.Component<IProps, IState> {
 
     public componentDidMount() {
         this.userId = this.messageRepo.getCurrentUserId();
-        if (this.state.message.replyto && this.state.message.replyto !== '0') {
+        if (this.state.message.replyto && this.state.message.replyto !== 0) {
             this.getMessage();
         }
     }
@@ -40,7 +40,7 @@ class MessagePreview extends React.Component<IProps, IState> {
             this.setState({
                 message: newProps.message,
             }, () => {
-                if (this.state.message.replyto && this.state.message.replyto !== '0') {
+                if (this.state.message.replyto && this.state.message.replyto !== 0) {
                     this.getMessage();
                 }
             });
@@ -49,7 +49,7 @@ class MessagePreview extends React.Component<IProps, IState> {
 
     public render() {
         const {message, previewMessage} = this.state;
-        if (!message.replyto || message.replyto === '0') {
+        if (!message.replyto || message.replyto === 0) {
             return '';
         }
         if (!previewMessage) {
@@ -83,7 +83,7 @@ class MessagePreview extends React.Component<IProps, IState> {
     }
 
     private getMessage() {
-        this.messageRepo.get(this.state.message.replyto || '').then((message) => {
+        this.messageRepo.get(this.state.message.replyto || 0).then((message) => {
             this.setState({
                 previewMessage: message,
             });

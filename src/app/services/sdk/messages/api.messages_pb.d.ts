@@ -62,8 +62,8 @@ export class MessagesEdit extends jspb.Message {
 
   hasMessageid(): boolean;
   clearMessageid(): void;
-  getMessageid(): string | undefined;
-  setMessageid(value: string): void;
+  getMessageid(): number | undefined;
+  setMessageid(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesEdit.AsObject;
@@ -80,7 +80,7 @@ export namespace MessagesEdit {
     randomid?: number,
     peer: core_types_pb.InputPeer.AsObject,
     body?: string,
-    messageid?: string,
+    messageid?: number,
   }
 }
 

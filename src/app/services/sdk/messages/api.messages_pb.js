@@ -407,7 +407,7 @@ proto.msg.MessagesEdit.deserializeBinaryFromReader = function(msg, reader) {
       msg.setBody(value);
       break;
     case 4:
-      var value = /** @type {string} */ (reader.readInt64String());
+      var value = /** @type {number} */ (reader.readInt64());
       msg.setMessageid(value);
       break;
     default:
@@ -461,9 +461,9 @@ proto.msg.MessagesEdit.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 4));
+  f = /** @type {number} */ (jspb.Message.getField(message, 4));
   if (f != null) {
-    writer.writeInt64String(
+    writer.writeInt64(
       4,
       f
     );
@@ -561,14 +561,14 @@ proto.msg.MessagesEdit.prototype.hasBody = function() {
 
 /**
  * required int64 MessageID = 4;
- * @return {string}
+ * @return {number}
  */
 proto.msg.MessagesEdit.prototype.getMessageid = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, "0"));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
-/** @param {string} value */
+/** @param {number} value */
 proto.msg.MessagesEdit.prototype.setMessageid = function(value) {
   jspb.Message.setField(this, 4, value);
 };

@@ -137,7 +137,8 @@ body {
       width: 16px;
       display: none;
       cursor: pointer;
-      background-color: inherit; }
+      background-color: inherit;
+      z-index: 10; }
       .bubble-wrapper .bubble .more svg {
         height: 20px;
         font-size: 20px; }
@@ -153,6 +154,8 @@ body {
     animation-name: slideFromLeft;
     text-align: left;
     margin-left: 44px; }
+    .bubble-wrapper.you .bubble.edited {
+      min-width: 80px; }
   .bubble-wrapper.me.avatar {
     padding-top: 6px; }
   .bubble-wrapper.me .bubble {
@@ -163,6 +166,8 @@ body {
     animation-name: slideFromRight;
     text-align: right;
     margin-right: 10px; }
+    .bubble-wrapper.me .bubble.edited {
+      min-width: 92px; }
 
 .context-menu ul {
   padding: 6px 0 !important;

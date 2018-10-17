@@ -84,7 +84,7 @@ message UserMessage {
     required int64 SenderID = 12 [jstype = JS_STRING];//
     required bool ContentRead = 13;
     required bool Inbox = 14;
-    optional int64 ReplyTo = 15 [jstype = JS_STRING];//
+    optional int64 ReplyTo = 15;//
     optional int32 MessageAction = 16;
 }
 

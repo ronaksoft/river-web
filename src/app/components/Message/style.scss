@@ -127,6 +127,7 @@
       display: none;
       cursor: pointer;
       background-color: inherit;
+      z-index: 10;
       svg {
         height: 20px;
         font-size: 20px;
@@ -148,6 +149,9 @@
       animation-name: slideFromLeft;
       text-align: left;
       margin-left: 44px;
+      &.edited {
+        min-width: 80px;
+      }
     }
   }
   &.me {
@@ -162,6 +166,9 @@
       animation-name: slideFromRight;
       text-align: right;
       margin-right: 10px;
+      &.edited {
+        min-width: 92px;
+      }
     }
   }
 }

@@ -1,9 +1,10 @@
 import UserMessageDB from '../../services/db/user_message';
 import {IMessage} from './interface';
-import {differenceBy, find, merge, cloneDeep} from 'lodash';
+import {differenceBy, find, merge, clone, cloneDeep, throttle} from 'lodash';
 import SDK from '../../services/sdk';
 import UserRepo from '../user';
 import RTLDetector from '../../services/utilities/rtl_detector';
+import {IDialog} from "../dialog/interface";
 
 export default class MessageRepo {
     public static getInstance() {
@@ -22,6 +23,8 @@ export default class MessageRepo {
     private userRepo: UserRepo;
     private userId: string;
     private rtlDetector: RTLDetector;
+    private lazyMap: { [key: number]: IDialog } = {};
+    private readonly updateThrottle: any = null;
 
     private constructor() {
         SDK.getInstance().loadConnInfo();
@@ -31,6 +34,7 @@ export default class MessageRepo {
         this.sdk = SDK.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.rtlDetector = RTLDetector.getInstance();
+        this.updateThrottle = throttle(this.insertToDb, 2000);
     }
 
     public loadConnInfo() {
@@ -119,8 +123,7 @@ export default class MessageRepo {
         });
     }
 
-    public get(id: string): Promise<IMessage> {
-        window.console.log(id);
+    public get(id: number): Promise<IMessage> {
         return this.db.get(String(id));
     }
 
@@ -210,6 +213,38 @@ export default class MessageRepo {
             },
         }).then((result: any) => {
             return result.docs.length;
+        });
+    }
+
+    public lazyUpsert(messages: IMessage[]) {
+        if (this.userId === '0' || this.userId === '') {
+            this.loadConnInfo();
+        }
+        clone(messages).forEach((dialog) => {
+            this.updateMap(dialog);
+        });
+        this.updateThrottle();
+    }
+
+    private updateMap = (message: IMessage) => {
+        message.me = (message.senderid === this.userId);
+        message.rtl = this.rtlDetector.direction(message.body || '');
+        if (this.lazyMap.hasOwnProperty(message.id || 0)) {
+            const t = this.lazyMap[message.id || 0];
+            this.lazyMap[message.id || 0] = merge(message, t);
+        } else {
+            message._id = String(message.id);
+            this.lazyMap[message.id || 0] = message;
+        }
+    }
+
+    private insertToDb = () => {
+        const messages: IMessage[] = [];
+        Object.keys(this.lazyMap).forEach((key) => {
+            messages.push(this.lazyMap[key]);
+        });
+        this.upsert(messages).then(() => {
+            this.lazyMap = {};
         });
     }
 }

@@ -225,12 +225,12 @@ class Message extends React.Component<IProps, IState> {
                         <UserAvatar id={data.senderid} className="avatar"/>
                     )}
                     {(data.avatar && data.senderid) && (<div className="arrow"/>)}
-                    <div className={'bubble b_' + data._id}>
+                    <div className={'bubble b_' + data._id + ((data.editedon || 0) > 0 ? ' edited' : '')}>
                         <MessagePreview message={data}/>
                         <div className={'inner' + (data.rtl ? ' rtl' : '')}
                              dangerouslySetInnerHTML={{__html: this.formatText(data.body)}}/>
                         <MessageStatus status={data.me || false} id={data.id} readId={this.state.readId}
-                                       time={data.createdon || 0}/>
+                                       time={data.createdon || 0} editedTime={data.editedon || 0}/>
                         <div className="more" onClick={this.contextMenuHandler.bind(this, index)}>
                             <MoreVert/>
                         </div>

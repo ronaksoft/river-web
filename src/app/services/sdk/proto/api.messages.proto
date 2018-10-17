@@ -19,7 +19,7 @@ message MessagesEdit {
     required int64 RandomID = 1;
     required InputPeer Peer = 2;
     required string Body = 3;
-    required int64 MessageID = 4 [jstype = JS_STRING];
+    required int64 MessageID = 4;
 }
 
 // MessageSendMedia

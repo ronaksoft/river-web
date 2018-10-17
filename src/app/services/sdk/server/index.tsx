@@ -112,7 +112,7 @@ export default class Server {
         window.console.warn(C_MSG_NAME[request.constructor], request.reqId);
         request.timeout = setTimeout(() => {
             this.dispatchTimeout(request.reqId);
-        }, 30000);
+        }, 180000);
         window.dispatchEvent(fnCallbackEvent);
     }
 

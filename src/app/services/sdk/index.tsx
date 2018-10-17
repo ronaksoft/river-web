@@ -15,7 +15,7 @@ import {IConnInfo} from './interface';
 import {ContactsGet, ContactsImport, ContactsImported, ContactsMany} from './messages/api.contacts_pb';
 import {InputPeer, PhoneContact, TypingAction} from './messages/core.types_pb';
 import {
-    MessagesDialogs,
+    MessagesDialogs, MessagesEdit,
     MessagesGetDialogs,
     MessagesGetHistory,
     MessagesMany, MessagesReadHistory,
@@ -189,6 +189,16 @@ export default class SDK {
             data.setReplyto(replyTo);
         }
         return this.server.send(C_MSG.MessagesSend, data.serializeBinary());
+    }
+
+    public editMessage(id: number, body: string, peer: InputPeer): Promise<MessagesSent.AsObject> {
+        const data = new MessagesEdit();
+        // this.msgId++;
+        data.setRandomid(parseInt(Math.random().toFixed(10).split('.')[1], 10));
+        data.setBody(body);
+        data.setPeer(peer);
+        data.setMessageid(id);
+        return this.server.send(C_MSG.MessagesEdit, data.serializeBinary());
     }
 
     public getMessageHistory(peer: InputPeer, {limit, minId, maxId}: any): Promise<MessagesMany.AsObject> {
