@@ -52,10 +52,10 @@ http {
         }
 
         location /ws {
-            # redirect all HTTP traffic to localhost:8080
+            # redirect all HTTP traffic to http://new.river.im
             proxy_pass http://new.river.im;
             proxy_set_header X-Real-IP ${DOLLAR}remote_addr;
-            proxy_set_header Host ${DOLLAR}host;
+            proxy_set_header Host new.river.im;
             proxy_set_header X-Forwarded-For ${DOLLAR}proxy_add_x_forwarded_for;
 
             # WebSocket support (nginx 1.4)
