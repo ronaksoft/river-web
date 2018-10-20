@@ -38,6 +38,7 @@ import SettingMenu from "../../components/SettingMenu";
 import {C_MSG_MODE} from "../../components/TextInput/consts";
 import TimeUtililty from '../../services/utilities/time';
 import {C_MESSAGE_TYPE} from "../../repository/message/consts";
+import PopUpDate from "../../components/PopUpDate";
 
 interface IProps {
     history?: any;
@@ -56,6 +57,7 @@ interface IState {
     messages: IMessage[];
     openNewMessage: boolean;
     peer: InputPeer | null;
+    popUpDate: number | null;
     rightMenu: boolean;
     selectedDialogId: string;
     settingMenu: boolean;
@@ -82,6 +84,7 @@ class Chat extends React.Component<IProps, IState> {
     private typingTimeout: any = null;
     private dialogsSortThrottle: any = null;
     private readHistoryMaxId: number | null = null;
+    private popUpDateTime: any;
 
     constructor(props: IProps) {
         super(props);
@@ -96,6 +99,7 @@ class Chat extends React.Component<IProps, IState> {
             messages: [],
             openNewMessage: false,
             peer: null,
+            popUpDate: null,
             rightMenu: false,
             selectedDialogId: props.match.params.id,
             settingMenu: false,
@@ -318,7 +322,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {anchorEl, settingMenu, textInputMessage, textInputMessageMode, peer, selectedDialogId} = this.state;
+        const {anchorEl, settingMenu, textInputMessage, textInputMessageMode, peer, selectedDialogId, popUpDate} = this.state;
         const open = Boolean(anchorEl);
         return (
             <div className="bg">
@@ -381,12 +385,14 @@ class Chat extends React.Component<IProps, IState> {
                             </span>
                             </div>
                             <div className="conversation" hidden={this.state.toggleAttachment}>
+                                <PopUpDate timestamp={popUpDate}/>
                                 <Message ref={this.messageRefHandler}
                                          items={this.state.messages}
                                          onLoadMore={this.onMessageScroll}
                                          readId={this.state.maxReadId}
                                          contextMenu={this.messageContextMenuHandler}
                                          peer={peer}
+                                         showDate={this.messageShowDateHandler}
                                 />
                             </div>
                             <div className="attachments" hidden={!this.state.toggleAttachment}>
@@ -1106,6 +1112,20 @@ class Chat extends React.Component<IProps, IState> {
             textInputMessage: undefined,
             textInputMessageMode: C_MSG_MODE.Normal,
         });
+    }
+
+    private messageShowDateHandler = (timestamp: number) => {
+        if (this.state.popUpDate !== timestamp) {
+            this.setState({
+                popUpDate: timestamp,
+            });
+        }
+        clearTimeout(this.popUpDateTime);
+        this.popUpDateTime = setTimeout(() => {
+            this.setState({
+                popUpDate: null,
+            });
+        }, 3000);
     }
 }
 

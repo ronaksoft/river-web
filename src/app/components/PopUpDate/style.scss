@@ -1,0 +1,37 @@
+@import '../../../style/common';
+
+.pop-up-date-container {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 100px;
+  height: 40px;
+  transform: translateX(calc(-50% + 4px));
+  overflow: hidden;
+  .pop-up-date {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(225, 245, 254, 0.92);
+    border-radius: 7.5px;
+    padding: 5px 10px 6px 10px;
+    text-align: center;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+    box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.1);
+    font-weight: 100;
+    box-sizing: border-box;
+    color: rgba(69, 90, 100, 0.95);
+    display: inline-block;
+    white-space: nowrap;
+    font-size: 12.5px;
+    line-height: 21px;
+    text-transform: uppercase;
+    opacity: 0.4;
+    transition: all 0.5s;
+    &.down {
+      top: 5px;
+      opacity: 1;
+    }
+  }
+}

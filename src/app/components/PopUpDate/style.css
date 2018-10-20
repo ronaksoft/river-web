@@ -1,0 +1,61 @@
+*, *:before, *:after {
+  box-sizing: border-box; }
+
+:root {
+  --white: #fff;
+  --black: #000;
+  --black-text: #323D47;
+  --bg: #f8f8f8;
+  --grey: #999;
+  --dark: #1a1a1a;
+  --light: #e6e6e6;
+  --wrapper: 1200px;
+  --blue: #00b0ff;
+  --light-blue: rgba(54, 115, 249, 0.2);
+  --green: #dcf8c6;
+  --message-chat: #EFEFF0;
+  --color-hover: rgba(50, 61, 71, 0.08);
+  --color-text-hover: rgba(50, 61, 71, 0.64); }
+
+body {
+  background-color: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 400;
+  background-size: cover;
+  background-repeat: no-repeat; }
+
+.pop-up-date-container {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 100px;
+  height: 40px;
+  transform: translateX(calc(-50% + 4px));
+  overflow: hidden; }
+  .pop-up-date-container .pop-up-date {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(225, 245, 254, 0.92);
+    border-radius: 7.5px;
+    padding: 5px 10px 6px 10px;
+    text-align: center;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+    box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.1);
+    font-weight: 100;
+    box-sizing: border-box;
+    color: rgba(69, 90, 100, 0.95);
+    display: inline-block;
+    white-space: nowrap;
+    font-size: 12.5px;
+    line-height: 21px;
+    text-transform: uppercase;
+    opacity: 0.4;
+    transition: all 0.5s; }
+    .pop-up-date-container .pop-up-date.down {
+      top: 5px;
+      opacity: 1; }

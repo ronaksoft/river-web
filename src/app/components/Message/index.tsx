@@ -6,6 +6,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import {InputPeer} from "../../services/sdk/messages/core.types_pb";
 import MessageItem from "../MessageItem";
+import {C_MESSAGE_TYPE} from "../../repository/message/consts";
 
 interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
@@ -13,7 +14,8 @@ interface IProps {
     onLoadMore?: () => any;
     peer: InputPeer | null;
     readId: number;
-    rendered?: () => void;
+    rendered?: (info: any) => void;
+    showDate?: (timestamp: number | null) => void;
 }
 
 interface IState {
@@ -117,11 +119,11 @@ class Message extends React.Component<IProps, IState> {
                             rowHeight={this.cache.rowHeight}
                             rowRenderer={this.rowRender}
                             rowCount={items.length}
-                            overscanRowCount={1}
+                            overscanRowCount={8}
                             width={width}
                             height={height}
                             scrollToIndex={this.state.scrollIndex}
-                            onRowsRendered={this.props.rendered}
+                            onRowsRendered={this.onRowsRenderedHandler}
                             onScroll={this.onScroll}
                             style={this.state.listStyle}
                             className={'chat active-chat' + (this.state.noTransition ? ' no-transition' : '')}
@@ -295,6 +297,27 @@ class Message extends React.Component<IProps, IState> {
             moreAnchorEl: null,
         });
     }
+
+
+    private onRowsRenderedHandler = (data: any) => {
+        const {items} = this.state;
+        if (data.startIndex > -1) {
+            if (items[data.startIndex].type !== C_MESSAGE_TYPE.Date) {
+                if (this.props.showDate) {
+                    this.props.showDate(items[data.startIndex].createdon || 0);
+                }
+            } else {
+                if (this.props.showDate) {
+                    this.props.showDate(null);
+                }
+            }
+        }
+
+        if (this.props.rendered) {
+            this.props.rendered(data);
+        }
+    }
+
 }
 
 export default Message;
