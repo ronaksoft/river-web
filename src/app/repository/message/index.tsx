@@ -1,6 +1,6 @@
 import UserMessageDB from '../../services/db/user_message';
 import {IMessage} from './interface';
-import {differenceBy, find, merge, clone, cloneDeep, throttle} from 'lodash';
+import {differenceBy, find, merge, cloneDeep, throttle} from 'lodash';
 import SDK from '../../services/sdk';
 import UserRepo from '../user';
 import RTLDetector from '../../services/utilities/rtl_detector';
@@ -200,6 +200,11 @@ export default class MessageRepo {
     }
 
     public remove(id: string): Promise<any> {
+        const intId = parseInt(id, 10);
+        if (this.lazyMap.hasOwnProperty(intId)) {
+            delete this.lazyMap[intId];
+            return Promise.resolve();
+        }
         return this.db.get(id).then((result: any) => {
             return this.db.remove(result._id, result._rev);
         });
@@ -222,7 +227,7 @@ export default class MessageRepo {
         if (this.userId === '0' || this.userId === '') {
             this.loadConnInfo();
         }
-        clone(messages).forEach((message) => {
+        cloneDeep(messages).forEach((message) => {
             this.updateMap(message, temp);
         });
         this.updateThrottle();
@@ -248,6 +253,8 @@ export default class MessageRepo {
         });
         this.upsert(messages).then(() => {
             this.lazyMap = {};
+        }).catch((err) => {
+            window.console.log(err);
         });
     }
 

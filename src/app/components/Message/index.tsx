@@ -2,13 +2,10 @@ import * as React from 'react';
 import {List, CellMeasurer, CellMeasurerCache, AutoSizer} from 'react-virtualized';
 import {IMessage} from '../../repository/message/interface';
 import './style.css';
-import UserAvatar from '../UserAvatar';
-import MessageStatus from '../MessageStatus';
-import {MoreVert} from '@material-ui/icons';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import MessagePreview from "../MessagePreview";
 import {InputPeer} from "../../services/sdk/messages/core.types_pb";
+import MessageItem from "../MessageItem";
 
 interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
@@ -202,13 +199,8 @@ class Message extends React.Component<IProps, IState> {
         this.list = value;
     }
 
-    private formatText(text: string | undefined) {
-        text = text || '';
-        return text.split('\n').join('<br/>');
-    }
-
     private rowRender = ({index, key, parent, style}: any): any => {
-        const data = this.state.items[index];
+        const message = this.state.items[index];
         return (
             <CellMeasurer
                 cache={this.cache}
@@ -216,24 +208,9 @@ class Message extends React.Component<IProps, IState> {
                 key={key}
                 rowIndex={index}
                 parent={parent}>
-                <div style={style} key={data.id}
-                     className={'bubble-wrapper ' + (data.me ? 'me' : 'you') + (data.avatar ? ' avatar' : '')}>
-                    {(data.avatar && data.senderid && !data.me) && (
-                        <UserAvatar id={data.senderid} className="avatar"/>
-                    )}
-                    {(data.avatar && data.senderid) && (<div className="arrow"/>)}
-                    <div className={'bubble b_' + data._id + ((data.editedon || 0) > 0 ? ' edited' : '')}
-                         onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}>
-                        <MessagePreview message={data} peer={this.state.peer}/>
-                        <div className={'inner ' + (data.rtl ? 'rtl' : 'ltr')}
-                             dangerouslySetInnerHTML={{__html: this.formatText(data.body)}}/>
-                        <MessageStatus status={data.me || false} id={data.id} readId={this.state.readId}
-                                       time={data.createdon || 0} editedTime={data.editedon || 0}/>
-                        <div className="more" onClick={this.contextMenuHandler.bind(this, index)}>
-                            <MoreVert/>
-                        </div>
-                    </div>
-                </div>
+                <MessageItem index={index} message={message} peer={this.state.peer} readId={this.state.readId}
+                             style={style} moreCmdHandler={this.moreCmdHandler}
+                             contextMenuHandler={this.contextMenuHandler}/>
             </CellMeasurer>
         );
     }
@@ -310,7 +287,7 @@ class Message extends React.Component<IProps, IState> {
         });
     }
 
-    private moreCmdHandler = (cmd: string, index: number) => {
+    private moreCmdHandler = (cmd: string, index: number, e: any) => {
         if (this.props.contextMenu && index > -1) {
             this.props.contextMenu(cmd, this.state.items[index]);
         }

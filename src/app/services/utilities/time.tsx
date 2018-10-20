@@ -102,6 +102,40 @@ class TimeUntiles {
         return date.format('DD[/]MM[/]YYYY');
 
     }
+
+    public dynamicDate(timestamp: number | undefined) {
+        if (!timestamp) {
+            return '';
+        }
+
+        const date = moment(timestamp * 1000);
+        const current = Date.now();
+
+        const today = moment(current).startOf('day');
+        if (date.isSameOrAfter(today)) {
+            return date.format('[Today]');
+        }
+
+        const yesterday = moment(current).startOf('day').subtract(1, 'days');
+        if (date.isSameOrAfter(yesterday)) {
+            return date.format('[Yesterday]');
+        }
+
+        const thisYear = moment(current).startOf('year');
+        if (date.isSameOrAfter(thisYear)) {
+            return date.format('MMM DD');
+        }
+
+        return date.format('DD[/]MM[/]YYYY');
+
+    }
+
+    public isInSameDay(time1?: number, time2?: number): boolean {
+        if (!time1 || !time2) {
+            return false;
+        }
+        return moment(time1*1000).isSame(time2*1000, 'day');
+    }
 }
 
 export default new TimeUntiles();

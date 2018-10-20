@@ -112,8 +112,7 @@ class MessagePreview extends React.Component<IProps, IState> {
                 error: false,
                 previewMessage: res,
             });
-        }).catch((err) => {
-            window.console.log(err);
+        }).catch(() => {
             this.setState({
                 error: true,
                 previewMessage: null,

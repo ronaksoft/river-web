@@ -142,9 +142,10 @@ export default class SyncManager {
         });
         if (data.length > 0) {
             // TODO: check
-            this.dialogRepo.importBulk(data).then(() => {
+            this.dialogRepo.lazyUpsert(data);
+            setTimeout(() => {
                 this.broadcastEvent('Dialog_DB_Updated', {ids: keys});
-            });
+            }, 1000);
         }
     }
 
@@ -159,12 +160,13 @@ export default class SyncManager {
             }
         });
         if (data.length > 0) {
-            this.messageRepo.importBulk(data).then(() => {
+            this.messageRepo.lazyUpsert(data);
+            setTimeout(() => {
                 this.broadcastEvent('Message_DB_Updated', {
                     ids: keys,
                     peerids: peerIds,
                 });
-            });
+            }, 1000);
         }
     }
 

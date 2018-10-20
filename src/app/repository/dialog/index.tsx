@@ -195,6 +195,8 @@ export default class DialogRepo {
         }
         this.upsert(dialogs).then(() => {
             this.lazyMap = {};
+        }).catch(() => {
+            //
         });
     }
 

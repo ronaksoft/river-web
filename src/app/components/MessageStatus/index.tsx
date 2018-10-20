@@ -1,5 +1,6 @@
 import * as React from 'react';
 import TimeUtililty from '../../services/utilities/time';
+import {DoneRounded, DoneAllRounded, ScheduleRounded} from '@material-ui/icons';
 
 import './style.css';
 
@@ -46,23 +47,30 @@ class MessageStatus extends React.Component<IProps, IState> {
 
     public render() {
         const {id, readId, status, time, editedTime} = this.state;
-        let cn = 'icon';
-        if (id && status) {
-            if (id < 0) {
-                cn += ' pending';
-            } else if (id > 0 && readId >= id) {
-                cn += ' double-check';
-            } else if (id > 0 && readId < id) {
-                cn += ' check';
-            }
-        }
+
         return (
             <div className={'message-status'}>
                 {editedTime > 0 && <span className="edited">edited</span>}
                 <span className="time">{TimeUtililty.TimeParse(time)}</span>
-                {status && <span className={cn}/>}
+                {this.getStatus(id, readId, status)}
             </div>
         );
+    }
+
+    private getStatus (id: number, readId: number, status: boolean) {
+        if (id && status) {
+            if (id < 0) {
+                return (<ScheduleRounded className="icon"/>);
+            } else if (id > 0 && readId >= id) {
+                return (<DoneAllRounded className="icon"/>);
+            } else if (id > 0 && readId < id) {
+                return (<DoneRounded className="icon"/>);
+            } else {
+                return '';
+            }
+        } else {
+            return '';
+        }
     }
 }
 

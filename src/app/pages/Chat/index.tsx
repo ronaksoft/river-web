@@ -12,7 +12,7 @@ import DialogRepo from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
 import Uploader from '../../components/Uploader/index';
 import TextInput from '../../components/TextInput/index';
-import {trimStart, throttle, findIndex} from 'lodash';
+import {trimStart, throttle, findIndex, cloneDeep} from 'lodash';
 import SDK from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
 import {InputPeer, PeerType, PhoneContact, TypingAction} from '../../services/sdk/messages/core.types_pb';
@@ -36,6 +36,8 @@ import MainRepo from '../../repository';
 import './style.css';
 import SettingMenu from "../../components/SettingMenu";
 import {C_MSG_MODE} from "../../components/TextInput/consts";
+import TimeUtililty from '../../services/utilities/time';
+import {C_MESSAGE_TYPE} from "../../repository/message/consts";
 
 interface IProps {
     history?: any;
@@ -219,6 +221,7 @@ class Chat extends React.Component<IProps, IState> {
                 const index = findIndex(messages, {id: data.message.id});
                 if (index > -1) {
                     messages[index] = data.message;
+                    messages[index].me = (this.connInfo.UserID === data.message.senderid);
                     this.messageComponent.list.forceUpdateGrid();
                 }
             }
@@ -496,40 +499,35 @@ class Chat extends React.Component<IProps, IState> {
         };
 
         this.messageRepo.getMany({peer, limit: 25}).then((data) => {
-            let maxId = 0;
             if (data.length === 0) {
                 messages = [];
             } else {
                 messages = data.reverse();
             }
-            messages.map((msg, key) => {
-                if (msg.id && msg.id > maxId) {
-                    maxId = msg.id;
-                }
-                msg.avatar = (key > 0 && msg.senderid !== messages[key - 1].senderid || key === 0 && msg.senderid !== this.connInfo.UserID);
-                return msg;
-            });
-            window.console.log(messages);
+
+            const dataMsg = this.modifyMessages(messages, true);
+
             let maxReadId = 0;
             if (this.dialogMap.hasOwnProperty(dialogId)) {
                 maxReadId = this.state.dialogs[this.dialogMap[dialogId]].readoutboxmaxid || 0;
             }
+
             this.setState({
                 isTyping: false,
                 maxReadId,
-                messages,
+                messages: dataMsg.msgs,
                 selectedDialogId: dialogId,
                 textInputMessage: undefined,
                 textInputMessageMode: C_MSG_MODE.Normal,
             }, () => {
                 if (messages.length > 0) {
-                    window.console.log('maxReadId', maxReadId, 'maxId', maxId);
+                    window.console.log('maxReadId', maxReadId, 'maxId', dataMsg.maxId);
                 }
                 if (force === true) {
                     updateState();
                 }
                 if (messages.length > 0) {
-                    this.sendReadHistory(peer, maxId);
+                    this.sendReadHistory(peer, dataMsg.maxId);
                 }
             });
         }).catch((err: any) => {
@@ -573,6 +571,31 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
+    private modifyMessages(messages: IMessage[], push: boolean): {maxId: number, msgs: IMessage[]} {
+        let maxId = 0;
+        const msgs: IMessage[] = [];
+        messages.forEach((msg, key) => {
+            if (msg.id && msg.id > maxId) {
+                maxId = msg.id;
+            }
+            msg.avatar = (key > 0 && msg.senderid !== messages[key - 1].senderid || key === 0 && msg.senderid !== this.connInfo.UserID);
+            msg.type = C_MESSAGE_TYPE.Normal;
+            if ((push && key === 0) || (key > 0 && !TimeUtililty.isInSameDay(msg.createdon, messages[key - 1].createdon))) {
+                msgs.push({
+                    _id: msg._id,
+                    createdon: msg.createdon,
+                    id: msg.id,
+                    type: C_MESSAGE_TYPE.Date,
+                });
+            }
+            msgs.push(msg);
+        });
+        return {
+            maxId,
+            msgs,
+        };
+    }
+
     private onMessageHandler = (text: string, param?: any) => {
         if (trimStart(text).length === 0) {
             return;
@@ -587,7 +610,7 @@ class Chat extends React.Component<IProps, IState> {
             const {messages} = this.state;
             const message: IMessage = param.message;
             message.body = text;
-            message.editedon = Date.now() / 1000;
+            message.editedon = Math.floor(Date.now() / 1000);
             this.sdk.editMessage(message.id || 0, text, peer).then(() => {
                 const index = findIndex(messages, {id: message.id});
                 if (index > -1) {
@@ -603,7 +626,7 @@ class Chat extends React.Component<IProps, IState> {
             const message: IMessage = {
                 _id: String(id),
                 body: text,
-                createdon: Date.now() / 1000,
+                createdon: Math.floor(Date.now() / 1000),
                 id,
                 me: true,
                 peerid: this.state.selectedDialogId,
@@ -619,7 +642,9 @@ class Chat extends React.Component<IProps, IState> {
             this.pushMessage(message);
 
             this.sdk.sendMessage(text, peer, replyTo).then((msg) => {
-                this.messageRepo.remove(message._id || '');
+                this.messageRepo.remove(message._id || '').catch(() => {
+                    //
+                });
                 message.id = msg.messageid;
                 message._id = String(msg.messageid);
                 this.messageRepo.lazyUpsert([message]);
@@ -683,7 +708,7 @@ class Chat extends React.Component<IProps, IState> {
                 const dialogs = this.state.dialogs;
                 const dialog: IDialog = {
                     accesshash: user.accesshash,
-                    last_update: Date.now() / 1000,
+                    last_update: Math.floor(Date.now() / 1000),
                     peerid: user.id,
                     peertype: PeerType.PEERUSER,
                     preview: text.substr(0, 64),
@@ -747,12 +772,14 @@ class Chat extends React.Component<IProps, IState> {
             dialogs[index].topmessageid = msg.id;
             dialogs[index].preview = preview;
             dialogs[index].last_update = msg.createdon;
+            dialogs[index].peerid = id;
+            dialogs[index].peertype = msg.peertype;
             toUpdateDialog = dialogs[index];
         } else {
             const dialog: IDialog = {
                 _id: String(msg.id),
                 last_update: msg.createdon,
-                peerid: msg.peerid,
+                peerid: id,
                 peertype: msg.peertype,
                 preview,
                 topmessageid: msg.id,
@@ -803,12 +830,15 @@ class Chat extends React.Component<IProps, IState> {
             }
             return i2.last_update - i1.last_update;
         });
+        const td = cloneDeep(dialogs);
         this.dialogMap = {};
         this.setState({
-            dialogs,
+            dialogs: td,
         }, () => {
-            dialogs.forEach((d, i) => {
-                this.dialogMap[d.peerid || ''] = i;
+            td.forEach((d, i) => {
+                if (d) {
+                    this.dialogMap[d.peerid || ''] = i;
+                }
             });
         });
     }

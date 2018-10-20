@@ -1,0 +1,192 @@
+@import '../../../style/common';
+
+.bubble-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  padding-bottom: 2px;
+  .arrow {
+    position: absolute;
+    top: 6px;
+    right: 0;
+    height: 10px;
+    width: 16px;
+    overflow: hidden;
+    &:after {
+      position: absolute;
+      content: '';
+      height: 15px;
+      width: 15px;
+      top: -9px;
+      left: -3px;
+      background-color: var(--green);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+      transform: rotate(-45deg);
+    }
+  }
+  &.you .arrow {
+    position: absolute;
+    top: 6px;
+    right: auto;
+    left: 34px;
+    overflow: hidden;
+    &:after {
+      background-color: var(--message-chat);
+      box-shadow: -1px 2px 0px rgba(0, 0, 0, 0.1);
+      transform: rotate(-45deg);
+      left: 5px
+    }
+  }
+  .avatar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 32px;
+    width: 32px;
+    border-radius: 50%;
+    background-color: #ccc;
+    background-position: center center;
+    background-size: cover;
+    background-image: url(../../../asset/image/user.png);
+    overflow: hidden;
+    img {
+      height: 32px;
+      width: 32px;
+      object-fit: cover;
+    }
+  }
+  .bubble {
+    position: relative;
+    font-size: 14px;
+    line-height: 17px;
+    display: inline-block;
+    clear: both;
+    padding: 3px 3px 15px 3px;
+    vertical-align: top;
+    border-radius: 5px;
+    max-width: 558px;
+    min-width: 75px;
+    min-height: 35px;
+    box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.1);
+    > .inner {
+      direction: ltr;
+      padding: 4px 70px 0 4px;
+      &.rtl {
+        direction: rtl;
+        text-align: right;
+      }
+      &.ltr {
+        direction: ltr;
+        text-align: left;
+      }
+    }
+    .more {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      height: 20px;
+      width: 16px;
+      display: none;
+      cursor: pointer;
+      background-color: inherit;
+      z-index: 10;
+      svg {
+        height: 20px;
+        font-size: 20px;
+      }
+    }
+    &:hover .more {
+      display: block;
+    }
+  }
+  &.you {
+    &.avatar {
+      padding-top: 6px;
+    }
+    .bubble {
+      float: left;
+      color: var(--black-text);
+      background-color: var(--message-chat);
+      align-self: flex-start;
+      animation-name: slideFromLeft;
+      text-align: left;
+      margin-left: 44px;
+      &.edited {
+        min-width: 80px;
+      }
+    }
+  }
+  &.me {
+    &.avatar {
+      padding-top: 6px;
+    }
+    .bubble {
+      float: right;
+      color: var(--black-text);
+      background-color: var(--green);
+      align-self: flex-end;
+      animation-name: slideFromRight;
+      text-align: right;
+      margin-right: 10px;
+      &.edited {
+        min-width: 92px;
+      }
+    }
+  }
+  > .date {
+    background-color: rgba(225, 245, 254, 0.92);
+    border-radius: 7.5px;
+    padding: 5px 10px 6px 10px;
+    text-align: center;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+    box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.1);
+    font-weight: 100;
+    box-sizing: border-box;
+    color: rgba(69, 90, 100, 0.95);
+    display: inline-block;
+    flex: none;
+    font-size: 12.5px;
+    line-height: 21px;
+    text-transform: uppercase;
+  }
+}
+
+.context-menu {
+  ul {
+    padding: 6px 0 !important;
+    min-width: 100px;
+    .context-item {
+      padding: 3px 12px;
+      font-size: 13px;
+    }
+  }
+}
+
+html[theme="dark"] {
+  .bubble-wrapper {
+    &.me {
+      .bubble {
+        background-color: #133048;
+        color: #eee;
+      }
+      .arrow {
+        &:after {
+          background-color: #133048;
+          color: #eee;
+        }
+      }
+    }
+    &.you {
+      .bubble {
+        background-color: #133048;
+        color: #eee;
+      }
+      .arrow {
+        &:after {
+          background-color: #133048;
+          color: #eee;
+        }
+      }
+    }
+  }
+}
