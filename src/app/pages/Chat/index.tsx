@@ -347,7 +347,7 @@ class Chat extends React.Component<IProps, IState> {
                                     <ExitToApp/>
                                 </a>
                                 <div className="version">
-                                    v0.23.3
+                                    v0.27.0
                                 </div>
                             </div>
                         </div>
