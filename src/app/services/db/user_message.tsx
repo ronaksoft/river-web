@@ -18,7 +18,9 @@ export default class UserMessageDB {
     private constructor() {
         this.uniqueId = UniqueId.getInstance();
         PouchDB.plugin(PouchDBFind);
-        this.db = new PouchDB("user_message");
+        this.db = new PouchDB("user_message", {
+            auto_compaction: true,
+        });
         this.db.info().then((info: any) => {
             this.uniqueId.setLastId('msg', info.doc_count);
         });
@@ -36,10 +38,19 @@ export default class UserMessageDB {
         }).then((result: any) => {
             // window.console.warn(result);
         });
+
+        setInterval(this.viewCleanup, 60000);
     }
 
     public getDB() {
         return this.db;
     }
 
+    private viewCleanup = () => {
+        this.db.viewCleanup().then(() => {
+            // window.console.log(err);
+        }).catch((err: any) => {
+            window.console.log('Message viewCleanup', err);
+        });
+    }
 }

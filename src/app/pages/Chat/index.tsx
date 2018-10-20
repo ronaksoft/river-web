@@ -266,6 +266,7 @@ class Chat extends React.Component<IProps, IState> {
             if (this.state.isUpdating) {
                 return;
             }
+            window.console.log('UpdateMaxOutbox:', data.maxid);
             this.updateDialogsCounter(data.peer.id || '', {maxOutbox: data.maxid});
             if (data.peer.id === this.state.selectedDialogId) {
                 this.setState({
@@ -773,10 +774,10 @@ class Chat extends React.Component<IProps, IState> {
         const {dialogs} = this.state;
         if (this.dialogMap.hasOwnProperty(peerid)) {
             const index = this.dialogMap[peerid];
-            if (maxInbox && dialogs[index].readinboxmaxid && maxInbox > (dialogs[index].readinboxmaxid || 0)) {
+            if (maxInbox && maxInbox > (dialogs[index].readinboxmaxid || 0)) {
                 dialogs[index].readinboxmaxid = maxInbox;
             }
-            if (maxOutbox && dialogs[index].readoutboxmaxid && maxOutbox > (dialogs[index].readoutboxmaxid || 0)) {
+            if (maxOutbox && maxOutbox > (dialogs[index].readoutboxmaxid || 0)) {
                 dialogs[index].readoutboxmaxid = maxOutbox;
             }
             if (unreadCounterIncrease === 1) {

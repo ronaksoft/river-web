@@ -17,7 +17,9 @@ export default class UserDB {
 
     private constructor() {
         PouchDB.plugin(PouchDBFind);
-        this.db = new PouchDB("user");
+        this.db = new PouchDB("user", {
+            auto_compaction: true,
+        });
     }
 
     public getDB() {

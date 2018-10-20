@@ -133,8 +133,7 @@ export default class DialogRepo {
     }
 
     public upsert(dialogs: IDialog[]): Promise<any> {
-        let tempDialogs = cloneDeep(dialogs);
-        tempDialogs = uniqBy(tempDialogs, '_id');
+        const tempDialogs = uniqBy(dialogs, '_id');
         const ids = dialogs.map((dialog) => {
             return dialog._id;
         });
@@ -150,7 +149,11 @@ export default class DialogRepo {
                 const t = find(tempDialogs, {_id: dialog._id});
                 return merge(dialog, t);
             });
-            return this.createMany([...createItems, ...updateItems]);
+            const items = [...createItems, ...updateItems];
+            return this.createMany(items).then((res: any) => {
+                this.resolveConflicts(items, res);
+                return res;
+            });
         }).catch((err: any) => {
             window.console.log('dialog upsert', err);
         });
@@ -187,8 +190,28 @@ export default class DialogRepo {
         Object.keys(this.lazyMap).forEach((key) => {
             dialogs.push(this.lazyMap[key]);
         });
+        if (dialogs.length === 0) {
+            return;
+        }
         this.upsert(dialogs).then(() => {
             this.lazyMap = {};
+        });
+    }
+
+    private resolveConflicts(docs: IDialog[], res: any) {
+        res.forEach((item: any) => {
+            if (item.error && item.status === 409) {
+                this.db.get(item.id, {conflicts: true}).then((getRes: any) => {
+                    this.db.remove(getRes._id, getRes._rev).then(() => {
+                        const t = find(docs, {_id: getRes._id});
+                        if (t) {
+                            // @ts-ignore
+                            t._rev = undefined;
+                            this.db.put(t);
+                        }
+                    });
+                });
+            }
         });
     }
 }

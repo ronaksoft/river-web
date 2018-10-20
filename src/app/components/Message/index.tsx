@@ -55,7 +55,7 @@ class Message extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        this.fitList();
+        this.fitList(true);
         setTimeout(() => {
             this.setState({
                 noTransition: false,
@@ -274,7 +274,7 @@ class Message extends React.Component<IProps, IState> {
                             top: 1000000,
                         });
                     }
-                }, 52);
+                }, 55);
             }
         }, 10);
     }

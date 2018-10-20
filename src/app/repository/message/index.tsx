@@ -191,7 +191,11 @@ export default class MessageRepo {
                 const t = find(msgs, {_id: msg._id});
                 return merge(msg, t);
             });
-            return this.createMany([...createItems, ...updateItems]);
+            const items = [...createItems, ...updateItems];
+            return this.createMany(items).then((res: any) => {
+                this.resolveConflicts(items, res);
+                return res;
+            });
         });
     }
 
@@ -244,6 +248,23 @@ export default class MessageRepo {
         });
         this.upsert(messages).then(() => {
             this.lazyMap = {};
+        });
+    }
+
+    private resolveConflicts(docs: IMessage[], res: any) {
+        res.forEach((item: any) => {
+            if (item.error && item.status === 409) {
+                this.db.get(item.id, {conflicts: true}).then((getRes: any) => {
+                    this.db.remove(getRes._id, getRes._rev).then(() => {
+                        const t = find(docs, {_id: getRes._id});
+                        if (t) {
+                            // @ts-ignore
+                            t._rev = undefined;
+                            this.db.put(t);
+                        }
+                    });
+                });
+            }
         });
     }
 }

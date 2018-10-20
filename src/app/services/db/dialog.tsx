@@ -15,7 +15,9 @@ export default class UserMessageDB {
 
     private constructor() {
         PouchDB.plugin(PouchDBFind);
-        this.db = new PouchDB("dialogs");
+        this.db = new PouchDB("dialogs", {
+            auto_compaction: true,
+        });
         this.db.createIndex({
             index: {
                 fields: ['last_update'],
@@ -30,10 +32,19 @@ export default class UserMessageDB {
         }).then((result: any) => {
             // window.console.warn(result);
         });
+
+        setInterval(this.viewCleanup, 60000);
     }
 
     public getDB() {
         return this.db;
     }
 
+    private viewCleanup = () => {
+        this.db.viewCleanup().then(() => {
+            // window.console.log(err);
+        }).catch((err: any) => {
+            window.console.log('Dialog viewCleanup', err);
+        });
+    }
 }
