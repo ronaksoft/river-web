@@ -106,7 +106,6 @@ class Chat extends React.Component<IProps, IState> {
         this.userRepo = UserRepo.getInstance();
         this.dialogRepo = DialogRepo.getInstance();
         this.mainRepo = MainRepo.getInstance();
-        // this.uniqueId = UniqueId.getInstance();
         this.updateManager = UpdateManager.getInstance();
         this.syncManager = SyncManager.getInstance();
         this.dialogsSortThrottle = throttle(this.dialogsSort, 500);
