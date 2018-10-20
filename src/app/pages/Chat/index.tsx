@@ -505,7 +505,7 @@ class Chat extends React.Component<IProps, IState> {
                 messages = data.reverse();
             }
 
-            const dataMsg = this.modifyMessages(messages, true);
+            const dataMsg = this.modifyMessages([], messages, true);
 
             let maxReadId = 0;
             if (this.dialogMap.hasOwnProperty(dialogId)) {
@@ -552,13 +552,16 @@ class Chat extends React.Component<IProps, IState> {
                 return;
             }
             const messages = this.state.messages;
-            messages.unshift.apply(messages, data.reverse());
-            messages.map((msg, key) => {
-                msg.avatar = (key > 0 && msg.senderid !== messages[key - 1].senderid || key === 0 && msg.senderid !== this.connInfo.UserID);
-                return msg;
-            });
+            // messages.unshift.apply(messages, data.reverse());
+            // messages.map((msg, key) => {
+            //     msg.avatar = (key > 0 && msg.senderid !== messages[key - 1].senderid || key === 0 && msg.senderid !== this.connInfo.UserID);
+            //     return msg;
+            // });
+
+            const dataMsg = this.modifyMessages(messages, data, false);
+
             this.setState({
-                messages,
+                messages: dataMsg.msgs,
             }, () => {
                 this.messageComponent.cache.clearAll();
                 this.messageComponent.list.recomputeRowHeights();
@@ -571,28 +574,52 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private modifyMessages(messages: IMessage[], push: boolean): {maxId: number, msgs: IMessage[]} {
+    private modifyMessages(defaultMessages: IMessage[], messages: IMessage[], push: boolean): { maxId: number, msgs: IMessage[] } {
         let maxId = 0;
-        const msgs: IMessage[] = [];
         messages.forEach((msg, key) => {
             if (msg.id && msg.id > maxId) {
                 maxId = msg.id;
             }
-            msg.avatar = (key > 0 && msg.senderid !== messages[key - 1].senderid || key === 0 && msg.senderid !== this.connInfo.UserID);
             msg.type = C_MESSAGE_TYPE.Normal;
-            if ((push && key === 0) || (key > 0 && !TimeUtililty.isInSameDay(msg.createdon, messages[key - 1].createdon))) {
-                msgs.push({
-                    _id: msg._id,
-                    createdon: msg.createdon,
-                    id: msg.id,
-                    type: C_MESSAGE_TYPE.Date,
-                });
+            if (push) {
+                msg.avatar = (key > 0 && msg.senderid !== messages[key - 1].senderid) || (key === 0);
+                if (key === 0 || (key > 0 && !TimeUtililty.isInSameDay(msg.createdon, messages[key - 1].createdon))) {
+                    defaultMessages.push({
+                        _id: msg._id,
+                        createdon: msg.createdon,
+                        id: msg.id,
+                        senderid: msg.senderid,
+                        type: C_MESSAGE_TYPE.Date,
+                    });
+                }
+                defaultMessages.push(msg);
             }
-            msgs.push(msg);
+
+            if (!push) {
+                if (key === 0 && defaultMessages[0].type === C_MESSAGE_TYPE.Date) {
+                    if (TimeUtililty.isInSameDay(msg.createdon, defaultMessages[0].createdon)) {
+                        defaultMessages.splice(0, 1);
+                    }
+                }
+                if (key === 0 && defaultMessages[0].type === C_MESSAGE_TYPE.Normal && defaultMessages[1].senderid === msg.senderid) {
+                    defaultMessages[0].avatar = false;
+                }
+                msg.avatar = (messages.length - 1 === key || msg.senderid !== defaultMessages[0].senderid);
+                defaultMessages.unshift(msg);
+                if (messages.length - 1 === key || !TimeUtililty.isInSameDay(msg.createdon, defaultMessages[0].createdon)) {
+                    defaultMessages.unshift({
+                        _id: msg._id,
+                        createdon: msg.createdon,
+                        id: msg.id,
+                        senderid: msg.senderid,
+                        type: C_MESSAGE_TYPE.Date,
+                    });
+                }
+            }
         });
         return {
             maxId,
-            msgs,
+            msgs: defaultMessages,
         };
     }
 
@@ -659,7 +686,19 @@ class Chat extends React.Component<IProps, IState> {
 
     private pushMessage = (message: IMessage) => {
         const messages = this.state.messages;
+        if (messages.length > 0 &&
+            !TimeUtililty.isInSameDay(message.createdon, messages[messages.length - 1].createdon)) {
+            messages.push({
+                _id: message._id,
+                createdon: message.createdon,
+                id: message.id,
+                senderid: message.senderid,
+                type: C_MESSAGE_TYPE.Date,
+            });
+        }
         if (messages.length > 0 && message.senderid !== messages[messages.length - 1].senderid) {
+            message.avatar = true;
+        } else if (messages.length === 0) {
             message.avatar = true;
         }
         messages.push(message);
