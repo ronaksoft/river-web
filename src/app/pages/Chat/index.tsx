@@ -81,6 +81,7 @@ class Chat extends React.Component<IProps, IState> {
     private dialogMap: { [key: string]: number } = {};
     private typingTimeout: any = null;
     private dialogsSortThrottle: any = null;
+    private readHistoryMaxId: number | null = null;
 
     constructor(props: IProps) {
         super(props);
@@ -187,6 +188,9 @@ class Chat extends React.Component<IProps, IState> {
                 this.pushMessage(message);
                 const {peer} = this.state;
                 this.sendReadHistory(peer, message.id || 0);
+                if (!this.isInChat) {
+                    this.readHistoryMaxId = message.id || 0;
+                }
             }
             this.messageRepo.lazyUpsert([data.message]);
             this.userRepo.importBulk([data.sender]);
@@ -604,7 +608,8 @@ class Chat extends React.Component<IProps, IState> {
                 if (key === 0 && defaultMessages[0].type === C_MESSAGE_TYPE.Normal && defaultMessages[1].senderid === msg.senderid) {
                     defaultMessages[0].avatar = false;
                 }
-                msg.avatar = (messages.length - 1 === key || msg.senderid !== defaultMessages[0].senderid);
+                defaultMessages[0].avatar = (msg.senderid !== defaultMessages[0].senderid);
+                msg.avatar = (messages.length - 1 === key);
                 defaultMessages.unshift(msg);
                 if (messages.length - 1 === key || !TimeUtililty.isInSameDay(msg.createdon, defaultMessages[0].createdon)) {
                     defaultMessages.unshift({
@@ -1046,6 +1051,10 @@ class Chat extends React.Component<IProps, IState> {
 
     private windowFocusHandler = () => {
         this.isInChat = true;
+        if (this.readHistoryMaxId) {
+            const {peer} = this.state;
+            this.sendReadHistory(peer, this.readHistoryMaxId);
+        }
     }
 
     private windowBlurHandler = () => {
@@ -1069,6 +1078,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.sdk.setMessagesReadHistory(peer, msgId);
             }
         }
+        this.readHistoryMaxId = null;
     }
 
     private messageContextMenuHandler = (cmd: string, message: IMessage) => {

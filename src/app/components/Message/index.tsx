@@ -117,7 +117,7 @@ class Message extends React.Component<IProps, IState> {
                             rowHeight={this.cache.rowHeight}
                             rowRenderer={this.rowRender}
                             rowCount={items.length}
-                            overscanRowCount={5}
+                            overscanRowCount={1}
                             width={width}
                             height={height}
                             scrollToIndex={this.state.scrollIndex}
