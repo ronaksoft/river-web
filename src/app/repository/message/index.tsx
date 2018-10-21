@@ -35,7 +35,7 @@ export default class MessageRepo {
         this.sdk = SDK.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.rtlDetector = RTLDetector.getInstance();
-        this.updateThrottle = throttle(this.insertToDb, 2000);
+        this.updateThrottle = throttle(this.insertToDb, 5000);
     }
 
     public loadConnInfo() {
@@ -132,7 +132,6 @@ export default class MessageRepo {
             }).catch(() => {
                 if (peer) {
                     this.sdk.getMessageHistory(peer, {minId: id, maxId: id}).then((remoteRes) => {
-                        window.console.log(id, remoteRes);
                         if (remoteRes.messagesList.length === 0) {
                             reject();
                         } else {
@@ -176,7 +175,7 @@ export default class MessageRepo {
 
     public upsert(msgs: IMessage[]): Promise<any> {
         const ids = msgs.map((msg) => {
-            msg.avatar = undefined;
+            delete msg.avatar;
             return msg._id;
         });
         return this.db.find({
@@ -248,11 +247,15 @@ export default class MessageRepo {
 
     private insertToDb = () => {
         const messages: IMessage[] = [];
+        const keys: any[] = [];
         Object.keys(this.lazyMap).forEach((key) => {
+            keys.push(key);
             messages.push(this.lazyMap[key]);
         });
         this.upsert(messages).then(() => {
-            this.lazyMap = {};
+            keys.forEach((_, key) => {
+                delete this.lazyMap[key];
+            });
         }).catch((err) => {
             window.console.log(err);
         });

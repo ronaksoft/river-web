@@ -696,7 +696,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private pushMessage = (message: IMessage) => {
-        const messages = this.state.messages;
+        const {messages} = this.state;
         if (messages.length > 0 &&
             !TimeUtililty.isInSameDay(message.createdon, messages[messages.length - 1].createdon)) {
             messages.push({

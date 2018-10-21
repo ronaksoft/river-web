@@ -255,7 +255,7 @@ class Message extends React.Component<IProps, IState> {
                     }
                 }, 55);
             }
-        }, 10);
+        }, 50);
     }
 
     private onScroll = (params: any) => {
@@ -302,13 +302,14 @@ class Message extends React.Component<IProps, IState> {
     private onRowsRenderedHandler = (data: any) => {
         const {items} = this.state;
         if (data.startIndex > -1) {
-            if (items[data.startIndex].type !== C_MESSAGE_TYPE.Date) {
+            if (items[data.startIndex].type === C_MESSAGE_TYPE.Date ||
+                (items[data.startIndex + 1] && items[data.startIndex + 1].type === C_MESSAGE_TYPE.Date)) {
                 if (this.props.showDate) {
-                    this.props.showDate(items[data.startIndex].createdon || 0);
+                    this.props.showDate(null);
                 }
             } else {
                 if (this.props.showDate) {
-                    this.props.showDate(null);
+                    this.props.showDate(items[data.startIndex].createdon || 0);
                 }
             }
         }

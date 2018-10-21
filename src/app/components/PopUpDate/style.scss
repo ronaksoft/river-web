@@ -8,6 +8,7 @@
   height: 40px;
   transform: translateX(calc(-50% + 4px));
   overflow: hidden;
+  z-index: 10;
   .pop-up-date {
     position: absolute;
     top: -40px;
