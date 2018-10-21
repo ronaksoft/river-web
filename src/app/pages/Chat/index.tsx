@@ -5,7 +5,7 @@ import Message from '../../components/Message/index';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import {Attachment, MoreVert as MoreVertIcon, Settings, ExitToApp} from '@material-ui/icons';
+import {Attachment, MoreVert as MoreVertIcon} from '@material-ui/icons';
 import * as faker from 'faker';
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
@@ -39,6 +39,8 @@ import {C_MSG_MODE} from "../../components/TextInput/consts";
 import TimeUtililty from '../../services/utilities/time';
 import {C_MESSAGE_TYPE} from "../../repository/message/consts";
 import PopUpDate from "../../components/PopUpDate";
+import BottomBar from "../../components/BottomBar";
+import ContactMenu from '../../components/ContactMenu';
 
 interface IProps {
     history?: any;
@@ -53,6 +55,7 @@ interface IState {
     isConnecting: boolean;
     isTyping: boolean;
     isUpdating: boolean;
+    leftMenu: string;
     maxReadId: number;
     messages: IMessage[];
     openNewMessage: boolean;
@@ -60,7 +63,6 @@ interface IState {
     popUpDate: number | null;
     rightMenu: boolean;
     selectedDialogId: string;
-    settingMenu: boolean;
     textInputMessage?: IMessage;
     textInputMessageMode: number;
     toggleAttachment: boolean;
@@ -95,6 +97,7 @@ class Chat extends React.Component<IProps, IState> {
             isConnecting: true,
             isTyping: false,
             isUpdating: false,
+            leftMenu: 'chat',
             maxReadId: 0,
             messages: [],
             openNewMessage: false,
@@ -102,7 +105,6 @@ class Chat extends React.Component<IProps, IState> {
             popUpDate: null,
             rightMenu: false,
             selectedDialogId: props.match.params.id,
-            settingMenu: false,
             textInputMessageMode: C_MSG_MODE.Normal,
             toggleAttachment: false,
         };
@@ -116,6 +118,7 @@ class Chat extends React.Component<IProps, IState> {
         this.updateManager = UpdateManager.getInstance();
         this.syncManager = SyncManager.getInstance();
         this.dialogsSortThrottle = throttle(this.dialogsSort, 500);
+        this.isInChat = (document.visibilityState === 'visible');
     }
 
     public componentDidMount() {
@@ -149,6 +152,7 @@ class Chat extends React.Component<IProps, IState> {
                 if (selectedId !== 'null') {
                     const peer = this.getPeerByDialogId(selectedId);
                     this.setState({
+                        leftMenu: 'chat',
                         peer,
                     }, () => {
                         this.getMessagesByDialogId(selectedId, true);
@@ -297,6 +301,7 @@ class Chat extends React.Component<IProps, IState> {
         } else {
             const peer = this.getPeerByDialogId(selectedId);
             this.setState({
+                leftMenu: 'chat',
                 peer,
             }, () => {
                 this.getMessagesByDialogId(selectedId, true);
@@ -322,34 +327,34 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {anchorEl, settingMenu, textInputMessage, textInputMessageMode, peer, selectedDialogId, popUpDate} = this.state;
+        const {anchorEl, leftMenu, textInputMessage, textInputMessageMode, peer, selectedDialogId, popUpDate} = this.state;
         const open = Boolean(anchorEl);
+        const leftMenuRender = () => {
+            switch (leftMenu) {
+                default:
+                case 'chat':
+                    return (<Dialog items={this.state.dialogs} selectedId={selectedDialogId}/>);
+                case 'setting':
+                    return (<SettingMenu/>);
+                case 'contact':
+                    return (<ContactMenu/>);
+            }
+        };
         return (
             <div className="bg">
                 <div className="wrapper">
                     <div className="container">
                         <div className="column-left">
-                            <div className="top">
+                            <div className="top-bar">
                                 <span className="new-message" onClick={this.onNewMessageOpen}>
                                     <RiverLogo height={24} width={24}/>
                                     <span>New message</span>
                                 </span>
                             </div>
-                            {!settingMenu &&
-                            <Dialog items={this.state.dialogs} selectedId={selectedDialogId}/>}
-                            {settingMenu &&
-                            <SettingMenu/>}
-                            <div className="setting">
-                                <a onClick={this.settingMenuHandler}>
-                                    <Settings/>
-                                </a>
-                                <a onClick={this.logOutHandler}>
-                                    <ExitToApp/>
-                                </a>
-                                <div className="version">
-                                    v0.27.0
-                                </div>
+                            <div className="left-content">
+                                {leftMenuRender()}
                             </div>
+                            <BottomBar onSelect={this.bottomBarSelectHandler} selected={leftMenu}/>
                         </div>
                         {selectedDialogId !== 'null' && <div className="column-center">
                             <div className="top">
@@ -1042,7 +1047,20 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private logOutHandler = () => {
+    private bottomBarSelectHandler = (item: string) => {
+        switch (item) {
+            case 'logout':
+                this.logOutHandler();
+                break;
+            default:
+                this.setState({
+                    leftMenu: item,
+                });
+                break;
+        }
+    }
+
+    private logOutHandler() {
         this.sdk.logout(this.connInfo.AuthID).then((res) => {
             this.sdk.resetConnInfo();
             this.mainRepo.destroyDB().then(() => {
@@ -1065,12 +1083,6 @@ class Chat extends React.Component<IProps, IState> {
 
     private windowBlurHandler = () => {
         this.isInChat = false;
-    }
-
-    private settingMenuHandler = () => {
-        this.setState({
-            settingMenu: !this.state.settingMenu,
-        });
     }
 
     private sendReadHistory(peer: InputPeer | null, msgId: number) {

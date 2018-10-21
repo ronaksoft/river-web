@@ -14,7 +14,8 @@
   --light-blue: rgba(54, 115, 249, 0.2);
   --green: #dcf8c6;
   --message-chat: #EFEFF0;
-  --color-hover: rgba(50, 61, 71, 0.08);
+  --color-hover: rgba(50, 61, 71, 0.07);
+  --color-hover-dark: rgba(50, 61, 71, 0.12);
   --color-text-hover: rgba(50, 61, 71, 0.64); }
 
 body {
@@ -28,11 +29,7 @@ body {
   background-repeat: no-repeat; }
 
 .dialog-container {
-  margin-left: -1px;
-  border-right: 1px solid var(--light);
-  border-left: 1px solid var(--light);
-  width: calc(100% + 2px);
-  height: 502px; }
+  height: 100%; }
   .dialog-container .dialog {
     position: relative;
     width: 100%;
@@ -59,7 +56,7 @@ body {
         background: transparent; }
     .dialog-container .dialog.active {
       border: 0;
-      background-color: var(--light-blue); }
+      background-color: var(--color-hover-dark); }
       .dialog-container .dialog.active > span {
         color: var(--color-text-hover);
         background: transparent; }

@@ -14,7 +14,8 @@
   --light-blue: rgba(54, 115, 249, 0.2);
   --green: #dcf8c6;
   --message-chat: #EFEFF0;
-  --color-hover: rgba(50, 61, 71, 0.08);
+  --color-hover: rgba(50, 61, 71, 0.07);
+  --color-hover-dark: rgba(50, 61, 71, 0.12);
   --color-text-hover: rgba(50, 61, 71, 0.64); }
 
 body {
@@ -60,14 +61,14 @@ body {
     flex: none;
     border: 1px solid var(--light);
     background-color: var(--white); }
-    .container .column-left .top {
+    .container .column-left .top-bar {
       position: relative;
       width: 100%;
       height: 48px;
       display: flex;
       align-items: center;
       padding: 0 17px; }
-      .container .column-left .top:after {
+      .container .column-left .top-bar:after {
         position: absolute;
         bottom: 0;
         left: 50%;
@@ -77,55 +78,14 @@ body {
         content: '';
         background-color: var(--light);
         transform: translate(-50%, 0); }
-      .container .column-left .top .new-message {
+      .container .column-left .top-bar .new-message {
         color: #60BF70;
         cursor: pointer; }
-    .container .column-left .setting {
-      position: relative;
-      width: calc(100% - 12px);
-      height: 50px;
-      padding-left: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: right; }
-      .container .column-left .setting:after {
-        position: absolute;
-        top: 0;
-        left: 50%;
-        display: block;
-        width: 80%;
-        height: 1px;
-        content: '';
-        background-color: var(--light);
-        transform: translate(-50%, 0); }
-      .container .column-left .setting svg {
-        cursor: pointer;
-        fill: var(--grey); }
-        .container .column-left .setting svg:hover {
-          fill: var(--dark); }
-      .container .column-left .setting .version {
-        font-family: 'Source Sans Pro', sans-serif;
-        font-weight: 400;
-        position: absolute;
-        top: 50%;
-        right: 12px;
-        transform: translateY(-50%);
-        font-size: 12px;
-        color: var(--light); }
-        .container .column-left .setting .version:hover {
-          color: var(--grey); }
-    .container .column-left input {
-      float: left;
-      width: 188px;
-      height: 42px;
-      padding: 0 15px;
-      border: 1px solid var(--light);
-      background-color: #eceff1;
-      border-radius: 21px;
-      font-family: 'Source Sans Pro', sans-serif;
-      font-weight: 400; }
-      .container .column-left input:focus {
-        outline: none; }
+    .container .column-left .left-content {
+      border-right: 1px solid var(--light);
+      border-left: 1px solid var(--light);
+      width: 100%;
+      height: calc(100% - 100px); }
   .container .column-center {
     position: relative;
     flex: 1;

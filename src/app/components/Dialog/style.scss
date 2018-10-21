@@ -1,11 +1,7 @@
 @import '../../../style/common';
 
 .dialog-container {
-  margin-left: -1px;
-  border-right: 1px solid var(--light);
-  border-left: 1px solid var(--light);
-  width: calc(100% + 2px);
-  height: 502px;
+  height: 100%;
   .dialog {
     position: relative;
     width: 100%;
@@ -35,7 +31,7 @@
     }
     &.active {
       border: 0;
-      background-color: var(--light-blue);
+      background-color: var(--color-hover-dark);
       > span {
         color: var(--color-text-hover);
         background: transparent;

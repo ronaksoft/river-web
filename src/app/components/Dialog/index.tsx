@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {List} from 'react-virtualized';
+import {List, AutoSizer} from 'react-virtualized';
 import {Link} from 'react-router-dom';
 import * as _ from 'lodash';
 import './style.css';
@@ -56,17 +56,21 @@ class Dialog extends React.Component<IProps, IState> {
     public render() {
         const {items} = this.state;
         return (
-            <List
-                ref={this.refHandler}
-                rowHeight={64}
-                rowRenderer={this.rowRender}
-                rowCount={items.length}
-                overscanRowCount={0}
-                scrollToIndex={this.state.scrollIndex}
-                width={318}
-                height={502}
-                className="dialog-container"
-            />
+            <AutoSizer>
+                {({width, height}: any) => (
+                    <List
+                        ref={this.refHandler}
+                        rowHeight={64}
+                        rowRenderer={this.rowRender}
+                        rowCount={items.length}
+                        overscanRowCount={0}
+                        scrollToIndex={this.state.scrollIndex}
+                        width={width - 2}
+                        height={height}
+                        className="dialog-container"
+                    />
+                )}
+            </AutoSizer>
         );
     }
 
