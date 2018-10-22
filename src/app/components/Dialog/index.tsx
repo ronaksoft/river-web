@@ -7,11 +7,14 @@ import {IDialog} from '../../repository/dialog/interface';
 import DialogMessage from '../DialogMessage';
 
 interface IProps {
+    cancelIsTyping: (id: string) => void;
+    isTypingList: { [key: string]: boolean };
     items: IDialog[];
     selectedId: string;
 }
 
 interface IState {
+    isTypingList: { [key: string]: boolean };
     items: IDialog[];
     selectedId: string;
     scrollIndex: number;
@@ -24,6 +27,7 @@ class Dialog extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
+            isTypingList: props.isTypingList,
             items: props.items,
             scrollIndex: -1,
             selectedId: props.selectedId,
@@ -38,6 +42,7 @@ class Dialog extends React.Component<IProps, IState> {
     public componentWillReceiveProps(newProps: IProps) {
         if (this.state.items !== newProps.items) {
             this.setState({
+                isTypingList: newProps.isTypingList,
                 items: newProps.items,
                 scrollIndex: -1,
                 selectedId: newProps.selectedId,
@@ -48,6 +53,7 @@ class Dialog extends React.Component<IProps, IState> {
             // @ts-ignore
             const index = _.findIndex(this.state.items, {id: newProps.selectedId});
             this.setState({
+                isTypingList: newProps.isTypingList,
                 items: newProps.items,
                 scrollIndex: index,
                 selectedId: newProps.selectedId,
@@ -85,11 +91,12 @@ class Dialog extends React.Component<IProps, IState> {
 
     private rowRender = ({index, key, parent, style}: any): any => {
         const data = this.state.items[index];
+        const isTyping = this.state.isTypingList.hasOwnProperty(data.peerid || '');
         return (
             <div style={style} key={index}>
                 <Link to={`/conversation/${data.peerid}`}>
                     <div className={'dialog' + (data.peerid === this.state.selectedId ? ' active' : '')}>
-                        <DialogMessage dialog={data}/>
+                        <DialogMessage dialog={data} isTyping={isTyping} cancelIsTyping={this.props.cancelIsTyping}/>
                     </div>
                 </Link>
             </div>

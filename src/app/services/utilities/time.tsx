@@ -134,7 +134,7 @@ class TimeUntiles {
         if (!time1 || !time2) {
             return false;
         }
-        return moment(time1*1000).isSame(time2*1000, 'day');
+        return moment(time1 * 1000).isSame(moment(time2 * 1000), 'day');
     }
 }
 

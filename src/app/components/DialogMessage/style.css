@@ -72,6 +72,14 @@ body {
     white-space: nowrap;
     text-overflow: ellipsis;
     color: var(--grey); }
+    .dialog-wrapper .preview .status {
+      height: 17px;
+      width: 17px;
+      padding: 0 3px 0 0; }
+      .dialog-wrapper .preview .status svg {
+        height: 17px;
+        width: 17px;
+        vertical-align: bottom; }
   .dialog-wrapper .unread {
     font-size: 11px;
     position: absolute;

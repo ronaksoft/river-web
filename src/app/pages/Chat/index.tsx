@@ -54,6 +54,7 @@ interface IState {
     inputVal: string;
     isConnecting: boolean;
     isTyping: boolean;
+    isTypingList: { [key: string]: boolean };
     isUpdating: boolean;
     leftMenu: string;
     maxReadId: number;
@@ -96,6 +97,7 @@ class Chat extends React.Component<IProps, IState> {
             inputVal: '',
             isConnecting: true,
             isTyping: false,
+            isTypingList: {},
             isUpdating: false,
             leftMenu: 'chat',
             maxReadId: 0,
@@ -245,6 +247,20 @@ class Chat extends React.Component<IProps, IState> {
             if (this.state.isUpdating) {
                 return;
             }
+            const {isTypingList} = this.state;
+            if (data.action === TypingAction.TYPING) {
+                isTypingList[data.userid || ''] = true;
+                this.setState({
+                    isTypingList,
+                });
+            } else if (data.action === TypingAction.CANCEL) {
+                if (isTypingList.hasOwnProperty(data.userid || '')) {
+                    delete isTypingList[data.userid || ''];
+                    this.setState({
+                        isTypingList,
+                    });
+                }
+            }
             if (data.userid !== this.state.selectedDialogId) {
                 return;
             }
@@ -252,6 +268,7 @@ class Chat extends React.Component<IProps, IState> {
             if (this.state.isTyping !== isTyping) {
                 this.setState({
                     isTyping,
+                    isTypingList,
                 });
             }
             clearTimeout(this.typingTimeout);
@@ -328,13 +345,14 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {anchorEl, leftMenu, textInputMessage, textInputMessageMode, peer, selectedDialogId, popUpDate} = this.state;
+        const {anchorEl, isTypingList, leftMenu, textInputMessage, textInputMessageMode, peer, selectedDialogId, popUpDate} = this.state;
         const open = Boolean(anchorEl);
         const leftMenuRender = () => {
             switch (leftMenu) {
                 default:
                 case 'chat':
-                    return (<Dialog items={this.state.dialogs} selectedId={selectedDialogId}/>);
+                    return (<Dialog items={this.state.dialogs} selectedId={selectedDialogId} isTypingList={isTypingList}
+                                    cancelIsTyping={this.cancelIsTypingHandler}/>);
                 case 'setting':
                     return (<SettingMenu/>);
                 case 'contact':
@@ -822,12 +840,14 @@ class Chat extends React.Component<IProps, IState> {
         }
         const {dialogs} = this.state;
         const preview = (msg.body || '').substr(0, 64);
+        const previewMe = (this.connInfo.UserID === msg.senderid);
         let toUpdateDialog: IDialog | null = null;
         if (this.dialogMap.hasOwnProperty(id)) {
             const index = this.dialogMap[id];
             if ((dialogs[index].topmessageid || 0) < (msg.id || 0)) {
                 dialogs[index].topmessageid = msg.id;
                 dialogs[index].preview = preview;
+                dialogs[index].preview_me = previewMe;
                 dialogs[index].last_update = msg.createdon;
                 dialogs[index].peerid = id;
                 dialogs[index].peertype = msg.peertype;
@@ -840,6 +860,7 @@ class Chat extends React.Component<IProps, IState> {
                 peerid: id,
                 peertype: msg.peertype,
                 preview,
+                preview_me: previewMe,
                 topmessageid: msg.id,
                 unreadcount: 0,
                 user_id: msg.peerid,
@@ -1143,6 +1164,17 @@ class Chat extends React.Component<IProps, IState> {
                 popUpDate: null,
             });
         }, 3000);
+    }
+
+    private cancelIsTypingHandler = (id: string) => {
+        const {isTypingList} = this.state;
+        if (isTypingList.hasOwnProperty(id)) {
+            delete isTypingList[id];
+            this.setState({
+                isTypingList,
+            });
+        }
+
     }
 }
 

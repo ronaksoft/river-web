@@ -26,6 +26,7 @@ export default class DialogRepo {
     private db: any;
     private sdk: SDK;
     private messageRepo: MessageRepo;
+    private userId: string;
     private userRepo: UserRepo;
     private lazyMap: { [key: number]: IDialog } = {};
     private readonly updateThrottle: any = null;
@@ -37,6 +38,12 @@ export default class DialogRepo {
         this.messageRepo = MessageRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.updateThrottle = throttle(this.insertToDb, 5000);
+        this.userId = SDK.getInstance().getConnInfo().UserID || '0';
+    }
+
+    public loadConnInfo() {
+        SDK.getInstance().loadConnInfo();
+        this.userId = SDK.getInstance().getConnInfo().UserID || '0';
     }
 
     public create(dialog: IDialog) {
@@ -82,6 +89,9 @@ export default class DialogRepo {
     }
 
     public getManyForSnapshot({skip, limit}: any): Promise<IDialogWithUpdateId> {
+        if (this.userId === '0' || this.userId === '') {
+            this.loadConnInfo();
+        }
         return this.sdk.getDialogs(skip || 0, limit || 30).then((remoteRes) => {
             this.messageRepo.importBulk(remoteRes.messagesList);
             const messageMap: { [key: number]: IMessage } = {};
@@ -95,6 +105,7 @@ export default class DialogRepo {
                 const msg = messageMap[dialog.topmessageid || 0];
                 if (msg) {
                     dialog.preview = (msg.body || '').substr(0, 64);
+                    dialog.preview_me = (msg.senderid === this.userId);
                     dialog.last_update = msg.createdon;
                     dialog.user_id = msg.peerid;
                 }
@@ -133,6 +144,7 @@ export default class DialogRepo {
                 const msg = messageMap[dialog.topmessageid || 0];
                 if (msg) {
                     dialog.preview = (msg.body || '').substr(0, 64);
+                    dialog.preview_me = (msg.senderid === this.userId);
                     dialog.last_update = msg.createdon;
                     dialog.user_id = msg.peerid;
                 }
@@ -187,6 +199,7 @@ export default class DialogRepo {
             const msg = messageMap[dialog.topmessageid || 0];
             if (msg) {
                 dialog.preview = (msg.body || '').substr(0, 64);
+                dialog.preview_me = (msg.senderid === this.userId);
                 dialog.last_update = msg.createdon;
                 dialog.user_id = msg.peerid;
             }
