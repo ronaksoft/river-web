@@ -36,11 +36,7 @@ body {
     height: 48px;
     border-radius: 50%;
     float: left;
-    margin-right: 12px;
-    background-color: #ccc;
-    background-position: center center;
-    background-size: cover;
-    background-image: url(../../../asset/image/user.png); }
+    margin-right: 12px; }
     .dialog-wrapper .avatar img {
       float: left;
       width: 48px;

@@ -42,3 +42,16 @@
     }
   }
 }
+
+@media screen and (max-width: 600px) {
+  .loading-page {
+    .loading-area {
+      height: 250px;
+      width: 250px;
+      .rc-progress-circle {
+        height: 250px;
+        width: 250px;
+      }
+    }
+  }
+}

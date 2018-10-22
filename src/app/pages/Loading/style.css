@@ -65,3 +65,11 @@ body {
       top: 70%;
       left: 50%;
       transform: translateX(-50%); }
+
+@media screen and (max-width: 600px) {
+  .loading-page .loading-area {
+    height: 250px;
+    width: 250px; }
+    .loading-page .loading-area .rc-progress-circle {
+      height: 250px;
+      width: 250px; } }
