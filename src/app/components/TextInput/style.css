@@ -72,7 +72,7 @@ body {
         line-height: 15px;
         float: left;
         width: calc(100% - 8px);
-        height: 30px;
+        height: 32px;
         padding: 7px 10px 8px;
         color: var(--dark);
         border: 1px solid rgba(50, 61, 71, 0.16);
