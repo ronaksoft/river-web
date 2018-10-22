@@ -44,11 +44,12 @@
     height: 32px;
     width: 32px;
     border-radius: 50%;
-    background-color: #ccc;
-    background-position: center center;
-    background-size: cover;
-    background-image: url(../../../asset/image/user.png);
     overflow: hidden;
+    font-size: 12px;
+    .text-avatar {
+      height: 32px;
+      width: 32px;
+    }
     img {
       height: 32px;
       width: 32px;

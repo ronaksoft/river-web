@@ -10,7 +10,8 @@
     "semicolon": [
       true,
       "always"
-    ]
+    ],
+    "no-bitwise": false
   },
   "linterOptions": {
     "exclude": [

@@ -23,12 +23,13 @@
         height: 32px;
         width: 32px;
         border-radius: 50%;
-        background-color: #ccc;
-        background-position: center center;
-        background-size: cover;
-        background-image: url(../../../asset/image/user.png);
         overflow: hidden;
         box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.3) inset;
+        font-size: 12px;
+        .text-avatar {
+          height: 32px;
+          width: 32px;
+        }
         img {
           width: 100%;
           height: 100%;

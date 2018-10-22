@@ -68,11 +68,11 @@ body {
     height: 32px;
     width: 32px;
     border-radius: 50%;
-    background-color: #ccc;
-    background-position: center center;
-    background-size: cover;
-    background-image: url(../../../asset/image/user.png);
-    overflow: hidden; }
+    overflow: hidden;
+    font-size: 12px; }
+    .bubble-wrapper .avatar .text-avatar {
+      height: 32px;
+      width: 32px; }
     .bubble-wrapper .avatar img {
       height: 32px;
       width: 32px;

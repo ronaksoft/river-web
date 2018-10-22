@@ -6,6 +6,7 @@ import {debounce} from 'lodash';
 
 import './style.css';
 import {Link} from 'react-router-dom';
+import {TextAvatar} from '../UserAvatar';
 
 interface IProps {
     id?: number;
@@ -94,7 +95,7 @@ class ContactMenu extends React.Component<IProps, IState> {
             <div style={style} key={index} className="contact-item">
                 <Link to={`/conversation/${contact.id}`}>
                     <span className="avatar">
-                        {contact.avatar && <img src={contact.avatar}/>}
+                        {contact.avatar ? <img src={contact.avatar}/> : TextAvatar(contact.firstname, contact.lastname)}
                     </span>
                     <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>
                     <span className="phone">{contact.phone ? contact.phone : 'no phone'}</span>
