@@ -72,7 +72,8 @@ class MessageItem extends React.Component<IProps, IState> {
                         {(message.avatar && message.senderid) && (<div className="arrow"/>)}
                         <div className={'bubble b_' + message._id + ((message.editedon || 0) > 0 ? ' edited' : '')}
                              onDoubleClick={this.props.moreCmdHandler.bind(this, 'reply', index)}>
-                            <MessagePreview message={message} peer={peer}/>
+                            {Boolean(message.replyto && message.replyto !== 0) &&
+                            <MessagePreview message={message} peer={peer}/>}
                             <div className={'inner ' + (message.rtl ? 'rtl' : 'ltr')}
                                  dangerouslySetInnerHTML={{__html: this.formatText(message.body)}}/>
                             <MessageStatus status={message.me || false} id={message.id} readId={readId}

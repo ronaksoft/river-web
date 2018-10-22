@@ -4,7 +4,6 @@ import {differenceBy, find, merge, cloneDeep, throttle} from 'lodash';
 import SDK from '../../services/sdk';
 import UserRepo from '../user';
 import RTLDetector from '../../services/utilities/rtl_detector';
-import {IDialog} from "../dialog/interface";
 import {InputPeer} from "../../services/sdk/messages/core.types_pb";
 
 export default class MessageRepo {
@@ -24,7 +23,7 @@ export default class MessageRepo {
     private userRepo: UserRepo;
     private userId: string;
     private rtlDetector: RTLDetector;
-    private lazyMap: { [key: number]: IDialog } = {};
+    private lazyMap: { [key: number]: IMessage } = {};
     private readonly updateThrottle: any = null;
 
     private constructor() {
@@ -35,7 +34,7 @@ export default class MessageRepo {
         this.sdk = SDK.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.rtlDetector = RTLDetector.getInstance();
-        this.updateThrottle = throttle(this.insertToDb, 5000);
+        this.updateThrottle = throttle(this.insertToDb, 2000);
     }
 
     public loadConnInfo() {
@@ -130,6 +129,10 @@ export default class MessageRepo {
             this.db.get(String(id)).then((res: IMessage) => {
                 resolve(res);
             }).catch(() => {
+                if (this.lazyMap.hasOwnProperty(id)) {
+                    resolve(cloneDeep(this.lazyMap[id]));
+                    return;
+                }
                 if (peer) {
                     this.sdk.getMessageHistory(peer, {minId: id, maxId: id}).then((remoteRes) => {
                         if (remoteRes.messagesList.length === 0) {
@@ -154,6 +157,7 @@ export default class MessageRepo {
             msg._id = String(msg.id);
             msg.me = (msg.senderid === this.userId);
             msg.rtl = this.rtlDetector.direction(msg.body || '');
+            msg.temp = false;
             return msg;
         });
     }
@@ -175,7 +179,6 @@ export default class MessageRepo {
 
     public upsert(msgs: IMessage[]): Promise<any> {
         const ids = msgs.map((msg) => {
-            delete msg.avatar;
             return msg._id;
         });
         return this.db.find({
@@ -188,7 +191,13 @@ export default class MessageRepo {
             const updateItems: IMessage[] = result.docs;
             updateItems.map((msg: IMessage) => {
                 const t = find(msgs, {_id: msg._id});
-                return merge(msg, t);
+                if (t && t.temp === true && msg.temp === false) {
+                    const d = merge(msg, t);
+                    d.temp = false;
+                    return d;
+                } else {
+                    return merge(msg, t);
+                }
             });
             const items = [...createItems, ...updateItems];
             return this.createMany(items).then((res: any) => {
@@ -222,6 +231,11 @@ export default class MessageRepo {
         });
     }
 
+    public flush() {
+        this.updateThrottle.cancel();
+        this.insertToDb();
+    }
+
     public lazyUpsert(messages: IMessage[], temp?: boolean) {
         if (this.userId === '0' || this.userId === '') {
             this.loadConnInfo();
@@ -238,7 +252,12 @@ export default class MessageRepo {
         message.temp = (temp === true);
         if (this.lazyMap.hasOwnProperty(message.id || 0)) {
             const t = this.lazyMap[message.id || 0];
-            this.lazyMap[message.id || 0] = merge(message, t);
+            if (t && t.temp === false && temp) {
+                this.lazyMap[message.id || 0] = merge(message, t);
+                this.lazyMap[message.id || 0].temp = false;
+            } else {
+                this.lazyMap[message.id || 0] = merge(message, t);
+            }
         } else {
             message._id = String(message.id);
             this.lazyMap[message.id || 0] = message;
@@ -247,15 +266,15 @@ export default class MessageRepo {
 
     private insertToDb = () => {
         const messages: IMessage[] = [];
-        const keys: any[] = [];
         Object.keys(this.lazyMap).forEach((key) => {
-            keys.push(key);
-            messages.push(this.lazyMap[key]);
+            messages.push(cloneDeep(this.lazyMap[key]));
         });
+        if (messages.length === 0) {
+            return;
+        }
+        this.lazyMap = {};
         this.upsert(messages).then(() => {
-            keys.forEach((_, key) => {
-                delete this.lazyMap[key];
-            });
+            //
         }).catch((err) => {
             window.console.log(err);
         });

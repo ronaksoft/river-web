@@ -118,16 +118,21 @@ export default class SyncManager {
                     break;
             }
         });
-        // }
-        this.updateDialogDB(dialogs);
         this.updateMessageDB(messages);
         this.updateUserDB(users);
+        this.updateDialogDB(dialogs);
     }
 
     private updateDialog(dialogs: { [key: number]: IDialog }, dialog: IDialog) {
         const d = dialogs[dialog.peerid || 0];
         if (d) {
-            dialogs[dialog.peerid || 0] = merge(d, dialog);
+            if (dialog.topmessageid) {
+                if (dialog.topmessageid > dialogs[dialog.peerid || 0].topmessageid) {
+                    dialogs[dialog.peerid || 0] = merge(d, dialog);
+                }
+            } else {
+                dialogs[dialog.peerid || 0] = merge(d, dialog);
+            }
         } else {
             dialogs[dialog.peerid || 0] = dialog;
         }
@@ -142,7 +147,18 @@ export default class SyncManager {
         });
         if (data.length > 0) {
             // TODO: check
-            this.dialogRepo.lazyUpsert(data);
+            this.messageRepo.flush();
+            setTimeout(() => {
+                data.forEach((item) => {
+                    if (item.readinboxmaxid) {
+                        this.messageRepo.getUnreadCount(item.peerid || '', item.readinboxmaxid || 0).then((res) => {
+                            item.unreadcount = res;
+                        });
+                    }
+                });
+                this.dialogRepo.lazyUpsert(data);
+                this.dialogRepo.flush();
+            }, 500);
             setTimeout(() => {
                 this.broadcastEvent('Dialog_DB_Updated', {ids: keys});
             }, 1000);

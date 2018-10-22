@@ -27,9 +27,9 @@ class DialogMessage extends React.Component<IProps, IState> {
     // }
 
     public componentWillReceiveProps(newProps: IProps) {
-        if (this.state.dialog === newProps.dialog) {
-            return;
-        }
+        // if (this.state.dialog === newProps.dialog) {
+        //     return;
+        // }
         this.setState({
             dialog: newProps.dialog,
         });

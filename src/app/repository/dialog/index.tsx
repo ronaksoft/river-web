@@ -1,6 +1,6 @@
 import DB from '../../services/db/dialog';
 import {IDialog} from './interface';
-import {throttle, differenceBy, find, merge, uniqBy, clone, cloneDeep} from 'lodash';
+import {throttle, differenceBy, find, merge, uniqBy, cloneDeep} from 'lodash';
 import SDK from '../../services/sdk';
 import UserRepo from '../user';
 import MessageRepo from '../message';
@@ -90,8 +90,18 @@ export default class DialogRepo {
             });
             this.userRepo.importBulk(remoteRes.usersList);
             this.lazyUpsert(remoteRes.dialogsList, messageMap);
+            const dialogs: IDialog[] = remoteRes.dialogsList;
+            dialogs.map((dialog) => {
+                const msg = messageMap[dialog.topmessageid || 0];
+                if (msg) {
+                    dialog.preview = (msg.body || '').substr(0, 64);
+                    dialog.last_update = msg.createdon;
+                    dialog.user_id = msg.peerid;
+                }
+                return dialog;
+            });
             return {
-                dialogs: remoteRes.dialogsList,
+                dialogs,
                 updateid: remoteRes.updateid || 0,
             };
         });
@@ -159,8 +169,13 @@ export default class DialogRepo {
         });
     }
 
+    public flush() {
+        this.updateThrottle.cancel();
+        this.insertToDb();
+    }
+
     public lazyUpsert(dialogs: IDialog[], messageMap?: { [key: number]: IMessage }) {
-        clone(dialogs).forEach((dialog) => {
+        cloneDeep(dialogs).forEach((dialog) => {
             this.updateMap(dialog, cloneDeep(messageMap));
         });
         this.updateThrottle();
@@ -188,13 +203,14 @@ export default class DialogRepo {
     private insertToDb = () => {
         const dialogs: IDialog[] = [];
         Object.keys(this.lazyMap).forEach((key) => {
-            dialogs.push(this.lazyMap[key]);
+            dialogs.push(cloneDeep(this.lazyMap[key]));
         });
         if (dialogs.length === 0) {
             return;
         }
+        this.lazyMap = {};
         this.upsert(dialogs).then(() => {
-            this.lazyMap = {};
+            //
         }).catch(() => {
             //
         });

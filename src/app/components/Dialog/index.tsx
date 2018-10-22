@@ -30,6 +30,11 @@ class Dialog extends React.Component<IProps, IState> {
         };
     }
 
+    public componentDidMount() {
+        this.list.recomputeRowHeights();
+        this.list.forceUpdateGrid();
+    }
+
     public componentWillReceiveProps(newProps: IProps) {
         if (this.state.items !== newProps.items) {
             this.setState({

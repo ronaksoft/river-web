@@ -218,6 +218,7 @@ class Chat extends React.Component<IProps, IState> {
             if (this.state.isUpdating) {
                 return;
             }
+            this.updateDialogs(data.message, data.accesshash || '0');
             this.messageRepo.lazyUpsert([data.message]);
             this.userRepo.importBulk([data.sender]);
         }));
@@ -821,15 +822,17 @@ class Chat extends React.Component<IProps, IState> {
         }
         const {dialogs} = this.state;
         const preview = (msg.body || '').substr(0, 64);
-        let toUpdateDialog: IDialog;
+        let toUpdateDialog: IDialog | null = null;
         if (this.dialogMap.hasOwnProperty(id)) {
             const index = this.dialogMap[id];
-            dialogs[index].topmessageid = msg.id;
-            dialogs[index].preview = preview;
-            dialogs[index].last_update = msg.createdon;
-            dialogs[index].peerid = id;
-            dialogs[index].peertype = msg.peertype;
-            toUpdateDialog = dialogs[index];
+            if ((dialogs[index].topmessageid || 0) < (msg.id || 0)) {
+                dialogs[index].topmessageid = msg.id;
+                dialogs[index].preview = preview;
+                dialogs[index].last_update = msg.createdon;
+                dialogs[index].peerid = id;
+                dialogs[index].peertype = msg.peertype;
+                toUpdateDialog = dialogs[index];
+            }
         } else {
             const dialog: IDialog = {
                 _id: String(msg.id),
@@ -849,7 +852,9 @@ class Chat extends React.Component<IProps, IState> {
         }
 
         this.dialogsSortThrottle(dialogs);
-        this.dialogRepo.lazyUpsert([toUpdateDialog]);
+        if (toUpdateDialog) {
+            this.dialogRepo.lazyUpsert([toUpdateDialog]);
+        }
     }
 
     private updateDialogsCounter(peerid: string, {maxInbox, maxOutbox, unreadCounter, unreadCounterIncrease}: any) {
