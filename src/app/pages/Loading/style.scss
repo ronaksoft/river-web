@@ -46,11 +46,21 @@
 @media screen and (max-width: 600px) {
   .loading-page {
     .loading-area {
-      height: 250px;
-      width: 250px;
+      height: 300px;
+      width: 300px;
       .rc-progress-circle {
-        height: 250px;
-        width: 250px;
+        height: 300px;
+        width: 300px;
+      }
+      .loading-text {
+        font-size: 15px;
+        line-height: 30px;
+        .info {
+          font-size: 13px;
+        }
+      }
+      .logo {
+        transform: translateX(-50%) scale(0.7);
       }
     }
   }

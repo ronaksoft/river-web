@@ -297,3 +297,16 @@ animation-play-state: paused;*/
   color: #fff;
   border-top: 1px solid rgba(255, 255, 255, 0.32);
 }
+
+@media screen and (max-width: 600px) {
+  .wrap-login100 {
+    width: 280px;
+  }
+  .top-logo {
+    transform: scale(0.7);
+  }
+  .top-desc {
+    width: 280px;
+    font-size: 15px;
+  }
+}
