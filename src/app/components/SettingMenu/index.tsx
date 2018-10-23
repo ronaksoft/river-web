@@ -10,6 +10,7 @@ interface IProps {
 }
 
 interface IState {
+    checked: boolean;
     id: number;
     readId: number;
 }
@@ -19,13 +20,21 @@ class SettingMenu extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
+            checked: false,
             id: props.id || 0,
             readId: props.readId || 0,
         };
     }
 
-    // public componentDidMount() {
-    // }
+    public componentDidMount() {
+        const el = document.querySelector('html');
+        if (!el) {
+            return;
+        }
+        this.setState({
+            checked: (el.getAttribute('theme') === 'dark'),
+        });
+    }
 
     public componentWillReceiveProps(newProps: IProps) {
         this.setState({
@@ -37,9 +46,10 @@ class SettingMenu extends React.Component<IProps, IState> {
     public render() {
         return (
             <div className="setting-menu">
-                <FormControlLabel control={
+                <FormControlLabel className="setting-switch-label" control={
                     <Switch
-                        value="checkedC"
+                        checked={this.state.checked}
+                        className="setting-switch"
                         color="default"
                         onChange={this.nightModeHandler}
                     />
@@ -58,6 +68,10 @@ class SettingMenu extends React.Component<IProps, IState> {
         } else {
             el.setAttribute('theme', 'light');
         }
+        this.setState({
+            checked: e.target.checked,
+        });
+        localStorage.setItem('river.theme.color', e.target.checked);
     }
 }
 

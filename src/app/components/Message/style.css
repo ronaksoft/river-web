@@ -227,3 +227,11 @@ html[theme="dark"] .bubble-wrapper > .date {
   background-color: var(--dark-high);
   text-shadow: none;
   color: var(--grey); }
+
+html[theme="dark"] .context-menu > div[role="document"] {
+  background-color: var(--dark-medium); }
+
+html[theme="dark"] .context-menu ul {
+  background-color: var(--dark-medium); }
+  html[theme="dark"] .context-menu ul .context-item {
+    color: var(--light); }

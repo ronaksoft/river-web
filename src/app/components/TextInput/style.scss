@@ -179,6 +179,7 @@
       .btn-clear {
         height: 32px;
         width: 32px;
+        color: inherit;
         svg {
           font-size: 20px;
         }
@@ -196,6 +197,15 @@ html[theme="dark"] {
         textarea {
           background-color: var(--dark-low);
           color: var(--light);
+        }
+      }
+    }
+    .previews {
+      color: var(--light);
+      fill: var(--light);
+      .preview-container {
+        .preview-message-wrapper {
+          background-color: rgba(255, 255, 255, 0.07);
         }
       }
     }

@@ -238,7 +238,19 @@ html[theme="dark"] {
     > .date {
       background-color: var(--dark-high);
       text-shadow: none;
+
       color: var(--grey);
+    }
+  }
+  .context-menu {
+    > div[role="document"] {
+      background-color: var(--dark-medium);
+    }
+    ul {
+      background-color: var(--dark-medium);
+      .context-item {
+        color: var(--light);
+      }
     }
   }
 }

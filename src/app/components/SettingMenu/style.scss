@@ -10,3 +10,17 @@
   text-align: left;
 }
 
+html[theme="dark"] {
+  .setting-menu {
+    .setting-switch {
+      span {
+        color: var(--dark-accent-medium) !important;
+      }
+    }
+    .setting-switch-label {
+      > span {
+        color: var(--light);
+      }
+    }
+  }
+}

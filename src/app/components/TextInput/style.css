@@ -185,7 +185,8 @@ body {
       align-items: center; }
       .write .previews .preview-clear .btn-clear {
         height: 32px;
-        width: 32px; }
+        width: 32px;
+        color: inherit; }
         .write .previews .preview-clear .btn-clear svg {
           font-size: 20px; }
 
@@ -195,6 +196,11 @@ html[theme="dark"] .write {
   html[theme="dark"] .write .inputs .input textarea {
     background-color: var(--dark-low);
     color: var(--light); }
+  html[theme="dark"] .write .previews {
+    color: var(--light);
+    fill: var(--light); }
+    html[theme="dark"] .write .previews .preview-container .preview-message-wrapper {
+      background-color: rgba(255, 255, 255, 0.07); }
 
 html[theme="dark"] .emoji-mart {
   background-color: var(--dark-medium);

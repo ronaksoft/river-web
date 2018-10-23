@@ -41,6 +41,15 @@ class App extends React.Component<{}, IState> {
                 alertOpen: true,
             });
         });
+
+        const el = document.querySelector('html');
+        if (el) {
+            if (localStorage.getItem('river.theme.color')) {
+                el.setAttribute('theme', 'dark');
+            } else {
+                el.setAttribute('theme', 'light');
+            }
+        }
     }
 
     public render() {

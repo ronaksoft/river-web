@@ -133,7 +133,6 @@ class Message extends React.Component<IProps, IState> {
                             className={'chat active-chat' + (this.state.noTransition ? ' no-transition' : '')}
                         />
                         <Menu
-                            id="simple-menu"
                             anchorEl={moreAnchorEl}
                             open={Boolean(moreAnchorEl)}
                             onClose={this.moreCloseHandler}

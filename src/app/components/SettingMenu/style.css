@@ -44,3 +44,9 @@ body {
   height: 502px;
   padding: 0 10px;
   text-align: left; }
+
+html[theme="dark"] .setting-menu .setting-switch span {
+  color: var(--dark-accent-medium) !important; }
+
+html[theme="dark"] .setting-menu .setting-switch-label > span {
+  color: var(--light); }
