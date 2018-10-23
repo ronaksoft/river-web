@@ -191,6 +191,11 @@ body {
         .write .previews .preview-clear .btn-clear svg {
           font-size: 20px; }
 
+.mobile-view .write .inputs .input textarea {
+  font-size: 16px;
+  line-height: 20px;
+  padding: 5px 10px; }
+
 html[theme="dark"] .write {
   border: 1px solid var(--dark-medium);
   background-color: var(--dark-medium); }
