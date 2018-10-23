@@ -72,3 +72,11 @@
     border-radius: 8px;
   }
 }
+
+html[theme="dark"] {
+  .dialog-wrapper {
+    .name {
+      color: var(--light);
+    }
+  }
+}

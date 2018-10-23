@@ -2,10 +2,11 @@
 
 .setting-menu {
   margin-left: -1px;
-  border-right: 1px solid var(--light);
-  border-left: 1px solid var(--light);
+  border-right: 1px solid transparent;
+  border-left: 1px solid transparent;
   width: calc(100% + 2px);
   height: 502px;
   padding: 0 10px;
   text-align: left;
 }
+

@@ -186,3 +186,37 @@
     }
   }
 }
+
+html[theme="dark"] {
+  .write {
+    border: 1px solid var(--dark-medium);
+    background-color: var(--dark-medium);
+    .inputs {
+      .input {
+        textarea {
+          background-color: var(--dark-low);
+          color: var(--light);
+        }
+      }
+    }
+  }
+  .emoji-mart {
+    background-color: var(--dark-medium);
+    border-color: var(--dark-high);
+    .emoji-mart-bar {
+      border-color: var(--dark-low);
+    }
+    .emoji-mart-search input {
+      background-color: var(--dark-low);
+      border-color: var(--dark-high);
+      color: var(--light);
+    }
+    .emoji-mart-category-label span {
+      background-color: transparent;
+      color: var(--light);
+    }
+    .emoji-mart-search-icon {
+      fill: var(--light);
+    }
+  }
+}

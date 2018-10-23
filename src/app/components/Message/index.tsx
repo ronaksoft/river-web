@@ -5,8 +5,12 @@ import './style.css';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import {InputPeer} from "../../services/sdk/messages/core.types_pb";
-import MessageItem from "../MessageItem";
 import {C_MESSAGE_TYPE} from "../../repository/message/consts";
+import TimeUtililty from '../../services/utilities/time';
+import UserAvatar from '../UserAvatar';
+import MessagePreview from '../MessagePreview';
+import MessageStatus from '../MessageStatus';
+import {MoreVert} from '@material-ui/icons';
 
 interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
@@ -210,11 +214,45 @@ class Message extends React.Component<IProps, IState> {
                 key={key}
                 rowIndex={index}
                 parent={parent}>
-                <MessageItem index={index} message={message} peer={this.state.peer} readId={this.state.readId}
+                {this.messageItem(index, message, this.state.peer, this.state.readId, style)}
+                {/*<MessageItem index={index} message={message} peer={this.state.peer} readId={this.state.readId}
                              style={style} moreCmdHandler={this.moreCmdHandler}
-                             contextMenuHandler={this.contextMenuHandler}/>
+                             contextMenuHandler={this.contextMenuHandler}/>*/}
             </CellMeasurer>
         );
+    }
+
+    private messageItem(index: number, message: IMessage, peer: InputPeer | null, readId: number, style: any) {
+        switch (message.type) {
+            case C_MESSAGE_TYPE.Date:
+                return (
+                    <div style={style} className="bubble-wrapper">
+                        <span className="date">{TimeUtililty.dynamicDate(message.createdon || 0)}</span>
+                    </div>
+                );
+            case C_MESSAGE_TYPE.Normal:
+            default:
+                return (
+                    <div style={style}
+                         className={'bubble-wrapper ' + (message.me ? 'me' : 'you') + (message.avatar ? ' avatar' : '')}>
+                        {(message.avatar && message.senderid && !message.me) && (
+                            <UserAvatar id={message.senderid} className="avatar"/>
+                        )}
+                        {(message.avatar && message.senderid) && (<div className="arrow"/>)}
+                        <div className={'bubble b_' + message._id + ((message.editedon || 0) > 0 ? ' edited' : '')}
+                             onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}>
+                            {Boolean(message.replyto && message.replyto !== 0) &&
+                            <MessagePreview message={message} peer={peer}/>}
+                            <div className={'inner ' + (message.rtl ? 'rtl' : 'ltr')}>{message.body}</div>
+                            <MessageStatus status={message.me || false} id={message.id} readId={readId}
+                                           time={message.createdon || 0} editedTime={message.editedon || 0}/>
+                            <div className="more" onClick={this.contextMenuHandler.bind(this, index)}>
+                                <MoreVert/>
+                            </div>
+                        </div>
+                    </div>
+                );
+        }
     }
 
     private fitList(forceScroll?: boolean) {

@@ -8,7 +8,6 @@
     height: 64px;
     padding: 8px;
     cursor: pointer;
-    background-color: var(--white);
     text-align: left;
     &:after {
       position: absolute;
@@ -35,6 +34,28 @@
       > span {
         color: var(--color-text-hover);
         background: transparent;
+      }
+    }
+  }
+}
+
+html[theme="dark"] {
+  .dialog-container {
+    .dialog {
+      &:after {
+        background-color: var(--dark-low);
+      }
+      &:hover {
+        background-color: var(--dark-hover);
+        > span {
+          color: var(--color-text-hover);
+        }
+      }
+      &.active {
+        background-color: var(--dark-hover-light);
+        > span {
+          color: var(--color-text-hover);
+        }
       }
     }
   }

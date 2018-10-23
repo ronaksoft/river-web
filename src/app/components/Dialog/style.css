@@ -16,7 +16,15 @@
   --message-chat: #EFEFF0;
   --color-hover: rgba(50, 61, 71, 0.07);
   --color-hover-dark: rgba(50, 61, 71, 0.12);
-  --color-text-hover: rgba(50, 61, 71, 0.64); }
+  --color-text-hover: rgba(50, 61, 71, 0.64);
+  --dark-low: #191919;
+  --dark-medium: #232323;
+  --dark-high: #333333;
+  --dark-hover: rgba(183, 222, 255, 0.07);
+  --dark-hover-light: rgba(183, 222, 255, 0.12);
+  --dark-accent-low: #003367;
+  --dark-accent-medium: #004783;
+  --dark-accent-high: #005eae; }
 
 body {
   background-color: var(--bg);
@@ -36,7 +44,6 @@ body {
     height: 64px;
     padding: 8px;
     cursor: pointer;
-    background-color: var(--white);
     text-align: left; }
     .dialog-container .dialog:after {
       position: absolute;
@@ -60,3 +67,16 @@ body {
       .dialog-container .dialog.active > span {
         color: var(--color-text-hover);
         background: transparent; }
+
+html[theme="dark"] .dialog-container .dialog:after {
+  background-color: var(--dark-low); }
+
+html[theme="dark"] .dialog-container .dialog:hover {
+  background-color: var(--dark-hover); }
+  html[theme="dark"] .dialog-container .dialog:hover > span {
+    color: var(--color-text-hover); }
+
+html[theme="dark"] .dialog-container .dialog.active {
+  background-color: var(--dark-hover-light); }
+  html[theme="dark"] .dialog-container .dialog.active > span {
+    color: var(--color-text-hover); }

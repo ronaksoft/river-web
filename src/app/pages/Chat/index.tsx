@@ -532,7 +532,9 @@ class Chat extends React.Component<IProps, IState> {
             });
         };
 
+        window.console.time('DB benchmark:');
         this.messageRepo.getMany({peer, limit: 25}).then((data) => {
+            window.console.timeEnd('DB benchmark:');
             if (data.length === 0) {
                 messages = [];
             } else {

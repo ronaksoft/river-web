@@ -16,7 +16,15 @@
   --message-chat: #EFEFF0;
   --color-hover: rgba(50, 61, 71, 0.07);
   --color-hover-dark: rgba(50, 61, 71, 0.12);
-  --color-text-hover: rgba(50, 61, 71, 0.64); }
+  --color-text-hover: rgba(50, 61, 71, 0.64);
+  --dark-low: #191919;
+  --dark-medium: #232323;
+  --dark-high: #333333;
+  --dark-hover: rgba(183, 222, 255, 0.07);
+  --dark-hover-light: rgba(183, 222, 255, 0.12);
+  --dark-accent-low: #003367;
+  --dark-accent-medium: #004783;
+  --dark-accent-high: #005eae; }
 
 body {
   background-color: var(--bg);
@@ -49,12 +57,6 @@ body {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center center; }
-    .message-status .icon.pending {
-      background-image: url(../../../asset/image/pending.svg); }
-    .message-status .icon.check {
-      background-image: url(../../../asset/image/check.svg); }
-    .message-status .icon.double-check {
-      background-image: url(../../../asset/image/double-check.svg); }
   .message-status .time {
     line-height: 10px; }
   .message-status .edited {
@@ -62,9 +64,9 @@ body {
 
 .me .bubble .message-status {
   color: #555; }
-  .me .bubble .message-status .icon.pending {
-    background-image: url(../../../asset/image/pending.svg); }
-  .me .bubble .message-status .icon.check {
-    background-image: url(../../../asset/image/check.svg); }
-  .me .bubble .message-status .icon.double-check {
-    background-image: url(../../../asset/image/double-check.svg); }
+
+html[theme="dark"] .message-status {
+  color: var(--grey); }
+
+html[theme="dark"] .me .bubble .message-status {
+  color: var(--grey); }

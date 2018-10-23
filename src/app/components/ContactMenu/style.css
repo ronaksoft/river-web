@@ -16,7 +16,15 @@
   --message-chat: #EFEFF0;
   --color-hover: rgba(50, 61, 71, 0.07);
   --color-hover-dark: rgba(50, 61, 71, 0.12);
-  --color-text-hover: rgba(50, 61, 71, 0.64); }
+  --color-text-hover: rgba(50, 61, 71, 0.64);
+  --dark-low: #191919;
+  --dark-medium: #232323;
+  --dark-high: #333333;
+  --dark-hover: rgba(183, 222, 255, 0.07);
+  --dark-hover-light: rgba(183, 222, 255, 0.12);
+  --dark-accent-low: #003367;
+  --dark-accent-medium: #004783;
+  --dark-accent-high: #005eae; }
 
 body {
   background-color: var(--bg);
@@ -57,7 +65,6 @@ body {
         height: 64px;
         padding: 8px;
         cursor: pointer;
-        background-color: var(--white);
         text-align: left; }
         .contacts .contact-box .contact-container .contact-item:after {
           position: absolute;
@@ -72,9 +79,6 @@ body {
         .contacts .contact-box .contact-container .contact-item:hover {
           border: 0;
           background-color: var(--color-hover); }
-        .contacts .contact-box .contact-container .contact-item.active {
-          border: 0;
-          background-color: var(--light-blue); }
         .contacts .contact-box .contact-container .contact-item .avatar {
           width: 48px;
           height: 48px;
@@ -105,3 +109,22 @@ body {
           white-space: nowrap;
           text-overflow: ellipsis;
           color: var(--grey); }
+
+html[theme="dark"] .contacts .search-container {
+  background-color: var(--dark-medium);
+  border-bottom: 1px solid var(--dark-low);
+  border-top: 1px solid var(--dark-low); }
+  html[theme="dark"] .contacts .search-container input {
+    height: 32px;
+    border: 1px solid var(--dark-high);
+    padding: 0 12px;
+    width: 100%;
+    font-size: 14px;
+    background-color: var(--dark-low);
+    color: var(--light); }
+
+html[theme="dark"] .contacts .contact-box .contact-container .contact-item:after {
+  background-color: var(--dark-low); }
+
+html[theme="dark"] .contacts .contact-box .contact-container .contact-item .name {
+  color: var(--light); }

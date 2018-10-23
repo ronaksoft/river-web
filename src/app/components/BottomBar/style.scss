@@ -25,6 +25,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
     .title {
       font-size: 12px;
       color: var(--grey);
@@ -39,6 +40,24 @@
       }
       svg {
         fill: var(--dark);
+      }
+    }
+  }
+}
+
+html[theme="dark"] {
+  .bottom-bar {
+    &:after {
+      background-color: var(--dark-low);
+    }
+    a {
+      &.active, &:hover {
+        .title {
+          color: var(--light);
+        }
+        svg {
+          fill: var(--light);
+        }
       }
     }
   }

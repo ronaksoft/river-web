@@ -36,3 +36,13 @@
     }
   }
 }
+
+html[theme="dark"] {
+  .pop-up-date-container {
+    .pop-up-date {
+      background-color: var(--dark-high);
+      text-shadow: none;
+      color: var(--grey);
+    }
+  }
+}

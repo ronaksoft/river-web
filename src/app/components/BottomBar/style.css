@@ -16,7 +16,15 @@
   --message-chat: #EFEFF0;
   --color-hover: rgba(50, 61, 71, 0.07);
   --color-hover-dark: rgba(50, 61, 71, 0.12);
-  --color-text-hover: rgba(50, 61, 71, 0.64); }
+  --color-text-hover: rgba(50, 61, 71, 0.64);
+  --dark-low: #191919;
+  --dark-medium: #232323;
+  --dark-high: #333333;
+  --dark-hover: rgba(183, 222, 255, 0.07);
+  --dark-hover-light: rgba(183, 222, 255, 0.12);
+  --dark-accent-low: #003367;
+  --dark-accent-medium: #004783;
+  --dark-accent-high: #005eae; }
 
 body {
   background-color: var(--bg);
@@ -51,7 +59,8 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center; }
+    align-items: center;
+    cursor: pointer; }
     .bottom-bar a .title {
       font-size: 12px;
       color: var(--grey); }
@@ -62,3 +71,12 @@ body {
       color: var(--dark); }
     .bottom-bar a.active svg, .bottom-bar a:hover svg {
       fill: var(--dark); }
+
+html[theme="dark"] .bottom-bar:after {
+  background-color: var(--dark-low); }
+
+html[theme="dark"] .bottom-bar a.active .title, html[theme="dark"] .bottom-bar a:hover .title {
+  color: var(--light); }
+
+html[theme="dark"] .bottom-bar a.active svg, html[theme="dark"] .bottom-bar a:hover svg {
+  fill: var(--light); }

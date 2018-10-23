@@ -31,7 +31,6 @@
         height: 64px;
         padding: 8px;
         cursor: pointer;
-        background-color: var(--white);
         text-align: left;
         &:after {
           position: absolute;
@@ -47,10 +46,6 @@
         &:hover {
           border: 0;
           background-color: var(--color-hover);
-        }
-        &.active {
-          border: 0;
-          background-color: var(--light-blue);
         }
         .avatar {
           width: 48px;
@@ -84,6 +79,37 @@
           white-space: nowrap;
           text-overflow: ellipsis;
           color: var(--grey);
+        }
+      }
+    }
+  }
+}
+
+html[theme="dark"] {
+  .contacts {
+    .search-container {
+      background-color: var(--dark-medium);
+      border-bottom: 1px solid var(--dark-low);
+      border-top: 1px solid var(--dark-low);
+      input {
+        height: 32px;
+        border: 1px solid var(--dark-high);
+        padding: 0 12px;
+        width: 100%;
+        font-size: 14px;
+        background-color: var(--dark-low);
+        color: var(--light);
+      }
+    }
+    .contact-box {
+      .contact-container {
+        .contact-item {
+          &:after {
+            background-color: var(--dark-low);
+          }
+          .name {
+            color: var(--light);
+          }
         }
       }
     }

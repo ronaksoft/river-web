@@ -16,7 +16,15 @@
   --message-chat: #EFEFF0;
   --color-hover: rgba(50, 61, 71, 0.07);
   --color-hover-dark: rgba(50, 61, 71, 0.12);
-  --color-text-hover: rgba(50, 61, 71, 0.64); }
+  --color-text-hover: rgba(50, 61, 71, 0.64);
+  --dark-low: #191919;
+  --dark-medium: #232323;
+  --dark-high: #333333;
+  --dark-hover: rgba(183, 222, 255, 0.07);
+  --dark-hover-light: rgba(183, 222, 255, 0.12);
+  --dark-accent-low: #003367;
+  --dark-accent-medium: #004783;
+  --dark-accent-high: #005eae; }
 
 body {
   background-color: var(--bg);
@@ -180,3 +188,25 @@ body {
         width: 32px; }
         .write .previews .preview-clear .btn-clear svg {
           font-size: 20px; }
+
+html[theme="dark"] .write {
+  border: 1px solid var(--dark-medium);
+  background-color: var(--dark-medium); }
+  html[theme="dark"] .write .inputs .input textarea {
+    background-color: var(--dark-low);
+    color: var(--light); }
+
+html[theme="dark"] .emoji-mart {
+  background-color: var(--dark-medium);
+  border-color: var(--dark-high); }
+  html[theme="dark"] .emoji-mart .emoji-mart-bar {
+    border-color: var(--dark-low); }
+  html[theme="dark"] .emoji-mart .emoji-mart-search input {
+    background-color: var(--dark-low);
+    border-color: var(--dark-high);
+    color: var(--light); }
+  html[theme="dark"] .emoji-mart .emoji-mart-category-label span {
+    background-color: transparent;
+    color: var(--light); }
+  html[theme="dark"] .emoji-mart .emoji-mart-search-icon {
+    fill: var(--light); }

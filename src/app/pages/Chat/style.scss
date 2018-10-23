@@ -154,8 +154,36 @@
 }
 
 html[theme="dark"] {
-  .container .column-center .conversation {
-    background-image: none;
-    background-color: #021D33;
+  .container {
+    background-color: var(--dark-medium);
+    .column-left {
+      border: 1px solid transparent;
+      border-right: 1px solid var(--dark-low);
+      background-color: var(--dark-medium);
+      .top-bar {
+        &:after {
+          background-color: var(--dark-medium);
+        }
+      }
+      .left-content {
+        border-right: 1px solid var(--dark-medium);
+        border-left: 1px solid transparent;
+      }
+    }
+    .column-center {
+      .top {
+        background-color: var(--dark-medium);
+        span {
+          color: var(--light);
+          .name {
+            color: var(--light);
+          }
+        }
+      }
+      .conversation {
+        background-image: none;
+        background-color: var(--dark-low);
+      }
+    }
   }
 }

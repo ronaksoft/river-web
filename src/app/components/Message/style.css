@@ -16,7 +16,15 @@
   --message-chat: #EFEFF0;
   --color-hover: rgba(50, 61, 71, 0.07);
   --color-hover-dark: rgba(50, 61, 71, 0.12);
-  --color-text-hover: rgba(50, 61, 71, 0.64); }
+  --color-text-hover: rgba(50, 61, 71, 0.64);
+  --dark-low: #191919;
+  --dark-medium: #232323;
+  --dark-high: #333333;
+  --dark-hover: rgba(183, 222, 255, 0.07);
+  --dark-hover-light: rgba(183, 222, 255, 0.12);
+  --dark-accent-low: #003367;
+  --dark-accent-medium: #004783;
+  --dark-accent-high: #005eae; }
 
 body {
   background-color: var(--bg);
@@ -62,3 +70,160 @@ body {
 
 .ReactVirtualized__Grid__innerScrollContainer {
   width: 100% !important; }
+
+.bubble-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  padding-bottom: 2px; }
+  .bubble-wrapper .arrow {
+    position: absolute;
+    top: 6px;
+    right: 0;
+    height: 10px;
+    width: 16px;
+    overflow: hidden; }
+    .bubble-wrapper .arrow:after {
+      position: absolute;
+      content: '';
+      height: 15px;
+      width: 15px;
+      top: -9px;
+      left: -3px;
+      background-color: var(--green);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+      transform: rotate(-45deg); }
+  .bubble-wrapper.you .arrow {
+    position: absolute;
+    top: 6px;
+    right: auto;
+    left: 34px;
+    overflow: hidden; }
+    .bubble-wrapper.you .arrow:after {
+      background-color: var(--message-chat);
+      box-shadow: -1px 2px 0px rgba(0, 0, 0, 0.1);
+      transform: rotate(-45deg);
+      left: 5px; }
+  .bubble-wrapper .avatar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 32px;
+    width: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+    font-size: 12px; }
+    .bubble-wrapper .avatar .text-avatar {
+      height: 32px;
+      width: 32px; }
+    .bubble-wrapper .avatar img {
+      height: 32px;
+      width: 32px;
+      object-fit: cover; }
+  .bubble-wrapper .bubble {
+    position: relative;
+    font-size: 14px;
+    line-height: 17px;
+    display: inline-block;
+    clear: both;
+    padding: 3px 3px 15px 3px;
+    vertical-align: top;
+    border-radius: 5px;
+    max-width: 558px;
+    min-width: 75px;
+    min-height: 35px;
+    box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.1); }
+    .bubble-wrapper .bubble > .inner {
+      direction: ltr;
+      padding: 4px 4px 0 4px; }
+      .bubble-wrapper .bubble > .inner.rtl {
+        direction: rtl;
+        text-align: right; }
+      .bubble-wrapper .bubble > .inner.ltr {
+        direction: ltr;
+        text-align: left; }
+    .bubble-wrapper .bubble .more {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      height: 20px;
+      width: 16px;
+      display: none;
+      cursor: pointer;
+      background-color: inherit;
+      z-index: 10; }
+      .bubble-wrapper .bubble .more svg {
+        height: 20px;
+        font-size: 20px; }
+    .bubble-wrapper .bubble:hover .more {
+      display: block; }
+  .bubble-wrapper.you.avatar {
+    padding-top: 6px; }
+  .bubble-wrapper.you .bubble {
+    float: left;
+    color: var(--black-text);
+    background-color: var(--message-chat);
+    align-self: flex-start;
+    animation-name: slideFromLeft;
+    text-align: left;
+    margin-left: 44px; }
+    .bubble-wrapper.you .bubble.edited {
+      min-width: 80px; }
+  .bubble-wrapper.me.avatar {
+    padding-top: 6px; }
+  .bubble-wrapper.me .bubble {
+    float: right;
+    color: var(--black-text);
+    background-color: var(--green);
+    align-self: flex-end;
+    animation-name: slideFromRight;
+    text-align: right;
+    margin-right: 10px; }
+    .bubble-wrapper.me .bubble.edited {
+      min-width: 92px; }
+  .bubble-wrapper > .date {
+    background-color: rgba(225, 245, 254, 0.92);
+    border-radius: 7.5px;
+    padding: 5px 10px 6px 10px;
+    text-align: center;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+    box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.1);
+    font-weight: 100;
+    box-sizing: border-box;
+    color: rgba(69, 90, 100, 0.95);
+    display: inline-block;
+    flex: none;
+    font-size: 12.5px;
+    line-height: 21px;
+    text-transform: uppercase; }
+
+.context-menu ul {
+  padding: 6px 0 !important;
+  min-width: 100px; }
+  .context-menu ul .context-item {
+    padding: 3px 12px;
+    font-size: 13px; }
+
+html[theme="dark"] .chat {
+  border-color: var(--dark-low); }
+
+html[theme="dark"] .bubble-wrapper.me .bubble {
+  background-color: var(--dark-accent-low);
+  color: #eee; }
+
+html[theme="dark"] .bubble-wrapper.me .arrow:after {
+  background-color: var(--dark-accent-low);
+  color: #eee; }
+
+html[theme="dark"] .bubble-wrapper.you .bubble {
+  background-color: var(--dark-accent-medium);
+  color: #eee; }
+
+html[theme="dark"] .bubble-wrapper.you .arrow:after {
+  background-color: var(--dark-accent-medium);
+  color: #eee; }
+
+html[theme="dark"] .bubble-wrapper > .date {
+  background-color: var(--dark-high);
+  text-shadow: none;
+  color: var(--grey); }
