@@ -208,7 +208,7 @@ class Chat extends React.Component<IProps, IState> {
             if (!this.isInChat && data.message.senderid !== this.connInfo.UserID) {
                 this.notify(
                     `Message from ${data.sender.firstname} ${data.sender.lastname}`,
-                    (data.message.body || '').substr(0, 64));
+                    (data.message.body || '').substr(0, 64), data.message.peerid || 'null');
             }
             if (data.message.senderid !== this.connInfo.UserID && data.message.peerid !== this.state.selectedDialogId) {
                 this.updateDialogsCounter(data.message.peerid || '', {unreadCounterIncrease: 1});
@@ -1064,7 +1064,7 @@ class Chat extends React.Component<IProps, IState> {
         window.console.log('User_DB_Updated');
     }
 
-    private notify = (title: string, body: string) => {
+    private notify = (title: string, body: string, id: string) => {
         if (Notification.permission === 'granted') {
             const options = {
                 body,
@@ -1072,6 +1072,10 @@ class Chat extends React.Component<IProps, IState> {
             };
             // @ts-ignore
             const notification = new Notification(title, options);
+            notification.onclick = () => {
+                window.focus();
+                this.props.history.push(`/conversation/${id}`);
+            };
         }
     }
 

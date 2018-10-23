@@ -21,8 +21,8 @@ interface IProps {
     previewMessage?: IMessage;
     previewMessageMode?: number;
     ref?: (ref: any) => void;
-    userId?: string;
     text?: string;
+    userId?: string;
 }
 
 interface IState {
@@ -149,8 +149,20 @@ class TextInput extends React.Component<IProps, IState> {
     }
 
     private submitMessage = () => {
+        const {previewMessage, previewMessageMode} = this.state;
         if (this.props.onMessage) {
-            this.props.onMessage(this.textarea.value);
+            if (this.props.onMessage) {
+                if (previewMessageMode === C_MSG_MODE.Normal) {
+                    this.props.onMessage(this.textarea.value);
+                } else if (previewMessageMode !== C_MSG_MODE.Normal) {
+                    const message = cloneDeep(previewMessage);
+                    this.props.onMessage(this.textarea.value, {
+                        message,
+                        mode: previewMessageMode,
+                    });
+                    this.clearPreviewMessage();
+                }
+            }
         }
         this.textarea.value = '';
         this.setState({

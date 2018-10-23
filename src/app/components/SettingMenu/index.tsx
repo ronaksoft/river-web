@@ -65,13 +65,14 @@ class SettingMenu extends React.Component<IProps, IState> {
         }
         if (e.target.checked) {
             el.setAttribute('theme', 'dark');
+            localStorage.setItem('river.theme.color', 'dark');
         } else {
             el.setAttribute('theme', 'light');
+            localStorage.setItem('river.theme.color', 'light');
         }
         this.setState({
             checked: e.target.checked,
         });
-        localStorage.setItem('river.theme.color', e.target.checked);
     }
 }
 

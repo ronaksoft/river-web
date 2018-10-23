@@ -44,11 +44,7 @@ class App extends React.Component<{}, IState> {
 
         const el = document.querySelector('html');
         if (el) {
-            if (localStorage.getItem('river.theme.color')) {
-                el.setAttribute('theme', 'dark');
-            } else {
-                el.setAttribute('theme', 'light');
-            }
+            el.setAttribute('theme', localStorage.getItem('river.theme.color') || 'normal');
         }
     }
 
