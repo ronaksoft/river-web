@@ -109,3 +109,6 @@ body {
 
 .me .message-preview .preview-container .preview-message-wrapper.reply .preview-message .preview-message-user {
   color: #35cd96; }
+
+html[theme="dark"] .message-preview .preview-container .preview-message-wrapper .preview-message {
+  background-color: rgba(255, 255, 255, 0.1); }

@@ -197,6 +197,27 @@ html[theme="dark"] {
         background-image: none;
         background-color: var(--dark-low);
       }
+      .start-messaging {
+        background-color: var(--dark-low);
+        background-image: none;
+        .start-messaging-header {
+          background-color: transparent;
+        }
+        .start-messaging-img {
+          width: 100%;
+          height: calc(100% - 150px);
+          background-image: url(../../../asset/image/start-messaging.svg);
+          background-position: center center;
+          background-size: contain;
+          background-repeat: no-repeat;
+        }
+        .start-messaging-title {
+          visibility: hidden;
+        }
+        .start-messaging-footer {
+          background-color: transparent;
+        }
+      }
     }
   }
 }

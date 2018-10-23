@@ -96,3 +96,15 @@
   //  background-color: rgba(255, 255, 255, 0.15);
   //}
 }
+
+html[theme="dark"] {
+  .message-preview {
+    .preview-container {
+      .preview-message-wrapper {
+        .preview-message {
+          background-color: rgba(255, 255, 255, 0.10);
+        }
+      }
+    }
+  }
+}

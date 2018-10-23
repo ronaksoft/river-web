@@ -195,3 +195,19 @@ html[theme="dark"] .container {
   html[theme="dark"] .container .column-center .conversation {
     background-image: none;
     background-color: var(--dark-low); }
+  html[theme="dark"] .container .column-center .start-messaging {
+    background-color: var(--dark-low);
+    background-image: none; }
+    html[theme="dark"] .container .column-center .start-messaging .start-messaging-header {
+      background-color: transparent; }
+    html[theme="dark"] .container .column-center .start-messaging .start-messaging-img {
+      width: 100%;
+      height: calc(100% - 150px);
+      background-image: url(../../../asset/image/start-messaging.svg);
+      background-position: center center;
+      background-size: contain;
+      background-repeat: no-repeat; }
+    html[theme="dark"] .container .column-center .start-messaging .start-messaging-title {
+      visibility: hidden; }
+    html[theme="dark"] .container .column-center .start-messaging .start-messaging-footer {
+      background-color: transparent; }
