@@ -204,6 +204,18 @@ body {
     padding: 3px 12px;
     font-size: 13px; }
 
+.mobile-view .chat {
+  padding-left: 7px; }
+
+.mobile-view .bubble-wrapper.you .avatar {
+  display: none; }
+
+.mobile-view .bubble-wrapper.you .arrow {
+  left: 0; }
+
+.mobile-view .bubble-wrapper.you .bubble {
+  margin-left: 10px; }
+
 html[theme="dark"] .chat {
   border-color: var(--dark-low); }
 

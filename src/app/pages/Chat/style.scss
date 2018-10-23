@@ -12,6 +12,7 @@
   position: relative;
   width: var(--wrapper);
   margin: 0 auto;
+  overflow: hidden;
 }
 
 .container {
@@ -62,11 +63,24 @@
     height: 100%;
     overflow: hidden;
     .top {
+      position: relative;
       width: 100%;
       height: 48px;
       padding: 15px 29px;
       background-color: #eceff1;
       text-align: left;
+      .back-to-chats {
+        position: absolute;
+        top: 50%;
+        left: 5px;
+        height: 36px;
+        width: 36px;
+        transform: translateY(-50%);
+        svg {
+          height: 36px;
+          width: 36px;
+        }
+      }
       span {
         font-size: 15px;
         color: var(--grey);
@@ -128,6 +142,20 @@
       }
     }
   }
+  &.mobile-view {
+    width: 200vw;
+    transition: margin-left 0.3s;
+    &.chat-view {
+      margin-left: -100vw;
+    }
+    .column-left,
+    .column-center {
+      width: 100vw;
+      .top {
+        padding-left: 40px;
+      }
+    }
+  }
   .column-right {
     width: 0;
     height: 100%;
@@ -186,6 +214,11 @@ html[theme="dark"] {
     .column-center {
       .top {
         background-color: var(--dark-medium);
+        .back-to-chats {
+          svg {
+            color: var(--light);
+          }
+        }
         span {
           color: var(--light);
           .name {

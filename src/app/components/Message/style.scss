@@ -206,6 +206,23 @@
   }
 }
 
+.mobile-view {
+  .chat {
+    padding-left: 7px;
+  }
+  .bubble-wrapper.you {
+    .avatar {
+      display: none;
+    }
+    .arrow {
+      left: 0;
+    }
+    .bubble {
+      margin-left: 10px;
+    }
+  }
+}
+
 html[theme="dark"] {
   .chat {
     border-color: var(--dark-low);

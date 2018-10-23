@@ -46,7 +46,8 @@ body {
 .wrapper {
   position: relative;
   width: var(--wrapper);
-  margin: 0 auto; }
+  margin: 0 auto;
+  overflow: hidden; }
 
 .container {
   position: relative;
@@ -91,11 +92,22 @@ body {
     height: 100%;
     overflow: hidden; }
     .container .column-center .top {
+      position: relative;
       width: 100%;
       height: 48px;
       padding: 15px 29px;
       background-color: #eceff1;
       text-align: left; }
+      .container .column-center .top .back-to-chats {
+        position: absolute;
+        top: 50%;
+        left: 5px;
+        height: 36px;
+        width: 36px;
+        transform: translateY(-50%); }
+        .container .column-center .top .back-to-chats svg {
+          height: 36px;
+          width: 36px; }
       .container .column-center .top span {
         font-size: 15px;
         color: var(--grey); }
@@ -147,6 +159,17 @@ body {
       .container .column-center .start-messaging .start-messaging-footer {
         height: 50px;
         background-color: rgba(255, 255, 255, 0.2); }
+  .container.mobile-view {
+    width: 200vw;
+    transition: margin-left 0.3s; }
+    .container.mobile-view.chat-view {
+      margin-left: -100vw; }
+    .container.mobile-view .column-left,
+    .container.mobile-view .column-center {
+      width: 100vw; }
+      .container.mobile-view .column-left .top,
+      .container.mobile-view .column-center .top {
+        padding-left: 40px; }
   .container .column-right {
     width: 0;
     height: 100%;
@@ -188,6 +211,8 @@ html[theme="dark"] .container {
       border-left: 1px solid transparent; }
   html[theme="dark"] .container .column-center .top {
     background-color: var(--dark-medium); }
+    html[theme="dark"] .container .column-center .top .back-to-chats svg {
+      color: var(--light); }
     html[theme="dark"] .container .column-center .top span {
       color: var(--light); }
       html[theme="dark"] .container .column-center .top span .name {

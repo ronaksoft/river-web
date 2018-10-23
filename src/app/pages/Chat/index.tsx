@@ -5,7 +5,7 @@ import Message from '../../components/Message/index';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import {Attachment, MoreVert as MoreVertIcon} from '@material-ui/icons';
+import {Attachment, MoreVert as MoreVertIcon, KeyboardArrowLeftRounded} from '@material-ui/icons';
 import * as faker from 'faker';
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
@@ -52,6 +52,7 @@ interface IState {
     anchorEl: any;
     dialogs: IDialog[];
     inputVal: string;
+    isChatView: boolean;
     isConnecting: boolean;
     isTyping: boolean;
     isTypingList: { [key: string]: boolean };
@@ -88,6 +89,7 @@ class Chat extends React.Component<IProps, IState> {
     private dialogsSortThrottle: any = null;
     private readHistoryMaxId: number | null = null;
     private popUpDateTime: any;
+    private isMobileView: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -95,6 +97,7 @@ class Chat extends React.Component<IProps, IState> {
             anchorEl: null,
             dialogs: [],
             inputVal: '',
+            isChatView: false,
             isConnecting: true,
             isTyping: false,
             isTypingList: {},
@@ -121,6 +124,7 @@ class Chat extends React.Component<IProps, IState> {
         this.syncManager = SyncManager.getInstance();
         this.dialogsSortThrottle = throttle(this.dialogsSort, 500);
         this.isInChat = (document.visibilityState === 'visible');
+        this.isMobileView = (window.innerWidth < 600);
     }
 
     public componentDidMount() {
@@ -362,7 +366,8 @@ class Chat extends React.Component<IProps, IState> {
         return (
             <div className="bg">
                 <div className="wrapper">
-                    <div className="container">
+                    <div
+                        className={'container' + (this.isMobileView ? ' mobile-view' : '') + (this.state.isChatView ? ' chat-view' : '')}>
                         <div className="column-left">
                             <div className="top-bar">
                                 <span className="new-message" onClick={this.onNewMessageOpen}>
@@ -377,6 +382,8 @@ class Chat extends React.Component<IProps, IState> {
                         </div>
                         {selectedDialogId !== 'null' && <div className="column-center">
                             <div className="top">
+                                {this.isMobileView ? (<div className="back-to-chats" onClick={this.backToChatsHandler}>
+                                    <KeyboardArrowLeftRounded/></div>) : ''}
                                 {this.getChatTitle()}
                                 <span className="buttons">
                                 <IconButton
@@ -549,6 +556,7 @@ class Chat extends React.Component<IProps, IState> {
             }
 
             this.setState({
+                isChatView: true,
                 isTyping: false,
                 maxReadId,
                 messages: dataMsg.msgs,
@@ -1181,6 +1189,12 @@ class Chat extends React.Component<IProps, IState> {
             });
         }
 
+    }
+
+    private backToChatsHandler = () => {
+        this.setState({
+            isChatView: false,
+        });
     }
 }
 
