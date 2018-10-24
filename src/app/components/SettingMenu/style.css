@@ -44,9 +44,39 @@ body {
   height: 502px;
   padding: 0 10px;
   text-align: left; }
+  .setting-menu .font-size-label {
+    display: block;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 400;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    line-height: 1.46429em;
+    color: rgba(0, 0, 0, 0.87);
+    margin-bottom: -15px; }
+  .setting-menu .font-size-container {
+    padding: 8px 0;
+    background-color: transparent; }
+    .setting-menu .font-size-container button {
+      min-width: 30px; }
+    .setting-menu .font-size-container div[role="progressbar"] {
+      width: calc(100% - 88px);
+      background-color: var(--light); }
+      .setting-menu .font-size-container div[role="progressbar"] > div {
+        background-color: var(--grey); }
+
+html[theme="dark"] .setting-menu .font-size-container button {
+  color: var(--light); }
+
+html[theme="dark"] .setting-menu .font-size-container div[role="progressbar"] {
+  background-color: var(--dark-low); }
+  html[theme="dark"] .setting-menu .font-size-container div[role="progressbar"] > div {
+    background-color: var(--dark-accent-medium); }
 
 html[theme="dark"] .setting-menu .setting-switch span {
   color: var(--dark-accent-medium) !important; }
 
 html[theme="dark"] .setting-menu .setting-switch-label > span {
+  color: var(--light); }
+
+html[theme="dark"] .setting-menu .font-size-label {
   color: var(--light); }

@@ -45,6 +45,7 @@ class App extends React.Component<{}, IState> {
         const el = document.querySelector('html');
         if (el) {
             el.setAttribute('theme', localStorage.getItem('river.theme.color') || 'normal');
+            el.setAttribute('font', localStorage.getItem('river.theme.font') || '2');
         }
     }
 

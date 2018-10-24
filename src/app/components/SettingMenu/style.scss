@@ -8,10 +8,45 @@
   height: 502px;
   padding: 0 10px;
   text-align: left;
+  .font-size-label {
+    display: block;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 400;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    line-height: 1.46429em;
+    color: rgba(0, 0, 0, 0.87);
+    margin-bottom: -15px;
+  }
+  .font-size-container {
+    padding: 8px 0;
+    background-color: transparent;
+    button {
+      min-width: 30px;
+    }
+    div[role="progressbar"] {
+      width: calc(100% - 88px);
+      background-color: var(--light);
+      > div {
+        background-color: var(--grey);
+      }
+    }
+  }
 }
 
 html[theme="dark"] {
   .setting-menu {
+    .font-size-container {
+      button {
+        color: var(--light);
+      }
+      div[role="progressbar"] {
+        background-color: var(--dark-low);
+        > div {
+          background-color: var(--dark-accent-medium);
+        }
+      }
+    }
     .setting-switch {
       span {
         color: var(--dark-accent-medium) !important;
@@ -21,6 +56,9 @@ html[theme="dark"] {
       > span {
         color: var(--light);
       }
+    }
+    .font-size-label {
+      color: var(--light);
     }
   }
 }

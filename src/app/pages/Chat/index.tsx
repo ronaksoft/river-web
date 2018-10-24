@@ -358,7 +358,7 @@ class Chat extends React.Component<IProps, IState> {
                     return (<Dialog items={this.state.dialogs} selectedId={selectedDialogId} isTypingList={isTypingList}
                                     cancelIsTyping={this.cancelIsTypingHandler}/>);
                 case 'setting':
-                    return (<SettingMenu/>);
+                    return (<SettingMenu updateMessages={this.settingUpdateMessage}/>);
                 case 'contact':
                     return (<ContactMenu/>);
             }
@@ -1195,6 +1195,15 @@ class Chat extends React.Component<IProps, IState> {
         this.setState({
             isChatView: false,
         });
+    }
+
+    private settingUpdateMessage = () => {
+        const {selectedDialogId} = this.state;
+        if (selectedDialogId !== 'null') {
+            this.messageComponent.cache.clearAll();
+            this.messageComponent.list.recomputeRowHeights();
+            this.messageComponent.forceUpdate();
+        }
     }
 }
 

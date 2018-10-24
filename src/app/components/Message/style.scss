@@ -102,7 +102,7 @@
   .bubble {
     position: relative;
     font-size: 14px;
-    line-height: 17px;
+    line-height: 1.22em;
     display: inline-block;
     clear: both;
     padding: 3px 3px 15px 3px;
@@ -267,6 +267,81 @@ html[theme="dark"] {
       background-color: var(--dark-medium);
       .context-item {
         color: var(--light);
+      }
+    }
+  }
+}
+
+html[font="0"] {
+  .bubble-wrapper {
+    .bubble {
+      font-size: 10px;
+    }
+    .message-status {
+      height: 8px;
+      .time {
+        font-size: 8px;
+      }
+    }
+  }
+}
+
+html[font="1"] {
+  .bubble-wrapper {
+    .bubble {
+      font-size: 12px;
+    }
+  }
+}
+
+html[font="2"] {
+  .bubble-wrapper {
+    .bubble {
+      font-size: 14px;
+    }
+  }
+}
+
+html[font="3"] {
+  .bubble-wrapper {
+    .bubble {
+      font-size: 16px;
+      padding-bottom: 16px;
+    }
+    .message-status {
+      height: 11px;
+      .time {
+        font-size: 11px;
+      }
+    }
+  }
+}
+
+html[font="4"] {
+  .bubble-wrapper {
+    .bubble {
+      font-size: 18px;
+      padding-bottom: 16px;
+    }
+    .message-status {
+      height: 11px;
+      .time {
+        font-size: 11px;
+      }
+    }
+  }
+}
+
+html[font="5"] {
+  .bubble-wrapper {
+    .bubble {
+      font-size: 20px;
+      padding-bottom: 17px;
+    }
+    .message-status {
+      height: 12px;
+      .time {
+        font-size: 12px;
       }
     }
   }

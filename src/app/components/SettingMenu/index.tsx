@@ -1,16 +1,22 @@
 import * as React from 'react';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
+import MobileStepper from '@material-ui/core/MobileStepper';
+import Button from '@material-ui/core/Button';
+import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 
 import './style.css';
 
 interface IProps {
     id?: number;
     readId?: number;
+    updateMessages?: () => void;
 }
 
 interface IState {
     checked: boolean;
+    fontSize: number;
     id: number;
     readId: number;
 }
@@ -21,6 +27,7 @@ class SettingMenu extends React.Component<IProps, IState> {
 
         this.state = {
             checked: false,
+            fontSize: 2,
             id: props.id || 0,
             readId: props.readId || 0,
         };
@@ -33,6 +40,7 @@ class SettingMenu extends React.Component<IProps, IState> {
         }
         this.setState({
             checked: (el.getAttribute('theme') === 'dark'),
+            fontSize: parseInt(el.getAttribute('font') || '2', 10),
         });
     }
 
@@ -53,7 +61,25 @@ class SettingMenu extends React.Component<IProps, IState> {
                         color="default"
                         onChange={this.nightModeHandler}
                     />
-                } label="Night mode" />
+                } label="Night mode"/>
+                <label className="font-size-label">Font Size</label>
+                <MobileStepper
+                    variant="progress"
+                    steps={6}
+                    position="static"
+                    activeStep={this.state.fontSize}
+                    className="font-size-container"
+                    nextButton={
+                        <Button size="small" onClick={this.handleNext} disabled={this.state.fontSize === 5}>
+                            <KeyboardArrowRight/>
+                        </Button>
+                    }
+                    backButton={
+                        <Button size="small" onClick={this.handleBack} disabled={this.state.fontSize === 0}>
+                            <KeyboardArrowLeft/>
+                        </Button>
+                    }
+                />
             </div>
         );
     }
@@ -73,6 +99,34 @@ class SettingMenu extends React.Component<IProps, IState> {
         this.setState({
             checked: e.target.checked,
         });
+    }
+
+    private handleNext = () => {
+        this.setState(state => ({
+            fontSize: state.fontSize + 1,
+        }), () => {
+            this.changeFontSize();
+        });
+    }
+
+    private handleBack = () => {
+        this.setState(state => ({
+            fontSize: state.fontSize - 1,
+        }), () => {
+            this.changeFontSize();
+        });
+    }
+
+    private changeFontSize() {
+        const el = document.querySelector('html');
+        if (!el) {
+            return;
+        }
+        localStorage.setItem('river.theme.font', String(this.state.fontSize));
+        el.setAttribute('font', String(this.state.fontSize));
+        if (this.props.updateMessages) {
+            this.props.updateMessages();
+        }
     }
 }
 
