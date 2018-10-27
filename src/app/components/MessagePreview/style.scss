@@ -1,7 +1,7 @@
 @import '../../../style/common';
 
 .message-preview {
-  height: 40px;
+  height: 42px;
   .preview-container {
     display: flex;
     overflow: hidden;
@@ -20,7 +20,7 @@
         background-color: #35cd96;
       }
       .preview-message {
-        padding: 3px 6px;
+        padding: 4px 8px;
         min-height: 32px;
         max-height: 82px;
         display: flex;

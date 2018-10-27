@@ -90,6 +90,7 @@ class Chat extends React.Component<IProps, IState> {
     private readHistoryMaxId: number | null = null;
     private popUpDateTime: any;
     private isMobileView: boolean = false;
+    private mobileBackTimeout: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -540,7 +541,18 @@ class Chat extends React.Component<IProps, IState> {
         };
 
         window.console.time('DB benchmark:');
-        this.messageRepo.getMany({peer, limit: 25}).then((data) => {
+        this.messageRepo.getMany({peer, limit: 25}, (resMsgs) => {
+            const dataMsg = this.modifyMessages(this.state.messages, resMsgs, false);
+            this.setState({
+                messages: dataMsg.msgs,
+            }, () => {
+                this.messageComponent.cache.clearAll();
+                this.messageComponent.list.recomputeRowHeights();
+                this.messageComponent.forceUpdate(() => {
+                    this.isLoading = false;
+                });
+            });
+        }).then((data) => {
             window.console.timeEnd('DB benchmark:');
             if (data.length === 0) {
                 messages = [];
@@ -1192,8 +1204,13 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private backToChatsHandler = () => {
+        clearTimeout(this.mobileBackTimeout);
         this.setState({
             isChatView: false,
+        }, () => {
+            this.mobileBackTimeout = setTimeout(() => {
+                this.props.history.push('/conversation/null');
+            }, 1000);
         });
     }
 

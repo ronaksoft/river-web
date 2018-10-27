@@ -19,14 +19,40 @@ export default class UpdateManager {
 
     private static instance: UpdateManager;
 
+    private lastUpdateId: number = 0;
     private fnQueue: any = {};
     private fnIndex: number = 0;
-    private lastUpdateId: number = 0;
     private rndMsgMap: {[key:number]:boolean} = {};
 
     public constructor() {
         window.console.log('Update manager started');
-        this.getLastUpdateId();
+        this.lastUpdateId = this.loadLastUpdateId();
+    }
+
+    public loadLastUpdateId(): number {
+        const data = localStorage.getItem('river.last_update_id');
+        if (data) {
+            this.lastUpdateId = JSON.parse(data).lastId;
+            return this.lastUpdateId;
+        }
+        return 0;
+    }
+
+    public getLastUpdateId(): number {
+        if (!this.lastUpdateId) {
+            this.lastUpdateId = this.loadLastUpdateId();
+        }
+        return this.lastUpdateId;
+    }
+
+    public setLastUpdateId(id: number) {
+        this.lastUpdateId = id;
+    }
+
+    public flushLastUpdateId() {
+        localStorage.setItem('river.last_update_id', JSON.stringify({
+            lastId: this.lastUpdateId,
+        }));
     }
 
     public parseUpdate(bytes: string) {
@@ -65,22 +91,6 @@ export default class UpdateManager {
         return () => {
             delete this.fnQueue[eventConstructor][this.fnIndex];
         };
-    }
-
-    public getLastUpdateId(): number {
-        const data = localStorage.getItem('river.last_update_id');
-        if (data) {
-            this.lastUpdateId = JSON.parse(data).lastId;
-            return this.lastUpdateId;
-        }
-        return 0;
-    }
-
-    private setLastUpdateId(id: number) {
-        this.lastUpdateId = id;
-        localStorage.setItem('river.last_update_id', JSON.stringify({
-            lastId: this.lastUpdateId,
-        }));
     }
 
     private responseUpdateMessageID(update: UpdateEnvelope) {

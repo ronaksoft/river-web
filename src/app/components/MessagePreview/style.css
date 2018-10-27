@@ -37,7 +37,7 @@ body {
   background-repeat: no-repeat; }
 
 .message-preview {
-  height: 40px; }
+  height: 42px; }
   .message-preview .preview-container {
     display: flex;
     overflow: hidden;
@@ -55,7 +55,7 @@ body {
         border-bottom-left-radius: 7.5px;
         background-color: #35cd96; }
       .message-preview .preview-container .preview-message-wrapper .preview-message {
-        padding: 3px 6px;
+        padding: 4px 8px;
         min-height: 32px;
         max-height: 82px;
         display: flex;

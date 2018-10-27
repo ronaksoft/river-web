@@ -83,7 +83,7 @@ class Message extends React.Component<IProps, IState> {
                     this.setState({
                         noTransition: false,
                     });
-                }, 50);
+                }, 250);
             });
             this.listCount = newProps.items.length;
             this.topOfList = false;

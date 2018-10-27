@@ -20,6 +20,7 @@
   .name {
     display: inline-block;
     min-width: 200px;
+    width: calc(100% - 90px);
     font-size: 12px;
     line-height: 23px;
     margin: 0 0 4px;

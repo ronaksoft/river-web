@@ -14,6 +14,7 @@ import {merge} from 'lodash';
 import DialogRepo from '../../../repository/dialog';
 import MessageRepo from '../../../repository/message';
 import UserRepo from '../../../repository/user';
+import UpdateManager from '../server/updateManager';
 
 export default class SyncManager {
     public static getInstance() {
@@ -26,34 +27,25 @@ export default class SyncManager {
 
     private static instance: SyncManager;
 
-    private lastUpdateId: number = 0;
-
+    private updateManager: UpdateManager;
     private dialogRepo: DialogRepo;
     private messageRepo: MessageRepo;
     private userRepo: UserRepo;
 
     public constructor() {
         window.console.log('Sync manager started');
-        this.getLastUpdateId();
+        this.updateManager = UpdateManager.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.dialogRepo = DialogRepo.getInstance();
         this.messageRepo = MessageRepo.getInstance();
     }
 
     public getLastUpdateId(): number {
-        const data = localStorage.getItem('river.last_update_id');
-        if (data) {
-            this.lastUpdateId = JSON.parse(data).lastId;
-            return this.lastUpdateId;
-        }
-        return 0;
+        return this.updateManager.getLastUpdateId();
     }
 
     public setLastUpdateId(id: number) {
-        this.lastUpdateId = id;
-        localStorage.setItem('river.last_update_id', JSON.stringify({
-            lastId: this.lastUpdateId,
-        }));
+        this.updateManager.setLastUpdateId(id);
     }
 
     public applyUpdate(data: UpdateDifference): Promise<number> {

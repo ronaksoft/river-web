@@ -54,7 +54,7 @@ export default class MessageRepo {
         return this.db.bulkDocs(msgs);
     }
 
-    public getMany({peer, limit, before, after}: any): Promise<IMessage[]> {
+    public getMany({peer, limit, before, after}: any, fnCallback?: (resMsgs: IMessage[]) => void): Promise<IMessage[]> {
         limit = limit || 30;
         return new Promise((resolve, reject) => {
             this.getManyCache({peerId: peer.getId(), limit, before, after}).then((res) => {
@@ -71,15 +71,24 @@ export default class MessageRepo {
                         resolve(res);
                         return;
                     }
+                    if (typeof fnCallback === 'function') {
+                        resolve(res);
+                    }
                     const lim = limit - len;
                     this.sdk.getMessageHistory(peer, {maxId, limit: lim}).then((remoteRes) => {
                         this.userRepo.importBulk(remoteRes.usersList);
                         return this.transform(remoteRes.messagesList);
                     }).then((remoteRes) => {
                         this.importBulk(remoteRes, true);
-                        resolve([...res, ...remoteRes]);
+                        if (typeof fnCallback === 'function') {
+                            fnCallback(remoteRes);
+                        } else {
+                            resolve([...res, ...remoteRes]);
+                        }
                     }).catch((err2) => {
-                        reject(err2);
+                        if (fnCallback === undefined) {
+                            reject(err2);
+                        }
                     });
                 } else {
                     resolve(res);

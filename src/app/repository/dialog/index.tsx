@@ -5,6 +5,7 @@ import SDK from '../../services/sdk';
 import UserRepo from '../user';
 import MessageRepo from '../message';
 import {IMessage} from '../message/interface';
+import UpdateManager from '../../services/sdk/server/updateManager';
 
 interface IDialogWithUpdateId {
     dialogs: IDialog[];
@@ -30,8 +31,10 @@ export default class DialogRepo {
     private userRepo: UserRepo;
     private lazyMap: { [key: number]: IDialog } = {};
     private readonly updateThrottle: any = null;
+    private updateManager: UpdateManager;
 
     public constructor() {
+        this.updateManager = UpdateManager.getInstance();
         this.dbService = DB.getInstance();
         this.db = this.dbService.getDB();
         this.sdk = SDK.getInstance();
@@ -223,6 +226,7 @@ export default class DialogRepo {
         }
         this.lazyMap = {};
         this.upsert(dialogs).then(() => {
+            this.updateManager.flushLastUpdateId();
             //
         }).catch(() => {
             //
