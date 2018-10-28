@@ -1116,7 +1116,8 @@ class Chat extends React.Component<IProps, IState> {
         this.sdk.logout(this.connInfo.AuthID).then((res) => {
             this.sdk.resetConnInfo();
             this.mainRepo.destroyDB().then(() => {
-                this.syncManager.setLastUpdateId(0);
+                this.updateManager.setLastUpdateId(0);
+                this.updateManager.flushLastUpdateId();
                 window.location.href = '/';
                 // window.location.reload();
             });
