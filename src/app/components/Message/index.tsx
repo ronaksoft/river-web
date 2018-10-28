@@ -238,13 +238,15 @@ class Message extends React.Component<IProps, IState> {
                             <UserAvatar id={message.senderid} className="avatar"/>
                         )}
                         {(message.avatar && message.senderid) && (<div className="arrow"/>)}
-                        <div className={'bubble b_' + message._id + ((message.editedon || 0) > 0 ? ' edited' : '')}
-                             onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}>
+                        <div className={'bubble b_' + message._id + ((message.editedon || 0) > 0 ? ' edited' : '')}>
                             {Boolean(message.replyto && message.replyto !== 0) &&
-                            <MessagePreview message={message} peer={peer}/>}
-                            <div className={'inner ' + (message.rtl ? 'rtl' : 'ltr')}>{message.body}</div>
+                            <MessagePreview message={message} peer={peer}
+                                            onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>}
+                            <div className={'inner ' + (message.rtl ? 'rtl' : 'ltr')}
+                                 onDoubleClick={this.selectText}>{message.body}</div>
                             <MessageStatus status={message.me || false} id={message.id} readId={readId}
-                                           time={message.createdon || 0} editedTime={message.editedon || 0}/>
+                                           time={message.createdon || 0} editedTime={message.editedon || 0}
+                                           onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>
                             <div className="more" onClick={this.contextMenuHandler.bind(this, index)}>
                                 <MoreVert/>
                             </div>
@@ -356,6 +358,21 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
+    private selectText = (e: any) => {
+        const elem = e.currentTarget;
+        // @ts-ignore
+        if (document.selection) { // IE
+            // @ts-ignore
+            const range = document.body.createTextRange();
+            range.moveToElementText(elem);
+            range.select();
+        } else if (window.getSelection) {
+            const range = document.createRange();
+            range.selectNode(elem);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+        }
+    }
 }
 
 export default Message;

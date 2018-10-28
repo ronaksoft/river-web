@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {IUser} from '../../repository/user/interface';
 import UserRepo from '../../repository/user';
+import ContactRepo from '../../repository/contact';
 
 interface IProps {
     className?: string;
@@ -17,6 +18,7 @@ interface IState {
 
 class UserName extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
+    private contactRepo: ContactRepo;
     private tryTimeout: any = null;
     private tryCount: number = 0;
 
@@ -31,6 +33,7 @@ class UserName extends React.Component<IProps, IState> {
         };
 
         this.userRepo = UserRepo.getInstance();
+        this.contactRepo = ContactRepo.getInstance();
     }
 
     public componentDidMount() {
@@ -78,17 +81,29 @@ class UserName extends React.Component<IProps, IState> {
             });
             return;
         }
-        this.userRepo.get(this.state.id).then((user) => {
+
+        this.contactRepo.get(this.state.id).then((contact) => {
             this.setState({
-                user,
+                user: {
+                    _id: contact.id,
+                    firstname: contact.firstname,
+                    id: contact.id,
+                    lastname: contact.lastname,
+                },
             });
         }).catch(() => {
-            if (this.tryCount < 10) {
-                this.tryCount++;
-                this.tryTimeout = setTimeout(() => {
-                    this.getUser();
-                }, 1000);
-            }
+            this.userRepo.get(this.state.id).then((user) => {
+                this.setState({
+                    user,
+                });
+            }).catch(() => {
+                if (this.tryCount < 10) {
+                    this.tryCount++;
+                    this.tryTimeout = setTimeout(() => {
+                        this.getUser();
+                    }, 1000);
+                }
+            });
         });
     }
 }

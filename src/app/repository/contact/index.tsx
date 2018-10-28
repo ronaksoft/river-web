@@ -51,9 +51,11 @@ export default class ContactRepo {
         return new Promise((resolve, reject) => {
             this.getManyCache({}).then((res) => {
                 resolve(res);
+                window.console.log(res);
             }).catch((err) => {
                 window.console.log(err);
                 this.sdk.getContacts().then((remoteRes) => {
+                    window.console.log(remoteRes);
                     this.importBulk(remoteRes.contactsList);
                     resolve(remoteRes.contactsList);
                 }).catch((err2) => {

@@ -7,6 +7,7 @@ import './style.css';
 interface IProps {
     editedTime: number;
     id?: number;
+    onDoubleClick?: ()=> void;
     readId?: number;
     status: boolean;
     time: number;
@@ -49,7 +50,7 @@ class MessageStatus extends React.Component<IProps, IState> {
         const {id, readId, status, time, editedTime} = this.state;
 
         return (
-            <div className={'message-status'}>
+            <div className={'message-status'} onDoubleClick={this.onDoubleClickHandler}>
                 {editedTime > 0 && <span className="edited">edited</span>}
                 <span className="time">{TimeUtililty.TimeParse(time)}</span>
                 {this.getStatus(id, readId, status)}
@@ -70,6 +71,12 @@ class MessageStatus extends React.Component<IProps, IState> {
             }
         } else {
             return '';
+        }
+    }
+
+    private onDoubleClickHandler = () => {
+        if (this.props.onDoubleClick) {
+            this.props.onDoubleClick();
         }
     }
 }

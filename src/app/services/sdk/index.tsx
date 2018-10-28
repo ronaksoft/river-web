@@ -182,7 +182,6 @@ export default class SDK {
     public sendMessage(body: string, peer: InputPeer, replyTo?: number): Promise<MessagesSent.AsObject> {
         const data = new MessagesSend();
         // this.msgId++;
-        window.console.log(peer.getAccesshash());
         data.setRandomid(parseInt(Math.random().toFixed(10).split('.')[1], 10));
         data.setBody(body);
         data.setPeer(peer);
