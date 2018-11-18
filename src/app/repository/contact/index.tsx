@@ -1,7 +1,8 @@
-import DB from '../../services/db/contact';
+import DB from '../../services/db/user';
 import {IContact} from './interface';
+import SDK from '../../services/sdk';
 import {differenceBy, find, merge} from 'lodash';
-import SDK from "../../services/sdk";
+import {DexieUserDB} from '../../services/db/dexie/user';
 
 export default class ContactRepo {
     public static getInstance() {
@@ -15,7 +16,7 @@ export default class ContactRepo {
     private static instance: ContactRepo;
 
     private dbService: DB;
-    private db: any;
+    private db: DexieUserDB;
     private sdk: SDK;
 
     private constructor() {
@@ -29,11 +30,11 @@ export default class ContactRepo {
     }
 
     public create(contact: IContact) {
-        this.db.put(contact);
+        return this.db.contacts.put(contact);
     }
 
     public createMany(contacts: IContact[]) {
-        return this.db.bulkDocs(contacts);
+        return this.db.contacts.bulkPut(contacts);
     }
 
     public get(id: string): Promise<IContact> {
@@ -41,7 +42,7 @@ export default class ContactRepo {
         if (contact) {
             return Promise.resolve(contact);
         }
-        return this.db.get(String(id)).then((c: IContact) => {
+        return this.db.contacts.get(id).then((c: IContact) => {
             this.dbService.setContact(c);
             return c;
         });
@@ -51,11 +52,8 @@ export default class ContactRepo {
         return new Promise((resolve, reject) => {
             this.getManyCache({}).then((res) => {
                 resolve(res);
-                window.console.log(res);
             }).catch((err) => {
-                window.console.log(err);
                 this.sdk.getContacts().then((remoteRes) => {
-                    window.console.log(remoteRes);
                     this.importBulk(remoteRes.contactsList);
                     resolve(remoteRes.contactsList);
                 }).catch((err2) => {
@@ -66,54 +64,28 @@ export default class ContactRepo {
     }
 
     public getManyCache({keyword, limit}: any): Promise<IContact[]> {
-        const q: any = [
-            {id: {'$exists': true}},
-        ];
-        if (keyword !== null && keyword !== undefined) {
-            const rg = {$regex: RegExp(keyword, "i")};
-            q.push(
-                {
-                    $or: [
-                        {firstname: rg},
-                        {lastname: rg},
-                        {phone: rg},
-                    ]
-                }
-            );
-        }
-        return this.db.find({
-            limit: limit || 1000,
-            selector: {
-                $and: q,
-            },
-        }).then((result: any) => {
-            return result.docs;
-        });
+        return this.db.contacts
+            .where('firstname').startsWithIgnoreCase(keyword)
+            .or('lastname').startsWithIgnoreCase(keyword)
+            .or('phone').startsWithIgnoreCase(keyword).limit(limit).toArray().then((result: any) => {
+                return result.docs;
+            });
     }
 
     public importBulk(contacts: IContact[]): Promise<any> {
-        contacts = contacts.map((msg) => {
-            msg._id = String(msg.id);
-            return msg;
-        });
         return this.upsert(contacts);
     }
 
     public upsert(contacts: IContact[]): Promise<any> {
         const ids = contacts.map((contact) => {
             this.dbService.setContact(contact);
-            return contact._id;
+            return contact.id || '';
         });
-        return this.db.find({
-            selector: {
-                _id: {'$in': ids}
-            },
-        }).then((result: any) => {
-            const createItems: IContact[] = differenceBy(contacts, result.docs, '_id');
-            // @ts-ignore
-            const updateItems: IContact[] = result.docs;
+        return this.db.contacts.where('id').anyOf(ids).toArray().then((result) => {
+            const createItems: IContact[] = differenceBy(contacts, result, 'id');
+            const updateItems: IContact[] = result;
             updateItems.map((contact: IContact) => {
-                const t = find(contacts, {_id: contact._id});
+                const t = find(contacts, {id: contact.id});
                 return merge(contact, t);
             });
             return this.createMany([...createItems, ...updateItems]);

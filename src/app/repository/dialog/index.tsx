@@ -6,6 +6,7 @@ import UserRepo from '../user';
 import MessageRepo from '../message';
 import {IMessage} from '../message/interface';
 import UpdateManager from '../../services/sdk/server/updateManager';
+import {DexieDialogDB} from '../../services/db/dexie/dialog';
 
 interface IDialogWithUpdateId {
     dialogs: IDialog[];
@@ -24,7 +25,7 @@ export default class DialogRepo {
     private static instance: DialogRepo;
 
     private dbService: DB;
-    private db: any;
+    private db: DexieDialogDB;
     private sdk: SDK;
     private messageRepo: MessageRepo;
     private userId: string;
@@ -50,11 +51,11 @@ export default class DialogRepo {
     }
 
     public create(dialog: IDialog) {
-        this.db.put(dialog);
+        return this.db.dialogs.put(dialog);
     }
 
     public createMany(dialogs: IDialog[]) {
-        return this.db.bulkDocs(dialogs);
+        return this.db.dialogs.bulkPut(dialogs);
     }
 
     public getSnapshot({limit, skip, dialogs}: any): Promise<IDialogWithUpdateId> {
@@ -122,26 +123,13 @@ export default class DialogRepo {
     }
 
     public getManyCache({skip, limit}: any): Promise<IDialog[]> {
-        const q: any = [
-            {last_update: {'$gt': true}},
-        ];
-        return this.db.find({
-            limit: (limit || 30),
-            selector: {
-                $and: q,
-            },
-            skip: (skip || 0),
-            sort: [
-                {last_update: 'desc'},
-            ],
-        }).then((result: any) => {
-            return result.docs;
-        });
+        return this.db.dialogs
+            .orderBy('last_update').reverse()
+            .offset(skip || 0).limit(limit || 30).toArray();
     }
 
     public importBulk(dialogs: IDialog[], messageMap?: { [key: number]: IMessage }): Promise<any> {
         dialogs = dialogs.map((dialog) => {
-            dialog._id = String(dialog.peerid);
             if (messageMap &&
                 dialog.topmessageid) {
                 const msg = messageMap[dialog.topmessageid || 0];
@@ -160,25 +148,16 @@ export default class DialogRepo {
     public upsert(dialogs: IDialog[]): Promise<any> {
         const tempDialogs = uniqBy(dialogs, '_id');
         const ids = dialogs.map((dialog) => {
-            return dialog._id;
+            return dialog.peerid || '';
         });
-        return this.db.find({
-            selector: {
-                _id: {'$in': ids}
-            },
-        }).then((result: any) => {
-            const createItems: IDialog[] = differenceBy(tempDialogs, result.docs, '_id');
-            // @ts-ignore
-            const updateItems: IDialog[] = result.docs;
+        return this.db.dialogs.where('peerid').anyOf(ids).toArray().then((result) => {
+            const createItems: IDialog[] = differenceBy(tempDialogs, result, 'peerid');
+            const updateItems: IDialog[] = result;
             updateItems.map((dialog: IDialog) => {
-                const t = find(tempDialogs, {_id: dialog._id});
+                const t = find(tempDialogs, {peerid: dialog.peerid});
                 return merge(dialog, t);
             });
-            const items = [...createItems, ...updateItems];
-            return this.createMany(items).then((res: any) => {
-                this.resolveConflicts(items, res);
-                return res;
-            });
+            return this.createMany([...createItems, ...updateItems]);
         }).catch((err: any) => {
             window.console.log('dialog upsert', err);
         });
@@ -211,7 +190,6 @@ export default class DialogRepo {
             const t = this.lazyMap[dialog.peerid || 0];
             this.lazyMap[dialog.peerid || 0] = merge(dialog, t);
         } else {
-            dialog._id = String(dialog.peerid);
             this.lazyMap[dialog.peerid || 0] = dialog;
         }
     }
@@ -230,23 +208,6 @@ export default class DialogRepo {
             //
         }).catch(() => {
             //
-        });
-    }
-
-    private resolveConflicts(docs: IDialog[], res: any) {
-        res.forEach((item: any) => {
-            if (item.error && item.status === 409) {
-                this.db.get(item.id, {conflicts: true}).then((getRes: any) => {
-                    this.db.remove(getRes._id, getRes._rev).then(() => {
-                        const t = find(docs, {_id: getRes._id});
-                        if (t) {
-                            // @ts-ignore
-                            t._rev = undefined;
-                            this.db.put(t);
-                        }
-                    });
-                });
-            }
         });
     }
 }

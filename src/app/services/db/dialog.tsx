@@ -1,50 +1,28 @@
-import PouchDB from 'pouchdb';
-import PouchDBFind from 'pouchdb-find';
+import {DexieDialogDB} from './dexie/dialog';
 
-export default class UserMessageDB {
+export default class DialogDB {
     public static getInstance() {
         if (!this.instance) {
-            this.instance = new UserMessageDB();
+            this.instance = new DialogDB();
         }
 
         return this.instance;
     }
 
-    private static instance: UserMessageDB;
-    private db: any;
+    private static instance: DialogDB;
+    private db: DexieDialogDB;
 
     private constructor() {
-        PouchDB.plugin(PouchDBFind);
-        this.db = new PouchDB("dialogs", {
-            auto_compaction: true,
-        });
-        this.db.createIndex({
-            index: {
-                fields: ['last_update'],
-            }
-        }).then((result: any) => {
-            // window.console.warn(result);
-        });
-        this.db.createIndex({
-            index: {
-                fields: ['_id'],
-            }
-        }).then((result: any) => {
-            // window.console.warn(result);
-        });
+        this.db = new DexieDialogDB();
 
-        setInterval(this.viewCleanup, 60000);
+        // setInterval(this.viewCleanup, 60000);
     }
 
     public getDB() {
         return this.db;
     }
-
-    private viewCleanup = () => {
-        this.db.viewCleanup().then(() => {
-            // window.console.log(err);
-        }).catch((err: any) => {
-            window.console.log('Dialog viewCleanup', err);
-        });
-    }
+    //
+    // private viewCleanup = () => {
+    //     //
+    // }
 }

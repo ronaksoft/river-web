@@ -1,6 +1,9 @@
 import UserDB from '../services/db/user';
-import MessageDB from '../services/db/user_message';
+import MessageDB from '../services/db/message';
 import DialogDB from '../services/db/dialog';
+import {DexieUserDB} from '../services/db/dexie/user';
+import {DexieMessageDB} from '../services/db/dexie/message';
+import {DexieDialogDB} from '../services/db/dexie/dialog';
 
 export default class MainRepo {
     public static getInstance() {
@@ -13,9 +16,9 @@ export default class MainRepo {
 
     private static instance: MainRepo;
 
-    private userDB: UserDB;
-    private messageDB: MessageDB;
-    private dialogDB: DialogDB;
+    private userDB: DexieUserDB;
+    private messageDB: DexieMessageDB;
+    private dialogDB: DexieDialogDB;
 
     private constructor() {
         this.userDB = UserDB.getInstance().getDB();
@@ -26,11 +29,11 @@ export default class MainRepo {
     public destroyDB(): Promise<any> {
         const promises = [];
         // @ts-ignore
-        promises.push(this.userDB.destroy());
+        promises.push(this.userDB.delete());
         // @ts-ignore
-        promises.push(this.messageDB.destroy());
+        promises.push(this.messageDB.delete());
         // @ts-ignore
-        promises.push(this.dialogDB.destroy());
+        promises.push(this.dialogDB.delete());
         return Promise.all(promises);
     }
 }

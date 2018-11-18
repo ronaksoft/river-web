@@ -1,5 +1,5 @@
 import Dexie from 'dexie';
-import {IDialog} from '../../repository/dialog/interface';
+import {IDialog} from '../../../repository/dialog/interface';
 
 export class DexieDialogDB extends Dexie {
     public dialogs: Dexie.Table<IDialog, string>;
@@ -12,34 +12,7 @@ export class DexieDialogDB extends Dexie {
         // (Here's where the implicit table props are dynamically created)
         //
         this.version(1).stores({
-            messages: `id,peerid,type`,
+            dialogs: `peerid,last_update`,
         });
-    }
-}
-
-export default class DialogDB {
-    public static getInstance() {
-        if (!this.instance) {
-            this.instance = new DialogDB();
-        }
-
-        return this.instance;
-    }
-
-    private static instance: DialogDB;
-    private db: DexieDialogDB;
-
-    private constructor() {
-        this.db = new DexieDialogDB();
-
-        setInterval(this.viewCleanup, 60000);
-    }
-
-    public getDB() {
-        return this.db;
-    }
-
-    private viewCleanup = () => {
-        //
     }
 }

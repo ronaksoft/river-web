@@ -1,6 +1,6 @@
-import PouchDB from 'pouchdb';
-import PouchDBFind from 'pouchdb-find';
 import {IUser} from '../../repository/user/interface';
+import {IContact} from '../../repository/contact/interface';
+import {DexieUserDB} from './dexie/user';
 
 export default class UserDB {
     public static getInstance() {
@@ -12,14 +12,12 @@ export default class UserDB {
     }
 
     private static instance: UserDB;
-    private db: any;
+    private db: DexieUserDB;
     private users: { [key: string]: IUser } = {};
+    private contacts: { [key: string]: IContact } = {};
 
     private constructor() {
-        PouchDB.plugin(PouchDBFind);
-        this.db = new PouchDB("user", {
-            auto_compaction: true,
-        });
+        this.db = new DexieUserDB();
     }
 
     public getDB() {
@@ -34,4 +32,11 @@ export default class UserDB {
         return this.users[id];
     }
 
+    public setContact(user: IContact) {
+        this.contacts[user.id || 0] = user;
+    }
+
+    public getContact(id: string): IContact | null {
+        return this.contacts[id];
+    }
 }

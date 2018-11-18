@@ -197,7 +197,6 @@ class Chat extends React.Component<IProps, IState> {
                 return;
             }
             const message: IMessage = data.message;
-            message._id = String(message.id);
             message.me = (this.connInfo.UserID === message.senderid);
             if (data.message.peerid === this.state.selectedDialogId) {
                 this.pushMessage(message);
@@ -641,7 +640,6 @@ class Chat extends React.Component<IProps, IState> {
                 msg.avatar = (key > 0 && msg.senderid !== messages[key - 1].senderid) || (key === 0);
                 if (key === 0 || (key > 0 && !TimeUtililty.isInSameDay(msg.createdon, messages[key - 1].createdon))) {
                     defaultMessages.push({
-                        _id: msg._id,
                         createdon: msg.createdon,
                         id: msg.id,
                         senderid: msg.senderid,
@@ -665,7 +663,6 @@ class Chat extends React.Component<IProps, IState> {
                 defaultMessages.unshift(msg);
                 if (messages.length - 1 === key || !TimeUtililty.isInSameDay(msg.createdon, defaultMessages[0].createdon)) {
                     defaultMessages.unshift({
-                        _id: msg._id,
                         createdon: msg.createdon,
                         id: msg.id,
                         senderid: msg.senderid,
@@ -708,7 +705,6 @@ class Chat extends React.Component<IProps, IState> {
         } else {
             const id = -UniqueId.getRandomId();
             const message: IMessage = {
-                _id: String(id),
                 body: text,
                 createdon: Math.floor(Date.now() / 1000),
                 id,
@@ -726,11 +722,10 @@ class Chat extends React.Component<IProps, IState> {
             this.pushMessage(message);
 
             this.sdk.sendMessage(text, peer, replyTo).then((msg) => {
-                this.messageRepo.remove(message._id || '').catch(() => {
+                this.messageRepo.remove(message.id || 0).catch(() => {
                     //
                 });
                 message.id = msg.messageid;
-                message._id = String(msg.messageid);
                 this.messageRepo.lazyUpsert([message]);
                 this.updateDialogs(message, '0');
                 // Force update messages
@@ -746,7 +741,6 @@ class Chat extends React.Component<IProps, IState> {
         if (messages.length > 0 &&
             !TimeUtililty.isInSameDay(message.createdon, messages[messages.length - 1].createdon)) {
             messages.push({
-                _id: message._id,
                 createdon: message.createdon,
                 id: message.id,
                 senderid: message.senderid,
@@ -877,7 +871,6 @@ class Chat extends React.Component<IProps, IState> {
             }
         } else {
             const dialog: IDialog = {
-                _id: String(msg.id),
                 last_update: msg.createdon,
                 peerid: id,
                 peertype: msg.peertype,

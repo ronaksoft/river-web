@@ -5,14 +5,14 @@ import PopUpMenu from '../PopUpMenu';
 import {throttle, cloneDeep} from 'lodash';
 import {SentimentSatisfiedRounded, SendRounded, ClearRounded} from '@material-ui/icons';
 import {IconButton} from '@material-ui/core';
+import UserAvatar from '../UserAvatar';
+import RTLDetector from '../../services/utilities/rtl_detector';
+import {IMessage} from '../../repository/message/interface';
+import UserName from '../UserName';
+import {C_MSG_MODE} from './consts';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
-import UserAvatar from '../UserAvatar';
-import RTLDetector from '../../services/utilities/rtl_detector';
-import {IMessage} from "../../repository/message/interface";
-import UserName from "../UserName";
-import {C_MSG_MODE} from "./consts";
 
 interface IProps {
     clearPreviewMessage?: () => void;

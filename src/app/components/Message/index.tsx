@@ -6,7 +6,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import {InputPeer} from "../../services/sdk/messages/core.types_pb";
 import {C_MESSAGE_TYPE} from "../../repository/message/consts";
-import TimeUtililty from '../../services/utilities/time';
+import TimeUtility from '../../services/utilities/time';
 import UserAvatar from '../UserAvatar';
 import MessagePreview from '../MessagePreview';
 import MessageStatus from '../MessageStatus';
@@ -226,7 +226,7 @@ class Message extends React.Component<IProps, IState> {
             case C_MESSAGE_TYPE.Date:
                 return (
                     <div style={style} className="bubble-wrapper">
-                        <span className="date">{TimeUtililty.dynamicDate(message.createdon || 0)}</span>
+                        <span className="date">{TimeUtility.dynamicDate(message.createdon || 0)}</span>
                     </div>
                 );
             case C_MESSAGE_TYPE.Normal:
@@ -238,7 +238,7 @@ class Message extends React.Component<IProps, IState> {
                             <UserAvatar id={message.senderid} className="avatar"/>
                         )}
                         {(message.avatar && message.senderid) && (<div className="arrow"/>)}
-                        <div className={'bubble b_' + message._id + ((message.editedon || 0) > 0 ? ' edited' : '')}>
+                        <div className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')}>
                             {Boolean(message.replyto && message.replyto !== 0) &&
                             <MessagePreview message={message} peer={peer}
                                             onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>}
