@@ -598,6 +598,7 @@ class Chat extends React.Component<IProps, IState> {
         if (peer === null) {
             return;
         }
+        window.console.log(this.state.messages[0].id);
         this.messageRepo.getMany({
             before: this.state.messages[0].id,
             limit: 20,

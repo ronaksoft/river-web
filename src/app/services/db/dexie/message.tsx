@@ -12,7 +12,7 @@ export class DexieMessageDB extends Dexie {
         // (Here's where the implicit table props are dynamically created)
         //
         this.version(1).stores({
-            messages: `id,peerid,type`,
+            messages: `id,peerid,[peerid+id]`,
         });
     }
 }

@@ -60,6 +60,7 @@ export default class MessageRepo {
         limit = limit || 30;
         return new Promise((resolve, reject) => {
             this.getManyCache({peerId: peer.getId(), limit, before, after}).then((res) => {
+                window.console.log(res);
                 const len = res.length;
                 if (len < limit) {
                     let maxId = null;
@@ -77,6 +78,7 @@ export default class MessageRepo {
                         resolve(res);
                     }
                     const lim = limit - len;
+                    window.console.log(maxId);
                     this.sdk.getMessageHistory(peer, {maxId, limit: lim}).then((remoteRes) => {
                         this.userRepo.importBulk(remoteRes.usersList);
                         return this.transform(remoteRes.messagesList);
@@ -96,7 +98,10 @@ export default class MessageRepo {
                     resolve(res);
                 }
             }).catch((err) => {
-                this.sdk.getMessageHistory(peer, {minId: before, limit}).then((remoteRes) => {
+                window.console.log(err);
+                window.console.log(before);
+                this.sdk.getMessageHistory(peer, {maxId: before - 1, limit}).then((remoteRes) => {
+                    window.console.log(remoteRes);
                     this.userRepo.importBulk(remoteRes.usersList);
                     return this.transform(remoteRes.messagesList);
                 }).then((remoteRes) => {
@@ -112,11 +117,11 @@ export default class MessageRepo {
     public getManyCache({peerId, limit, before, after}: any): Promise<IMessage[]> {
         const pipe = this.db.messages.where('id');
         let pipe2: Dexie.Collection<IMessage, number>;
-        let mode = 0;
+        let mode = 0x0;
         if (before !== null && before !== undefined) {
             mode = mode | 0x1;
         }
-        if (after !== null && before !== undefined) {
+        if (after !== null && after !== undefined) {
             mode = mode | 0x2;
         }
         switch (mode) {
@@ -127,7 +132,8 @@ export default class MessageRepo {
                 break;
             // before
             case 0x1:
-                pipe2 = pipe.below(before);
+                pipe2 = this.db.messages.where('[peerid+id]').between([peerId, Dexie.minKey], [peerId, before - 1]);
+                window.console.log([peerId, Dexie.minKey], [peerId, before - 1]);
                 break;
             // after
             case 0x2:
@@ -138,7 +144,7 @@ export default class MessageRepo {
                 pipe2 = pipe.between(after, before);
                 break;
         }
-        if (mode !== 0x01) {
+        if (mode === 0x02 || mode === 0x03) {
             pipe2.reverse().filter((item: IMessage) => {
                 return item.peerid === peerId && item.temp !== true && (item.id || 0) > 0;
             });

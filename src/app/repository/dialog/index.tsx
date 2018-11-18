@@ -55,6 +55,7 @@ export default class DialogRepo {
     }
 
     public createMany(dialogs: IDialog[]) {
+        window.console.log(dialogs);
         return this.db.dialogs.bulkPut(dialogs);
     }
 
@@ -146,11 +147,12 @@ export default class DialogRepo {
     }
 
     public upsert(dialogs: IDialog[]): Promise<any> {
-        const tempDialogs = uniqBy(dialogs, '_id');
+        const tempDialogs = uniqBy(dialogs, 'peerid');
         const ids = dialogs.map((dialog) => {
             return dialog.peerid || '';
         });
         return this.db.dialogs.where('peerid').anyOf(ids).toArray().then((result) => {
+            window.console.log(result);
             const createItems: IDialog[] = differenceBy(tempDialogs, result, 'peerid');
             const updateItems: IDialog[] = result;
             updateItems.map((dialog: IDialog) => {
@@ -202,12 +204,14 @@ export default class DialogRepo {
         if (dialogs.length === 0) {
             return;
         }
+        window.console.log(dialogs);
         this.lazyMap = {};
-        this.upsert(dialogs).then(() => {
+        this.upsert(dialogs).then((info) => {
+            window.console.log(info);
             this.updateManager.flushLastUpdateId();
             //
-        }).catch(() => {
-            //
+        }).catch((err) => {
+            window.console.log(err);
         });
     }
 }
