@@ -703,38 +703,36 @@ class Chat extends React.Component<IProps, IState> {
                 window.console.log(err);
             });
         } else {
-            for (let c = 1; c <= 200; c++) {
-                const id = -UniqueId.getRandomId();
-                const message: IMessage = {
-                    body: text + ` ${c}`,
-                    createdon: Math.floor(Date.now() / 1000),
-                    id,
-                    me: true,
-                    peerid: this.state.selectedDialogId,
-                    senderid: this.connInfo.UserID,
-                };
+            const id = -UniqueId.getRandomId();
+            const message: IMessage = {
+                body: text,
+                createdon: Math.floor(Date.now() / 1000),
+                id,
+                me: true,
+                peerid: this.state.selectedDialogId,
+                senderid: this.connInfo.UserID,
+            };
 
-                let replyTo;
-                if (param && param.mode === C_MSG_MODE.Reply) {
-                    message.replyto = param.message.id;
-                    replyTo = param.message.id;
-                }
-
-                this.pushMessage(message);
-
-                this.sdk.sendMessage(text + `: ${c}`, peer, replyTo).then((msg) => {
-                    this.messageRepo.remove(message.id || 0).catch(() => {
-                        //
-                    });
-                    message.id = msg.messageid;
-                    this.messageRepo.lazyUpsert([message]);
-                    this.updateDialogs(message, '0');
-                    // Force update messages
-                    this.messageComponent.list.forceUpdateGrid();
-                }).catch((err) => {
-                    window.console.log(err);
-                });
+            let replyTo;
+            if (param && param.mode === C_MSG_MODE.Reply) {
+                message.replyto = param.message.id;
+                replyTo = param.message.id;
             }
+
+            this.pushMessage(message);
+
+            this.sdk.sendMessage(text, peer, replyTo).then((msg) => {
+                this.messageRepo.remove(message.id || 0).catch(() => {
+                    //
+                });
+                message.id = msg.messageid;
+                this.messageRepo.lazyUpsert([message]);
+                this.updateDialogs(message, '0');
+                // Force update messages
+                this.messageComponent.list.forceUpdateGrid();
+            }).catch((err) => {
+                window.console.log(err);
+            });
         }
     }
 
