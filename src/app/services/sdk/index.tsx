@@ -25,6 +25,7 @@ import {
 } from './messages/api.messages_pb';
 import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from './messages/api.updates_pb';
 import {Bool} from './messages/core.messages_pb';
+import {AccountRegisterDevice} from './messages/api.accounts_pb';
 
 export default class SDK {
     public static getInstance() {
@@ -240,5 +241,16 @@ export default class SDK {
         const data = new AuthLogout();
         data.setAuthidsList([authId]);
         return this.server.send(C_MSG.AuthLogout, data.serializeBinary(), true);
+    }
+
+    public registerDevice(token: string, tokenType: number, appVersion: string, deviceModel: string, langCode: string, systemVersion: string): Promise<Bool> {
+        const data = new AccountRegisterDevice();
+        data.setAppversion(appVersion);
+        data.setDevicemodel(deviceModel);
+        data.setLangcode(langCode);
+        data.setSystemversion(systemVersion);
+        data.setToken(token);
+        data.setTokentype(tokenType);
+        return this.server.send(C_MSG.AccountRegisterDevice, data.serializeBinary(), true);
     }
 }

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import {} from 'react-router-dom';
 import SDK from '../../services/sdk';
 // @ts-ignore
 import ReactPhoneInput from 'react-phone-input-2';
@@ -9,6 +8,7 @@ import './style.css';
 import {Refresh} from '@material-ui/icons';
 import {C_ERR, C_ERR_ITEM} from "../../services/sdk/const";
 import RiverLogo from '../../components/RiverLogo';
+import NotificationService from '../../services/notification';
 
 interface IProps {
     match?: any;
@@ -32,6 +32,7 @@ interface IState {
 
 class SignUp extends React.Component<IProps, IState> {
     private sdk: SDK;
+    private notification: NotificationService;
 
     constructor(props: IProps) {
         super(props);
@@ -49,6 +50,7 @@ class SignUp extends React.Component<IProps, IState> {
             tries: 0,
         };
         this.sdk = SDK.getInstance();
+        this.notification = NotificationService.getInstance();
     }
 
     public componentDidMount() {
@@ -219,6 +221,9 @@ class SignUp extends React.Component<IProps, IState> {
             });
             this.props.history.push('/conversation/null');
             this.dispatchWSOpenEvent();
+            this.notification.initToken().then((token) => {
+                this.sdk.registerDevice(token, 0, '0.23.2', 'web', 'en', '1');
+            });
         }).catch((err) => {
             window.console.log(err);
             this.setState({
@@ -302,6 +307,9 @@ class SignUp extends React.Component<IProps, IState> {
             });
             this.props.history.push('/conversation/null');
             this.dispatchWSOpenEvent();
+            this.notification.initToken().then((token) => {
+                this.sdk.registerDevice(token, 0, '0.23.2', 'web', 'en', '1');
+            });
         }).catch((err) => {
             this.setState({
                 loading: false,

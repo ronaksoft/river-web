@@ -304,6 +304,7 @@ export default class Server {
         for (const key in localStorage) {
             if (key.indexOf('_pouch_') === 0) {
                 indexedDB.deleteDatabase(key);
+                localStorage.removeItem(key);
             }
         }
         localStorage.setItem('river.last_update_id', JSON.stringify({
