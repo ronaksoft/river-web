@@ -598,7 +598,6 @@ class Chat extends React.Component<IProps, IState> {
         if (peer === null) {
             return;
         }
-        window.console.log(this.state.messages[0].id);
         this.messageRepo.getMany({
             before: this.state.messages[0].id,
             limit: 20,
@@ -656,7 +655,7 @@ class Chat extends React.Component<IProps, IState> {
                         defaultMessages.splice(0, 1);
                     }
                 }
-                if (key === 0 && defaultMessages[0].type === C_MESSAGE_TYPE.Normal && defaultMessages[1].senderid === msg.senderid) {
+                if (key === 0 && defaultMessages.length > 1 && defaultMessages[0].type === C_MESSAGE_TYPE.Normal && defaultMessages[1].senderid === msg.senderid) {
                     defaultMessages[0].avatar = false;
                 }
                 defaultMessages[0].avatar = (msg.senderid !== defaultMessages[0].senderid);

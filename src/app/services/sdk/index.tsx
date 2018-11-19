@@ -186,7 +186,6 @@ export default class SDK {
         data.setBody(body);
         data.setPeer(peer);
         if (replyTo) {
-            window.console.log(replyTo);
             data.setReplyto(replyTo);
         }
         return this.server.send(C_MSG.MessagesSend, data.serializeBinary());
@@ -215,31 +214,31 @@ export default class SDK {
         const data = new MessagesSetTyping();
         data.setPeer(peer);
         data.setAction(type);
-        return this.server.send(C_MSG.MessagesSetTyping, data.serializeBinary());
+        return this.server.send(C_MSG.MessagesSetTyping, data.serializeBinary(), true);
     }
 
     public setMessagesReadHistory(peer: InputPeer, maxId: number): Promise<Bool> {
         const data = new MessagesReadHistory();
         data.setPeer(peer);
         data.setMaxid(maxId);
-        return this.server.send(C_MSG.MessagesReadHistory, data.serializeBinary());
+        return this.server.send(C_MSG.MessagesReadHistory, data.serializeBinary(), true);
     }
 
     public getUpdateState(): Promise<UpdateState.AsObject> {
         const data = new UpdateGetState();
-        return this.server.send(C_MSG.UpdateGetState, data.serializeBinary());
+        return this.server.send(C_MSG.UpdateGetState, data.serializeBinary(), true);
     }
 
     public getUpdateDifference(from: number, limit: number): Promise<UpdateDifference> {
         const data = new UpdateGetDifference();
         data.setFrom(from);
         data.setLimit(limit);
-        return this.server.send(C_MSG.UpdateGetDifference, data.serializeBinary());
+        return this.server.send(C_MSG.UpdateGetDifference, data.serializeBinary(), true);
     }
 
     public logout(authId: string): Promise<Bool> {
         const data = new AuthLogout();
         data.setAuthidsList([authId]);
-        return this.server.send(C_MSG.AuthLogout, data.serializeBinary());
+        return this.server.send(C_MSG.AuthLogout, data.serializeBinary(), true);
     }
 }

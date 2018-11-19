@@ -239,7 +239,6 @@ class Message extends React.Component<IProps, IState> {
                         )}
                         {(message.avatar && message.senderid) && (<div className="arrow"/>)}
                         <div className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')}>
-                            {message.id}
                             {Boolean(message.replyto && message.replyto !== 0) &&
                             <MessagePreview message={message} peer={peer}
                                             onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>}

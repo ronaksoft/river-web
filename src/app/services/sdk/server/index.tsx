@@ -1,6 +1,15 @@
 import {C_MSG, C_MSG_NAME} from '../const';
 import Presenter from '../presenters';
 import UpdateManager from './updateManager';
+import {MessageContainer, MessageEnvelope} from '../messages/core.messages_pb';
+import {throttle} from 'lodash';
+
+export interface IServerRequest {
+    constructor: number;
+    data: Uint8Array;
+    reqId: number;
+    timeout: any;
+}
 
 export default class Server {
     public static getInstance() {
@@ -37,6 +46,10 @@ export default class Server {
 
     private isConnected: boolean = false;
 
+    private requestQueue: MessageEnvelope[] = [];
+
+    private executeSendThrottledRequestThrottle: any;
+
     public constructor() {
         this.reqId = 0;
         window.addEventListener('fnCallbackEvent', (event: any) => {
@@ -51,6 +64,7 @@ export default class Server {
         window.addEventListener('wsOpen', () => {
             this.isConnected = true;
             this.flushSentQueue();
+            this.executeSendThrottledRequestThrottle();
         });
         window.addEventListener('wsClose', () => {
             this.isConnected = false;
@@ -58,17 +72,19 @@ export default class Server {
 
         this.updateThrottler();
         this.updateManager = UpdateManager.getInstance();
+
+        this.executeSendThrottledRequestThrottle = throttle(this.executeSendThrottledRequest, 200);
     }
 
     /**
      * Send a request to wasm worker over CustomEvent in window object
      */
-    public send(constructor: number, data: Uint8Array): Promise<any> {
+    public send(constructor: number, data: Uint8Array, instant?: boolean): Promise<any> {
         let internalResolve = null;
         let internalReject = null;
 
         this.reqId++;
-        const request: any = {
+        const request: IServerRequest = {
             constructor,
             data,
             reqId: this.reqId,
@@ -79,7 +95,11 @@ export default class Server {
             internalResolve = res;
             internalReject = rej;
             if (this.isConnected) {
-                this.sendRequest(request);
+                if (instant) {
+                    this.sendRequest(request);
+                } else {
+                    this.sendThrottledRequest(request);
+                }
             }
         });
 
@@ -104,7 +124,7 @@ export default class Server {
      * @param {*} request
      * @memberof Server
      */
-    private sendRequest(request: any) {
+    private sendRequest(request: IServerRequest) {
         const fnCallbackEvent = new CustomEvent('fnCallEvent', {
             bubbles: true,
             detail: request,
@@ -114,6 +134,53 @@ export default class Server {
             this.dispatchTimeout(request.reqId);
         }, 180000);
         window.dispatchEvent(fnCallbackEvent);
+    }
+
+    private sendThrottledRequest(request: IServerRequest) {
+        window.console.warn(C_MSG_NAME[request.constructor], request.reqId);
+        request.timeout = setTimeout(() => {
+            this.dispatchTimeout(request.reqId);
+        }, 180000);
+        const data = new MessageEnvelope();
+        data.setConstructor(C_MSG.MessageEnvelope);
+        data.setMessage(request.data);
+        data.setRequestid(0);
+        this.requestQueue.push(data);
+        this.executeSendThrottledRequestThrottle();
+    }
+
+    private executeSendThrottledRequest = () => {
+        if (!this.isConnected) {
+            return;
+        }
+        const execute = (envs: MessageEnvelope[]) => {
+            this.reqId++;
+            const data = new MessageContainer();
+            data.setEnvelopesList(envs);
+            data.setLength(envs.length);
+            const fnCallbackEvent = new CustomEvent('fnCallEvent', {
+                bubbles: true,
+                detail: {
+                    constructor: C_MSG.MessageContainer,
+                    data,
+                    reqId: this.reqId,
+                },
+            });
+            window.dispatchEvent(fnCallbackEvent);
+            window.console.log(envs.length);
+        };
+        let envelopes: MessageEnvelope[] = [];
+        while (this.requestQueue.length > 0) {
+            const envelope = this.requestQueue.shift();
+            if (envelope) {
+                envelopes.push(envelope);
+            }
+            if (envelopes.length >= 50) {
+                execute(envelopes);
+                envelopes = [];
+            }
+        }
+        execute(envelopes);
     }
 
     private response({reqId, constructor, data}: any) {

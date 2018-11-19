@@ -54,8 +54,8 @@ export default class ContactRepo {
                 resolve(res);
             }).catch((err) => {
                 this.sdk.getContacts().then((remoteRes) => {
-                    this.importBulk(remoteRes.contactsList);
-                    resolve(remoteRes.contactsList);
+                    this.importBulk(remoteRes.usersList);
+                    resolve(remoteRes.usersList);
                 }).catch((err2) => {
                     reject(err2);
                 });
@@ -67,9 +67,7 @@ export default class ContactRepo {
         return this.db.contacts
             .where('firstname').startsWithIgnoreCase(keyword)
             .or('lastname').startsWithIgnoreCase(keyword)
-            .or('phone').startsWithIgnoreCase(keyword).limit(limit).toArray().then((result: any) => {
-                return result.docs;
-            });
+            .or('phone').startsWithIgnoreCase(keyword).limit(limit).toArray();
     }
 
     public importBulk(contacts: IContact[]): Promise<any> {

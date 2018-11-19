@@ -119,7 +119,7 @@ class ContactMenu extends React.Component<IProps, IState> {
     private search = (text: string) => {
         this.contactRepo.getManyCache({keyword: text, limit: 12}).then((res) => {
             this.setState({
-                contacts: res,
+                contacts: res || [],
             }, () => {
                 this.list.recomputeRowHeights();
                 this.list.forceUpdateGrid();
