@@ -268,12 +268,12 @@ func (r *River) createAuthKeyStep2(clientNonce, serverNonce, serverPubFP, server
 
 func (r *River) ExecuteRemoteCommand(requestID uint64, constructor int64, commandBytes []byte, timeoutCB TimeoutCallback, successCB MessageHandler) {
 	//r.queueCtrl.executeCommand(requestID, constructor, commandBytes, timeoutCB, successCB)
-	msg := new(msg.MessageEnvelope)
-	msg.RequestID = requestID
-	msg.Constructor = constructor
-	msg.Message = commandBytes
+	_msg := new(msg.MessageEnvelope)
+	_msg.RequestID = requestID
+	_msg.Constructor = constructor
+	_msg.Message = commandBytes
 	r.MessageQueue[requestID] = &successCB
-	r.send(msg)
+	r.send(_msg)
 }
 
 func (r *River) send(msgEnvelope *msg.MessageEnvelope) {
@@ -364,7 +364,7 @@ func (r *River) messageHandler(m *msg.MessageEnvelope) {
 		)
 		js.Global().Call("fnUpdate", base64.StdEncoding.EncodeToString(m.Message))
 	default:
-		if val, ok := r.MessageQueue[m.RequestID]; ok {
+		if val, ok := r.MessageQueue[m.RequestID]; ok && (*val) != nil {
 			(*val)(m)
 			delete(r.MessageQueue, m.RequestID)
 		} else if m.Constructor == msg.C_Error {
@@ -373,6 +373,8 @@ func (r *River) messageHandler(m *msg.MessageEnvelope) {
 			if error.Code == "E01" {
 				js.Global().Call("wsError", m.RequestID, m.Constructor, base64.StdEncoding.EncodeToString(m.Message))
 			}
+		} else {
+			js.Global().Call("fnCallback", m.RequestID, m.Constructor, base64.StdEncoding.EncodeToString(m.Message))
 		}
 	}
 }

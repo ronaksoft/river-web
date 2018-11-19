@@ -109,13 +109,13 @@ export default class SDK {
     public sendCode(phone: string): Promise<AuthSentCode.AsObject> {
         const data = new AuthSendCode;
         data.setPhone(phone);
-        return this.server.send(C_MSG.AuthSendCode, data.serializeBinary());
+        return this.server.send(C_MSG.AuthSendCode, data.serializeBinary(), true);
     }
 
     public checkPhone(phone: string): Promise<AuthCheckedPhone.AsObject> {
         const data = new AuthCheckPhone();
         data.setPhone(phone);
-        return this.server.send(C_MSG.AuthCheckPhone, data.serializeBinary());
+        return this.server.send(C_MSG.AuthCheckPhone, data.serializeBinary(), true);
     }
 
     public register(phone: string, phoneCode: string, phoneCodeHash: string, fName: string, lName: string): Promise<any> {
@@ -125,7 +125,7 @@ export default class SDK {
         data.setPhonecodehash(phoneCodeHash);
         data.setFirstname(fName);
         data.setLastname(lName);
-        return this.server.send(C_MSG.AuthRegister, data.serializeBinary());
+        return this.server.send(C_MSG.AuthRegister, data.serializeBinary(), true);
     }
 
     public login(phone: string, phoneCode: string, phoneCodeHash: string): Promise<AuthAuthorization.AsObject> {
@@ -133,13 +133,13 @@ export default class SDK {
         data.setPhone(phone);
         data.setPhonecode(phoneCode);
         data.setPhonecodehash(phoneCodeHash);
-        return this.server.send(C_MSG.AuthLogin, data.serializeBinary());
+        return this.server.send(C_MSG.AuthLogin, data.serializeBinary(), true);
     }
 
     public recall(clientId: string): Promise<AuthRecalled.AsObject> {
         const data = new AuthRecall();
         data.setClientid(clientId);
-        return this.server.send(C_MSG.AuthRecall, data.serializeBinary());
+        return this.server.send(C_MSG.AuthRecall, data.serializeBinary(), true);
     }
 
     public contactImport(replace: boolean, contacts: PhoneContact.AsObject[]): Promise<ContactsImported.AsObject> {

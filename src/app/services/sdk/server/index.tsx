@@ -52,28 +52,34 @@ export default class Server {
 
     public constructor() {
         this.reqId = 0;
-        window.addEventListener('fnCallbackEvent', (event: any) => {
-            this.response(event.detail);
-        });
-        window.addEventListener('fnUpdate', (event: any) => {
-            this.update(event.detail);
-        });
-        window.addEventListener('fnErrorEvent', (event: any) => {
-            this.error(event.detail);
-        });
-        window.addEventListener('wsOpen', () => {
-            this.isConnected = true;
-            this.flushSentQueue();
-            this.executeSendThrottledRequestThrottle();
-        });
-        window.addEventListener('wsClose', () => {
-            this.isConnected = false;
-        });
+        const version = this.shouldMigrate(localStorage.getItem('river.version'));
+        if (version !== false) {
+            this.migrate(version);
+            return;
+        } else {
+            window.addEventListener('fnCallbackEvent', (event: any) => {
+                this.response(event.detail);
+            });
+            window.addEventListener('fnUpdate', (event: any) => {
+                this.update(event.detail);
+            });
+            window.addEventListener('fnErrorEvent', (event: any) => {
+                this.error(event.detail);
+            });
+            window.addEventListener('wsOpen', () => {
+                this.isConnected = true;
+                this.flushSentQueue();
+                this.executeSendThrottledRequestThrottle();
+            });
+            window.addEventListener('wsClose', () => {
+                this.isConnected = false;
+            });
 
-        this.updateThrottler();
-        this.updateManager = UpdateManager.getInstance();
+            this.updateThrottler();
+            this.updateManager = UpdateManager.getInstance();
 
-        this.executeSendThrottledRequestThrottle = throttle(this.executeSendThrottledRequest, 200);
+            this.executeSendThrottledRequestThrottle = throttle(this.executeSendThrottledRequest, 200);
+        }
     }
 
     /**
@@ -83,11 +89,11 @@ export default class Server {
         let internalResolve = null;
         let internalReject = null;
 
-        this.reqId++;
+        const reqId = ++this.reqId;
         const request: IServerRequest = {
             constructor,
             data,
-            reqId: this.reqId,
+            reqId,
             timeout: null,
         };
 
@@ -106,14 +112,14 @@ export default class Server {
         /**
          * Add request to the queue manager
          */
-        this.messageListeners[this.reqId] = {
+        this.messageListeners[reqId] = {
             reject: internalReject,
             request,
             resolve: internalResolve,
             state: 0,
         };
 
-        this.sentQueue.push(this.reqId);
+        this.sentQueue.push(reqId);
 
         return promise;
     }
@@ -142,9 +148,9 @@ export default class Server {
             this.dispatchTimeout(request.reqId);
         }, 180000);
         const data = new MessageEnvelope();
-        data.setConstructor(C_MSG.MessageEnvelope);
+        data.setConstructor(request.constructor);
         data.setMessage(request.data);
-        data.setRequestid(0);
+        data.setRequestid(request.reqId);
         this.requestQueue.push(data);
         this.executeSendThrottledRequestThrottle();
     }
@@ -154,7 +160,7 @@ export default class Server {
             return;
         }
         const execute = (envs: MessageEnvelope[]) => {
-            this.reqId++;
+            const reqId = ++this.reqId;
             const data = new MessageContainer();
             data.setEnvelopesList(envs);
             data.setLength(envs.length);
@@ -162,12 +168,12 @@ export default class Server {
                 bubbles: true,
                 detail: {
                     constructor: C_MSG.MessageContainer,
-                    data,
-                    reqId: this.reqId,
+                    data: data.serializeBinary(),
+                    reqId,
                 },
             });
             window.dispatchEvent(fnCallbackEvent);
-            window.console.log(envs.length);
+            window.console.log('Compact:', envs.length);
         };
         let envelopes: MessageEnvelope[] = [];
         while (this.requestQueue.length > 0) {
@@ -211,6 +217,7 @@ export default class Server {
     }
 
     private error({reqId, constructor, data}: any) {
+        window.console.warn(C_MSG_NAME[constructor], reqId);
         // @ts-ignore
         const arr = Uint8Array.from(atob(data), c => c.charCodeAt(0));
         const res = Presenter.getMessage(constructor, arr);
@@ -267,5 +274,46 @@ export default class Server {
         if (this.updateQueue.length > 0) {
             this.updateManager.parseUpdate(this.updateQueue.pop());
         }
+    }
+
+    private shouldMigrate(v: string | null) {
+        if (v === null) {
+            return 0;
+        }
+        const pv = JSON.parse(v);
+        switch (pv.v) {
+            default:
+            case 0:
+                return pv.v;
+            case 1:
+                return false;
+        }
+    }
+
+    private migrate(v: number | null) {
+        switch (v) {
+            default:
+            case 0:
+                this.migrate1();
+                return;
+        }
+    }
+
+    private migrate1() {
+        // @ts-ignore
+        for (const key in localStorage) {
+            if (key.indexOf('_pouch_') === 0) {
+                indexedDB.deleteDatabase(key);
+            }
+        }
+        localStorage.setItem('river.last_update_id', JSON.stringify({
+            lastId: 0,
+        }));
+        localStorage.setItem('river.version', JSON.stringify({
+            v: 1,
+        }));
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
     }
 }
