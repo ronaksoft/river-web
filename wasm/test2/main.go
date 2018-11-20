@@ -64,7 +64,7 @@ func fnCall(args []js.Value) {
 	constructor := int64(args[1].Int())
 	enc, err := base64.StdEncoding.DecodeString(args[2].String())
 	if err == nil {
-		river.ExecuteRemoteCommand(reqId, constructor, enc, nil, nil)
+		river.ExecuteRemoteCommand(reqId, constructor, enc, nil)
 	}
 }
 

@@ -160,6 +160,9 @@ export default class Server {
             return;
         }
         const execute = (envs: MessageEnvelope[]) => {
+            if (envs.length === 0) {
+                return;
+            }
             const reqId = ++this.reqId;
             const data = new MessageContainer();
             data.setEnvelopesList(envs);

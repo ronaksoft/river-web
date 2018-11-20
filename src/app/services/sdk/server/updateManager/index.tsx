@@ -7,6 +7,18 @@ import {
     UpdateReadHistoryOutbox,
     UpdateUserTyping
 } from '../../messages/api.updates_pb';
+import {throttle} from 'lodash';
+import {User} from '../../messages/core.types_pb';
+import {IMessage} from '../../../../repository/message/interface';
+
+export interface INewMessageBulkUpdate {
+    accessHashes: string[];
+    messages: IMessage[];
+    peerid: string;
+    peertype?: number;
+    senderIds: string[];
+    senders: User.AsObject[];
+}
 
 export default class UpdateManager {
     public static getInstance() {
@@ -22,11 +34,17 @@ export default class UpdateManager {
     private lastUpdateId: number = 0;
     private fnQueue: any = {};
     private fnIndex: number = 0;
-    private rndMsgMap: {[key:number]:boolean} = {};
+    private rndMsgMap: { [key: number]: boolean } = {};
+    private messageList: { [key: string]: UpdateNewMessage.AsObject[] } = {};
+    private messageDropList: { [key: string]: UpdateNewMessage.AsObject[] } = {};
+    private newMessageThrottle: any;
+    private newMessageDropThrottle: any;
 
     public constructor() {
         window.console.log('Update manager started');
         this.lastUpdateId = this.loadLastUpdateId();
+        this.newMessageThrottle = throttle(this.executeNewMessageThrottle, 300);
+        this.newMessageDropThrottle = throttle(this.executeNewMessageDropThrottle, 300);
     }
 
     public loadLastUpdateId(): number {
@@ -99,7 +117,7 @@ export default class UpdateManager {
             case C_MSG.UpdateMessageID:
                 const updateMessageId = UpdateMessageID.deserializeBinary(data).toObject();
                 this.rndMsgMap[updateMessageId.messageid || 0] = true;
-                window.console.log('UpdateMessageID', 'msg id:', updateMessageId.messageid);
+                // window.console.log('UpdateMessageID', 'msg id:', updateMessageId.messageid);
                 break;
         }
     }
@@ -109,12 +127,14 @@ export default class UpdateManager {
         switch (update.getConstructor()) {
             case C_MSG.UpdateNewMessage:
                 const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
-                window.console.log('UpdateNewMessage', 'msg id:', updateNewMessage.message.id);
+                // window.console.log('UpdateNewMessage', 'msg id:', updateNewMessage.message.id);
                 if (!this.rndMsgMap[updateNewMessage.message.id || 0]) {
-                    this.callHandlers(C_MSG.UpdateNewMessage, updateNewMessage);
+                    // this.callHandlers(C_MSG.UpdateNewMessage, updateNewMessage);
+                    this.throttledNewMessage(updateNewMessage);
                 } else {
-                    window.console.log('UpdateNewMessage drop on', 'msg id:', updateNewMessage.message.id);
-                    this.callHandlers(C_MSG.UpdateNewMessageDrop, updateNewMessage);
+                    // window.console.log('UpdateNewMessage drop on', 'msg id:', updateNewMessage.message.id);
+                    // this.callHandlers(C_MSG.UpdateNewMessageDrop, updateNewMessage);
+                    this.throttledNewMessageDrop(updateNewMessage);
                     delete this.rndMsgMap[updateNewMessage.message.id || 0];
                 }
                 break;
@@ -144,6 +164,75 @@ export default class UpdateManager {
             const fn = this.fnQueue[eventConstructor][key];
             if (fn) {
                 fn(payload);
+            }
+        });
+    }
+
+    private throttledNewMessage(data: UpdateNewMessage.AsObject) {
+        if (!data.message.peerid) {
+            return;
+        }
+        if (!this.messageList.hasOwnProperty(data.message.peerid)) {
+            this.messageList[data.message.peerid] = [data];
+        } else {
+            this.messageList[data.message.peerid].push(data);
+        }
+        this.newMessageThrottle();
+    }
+
+    private executeNewMessageThrottle = () => {
+        setTimeout(() => {
+            this.prepareBulkUpdate(C_MSG.UpdateNewMessage, this.messageList);
+        }, 100);
+    }
+
+    private throttledNewMessageDrop(data: UpdateNewMessage.AsObject) {
+        if (!data.message.peerid) {
+            return;
+        }
+        if (!this.messageDropList.hasOwnProperty(data.message.peerid)) {
+            this.messageDropList[data.message.peerid] = [data];
+        } else {
+            this.messageDropList[data.message.peerid].push(data);
+        }
+        this.newMessageDropThrottle();
+    }
+
+    private executeNewMessageDropThrottle = () => {
+        this.prepareBulkUpdate(C_MSG.UpdateNewMessageDrop, this.messageDropList);
+    }
+
+    private prepareBulkUpdate(eventConstructor: number, list: { [key: string]: UpdateNewMessage.AsObject[] }) {
+        const keys = Object.keys(list);
+        if (keys.length === 0) {
+            return;
+        }
+        keys.forEach((key) => {
+            const batchUpdate: INewMessageBulkUpdate = {
+                accessHashes: [],
+                messages: [],
+                peerid: '',
+                peertype: undefined,
+                senderIds: [],
+                senders: [],
+            };
+            while (list[key].length > 0) {
+                const data = list[key].shift();
+                if (data) {
+                    batchUpdate.accessHashes.push(data.accesshash || '');
+                    batchUpdate.messages.push(data.message);
+                    batchUpdate.senderIds.push(data.sender.id || '');
+                    batchUpdate.senders.push(data.sender);
+                    batchUpdate.peerid = data.message.peerid || '';
+                    batchUpdate.peertype = data.message.peertype;
+                }
+                if (batchUpdate.messages.length >= 50) {
+                    break;
+                }
+            }
+            window.console.log(batchUpdate.messages.length);
+            if (batchUpdate.messages.length > 0) {
+                this.callHandlers(eventConstructor, batchUpdate);
             }
         });
     }

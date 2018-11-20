@@ -53,6 +53,7 @@ class Message extends React.Component<IProps, IState> {
         };
         this.cache = new CellMeasurerCache({
             fixedWidth: true,
+            keyMapper: this.keyMapperHandler,
             minHeight: 35,
         });
     }
@@ -90,7 +91,7 @@ class Message extends React.Component<IProps, IState> {
         } else if (this.state.items === newProps.items && this.listCount < newProps.items.length) {
             if (!this.topOfList) {
                 this.setState({
-                    scrollIndex: this.listCount - 2,
+                    scrollIndex: -1,
                 }, () => {
                     this.fitList();
                 });
@@ -126,6 +127,7 @@ class Message extends React.Component<IProps, IState> {
                             overscanRowCount={8}
                             width={width}
                             height={height}
+                            estimatedRowSize={40}
                             scrollToIndex={this.state.scrollIndex}
                             onRowsRendered={this.onRowsRenderedHandler}
                             onScroll={this.onScroll}
@@ -372,6 +374,11 @@ class Message extends React.Component<IProps, IState> {
             window.getSelection().removeAllRanges();
             window.getSelection().addRange(range);
         }
+    }
+
+    private keyMapperHandler = (rowIndex: number) => {
+        // todo
+        return `${this.state.items[rowIndex].id}-${this.state.items[rowIndex].type}`;
     }
 }
 

@@ -1,6 +1,6 @@
 import DB from '../../services/db/user';
 import {IUser} from './interface';
-import {differenceBy, find, merge} from 'lodash';
+import {differenceBy, find, merge, uniqBy} from 'lodash';
 import SDK from "../../services/sdk";
 import {DexieUserDB} from '../../services/db/dexie/user';
 
@@ -49,7 +49,8 @@ export default class UserRepo {
     }
 
     public importBulk(users: IUser[]): Promise<any> {
-        return this.upsert(users);
+        const tempUsers = uniqBy(users, 'id');
+        return this.upsert(tempUsers);
     }
 
     public upsert(users: IUser[]): Promise<any> {

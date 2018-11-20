@@ -18,11 +18,10 @@ import NewMessage from '../../components/NewMessage';
 import {InputPeer, PeerType, PhoneContact, TypingAction} from '../../services/sdk/messages/core.types_pb';
 import {IConnInfo} from '../../services/sdk/interface';
 import {IDialog} from '../../repository/dialog/interface';
-import UpdateManager from '../../services/sdk/server/updateManager';
+import UpdateManager, {INewMessageBulkUpdate} from '../../services/sdk/server/updateManager';
 import {C_MSG} from '../../services/sdk/const';
 import {
     UpdateMessageEdited,
-    UpdateNewMessage,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox,
     UpdateUserTyping
@@ -51,7 +50,6 @@ interface IProps {
 interface IState {
     anchorEl: any;
     dialogs: IDialog[];
-    inputVal: string;
     isChatView: boolean;
     isConnecting: boolean;
     isTyping: boolean;
@@ -97,7 +95,6 @@ class Chat extends React.Component<IProps, IState> {
         this.state = {
             anchorEl: null,
             dialogs: [],
-            inputVal: '',
             isChatView: false,
             isConnecting: true,
             isTyping: false,
@@ -192,41 +189,63 @@ class Chat extends React.Component<IProps, IState> {
         }));
 
         // Update: New Message Received
-        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNewMessage, (data: UpdateNewMessage.AsObject) => {
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNewMessage, (data: INewMessageBulkUpdate) => {
             if (this.state.isUpdating) {
                 return;
             }
-            const message: IMessage = data.message;
-            message.me = (this.connInfo.UserID === message.senderid);
-            if (data.message.peerid === this.state.selectedDialogId) {
-                this.pushMessage(message);
+            data.messages.forEach((message) => {
+                message.me = (this.connInfo.UserID === message.senderid);
+            });
+            if (data.peerid === this.state.selectedDialogId) {
+                const dataMsg = this.modifyMessages(this.state.messages, data.messages.reverse(), true);
+
+                this.setState({
+                    messages: dataMsg.msgs,
+                }, () => {
+                    setTimeout(() => {
+                        this.animateToEnd();
+                    }, 200);
+                });
                 const {peer} = this.state;
-                this.sendReadHistory(peer, message.id || 0);
+                this.sendReadHistory(peer, dataMsg.maxId);
                 if (!this.isInChat) {
-                    this.readHistoryMaxId = message.id || 0;
+                    this.readHistoryMaxId = dataMsg.maxId;
                 }
             }
-            this.messageRepo.lazyUpsert([data.message]);
-            this.userRepo.importBulk([data.sender]);
-            this.updateDialogs(data.message, data.accesshash || '0');
-            if (!this.isInChat && data.message.senderid !== this.connInfo.UserID) {
-                this.notify(
-                    `Message from ${data.sender.firstname} ${data.sender.lastname}`,
-                    (data.message.body || '').substr(0, 64), data.message.peerid || 'null');
+            this.messageRepo.lazyUpsert(data.messages);
+            this.userRepo.importBulk(data.senders);
+
+            data.messages.forEach((message, index) => {
+                this.updateDialogs(message, data.accessHashes[index] || '0');
+            });
+
+            if (!this.isInChat && data.senderIds.indexOf(this.connInfo.UserID || '') === -1) {
+                if (data.messages.length === 1) {
+                    this.notify(
+                        `Message from ${data.senders[0].firstname} ${data.senders[0].lastname}`,
+                        (data.messages[0].body || '').substr(0, 64), data.messages[0].peerid || 'null');
+                } else {
+                    this.notify(
+                        `${data.messages.length} messages in ${data.messages[0].peerid}`, '', data.messages[0].peerid || 'null');
+                }
             }
-            if (data.message.senderid !== this.connInfo.UserID && data.message.peerid !== this.state.selectedDialogId) {
-                this.updateDialogsCounter(data.message.peerid || '', {unreadCounterIncrease: 1});
-            }
+            data.messages.forEach((message) => {
+                if (message.senderid !== this.connInfo.UserID && message.peerid !== this.state.selectedDialogId) {
+                    this.updateDialogsCounter(message.peerid || '', {unreadCounterIncrease: 1});
+                }
+            });
         }));
 
         // Update: Message Dropped (internal)
-        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNewMessageDrop, (data: UpdateNewMessage.AsObject) => {
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNewMessageDrop, (data: INewMessageBulkUpdate) => {
             if (this.state.isUpdating) {
                 return;
             }
-            this.updateDialogs(data.message, data.accesshash || '0');
-            this.messageRepo.lazyUpsert([data.message]);
-            this.userRepo.importBulk([data.sender]);
+            data.messages.forEach((message, index) => {
+                this.updateDialogs(message, data.accessHashes[index] || '0');
+            });
+            this.messageRepo.lazyUpsert(data.messages);
+            this.userRepo.importBulk(data.senders);
         }));
 
         // Update: Message Edited
@@ -545,8 +564,7 @@ class Chat extends React.Component<IProps, IState> {
             this.setState({
                 messages: dataMsg.msgs,
             }, () => {
-                this.messageComponent.cache.clearAll();
-                this.messageComponent.list.recomputeRowHeights();
+                // this.messageComponent.list.recomputeRowHeights();
                 this.messageComponent.forceUpdate(() => {
                     this.isLoading = false;
                 });
@@ -618,8 +636,7 @@ class Chat extends React.Component<IProps, IState> {
             this.setState({
                 messages: dataMsg.msgs,
             }, () => {
-                this.messageComponent.cache.clearAll();
-                this.messageComponent.list.recomputeRowHeights();
+                // this.messageComponent.list.recomputeRowHeights();
                 this.messageComponent.forceUpdate(() => {
                     this.isLoading = false;
                 });
@@ -637,8 +654,12 @@ class Chat extends React.Component<IProps, IState> {
             }
             msg.type = C_MESSAGE_TYPE.Normal;
             if (push) {
-                msg.avatar = (key > 0 && msg.senderid !== messages[key - 1].senderid) || (key === 0);
-                if (key === 0 || (key > 0 && !TimeUtililty.isInSameDay(msg.createdon, messages[key - 1].createdon))) {
+                // avatar breakpoint
+                msg.avatar = (key === 0 && (defaultMessages.length === 0 || (defaultMessages.length > 0 && msg.senderid !== defaultMessages[defaultMessages.length - 1].senderid))) || (key > 0 && msg.senderid !== messages[key - 1].senderid);
+
+                // date breakpoint
+                if ((key === 0 && (defaultMessages.length === 0 || (defaultMessages.length > 0 && !TimeUtililty.isInSameDay(msg.createdon, defaultMessages[defaultMessages.length - 1].createdon))))
+                    || (key > 0 && !TimeUtililty.isInSameDay(msg.createdon, messages[key - 1].createdon))) {
                     defaultMessages.push({
                         createdon: msg.createdon,
                         id: msg.id,
@@ -658,9 +679,13 @@ class Chat extends React.Component<IProps, IState> {
                 if (key === 0 && defaultMessages.length > 1 && defaultMessages[0].type === C_MESSAGE_TYPE.Normal && defaultMessages[1].senderid === msg.senderid) {
                     defaultMessages[0].avatar = false;
                 }
+                // avatar breakpoint
                 defaultMessages[0].avatar = (msg.senderid !== defaultMessages[0].senderid);
                 msg.avatar = (messages.length - 1 === key);
+                // end of avatar breakpoint
+
                 defaultMessages.unshift(msg);
+                // date breakpoint
                 if (messages.length - 1 === key || !TimeUtililty.isInSameDay(msg.createdon, defaultMessages[0].createdon)) {
                     defaultMessages.unshift({
                         createdon: msg.createdon,
@@ -711,6 +736,7 @@ class Chat extends React.Component<IProps, IState> {
                 me: true,
                 peerid: this.state.selectedDialogId,
                 senderid: this.connInfo.UserID,
+                type: C_MESSAGE_TYPE.Normal,
             };
 
             let replyTo;
@@ -722,6 +748,11 @@ class Chat extends React.Component<IProps, IState> {
             this.pushMessage(message);
 
             this.sdk.sendMessage(text, peer, replyTo).then((msg) => {
+                const {messages} = this.state;
+                const index = findIndex(messages, {id: message.id});
+                if (index) {
+                    this.messageComponent.cache.clear(index);
+                }
                 this.messageRepo.remove(message.id || 0).catch(() => {
                     //
                 });
@@ -754,12 +785,11 @@ class Chat extends React.Component<IProps, IState> {
         }
         messages.push(message);
         this.setState({
-            inputVal: '',
             messages,
         }, () => {
             setTimeout(() => {
                 this.animateToEnd();
-            }, 100);
+            }, 200);
         });
         this.messageRepo.lazyUpsert([message]);
     }

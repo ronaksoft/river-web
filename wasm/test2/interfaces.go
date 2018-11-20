@@ -91,9 +91,6 @@ func (r *River) CreateAuthKey(callback Callback) (err error) {
 		_RandomUint64(),
 		msg.C_InitConnect,
 		req1Bytes,
-		func() {
-			err = ErrRequestTimeout
-		},
 		func(res *msg.MessageEnvelope) {
 			_LOG.Debug("Success Callback Called")
 			AuthProgress(12)
@@ -209,9 +206,6 @@ func (r *River) createAuthKeyStep2(clientNonce, serverNonce, serverPubFP, server
 		_RandomUint64(),
 		msg.C_InitCompleteAuth,
 		req2Bytes,
-		func() {
-			err = ErrRequestTimeout
-		},
 		func(res *msg.MessageEnvelope) {
 			switch res.Constructor {
 			case msg.C_InitAuthCompleted:
@@ -266,13 +260,16 @@ func (r *River) createAuthKeyStep2(clientNonce, serverNonce, serverPubFP, server
 	return
 }
 
-func (r *River) ExecuteRemoteCommand(requestID uint64, constructor int64, commandBytes []byte, timeoutCB TimeoutCallback, successCB MessageHandler) {
+func (r *River) ExecuteRemoteCommand(requestID uint64, constructor int64, commandBytes []byte, successCB MessageHandler) {
 	//r.queueCtrl.executeCommand(requestID, constructor, commandBytes, timeoutCB, successCB)
 	_msg := new(msg.MessageEnvelope)
 	_msg.RequestID = requestID
 	_msg.Constructor = constructor
 	_msg.Message = commandBytes
-	r.MessageQueue[requestID] = &successCB
+
+	if successCB != nil {
+		r.MessageQueue[requestID] = &successCB
+	}
 	r.send(_msg)
 }
 
