@@ -230,7 +230,6 @@ export default class UpdateManager {
                     break;
                 }
             }
-            window.console.log(batchUpdate.messages.length);
             if (batchUpdate.messages.length > 0) {
                 this.callHandlers(eventConstructor, batchUpdate);
             }

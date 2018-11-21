@@ -511,7 +511,7 @@ class Chat extends React.Component<IProps, IState> {
                         </div>}
                         {selectedDialogId === 'null' && <div className="column-center">
                             <div className="start-messaging">
-                                <div className="start-messaging-header">{this.getChatTitle(true)}</div>
+                                <div className="start-messaging-header"/>
                                 <div className="start-messaging-img"/>
                                 <div className="start-messaging-title">Choose a chat to start messaging!</div>
                                 <div className="start-messaging-footer"/>
