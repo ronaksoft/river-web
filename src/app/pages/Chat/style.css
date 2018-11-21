@@ -68,7 +68,7 @@ body {
       position: relative;
       width: 100%;
       height: 48px;
-      display: flex;
+      display: none;
       align-items: center;
       padding: 0 17px; }
       .container .column-left .top-bar:after {
@@ -84,10 +84,20 @@ body {
       .container .column-left .top-bar .new-message {
         color: #60BF70;
         cursor: pointer; }
+      .container .column-left .top-bar .actions {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 100px; }
     .container .column-left .left-content {
       border-right: 1px solid var(--light);
       border-left: 1px solid var(--light);
       width: 100%;
+      height: calc(100% - 52px); }
+    .container .column-left.with-top-bar .top-bar {
+      display: flex; }
+    .container .column-left.with-top-bar .left-content {
       height: calc(100% - 100px); }
   .container .column-center {
     position: relative;
@@ -98,7 +108,7 @@ body {
       position: relative;
       width: 100%;
       height: 48px;
-      padding: 15px 29px;
+      padding: 5px 29px;
       background-color: #eceff1;
       text-align: left; }
       .container .column-center .top .back-to-chats {
@@ -111,13 +121,18 @@ body {
         .container .column-center .top .back-to-chats svg {
           height: 36px;
           width: 36px; }
-      .container .column-center .top span {
-        font-size: 15px;
-        color: var(--grey); }
-        .container .column-center .top span .name {
+      .container .column-center .top .chat-title {
+        padding: 5px 0;
+        display: flex;
+        flex-direction: column;
+        color: var(--grey);
+        font-size: 12px; }
+        .container .column-center .top .chat-title .name {
           color: var(--dark);
+          font-size: 15px;
           font-family: 'Source Sans Pro', sans-serif;
-          font-weight: 600; }
+          font-weight: 600;
+          margin-bottom: 5px; }
       .container .column-center .top .buttons {
         position: absolute;
         top: 0;
@@ -202,6 +217,13 @@ body {
   .container {
     height: 100vh; } }
 
+.kk-context-menu ul {
+  padding: 6px 0 !important;
+  min-width: 100px; }
+  .kk-context-menu ul .context-item {
+    padding: 3px 12px;
+    font-size: 13px; }
+
 html[theme="dark"] .bg {
   background-color: #171717; }
 
@@ -211,6 +233,8 @@ html[theme="dark"] .container {
     border: 1px solid transparent;
     border-right: 1px solid var(--dark-low);
     background-color: var(--dark-medium); }
+    html[theme="dark"] .container .column-left .actions svg {
+      color: var(--light); }
     html[theme="dark"] .container .column-left .top-bar:after {
       background-color: var(--dark-medium); }
     html[theme="dark"] .container .column-left .left-content {
@@ -243,3 +267,14 @@ html[theme="dark"] .container {
       visibility: hidden; }
     html[theme="dark"] .container .column-center .start-messaging .start-messaging-footer {
       background-color: transparent; }
+
+html[theme="dark"] .kk-context-menu > div[role="document"] {
+  background-color: var(--dark-medium); }
+
+html[theme="dark"] .kk-context-menu ul {
+  background-color: var(--dark-medium); }
+  html[theme="dark"] .kk-context-menu ul .context-item {
+    color: var(--light); }
+
+html[theme="dark"] .kk-context-menu.darker > div[role="document"], html[theme="dark"] .kk-context-menu.darker ul {
+  background-color: var(--dark-low); }

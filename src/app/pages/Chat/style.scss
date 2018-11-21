@@ -34,7 +34,7 @@
       position: relative;
       width: 100%;
       height: 48px;
-      display: flex;
+      display: none;
       align-items: center;
       padding: 0 17px;
       &:after {
@@ -52,12 +52,27 @@
         color: #60BF70;
         cursor: pointer;
       }
+      .actions {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 100px;
+      }
     }
     .left-content {
       border-right: 1px solid var(--light);
       border-left: 1px solid var(--light);
       width: 100%;
-      height: calc(100% - 100px);
+      height: calc(100% - 52px);
+    }
+    &.with-top-bar {
+      .top-bar {
+        display: flex;
+      }
+      .left-content {
+        height: calc(100% - 100px);
+      }
     }
   }
   .column-center {
@@ -69,7 +84,7 @@
       position: relative;
       width: 100%;
       height: 48px;
-      padding: 15px 29px;
+      padding: 5px 29px;
       background-color: #eceff1;
       text-align: left;
       .back-to-chats {
@@ -84,12 +99,25 @@
           width: 36px;
         }
       }
-      span {
-        font-size: 15px;
+      //span {
+      //  font-size: 15px;
+      //  color: var(--grey);
+      //  .name {
+      //    color: var(--dark);
+      //    @include font-bold;
+      //  }
+      //}
+      .chat-title {
+        padding: 5px 0;
+        display: flex;
+        flex-direction: column;
         color: var(--grey);
+        font-size: 12px;
         .name {
           color: var(--dark);
+          font-size: 15px;
           @include font-bold;
+          margin-bottom: 5px;
         }
       }
       .buttons {
@@ -199,6 +227,17 @@
   }
 }
 
+.kk-context-menu {
+  ul {
+    padding: 6px 0 !important;
+    min-width: 100px;
+    .context-item {
+      padding: 3px 12px;
+      font-size: 13px;
+    }
+  }
+}
+
 html[theme="dark"] {
   .bg {
     background-color: #171717;
@@ -209,6 +248,11 @@ html[theme="dark"] {
       border: 1px solid transparent;
       border-right: 1px solid var(--dark-low);
       background-color: var(--dark-medium);
+      .actions {
+        svg {
+          color: var(--light);
+        }
+      }
       .top-bar {
         &:after {
           background-color: var(--dark-medium);
@@ -258,6 +302,23 @@ html[theme="dark"] {
         .start-messaging-footer {
           background-color: transparent;
         }
+      }
+    }
+  }
+
+  .kk-context-menu {
+    > div[role="document"] {
+      background-color: var(--dark-medium);
+    }
+    ul {
+      background-color: var(--dark-medium);
+      .context-item {
+        color: var(--light);
+      }
+    }
+    &.darker {
+      > div[role="document"], ul {
+        background-color: var(--dark-low);
       }
     }
   }

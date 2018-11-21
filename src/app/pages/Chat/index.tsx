@@ -5,7 +5,7 @@ import Message from '../../components/Message/index';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import {Attachment, MoreVert as MoreVertIcon, KeyboardArrowLeftRounded} from '@material-ui/icons';
+import {Attachment, MoreVert as MoreVertIcon, KeyboardArrowLeftRounded, MessageRounded} from '@material-ui/icons';
 import * as faker from 'faker';
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
@@ -40,6 +40,7 @@ import {C_MESSAGE_TYPE} from "../../repository/message/consts";
 import PopUpDate from "../../components/PopUpDate";
 import BottomBar from "../../components/BottomBar";
 import ContactMenu from '../../components/ContactMenu';
+import Tooltip from '@material-ui/core/Tooltip';
 
 interface IProps {
     history?: any;
@@ -48,7 +49,7 @@ interface IProps {
 }
 
 interface IState {
-    anchorEl: any;
+    chatMoreAnchorEl: any;
     dialogs: IDialog[];
     isChatView: boolean;
     isConnecting: boolean;
@@ -58,6 +59,7 @@ interface IState {
     leftMenu: string;
     maxReadId: number;
     messages: IMessage[];
+    moreInfoAnchorEl: any;
     openNewMessage: boolean;
     peer: InputPeer | null;
     popUpDate: number | null;
@@ -71,7 +73,7 @@ interface IState {
 class Chat extends React.Component<IProps, IState> {
     private isInChat: boolean = true;
     private rightMenu: any = null;
-    private messageComponent: any = null;
+    private messageComponent: Message;
     private messageRepo: MessageRepo;
     private dialogRepo: DialogRepo;
     private userRepo: UserRepo;
@@ -93,7 +95,7 @@ class Chat extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
         this.state = {
-            anchorEl: null,
+            chatMoreAnchorEl: null,
             dialogs: [],
             isChatView: false,
             isConnecting: true,
@@ -103,6 +105,7 @@ class Chat extends React.Component<IProps, IState> {
             leftMenu: 'chat',
             maxReadId: 0,
             messages: [],
+            moreInfoAnchorEl: null,
             openNewMessage: false,
             peer: null,
             popUpDate: null,
@@ -368,8 +371,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {anchorEl, isTypingList, leftMenu, textInputMessage, textInputMessageMode, peer, selectedDialogId, popUpDate} = this.state;
-        const open = Boolean(anchorEl);
+        const {moreInfoAnchorEl, chatMoreAnchorEl, isTypingList, leftMenu, textInputMessage, textInputMessageMode, peer, selectedDialogId, popUpDate} = this.state;
         const leftMenuRender = () => {
             switch (leftMenu) {
                 default:
@@ -382,17 +384,68 @@ class Chat extends React.Component<IProps, IState> {
                     return (<ContactMenu/>);
             }
         };
+        const chatMoreMenuItem = [{
+            cmd: 'new_message',
+            title: 'New Message',
+        },{
+            cmd: 'new_group',
+            title: 'New Group',
+        },{
+            cmd: 'account',
+            title: 'Account Info',
+        },{
+            cmd: 'setting',
+            title: 'Setting',
+        }];
         return (
             <div className="bg">
                 <div className="wrapper">
                     <div
                         className={'container' + (this.isMobileView ? ' mobile-view' : '') + (this.state.isChatView ? ' chat-view' : '')}>
-                        <div className="column-left">
+                        <div className={'column-left ' + (leftMenu === 'chat' ? 'with-top-bar' : '')}>
                             <div className="top-bar">
-                                <span className="new-message" onClick={this.onNewMessageOpen}>
+                                <span className="new-message">
                                     <RiverLogo height={24} width={24}/>
-                                    <span>New message</span>
                                 </span>
+                                <div className="actions">
+                                    <Tooltip
+                                        title="New Message"
+                                        placement="bottom"
+                                    >
+                                        <IconButton
+                                            aria-label="Attachment"
+                                            aria-haspopup="true"
+                                            onClick={this.onNewMessageOpen}
+                                        >
+                                            <MessageRounded/>
+                                        </IconButton>
+                                    </Tooltip>
+                                    <IconButton
+                                        aria-label="More"
+                                        aria-owns={moreInfoAnchorEl ? 'long-menu' : undefined}
+                                        aria-haspopup="true"
+                                        onClick={this.chatMoreOpenHandler}
+                                    >
+                                        <MoreVertIcon/>
+                                    </IconButton>
+                                    <Menu
+                                        anchorEl={chatMoreAnchorEl}
+                                        open={Boolean(chatMoreAnchorEl)}
+                                        onClose={this.chatMoreCloseHandler}
+                                        className="kk-context-menu darker"
+                                    >
+                                        {chatMoreMenuItem.map((item, key) => {
+                                            return (
+                                                <MenuItem key={key}
+                                                          onClick={this.chatMoreActionHandler.bind(this, item.cmd)}
+                                                          className="context-item"
+                                                >
+                                                    {item.title}
+                                                </MenuItem>
+                                            );
+                                        })}
+                                    </Menu>
+                                </div>
                             </div>
                             <div className="left-content">
                                 {leftMenuRender()}
@@ -408,26 +461,28 @@ class Chat extends React.Component<IProps, IState> {
                                 <IconButton
                                     aria-label="Attachment"
                                     aria-haspopup="true"
-                                    onClick={this.toggleAttachment}
+                                    onClick={this.attachmentToggleHandler}
                                 >
                                     <Attachment/>
                                 </IconButton>
                                 <IconButton
                                     aria-label="More"
-                                    aria-owns={anchorEl ? 'long-menu' : undefined}
+                                    aria-owns={moreInfoAnchorEl ? 'long-menu' : undefined}
                                     aria-haspopup="true"
-                                    onClick={this.handleContactInfoClick}
+                                    onClick={this.contactInfoOpenHandler}
                                 >
                                     <MoreVertIcon/>
                                 </IconButton>
                                 <Menu
                                     id="long-menu"
-                                    anchorEl={anchorEl}
-                                    open={open}
-                                    onClose={this.handleContactInfoClose}
+                                    anchorEl={moreInfoAnchorEl}
+                                    open={Boolean(moreInfoAnchorEl)}
+                                    onClose={this.contactInfoCloseHandler}
+                                    className="kk-context-menu darker"
                                 >
                                   <MenuItem key={1}
                                             onClick={this.toggleRightMenu}
+                                            className="context-item"
                                   >
                                       {"Contact Info"}
                                   </MenuItem>
@@ -472,51 +527,73 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private getChatTitle(placeholder?: boolean) {
+        return (
+            <span className="chat-title">
+                {Boolean(placeholder !== true) && <UserName id={this.state.selectedDialogId} className="name"/>}
+                {this.getChatStatus()}
+            </span>
+        );
+    }
+
+    private getChatStatus() {
         if (this.state.isConnecting) {
             return (<span>Connecting...</span>);
         } else if (this.state.isUpdating) {
             return (<span>Updating...</span>);
         } else if (this.state.isTyping) {
-            return (<span><UserName id={this.state.selectedDialogId} className="name"/> is typing...</span>);
-        } else if (placeholder !== true) {
-            return (<span><UserName id={this.state.selectedDialogId} className="name"/></span>);
+            return (<span>is typing...</span>);
         } else {
-            return '';
+            return (<span>last seen recently</span>);
         }
     }
 
-    private handleContactInfoClick = (event: any) => {
+    private contactInfoOpenHandler = (event: any) => {
         this.setState({
-            anchorEl: event.currentTarget,
+            moreInfoAnchorEl: event.currentTarget,
         });
     }
 
-    private handleContactInfoClose = () => {
+    private contactInfoCloseHandler = () => {
         this.setState({
-            anchorEl: null,
+            moreInfoAnchorEl: null,
         });
     }
 
-    private toggleAttachment = () => {
+    private attachmentToggleHandler = () => {
         this.setState({
             toggleAttachment: !this.state.toggleAttachment,
         });
     }
 
     private toggleRightMenu = () => {
-        this.setState({
-            anchorEl: null,
-        });
+        this.contactInfoCloseHandler();
         this.rightMenu.classList.toggle('active');
         setTimeout(() => {
             this.messageComponent.cache.clearAll();
             this.messageComponent.list.recomputeRowHeights();
+            this.messageComponent.list.recomputeGridSize();
             this.messageComponent.forceUpdate(() => {
                 setTimeout(() => {
                     this.messageComponent.list.scrollToRow(this.state.messages.length - 1);
                 }, 100);
             });
         }, 200);
+    }
+
+    private chatMoreOpenHandler = (event: any) => {
+        this.setState({
+            chatMoreAnchorEl: event.currentTarget,
+        });
+    }
+
+    private chatMoreCloseHandler = () => {
+        this.setState({
+            chatMoreAnchorEl: null,
+        });
+    }
+
+    private chatMoreActionHandler = (cmd: string) => {
+        window.console.log(cmd);
     }
 
     private rightMenuRefHandler = (value: any) => {
@@ -551,6 +628,7 @@ class Chat extends React.Component<IProps, IState> {
         const updateState = () => {
             this.messageComponent.cache.clearAll();
             this.messageComponent.list.recomputeRowHeights();
+            this.messageComponent.list.recomputeGridSize();
             this.messageComponent.forceUpdate(() => {
                 setTimeout(() => {
                     this.messageComponent.list.scrollToRow(messages.length - 1);
@@ -564,7 +642,7 @@ class Chat extends React.Component<IProps, IState> {
             this.setState({
                 messages: dataMsg.msgs,
             }, () => {
-                // this.messageComponent.list.recomputeRowHeights();
+                this.messageComponent.list.recomputeRowHeights();
                 this.messageComponent.forceUpdate(() => {
                     this.isLoading = false;
                 });
@@ -612,6 +690,7 @@ class Chat extends React.Component<IProps, IState> {
         if (this.isLoading) {
             return;
         }
+        this.isLoading = true;
         const {peer} = this.state;
         if (peer === null) {
             return;
@@ -625,21 +704,20 @@ class Chat extends React.Component<IProps, IState> {
                 return;
             }
             const messages = this.state.messages;
-            // messages.unshift.apply(messages, data.reverse());
-            // messages.map((msg, key) => {
-            //     msg.avatar = (key > 0 && msg.senderid !== messages[key - 1].senderid || key === 0 && msg.senderid !== this.connInfo.UserID);
-            //     return msg;
-            // });
-
+            const messsageSize = messages.length;
             const dataMsg = this.modifyMessages(messages, data, false);
 
             this.setState({
                 messages: dataMsg.msgs,
             }, () => {
-                // this.messageComponent.list.recomputeRowHeights();
-                this.messageComponent.forceUpdate(() => {
+                // clears the gap between each message load
+                for (let i = 0; i <= (dataMsg.msgs.length - messsageSize) + 1; i++) {
+                    this.messageComponent.cache.clear(i, 0);
+                }
+                this.messageComponent.list.recomputeGridSize();
+                setTimeout(() => {
                     this.isLoading = false;
-                });
+                }, 100);
             });
         }).catch(() => {
             this.isLoading = false;
@@ -652,7 +730,6 @@ class Chat extends React.Component<IProps, IState> {
             if (msg.id && msg.id > maxId) {
                 maxId = msg.id;
             }
-            msg.type = C_MESSAGE_TYPE.Normal;
             if (push) {
                 // avatar breakpoint
                 msg.avatar = (key === 0 && (defaultMessages.length === 0 || (defaultMessages.length > 0 && msg.senderid !== defaultMessages[defaultMessages.length - 1].senderid))) || (key > 0 && msg.senderid !== messages[key - 1].senderid);
@@ -663,20 +740,20 @@ class Chat extends React.Component<IProps, IState> {
                     defaultMessages.push({
                         createdon: msg.createdon,
                         id: msg.id,
+                        messagetype: C_MESSAGE_TYPE.Date,
                         senderid: msg.senderid,
-                        type: C_MESSAGE_TYPE.Date,
                     });
                 }
                 defaultMessages.push(msg);
             }
 
             if (!push) {
-                if (key === 0 && defaultMessages[0].type === C_MESSAGE_TYPE.Date) {
+                if (key === 0 && defaultMessages[0].messagetype === C_MESSAGE_TYPE.Date) {
                     if (TimeUtililty.isInSameDay(msg.createdon, defaultMessages[0].createdon)) {
                         defaultMessages.splice(0, 1);
                     }
                 }
-                if (key === 0 && defaultMessages.length > 1 && defaultMessages[0].type === C_MESSAGE_TYPE.Normal && defaultMessages[1].senderid === msg.senderid) {
+                if (key === 0 && defaultMessages.length > 1 && defaultMessages[0].messagetype === C_MESSAGE_TYPE.Normal && defaultMessages[1].senderid === msg.senderid) {
                     defaultMessages[0].avatar = false;
                 }
                 // avatar breakpoint
@@ -690,8 +767,8 @@ class Chat extends React.Component<IProps, IState> {
                     defaultMessages.unshift({
                         createdon: msg.createdon,
                         id: msg.id,
+                        messagetype: C_MESSAGE_TYPE.Date,
                         senderid: msg.senderid,
-                        type: C_MESSAGE_TYPE.Date,
                     });
                 }
             }
@@ -736,7 +813,6 @@ class Chat extends React.Component<IProps, IState> {
                 me: true,
                 peerid: this.state.selectedDialogId,
                 senderid: this.connInfo.UserID,
-                type: C_MESSAGE_TYPE.Normal,
             };
 
             let replyTo;
@@ -751,7 +827,7 @@ class Chat extends React.Component<IProps, IState> {
                 const {messages} = this.state;
                 const index = findIndex(messages, {id: message.id});
                 if (index) {
-                    this.messageComponent.cache.clear(index);
+                    this.messageComponent.cache.clear(index, 0);
                 }
                 this.messageRepo.remove(message.id || 0).catch(() => {
                     //
@@ -774,8 +850,8 @@ class Chat extends React.Component<IProps, IState> {
             messages.push({
                 createdon: message.createdon,
                 id: message.id,
+                messagetype: C_MESSAGE_TYPE.Date,
                 senderid: message.senderid,
-                type: C_MESSAGE_TYPE.Date,
             });
         }
         if (messages.length > 0 && message.senderid !== messages[messages.length - 1].senderid) {
@@ -873,7 +949,7 @@ class Chat extends React.Component<IProps, IState> {
         const index = this.dialogMap[id];
         const {dialogs} = this.state;
         const peer = new InputPeer();
-        peer.setType(PeerType.PEERUSER);
+        peer.setType(dialogs[index].peertype || 0);
         peer.setAccesshash(dialogs[index].accesshash || '0');
         peer.setId(dialogs[index].peerid || '');
         return peer;

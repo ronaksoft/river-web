@@ -5,12 +5,13 @@ import './style.css';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import {InputPeer} from "../../services/sdk/messages/core.types_pb";
-import {C_MESSAGE_TYPE} from "../../repository/message/consts";
+import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from "../../repository/message/consts";
 import TimeUtility from '../../services/utilities/time';
 import UserAvatar from '../UserAvatar';
 import MessagePreview from '../MessagePreview';
 import MessageStatus from '../MessageStatus';
 import {MoreVert} from '@material-ui/icons';
+import UserName from '../UserName';
 
 interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
@@ -34,8 +35,8 @@ interface IState {
 }
 
 class Message extends React.Component<IProps, IState> {
-    private list: any;
-    private cache: any;
+    public list: List;
+    public cache: CellMeasurerCache;
     private listCount: number;
     private topOfList: boolean = false;
 
@@ -71,6 +72,7 @@ class Message extends React.Component<IProps, IState> {
 
     public componentWillReceiveProps(newProps: IProps) {
         if (this.state.items !== newProps.items) {
+            this.cache.clearAll();
             this.setState({
                 items: newProps.items,
                 moreAnchorEl: null,
@@ -96,9 +98,7 @@ class Message extends React.Component<IProps, IState> {
                     this.fitList();
                 });
             } else {
-                this.setState({
-                    scrollIndex: (newProps.items.length - this.listCount) + 2,
-                });
+                this.list.scrollToRow((newProps.items.length - this.listCount));
             }
             this.listCount = newProps.items.length;
             this.topOfList = false;
@@ -127,7 +127,7 @@ class Message extends React.Component<IProps, IState> {
                             overscanRowCount={8}
                             width={width}
                             height={height}
-                            estimatedRowSize={40}
+                            estimatedRowSize={41}
                             scrollToIndex={this.state.scrollIndex}
                             onRowsRendered={this.onRowsRenderedHandler}
                             onScroll={this.onScroll}
@@ -138,7 +138,7 @@ class Message extends React.Component<IProps, IState> {
                             anchorEl={moreAnchorEl}
                             open={Boolean(moreAnchorEl)}
                             onClose={this.moreCloseHandler}
-                            className="context-menu"
+                            className="kk-context-menu"
                         >
                             {this.contextMenuItem()}
                         </Menu>
@@ -224,11 +224,17 @@ class Message extends React.Component<IProps, IState> {
     }
 
     private messageItem(index: number, message: IMessage, peer: InputPeer | null, readId: number, style: any) {
-        switch (message.type) {
+        switch (message.messagetype) {
             case C_MESSAGE_TYPE.Date:
                 return (
                     <div style={style} className="bubble-wrapper">
                         <span className="date">{TimeUtility.dynamicDate(message.createdon || 0)}</span>
+                    </div>
+                );
+            case C_MESSAGE_TYPE.System:
+                return (
+                    <div style={style} className="bubble-wrapper">
+                        {this.renderSystemMessage(message)}
                     </div>
                 );
             case C_MESSAGE_TYPE.Normal:
@@ -343,8 +349,8 @@ class Message extends React.Component<IProps, IState> {
     private onRowsRenderedHandler = (data: any) => {
         const {items} = this.state;
         if (data.startIndex > -1) {
-            if (items[data.startIndex].type === C_MESSAGE_TYPE.Date ||
-                (items[data.startIndex + 1] && items[data.startIndex + 1].type === C_MESSAGE_TYPE.Date)) {
+            if (items[data.startIndex].messagetype === C_MESSAGE_TYPE.Date ||
+                (items[data.startIndex + 1] && items[data.startIndex + 1].messagetype === C_MESSAGE_TYPE.Date)) {
                 if (this.props.showDate) {
                     this.props.showDate(null);
                 }
@@ -376,9 +382,31 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
-    private keyMapperHandler = (rowIndex: number) => {
-        // todo
-        return `${this.state.items[rowIndex].id}-${this.state.items[rowIndex].type}`;
+    private keyMapperHandler = (rowIndex: number, colIndex: number) => {
+        return this.getKey(rowIndex, colIndex);
+    }
+
+    private getKey = (rowIndex: number, colIndex: number) => {
+        const {items} = this.state;
+        return `${items[rowIndex].id || 0}-${colIndex}-${items[rowIndex].messagetype || 0}`;
+    }
+
+    private renderSystemMessage(message: IMessage) {
+        switch (message.messageaction) {
+            case C_MESSAGE_ACTION.MessageActionContactRegistered:
+                return (<span className="system-message">
+                    <UserName className="user" id={message.senderid || ''}/> Joined River</span>);
+            case C_MESSAGE_ACTION.MessageActionGroupCreated:
+                return (<span className="system-message">Group Created</span>);
+            case C_MESSAGE_ACTION.MessageActionJoined:
+                return (<span className="system-message">
+                    <UserName className="user" id={message.senderid || ''}/> Joined</span>);
+            case C_MESSAGE_ACTION.MessageActionLeft:
+                return (<span className="system-message">
+                    <UserName className="user" id={message.senderid || ''}/> Left</span>);
+            default:
+                return '';
+        }
     }
 }
 

@@ -100,7 +100,6 @@ class TimeUntiles {
         }
 
         return date.format('DD[/]MM[/]YYYY');
-
     }
 
     public dynamicDate(timestamp: number | undefined) {
@@ -127,14 +126,15 @@ class TimeUntiles {
         }
 
         return date.format('DD[/]MM[/]YYYY');
-
     }
 
     public isInSameDay(time1?: number, time2?: number): boolean {
         if (!time1 || !time2) {
             return false;
         }
-        return moment(time1 * 1000).isSame(moment(time2 * 1000), 'day');
+        const m1 = moment.parseZone(time1 * 1000);
+        const m2 = moment.parseZone(time2 * 1000);
+        return m1.isSame(m2, 'day');
     }
 }
 

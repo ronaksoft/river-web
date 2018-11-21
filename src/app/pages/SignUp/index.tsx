@@ -68,8 +68,8 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     public render() {
-        // const {anchorEl} = this.state;
-        // const open = Boolean(anchorEl);
+        // const {moreInfoAnchorEl} = this.state;
+        // const open = Boolean(moreInfoAnchorEl);
         const {step} = this.state;
         return (
             <div className="limiter">
