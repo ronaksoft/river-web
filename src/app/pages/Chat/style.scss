@@ -25,6 +25,7 @@
   height: 800px;
   background-color: var(--white);
   .column-left {
+    position: relative;
     width: 318px;
     height: 100%;
     flex: none;
@@ -72,6 +73,21 @@
       }
       .left-content {
         height: calc(100% - 100px);
+      }
+    }
+    .left-overlay {
+      position: absolute;
+      top: 0;
+      left: calc(-100% - 1px);
+      bottom: 0;
+      width: 100%;
+      z-index: 100;
+      background-color: var(--white);
+      transition: left 0.2s ease-out;
+    }
+    &.left-overlay-enable {
+      .left-overlay {
+        left: 0;
       }
     }
   }
@@ -261,6 +277,9 @@ html[theme="dark"] {
       .left-content {
         border-right: 1px solid var(--dark-medium);
         border-left: 1px solid transparent;
+      }
+      .left-overlay {
+        background-color: var(--dark-medium);
       }
     }
     .column-center {

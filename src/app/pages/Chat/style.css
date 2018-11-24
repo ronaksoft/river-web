@@ -59,6 +59,7 @@ body {
   height: 800px;
   background-color: var(--white); }
   .container .column-left {
+    position: relative;
     width: 318px;
     height: 100%;
     flex: none;
@@ -99,6 +100,17 @@ body {
       display: flex; }
     .container .column-left.with-top-bar .left-content {
       height: calc(100% - 100px); }
+    .container .column-left .left-overlay {
+      position: absolute;
+      top: 0;
+      left: calc(-100% - 1px);
+      bottom: 0;
+      width: 100%;
+      z-index: 100;
+      background-color: var(--white);
+      transition: left 0.2s ease-out; }
+    .container .column-left.left-overlay-enable .left-overlay {
+      left: 0; }
   .container .column-center {
     position: relative;
     flex: 1;
@@ -240,6 +252,8 @@ html[theme="dark"] .container {
     html[theme="dark"] .container .column-left .left-content {
       border-right: 1px solid var(--dark-medium);
       border-left: 1px solid transparent; }
+    html[theme="dark"] .container .column-left .left-overlay {
+      background-color: var(--dark-medium); }
   html[theme="dark"] .container .column-center .top {
     background-color: var(--dark-medium); }
     html[theme="dark"] .container .column-center .top .back-to-chats svg {

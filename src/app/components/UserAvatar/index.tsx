@@ -67,7 +67,7 @@ const TextAvatar = (fname?: string, lname?: string) => {
     const str = fname || '' + lname || '';
     let name = 'NA';
     if (fname && lname) {
-        name = fname.substr(0, 1) + ' ' + lname.substr(0, 1);
+        name = fname.substr(0, 1) + lname.substr(0, 1);
     } else if (fname && !lname) {
         name = fname.substr(0, 2);
     } else if (!fname && lname) {

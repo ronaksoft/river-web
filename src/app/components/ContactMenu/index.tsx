@@ -3,10 +3,10 @@ import {List, AutoSizer} from 'react-virtualized';
 import {IContact} from '../../repository/contact/interface';
 import ContactRepo from '../../repository/contact';
 import {debounce} from 'lodash';
-
-import './style.css';
 import {Link} from 'react-router-dom';
 import {TextAvatar} from '../UserAvatar';
+
+import './style.css';
 
 interface IProps {
     id?: number;

@@ -142,6 +142,11 @@ export class UpdateContainer extends jspb.Message {
   setUsersList(value: Array<core_types_pb.User>): void;
   addUsers(value?: core_types_pb.User, index?: number): core_types_pb.User;
 
+  clearGroupsList(): void;
+  getGroupsList(): Array<core_types_pb.Group>;
+  setGroupsList(value: Array<core_types_pb.Group>): void;
+  addGroups(value?: core_types_pb.Group, index?: number): core_types_pb.Group;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateContainer.AsObject;
   static toObject(includeInstance: boolean, msg: UpdateContainer): UpdateContainer.AsObject;
@@ -159,6 +164,7 @@ export namespace UpdateContainer {
     minupdateid?: number,
     maxupdateid?: number,
     usersList: Array<core_types_pb.User.AsObject>,
+    groupsList: Array<core_types_pb.Group.AsObject>,
   }
 }
 

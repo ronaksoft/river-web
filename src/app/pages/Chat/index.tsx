@@ -31,16 +31,17 @@ import SyncManager from '../../services/sdk/syncManager';
 import UserRepo from '../../repository/user';
 import RiverLogo from '../../components/RiverLogo';
 import MainRepo from '../../repository';
-
-import './style.css';
-import SettingMenu from "../../components/SettingMenu";
-import {C_MSG_MODE} from "../../components/TextInput/consts";
+import SettingMenu from '../../components/SettingMenu';
+import {C_MSG_MODE} from '../../components/TextInput/consts';
 import TimeUtililty from '../../services/utilities/time';
-import {C_MESSAGE_TYPE} from "../../repository/message/consts";
-import PopUpDate from "../../components/PopUpDate";
-import BottomBar from "../../components/BottomBar";
+import {C_MESSAGE_TYPE} from '../../repository/message/consts';
+import PopUpDate from '../../components/PopUpDate';
+import BottomBar from '../../components/BottomBar';
 import ContactMenu from '../../components/ContactMenu';
 import Tooltip from '@material-ui/core/Tooltip';
+import NewGroupMenu from '../../components/NewGroupMenu';
+
+import './style.css';
 
 interface IProps {
     history?: any;
@@ -57,6 +58,7 @@ interface IState {
     isTypingList: { [key: string]: boolean };
     isUpdating: boolean;
     leftMenu: string;
+    leftOverlay: boolean;
     maxReadId: number;
     messages: IMessage[];
     moreInfoAnchorEl: any;
@@ -103,6 +105,7 @@ class Chat extends React.Component<IProps, IState> {
             isTypingList: {},
             isUpdating: false,
             leftMenu: 'chat',
+            leftOverlay: false,
             maxReadId: 0,
             messages: [],
             moreInfoAnchorEl: null,
@@ -371,7 +374,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {moreInfoAnchorEl, chatMoreAnchorEl, isTypingList, leftMenu, textInputMessage, textInputMessageMode, peer, selectedDialogId, popUpDate} = this.state;
+        const {moreInfoAnchorEl, chatMoreAnchorEl, isTypingList, leftMenu, leftOverlay, textInputMessage, textInputMessageMode, peer, selectedDialogId, popUpDate} = this.state;
         const leftMenuRender = () => {
             switch (leftMenu) {
                 default:
@@ -385,15 +388,15 @@ class Chat extends React.Component<IProps, IState> {
             }
         };
         const chatMoreMenuItem = [{
-            cmd: 'new_message',
-            title: 'New Message',
-        },{
             cmd: 'new_group',
             title: 'New Group',
-        },{
+        }, {
+            cmd: 'new_message',
+            title: 'New Message',
+        }, {
             cmd: 'account',
             title: 'Account Info',
-        },{
+        }, {
             cmd: 'setting',
             title: 'Setting',
         }];
@@ -402,7 +405,8 @@ class Chat extends React.Component<IProps, IState> {
                 <div className="wrapper">
                     <div
                         className={'container' + (this.isMobileView ? ' mobile-view' : '') + (this.state.isChatView ? ' chat-view' : '')}>
-                        <div className={'column-left ' + (leftMenu === 'chat' ? 'with-top-bar' : '')}>
+                        <div
+                            className={'column-left ' + (leftMenu === 'chat' ? 'with-top-bar' : '') + (leftOverlay ? ' left-overlay-enable' : '')}>
                             <div className="top-bar">
                                 <span className="new-message">
                                     <RiverLogo height={24} width={24}/>
@@ -451,6 +455,9 @@ class Chat extends React.Component<IProps, IState> {
                                 {leftMenuRender()}
                             </div>
                             <BottomBar onSelect={this.bottomBarSelectHandler} selected={leftMenu}/>
+                            <div className="left-overlay">
+                                <NewGroupMenu onClose={this.leftOverlayCloseHandler}/>
+                            </div>
                         </div>
                         {selectedDialogId !== 'null' && <div className="column-center">
                             <div className="top">
@@ -593,7 +600,13 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private chatMoreActionHandler = (cmd: string) => {
+        this.chatMoreCloseHandler();
         window.console.log(cmd);
+        if (cmd === 'new_group') {
+            this.setState({
+                leftOverlay: true,
+            });
+        }
     }
 
     private rightMenuRefHandler = (value: any) => {
@@ -1209,6 +1222,12 @@ class Chat extends React.Component<IProps, IState> {
                 });
                 break;
         }
+    }
+
+    private leftOverlayCloseHandler = () => {
+        this.setState({
+            leftOverlay: false,
+        });
     }
 
     private logOutHandler() {

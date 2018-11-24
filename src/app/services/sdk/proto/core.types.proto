@@ -125,3 +125,11 @@ message InputFile {
     required int32 TotalParts = 2;
     required string FileName = 3;
 }
+
+// Group
+message Group {
+    required int64 ID = 1 [jstype = JS_STRING];
+    required string Title = 2;
+    required int64 CreatedOn = 3;
+    required int32 Participants = 4;
+}

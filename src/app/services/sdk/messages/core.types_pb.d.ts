@@ -549,6 +549,46 @@ export namespace InputFile {
   }
 }
 
+export class Group extends jspb.Message {
+  hasId(): boolean;
+  clearId(): void;
+  getId(): string | undefined;
+  setId(value: string): void;
+
+  hasTitle(): boolean;
+  clearTitle(): void;
+  getTitle(): string | undefined;
+  setTitle(value: string): void;
+
+  hasCreatedon(): boolean;
+  clearCreatedon(): void;
+  getCreatedon(): number | undefined;
+  setCreatedon(value: number): void;
+
+  hasParticipants(): boolean;
+  clearParticipants(): void;
+  getParticipants(): number | undefined;
+  setParticipants(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Group.AsObject;
+  static toObject(includeInstance: boolean, msg: Group): Group.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Group, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Group;
+  static deserializeBinaryFromReader(message: Group, reader: jspb.BinaryReader): Group;
+}
+
+export namespace Group {
+  export type AsObject = {
+    id?: string,
+    title?: string,
+    createdon?: number,
+    participants?: number,
+  }
+}
+
 export enum TypingAction {
   TYPING = 0,
   RECORDINGVOICE = 1,

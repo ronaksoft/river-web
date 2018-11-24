@@ -436,6 +436,11 @@ export class MessagesDialogs extends jspb.Message {
   getUpdateid(): number | undefined;
   setUpdateid(value: number): void;
 
+  clearGroupsList(): void;
+  getGroupsList(): Array<core_types_pb.Group>;
+  setGroupsList(value: Array<core_types_pb.Group>): void;
+  addGroups(value?: core_types_pb.Group, index?: number): core_types_pb.Group;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesDialogs.AsObject;
   static toObject(includeInstance: boolean, msg: MessagesDialogs): MessagesDialogs.AsObject;
@@ -453,6 +458,7 @@ export namespace MessagesDialogs {
     messagesList: Array<core_types_pb.UserMessage.AsObject>,
     count?: number,
     updateid?: number,
+    groupsList: Array<core_types_pb.Group.AsObject>,
   }
 }
 
@@ -501,6 +507,11 @@ export class MessagesMany extends jspb.Message {
   setUsersList(value: Array<core_types_pb.User>): void;
   addUsers(value?: core_types_pb.User, index?: number): core_types_pb.User;
 
+  clearGroupsList(): void;
+  getGroupsList(): Array<core_types_pb.Group>;
+  setGroupsList(value: Array<core_types_pb.Group>): void;
+  addGroups(value?: core_types_pb.Group, index?: number): core_types_pb.Group;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesMany.AsObject;
   static toObject(includeInstance: boolean, msg: MessagesMany): MessagesMany.AsObject;
@@ -515,6 +526,7 @@ export namespace MessagesMany {
   export type AsObject = {
     messagesList: Array<core_types_pb.UserMessage.AsObject>,
     usersList: Array<core_types_pb.User.AsObject>,
+    groupsList: Array<core_types_pb.Group.AsObject>,
   }
 }
 

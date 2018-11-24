@@ -13,11 +13,11 @@ var global = Function('return this')();
 
 var core_messages_pb = require('./core.messages_pb.js');
 var core_types_pb = require('./core.types_pb.js');
-goog.exportSymbol('proto.msg.UpdateChatMemberAdded', null, global);
-goog.exportSymbol('proto.msg.UpdateChatMemberDeleted', null, global);
 goog.exportSymbol('proto.msg.UpdateDifference', null, global);
 goog.exportSymbol('proto.msg.UpdateGetDifference', null, global);
 goog.exportSymbol('proto.msg.UpdateGetState', null, global);
+goog.exportSymbol('proto.msg.UpdateGroupMemberAdded', null, global);
+goog.exportSymbol('proto.msg.UpdateGroupMemberDeleted', null, global);
 goog.exportSymbol('proto.msg.UpdateMessageEdited', null, global);
 goog.exportSymbol('proto.msg.UpdateMessageID', null, global);
 goog.exportSymbol('proto.msg.UpdateNewMessage', null, global);
@@ -364,7 +364,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.msg.UpdateDifference.repeatedFields_ = [4,5];
+proto.msg.UpdateDifference.repeatedFields_ = [4,5,6];
 
 
 
@@ -401,7 +401,9 @@ proto.msg.UpdateDifference.toObject = function(includeInstance, msg) {
     updatesList: jspb.Message.toObjectList(msg.getUpdatesList(),
     core_messages_pb.UpdateEnvelope.toObject, includeInstance),
     usersList: jspb.Message.toObjectList(msg.getUsersList(),
-    core_types_pb.User.toObject, includeInstance)
+    core_types_pb.User.toObject, includeInstance),
+    groupsList: jspb.Message.toObjectList(msg.getGroupsList(),
+    core_types_pb.Group.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -459,6 +461,11 @@ proto.msg.UpdateDifference.deserializeBinaryFromReader = function(msg, reader) {
       var value = new core_types_pb.User;
       reader.readMessage(value,core_types_pb.User.deserializeBinaryFromReader);
       msg.addUsers(value);
+      break;
+    case 6:
+      var value = new core_types_pb.Group;
+      reader.readMessage(value,core_types_pb.Group.deserializeBinaryFromReader);
+      msg.addGroups(value);
       break;
     default:
       reader.skipField();
@@ -524,6 +531,14 @@ proto.msg.UpdateDifference.serializeBinaryToWriter = function(message, writer) {
       5,
       f,
       core_types_pb.User.serializeBinaryToWriter
+    );
+  }
+  f = message.getGroupsList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      6,
+      f,
+      core_types_pb.Group.serializeBinaryToWriter
     );
   }
 };
@@ -677,6 +692,37 @@ proto.msg.UpdateDifference.prototype.addUsers = function(opt_value, opt_index) {
 
 proto.msg.UpdateDifference.prototype.clearUsersList = function() {
   this.setUsersList([]);
+};
+
+
+/**
+ * repeated Group Groups = 6;
+ * @return {!Array.<!proto.msg.Group>}
+ */
+proto.msg.UpdateDifference.prototype.getGroupsList = function() {
+  return /** @type{!Array.<!proto.msg.Group>} */ (
+    jspb.Message.getRepeatedWrapperField(this, core_types_pb.Group, 6));
+};
+
+
+/** @param {!Array.<!proto.msg.Group>} value */
+proto.msg.UpdateDifference.prototype.setGroupsList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 6, value);
+};
+
+
+/**
+ * @param {!proto.msg.Group=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.msg.Group}
+ */
+proto.msg.UpdateDifference.prototype.addGroups = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 6, opt_value, proto.msg.Group, opt_index);
+};
+
+
+proto.msg.UpdateDifference.prototype.clearGroupsList = function() {
+  this.setGroupsList([]);
 };
 
 
@@ -3379,12 +3425,12 @@ proto.msg.UpdateNotifySettings.prototype.hasSettings = function() {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.msg.UpdateChatMemberAdded = function(opt_data) {
+proto.msg.UpdateGroupMemberAdded = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.msg.UpdateChatMemberAdded, jspb.Message);
+goog.inherits(proto.msg.UpdateGroupMemberAdded, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.msg.UpdateChatMemberAdded.displayName = 'proto.msg.UpdateChatMemberAdded';
+  proto.msg.UpdateGroupMemberAdded.displayName = 'proto.msg.UpdateGroupMemberAdded';
 }
 
 
@@ -3399,8 +3445,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.msg.UpdateChatMemberAdded.prototype.toObject = function(opt_includeInstance) {
-  return proto.msg.UpdateChatMemberAdded.toObject(opt_includeInstance, this);
+proto.msg.UpdateGroupMemberAdded.prototype.toObject = function(opt_includeInstance) {
+  return proto.msg.UpdateGroupMemberAdded.toObject(opt_includeInstance, this);
 };
 
 
@@ -3409,11 +3455,11 @@ proto.msg.UpdateChatMemberAdded.prototype.toObject = function(opt_includeInstanc
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.msg.UpdateChatMemberAdded} msg The msg instance to transform.
+ * @param {!proto.msg.UpdateGroupMemberAdded} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.msg.UpdateChatMemberAdded.toObject = function(includeInstance, msg) {
+proto.msg.UpdateGroupMemberAdded.toObject = function(includeInstance, msg) {
   var f, obj = {
     chatid: jspb.Message.getField(msg, 1),
     userid: jspb.Message.getField(msg, 2),
@@ -3433,23 +3479,23 @@ proto.msg.UpdateChatMemberAdded.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.msg.UpdateChatMemberAdded}
+ * @return {!proto.msg.UpdateGroupMemberAdded}
  */
-proto.msg.UpdateChatMemberAdded.deserializeBinary = function(bytes) {
+proto.msg.UpdateGroupMemberAdded.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.msg.UpdateChatMemberAdded;
-  return proto.msg.UpdateChatMemberAdded.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.msg.UpdateGroupMemberAdded;
+  return proto.msg.UpdateGroupMemberAdded.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.msg.UpdateChatMemberAdded} msg The message object to deserialize into.
+ * @param {!proto.msg.UpdateGroupMemberAdded} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.msg.UpdateChatMemberAdded}
+ * @return {!proto.msg.UpdateGroupMemberAdded}
  */
-proto.msg.UpdateChatMemberAdded.deserializeBinaryFromReader = function(msg, reader) {
+proto.msg.UpdateGroupMemberAdded.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -3489,9 +3535,9 @@ proto.msg.UpdateChatMemberAdded.deserializeBinaryFromReader = function(msg, read
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.msg.UpdateChatMemberAdded.prototype.serializeBinary = function() {
+proto.msg.UpdateGroupMemberAdded.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.msg.UpdateChatMemberAdded.serializeBinaryToWriter(this, writer);
+  proto.msg.UpdateGroupMemberAdded.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -3499,11 +3545,11 @@ proto.msg.UpdateChatMemberAdded.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.msg.UpdateChatMemberAdded} message
+ * @param {!proto.msg.UpdateGroupMemberAdded} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.msg.UpdateChatMemberAdded.serializeBinaryToWriter = function(message, writer) {
+proto.msg.UpdateGroupMemberAdded.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = /** @type {number} */ (jspb.Message.getField(message, 1));
   if (f != null) {
@@ -3547,18 +3593,18 @@ proto.msg.UpdateChatMemberAdded.serializeBinaryToWriter = function(message, writ
  * required int64 ChatID = 1;
  * @return {number}
  */
-proto.msg.UpdateChatMemberAdded.prototype.getChatid = function() {
+proto.msg.UpdateGroupMemberAdded.prototype.getChatid = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {number} value */
-proto.msg.UpdateChatMemberAdded.prototype.setChatid = function(value) {
+proto.msg.UpdateGroupMemberAdded.prototype.setChatid = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
 
-proto.msg.UpdateChatMemberAdded.prototype.clearChatid = function() {
+proto.msg.UpdateGroupMemberAdded.prototype.clearChatid = function() {
   jspb.Message.setField(this, 1, undefined);
 };
 
@@ -3567,7 +3613,7 @@ proto.msg.UpdateChatMemberAdded.prototype.clearChatid = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.msg.UpdateChatMemberAdded.prototype.hasChatid = function() {
+proto.msg.UpdateGroupMemberAdded.prototype.hasChatid = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -3576,18 +3622,18 @@ proto.msg.UpdateChatMemberAdded.prototype.hasChatid = function() {
  * required int64 UserID = 2;
  * @return {number}
  */
-proto.msg.UpdateChatMemberAdded.prototype.getUserid = function() {
+proto.msg.UpdateGroupMemberAdded.prototype.getUserid = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
 /** @param {number} value */
-proto.msg.UpdateChatMemberAdded.prototype.setUserid = function(value) {
+proto.msg.UpdateGroupMemberAdded.prototype.setUserid = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
 
-proto.msg.UpdateChatMemberAdded.prototype.clearUserid = function() {
+proto.msg.UpdateGroupMemberAdded.prototype.clearUserid = function() {
   jspb.Message.setField(this, 2, undefined);
 };
 
@@ -3596,7 +3642,7 @@ proto.msg.UpdateChatMemberAdded.prototype.clearUserid = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.msg.UpdateChatMemberAdded.prototype.hasUserid = function() {
+proto.msg.UpdateGroupMemberAdded.prototype.hasUserid = function() {
   return jspb.Message.getField(this, 2) != null;
 };
 
@@ -3605,18 +3651,18 @@ proto.msg.UpdateChatMemberAdded.prototype.hasUserid = function() {
  * required int64 InviterID = 3;
  * @return {number}
  */
-proto.msg.UpdateChatMemberAdded.prototype.getInviterid = function() {
+proto.msg.UpdateGroupMemberAdded.prototype.getInviterid = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
 /** @param {number} value */
-proto.msg.UpdateChatMemberAdded.prototype.setInviterid = function(value) {
+proto.msg.UpdateGroupMemberAdded.prototype.setInviterid = function(value) {
   jspb.Message.setField(this, 3, value);
 };
 
 
-proto.msg.UpdateChatMemberAdded.prototype.clearInviterid = function() {
+proto.msg.UpdateGroupMemberAdded.prototype.clearInviterid = function() {
   jspb.Message.setField(this, 3, undefined);
 };
 
@@ -3625,7 +3671,7 @@ proto.msg.UpdateChatMemberAdded.prototype.clearInviterid = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.msg.UpdateChatMemberAdded.prototype.hasInviterid = function() {
+proto.msg.UpdateGroupMemberAdded.prototype.hasInviterid = function() {
   return jspb.Message.getField(this, 3) != null;
 };
 
@@ -3634,18 +3680,18 @@ proto.msg.UpdateChatMemberAdded.prototype.hasInviterid = function() {
  * required int32 ChatVersion = 4;
  * @return {number}
  */
-proto.msg.UpdateChatMemberAdded.prototype.getChatversion = function() {
+proto.msg.UpdateGroupMemberAdded.prototype.getChatversion = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
 /** @param {number} value */
-proto.msg.UpdateChatMemberAdded.prototype.setChatversion = function(value) {
+proto.msg.UpdateGroupMemberAdded.prototype.setChatversion = function(value) {
   jspb.Message.setField(this, 4, value);
 };
 
 
-proto.msg.UpdateChatMemberAdded.prototype.clearChatversion = function() {
+proto.msg.UpdateGroupMemberAdded.prototype.clearChatversion = function() {
   jspb.Message.setField(this, 4, undefined);
 };
 
@@ -3654,7 +3700,7 @@ proto.msg.UpdateChatMemberAdded.prototype.clearChatversion = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.msg.UpdateChatMemberAdded.prototype.hasChatversion = function() {
+proto.msg.UpdateGroupMemberAdded.prototype.hasChatversion = function() {
   return jspb.Message.getField(this, 4) != null;
 };
 
@@ -3663,18 +3709,18 @@ proto.msg.UpdateChatMemberAdded.prototype.hasChatversion = function() {
  * required int64 Date = 5;
  * @return {number}
  */
-proto.msg.UpdateChatMemberAdded.prototype.getDate = function() {
+proto.msg.UpdateGroupMemberAdded.prototype.getDate = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
 /** @param {number} value */
-proto.msg.UpdateChatMemberAdded.prototype.setDate = function(value) {
+proto.msg.UpdateGroupMemberAdded.prototype.setDate = function(value) {
   jspb.Message.setField(this, 5, value);
 };
 
 
-proto.msg.UpdateChatMemberAdded.prototype.clearDate = function() {
+proto.msg.UpdateGroupMemberAdded.prototype.clearDate = function() {
   jspb.Message.setField(this, 5, undefined);
 };
 
@@ -3683,7 +3729,7 @@ proto.msg.UpdateChatMemberAdded.prototype.clearDate = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.msg.UpdateChatMemberAdded.prototype.hasDate = function() {
+proto.msg.UpdateGroupMemberAdded.prototype.hasDate = function() {
   return jspb.Message.getField(this, 5) != null;
 };
 
@@ -3699,12 +3745,12 @@ proto.msg.UpdateChatMemberAdded.prototype.hasDate = function() {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.msg.UpdateChatMemberDeleted = function(opt_data) {
+proto.msg.UpdateGroupMemberDeleted = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.msg.UpdateChatMemberDeleted, jspb.Message);
+goog.inherits(proto.msg.UpdateGroupMemberDeleted, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.msg.UpdateChatMemberDeleted.displayName = 'proto.msg.UpdateChatMemberDeleted';
+  proto.msg.UpdateGroupMemberDeleted.displayName = 'proto.msg.UpdateGroupMemberDeleted';
 }
 
 
@@ -3719,8 +3765,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.msg.UpdateChatMemberDeleted.prototype.toObject = function(opt_includeInstance) {
-  return proto.msg.UpdateChatMemberDeleted.toObject(opt_includeInstance, this);
+proto.msg.UpdateGroupMemberDeleted.prototype.toObject = function(opt_includeInstance) {
+  return proto.msg.UpdateGroupMemberDeleted.toObject(opt_includeInstance, this);
 };
 
 
@@ -3729,11 +3775,11 @@ proto.msg.UpdateChatMemberDeleted.prototype.toObject = function(opt_includeInsta
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.msg.UpdateChatMemberDeleted} msg The msg instance to transform.
+ * @param {!proto.msg.UpdateGroupMemberDeleted} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.msg.UpdateChatMemberDeleted.toObject = function(includeInstance, msg) {
+proto.msg.UpdateGroupMemberDeleted.toObject = function(includeInstance, msg) {
   var f, obj = {
     chatid: jspb.Message.getField(msg, 1),
     userid: jspb.Message.getField(msg, 2),
@@ -3752,23 +3798,23 @@ proto.msg.UpdateChatMemberDeleted.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.msg.UpdateChatMemberDeleted}
+ * @return {!proto.msg.UpdateGroupMemberDeleted}
  */
-proto.msg.UpdateChatMemberDeleted.deserializeBinary = function(bytes) {
+proto.msg.UpdateGroupMemberDeleted.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.msg.UpdateChatMemberDeleted;
-  return proto.msg.UpdateChatMemberDeleted.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.msg.UpdateGroupMemberDeleted;
+  return proto.msg.UpdateGroupMemberDeleted.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.msg.UpdateChatMemberDeleted} msg The message object to deserialize into.
+ * @param {!proto.msg.UpdateGroupMemberDeleted} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.msg.UpdateChatMemberDeleted}
+ * @return {!proto.msg.UpdateGroupMemberDeleted}
  */
-proto.msg.UpdateChatMemberDeleted.deserializeBinaryFromReader = function(msg, reader) {
+proto.msg.UpdateGroupMemberDeleted.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -3804,9 +3850,9 @@ proto.msg.UpdateChatMemberDeleted.deserializeBinaryFromReader = function(msg, re
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.msg.UpdateChatMemberDeleted.prototype.serializeBinary = function() {
+proto.msg.UpdateGroupMemberDeleted.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.msg.UpdateChatMemberDeleted.serializeBinaryToWriter(this, writer);
+  proto.msg.UpdateGroupMemberDeleted.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -3814,11 +3860,11 @@ proto.msg.UpdateChatMemberDeleted.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.msg.UpdateChatMemberDeleted} message
+ * @param {!proto.msg.UpdateGroupMemberDeleted} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.msg.UpdateChatMemberDeleted.serializeBinaryToWriter = function(message, writer) {
+proto.msg.UpdateGroupMemberDeleted.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = /** @type {number} */ (jspb.Message.getField(message, 1));
   if (f != null) {
@@ -3855,18 +3901,18 @@ proto.msg.UpdateChatMemberDeleted.serializeBinaryToWriter = function(message, wr
  * required int64 ChatID = 1;
  * @return {number}
  */
-proto.msg.UpdateChatMemberDeleted.prototype.getChatid = function() {
+proto.msg.UpdateGroupMemberDeleted.prototype.getChatid = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {number} value */
-proto.msg.UpdateChatMemberDeleted.prototype.setChatid = function(value) {
+proto.msg.UpdateGroupMemberDeleted.prototype.setChatid = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
 
-proto.msg.UpdateChatMemberDeleted.prototype.clearChatid = function() {
+proto.msg.UpdateGroupMemberDeleted.prototype.clearChatid = function() {
   jspb.Message.setField(this, 1, undefined);
 };
 
@@ -3875,7 +3921,7 @@ proto.msg.UpdateChatMemberDeleted.prototype.clearChatid = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.msg.UpdateChatMemberDeleted.prototype.hasChatid = function() {
+proto.msg.UpdateGroupMemberDeleted.prototype.hasChatid = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -3884,18 +3930,18 @@ proto.msg.UpdateChatMemberDeleted.prototype.hasChatid = function() {
  * required int64 UserID = 2;
  * @return {number}
  */
-proto.msg.UpdateChatMemberDeleted.prototype.getUserid = function() {
+proto.msg.UpdateGroupMemberDeleted.prototype.getUserid = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
 /** @param {number} value */
-proto.msg.UpdateChatMemberDeleted.prototype.setUserid = function(value) {
+proto.msg.UpdateGroupMemberDeleted.prototype.setUserid = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
 
-proto.msg.UpdateChatMemberDeleted.prototype.clearUserid = function() {
+proto.msg.UpdateGroupMemberDeleted.prototype.clearUserid = function() {
   jspb.Message.setField(this, 2, undefined);
 };
 
@@ -3904,7 +3950,7 @@ proto.msg.UpdateChatMemberDeleted.prototype.clearUserid = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.msg.UpdateChatMemberDeleted.prototype.hasUserid = function() {
+proto.msg.UpdateGroupMemberDeleted.prototype.hasUserid = function() {
   return jspb.Message.getField(this, 2) != null;
 };
 
@@ -3913,18 +3959,18 @@ proto.msg.UpdateChatMemberDeleted.prototype.hasUserid = function() {
  * required int32 ChatVersion = 3;
  * @return {number}
  */
-proto.msg.UpdateChatMemberDeleted.prototype.getChatversion = function() {
+proto.msg.UpdateGroupMemberDeleted.prototype.getChatversion = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
 /** @param {number} value */
-proto.msg.UpdateChatMemberDeleted.prototype.setChatversion = function(value) {
+proto.msg.UpdateGroupMemberDeleted.prototype.setChatversion = function(value) {
   jspb.Message.setField(this, 3, value);
 };
 
 
-proto.msg.UpdateChatMemberDeleted.prototype.clearChatversion = function() {
+proto.msg.UpdateGroupMemberDeleted.prototype.clearChatversion = function() {
   jspb.Message.setField(this, 3, undefined);
 };
 
@@ -3933,7 +3979,7 @@ proto.msg.UpdateChatMemberDeleted.prototype.clearChatversion = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.msg.UpdateChatMemberDeleted.prototype.hasChatversion = function() {
+proto.msg.UpdateGroupMemberDeleted.prototype.hasChatversion = function() {
   return jspb.Message.getField(this, 3) != null;
 };
 
@@ -3942,18 +3988,18 @@ proto.msg.UpdateChatMemberDeleted.prototype.hasChatversion = function() {
  * required int64 Date = 4;
  * @return {number}
  */
-proto.msg.UpdateChatMemberDeleted.prototype.getDate = function() {
+proto.msg.UpdateGroupMemberDeleted.prototype.getDate = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
 /** @param {number} value */
-proto.msg.UpdateChatMemberDeleted.prototype.setDate = function(value) {
+proto.msg.UpdateGroupMemberDeleted.prototype.setDate = function(value) {
   jspb.Message.setField(this, 4, value);
 };
 
 
-proto.msg.UpdateChatMemberDeleted.prototype.clearDate = function() {
+proto.msg.UpdateGroupMemberDeleted.prototype.clearDate = function() {
   jspb.Message.setField(this, 4, undefined);
 };
 
@@ -3962,7 +4008,7 @@ proto.msg.UpdateChatMemberDeleted.prototype.clearDate = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.msg.UpdateChatMemberDeleted.prototype.hasDate = function() {
+proto.msg.UpdateGroupMemberDeleted.prototype.hasDate = function() {
   return jspb.Message.getField(this, 4) != null;
 };
 

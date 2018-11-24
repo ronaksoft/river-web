@@ -10,4 +10,6 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-weight: 100; }
+    font-weight: 100;
+    letter-spacing: 3px;
+    padding-left: 3px; }

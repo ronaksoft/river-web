@@ -2951,7 +2951,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.msg.MessagesDialogs.repeatedFields_ = [1,2,3];
+proto.msg.MessagesDialogs.repeatedFields_ = [1,2,3,6];
 
 
 
@@ -2989,7 +2989,9 @@ proto.msg.MessagesDialogs.toObject = function(includeInstance, msg) {
     messagesList: jspb.Message.toObjectList(msg.getMessagesList(),
     core_types_pb.UserMessage.toObject, includeInstance),
     count: jspb.Message.getField(msg, 4),
-    updateid: jspb.Message.getField(msg, 5)
+    updateid: jspb.Message.getField(msg, 5),
+    groupsList: jspb.Message.toObjectList(msg.getGroupsList(),
+    core_types_pb.Group.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -3048,6 +3050,11 @@ proto.msg.MessagesDialogs.deserializeBinaryFromReader = function(msg, reader) {
     case 5:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setUpdateid(value);
+      break;
+    case 6:
+      var value = new core_types_pb.Group;
+      reader.readMessage(value,core_types_pb.Group.deserializeBinaryFromReader);
+      msg.addGroups(value);
       break;
     default:
       reader.skipField();
@@ -3114,6 +3121,14 @@ proto.msg.MessagesDialogs.serializeBinaryToWriter = function(message, writer) {
     writer.writeInt64(
       5,
       f
+    );
+  }
+  f = message.getGroupsList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      6,
+      f,
+      core_types_pb.Group.serializeBinaryToWriter
     );
   }
 };
@@ -3267,6 +3282,37 @@ proto.msg.MessagesDialogs.prototype.clearUpdateid = function() {
  */
 proto.msg.MessagesDialogs.prototype.hasUpdateid = function() {
   return jspb.Message.getField(this, 5) != null;
+};
+
+
+/**
+ * repeated Group Groups = 6;
+ * @return {!Array.<!proto.msg.Group>}
+ */
+proto.msg.MessagesDialogs.prototype.getGroupsList = function() {
+  return /** @type{!Array.<!proto.msg.Group>} */ (
+    jspb.Message.getRepeatedWrapperField(this, core_types_pb.Group, 6));
+};
+
+
+/** @param {!Array.<!proto.msg.Group>} value */
+proto.msg.MessagesDialogs.prototype.setGroupsList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 6, value);
+};
+
+
+/**
+ * @param {!proto.msg.Group=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.msg.Group}
+ */
+proto.msg.MessagesDialogs.prototype.addGroups = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 6, opt_value, proto.msg.Group, opt_index);
+};
+
+
+proto.msg.MessagesDialogs.prototype.clearGroupsList = function() {
+  this.setGroupsList([]);
 };
 
 
@@ -3531,7 +3577,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.msg.MessagesMany.repeatedFields_ = [1,2];
+proto.msg.MessagesMany.repeatedFields_ = [1,2,3];
 
 
 
@@ -3565,7 +3611,9 @@ proto.msg.MessagesMany.toObject = function(includeInstance, msg) {
     messagesList: jspb.Message.toObjectList(msg.getMessagesList(),
     core_types_pb.UserMessage.toObject, includeInstance),
     usersList: jspb.Message.toObjectList(msg.getUsersList(),
-    core_types_pb.User.toObject, includeInstance)
+    core_types_pb.User.toObject, includeInstance),
+    groupsList: jspb.Message.toObjectList(msg.getGroupsList(),
+    core_types_pb.Group.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -3612,6 +3660,11 @@ proto.msg.MessagesMany.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,core_types_pb.User.deserializeBinaryFromReader);
       msg.addUsers(value);
       break;
+    case 3:
+      var value = new core_types_pb.Group;
+      reader.readMessage(value,core_types_pb.Group.deserializeBinaryFromReader);
+      msg.addGroups(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -3655,6 +3708,14 @@ proto.msg.MessagesMany.serializeBinaryToWriter = function(message, writer) {
       2,
       f,
       core_types_pb.User.serializeBinaryToWriter
+    );
+  }
+  f = message.getGroupsList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      3,
+      f,
+      core_types_pb.Group.serializeBinaryToWriter
     );
   }
 };
@@ -3719,6 +3780,37 @@ proto.msg.MessagesMany.prototype.addUsers = function(opt_value, opt_index) {
 
 proto.msg.MessagesMany.prototype.clearUsersList = function() {
   this.setUsersList([]);
+};
+
+
+/**
+ * repeated Group Groups = 3;
+ * @return {!Array.<!proto.msg.Group>}
+ */
+proto.msg.MessagesMany.prototype.getGroupsList = function() {
+  return /** @type{!Array.<!proto.msg.Group>} */ (
+    jspb.Message.getRepeatedWrapperField(this, core_types_pb.Group, 3));
+};
+
+
+/** @param {!Array.<!proto.msg.Group>} value */
+proto.msg.MessagesMany.prototype.setGroupsList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 3, value);
+};
+
+
+/**
+ * @param {!proto.msg.Group=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.msg.Group}
+ */
+proto.msg.MessagesMany.prototype.addGroups = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.msg.Group, opt_index);
+};
+
+
+proto.msg.MessagesMany.prototype.clearGroupsList = function() {
+  this.setGroupsList([]);
 };
 
 

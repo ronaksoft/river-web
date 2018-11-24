@@ -75,6 +75,11 @@ export class UpdateDifference extends jspb.Message {
   setUsersList(value: Array<core_types_pb.User>): void;
   addUsers(value?: core_types_pb.User, index?: number): core_types_pb.User;
 
+  clearGroupsList(): void;
+  getGroupsList(): Array<core_types_pb.Group>;
+  setGroupsList(value: Array<core_types_pb.Group>): void;
+  addGroups(value?: core_types_pb.Group, index?: number): core_types_pb.Group;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateDifference.AsObject;
   static toObject(includeInstance: boolean, msg: UpdateDifference): UpdateDifference.AsObject;
@@ -92,6 +97,7 @@ export namespace UpdateDifference {
     minupdateid?: number,
     updatesList: Array<core_messages_pb.UpdateEnvelope.AsObject>,
     usersList: Array<core_types_pb.User.AsObject>,
+    groupsList: Array<core_types_pb.Group.AsObject>,
   }
 }
 
@@ -477,7 +483,7 @@ export namespace UpdateNotifySettings {
   }
 }
 
-export class UpdateChatMemberAdded extends jspb.Message {
+export class UpdateGroupMemberAdded extends jspb.Message {
   hasChatid(): boolean;
   clearChatid(): void;
   getChatid(): number | undefined;
@@ -504,16 +510,16 @@ export class UpdateChatMemberAdded extends jspb.Message {
   setDate(value: number): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): UpdateChatMemberAdded.AsObject;
-  static toObject(includeInstance: boolean, msg: UpdateChatMemberAdded): UpdateChatMemberAdded.AsObject;
+  toObject(includeInstance?: boolean): UpdateGroupMemberAdded.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateGroupMemberAdded): UpdateGroupMemberAdded.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: UpdateChatMemberAdded, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): UpdateChatMemberAdded;
-  static deserializeBinaryFromReader(message: UpdateChatMemberAdded, reader: jspb.BinaryReader): UpdateChatMemberAdded;
+  static serializeBinaryToWriter(message: UpdateGroupMemberAdded, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateGroupMemberAdded;
+  static deserializeBinaryFromReader(message: UpdateGroupMemberAdded, reader: jspb.BinaryReader): UpdateGroupMemberAdded;
 }
 
-export namespace UpdateChatMemberAdded {
+export namespace UpdateGroupMemberAdded {
   export type AsObject = {
     chatid?: number,
     userid?: number,
@@ -523,7 +529,7 @@ export namespace UpdateChatMemberAdded {
   }
 }
 
-export class UpdateChatMemberDeleted extends jspb.Message {
+export class UpdateGroupMemberDeleted extends jspb.Message {
   hasChatid(): boolean;
   clearChatid(): void;
   getChatid(): number | undefined;
@@ -545,16 +551,16 @@ export class UpdateChatMemberDeleted extends jspb.Message {
   setDate(value: number): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): UpdateChatMemberDeleted.AsObject;
-  static toObject(includeInstance: boolean, msg: UpdateChatMemberDeleted): UpdateChatMemberDeleted.AsObject;
+  toObject(includeInstance?: boolean): UpdateGroupMemberDeleted.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateGroupMemberDeleted): UpdateGroupMemberDeleted.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: UpdateChatMemberDeleted, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): UpdateChatMemberDeleted;
-  static deserializeBinaryFromReader(message: UpdateChatMemberDeleted, reader: jspb.BinaryReader): UpdateChatMemberDeleted;
+  static serializeBinaryToWriter(message: UpdateGroupMemberDeleted, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateGroupMemberDeleted;
+  static deserializeBinaryFromReader(message: UpdateGroupMemberDeleted, reader: jspb.BinaryReader): UpdateGroupMemberDeleted;
 }
 
-export namespace UpdateChatMemberDeleted {
+export namespace UpdateGroupMemberDeleted {
   export type AsObject = {
     chatid?: number,
     userid?: number,

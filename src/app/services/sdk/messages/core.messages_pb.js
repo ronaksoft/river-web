@@ -859,7 +859,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.msg.UpdateContainer.repeatedFields_ = [2,5];
+proto.msg.UpdateContainer.repeatedFields_ = [2,5,6];
 
 
 
@@ -896,7 +896,9 @@ proto.msg.UpdateContainer.toObject = function(includeInstance, msg) {
     minupdateid: jspb.Message.getField(msg, 3),
     maxupdateid: jspb.Message.getField(msg, 4),
     usersList: jspb.Message.toObjectList(msg.getUsersList(),
-    core_types_pb.User.toObject, includeInstance)
+    core_types_pb.User.toObject, includeInstance),
+    groupsList: jspb.Message.toObjectList(msg.getGroupsList(),
+    core_types_pb.Group.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -954,6 +956,11 @@ proto.msg.UpdateContainer.deserializeBinaryFromReader = function(msg, reader) {
       var value = new core_types_pb.User;
       reader.readMessage(value,core_types_pb.User.deserializeBinaryFromReader);
       msg.addUsers(value);
+      break;
+    case 6:
+      var value = new core_types_pb.Group;
+      reader.readMessage(value,core_types_pb.Group.deserializeBinaryFromReader);
+      msg.addGroups(value);
       break;
     default:
       reader.skipField();
@@ -1019,6 +1026,14 @@ proto.msg.UpdateContainer.serializeBinaryToWriter = function(message, writer) {
       5,
       f,
       core_types_pb.User.serializeBinaryToWriter
+    );
+  }
+  f = message.getGroupsList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      6,
+      f,
+      core_types_pb.Group.serializeBinaryToWriter
     );
   }
 };
@@ -1170,6 +1185,37 @@ proto.msg.UpdateContainer.prototype.addUsers = function(opt_value, opt_index) {
 
 proto.msg.UpdateContainer.prototype.clearUsersList = function() {
   this.setUsersList([]);
+};
+
+
+/**
+ * repeated Group Groups = 6;
+ * @return {!Array.<!proto.msg.Group>}
+ */
+proto.msg.UpdateContainer.prototype.getGroupsList = function() {
+  return /** @type{!Array.<!proto.msg.Group>} */ (
+    jspb.Message.getRepeatedWrapperField(this, core_types_pb.Group, 6));
+};
+
+
+/** @param {!Array.<!proto.msg.Group>} value */
+proto.msg.UpdateContainer.prototype.setGroupsList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 6, value);
+};
+
+
+/**
+ * @param {!proto.msg.Group=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.msg.Group}
+ */
+proto.msg.UpdateContainer.prototype.addGroups = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 6, opt_value, proto.msg.Group, opt_index);
+};
+
+
+proto.msg.UpdateContainer.prototype.clearGroupsList = function() {
+  this.setGroupsList([]);
 };
 
 
