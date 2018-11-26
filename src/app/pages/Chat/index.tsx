@@ -326,6 +326,7 @@ class Chat extends React.Component<IProps, IState> {
             if (this.state.isUpdating) {
                 return;
             }
+            window.console.log('UpdateMaxInbox:', data.maxid);
             this.updateDialogsCounter(data.peer.id || '', {maxInbox: data.maxid});
             if (data.peer.id !== this.state.selectedDialogId) {
                 this.messageRepo.getUnreadCount(data.peer.id || '', data.maxid || 0).then((res) => {

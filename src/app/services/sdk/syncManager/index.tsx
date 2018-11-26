@@ -206,7 +206,6 @@ export default class SyncManager {
             data.push(group);
             return group.id;
         });
-        window.console.log(data, keys);
         if (data.length > 0) {
             this.groupRepo.importBulk(data).then(() => {
                 this.broadcastEvent('Group_DB_Updated', {ids: keys});
