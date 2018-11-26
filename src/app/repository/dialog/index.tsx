@@ -7,6 +7,7 @@ import MessageRepo from '../message';
 import {IMessage} from '../message/interface';
 import UpdateManager from '../../services/sdk/server/updateManager';
 import {DexieDialogDB} from '../../services/db/dexie/dialog';
+import GroupRepo from '../group';
 
 interface IDialogWithUpdateId {
     dialogs: IDialog[];
@@ -30,6 +31,7 @@ export default class DialogRepo {
     private messageRepo: MessageRepo;
     private userId: string;
     private userRepo: UserRepo;
+    private groupRepo: GroupRepo;
     private lazyMap: { [key: number]: IDialog } = {};
     private readonly updateThrottle: any = null;
     private updateManager: UpdateManager;
@@ -41,6 +43,7 @@ export default class DialogRepo {
         this.sdk = SDK.getInstance();
         this.messageRepo = MessageRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
+        this.groupRepo = GroupRepo.getInstance();
         this.updateThrottle = throttle(this.insertToDb, 5000);
         this.userId = SDK.getInstance().getConnInfo().UserID || '0';
     }
@@ -87,6 +90,7 @@ export default class DialogRepo {
                 messageMap[msg.id || 0] = msg;
             });
             this.userRepo.importBulk(remoteRes.usersList);
+            this.groupRepo.importBulk(remoteRes.groupsList);
             this.lazyUpsert(remoteRes.dialogsList, messageMap);
             return remoteRes.dialogsList;
         });
@@ -103,6 +107,7 @@ export default class DialogRepo {
                 messageMap[msg.id || 0] = msg;
             });
             this.userRepo.importBulk(remoteRes.usersList);
+            this.groupRepo.importBulk(remoteRes.groupsList);
             this.lazyUpsert(remoteRes.dialogsList, messageMap);
             const dialogs: IDialog[] = remoteRes.dialogsList;
             dialogs.map((dialog) => {
@@ -111,7 +116,7 @@ export default class DialogRepo {
                     dialog.preview = (msg.body || '').substr(0, 64);
                     dialog.preview_me = (msg.senderid === this.userId);
                     dialog.last_update = msg.createdon;
-                    dialog.user_id = msg.peerid;
+                    dialog.target_id = msg.peerid;
                 }
                 return dialog;
             });
@@ -137,7 +142,7 @@ export default class DialogRepo {
                     dialog.preview = (msg.body || '').substr(0, 64);
                     dialog.preview_me = (msg.senderid === this.userId);
                     dialog.last_update = msg.createdon;
-                    dialog.user_id = msg.peerid;
+                    dialog.target_id = msg.peerid;
                 }
             }
             return dialog;
@@ -183,7 +188,7 @@ export default class DialogRepo {
                 dialog.preview = (msg.body || '').substr(0, 64);
                 dialog.preview_me = (msg.senderid === this.userId);
                 dialog.last_update = msg.createdon;
-                dialog.user_id = msg.peerid;
+                dialog.target_id = msg.peerid;
             }
         }
         if (this.lazyMap.hasOwnProperty(dialog.peerid || 0)) {

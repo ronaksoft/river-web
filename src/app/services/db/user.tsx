@@ -1,6 +1,7 @@
 import {IUser} from '../../repository/user/interface';
 import {IContact} from '../../repository/contact/interface';
 import {DexieUserDB} from './dexie/user';
+import {IGroup} from '../../repository/group/interface';
 
 export default class UserDB {
     public static getInstance() {
@@ -15,9 +16,11 @@ export default class UserDB {
     private db: DexieUserDB;
     private users: { [key: string]: IUser } = {};
     private contacts: { [key: string]: IContact } = {};
+    private groups: { [key: string]: IGroup } = {};
 
     private constructor() {
         this.db = new DexieUserDB();
+        this.db.open();
     }
 
     public getDB() {
@@ -38,5 +41,13 @@ export default class UserDB {
 
     public getContact(id: string): IContact | null {
         return this.contacts[id];
+    }
+
+    public setGroup(group: IGroup) {
+        this.groups[group.id || 0] = group;
+    }
+
+    public getGroup(id: string): IGroup | null {
+        return this.groups[id];
     }
 }

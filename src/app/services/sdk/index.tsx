@@ -13,7 +13,7 @@ import Server from './server';
 import {C_MSG} from './const';
 import {IConnInfo} from './interface';
 import {ContactsGet, ContactsImport, ContactsImported, ContactsMany} from './messages/api.contacts_pb';
-import {InputPeer, PhoneContact, TypingAction} from './messages/core.types_pb';
+import {Group, InputPeer, InputUser, PhoneContact, TypingAction} from './messages/core.types_pb';
 import {
     MessagesDialogs, MessagesEdit,
     MessagesGetDialogs,
@@ -26,6 +26,7 @@ import {
 import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from './messages/api.updates_pb';
 import {Bool} from './messages/core.messages_pb';
 import {AccountRegisterDevice} from './messages/api.accounts_pb';
+import {GroupsCreate} from './messages/api.groups_pb';
 
 export default class SDK {
     public static getInstance() {
@@ -243,7 +244,7 @@ export default class SDK {
         return this.server.send(C_MSG.AuthLogout, data.serializeBinary(), true);
     }
 
-    public registerDevice(token: string, tokenType: number, appVersion: string, deviceModel: string, langCode: string, systemVersion: string): Promise<Bool> {
+    public registerDevice(token: string, tokenType: number, appVersion: string, deviceModel: string, langCode: string, systemVersion: string): Promise<Bool.AsObject> {
         const data = new AccountRegisterDevice();
         data.setAppversion(appVersion);
         data.setDevicemodel(deviceModel);
@@ -252,5 +253,12 @@ export default class SDK {
         data.setToken(token);
         data.setTokentype(tokenType);
         return this.server.send(C_MSG.AccountRegisterDevice, data.serializeBinary(), true);
+    }
+
+    public createGroup(users: InputUser[], title: string): Promise<Group.AsObject> {
+        const data = new GroupsCreate();
+        data.setUsersList(users);
+        data.setTitle(title);
+        return this.server.send(C_MSG.GroupsCreate, data.serializeBinary(), true);
     }
 }

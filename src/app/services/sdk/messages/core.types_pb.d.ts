@@ -686,8 +686,9 @@ export enum TypingAction {
 export enum PeerType {
   PEERSELF = 0,
   PEERUSER = 1,
-  PEERCHAT = 2,
-  PEERCHANNEL = 3,
+  PEERGROUP = 2,
+  PEERSUPERGROUP = 3,
+  PEERCHANNEL = 4,
 }
 
 export enum ParticipantType {

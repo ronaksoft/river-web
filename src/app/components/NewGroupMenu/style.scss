@@ -1,20 +1,49 @@
 @import '../../../style/common';
 
 .new-group-menu {
-  display: flex;
-  flex-direction: column;
   height: 100%;
+  .page-container {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    .page {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      transition: left 0.2s ease-out;
+      &.page-1 {
+        left: 0;
+      }
+      &.page-2 {
+        left: 100%;
+      }
+    }
+    &.page-2 {
+      .page-1 {
+        left: -100%;
+      }
+      .page-2 {
+        left: 0;
+      }
+    }
+  }
   .menu-header {
     padding: 10px;
     background-color: var(--bg);
     text-align: left;
     height: 47px;
+    color: var(--dark-medium);
     svg {
       vertical-align: sub;
-      margin-right: 10px;
+      margin: 0 10px -2px 0;
     }
   }
-  .search-container {
+  .input-container {
     min-height: 48px;
     padding: 10px;
   }
@@ -85,6 +114,9 @@
     padding: 18px 0 22px;
     text-align: center;
     background-color: var(--message-chat);
+    &.no-bg {
+      background-color: transparent;
+    }
     .add-action {
       display: inline-flex;
       height: 46px;
@@ -109,19 +141,15 @@
 }
 
 html[theme="dark"] {
-  .contacts {
-    .search-container {
-      background-color: var(--dark-medium);
-      border-bottom: 1px solid var(--dark-low);
-      border-top: 1px solid var(--dark-low);
-      input {
-        height: 32px;
-        border: 1px solid var(--dark-high);
-        padding: 0 12px;
-        width: 100%;
-        font-size: 14px;
-        background-color: var(--dark-low);
-        color: var(--light);
+  .new-group-menu {
+    .menu-header {
+      background-color: var(--dark-high);
+      color: var(--white);
+    }
+    .input-container {
+      color: var(--white);
+      label, input {
+        color: var(--white);
       }
     }
     .contact-box {

@@ -6,6 +6,9 @@ import LiveDate from '../LiveDate';
 import {DoneAllRounded, DoneRounded, ScheduleRounded} from '@material-ui/icons';
 
 import './style.css';
+import {PeerType} from '../../services/sdk/messages/core.types_pb';
+import GroupAvatar from '../GroupAvatar';
+import GroupName from '../GroupName';
 
 interface IProps {
     cancelIsTyping: (id: string) => void;
@@ -50,8 +53,14 @@ class DialogMessage extends React.Component<IProps, IState> {
         const {dialog, isTyping} = this.state;
         return (
             <div className="dialog-wrapper">
-                <UserAvatar className="avatar" id={dialog.user_id || ''}/>
-                <UserName className="name" id={dialog.user_id || ''}/>
+                {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
+                <UserAvatar className="avatar" id={dialog.target_id || ''}/>}
+                {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
+                <UserName className="name" id={dialog.target_id || ''}/>}
+                {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
+                <GroupAvatar className="avatar" id={dialog.target_id || ''}/>}
+                {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
+                <GroupName className="name" id={dialog.target_id || ''}/>}
                 <LiveDate className="time" time={dialog.last_update || 0}/>
                 {!isTyping && <span className="preview">
                     {dialog.preview_me && <span className="status">

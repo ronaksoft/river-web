@@ -16,19 +16,39 @@ interface IState {
     user: IUser;
 }
 
-const defaultColors = [
-    'linear-gradient(45deg,#30496B,#30B8D2)',
-    'linear-gradient(45deg,#B6C1D4,#EC68B1)',
-    'linear-gradient(45deg,#476892,#59355D)',
-    'linear-gradient(45deg,#3D3949,#6772A4)',
-    'linear-gradient(45deg,#FBCA88,#EF69AD)',
-    'linear-gradient(45deg,#ABE5E6,#7062F0)',
-    'linear-gradient(45deg,#F32F8E,#B236D0)',
-    'linear-gradient(45deg,#DA1FF2,#4C15D0)',
-    'linear-gradient(45deg,#7D6AE7,#56A2D5)',
-    'linear-gradient(45deg,#239FE9,#44D5F3)',
-    'linear-gradient(45deg,#FD5A49,#FDDC98)',
+const DefaultColors = [
+    '#30496B',
+    '#B6C1D4',
+    '#476892',
+    '#3D3949',
+    '#FBCA88',
+    '#ABE5E6',
+    '#F32F8E',
+    '#DA1FF2',
+    '#7D6AE7',
+    '#239FE9',
+    '#FD5A49',
 ];
+
+const SecondaryColors = [
+    '#30B8D2',
+    '#EC68B1',
+    '#59355D',
+    '#6772A4',
+    '#EF69AD',
+    '#7062F0',
+    '#B236D0',
+    '#4C15D0',
+    '#56A2D5',
+    '#44D5F3',
+    '#FDDC98',
+];
+
+const defaultGradients: string[] = [];
+
+DefaultColors.forEach((color, index) => {
+    defaultGradients.push(`linear-gradient(45deg,${color},${SecondaryColors[index]})`);
+});
 
 const sumChars = (str: string): number => {
     let sum = 0;
@@ -64,6 +84,10 @@ const contrast = (hex: string) => {
     return (o <= 180) ? '#fff' : '#333';
 };
 
+const GetUniqueColor = (str: string, list: string[]) => {
+    return list[sumChars(str) % list.length];
+};
+
 const TextAvatar = (fname?: string, lname?: string) => {
     const str = fname || '' + lname || '';
     let name = 'NA';
@@ -75,8 +99,7 @@ const TextAvatar = (fname?: string, lname?: string) => {
         name = lname.substr(0, 2);
     }
     name = name.toLocaleUpperCase();
-    const i = sumChars(str) % defaultColors.length;
-    const background = defaultColors[i];
+    const background = GetUniqueColor(str, defaultGradients);
     const color = contrast(background.split(',')[2].substr(0, 6));
     const style = {
         background,
@@ -168,4 +191,4 @@ class UserAvatar extends React.Component<IProps, IState> {
 }
 
 export default UserAvatar;
-export {TextAvatar};
+export {TextAvatar, DefaultColors, SecondaryColors, GetUniqueColor};

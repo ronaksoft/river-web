@@ -15,6 +15,9 @@ import DialogRepo from '../../../repository/dialog';
 import MessageRepo from '../../../repository/message';
 import UserRepo from '../../../repository/user';
 import UpdateManager from '../server/updateManager';
+import GroupRepo from '../../../repository/group';
+import {IGroup} from '../../../repository/group/interface';
+import {Group} from '../messages/core.types_pb';
 
 export default class SyncManager {
     public static getInstance() {
@@ -31,11 +34,14 @@ export default class SyncManager {
     private dialogRepo: DialogRepo;
     private messageRepo: MessageRepo;
     private userRepo: UserRepo;
+    // @ts-ignore
+    private groupRepo: GroupRepo;
 
     public constructor() {
         window.console.log('Sync manager started');
         this.updateManager = UpdateManager.getInstance();
         this.userRepo = UserRepo.getInstance();
+        this.groupRepo = GroupRepo.getInstance();
         this.dialogRepo = DialogRepo.getInstance();
         this.messageRepo = MessageRepo.getInstance();
     }
@@ -48,16 +54,16 @@ export default class SyncManager {
         this.updateManager.setLastUpdateId(id);
     }
 
-    public applyUpdate(data: UpdateDifference): Promise<number> {
+    public applyUpdate(data: UpdateDifference.AsObject): Promise<number> {
         return new Promise((resolve, reject) => {
-            const lastUpdateId = data.getMaxupdateid() || 0;
+            const lastUpdateId = data.maxupdateid || 0;
             if (lastUpdateId > 0) {
                 this.setLastUpdateId(lastUpdateId);
             }
-            this.updateMany(data.getUpdatesList());
-            if (data.getMore()) {
+            this.updateMany(data.updatesList, data.groupsList);
+            if (data.more) {
                 setTimeout(() => {
-                    resolve((data.getMaxupdateid() || 0) + 1);
+                    resolve((data.maxupdateid || 0) + 1);
                 }, 200);
             } else {
                 reject({
@@ -67,13 +73,14 @@ export default class SyncManager {
         });
     }
 
-    private updateMany(envelopes: UpdateEnvelope[]) {
+    private updateMany(envelopes: UpdateEnvelope.AsObject[], groups: Group.AsObject[]) {
         let dialogs: { [key: number]: IDialog } = {};
         const messages: { [key: number]: IMessage } = {};
         const users: { [key: number]: IUser } = {};
         envelopes.forEach((envelope) => {
-            const data = envelope.getUpdate_asU8();
-            switch (envelope.getConstructor()) {
+            // @ts-ignore
+            const data: Uint8Array = envelope.update;
+            switch (envelope.constructor) {
                 case C_MSG.UpdateNewMessage:
                     const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
                     users[updateNewMessage.sender.id || 0] = updateNewMessage.sender;
@@ -84,8 +91,8 @@ export default class SyncManager {
                         peerid: updateNewMessage.message.peerid,
                         peertype: updateNewMessage.message.peertype,
                         preview: (updateNewMessage.message.body || '').substr(0, 64),
+                        target_id: updateNewMessage.message.peerid,
                         topmessageid: updateNewMessage.message.id,
-                        user_id: updateNewMessage.message.peerid,
                     });
                     break;
                 case C_MSG.UpdateReadHistoryInbox:
@@ -113,6 +120,7 @@ export default class SyncManager {
         this.updateMessageDB(messages);
         this.updateUserDB(users);
         this.updateDialogDB(dialogs);
+        this.updateGroupDB(groups);
     }
 
     private updateDialog(dialogs: { [key: number]: IDialog }, dialog: IDialog) {
@@ -187,6 +195,21 @@ export default class SyncManager {
         if (data.length > 0) {
             this.userRepo.importBulk(data).then(() => {
                 this.broadcastEvent('User_DB_Updated', {ids: keys});
+            });
+        }
+    }
+
+    private updateGroupDB(groups: Group.AsObject[]) {
+        const data: IGroup[] = [];
+        const keys = groups.map((group) => {
+            // @ts-ignore
+            data.push(group);
+            return group.id;
+        });
+        window.console.log(data, keys);
+        if (data.length > 0) {
+            this.groupRepo.importBulk(data).then(() => {
+                this.broadcastEvent('Group_DB_Updated', {ids: keys});
             });
         }
     }

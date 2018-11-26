@@ -1,10 +1,12 @@
 import {IUser} from '../../../repository/user/interface';
+import {IGroup} from '../../../repository/group/interface';
 import {IContact} from '../../../repository/contact/interface';
 import Dexie from 'dexie';
 
 export class DexieUserDB extends Dexie {
-    public users: Dexie.Table<IUser, string>;
     public contacts: Dexie.Table<IContact, string>;
+    public groups: Dexie.Table<IGroup, string>;
+    public users: Dexie.Table<IUser, string>;
 
     constructor() {
         super('user_db');
@@ -15,6 +17,7 @@ export class DexieUserDB extends Dexie {
         //
         this.version(1).stores({
             contacts: `id,firstname,lastname,phone,username`,
+            groups: `id,title`,
             users: `id,firstname,lastname`,
         });
     }

@@ -7,9 +7,21 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import MainRepo from "./app/repository";
+import MainRepo from './app/repository';
+import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 
 import './App.css';
+
+const theme = createMuiTheme({
+    palette: {
+        primary: {
+            contrastText: '#FFF',
+            dark: '#2E8F57',
+            light: '#29c16d',
+            main: '#27AE60',
+        },
+    },
+});
 
 interface IState {
     alertOpen: boolean;
@@ -53,7 +65,9 @@ class App extends React.Component<{}, IState> {
         const {alertOpen, clearingSiteData} = this.state;
         return (
             <div className="App">
-                {Routes}
+                <MuiThemeProvider theme={theme}>
+                    {Routes}
+                </MuiThemeProvider>
                 <Dialog
                     open={alertOpen}
                     onClose={this.alertCloseHandler}

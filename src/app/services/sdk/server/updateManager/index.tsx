@@ -76,11 +76,11 @@ export default class UpdateManager {
     public parseUpdate(bytes: string) {
         // @ts-ignore
         const arr = Uint8Array.from(atob(bytes), c => c.charCodeAt(0));
-        const data = UpdateContainer.deserializeBinary(arr);
-        const updates = data.getUpdatesList();
-        const currentUpdateId = this.getLastUpdateId();
-        const minId = data.getMinupdateid();
-        const maxId = data.getMaxupdateid();
+        const data = UpdateContainer.deserializeBinary(arr).toObject();
+        const updates = data.updatesList;
+        const currentUpdateId = this.lastUpdateId;
+        const minId = data.minupdateid;
+        const maxId = data.maxupdateid;
         window.console.log('on update, current:', currentUpdateId, 'min:', minId, 'max:', maxId);
         if (currentUpdateId + 1 !== minId && (minId || 0) > currentUpdateId) {
             this.callHandlers(C_MSG.OutOfSync, {});
@@ -95,6 +95,12 @@ export default class UpdateManager {
         updates.forEach((update) => {
             this.response(update);
         });
+        if (data.usersList && data.usersList.length > 0) {
+            this.callHandlers(C_MSG.UpdateUsers, data.usersList);
+        }
+        if (data.groupsList && data.groupsList.length > 0) {
+            this.callHandlers(C_MSG.UpdateGroups, data.groupsList);
+        }
     }
 
     public listen(eventConstructor: number, fn: any): (() => void) | null {
@@ -111,9 +117,10 @@ export default class UpdateManager {
         };
     }
 
-    private responseUpdateMessageID(update: UpdateEnvelope) {
-        const data = update.getUpdate_asU8();
-        switch (update.getConstructor()) {
+    private responseUpdateMessageID(update: UpdateEnvelope.AsObject) {
+        // @ts-ignore
+        const data: Uint8Array = update.update;
+        switch (update.constructor) {
             case C_MSG.UpdateMessageID:
                 const updateMessageId = UpdateMessageID.deserializeBinary(data).toObject();
                 this.rndMsgMap[updateMessageId.messageid || 0] = true;
@@ -122,9 +129,10 @@ export default class UpdateManager {
         }
     }
 
-    private response(update: UpdateEnvelope) {
-        const data = update.getUpdate_asU8();
-        switch (update.getConstructor()) {
+    private response(update: UpdateEnvelope.AsObject) {
+        // @ts-ignore
+        const data: Uint8Array = update.update;
+        switch (update.constructor) {
             case C_MSG.UpdateNewMessage:
                 const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
                 // window.console.log('UpdateNewMessage', 'msg id:', updateNewMessage.message.id);

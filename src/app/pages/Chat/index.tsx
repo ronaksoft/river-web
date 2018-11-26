@@ -15,7 +15,15 @@ import TextInput from '../../components/TextInput/index';
 import {trimStart, throttle, findIndex, cloneDeep} from 'lodash';
 import SDK from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
-import {InputPeer, PeerType, PhoneContact, TypingAction} from '../../services/sdk/messages/core.types_pb';
+import {
+    Group,
+    InputPeer,
+    InputUser,
+    PeerType,
+    PhoneContact,
+    TypingAction,
+    User
+} from '../../services/sdk/messages/core.types_pb';
 import {IConnInfo} from '../../services/sdk/interface';
 import {IDialog} from '../../repository/dialog/interface';
 import UpdateManager, {INewMessageBulkUpdate} from '../../services/sdk/server/updateManager';
@@ -43,6 +51,8 @@ import NewGroupMenu from '../../components/NewGroupMenu';
 
 import './style.css';
 import {IContact} from '../../repository/contact/interface';
+import GroupRepo from '../../repository/group';
+import GroupName from '../../components/GroupName';
 
 interface IProps {
     history?: any;
@@ -80,6 +90,7 @@ class Chat extends React.Component<IProps, IState> {
     private messageRepo: MessageRepo;
     private dialogRepo: DialogRepo;
     private userRepo: UserRepo;
+    private groupRepo: GroupRepo;
     private mainRepo: MainRepo;
     private isLoading: boolean = false;
     private sdk: SDK;
@@ -123,6 +134,7 @@ class Chat extends React.Component<IProps, IState> {
         this.connInfo = this.sdk.getConnInfo();
         this.messageRepo = MessageRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
+        this.groupRepo = GroupRepo.getInstance();
         this.dialogRepo = DialogRepo.getInstance();
         this.mainRepo = MainRepo.getInstance();
         this.updateManager = UpdateManager.getInstance();
@@ -337,6 +349,24 @@ class Chat extends React.Component<IProps, IState> {
                 });
             }
         }));
+
+        // Update: Users
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUsers, (data: User[]) => {
+            if (this.state.isUpdating) {
+                return;
+            }
+            // @ts-ignore
+            this.userRepo.importBulk(data);
+        }));
+
+        // Update: Groups
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateGroups, (data: Group[]) => {
+            if (this.state.isUpdating) {
+                return;
+            }
+            // @ts-ignore
+            this.groupRepo.importBulk(data);
+        }));
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -536,9 +566,17 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private getChatTitle(placeholder?: boolean) {
+        const {peer} = this.state;
+        if (!peer) {
+            return '';
+        }
+        const isGroup = peer.getType() === PeerType.PEERGROUP;
         return (
             <span className="chat-title">
-                {Boolean(placeholder !== true) && <UserName id={this.state.selectedDialogId} className="name"/>}
+                {Boolean(placeholder !== true && !isGroup) &&
+                <UserName id={this.state.selectedDialogId} className="name"/>}
+                {Boolean(placeholder !== true && isGroup) &&
+                <GroupName id={this.state.selectedDialogId} className="name"/>}
                 {this.getChatStatus()}
             </span>
         );
@@ -841,6 +879,7 @@ class Chat extends React.Component<IProps, IState> {
                 id,
                 me: true,
                 peerid: this.state.selectedDialogId,
+                peertype: peer.getType(),
                 senderid: this.connInfo.UserID,
             };
 
@@ -937,7 +976,7 @@ class Chat extends React.Component<IProps, IState> {
                     peerid: user.id,
                     peertype: PeerType.PEERUSER,
                     preview: text.substr(0, 64),
-                    user_id: user.id,
+                    target_id: user.id,
                 };
                 dialogs.push(dialog);
                 this.dialogsSortThrottle(dialogs);
@@ -1011,9 +1050,9 @@ class Chat extends React.Component<IProps, IState> {
                 peertype: msg.peertype,
                 preview,
                 preview_me: previewMe,
+                target_id: msg.peerid,
                 topmessageid: msg.id,
                 unreadcount: 0,
-                user_id: msg.peerid,
             };
             if (accessHash !== '0') {
                 dialog.accesshash = accessHash;
@@ -1100,7 +1139,7 @@ class Chat extends React.Component<IProps, IState> {
         let tries = 0;
         this.sdk.getUpdateDifference(lastId, limit).then((res) => {
             tries = 0;
-            this.syncManager.applyUpdate(res).then((id) => {
+            this.syncManager.applyUpdate(res.toObject()).then((id) => {
                 this.syncThemAll(id, limit);
             }).catch((err2) => {
                 window.console.log(err2);
@@ -1246,8 +1285,29 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private onGroupCreateHandler = (contacts: IContact[]) => {
-        window.console.log(contacts);
+    private onGroupCreateHandler = (contacts: IContact[], title: string) => {
+        const users: InputUser[] = [];
+        contacts.forEach((contact) => {
+            const user = new InputUser();
+            user.setAccesshash(contact.accesshash || '');
+            user.setUserid(contact.id || '');
+            users.push(user);
+        });
+        this.sdk.createGroup(users, title).then((res) => {
+            this.groupRepo.importBulk([res]);
+            const {dialogs} = this.state;
+            const dialog: IDialog = {
+                accesshash: '0',
+                last_update: res.createdon,
+                peerid: res.id,
+                peertype: PeerType.PEERGROUP,
+                preview: 'Group created',
+                target_id: res.id,
+            };
+            dialogs.push(dialog);
+            this.dialogsSortThrottle(dialogs);
+            this.props.history.push(`/conversation/${res.id}`);
+        });
     }
 
     private logOutHandler() {

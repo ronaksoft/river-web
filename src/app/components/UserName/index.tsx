@@ -2,10 +2,12 @@ import * as React from 'react';
 import {IUser} from '../../repository/user/interface';
 import UserRepo from '../../repository/user';
 import ContactRepo from '../../repository/contact';
+import {GetUniqueColor, SecondaryColors} from '../UserAvatar';
 
 interface IProps {
     className?: string;
     id: string;
+    uniqueColor?: boolean;
     you?: boolean;
 }
 
@@ -59,8 +61,15 @@ class UserName extends React.Component<IProps, IState> {
 
     public render() {
         const {user, className} = this.state;
+        let style = {};
+        if (this.props.uniqueColor === true) {
+            style = {
+                color: GetUniqueColor(`${user.firstname}${user.lastname}`, SecondaryColors),
+            };
+        }
         return (
-            <span className={className}>{(user && user.id) ? `${user.firstname} ${user.lastname}` : ''}</span>
+            <span className={className}
+                  style={style}>{(user && user.id) ? `${user.firstname} ${user.lastname}` : ''}</span>
         );
     }
 

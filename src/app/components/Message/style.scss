@@ -112,6 +112,13 @@
     min-width: 75px;
     min-height: 35px;
     box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.1);
+    > .name {
+      display: block;
+      height: 16px;
+      padding: 2px 3px 5px;
+      font-weight: bold;
+      text-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
+    }
     > .inner {
       direction: ltr;
       padding: 4px 4px 0 4px;
@@ -194,6 +201,7 @@
     font-size: 12.5px;
     line-height: 21px;
     text-transform: uppercase;
+    margin-bottom: 8px;
   }
   > .system-message {
     background-color: rgba(0, 0, 0, 0.31);
@@ -211,6 +219,22 @@
     > .user {
       text-transform: uppercase;
       font-style: italic;
+    }
+    &.divider {
+      &:before, &:after {
+        content: '';
+        position: absolute;
+        left: 10px;
+        right: calc(50% + 60px);
+        top: calc(50% - 5px);
+        height: 1px;
+        background: var(--grey);
+        box-shadow: 0 1px 1px var(--grey);
+      }
+      &:after {
+        right: 10px;
+        left: calc(50% + 60px);
+      }
     }
   }
 }

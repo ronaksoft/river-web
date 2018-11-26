@@ -2,26 +2,29 @@ import * as React from 'react';
 import {List, AutoSizer} from 'react-virtualized';
 import {IContact} from '../../repository/contact/interface';
 import ContactRepo from '../../repository/contact';
-import {debounce, findIndex, differenceBy, clone} from 'lodash';
+import {debounce, findIndex, differenceBy, clone, trimStart} from 'lodash';
 import UserAvatar, {TextAvatar} from '../UserAvatar';
-import {KeyboardBackspaceRounded, ArrowForwardRounded} from '@material-ui/icons';
+import {KeyboardBackspaceRounded, ArrowForwardRounded, CheckRounded} from '@material-ui/icons';
 import ChipInput from 'material-ui-chip-input';
 import Chip from '@material-ui/core/Chip';
 import UserName from '../UserName';
+import TextField from '@material-ui/core/TextField';
 
 import './style.css';
 
 interface IProps {
     id?: number;
     onClose?: () => void;
-    onCreate?: (contacts: IContact[]) => void;
+    onCreate?: (contacts: IContact[], title: string) => void;
 }
 
 interface IState {
     id?: number;
     contacts: IContact[];
+    page: string;
     selectedContacts: IContact[];
     scrollIndex: number;
+    title: string;
 }
 
 class NewGroupMenu extends React.Component<IProps, IState> {
@@ -37,8 +40,10 @@ class NewGroupMenu extends React.Component<IProps, IState> {
 
         this.state = {
             contacts: [],
+            page: '1',
             scrollIndex: -1,
             selectedContacts: [],
+            title: '',
         };
 
         this.contactRepo = ContactRepo.getInstance();
@@ -65,44 +70,69 @@ class NewGroupMenu extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {contacts, scrollIndex, selectedContacts} = this.state;
+        const {contacts, page, scrollIndex, selectedContacts, title} = this.state;
         return (
             <div className="new-group-menu">
-                <div className="menu-header">
-                    <KeyboardBackspaceRounded onClick={this.props.onClose}/> Create a New Group
-                </div>
-                <div className="search-container">
-                    <ChipInput
-                        label="Search contacts"
-                        value={selectedContacts}
-                        chipRenderer={this.chipRenderer}
-                        fullWidth={true}
-                        onUpdateInput={this.searchChangeHandler}
-                        onDelete={this.removeMemberHandler}
-                    />
-                </div>
-                <div className="contact-box">
-                    <AutoSizer>
-                        {({width, height}: any) => (
-                            <List
-                                ref={this.refHandler}
-                                rowHeight={64}
-                                rowRenderer={this.rowRender}
-                                rowCount={contacts.length}
-                                overscanRowCount={0}
-                                scrollToIndex={scrollIndex}
-                                width={width - 2}
-                                height={height}
-                                className="contact-container"
+                <div className={'page-container page-' + page}>
+                    <div className="page page-1">
+                        <div className="menu-header">
+                            <KeyboardBackspaceRounded onClick={this.props.onClose}/> Create a New Group
+                        </div>
+                        <div className="input-container">
+                            <ChipInput
+                                label="Search contacts"
+                                value={selectedContacts}
+                                chipRenderer={this.chipRenderer}
+                                fullWidth={true}
+                                onUpdateInput={this.searchChangeHandler}
+                                onDelete={this.removeMemberHandler}
                             />
-                        )}
-                    </AutoSizer>
-                </div>
-                {Boolean(selectedContacts.length > 0) && <div className="actions-bar">
-                    <div className="add-action" onClick={this.onCreate}>
-                        <ArrowForwardRounded/>
+                        </div>
+                        <div className="contact-box">
+                            <AutoSizer>
+                                {({width, height}: any) => (
+                                    <List
+                                        ref={this.refHandler}
+                                        rowHeight={64}
+                                        rowRenderer={this.rowRender}
+                                        rowCount={contacts.length}
+                                        overscanRowCount={0}
+                                        scrollToIndex={scrollIndex}
+                                        width={width - 2}
+                                        height={height}
+                                        className="contact-container"
+                                    />
+                                )}
+                            </AutoSizer>
+                        </div>
+                        {Boolean(selectedContacts.length > 0) && <div className="actions-bar">
+                            <div className="add-action" onClick={this.onNextHandler}>
+                                <ArrowForwardRounded/>
+                            </div>
+                        </div>}
                     </div>
-                </div>}
+                    <div className="page page-2">
+                        <div className="menu-header">
+                            <KeyboardBackspaceRounded onClick={this.onPrevHandler}/> Group setting
+                        </div>
+                        <div className="input-container">
+                            <TextField
+                                label="Group title"
+                                fullWidth={true}
+                                value={title}
+                                inputProps={{
+                                    maxLength: 32,
+                                }}
+                                onChange={this.onTitleChangeHandler}
+                            />
+                        </div>
+                        {Boolean(title.length > 0) && <div className="actions-bar no-bg">
+                            <div className="add-action" onClick={this.onCreateHandler}>
+                                <CheckRounded/>
+                            </div>
+                        </div>}
+                    </div>
+                </div>
             </div>
         );
     }
@@ -184,8 +214,36 @@ class NewGroupMenu extends React.Component<IProps, IState> {
         return differenceBy(this.contactsRes, selectedContacts, 'id');
     }
 
-    private onCreate = () => {
+    private onNextHandler = () => {
         const {selectedContacts} = this.state;
+        if (!selectedContacts) {
+            return;
+        }
+        this.setState({
+            page: '2',
+        });
+        // if (this.props.onClose) {
+        //     this.props.onClose();
+        // }
+        // if (this.props.onCreate) {
+        //     this.props.onCreate(selectedContacts);
+        // }
+    }
+
+    private onPrevHandler = () => {
+        this.setState({
+            page: '1',
+        });
+    }
+
+    private onTitleChangeHandler = (e: any) => {
+        this.setState({
+            title: trimStart(e.currentTarget.value),
+        });
+    }
+
+    private onCreateHandler = () => {
+        const {selectedContacts, title} = this.state;
         if (!selectedContacts) {
             return;
         }
@@ -193,7 +251,7 @@ class NewGroupMenu extends React.Component<IProps, IState> {
             this.props.onClose();
         }
         if (this.props.onCreate) {
-            this.props.onCreate(selectedContacts);
+            this.props.onCreate(selectedContacts, title);
         }
     }
 }

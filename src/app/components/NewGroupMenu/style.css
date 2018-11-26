@@ -4,17 +4,18 @@
 :root {
   --river: #27AE60;
   --river-dark: #2E8F57;
-  --white: #fff;
+  --river-light: #29C16D;
+  --white: #FFF;
   --black: #000;
   --black-text: #323D47;
-  --bg: #f8f8f8;
+  --bg: #F8F8F8;
   --grey: #999;
-  --dark: #1a1a1a;
-  --light: #e6e6e6;
+  --dark: #1A1A1A;
+  --light: #E6E6E6;
   --wrapper: 1200px;
-  --blue: #00b0ff;
+  --blue: #00B0FF;
   --light-blue: rgba(54, 115, 249, 0.2);
-  --green: #dcf8c6;
+  --green: #DCf8C6;
   --message-chat: #EFEFF0;
   --color-hover: rgba(50, 61, 71, 0.07);
   --color-hover-dark: rgba(50, 61, 71, 0.12);
@@ -26,7 +27,7 @@
   --dark-hover-light: rgba(183, 222, 255, 0.12);
   --dark-accent-low: #003367;
   --dark-accent-medium: #004783;
-  --dark-accent-high: #005eae; }
+  --dark-accent-high: #005EAE; }
 
 body {
   background-color: var(--bg);
@@ -39,18 +40,39 @@ body {
   background-repeat: no-repeat; }
 
 .new-group-menu {
-  display: flex;
-  flex-direction: column;
   height: 100%; }
+  .new-group-menu .page-container {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow: hidden; }
+    .new-group-menu .page-container .page {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      transition: left 0.2s ease-out; }
+      .new-group-menu .page-container .page.page-1 {
+        left: 0; }
+      .new-group-menu .page-container .page.page-2 {
+        left: 100%; }
+    .new-group-menu .page-container.page-2 .page-1 {
+      left: -100%; }
+    .new-group-menu .page-container.page-2 .page-2 {
+      left: 0; }
   .new-group-menu .menu-header {
     padding: 10px;
     background-color: var(--bg);
     text-align: left;
-    height: 47px; }
+    height: 47px;
+    color: var(--dark-medium); }
     .new-group-menu .menu-header svg {
       vertical-align: sub;
-      margin-right: 10px; }
-  .new-group-menu .search-container {
+      margin: 0 10px -2px 0; }
+  .new-group-menu .input-container {
     min-height: 48px;
     padding: 10px; }
   .new-group-menu .contact-box {
@@ -112,6 +134,8 @@ body {
     padding: 18px 0 22px;
     text-align: center;
     background-color: var(--message-chat); }
+    .new-group-menu .actions-bar.no-bg {
+      background-color: transparent; }
     .new-group-menu .actions-bar .add-action {
       display: inline-flex;
       height: 46px;
@@ -130,21 +154,17 @@ body {
         background: var(--river-dark);
         box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4); }
 
-html[theme="dark"] .contacts .search-container {
-  background-color: var(--dark-medium);
-  border-bottom: 1px solid var(--dark-low);
-  border-top: 1px solid var(--dark-low); }
-  html[theme="dark"] .contacts .search-container input {
-    height: 32px;
-    border: 1px solid var(--dark-high);
-    padding: 0 12px;
-    width: 100%;
-    font-size: 14px;
-    background-color: var(--dark-low);
-    color: var(--light); }
+html[theme="dark"] .new-group-menu .menu-header {
+  background-color: var(--dark-high);
+  color: var(--white); }
 
-html[theme="dark"] .contacts .contact-box .contact-container .contact-item:after {
+html[theme="dark"] .new-group-menu .input-container {
+  color: var(--white); }
+  html[theme="dark"] .new-group-menu .input-container label, html[theme="dark"] .new-group-menu .input-container input {
+    color: var(--white); }
+
+html[theme="dark"] .new-group-menu .contact-box .contact-container .contact-item:after {
   background-color: var(--dark-low); }
 
-html[theme="dark"] .contacts .contact-box .contact-container .contact-item .name {
+html[theme="dark"] .new-group-menu .contact-box .contact-container .contact-item .name {
   color: var(--light); }

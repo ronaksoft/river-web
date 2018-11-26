@@ -1,10 +1,10 @@
 import * as React from 'react';
-import {List, CellMeasurer, CellMeasurerCache, AutoSizer} from 'react-virtualized';
+import {AutoSizer, CellMeasurer, CellMeasurerCache, List} from 'react-virtualized';
 import {IMessage} from '../../repository/message/interface';
 import './style.css';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import {InputPeer} from "../../services/sdk/messages/core.types_pb";
+import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from "../../repository/message/consts";
 import TimeUtility from '../../services/utilities/time';
 import UserAvatar from '../UserAvatar';
@@ -231,7 +231,7 @@ class Message extends React.Component<IProps, IState> {
             case C_MESSAGE_TYPE.NewMessage:
                 return (
                     <div style={style} className="bubble-wrapper">
-                        <span className="system-message">New Message</span>
+                        <span className="system-message divider">New Message</span>
                     </div>
                 );
             case C_MESSAGE_TYPE.Date:
@@ -256,6 +256,8 @@ class Message extends React.Component<IProps, IState> {
                         )}
                         {(message.avatar && message.senderid) && (<div className="arrow"/>)}
                         <div className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')}>
+                            {Boolean(peer && peer.getType() === PeerType.PEERGROUP && message.avatar) &&
+                            <UserName className="name" uniqueColor={true} id={message.senderid || ''}/>}
                             {Boolean(message.replyto && message.replyto !== 0) &&
                             <MessagePreview message={message} peer={peer}
                                             onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>}

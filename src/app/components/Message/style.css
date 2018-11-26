@@ -4,17 +4,18 @@
 :root {
   --river: #27AE60;
   --river-dark: #2E8F57;
-  --white: #fff;
+  --river-light: #29C16D;
+  --white: #FFF;
   --black: #000;
   --black-text: #323D47;
-  --bg: #f8f8f8;
+  --bg: #F8F8F8;
   --grey: #999;
-  --dark: #1a1a1a;
-  --light: #e6e6e6;
+  --dark: #1A1A1A;
+  --light: #E6E6E6;
   --wrapper: 1200px;
-  --blue: #00b0ff;
+  --blue: #00B0FF;
   --light-blue: rgba(54, 115, 249, 0.2);
-  --green: #dcf8c6;
+  --green: #DCf8C6;
   --message-chat: #EFEFF0;
   --color-hover: rgba(50, 61, 71, 0.07);
   --color-hover-dark: rgba(50, 61, 71, 0.12);
@@ -26,7 +27,7 @@
   --dark-hover-light: rgba(183, 222, 255, 0.12);
   --dark-accent-low: #003367;
   --dark-accent-medium: #004783;
-  --dark-accent-high: #005eae; }
+  --dark-accent-high: #005EAE; }
 
 body {
   background-color: var(--bg);
@@ -135,6 +136,12 @@ body {
     min-width: 75px;
     min-height: 35px;
     box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.1); }
+    .bubble-wrapper .bubble > .name {
+      display: block;
+      height: 16px;
+      padding: 2px 3px 5px;
+      font-weight: bold;
+      text-shadow: 0 2px 0 rgba(0, 0, 0, 0.1); }
     .bubble-wrapper .bubble > .inner {
       direction: ltr;
       padding: 4px 4px 0 4px;
@@ -199,7 +206,8 @@ body {
     flex: none;
     font-size: 12.5px;
     line-height: 21px;
-    text-transform: uppercase; }
+    text-transform: uppercase;
+    margin-bottom: 8px; }
   .bubble-wrapper > .system-message {
     background-color: rgba(0, 0, 0, 0.31);
     border-radius: 7.5px;
@@ -216,6 +224,18 @@ body {
     .bubble-wrapper > .system-message > .user {
       text-transform: uppercase;
       font-style: italic; }
+    .bubble-wrapper > .system-message.divider:before, .bubble-wrapper > .system-message.divider:after {
+      content: '';
+      position: absolute;
+      left: 10px;
+      right: calc(50% + 60px);
+      top: calc(50% - 5px);
+      height: 1px;
+      background: var(--grey);
+      box-shadow: 0 1px 1px var(--grey); }
+    .bubble-wrapper > .system-message.divider:after {
+      right: 10px;
+      left: calc(50% + 60px); }
 
 .mobile-view .chat {
   padding-left: 7px; }
