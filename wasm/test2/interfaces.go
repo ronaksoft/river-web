@@ -367,8 +367,10 @@ func (r *River) messageHandler(m *msg.MessageEnvelope) {
 		} else if m.Constructor == msg.C_Error {
 			error := new(msg.Error)
 			error.Unmarshal(m.Message)
-			if error.Code == "E01" {
+			if error.Code == "E01" && error.Items == "AUTH" {
 				js.Global().Call("wsError", m.RequestID, m.Constructor, base64.StdEncoding.EncodeToString(m.Message))
+			} else {
+				js.Global().Call("fnCallback", m.RequestID, m.Constructor, base64.StdEncoding.EncodeToString(m.Message))
 			}
 		} else {
 			js.Global().Call("fnCallback", m.RequestID, m.Constructor, base64.StdEncoding.EncodeToString(m.Message))
