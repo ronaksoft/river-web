@@ -3,6 +3,7 @@ import {IUser} from '../../repository/user/interface';
 import UserRepo from '../../repository/user';
 
 import './style.css';
+import ContactRepo from '../../repository/contact';
 
 interface IProps {
     className?: string;
@@ -86,6 +87,7 @@ const TextAvatar = (fname?: string, lname?: string) => {
 
 class UserAvatar extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
+    private contactRepo: ContactRepo;
     private tryTimeout: any = null;
     private tryCount: number = 0;
 
@@ -99,6 +101,7 @@ class UserAvatar extends React.Component<IProps, IState> {
         };
 
         this.userRepo = UserRepo.getInstance();
+        this.contactRepo = ContactRepo.getInstance();
     }
 
     public componentDidMount() {
@@ -137,17 +140,29 @@ class UserAvatar extends React.Component<IProps, IState> {
         if (data && data.details.ids.indexOf(this.state.id) === -1) {
             return;
         }
-        this.userRepo.get(this.state.id).then((user) => {
+        this.contactRepo.get(this.state.id).then((contact) => {
             this.setState({
-                user,
+                user: {
+                    _id: contact.id,
+                    avatar: contact.avatar,
+                    firstname: contact.firstname,
+                    id: contact.id,
+                    lastname: contact.lastname,
+                },
             });
         }).catch(() => {
-            if (this.tryCount < 10) {
-                this.tryCount++;
-                this.tryTimeout = setTimeout(() => {
-                    this.getUser();
-                }, 1000);
-            }
+            this.userRepo.get(this.state.id).then((user) => {
+                this.setState({
+                    user,
+                });
+            }).catch(() => {
+                if (this.tryCount < 10) {
+                    this.tryCount++;
+                    this.tryTimeout = setTimeout(() => {
+                        this.getUser();
+                    }, 1000);
+                }
+            });
         });
     }
 }
