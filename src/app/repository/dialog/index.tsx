@@ -44,7 +44,7 @@ export default class DialogRepo {
         this.messageRepo = MessageRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
-        this.updateThrottle = throttle(this.insertToDb, 5000);
+        this.updateThrottle = throttle(this.insertToDb, 1000);
         this.userId = SDK.getInstance().getConnInfo().UserID || '0';
     }
 

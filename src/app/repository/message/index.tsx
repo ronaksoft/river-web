@@ -36,7 +36,7 @@ export default class MessageRepo {
         this.sdk = SDK.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.rtlDetector = RTLDetector.getInstance();
-        this.updateThrottle = throttle(this.insertToDb, 2000);
+        this.updateThrottle = throttle(this.insertToDb, 1000);
     }
 
     public loadConnInfo() {
@@ -225,10 +225,9 @@ export default class MessageRepo {
         return this.db.messages.delete(id);
     }
 
-    public getUnreadCount(peerid: string, minId: number): Promise<any> {
-        return this.db.messages.where('peerid').equals(peerid).filter((item: IMessage) => {
-            return (item.id || 0) > minId;
-        }).count();
+    public getUnreadCount(peerId: string, minId: number): Promise<any> {
+        return this.db.messages.where('[peerid+id]')
+            .between([peerId, minId], [peerId, Dexie.maxKey], true, true).count();
     }
 
     public flush() {
