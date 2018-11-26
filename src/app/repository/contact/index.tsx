@@ -64,10 +64,13 @@ export default class ContactRepo {
     }
 
     public getManyCache({keyword, limit}: any): Promise<IContact[]> {
+        if (!keyword) {
+            return this.db.contacts.orderBy('firstname').limit(limit || 100).toArray();
+        }
         return this.db.contacts
             .where('firstname').startsWithIgnoreCase(keyword)
             .or('lastname').startsWithIgnoreCase(keyword)
-            .or('phone').startsWithIgnoreCase(keyword).limit(limit).toArray();
+            .or('phone').startsWithIgnoreCase(keyword).limit(limit || 100).toArray();
     }
 
     public importBulk(contacts: IContact[]): Promise<any> {
