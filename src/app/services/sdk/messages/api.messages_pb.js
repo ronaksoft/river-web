@@ -21,6 +21,7 @@ goog.exportSymbol('proto.msg.MessagesEditGroupTitle', null, global);
 goog.exportSymbol('proto.msg.MessagesGet', null, global);
 goog.exportSymbol('proto.msg.MessagesGetDialog', null, global);
 goog.exportSymbol('proto.msg.MessagesGetDialogs', null, global);
+goog.exportSymbol('proto.msg.MessagesGetFullGroup', null, global);
 goog.exportSymbol('proto.msg.MessagesGetHistory', null, global);
 goog.exportSymbol('proto.msg.MessagesMany', null, global);
 goog.exportSymbol('proto.msg.MessagesReadHistory', null, global);
@@ -2337,7 +2338,7 @@ proto.msg.MessagesAddGroupUser.prototype.toObject = function(opt_includeInstance
  */
 proto.msg.MessagesAddGroupUser.toObject = function(includeInstance, msg) {
   var f, obj = {
-    chatid: jspb.Message.getField(msg, 1),
+    groupid: jspb.Message.getField(msg, 1),
     user: (f = msg.getUser()) && core_types_pb.InputUser.toObject(includeInstance, f),
     forwardlimit: jspb.Message.getField(msg, 3)
   };
@@ -2378,7 +2379,7 @@ proto.msg.MessagesAddGroupUser.deserializeBinaryFromReader = function(msg, reade
     switch (field) {
     case 1:
       var value = /** @type {number} */ (reader.readInt64());
-      msg.setChatid(value);
+      msg.setGroupid(value);
       break;
     case 2:
       var value = new core_types_pb.InputUser;
@@ -2444,21 +2445,21 @@ proto.msg.MessagesAddGroupUser.serializeBinaryToWriter = function(message, write
 
 
 /**
- * required int64 ChatID = 1;
+ * required int64 GroupID = 1;
  * @return {number}
  */
-proto.msg.MessagesAddGroupUser.prototype.getChatid = function() {
+proto.msg.MessagesAddGroupUser.prototype.getGroupid = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {number} value */
-proto.msg.MessagesAddGroupUser.prototype.setChatid = function(value) {
+proto.msg.MessagesAddGroupUser.prototype.setGroupid = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
 
-proto.msg.MessagesAddGroupUser.prototype.clearChatid = function() {
+proto.msg.MessagesAddGroupUser.prototype.clearGroupid = function() {
   jspb.Message.setField(this, 1, undefined);
 };
 
@@ -2467,7 +2468,7 @@ proto.msg.MessagesAddGroupUser.prototype.clearChatid = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.msg.MessagesAddGroupUser.prototype.hasChatid = function() {
+proto.msg.MessagesAddGroupUser.prototype.hasGroupid = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -2578,7 +2579,7 @@ proto.msg.MessagesEditGroupTitle.prototype.toObject = function(opt_includeInstan
  */
 proto.msg.MessagesEditGroupTitle.toObject = function(includeInstance, msg) {
   var f, obj = {
-    chatid: jspb.Message.getField(msg, 1),
+    groupid: jspb.Message.getField(msg, 1),
     title: jspb.Message.getField(msg, 2)
   };
 
@@ -2618,7 +2619,7 @@ proto.msg.MessagesEditGroupTitle.deserializeBinaryFromReader = function(msg, rea
     switch (field) {
     case 1:
       var value = /** @type {number} */ (reader.readInt64());
-      msg.setChatid(value);
+      msg.setGroupid(value);
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
@@ -2671,21 +2672,21 @@ proto.msg.MessagesEditGroupTitle.serializeBinaryToWriter = function(message, wri
 
 
 /**
- * required int64 ChatID = 1;
+ * required int64 GroupID = 1;
  * @return {number}
  */
-proto.msg.MessagesEditGroupTitle.prototype.getChatid = function() {
+proto.msg.MessagesEditGroupTitle.prototype.getGroupid = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {number} value */
-proto.msg.MessagesEditGroupTitle.prototype.setChatid = function(value) {
+proto.msg.MessagesEditGroupTitle.prototype.setGroupid = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
 
-proto.msg.MessagesEditGroupTitle.prototype.clearChatid = function() {
+proto.msg.MessagesEditGroupTitle.prototype.clearGroupid = function() {
   jspb.Message.setField(this, 1, undefined);
 };
 
@@ -2694,7 +2695,7 @@ proto.msg.MessagesEditGroupTitle.prototype.clearChatid = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.msg.MessagesEditGroupTitle.prototype.hasChatid = function() {
+proto.msg.MessagesEditGroupTitle.prototype.hasGroupid = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -2775,7 +2776,7 @@ proto.msg.MessagesDeleteGroupUser.prototype.toObject = function(opt_includeInsta
  */
 proto.msg.MessagesDeleteGroupUser.toObject = function(includeInstance, msg) {
   var f, obj = {
-    chatid: jspb.Message.getField(msg, 1),
+    groupid: jspb.Message.getField(msg, 1),
     user: (f = msg.getUser()) && core_types_pb.InputUser.toObject(includeInstance, f)
   };
 
@@ -2815,7 +2816,7 @@ proto.msg.MessagesDeleteGroupUser.deserializeBinaryFromReader = function(msg, re
     switch (field) {
     case 1:
       var value = /** @type {number} */ (reader.readInt64());
-      msg.setChatid(value);
+      msg.setGroupid(value);
       break;
     case 2:
       var value = new core_types_pb.InputUser;
@@ -2870,21 +2871,21 @@ proto.msg.MessagesDeleteGroupUser.serializeBinaryToWriter = function(message, wr
 
 
 /**
- * required int64 ChatID = 1;
+ * required int64 GroupID = 1;
  * @return {number}
  */
-proto.msg.MessagesDeleteGroupUser.prototype.getChatid = function() {
+proto.msg.MessagesDeleteGroupUser.prototype.getGroupid = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {number} value */
-proto.msg.MessagesDeleteGroupUser.prototype.setChatid = function(value) {
+proto.msg.MessagesDeleteGroupUser.prototype.setGroupid = function(value) {
   jspb.Message.setField(this, 1, value);
 };
 
 
-proto.msg.MessagesDeleteGroupUser.prototype.clearChatid = function() {
+proto.msg.MessagesDeleteGroupUser.prototype.clearGroupid = function() {
   jspb.Message.setField(this, 1, undefined);
 };
 
@@ -2893,7 +2894,7 @@ proto.msg.MessagesDeleteGroupUser.prototype.clearChatid = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.msg.MessagesDeleteGroupUser.prototype.hasChatid = function() {
+proto.msg.MessagesDeleteGroupUser.prototype.hasGroupid = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -2925,6 +2926,162 @@ proto.msg.MessagesDeleteGroupUser.prototype.clearUser = function() {
  */
 proto.msg.MessagesDeleteGroupUser.prototype.hasUser = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.msg.MessagesGetFullGroup = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.msg.MessagesGetFullGroup, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.msg.MessagesGetFullGroup.displayName = 'proto.msg.MessagesGetFullGroup';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.msg.MessagesGetFullGroup.prototype.toObject = function(opt_includeInstance) {
+  return proto.msg.MessagesGetFullGroup.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.msg.MessagesGetFullGroup} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.MessagesGetFullGroup.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    groupid: jspb.Message.getField(msg, 1)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.msg.MessagesGetFullGroup}
+ */
+proto.msg.MessagesGetFullGroup.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.msg.MessagesGetFullGroup;
+  return proto.msg.MessagesGetFullGroup.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.msg.MessagesGetFullGroup} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.msg.MessagesGetFullGroup}
+ */
+proto.msg.MessagesGetFullGroup.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setGroupid(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.msg.MessagesGetFullGroup.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.msg.MessagesGetFullGroup.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.msg.MessagesGetFullGroup} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.MessagesGetFullGroup.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  if (f != null) {
+    writer.writeInt32(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * required int32 GroupID = 1;
+ * @return {number}
+ */
+proto.msg.MessagesGetFullGroup.prototype.getGroupid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.MessagesGetFullGroup.prototype.setGroupid = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+proto.msg.MessagesGetFullGroup.prototype.clearGroupid = function() {
+  jspb.Message.setField(this, 1, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.MessagesGetFullGroup.prototype.hasGroupid = function() {
+  return jspb.Message.getField(this, 1) != null;
 };
 
 

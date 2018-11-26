@@ -42,6 +42,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import NewGroupMenu from '../../components/NewGroupMenu';
 
 import './style.css';
+import {IContact} from '../../repository/contact/interface';
 
 interface IProps {
     history?: any;
@@ -456,7 +457,7 @@ class Chat extends React.Component<IProps, IState> {
                             </div>
                             <BottomBar onSelect={this.bottomBarSelectHandler} selected={leftMenu}/>
                             <div className="left-overlay">
-                                <NewGroupMenu onClose={this.leftOverlayCloseHandler}/>
+                                <NewGroupMenu onClose={this.leftOverlayCloseHandler} onCreate={this.onGroupCreateHandler}/>
                             </div>
                         </div>
                         {selectedDialogId !== 'null' && <div className="column-center">
@@ -1228,6 +1229,10 @@ class Chat extends React.Component<IProps, IState> {
         this.setState({
             leftOverlay: false,
         });
+    }
+
+    private onGroupCreateHandler = (contacts: IContact[]) => {
+        window.console.log(contacts);
     }
 
     private logOutHandler() {

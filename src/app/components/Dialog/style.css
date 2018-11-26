@@ -2,6 +2,8 @@
   box-sizing: border-box; }
 
 :root {
+  --river: #27AE60;
+  --river-dark: #2E8F57;
   --white: #fff;
   --black: #000;
   --black-text: #323D47;

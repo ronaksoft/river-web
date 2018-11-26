@@ -570,6 +570,11 @@ export class Group extends jspb.Message {
   getParticipants(): number | undefined;
   setParticipants(value: number): void;
 
+  hasEditedon(): boolean;
+  clearEditedon(): void;
+  getEditedon(): number | undefined;
+  setEditedon(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Group.AsObject;
   static toObject(includeInstance: boolean, msg: Group): Group.AsObject;
@@ -586,6 +591,87 @@ export namespace Group {
     title?: string,
     createdon?: number,
     participants?: number,
+    editedon?: number,
+  }
+}
+
+export class GroupFull extends jspb.Message {
+  hasGroup(): boolean;
+  clearGroup(): void;
+  getGroup(): Group;
+  setGroup(value?: Group): void;
+
+  clearUsersList(): void;
+  getUsersList(): Array<User>;
+  setUsersList(value: Array<User>): void;
+  addUsers(value?: User, index?: number): User;
+
+  clearParticipantsList(): void;
+  getParticipantsList(): Array<GroupParticipant>;
+  setParticipantsList(value: Array<GroupParticipant>): void;
+  addParticipants(value?: GroupParticipant, index?: number): GroupParticipant;
+
+  hasNotifysettings(): boolean;
+  clearNotifysettings(): void;
+  getNotifysettings(): PeerNotifySettings;
+  setNotifysettings(value?: PeerNotifySettings): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GroupFull.AsObject;
+  static toObject(includeInstance: boolean, msg: GroupFull): GroupFull.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: GroupFull, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GroupFull;
+  static deserializeBinaryFromReader(message: GroupFull, reader: jspb.BinaryReader): GroupFull;
+}
+
+export namespace GroupFull {
+  export type AsObject = {
+    group: Group.AsObject,
+    usersList: Array<User.AsObject>,
+    participantsList: Array<GroupParticipant.AsObject>,
+    notifysettings: PeerNotifySettings.AsObject,
+  }
+}
+
+export class GroupParticipant extends jspb.Message {
+  hasUserid(): boolean;
+  clearUserid(): void;
+  getUserid(): number | undefined;
+  setUserid(value: number): void;
+
+  hasInviterid(): boolean;
+  clearInviterid(): void;
+  getInviterid(): number | undefined;
+  setInviterid(value: number): void;
+
+  hasDate(): boolean;
+  clearDate(): void;
+  getDate(): number | undefined;
+  setDate(value: number): void;
+
+  hasType(): boolean;
+  clearType(): void;
+  getType(): ParticipantType | undefined;
+  setType(value: ParticipantType): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GroupParticipant.AsObject;
+  static toObject(includeInstance: boolean, msg: GroupParticipant): GroupParticipant.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: GroupParticipant, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GroupParticipant;
+  static deserializeBinaryFromReader(message: GroupParticipant, reader: jspb.BinaryReader): GroupParticipant;
+}
+
+export namespace GroupParticipant {
+  export type AsObject = {
+    userid?: number,
+    inviterid?: number,
+    date?: number,
+    type?: ParticipantType,
   }
 }
 
@@ -602,5 +688,11 @@ export enum PeerType {
   PEERUSER = 1,
   PEERCHAT = 2,
   PEERCHANNEL = 3,
+}
+
+export enum ParticipantType {
+  CREATOR = 0,
+  ADMIN = 1,
+  MEMBER = 2,
 }
 

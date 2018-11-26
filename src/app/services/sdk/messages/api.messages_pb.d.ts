@@ -321,10 +321,10 @@ export namespace MessagesCreateGroup {
 }
 
 export class MessagesAddGroupUser extends jspb.Message {
-  hasChatid(): boolean;
-  clearChatid(): void;
-  getChatid(): number | undefined;
-  setChatid(value: number): void;
+  hasGroupid(): boolean;
+  clearGroupid(): void;
+  getGroupid(): number | undefined;
+  setGroupid(value: number): void;
 
   hasUser(): boolean;
   clearUser(): void;
@@ -348,17 +348,17 @@ export class MessagesAddGroupUser extends jspb.Message {
 
 export namespace MessagesAddGroupUser {
   export type AsObject = {
-    chatid?: number,
+    groupid?: number,
     user: core_types_pb.InputUser.AsObject,
     forwardlimit?: number,
   }
 }
 
 export class MessagesEditGroupTitle extends jspb.Message {
-  hasChatid(): boolean;
-  clearChatid(): void;
-  getChatid(): number | undefined;
-  setChatid(value: number): void;
+  hasGroupid(): boolean;
+  clearGroupid(): void;
+  getGroupid(): number | undefined;
+  setGroupid(value: number): void;
 
   hasTitle(): boolean;
   clearTitle(): void;
@@ -377,16 +377,16 @@ export class MessagesEditGroupTitle extends jspb.Message {
 
 export namespace MessagesEditGroupTitle {
   export type AsObject = {
-    chatid?: number,
+    groupid?: number,
     title?: string,
   }
 }
 
 export class MessagesDeleteGroupUser extends jspb.Message {
-  hasChatid(): boolean;
-  clearChatid(): void;
-  getChatid(): number | undefined;
-  setChatid(value: number): void;
+  hasGroupid(): boolean;
+  clearGroupid(): void;
+  getGroupid(): number | undefined;
+  setGroupid(value: number): void;
 
   hasUser(): boolean;
   clearUser(): void;
@@ -405,8 +405,30 @@ export class MessagesDeleteGroupUser extends jspb.Message {
 
 export namespace MessagesDeleteGroupUser {
   export type AsObject = {
-    chatid?: number,
+    groupid?: number,
     user: core_types_pb.InputUser.AsObject,
+  }
+}
+
+export class MessagesGetFullGroup extends jspb.Message {
+  hasGroupid(): boolean;
+  clearGroupid(): void;
+  getGroupid(): number | undefined;
+  setGroupid(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessagesGetFullGroup.AsObject;
+  static toObject(includeInstance: boolean, msg: MessagesGetFullGroup): MessagesGetFullGroup.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessagesGetFullGroup, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessagesGetFullGroup;
+  static deserializeBinaryFromReader(message: MessagesGetFullGroup, reader: jspb.BinaryReader): MessagesGetFullGroup;
+}
+
+export namespace MessagesGetFullGroup {
+  export type AsObject = {
+    groupid?: number,
   }
 }
 

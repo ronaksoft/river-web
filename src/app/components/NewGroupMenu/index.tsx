@@ -4,7 +4,7 @@ import {IContact} from '../../repository/contact/interface';
 import ContactRepo from '../../repository/contact';
 import {debounce, findIndex, differenceBy, clone} from 'lodash';
 import UserAvatar, {TextAvatar} from '../UserAvatar';
-import {KeyboardBackspaceRounded} from '@material-ui/icons';
+import {KeyboardBackspaceRounded, ArrowForwardRounded} from '@material-ui/icons';
 import ChipInput from 'material-ui-chip-input';
 import Chip from '@material-ui/core/Chip';
 import UserName from '../UserName';
@@ -14,6 +14,7 @@ import './style.css';
 interface IProps {
     id?: number;
     onClose?: () => void;
+    onCreate?: (contacts: IContact[]) => void;
 }
 
 interface IState {
@@ -97,6 +98,11 @@ class NewGroupMenu extends React.Component<IProps, IState> {
                         )}
                     </AutoSizer>
                 </div>
+                {Boolean(selectedContacts.length > 0) && <div className="actions-bar">
+                    <div className="add-action" onClick={this.onCreate}>
+                        <ArrowForwardRounded/>
+                    </div>
+                </div>}
             </div>
         );
     }
@@ -176,6 +182,19 @@ class NewGroupMenu extends React.Component<IProps, IState> {
 
     private getTrimmedList(selectedContacts: IContact[]) {
         return differenceBy(this.contactsRes, selectedContacts, 'id');
+    }
+
+    private onCreate = () => {
+        const {selectedContacts} = this.state;
+        if (!selectedContacts) {
+            return;
+        }
+        if (this.props.onClose) {
+            this.props.onClose();
+        }
+        if (this.props.onCreate) {
+            this.props.onCreate(selectedContacts);
+        }
     }
 }
 

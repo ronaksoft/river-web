@@ -2,6 +2,8 @@
   box-sizing: border-box; }
 
 :root {
+  --river: #27AE60;
+  --river-dark: #2E8F57;
   --white: #fff;
   --black: #000;
   --black-text: #323D47;
@@ -105,6 +107,28 @@ body {
           white-space: nowrap;
           text-overflow: ellipsis;
           color: var(--grey); }
+  .new-group-menu .actions-bar {
+    height: 86px;
+    padding: 18px 0 22px;
+    text-align: center;
+    background-color: var(--message-chat); }
+    .new-group-menu .actions-bar .add-action {
+      display: inline-flex;
+      height: 46px;
+      width: 46px;
+      border-radius: 50%;
+      background: var(--river);
+      color: var(--white);
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+      transition: all 0.2s; }
+      .new-group-menu .actions-bar .add-action svg {
+        font-size: 40px; }
+      .new-group-menu .actions-bar .add-action:hover {
+        background: var(--river-dark);
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4); }
 
 html[theme="dark"] .contacts .search-container {
   background-color: var(--dark-medium);
