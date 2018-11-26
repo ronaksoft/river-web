@@ -457,7 +457,8 @@ class Chat extends React.Component<IProps, IState> {
                             </div>
                             <BottomBar onSelect={this.bottomBarSelectHandler} selected={leftMenu}/>
                             <div className="left-overlay">
-                                <NewGroupMenu onClose={this.leftOverlayCloseHandler} onCreate={this.onGroupCreateHandler}/>
+                                <NewGroupMenu onClose={this.leftOverlayCloseHandler}
+                                              onCreate={this.onGroupCreateHandler}/>
                             </div>
                         </div>
                         {selectedDialogId !== 'null' && <div className="column-center">
@@ -669,12 +670,14 @@ class Chat extends React.Component<IProps, IState> {
                 messages = data.reverse();
             }
 
-            const dataMsg = this.modifyMessages([], messages, true);
-
             let maxReadId = 0;
+            let maxReadInbox = 0;
             if (this.dialogMap.hasOwnProperty(dialogId)) {
                 maxReadId = this.state.dialogs[this.dialogMap[dialogId]].readoutboxmaxid || 0;
+                maxReadInbox = this.state.dialogs[this.dialogMap[dialogId]].readinboxmaxid || 0;
             }
+
+            const dataMsg = this.modifyMessages([], messages, true, maxReadInbox);
 
             this.setState({
                 isChatView: true,
@@ -738,8 +741,9 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private modifyMessages(defaultMessages: IMessage[], messages: IMessage[], push: boolean): { maxId: number, msgs: IMessage[] } {
+    private modifyMessages(defaultMessages: IMessage[], messages: IMessage[], push: boolean, messageReadId?: number): { maxId: number, msgs: IMessage[] } {
         let maxId = 0;
+        let newMessageFlag = false;
         messages.forEach((msg, key) => {
             if (msg.id && msg.id > maxId) {
                 maxId = msg.id;
@@ -757,6 +761,14 @@ class Chat extends React.Component<IProps, IState> {
                         messagetype: C_MESSAGE_TYPE.Date,
                         senderid: msg.senderid,
                     });
+                    msg.avatar = true;
+                }
+                if (messageReadId !== undefined && !newMessageFlag && (msg.id || 0) > messageReadId) {
+                    defaultMessages.push({
+                        id: (msg.id || 0) + 0.5,
+                        messagetype: C_MESSAGE_TYPE.NewMessage,
+                    });
+                    newMessageFlag = true;
                 }
                 defaultMessages.push(msg);
             }
@@ -784,6 +796,9 @@ class Chat extends React.Component<IProps, IState> {
                         messagetype: C_MESSAGE_TYPE.Date,
                         senderid: msg.senderid,
                     });
+                    if (defaultMessages.length > 1) {
+                        defaultMessages[1].avatar = true;
+                    }
                 }
             }
         });

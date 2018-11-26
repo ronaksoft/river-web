@@ -31,6 +31,7 @@ interface IState {
     noTransition: boolean;
     peer: InputPeer | null;
     readId: number;
+    readIdInit: number;
     scrollIndex: number;
 }
 
@@ -50,6 +51,7 @@ class Message extends React.Component<IProps, IState> {
             noTransition: false,
             peer: props.peer,
             readId: props.readId,
+            readIdInit: -1,
             scrollIndex: -1,
         };
         this.cache = new CellMeasurerCache({
@@ -79,6 +81,7 @@ class Message extends React.Component<IProps, IState> {
                 moreIndex: -1,
                 noTransition: true,
                 peer: newProps.peer,
+                readIdInit: newProps.readId,
                 scrollIndex: newProps.items.length - 1,
             }, () => {
                 this.fitList(true);
@@ -225,6 +228,12 @@ class Message extends React.Component<IProps, IState> {
 
     private messageItem(index: number, message: IMessage, peer: InputPeer | null, readId: number, style: any) {
         switch (message.messagetype) {
+            case C_MESSAGE_TYPE.NewMessage:
+                return (
+                    <div style={style} className="bubble-wrapper">
+                        <span className="system-message">New Message</span>
+                    </div>
+                );
             case C_MESSAGE_TYPE.Date:
                 return (
                     <div style={style} className="bubble-wrapper">

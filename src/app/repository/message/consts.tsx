@@ -1,6 +1,7 @@
 export const C_MESSAGE_TYPE = {
     Date: -1,
     Hole: -2,
+    NewMessage: -3,
     Normal: 2,
     System: 1,
 };
