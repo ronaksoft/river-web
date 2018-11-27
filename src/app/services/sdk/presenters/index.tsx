@@ -3,7 +3,7 @@ import {AuthSentCode, AuthCheckedPhone, AuthAuthorization, AuthRecalled} from '.
 import {ContactsImported, ContactsMany} from '../messages/api.contacts_pb';
 import {Bool, Error} from '../messages/core.messages_pb';
 import {MessagesDialogs, MessagesMany, MessagesSent} from '../messages/api.messages_pb';
-import {Dialog, Group} from '../messages/core.types_pb';
+import {Dialog, Group, GroupFull} from '../messages/core.types_pb';
 import {
     UpdateDifference,
     UpdateNewMessage,
@@ -45,6 +45,8 @@ export default class UniqueId {
                 return UpdateDifference.deserializeBinary(data);
             case C_MSG.Group:
                 return Group.deserializeBinary(data);
+            case C_MSG.GroupFull:
+                return GroupFull.deserializeBinary(data);
             default:
                 return null;
         }

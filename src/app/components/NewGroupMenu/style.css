@@ -20,6 +20,7 @@
   --color-hover: rgba(50, 61, 71, 0.07);
   --color-hover-dark: rgba(50, 61, 71, 0.12);
   --color-text-hover: rgba(50, 61, 71, 0.64);
+  --header-color: #eee;
   --dark-low: #191919;
   --dark-medium: #232323;
   --dark-high: #333333;
@@ -64,17 +65,17 @@ body {
     .new-group-menu .page-container.page-2 .page-2 {
       left: 0; }
   .new-group-menu .menu-header {
-    padding: 10px;
     background-color: var(--bg);
     text-align: left;
     height: 47px;
     color: var(--dark-medium); }
-    .new-group-menu .menu-header svg {
-      vertical-align: sub;
-      margin: 0 10px -2px 0; }
+    .new-group-menu .menu-header label {
+      padding: 10px; }
   .new-group-menu .input-container {
     min-height: 48px;
     padding: 10px; }
+    .new-group-menu .input-container .chip {
+      margin: 0 3px 3px 0; }
   .new-group-menu .contact-box {
     flex: 1; }
     .new-group-menu .contact-box .contact-container {
@@ -157,9 +158,14 @@ body {
 html[theme="dark"] .new-group-menu .menu-header {
   background-color: var(--dark-high);
   color: var(--white); }
+  html[theme="dark"] .new-group-menu .menu-header svg {
+    color: var(--white); }
 
 html[theme="dark"] .new-group-menu .input-container {
   color: var(--white); }
+  html[theme="dark"] .new-group-menu .input-container .chip {
+    background-color: var(--dark-high);
+    color: var(--white); }
   html[theme="dark"] .new-group-menu .input-container label, html[theme="dark"] .new-group-menu .input-container input {
     color: var(--white); }
 
@@ -168,3 +174,8 @@ html[theme="dark"] .new-group-menu .contact-box .contact-container .contact-item
 
 html[theme="dark"] .new-group-menu .contact-box .contact-container .contact-item .name {
   color: var(--light); }
+
+html[theme="dark"] .new-group-menu .actions-bar {
+  background-color: var(--dark-high); }
+  html[theme="dark"] .new-group-menu .actions-bar.no-bg {
+    background-color: transparent; }

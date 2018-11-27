@@ -48,11 +48,12 @@ import BottomBar from '../../components/BottomBar';
 import ContactMenu from '../../components/ContactMenu';
 import Tooltip from '@material-ui/core/Tooltip';
 import NewGroupMenu from '../../components/NewGroupMenu';
-
-import './style.css';
 import {IContact} from '../../repository/contact/interface';
 import GroupRepo from '../../repository/group';
 import GroupName from '../../components/GroupName';
+import GroupInfoMenu from '../../components/GroupInfoMenu';
+
+import './style.css';
 
 interface IProps {
     history?: any;
@@ -159,7 +160,6 @@ class Chat extends React.Component<IProps, IState> {
         window.addEventListener('fnStarted', this.fnStartedHandler);
         window.addEventListener('Dialog_DB_Updated', this.dialogDBUpdatedHandler);
         window.addEventListener('Message_DB_Updated', this.messageDBUpdatedHandler);
-        window.addEventListener('User_DB_Updated', this.userDBUpdatedHandler);
 
         // Get latest cached dialogs
         this.dialogRepo.getManyCache({}).then((res) => {
@@ -402,7 +402,6 @@ class Chat extends React.Component<IProps, IState> {
         window.removeEventListener('fnStarted', this.fnStartedHandler);
         window.removeEventListener('Dialog_DB_Updated', this.dialogDBUpdatedHandler);
         window.removeEventListener('Message_DB_Updated', this.messageDBUpdatedHandler);
-        window.removeEventListener('User_DB_Updated', this.userDBUpdatedHandler);
     }
 
     public render() {
@@ -509,7 +508,7 @@ class Chat extends React.Component<IProps, IState> {
                                     aria-label="More"
                                     aria-owns={moreInfoAnchorEl ? 'long-menu' : undefined}
                                     aria-haspopup="true"
-                                    onClick={this.contactInfoOpenHandler}
+                                    onClick={this.moreInfoOpenHandler}
                                 >
                                     <MoreVertIcon/>
                                 </IconButton>
@@ -517,7 +516,7 @@ class Chat extends React.Component<IProps, IState> {
                                     id="long-menu"
                                     anchorEl={moreInfoAnchorEl}
                                     open={Boolean(moreInfoAnchorEl)}
-                                    onClose={this.contactInfoCloseHandler}
+                                    onClose={this.moreInfoCloseHandler}
                                     className="kk-context-menu darker"
                                 >
                                   <MenuItem key={1}
@@ -557,7 +556,9 @@ class Chat extends React.Component<IProps, IState> {
                                 <div className="start-messaging-footer"/>
                             </div>
                         </div>}
-                        <div ref={this.rightMenuRefHandler} className="column-right"/>
+                        <div ref={this.rightMenuRefHandler} className="column-right">
+                            <GroupInfoMenu peer={peer} onClose={this.setRightMenu.bind(this, false)}/>
+                        </div>
                     </div>
                     <NewMessage open={this.state.openNewMessage} onClose={this.onNewMessageClose}
                                 onMessage={this.onNewMessage}/>
@@ -595,13 +596,13 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private contactInfoOpenHandler = (event: any) => {
+    private moreInfoOpenHandler = (event: any) => {
         this.setState({
             moreInfoAnchorEl: event.currentTarget,
         });
     }
 
-    private contactInfoCloseHandler = () => {
+    private moreInfoCloseHandler = () => {
         this.setState({
             moreInfoAnchorEl: null,
         });
@@ -614,8 +615,20 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private toggleRightMenu = () => {
-        this.contactInfoCloseHandler();
-        this.rightMenu.classList.toggle('active');
+        this.setRightMenu();
+    }
+
+    private setRightMenu = (force?: boolean) => {
+        this.moreInfoCloseHandler();
+        if (force === undefined) {
+            this.rightMenu.classList.toggle('active');
+        } else {
+            if (force) {
+                this.rightMenu.classList.remove('active');
+            } else {
+                this.rightMenu.classList.add('active');
+            }
+        }
         setTimeout(() => {
             this.messageComponent.cache.clearAll();
             this.messageComponent.list.recomputeRowHeights();
@@ -1246,10 +1259,6 @@ class Chat extends React.Component<IProps, IState> {
         if (data.peerids && data.peerids.indexOf(this.state.selectedDialogId) > -1) {
             this.getMessagesByDialogId(this.state.selectedDialogId);
         }
-    }
-
-    private userDBUpdatedHandler = () => {
-        window.console.log('User_DB_Updated');
     }
 
     private notify = (title: string, body: string, id: string) => {

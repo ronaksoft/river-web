@@ -35,8 +35,8 @@ export namespace GroupsCreate {
 export class GroupsAddUser extends jspb.Message {
   hasGroupid(): boolean;
   clearGroupid(): void;
-  getGroupid(): number | undefined;
-  setGroupid(value: number): void;
+  getGroupid(): string | undefined;
+  setGroupid(value: string): void;
 
   hasUser(): boolean;
   clearUser(): void;
@@ -60,7 +60,7 @@ export class GroupsAddUser extends jspb.Message {
 
 export namespace GroupsAddUser {
   export type AsObject = {
-    groupid?: number,
+    groupid?: string,
     user: core_types_pb.InputUser.AsObject,
     forwardlimit?: number,
   }
@@ -69,8 +69,8 @@ export namespace GroupsAddUser {
 export class GroupsEditTitle extends jspb.Message {
   hasGroupid(): boolean;
   clearGroupid(): void;
-  getGroupid(): number | undefined;
-  setGroupid(value: number): void;
+  getGroupid(): string | undefined;
+  setGroupid(value: string): void;
 
   hasTitle(): boolean;
   clearTitle(): void;
@@ -89,7 +89,7 @@ export class GroupsEditTitle extends jspb.Message {
 
 export namespace GroupsEditTitle {
   export type AsObject = {
-    groupid?: number,
+    groupid?: string,
     title?: string,
   }
 }
@@ -97,8 +97,8 @@ export namespace GroupsEditTitle {
 export class GroupsDeleteUser extends jspb.Message {
   hasGroupid(): boolean;
   clearGroupid(): void;
-  getGroupid(): number | undefined;
-  setGroupid(value: number): void;
+  getGroupid(): string | undefined;
+  setGroupid(value: string): void;
 
   hasUser(): boolean;
   clearUser(): void;
@@ -117,7 +117,7 @@ export class GroupsDeleteUser extends jspb.Message {
 
 export namespace GroupsDeleteUser {
   export type AsObject = {
-    groupid?: number,
+    groupid?: string,
     user: core_types_pb.InputUser.AsObject,
   }
 }
@@ -125,8 +125,8 @@ export namespace GroupsDeleteUser {
 export class GroupsGetFull extends jspb.Message {
   hasGroupid(): boolean;
   clearGroupid(): void;
-  getGroupid(): number | undefined;
-  setGroupid(value: number): void;
+  getGroupid(): string | undefined;
+  setGroupid(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GroupsGetFull.AsObject;
@@ -140,7 +140,7 @@ export class GroupsGetFull extends jspb.Message {
 
 export namespace GroupsGetFull {
   export type AsObject = {
-    groupid?: number,
+    groupid?: string,
   }
 }
 

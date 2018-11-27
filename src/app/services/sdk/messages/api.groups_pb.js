@@ -313,7 +313,7 @@ proto.msg.GroupsAddUser.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setGroupid(value);
       break;
     case 2:
@@ -354,9 +354,9 @@ proto.msg.GroupsAddUser.prototype.serializeBinary = function() {
  */
 proto.msg.GroupsAddUser.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       1,
       f
     );
@@ -381,14 +381,14 @@ proto.msg.GroupsAddUser.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * required int64 GroupID = 1;
- * @return {number}
+ * @return {string}
  */
 proto.msg.GroupsAddUser.prototype.getGroupid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.GroupsAddUser.prototype.setGroupid = function(value) {
   jspb.Message.setField(this, 1, value);
 };
@@ -553,7 +553,7 @@ proto.msg.GroupsEditTitle.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setGroupid(value);
       break;
     case 2:
@@ -589,9 +589,9 @@ proto.msg.GroupsEditTitle.prototype.serializeBinary = function() {
  */
 proto.msg.GroupsEditTitle.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       1,
       f
     );
@@ -608,14 +608,14 @@ proto.msg.GroupsEditTitle.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * required int64 GroupID = 1;
- * @return {number}
+ * @return {string}
  */
 proto.msg.GroupsEditTitle.prototype.getGroupid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.GroupsEditTitle.prototype.setGroupid = function(value) {
   jspb.Message.setField(this, 1, value);
 };
@@ -750,7 +750,7 @@ proto.msg.GroupsDeleteUser.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setGroupid(value);
       break;
     case 2:
@@ -787,9 +787,9 @@ proto.msg.GroupsDeleteUser.prototype.serializeBinary = function() {
  */
 proto.msg.GroupsDeleteUser.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       1,
       f
     );
@@ -807,14 +807,14 @@ proto.msg.GroupsDeleteUser.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * required int64 GroupID = 1;
- * @return {number}
+ * @return {string}
  */
 proto.msg.GroupsDeleteUser.prototype.getGroupid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.GroupsDeleteUser.prototype.setGroupid = function(value) {
   jspb.Message.setField(this, 1, value);
 };
@@ -949,7 +949,7 @@ proto.msg.GroupsGetFull.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setGroupid(value);
       break;
     default:
@@ -981,9 +981,9 @@ proto.msg.GroupsGetFull.prototype.serializeBinary = function() {
  */
 proto.msg.GroupsGetFull.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       1,
       f
     );
@@ -993,14 +993,14 @@ proto.msg.GroupsGetFull.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * required int64 GroupID = 1;
- * @return {number}
+ * @return {string}
  */
 proto.msg.GroupsGetFull.prototype.getGroupid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.GroupsGetFull.prototype.setGroupid = function(value) {
   jspb.Message.setField(this, 1, value);
 };

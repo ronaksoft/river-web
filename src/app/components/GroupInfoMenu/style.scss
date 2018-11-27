@@ -1,0 +1,79 @@
+@import '../../../style/common';
+
+.group-info-menu {
+  height: 100%;
+  .page-container {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    .page {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      transition: left 0.2s ease-out;
+      &.page-1 {
+        left: 0;
+      }
+      &.page-2 {
+        left: 100%;
+      }
+    }
+    &.page-2 {
+      .page-1 {
+        left: -100%;
+      }
+      .page-2 {
+        left: 0;
+      }
+    }
+  }
+  .menu-header {
+    background-color: var(--bg);
+    text-align: left;
+    height: 47px;
+    color: var(--dark-medium);
+    label {
+      padding: 10px;
+    }
+  }
+  .info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 20px 10px;
+    .avatar {
+      height: 200px;
+      width: 200px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .title {
+
+    }
+  }
+  .contact-box {
+    flex: 1;
+  }
+}
+
+html[theme="dark"] {
+  .group-info-menu {
+    .menu-header {
+      background-color: var(--dark-high);
+      color: var(--white);
+      svg {
+        color: var(--white);
+      }
+    }
+    .info {
+    }
+    .contact-box {
+    }
+  }
+}

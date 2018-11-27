@@ -13,7 +13,7 @@ import Server from './server';
 import {C_MSG} from './const';
 import {IConnInfo} from './interface';
 import {ContactsGet, ContactsImport, ContactsImported, ContactsMany} from './messages/api.contacts_pb';
-import {Group, InputPeer, InputUser, PhoneContact, TypingAction} from './messages/core.types_pb';
+import {Group, GroupFull, InputPeer, InputUser, PhoneContact, TypingAction} from './messages/core.types_pb';
 import {
     MessagesDialogs, MessagesEdit,
     MessagesGetDialogs,
@@ -26,7 +26,7 @@ import {
 import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from './messages/api.updates_pb';
 import {Bool} from './messages/core.messages_pb';
 import {AccountRegisterDevice} from './messages/api.accounts_pb';
-import {GroupsCreate} from './messages/api.groups_pb';
+import {GroupsCreate, GroupsGetFull} from './messages/api.groups_pb';
 
 export default class SDK {
     public static getInstance() {
@@ -260,5 +260,11 @@ export default class SDK {
         data.setUsersList(users);
         data.setTitle(title);
         return this.server.send(C_MSG.GroupsCreate, data.serializeBinary(), true);
+    }
+
+    public getFullGroup(peer: InputPeer): Promise<GroupFull.AsObject> {
+        const data = new GroupsGetFull();
+        data.setGroupid(peer.getId() || '');
+        return this.server.send(C_MSG.GroupsGetFull, data.serializeBinary(), true);
     }
 }

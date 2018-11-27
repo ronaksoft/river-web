@@ -38,6 +38,7 @@
       display: none;
       align-items: center;
       padding: 0 17px;
+      background-color: var(--header-color);
       &:after {
         position: absolute;
         bottom: 0;
@@ -101,7 +102,7 @@
       width: 100%;
       height: 48px;
       padding: 5px 29px;
-      background-color: #eceff1;
+      background-color: var(--header-color);
       text-align: left;
       .back-to-chats {
         position: absolute;
@@ -115,14 +116,6 @@
           width: 36px;
         }
       }
-      //span {
-      //  font-size: 15px;
-      //  color: var(--grey);
-      //  .name {
-      //    color: var(--dark);
-      //    @include font-bold;
-      //  }
-      //}
       .chat-title {
         padding: 5px 0;
         display: flex;
@@ -270,6 +263,7 @@ html[theme="dark"] {
         }
       }
       .top-bar {
+        background-color: var(--dark-medium);
         &:after {
           background-color: var(--dark-medium);
         }

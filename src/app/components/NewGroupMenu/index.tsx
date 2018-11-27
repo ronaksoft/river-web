@@ -11,6 +11,7 @@ import UserName from '../UserName';
 import TextField from '@material-ui/core/TextField';
 
 import './style.css';
+import IconButton from '@material-ui/core/IconButton/IconButton';
 
 interface IProps {
     id?: number;
@@ -76,7 +77,14 @@ class NewGroupMenu extends React.Component<IProps, IState> {
                 <div className={'page-container page-' + page}>
                     <div className="page page-1">
                         <div className="menu-header">
-                            <KeyboardBackspaceRounded onClick={this.props.onClose}/> Create a New Group
+                            <IconButton
+                                aria-label="Close"
+                                aria-haspopup="true"
+                                onClick={this.props.onClose}
+                            >
+                                <KeyboardBackspaceRounded/>
+                            </IconButton>
+                            <label>Create a New Group</label>
                         </div>
                         <div className="input-container">
                             <ChipInput
@@ -113,7 +121,14 @@ class NewGroupMenu extends React.Component<IProps, IState> {
                     </div>
                     <div className="page page-2">
                         <div className="menu-header">
-                            <KeyboardBackspaceRounded onClick={this.onPrevHandler}/> Group setting
+                            <IconButton
+                                aria-label="Prev"
+                                aria-haspopup="true"
+                                onClick={this.onPrevHandler}
+                            >
+                                <KeyboardBackspaceRounded/>
+                            </IconButton>
+                            <label>Group setting</label>
                         </div>
                         <div className="input-container">
                             <TextField
@@ -139,7 +154,7 @@ class NewGroupMenu extends React.Component<IProps, IState> {
 
     private chipRenderer = ({value, text}: any, key: any): React.ReactNode => {
         return (<Chip key={key} avatar={<UserAvatar id={value.id}/>} tabIndex={-1} label={<UserName id={value.id}/>}
-                      onDelete={this.removeMemberHandler.bind(this, value)} style={{margin: '0 3px 3px 0'}}/>);
+                      onDelete={this.removeMemberHandler.bind(this, value)} className="chip"/>);
     }
 
     private refHandler = (value: any) => {

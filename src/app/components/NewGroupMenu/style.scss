@@ -33,19 +33,20 @@
     }
   }
   .menu-header {
-    padding: 10px;
     background-color: var(--bg);
     text-align: left;
     height: 47px;
     color: var(--dark-medium);
-    svg {
-      vertical-align: sub;
-      margin: 0 10px -2px 0;
+    label {
+      padding: 10px;
     }
   }
   .input-container {
     min-height: 48px;
     padding: 10px;
+    .chip {
+      margin: 0 3px 3px 0;
+    }
   }
   .contact-box {
     flex: 1;
@@ -145,9 +146,16 @@ html[theme="dark"] {
     .menu-header {
       background-color: var(--dark-high);
       color: var(--white);
+      svg {
+        color: var(--white);
+      }
     }
     .input-container {
       color: var(--white);
+      .chip {
+        background-color: var(--dark-high);
+        color: var(--white);
+      }
       label, input {
         color: var(--white);
       }
@@ -162,6 +170,12 @@ html[theme="dark"] {
             color: var(--light);
           }
         }
+      }
+    }
+    .actions-bar {
+      background-color: var(--dark-high);
+      &.no-bg {
+        background-color: transparent;
       }
     }
   }
