@@ -227,7 +227,9 @@ export default class MessageRepo {
 
     public getUnreadCount(peerId: string, minId: number): Promise<any> {
         return this.db.messages.where('[peerid+id]')
-            .between([peerId, minId], [peerId, Dexie.maxKey], true, true).count();
+            .between([peerId, minId], [peerId, Dexie.maxKey], true, true).filter((item) => {
+                return item.temp !== true;
+            }).count();
     }
 
     public flush() {
