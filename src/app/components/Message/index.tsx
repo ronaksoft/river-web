@@ -415,6 +415,12 @@ class Message extends React.Component<IProps, IState> {
             case C_MESSAGE_ACTION.MessageActionLeft:
                 return (<span className="system-message">
                     <UserName className="user" id={message.senderid || ''}/> Left</span>);
+            case C_MESSAGE_ACTION.MessageActionGroupTitleChanged:
+                return (<span className="system-message">
+                    <UserName className="user" id={message.senderid || ''}/> Changed the Group Title</span>);
+            case C_MESSAGE_ACTION.MessageActionKicked:
+                return (<span className="system-message">
+                    <UserName className="user" id={message.senderid || ''}/> Was Kicked</span>);
             default:
                 return '';
         }

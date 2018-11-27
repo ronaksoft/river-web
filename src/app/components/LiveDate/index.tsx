@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import TimeUtililty from '../../services/utilities/time';
+import TimeUtility from '../../services/utilities/time';
 
 interface IProps {
     className?: string;
@@ -47,7 +47,7 @@ class LiveDate extends React.Component<IProps, IState> {
 
     public render() {
         return (
-            this.state.toggle && <span className={this.state.className}>{TimeUtililty.dynamic(this.state.time)}</span>
+            this.state.toggle && <span className={this.state.className}>{TimeUtility.dynamic(this.state.time)}</span>
         );
     }
 }

@@ -7,9 +7,11 @@ export const C_MESSAGE_TYPE = {
 };
 
 export const C_MESSAGE_ACTION = {
-    MessageActionContactRegistered: 1,
-    MessageActionGroupCreated: 2,
-    MessageActionJoined: 3,
-    MessageActionLeft: 4,
-    MessageActionNope: 0,
+    MessageActionContactRegistered: 0x01,
+    MessageActionGroupCreated: 0x02,
+    MessageActionGroupTitleChanged: 0x06,
+    MessageActionJoined: 0x03,
+    MessageActionKicked: 0x05,
+    MessageActionLeft: 0x04,
+    MessageActionNope: 0x00,
 };

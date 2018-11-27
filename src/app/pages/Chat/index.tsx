@@ -523,7 +523,7 @@ class Chat extends React.Component<IProps, IState> {
                                             onClick={this.toggleRightMenu}
                                             className="context-item"
                                   >
-                                      {"Contact Info"}
+                                      {(peer && peer.getType() === PeerType.PEERGROUP) ? 'Group Info' : 'Contact Info'}
                                   </MenuItem>
                                 </Menu>
                             </span>
@@ -557,7 +557,8 @@ class Chat extends React.Component<IProps, IState> {
                             </div>
                         </div>}
                         <div ref={this.rightMenuRefHandler} className="column-right">
-                            <GroupInfoMenu peer={peer} onClose={this.setRightMenu.bind(this, false)}/>
+                            {(this.state.rightMenu && peer && peer.getType() === PeerType.PEERGROUP) &&
+                            <GroupInfoMenu peer={peer} onClose={this.setRightMenu.bind(this, false)}/>}
                         </div>
                     </div>
                     <NewMessage open={this.state.openNewMessage} onClose={this.onNewMessageClose}
@@ -622,11 +623,26 @@ class Chat extends React.Component<IProps, IState> {
         this.moreInfoCloseHandler();
         if (force === undefined) {
             this.rightMenu.classList.toggle('active');
+            if (this.rightMenu.classList.contains('active')) {
+                this.setState({
+                    rightMenu: true,
+                });
+            } else {
+                this.setState({
+                    rightMenu: false,
+                });
+            }
         } else {
-            if (force) {
+            if (!force) {
                 this.rightMenu.classList.remove('active');
+                this.setState({
+                    rightMenu: false,
+                });
             } else {
                 this.rightMenu.classList.add('active');
+                this.setState({
+                    rightMenu: true,
+                });
             }
         }
         setTimeout(() => {
@@ -1303,7 +1319,7 @@ class Chat extends React.Component<IProps, IState> {
             user.setUserid(contact.id || '');
             users.push(user);
         });
-        this.sdk.createGroup(users, title).then((res) => {
+        this.sdk.groupCreate(users, title).then((res) => {
             this.groupRepo.importBulk([res]);
             const {dialogs} = this.state;
             const dialog: IDialog = {

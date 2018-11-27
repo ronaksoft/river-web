@@ -4,11 +4,11 @@ import UserName from '../UserName';
 import {IDialog} from '../../repository/dialog/interface';
 import LiveDate from '../LiveDate';
 import {DoneAllRounded, DoneRounded, ScheduleRounded} from '@material-ui/icons';
-
-import './style.css';
 import {PeerType} from '../../services/sdk/messages/core.types_pb';
 import GroupAvatar from '../GroupAvatar';
 import GroupName from '../GroupName';
+
+import './style.css';
 
 interface IProps {
     cancelIsTyping: (id: string) => void;

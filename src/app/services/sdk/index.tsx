@@ -26,7 +26,7 @@ import {
 import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from './messages/api.updates_pb';
 import {Bool} from './messages/core.messages_pb';
 import {AccountRegisterDevice} from './messages/api.accounts_pb';
-import {GroupsCreate, GroupsGetFull} from './messages/api.groups_pb';
+import {GroupsCreate, GroupsEditTitle, GroupsGetFull} from './messages/api.groups_pb';
 
 export default class SDK {
     public static getInstance() {
@@ -255,16 +255,23 @@ export default class SDK {
         return this.server.send(C_MSG.AccountRegisterDevice, data.serializeBinary(), true);
     }
 
-    public createGroup(users: InputUser[], title: string): Promise<Group.AsObject> {
+    public groupCreate(users: InputUser[], title: string): Promise<Group.AsObject> {
         const data = new GroupsCreate();
         data.setUsersList(users);
         data.setTitle(title);
         return this.server.send(C_MSG.GroupsCreate, data.serializeBinary(), true);
     }
 
-    public getFullGroup(peer: InputPeer): Promise<GroupFull.AsObject> {
+    public groupGetFull(peer: InputPeer): Promise<GroupFull.AsObject> {
         const data = new GroupsGetFull();
         data.setGroupid(peer.getId() || '');
         return this.server.send(C_MSG.GroupsGetFull, data.serializeBinary(), true);
+    }
+
+    public groupEditTitle(peer: InputPeer, title: string): Promise<Bool.AsObject> {
+        const data = new GroupsEditTitle();
+        data.setGroupid(peer.getId() || '');
+        data.setTitle(title);
+        return this.server.send(C_MSG.GroupsEditTitle, data.serializeBinary(), true);
     }
 }

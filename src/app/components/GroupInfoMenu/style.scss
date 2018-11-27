@@ -2,6 +2,7 @@
 
 .group-info-menu {
   height: 100%;
+  background: var(--bg);
   .page-container {
     position: relative;
     height: 100%;
@@ -52,18 +53,120 @@
       width: 200px;
       border-radius: 50%;
       display: inline-block;
+      font-size: 75px;
     }
     .title {
-
+      padding: 16px 10px 0;
+      text-align: left;
+      width: 100%;
+      .title-edit {
+        margin-bottom: 10px;
+      }
+    }
+    .created-on {
+      padding: 0 10px;
+      text-align: left;
+      width: 100%;
+      color: var(--grey);
+    }
+  }
+  .participant {
+    padding: 16px 0;
+    label {
+      text-align: left;
+      color: var(--river);
+      display: block;
+      padding: 0 16px 10px;
+    }
+    .contact-item {
+      position: relative;
+      width: 100%;
+      height: 64px;
+      padding: 8px;
+      cursor: pointer;
+      text-align: left;
+      &:after {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        display: block;
+        width: 100%;
+        height: 1px;
+        content: '';
+        background-color: var(--light);
+        transform: translate(-50%, 0);
+      }
+      &:last-of-type {
+        &:after {
+          content: none;
+        }
+      }
+      &:hover {
+        border: 0;
+        background-color: var(--color-hover);
+      }
+      .avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        float: left;
+        margin-right: 12px;
+        img {
+          float: left;
+          width: 48px;
+          height: 48px;
+          object-fit: cover;
+          border-radius: 50%;
+        }
+      }
+      .name {
+        display: inline-block;
+        min-width: 200px;
+        font-size: 12px;
+        line-height: 23px;
+        margin: 0 0 4px;
+        color: var(--dark);
+        @include font-bold;
+      }
+      .username {
+        font-size: 14px;
+        line-height: 17px;
+        display: inline-block;
+        overflow: hidden !important;
+        width: 70%;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        color: var(--grey);
+      }
     }
   }
   .contact-box {
     flex: 1;
   }
+  .form-control {
+    display: flex;
+    .inner {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .action {
+      width: 48px;
+    }
+  }
+  .kk-card {
+    margin-bottom: 10px;
+    background-color: var(--white);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
 }
 
 html[theme="dark"] {
   .group-info-menu {
+    background-color: var(--dark-high);
     .menu-header {
       background-color: var(--dark-high);
       color: var(--white);
@@ -72,8 +175,29 @@ html[theme="dark"] {
       }
     }
     .info {
+      .title, .title-edit input, .title-edit label, .title-edit svg {
+        color: var(--white);
+      }
     }
-    .contact-box {
+    .participant {
+      .contact-item {
+        &:after {
+          background-color: var(--dark-low);
+        }
+        .name {
+          color: var(--light);
+        }
+      }
+    }
+    .form-control {
+      .action {
+        svg {
+          color: var(--white);
+        }
+      }
+    }
+    .kk-card {
+      background-color: var(--dark-medium);
     }
   }
 }
