@@ -1397,6 +1397,9 @@ class Chat extends React.Component<IProps, IState> {
             const dialog = dialogs[this.dialogMap[selectedDialogId]];
             if ((dialog.readinboxmaxid || 0) < msgId || (dialog.unreadcount || 0) > 0) {
                 this.sdk.setMessagesReadHistory(peer, msgId);
+                this.messageRepo.getUnreadCount(peer.getId() || '', msgId).then((res) => {
+                    this.updateDialogsCounter(peer.getId() || '', {unreadCounter: res});
+                });
             }
         }
         this.readHistoryMaxId = null;
