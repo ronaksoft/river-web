@@ -54,9 +54,8 @@ body {
       left: 0;
       height: 100%;
       width: 100%;
-      display: flex;
-      flex-direction: column;
-      transition: left 0.2s ease-out; }
+      transition: left 0.2s ease-out;
+      overflow-y: scroll; }
       .group-info-menu .page-container .page.page-1 {
         left: 0; }
       .group-info-menu .page-container .page.page-2 {
@@ -71,7 +70,7 @@ body {
     height: 47px;
     color: var(--dark-medium); }
     .group-info-menu .menu-header label {
-      padding: 10px; }
+      padding: 10px 10px 10px 0; }
   .group-info-menu .info {
     display: flex;
     justify-content: center;
@@ -96,7 +95,7 @@ body {
       width: 100%;
       color: var(--grey); }
   .group-info-menu .participant {
-    padding: 16px 0; }
+    padding: 16px 0 0; }
     .group-info-menu .participant label {
       text-align: left;
       color: var(--river);
@@ -107,7 +106,6 @@ body {
       width: 100%;
       height: 64px;
       padding: 8px;
-      cursor: pointer;
       text-align: left; }
       .group-info-menu .participant .contact-item:after {
         position: absolute;
@@ -154,6 +152,29 @@ body {
         white-space: nowrap;
         text-overflow: ellipsis;
         color: var(--grey); }
+      .group-info-menu .participant .contact-item .more {
+        position: absolute;
+        top: 5px;
+        right: 8px;
+        height: 25px;
+        width: 20px;
+        display: none;
+        cursor: pointer;
+        z-index: 10; }
+        .group-info-menu .participant .contact-item .more svg {
+          height: 25px;
+          font-size: 25px; }
+      .group-info-menu .participant .contact-item:hover .more {
+        display: block; }
+    .group-info-menu .participant .add-member {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--river);
+      height: 40px;
+      cursor: pointer; }
+      .group-info-menu .participant .add-member:hover {
+        background-color: var(--color-hover); }
   .group-info-menu .contact-box {
     flex: 1; }
   .group-info-menu .form-control {
@@ -171,6 +192,21 @@ body {
     margin-bottom: 10px;
     background-color: var(--white);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); }
+
+.add-member-dialog .dialog-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  background-color: var(--river);
+  color: var(--white);
+  text-transform: uppercase; }
+  .add-member-dialog .dialog-header svg {
+    margin: 0 5px; }
+
+.add-member-dialog .dialog-content {
+  width: 300px;
+  height: 500px; }
 
 html[theme="dark"] .group-info-menu {
   background-color: var(--dark-high); }

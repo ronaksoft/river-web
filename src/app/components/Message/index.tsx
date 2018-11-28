@@ -219,9 +219,6 @@ class Message extends React.Component<IProps, IState> {
                 rowIndex={index}
                 parent={parent}>
                 {this.messageItem(index, message, this.state.peer, this.state.readId, style)}
-                {/*<MessageItem index={index} message={message} peer={this.state.peer} readId={this.state.readId}
-                             style={style} moreCmdHandler={this.moreCmdHandler}
-                             contextMenuHandler={this.contextMenuHandler}/>*/}
             </CellMeasurer>
         );
     }

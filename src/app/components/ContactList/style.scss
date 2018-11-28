@@ -1,54 +1,18 @@
 @import '../../../style/common';
 
-.new-group-menu {
+.contact-list {
   height: 100%;
-  .page-container {
-    position: relative;
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-    .page {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      transition: left 0.2s ease-out;
-      &.page-1 {
-        left: 0;
-      }
-      &.page-2 {
-        left: 100%;
-      }
-    }
-    &.page-2 {
-      .page-1 {
-        left: -100%;
-      }
-      .page-2 {
-        left: 0;
-      }
-    }
-  }
-  .menu-header {
-    background-color: var(--bg);
-    text-align: left;
-    height: 47px;
-    color: var(--dark-medium);
-    label {
-      padding: 10px 10px 10px 0;
-    }
-  }
-  .input-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  .contact-input-container {
     min-height: 48px;
     padding: 10px;
     .chip {
       margin: 0 3px 3px 0;
     }
   }
-  .contact-box {
+  .contact-list-container {
     flex: 1;
     .contact-container {
       height: 100%;
@@ -110,47 +74,11 @@
       }
     }
   }
-  .actions-bar {
-    height: 86px;
-    padding: 18px 0 22px;
-    text-align: center;
-    background-color: var(--message-chat);
-    &.no-bg {
-      background-color: transparent;
-    }
-    .add-action {
-      display: inline-flex;
-      height: 46px;
-      width: 46px;
-      border-radius: 50%;
-      background: var(--river);
-      color: var(--white);
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-      cursor: pointer;
-      transition: all 0.2s;
-      svg {
-        font-size: 40px;
-      }
-      &:hover {
-        background: var(--river-dark);
-        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
-      }
-    }
-  }
 }
 
 html[theme="dark"] {
-  .new-group-menu {
-    .menu-header {
-      background-color: var(--dark-high);
-      color: var(--white);
-      svg {
-        color: var(--white);
-      }
-    }
-    .input-container {
+  .contact-input {
+    .contact-input-container {
       color: var(--white);
       .chip {
         background-color: var(--dark-high);
@@ -160,7 +88,7 @@ html[theme="dark"] {
         color: var(--white);
       }
     }
-    .contact-box {
+    .contact-list-container {
       .contact-container {
         .contact-item {
           &:after {
@@ -170,12 +98,6 @@ html[theme="dark"] {
             color: var(--light);
           }
         }
-      }
-    }
-    .actions-bar {
-      background-color: var(--dark-high);
-      &.no-bg {
-        background-color: transparent;
       }
     }
   }

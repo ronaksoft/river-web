@@ -26,7 +26,7 @@ import {
 import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from './messages/api.updates_pb';
 import {Bool} from './messages/core.messages_pb';
 import {AccountRegisterDevice} from './messages/api.accounts_pb';
-import {GroupsCreate, GroupsEditTitle, GroupsGetFull} from './messages/api.groups_pb';
+import {GroupsCreate, GroupsDeleteUser, GroupsEditTitle, GroupsGetFull} from './messages/api.groups_pb';
 
 export default class SDK {
     public static getInstance() {
@@ -273,5 +273,12 @@ export default class SDK {
         data.setGroupid(peer.getId() || '');
         data.setTitle(title);
         return this.server.send(C_MSG.GroupsEditTitle, data.serializeBinary(), true);
+    }
+
+    public groupRemoveMember(peer: InputPeer, user: InputUser): Promise<Bool.AsObject> {
+        const data = new GroupsDeleteUser();
+        data.setGroupid(peer.getId() || '');
+        data.setUser(user);
+        return this.server.send(C_MSG.GroupsDeleteUser, data.serializeBinary(), true);
     }
 }
