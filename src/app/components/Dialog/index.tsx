@@ -1,10 +1,12 @@
 import * as React from 'react';
 import {List, AutoSizer} from 'react-virtualized';
 import {Link} from 'react-router-dom';
-import * as _ from 'lodash';
-import './style.css';
+import {findIndex} from 'lodash';
 import {IDialog} from '../../repository/dialog/interface';
 import DialogMessage from '../DialogMessage';
+import {MessageRounded} from '@material-ui/icons';
+
+import './style.css';
 
 interface IProps {
     cancelIsTyping: (id: string) => void;
@@ -21,7 +23,7 @@ interface IState {
 }
 
 class Dialog extends React.Component<IProps, IState> {
-    private list: any;
+    private list: List;
 
     constructor(props: IProps) {
         super(props);
@@ -51,7 +53,7 @@ class Dialog extends React.Component<IProps, IState> {
             });
         } else {
             // @ts-ignore
-            const index = _.findIndex(this.state.items, {id: newProps.selectedId});
+            const index = findIndex(this.state.items, {id: newProps.selectedId});
             this.setState({
                 isTypingList: newProps.isTypingList,
                 items: newProps.items,
@@ -79,6 +81,7 @@ class Dialog extends React.Component<IProps, IState> {
                         width={width}
                         height={height}
                         className="dialog-container"
+                        noRowsRenderer={this.noRowsRenderer}
                     />
                 )}
             </AutoSizer>
@@ -101,6 +104,14 @@ class Dialog extends React.Component<IProps, IState> {
                 </Link>
             </div>
         );
+    }
+
+    private noRowsRenderer = () => {
+        return (
+            <div className="no-result">
+                <MessageRounded/>
+                compose a new message : )
+            </div>);
     }
 }
 

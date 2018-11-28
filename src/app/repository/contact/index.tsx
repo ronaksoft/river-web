@@ -18,7 +18,7 @@ export default class ContactRepo {
     private dbService: DB;
     private db: DexieUserDB;
     private sdk: SDK;
-    private contactImported: boolean = false;
+    private contactImported: boolean = true;
 
     private constructor() {
         this.dbService = DB.getInstance();
@@ -36,6 +36,10 @@ export default class ContactRepo {
 
     public createMany(contacts: IContact[]) {
         return this.db.contacts.bulkPut(contacts);
+    }
+
+    public getInstant(id: string): IContact | null {
+        return this.dbService.getContact(id);
     }
 
     public get(id: string): Promise<IContact> {

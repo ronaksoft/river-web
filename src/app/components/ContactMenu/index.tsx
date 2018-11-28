@@ -6,6 +6,7 @@ import {debounce} from 'lodash';
 import {Link} from 'react-router-dom';
 import {TextAvatar} from '../UserAvatar';
 import TextField from '@material-ui/core/TextField/TextField';
+import {PersonRounded} from '@material-ui/icons';
 
 import './style.css';
 
@@ -88,6 +89,7 @@ class ContactMenu extends React.Component<IProps, IState> {
                                 width={width}
                                 height={height}
                                 className="contact-container"
+                                noRowsRenderer={this.noRowsRenderer}
                             />
                         )}
                     </AutoSizer>
@@ -98,6 +100,14 @@ class ContactMenu extends React.Component<IProps, IState> {
 
     private refHandler = (value: any) => {
         this.list = value;
+    }
+
+    private noRowsRenderer = () => {
+        return (
+            <div className="no-result">
+                <PersonRounded/>
+                add a contact : )
+            </div>);
     }
 
     private rowRender = ({index, key, parent, style}: any): any => {

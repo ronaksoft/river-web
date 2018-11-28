@@ -71,6 +71,19 @@ body {
       .dialog-container .dialog.active > span {
         color: var(--color-text-hover);
         background: transparent; }
+  .dialog-container .no-result {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    font-weight: 100;
+    color: var(--grey); }
+    .dialog-container .no-result svg {
+      margin: 0 0 32px;
+      color: inherit;
+      font-size: 75px; }
 
 html[theme="dark"] .dialog-container .dialog:after {
   background-color: var(--dark-low); }

@@ -5,14 +5,14 @@ import Message from '../../components/Message/index';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import {Attachment, MoreVert as MoreVertIcon, KeyboardArrowLeftRounded, MessageRounded} from '@material-ui/icons';
+import {Attachment, KeyboardArrowLeftRounded, MessageRounded, MoreVert as MoreVertIcon} from '@material-ui/icons';
 import * as faker from 'faker';
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
 import Uploader from '../../components/Uploader/index';
 import TextInput from '../../components/TextInput/index';
-import {trimStart, throttle, findIndex, cloneDeep} from 'lodash';
+import {cloneDeep, findIndex, throttle, trimStart} from 'lodash';
 import SDK from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
 import {
@@ -55,6 +55,7 @@ import GroupInfoMenu from '../../components/GroupInfoMenu';
 
 import './style.css';
 import UserInfoMenu from '../../components/UserInfoMenu';
+import ContactRepo from '../../repository/contact';
 
 interface IProps {
     history?: any;
@@ -92,6 +93,7 @@ class Chat extends React.Component<IProps, IState> {
     private messageRepo: MessageRepo;
     private dialogRepo: DialogRepo;
     private userRepo: UserRepo;
+    private contactRepo: ContactRepo;
     private groupRepo: GroupRepo;
     private mainRepo: MainRepo;
     private isLoading: boolean = false;
@@ -136,6 +138,7 @@ class Chat extends React.Component<IProps, IState> {
         this.connInfo = this.sdk.getConnInfo();
         this.messageRepo = MessageRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
+        this.contactRepo = ContactRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
         this.dialogRepo = DialogRepo.getInstance();
         this.mainRepo = MainRepo.getInstance();
@@ -346,7 +349,6 @@ class Chat extends React.Component<IProps, IState> {
             window.console.log('UpdateMaxOutbox:', data.maxid, data.peer.id);
             this.updateDialogsCounter(data.peer.id || '', {maxOutbox: data.maxid});
             if (data.peer.id === this.state.selectedDialogId) {
-                window.console.log('here', data.peer.id);
                 this.setState({
                     maxReadId: data.maxid || 0,
                 });
@@ -381,6 +383,9 @@ class Chat extends React.Component<IProps, IState> {
             });
         } else {
             const peer = this.getPeerByDialogId(selectedId);
+            if (peer) {
+                window.console.log(peer.getId());
+            }
             this.setState({
                 leftMenu: 'chat',
                 peer,
@@ -771,6 +776,15 @@ class Chat extends React.Component<IProps, IState> {
             });
         }).catch((err: any) => {
             window.console.warn(err);
+            this.setState({
+                isChatView: true,
+                isTyping: false,
+                maxReadId: 0,
+                messages: [],
+                selectedDialogId: dialogId,
+                textInputMessage: undefined,
+                textInputMessageMode: C_MSG_MODE.Normal,
+            });
         });
     }
 
@@ -1045,7 +1059,16 @@ class Chat extends React.Component<IProps, IState> {
 
     private getPeerByDialogId(id: string): InputPeer | null {
         if (!this.dialogMap.hasOwnProperty(id)) {
-            return null;
+            const contact = this.contactRepo.getInstant(id);
+            if (contact) {
+                const contactPeer = new InputPeer();
+                contactPeer.setType(PeerType.PEERUSER);
+                contactPeer.setAccesshash(contact.accesshash || '0');
+                contactPeer.setId(contact.id || '');
+                return contactPeer;
+            } else {
+                return null;
+            }
         }
         const index = this.dialogMap[id];
         const {dialogs} = this.state;
