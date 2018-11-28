@@ -260,6 +260,11 @@ html[theme="dark"] {
         .name {
           color: var(--light);
         }
+        .more {
+          svg {
+            color: var(--white);
+          }
+        }
       }
     }
     .form-control {

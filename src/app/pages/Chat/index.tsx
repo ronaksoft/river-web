@@ -54,6 +54,7 @@ import GroupName from '../../components/GroupName';
 import GroupInfoMenu from '../../components/GroupInfoMenu';
 
 import './style.css';
+import UserInfoMenu from '../../components/UserInfoMenu';
 
 interface IProps {
     history?: any;
@@ -430,7 +431,7 @@ class Chat extends React.Component<IProps, IState> {
             title: 'Account Info',
         }, {
             cmd: 'setting',
-            title: 'Setting',
+            title: 'Settings',
         }];
         return (
             <div className="bg">
@@ -560,6 +561,8 @@ class Chat extends React.Component<IProps, IState> {
                         <div ref={this.rightMenuRefHandler} className="column-right">
                             {(this.state.rightMenu && peer && peer.getType() === PeerType.PEERGROUP) &&
                             <GroupInfoMenu peer={peer} onClose={this.setRightMenu.bind(this, false)}/>}
+                            {(this.state.rightMenu && peer && peer.getType() === PeerType.PEERUSER) &&
+                            <UserInfoMenu peer={peer} onClose={this.setRightMenu.bind(this, false)}/>}
                         </div>
                     </div>
                     <NewMessage open={this.state.openNewMessage} onClose={this.onNewMessageClose}
@@ -672,7 +675,6 @@ class Chat extends React.Component<IProps, IState> {
 
     private chatMoreActionHandler = (cmd: string) => {
         this.chatMoreCloseHandler();
-        window.console.log(cmd);
         if (cmd === 'new_group') {
             this.setState({
                 leftOverlay: true,

@@ -73,11 +73,12 @@ class UserName extends React.Component<IProps, IState> {
         );
     }
 
-    private getUser(data?: any) {
+    private getUser = (data?: any) => {
         if (!this.state || this.state.id === '') {
             return;
         }
-        if (data && data.details.ids.indexOf(this.state.id) === -1) {
+
+        if (data && data.detail.ids.indexOf(this.state.id) === -1) {
             return;
         }
         if (this.state.you && this.userRepo.getCurrentUserId() === this.state.id) {

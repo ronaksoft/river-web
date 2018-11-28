@@ -244,6 +244,8 @@ html[theme="dark"] .group-info-menu {
     background-color: var(--dark-low); }
   html[theme="dark"] .group-info-menu .participant .contact-item .name {
     color: var(--light); }
+  html[theme="dark"] .group-info-menu .participant .contact-item .more svg {
+    color: var(--white); }
   html[theme="dark"] .group-info-menu .form-control .action svg {
     color: var(--white); }
   html[theme="dark"] .group-info-menu .kk-card {

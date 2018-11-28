@@ -98,7 +98,7 @@ class ContactList extends React.Component<IProps, IState> {
                                 rowCount={contacts.length}
                                 overscanRowCount={0}
                                 scrollToIndex={scrollIndex}
-                                width={width - 2}
+                                width={width}
                                 height={height}
                                 className="contact-container"
                                 noRowsRenderer={this.noRowsRenderer}

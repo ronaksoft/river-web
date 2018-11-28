@@ -4,22 +4,18 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  .menu-header {
+    background-color: var(--bg);
+    text-align: left;
+    height: 47px;
+    line-height: 27px;
+    color: var(--dark-medium);
+    padding: 10px 16px;
+  }
   .search-container {
-    height: 48px;
-    padding: 6px 12px;
-    background-color: #fbfbfb;
-    border-bottom: 1px solid #e9e9e9;
-    border-top: 1px solid #e9e9e9;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    input {
-      height: 32px;
-      border: 1px solid #eee;
-      padding: 0 12px;
-      width: 100%;
-      font-size: 14px;
-    }
+    min-height: 48px;
+    padding: 10px;
+    text-align: left;
   }
   .contact-box {
     flex: 1;
@@ -87,18 +83,13 @@
 
 html[theme="dark"] {
   .contacts {
+    .menu-header {
+      background-color: var(--dark-high);
+      color: var(--white);
+    }
     .search-container {
-      background-color: var(--dark-medium);
-      border-bottom: 1px solid var(--dark-low);
-      border-top: 1px solid var(--dark-low);
-      input {
-        height: 32px;
-        border: 1px solid var(--dark-high);
-        padding: 0 12px;
-        width: 100%;
-        font-size: 14px;
-        background-color: var(--dark-low);
-        color: var(--light);
+      label, input {
+        color: var(--white);
       }
     }
     .contact-box {

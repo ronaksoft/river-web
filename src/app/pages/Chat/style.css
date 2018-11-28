@@ -97,8 +97,6 @@ body {
         bottom: 0;
         width: 100px; }
     .container .column-left .left-content {
-      border-right: 1px solid var(--light);
-      border-left: 1px solid var(--light);
       width: 100%;
       height: calc(100% - 52px); }
     .container .column-left.with-top-bar .top-bar {
@@ -248,7 +246,6 @@ html[theme="dark"] .container {
   background-color: var(--dark-medium); }
   html[theme="dark"] .container .column-left {
     border: 1px solid transparent;
-    border-right: 1px solid var(--dark-low);
     background-color: var(--dark-medium); }
     html[theme="dark"] .container .column-left .actions svg {
       color: var(--light); }
@@ -256,9 +253,6 @@ html[theme="dark"] .container {
       background-color: var(--dark-medium); }
       html[theme="dark"] .container .column-left .top-bar:after {
         background-color: var(--dark-medium); }
-    html[theme="dark"] .container .column-left .left-content {
-      border-right: 1px solid var(--dark-medium);
-      border-left: 1px solid transparent; }
     html[theme="dark"] .container .column-left .left-overlay {
       background-color: var(--dark-medium); }
   html[theme="dark"] .container .column-center .top {

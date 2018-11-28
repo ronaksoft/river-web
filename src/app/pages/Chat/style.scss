@@ -63,8 +63,7 @@
       }
     }
     .left-content {
-      border-right: 1px solid var(--light);
-      border-left: 1px solid var(--light);
+      //border-right: 1px solid var(--light);
       width: 100%;
       height: calc(100% - 52px);
     }
@@ -255,7 +254,7 @@ html[theme="dark"] {
     background-color: var(--dark-medium);
     .column-left {
       border: 1px solid transparent;
-      border-right: 1px solid var(--dark-low);
+      //border-right: 1px solid var(--dark-low);
       background-color: var(--dark-medium);
       .actions {
         svg {
@@ -269,8 +268,7 @@ html[theme="dark"] {
         }
       }
       .left-content {
-        border-right: 1px solid var(--dark-medium);
-        border-left: 1px solid transparent;
+        //border-right: 1px solid var(--dark-medium);
       }
       .left-overlay {
         background-color: var(--dark-medium);

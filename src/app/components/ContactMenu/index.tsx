@@ -5,6 +5,7 @@ import ContactRepo from '../../repository/contact';
 import {debounce} from 'lodash';
 import {Link} from 'react-router-dom';
 import {TextAvatar} from '../UserAvatar';
+import TextField from '@material-ui/core/TextField/TextField';
 
 import './style.css';
 
@@ -61,8 +62,18 @@ class ContactMenu extends React.Component<IProps, IState> {
         const {contacts, scrollIndex} = this.state;
         return (
             <div className="contacts">
+                <div className="menu-header">
+                    <label>Contacts</label>
+                </div>
                 <div className="search-container">
-                    <input placeholder="search..." onChange={this.searchChangeHandler}/>
+                    <TextField
+                        label="Search..."
+                        fullWidth={true}
+                        inputProps={{
+                            maxLength: 32,
+                        }}
+                        onChange={this.searchChangeHandler}
+                    />
                 </div>
                 <div className="contact-box">
                     <AutoSizer>
@@ -74,7 +85,7 @@ class ContactMenu extends React.Component<IProps, IState> {
                                 rowCount={contacts.length}
                                 overscanRowCount={0}
                                 scrollToIndex={scrollIndex}
-                                width={width - 2}
+                                width={width}
                                 height={height}
                                 className="contact-container"
                             />

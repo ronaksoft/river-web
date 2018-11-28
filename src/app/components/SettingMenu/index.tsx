@@ -54,32 +54,37 @@ class SettingMenu extends React.Component<IProps, IState> {
     public render() {
         return (
             <div className="setting-menu">
-                <FormControlLabel className="setting-switch-label" control={
-                    <Switch
-                        checked={this.state.checked}
-                        className="setting-switch"
-                        color="default"
-                        onChange={this.nightModeHandler}
+                <div className="menu-header">
+                    <label>Contacts</label>
+                </div>
+                <div className="menu-content">
+                    <FormControlLabel className="setting-switch-label" control={
+                        <Switch
+                            checked={this.state.checked}
+                            className="setting-switch"
+                            color="default"
+                            onChange={this.nightModeHandler}
+                        />
+                    } label="Night mode"/>
+                    <label className="font-size-label">Font Size</label>
+                    <MobileStepper
+                        variant="progress"
+                        steps={6}
+                        position="static"
+                        activeStep={this.state.fontSize}
+                        className="font-size-container"
+                        nextButton={
+                            <Button size="small" onClick={this.handleNext} disabled={this.state.fontSize === 5}>
+                                <KeyboardArrowRight/>
+                            </Button>
+                        }
+                        backButton={
+                            <Button size="small" onClick={this.handleBack} disabled={this.state.fontSize === 0}>
+                                <KeyboardArrowLeft/>
+                            </Button>
+                        }
                     />
-                } label="Night mode"/>
-                <label className="font-size-label">Font Size</label>
-                <MobileStepper
-                    variant="progress"
-                    steps={6}
-                    position="static"
-                    activeStep={this.state.fontSize}
-                    className="font-size-container"
-                    nextButton={
-                        <Button size="small" onClick={this.handleNext} disabled={this.state.fontSize === 5}>
-                            <KeyboardArrowRight/>
-                        </Button>
-                    }
-                    backButton={
-                        <Button size="small" onClick={this.handleBack} disabled={this.state.fontSize === 0}>
-                            <KeyboardArrowLeft/>
-                        </Button>
-                    }
-                />
+                </div>
             </div>
         );
     }

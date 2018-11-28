@@ -41,13 +41,20 @@ body {
   background-repeat: no-repeat; }
 
 .setting-menu {
-  margin-left: -1px;
   border-right: 1px solid transparent;
   border-left: 1px solid transparent;
-  width: calc(100% + 2px);
+  width: calc(100% + 1px);
   height: 502px;
-  padding: 0 10px;
   text-align: left; }
+  .setting-menu .menu-header {
+    background-color: var(--bg);
+    text-align: left;
+    height: 47px;
+    line-height: 27px;
+    color: var(--dark-medium);
+    padding: 10px 16px; }
+  .setting-menu .menu-content {
+    padding: 0 10px; }
   .setting-menu .font-size-label {
     display: block;
     text-align: center;
@@ -67,6 +74,10 @@ body {
       background-color: var(--light); }
       .setting-menu .font-size-container div[role="progressbar"] > div {
         background-color: var(--grey); }
+
+html[theme="dark"] .setting-menu .menu-header {
+  background-color: var(--dark-high);
+  color: var(--white); }
 
 html[theme="dark"] .setting-menu .font-size-container button {
   color: var(--light); }

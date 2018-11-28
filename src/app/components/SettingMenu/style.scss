@@ -1,13 +1,22 @@
 @import '../../../style/common';
 
 .setting-menu {
-  margin-left: -1px;
   border-right: 1px solid transparent;
   border-left: 1px solid transparent;
-  width: calc(100% + 2px);
+  width: calc(100% + 1px);
   height: 502px;
-  padding: 0 10px;
   text-align: left;
+  .menu-header {
+    background-color: var(--bg);
+    text-align: left;
+    height: 47px;
+    line-height: 27px;
+    color: var(--dark-medium);
+    padding: 10px 16px;
+  }
+  .menu-content {
+    padding: 0 10px;
+  }
   .font-size-label {
     display: block;
     text-align: center;
@@ -36,6 +45,10 @@
 
 html[theme="dark"] {
   .setting-menu {
+    .menu-header {
+      background-color: var(--dark-high);
+      color: var(--white);
+    }
     .font-size-container {
       button {
         color: var(--light);

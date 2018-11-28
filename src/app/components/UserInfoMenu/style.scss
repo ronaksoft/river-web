@@ -1,0 +1,156 @@
+@import '../../../style/common';
+
+.user-info-menu {
+  height: 100%;
+  background: var(--bg);
+  .page-container {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    .page {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: calc(100% - 47px);
+      width: 100%;
+      transition: left 0.2s ease-out;
+      overflow-y: scroll;
+      &.page-1 {
+        left: 0;
+      }
+      &.page-2 {
+        left: 100%;
+      }
+    }
+    &.page-2 {
+      .page-1 {
+        left: -100%;
+      }
+      .page-2 {
+        left: 0;
+      }
+    }
+  }
+  .menu-header {
+    background-color: var(--bg);
+    text-align: left;
+    height: 47px;
+    color: var(--dark-medium);
+    label {
+      padding: 10px 10px 10px 0;
+    }
+  }
+  .info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 20px 10px;
+    .avatar {
+      height: 200px;
+      width: 200px;
+      border-radius: 50%;
+      display: inline-block;
+      font-size: 75px;
+    }
+    .line {
+      padding: 16px 10px 0;
+      text-align: left;
+      width: 100%;
+      .input-edit {
+        margin-bottom: 10px;
+      }
+    }
+    .created-on {
+      padding: 0 10px;
+      text-align: left;
+      width: 100%;
+      color: var(--grey);
+    }
+  }
+  .add-as-contact {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--river);
+    height: 40px;
+    cursor: pointer;
+    width: 100%;
+    &:hover {
+      background-color: var(--color-hover);
+    }
+  }
+  .actions-bar {
+    height: 86px;
+    padding: 18px 0 22px;
+    text-align: center;
+    .add-action {
+      display: inline-flex;
+      height: 46px;
+      width: 46px;
+      border-radius: 50%;
+      background: var(--river);
+      color: var(--white);
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+      transition: all 0.2s;
+      svg {
+        font-size: 40px;
+      }
+      &:hover {
+        background: var(--river-dark);
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+      }
+    }
+  }
+  .form-control {
+    display: flex;
+    .inner {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .action {
+      width: 48px;
+    }
+  }
+  .kk-card {
+    margin-bottom: 10px;
+    background-color: var(--white);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+}
+
+html[theme="dark"] {
+  .user-info-menu {
+    background-color: var(--dark-high);
+    .menu-header {
+      background-color: var(--dark-high);
+      color: var(--white);
+      svg {
+        color: var(--white);
+      }
+    }
+    .info {
+      .line, .input-edit input, .input-edit label, .input-edit svg {
+        color: var(--white);
+      }
+    }
+    .form-control {
+      .action {
+        svg {
+          color: var(--white);
+        }
+      }
+    }
+    .kk-card {
+      background-color: var(--dark-medium);
+    }
+  }
+}

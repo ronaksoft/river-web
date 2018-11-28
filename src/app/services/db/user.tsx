@@ -35,8 +35,8 @@ export default class UserDB {
         return this.users[id];
     }
 
-    public setContact(user: IContact) {
-        this.contacts[user.id || 0] = user;
+    public setContact(contact: IContact) {
+        this.contacts[contact.id || 0] = contact;
     }
 
     public getContact(id: string): IContact | null {

@@ -76,7 +76,7 @@ class Dialog extends React.Component<IProps, IState> {
                         rowCount={items.length}
                         overscanRowCount={0}
                         scrollToIndex={this.state.scrollIndex}
-                        width={width - 2}
+                        width={width}
                         height={height}
                         className="dialog-container"
                     />

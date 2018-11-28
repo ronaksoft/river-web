@@ -18,6 +18,7 @@ export default class ContactRepo {
     private dbService: DB;
     private db: DexieUserDB;
     private sdk: SDK;
+    private contactImported: boolean = false;
 
     private constructor() {
         this.dbService = DB.getInstance();
@@ -43,23 +44,37 @@ export default class ContactRepo {
             return Promise.resolve(contact);
         }
         return this.db.contacts.get(id).then((c: IContact) => {
-            this.dbService.setContact(c);
+            if (c) {
+                this.dbService.setContact(c);
+            } else {
+                return Promise.reject();
+            }
             return c;
         });
     }
 
     public getAll(): Promise<IContact[]> {
         return new Promise((resolve, reject) => {
-            this.getManyCache({}).then((res) => {
-                resolve(res);
-            }).catch((err) => {
+            if (this.contactImported) {
+                this.getManyCache({}).then((res) => {
+                    resolve(res);
+                }).catch((err) => {
+                    this.sdk.getContacts().then((remoteRes) => {
+                        this.importBulk(remoteRes.usersList);
+                        resolve(remoteRes.usersList);
+                    }).catch((err2) => {
+                        reject(err2);
+                    });
+                });
+            } else {
+                this.contactImported = true;
                 this.sdk.getContacts().then((remoteRes) => {
                     this.importBulk(remoteRes.usersList);
                     resolve(remoteRes.usersList);
                 }).catch((err2) => {
                     reject(err2);
                 });
-            });
+            }
         });
     }
 
@@ -90,6 +105,17 @@ export default class ContactRepo {
                 return merge(contact, t);
             });
             return this.createMany([...createItems, ...updateItems]);
+        }).then((res) => {
+            this.broadcastEvent('User_DB_Updated', {ids});
+            return res;
         });
+    }
+
+    private broadcastEvent(name: string, data: any) {
+        const event = new CustomEvent(name, {
+            bubbles: true,
+            detail: data,
+        });
+        window.dispatchEvent(event);
     }
 }
