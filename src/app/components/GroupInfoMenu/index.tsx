@@ -41,8 +41,10 @@ interface IProps {
 interface IState {
     addMemberDialogEnable: boolean;
     currentUser: IUser | null;
+    forwardLimit: number;
     group: IGroup | null;
     moreAnchorEl: any;
+    newMembers: IContact[];
     page: string;
     participants: IUser[];
     peer: InputPeer | null;
@@ -61,8 +63,10 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         this.state = {
             addMemberDialogEnable: false,
             currentUser: null,
+            forwardLimit: 50,
             group: null,
             moreAnchorEl: null,
+            newMembers: [],
             page: '1',
             participants: [],
             peer: props.peer,
@@ -92,21 +96,21 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {addMemberDialogEnable, group, page, title, titleEdit, moreAnchorEl} = this.state;
+        const {addMemberDialogEnable, group, page, participants, title, titleEdit, moreAnchorEl} = this.state;
         return (
             <div className="group-info-menu">
+                <div className="menu-header">
+                    <IconButton
+                        aria-label="Close"
+                        aria-haspopup="true"
+                        onClick={this.props.onClose}
+                    >
+                        <CloseRounded/>
+                    </IconButton>
+                    <label>Group Info</label>
+                </div>
                 <div className={'page-container page-' + page}>
                     <div className="page page-1">
-                        <div className="menu-header">
-                            <IconButton
-                                aria-label="Close"
-                                aria-haspopup="true"
-                                onClick={this.props.onClose}
-                            >
-                                <CloseRounded/>
-                            </IconButton>
-                            <label>Group Info</label>
-                        </div>
                         {group && <div className="info kk-card">
                             <div className="avatar">
                                 <GroupAvatar id={group.id || ''}/>
@@ -151,7 +155,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                         </div>}
                         {group && <div className="participant kk-card">
                             <label>{group.participants} participants</label>
-                            {this.state.participants.map((contact, index) => {
+                            {participants.map((contact, index) => {
                                 return (
                                     <div key={index} className="contact-item">
                                         <span className="avatar">{contact.avatar ? <img
@@ -187,12 +191,17 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                     onClose={this.addMemberDialogCloseHandler}
                     className="add-member-dialog"
                 >
-                    <div className="dialog-content">
+                    {addMemberDialogEnable && <div className="dialog-content">
                         <div className="dialog-header">
                             <PersonAddRounded/> Add member
                         </div>
-                        <ContactList/>
-                    </div>
+                        <ContactList hiddenContacts={participants} onChange={this.addMemberChangeHandler}/>
+                        {Boolean(this.state.newMembers.length > 0) && <div className="actions-bar">
+                            <div className="add-action" onClick={this.addMemberHandler}>
+                                <CheckRounded/>
+                            </div>
+                        </div>}
+                    </div>}
                 </Dialog>
             </div>
         );
@@ -349,6 +358,50 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         this.setState({
             addMemberDialogEnable: false,
         });
+    }
+
+    /* Sets the new member list */
+    private addMemberChangeHandler = (contacts: IContact[]) => {
+        this.setState({
+            newMembers: contacts,
+        });
+    }
+
+    /* Adds member(s) to group */
+    private addMemberHandler = () => {
+        this.addMemberDialogCloseHandler();
+        const {peer, newMembers, group, forwardLimit, participants} = this.state;
+        if (!peer || !group || newMembers.length === 0) {
+            return;
+        }
+        const promises: any[] = [];
+        newMembers.forEach((member) => {
+            const user = new InputUser();
+            user.setUserid(member.id || '');
+            user.setAccesshash(member.accesshash || '');
+            promises.push(this.sdk.groupAddMember(peer, user, forwardLimit));
+        });
+        /* waits for all promises to be resolved */
+        if (promises.length > 0) {
+            Promise.all(newMembers).then((res) => {
+                window.console.log('successfully added', res);
+                participants.push.apply(participants, newMembers);
+                group.participants = participants.length;
+                this.setState({
+                    group,
+                    newMembers: [],
+                    participants,
+                });
+            }).catch(() => {
+                this.setState({
+                    newMembers: [],
+                });
+            });
+        } else {
+            this.setState({
+                newMembers: [],
+            });
+        }
     }
 }
 

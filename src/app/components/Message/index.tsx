@@ -408,10 +408,10 @@ class Message extends React.Component<IProps, IState> {
                 return (<span className="system-message">Group Created</span>);
             case C_MESSAGE_ACTION.MessageActionJoined:
                 return (<span className="system-message">
-                    <UserName className="user" id={message.senderid || ''}/> Joined</span>);
+                    <UserName className="user" id={message.senderid || ''}/> Added a Member</span>);
             case C_MESSAGE_ACTION.MessageActionLeft:
                 return (<span className="system-message">
-                    <UserName className="user" id={message.senderid || ''}/> Left</span>);
+                    <UserName className="user" id={message.senderid || ''}/> Removed a Member</span>);
             case C_MESSAGE_ACTION.MessageActionGroupTitleChanged:
                 return (<span className="system-message">
                     <UserName className="user" id={message.senderid || ''}/> Changed the Group Title</span>);

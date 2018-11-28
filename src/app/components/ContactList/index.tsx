@@ -16,18 +16,19 @@ import UserAvatar, {TextAvatar} from '../UserAvatar';
 import ChipInput from 'material-ui-chip-input';
 import Chip from '@material-ui/core/Chip';
 import UserName from '../UserName';
+import {NotInterestedRounded} from '@material-ui/icons';
 
 import './style.css';
 
 interface IProps {
-    contacts?: [];
-    hiddenContacts?: [];
+    contacts?: IContact[];
+    hiddenContacts?: IContact[];
     onChange?: (contacts: IContact[]) => void;
 }
 
 interface IState {
     contacts: IContact[];
-    hiddenContacts: [];
+    hiddenContacts: IContact[];
     page: string;
     selectedContacts: IContact[];
     scrollIndex: number;
@@ -50,7 +51,7 @@ class ContactList extends React.Component<IProps, IState> {
             hiddenContacts: props.hiddenContacts || [],
             page: '1',
             scrollIndex: -1,
-            selectedContacts: [],
+            selectedContacts: props.contacts || [],
             title: '',
         };
 
@@ -60,22 +61,16 @@ class ContactList extends React.Component<IProps, IState> {
 
     public componentDidMount() {
         // Gets all contacts on mount
-        this.contactRepo.getAll().then((res) => {
-            this.defaultContact = res;
-            this.contactsRes = clone(res);
-            this.setState({
-                contacts: res,
-            }, () => {
-                this.list.recomputeRowHeights();
-                this.list.forceUpdateGrid();
-            });
-        });
+        this.getDefault();
     }
 
     public componentWillReceiveProps(newProps: IProps) {
         this.setState({
-            contacts: newProps.contacts || [],
             hiddenContacts: newProps.hiddenContacts || [],
+        }, () => {
+            if (this.state.selectedContacts.length === 0) {
+                this.getDefault();
+            }
         });
     }
 
@@ -106,6 +101,7 @@ class ContactList extends React.Component<IProps, IState> {
                                 width={width - 2}
                                 height={height}
                                 className="contact-container"
+                                noRowsRenderer={this.noRowsRenderer}
                             />
                         )}
                     </AutoSizer>
@@ -137,6 +133,29 @@ class ContactList extends React.Component<IProps, IState> {
                 <span className="phone">{contact.phone ? contact.phone : 'no phone'}</span>
             </div>
         );
+    }
+
+    private noRowsRenderer = () => {
+        return (
+            <div className="no-result">
+                <NotInterestedRounded/>
+                no result!
+            </div>
+        );
+    }
+
+    /* Get all contacts */
+    private getDefault() {
+        this.contactRepo.getAll().then((res) => {
+            this.defaultContact = res;
+            this.contactsRes = clone(res);
+            this.setState({
+                contacts: this.getTrimmedList([]),
+            }, () => {
+                this.list.recomputeRowHeights();
+                this.list.forceUpdateGrid();
+            });
+        });
     }
 
     /* Searches the given string */
@@ -183,7 +202,7 @@ class ContactList extends React.Component<IProps, IState> {
     /* Remove member from selectedContacts */
     private removeMemberHandler = (contact: IContact) => {
         const {selectedContacts} = this.state;
-        if (!selectedContacts) {
+        if (!selectedContacts || !contact) {
             return;
         }
         const index = findIndex(selectedContacts, {id: contact.id || ''});
@@ -200,14 +219,14 @@ class ContactList extends React.Component<IProps, IState> {
 
     /* Removes the selected users from the list */
     private getTrimmedList(selectedContacts: IContact[]) {
-        return differenceBy(this.contactsRes, selectedContacts.concat(this.state.hiddenContacts), 'id');
+        return differenceBy(this.contactsRes, [...selectedContacts, ...this.state.hiddenContacts], 'id');
     }
 
     /* Dispatch any changes on edit */
     private dispatchContactChange() {
         const {selectedContacts} = this.state;
         if (this.props.onChange) {
-            this.props.onChange(selectedContacts);
+            this.props.onChange(clone(selectedContacts));
         }
     }
 }

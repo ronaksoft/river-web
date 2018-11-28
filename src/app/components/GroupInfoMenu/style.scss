@@ -12,7 +12,7 @@
       position: absolute;
       top: 0;
       left: 0;
-      height: 100%;
+      height: calc(100% - 47px);
       width: 100%;
       transition: left 0.2s ease-out;
       overflow-y: scroll;
@@ -191,21 +191,49 @@
 }
 
 .add-member-dialog {
-  .dialog-header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 40px;
-    background-color: var(--river);
-    color: var(--white);
-    text-transform: uppercase;
-    svg {
-      margin: 0 5px;
-    }
-  }
   .dialog-content {
     width: 300px;
     height: 500px;
+    display: flex;
+    flex-direction: column;
+    .dialog-header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 40px;
+      background-color: var(--river);
+      color: var(--white);
+      text-transform: uppercase;
+      svg {
+        margin: 0 5px;
+      }
+    }
+    .actions-bar {
+      height: 86px;
+      padding: 18px 0 22px;
+      text-align: center;
+      background-color: var(--message-chat);
+      .add-action {
+        display: inline-flex;
+        height: 46px;
+        width: 46px;
+        border-radius: 50%;
+        background: var(--river);
+        color: var(--white);
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+        cursor: pointer;
+        transition: all 0.2s;
+        svg {
+          font-size: 40px;
+        }
+        &:hover {
+          background: var(--river-dark);
+          box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+        }
+      }
+    }
   }
 }
 
@@ -243,6 +271,14 @@ html[theme="dark"] {
     }
     .kk-card {
       background-color: var(--dark-medium);
+    }
+  }
+  .add-member-dialog {
+    .dialog-content {
+      background-color: var(--dark);
+      .actions-bar {
+        background-color: var(--dark-medium);
+      }
     }
   }
 }

@@ -52,7 +52,7 @@ body {
       position: absolute;
       top: 0;
       left: 0;
-      height: 100%;
+      height: calc(100% - 47px);
       width: 100%;
       transition: left 0.2s ease-out;
       overflow-y: scroll; }
@@ -193,20 +193,43 @@ body {
     background-color: var(--white);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); }
 
-.add-member-dialog .dialog-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 40px;
-  background-color: var(--river);
-  color: var(--white);
-  text-transform: uppercase; }
-  .add-member-dialog .dialog-header svg {
-    margin: 0 5px; }
-
 .add-member-dialog .dialog-content {
   width: 300px;
-  height: 500px; }
+  height: 500px;
+  display: flex;
+  flex-direction: column; }
+  .add-member-dialog .dialog-content .dialog-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    background-color: var(--river);
+    color: var(--white);
+    text-transform: uppercase; }
+    .add-member-dialog .dialog-content .dialog-header svg {
+      margin: 0 5px; }
+  .add-member-dialog .dialog-content .actions-bar {
+    height: 86px;
+    padding: 18px 0 22px;
+    text-align: center;
+    background-color: var(--message-chat); }
+    .add-member-dialog .dialog-content .actions-bar .add-action {
+      display: inline-flex;
+      height: 46px;
+      width: 46px;
+      border-radius: 50%;
+      background: var(--river);
+      color: var(--white);
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+      transition: all 0.2s; }
+      .add-member-dialog .dialog-content .actions-bar .add-action svg {
+        font-size: 40px; }
+      .add-member-dialog .dialog-content .actions-bar .add-action:hover {
+        background: var(--river-dark);
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4); }
 
 html[theme="dark"] .group-info-menu {
   background-color: var(--dark-high); }
@@ -224,4 +247,9 @@ html[theme="dark"] .group-info-menu {
   html[theme="dark"] .group-info-menu .form-control .action svg {
     color: var(--white); }
   html[theme="dark"] .group-info-menu .kk-card {
+    background-color: var(--dark-medium); }
+
+html[theme="dark"] .add-member-dialog .dialog-content {
+  background-color: var(--dark); }
+  html[theme="dark"] .add-member-dialog .dialog-content .actions-bar {
     background-color: var(--dark-medium); }

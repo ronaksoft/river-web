@@ -488,8 +488,8 @@ class Chat extends React.Component<IProps, IState> {
                             </div>
                             <BottomBar onSelect={this.bottomBarSelectHandler} selected={leftMenu}/>
                             <div className="left-overlay">
-                                <NewGroupMenu onClose={this.leftOverlayCloseHandler}
-                                              onCreate={this.onGroupCreateHandler}/>
+                                {leftOverlay && <NewGroupMenu onClose={this.leftOverlayCloseHandler}
+                                                              onCreate={this.onGroupCreateHandler}/>}
                             </div>
                         </div>
                         {selectedDialogId !== 'null' && <div className="column-center">
