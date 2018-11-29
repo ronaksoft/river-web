@@ -18,7 +18,7 @@ export default class ContactRepo {
     private dbService: DB;
     private db: DexieUserDB;
     private sdk: SDK;
-    private contactImported: boolean = true;
+    private contactImported: boolean = false;
 
     private constructor() {
         this.dbService = DB.getInstance();
