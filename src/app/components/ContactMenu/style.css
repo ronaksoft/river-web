@@ -45,12 +45,18 @@ body {
   flex-direction: column;
   height: 100%; }
   .contacts .menu-header {
+    position: relative;
     background-color: var(--bg);
     text-align: left;
     height: 47px;
     line-height: 27px;
     color: var(--dark-medium);
     padding: 10px 16px; }
+    .contacts .menu-header .actions {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 47px; }
   .contacts .search-container {
     min-height: 48px;
     padding: 10px;
@@ -123,6 +129,28 @@ body {
           color: inherit;
           font-size: 75px; }
 
+.add-contact-dialog .actions-bar {
+  height: 64px;
+  padding: 18px 0 0;
+  text-align: center; }
+  .add-contact-dialog .actions-bar .add-action {
+    display: inline-flex;
+    height: 46px;
+    width: 46px;
+    border-radius: 50%;
+    background: var(--river);
+    color: var(--white);
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    transition: all 0.2s; }
+    .add-contact-dialog .actions-bar .add-action svg {
+      font-size: 40px; }
+    .add-contact-dialog .actions-bar .add-action:hover {
+      background: var(--river-dark);
+      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4); }
+
 html[theme="dark"] .contacts .menu-header {
   background-color: var(--dark-high);
   color: var(--white); }
@@ -135,3 +163,9 @@ html[theme="dark"] .contacts .contact-box .contact-container .contact-item:after
 
 html[theme="dark"] .contacts .contact-box .contact-container .contact-item .name {
   color: var(--light); }
+
+html[theme="dark"] .add-contact-dialog div[role="document"] > div {
+  background: var(--dark);
+  color: var(--white); }
+  html[theme="dark"] .add-contact-dialog div[role="document"] > div h2, html[theme="dark"] .add-contact-dialog div[role="document"] > div input, html[theme="dark"] .add-contact-dialog div[role="document"] > div label {
+    color: var(--white); }

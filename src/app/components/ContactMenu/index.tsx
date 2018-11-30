@@ -1,3 +1,12 @@
+/*
+    Creation Time: 2018 - Oct - 21
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+
 import * as React from 'react';
 import {List, AutoSizer} from 'react-virtualized';
 import {IContact} from '../../repository/contact/interface';
@@ -6,7 +15,15 @@ import {debounce} from 'lodash';
 import {Link} from 'react-router-dom';
 import {TextAvatar} from '../UserAvatar';
 import TextField from '@material-ui/core/TextField/TextField';
-import {PersonRounded} from '@material-ui/icons';
+import {CheckRounded, PersonAddRounded, PersonRounded} from '@material-ui/icons';
+import IconButton from '@material-ui/core/IconButton/IconButton';
+import Tooltip from '@material-ui/core/Tooltip/Tooltip';
+import DialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent/DialogContent';
+import Dialog from '@material-ui/core/Dialog/Dialog';
+import SDK from '../../services/sdk';
+import {PhoneContact} from '../../services/sdk/messages/core.types_pb';
+import UniqueId from '../../services/uniqueId';
 
 import './style.css';
 
@@ -15,10 +32,13 @@ interface IProps {
 }
 
 interface IState {
-    id?: number;
     contacts: IContact[];
-    selectedId: string;
+    firstname: string;
+    lastname: string;
+    newContactDialogOpen: boolean;
+    phone: string;
     scrollIndex: number;
+    selectedId: string;
 }
 
 class ContactMenu extends React.Component<IProps, IState> {
@@ -27,44 +47,50 @@ class ContactMenu extends React.Component<IProps, IState> {
     private contactRepo: ContactRepo;
     private searchDebounce: any;
     private defaultContact: IContact[];
+    private sdk: SDK;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
             contacts: [],
+            firstname: '',
+            lastname: '',
+            newContactDialogOpen: false,
+            phone: '',
             scrollIndex: -1,
             selectedId: '-1',
         };
 
         this.contactRepo = ContactRepo.getInstance();
         this.searchDebounce = debounce(this.search, 512);
+        this.sdk = SDK.getInstance();
     }
 
     public componentDidMount() {
-        this.contactRepo.getAll().then((res) => {
-            this.defaultContact = res;
-            this.setState({
-                contacts: res,
-            }, () => {
-                this.list.recomputeRowHeights();
-                this.list.forceUpdateGrid();
-            });
-        });
-    }
-
-    public componentWillReceiveProps(newProps: IProps) {
-        this.setState({
-            id: newProps.id || 0,
-        });
+        this.getContacts();
     }
 
     public render() {
-        const {contacts, scrollIndex} = this.state;
+        const {firstname, lastname, phone, contacts, newContactDialogOpen, scrollIndex} = this.state;
         return (
             <div className="contacts">
                 <div className="menu-header">
                     <label>Contacts</label>
+                    <span className="actions">
+                        <Tooltip
+                            title="New Contact"
+                            placement="bottom"
+                        >
+                            <IconButton
+                                aria-label="New Contact"
+                                aria-haspopup="true"
+                                onClick={this.newContactOpenHandler}
+                            >
+                                <PersonAddRounded/>
+                            </IconButton>
+                        </Tooltip>
+                    </span>
                 </div>
                 <div className="search-container">
                     <TextField
@@ -94,6 +120,44 @@ class ContactMenu extends React.Component<IProps, IState> {
                         )}
                     </AutoSizer>
                 </div>
+                <Dialog
+                    open={newContactDialogOpen}
+                    onClose={this.newContactCloseHandler}
+                    aria-labelledby="form-dialog-title"
+                    maxWidth="xs"
+                    className="add-contact-dialog"
+                >
+                    <DialogTitle id="form-dialog-title">New Contact</DialogTitle>
+                    <DialogContent>
+                        <TextField
+                            autoFocus={true}
+                            fullWidth={true}
+                            label="First Name"
+                            margin="dense"
+                            onChange={this.firstnameHandleChange}
+                            value={firstname}
+                        />
+                        <TextField
+                            fullWidth={true}
+                            label="Last Name"
+                            margin="dense"
+                            onChange={this.lastnameHandleChange}
+                            value={lastname}
+                        />
+                        <TextField
+                            fullWidth={true}
+                            label="Phone"
+                            margin="dense"
+                            onChange={this.phoneHandleChange}
+                            value={phone}
+                        />
+                        {Boolean(firstname.length > 0 && lastname.length > 0 && phone.length > 5) && <div className="actions-bar">
+                            <div className="add-action" onClick={this.createContactHandler}>
+                                <CheckRounded/>
+                            </div>
+                        </div>}
+                    </DialogContent>
+                </Dialog>
             </div>
         );
     }
@@ -144,6 +208,78 @@ class ContactMenu extends React.Component<IProps, IState> {
             }, () => {
                 this.list.recomputeRowHeights();
                 this.list.forceUpdateGrid();
+            });
+        });
+    }
+
+    private getContacts() {
+        this.contactRepo.getAll().then((res) => {
+            this.defaultContact = res;
+            this.setState({
+                contacts: res,
+            }, () => {
+                this.list.recomputeRowHeights();
+                this.list.forceUpdateGrid();
+            });
+        });
+    }
+
+    private newContactOpenHandler = () => {
+        this.setState({
+            newContactDialogOpen: true,
+        });
+    }
+
+    private newContactCloseHandler = () => {
+        this.setState({
+            newContactDialogOpen: false,
+        });
+    }
+
+    private firstnameHandleChange = (e: any) => {
+        this.setState({
+            firstname: e.currentTarget.value,
+        });
+    }
+
+    private lastnameHandleChange = (e: any) => {
+        this.setState({
+            lastname: e.currentTarget.value,
+        });
+    }
+
+    private phoneHandleChange = (e: any) => {
+        this.setState({
+            phone: e.currentTarget.value,
+        });
+    }
+
+    private createContactHandler = () => {
+        this.newContactCloseHandler();
+        const {firstname, lastname, phone} = this.state;
+        const contacts: PhoneContact.AsObject[] = [];
+        contacts.push({
+            clientid: String(UniqueId.getRandomId()),
+            firstname,
+            lastname,
+            phone,
+        });
+        this.sdk.contactImport(true, contacts).then((data) => {
+            data.usersList.forEach((user) => {
+                this.contactRepo.importBulk([user]).then(() => {
+                    this.getContacts();
+                });
+            });
+            this.setState({
+                firstname: '',
+                lastname: '',
+                phone: '',
+            });
+        }).catch(() => {
+            this.setState({
+                firstname: '',
+                lastname: '',
+                phone: '',
             });
         });
     }

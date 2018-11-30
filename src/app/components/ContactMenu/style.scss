@@ -5,12 +5,19 @@
   flex-direction: column;
   height: 100%;
   .menu-header {
+    position: relative;
     background-color: var(--bg);
     text-align: left;
     height: 47px;
     line-height: 27px;
     color: var(--dark-medium);
     padding: 10px 16px;
+    .actions {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 47px;
+    }
   }
   .search-container {
     min-height: 48px;
@@ -96,6 +103,34 @@
   }
 }
 
+.add-contact-dialog {
+  .actions-bar {
+    height: 64px;
+    padding: 18px 0 0;
+    text-align: center;
+    .add-action {
+      display: inline-flex;
+      height: 46px;
+      width: 46px;
+      border-radius: 50%;
+      background: var(--river);
+      color: var(--white);
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+      transition: all 0.2s;
+      svg {
+        font-size: 40px;
+      }
+      &:hover {
+        background: var(--river-dark);
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+      }
+    }
+  }
+}
+
 html[theme="dark"] {
   .contacts {
     .menu-header {
@@ -116,6 +151,17 @@ html[theme="dark"] {
           .name {
             color: var(--light);
           }
+        }
+      }
+    }
+  }
+  .add-contact-dialog {
+    div[role="document"] {
+      > div {
+        background: var(--dark);
+        color: var(--white);
+        h2, input, label {
+          color: var(--white);
         }
       }
     }
