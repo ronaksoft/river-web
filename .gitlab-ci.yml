@@ -5,7 +5,7 @@ stages:
 variables:
   BUILD_DIR: $CI_PROJECT_DIR
 
-image: "yarnpkg/node-yarn"
+image: "node"
 
 build:mobile:
   stage: build
