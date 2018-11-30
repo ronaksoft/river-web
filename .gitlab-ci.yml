@@ -5,7 +5,7 @@ stages:
 variables:
   BUILD_DIR: $CI_PROJECT_DIR
 
-image: "node"
+image: "node:8"
 
 build:mobile:
   stage: build
