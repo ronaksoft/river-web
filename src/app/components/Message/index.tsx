@@ -304,7 +304,7 @@ class Message extends React.Component<IProps, IState> {
                     const el = document.querySelector('.chat.active-chat');
                     if (el) {
                         el.scroll({
-                            behavior: 'instant',
+                            behavior: 'auto',
                             top: 1000000,
                         });
                     }
