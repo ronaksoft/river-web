@@ -242,7 +242,6 @@ class UserInfoMenu extends React.Component<IProps, IState> {
         this.sdk.contactImport(true, contacts).then((data) => {
             data.usersList.forEach((item) => {
                 this.contactRepo.importBulk([item]);
-                window.console.log(item);
             });
             user.lastname = lastname;
             user.firstname = firstname;
