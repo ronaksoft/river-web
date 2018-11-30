@@ -35,7 +35,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
   font-weight: 400;
   background-size: cover;
   background-repeat: no-repeat; }
@@ -98,7 +98,7 @@ body {
           line-height: 23px;
           margin: 0 0 4px;
           color: var(--dark);
-          font-family: 'Source Sans Pro', sans-serif;
+          font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
           font-weight: 600; }
         .contacts .contact-box .contact-container .contact-item .phone {
           font-size: 14px;

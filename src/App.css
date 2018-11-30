@@ -74,3 +74,33 @@ table {
     transform: rotate(0deg); }
   to {
     transform: rotate(360deg); } }
+
+@font-face {
+  font-family: 'OpenSans';
+  font-weight: 300;
+  src: url(asset/font/OpenSans/OpenSans-Light.eot?) format("eot"), url(asset/font/OpenSans/OpenSans-Light.ttf) format("truetype"), url(asset/font/OpenSans/OpenSans-Light.woff) format("woff"), url(asset/font/OpenSans/OpenSans-Light.woff2) format("woff2"); }
+
+@font-face {
+  font-family: 'OpenSans';
+  font-weight: 400;
+  src: url(asset/font/OpenSans/OpenSans-Regular.eot?) format("eot"), url(asset/font/OpenSans/OpenSans-Regular.ttf) format("truetype"), url(asset/font/OpenSans/OpenSans-Regular.woff) format("woff"), url(asset/font/OpenSans/OpenSans-Regular.woff2) format("woff2"); }
+
+@font-face {
+  font-family: 'OpenSans';
+  font-weight: 700;
+  src: url(asset/font/OpenSans/OpenSans-Bold.eot?) format("eot"), url(asset/font/OpenSans/OpenSans-Bold.ttf) format("truetype"), url(asset/font/OpenSans/OpenSans-Bold.woff) format("woff"), url(asset/font/OpenSans/OpenSans-Bold.woff2) format("woff2"); }
+
+@font-face {
+  font-family: 'YekanBakh';
+  font-weight: 300;
+  src: url(asset/font/YekanBakh/YekanBakhNestedWeb-Light.eot?) format("eot"), url(asset/font/YekanBakh/YekanBakhNestedWeb-Light.ttf) format("truetype"), url(asset/font/YekanBakh/YekanBakhNestedWeb-Light.woff) format("woff"), url(asset/font/YekanBakh/YekanBakhNestedWeb-Light.woff2) format("woff2"); }
+
+@font-face {
+  font-family: 'YekanBakh';
+  font-weight: 400;
+  src: url(asset/font/YekanBakh/YekanBakhNestedWeb-Regular.eot?) format("eot"), url(asset/font/YekanBakh/YekanBakhNestedWeb-Regular.ttf) format("truetype"), url(asset/font/YekanBakh/YekanBakhNestedWeb-Regular.woff) format("woff"), url(asset/font/YekanBakh/YekanBakhNestedWeb-Regular.woff2) format("woff2"); }
+
+@font-face {
+  font-family: 'YekanBakh';
+  font-weight: 700;
+  src: url(asset/font/YekanBakh/YekanBakhNestedWeb-Bold.eot?) format("eot"), url(asset/font/YekanBakh/YekanBakhNestedWeb-Bold.ttf) format("truetype"), url(asset/font/YekanBakh/YekanBakhNestedWeb-Bold.woff) format("woff"), url(asset/font/YekanBakh/YekanBakhNestedWeb-Bold.woff2) format("woff2"); }
