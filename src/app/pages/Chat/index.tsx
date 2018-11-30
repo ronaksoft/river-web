@@ -1074,6 +1074,12 @@ class Chat extends React.Component<IProps, IState> {
         const {dialogs} = this.state;
         const peer = new InputPeer();
         peer.setType(dialogs[index].peertype || 0);
+        if (dialogs[index].peertype === PeerType.PEERUSER && (!dialogs[index].accesshash || dialogs[index].accesshash === '0')) {
+            const contact = this.contactRepo.getInstant(id);
+            if (contact) {
+                dialogs[index].accesshash = contact.accesshash;
+            }
+        }
         peer.setAccesshash(dialogs[index].accesshash || '0');
         peer.setId(dialogs[index].peerid || '');
         return peer;

@@ -190,6 +190,7 @@ export default class SDK {
         if (replyTo) {
             data.setReplyto(replyTo);
         }
+        window.console.log(peer.getAccesshash());
         return this.server.send(C_MSG.MessagesSend, data.serializeBinary());
     }
 

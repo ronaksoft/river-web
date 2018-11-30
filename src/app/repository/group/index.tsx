@@ -59,6 +59,17 @@ export default class GroupRepo {
                 return merge(group, t);
             });
             return this.createMany([...createItems, ...updateItems]);
+        }).then((res) => {
+            this.broadcastEvent('Group_DB_Updated', {ids});
+            return res;
         });
+    }
+
+    private broadcastEvent(name: string, data: any) {
+        const event = new CustomEvent(name, {
+            bubbles: true,
+            detail: data,
+        });
+        window.dispatchEvent(event);
     }
 }
