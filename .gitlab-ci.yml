@@ -14,7 +14,7 @@ build:mobile:
   script:
     - cp -a ./. /var/lib/app
     - cd /var/lib/app
-    - yarn install
+    - npm install
     - npm run build
     - mkdir -p $BUILD_DIR/app
     - cp -r ./build/* $BUILD_DIR/app
