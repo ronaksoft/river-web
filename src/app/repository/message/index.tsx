@@ -9,6 +9,7 @@ import Dexie from 'dexie';
 import {DexieMessageDB} from '../../services/db/dexie/message';
 import {C_MESSAGE_ACTION} from './consts';
 import {
+    MessageActionClearHistory,
     MessageActionContactRegistered,
     MessageActionGroupAddUser,
     MessageActionGroupCreated,
@@ -27,23 +28,23 @@ export default class MessageRepo {
         switch (msg.messageaction) {
             case C_MESSAGE_ACTION.MessageActionNope:
                 break;
-            case C_MESSAGE_ACTION.MessageActionKicked:
-                out.actiondata = MessageActionGroupDeleteUser.deserializeBinary(data).toObject();
-                break;
             case C_MESSAGE_ACTION.MessageActionGroupTitleChanged:
                 out.actiondata = MessageActionGroupTitleChanged.deserializeBinary(data).toObject();
                 break;
             case C_MESSAGE_ACTION.MessageActionGroupCreated:
                 out.actiondata = MessageActionGroupCreated.deserializeBinary(data).toObject();
                 break;
-            case C_MESSAGE_ACTION.MessageActionLeft:
+            case C_MESSAGE_ACTION.MessageActionGroupDeleteUser:
                 out.actiondata = MessageActionGroupDeleteUser.deserializeBinary(data).toObject();
                 break;
-            case C_MESSAGE_ACTION.MessageActionJoined:
+            case C_MESSAGE_ACTION.MessageActionGroupAddUser:
                 out.actiondata = MessageActionGroupAddUser.deserializeBinary(data).toObject();
                 break;
             case C_MESSAGE_ACTION.MessageActionContactRegistered:
                 out.actiondata = MessageActionContactRegistered.deserializeBinary(data).toObject();
+                break;
+            case C_MESSAGE_ACTION.MessageActionClearHistory:
+                out.actiondata = MessageActionClearHistory.deserializeBinary(data).toObject();
                 break;
         }
         delete out.messageactiondata;

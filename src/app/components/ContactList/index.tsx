@@ -86,6 +86,8 @@ class ContactList extends React.Component<IProps, IState> {
                         fullWidth={true}
                         onUpdateInput={this.searchChangeHandler}
                         onDelete={this.removeMemberHandler}
+                        // @ts-ignore
+                        classes={{}}
                     />
                 </div>
                 <div className="contact-list-container">

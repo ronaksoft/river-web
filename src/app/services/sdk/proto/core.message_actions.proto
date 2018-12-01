@@ -2,7 +2,7 @@ syntax = "proto2";
 package msg;
 
 
-/* 
+/*
     Creation Time: 2018 - Nov - 28
     Created by:  (ehsan)
     Maintainers:
@@ -13,18 +13,18 @@ package msg;
 
 // MessageActionGroupAddUser
 message MessageActionGroupAddUser {
-    repeated int64 UserIDs = 1;
+    repeated int64 UserIDs = 1 [jstype = JS_STRING];
 }
 
 // MessageActionGroupDeleteUser
 message MessageActionGroupDeleteUser {
-    repeated int64 UserIDs = 1;
+    repeated int64 UserIDs = 1 [jstype = JS_STRING];
 }
 
 // MessageActionGroupCreated
 message MessageActionGroupCreated {
     required string GroupTitle = 1;
-    repeated int64 UserIDs = 2;
+    repeated int64 UserIDs = 2 [jstype = JS_STRING];
 }
 
 // MessageActionGroupTitleChanged

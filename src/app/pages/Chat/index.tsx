@@ -42,7 +42,7 @@ import MainRepo from '../../repository';
 import SettingMenu from '../../components/SettingMenu';
 import {C_MSG_MODE} from '../../components/TextInput/consts';
 import TimeUtililty from '../../services/utilities/time';
-import {C_MESSAGE_TYPE} from '../../repository/message/consts';
+import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from '../../repository/message/consts';
 import PopUpDate from '../../components/PopUpDate';
 import BottomBar from '../../components/BottomBar';
 import ContactMenu from '../../components/ContactMenu';
@@ -864,9 +864,11 @@ class Chat extends React.Component<IProps, IState> {
                         defaultMessages.splice(0, 1);
                     }
                 }
+
                 if (key === 0 && defaultMessages.length > 1 && defaultMessages[0].messagetype === C_MESSAGE_TYPE.Normal && defaultMessages[1].senderid === msg.senderid) {
                     defaultMessages[0].avatar = false;
                 }
+
                 // avatar breakpoint
                 defaultMessages[0].avatar = (msg.senderid !== defaultMessages[0].senderid);
                 msg.avatar = (messages.length - 1 === key);
@@ -925,6 +927,7 @@ class Chat extends React.Component<IProps, IState> {
                 createdon: Math.floor(Date.now() / 1000),
                 id,
                 me: true,
+                messageaction: C_MESSAGE_ACTION.MessageActionNope,
                 peerid: this.state.selectedDialogId,
                 peertype: peer.getType(),
                 senderid: this.connInfo.UserID,

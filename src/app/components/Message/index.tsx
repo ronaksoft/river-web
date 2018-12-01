@@ -237,38 +237,40 @@ class Message extends React.Component<IProps, IState> {
                         <span className="date">{TimeUtility.dynamicDate(message.createdon || 0)}</span>
                     </div>
                 );
-            case C_MESSAGE_TYPE.System:
-                return (
-                    <div style={style} className="bubble-wrapper">
-                        {this.renderSystemMessage(message)}
-                    </div>
-                );
             case C_MESSAGE_TYPE.Normal:
             default:
-                return (
-                    <div style={style}
-                         className={'bubble-wrapper ' + (message.me ? 'me' : 'you') + (message.avatar ? ' avatar' : '')}>
-                        {(message.avatar && message.senderid && !message.me) && (
-                            <UserAvatar id={message.senderid} className="avatar"/>
-                        )}
-                        {(message.avatar && message.senderid) && (<div className="arrow"/>)}
-                        <div className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')}>
-                            {Boolean(peer && peer.getType() === PeerType.PEERGROUP && message.avatar) &&
-                            <UserName className="name" uniqueColor={true} id={message.senderid || ''}/>}
-                            {Boolean(message.replyto && message.replyto !== 0) &&
-                            <MessagePreview message={message} peer={peer}
-                                            onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>}
-                            <div className={'inner ' + (message.rtl ? 'rtl' : 'ltr')}
-                                 onDoubleClick={this.selectText}>{message.body}</div>
-                            <MessageStatus status={message.me || false} id={message.id} readId={readId}
-                                           time={message.createdon || 0} editedTime={message.editedon || 0}
-                                           onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>
-                            <div className="more" onClick={this.contextMenuHandler.bind(this, index)}>
-                                <MoreVert/>
+                if (message.messageaction !== C_MESSAGE_ACTION.MessageActionNope && message.messageaction !== undefined) {
+                    return (
+                        <div style={style} className="bubble-wrapper">
+                            {this.renderSystemMessage(message)}
+                        </div>
+                    );
+                } else {
+                    return (
+                        <div style={style}
+                             className={'bubble-wrapper ' + (message.me ? 'me' : 'you') + (message.avatar ? ' avatar' : '')}>
+                            {(message.avatar && message.senderid && !message.me) && (
+                                <UserAvatar id={message.senderid} className="avatar"/>
+                            )}
+                            {(message.avatar && message.senderid) && (<div className="arrow"/>)}
+                            <div className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')}>
+                                {Boolean(peer && peer.getType() === PeerType.PEERGROUP && message.avatar) &&
+                                <UserName className="name" uniqueColor={true} id={message.senderid || ''}/>}
+                                {Boolean(message.replyto && message.replyto !== 0) &&
+                                <MessagePreview message={message} peer={peer}
+                                                onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>}
+                                <div className={'inner ' + (message.rtl ? 'rtl' : 'ltr')}
+                                     onDoubleClick={this.selectText}>{message.body}</div>
+                                <MessageStatus status={message.me || false} id={message.id} readId={readId}
+                                               time={message.createdon || 0} editedTime={message.editedon || 0}
+                                               onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>
+                                <div className="more" onClick={this.contextMenuHandler.bind(this, index)}>
+                                    <MoreVert/>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                );
+                    );
+                }
         }
     }
 
@@ -400,24 +402,38 @@ class Message extends React.Component<IProps, IState> {
     }
 
     private renderSystemMessage(message: IMessage) {
+        if (!message.actiondata) {
+            return '';
+        }
         switch (message.messageaction) {
             case C_MESSAGE_ACTION.MessageActionContactRegistered:
                 return (<span className="system-message">
                     <UserName className="user" id={message.senderid || ''}/> Joined River</span>);
             case C_MESSAGE_ACTION.MessageActionGroupCreated:
                 return (<span className="system-message">Group Created</span>);
-            case C_MESSAGE_ACTION.MessageActionJoined:
+            case C_MESSAGE_ACTION.MessageActionGroupAddUser:
                 return (<span className="system-message">
-                    <UserName className="user" id={message.senderid || ''}/> Added a Member</span>);
-            case C_MESSAGE_ACTION.MessageActionLeft:
+                    <UserName className="user"
+                              id={message.senderid || ''}/> Added {message.actiondata.useridsList.map((id: string, index: number) => {
+                    return (
+                        <span key={index}>
+                            {index !== 0 ? ', ' : ''}
+                            <UserName className="target-user" id={id}/></span>
+                    );
+                })}</span>);
+            case C_MESSAGE_ACTION.MessageActionGroupDeleteUser:
                 return (<span className="system-message">
-                    <UserName className="user" id={message.senderid || ''}/> Removed a Member</span>);
+                    <UserName className="user"
+                              id={message.senderid || ''}/> Removed {message.actiondata.useridsList.map((id: string, index: number) => {
+                    return (
+                        <span key={index}>
+                            {index !== 0 ? ', ' : ''}
+                            <UserName className="target-user" id={id}/></span>
+                    );
+                })}</span>);
             case C_MESSAGE_ACTION.MessageActionGroupTitleChanged:
                 return (<span className="system-message">
                     <UserName className="user" id={message.senderid || ''}/> Changed the Group Title</span>);
-            case C_MESSAGE_ACTION.MessageActionKicked:
-                return (<span className="system-message">
-                    <UserName className="user" id={message.senderid || ''}/> Was Kicked</span>);
             default:
                 return '';
         }

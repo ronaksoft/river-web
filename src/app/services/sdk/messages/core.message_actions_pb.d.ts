@@ -5,9 +5,9 @@ import * as jspb from "google-protobuf";
 
 export class MessageActionGroupAddUser extends jspb.Message {
   clearUseridsList(): void;
-  getUseridsList(): Array<number>;
-  setUseridsList(value: Array<number>): void;
-  addUserids(value: number, index?: number): number;
+  getUseridsList(): Array<string>;
+  setUseridsList(value: Array<string>): void;
+  addUserids(value: string, index?: number): string;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessageActionGroupAddUser.AsObject;
@@ -21,15 +21,15 @@ export class MessageActionGroupAddUser extends jspb.Message {
 
 export namespace MessageActionGroupAddUser {
   export type AsObject = {
-    useridsList: Array<number>,
+    useridsList: Array<string>,
   }
 }
 
 export class MessageActionGroupDeleteUser extends jspb.Message {
   clearUseridsList(): void;
-  getUseridsList(): Array<number>;
-  setUseridsList(value: Array<number>): void;
-  addUserids(value: number, index?: number): number;
+  getUseridsList(): Array<string>;
+  setUseridsList(value: Array<string>): void;
+  addUserids(value: string, index?: number): string;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessageActionGroupDeleteUser.AsObject;
@@ -43,7 +43,7 @@ export class MessageActionGroupDeleteUser extends jspb.Message {
 
 export namespace MessageActionGroupDeleteUser {
   export type AsObject = {
-    useridsList: Array<number>,
+    useridsList: Array<string>,
   }
 }
 
@@ -54,9 +54,9 @@ export class MessageActionGroupCreated extends jspb.Message {
   setGrouptitle(value: string): void;
 
   clearUseridsList(): void;
-  getUseridsList(): Array<number>;
-  setUseridsList(value: Array<number>): void;
-  addUserids(value: number, index?: number): number;
+  getUseridsList(): Array<string>;
+  setUseridsList(value: Array<string>): void;
+  addUserids(value: string, index?: number): string;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessageActionGroupCreated.AsObject;
@@ -71,7 +71,7 @@ export class MessageActionGroupCreated extends jspb.Message {
 export namespace MessageActionGroupCreated {
   export type AsObject = {
     grouptitle?: string,
-    useridsList: Array<number>,
+    useridsList: Array<string>,
   }
 }
 
