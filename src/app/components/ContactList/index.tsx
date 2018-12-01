@@ -79,7 +79,7 @@ class ContactList extends React.Component<IProps, IState> {
         return (
             <div className="contact-list">
                 <div className="contact-input-container">
-                    // @ts-ignore
+                     {/*@ts-ignore*/}
                     <ChipInput
                         label="Search contacts"
                         value={selectedContacts}
