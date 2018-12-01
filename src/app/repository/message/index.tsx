@@ -4,11 +4,58 @@ import {differenceBy, find, merge, cloneDeep, throttle} from 'lodash';
 import SDK from '../../services/sdk';
 import UserRepo from '../user';
 import RTLDetector from '../../services/utilities/rtl_detector';
-import {InputPeer} from '../../services/sdk/messages/core.types_pb';
+import {InputPeer, UserMessage} from '../../services/sdk/messages/core.types_pb';
 import Dexie from 'dexie';
 import {DexieMessageDB} from '../../services/db/dexie/message';
+import {C_MESSAGE_ACTION} from './consts';
+import {
+    MessageActionContactRegistered,
+    MessageActionGroupAddUser,
+    MessageActionGroupCreated,
+    MessageActionGroupDeleteUser,
+    MessageActionGroupTitleChanged
+} from '../../services/sdk/messages/core.message_actions_pb';
 
 export default class MessageRepo {
+    public static parseMessage(msg: UserMessage.AsObject): IMessage {
+        if (!msg.messageactiondata) {
+            return msg;
+        }
+        // @ts-ignore
+        const data: Uint8Array = msg.messageactiondata;
+        const out: IMessage = msg;
+        switch (msg.messageaction) {
+            case C_MESSAGE_ACTION.MessageActionNope:
+                break;
+            case C_MESSAGE_ACTION.MessageActionKicked:
+                out.actiondata = MessageActionGroupDeleteUser.deserializeBinary(data).toObject();
+                break;
+            case C_MESSAGE_ACTION.MessageActionGroupTitleChanged:
+                out.actiondata = MessageActionGroupTitleChanged.deserializeBinary(data).toObject();
+                break;
+            case C_MESSAGE_ACTION.MessageActionGroupCreated:
+                out.actiondata = MessageActionGroupCreated.deserializeBinary(data).toObject();
+                break;
+            case C_MESSAGE_ACTION.MessageActionLeft:
+                out.actiondata = MessageActionGroupDeleteUser.deserializeBinary(data).toObject();
+                break;
+            case C_MESSAGE_ACTION.MessageActionJoined:
+                out.actiondata = MessageActionGroupAddUser.deserializeBinary(data).toObject();
+                break;
+            case C_MESSAGE_ACTION.MessageActionContactRegistered:
+                out.actiondata = MessageActionContactRegistered.deserializeBinary(data).toObject();
+                break;
+        }
+        delete out.messageactiondata;
+        return out;
+    }
+
+    public static parseMessageMany(msg: UserMessage.AsObject[]): IMessage[] {
+        return msg.map((m) => {
+            return this.parseMessage(m);
+        });
+    }
+
     public static getInstance() {
         if (!this.instance) {
             this.instance = new MessageRepo();
@@ -79,6 +126,7 @@ export default class MessageRepo {
                     const lim = limit - len;
                     this.sdk.getMessageHistory(peer, {maxId, limit: lim}).then((remoteRes) => {
                         this.userRepo.importBulk(remoteRes.usersList);
+                        remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList);
                         return this.transform(remoteRes.messagesList);
                     }).then((remoteRes) => {
                         this.importBulk(remoteRes, true);
@@ -98,6 +146,7 @@ export default class MessageRepo {
             }).catch((err) => {
                 this.sdk.getMessageHistory(peer, {maxId: before - 1, limit}).then((remoteRes) => {
                     this.userRepo.importBulk(remoteRes.usersList);
+                    remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList);
                     return this.transform(remoteRes.messagesList);
                 }).then((remoteRes) => {
                     this.importBulk(remoteRes, true);
@@ -158,7 +207,7 @@ export default class MessageRepo {
                         if (remoteRes.messagesList.length === 0) {
                             reject();
                         } else {
-                            const message = remoteRes.messagesList[0];
+                            const message = MessageRepo.parseMessage(remoteRes.messagesList[0]);
                             this.lazyUpsert([message], true);
                             resolve(message);
                         }
@@ -174,6 +223,7 @@ export default class MessageRepo {
 
     public transform(msgs: IMessage[]) {
         return msgs.map((msg) => {
+            // msg = MessageRepo.parseMessage(msg);
             msg.me = (msg.senderid === this.userId);
             msg.rtl = this.rtlDetector.direction(msg.body || '');
             msg.temp = false;

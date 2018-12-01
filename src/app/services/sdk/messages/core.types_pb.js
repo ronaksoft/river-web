@@ -1891,7 +1891,8 @@ proto.msg.UserMessage.toObject = function(includeInstance, msg) {
     contentread: jspb.Message.getField(msg, 13),
     inbox: jspb.Message.getField(msg, 14),
     replyto: jspb.Message.getField(msg, 15),
-    messageaction: jspb.Message.getField(msg, 16)
+    messageaction: jspb.Message.getField(msg, 16),
+    messageactiondata: msg.getMessageactiondata_asB64()
   };
 
   if (includeInstance) {
@@ -1991,6 +1992,10 @@ proto.msg.UserMessage.deserializeBinaryFromReader = function(msg, reader) {
     case 16:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setMessageaction(value);
+      break;
+    case 17:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setMessageactiondata(value);
       break;
     default:
       reader.skipField();
@@ -2130,6 +2135,13 @@ proto.msg.UserMessage.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeInt32(
       16,
+      f
+    );
+  }
+  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 17));
+  if (f != null) {
+    writer.writeBytes(
+      17,
       f
     );
   }
@@ -2601,6 +2613,59 @@ proto.msg.UserMessage.prototype.clearMessageaction = function() {
  */
 proto.msg.UserMessage.prototype.hasMessageaction = function() {
   return jspb.Message.getField(this, 16) != null;
+};
+
+
+/**
+ * optional bytes MessageActionData = 17;
+ * @return {!(string|Uint8Array)}
+ */
+proto.msg.UserMessage.prototype.getMessageactiondata = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 17, ""));
+};
+
+
+/**
+ * optional bytes MessageActionData = 17;
+ * This is a type-conversion wrapper around `getMessageactiondata()`
+ * @return {string}
+ */
+proto.msg.UserMessage.prototype.getMessageactiondata_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getMessageactiondata()));
+};
+
+
+/**
+ * optional bytes MessageActionData = 17;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getMessageactiondata()`
+ * @return {!Uint8Array}
+ */
+proto.msg.UserMessage.prototype.getMessageactiondata_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getMessageactiondata()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.msg.UserMessage.prototype.setMessageactiondata = function(value) {
+  jspb.Message.setField(this, 17, value);
+};
+
+
+proto.msg.UserMessage.prototype.clearMessageactiondata = function() {
+  jspb.Message.setField(this, 17, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UserMessage.prototype.hasMessageactiondata = function() {
+  return jspb.Message.getField(this, 17) != null;
 };
 
 

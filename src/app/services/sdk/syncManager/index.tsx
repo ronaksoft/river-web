@@ -84,7 +84,7 @@ export default class SyncManager {
                 case C_MSG.UpdateNewMessage:
                     const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
                     users[updateNewMessage.sender.id || 0] = updateNewMessage.sender;
-                    messages[updateNewMessage.message.id || 0] = updateNewMessage.message;
+                    messages[updateNewMessage.message.id || 0] = MessageRepo.parseMessage(updateNewMessage.message);
                     dialogs = this.updateDialog(dialogs, {
                         accesshash: updateNewMessage.accesshash,
                         last_update: updateNewMessage.message.createdon,
@@ -111,7 +111,7 @@ export default class SyncManager {
                     break;
                 case C_MSG.UpdateMessageEdited:
                     const updateMessageEdited = UpdateMessageEdited.deserializeBinary(data).toObject();
-                    messages[updateMessageEdited.message.id || 0] = updateMessageEdited.message;
+                    messages[updateMessageEdited.message.id || 0] = MessageRepo.parseMessage(updateMessageEdited.message);
                     break;
                 default:
                     break;

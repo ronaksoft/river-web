@@ -292,6 +292,68 @@ export namespace MessagesSetTyping {
   }
 }
 
+export class MessagesClearHistory extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.InputPeer;
+  setPeer(value?: core_types_pb.InputPeer): void;
+
+  hasMaxid(): boolean;
+  clearMaxid(): void;
+  getMaxid(): number | undefined;
+  setMaxid(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessagesClearHistory.AsObject;
+  static toObject(includeInstance: boolean, msg: MessagesClearHistory): MessagesClearHistory.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessagesClearHistory, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessagesClearHistory;
+  static deserializeBinaryFromReader(message: MessagesClearHistory, reader: jspb.BinaryReader): MessagesClearHistory;
+}
+
+export namespace MessagesClearHistory {
+  export type AsObject = {
+    peer: core_types_pb.InputPeer.AsObject,
+    maxid?: number,
+  }
+}
+
+export class MessagesDelete extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.InputPeer;
+  setPeer(value?: core_types_pb.InputPeer): void;
+
+  clearMessageidsList(): void;
+  getMessageidsList(): Array<number>;
+  setMessageidsList(value: Array<number>): void;
+  addMessageids(value: number, index?: number): number;
+
+  hasRevoke(): boolean;
+  clearRevoke(): void;
+  getRevoke(): boolean | undefined;
+  setRevoke(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessagesDelete.AsObject;
+  static toObject(includeInstance: boolean, msg: MessagesDelete): MessagesDelete.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessagesDelete, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessagesDelete;
+  static deserializeBinaryFromReader(message: MessagesDelete, reader: jspb.BinaryReader): MessagesDelete;
+}
+
+export namespace MessagesDelete {
+  export type AsObject = {
+    peer: core_types_pb.InputPeer.AsObject,
+    messageidsList: Array<number>,
+    revoke?: boolean,
+  }
+}
+
 export class MessagesDialogs extends jspb.Message {
   clearDialogsList(): void;
   getDialogsList(): Array<core_types_pb.Dialog>;

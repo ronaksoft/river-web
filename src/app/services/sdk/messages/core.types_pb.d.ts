@@ -342,6 +342,13 @@ export class UserMessage extends jspb.Message {
   getMessageaction(): number | undefined;
   setMessageaction(value: number): void;
 
+  hasMessageactiondata(): boolean;
+  clearMessageactiondata(): void;
+  getMessageactiondata(): Uint8Array | string;
+  getMessageactiondata_asU8(): Uint8Array;
+  getMessageactiondata_asB64(): string;
+  setMessageactiondata(value: Uint8Array | string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UserMessage.AsObject;
   static toObject(includeInstance: boolean, msg: UserMessage): UserMessage.AsObject;
@@ -370,6 +377,7 @@ export namespace UserMessage {
     inbox?: boolean,
     replyto?: number,
     messageaction?: number,
+    messageactiondata?: Uint8Array | string,
   }
 }
 

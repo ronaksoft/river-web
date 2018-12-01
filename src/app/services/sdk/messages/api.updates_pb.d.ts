@@ -237,6 +237,40 @@ export namespace UpdateMessageEdited {
   }
 }
 
+export class UpdateMessagesDeleted extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  clearMessageidsList(): void;
+  getMessageidsList(): Array<number>;
+  setMessageidsList(value: Array<number>): void;
+  addMessageids(value: number, index?: number): number;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateMessagesDeleted.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateMessagesDeleted): UpdateMessagesDeleted.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateMessagesDeleted, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateMessagesDeleted;
+  static deserializeBinaryFromReader(message: UpdateMessagesDeleted, reader: jspb.BinaryReader): UpdateMessagesDeleted;
+}
+
+export namespace UpdateMessagesDeleted {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+    messageidsList: Array<number>,
+  }
+}
+
 export class UpdateReadHistoryInbox extends jspb.Message {
   hasUcount(): boolean;
   clearUcount(): void;
@@ -480,120 +514,6 @@ export namespace UpdateNotifySettings {
     userid?: string,
     notifypeer: core_types_pb.InputPeer.AsObject,
     settings: core_types_pb.PeerNotifySettings.AsObject,
-  }
-}
-
-export class UpdateGroupMemberAdded extends jspb.Message {
-  hasGroupid(): boolean;
-  clearGroupid(): void;
-  getGroupid(): number | undefined;
-  setGroupid(value: number): void;
-
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): number | undefined;
-  setUserid(value: number): void;
-
-  hasInviterid(): boolean;
-  clearInviterid(): void;
-  getInviterid(): number | undefined;
-  setInviterid(value: number): void;
-
-  hasChatversion(): boolean;
-  clearChatversion(): void;
-  getChatversion(): number | undefined;
-  setChatversion(value: number): void;
-
-  hasDate(): boolean;
-  clearDate(): void;
-  getDate(): number | undefined;
-  setDate(value: number): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): UpdateGroupMemberAdded.AsObject;
-  static toObject(includeInstance: boolean, msg: UpdateGroupMemberAdded): UpdateGroupMemberAdded.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: UpdateGroupMemberAdded, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): UpdateGroupMemberAdded;
-  static deserializeBinaryFromReader(message: UpdateGroupMemberAdded, reader: jspb.BinaryReader): UpdateGroupMemberAdded;
-}
-
-export namespace UpdateGroupMemberAdded {
-  export type AsObject = {
-    groupid?: number,
-    userid?: number,
-    inviterid?: number,
-    chatversion?: number,
-    date?: number,
-  }
-}
-
-export class UpdateGroupMemberDeleted extends jspb.Message {
-  hasGroupid(): boolean;
-  clearGroupid(): void;
-  getGroupid(): number | undefined;
-  setGroupid(value: number): void;
-
-  hasUserid(): boolean;
-  clearUserid(): void;
-  getUserid(): number | undefined;
-  setUserid(value: number): void;
-
-  hasChatversion(): boolean;
-  clearChatversion(): void;
-  getChatversion(): number | undefined;
-  setChatversion(value: number): void;
-
-  hasDate(): boolean;
-  clearDate(): void;
-  getDate(): number | undefined;
-  setDate(value: number): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): UpdateGroupMemberDeleted.AsObject;
-  static toObject(includeInstance: boolean, msg: UpdateGroupMemberDeleted): UpdateGroupMemberDeleted.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: UpdateGroupMemberDeleted, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): UpdateGroupMemberDeleted;
-  static deserializeBinaryFromReader(message: UpdateGroupMemberDeleted, reader: jspb.BinaryReader): UpdateGroupMemberDeleted;
-}
-
-export namespace UpdateGroupMemberDeleted {
-  export type AsObject = {
-    groupid?: number,
-    userid?: number,
-    chatversion?: number,
-    date?: number,
-  }
-}
-
-export class UpdateGroupTitleUpdated extends jspb.Message {
-  hasGroupid(): boolean;
-  clearGroupid(): void;
-  getGroupid(): number | undefined;
-  setGroupid(value: number): void;
-
-  hasTitle(): boolean;
-  clearTitle(): void;
-  getTitle(): string | undefined;
-  setTitle(value: string): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): UpdateGroupTitleUpdated.AsObject;
-  static toObject(includeInstance: boolean, msg: UpdateGroupTitleUpdated): UpdateGroupTitleUpdated.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: UpdateGroupTitleUpdated, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): UpdateGroupTitleUpdated;
-  static deserializeBinaryFromReader(message: UpdateGroupTitleUpdated, reader: jspb.BinaryReader): UpdateGroupTitleUpdated;
-}
-
-export namespace UpdateGroupTitleUpdated {
-  export type AsObject = {
-    groupid?: number,
-    title?: string,
   }
 }
 

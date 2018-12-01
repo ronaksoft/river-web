@@ -10,6 +10,7 @@ import {
 import {throttle} from 'lodash';
 import {User} from '../../messages/core.types_pb';
 import {IMessage} from '../../../../repository/message/interface';
+import MessageRepo from '../../../../repository/message';
 
 export interface INewMessageBulkUpdate {
     accessHashes: string[];
@@ -228,7 +229,7 @@ export default class UpdateManager {
                 const data = list[key].shift();
                 if (data) {
                     batchUpdate.accessHashes.push(data.accesshash || '');
-                    batchUpdate.messages.push(data.message);
+                    batchUpdate.messages.push(MessageRepo.parseMessage(data.message));
                     batchUpdate.senderIds.push(data.sender.id || '');
                     batchUpdate.senders.push(data.sender);
                     batchUpdate.peerid = data.message.peerid || '';
