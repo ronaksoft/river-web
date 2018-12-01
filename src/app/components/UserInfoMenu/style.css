@@ -28,7 +28,8 @@
   --dark-hover-light: rgba(183, 222, 255, 0.12);
   --dark-accent-low: #003367;
   --dark-accent-medium: #004783;
-  --dark-accent-high: #005EAE; }
+  --dark-accent-high: #005EAE;
+  --red: #cc0000; }
 
 body {
   background-color: var(--bg);

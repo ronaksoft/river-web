@@ -116,11 +116,11 @@ class Message extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {items, moreAnchorEl} = this.state;
+        const {items, moreAnchorEl, peer} = this.state;
         return (
             <AutoSizer>
                 {({width, height}: any) => (
-                    <div>
+                    <div className={(peer && peer.getType() === PeerType.PEERGROUP) ? 'group' : 'user'}>
                         <List
                             ref={this.refHandler}
                             deferredMeasurementCache={this.cache}
@@ -254,8 +254,8 @@ class Message extends React.Component<IProps, IState> {
                             )}
                             {(message.avatar && message.senderid) && (<div className="arrow"/>)}
                             <div className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')}>
-                                {Boolean(peer && peer.getType() === PeerType.PEERGROUP && message.avatar) &&
-                                <UserName className="name" uniqueColor={true} id={message.senderid || ''}/>}
+                                {Boolean(peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me) &&
+                                <UserName className="name" uniqueColor={false} id={message.senderid || ''}/>}
                                 {Boolean(message.replyto && message.replyto !== 0) &&
                                 <MessagePreview message={message} peer={peer}
                                                 onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>}
@@ -402,9 +402,6 @@ class Message extends React.Component<IProps, IState> {
     }
 
     private renderSystemMessage(message: IMessage) {
-        if (!message.actiondata) {
-            return '';
-        }
         switch (message.messageaction) {
             case C_MESSAGE_ACTION.MessageActionContactRegistered:
                 return (<span className="system-message">
@@ -422,6 +419,10 @@ class Message extends React.Component<IProps, IState> {
                     );
                 })}</span>);
             case C_MESSAGE_ACTION.MessageActionGroupDeleteUser:
+                if (message.actiondata.useridsList.indexOf(message.senderid) > -1) {
+                    return (<span className="system-message">
+                    <UserName className="user" id={message.senderid || ''}/> Left</span>);
+                }
                 return (<span className="system-message">
                     <UserName className="user"
                               id={message.senderid || ''}/> Removed {message.actiondata.useridsList.map((id: string, index: number) => {

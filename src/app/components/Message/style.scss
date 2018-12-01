@@ -114,10 +114,11 @@
     box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.1);
     > .name {
       display: block;
-      height: 16px;
-      padding: 2px 3px 5px;
-      font-weight: bold;
-      text-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
+      height: 20px;
+      padding: 2px 3px 2px;
+      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+      color: var(--dark-medium);
+      font-weight: 300;
     }
     > .inner {
       direction: ltr;
@@ -216,6 +217,7 @@
     flex: none;
     font-size: 12.5px;
     line-height: 21px;
+    margin-top: 6px;
     > .user {
       text-transform: uppercase;
       font-style: italic;
@@ -265,6 +267,9 @@ html[theme="dark"] {
       .bubble {
         background-color: var(--dark-accent-low);
         color: #eee;
+        > .name {
+          color: #eee;
+        }
       }
       .arrow {
         &:after {
@@ -277,6 +282,9 @@ html[theme="dark"] {
       .bubble {
         background-color: var(--dark-accent-medium);
         color: #eee;
+        > .name {
+          color: #eee;
+        }
       }
       .arrow {
         &:after {

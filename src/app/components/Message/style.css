@@ -28,7 +28,8 @@
   --dark-hover-light: rgba(183, 222, 255, 0.12);
   --dark-accent-low: #003367;
   --dark-accent-medium: #004783;
-  --dark-accent-high: #005EAE; }
+  --dark-accent-high: #005EAE;
+  --red: #cc0000; }
 
 body {
   background-color: var(--bg);
@@ -143,10 +144,11 @@ input {
     box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.1); }
     .bubble-wrapper .bubble > .name {
       display: block;
-      height: 16px;
-      padding: 2px 3px 5px;
-      font-weight: bold;
-      text-shadow: 0 2px 0 rgba(0, 0, 0, 0.1); }
+      height: 20px;
+      padding: 2px 3px 2px;
+      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+      color: var(--dark-medium);
+      font-weight: 300; }
     .bubble-wrapper .bubble > .inner {
       direction: ltr;
       padding: 4px 4px 0 4px;
@@ -225,7 +227,8 @@ input {
     display: inline-block;
     flex: none;
     font-size: 12.5px;
-    line-height: 21px; }
+    line-height: 21px;
+    margin-top: 6px; }
     .bubble-wrapper > .system-message > .user {
       text-transform: uppercase;
       font-style: italic; }
@@ -260,6 +263,8 @@ html[theme="dark"] .chat {
 html[theme="dark"] .bubble-wrapper.me .bubble {
   background-color: var(--dark-accent-low);
   color: #eee; }
+  html[theme="dark"] .bubble-wrapper.me .bubble > .name {
+    color: #eee; }
 
 html[theme="dark"] .bubble-wrapper.me .arrow:after {
   background-color: var(--dark-accent-low);
@@ -268,6 +273,8 @@ html[theme="dark"] .bubble-wrapper.me .arrow:after {
 html[theme="dark"] .bubble-wrapper.you .bubble {
   background-color: var(--dark-accent-medium);
   color: #eee; }
+  html[theme="dark"] .bubble-wrapper.you .bubble > .name {
+    color: #eee; }
 
 html[theme="dark"] .bubble-wrapper.you .arrow:after {
   background-color: var(--dark-accent-medium);

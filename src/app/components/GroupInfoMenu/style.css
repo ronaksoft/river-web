@@ -28,7 +28,8 @@
   --dark-hover-light: rgba(183, 222, 255, 0.12);
   --dark-accent-low: #003367;
   --dark-accent-medium: #004783;
-  --dark-accent-high: #005EAE; }
+  --dark-accent-high: #005EAE;
+  --red: #cc0000; }
 
 body {
   background-color: var(--bg);
@@ -179,6 +180,17 @@ input {
       cursor: pointer; }
       .group-info-menu .participant .add-member:hover {
         background-color: var(--color-hover); }
+  .group-info-menu .leave-group {
+    height: 40px;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    color: var(--red);
+    padding: 0 10px;
+    cursor: pointer; }
+    .group-info-menu .leave-group svg {
+      color: var(--red);
+      margin-right: 10px; }
   .group-info-menu .contact-box {
     flex: 1; }
   .group-info-menu .form-control {

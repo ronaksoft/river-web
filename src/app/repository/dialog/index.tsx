@@ -57,6 +57,11 @@ export default class DialogRepo {
         return this.db.dialogs.put(dialog);
     }
 
+    public remove(id: string) {
+        delete this.lazyMap[id];
+        return this.db.dialogs.delete(id);
+    }
+
     public createMany(dialogs: IDialog[]) {
         return this.db.dialogs.bulkPut(dialogs);
     }

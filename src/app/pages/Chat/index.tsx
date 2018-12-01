@@ -52,10 +52,10 @@ import {IContact} from '../../repository/contact/interface';
 import GroupRepo from '../../repository/group';
 import GroupName from '../../components/GroupName';
 import GroupInfoMenu from '../../components/GroupInfoMenu';
-
-import './style.css';
 import UserInfoMenu from '../../components/UserInfoMenu';
 import ContactRepo from '../../repository/contact';
+
+import './style.css';
 
 interface IProps {
     history?: any;
@@ -164,6 +164,7 @@ class Chat extends React.Component<IProps, IState> {
         window.addEventListener('fnStarted', this.fnStartedHandler);
         window.addEventListener('Dialog_DB_Updated', this.dialogDBUpdatedHandler);
         window.addEventListener('Message_DB_Updated', this.messageDBUpdatedHandler);
+        window.addEventListener('Dialog_Remove', this.dialogRemoveHandler);
 
         // Get latest cached dialogs
         this.dialogRepo.getManyCache({}).then((res) => {
@@ -371,6 +372,7 @@ class Chat extends React.Component<IProps, IState> {
             }
             // @ts-ignore
             this.groupRepo.importBulk(data);
+            window.console.log(data);
         }));
     }
 
@@ -409,6 +411,7 @@ class Chat extends React.Component<IProps, IState> {
         window.removeEventListener('fnStarted', this.fnStartedHandler);
         window.removeEventListener('Dialog_DB_Updated', this.dialogDBUpdatedHandler);
         window.removeEventListener('Message_DB_Updated', this.messageDBUpdatedHandler);
+        window.removeEventListener('Dialog_Remove', this.dialogRemoveHandler);
     }
 
     public render() {
@@ -680,10 +683,20 @@ class Chat extends React.Component<IProps, IState> {
 
     private chatMoreActionHandler = (cmd: string) => {
         this.chatMoreCloseHandler();
-        if (cmd === 'new_group') {
-            this.setState({
-                leftOverlay: true,
-            });
+        switch (cmd) {
+            case 'new_group':
+                this.setState({
+                    leftOverlay: true,
+                });
+                break;
+            case 'new_message':
+                this.onNewMessageOpen();
+                break;
+            case 'setting':
+                this.setState({
+                    leftMenu: 'setting',
+                });
+                break;
         }
     }
 
@@ -1299,16 +1312,50 @@ class Chat extends React.Component<IProps, IState> {
         this.messageRepo.loadConnInfo();
     }
 
-    private dialogDBUpdatedHandler = () => {
+    private dialogDBUpdatedHandler = (event: any) => {
+        const {dialogs} = this.state;
+        const data = event.detail;
         this.dialogRepo.getManyCache({}).then((res) => {
             this.dialogsSortThrottle(res);
+            data.ids.forEach((id: string) => {
+                if (this.dialogMap.hasOwnProperty(id)) {
+                    const maxReadInbox = dialogs[this.dialogMap[id]].readinboxmaxid || 0;
+                    this.messageRepo.getUnreadCount(id, maxReadInbox).then((count) => {
+                        this.updateDialogsCounter(id, {unreadCounter: count});
+                    });
+                }
+            });
         });
     }
 
     private messageDBUpdatedHandler = (event: any) => {
+        const {peer, messages} = this.state;
+        if (!peer) {
+            return;
+        }
         const data = event.detail;
         if (data.peerids && data.peerids.indexOf(this.state.selectedDialogId) > -1) {
-            this.getMessagesByDialogId(this.state.selectedDialogId);
+            // this.getMessagesByDialogId(this.state.selectedDialogId);
+            let after = 0;
+            if (messages.length > 0) {
+                after = messages[messages.length - 1].id || 0;
+            }
+            this.messageRepo.getManyCache({peerId: peer.getId(), after}).then((msgs) => {
+                const dataMsg = this.modifyMessages(this.state.messages, msgs, true);
+
+                this.setState({
+                    messages: dataMsg.msgs,
+                }, () => {
+                    setTimeout(() => {
+                        this.animateToEnd();
+                    }, 200);
+                });
+
+                this.sendReadHistory(peer, dataMsg.maxId);
+                if (!this.isInChat) {
+                    this.readHistoryMaxId = dataMsg.maxId;
+                }
+            });
         }
     }
 
@@ -1406,6 +1453,7 @@ class Chat extends React.Component<IProps, IState> {
             const dialog = dialogs[this.dialogMap[selectedDialogId]];
             if ((dialog.readinboxmaxid || 0) < msgId || (dialog.unreadcount || 0) > 0) {
                 this.sdk.setMessagesReadHistory(peer, msgId);
+                this.updateDialogsCounter(peer.getId() || '', {maxInbox: msgId});
                 this.messageRepo.getUnreadCount(peer.getId() || '', msgId).then((res) => {
                     this.updateDialogsCounter(peer.getId() || '', {unreadCounter: res});
                 });
@@ -1483,6 +1531,35 @@ class Chat extends React.Component<IProps, IState> {
             this.messageComponent.cache.clearAll();
             this.messageComponent.list.recomputeRowHeights();
             this.messageComponent.forceUpdate();
+        }
+    }
+
+    private dialogRemoveHandler = (event: any) => {
+        const {dialogs} = this.state;
+        if (!dialogs) {
+            return;
+        }
+        this.setState({
+            isUpdating: true,
+        });
+        const data = event.detail;
+        if (data && data.id) {
+            const index = this.dialogMap[data.id];
+            dialogs.splice(index, 1);
+            delete this.dialogMap[data.id];
+            this.setState({
+                dialogs,
+            });
+            this.dialogRepo.remove(data.id).then(() => {
+                this.props.history.push('/conversation/null');
+                this.setState({
+                    isUpdating: false,
+                });
+            }).catch(()=> {
+                this.setState({
+                    isUpdating: false,
+                });
+            });
         }
     }
 }

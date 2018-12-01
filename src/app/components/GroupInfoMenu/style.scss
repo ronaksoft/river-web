@@ -166,6 +166,19 @@
       }
     }
   }
+  .leave-group {
+    height: 40px;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    color: var(--red);
+    padding: 0 10px;
+    cursor: pointer;
+    svg {
+      color: var(--red);
+      margin-right: 10px;
+    }
+  }
   .contact-box {
     flex: 1;
   }

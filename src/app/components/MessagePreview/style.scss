@@ -97,6 +97,13 @@
   //}
 }
 
+.group .you.avatar {
+  .message-preview {
+    height: 47px;
+    padding-top: 5px;
+  }
+}
+
 html[theme="dark"] {
   .message-preview {
     .preview-container {

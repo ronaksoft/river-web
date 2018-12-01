@@ -28,7 +28,8 @@
   --dark-hover-light: rgba(183, 222, 255, 0.12);
   --dark-accent-low: #003367;
   --dark-accent-medium: #004783;
-  --dark-accent-high: #005EAE; }
+  --dark-accent-high: #005EAE;
+  --red: #cc0000; }
 
 body {
   background-color: var(--bg);
@@ -117,6 +118,10 @@ input {
 
 .me .message-preview .preview-container .preview-message-wrapper.reply .preview-message .preview-message-user {
   color: #35cd96; }
+
+.group .you.avatar .message-preview {
+  height: 47px;
+  padding-top: 5px; }
 
 html[theme="dark"] .message-preview .preview-container .preview-message-wrapper .preview-message {
   background-color: rgba(255, 255, 255, 0.1); }

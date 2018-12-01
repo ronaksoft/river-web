@@ -188,7 +188,10 @@ export default class MessageRepo {
                 pipe2 = pipe.between([peerId, after + 1], [peerId, before - 1], true, true);
                 break;
         }
-        pipe2.reverse().filter((item: IMessage) => {
+        if (mode !== 0x2) {
+            pipe2 = pipe2.reverse();
+        }
+        pipe2.filter((item: IMessage) => {
             return item.temp !== true && (item.id || 0) > 0;
         });
         return pipe2.limit(limit).toArray();
@@ -278,7 +281,7 @@ export default class MessageRepo {
 
     public getUnreadCount(peerId: string, minId: number): Promise<any> {
         return this.db.messages.where('[peerid+id]')
-            .between([peerId, minId], [peerId, Dexie.maxKey], true, true).filter((item) => {
+            .between([peerId, minId + 1], [peerId, Dexie.maxKey], true, true).filter((item) => {
                 return item.temp !== true && item.me !== true;
             }).count();
     }

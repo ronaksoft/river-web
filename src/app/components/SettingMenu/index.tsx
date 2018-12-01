@@ -55,7 +55,7 @@ class SettingMenu extends React.Component<IProps, IState> {
         return (
             <div className="setting-menu">
                 <div className="menu-header">
-                    <label>Contacts</label>
+                    <label>Settings</label>
                 </div>
                 <div className="menu-content">
                     <FormControlLabel className="setting-switch-label" control={

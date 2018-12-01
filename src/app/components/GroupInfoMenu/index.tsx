@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import {IContact} from '../../repository/contact/interface';
-import {CloseRounded, CheckRounded, EditRounded, MoreVert, AddRounded, PersonAddRounded} from '@material-ui/icons';
+import {CloseRounded, CheckRounded, EditRounded, MoreVert, AddRounded, PersonAddRounded, ExitToAppRounded} from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import {InputPeer, InputUser} from '../../services/sdk/messages/core.types_pb';
 import SDK from '../../services/sdk';
@@ -173,6 +173,9 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                 <AddRounded/> Add member
                             </div>
                         </div>}
+                        <div className="leave-group kk-card" onClick={this.leaveGroupHandler}>
+                            <ExitToAppRounded/> Exit the '{group ? group.title : ''}'
+                        </div>
                         {/*<div className="contact-box">
                             hey
                         </div>*/}
@@ -305,8 +308,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
 
     /* Decide what action should be done on current user */
     private moreCmdHandler = (cmd: string) => {
-        const {peer, currentUser, participants} = this.state;
-        if (!peer || !currentUser) {
+        const {peer, currentUser, participants, group} = this.state;
+        if (!peer || !currentUser || !group) {
             return;
         }
         const user = new InputUser();
@@ -319,7 +322,9 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                     const index = findIndex(participants, {id: currentUser.id});
                     if (index > -1) {
                         participants.splice(index, 1);
+                        group.participants = participants.length;
                         this.setState({
+                            group,
                             participants,
                         });
                     }
@@ -402,6 +407,41 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                 newMembers: [],
             });
         }
+    }
+
+    /* Exits the group */
+    private leaveGroupHandler = () => {
+        const {peer, participants, group} = this.state;
+        if (!peer || !group) {
+            return;
+        }
+        const id = this.sdk.getConnInfo().UserID || '';
+        const user = new InputUser();
+        user.setUserid(id);
+        user.setAccesshash('');
+        this.sdk.groupRemoveMember(peer, user).then(() => {
+            const index = findIndex(participants, {id});
+            if (index > -1) {
+                participants.splice(index, 1);
+                group.participants = participants.length;
+                this.setState({
+                    group,
+                    participants,
+                }, () => {
+                    setTimeout(() => {
+                        this.broadcastEvent('Dialog_Remove', {id: peer.getId()});
+                    }, 1000);
+                });
+            }
+        });
+    }
+
+    private broadcastEvent(name: string, data: any) {
+        const event = new CustomEvent(name, {
+            bubbles: true,
+            detail: data,
+        });
+        window.dispatchEvent(event);
     }
 }
 
