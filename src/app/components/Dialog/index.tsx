@@ -10,13 +10,13 @@ import './style.css';
 
 interface IProps {
     cancelIsTyping: (id: string) => void;
-    isTypingList: { [key: string]: boolean };
+    isTypingList: { [key: string]: { [key: string]: any } };
     items: IDialog[];
     selectedId: string;
 }
 
 interface IState {
-    isTypingList: { [key: string]: boolean };
+    isTypingList: { [key: string]: { [key: string]: any } };
     items: IDialog[];
     selectedId: string;
     scrollIndex: number;
@@ -94,12 +94,12 @@ class Dialog extends React.Component<IProps, IState> {
 
     private rowRender = ({index, key, parent, style}: any): any => {
         const data = this.state.items[index];
-        const isTyping = this.state.isTypingList.hasOwnProperty(data.peerid || '');
+        const isTyping = this.state.isTypingList.hasOwnProperty(data.peerid || '') ? this.state.isTypingList[data.peerid || ''] : {};
         return (
             <div style={style} key={index}>
                 <Link to={`/conversation/${data.peerid}`}>
                     <div className={'dialog' + (data.peerid === this.state.selectedId ? ' active' : '')}>
-                        <DialogMessage dialog={data} isTyping={isTyping} cancelIsTyping={this.props.cancelIsTyping}/>
+                        <DialogMessage dialog={data} isTyping={isTyping}/>
                     </div>
                 </Link>
             </div>

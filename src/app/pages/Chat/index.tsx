@@ -56,6 +56,7 @@ import UserInfoMenu from '../../components/UserInfoMenu';
 import ContactRepo from '../../repository/contact';
 
 import './style.css';
+import {isTypingRender} from '../../components/DialogMessage';
 
 interface IProps {
     history?: any;
@@ -69,7 +70,7 @@ interface IState {
     isChatView: boolean;
     isConnecting: boolean;
     isTyping: boolean;
-    isTypingList: { [key: string]: boolean };
+    isTypingList: { [key: string]: { [key: string]: any } };
     isUpdating: boolean;
     leftMenu: string;
     leftOverlay: boolean;
@@ -103,7 +104,7 @@ class Chat extends React.Component<IProps, IState> {
     private connInfo: IConnInfo;
     private eventReferences: any[] = [];
     private dialogMap: { [key: string]: number } = {};
-    private typingTimeout: any = null;
+    // private typingTimeout: any = null;
     private dialogsSortThrottle: any = null;
     private readHistoryMaxId: number | null = null;
     private popUpDateTime: any;
@@ -296,34 +297,56 @@ class Chat extends React.Component<IProps, IState> {
             }
             const {isTypingList} = this.state;
             if (data.action === TypingAction.TYPING) {
-                isTypingList[data.userid || ''] = true;
+                const fn = setTimeout(() => {
+                    if (isTypingList.hasOwnProperty(data.peerid || '')) {
+                        if (isTypingList[data.peerid || ''].hasOwnProperty(data.userid || 0)) {
+                            delete isTypingList[data.peerid || ''][data.userid || 0];
+                            this.setState({
+                                isTypingList,
+                            });
+                        }
+                    }
+                }, 5000);
+                if (!isTypingList.hasOwnProperty(data.peerid || '')) {
+                    isTypingList[data.peerid || ''] = {};
+                    isTypingList[data.peerid || ''][data.userid || 0] = fn;
+                } else {
+                    if (isTypingList[data.peerid || ''].hasOwnProperty(data.userid || 0)) {
+                        clearTimeout(isTypingList[data.peerid || ''][data.userid || 0]);
+                    }
+                    isTypingList[data.peerid || ''][data.userid || 0] = fn;
+                }
                 this.setState({
                     isTypingList,
                 });
             } else if (data.action === TypingAction.CANCEL) {
-                if (isTypingList.hasOwnProperty(data.userid || '')) {
-                    delete isTypingList[data.userid || ''];
-                    this.setState({
-                        isTypingList,
-                    });
+                if (isTypingList.hasOwnProperty(data.peerid || '')) {
+                    if (isTypingList[data.peerid || ''].hasOwnProperty(data.userid || 0)) {
+                        clearTimeout(isTypingList[data.peerid || ''][data.userid || 0]);
+                        delete isTypingList[data.peerid || ''][data.userid || 0];
+                        this.setState({
+                            isTypingList,
+                        });
+                    }
                 }
             }
-            if (data.userid !== this.state.selectedDialogId) {
-                return;
-            }
-            const isTyping = data.userid === this.state.selectedDialogId && data.action === TypingAction.TYPING;
-            if (this.state.isTyping !== isTyping) {
-                this.setState({
-                    isTyping,
-                    isTypingList,
-                });
-            }
-            clearTimeout(this.typingTimeout);
-            this.typingTimeout = setTimeout(() => {
-                this.setState({
-                    isTyping: false,
-                });
-            }, 5000);
+            window.console.log('is typing', isTypingList);
+            // if (data.peerid !== this.state.selectedDialogId) {
+            //     return;
+            // }
+            // const isTyping = data.peerid === this.state.selectedDialogId && data.action === TypingAction.TYPING;
+            // if (this.state.isTyping !== isTyping) {
+            //     this.setState({
+            //         isTyping,
+            //         isTypingList,
+            //     });
+            // }
+            // clearTimeout(this.typingTimeout);
+            // this.typingTimeout = setTimeout(() => {
+            //     this.setState({
+            //         isTyping: false,
+            //     });
+            // }, 5000);
         }));
 
         // Update: Read Inbox History
@@ -581,7 +604,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private getChatTitle(placeholder?: boolean) {
-        const {peer} = this.state;
+        const {peer, selectedDialogId} = this.state;
         if (!peer) {
             return '';
         }
@@ -592,18 +615,26 @@ class Chat extends React.Component<IProps, IState> {
                 <UserName id={this.state.selectedDialogId} className="name"/>}
                 {Boolean(placeholder !== true && isGroup) &&
                 <GroupName id={this.state.selectedDialogId} className="name"/>}
-                {this.getChatStatus()}
+                {this.getChatStatus(selectedDialogId)}
             </span>
         );
     }
 
-    private getChatStatus() {
+    private getChatStatus(dialogId: string) {
+        let dialog: IDialog | null = null;
+        if (this.dialogMap.hasOwnProperty(dialogId)) {
+            dialog = this.state.dialogs[this.dialogMap[dialogId]];
+        }
+        let ids: string[] = [];
+        if (dialog && this.state.isTypingList.hasOwnProperty(dialog.peerid || '')) {
+            ids = Object.keys(this.state.isTypingList[dialog.peerid || '']);
+        }
         if (this.state.isConnecting) {
             return (<span>Connecting...</span>);
         } else if (this.state.isUpdating) {
             return (<span>Updating...</span>);
-        } else if (this.state.isTyping) {
-            return (<span>is typing...</span>);
+        } else if (dialog && ids.length > 0) {
+            return (isTypingRender(ids, dialog));
         } else {
             return (<span>last seen recently</span>);
         }
@@ -1555,7 +1586,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.setState({
                     isUpdating: false,
                 });
-            }).catch(()=> {
+            }).catch(() => {
                 this.setState({
                     isUpdating: false,
                 });

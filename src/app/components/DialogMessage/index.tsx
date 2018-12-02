@@ -11,30 +11,30 @@ import GroupName from '../GroupName';
 import './style.css';
 
 interface IProps {
-    cancelIsTyping: (id: string) => void;
+    cancelIsTyping?: (id: string) => void;
     dialog: IDialog;
-    isTyping: boolean;
+    isTyping: { [key: string]: any };
 }
 
 interface IState {
     dialog: IDialog;
-    isTyping: boolean;
+    isTyping: { [key: string]: any };
 }
 
 class DialogMessage extends React.Component<IProps, IState> {
-    private isTypingTimout: any = null;
+    // private isTypingTimout: any = null;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
             dialog: props.dialog,
-            isTyping: false,
+            isTyping: {},
         };
     }
 
     public componentDidMount() {
-        this.handleTypingTimeout();
+        // this.handleTypingTimeout();
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -45,12 +45,13 @@ class DialogMessage extends React.Component<IProps, IState> {
             dialog: newProps.dialog,
             isTyping: newProps.isTyping,
         }, () => {
-            this.handleTypingTimeout();
+            // this.handleTypingTimeout();
         });
     }
 
     public render() {
         const {dialog, isTyping} = this.state;
+        const ids = Object.keys(isTyping);
         return (
             <div className="dialog-wrapper">
                 {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
@@ -62,13 +63,13 @@ class DialogMessage extends React.Component<IProps, IState> {
                 {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
                 <GroupName className="name" id={dialog.target_id || ''}/>}
                 <LiveDate className="time" time={dialog.last_update || 0}/>
-                {!isTyping && <span className="preview">
+                {Boolean(ids.length === 0) && <span className="preview">
                     {dialog.preview_me && <span className="status">
                         {this.getStatus(dialog.topmessageid || 0, dialog.readoutboxmaxid || 0)}
                     </span>}
                     {dialog.preview}
                 </span>}
-                {isTyping && <span className="preview">is typing...</span>}
+                {isTypingRender(ids, dialog)}
                 {(dialog.unreadcount && dialog.unreadcount > 0) ? (
                     <span className="unread">{dialog.unreadcount > 99 ? '+99' : dialog.unreadcount}</span>) : ''}
             </div>
@@ -87,19 +88,40 @@ class DialogMessage extends React.Component<IProps, IState> {
         }
     }
 
-    private handleTypingTimeout = () => {
-        clearTimeout(this.isTypingTimout);
-        if (this.state.isTyping) {
-            this.isTypingTimout = setTimeout(() => {
-                this.setState({
-                    isTyping: false,
-                });
-                if (this.props.isTyping) {
-                    this.props.cancelIsTyping(this.state.dialog.peerid || '');
-                }
-            }, 5000);
-        }
-    }
+    // private handleTypingTimeout = () => {
+    //     clearTimeout(this.isTypingTimout);
+    //     if (this.state.isTyping) {
+    //         this.isTypingTimout = setTimeout(() => {
+    //             this.setState({
+    //                 isTyping: false,
+    //             });
+    //             if (this.props.isTyping) {
+    //                 this.props.cancelIsTyping(this.state.dialog.peerid || '');
+    //             }
+    //         }, 5000);
+    //     }
+    // }
 }
+
+export const isTypingRender = (ids: string[], dialog: IDialog) => {
+    if (ids.length === 0) {
+        return '';
+    }
+    if (dialog.peertype === PeerType.PEERUSER) {
+        return (<span className="preview">is typing...</span>);
+    } else {
+        return (<span className="preview">
+                {ids.slice(0, 2).map((id, index) => {
+                    return (<span key={index}>
+                        {index !== 0 ? ', ' : ''}
+                        <UserName id={id} onlyFirstName={true}/>
+                    </span>);
+                })}
+            {Boolean(ids.length > 2) && <span> and {ids.length - 2} others</span>}
+            {ids.length === 1 ? ' is ' : ' are '}
+            typing...
+            </span>);
+    }
+};
 
 export default DialogMessage;

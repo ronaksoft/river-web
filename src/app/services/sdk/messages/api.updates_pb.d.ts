@@ -367,6 +367,11 @@ export class UpdateUserTyping extends jspb.Message {
   getAction(): core_types_pb.TypingAction | undefined;
   setAction(value: core_types_pb.TypingAction): void;
 
+  hasPeerid(): boolean;
+  clearPeerid(): void;
+  getPeerid(): string | undefined;
+  setPeerid(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateUserTyping.AsObject;
   static toObject(includeInstance: boolean, msg: UpdateUserTyping): UpdateUserTyping.AsObject;
@@ -382,6 +387,7 @@ export namespace UpdateUserTyping {
     ucount?: number,
     userid?: string,
     action?: core_types_pb.TypingAction,
+    peerid?: string,
   }
 }
 

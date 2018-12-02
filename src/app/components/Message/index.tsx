@@ -434,7 +434,8 @@ class Message extends React.Component<IProps, IState> {
                 })}</span>);
             case C_MESSAGE_ACTION.MessageActionGroupTitleChanged:
                 return (<span className="system-message">
-                    <UserName className="user" id={message.senderid || ''}/> Changed the Group Title</span>);
+                    <UserName className="user"
+                              id={message.senderid || ''}/> Changed the Title to '{message.actiondata.grouptitle}'</span>);
             default:
                 return '';
         }

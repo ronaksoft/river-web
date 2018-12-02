@@ -124,10 +124,16 @@ export default class SyncManager {
     }
 
     private updateDialog(dialogs: { [key: number]: IDialog }, dialog: IDialog) {
-        const d = dialogs[dialog.peerid || 0];
+        const d: IDialog = dialogs[dialog.peerid || 0];
         if (d) {
+            if ((d.readinboxmaxid || 0) > (dialog.readinboxmaxid || 0)) {
+                dialog.readinboxmaxid = (d.readinboxmaxid || 0);
+            }
+            if ((d.readoutboxmaxid || 0) > (dialog.readoutboxmaxid || 0)) {
+                dialog.readoutboxmaxid = (d.readoutboxmaxid || 0);
+            }
             if (dialog.topmessageid) {
-                if (dialog.topmessageid > dialogs[dialog.peerid || 0].topmessageid) {
+                if (dialog.topmessageid > (d.topmessageid || 0)) {
                     dialogs[dialog.peerid || 0] = merge(d, dialog);
                 }
             } else {

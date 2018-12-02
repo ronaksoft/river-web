@@ -83,6 +83,7 @@ message UpdateUserTyping {
     required int32 UCount = 100;
     required int64 UserID = 1 [jstype = JS_STRING];
     required TypingAction Action = 2;
+    required int64 PeerID = 3 [jstype = JS_STRING];
 }
 
 // UpdateUserStatus

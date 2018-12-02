@@ -9,6 +9,7 @@ interface IProps {
     id: string;
     uniqueColor?: boolean;
     you?: boolean;
+    onlyFirstName?: boolean;
 }
 
 interface IState {
@@ -60,6 +61,7 @@ class UserName extends React.Component<IProps, IState> {
     }
 
     public render() {
+        const {onlyFirstName} = this.props;
         const {user, className} = this.state;
         let style = {};
         if (this.props.uniqueColor === true) {
@@ -69,7 +71,7 @@ class UserName extends React.Component<IProps, IState> {
         }
         return (
             <span className={className}
-                  style={style}>{(user && user.id) ? `${user.firstname} ${user.lastname}` : ''}</span>
+                  style={style}>{(user && user.id) ? (onlyFirstName ? user.firstname : `${user.firstname} ${user.lastname}`) : ''}</span>
         );
     }
 

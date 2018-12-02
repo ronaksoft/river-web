@@ -2544,7 +2544,8 @@ proto.msg.UpdateUserTyping.toObject = function(includeInstance, msg) {
   var f, obj = {
     ucount: jspb.Message.getField(msg, 100),
     userid: jspb.Message.getField(msg, 1),
-    action: jspb.Message.getField(msg, 2)
+    action: jspb.Message.getField(msg, 2),
+    peerid: jspb.Message.getField(msg, 3)
   };
 
   if (includeInstance) {
@@ -2593,6 +2594,10 @@ proto.msg.UpdateUserTyping.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {!proto.msg.TypingAction} */ (reader.readEnum());
       msg.setAction(value);
       break;
+    case 3:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setPeerid(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -2640,6 +2645,13 @@ proto.msg.UpdateUserTyping.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeEnum(
       2,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeInt64String(
+      3,
       f
     );
   }
@@ -2730,6 +2742,35 @@ proto.msg.UpdateUserTyping.prototype.clearAction = function() {
  */
 proto.msg.UpdateUserTyping.prototype.hasAction = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * required int64 PeerID = 3;
+ * @return {string}
+ */
+proto.msg.UpdateUserTyping.prototype.getPeerid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, "0"));
+};
+
+
+/** @param {string} value */
+proto.msg.UpdateUserTyping.prototype.setPeerid = function(value) {
+  jspb.Message.setField(this, 3, value);
+};
+
+
+proto.msg.UpdateUserTyping.prototype.clearPeerid = function() {
+  jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateUserTyping.prototype.hasPeerid = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 
