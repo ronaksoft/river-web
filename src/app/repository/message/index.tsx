@@ -104,6 +104,13 @@ export default class MessageRepo {
         return this.db.messages.bulkPut(msgs);
     }
 
+    public removeMany(ids: number[]) {
+        ids.map((id) => {
+            delete this.lazyMap[id];
+        });
+        return this.db.messages.bulkDelete(ids);
+    }
+
     public getMany({peer, limit, before, after}: any, fnCallback?: (resMsgs: IMessage[]) => void): Promise<IMessage[]> {
         limit = limit || 30;
         return new Promise((resolve, reject) => {

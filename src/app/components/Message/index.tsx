@@ -192,7 +192,13 @@ class Message extends React.Component<IProps, IState> {
             });
         } else if (me === true && id && id > 0) {
             menuTypes[1].forEach((key) => {
-                menuItems.push(menuItem[key]);
+                if (key === 4) {
+                    if ((Math.floor(Date.now() / 1000) - (items[moreIndex].createdon || 0)) < 86400) {
+                        menuItems.push(menuItem[key]);
+                    }
+                } else {
+                    menuItems.push(menuItem[key]);
+                }
             });
         } else if (me === false && id && id > 0) {
             menuTypes[2].forEach((key) => {
@@ -224,6 +230,9 @@ class Message extends React.Component<IProps, IState> {
     }
 
     private messageItem(index: number, message: IMessage, peer: InputPeer | null, readId: number, style: any) {
+        if (!message) {
+            return '';
+        }
         switch (message.messagetype) {
             case C_MESSAGE_TYPE.NewMessage:
                 return (
@@ -398,6 +407,9 @@ class Message extends React.Component<IProps, IState> {
 
     private getKey = (rowIndex: number, colIndex: number) => {
         const {items} = this.state;
+        if (!items[rowIndex]) {
+            return 'null';
+        }
         return `${items[rowIndex].id || 0}-${colIndex}-${items[rowIndex].messagetype || 0}`;
     }
 

@@ -29,7 +29,7 @@ import {IDialog} from '../../repository/dialog/interface';
 import UpdateManager, {INewMessageBulkUpdate} from '../../services/sdk/server/updateManager';
 import {C_MSG} from '../../services/sdk/const';
 import {
-    UpdateMessageEdited,
+    UpdateMessageEdited, UpdateMessagesDeleted,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox,
     UpdateUserTyping
@@ -330,23 +330,6 @@ class Chat extends React.Component<IProps, IState> {
                     }
                 }
             }
-            window.console.log('is typing', isTypingList);
-            // if (data.peerid !== this.state.selectedDialogId) {
-            //     return;
-            // }
-            // const isTyping = data.peerid === this.state.selectedDialogId && data.action === TypingAction.TYPING;
-            // if (this.state.isTyping !== isTyping) {
-            //     this.setState({
-            //         isTyping,
-            //         isTypingList,
-            //     });
-            // }
-            // clearTimeout(this.typingTimeout);
-            // this.typingTimeout = setTimeout(() => {
-            //     this.setState({
-            //         isTyping: false,
-            //     });
-            // }, 5000);
         }));
 
         // Update: Read Inbox History
@@ -379,6 +362,27 @@ class Chat extends React.Component<IProps, IState> {
             }
         }));
 
+        // Update: Message Delete
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateMessagesDeleted, (data: UpdateMessagesDeleted.AsObject) => {
+            if (this.state.isUpdating) {
+                return;
+            }
+            this.messageRepo.removeMany(data.messageidsList);
+            const {messages} = this.state;
+            let updateView = false;
+            data.messageidsList.map((id) => {
+                const index = findIndex(messages, {id});
+                if (index > -1) {
+                    updateView = true;
+                    this.messageComponent.cache.clear(index, 0);
+                    messages.splice(index, 1);
+                }
+            });
+            if (updateView) {
+                this.messageComponent.list.recomputeGridSize();
+            }
+        }));
+
         // Update: Users
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUsers, (data: User[]) => {
             if (this.state.isUpdating) {
@@ -395,7 +399,6 @@ class Chat extends React.Component<IProps, IState> {
             }
             // @ts-ignore
             this.groupRepo.importBulk(data);
-            window.console.log(data);
         }));
     }
 
@@ -1494,6 +1497,10 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private messageContextMenuHandler = (cmd: string, message: IMessage) => {
+        const {peer} = this.state;
+        if (!peer) {
+            return;
+        }
         switch (cmd) {
             case 'reply':
                 this.setState({
@@ -1507,6 +1514,8 @@ class Chat extends React.Component<IProps, IState> {
                     textInputMessageMode: C_MSG_MODE.Edit,
                 });
                 break;
+            case 'remove':
+                this.sdk.removeMessage(peer, [message.id || 0], false);
             default:
                 window.console.log(cmd, message);
                 break;

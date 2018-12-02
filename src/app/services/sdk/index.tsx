@@ -15,6 +15,7 @@ import {IConnInfo} from './interface';
 import {ContactsGet, ContactsImport, ContactsImported, ContactsMany} from './messages/api.contacts_pb';
 import {Group, GroupFull, InputPeer, InputUser, PhoneContact, TypingAction} from './messages/core.types_pb';
 import {
+    MessagesDelete,
     MessagesDialogs, MessagesEdit,
     MessagesGetDialogs,
     MessagesGetHistory,
@@ -254,6 +255,14 @@ export default class SDK {
         data.setToken(token);
         data.setTokentype(tokenType);
         return this.server.send(C_MSG.AccountRegisterDevice, data.serializeBinary(), true);
+    }
+
+    public removeMessage(peer: InputPeer, ids: number[], revoke: boolean): Promise<Bool.AsObject> {
+        const data = new MessagesDelete();
+        data.setPeer(peer);
+        data.setMessageidsList(ids);
+        data.setRevoke(revoke);
+        return this.server.send(C_MSG.MessagesDelete, data.serializeBinary(), true);
     }
 
     public groupCreate(users: InputUser[], title: string): Promise<Group.AsObject> {
