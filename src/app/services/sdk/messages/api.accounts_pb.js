@@ -996,7 +996,8 @@ proto.msg.AccountUpdateProfile.prototype.toObject = function(opt_includeInstance
 proto.msg.AccountUpdateProfile.toObject = function(includeInstance, msg) {
   var f, obj = {
     firstname: jspb.Message.getField(msg, 1),
-    lastname: jspb.Message.getField(msg, 2)
+    lastname: jspb.Message.getField(msg, 2),
+    bio: jspb.Message.getField(msg, 3)
   };
 
   if (includeInstance) {
@@ -1041,6 +1042,10 @@ proto.msg.AccountUpdateProfile.deserializeBinaryFromReader = function(msg, reade
       var value = /** @type {string} */ (reader.readString());
       msg.setLastname(value);
       break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setBio(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1081,6 +1086,13 @@ proto.msg.AccountUpdateProfile.serializeBinaryToWriter = function(message, write
   if (f != null) {
     writer.writeString(
       2,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeString(
+      3,
       f
     );
   }
@@ -1142,6 +1154,35 @@ proto.msg.AccountUpdateProfile.prototype.clearLastname = function() {
  */
 proto.msg.AccountUpdateProfile.prototype.hasLastname = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional string Bio = 3;
+ * @return {string}
+ */
+proto.msg.AccountUpdateProfile.prototype.getBio = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.AccountUpdateProfile.prototype.setBio = function(value) {
+  jspb.Message.setField(this, 3, value);
+};
+
+
+proto.msg.AccountUpdateProfile.prototype.clearBio = function() {
+  jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AccountUpdateProfile.prototype.hasBio = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 

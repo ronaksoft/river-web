@@ -111,5 +111,3 @@ message UpdateNotifySettings {
     required InputPeer NotifyPeer = 2;
     required PeerNotifySettings Settings = 3;
 }
-
-

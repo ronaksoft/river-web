@@ -70,6 +70,10 @@ input {
     color: var(--dark);
     font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
     font-weight: 600; }
+    .dialog-wrapper .name svg {
+      font-size: 18px;
+      margin-right: 6px;
+      vertical-align: sub; }
   .dialog-wrapper .time {
     font-size: 11px;
     position: absolute;

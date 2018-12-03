@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {IGroup} from '../../repository/group/interface';
 import GroupRepo from '../../repository/group';
+import {GroupRounded} from '@material-ui/icons';
 
 interface IProps {
     className?: string;
@@ -54,7 +55,7 @@ class GroupName extends React.Component<IProps, IState> {
     public render() {
         const {group, className} = this.state;
         return (
-            <span className={className}>{(group && group.id) ? `${group.title}` : ''}</span>
+            <span className={className}><GroupRounded/>{(group && group.id) ? `${group.title}` : ''}</span>
         );
     }
 

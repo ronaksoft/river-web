@@ -6,7 +6,7 @@
   border-style: solid;
   border-color: var(--light);
   height: calc(100% - 48px);
-  transition: padding-top 1s;
+  //transition: padding-top 1s;
   &.no-transition {
     transition: none;
   }

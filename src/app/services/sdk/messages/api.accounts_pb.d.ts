@@ -145,6 +145,11 @@ export class AccountUpdateProfile extends jspb.Message {
   getLastname(): string | undefined;
   setLastname(value: string): void;
 
+  hasBio(): boolean;
+  clearBio(): void;
+  getBio(): string | undefined;
+  setBio(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountUpdateProfile.AsObject;
   static toObject(includeInstance: boolean, msg: AccountUpdateProfile): AccountUpdateProfile.AsObject;
@@ -159,6 +164,7 @@ export namespace AccountUpdateProfile {
   export type AsObject = {
     firstname?: string,
     lastname?: string,
+    bio?: string,
   }
 }
 

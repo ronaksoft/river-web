@@ -50,8 +50,7 @@ input {
   border-width: 1px 1px 0 0;
   border-style: solid;
   border-color: var(--light);
-  height: calc(100% - 48px);
-  transition: padding-top 1s; }
+  height: calc(100% - 48px); }
   .chat.no-transition {
     transition: none; }
 

@@ -16,10 +16,11 @@ import IconButton from '@material-ui/core/IconButton/IconButton';
 import UserAvatar from '../UserAvatar';
 import TextField from '@material-ui/core/TextField/TextField';
 import {IContact} from '../../repository/contact/interface';
-
-import './style.css';
 import UserRepo from '../../repository/user';
 import SDK from '../../services/sdk';
+import {debounce} from 'lodash';
+
+import './style.css';
 
 interface IProps {
     id?: number;
@@ -30,7 +31,8 @@ interface IProps {
 
 interface IState {
     checked: boolean;
-    edit: boolean;
+    editProfile: boolean;
+    editUsername: boolean;
     firstname: string;
     fontSize: number;
     id: number;
@@ -41,12 +43,15 @@ interface IState {
     readId: number;
     user: IContact | null;
     username: string;
+    usernameAvailable: boolean;
+    usernameValid: boolean;
 }
 
 class SettingMenu extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
     private sdk: SDK;
     private userId: string;
+    private usernameCheckDebounce: any;
 
     constructor(props: IProps) {
         super(props);
@@ -56,7 +61,8 @@ class SettingMenu extends React.Component<IProps, IState> {
 
         this.state = {
             checked: false,
-            edit: false,
+            editProfile: false,
+            editUsername: false,
             firstname: '',
             fontSize: 2,
             id: props.id || 0,
@@ -67,9 +73,12 @@ class SettingMenu extends React.Component<IProps, IState> {
             readId: props.readId || 0,
             user: null,
             username: '',
+            usernameAvailable: false,
+            usernameValid: false,
         };
 
         this.userRepo = UserRepo.getInstance();
+        this.usernameCheckDebounce = debounce(this.checkUsername, 256);
     }
 
     public componentDidMount() {
@@ -81,15 +90,6 @@ class SettingMenu extends React.Component<IProps, IState> {
             checked: (el.getAttribute('theme') === 'dark'),
             fontSize: parseInt(el.getAttribute('font') || '2', 10),
         });
-
-        this.userRepo.get(this.userId).then((res) => {
-            this.setState({
-                firstname: res.firstname || '',
-                lastname: res.lastname || '',
-                user: res,
-                username: res.username || '',
-            });
-        });
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -100,7 +100,7 @@ class SettingMenu extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {page, pageContent, user, edit, firstname, lastname, phone, username} = this.state;
+        const {page, pageContent, user, editProfile, editUsername, firstname, lastname, phone, username, usernameAvailable, usernameValid} = this.state;
         return (
             <div className="setting-menu">
                 <div className={'page-container page-' + page}>
@@ -191,19 +191,19 @@ class SettingMenu extends React.Component<IProps, IState> {
                                     <UserAvatar id={user.id || ''}/>
                                 </div>
                                 <div className="line">
-                                    {!edit && <div className="form-control">
+                                    {!editProfile && <div className="form-control">
                                         <label>First Name</label>
                                         <div className="inner">{user.firstname}</div>
                                         <div className="action">
-                                            <IconButton
+                                            {!editUsername && <IconButton
                                                 aria-label="Edit title"
-                                                onClick={this.onEditHandler}
+                                                onClick={this.onEditProfileHandler}
                                             >
                                                 <EditRounded/>
-                                            </IconButton>
+                                            </IconButton>}
                                         </div>
                                     </div>}
-                                    {edit &&
+                                    {editProfile &&
                                     <TextField
                                         label="First Name"
                                         fullWidth={true}
@@ -216,19 +216,19 @@ class SettingMenu extends React.Component<IProps, IState> {
                                     />}
                                 </div>
                                 <div className="line">
-                                    {!edit && <div className="form-control">
+                                    {!editProfile && <div className="form-control">
                                         <label>Last Name</label>
                                         <div className="inner">{user.lastname}</div>
                                         <div className="action">
-                                            <IconButton
+                                            {!editUsername && <IconButton
                                                 aria-label="Edit title"
-                                                onClick={this.onEditHandler}
+                                                onClick={this.onEditProfileHandler}
                                             >
                                                 <EditRounded/>
-                                            </IconButton>
+                                            </IconButton>}
                                         </div>
                                     </div>}
-                                    {edit &&
+                                    {editProfile &&
                                     <TextField
                                         label="Last Name"
                                         fullWidth={true}
@@ -241,19 +241,19 @@ class SettingMenu extends React.Component<IProps, IState> {
                                     />}
                                 </div>
                                 <div className="line">
-                                    {!edit && <div className="form-control">
+                                    {!editUsername && <div className="form-control">
                                         <label>Username</label>
                                         <div className="inner">{user.username}</div>
                                         <div className="action">
-                                            <IconButton
+                                            {!editProfile && <IconButton
                                                 aria-label="Edit title"
-                                                onClick={this.onEditHandler}
+                                                onClick={this.onEditUsernameHandler}
                                             >
                                                 <EditRounded/>
-                                            </IconButton>
+                                            </IconButton>}
                                         </div>
                                     </div>}
-                                    {edit &&
+                                    {editUsername &&
                                     <TextField
                                         label="Username"
                                         fullWidth={true}
@@ -263,6 +263,8 @@ class SettingMenu extends React.Component<IProps, IState> {
                                         value={username}
                                         className="input-edit"
                                         onChange={this.onUsernameChangeHandler}
+                                        error={!usernameAvailable || !usernameValid}
+                                        helperText={!usernameAvailable ? 'Username is not available' : (!usernameValid ? 'Username is not valid' : '')}
                                     />}
                                 </div>
                                 <div className="line">
@@ -271,9 +273,15 @@ class SettingMenu extends React.Component<IProps, IState> {
                                         <div className="inner">{phone}</div>
                                     </div>
                                 </div>
-                                {Boolean(edit && user && ((user.firstname !== firstname || user.lastname !== lastname || user.username !== username))) &&
+                                {Boolean(editProfile && user && ((user.firstname !== firstname || user.lastname !== lastname))) &&
                                 <div className="actions-bar">
-                                    <div className="add-action" onClick={this.confirmChangesHandler}>
+                                    <div className="add-action" onClick={this.confirmProfileChangesHandler}>
+                                        <CheckRounded/>
+                                    </div>
+                                </div>}
+                                {Boolean(editUsername && user && user.username !== username && usernameAvailable && usernameValid) &&
+                                <div className="actions-bar">
+                                    <div className="add-action" onClick={this.confirmUsernameChangeHandler}>
                                         <CheckRounded/>
                                     </div>
                                 </div>}
@@ -332,7 +340,8 @@ class SettingMenu extends React.Component<IProps, IState> {
 
     private onPrevHandler = () => {
         this.setState({
-            edit: false,
+            editProfile: false,
+            editUsername: false,
             page: '1',
             pageContent: 'none',
         });
@@ -346,15 +355,31 @@ class SettingMenu extends React.Component<IProps, IState> {
     }
 
     private accountPageHandler = () => {
+        this.userRepo.get(this.userId).then((res) => {
+            this.setState({
+                firstname: res.firstname || '',
+                lastname: res.lastname || '',
+                user: res,
+                username: res.username || '',
+            });
+        });
         this.setState({
             page: '2',
             pageContent: 'account',
         });
     }
 
-    private onEditHandler = () => {
+    private onEditProfileHandler = () => {
         this.setState({
-            edit: true,
+            editProfile: true,
+        });
+    }
+
+    private onEditUsernameHandler = () => {
+        this.setState({
+            editUsername: true,
+            usernameAvailable: false,
+            usernameValid: false,
         });
     }
 
@@ -371,13 +396,82 @@ class SettingMenu extends React.Component<IProps, IState> {
     }
 
     private onUsernameChangeHandler = (e: any) => {
+        const username = e.currentTarget.value;
+        const reg = /^(?=.{2,32}$)[a-zA-Z0-9._]/;
         this.setState({
-            username: e.currentTarget.value,
+            usernameValid: reg.test(username),
+        });
+        this.usernameCheckDebounce(username);
+        this.setState({
+            username,
         });
     }
 
-    private confirmChangesHandler = () => {
-        window.console.log('erfe');
+    private checkUsername = (username: string) => {
+        this.sdk.usernameAvailable(username).then((res) => {
+            this.setState({
+                usernameAvailable: res.result || false,
+            });
+        });
+    }
+
+    private confirmProfileChangesHandler = () => {
+        const {firstname, lastname, user} = this.state;
+        if (!user) {
+            return;
+        }
+        this.sdk.updateProfile(firstname, lastname).then(() => {
+            user.firstname = firstname;
+            user.lastname = lastname;
+            this.setState({
+                editProfile: false,
+                firstname: user.firstname || '',
+                lastname: user.lastname || '',
+                user,
+            });
+            this.userRepo.importBulk([user]);
+        }).catch(() => {
+            this.setState({
+                editProfile: false,
+                firstname: user.firstname || '',
+                lastname: user.lastname || '',
+                user,
+            });
+        });
+    }
+
+    private confirmUsernameChangeHandler = () => {
+        const {username, usernameAvailable, usernameValid, user} = this.state;
+        if (!user) {
+            return;
+        }
+        if (!usernameAvailable || !usernameValid) {
+            this.setState({
+                editUsername: false,
+                username: user.username || '',
+            });
+            return;
+        }
+        this.sdk.updateUsername(username).then((res) => {
+            window.console.log(res);
+            user.firstname = res.firstname;
+            user.lastname = res.lastname;
+            user.username = res.username;
+            this.setState({
+                editUsername: false,
+                firstname: user.firstname || '',
+                lastname: user.lastname || '',
+                user,
+                username: user.username || '',
+            });
+            this.userRepo.importBulk([user]);
+        }).catch(() => {
+            this.setState({
+                editUsername: false,
+                user,
+                username: user.username || '',
+            });
+        });
     }
 }
 

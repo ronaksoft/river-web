@@ -26,6 +26,11 @@
     margin: 0 0 4px;
     color: var(--dark);
     @include font-bold;
+    svg {
+      font-size: 18px;
+      margin-right: 6px;
+      vertical-align: sub;
+    }
   }
   .time {
     font-size: 11px;

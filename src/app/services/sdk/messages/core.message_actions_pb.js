@@ -750,7 +750,8 @@ proto.msg.MessageActionClearHistory.prototype.toObject = function(opt_includeIns
  */
 proto.msg.MessageActionClearHistory.toObject = function(includeInstance, msg) {
   var f, obj = {
-    maxid: jspb.Message.getField(msg, 1)
+    maxid: jspb.Message.getField(msg, 1),
+    pb_delete: jspb.Message.getField(msg, 2)
   };
 
   if (includeInstance) {
@@ -791,6 +792,10 @@ proto.msg.MessageActionClearHistory.deserializeBinaryFromReader = function(msg, 
       var value = /** @type {number} */ (reader.readInt64());
       msg.setMaxid(value);
       break;
+    case 2:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setDelete(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -827,6 +832,13 @@ proto.msg.MessageActionClearHistory.serializeBinaryToWriter = function(message, 
       f
     );
   }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeBool(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -856,6 +868,37 @@ proto.msg.MessageActionClearHistory.prototype.clearMaxid = function() {
  */
 proto.msg.MessageActionClearHistory.prototype.hasMaxid = function() {
   return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * required bool Delete = 2;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.msg.MessageActionClearHistory.prototype.getDelete = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 2, false));
+};
+
+
+/** @param {boolean} value */
+proto.msg.MessageActionClearHistory.prototype.setDelete = function(value) {
+  jspb.Message.setField(this, 2, value);
+};
+
+
+proto.msg.MessageActionClearHistory.prototype.clearDelete = function() {
+  jspb.Message.setField(this, 2, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.MessageActionClearHistory.prototype.hasDelete = function() {
+  return jspb.Message.getField(this, 2) != null;
 };
 
 

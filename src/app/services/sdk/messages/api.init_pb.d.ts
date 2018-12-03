@@ -251,3 +251,71 @@ export namespace InitAuthCompleted {
   }
 }
 
+export class InitBindUser extends jspb.Message {
+  hasAuthkey(): boolean;
+  clearAuthkey(): void;
+  getAuthkey(): string | undefined;
+  setAuthkey(value: string): void;
+
+  hasUsername(): boolean;
+  clearUsername(): void;
+  getUsername(): string | undefined;
+  setUsername(value: string): void;
+
+  hasPhone(): boolean;
+  clearPhone(): void;
+  getPhone(): string | undefined;
+  setPhone(value: string): void;
+
+  hasFirstname(): boolean;
+  clearFirstname(): void;
+  getFirstname(): string | undefined;
+  setFirstname(value: string): void;
+
+  hasLastname(): boolean;
+  clearLastname(): void;
+  getLastname(): string | undefined;
+  setLastname(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): InitBindUser.AsObject;
+  static toObject(includeInstance: boolean, msg: InitBindUser): InitBindUser.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: InitBindUser, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): InitBindUser;
+  static deserializeBinaryFromReader(message: InitBindUser, reader: jspb.BinaryReader): InitBindUser;
+}
+
+export namespace InitBindUser {
+  export type AsObject = {
+    authkey?: string,
+    username?: string,
+    phone?: string,
+    firstname?: string,
+    lastname?: string,
+  }
+}
+
+export class InitUserBound extends jspb.Message {
+  hasAuthid(): boolean;
+  clearAuthid(): void;
+  getAuthid(): number | undefined;
+  setAuthid(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): InitUserBound.AsObject;
+  static toObject(includeInstance: boolean, msg: InitUserBound): InitUserBound.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: InitUserBound, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): InitUserBound;
+  static deserializeBinaryFromReader(message: InitUserBound, reader: jspb.BinaryReader): InitUserBound;
+}
+
+export namespace InitUserBound {
+  export type AsObject = {
+    authid?: number,
+  }
+}
+

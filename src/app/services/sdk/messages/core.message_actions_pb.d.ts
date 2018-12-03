@@ -103,6 +103,11 @@ export class MessageActionClearHistory extends jspb.Message {
   getMaxid(): number | undefined;
   setMaxid(value: number): void;
 
+  hasDelete(): boolean;
+  clearDelete(): void;
+  getDelete(): boolean | undefined;
+  setDelete(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessageActionClearHistory.AsObject;
   static toObject(includeInstance: boolean, msg: MessageActionClearHistory): MessageActionClearHistory.AsObject;
@@ -116,6 +121,7 @@ export class MessageActionClearHistory extends jspb.Message {
 export namespace MessageActionClearHistory {
   export type AsObject = {
     maxid?: number,
+    pb_delete?: boolean,
   }
 }
 

@@ -449,7 +449,8 @@ class Chat extends React.Component<IProps, IState> {
                     return (<Dialog items={this.state.dialogs} selectedId={selectedDialogId} isTypingList={isTypingList}
                                     cancelIsTyping={this.cancelIsTypingHandler}/>);
                 case 'setting':
-                    return (<SettingMenu updateMessages={this.settingUpdateMessage}/>);
+                    return (<SettingMenu updateMessages={this.settingUpdateMessage}
+                                         onClose={this.bottomBarSelectHandler.bind(this, 'chat')}/>);
                 case 'contact':
                     return (<ContactMenu/>);
             }
@@ -540,15 +541,18 @@ class Chat extends React.Component<IProps, IState> {
                                 >
                                     <Attachment/>
                                 </IconButton>
-                                <IconButton
-                                    aria-label="More"
-                                    aria-owns={moreInfoAnchorEl ? 'long-menu' : undefined}
-                                    aria-haspopup="true"
-                                    onClick={this.moreInfoOpenHandler}
-                                >
-                                    <MoreVertIcon/>
-                                </IconButton>
-                                <Menu
+                                <Tooltip
+                                    title={(peer && peer.getType() === PeerType.PEERGROUP) ? 'Group Info' : 'Contact Info'}>
+                                    <IconButton
+                                        aria-label="More"
+                                        aria-owns={moreInfoAnchorEl ? 'long-menu' : undefined}
+                                        aria-haspopup="true"
+                                        onClick={this.toggleRightMenu}
+                                    >
+                                        <MoreVertIcon/>
+                                    </IconButton>
+                                </Tooltip>
+                                    {/*<Menu
                                     id="long-menu"
                                     anchorEl={moreInfoAnchorEl}
                                     open={Boolean(moreInfoAnchorEl)}
@@ -561,7 +565,7 @@ class Chat extends React.Component<IProps, IState> {
                                   >
                                       {(peer && peer.getType() === PeerType.PEERGROUP) ? 'Group Info' : 'Contact Info'}
                                   </MenuItem>
-                                </Menu>
+                                </Menu>*/}
                             </span>
                             </div>
                             <div className="conversation" hidden={this.state.toggleAttachment}>
@@ -643,11 +647,11 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private moreInfoOpenHandler = (event: any) => {
-        this.setState({
-            moreInfoAnchorEl: event.currentTarget,
-        });
-    }
+    // private moreInfoOpenHandler = (event: any) => {
+    //     this.setState({
+    //         moreInfoAnchorEl: event.currentTarget,
+    //     });
+    // }
 
     private moreInfoCloseHandler = () => {
         this.setState({

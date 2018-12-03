@@ -13,7 +13,7 @@ import Server from './server';
 import {C_MSG} from './const';
 import {IConnInfo} from './interface';
 import {ContactsGet, ContactsImport, ContactsImported, ContactsMany} from './messages/api.contacts_pb';
-import {Group, GroupFull, InputPeer, InputUser, PhoneContact, TypingAction} from './messages/core.types_pb';
+import {Group, GroupFull, InputPeer, InputUser, PhoneContact, TypingAction, User} from './messages/core.types_pb';
 import {
     MessagesDelete,
     MessagesDialogs, MessagesEdit,
@@ -26,7 +26,12 @@ import {
 } from './messages/api.messages_pb';
 import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from './messages/api.updates_pb';
 import {Bool} from './messages/core.messages_pb';
-import {AccountRegisterDevice} from './messages/api.accounts_pb';
+import {
+    AccountCheckUsername,
+    AccountRegisterDevice,
+    AccountUpdateProfile,
+    AccountUpdateUsername
+} from './messages/api.accounts_pb';
 import {GroupsAddUser, GroupsCreate, GroupsDeleteUser, GroupsEditTitle, GroupsGetFull} from './messages/api.groups_pb';
 
 export default class SDK {
@@ -263,6 +268,25 @@ export default class SDK {
         data.setMessageidsList(ids);
         data.setRevoke(revoke);
         return this.server.send(C_MSG.MessagesDelete, data.serializeBinary(), true);
+    }
+
+    public usernameAvailable(username: string): Promise<Bool.AsObject> {
+        const data = new AccountCheckUsername();
+        data.setUsername(username);
+        return this.server.send(C_MSG.AccountCheckUsername, data.serializeBinary(), true);
+    }
+
+    public updateUsername(username: string): Promise<User.AsObject> {
+        const data = new AccountUpdateUsername();
+        data.setUsername(username);
+        return this.server.send(C_MSG.AccountUpdateUsername, data.serializeBinary(), true);
+    }
+
+    public updateProfile(firsname: string, lastname: string): Promise<Bool.AsObject> {
+        const data = new AccountUpdateProfile();
+        data.setFirstname(firsname);
+        data.setLastname(lastname);
+        return this.server.send(C_MSG.AccountUpdateProfile, data.serializeBinary(), true);
     }
 
     public groupCreate(users: InputUser[], title: string): Promise<Group.AsObject> {

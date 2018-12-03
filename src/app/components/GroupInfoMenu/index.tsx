@@ -174,7 +174,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                             </div>
                         </div>}
                         <div className="leave-group kk-card" onClick={this.leaveGroupHandler}>
-                            <ExitToAppRounded/> Exit the '{group ? group.title : ''}'
+                            <ExitToAppRounded/> Leave the '{group ? group.title : ''}'
                         </div>
                         {/*<div className="contact-box">
                             hey

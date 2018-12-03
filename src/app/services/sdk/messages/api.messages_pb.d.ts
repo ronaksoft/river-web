@@ -303,6 +303,11 @@ export class MessagesClearHistory extends jspb.Message {
   getMaxid(): number | undefined;
   setMaxid(value: number): void;
 
+  hasDelete(): boolean;
+  clearDelete(): void;
+  getDelete(): boolean | undefined;
+  setDelete(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesClearHistory.AsObject;
   static toObject(includeInstance: boolean, msg: MessagesClearHistory): MessagesClearHistory.AsObject;
@@ -317,6 +322,7 @@ export namespace MessagesClearHistory {
   export type AsObject = {
     peer: core_types_pb.InputPeer.AsObject,
     maxid?: number,
+    pb_delete?: boolean,
   }
 }
 
@@ -351,6 +357,52 @@ export namespace MessagesDelete {
     peer: core_types_pb.InputPeer.AsObject,
     messageidsList: Array<number>,
     revoke?: boolean,
+  }
+}
+
+export class MessagesForward extends jspb.Message {
+  hasFrompeer(): boolean;
+  clearFrompeer(): void;
+  getFrompeer(): core_types_pb.InputPeer;
+  setFrompeer(value?: core_types_pb.InputPeer): void;
+
+  hasTopeer(): boolean;
+  clearTopeer(): void;
+  getTopeer(): core_types_pb.InputPeer;
+  setTopeer(value?: core_types_pb.InputPeer): void;
+
+  hasSilence(): boolean;
+  clearSilence(): void;
+  getSilence(): boolean | undefined;
+  setSilence(value: boolean): void;
+
+  clearMessageidsList(): void;
+  getMessageidsList(): Array<number>;
+  setMessageidsList(value: Array<number>): void;
+  addMessageids(value: number, index?: number): number;
+
+  hasRandomid(): boolean;
+  clearRandomid(): void;
+  getRandomid(): number | undefined;
+  setRandomid(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessagesForward.AsObject;
+  static toObject(includeInstance: boolean, msg: MessagesForward): MessagesForward.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessagesForward, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessagesForward;
+  static deserializeBinaryFromReader(message: MessagesForward, reader: jspb.BinaryReader): MessagesForward;
+}
+
+export namespace MessagesForward {
+  export type AsObject = {
+    frompeer: core_types_pb.InputPeer.AsObject,
+    topeer: core_types_pb.InputPeer.AsObject,
+    silence?: boolean,
+    messageidsList: Array<number>,
+    randomid?: number,
   }
 }
 

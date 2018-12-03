@@ -169,6 +169,7 @@ input {
       text-overflow: ellipsis;
       white-space: nowrap; }
     .setting-menu .form-control .action {
+      height: 48px;
       width: 48px; }
   .setting-menu .kk-card {
     margin-bottom: 10px;

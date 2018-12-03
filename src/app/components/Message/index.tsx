@@ -192,7 +192,7 @@ class Message extends React.Component<IProps, IState> {
             });
         } else if (me === true && id && id > 0) {
             menuTypes[1].forEach((key) => {
-                if (key === 4) {
+                if (key === 4 || key === 3) {
                     if ((Math.floor(Date.now() / 1000) - (items[moreIndex].createdon || 0)) < 86400) {
                         menuItems.push(menuItem[key]);
                     }
