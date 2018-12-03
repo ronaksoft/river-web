@@ -46,26 +46,53 @@ input {
   font-weight: 400; }
 
 .setting-menu {
-  border-right: 1px solid transparent;
-  border-left: 1px solid transparent;
-  width: calc(100% + 1px);
-  height: 502px;
-  text-align: left; }
+  height: 100%; }
+  .setting-menu .page-container {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow: hidden; }
+    .setting-menu .page-container .page {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      transition: left 0.2s ease-out; }
+      .setting-menu .page-container .page.page-1 {
+        left: 0; }
+      .setting-menu .page-container .page.page-2 {
+        left: 100%; }
+    .setting-menu .page-container.page-2 .page-1 {
+      left: -100%; }
+    .setting-menu .page-container.page-2 .page-2 {
+      left: 0; }
   .setting-menu .menu-header {
     background-color: var(--bg);
     text-align: left;
     height: 47px;
-    line-height: 27px;
-    color: var(--dark-medium);
-    padding: 10px 16px; }
+    color: var(--dark-medium); }
   .setting-menu .menu-content {
-    padding: 0 10px; }
+    padding: 0 10px;
+    text-align: left; }
+  .setting-menu .page-anchor {
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    border-top: 1px solid var(--light); }
+    .setting-menu .page-anchor svg {
+      margin-right: 5px; }
   .setting-menu .font-size-label {
     display: block;
     text-align: center;
     font-size: 0.875rem;
     font-weight: 400;
-    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
+    font-weight: 400;
     line-height: 1.46429em;
     color: rgba(0, 0, 0, 0.87);
     margin-bottom: -15px; }
@@ -79,10 +106,86 @@ input {
       background-color: var(--light); }
       .setting-menu .font-size-container div[role="progressbar"] > div {
         background-color: var(--grey); }
+  .setting-menu .info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 20px 10px; }
+    .setting-menu .info .avatar {
+      height: 200px;
+      width: 200px;
+      border-radius: 50%;
+      display: inline-block;
+      font-size: 75px; }
+    .setting-menu .info .line {
+      padding: 16px 10px 0;
+      text-align: left;
+      width: 100%; }
+      .setting-menu .info .line .input-edit {
+        margin-bottom: 10px; }
+    .setting-menu .info .created-on {
+      padding: 0 10px;
+      text-align: left;
+      width: 100%;
+      color: var(--grey); }
+  .setting-menu .actions-bar {
+    height: 86px;
+    padding: 18px 0 22px;
+    text-align: center; }
+    .setting-menu .actions-bar .add-action {
+      display: inline-flex;
+      height: 46px;
+      width: 46px;
+      border-radius: 50%;
+      background: var(--river);
+      color: var(--white);
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+      transition: all 0.2s; }
+      .setting-menu .actions-bar .add-action svg {
+        font-size: 40px; }
+      .setting-menu .actions-bar .add-action:hover {
+        background: var(--river-dark);
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4); }
+  .setting-menu .form-control {
+    position: relative;
+    display: flex; }
+    .setting-menu .form-control.pad {
+      padding-top: 16px; }
+    .setting-menu .form-control label {
+      position: absolute;
+      top: 0;
+      left: 0;
+      color: var(--river);
+      font-size: 12px; }
+    .setting-menu .form-control .inner {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap; }
+    .setting-menu .form-control .action {
+      width: 48px; }
+  .setting-menu .kk-card {
+    margin-bottom: 10px;
+    background-color: var(--white);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); }
 
 html[theme="dark"] .setting-menu .menu-header {
   background-color: var(--dark-high);
   color: var(--white); }
+  html[theme="dark"] .setting-menu .menu-header svg {
+    color: var(--white); }
+
+html[theme="dark"] .setting-menu .page-anchor {
+  color: var(--white);
+  border-color: var(--dark); }
+  html[theme="dark"] .setting-menu .page-anchor svg {
+    color: var(--white); }
 
 html[theme="dark"] .setting-menu .font-size-container button {
   color: var(--light); }
@@ -100,3 +203,12 @@ html[theme="dark"] .setting-menu .setting-switch-label > span {
 
 html[theme="dark"] .setting-menu .font-size-label {
   color: var(--light); }
+
+html[theme="dark"] .setting-menu .info .line, html[theme="dark"] .setting-menu .info .input-edit input, html[theme="dark"] .setting-menu .info .input-edit label, html[theme="dark"] .setting-menu .info .input-edit svg {
+  color: var(--white); }
+
+html[theme="dark"] .setting-menu .form-control .action svg {
+  color: var(--white); }
+
+html[theme="dark"] .setting-menu .kk-card {
+  background-color: var(--dark-medium); }

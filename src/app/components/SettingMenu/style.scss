@@ -1,28 +1,64 @@
 @import '../../../style/common';
 
 .setting-menu {
-  border-right: 1px solid transparent;
-  border-left: 1px solid transparent;
-  width: calc(100% + 1px);
-  height: 502px;
-  text-align: left;
+  height: 100%;
+  .page-container {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    .page {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      transition: left 0.2s ease-out;
+      &.page-1 {
+        left: 0;
+      }
+      &.page-2 {
+        left: 100%;
+      }
+    }
+    &.page-2 {
+      .page-1 {
+        left: -100%;
+      }
+      .page-2 {
+        left: 0;
+      }
+    }
+  }
   .menu-header {
     background-color: var(--bg);
     text-align: left;
     height: 47px;
-    line-height: 27px;
     color: var(--dark-medium);
-    padding: 10px 16px;
   }
   .menu-content {
     padding: 0 10px;
+    text-align: left;
+  }
+  .page-anchor {
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    border-top: 1px solid var(--light);
+    svg {
+      margin-right: 5px;
+    }
   }
   .font-size-label {
     display: block;
     text-align: center;
     font-size: 0.875rem;
     font-weight: 400;
-    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    @include font;
     line-height: 1.46429em;
     color: rgba(0, 0, 0, 0.87);
     margin-bottom: -15px;
@@ -41,6 +77,89 @@
       }
     }
   }
+  .info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 20px 10px;
+    .avatar {
+      height: 200px;
+      width: 200px;
+      border-radius: 50%;
+      display: inline-block;
+      font-size: 75px;
+    }
+    .line {
+      padding: 16px 10px 0;
+      text-align: left;
+      width: 100%;
+      .input-edit {
+        margin-bottom: 10px;
+      }
+    }
+    .created-on {
+      padding: 0 10px;
+      text-align: left;
+      width: 100%;
+      color: var(--grey);
+    }
+  }
+  .actions-bar {
+    height: 86px;
+    padding: 18px 0 22px;
+    text-align: center;
+    .add-action {
+      display: inline-flex;
+      height: 46px;
+      width: 46px;
+      border-radius: 50%;
+      background: var(--river);
+      color: var(--white);
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+      transition: all 0.2s;
+      svg {
+        font-size: 40px;
+      }
+      &:hover {
+        background: var(--river-dark);
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+      }
+    }
+  }
+  .form-control {
+    position: relative;
+    display: flex;
+    &.pad {
+      padding-top: 16px
+    }
+    label {
+      position: absolute;
+      top: 0;
+      left: 0;
+      color: var(--river);
+      font-size: 12px;
+    }
+    .inner {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .action {
+      width: 48px;
+    }
+  }
+  .kk-card {
+    margin-bottom: 10px;
+    background-color: var(--white);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
 }
 
 html[theme="dark"] {
@@ -48,6 +167,16 @@ html[theme="dark"] {
     .menu-header {
       background-color: var(--dark-high);
       color: var(--white);
+      svg {
+        color: var(--white);
+      }
+    }
+    .page-anchor {
+      color: var(--white);
+      border-color: var(--dark);
+      svg {
+        color: var(--white);
+      }
     }
     .font-size-container {
       button {
@@ -72,6 +201,21 @@ html[theme="dark"] {
     }
     .font-size-label {
       color: var(--light);
+    }
+    .info {
+      .line, .input-edit input, .input-edit label, .input-edit svg {
+        color: var(--white);
+      }
+    }
+    .form-control {
+      .action {
+        svg {
+          color: var(--white);
+        }
+      }
+    }
+    .kk-card {
+      background-color: var(--dark-medium);
     }
   }
 }

@@ -198,7 +198,7 @@ input {
     text-align: right;
     margin-right: 10px; }
     .bubble-wrapper.me .bubble.edited {
-      min-width: 92px; }
+      min-width: 100px; }
   .bubble-wrapper > .date {
     background-color: rgba(225, 245, 254, 0.92);
     border-radius: 7.5px;
