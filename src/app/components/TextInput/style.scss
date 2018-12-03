@@ -83,10 +83,8 @@
           }
         }
       }
-      &.rtl .write-link {
-        right: auto;
-        left: 6px;
-        bottom: 0;
+      &.rtl textarea {
+        padding-right: 60px;
       }
     }
   }

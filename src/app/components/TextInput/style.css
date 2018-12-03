@@ -118,10 +118,8 @@ input {
             height: 32px; }
           .write .inputs .input .write-link a:hover svg {
             fill: var(--grey); }
-      .write .inputs .input.rtl .write-link {
-        right: auto;
-        left: 6px;
-        bottom: 0; }
+      .write .inputs .input.rtl textarea {
+        padding-right: 60px; }
   .write .previews {
     display: flex;
     transition: height 0.1s;
