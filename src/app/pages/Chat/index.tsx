@@ -5,7 +5,7 @@ import Message from '../../components/Message/index';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import {/*Attachment,*/ KeyboardArrowLeftRounded, MessageRounded, MoreVertRounded, InfoRounded} from '@material-ui/icons';
+import {/*Attachment,*/ KeyboardArrowLeftRounded, MessageRounded, MoreVertRounded, InfoOutlined} from '@material-ui/icons';
 import * as faker from 'faker';
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
@@ -578,7 +578,7 @@ class Chat extends React.Component<IProps, IState> {
                                         aria-haspopup="true"
                                         onClick={this.toggleRightMenu}
                                     >
-                                        <InfoRounded/>
+                                        <InfoOutlined/>
                                     </IconButton>
                                 </Tooltip>
                                     {/*<Menu
