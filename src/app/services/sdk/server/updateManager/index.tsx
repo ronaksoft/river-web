@@ -4,7 +4,7 @@ import {
     UpdateMessageEdited, UpdateMessageID, UpdateMessagesDeleted,
     UpdateNewMessage,
     UpdateReadHistoryInbox,
-    UpdateReadHistoryOutbox,
+    UpdateReadHistoryOutbox, UpdateUsername,
     UpdateUserTyping
 } from '../../messages/api.updates_pb';
 import {throttle} from 'lodash';
@@ -125,7 +125,6 @@ export default class UpdateManager {
             case C_MSG.UpdateMessageID:
                 const updateMessageId = UpdateMessageID.deserializeBinary(data).toObject();
                 this.rndMsgMap[updateMessageId.messageid || 0] = true;
-                // window.console.log('UpdateMessageID', 'msg id:', updateMessageId.messageid);
                 break;
         }
     }
@@ -136,13 +135,9 @@ export default class UpdateManager {
         switch (update.constructor) {
             case C_MSG.UpdateNewMessage:
                 const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
-                // window.console.log('UpdateNewMessage', 'msg id:', updateNewMessage.message.id);
                 if (!this.rndMsgMap[updateNewMessage.message.id || 0]) {
-                    // this.callHandlers(C_MSG.UpdateNewMessage, updateNewMessage);
                     this.throttledNewMessage(updateNewMessage);
                 } else {
-                    // window.console.log('UpdateNewMessage drop on', 'msg id:', updateNewMessage.message.id);
-                    // this.callHandlers(C_MSG.UpdateNewMessageDrop, updateNewMessage);
                     this.throttledNewMessageDrop(updateNewMessage);
                     delete this.rndMsgMap[updateNewMessage.message.id || 0];
                 }
@@ -161,6 +156,9 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateMessagesDeleted:
                 this.callHandlers(C_MSG.UpdateMessagesDeleted, UpdateMessagesDeleted.deserializeBinary(data).toObject());
+                break;
+            case C_MSG.UpdateUsername:
+                this.callHandlers(C_MSG.UpdateUsername, UpdateUsername.deserializeBinary(data).toObject());
                 break;
             default:
                 break;

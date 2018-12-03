@@ -127,7 +127,7 @@
           margin-bottom: 5px;
           @include font-bold;
           svg {
-            font-size: 18px;
+            font-size: 15px;
             margin-right: 6px;
             vertical-align: sub;
           }
@@ -144,9 +144,17 @@
     .conversation {
       width: 100%;
       height: calc(100% - 100px);
-      background-image: url(../../../asset/image/pattern.png);
       background-color: rgba(168, 144, 106, 0.3);
-      background-size: 500px 500px;
+      background-repeat: repeat;
+      background-size: 100px;
+    }
+    .input-placeholder {
+      display: flex;
+      height: 50px;
+      justify-content: center;
+      align-items: center;
+      color: var(--red);
+      text-transform: uppercase;
     }
     .attachments {
       width: 100%;
@@ -155,9 +163,8 @@
     .start-messaging {
       width: 100%;
       height: 100%;
-      background-image: url(../../../asset/image/pattern.png);
       background-color: rgba(168, 144, 106, 0.3);
-      background-size: 500px 500px;
+      background-size: 100px;
       .start-messaging-header {
         height: 48px;
         background-color: rgba(255, 255, 255, 0.2);
@@ -209,6 +216,208 @@
     &.active {
       width: 318px;
     }
+  }
+}
+
+html[bg="1"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgd/4-point-stars.svg);
+    background-size: 50px;
+  }
+}
+
+html[bg="2"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgd/anchors-away.svg);
+  }
+}
+
+html[bg="3"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgd/bank-note.svg);
+    background-size: 200px;
+  }
+}
+
+html[bg="4"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgd/bubbles.svg);
+  }
+}
+
+html[bg="5"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgd/glamorous.svg);
+  }
+}
+
+html[bg="6"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgd/hideout.svg);
+  }
+}
+
+html[bg="7"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgd/i-like-food.svg);
+  }
+}
+
+html[bg="8"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgd/jigsaw.svg);
+  }
+}
+
+html[bg="9"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgd/plus.svg);
+  }
+}
+
+html[bg="10"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgd/rounded-plus-connected.svg);
+  }
+}
+
+html[bg="11"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgd/skulls.svg);
+  }
+}
+
+html[bg="12"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgd/squares-in-squares.svg);
+  }
+}
+
+html[bg="13"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgd/tic-tac-toe.svg);
+  }
+}
+
+html[bg="14"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgd/topography.svg);
+    background-size: 300px;
+  }
+}
+
+html[theme="dark"][bg="1"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgl/4-point-stars.svg);
+    background-size: 50px;
+  }
+}
+
+html[theme="dark"][bg="2"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgl/anchors-away.svg);
+  }
+}
+
+html[theme="dark"][bg="3"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgl/bank-note.svg);
+    background-size: 200px;
+  }
+}
+
+html[theme="dark"][bg="4"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgl/bubbles.svg);
+  }
+}
+
+html[theme="dark"][bg="5"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgl/glamorous.svg);
+  }
+}
+
+html[theme="dark"][bg="6"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgl/hideout.svg);
+  }
+}
+
+html[theme="dark"][bg="7"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgl/i-like-food.svg);
+  }
+}
+
+html[theme="dark"][bg="8"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgl/jigsaw.svg);
+  }
+}
+
+html[theme="dark"][bg="9"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgl/plus.svg);
+  }
+}
+
+html[theme="dark"][bg="10"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgl/rounded-plus-connected.svg);
+  }
+}
+
+html[theme="dark"][bg="11"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgl/skulls.svg);
+  }
+}
+
+html[theme="dark"][bg="12"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgl/squares-in-squares.svg);
+  }
+}
+
+html[theme="dark"][bg="13"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgl/tic-tac-toe.svg);
+  }
+}
+
+html[theme="dark"][bg="14"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgl/topography.svg);
+    background-size: 300px;
   }
 }
 
@@ -295,19 +504,16 @@ html[theme="dark"] {
         }
       }
       .conversation {
-        background-image: none;
         background-color: var(--dark-low);
       }
       .start-messaging {
         background-color: var(--dark-low);
-        background-image: none;
         .start-messaging-header {
           background-color: transparent;
         }
         .start-messaging-img {
           width: 100%;
           height: calc(100% - 150px);
-          background-image: url(../../../asset/image/start-messaging.svg);
           background-position: center center;
           background-size: contain;
           background-repeat: no-repeat;
@@ -335,6 +541,16 @@ html[theme="dark"] {
     &.darker {
       > div[role="document"], ul {
         background-color: var(--dark-low);
+      }
+    }
+  }
+  .confirm-dialog {
+    div[role="document"] {
+      > div {
+        background-color: var(--dark);
+        h2, p {
+          color: var(--white);
+        }
       }
     }
   }

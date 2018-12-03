@@ -5,7 +5,7 @@ import Message from '../../components/Message/index';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import {Attachment, KeyboardArrowLeftRounded, MessageRounded, MoreVert as MoreVertIcon} from '@material-ui/icons';
+import {/*Attachment,*/ KeyboardArrowLeftRounded, MessageRounded, MoreVert as MoreVertIcon} from '@material-ui/icons';
 import * as faker from 'faker';
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
@@ -31,7 +31,7 @@ import {C_MSG} from '../../services/sdk/const';
 import {
     UpdateMessageEdited, UpdateMessagesDeleted,
     UpdateReadHistoryInbox,
-    UpdateReadHistoryOutbox,
+    UpdateReadHistoryOutbox, UpdateUsername,
     UpdateUserTyping
 } from '../../services/sdk/messages/api.updates_pb';
 import UserName from '../../components/UserName';
@@ -54,9 +54,15 @@ import GroupName from '../../components/GroupName';
 import GroupInfoMenu from '../../components/GroupInfoMenu';
 import UserInfoMenu from '../../components/UserInfoMenu';
 import ContactRepo from '../../repository/contact';
+import {isTypingRender} from '../../components/DialogMessage';
+import ConfirmDialog from '@material-ui/core/Dialog/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions/DialogActions';
+import Button from '@material-ui/core/Button/Button';
 
 import './style.css';
-import {isTypingRender} from '../../components/DialogMessage';
 
 interface IProps {
     history?: any;
@@ -66,6 +72,7 @@ interface IProps {
 
 interface IState {
     chatMoreAnchorEl: any;
+    confirmDialogOpen: boolean;
     dialogs: IDialog[];
     isChatView: boolean;
     isConnecting: boolean;
@@ -73,6 +80,7 @@ interface IState {
     isTypingList: { [key: string]: { [key: string]: any } };
     isUpdating: boolean;
     leftMenu: string;
+    leftMenuSub: string;
     leftOverlay: boolean;
     maxReadId: number;
     messages: IMessage[];
@@ -115,6 +123,7 @@ class Chat extends React.Component<IProps, IState> {
         super(props);
         this.state = {
             chatMoreAnchorEl: null,
+            confirmDialogOpen: false,
             dialogs: [],
             isChatView: false,
             isConnecting: true,
@@ -122,6 +131,7 @@ class Chat extends React.Component<IProps, IState> {
             isTypingList: {},
             isUpdating: false,
             leftMenu: 'chat',
+            leftMenuSub: 'none',
             leftOverlay: false,
             maxReadId: 0,
             messages: [],
@@ -383,6 +393,19 @@ class Chat extends React.Component<IProps, IState> {
             }
         }));
 
+        // Update: Username
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUsername, (data: UpdateUsername.AsObject) => {
+            if (this.state.isUpdating) {
+                return;
+            }
+            this.userRepo.importBulk([{
+                firstname: data.firstname,
+                id: data.userid,
+                lastname: data.lastname,
+                username: data.username,
+            }]);
+        }));
+
         // Update: Users
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUsers, (data: User[]) => {
             if (this.state.isUpdating) {
@@ -411,9 +434,6 @@ class Chat extends React.Component<IProps, IState> {
             });
         } else {
             const peer = this.getPeerByDialogId(selectedId);
-            if (peer) {
-                window.console.log(peer.getId());
-            }
             this.setState({
                 leftMenu: 'chat',
                 peer,
@@ -441,7 +461,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {moreInfoAnchorEl, chatMoreAnchorEl, isTypingList, leftMenu, leftOverlay, textInputMessage, textInputMessageMode, peer, selectedDialogId, popUpDate} = this.state;
+        const {confirmDialogOpen, moreInfoAnchorEl, chatMoreAnchorEl, isTypingList, leftMenu, leftMenuSub, leftOverlay, textInputMessage, textInputMessageMode, peer, selectedDialogId, popUpDate} = this.state;
         const leftMenuRender = () => {
             switch (leftMenu) {
                 default:
@@ -449,7 +469,7 @@ class Chat extends React.Component<IProps, IState> {
                     return (<Dialog items={this.state.dialogs} selectedId={selectedDialogId} isTypingList={isTypingList}
                                     cancelIsTyping={this.cancelIsTypingHandler}/>);
                 case 'setting':
-                    return (<SettingMenu updateMessages={this.settingUpdateMessage}
+                    return (<SettingMenu updateMessages={this.settingUpdateMessage} subMenu={leftMenuSub}
                                          onClose={this.bottomBarSelectHandler.bind(this, 'chat')}/>);
                 case 'contact':
                     return (<ContactMenu/>);
@@ -468,6 +488,15 @@ class Chat extends React.Component<IProps, IState> {
             cmd: 'setting',
             title: 'Settings',
         }];
+        let inputDisable = false;
+        if (this.state.messages.length > 0) {
+            const lastMessage = this.state.messages[this.state.messages.length - 1];
+            if (lastMessage.messageaction === C_MESSAGE_ACTION.MessageActionGroupDeleteUser) {
+                if (lastMessage.actiondata.useridsList.indexOf(lastMessage.senderid) > -1) {
+                    inputDisable = true;
+                }
+            }
+        }
         return (
             <div className="bg">
                 <div className="wrapper">
@@ -534,15 +563,15 @@ class Chat extends React.Component<IProps, IState> {
                                     <KeyboardArrowLeftRounded/></div>) : ''}
                                 {this.getChatTitle()}
                                 <span className="buttons">
-                                <IconButton
+                                {/*<IconButton
                                     aria-label="Attachment"
                                     aria-haspopup="true"
                                     onClick={this.attachmentToggleHandler}
                                 >
                                     <Attachment/>
-                                </IconButton>
-                                <Tooltip
-                                    title={(peer && peer.getType() === PeerType.PEERGROUP) ? 'Group Info' : 'Contact Info'}>
+                                </IconButton>*/}
+                                    <Tooltip
+                                        title={(peer && peer.getType() === PeerType.PEERGROUP) ? 'Group Info' : 'Contact Info'}>
                                     <IconButton
                                         aria-label="More"
                                         aria-owns={moreInfoAnchorEl ? 'long-menu' : undefined}
@@ -582,11 +611,15 @@ class Chat extends React.Component<IProps, IState> {
                             <div className="attachments" hidden={!this.state.toggleAttachment}>
                                 <Uploader/>
                             </div>
-                            {!this.state.toggleAttachment &&
+                            {Boolean(!this.state.toggleAttachment && !inputDisable) &&
                             <TextInput onMessage={this.onMessageHandler} onTyping={this.onTyping}
                                        userId={this.connInfo.UserID} previewMessage={textInputMessage}
                                        previewMessageMode={textInputMessageMode}
                                        clearPreviewMessage={this.clearPreviewMessageHandler}/>}
+                            {Boolean(!this.state.toggleAttachment && inputDisable) &&
+                            <div className="input-placeholder">
+                                You have been removed from this group
+                            </div>}
                         </div>}
                         {selectedDialogId === 'null' && <div className="column-center">
                             <div className="start-messaging">
@@ -606,6 +639,30 @@ class Chat extends React.Component<IProps, IState> {
                     <NewMessage open={this.state.openNewMessage} onClose={this.onNewMessageClose}
                                 onMessage={this.onNewMessage}/>
                 </div>
+                <ConfirmDialog
+                    open={confirmDialogOpen}
+                    onClose={this.confirmDialogCloseHandler}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                    className="confirm-dialog"
+                >
+                    <DialogTitle>Log Out?</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            We are about to log out of River.<br/>
+                            All databases will be removed!<br/>
+                            Are you sure?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={this.confirmDialogCloseHandler} color="secondary">
+                            Disagree
+                        </Button>
+                        <Button onClick={this.confirmDialogAcceptHandler} color="primary" autoFocus={true}>
+                            Agree
+                        </Button>
+                    </DialogActions>
+                </ConfirmDialog>
             </div>
         );
     }
@@ -659,11 +716,11 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private attachmentToggleHandler = () => {
-        this.setState({
-            toggleAttachment: !this.state.toggleAttachment,
-        });
-    }
+    // private attachmentToggleHandler = () => {
+    //     this.setState({
+    //         toggleAttachment: !this.state.toggleAttachment,
+    //     });
+    // }
 
     private toggleRightMenu = () => {
         this.setRightMenu();
@@ -729,6 +786,12 @@ class Chat extends React.Component<IProps, IState> {
                 break;
             case 'new_message':
                 this.onNewMessageOpen();
+                break;
+            case 'account':
+                this.setState({
+                    leftMenu: 'setting',
+                    leftMenuSub: 'account',
+                });
                 break;
             case 'setting':
                 this.setState({
@@ -1415,7 +1478,11 @@ class Chat extends React.Component<IProps, IState> {
     private bottomBarSelectHandler = (item: string) => {
         switch (item) {
             case 'logout':
-                this.logOutHandler();
+                this.setState({
+                    confirmDialogOpen: true,
+                    leftMenu: 'chat',
+                    leftMenuSub: 'none',
+                });
                 break;
             default:
                 this.setState({
@@ -1605,6 +1672,16 @@ class Chat extends React.Component<IProps, IState> {
                 });
             });
         }
+    }
+
+    private confirmDialogCloseHandler = () => {
+        this.setState({
+            confirmDialogOpen: false,
+        });
+    }
+
+    private confirmDialogAcceptHandler = () => {
+        this.logOutHandler();
     }
 }
 

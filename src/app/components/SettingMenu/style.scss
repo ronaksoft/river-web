@@ -41,6 +41,7 @@
   .menu-content {
     padding: 0 10px;
     text-align: left;
+    height: calc(100% - 50px);
   }
   .page-anchor {
     padding: 10px;
@@ -49,11 +50,45 @@
     align-items: center;
     justify-content: left;
     border-top: 1px solid var(--light);
-    svg {
-      margin-right: 5px;
+    > svg {
+      margin-right: 6px;
+    }
+    .icon {
+      position: relative;
+      width: 24px;
+      height: 24px;
+      margin-right: 6px;
+      .icon-primary, .icon-secondary {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        transition: opacity 0.2s;
+      }
+      .icon-primary {
+        opacity: 1;
+      }
+      .icon-secondary {
+        opacity: 0;
+        .avatar {
+          height: 100%;
+          width: 100%;
+          font-size: 11px;
+          font-weight: bold;
+        }
+      }
+    }
+    &:hover {
+      .icon {
+        .icon-primary {
+          opacity: 0;
+        }
+        .icon-secondary {
+          opacity: 1;
+        }
+      }
     }
   }
-  .font-size-label {
+  .label {
     display: block;
     text-align: center;
     font-size: 0.875rem;
@@ -61,7 +96,10 @@
     @include font;
     line-height: 1.46429em;
     color: rgba(0, 0, 0, 0.87);
-    margin-bottom: -15px;
+    margin-bottom: 10px;
+    &.font-size-label {
+      margin-bottom: -15px;
+    }
   }
   .font-size-container {
     padding: 8px 0;
@@ -156,6 +194,94 @@
       width: 48px;
     }
   }
+  .background-container {
+    height: 500px;
+    li {
+      cursor: pointer;
+    }
+    .bg-item {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 6px;
+      overflow: hidden;
+      background-color: rgba(168, 144, 106, 0.3);
+      background-repeat: repeat;
+      background-size: 50px;
+      background-position: center center;
+      &:after, &:before {
+        position: absolute;
+        content: '';
+        top: 10%;
+        left: 10%;
+        height: 25%;
+        width: 50%;
+        border-radius: 3px;
+        background: var(--white);
+      }
+      &:before {
+        top: 45%;
+        left: auto;
+        right: 10%;
+        background: var(--green);
+      }
+      &.bg-1 {
+        background-image: url(../../../asset/image/bgd/4-point-stars.svg);
+        background-size: 20px;
+      }
+      &.bg-2 {
+        background-image: url(../../../asset/image/bgd/anchors-away.svg);
+      }
+      &.bg-3 {
+        background-image: url(../../../asset/image/bgd/bank-note.svg);
+      }
+      &.bg-4 {
+        background-image: url(../../../asset/image/bgd/bubbles.svg);
+      }
+      &.bg-5 {
+        background-image: url(../../../asset/image/bgd/glamorous.svg);
+      }
+      &.bg-6 {
+        background-image: url(../../../asset/image/bgd/hideout.svg);
+      }
+      &.bg-7 {
+        background-image: url(../../../asset/image/bgd/i-like-food.svg);
+      }
+      &.bg-8 {
+        background-image: url(../../../asset/image/bgd/jigsaw.svg);
+      }
+      &.bg-9 {
+        background-image: url(../../../asset/image/bgd/plus.svg);
+      }
+      &.bg-10 {
+        background-image: url(../../../asset/image/bgd/rounded-plus-connected.svg);
+      }
+      &.bg-11 {
+        background-image: url(../../../asset/image/bgd/skulls.svg);
+      }
+      &.bg-12 {
+        background-image: url(../../../asset/image/bgd/squares-in-squares.svg);
+      }
+      &.bg-13 {
+        background-image: url(../../../asset/image/bgd/tic-tac-toe.svg);
+      }
+      &.bg-14 {
+        background-image: url(../../../asset/image/bgd/topography.svg);
+        background-size: 200px;
+      }
+    }
+    .title-bar {
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.3) 70%, rgba(0, 0, 0, 0) 100%);
+      height: 38px;
+      border-radius: 0 0 6px 6px;
+      &.selected {
+        background: linear-gradient(to top, #2E8F57AA 0%, #2E8F5777 70%, rgba(0, 0, 0, 0) 100%);
+      }
+      div {
+        font-size: 13px;
+      }
+    }
+  }
   .kk-card {
     margin-bottom: 10px;
     background-color: var(--white);
@@ -200,7 +326,7 @@ html[theme="dark"] {
         color: var(--light);
       }
     }
-    .font-size-label {
+    .label {
       color: var(--light);
     }
     .info {
@@ -212,6 +338,64 @@ html[theme="dark"] {
       .action {
         svg {
           color: var(--white);
+        }
+      }
+    }
+    .background-container {
+      .bg-item {
+        background-color: var(--dark);
+        &:after {
+          background: var(--dark-accent-medium);
+        }
+        &:before {
+          background: var(--dark-accent-low);
+        }
+        &.bg-1 {
+          background-image: url(../../../asset/image/bgl/4-point-stars.svg);
+        }
+        &.bg-2 {
+          background-image: url(../../../asset/image/bgl/anchors-away.svg);
+        }
+        &.bg-3 {
+          background-image: url(../../../asset/image/bgl/bank-note.svg);
+        }
+        &.bg-4 {
+          background-image: url(../../../asset/image/bgl/bubbles.svg);
+        }
+        &.bg-5 {
+          background-image: url(../../../asset/image/bgl/glamorous.svg);
+        }
+        &.bg-6 {
+          background-image: url(../../../asset/image/bgl/hideout.svg);
+        }
+        &.bg-7 {
+          background-image: url(../../../asset/image/bgl/i-like-food.svg);
+        }
+        &.bg-8 {
+          background-image: url(../../../asset/image/bgl/jigsaw.svg);
+        }
+        &.bg-9 {
+          background-image: url(../../../asset/image/bgl/plus.svg);
+        }
+        &.bg-10 {
+          background-image: url(../../../asset/image/bgl/rounded-plus-connected.svg);
+        }
+        &.bg-11 {
+          background-image: url(../../../asset/image/bgl/skulls.svg);
+        }
+        &.bg-12 {
+          background-image: url(../../../asset/image/bgl/squares-in-squares.svg);
+        }
+        &.bg-13 {
+          background-image: url(../../../asset/image/bgl/tic-tac-toe.svg);
+        }
+        &.bg-14 {
+          background-image: url(../../../asset/image/bgl/topography.svg);
+        }
+      }
+      .title-bar {
+        &.selected {
+          background: linear-gradient(to top, #00478399 0%, #00478344 70%, rgba(0, 0, 0, 0) 100%);
         }
       }
     }

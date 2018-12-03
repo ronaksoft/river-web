@@ -58,6 +58,7 @@ class App extends React.Component<{}, IState> {
         if (el) {
             el.setAttribute('theme', localStorage.getItem('river.theme.color') || 'normal');
             el.setAttribute('font', localStorage.getItem('river.theme.font') || '2');
+            el.setAttribute('bg', localStorage.getItem('river.theme.bg') || '2');
         }
     }
 

@@ -2,10 +2,10 @@ import {C_MSG} from '../const';
 import {UpdateEnvelope} from '../messages/core.messages_pb';
 import {
     UpdateDifference,
-    UpdateMessageEdited,
+    UpdateMessageEdited, UpdateMessagesDeleted,
     UpdateNewMessage,
     UpdateReadHistoryInbox,
-    UpdateReadHistoryOutbox,
+    UpdateReadHistoryOutbox, UpdateUsername,
 } from '../messages/api.updates_pb';
 import {IUser} from '../../../repository/user/interface';
 import {IMessage} from '../../../repository/message/interface';
@@ -76,6 +76,7 @@ export default class SyncManager {
     private updateMany(envelopes: UpdateEnvelope.AsObject[], groups: Group.AsObject[]) {
         let dialogs: { [key: number]: IDialog } = {};
         const messages: { [key: number]: IMessage } = {};
+        const toRemoveMessages: number[] = [];
         const users: { [key: number]: IUser } = {};
         envelopes.forEach((envelope) => {
             // @ts-ignore
@@ -113,11 +114,32 @@ export default class SyncManager {
                     const updateMessageEdited = UpdateMessageEdited.deserializeBinary(data).toObject();
                     messages[updateMessageEdited.message.id || 0] = MessageRepo.parseMessage(updateMessageEdited.message);
                     break;
+                case C_MSG.UpdateMessagesDeleted:
+                    const updateMessagesDeleted = UpdateMessagesDeleted.deserializeBinary(data).toObject();
+                    updateMessagesDeleted.messageidsList.forEach((id) => {
+                        if (messages.hasOwnProperty(id)) {
+                            delete messages[id || 0];
+                        } else {
+                            toRemoveMessages.push(id);
+                        }
+                    });
+                    break;
+                case C_MSG.UpdateUsername:
+                    const updateUsername = UpdateUsername.deserializeBinary(data).toObject();
+                    if (users.hasOwnProperty(updateUsername.userid || 0)) {
+                        users[updateUsername.userid || 0] = merge(users[updateUsername.userid || 0], {
+                            firstname: updateUsername.firstname,
+                            id: updateUsername.userid,
+                            lastname: updateUsername.lastname,
+                            username: updateUsername.username,
+                        });
+                    }
+                    break;
                 default:
                     break;
             }
         });
-        this.updateMessageDB(messages);
+        this.updateMessageDB(messages, toRemoveMessages);
         this.updateUserDB(users);
         this.updateDialogDB(dialogs);
         this.updateGroupDB(groups);
@@ -171,7 +193,8 @@ export default class SyncManager {
         }
     }
 
-    private updateMessageDB(messages: { [key: number]: IMessage }) {
+    private updateMessageDB(messages: { [key: number]: IMessage }, toRemoveMessages: number[]) {
+        this.messageRepo.removeMany(toRemoveMessages);
         const data: IMessage[] = [];
         const keys = Object.keys(messages);
         const peerIds: number[] = [];

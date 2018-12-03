@@ -19,13 +19,15 @@ import {IContact} from '../../repository/contact/interface';
 import UserRepo from '../../repository/user';
 import SDK from '../../services/sdk';
 import {debounce} from 'lodash';
+import GridList from '@material-ui/core/GridList';
+import GridListTile from '@material-ui/core/GridListTile';
+import GridListTileBar from '@material-ui/core/GridListTileBar';
 
 import './style.css';
 
 interface IProps {
-    id?: number;
     onClose?: () => void;
-    readId?: number;
+    subMenu?: string;
     updateMessages?: () => void;
 }
 
@@ -35,17 +37,63 @@ interface IState {
     editUsername: boolean;
     firstname: string;
     fontSize: number;
-    id: number;
     lastname: string;
     page: string;
     pageContent: string;
     phone: string;
-    readId: number;
+    selectedBackground: string;
     user: IContact | null;
     username: string;
     usernameAvailable: boolean;
     usernameValid: boolean;
 }
+
+const backgrounds = [{
+    id: '-1',
+    title: 'None',
+}, {
+    id: '1',
+    title: '4 Point Star',
+}, {
+    id: '2',
+    title: 'Anchors Away',
+}, {
+    id: '3',
+    title: 'Bank Note',
+}, {
+    id: '4',
+    title: 'Bubbles',
+}, {
+    id: '5',
+    title: 'Glamorous',
+}, {
+    id: '6',
+    title: 'Hideout',
+}, {
+    id: '7',
+    title: 'I Like Food',
+}, {
+    id: '8',
+    title: 'Jigsaw',
+}, {
+    id: '9',
+    title: 'Plus',
+}, {
+    id: '10',
+    title: 'Rounded Plus Connected',
+}, {
+    id: '11',
+    title: 'Skulls',
+}, {
+    id: '12',
+    title: 'Squares in Squares',
+}, {
+    id: '13',
+    title: 'Tic Tac Toe',
+}, {
+    id: '14',
+    title: 'Topography',
+}];
 
 class SettingMenu extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
@@ -65,20 +113,21 @@ class SettingMenu extends React.Component<IProps, IState> {
             editUsername: false,
             firstname: '',
             fontSize: 2,
-            id: props.id || 0,
             lastname: '',
-            page: '1',
-            pageContent: 'none',
+            page: (props.subMenu && props.subMenu !== 'none' ? '2' : '1'),
+            pageContent: props.subMenu || 'none',
             phone: this.sdk.getConnInfo().Phone || '',
-            readId: props.readId || 0,
+            selectedBackground: '-1',
             user: null,
             username: '',
             usernameAvailable: false,
             usernameValid: false,
         };
-
         this.userRepo = UserRepo.getInstance();
         this.usernameCheckDebounce = debounce(this.checkUsername, 256);
+        if (props.subMenu === 'account') {
+            this.getUser();
+        }
     }
 
     public componentDidMount() {
@@ -89,14 +138,20 @@ class SettingMenu extends React.Component<IProps, IState> {
         this.setState({
             checked: (el.getAttribute('theme') === 'dark'),
             fontSize: parseInt(el.getAttribute('font') || '2', 10),
+            selectedBackground: el.getAttribute('bg') || '-1',
         });
     }
 
     public componentWillReceiveProps(newProps: IProps) {
-        this.setState({
-            id: newProps.id || 0,
-            readId: newProps.readId || 0,
-        });
+        if (newProps.subMenu !== 'none') {
+            this.setState({
+                page: '2',
+                pageContent: newProps.subMenu || 'none',
+            });
+            if (newProps.subMenu === 'account') {
+                this.getUser();
+            }
+        }
     }
 
     public render() {
@@ -125,7 +180,15 @@ class SettingMenu extends React.Component<IProps, IState> {
                                 />
                             } label="Night mode"/>
                             <div className="page-anchor" onClick={this.accountPageHandler}>
-                                <FaceRounded/> Account
+                                <div className="icon">
+                                    <div className="icon-primary">
+                                        <FaceRounded/>
+                                    </div>
+                                    <div className="icon-secondary">
+                                        <UserAvatar className="avatar" id={this.userId || ''}/>
+                                    </div>
+                                </div>
+                                Account ({phone})
                             </div>
                             <div className="page-anchor" onClick={this.themePageHandler}>
                                 <PaletteRounded/> Theme
@@ -153,7 +216,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                                         onChange={this.nightModeHandler}
                                     />
                                 } label="Night mode"/>
-                                <label className="font-size-label">Font Size</label>
+                                <label className="label font-size-label">Font Size</label>
                                 <MobileStepper
                                     variant="progress"
                                     steps={6}
@@ -173,6 +236,20 @@ class SettingMenu extends React.Component<IProps, IState> {
                                         </Button>
                                     }
                                 />
+                                <label className="label">Background</label>
+                                <GridList className="background-container" cellHeight={100} spacing={6}>
+                                    {backgrounds.map((bg, index) => (
+                                        <GridListTile key={index} cols={1} rows={1}
+                                                      onClick={this.selectBackgroundHandler.bind(this, bg.id)}>
+                                            <div className={'bg-item bg-' + bg.id}/>
+                                            <GridListTileBar
+                                                className={'title-bar ' + (this.state.selectedBackground === bg.id ? 'selected' : '')}
+                                                title={bg.title}
+                                                titlePosition="bottom"
+                                            />
+                                        </GridListTile>
+                                    ))}
+                                </GridList>
                             </div>
                         </div>}
                         {Boolean(pageContent === 'account') && <div>
@@ -354,7 +431,7 @@ class SettingMenu extends React.Component<IProps, IState> {
         });
     }
 
-    private accountPageHandler = () => {
+    private getUser() {
         this.userRepo.get(this.userId).then((res) => {
             this.setState({
                 firstname: res.firstname || '',
@@ -363,6 +440,10 @@ class SettingMenu extends React.Component<IProps, IState> {
                 username: res.username || '',
             });
         });
+    }
+
+    private accountPageHandler = () => {
+        this.getUser();
         this.setState({
             page: '2',
             pageContent: 'account',
@@ -415,6 +496,19 @@ class SettingMenu extends React.Component<IProps, IState> {
         });
     }
 
+    private selectBackgroundHandler = (id: string) => {
+        this.setState({
+            selectedBackground: id,
+        }, () => {
+            const el = document.querySelector('html');
+            if (!el) {
+                return;
+            }
+            localStorage.setItem('river.theme.bg', id);
+            el.setAttribute('bg', id);
+        });
+    }
+
     private confirmProfileChangesHandler = () => {
         const {firstname, lastname, user} = this.state;
         if (!user) {
@@ -453,7 +547,6 @@ class SettingMenu extends React.Component<IProps, IState> {
             return;
         }
         this.sdk.updateUsername(username).then((res) => {
-            window.console.log(res);
             user.firstname = res.firstname;
             user.lastname = res.lastname;
             user.username = res.username;

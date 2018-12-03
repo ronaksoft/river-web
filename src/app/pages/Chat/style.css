@@ -154,7 +154,7 @@ input {
           font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
           font-weight: 600; }
           .container .column-center .top .chat-title .name svg {
-            font-size: 18px;
+            font-size: 15px;
             margin-right: 6px;
             vertical-align: sub; }
       .container .column-center .top .buttons {
@@ -166,18 +166,24 @@ input {
     .container .column-center .conversation {
       width: 100%;
       height: calc(100% - 100px);
-      background-image: url(../../../asset/image/pattern.png);
       background-color: rgba(168, 144, 106, 0.3);
-      background-size: 500px 500px; }
+      background-repeat: repeat;
+      background-size: 100px; }
+    .container .column-center .input-placeholder {
+      display: flex;
+      height: 50px;
+      justify-content: center;
+      align-items: center;
+      color: var(--red);
+      text-transform: uppercase; }
     .container .column-center .attachments {
       width: 100%;
       height: calc(100% - 48px); }
     .container .column-center .start-messaging {
       width: 100%;
       height: 100%;
-      background-image: url(../../../asset/image/pattern.png);
       background-color: rgba(168, 144, 106, 0.3);
-      background-size: 500px 500px; }
+      background-size: 100px; }
       .container .column-center .start-messaging .start-messaging-header {
         height: 48px;
         background-color: rgba(255, 255, 255, 0.2);
@@ -220,6 +226,124 @@ input {
     transition: width 0.2s; }
     .container .column-right.active {
       width: 318px; }
+
+html[bg="1"] .container .column-center .conversation,
+html[bg="1"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgd/4-point-stars.svg);
+  background-size: 50px; }
+
+html[bg="2"] .container .column-center .conversation,
+html[bg="2"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgd/anchors-away.svg); }
+
+html[bg="3"] .container .column-center .conversation,
+html[bg="3"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgd/bank-note.svg);
+  background-size: 200px; }
+
+html[bg="4"] .container .column-center .conversation,
+html[bg="4"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgd/bubbles.svg); }
+
+html[bg="5"] .container .column-center .conversation,
+html[bg="5"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgd/glamorous.svg); }
+
+html[bg="6"] .container .column-center .conversation,
+html[bg="6"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgd/hideout.svg); }
+
+html[bg="7"] .container .column-center .conversation,
+html[bg="7"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgd/i-like-food.svg); }
+
+html[bg="8"] .container .column-center .conversation,
+html[bg="8"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgd/jigsaw.svg); }
+
+html[bg="9"] .container .column-center .conversation,
+html[bg="9"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgd/plus.svg); }
+
+html[bg="10"] .container .column-center .conversation,
+html[bg="10"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgd/rounded-plus-connected.svg); }
+
+html[bg="11"] .container .column-center .conversation,
+html[bg="11"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgd/skulls.svg); }
+
+html[bg="12"] .container .column-center .conversation,
+html[bg="12"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgd/squares-in-squares.svg); }
+
+html[bg="13"] .container .column-center .conversation,
+html[bg="13"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgd/tic-tac-toe.svg); }
+
+html[bg="14"] .container .column-center .conversation,
+html[bg="14"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgd/topography.svg);
+  background-size: 300px; }
+
+html[theme="dark"][bg="1"] .container .column-center .conversation,
+html[theme="dark"][bg="1"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgl/4-point-stars.svg);
+  background-size: 50px; }
+
+html[theme="dark"][bg="2"] .container .column-center .conversation,
+html[theme="dark"][bg="2"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgl/anchors-away.svg); }
+
+html[theme="dark"][bg="3"] .container .column-center .conversation,
+html[theme="dark"][bg="3"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgl/bank-note.svg);
+  background-size: 200px; }
+
+html[theme="dark"][bg="4"] .container .column-center .conversation,
+html[theme="dark"][bg="4"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgl/bubbles.svg); }
+
+html[theme="dark"][bg="5"] .container .column-center .conversation,
+html[theme="dark"][bg="5"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgl/glamorous.svg); }
+
+html[theme="dark"][bg="6"] .container .column-center .conversation,
+html[theme="dark"][bg="6"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgl/hideout.svg); }
+
+html[theme="dark"][bg="7"] .container .column-center .conversation,
+html[theme="dark"][bg="7"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgl/i-like-food.svg); }
+
+html[theme="dark"][bg="8"] .container .column-center .conversation,
+html[theme="dark"][bg="8"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgl/jigsaw.svg); }
+
+html[theme="dark"][bg="9"] .container .column-center .conversation,
+html[theme="dark"][bg="9"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgl/plus.svg); }
+
+html[theme="dark"][bg="10"] .container .column-center .conversation,
+html[theme="dark"][bg="10"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgl/rounded-plus-connected.svg); }
+
+html[theme="dark"][bg="11"] .container .column-center .conversation,
+html[theme="dark"][bg="11"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgl/skulls.svg); }
+
+html[theme="dark"][bg="12"] .container .column-center .conversation,
+html[theme="dark"][bg="12"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgl/squares-in-squares.svg); }
+
+html[theme="dark"][bg="13"] .container .column-center .conversation,
+html[theme="dark"][bg="13"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgl/tic-tac-toe.svg); }
+
+html[theme="dark"][bg="14"] .container .column-center .conversation,
+html[theme="dark"][bg="14"] .container .column-center .start-messaging {
+  background-image: url(../../../asset/image/bgl/topography.svg);
+  background-size: 300px; }
 
 @media screen and (max-height: 800px) {
   .wrapper {
@@ -273,17 +397,14 @@ html[theme="dark"] .container {
       html[theme="dark"] .container .column-center .top span .name {
         color: var(--light); }
   html[theme="dark"] .container .column-center .conversation {
-    background-image: none;
     background-color: var(--dark-low); }
   html[theme="dark"] .container .column-center .start-messaging {
-    background-color: var(--dark-low);
-    background-image: none; }
+    background-color: var(--dark-low); }
     html[theme="dark"] .container .column-center .start-messaging .start-messaging-header {
       background-color: transparent; }
     html[theme="dark"] .container .column-center .start-messaging .start-messaging-img {
       width: 100%;
       height: calc(100% - 150px);
-      background-image: url(../../../asset/image/start-messaging.svg);
       background-position: center center;
       background-size: contain;
       background-repeat: no-repeat; }
@@ -302,3 +423,8 @@ html[theme="dark"] .kk-context-menu ul {
 
 html[theme="dark"] .kk-context-menu.darker > div[role="document"], html[theme="dark"] .kk-context-menu.darker ul {
   background-color: var(--dark-low); }
+
+html[theme="dark"] .confirm-dialog div[role="document"] > div {
+  background-color: var(--dark); }
+  html[theme="dark"] .confirm-dialog div[role="document"] > div h2, html[theme="dark"] .confirm-dialog div[role="document"] > div p {
+    color: var(--white); }
