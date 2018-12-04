@@ -492,7 +492,8 @@ class Chat extends React.Component<IProps, IState> {
         if (this.state.messages.length > 0) {
             const lastMessage = this.state.messages[this.state.messages.length - 1];
             if (lastMessage.messageaction === C_MESSAGE_ACTION.MessageActionGroupDeleteUser) {
-                if (lastMessage.actiondata.useridsList.indexOf(lastMessage.senderid) > -1) {
+                window.console.log(lastMessage.actiondata.useridsList);
+                if (lastMessage.actiondata.useridsList.indexOf(this.connInfo.UserID) > -1) {
                     inputDisable = true;
                 }
             }
