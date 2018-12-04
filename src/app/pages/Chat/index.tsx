@@ -5,8 +5,13 @@ import Message from '../../components/Message/index';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import {/*Attachment,*/ KeyboardArrowLeftRounded, MessageRounded, MoreVertRounded, InfoOutlined} from '@material-ui/icons';
-import * as faker from 'faker';
+import {
+    /*Attachment,*/
+    KeyboardArrowLeftRounded,
+    MessageRounded,
+    MoreVertRounded,
+    InfoOutlined
+} from '@material-ui/icons';
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
@@ -20,7 +25,6 @@ import {
     InputPeer,
     InputUser,
     PeerType,
-    PhoneContact,
     TypingAction,
     User
 } from '../../services/sdk/messages/core.types_pb';
@@ -492,7 +496,6 @@ class Chat extends React.Component<IProps, IState> {
         if (this.state.messages.length > 0) {
             const lastMessage = this.state.messages[this.state.messages.length - 1];
             if (lastMessage.messageaction === C_MESSAGE_ACTION.MessageActionGroupDeleteUser) {
-                window.console.log(lastMessage.actiondata.useridsList);
                 if (lastMessage.actiondata.useridsList.indexOf(this.connInfo.UserID) > -1) {
                     inputDisable = true;
                 }
@@ -638,7 +641,7 @@ class Chat extends React.Component<IProps, IState> {
                         </div>
                     </div>
                     <NewMessage open={this.state.openNewMessage} onClose={this.onNewMessageClose}
-                                onMessage={this.onNewMessage}/>
+                                onMessage={this.onNewMessageHandler}/>
                 </div>
                 <ConfirmDialog
                     open={confirmDialogOpen}
@@ -1115,44 +1118,15 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private onNewMessage = (phone: string, text: string) => {
-        const contacts: PhoneContact.AsObject[] = [];
-        contacts.push({
-            clientid: String(UniqueId.getRandomId()),
-            firstname: faker.name.firstName(),
-            lastname: faker.name.lastName(),
-            phone,
-        });
-        this.sdk.contactImport(true, contacts).then((data) => {
-            data.usersList.forEach((user) => {
-                this.userRepo.importBulk([user]);
-                const peer = new InputPeer();
-                peer.setType(PeerType.PEERUSER);
-                if (user.accesshash) {
-                    peer.setAccesshash(user.accesshash);
-                }
-                if (user.id) {
-                    peer.setId(user.id);
-                }
-                const dialogs = this.state.dialogs;
-                const dialog: IDialog = {
-                    accesshash: user.accesshash,
-                    last_update: Math.floor(Date.now() / 1000),
-                    peerid: user.id,
-                    peertype: PeerType.PEERUSER,
-                    preview: text.substr(0, 64),
-                    target_id: user.id,
-                };
-                dialogs.push(dialog);
-                this.dialogsSortThrottle(dialogs);
-                this.sdk.sendMessage(text, peer).then((msg) => {
-                    window.console.log(msg);
-                }).catch((err) => {
-                    window.console.log(err);
-                });
+    private onNewMessageHandler = (contacts: IContact[], text: string) => {
+        contacts.forEach((contact) => {
+            const peer = new InputPeer();
+            peer.setType(PeerType.PEERUSER);
+            peer.setAccesshash(contact.accesshash || '');
+            peer.setId(contact.id || '');
+            this.sdk.sendMessage(text, peer).then((msg) => {
+                window.console.log(msg);
             });
-        }).catch((err) => {
-            window.console.log(err);
         });
     }
 
