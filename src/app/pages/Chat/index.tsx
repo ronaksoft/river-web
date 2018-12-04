@@ -293,6 +293,13 @@ class Chat extends React.Component<IProps, IState> {
                 return;
             }
             this.messageRepo.lazyUpsert([data.message]);
+            if (this.dialogMap.hasOwnProperty(data.message.peerid || '')) {
+                const {dialogs} = this.state;
+                const index = this.dialogMap[data.message.peerid || ''];
+                if (dialogs[index].topmessageid === data.message.id) {
+                    this.updateDialogs(data.message, dialogs[index].accesshash || '0');
+                }
+            }
             if (this.state.selectedDialogId === data.message.peerid) {
                 const {messages} = this.state;
                 const index = findIndex(messages, {id: data.message.id});
@@ -382,9 +389,22 @@ class Chat extends React.Component<IProps, IState> {
                 return;
             }
             this.messageRepo.removeMany(data.messageidsList);
-            const {messages} = this.state;
+            const {messages, dialogs} = this.state;
             let updateView = false;
             data.messageidsList.map((id) => {
+                const dialogIndex = findIndex(dialogs, {topmessageid: id});
+                if (dialogIndex > -1) {
+                    const peer = new InputPeer();
+                    peer.setId(dialogs[dialogIndex].peerid || '');
+                    peer.setAccesshash(dialogs[dialogIndex].accesshash || '0');
+                    if (id > 1) {
+                        this.messageRepo.getMany({peer, before: (id - 1), limit: 1}).then((res) => {
+                            if (res.length > 0) {
+                                this.updateDialogs(res[0], dialogs[dialogIndex].accesshash || '0', true);
+                            }
+                        });
+                    }
+                }
                 const index = findIndex(messages, {id});
                 if (index > -1) {
                     updateView = true;
@@ -1177,7 +1197,7 @@ class Chat extends React.Component<IProps, IState> {
         return peer;
     }
 
-    private updateDialogs(msg: IMessage, accessHash: string) {
+    private updateDialogs(msg: IMessage, accessHash: string, force?: boolean) {
         const id = msg.peerid || '';
         if (msg.peerid === '') {
             return;
@@ -1188,7 +1208,7 @@ class Chat extends React.Component<IProps, IState> {
         let toUpdateDialog: IDialog | null = null;
         if (this.dialogMap.hasOwnProperty(id)) {
             const index = this.dialogMap[id];
-            if ((dialogs[index].topmessageid || 0) < (msg.id || 0)) {
+            if ((dialogs[index].topmessageid || 0) <= (msg.id || 0) || force === true) {
                 dialogs[index].topmessageid = msg.id;
                 dialogs[index].preview = preview;
                 dialogs[index].preview_me = previewMe;
@@ -1562,6 +1582,7 @@ class Chat extends React.Component<IProps, IState> {
                 break;
             case 'remove':
                 this.sdk.removeMessage(peer, [message.id || 0], false);
+                return;
             default:
                 window.console.log(cmd, message);
                 break;

@@ -29,7 +29,7 @@ class DialogMessage extends React.Component<IProps, IState> {
 
         this.state = {
             dialog: props.dialog,
-            isTyping: {},
+            isTyping: props.isTyping,
         };
     }
 

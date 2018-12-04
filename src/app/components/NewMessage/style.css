@@ -125,7 +125,7 @@ input {
         margin-left: 2px;
         transition: transform 0.2s ease-out; }
       .compose-new-message .page-content .actions-bar .add-action.send:hover svg {
-        transform: rotate(90deg); }
+        transform: rotate(-30deg); }
     .compose-new-message .page-content .actions-bar.no-bg {
       background-color: transparent; }
 
