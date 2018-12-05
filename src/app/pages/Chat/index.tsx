@@ -512,12 +512,16 @@ class Chat extends React.Component<IProps, IState> {
             cmd: 'setting',
             title: 'Settings',
         }];
-        let inputDisable = false;
+        let inputDisable: number = 0x0;
         if (this.state.messages.length > 0) {
             const lastMessage = this.state.messages[this.state.messages.length - 1];
             if (lastMessage.messageaction === C_MESSAGE_ACTION.MessageActionGroupDeleteUser) {
                 if (lastMessage.actiondata.useridsList.indexOf(this.connInfo.UserID) > -1) {
-                    inputDisable = true;
+                    if (lastMessage.senderid === this.connInfo.UserID) {
+                        inputDisable = 0x1;
+                    } else {
+                        inputDisable = 0x2;
+                    }
                 }
             }
         }
@@ -640,7 +644,11 @@ class Chat extends React.Component<IProps, IState> {
                                        userId={this.connInfo.UserID} previewMessage={textInputMessage}
                                        previewMessageMode={textInputMessageMode}
                                        clearPreviewMessage={this.clearPreviewMessageHandler}/>}
-                            {Boolean(!this.state.toggleAttachment && inputDisable) &&
+                            {Boolean(!this.state.toggleAttachment && inputDisable === 0x1) &&
+                            <div className="input-placeholder">
+                                You have left the group
+                            </div>}
+                            {Boolean(!this.state.toggleAttachment && inputDisable === 0x2) &&
                             <div className="input-placeholder">
                                 You have been removed from this group
                             </div>}
