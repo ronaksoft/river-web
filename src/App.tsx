@@ -43,11 +43,6 @@ class App extends React.Component<{}, IState> {
     }
 
     public componentDidMount() {
-        // @ts-ignore
-        if (window.Notification) {
-            Notification.requestPermission();
-        }
-
         window.addEventListener('authErrorEvent', (event: any) => {
             this.setState({
                 alertOpen: true,

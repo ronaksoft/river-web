@@ -14,32 +14,44 @@ export default class NotificationService {
     private messaging: firebase.messaging.Messaging;
 
     private constructor() {
-        this.app = firebase.initializeApp({
-            apiKey: "AIzaSyAxXaCNUveWAy2fxxv824mFe1n53sLUSL4",
-            authDomain: "river-chat.firebaseapp.com",
-            databaseURL: "https://river-chat.firebaseio.com",
-            messagingSenderId: "1012919192766",
-            projectId: "river-chat",
-            storageBucket: "river-chat.appspot.com",
-        });
+        try {
+            this.app = firebase.initializeApp({
+                apiKey: "AIzaSyAxXaCNUveWAy2fxxv824mFe1n53sLUSL4",
+                authDomain: "river-chat.firebaseapp.com",
+                databaseURL: "https://river-chat.firebaseio.com",
+                messagingSenderId: "1012919192766",
+                projectId: "river-chat",
+                storageBucket: "river-chat.appspot.com",
+            });
+        } catch (e) {
+            window.console.log(e);
+        }
 
-        this.messaging = firebase.messaging(this.app);
-        this.messaging.usePublicVapidKey('BFxf-8XLrMr4ebwFjejZh1j9vQGTlEnJ_S9_1-cZbvZKXedCQomb7oAEd_eYHKwJlc1iJ7yAvQ_eOSzN9UbFPKM');
+        if (firebase.messaging.isSupported()) {
+            this.messaging = firebase.messaging(this.app);
+            this.messaging.usePublicVapidKey('BFxf-8XLrMr4ebwFjejZh1j9vQGTlEnJ_S9_1-cZbvZKXedCQomb7oAEd_eYHKwJlc1iJ7yAvQ_eOSzN9UbFPKM');
 
-        this.messaging.requestPermission().then(() => {
-            window.console.log('Notification permission granted.');
-            // TODO(developer): Retrieve an Instance ID token for use with FCM.
-            // ...
-        }).catch((err) => {
-            window.console.info('Unable to get permission to notify.', err);
-        });
 
-        this.messaging.onMessage((data) => {
-            window.console.log(data);
-        });
+            this.messaging.requestPermission().then(() => {
+                window.console.log('Notification permission granted.');
+                // TODO(developer): Retrieve an Instance ID token for use with FCM.
+                // ...
+            }).catch((err) => {
+                window.console.info('Unable to get permission to notify.', err);
+            });
+
+            this.messaging.onMessage((data) => {
+                window.console.log(data);
+            });
+        } else {
+            // @ts-ignore
+            if (window.Notification) {
+                Notification.requestPermission();
+            }
+        }
     }
 
-    public initToken(): Promise<any>  {
+    public initToken(): Promise<any> {
         return new Promise((resolve, reject) => {
             this.messaging.getToken().then((currentToken) => {
                 if (currentToken) {
