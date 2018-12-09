@@ -102,17 +102,19 @@ class DialogMessage extends React.Component<IProps, IState> {
         switch (dialog.action_code) {
             case C_MESSAGE_ACTION.MessageActionContactRegistered:
                 return (<span className="preview-message">
-                    <UserName className="sender" id={dialog.sender_id || ''}/> Joined River</span>);
+                    <UserName className="sender" id={dialog.sender_id || ''}/> joined River</span>);
             case C_MESSAGE_ACTION.MessageActionGroupCreated:
-                return (<span className="preview-message">Group Created</span>);
+                return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
+                                                                    you={true} onlyFirstName={true}/> created the Group</span>);
             case C_MESSAGE_ACTION.MessageActionGroupAddUser:
                 if (!dialog.action_data) {
                     return (<span className="preview-message">
-                        <UserName className="sender" id={dialog.sender_id || ''} you={true}/> Added a User</span>);
+                        <UserName className="sender" id={dialog.sender_id || ''} you={true} onlyFirstName={true}/> added a User</span>);
                 } else {
                     return (<span className="preview-message">
                         <UserName className="sender" id={dialog.sender_id || ''}
-                                  you={true}/> Added {dialog.action_data.useridsList.map((id: string, index: number) => {
+                                  you={true}
+                                  onlyFirstName={true}/> added {dialog.action_data.useridsList.map((id: string, index: number) => {
                         return (
                             <span key={index}>
                                 {index !== 0 ? ', ' : ''}
@@ -123,16 +125,17 @@ class DialogMessage extends React.Component<IProps, IState> {
             case C_MESSAGE_ACTION.MessageActionGroupDeleteUser:
                 if (!dialog.action_data) {
                     return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
-                                                                        you={true}/> Removed a User</span>);
+                                                                        you={true} onlyFirstName={true}/> removed a User</span>);
                 } else {
                     if (dialog.action_data.useridsList.indexOf(dialog.sender_id) > -1) {
                         return (
                             <span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
-                                                                        you={true}/> Left</span>);
+                                                                        you={true} onlyFirstName={true}/> left</span>);
                     }
                     return (<span className="preview-message">
                     <UserName className="sender" id={dialog.sender_id || ''}
-                              you={true}/> Removed {dialog.action_data.useridsList.map((id: string, index: number) => {
+                              you={true}
+                              onlyFirstName={true}/> removed {dialog.action_data.useridsList.map((id: string, index: number) => {
                         return (
                             <span key={index}>
                             {index !== 0 ? ', ' : ''}
@@ -143,10 +146,10 @@ class DialogMessage extends React.Component<IProps, IState> {
             case C_MESSAGE_ACTION.MessageActionGroupTitleChanged:
                 if (!dialog.action_data) {
                     return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
-                                                                        you={true}/> Changed the Title</span>);
+                                                                        you={true} onlyFirstName={true}/> changed the Title</span>);
                 } else {
                     return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
-                                                                        you={true}/> Changed the Title to '{dialog.action_data.grouptitle}'</span>);
+                                                                        you={true} onlyFirstName={true}/> changed the Title to '{dialog.action_data.grouptitle}'</span>);
                 }
             default:
                 return (<span className="preview-message">{dialog.preview}</span>);
@@ -168,7 +171,7 @@ export const isTypingRender = (ids: string[], dialog: IDialog) => {
                         <UserName id={id} onlyFirstName={true}/>
                     </span>);
                 })}
-            {Boolean(ids.length > 2) && <span> and {ids.length - 2} others</span>}
+            {Boolean(ids.length > 2) && <span> & {ids.length - 2} more</span>}
             {ids.length === 1 ? ' is ' : ' are '}
             typing...
             </span>);

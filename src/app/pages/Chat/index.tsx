@@ -1248,6 +1248,7 @@ class Chat extends React.Component<IProps, IState> {
             }
             toUpdateDialog = dialog;
             dialogs.push(dialog);
+            this.dialogMap[id] = dialogs.length - 1;
         }
 
         this.dialogsSortThrottle(dialogs);
