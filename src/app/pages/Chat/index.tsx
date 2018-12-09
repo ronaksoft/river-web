@@ -516,7 +516,7 @@ class Chat extends React.Component<IProps, IState> {
         if (this.state.messages.length > 0) {
             const lastMessage = this.state.messages[this.state.messages.length - 1];
             if (lastMessage.messageaction === C_MESSAGE_ACTION.MessageActionGroupDeleteUser) {
-                if (lastMessage.actiondata.useridsList.indexOf(this.connInfo.UserID) > -1) {
+                if (lastMessage.actiondata && lastMessage.actiondata.useridsList && lastMessage.actiondata.useridsList.indexOf(this.connInfo.UserID) > -1) {
                     if (lastMessage.senderid === this.connInfo.UserID) {
                         inputDisable = 0x1;
                     } else {
@@ -1217,9 +1217,13 @@ class Chat extends React.Component<IProps, IState> {
         if (this.dialogMap.hasOwnProperty(id)) {
             const index = this.dialogMap[id];
             if ((dialogs[index].topmessageid || 0) <= (msg.id || 0) || force === true) {
+                dialogs[index].action_code = msg.messageaction;
+                dialogs[index].action_data = msg.actiondata;
                 dialogs[index].topmessageid = msg.id;
                 dialogs[index].preview = preview;
                 dialogs[index].preview_me = previewMe;
+                dialogs[index].sender_id = msg.senderid;
+                dialogs[index].target_id = msg.peerid;
                 dialogs[index].last_update = msg.createdon;
                 dialogs[index].peerid = id;
                 dialogs[index].peertype = msg.peertype;
@@ -1227,11 +1231,14 @@ class Chat extends React.Component<IProps, IState> {
             }
         } else {
             const dialog: IDialog = {
+                action_code: msg.messageaction,
+                action_data: msg.actiondata,
                 last_update: msg.createdon,
                 peerid: id,
                 peertype: msg.peertype,
                 preview,
                 preview_me: previewMe,
+                sender_id: msg.senderid,
                 target_id: msg.peerid,
                 topmessageid: msg.id,
                 unreadcount: 0,
@@ -1514,10 +1521,13 @@ class Chat extends React.Component<IProps, IState> {
             const {dialogs} = this.state;
             const dialog: IDialog = {
                 accesshash: '0',
+                action_code: C_MESSAGE_ACTION.MessageActionGroupCreated,
+                action_data: null,
                 last_update: res.createdon,
                 peerid: res.id,
                 peertype: PeerType.PEERGROUP,
                 preview: 'Group created',
+                sender_id: this.connInfo.UserID,
                 target_id: res.id,
             };
             dialogs.push(dialog);

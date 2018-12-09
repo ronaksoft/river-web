@@ -88,10 +88,13 @@ export default class SyncManager {
                     messages[updateNewMessage.message.id || 0] = MessageRepo.parseMessage(updateNewMessage.message);
                     dialogs = this.updateDialog(dialogs, {
                         accesshash: updateNewMessage.accesshash,
+                        action_code: updateNewMessage.message.messageaction,
+                        action_data: messages[updateNewMessage.message.id || 0].actiondata,
                         last_update: updateNewMessage.message.createdon,
                         peerid: updateNewMessage.message.peerid,
                         peertype: updateNewMessage.message.peertype,
                         preview: (updateNewMessage.message.body || '').substr(0, 64),
+                        sender_id: updateNewMessage.message.senderid,
                         target_id: updateNewMessage.message.peerid,
                         topmessageid: updateNewMessage.message.id,
                     });

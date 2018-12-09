@@ -236,7 +236,7 @@ input {
       position: absolute;
       left: 10px;
       right: calc(50% + 60px);
-      top: calc(50% - 5px);
+      top: 50%;
       height: 1px;
       background: var(--grey);
       box-shadow: 0 1px 1px var(--grey); }

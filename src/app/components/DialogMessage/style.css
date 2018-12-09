@@ -98,6 +98,8 @@ input {
         height: 17px;
         width: 17px;
         vertical-align: bottom; }
+    .dialog-wrapper .preview .sender {
+      font-weight: bold; }
   .dialog-wrapper .unread {
     font-size: 11px;
     position: absolute;

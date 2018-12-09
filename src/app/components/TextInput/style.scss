@@ -45,7 +45,7 @@
       display: flex;
       textarea {
         font-size: 12px;
-        line-height: 15px;
+        line-height: 1.25em;
         float: left;
         width: calc(100% - 8px);
         height: 32px;
@@ -243,3 +243,34 @@ html[theme="dark"] {
     }
   }
 }
+
+html[font="1"] {
+  .write .inputs .input textarea {
+    font-size: 12px;
+  }
+}
+
+html[font="2"] {
+  .write .inputs .input textarea {
+    font-size: 14px;
+  }
+}
+
+html[font="3"] {
+  .write .inputs .input textarea {
+    font-size: 16px;
+  }
+}
+
+html[font="4"] {
+  .write .inputs .input textarea {
+    font-size: 18px;
+  }
+}
+
+html[font="5"] {
+  .write .inputs .input textarea {
+    font-size: 20px;
+  }
+}
+

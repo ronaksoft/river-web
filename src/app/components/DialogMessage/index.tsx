@@ -7,6 +7,7 @@ import {DoneAllRounded, DoneRounded, ScheduleRounded} from '@material-ui/icons';
 import {PeerType} from '../../services/sdk/messages/core.types_pb';
 import GroupAvatar from '../GroupAvatar';
 import GroupName from '../GroupName';
+import {C_MESSAGE_ACTION} from '../../repository/message/consts';
 
 import './style.css';
 
@@ -67,7 +68,7 @@ class DialogMessage extends React.Component<IProps, IState> {
                     {dialog.preview_me && <span className="status">
                         {this.getStatus(dialog.topmessageid || 0, dialog.readoutboxmaxid || 0)}
                     </span>}
-                    {dialog.preview}
+                    {this.renderPreviewMessage(dialog)}
                 </span>}
                 {isTypingRender(ids, dialog)}
                 {(dialog.unreadcount && dialog.unreadcount > 0) ? (
@@ -88,19 +89,69 @@ class DialogMessage extends React.Component<IProps, IState> {
         }
     }
 
-    // private handleTypingTimeout = () => {
-    //     clearTimeout(this.isTypingTimout);
-    //     if (this.state.isTyping) {
-    //         this.isTypingTimout = setTimeout(() => {
-    //             this.setState({
-    //                 isTyping: false,
-    //             });
-    //             if (this.props.isTyping) {
-    //                 this.props.cancelIsTyping(this.state.dialog.peerid || '');
-    //             }
-    //         }, 5000);
-    //     }
-    // }
+    private renderPreviewMessage(dialog: IDialog) {
+        if (dialog.action_code === C_MESSAGE_ACTION.MessageActionNope) {
+            return (
+                <span className="preview-message">
+                    {Boolean(dialog.peertype === PeerType.PEERGROUP && dialog.sender_id) && <span className="sender">
+                    <UserName id={dialog.sender_id || ''} onlyFirstName={true} you={true}/>: </span>}
+                    {dialog.preview}
+                </span>
+            );
+        }
+        switch (dialog.action_code) {
+            case C_MESSAGE_ACTION.MessageActionContactRegistered:
+                return (<span className="preview-message">
+                    <UserName className="sender" id={dialog.sender_id || ''}/> Joined River</span>);
+            case C_MESSAGE_ACTION.MessageActionGroupCreated:
+                return (<span className="preview-message">Group Created</span>);
+            case C_MESSAGE_ACTION.MessageActionGroupAddUser:
+                if (!dialog.action_data) {
+                    return (<span className="preview-message">
+                        <UserName className="sender" id={dialog.sender_id || ''} you={true}/> Added a User</span>);
+                } else {
+                    return (<span className="preview-message">
+                        <UserName className="sender" id={dialog.sender_id || ''}
+                                  you={true}/> Added {dialog.action_data.useridsList.map((id: string, index: number) => {
+                        return (
+                            <span key={index}>
+                                {index !== 0 ? ', ' : ''}
+                                <UserName className="target-user" id={id} you={true}/></span>
+                        );
+                    })}</span>);
+                }
+            case C_MESSAGE_ACTION.MessageActionGroupDeleteUser:
+                if (!dialog.action_data) {
+                    return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
+                                                                        you={true}/> Removed a User</span>);
+                } else {
+                    if (dialog.action_data.useridsList.indexOf(dialog.sender_id) > -1) {
+                        return (
+                            <span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
+                                                                        you={true}/> Left</span>);
+                    }
+                    return (<span className="preview-message">
+                    <UserName className="sender" id={dialog.sender_id || ''}
+                              you={true}/> Removed {dialog.action_data.useridsList.map((id: string, index: number) => {
+                        return (
+                            <span key={index}>
+                            {index !== 0 ? ', ' : ''}
+                                <UserName className="target-user" id={id} you={true}/></span>
+                        );
+                    })}</span>);
+                }
+            case C_MESSAGE_ACTION.MessageActionGroupTitleChanged:
+                if (!dialog.action_data) {
+                    return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
+                                                                        you={true}/> Changed the Title</span>);
+                } else {
+                    return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
+                                                                        you={true}/> Changed the Title to '{dialog.action_data.grouptitle}'</span>);
+                }
+            default:
+                return (<span className="preview-message">{dialog.preview}</span>);
+        }
+    }
 }
 
 export const isTypingRender = (ids: string[], dialog: IDialog) => {
@@ -113,7 +164,7 @@ export const isTypingRender = (ids: string[], dialog: IDialog) => {
         return (<span className="preview">
                 {ids.slice(0, 2).map((id, index) => {
                     return (<span key={index}>
-                        {index !== 0 ? ', ' : ''}
+                        {index !== 0 ? (ids.length - 1 === index ? ' & ' : ', ') : ''}
                         <UserName id={id} onlyFirstName={true}/>
                     </span>);
                 })}

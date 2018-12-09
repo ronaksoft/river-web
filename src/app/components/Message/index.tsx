@@ -421,33 +421,48 @@ class Message extends React.Component<IProps, IState> {
             case C_MESSAGE_ACTION.MessageActionGroupCreated:
                 return (<span className="system-message">Group Created</span>);
             case C_MESSAGE_ACTION.MessageActionGroupAddUser:
-                return (<span className="system-message">
-                    <UserName className="user"
-                              id={message.senderid || ''}/> Added {message.actiondata.useridsList.map((id: string, index: number) => {
-                    return (
-                        <span key={index}>
-                            {index !== 0 ? ', ' : ''}
-                            <UserName className="target-user" id={id}/></span>
-                    );
-                })}</span>);
-            case C_MESSAGE_ACTION.MessageActionGroupDeleteUser:
-                if (message.actiondata.useridsList.indexOf(message.senderid) > -1) {
+                if (!message.actiondata) {
                     return (<span className="system-message">
-                    <UserName className="user" id={message.senderid || ''}/> Left</span>);
+                        <UserName className="user" id={message.senderid || ''} you={true}/> Added a User</span>);
+                } else {
+                    return (<span className="system-message">
+                        <UserName className="user" id={message.senderid || ''}
+                                  you={true}/> Added {message.actiondata.useridsList.map((id: string, index: number) => {
+                        return (
+                            <span key={index}>
+                                {index !== 0 ? ', ' : ''}
+                                <UserName className="target-user" id={id} you={true}/></span>
+                        );
+                    })}</span>);
                 }
-                return (<span className="system-message">
-                    <UserName className="user"
-                              id={message.senderid || ''}/> Removed {message.actiondata.useridsList.map((id: string, index: number) => {
-                    return (
-                        <span key={index}>
+            case C_MESSAGE_ACTION.MessageActionGroupDeleteUser:
+                if (!message.actiondata) {
+                    return (<span className="system-message"><UserName className="user" id={message.senderid || ''}
+                                                                       you={true}/> Removed a User</span>);
+                } else {
+                    if (message.actiondata.useridsList.indexOf(message.senderid) > -1) {
+                        return (
+                            <span className="system-message"><UserName className="user" id={message.senderid || ''}
+                                                                       you={true}/> Left</span>);
+                    }
+                    return (<span className="system-message">
+                    <UserName className="user" id={message.senderid || ''}
+                              you={true}/> Removed {message.actiondata.useridsList.map((id: string, index: number) => {
+                        return (
+                            <span key={index}>
                             {index !== 0 ? ', ' : ''}
-                            <UserName className="target-user" id={id}/></span>
-                    );
-                })}</span>);
+                                <UserName className="target-user" id={id} you={true}/></span>
+                        );
+                    })}</span>);
+                }
             case C_MESSAGE_ACTION.MessageActionGroupTitleChanged:
-                return (<span className="system-message">
-                    <UserName className="user"
-                              id={message.senderid || ''}/> Changed the Title to '{message.actiondata.grouptitle}'</span>);
+                if (!message.actiondata) {
+                    return (<span className="system-message"><UserName className="user" id={message.senderid || ''}
+                                                                       you={true}/> Changed the Title</span>);
+                } else {
+                    return (<span className="system-message"><UserName className="user" id={message.senderid || ''}
+                                                                       you={true}/> Changed the Title to '{message.actiondata.grouptitle}'</span>);
+                }
             default:
                 return '';
         }

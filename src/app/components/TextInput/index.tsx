@@ -168,7 +168,7 @@ class TextInput extends React.Component<IProps, IState> {
         this.setState({
             emojiAnchorEl: null,
         });
-        if (this.props.onTyping) {
+        if (this.props.onTyping && this.state.previewMessageMode !== C_MSG_MODE.Edit) {
             this.props.onTyping(false);
             if (this.typingThrottle !== null) {
                 this.typingThrottle.cancel();
@@ -198,7 +198,7 @@ class TextInput extends React.Component<IProps, IState> {
                 emojiAnchorEl: null,
             });
         }
-        if (this.props.onTyping) {
+        if (this.props.onTyping && this.state.previewMessageMode !== C_MSG_MODE.Edit) {
             if (e.target.value.length === 0) {
                 this.props.onTyping(false);
                 if (this.typingThrottle !== null) {

@@ -389,7 +389,6 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         /* waits for all promises to be resolved */
         if (promises.length > 0) {
             Promise.all(newMembers).then((res) => {
-                window.console.log('successfully added', res);
                 participants.push.apply(participants, newMembers);
                 group.participants = participants.length;
                 this.setState({
