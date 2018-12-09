@@ -183,12 +183,17 @@ class SignUp extends React.Component<IProps, IState> {
         }
     }
 
-    private modifyCode(str: string): string {
+    private modifyCode(str: string, remove?: boolean): string {
         const s = '____'.split('');
-        const nums = str.match(/\d+/g);
+        let nums = str.match(/\d+/g);
         if (nums) {
-            nums.join('').split('').slice(0, 4).forEach((val, key) => {
-                s[key] = val;
+            nums = nums.join('').split('').slice(0, 4);
+            nums.forEach((val, key) => {
+                if (remove && nums && nums.length > 0 && nums.length - 1 === key) {
+                    s[key] = '_';
+                } else {
+                    s[key] = val;
+                }
             });
         }
         return s.join('');
@@ -251,7 +256,13 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     private confirmKeyDown = (e: any) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Backspace') {
+            e.stopPropagation();
+            e.preventDefault();
+            this.setState({
+                code: this.modifyCode(this.state.code, true),
+            });
+        } else if (e.key === 'Enter') {
             this.confirmCode();
         }
     }
@@ -308,7 +319,7 @@ class SignUp extends React.Component<IProps, IState> {
             this.props.history.push('/conversation/null');
             this.dispatchWSOpenEvent();
             this.notification.initToken().then((token) => {
-                this.sdk.registerDevice(token, 0, '0.23.2', 'web', 'en', '1');
+                this.sdk.registerDevice(token, 0, '0.23.5', 'web', 'en', '1');
             });
         }).catch((err) => {
             this.setState({

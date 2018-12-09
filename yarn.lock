@@ -406,6 +406,11 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
+"@types/xregexp@^3.0.29":
+  version "3.0.29"
+  resolved "https://registry.yarnpkg.com/@types/xregexp/-/xregexp-3.0.29.tgz#9f2f819712ab41fd8b434036ec4b14cbb9dbe654"
+  integrity sha512-mm6iZYQ1xbVBNsWq2VSMFuneRuO0k0wUqIT4ZfrtbD1Eb90DXmqBOPA/URyUHq6wsftxr8aXDJHTTHyyBBY95w==
+
 abab@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/abab/-/abab-2.0.0.tgz#aba0ab4c5eee2d4c79d3487d85450fb2376ebb0f"
@@ -9762,6 +9767,11 @@ xmlhttprequest@1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/xmlhttprequest/-/xmlhttprequest-1.8.0.tgz#67fe075c5c24fef39f9d65f5f7b7fe75171968fc"
   integrity sha1-Z/4HXFwk/vOfnWX197f+dRcZaPw=
+
+xregexp@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/xregexp/-/xregexp-4.2.0.tgz#33f09542b0d7cabed46728eeacac4d5bd764ccf5"
+  integrity sha512-IyMa7SVe9FyT4WbQVW3b95mTLVceHhLEezQ02+QMvmIqDnKTxk0MLWIQPSW2MXAr1zQb+9yvwYhcyQULneh3wA==
 
 xtend@^4.0.0, xtend@~4.0.1:
   version "4.0.1"

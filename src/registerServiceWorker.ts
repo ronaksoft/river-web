@@ -19,8 +19,6 @@ const isLocalhost = Boolean(
     )
 );
 
-// import Go from './bin/go_wasm_exec';
-
 export default function register() {
     if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
         // The URL constructor is available in all browsers that support SW.
@@ -56,7 +54,6 @@ export default function register() {
             }
         });
     }
-    // setWASM();
 }
 
 function registerValidSW(swUrl: string) {

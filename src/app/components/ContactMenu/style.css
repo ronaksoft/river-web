@@ -120,6 +120,13 @@ input {
           white-space: nowrap;
           text-overflow: ellipsis;
           color: var(--grey); }
+      .contacts .contact-box .contact-container .category-item {
+        color: var(--river);
+        font-size: 24px;
+        line-height: 24px;
+        height: 40px;
+        text-align: left;
+        padding: 16px 8px 0; }
       .contacts .contact-box .contact-container .no-result {
         height: 100%;
         display: flex;

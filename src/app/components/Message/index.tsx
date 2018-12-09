@@ -419,7 +419,8 @@ class Message extends React.Component<IProps, IState> {
                 return (<span className="system-message">
                     <UserName className="user" id={message.senderid || ''}/> Joined River</span>);
             case C_MESSAGE_ACTION.MessageActionGroupCreated:
-                return (<span className="system-message">Group Created</span>);
+                return (<span className="system-message"><UserName className="sender" id={message.senderid || ''}
+                                                                   you={true}/> created the Group</span>);
             case C_MESSAGE_ACTION.MessageActionGroupAddUser:
                 if (!message.actiondata) {
                     return (<span className="system-message">

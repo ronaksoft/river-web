@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import {List, AutoSizer} from 'react-virtualized';
+import {List, AutoSizer, Index} from 'react-virtualized';
 import {IContact} from '../../repository/contact/interface';
 import ContactRepo from '../../repository/contact';
 import {debounce} from 'lodash';
@@ -26,6 +26,7 @@ import {PhoneContact} from '../../services/sdk/messages/core.types_pb';
 import UniqueId from '../../services/uniqueId';
 
 import './style.css';
+import {categorizeContact} from '../ContactList';
 
 interface IProps {
     id?: number;
@@ -107,7 +108,7 @@ class ContactMenu extends React.Component<IProps, IState> {
                         {({width, height}: any) => (
                             <List
                                 ref={this.refHandler}
-                                rowHeight={64}
+                                rowHeight={this.getHeight}
                                 rowRenderer={this.rowRender}
                                 rowCount={contacts.length}
                                 overscanRowCount={0}
@@ -176,17 +177,21 @@ class ContactMenu extends React.Component<IProps, IState> {
 
     private rowRender = ({index, key, parent, style}: any): any => {
         const contact = this.state.contacts[index];
-        return (
-            <div style={style} key={index} className="contact-item">
-                <Link to={`/conversation/${contact.id}`}>
+        if (contact.category) {
+            return (<div style={style} key={index} className="category-item">{contact.category}</div>);
+        } else {
+            return (
+                <div style={style} key={index} className="contact-item">
+                    <Link to={`/conversation/${contact.id}`}>
                     <span className="avatar">
                         {contact.avatar ? <img src={contact.avatar}/> : TextAvatar(contact.firstname, contact.lastname)}
                     </span>
-                    <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>
-                    <span className="phone">{contact.phone ? contact.phone : 'no phone'}</span>
-                </Link>
-            </div>
-        );
+                        <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>
+                        <span className="phone">{contact.phone ? contact.phone : 'no phone'}</span>
+                    </Link>
+                </div>
+            );
+        }
     }
 
     private searchChangeHandler = (e: any) => {
@@ -196,7 +201,7 @@ class ContactMenu extends React.Component<IProps, IState> {
         } else {
             this.searchDebounce.cancel();
             this.setState({
-                contacts: this.defaultContact,
+                contacts: categorizeContact(this.defaultContact),
             });
         }
     }
@@ -204,7 +209,7 @@ class ContactMenu extends React.Component<IProps, IState> {
     private search = (text: string) => {
         this.contactRepo.getManyCache({keyword: text, limit: 12}).then((res) => {
             this.setState({
-                contacts: res || [],
+                contacts: categorizeContact(res) || [],
             }, () => {
                 this.list.recomputeRowHeights();
                 this.list.forceUpdateGrid();
@@ -216,7 +221,7 @@ class ContactMenu extends React.Component<IProps, IState> {
         this.contactRepo.getAll().then((res) => {
             this.defaultContact = res;
             this.setState({
-                contacts: res,
+                contacts: categorizeContact(res),
             }, () => {
                 this.list.recomputeRowHeights();
                 this.list.forceUpdateGrid();
@@ -282,6 +287,16 @@ class ContactMenu extends React.Component<IProps, IState> {
                 phone: '',
             });
         });
+    }
+
+    /* Get dynamic height */
+    private getHeight = (param: Index): number => {
+        const contact = this.state.contacts[param.index];
+        if (contact.category) {
+            return 40;
+        } else {
+            return 64;
+        }
     }
 }
 

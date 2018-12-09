@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import {List, AutoSizer} from 'react-virtualized';
+import {List, AutoSizer, Index} from 'react-virtualized';
 import {IContact} from '../../repository/contact/interface';
 import ContactRepo from '../../repository/contact';
 import {debounce, findIndex, differenceBy, clone} from 'lodash';
@@ -17,6 +17,7 @@ import ChipInput from 'material-ui-chip-input';
 import Chip from '@material-ui/core/Chip';
 import UserName from '../UserName';
 import {NotInterestedRounded} from '@material-ui/icons';
+import XRegExp from 'xregexp';
 
 import './style.css';
 
@@ -34,6 +35,44 @@ interface IState {
     scrollIndex: number;
     title: string;
 }
+
+export const categorizeContact = (contacts: IContact[]): IContact[] => {
+    const list = clone(contacts);
+    list.sort((a, b) => {
+        const strA = ((a.firstname || '') + (a.lastname || '')).toLowerCase();
+        const strB = ((b.firstname || '') + (b.lastname || '')).toLowerCase();
+        if (strA < strB) {
+            return -1;
+        }
+        if (strA > strB) {
+            return 1;
+        }
+        return 0;
+    });
+    const outList: IContact[] = [];
+    let cat = '';
+    let lastCat = '';
+    const regChar = XRegExp('\\p{L}');
+    const regDigit = /^\d+$/;
+    list.forEach((item) => {
+        const char = ((item.firstname || '') + (item.lastname || '')).toLowerCase().charAt(0);
+        if (regChar.test(char)) {
+            cat = char.toLocaleUpperCase();
+        } else if (regDigit.test(char)) {
+            cat = '#';
+        } else {
+            cat = '*';
+        }
+        if (cat !== lastCat) {
+            outList.push({
+                category: cat,
+            });
+            lastCat = cat;
+        }
+        outList.push(item);
+    });
+    return outList;
+};
 
 class ContactList extends React.Component<IProps, IState> {
     private contactsRes: IContact[] = [];
@@ -95,7 +134,7 @@ class ContactList extends React.Component<IProps, IState> {
                         {({width, height}: any) => (
                             <List
                                 ref={this.refHandler}
-                                rowHeight={64}
+                                rowHeight={this.getHeight}
                                 rowRenderer={this.rowRender}
                                 rowCount={contacts.length}
                                 overscanRowCount={0}
@@ -126,15 +165,20 @@ class ContactList extends React.Component<IProps, IState> {
     /* Row renderer for list */
     private rowRender = ({index, key, parent, style}: any): any => {
         const contact = this.state.contacts[index];
-        return (
-            <div style={style} key={index} className="contact-item" onClick={this.addMemberHandler.bind(this, contact)}>
+        if (contact.category) {
+            return (<div style={style} key={index} className="category-item">{contact.category}</div>);
+        } else {
+            return (
+                <div style={style} key={index} className="contact-item"
+                     onClick={this.addMemberHandler.bind(this, contact)}>
                 <span className="avatar">
                     {contact.avatar ? <img src={contact.avatar}/> : TextAvatar(contact.firstname, contact.lastname)}
                 </span>
-                <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>
-                <span className="phone">{contact.phone ? contact.phone : 'no phone'}</span>
-            </div>
-        );
+                    <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>
+                    <span className="phone">{contact.phone ? contact.phone : 'no phone'}</span>
+                </div>
+            );
+        }
     }
 
     private noRowsRenderer = () => {
@@ -152,7 +196,7 @@ class ContactList extends React.Component<IProps, IState> {
             this.defaultContact = res;
             this.contactsRes = clone(res);
             this.setState({
-                contacts: this.getTrimmedList([]),
+                contacts: categorizeContact(this.getTrimmedList([])),
             }, () => {
                 this.list.recomputeRowHeights();
                 this.list.forceUpdateGrid();
@@ -169,7 +213,7 @@ class ContactList extends React.Component<IProps, IState> {
             this.searchDebounce.cancel();
             this.contactsRes = clone(this.defaultContact);
             this.setState({
-                contacts: this.getTrimmedList(this.state.selectedContacts),
+                contacts: categorizeContact(this.getTrimmedList(this.state.selectedContacts)),
             });
         }
     }
@@ -179,7 +223,7 @@ class ContactList extends React.Component<IProps, IState> {
         this.contactRepo.getManyCache({keyword: text, limit: 12}).then((res) => {
             this.contactsRes = clone(res || []);
             this.setState({
-                contacts: this.getTrimmedList(this.state.selectedContacts),
+                contacts: categorizeContact(this.getTrimmedList(this.state.selectedContacts)),
             }, () => {
                 this.list.recomputeRowHeights();
                 this.list.forceUpdateGrid();
@@ -193,7 +237,7 @@ class ContactList extends React.Component<IProps, IState> {
         if (findIndex(selectedContacts, {id: contact.id || ''}) === -1) {
             selectedContacts.push(contact);
             this.setState({
-                contacts: this.getTrimmedList(selectedContacts),
+                contacts: categorizeContact(this.getTrimmedList(selectedContacts)),
                 selectedContacts,
             }, () => {
                 this.dispatchContactChange();
@@ -211,7 +255,7 @@ class ContactList extends React.Component<IProps, IState> {
         if (index > -1) {
             selectedContacts.splice(index, 1);
             this.setState({
-                contacts: this.getTrimmedList(selectedContacts),
+                contacts: categorizeContact(this.getTrimmedList(selectedContacts)),
                 selectedContacts,
             }, () => {
                 this.dispatchContactChange();
@@ -229,6 +273,16 @@ class ContactList extends React.Component<IProps, IState> {
         const {selectedContacts} = this.state;
         if (this.props.onChange) {
             this.props.onChange(clone(selectedContacts));
+        }
+    }
+
+    /* Get dynamic height */
+    private getHeight = (param: Index): number => {
+        const contact = this.state.contacts[param.index];
+        if (contact.category) {
+            return 40;
+        } else {
+            return 64;
         }
     }
 }
