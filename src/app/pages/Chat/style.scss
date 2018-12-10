@@ -460,6 +460,65 @@ html[theme="dark"][bg="14"] {
   }
 }
 
+.forward-recipient-dialog {
+  .dialog-content {
+    width: 300px;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    .dialog-header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 40px;
+      background-color: var(--river);
+      color: var(--white);
+      text-transform: uppercase;
+      svg {
+        margin: 0 5px;
+      }
+    }
+    .actions-bar {
+      height: 86px;
+      padding: 18px 0 22px;
+      text-align: center;
+      background-color: var(--message-chat);
+      .add-action {
+        display: inline-flex;
+        height: 46px;
+        width: 46px;
+        border-radius: 50%;
+        background: var(--river);
+        color: var(--white);
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+        cursor: pointer;
+        transition: all 0.2s;
+        svg {
+          font-size: 40px;
+        }
+        &:hover {
+          background: var(--river-dark);
+          box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+        }
+        &.send {
+          svg {
+            font-size: 30px;
+            margin-left: 2px;
+            transition: transform 0.2s ease-out;
+          }
+          &:hover {
+            svg {
+              transform: rotate(-30deg);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 html[theme="dark"] {
   .bg {
     background-color: #171717;
@@ -551,6 +610,14 @@ html[theme="dark"] {
         h2, p {
           color: var(--white);
         }
+      }
+    }
+  }
+  .forward-recipient-dialog {
+    .dialog-content {
+      background-color: var(--dark);
+      .actions-bar {
+        background-color: var(--dark-medium);
       }
     }
   }

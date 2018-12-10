@@ -250,6 +250,13 @@ input {
       right: 10px;
       left: calc(50% + 60px); }
 
+.selectable .bubble-wrapper {
+  cursor: pointer; }
+  .selectable .bubble-wrapper:hover {
+    background-color: var(--color-hover-dark); }
+  .selectable .bubble-wrapper.selected {
+    background-color: #27AE6030; }
+
 .mobile-view .chat {
   padding-left: 7px; }
 
@@ -293,6 +300,15 @@ html[theme="dark"] .bubble-wrapper > .date {
 html[theme="dark"] .bubble-wrapper .system-message {
   background-color: rgba(255, 255, 255, 0.5);
   color: var(--dark); }
+
+html[theme="dark"] .bubble-wrapper .checkbox:not(.checked) {
+  color: var(--white); }
+
+html[theme="dark"] .selectable .bubble-wrapper:hover {
+  background-color: var(--dark-hover-light); }
+
+html[theme="dark"] .selectable .bubble-wrapper.selected {
+  background-color: #27AE6020; }
 
 html[font="0"] .bubble-wrapper .bubble {
   font-size: 10px; }

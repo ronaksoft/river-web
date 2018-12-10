@@ -226,6 +226,14 @@ html[theme="dark"] {
         }
       }
     }
+    .actions {
+      svg {
+        color: var(--white);
+      }
+      [disabled] svg {
+        color: var(--grey);
+      }
+    }
     .previews {
       color: var(--light);
       fill: var(--light);

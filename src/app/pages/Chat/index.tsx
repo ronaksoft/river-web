@@ -6,11 +6,12 @@ import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import {
-    /*Attachment,*/
+    InfoOutlined,
     KeyboardArrowLeftRounded,
     MessageRounded,
     MoreVertRounded,
-    InfoOutlined
+    PersonAddRounded,
+    SendRounded
 } from '@material-ui/icons';
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
@@ -20,22 +21,17 @@ import TextInput from '../../components/TextInput/index';
 import {cloneDeep, findIndex, throttle, trimStart} from 'lodash';
 import SDK from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
-import {
-    Group,
-    InputPeer,
-    InputUser,
-    PeerType,
-    TypingAction,
-    User
-} from '../../services/sdk/messages/core.types_pb';
+import {Group, InputPeer, InputUser, PeerType, TypingAction, User} from '../../services/sdk/messages/core.types_pb';
 import {IConnInfo} from '../../services/sdk/interface';
 import {IDialog} from '../../repository/dialog/interface';
 import UpdateManager, {INewMessageBulkUpdate} from '../../services/sdk/server/updateManager';
 import {C_MSG} from '../../services/sdk/const';
 import {
-    UpdateMessageEdited, UpdateMessagesDeleted,
+    UpdateMessageEdited,
+    UpdateMessagesDeleted,
     UpdateReadHistoryInbox,
-    UpdateReadHistoryOutbox, UpdateUsername,
+    UpdateReadHistoryOutbox,
+    UpdateUsername,
     UpdateUserTyping
 } from '../../services/sdk/messages/api.updates_pb';
 import UserName from '../../components/UserName';
@@ -59,12 +55,13 @@ import GroupInfoMenu from '../../components/GroupInfoMenu';
 import UserInfoMenu from '../../components/UserInfoMenu';
 import ContactRepo from '../../repository/contact';
 import {isTypingRender} from '../../components/DialogMessage';
-import ConfirmDialog from '@material-ui/core/Dialog/Dialog';
+import OverlayDialog from '@material-ui/core/Dialog/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions/DialogActions';
 import Button from '@material-ui/core/Button/Button';
+import ContactList from '../../components/ContactList';
 
 import './style.css';
 
@@ -76,8 +73,11 @@ interface IProps {
 
 interface IState {
     chatMoreAnchorEl: any;
+    confirmDialogMode: 'none' | 'logout' | 'remove_message';
     confirmDialogOpen: boolean;
     dialogs: IDialog[];
+    forwardRecipientDialogOpen: boolean;
+    forwardRecipients: IContact[];
     isChatView: boolean;
     isConnecting: boolean;
     isTyping: boolean;
@@ -118,7 +118,6 @@ class Chat extends React.Component<IProps, IState> {
     private connInfo: IConnInfo;
     private eventReferences: any[] = [];
     private dialogMap: { [key: string]: number } = {};
-    // private typingTimeout: any = null;
     private dialogsSortThrottle: any = null;
     private readHistoryMaxId: number | null = null;
     private popUpDateTime: any;
@@ -129,8 +128,11 @@ class Chat extends React.Component<IProps, IState> {
         super(props);
         this.state = {
             chatMoreAnchorEl: null,
+            confirmDialogMode: 'none',
             confirmDialogOpen: false,
             dialogs: [],
+            forwardRecipientDialogOpen: false,
+            forwardRecipients: [],
             isChatView: false,
             isConnecting: true,
             isTyping: false,
@@ -490,9 +492,9 @@ class Chat extends React.Component<IProps, IState> {
 
     public render() {
         const {
-            confirmDialogOpen, moreInfoAnchorEl, chatMoreAnchorEl, isTypingList, leftMenu, leftMenuSub, leftOverlay,
+            confirmDialogMode, confirmDialogOpen, moreInfoAnchorEl, chatMoreAnchorEl, isTypingList, leftMenu, leftMenuSub, leftOverlay,
             textInputMessage, textInputMessageMode, peer, selectedDialogId, popUpDate, messageSelectable,
-            messageSelectedIds
+            messageSelectedIds, forwardRecipientDialogOpen, forwardRecipients,
         } = this.state;
         const leftMenuRender = () => {
             switch (leftMenu) {
@@ -631,6 +633,7 @@ class Chat extends React.Component<IProps, IState> {
                                          selectable={messageSelectable}
                                          selectedIds={messageSelectedIds}
                                          onSelectedIdsChange={this.messageSelectedIdsChangeHandler}
+                                         onSelectableChange={this.messageSelectableChangeHandler}
                                 />
                             </div>
                             <div className="attachments" hidden={!this.state.toggleAttachment}>
@@ -672,30 +675,69 @@ class Chat extends React.Component<IProps, IState> {
                     <NewMessage open={this.state.openNewMessage} onClose={this.onNewMessageClose}
                                 onMessage={this.onNewMessageHandler}/>
                 </div>
-                <ConfirmDialog
+                <OverlayDialog
                     open={confirmDialogOpen}
                     onClose={this.confirmDialogCloseHandler}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
                     className="confirm-dialog"
                 >
-                    <DialogTitle>Log Out?</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText>
-                            We are about to log out of River.<br/>
-                            All databases will be removed!<br/>
-                            Are you sure?
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={this.confirmDialogCloseHandler} color="secondary">
-                            Disagree
-                        </Button>
-                        <Button onClick={this.confirmDialogAcceptHandler} color="primary" autoFocus={true}>
-                            Agree
-                        </Button>
-                    </DialogActions>
-                </ConfirmDialog>
+                    {Boolean(confirmDialogMode === 'logout') && <div>
+                        <DialogTitle>Log Out?</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>
+                                We are about to log out of River.<br/>
+                                All databases will be removed!<br/>
+                                Are you sure?
+                            </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={this.confirmDialogCloseHandler} color="secondary">
+                                Disagree
+                            </Button>
+                            <Button onClick={this.confirmDialogAcceptHandler} color="primary" autoFocus={true}>
+                                Agree
+                            </Button>
+                        </DialogActions>
+                    </div>}
+                    {Boolean(confirmDialogMode === 'remove_message') && <div>
+                        <DialogTitle>Remove Message?</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>
+                                Remove {Object.keys(messageSelectedIds).length} message(s) <br/>
+                            </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={this.confirmDialogCloseHandler} color="secondary">
+                                Disagree
+                            </Button>
+                            <Button onClick={this.removeMessageHandler.bind(this, false)} color="primary"
+                                    autoFocus={true}>
+                                Remove
+                            </Button>
+                            <Button onClick={this.removeMessageHandler.bind(this, true)} color="primary">
+                                Remove (for all)
+                            </Button>
+                        </DialogActions>
+                    </div>}
+                </OverlayDialog>
+                <OverlayDialog
+                    open={forwardRecipientDialogOpen}
+                    onClose={this.forwardRecipientDialogCloseHandler}
+                    className="forward-recipient-dialog"
+                >
+                    {forwardRecipientDialogOpen && <div className="dialog-content">
+                        <div className="dialog-header">
+                            <PersonAddRounded/> Recipients
+                        </div>
+                        <ContactList onChange={this.forwardRecipientChangeHandler}/>
+                        {Boolean(forwardRecipients.length > 0) && <div className="actions-bar">
+                            <div className="add-action send" onClick={this.forwardHandler}>
+                                <SendRounded/>
+                            </div>
+                        </div>}
+                    </div>}
+                </OverlayDialog>
             </div>
         );
     }
@@ -1489,6 +1531,7 @@ class Chat extends React.Component<IProps, IState> {
         switch (item) {
             case 'logout':
                 this.setState({
+                    confirmDialogMode: 'logout',
                     confirmDialogOpen: true,
                     leftMenu: 'chat',
                     leftMenuSub: 'none',
@@ -1599,7 +1642,13 @@ class Chat extends React.Component<IProps, IState> {
                 });
                 break;
             case 'remove':
-                this.sdk.removeMessage(peer, [message.id || 0], false);
+                const messageSelectedIds = {};
+                messageSelectedIds[message.id || 0] = true;
+                this.setState({
+                    confirmDialogMode: 'remove_message',
+                    confirmDialogOpen: true,
+                    messageSelectedIds,
+                });
                 return;
             case 'forward':
                 this.setState({
@@ -1695,7 +1744,10 @@ class Chat extends React.Component<IProps, IState> {
 
     private confirmDialogCloseHandler = () => {
         this.setState({
+            confirmDialogMode: 'none',
             confirmDialogOpen: false,
+            messageSelectable: false,
+            messageSelectedIds: {},
         });
     }
 
@@ -1710,15 +1762,26 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
+    /* On message selectable change */
+    private messageSelectableChangeHandler = (selectable: boolean) => {
+        this.setState({
+            messageSelectable: selectable,
+        });
+    }
+
     /* TextInput bulk action handler */
     private textInputBulkActionHandler = (cmd: string) => {
-        const {messageSelectedIds} = this.state;
         switch (cmd) {
             case 'forward':
-                this.bulkForward(messageSelectedIds);
+                this.setState({
+                    forwardRecipientDialogOpen: true,
+                });
                 break;
             case 'remove':
-                this.bulkRemove(messageSelectedIds);
+                this.setState({
+                    confirmDialogMode: 'remove_message',
+                    confirmDialogOpen: true,
+                });
                 break;
             case 'close':
                 this.setState({
@@ -1731,12 +1794,56 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private bulkForward(selectedIds: { [key: number]: boolean}) {
-        window.console.log(selectedIds);
+    private forwardRecipientDialogCloseHandler = () => {
+        this.setState({
+            forwardRecipientDialogOpen: false,
+            messageSelectable: false,
+            messageSelectedIds: {},
+        });
     }
 
-    private bulkRemove(selectedIds: { [key: number]: boolean}) {
-        window.console.log(selectedIds);
+    private forwardRecipientChangeHandler = (contacts: IContact[]) => {
+        this.setState({
+            forwardRecipients: contacts,
+        });
+    }
+
+    private forwardHandler = () => {
+        const promises: any[] = [];
+        const {peer, forwardRecipients, messageSelectedIds} = this.state;
+        if (!peer) {
+            return;
+        }
+        // @ts-ignore
+        const msgIds: number[] = Object.keys(messageSelectedIds);
+        forwardRecipients.forEach((recipient) => {
+            const targetPeer = new InputPeer();
+            targetPeer.setAccesshash(recipient.accesshash || '');
+            targetPeer.setId(recipient.id || '');
+            targetPeer.setType(PeerType.PEERUSER);
+            promises.push(this.sdk.forwardMessage(peer, msgIds, UniqueId.getRandomId(), targetPeer, false));
+        });
+        this.forwardRecipientDialogCloseHandler();
+        Promise.all(promises).then((res) => {
+            window.console.log(res);
+        }).catch((err) => {
+            window.console.log(err);
+        });
+    }
+
+    private removeMessageHandler = (revoke: boolean) => {
+        const {peer, messageSelectedIds} = this.state;
+        if (!peer) {
+            return;
+        }
+        // @ts-ignore
+        const msgIds: number[] = Object.keys(messageSelectedIds);
+        this.sdk.removeMessage(peer, msgIds, revoke).then((res) => {
+            window.console.log(res);
+        }).catch((err) => {
+            window.console.log(err);
+        });
+        this.confirmDialogCloseHandler();
     }
 }
 

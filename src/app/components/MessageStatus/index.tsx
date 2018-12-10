@@ -7,7 +7,7 @@ import './style.css';
 interface IProps {
     editedTime: number;
     id?: number;
-    onDoubleClick?: ()=> void;
+    onDoubleClick?: (e: any) => void;
     readId?: number;
     status: boolean;
     time: number;
@@ -58,7 +58,7 @@ class MessageStatus extends React.Component<IProps, IState> {
         );
     }
 
-    private getStatus (id: number, readId: number, status: boolean) {
+    private getStatus(id: number, readId: number, status: boolean) {
         if (id && status) {
             if (id < 0) {
                 return (<ScheduleRounded className="icon"/>);
@@ -74,9 +74,9 @@ class MessageStatus extends React.Component<IProps, IState> {
         }
     }
 
-    private onDoubleClickHandler = () => {
+    private onDoubleClickHandler = (e: any) => {
         if (this.props.onDoubleClick) {
-            this.props.onDoubleClick();
+            this.props.onDoubleClick(e);
         }
     }
 }

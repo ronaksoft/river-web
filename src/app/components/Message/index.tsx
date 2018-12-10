@@ -26,6 +26,7 @@ interface IProps {
     selectable: boolean;
     selectedIds: { [key: number]: boolean };
     onSelectedIdsChange: (selectedIds: { [key: number]: boolean }) => void;
+    onSelectableChange: (selectable: boolean) => void;
 }
 
 interface IState {
@@ -102,7 +103,7 @@ class Message extends React.Component<IProps, IState> {
             });
             this.listCount = newProps.items.length;
             this.topOfList = false;
-        } else if (this.state.items === newProps.items && this.listCount < newProps.items.length) {
+        } else if (this.state.items === newProps.items && this.listCount !== newProps.items.length) {
             if (!this.topOfList) {
                 this.setState({
                     scrollIndex: -1,
@@ -275,13 +276,17 @@ class Message extends React.Component<IProps, IState> {
                 } else {
                     return (
                         <div style={style}
-                             className={'bubble-wrapper ' + (message.me ? 'me' : 'you') + (message.avatar ? ' avatar' : '')}>
+                             className={'bubble-wrapper ' + (message.me ? 'me' : 'you') + (message.avatar ? ' avatar' : '') + (this.state.selectedIds[message.id || 0] ? ' selected' : '')}
+                             onClick={this.toggleSelectHandler.bind(this, message.id || 0)}
+                             onDoubleClick={this.selectMessage.bind(this, index)}
+                        >
                             {(!this.state.selectable && message.avatar && message.senderid && !message.me) && (
                                 <UserAvatar id={message.senderid} className="avatar"/>
                             )}
-                            {this.state.selectable && <Checkbox className="checkbox" color="primary"
-                                                                checked={this.state.selectedIds[message.id || 0] || false}
-                                                                onChange={this.selectMessageHandler.bind(this, message.id || '')}/>}
+                            {this.state.selectable && <Checkbox
+                                className={'checkbox ' + (this.state.selectedIds[message.id || 0] ? 'checked' : '')}
+                                color="primary" checked={this.state.selectedIds[message.id || 0] || false}
+                                onChange={this.selectMessageHandler.bind(this, message.id || 0)}/>}
                             {(message.avatar && message.senderid) && (<div className="arrow"/>)}
                             <div className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')}>
                                 {Boolean(peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me) &&
@@ -377,6 +382,7 @@ class Message extends React.Component<IProps, IState> {
     }
 
     private moreCmdHandler = (cmd: string, index: number, e: any) => {
+        e.stopPropagation();
         if (this.props.contextMenu && index > -1) {
             this.props.contextMenu(cmd, this.state.items[index]);
         }
@@ -388,6 +394,17 @@ class Message extends React.Component<IProps, IState> {
         });
     }
 
+    private selectMessage = (index: number, e: any) => {
+        e.stopPropagation();
+        if (!this.state.selectable) {
+            this.setState({
+                selectable: true,
+            }, () => {
+                this.props.onSelectableChange(true);
+            });
+        }
+        this.selectMessageHandler(this.state.items[index].id || 0);
+    }
 
     private onRowsRenderedHandler = (data: any) => {
         const {items} = this.state;
@@ -497,6 +514,26 @@ class Message extends React.Component<IProps, IState> {
     private selectMessageHandler = (id: number, e?: any) => {
         const {selectedIds} = this.state;
         if (!e || (e && e.currentTarget.checked)) {
+            selectedIds[id] = true;
+        } else {
+            delete selectedIds[id];
+        }
+        this.setState({
+            selectedIds,
+        }, () => {
+            this.props.onSelectedIdsChange(selectedIds);
+            this.list.forceUpdateGrid();
+        });
+    }
+
+    /* Toggle selected id in selectedIds map */
+    private toggleSelectHandler = (id: number, e: any) => {
+        if (!this.state.selectable) {
+            return;
+        }
+        e.stopPropagation();
+        const {selectedIds} = this.state;
+        if (!selectedIds.hasOwnProperty(id)) {
             selectedIds[id] = true;
         } else {
             delete selectedIds[id];

@@ -372,6 +372,50 @@ html[theme="dark"][bg="14"] .container .column-center .start-messaging {
     padding: 3px 12px;
     font-size: 13px; }
 
+.forward-recipient-dialog .dialog-content {
+  width: 300px;
+  height: 500px;
+  display: flex;
+  flex-direction: column; }
+  .forward-recipient-dialog .dialog-content .dialog-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    background-color: var(--river);
+    color: var(--white);
+    text-transform: uppercase; }
+    .forward-recipient-dialog .dialog-content .dialog-header svg {
+      margin: 0 5px; }
+  .forward-recipient-dialog .dialog-content .actions-bar {
+    height: 86px;
+    padding: 18px 0 22px;
+    text-align: center;
+    background-color: var(--message-chat); }
+    .forward-recipient-dialog .dialog-content .actions-bar .add-action {
+      display: inline-flex;
+      height: 46px;
+      width: 46px;
+      border-radius: 50%;
+      background: var(--river);
+      color: var(--white);
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+      transition: all 0.2s; }
+      .forward-recipient-dialog .dialog-content .actions-bar .add-action svg {
+        font-size: 40px; }
+      .forward-recipient-dialog .dialog-content .actions-bar .add-action:hover {
+        background: var(--river-dark);
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4); }
+      .forward-recipient-dialog .dialog-content .actions-bar .add-action.send svg {
+        font-size: 30px;
+        margin-left: 2px;
+        transition: transform 0.2s ease-out; }
+      .forward-recipient-dialog .dialog-content .actions-bar .add-action.send:hover svg {
+        transform: rotate(-30deg); }
+
 html[theme="dark"] .bg {
   background-color: #171717; }
 
@@ -428,3 +472,8 @@ html[theme="dark"] .confirm-dialog div[role="document"] > div {
   background-color: var(--dark); }
   html[theme="dark"] .confirm-dialog div[role="document"] > div h2, html[theme="dark"] .confirm-dialog div[role="document"] > div p {
     color: var(--white); }
+
+html[theme="dark"] .forward-recipient-dialog .dialog-content {
+  background-color: var(--dark); }
+  html[theme="dark"] .forward-recipient-dialog .dialog-content .actions-bar {
+    background-color: var(--dark-medium); }

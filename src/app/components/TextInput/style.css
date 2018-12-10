@@ -219,6 +219,10 @@ html[theme="dark"] .write {
   html[theme="dark"] .write .inputs .input textarea {
     background-color: var(--dark-low);
     color: var(--light); }
+  html[theme="dark"] .write .actions svg {
+    color: var(--white); }
+  html[theme="dark"] .write .actions [disabled] svg {
+    color: var(--grey); }
   html[theme="dark"] .write .previews {
     color: var(--light);
     fill: var(--light); }

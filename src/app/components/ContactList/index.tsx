@@ -77,7 +77,7 @@ export const categorizeContact = (contacts: IContact[]): IContact[] => {
 class ContactList extends React.Component<IProps, IState> {
     private contactsRes: IContact[] = [];
     // @ts-ignore
-    private list: any;
+    private list: List;
     private contactRepo: ContactRepo;
     private searchDebounce: any;
     private defaultContact: IContact[];
@@ -241,6 +241,7 @@ class ContactList extends React.Component<IProps, IState> {
                 selectedContacts,
             }, () => {
                 this.dispatchContactChange();
+                this.list.recomputeRowHeights();
             });
         }
     }
@@ -259,6 +260,7 @@ class ContactList extends React.Component<IProps, IState> {
                 selectedContacts,
             }, () => {
                 this.dispatchContactChange();
+                this.list.recomputeRowHeights();
             });
         }
     }

@@ -16,7 +16,7 @@ import {ContactsGet, ContactsImport, ContactsImported, ContactsMany} from './mes
 import {Group, GroupFull, InputPeer, InputUser, PhoneContact, TypingAction, User} from './messages/core.types_pb';
 import {
     MessagesDelete,
-    MessagesDialogs, MessagesEdit,
+    MessagesDialogs, MessagesEdit, MessagesForward,
     MessagesGetDialogs,
     MessagesGetHistory,
     MessagesMany, MessagesReadHistory,
@@ -268,6 +268,16 @@ export default class SDK {
         data.setMessageidsList(ids);
         data.setRevoke(revoke);
         return this.server.send(C_MSG.MessagesDelete, data.serializeBinary(), true);
+    }
+
+    public forwardMessage(peer: InputPeer, ids: number[], randomId: number, targetPeer: InputPeer, silence: boolean): Promise<Bool.AsObject> {
+        const data = new MessagesForward();
+        data.setFrompeer(peer);
+        data.setMessageidsList(ids);
+        data.setTopeer(targetPeer);
+        data.setRandomid(randomId);
+        data.setSilence(silence);
+        return this.server.send(C_MSG.MessagesForward, data.serializeBinary(), false);
     }
 
     public usernameAvailable(username: string): Promise<Bool.AsObject> {

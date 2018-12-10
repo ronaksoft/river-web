@@ -248,6 +248,16 @@
   }
 }
 
+.selectable .bubble-wrapper {
+  cursor: pointer;
+  &:hover {
+    background-color: var(--color-hover-dark);
+  }
+  &.selected {
+    background-color: #27AE6030;
+  }
+}
+
 .mobile-view {
   .chat {
     padding-left: 7px;
@@ -308,6 +318,19 @@ html[theme="dark"] {
     .system-message {
       background-color: rgba(255, 255, 255, 0.5);
       color: var(--dark);
+    }
+    .checkbox {
+      &:not(.checked) {
+        color: var(--white);
+      }
+    }
+  }
+  .selectable .bubble-wrapper {
+    &:hover {
+      background-color: var(--dark-hover-light);
+    }
+    &.selected {
+      background-color: #27AE6020;
     }
   }
 }
