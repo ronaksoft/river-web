@@ -202,7 +202,6 @@ class Chat extends React.Component<IProps, IState> {
                     const peer = this.getPeerByDialogId(selectedId);
                     this.setState({
                         leftMenu: 'chat',
-                        leftMenuSub: 'none',
                         peer,
                     }, () => {
                         this.getMessagesByDialogId(selectedId, true);
@@ -467,7 +466,6 @@ class Chat extends React.Component<IProps, IState> {
             const peer = this.getPeerByDialogId(selectedId);
             this.setState({
                 leftMenu: 'chat',
-                leftMenuSub: 'none',
                 peer,
             }, () => {
                 this.getMessagesByDialogId(selectedId, true);
