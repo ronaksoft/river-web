@@ -8,7 +8,7 @@ import {InputPeer} from "../../services/sdk/messages/core.types_pb";
 
 interface IProps {
     message: IMessage;
-    onDoubleClick?: () => void;
+    onDoubleClick?: (e: any) => void;
     peer: InputPeer | null;
 }
 
@@ -61,7 +61,7 @@ class MessagePreview extends React.Component<IProps, IState> {
         }
         if (!previewMessage && error) {
             return (
-                <div className="message-preview">
+                <div className="message-preview" onDoubleClick={this.onDoubleClickHandler}>
                     <div className="preview-container">
                         <div className="preview-message-wrapper reply-you">
                             <span className="preview-bar"/>
@@ -121,9 +121,9 @@ class MessagePreview extends React.Component<IProps, IState> {
         });
     }
 
-    private onDoubleClickHandler = () => {
+    private onDoubleClickHandler = (e: any) => {
         if (this.props.onDoubleClick) {
-            this.props.onDoubleClick();
+            this.props.onDoubleClick(e);
         }
     }
 }

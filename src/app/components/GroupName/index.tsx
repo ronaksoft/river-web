@@ -5,13 +5,17 @@ import {GroupRounded} from '@material-ui/icons';
 
 interface IProps {
     className?: string;
+    defaultString?: string;
     id: string;
+    noIcon?: boolean;
+    prefix?: string;
 }
 
 interface IState {
     className: string;
     group: IGroup;
     id: string;
+    prefix: string;
 }
 
 class GroupName extends React.Component<IProps, IState> {
@@ -26,6 +30,7 @@ class GroupName extends React.Component<IProps, IState> {
             className: props.className || '',
             group: {},
             id: props.id,
+            prefix: props.prefix || '',
         };
 
         this.groupRepo = GroupRepo.getInstance();
@@ -53,9 +58,11 @@ class GroupName extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {group, className} = this.state;
+        const {group, className, prefix} = this.state;
+        const {defaultString, noIcon} = this.props;
         return (
-            <span className={className}><GroupRounded/>{(group && group.id) ? `${group.title}` : ''}</span>
+            <span
+                className={className}>{Boolean(noIcon !== true) && <GroupRounded/>}{(group && group.id) ? `${prefix}${group.title}` : (defaultString || '')}</span>
         );
     }
 

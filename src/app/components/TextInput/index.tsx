@@ -78,6 +78,7 @@ class TextInput extends React.Component<IProps, IState> {
             userId: newProps.userId || '',
         }, () => {
             this.animatePreviewMessage();
+            this.focus('f-textarea');
         });
         if (newProps.previewMessageMode === C_MSG_MODE.Edit && newProps.previewMessage) {
             this.textarea.value = newProps.previewMessage.body;
@@ -120,6 +121,7 @@ class TextInput extends React.Component<IProps, IState> {
                     </div>
                     <div className={'input ' + (this.state.rtl ? 'rtl' : 'ltr')}>
                         <Textarea
+                            className={'f-textarea'}
                             inputRef={this.textareaRefHandler}
                             maxRows={5}
                             placeholder="Type your message here..."
@@ -346,6 +348,13 @@ class TextInput extends React.Component<IProps, IState> {
                 });
             }
         }, 50);
+    }
+
+    private focus(className: string) {
+        const elem: any = document.querySelector('.' + className);
+        if (elem) {
+            elem.focus();
+        }
     }
 }
 

@@ -6,15 +6,18 @@ import {GetUniqueColor, SecondaryColors} from '../UserAvatar';
 
 interface IProps {
     className?: string;
+    defaultString?: string;
     id: string;
+    onlyFirstName?: boolean;
+    prefix?: string;
     uniqueColor?: boolean;
     you?: boolean;
-    onlyFirstName?: boolean;
 }
 
 interface IState {
     className: string;
     id: string;
+    prefix: string;
     user: IUser;
     you: boolean;
 }
@@ -31,6 +34,7 @@ class UserName extends React.Component<IProps, IState> {
         this.state = {
             className: props.className || '',
             id: props.id,
+            prefix: props.prefix || '',
             user: {},
             you: props.you || false,
         };
@@ -61,8 +65,8 @@ class UserName extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {onlyFirstName} = this.props;
-        const {user, className} = this.state;
+        const {onlyFirstName, defaultString} = this.props;
+        const {user, className, prefix} = this.state;
         let style = {};
         if (this.props.uniqueColor === true) {
             style = {
@@ -71,7 +75,7 @@ class UserName extends React.Component<IProps, IState> {
         }
         return (
             <span className={className}
-                  style={style}>{(user && user.id) ? (onlyFirstName ? user.firstname : `${user.firstname} ${user.lastname}`) : ''}</span>
+                  style={style}>{(user && user.id) ? (onlyFirstName ? prefix + user.firstname : `${prefix}${user.firstname} ${user.lastname}`) : (defaultString || '')}</span>
         );
     }
 

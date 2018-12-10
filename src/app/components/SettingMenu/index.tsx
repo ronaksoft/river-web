@@ -151,6 +151,10 @@ class SettingMenu extends React.Component<IProps, IState> {
             if (newProps.subMenu === 'account') {
                 this.getUser();
             }
+        } else {
+            this.setState({
+                pageContent: newProps.subMenu || 'none',
+            });
         }
     }
 

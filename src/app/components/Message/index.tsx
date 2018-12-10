@@ -14,6 +14,7 @@ import UserName from '../UserName';
 import Checkbox from '@material-ui/core/Checkbox';
 
 import './style.css';
+import MessageForwarded from '../MessageForwarded';
 
 interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
@@ -294,6 +295,9 @@ class Message extends React.Component<IProps, IState> {
                                 {Boolean(message.replyto && message.replyto !== 0) &&
                                 <MessagePreview message={message} peer={peer}
                                                 onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>}
+                                {Boolean(message.fwdsenderid && message.fwdsenderid !== '0') &&
+                                <MessageForwarded message={message} peer={peer}
+                                                  onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>}
                                 <div className={'inner ' + (message.rtl ? 'rtl' : 'ltr')}
                                      onDoubleClick={this.selectText}>{message.body}</div>
                                 <MessageStatus status={message.me || false} id={message.id} readId={readId}

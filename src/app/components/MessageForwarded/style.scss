@@ -1,0 +1,52 @@
+@import '../../../style/common';
+
+.message-forwarded {
+  height: 26px;
+  .forwarded-container {
+    display: flex;
+    overflow: hidden;
+    flex: 1;
+    .forwarded-message-wrapper {
+      display: flex;
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+      width: 100%;
+      .forwarded-bar {
+        flex: none;
+        width: 4px;
+        border-top-left-radius: 7.5px;
+        border-bottom-left-radius: 7.5px;
+        background-color: var(--grey);
+      }
+      .preview-message {
+        padding: 4px 8px 4px 4px;
+        display: flex;
+        align-items: center;
+        justify-content: left;
+        overflow: hidden;
+        background-color: rgba(0, 0, 0, 0.05);
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+        font-weight: bold;
+        font-size: 12px;
+        flex-grow: 1;
+      }
+    }
+  }
+}
+
+html[theme="dark"] {
+  .message-forwarded {
+    .forwarded-container {
+      .forwarded-message-wrapper {
+        .forwarded-bar {
+          background-color: var(--dark-accent-low);
+        }
+        .preview-message {
+          background-color: rgba(255, 255, 255, 0.10);
+        }
+      }
+    }
+  }
+}
