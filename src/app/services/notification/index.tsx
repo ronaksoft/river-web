@@ -53,6 +53,10 @@ export default class NotificationService {
 
     public initToken(): Promise<any> {
         return new Promise((resolve, reject) => {
+            if (!this.messaging) {
+                reject();
+                return;
+            }
             this.messaging.getToken().then((currentToken) => {
                 if (currentToken) {
                     resolve(currentToken);

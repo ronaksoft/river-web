@@ -87,6 +87,8 @@ interface IState {
     leftMenuSub: string;
     leftOverlay: boolean;
     maxReadId: number;
+    messageSelectable: boolean;
+    messageSelectedIds: { [key: number]: boolean };
     messages: IMessage[];
     moreInfoAnchorEl: any;
     openNewMessage: boolean;
@@ -138,6 +140,8 @@ class Chat extends React.Component<IProps, IState> {
             leftMenuSub: 'none',
             leftOverlay: false,
             maxReadId: 0,
+            messageSelectable: false,
+            messageSelectedIds: {},
             messages: [],
             moreInfoAnchorEl: null,
             openNewMessage: false,
@@ -317,7 +321,7 @@ class Chat extends React.Component<IProps, IState> {
                 return;
             }
             const {isTypingList} = this.state;
-            if (data.action === TypingAction.TYPING) {
+            if (data.action === TypingAction.TYPINGACTIONTYPING) {
                 const fn = setTimeout(() => {
                     if (isTypingList.hasOwnProperty(data.peerid || '')) {
                         if (isTypingList[data.peerid || ''].hasOwnProperty(data.userid || 0)) {
@@ -340,7 +344,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.setState({
                     isTypingList,
                 });
-            } else if (data.action === TypingAction.CANCEL) {
+            } else if (data.action === TypingAction.TYPINGACTIONCANCEL) {
                 if (isTypingList.hasOwnProperty(data.peerid || '')) {
                     if (isTypingList[data.peerid || ''].hasOwnProperty(data.userid || 0)) {
                         clearTimeout(isTypingList[data.peerid || ''][data.userid || 0]);
@@ -485,7 +489,11 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {confirmDialogOpen, moreInfoAnchorEl, chatMoreAnchorEl, isTypingList, leftMenu, leftMenuSub, leftOverlay, textInputMessage, textInputMessageMode, peer, selectedDialogId, popUpDate} = this.state;
+        const {
+            confirmDialogOpen, moreInfoAnchorEl, chatMoreAnchorEl, isTypingList, leftMenu, leftMenuSub, leftOverlay,
+            textInputMessage, textInputMessageMode, peer, selectedDialogId, popUpDate, messageSelectable,
+            messageSelectedIds
+        } = this.state;
         const leftMenuRender = () => {
             switch (leftMenu) {
                 default:
@@ -609,20 +617,6 @@ class Chat extends React.Component<IProps, IState> {
                                         <InfoOutlined/>
                                     </IconButton>
                                 </Tooltip>
-                                    {/*<Menu
-                                    id="long-menu"
-                                    anchorEl={moreInfoAnchorEl}
-                                    open={Boolean(moreInfoAnchorEl)}
-                                    onClose={this.moreInfoCloseHandler}
-                                    className="kk-context-menu darker"
-                                >
-                                  <MenuItem key={1}
-                                            onClick={this.toggleRightMenu}
-                                            className="context-item"
-                                  >
-                                      {(peer && peer.getType() === PeerType.PEERGROUP) ? 'Group Info' : 'Contact Info'}
-                                  </MenuItem>
-                                </Menu>*/}
                             </span>
                             </div>
                             <div className="conversation" hidden={this.state.toggleAttachment}>
@@ -634,6 +628,9 @@ class Chat extends React.Component<IProps, IState> {
                                          contextMenu={this.messageContextMenuHandler}
                                          peer={peer}
                                          showDate={this.messageShowDateHandler}
+                                         selectable={messageSelectable}
+                                         selectedIds={messageSelectedIds}
+                                         onSelectedIdsChange={this.messageSelectedIdsChangeHandler}
                                 />
                             </div>
                             <div className="attachments" hidden={!this.state.toggleAttachment}>
@@ -643,7 +640,11 @@ class Chat extends React.Component<IProps, IState> {
                             <TextInput onMessage={this.onMessageHandler} onTyping={this.onTyping}
                                        userId={this.connInfo.UserID} previewMessage={textInputMessage}
                                        previewMessageMode={textInputMessageMode}
-                                       clearPreviewMessage={this.clearPreviewMessageHandler}/>}
+                                       clearPreviewMessage={this.clearPreviewMessageHandler}
+                                       selectable={messageSelectable}
+                                       disable={Boolean(messageSelectable && Object.keys(messageSelectedIds).length === 0)}
+                                       onBulkAction={this.textInputBulkActionHandler}
+                            />}
                             {Boolean(!this.state.toggleAttachment && inputDisable === 0x1) &&
                             <div className="input-placeholder">
                                 You have left the group
@@ -735,12 +736,6 @@ class Chat extends React.Component<IProps, IState> {
             return (<span>last seen recently</span>);
         }
     }
-
-    // private moreInfoOpenHandler = (event: any) => {
-    //     this.setState({
-    //         moreInfoAnchorEl: event.currentTarget,
-    //     });
-    // }
 
     private moreInfoCloseHandler = () => {
         this.setState({
@@ -905,6 +900,8 @@ class Chat extends React.Component<IProps, IState> {
                 isChatView: true,
                 isTyping: false,
                 maxReadId,
+                messageSelectable: false,
+                messageSelectedIds: {},
                 messages: dataMsg.msgs,
                 selectedDialogId: dialogId,
                 textInputMessage: undefined,
@@ -926,6 +923,8 @@ class Chat extends React.Component<IProps, IState> {
                 isChatView: true,
                 isTyping: false,
                 maxReadId: 0,
+                messageSelectable: false,
+                messageSelectedIds: {},
                 messages: [],
                 selectedDialogId: dialogId,
                 textInputMessage: undefined,
@@ -1166,9 +1165,9 @@ class Chat extends React.Component<IProps, IState> {
 
         let action: TypingAction;
         if (typing) {
-            action = TypingAction.TYPING;
+            action = TypingAction.TYPINGACTIONTYPING;
         } else {
-            action = TypingAction.CANCEL;
+            action = TypingAction.TYPINGACTIONCANCEL;
         }
         this.sdk.typing(peer, action).then((data) => {
             window.console.debug(data);
@@ -1602,6 +1601,11 @@ class Chat extends React.Component<IProps, IState> {
             case 'remove':
                 this.sdk.removeMessage(peer, [message.id || 0], false);
                 return;
+            case 'forward':
+                this.setState({
+                    messageSelectable: true,
+                });
+                break;
             default:
                 window.console.log(cmd, message);
                 break;
@@ -1697,6 +1701,42 @@ class Chat extends React.Component<IProps, IState> {
 
     private confirmDialogAcceptHandler = () => {
         this.logOutHandler();
+    }
+
+    /* On message selected ids change */
+    private messageSelectedIdsChangeHandler = (selectedIds: { [key: number]: boolean }) => {
+        this.setState({
+            messageSelectedIds: selectedIds,
+        });
+    }
+
+    /* TextInput bulk action handler */
+    private textInputBulkActionHandler = (cmd: string) => {
+        const {messageSelectedIds} = this.state;
+        switch (cmd) {
+            case 'forward':
+                this.bulkForward(messageSelectedIds);
+                break;
+            case 'remove':
+                this.bulkRemove(messageSelectedIds);
+                break;
+            case 'close':
+                this.setState({
+                    messageSelectable: false,
+                    messageSelectedIds: {},
+                });
+                break;
+            default:
+                break;
+        }
+    }
+
+    private bulkForward(selectedIds: { [key: number]: boolean}) {
+        window.console.log(selectedIds);
+    }
+
+    private bulkRemove(selectedIds: { [key: number]: boolean}) {
+        window.console.log(selectedIds);
     }
 }
 

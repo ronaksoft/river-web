@@ -3,7 +3,7 @@ import Textarea from 'react-textarea-autosize';
 import {Picker} from 'emoji-mart';
 import PopUpMenu from '../PopUpMenu';
 import {throttle, cloneDeep} from 'lodash';
-import {SentimentSatisfiedRounded, SendRounded, ClearRounded} from '@material-ui/icons';
+import {SentimentSatisfiedRounded, SendRounded, ClearRounded, ForwardRounded, DeleteRounded} from '@material-ui/icons';
 import {IconButton} from '@material-ui/core';
 import UserAvatar from '../UserAvatar';
 import RTLDetector from '../../services/utilities/rtl_detector';
@@ -13,24 +13,30 @@ import {C_MSG_MODE} from './consts';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
+import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 
 interface IProps {
     clearPreviewMessage?: () => void;
+    disable: boolean;
+    onBulkAction: (cmd: string) => void;
     onMessage: (text: string, {mode, message}?: any) => void;
     onTyping?: (typing: boolean) => void;
     previewMessage?: IMessage;
     previewMessageMode?: number;
     ref?: (ref: any) => void;
+    selectable: boolean;
     text?: string;
     userId?: string;
 }
 
 interface IState {
+    disable: boolean;
     emojiAnchorEl: any;
     previewMessage: IMessage | null;
     previewMessageHeight: number;
     previewMessageMode: number;
     rtl: boolean;
+    selectable: boolean;
     userId: string;
 }
 
@@ -45,11 +51,13 @@ class TextInput extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
+            disable: props.disable,
             emojiAnchorEl: null,
-            previewMessage: this.props.previewMessage || null,
+            previewMessage: props.previewMessage || null,
             previewMessageHeight: 0,
-            previewMessageMode: this.props.previewMessageMode || C_MSG_MODE.Normal,
+            previewMessageMode: props.previewMessageMode || C_MSG_MODE.Normal,
             rtl: false,
+            selectable: props.selectable,
             userId: props.userId || '',
         };
 
@@ -63,8 +71,10 @@ class TextInput extends React.Component<IProps, IState> {
 
     public componentWillReceiveProps(newProps: IProps) {
         this.setState({
+            disable: newProps.disable,
             previewMessage: newProps.previewMessage || null,
             previewMessageMode: newProps.previewMessageMode || C_MSG_MODE.Normal,
+            selectable: newProps.selectable,
             userId: newProps.userId || '',
         }, () => {
             this.animatePreviewMessage();
@@ -75,7 +85,7 @@ class TextInput extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {previewMessage, previewMessageMode, previewMessageHeight} = this.state;
+        const {previewMessage, previewMessageMode, previewMessageHeight, selectable, disable} = this.state;
         return (
             <div className="write">
                 {previewMessage && <div className="previews" style={{height: previewMessageHeight + 'px'}}>
@@ -84,7 +94,8 @@ class TextInput extends React.Component<IProps, IState> {
                             className={'preview-message-wrapper ' + this.getPreviewCN(previewMessageMode, previewMessage.senderid || '')}>
                             <span className="preview-bar"/>
                             {Boolean(previewMessageMode === C_MSG_MODE.Reply) && <div className="preview-message">
-                                <UserName className="preview-message-user" id={previewMessage.senderid || ''} you={true}/>
+                                <UserName className="preview-message-user" id={previewMessage.senderid || ''}
+                                          you={true}/>
                                 <div className="preview-message-body">
                                     <div className={'inner ' + (previewMessage.rtl ? 'rtl' : 'ltr')}
                                     >{previewMessage.body}</div>
@@ -103,7 +114,7 @@ class TextInput extends React.Component<IProps, IState> {
                         </span>
                     </div>
                 </div>}
-                <div className="inputs">
+                {Boolean(!selectable) && <div className="inputs">
                     <div className="user">
                         <UserAvatar id={this.state.userId} className="user-avatar"/>
                     </div>
@@ -132,7 +143,39 @@ class TextInput extends React.Component<IProps, IState> {
                             </a>
                         </div>
                     </div>
-                </div>
+                </div>}
+                {Boolean(selectable && !previewMessage) && <div className="actions">
+                    <div className="left-action">
+                        <Tooltip
+                            title="Close"
+                            placement="top"
+                        >
+                            <IconButton aria-label="Close" onClick={this.props.onBulkAction.bind(this, 'close')}>
+                                <ClearRounded/>
+                            </IconButton>
+                        </Tooltip>
+                    </div>
+                    <div className="right-action">
+                        <Tooltip
+                            title="Remove"
+                            placement="top"
+                        >
+                            <IconButton aria-label="Remove" onClick={this.props.onBulkAction.bind(this, 'remove')}
+                                        disabled={disable}>
+                                <DeleteRounded/>
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip
+                            title="Forward"
+                            placement="top"
+                        >
+                            <IconButton aria-label="Forward" onClick={this.props.onBulkAction.bind(this, 'forward')}
+                                        disabled={disable}>
+                                <ForwardRounded/>
+                            </IconButton>
+                        </Tooltip>
+                    </div>
+                </div>}
             </div>
         );
     }

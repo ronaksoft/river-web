@@ -99,6 +99,13 @@
       object-fit: cover;
     }
   }
+  .checkbox {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 32px;
+    width: 32px;
+  }
   .bubble {
     position: relative;
     font-size: 14px;

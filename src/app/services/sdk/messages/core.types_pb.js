@@ -15,6 +15,7 @@ goog.exportSymbol('proto.msg.ContactUser', null, global);
 goog.exportSymbol('proto.msg.DHGroup', null, global);
 goog.exportSymbol('proto.msg.Dialog', null, global);
 goog.exportSymbol('proto.msg.Group', null, global);
+goog.exportSymbol('proto.msg.GroupFlags', null, global);
 goog.exportSymbol('proto.msg.GroupFull', null, global);
 goog.exportSymbol('proto.msg.GroupParticipant', null, global);
 goog.exportSymbol('proto.msg.InputFile', null, global);
@@ -3951,7 +3952,8 @@ proto.msg.Group.toObject = function(includeInstance, msg) {
     title: jspb.Message.getField(msg, 2),
     createdon: jspb.Message.getField(msg, 3),
     participants: jspb.Message.getField(msg, 4),
-    editedon: jspb.Message.getField(msg, 5)
+    editedon: jspb.Message.getField(msg, 5),
+    flags: jspb.Message.getField(msg, 6)
   };
 
   if (includeInstance) {
@@ -4007,6 +4009,10 @@ proto.msg.Group.deserializeBinaryFromReader = function(msg, reader) {
     case 5:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setEditedon(value);
+      break;
+    case 6:
+      var value = /** @type {!proto.msg.GroupFlags} */ (reader.readEnum());
+      msg.setFlags(value);
       break;
     default:
       reader.skipField();
@@ -4069,6 +4075,13 @@ proto.msg.Group.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeInt64(
       5,
+      f
+    );
+  }
+  f = /** @type {!proto.msg.GroupFlags} */ (jspb.Message.getField(message, 6));
+  if (f != null) {
+    writer.writeEnum(
+      6,
       f
     );
   }
@@ -4217,6 +4230,35 @@ proto.msg.Group.prototype.clearEditedon = function() {
  */
 proto.msg.Group.prototype.hasEditedon = function() {
   return jspb.Message.getField(this, 5) != null;
+};
+
+
+/**
+ * optional GroupFlags Flags = 6;
+ * @return {!proto.msg.GroupFlags}
+ */
+proto.msg.Group.prototype.getFlags = function() {
+  return /** @type {!proto.msg.GroupFlags} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/** @param {!proto.msg.GroupFlags} value */
+proto.msg.Group.prototype.setFlags = function(value) {
+  jspb.Message.setField(this, 6, value);
+};
+
+
+proto.msg.Group.prototype.clearFlags = function() {
+  jspb.Message.setField(this, 6, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.Group.prototype.hasFlags = function() {
+  return jspb.Message.getField(this, 6) != null;
 };
 
 
@@ -4805,11 +4847,11 @@ proto.msg.GroupParticipant.prototype.hasType = function() {
  * @enum {number}
  */
 proto.msg.TypingAction = {
-  TYPING: 0,
-  RECORDINGVOICE: 1,
-  RECORDINGVIDEO: 2,
-  UPLOADING: 3,
-  CANCEL: 4
+  TYPINGACTIONTYPING: 0,
+  TYPINGACTIONRECORDINGVOICE: 1,
+  TYPINGACTIONRECORDINGVIDEO: 2,
+  TYPINGACTIONUPLOADING: 3,
+  TYPINGACTIONCANCEL: 4
 };
 
 /**
@@ -4826,10 +4868,23 @@ proto.msg.PeerType = {
 /**
  * @enum {number}
  */
+proto.msg.GroupFlags = {
+  GROUPFLAGSEMPTY: 0,
+  GROUPFLAGSCREATOR: 1,
+  GROUPFLAGSLEFT: 2,
+  GROUPFLAGSKICKED: 4,
+  GROUPFLAGSADMIN: 8,
+  GROUPFLAGSADMINSENABLED: 16,
+  GROUPFLAGSDEACTIVATED: 32
+};
+
+/**
+ * @enum {number}
+ */
 proto.msg.ParticipantType = {
-  CREATOR: 0,
-  ADMIN: 1,
-  MEMBER: 2
+  PARTICIPANTTYPECREATOR: 0,
+  PARTICIPANTTYPEADMIN: 1,
+  PARTICIPANTMEMBER: 2
 };
 
 goog.object.extend(exports, proto.msg);

@@ -1105,15 +1105,15 @@ proto.msg.File.prototype.hasBytes = function() {
  * @enum {number}
  */
 proto.msg.FileType = {
-  UNKNOWN: 0,
-  PARTIAL: 1,
-  JPEG: 2,
-  GIF: 3,
-  PNG: 4,
-  WEBP: 5,
-  MP3: 6,
-  MP4: 7,
-  MOV: 8
+  FILETYPEUNKNOWN: 0,
+  FILETYPEPARTIAL: 1,
+  FILETYPEJPEG: 2,
+  FILETYPEGIF: 3,
+  FILETYPEPNG: 4,
+  FILETYPEWEBP: 5,
+  FILETYPEMP3: 6,
+  FILETYPEMP4: 7,
+  FILETYPEMOV: 8
 };
 
 goog.object.extend(exports, proto.msg);

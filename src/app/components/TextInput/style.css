@@ -120,6 +120,15 @@ input {
             fill: var(--grey); }
       .write .inputs .input.rtl textarea {
         padding-right: 60px; }
+  .write .actions {
+    display: flex;
+    min-height: 50px; }
+    .write .actions .left-action {
+      width: 50px;
+      text-align: left; }
+    .write .actions .right-action {
+      flex: 1;
+      text-align: right; }
   .write .previews {
     display: flex;
     transition: height 0.1s;
@@ -194,7 +203,8 @@ input {
       .write .previews .preview-clear .btn-clear {
         height: 32px;
         width: 32px;
-        color: inherit; }
+        color: inherit;
+        padding: 5px; }
         .write .previews .preview-clear .btn-clear svg {
           font-size: 20px; }
 

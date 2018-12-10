@@ -88,6 +88,18 @@
       }
     }
   }
+  .actions {
+    display: flex;
+    min-height: 50px;
+    .left-action {
+      width: 50px;
+      text-align: left;
+    }
+    .right-action {
+      flex: 1;
+      text-align: right;
+    }
+  }
   .previews {
     display: flex;
     transition: height 0.1s;
@@ -179,6 +191,7 @@
         height: 32px;
         width: 32px;
         color: inherit;
+        padding: 5px;
         svg {
           font-size: 20px;
         }

@@ -583,6 +583,11 @@ export class Group extends jspb.Message {
   getEditedon(): number | undefined;
   setEditedon(value: number): void;
 
+  hasFlags(): boolean;
+  clearFlags(): void;
+  getFlags(): GroupFlags | undefined;
+  setFlags(value: GroupFlags): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Group.AsObject;
   static toObject(includeInstance: boolean, msg: Group): Group.AsObject;
@@ -600,6 +605,7 @@ export namespace Group {
     createdon?: number,
     participants?: number,
     editedon?: number,
+    flags?: GroupFlags,
   }
 }
 
@@ -684,11 +690,11 @@ export namespace GroupParticipant {
 }
 
 export enum TypingAction {
-  TYPING = 0,
-  RECORDINGVOICE = 1,
-  RECORDINGVIDEO = 2,
-  UPLOADING = 3,
-  CANCEL = 4,
+  TYPINGACTIONTYPING = 0,
+  TYPINGACTIONRECORDINGVOICE = 1,
+  TYPINGACTIONRECORDINGVIDEO = 2,
+  TYPINGACTIONUPLOADING = 3,
+  TYPINGACTIONCANCEL = 4,
 }
 
 export enum PeerType {
@@ -699,9 +705,19 @@ export enum PeerType {
   PEERCHANNEL = 4,
 }
 
+export enum GroupFlags {
+  GROUPFLAGSEMPTY = 0,
+  GROUPFLAGSCREATOR = 1,
+  GROUPFLAGSLEFT = 2,
+  GROUPFLAGSKICKED = 4,
+  GROUPFLAGSADMIN = 8,
+  GROUPFLAGSADMINSENABLED = 16,
+  GROUPFLAGSDEACTIVATED = 32,
+}
+
 export enum ParticipantType {
-  CREATOR = 0,
-  ADMIN = 1,
-  MEMBER = 2,
+  PARTICIPANTTYPECREATOR = 0,
+  PARTICIPANTTYPEADMIN = 1,
+  PARTICIPANTMEMBER = 2,
 }
 

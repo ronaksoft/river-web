@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {AutoSizer, CellMeasurer, CellMeasurerCache, List} from 'react-virtualized';
 import {IMessage} from '../../repository/message/interface';
-import './style.css';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
@@ -12,6 +11,9 @@ import MessagePreview from '../MessagePreview';
 import MessageStatus from '../MessageStatus';
 import {MoreVert} from '@material-ui/icons';
 import UserName from '../UserName';
+import Checkbox from '@material-ui/core/Checkbox';
+
+import './style.css';
 
 interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
@@ -21,6 +23,9 @@ interface IProps {
     readId: number;
     rendered?: (info: any) => void;
     showDate?: (timestamp: number | null) => void;
+    selectable: boolean;
+    selectedIds: { [key: number]: boolean };
+    onSelectedIdsChange: (selectedIds: { [key: number]: boolean }) => void;
 }
 
 interface IState {
@@ -33,6 +38,8 @@ interface IState {
     readId: number;
     readIdInit: number;
     scrollIndex: number;
+    selectable: boolean;
+    selectedIds: { [key: string]: boolean };
 }
 
 class Message extends React.Component<IProps, IState> {
@@ -53,6 +60,8 @@ class Message extends React.Component<IProps, IState> {
             readId: props.readId,
             readIdInit: -1,
             scrollIndex: -1,
+            selectable: props.selectable,
+            selectedIds: props.selectedIds,
         };
         this.cache = new CellMeasurerCache({
             fixedWidth: true,
@@ -113,14 +122,23 @@ class Message extends React.Component<IProps, IState> {
                 this.list.forceUpdateGrid();
             });
         }
+        if (this.state.selectable !== newProps.selectable || Object.keys(this.state.selectedIds).length !== Object.keys(newProps.selectedIds).length) {
+            this.setState({
+                selectable: newProps.selectable,
+                selectedIds: newProps.selectedIds,
+            }, () => {
+                this.list.forceUpdateGrid();
+            });
+        }
     }
 
     public render() {
-        const {items, moreAnchorEl, peer} = this.state;
+        const {items, moreAnchorEl, peer, selectable} = this.state;
         return (
             <AutoSizer>
                 {({width, height}: any) => (
-                    <div className={(peer && peer.getType() === PeerType.PEERGROUP) ? 'group' : 'user'}>
+                    <div
+                        className={((peer && peer.getType() === PeerType.PEERGROUP) ? 'group' : 'user') + (selectable ? ' selectable' : '')}>
                         <List
                             ref={this.refHandler}
                             deferredMeasurementCache={this.cache}
@@ -258,9 +276,12 @@ class Message extends React.Component<IProps, IState> {
                     return (
                         <div style={style}
                              className={'bubble-wrapper ' + (message.me ? 'me' : 'you') + (message.avatar ? ' avatar' : '')}>
-                            {(message.avatar && message.senderid && !message.me) && (
+                            {(!this.state.selectable && message.avatar && message.senderid && !message.me) && (
                                 <UserAvatar id={message.senderid} className="avatar"/>
                             )}
+                            {this.state.selectable && <Checkbox className="checkbox" color="primary"
+                                                                checked={this.state.selectedIds[message.id || 0] || false}
+                                                                onChange={this.selectMessageHandler.bind(this, message.id || '')}/>}
                             {(message.avatar && message.senderid) && (<div className="arrow"/>)}
                             <div className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')}>
                                 {Boolean(peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me) &&
@@ -358,6 +379,9 @@ class Message extends React.Component<IProps, IState> {
     private moreCmdHandler = (cmd: string, index: number, e: any) => {
         if (this.props.contextMenu && index > -1) {
             this.props.contextMenu(cmd, this.state.items[index]);
+        }
+        if (cmd === 'forward') {
+            this.selectMessageHandler(this.state.items[index].id || 0);
         }
         this.setState({
             moreAnchorEl: null,
@@ -467,6 +491,22 @@ class Message extends React.Component<IProps, IState> {
             default:
                 return '';
         }
+    }
+
+    /* Add/Remove selected id to selectedIds map */
+    private selectMessageHandler = (id: number, e?: any) => {
+        const {selectedIds} = this.state;
+        if (!e || (e && e.currentTarget.checked)) {
+            selectedIds[id] = true;
+        } else {
+            delete selectedIds[id];
+        }
+        this.setState({
+            selectedIds,
+        }, () => {
+            this.props.onSelectedIdsChange(selectedIds);
+            this.list.forceUpdateGrid();
+        });
     }
 }
 
