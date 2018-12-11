@@ -99,6 +99,7 @@ interface IState {
     textInputMessage?: IMessage;
     textInputMessageMode: number;
     toggleAttachment: boolean;
+    unreadCounter: number;
 }
 
 class Chat extends React.Component<IProps, IState> {
@@ -153,6 +154,7 @@ class Chat extends React.Component<IProps, IState> {
             selectedDialogId: props.match.params.id,
             textInputMessageMode: C_MSG_MODE.Normal,
             toggleAttachment: false,
+            unreadCounter: 0,
         };
         this.sdk = SDK.getInstance();
         this.sdk.loadConnInfo();
@@ -189,13 +191,18 @@ class Chat extends React.Component<IProps, IState> {
 
         // Get latest cached dialogs
         this.dialogRepo.getManyCache({}).then((res) => {
+            let unreadCounter = 0;
             // Map indexes in order to to find them with O(1)
             res.forEach((dialog, index) => {
                 this.dialogMap[dialog.peerid || ''] = index;
+                if (dialog && dialog.unreadcount) {
+                    unreadCounter += dialog.unreadcount;
+                }
             });
 
             this.setState({
-                dialogs: res
+                dialogs: res,
+                unreadCounter,
             }, () => {
                 const selectedId = this.props.match.params.id;
                 if (selectedId !== 'null') {
@@ -494,7 +501,7 @@ class Chat extends React.Component<IProps, IState> {
         const {
             confirmDialogMode, confirmDialogOpen, moreInfoAnchorEl, chatMoreAnchorEl, isTypingList, leftMenu, leftMenuSub, leftOverlay,
             textInputMessage, textInputMessageMode, peer, selectedDialogId, popUpDate, messageSelectable,
-            messageSelectedIds, forwardRecipientDialogOpen, forwardRecipients,
+            messageSelectedIds, forwardRecipientDialogOpen, forwardRecipients, unreadCounter,
         } = this.state;
         const leftMenuRender = () => {
             switch (leftMenu) {
@@ -504,7 +511,8 @@ class Chat extends React.Component<IProps, IState> {
                                     cancelIsTyping={this.cancelIsTypingHandler}/>);
                 case 'setting':
                     return (<SettingMenu updateMessages={this.settingUpdateMessage} subMenu={leftMenuSub}
-                                         onClose={this.bottomBarSelectHandler.bind(this, 'chat')}/>);
+                                         onClose={this.bottomBarSelectHandler.bind(this, 'chat')}
+                                         onSubPlaceChange={this.leftMenuSubPageChangeHandler}/>);
                 case 'contact':
                     return (<ContactMenu/>);
             }
@@ -589,7 +597,8 @@ class Chat extends React.Component<IProps, IState> {
                             <div className="left-content">
                                 {leftMenuRender()}
                             </div>
-                            <BottomBar onSelect={this.bottomBarSelectHandler} selected={leftMenu}/>
+                            <BottomBar onSelect={this.bottomBarSelectHandler} selected={leftMenu}
+                                       unreadCounter={unreadCounter}/>
                             <div className="left-overlay">
                                 {leftOverlay && <NewGroupMenu onClose={this.leftOverlayCloseHandler}
                                                               onCreate={this.onGroupCreateHandler}/>}
@@ -1332,9 +1341,16 @@ class Chat extends React.Component<IProps, IState> {
             return i2.last_update - i1.last_update;
         });
         const td = cloneDeep(dialogs);
+        let unreadCounter = 0;
+        td.forEach((d) => {
+            if (d && d.unreadcount) {
+                unreadCounter += d.unreadcount;
+            }
+        });
         this.dialogMap = {};
         this.setState({
             dialogs: td,
+            unreadCounter,
         }, () => {
             td.forEach((d, i) => {
                 if (d) {
@@ -1543,6 +1559,12 @@ class Chat extends React.Component<IProps, IState> {
                 });
                 break;
         }
+    }
+
+    private leftMenuSubPageChangeHandler = (subPage: string) => {
+        this.setState({
+            leftMenuSub: subPage,
+        });
     }
 
     private leftOverlayCloseHandler = () => {

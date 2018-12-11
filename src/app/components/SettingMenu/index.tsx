@@ -29,6 +29,7 @@ interface IProps {
     onClose?: () => void;
     subMenu?: string;
     updateMessages?: () => void;
+    onSubPlaceChange?: (sub: string) => void;
 }
 
 interface IState {
@@ -151,6 +152,10 @@ class SettingMenu extends React.Component<IProps, IState> {
             if (newProps.subMenu === 'account') {
                 this.getUser();
             }
+        } else {
+            this.setState({
+                pageContent: newProps.subMenu || 'none',
+            });
         }
     }
 
@@ -421,6 +426,8 @@ class SettingMenu extends React.Component<IProps, IState> {
             editUsername: false,
             page: '1',
             pageContent: 'none',
+        }, () => {
+            this.dispatchSubPlaceChange();
         });
     }
 
@@ -428,6 +435,8 @@ class SettingMenu extends React.Component<IProps, IState> {
         this.setState({
             page: '2',
             pageContent: 'theme',
+        }, () => {
+            this.dispatchSubPlaceChange();
         });
     }
 
@@ -447,6 +456,8 @@ class SettingMenu extends React.Component<IProps, IState> {
         this.setState({
             page: '2',
             pageContent: 'account',
+        }, () => {
+            this.dispatchSubPlaceChange();
         });
     }
 
@@ -481,8 +492,11 @@ class SettingMenu extends React.Component<IProps, IState> {
         const reg = /^(?=.{2,32}$)[a-zA-Z0-9._]/;
         this.setState({
             usernameValid: reg.test(username),
+        }, () => {
+            if (this.state.usernameValid) {
+                this.usernameCheckDebounce(username);
+            }
         });
-        this.usernameCheckDebounce(username);
         this.setState({
             username,
         });
@@ -565,6 +579,13 @@ class SettingMenu extends React.Component<IProps, IState> {
                 username: user.username || '',
             });
         });
+    }
+
+    /* Dispatch sub place change */
+    private dispatchSubPlaceChange() {
+        if (this.props.onSubPlaceChange) {
+            this.props.onSubPlaceChange(this.state.pageContent);
+        }
     }
 }
 

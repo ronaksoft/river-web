@@ -1,15 +1,18 @@
 import * as React from 'react';
 import {ExitToAppRounded, SettingsRounded, ChatRounded, AccountCircleRounded} from "@material-ui/icons";
+import Badge from '@material-ui/core/Badge';
 
 import './style.css';
 
 interface IProps {
     selected: string;
     onSelect?: (item: string) => void;
+    unreadCounter: number;
 }
 
 interface IState {
     selected: string;
+    unreadCounter: number;
 }
 
 class BottomBar extends React.Component<IProps, IState> {
@@ -18,6 +21,7 @@ class BottomBar extends React.Component<IProps, IState> {
 
         this.state = {
             selected: props.selected,
+            unreadCounter: props.unreadCounter,
         };
     }
 
@@ -27,16 +31,18 @@ class BottomBar extends React.Component<IProps, IState> {
     public componentWillReceiveProps(newProps: IProps) {
         this.setState({
             selected: newProps.selected,
+            unreadCounter: newProps.unreadCounter,
         });
     }
 
     public render() {
-        const {selected} = this.state;
+        const {selected, unreadCounter} = this.state;
         const items: any[] = [{
             icon: <AccountCircleRounded/>,
             page: 'contact',
             title: 'Contacts',
         }, {
+            badge: true,
             icon: <ChatRounded/>,
             page: 'chat',
             title: 'Chats',
@@ -55,7 +61,9 @@ class BottomBar extends React.Component<IProps, IState> {
                     return (
                         <a onClick={this.onClickHandler.bind(this, item.page)} key={index}
                            className={item.page === selected ? 'active' : ''}>
-                            {item.icon}
+                            {Boolean(item.badge) && <Badge color="secondary" badgeContent={unreadCounter}
+                                                           invisible={Boolean(unreadCounter === 0)}>{item.icon}</Badge>}
+                            {!Boolean(item.badge) && <span>{item.icon}</span>}
                             <span className="title">{item.title}</span>
                         </a>);
                 })}
