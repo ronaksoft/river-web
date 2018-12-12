@@ -3913,12 +3913,19 @@ proto.msg.InputFile.prototype.hasFilename = function() {
  * @constructor
  */
 proto.msg.Group = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.msg.Group.repeatedFields_, null);
 };
 goog.inherits(proto.msg.Group, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   proto.msg.Group.displayName = 'proto.msg.Group';
 }
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.msg.Group.repeatedFields_ = [6];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -3953,7 +3960,7 @@ proto.msg.Group.toObject = function(includeInstance, msg) {
     createdon: jspb.Message.getField(msg, 3),
     participants: jspb.Message.getField(msg, 4),
     editedon: jspb.Message.getField(msg, 5),
-    flags: jspb.Message.getField(msg, 6)
+    flagsList: jspb.Message.getRepeatedField(msg, 6)
   };
 
   if (includeInstance) {
@@ -4012,7 +4019,7 @@ proto.msg.Group.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 6:
       var value = /** @type {!proto.msg.GroupFlags} */ (reader.readEnum());
-      msg.setFlags(value);
+      msg.addFlags(value);
       break;
     default:
       reader.skipField();
@@ -4078,9 +4085,9 @@ proto.msg.Group.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {!proto.msg.GroupFlags} */ (jspb.Message.getField(message, 6));
-  if (f != null) {
-    writer.writeEnum(
+  f = message.getFlagsList();
+  if (f.length > 0) {
+    writer.writeRepeatedEnum(
       6,
       f
     );
@@ -4234,31 +4241,31 @@ proto.msg.Group.prototype.hasEditedon = function() {
 
 
 /**
- * optional GroupFlags Flags = 6;
- * @return {!proto.msg.GroupFlags}
+ * repeated GroupFlags Flags = 6;
+ * @return {!Array.<!proto.msg.GroupFlags>}
  */
-proto.msg.Group.prototype.getFlags = function() {
-  return /** @type {!proto.msg.GroupFlags} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+proto.msg.Group.prototype.getFlagsList = function() {
+  return /** @type {!Array.<!proto.msg.GroupFlags>} */ (jspb.Message.getRepeatedField(this, 6));
 };
 
 
-/** @param {!proto.msg.GroupFlags} value */
-proto.msg.Group.prototype.setFlags = function(value) {
-  jspb.Message.setField(this, 6, value);
-};
-
-
-proto.msg.Group.prototype.clearFlags = function() {
-  jspb.Message.setField(this, 6, undefined);
+/** @param {!Array.<!proto.msg.GroupFlags>} value */
+proto.msg.Group.prototype.setFlagsList = function(value) {
+  jspb.Message.setField(this, 6, value || []);
 };
 
 
 /**
- * Returns whether this field is set.
- * @return {!boolean}
+ * @param {!proto.msg.GroupFlags} value
+ * @param {number=} opt_index
  */
-proto.msg.Group.prototype.hasFlags = function() {
-  return jspb.Message.getField(this, 6) != null;
+proto.msg.Group.prototype.addFlags = function(value, opt_index) {
+  jspb.Message.addToRepeatedField(this, 6, value, opt_index);
+};
+
+
+proto.msg.Group.prototype.clearFlagsList = function() {
+  this.setFlagsList([]);
 };
 
 
@@ -4614,7 +4621,8 @@ proto.msg.GroupParticipant.toObject = function(includeInstance, msg) {
     userid: jspb.Message.getField(msg, 1),
     inviterid: jspb.Message.getField(msg, 2),
     date: jspb.Message.getField(msg, 3),
-    type: jspb.Message.getField(msg, 4)
+    type: jspb.Message.getField(msg, 4),
+    accesshash: jspb.Message.getField(msg, 5)
   };
 
   if (includeInstance) {
@@ -4666,6 +4674,10 @@ proto.msg.GroupParticipant.deserializeBinaryFromReader = function(msg, reader) {
     case 4:
       var value = /** @type {!proto.msg.ParticipantType} */ (reader.readEnum());
       msg.setType(value);
+      break;
+    case 5:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setAccesshash(value);
       break;
     default:
       reader.skipField();
@@ -4721,6 +4733,13 @@ proto.msg.GroupParticipant.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeEnum(
       4,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 5));
+  if (f != null) {
+    writer.writeInt64(
+      5,
       f
     );
   }
@@ -4844,6 +4863,35 @@ proto.msg.GroupParticipant.prototype.hasType = function() {
 
 
 /**
+ * required int64 AccessHash = 5;
+ * @return {number}
+ */
+proto.msg.GroupParticipant.prototype.getAccesshash = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.GroupParticipant.prototype.setAccesshash = function(value) {
+  jspb.Message.setField(this, 5, value);
+};
+
+
+proto.msg.GroupParticipant.prototype.clearAccesshash = function() {
+  jspb.Message.setField(this, 5, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.GroupParticipant.prototype.hasAccesshash = function() {
+  return jspb.Message.getField(this, 5) != null;
+};
+
+
+/**
  * @enum {number}
  */
 proto.msg.TypingAction = {
@@ -4872,10 +4920,10 @@ proto.msg.GroupFlags = {
   GROUPFLAGSEMPTY: 0,
   GROUPFLAGSCREATOR: 1,
   GROUPFLAGSLEFT: 2,
-  GROUPFLAGSKICKED: 4,
-  GROUPFLAGSADMIN: 8,
-  GROUPFLAGSADMINSENABLED: 16,
-  GROUPFLAGSDEACTIVATED: 32
+  GROUPFLAGSKICKED: 3,
+  GROUPFLAGSADMIN: 4,
+  GROUPFLAGSADMINSENABLED: 5,
+  GROUPFLAGSDEACTIVATED: 6
 };
 
 /**

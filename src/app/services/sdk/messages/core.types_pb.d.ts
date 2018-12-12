@@ -583,10 +583,10 @@ export class Group extends jspb.Message {
   getEditedon(): number | undefined;
   setEditedon(value: number): void;
 
-  hasFlags(): boolean;
-  clearFlags(): void;
-  getFlags(): GroupFlags | undefined;
-  setFlags(value: GroupFlags): void;
+  clearFlagsList(): void;
+  getFlagsList(): Array<GroupFlags>;
+  setFlagsList(value: Array<GroupFlags>): void;
+  addFlags(value: GroupFlags, index?: number): GroupFlags;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Group.AsObject;
@@ -605,7 +605,7 @@ export namespace Group {
     createdon?: number,
     participants?: number,
     editedon?: number,
-    flags?: GroupFlags,
+    flagsList: Array<GroupFlags>,
   }
 }
 
@@ -670,6 +670,11 @@ export class GroupParticipant extends jspb.Message {
   getType(): ParticipantType | undefined;
   setType(value: ParticipantType): void;
 
+  hasAccesshash(): boolean;
+  clearAccesshash(): void;
+  getAccesshash(): number | undefined;
+  setAccesshash(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GroupParticipant.AsObject;
   static toObject(includeInstance: boolean, msg: GroupParticipant): GroupParticipant.AsObject;
@@ -686,6 +691,7 @@ export namespace GroupParticipant {
     inviterid?: number,
     date?: number,
     type?: ParticipantType,
+    accesshash?: number,
   }
 }
 
@@ -709,10 +715,10 @@ export enum GroupFlags {
   GROUPFLAGSEMPTY = 0,
   GROUPFLAGSCREATOR = 1,
   GROUPFLAGSLEFT = 2,
-  GROUPFLAGSKICKED = 4,
-  GROUPFLAGSADMIN = 8,
-  GROUPFLAGSADMINSENABLED = 16,
-  GROUPFLAGSDEACTIVATED = 32,
+  GROUPFLAGSKICKED = 3,
+  GROUPFLAGSADMIN = 4,
+  GROUPFLAGSADMINSENABLED = 5,
+  GROUPFLAGSDEACTIVATED = 6,
 }
 
 export enum ParticipantType {

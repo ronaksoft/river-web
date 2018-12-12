@@ -206,6 +206,10 @@ export default class MessageRepo {
 
     public get(id: number, peer?: InputPeer | null): Promise<IMessage> {
         return new Promise((resolve, reject) => {
+            if (this.lazyMap.hasOwnProperty(id)) {
+                resolve(this.lazyMap[id]);
+                return;
+            }
             this.db.messages.get(id).then((res: IMessage) => {
                 resolve(res);
             }).catch(() => {

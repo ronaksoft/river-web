@@ -132,10 +132,10 @@ enum GroupFlags {
     GroupFlagsEmpty = 0;
     GroupFlagsCreator = 1;
     GroupFlagsLeft = 2;
-    GroupFlagsKicked = 4;
-    GroupFlagsAdmin = 8;
-    GroupFlagsAdminsEnabled = 16;
-    GroupFlagsDeactivated = 32;
+    GroupFlagsKicked = 3;
+    GroupFlagsAdmin = 4;
+    GroupFlagsAdminsEnabled = 5;
+    GroupFlagsDeactivated = 6;
 }
 
 // Group
@@ -145,7 +145,7 @@ message Group {
     required int64 CreatedOn = 3;
     required int32 Participants = 4;
     optional int64 EditedOn = 5;
-    optional GroupFlags Flags = 6;
+    repeated GroupFlags Flags = 6;
 }
 
 // GroupFull
@@ -169,5 +169,6 @@ message GroupParticipant {
     required int64 InviterID = 2;
     required int64 Date = 3;
     required ParticipantType Type = 4;
+    required int64 AccessHash = 5;
 }
 

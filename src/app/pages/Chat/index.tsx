@@ -228,11 +228,13 @@ class Chat extends React.Component<IProps, IState> {
             }
             window.console.log('snapshot!');
             this.checkSync().then(() => {
+                this.updateManager.disable();
                 this.setState({
                     isUpdating: true,
                 });
             }).catch(() => {
                 if (this.state.isUpdating) {
+                    this.updateManager.enable();
                     this.setState({
                         isUpdating: false,
                     });
@@ -401,7 +403,21 @@ class Chat extends React.Component<IProps, IState> {
             if (this.state.isUpdating) {
                 return;
             }
-            this.messageRepo.removeMany(data.messageidsList);
+            let firstMessageId = 0;
+            if (data.messageidsList.length > 0) {
+                firstMessageId = data.messageidsList[0];
+            }
+            this.messageRepo.get(firstMessageId).then((res) => {
+                this.messageRepo.removeMany(data.messageidsList).then(() => {
+                    if (firstMessageId && res) {
+                        const dialogIndex = this.dialogMap[res.peerid || ''];
+                        const dialog = dialogs[dialogIndex];
+                        this.messageRepo.getUnreadCount(res.peerid || '', dialog.readinboxmaxid || 0).then((count) => {
+                            this.updateDialogsCounter(res.peerid || '', {unreadCounter: count});
+                        });
+                    }
+                });
+            });
             const {messages, dialogs} = this.state;
             let updateView = false;
             data.messageidsList.map((id) => {
@@ -1390,16 +1406,19 @@ class Chat extends React.Component<IProps, IState> {
                 this.syncThemAll(id, limit);
             }).catch((err2) => {
                 window.console.log(err2);
+                this.updateManager.enable();
                 this.setState({
                     isUpdating: false,
                 });
                 if (err2.code === -1) {
                     this.checkSync().then(() => {
+                        this.updateManager.disable();
                         this.setState({
                             isUpdating: true,
                         });
                     }).catch(() => {
                         if (this.state.isUpdating) {
+                            this.updateManager.enable();
                             this.setState({
                                 isUpdating: false,
                             });
@@ -1439,6 +1458,7 @@ class Chat extends React.Component<IProps, IState> {
         }
         // Normal syncing
         this.checkSync().then(() => {
+            this.updateManager.disable();
             this.setState({
                 isUpdating: true,
             });
@@ -1450,12 +1470,14 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private snapshot() {
+        this.updateManager.disable();
         this.setState({
             isUpdating: true,
         });
         this.dialogRepo.getSnapshot({}).then((res) => {
             this.dialogsSortThrottle(res.dialogs);
             this.syncManager.setLastUpdateId(res.updateid || 0);
+            this.updateManager.enable();
             this.setState({
                 isUpdating: false,
             }, () => {
@@ -1464,6 +1486,7 @@ class Chat extends React.Component<IProps, IState> {
                 }
             });
         }).catch(() => {
+            this.updateManager.enable();
             this.setState({
                 isUpdating: false,
             });
@@ -1740,6 +1763,7 @@ class Chat extends React.Component<IProps, IState> {
         if (!dialogs) {
             return;
         }
+        this.updateManager.disable();
         this.setState({
             isUpdating: true,
         });
@@ -1753,10 +1777,12 @@ class Chat extends React.Component<IProps, IState> {
             });
             this.dialogRepo.remove(data.id).then(() => {
                 this.props.history.push('/conversation/null');
+                this.updateManager.enable();
                 this.setState({
                     isUpdating: false,
                 });
             }).catch(() => {
+                this.updateManager.enable();
                 this.setState({
                     isUpdating: false,
                 });

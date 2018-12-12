@@ -13,7 +13,7 @@ interface IProps {
 
 interface IState {
     className: string;
-    group: IGroup;
+    group: IGroup | null;
     id: string;
     prefix: string;
 }
@@ -28,7 +28,7 @@ class GroupName extends React.Component<IProps, IState> {
 
         this.state = {
             className: props.className || '',
-            group: {},
+            group: null,
             id: props.id,
             prefix: props.prefix || '',
         };

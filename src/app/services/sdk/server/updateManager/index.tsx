@@ -40,6 +40,7 @@ export default class UpdateManager {
     private messageDropList: { [key: string]: UpdateNewMessage.AsObject[] } = {};
     private newMessageThrottle: any;
     private newMessageDropThrottle: any;
+    private active: boolean = false;
 
     public constructor() {
         window.console.log('Update manager started');
@@ -75,6 +76,9 @@ export default class UpdateManager {
     }
 
     public parseUpdate(bytes: string) {
+        if (!this.active) {
+            return;
+        }
         // @ts-ignore
         const arr = Uint8Array.from(atob(bytes), c => c.charCodeAt(0));
         const data = UpdateContainer.deserializeBinary(arr).toObject();
@@ -116,6 +120,14 @@ export default class UpdateManager {
         return () => {
             delete this.fnQueue[eventConstructor][this.fnIndex];
         };
+    }
+
+    public disable() {
+        this.active = false;
+    }
+
+    public enable() {
+        this.active = true;
     }
 
     private responseUpdateMessageID(update: UpdateEnvelope.AsObject) {

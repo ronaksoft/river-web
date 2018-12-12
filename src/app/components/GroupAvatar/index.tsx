@@ -12,7 +12,7 @@ interface IProps {
 
 interface IState {
     className: string;
-    group: IGroup;
+    group: IGroup | null;
     id: string;
 }
 
@@ -26,7 +26,7 @@ class GroupAvatar extends React.Component<IProps, IState> {
 
         this.state = {
             className: props.className || '',
-            group: {},
+            group: null,
             id: props.id
         };
 
@@ -58,7 +58,7 @@ class GroupAvatar extends React.Component<IProps, IState> {
         const {group, className} = this.state;
         return (
             <span className={className}>{(group && group.avatar) ?
-                <img src={group.avatar}/> : TextAvatar(group.title)}</span>
+                <img src={group.avatar}/> : TextAvatar(group ? group.title : undefined)}</span>
         );
     }
 
