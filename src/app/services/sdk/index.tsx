@@ -15,6 +15,7 @@ import {IConnInfo} from './interface';
 import {ContactsGet, ContactsImport, ContactsImported, ContactsMany} from './messages/api.contacts_pb';
 import {Group, GroupFull, InputPeer, InputUser, PhoneContact, TypingAction, User} from './messages/core.types_pb';
 import {
+    MessagesClearHistory,
     MessagesDelete,
     MessagesDialogs, MessagesEdit, MessagesForward,
     MessagesGetDialogs,
@@ -278,6 +279,14 @@ export default class SDK {
         data.setRandomid(randomId);
         data.setSilence(silence);
         return this.server.send(C_MSG.MessagesForward, data.serializeBinary(), false);
+    }
+
+    public clearMessage(peer: InputPeer, maxId: number, clearDialog: boolean) {
+        const data = new MessagesClearHistory();
+        data.setPeer(peer);
+        data.setMaxid(maxId);
+        data.setDelete(clearDialog);
+        return this.server.send(C_MSG.MessagesClearHistory, data.serializeBinary(), true);
     }
 
     public usernameAvailable(username: string): Promise<Bool.AsObject> {
