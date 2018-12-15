@@ -3,13 +3,14 @@ import UserAvatar from '../UserAvatar';
 import UserName from '../UserName';
 import {IDialog} from '../../repository/dialog/interface';
 import LiveDate from '../LiveDate';
-import {DoneAllRounded, DoneRounded, ScheduleRounded} from '@material-ui/icons';
+import {DoneAllRounded, DoneRounded, ScheduleRounded, NotificationsOffRounded} from '@material-ui/icons';
 import {PeerType} from '../../services/sdk/messages/core.types_pb';
 import GroupAvatar from '../GroupAvatar';
 import GroupName from '../GroupName';
 import {C_MESSAGE_ACTION} from '../../repository/message/consts';
 
 import './style.css';
+import {isMuted} from '../UserInfoMenu';
 
 interface IProps {
     cancelIsTyping?: (id: string) => void;
@@ -53,8 +54,10 @@ class DialogMessage extends React.Component<IProps, IState> {
     public render() {
         const {dialog, isTyping} = this.state;
         const ids = Object.keys(isTyping);
+        const muted = isMuted(dialog.notifysettings);
         return (
-            <div className="dialog-wrapper">
+            <div className={'dialog-wrapper' + (muted ? ' muted' : '')}>
+                {muted && <div className="muted-wrapper"><NotificationsOffRounded/></div>}
                 {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
                 <UserAvatar className="avatar" id={dialog.target_id || ''}/>}
                 {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&

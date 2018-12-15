@@ -17,10 +17,21 @@
       border-radius: 50%;
     }
   }
+  .muted-wrapper {
+    position: absolute;
+    height: 16px;
+    width: 16px;
+    top: 11px;
+    left: 64px;
+    svg {
+      font-size: 16px;
+      color: var(--dark);
+    }
+  }
   .name {
     display: inline-block;
     min-width: 200px;
-    width: calc(100% - 90px);
+    width: calc(100% - 120px);
     font-size: 12px;
     line-height: 23px;
     margin: 0 0 4px;
@@ -30,6 +41,14 @@
       font-size: 15px;
       margin-right: 6px;
       vertical-align: sub;
+    }
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  &.muted {
+    .name {
+      padding-left: 16px;
     }
   }
   .time {
@@ -86,6 +105,11 @@ html[theme="dark"] {
   .dialog-wrapper {
     .name {
       color: var(--light);
+    }
+    .muted-wrapper {
+      svg {
+        color: var(--white);
+      }
     }
   }
 }
