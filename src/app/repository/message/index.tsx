@@ -290,11 +290,18 @@ export default class MessageRepo {
         return this.db.messages.delete(id);
     }
 
-    public getUnreadCount(peerId: string, minId: number): Promise<any> {
+    public getUnreadCount(peerId: string, minId: number): Promise<number> {
+        if (!minId) {
+            return Promise.reject('bad input');
+        }
         return this.db.messages.where('[peerid+id]')
             .between([peerId, minId + 1], [peerId, Dexie.maxKey], true, true).filter((item) => {
                 return item.temp !== true && item.me !== true;
             }).count();
+    }
+
+    public clearHistory(peerId: string, messageId: number): Promise<any> {
+        return this.db.messages.where('[peerid+id]').between([peerId, Dexie.minKey], [peerId, messageId], true, true).delete();
     }
 
     public flush() {

@@ -66,6 +66,16 @@ export default class DialogRepo {
         return this.db.dialogs.bulkPut(dialogs);
     }
 
+    public get(id: string): Promise<IDialog> {
+        return this.db.dialogs.get(id).then((dialog) => {
+            if (this.lazyMap.hasOwnProperty(id)) {
+                return merge(dialog, this.lazyMap[id]);
+            } else {
+                return dialog;
+            }
+        });
+    }
+
     public getSnapshot({limit, skip, dialogs}: any): Promise<IDialogWithUpdateId> {
         limit = limit || 50;
         skip = skip || 0;
