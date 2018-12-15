@@ -9,9 +9,19 @@
 
 import * as React from 'react';
 import {IContact} from '../../repository/contact/interface';
-import {CloseRounded, CheckRounded, EditRounded, MoreVert, AddRounded, PersonAddRounded, ExitToAppRounded} from '@material-ui/icons';
+import {
+    AddRounded,
+    CheckRounded,
+    CloseRounded,
+    EditRounded,
+    ExitToAppRounded,
+    MoreVert,
+    PersonAddRounded,
+    StarRateRounded,
+    StarsRounded,
+} from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
-import {InputPeer, InputUser} from '../../services/sdk/messages/core.types_pb';
+import {InputPeer, InputUser, ParticipantType, PeerNotifySettings} from '../../services/sdk/messages/core.types_pb';
 import SDK from '../../services/sdk';
 import GroupAvatar from '../GroupAvatar';
 import {IGroup} from '../../repository/group/interface';
@@ -27,9 +37,20 @@ import Menu from '@material-ui/core/Menu/Menu';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';
 import {findIndex, trimStart} from 'lodash';
 import Dialog from '@material-ui/core/Dialog/Dialog';
+import ContactList from '../ContactList';
+import Checkbox from '@material-ui/core/Checkbox/Checkbox';
+import {isMuted} from '../UserInfoMenu';
+import {IDialog} from '../../repository/dialog/interface';
+import DialogRepo from '../../repository/dialog';
 
 import './style.css';
-import ContactList from '../ContactList';
+import DialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent/DialogContent';
+import RadioGroup from '@material-ui/core/RadioGroup/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel/FormControlLabel';
+import Radio from '@material-ui/core/Radio/Radio';
+import DialogActions from '@material-ui/core/DialogActions/DialogActions';
+import Button from '@material-ui/core/Button/Button';
 
 // Todo: add member, kick member, promote member and etc.
 interface IProps {
@@ -41,10 +62,13 @@ interface IProps {
 interface IState {
     addMemberDialogEnable: boolean;
     currentUser: IUser | null;
+    dialog: IDialog | null;
     forwardLimit: number;
     group: IGroup | null;
     moreAnchorEl: any;
     newMembers: IContact[];
+    notifySettingDialogOpen: boolean;
+    notifyValue: string;
     page: string;
     participants: IUser[];
     peer: InputPeer | null;
@@ -54,6 +78,7 @@ interface IState {
 
 class GroupInfoMenu extends React.Component<IProps, IState> {
     private groupRepo: GroupRepo;
+    private dialogRepo: DialogRepo;
     private sdk: SDK;
     private loading: boolean = false;
 
@@ -63,10 +88,13 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         this.state = {
             addMemberDialogEnable: false,
             currentUser: null,
+            dialog: null,
             forwardLimit: 50,
             group: null,
             moreAnchorEl: null,
             newMembers: [],
+            notifySettingDialogOpen: false,
+            notifyValue: '-1',
             page: '1',
             participants: [],
             peer: props.peer,
@@ -76,6 +104,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
 
         // Group Repository singleton
         this.groupRepo = GroupRepo.getInstance();
+        // Dialog Repository singleton
+        this.dialogRepo = DialogRepo.getInstance();
         // SDK singleton
         this.sdk = SDK.getInstance();
     }
@@ -96,7 +126,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {addMemberDialogEnable, group, page, participants, title, titleEdit, moreAnchorEl} = this.state;
+        const {addMemberDialogEnable, group, page, participants, title, titleEdit, moreAnchorEl, dialog, notifySettingDialogOpen, notifyValue} = this.state;
         return (
             <div className="group-info-menu">
                 <div className="menu-header">
@@ -153,13 +183,27 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                 Created {TimeUtility.dynamicDate(group.createdon || 0)}
                             </div>
                         </div>}
+                        {dialog && <div className="kk-card notify-settings">
+                            <div className="label">Mute</div>
+                            <div className="value">
+                                <Checkbox
+                                    className={'checkbox ' + (isMuted(dialog.notifysettings) ? 'checked' : '')}
+                                    color="primary" checked={isMuted(dialog.notifysettings)}
+                                    onChange={this.muteChangeHandler}/>
+                            </div>
+                        </div>}
                         {group && <div className="participant kk-card">
                             <label>{group.participants} participants</label>
                             {participants.map((contact, index) => {
                                 return (
-                                    <div key={index} className="contact-item">
+                                    <div key={index}
+                                         className={'contact-item' + (contact.type !== ParticipantType.PARTICIPANTTYPEMEMBER ? ' admin' : '')}>
                                         <span className="avatar">{contact.avatar ? <img
                                             src={contact.avatar}/> : TextAvatar(contact.firstname, contact.lastname)}</span>
+                                        {contact.type === ParticipantType.PARTICIPANTTYPECREATOR &&
+                                        <div className="admin-wrapper"><StarsRounded/></div>}
+                                        {contact.type === ParticipantType.PARTICIPANTTYPEADMIN &&
+                                        <div className="admin-wrapper"><StarRateRounded/></div>}
                                         <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>
                                         <span
                                             className="username">{contact.username ? contact.username : 'no username'}</span>
@@ -206,6 +250,40 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                         </div>}
                     </div>}
                 </Dialog>
+                <Dialog
+                    open={notifySettingDialogOpen}
+                    onClose={this.notifySettingDialogCloseHandler}
+                    maxWidth="xs"
+                    className="notify-setting-dialog"
+                >
+                    <DialogTitle>Notify Settings</DialogTitle>
+                    <DialogContent className="dialog-content">
+                        <RadioGroup
+                            name="notify-setting"
+                            value={notifyValue}
+                            onChange={this.notifyValueChangeHandler}
+                        >
+                            <FormControlLabel value="-1" control={<Radio color="primary"/>}
+                                              label="Enable"/>
+                            <FormControlLabel value="-2" control={<Radio color="primary"/>}
+                                              label="Disable"/>
+                            <FormControlLabel value="480" control={<Radio color="primary"/>}
+                                              label="Disable for 8 hours"/>
+                            <FormControlLabel value="2880" control={<Radio color="primary"/>}
+                                              label="Disable for 2 days"/>
+                            <FormControlLabel value="10080" control={<Radio color="primary"/>}
+                                              label="Disable for 1 week"/>
+                        </RadioGroup>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={this.notifySettingDialogCloseHandler} color="secondary">
+                            Disagree
+                        </Button>
+                        <Button onClick={this.applyNotifySettings} color="primary" autoFocus={true}>
+                            Apply
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </div>
         );
     }
@@ -224,6 +302,12 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             });
         });
 
+        this.dialogRepo.get(peer.getId() || '').then((dialog) => {
+            this.setState({
+                dialog,
+            });
+        });
+
         if (this.loading) {
             return;
         }
@@ -232,7 +316,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             this.groupRepo.importBulk([res.group]);
             this.setState({
                 group: res.group,
-                participants: res.usersList,
+                participants: res.participantsList,
             });
             this.loading = false;
         }).catch((err) => {
@@ -293,13 +377,26 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
 
     /* Decides what content the participants' "more" menu must have */
     private contextMenuItem() {
+        const {currentUser} = this.state;
+        if (!currentUser) {
+            return;
+        }
         const menuItems = [{
             cmd: 'remove',
             title: 'Remove',
-        }, {
-            cmd: 'promote',
-            title: 'Promote',
         }];
+        if (currentUser.type === ParticipantType.PARTICIPANTTYPEMEMBER) {
+            menuItems.push({
+                cmd: 'promote',
+                title: 'Promote',
+            });
+        }
+        if (currentUser.type === ParticipantType.PARTICIPANTTYPEADMIN) {
+            menuItems.push({
+                cmd: 'demote',
+                title: 'Demote',
+            });
+        }
         return menuItems.map((item, index) => {
             return (<MenuItem key={index} onClick={this.moreCmdHandler.bind(this, item.cmd)}
                               className="context-item">{item.title}</MenuItem>);
@@ -330,7 +427,27 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                     }
                 });
                 break;
-            case'promote':
+            case 'promote':
+                this.sdk.groupUpdateAdmin(peer, user, true).then(() => {
+                    const index = findIndex(participants, {id: currentUser.id});
+                    if (index > -1) {
+                        participants[index].type = ParticipantType.PARTICIPANTTYPEADMIN;
+                        this.setState({
+                            participants,
+                        });
+                    }
+                });
+                break;
+            case 'demote':
+                this.sdk.groupUpdateAdmin(peer, user, false).then(() => {
+                    const index = findIndex(participants, {id: currentUser.id});
+                    if (index > -1) {
+                        participants[index].type = ParticipantType.PARTICIPANTTYPEMEMBER;
+                        this.setState({
+                            participants,
+                        });
+                    }
+                });
                 break;
         }
     }
@@ -427,20 +544,91 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                     group,
                     participants,
                 }, () => {
-                    setTimeout(() => {
-                        this.broadcastEvent('Dialog_Remove', {id: peer.getId()});
-                    }, 1000);
+                    // setTimeout(() => {
+                    //     this.broadcastEvent('Dialog_Remove', {id: peer.getId()});
+                    // }, 1000);
                 });
             }
         });
     }
 
-    private broadcastEvent(name: string, data: any) {
-        const event = new CustomEvent(name, {
-            bubbles: true,
-            detail: data,
+    // private broadcastEvent(name: string, data: any) {
+    //     const event = new CustomEvent(name, {
+    //         bubbles: true,
+    //         detail: data,
+    //     });
+    //     window.dispatchEvent(event);
+    // }
+
+    /* On mute value changed */
+    private muteChangeHandler = (e: any) => {
+        const {peer, dialog} = this.state;
+        if (!peer || !dialog) {
+            return;
+        }
+        if (e.currentTarget.checked) {
+            let notifyValue = '-1';
+            if (dialog && dialog.notifysettings) {
+                notifyValue = String(dialog.notifysettings.muteuntil);
+            }
+            this.setState({
+                notifySettingDialogOpen: true,
+                notifyValue,
+            });
+        } else {
+            this.saveNotifySettings(-1);
+        }
+    }
+
+    /* Apply notify settings */
+    private applyNotifySettings = () => {
+        this.saveNotifySettings(parseInt(this.state.notifyValue, 10));
+    }
+
+    /* Save notify settings */
+    private saveNotifySettings(mode: number) {
+        const {peer, dialog} = this.state;
+        if (!peer || !dialog) {
+            return;
+        }
+        const settings = new PeerNotifySettings();
+        if (mode < 0) {
+            settings.setMuteuntil(mode);
+        } else if (mode > 0) {
+            mode += Math.floor(Date.now() / 1000);
+        }
+        settings.setFlags(0);
+        settings.setSound('');
+        settings.setMuteuntil(mode);
+        this.sdk.setNotifySettings(peer, settings).then(() => {
+            dialog.notifysettings = settings.toObject();
+            this.setState({
+                dialog,
+            });
+            this.setState({
+                notifySettingDialogOpen: false,
+                notifyValue: String(dialog.notifysettings.muteuntil),
+            });
+        }).catch(() => {
+            this.setState({
+                notifySettingDialogOpen: false,
+                notifyValue: '-1',
+            });
         });
-        window.dispatchEvent(event);
+    }
+
+    /* Notify settings Radio group change value handler */
+    private notifyValueChangeHandler = (e: any, val: string) => {
+        this.setState({
+            notifyValue: val,
+        });
+    }
+
+    /* Close notify settings */
+    private notifySettingDialogCloseHandler = () => {
+        this.setState({
+            notifySettingDialogOpen: false,
+        });
     }
 }
 

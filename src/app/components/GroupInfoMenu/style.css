@@ -99,6 +99,16 @@ input {
       text-align: left;
       width: 100%;
       color: var(--grey); }
+  .group-info-menu .notify-settings {
+    display: flex; }
+    .group-info-menu .notify-settings .label {
+      flex: 1;
+      text-align: left;
+      line-height: 48px;
+      padding-left: 12px; }
+    .group-info-menu .notify-settings .value {
+      width: 50px;
+      text-align: right; }
   .group-info-menu .participant {
     padding: 16px 0 0; }
     .group-info-menu .participant label {
@@ -139,6 +149,15 @@ input {
           height: 48px;
           object-fit: cover;
           border-radius: 50%; }
+      .group-info-menu .participant .contact-item .admin-wrapper {
+        position: absolute;
+        top: 11px;
+        left: 64px;
+        width: 16px;
+        height: 16px; }
+        .group-info-menu .participant .contact-item .admin-wrapper svg {
+          font-size: 16px;
+          color: var(--dark); }
       .group-info-menu .participant .contact-item .name {
         display: inline-block;
         min-width: 200px;
@@ -147,7 +166,13 @@ input {
         margin: 0 0 4px;
         color: var(--dark);
         font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
-        font-weight: 600; }
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 230px; }
+      .group-info-menu .participant .contact-item.admin .name {
+        padding-left: 16px; }
       .group-info-menu .participant .contact-item .username {
         font-size: 14px;
         line-height: 17px;
@@ -181,7 +206,7 @@ input {
       .group-info-menu .participant .add-member:hover {
         background-color: var(--color-hover); }
   .group-info-menu .leave-group {
-    height: 40px;
+    height: 48px;
     display: flex;
     justify-content: left;
     align-items: center;
@@ -256,8 +281,12 @@ html[theme="dark"] .group-info-menu {
       color: var(--white); }
   html[theme="dark"] .group-info-menu .info .title, html[theme="dark"] .group-info-menu .info .title-edit input, html[theme="dark"] .group-info-menu .info .title-edit label, html[theme="dark"] .group-info-menu .info .title-edit svg {
     color: var(--white); }
+  html[theme="dark"] .group-info-menu .notify-settings .label {
+    color: var(--white); }
   html[theme="dark"] .group-info-menu .participant .contact-item:after {
     background-color: var(--dark-low); }
+  html[theme="dark"] .group-info-menu .participant .contact-item .admin-wrapper svg {
+    color: var(--white); }
   html[theme="dark"] .group-info-menu .participant .contact-item .name {
     color: var(--light); }
   html[theme="dark"] .group-info-menu .participant .contact-item .more svg {
@@ -271,3 +300,8 @@ html[theme="dark"] .add-member-dialog .dialog-content {
   background-color: var(--dark); }
   html[theme="dark"] .add-member-dialog .dialog-content .actions-bar {
     background-color: var(--dark-medium); }
+
+html[theme="dark"] .notify-setting-dialog div[role="document"] > div {
+  background-color: var(--dark); }
+  html[theme="dark"] .notify-setting-dialog div[role="document"] > div h2, html[theme="dark"] .notify-setting-dialog div[role="document"] > div p, html[theme="dark"] .notify-setting-dialog div[role="document"] > div .dialog-content span {
+    color: var(--white); }
