@@ -67,11 +67,15 @@
         .name {
           display: inline-block;
           min-width: 200px;
+          max-width: 230px;
           font-size: 12px;
           line-height: 23px;
           margin: 0 0 4px;
           color: var(--dark);
           @include font-bold;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
         .phone {
           font-size: 14px;
