@@ -130,6 +130,16 @@ input {
       .user-info-menu .actions-bar .add-action:hover {
         background: var(--river-dark);
         box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4); }
+  .user-info-menu .notify-settings {
+    display: flex; }
+    .user-info-menu .notify-settings .label {
+      flex: 1;
+      text-align: left;
+      line-height: 48px;
+      padding-left: 12px; }
+    .user-info-menu .notify-settings .value {
+      width: 50px;
+      text-align: right; }
   .user-info-menu .form-control {
     display: flex; }
     .user-info-menu .form-control .inner {
@@ -155,7 +165,17 @@ html[theme="dark"] .user-info-menu {
       color: var(--white); }
   html[theme="dark"] .user-info-menu .info .line, html[theme="dark"] .user-info-menu .info .input-edit input, html[theme="dark"] .user-info-menu .info .input-edit label, html[theme="dark"] .user-info-menu .info .input-edit svg {
     color: var(--white); }
+  html[theme="dark"] .user-info-menu .notify-settings .label {
+    color: var(--white); }
   html[theme="dark"] .user-info-menu .form-control .action svg {
     color: var(--white); }
   html[theme="dark"] .user-info-menu .kk-card {
     background-color: var(--dark-medium); }
+
+html[theme="dark"] .checkbox:not(.checked) {
+  color: var(--white); }
+
+html[theme="dark"] .notify-setting-dialog div[role="document"] > div {
+  background-color: var(--dark); }
+  html[theme="dark"] .notify-setting-dialog div[role="document"] > div h2, html[theme="dark"] .notify-setting-dialog div[role="document"] > div p, html[theme="dark"] .notify-setting-dialog div[role="document"] > div .dialog-content span {
+    color: var(--white); }
