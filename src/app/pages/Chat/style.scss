@@ -131,6 +131,9 @@
             margin-right: 6px;
             vertical-align: sub;
           }
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       }
       .buttons {
@@ -147,14 +150,6 @@
       background-color: rgba(168, 144, 106, 0.3);
       background-repeat: repeat;
       background-size: 100px;
-    }
-    .input-placeholder {
-      display: flex;
-      height: 50px;
-      justify-content: center;
-      align-items: center;
-      color: var(--red);
-      text-transform: uppercase;
     }
     .attachments {
       width: 100%;

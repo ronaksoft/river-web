@@ -21,14 +21,22 @@ import TextInput from '../../components/TextInput/index';
 import {cloneDeep, findIndex, throttle, trimStart} from 'lodash';
 import SDK from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
-import {Group, InputPeer, InputUser, PeerType, TypingAction, User} from '../../services/sdk/messages/core.types_pb';
+import {
+    Group,
+    InputPeer,
+    InputUser,
+    PeerNotifySettings,
+    PeerType,
+    TypingAction,
+    User
+} from '../../services/sdk/messages/core.types_pb';
 import {IConnInfo} from '../../services/sdk/interface';
 import {IDialog} from '../../repository/dialog/interface';
 import UpdateManager, {INewMessageBulkUpdate} from '../../services/sdk/server/updateManager';
 import {C_MSG} from '../../services/sdk/const';
 import {
     UpdateMessageEdited,
-    UpdateMessagesDeleted,
+    UpdateMessagesDeleted, UpdateNotifySettings,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox,
     UpdateUsername,
@@ -52,7 +60,7 @@ import {IContact} from '../../repository/contact/interface';
 import GroupRepo from '../../repository/group';
 import GroupName from '../../components/GroupName';
 import GroupInfoMenu from '../../components/GroupInfoMenu';
-import UserInfoMenu from '../../components/UserInfoMenu';
+import UserInfoMenu, {isMuted} from '../../components/UserInfoMenu';
 import ContactRepo from '../../repository/contact';
 import {isTypingRender} from '../../components/DialogMessage';
 import OverlayDialog from '@material-ui/core/Dialog/Dialog';
@@ -187,7 +195,6 @@ class Chat extends React.Component<IProps, IState> {
         window.addEventListener('fnStarted', this.fnStartedHandler);
         window.addEventListener('Dialog_DB_Updated', this.dialogDBUpdatedHandler);
         window.addEventListener('Message_DB_Updated', this.messageDBUpdatedHandler);
-        window.addEventListener('Dialog_Remove', this.dialogRemoveHandler);
 
         // Get latest cached dialogs
         this.dialogRepo.getManyCache({}).then((res) => {
@@ -273,7 +280,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.updateDialogs(message, data.accessHashes[index] || '0');
             });
 
-            if (!this.isInChat && data.senderIds.indexOf(this.connInfo.UserID || '') === -1) {
+            if (!this.isInChat && data.senderIds.indexOf(this.connInfo.UserID || '') === -1 && data.messages.length > 0 && this.canNotify(data.messages[0].peerid || '')) {
                 if (data.messages.length === 1) {
                     this.notify(
                         `Message from ${data.senders[0].firstname} ${data.senders[0].lastname}`,
@@ -286,6 +293,14 @@ class Chat extends React.Component<IProps, IState> {
             data.messages.forEach((message) => {
                 if (message.senderid !== this.connInfo.UserID && message.peerid !== this.state.selectedDialogId) {
                     this.updateDialogsCounter(message.peerid || '', {unreadCounterIncrease: 1});
+                }
+                // Clear the message history
+                if (message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
+                    this.messageRepo.clearHistory(message.peerid || '', message.actiondata.maxid).then(() => {
+                        if (message.actiondata.pb_delete) {
+                            this.dialogRemove(message.peerid || '');
+                        }
+                    });
                 }
             });
         }));
@@ -459,6 +474,14 @@ class Chat extends React.Component<IProps, IState> {
             }]);
         }));
 
+        // Update: Notify Settings
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNotifySettings, (data: UpdateNotifySettings.AsObject) => {
+            if (this.state.isUpdating) {
+                return;
+            }
+            this.updateDialogsNotifySettings(data.notifypeer.id || '', data.settings);
+        }));
+
         // Update: Users
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUsers, (data: User[]) => {
             if (this.state.isUpdating) {
@@ -510,7 +533,6 @@ class Chat extends React.Component<IProps, IState> {
         window.removeEventListener('fnStarted', this.fnStartedHandler);
         window.removeEventListener('Dialog_DB_Updated', this.dialogDBUpdatedHandler);
         window.removeEventListener('Message_DB_Updated', this.messageDBUpdatedHandler);
-        window.removeEventListener('Dialog_Remove', this.dialogRemoveHandler);
     }
 
     public render() {
@@ -664,23 +686,16 @@ class Chat extends React.Component<IProps, IState> {
                             <div className="attachments" hidden={!this.state.toggleAttachment}>
                                 <Uploader/>
                             </div>
-                            {Boolean(!this.state.toggleAttachment && !inputDisable) &&
+                            {Boolean(!this.state.toggleAttachment) &&
                             <TextInput onMessage={this.onMessageHandler} onTyping={this.onTyping}
                                        userId={this.connInfo.UserID} previewMessage={textInputMessage}
                                        previewMessageMode={textInputMessageMode}
                                        clearPreviewMessage={this.clearPreviewMessageHandler}
                                        selectable={messageSelectable}
-                                       disable={Boolean(messageSelectable && Object.keys(messageSelectedIds).length === 0)}
+                                       selectableDisable={Boolean(messageSelectable && Object.keys(messageSelectedIds).length === 0)}
                                        onBulkAction={this.textInputBulkActionHandler}
+                                       disableMode={inputDisable} onAction={this.textInputActionHandler}
                             />}
-                            {Boolean(!this.state.toggleAttachment && inputDisable === 0x1) &&
-                            <div className="input-placeholder">
-                                You have left the group
-                            </div>}
-                            {Boolean(!this.state.toggleAttachment && inputDisable === 0x2) &&
-                            <div className="input-placeholder">
-                                You have been removed from this group
-                            </div>}
                         </div>}
                         {selectedDialogId === 'null' && <div className="column-center">
                             <div className="start-messaging">
@@ -956,7 +971,7 @@ class Chat extends React.Component<IProps, IState> {
 
             let maxReadId = 0;
             let maxReadInbox = 0;
-            if (this.dialogMap.hasOwnProperty(dialogId)) {
+            if (this.dialogMap.hasOwnProperty(dialogId) && this.state.dialogs[this.dialogMap[dialogId]]) {
                 maxReadId = this.state.dialogs[this.dialogMap[dialogId]].readoutboxmaxid || 0;
                 maxReadInbox = this.state.dialogs[this.dialogMap[dialogId]].readinboxmaxid || 0;
             }
@@ -1323,6 +1338,19 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
+    private updateDialogsNotifySettings(peerId: string, settings: PeerNotifySettings.AsObject) {
+        const {dialogs} = this.state;
+        if (!peerId || !dialogs) {
+            return;
+        }
+        if (this.dialogMap.hasOwnProperty(peerId)) {
+            const index = this.dialogMap[peerId];
+            dialogs[index].notifysettings = settings;
+            this.dialogsSortThrottle(dialogs);
+            this.dialogRepo.lazyUpsert([dialogs[index]]);
+        }
+    }
+
     private updateDialogsCounter(peerid: string, {maxInbox, maxOutbox, unreadCounter, unreadCounterIncrease}: any) {
         const {dialogs} = this.state;
         if (this.dialogMap.hasOwnProperty(peerid)) {
@@ -1510,7 +1538,7 @@ class Chat extends React.Component<IProps, IState> {
         this.dialogRepo.getManyCache({}).then((res) => {
             this.dialogsSortThrottle(res);
             data.ids.forEach((id: string) => {
-                if (this.dialogMap.hasOwnProperty(id)) {
+                if (this.dialogMap.hasOwnProperty(id) && dialogs[this.dialogMap[id]]) {
                     const maxReadInbox = dialogs[this.dialogMap[id]].readinboxmaxid || 0;
                     this.messageRepo.getUnreadCount(id, maxReadInbox).then((count) => {
                         this.updateDialogsCounter(id, {unreadCounter: count});
@@ -1657,7 +1685,7 @@ class Chat extends React.Component<IProps, IState> {
         const {selectedDialogId, dialogs} = this.state;
         if (this.dialogMap.hasOwnProperty(selectedDialogId)) {
             const dialog = dialogs[this.dialogMap[selectedDialogId]];
-            if ((dialog.readinboxmaxid || 0) < msgId || (dialog.unreadcount || 0) > 0) {
+            if (dialog && ((dialog.readinboxmaxid || 0) < msgId || (dialog.unreadcount || 0) > 0)) {
                 this.sdk.setMessagesReadHistory(peer, msgId);
                 this.updateDialogsCounter(peer.getId() || '', {maxInbox: msgId});
                 this.messageRepo.getUnreadCount(peer.getId() || '', msgId).then((res) => {
@@ -1758,7 +1786,7 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private dialogRemoveHandler = (event: any) => {
+    private dialogRemove = (id: string) => {
         const {dialogs} = this.state;
         if (!dialogs) {
             return;
@@ -1767,15 +1795,14 @@ class Chat extends React.Component<IProps, IState> {
         this.setState({
             isUpdating: true,
         });
-        const data = event.detail;
-        if (data && data.id) {
-            const index = this.dialogMap[data.id];
+        if (id) {
+            const index = this.dialogMap[id];
             dialogs.splice(index, 1);
-            delete this.dialogMap[data.id];
+            delete this.dialogMap[id];
             this.setState({
                 dialogs,
             });
-            this.dialogRepo.remove(data.id).then(() => {
+            this.dialogRepo.remove(id).then(() => {
                 this.props.history.push('/conversation/null');
                 this.updateManager.enable();
                 this.setState({
@@ -1842,6 +1869,26 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
+    /* TextInput action handler */
+    private textInputActionHandler = (cmd: string) => {
+        const {peer, dialogs} = this.state;
+        if (!peer || !dialogs) {
+            return;
+        }
+        switch (cmd) {
+            case 'remove_dialog':
+                const index = this.dialogMap[peer.getId() || ''];
+                if (dialogs[index].topmessageid) {
+                    this.sdk.clearMessage(peer, dialogs[index].topmessageid || 0, true).then(() => {
+                        this.dialogRemove(peer.getId() || '');
+                    });
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
     private forwardRecipientDialogCloseHandler = () => {
         this.setState({
             forwardRecipientDialogOpen: false,
@@ -1892,6 +1939,19 @@ class Chat extends React.Component<IProps, IState> {
             window.console.log(err);
         });
         this.confirmDialogCloseHandler();
+    }
+
+    /* Check if can notify user */
+    private canNotify(peerId: string) {
+        const {dialogs} = this.state;
+        if (!peerId || !dialogs) {
+            return;
+        }
+        if (this.dialogMap.hasOwnProperty(peerId)) {
+            const index = this.dialogMap[peerId];
+            return !isMuted(dialogs[index].notifysettings);
+        }
+        return true;
     }
 }
 
