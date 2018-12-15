@@ -13,7 +13,16 @@ import Server from './server';
 import {C_MSG} from './const';
 import {IConnInfo} from './interface';
 import {ContactsGet, ContactsImport, ContactsImported, ContactsMany} from './messages/api.contacts_pb';
-import {Group, GroupFull, InputPeer, InputUser, PhoneContact, TypingAction, User} from './messages/core.types_pb';
+import {
+    Group,
+    GroupFull,
+    InputPeer,
+    InputUser,
+    PeerNotifySettings,
+    PhoneContact,
+    TypingAction,
+    User
+} from './messages/core.types_pb';
 import {
     MessagesClearHistory,
     MessagesDelete,
@@ -29,11 +38,18 @@ import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from
 import {Bool} from './messages/core.messages_pb';
 import {
     AccountCheckUsername,
-    AccountRegisterDevice,
+    AccountRegisterDevice, AccountSetNotifySettings,
     AccountUpdateProfile,
     AccountUpdateUsername
 } from './messages/api.accounts_pb';
-import {GroupsAddUser, GroupsCreate, GroupsDeleteUser, GroupsEditTitle, GroupsGetFull} from './messages/api.groups_pb';
+import {
+    GroupsAddUser,
+    GroupsCreate,
+    GroupsDeleteUser,
+    GroupsEditTitle,
+    GroupsGetFull, GroupsToggleAdmins,
+    GroupsUpdateAdmin
+} from './messages/api.groups_pb';
 
 export default class SDK {
     public static getInstance() {
@@ -301,11 +317,18 @@ export default class SDK {
         return this.server.send(C_MSG.AccountUpdateUsername, data.serializeBinary(), true);
     }
 
-    public updateProfile(firsname: string, lastname: string): Promise<Bool.AsObject> {
+    public updateProfile(firstname: string, lastname: string): Promise<Bool.AsObject> {
         const data = new AccountUpdateProfile();
-        data.setFirstname(firsname);
+        data.setFirstname(firstname);
         data.setLastname(lastname);
         return this.server.send(C_MSG.AccountUpdateProfile, data.serializeBinary(), true);
+    }
+
+    public setNotifySettings(peer: InputPeer, settings: PeerNotifySettings): Promise<Bool.AsObject> {
+        const data = new AccountSetNotifySettings();
+        data.setPeer(peer);
+        data.setSettings(settings);
+        return this.server.send(C_MSG.AccountSetNotifySettings, data.serializeBinary(), true);
     }
 
     public groupCreate(users: InputUser[], title: string): Promise<Group.AsObject> {
@@ -341,5 +364,20 @@ export default class SDK {
         data.setUser(user);
         data.setForwardlimit(limit);
         return this.server.send(C_MSG.GroupsAddUser, data.serializeBinary(), true);
+    }
+
+    public groupUpdateAdmin(peer: InputPeer, user: InputUser, admin: boolean): Promise<Bool.AsObject> {
+        const data = new GroupsUpdateAdmin();
+        data.setGroupid(peer.getId() || '');
+        data.setUser(user);
+        data.setAdmin(admin);
+        return this.server.send(C_MSG.GroupsUpdateAdmin, data.serializeBinary(), true);
+    }
+
+    public groupToggleAdmin(peer: InputPeer, adminEnabled: boolean): Promise<Bool.AsObject> {
+        const data = new GroupsToggleAdmins();
+        data.setGroupid(peer.getId() || '');
+        data.setAdminenabled(adminEnabled);
+        return this.server.send(C_MSG.GroupsToggleAdmins, data.serializeBinary(), true);
     }
 }

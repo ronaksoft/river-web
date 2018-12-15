@@ -3,7 +3,7 @@ import {UpdateEnvelope} from '../messages/core.messages_pb';
 import {
     UpdateDifference,
     UpdateMessageEdited, UpdateMessagesDeleted,
-    UpdateNewMessage,
+    UpdateNewMessage, UpdateNotifySettings,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox, UpdateUsername,
 } from '../messages/api.updates_pb';
@@ -137,6 +137,14 @@ export default class SyncManager {
                             username: updateUsername.username,
                         });
                     }
+                    break;
+                case C_MSG.UpdateNotifySettings:
+                    const updateNotifySettings = UpdateNotifySettings.deserializeBinary(data).toObject();
+                    dialogs = this.updateDialog(dialogs, {
+                        accesshash: updateNotifySettings.notifypeer.accesshash,
+                        notifysettings: updateNotifySettings.settings,
+                        peerid: updateNotifySettings.notifypeer.id,
+                    });
                     break;
                 default:
                     break;

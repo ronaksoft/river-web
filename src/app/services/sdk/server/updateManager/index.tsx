@@ -2,7 +2,7 @@ import {C_MSG} from '../../const';
 import {UpdateContainer, UpdateEnvelope} from '../../messages/core.messages_pb';
 import {
     UpdateMessageEdited, UpdateMessageID, UpdateMessagesDeleted,
-    UpdateNewMessage,
+    UpdateNewMessage, UpdateNotifySettings,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox, UpdateUsername,
     UpdateUserTyping
@@ -171,6 +171,9 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateUsername:
                 this.callHandlers(C_MSG.UpdateUsername, UpdateUsername.deserializeBinary(data).toObject());
+                break;
+            case C_MSG.UpdateNotifySettings:
+                this.callHandlers(C_MSG.UpdateNotifySettings, UpdateNotifySettings.deserializeBinary(data).toObject());
                 break;
             default:
                 break;
