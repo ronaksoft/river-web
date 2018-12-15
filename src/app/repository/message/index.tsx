@@ -7,7 +7,7 @@ import RTLDetector from '../../services/utilities/rtl_detector';
 import {InputPeer, UserMessage} from '../../services/sdk/messages/core.types_pb';
 import Dexie from 'dexie';
 import {DexieMessageDB} from '../../services/db/dexie/message';
-import {C_MESSAGE_ACTION} from './consts';
+import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from './consts';
 import {
     MessageActionClearHistory,
     MessageActionContactRegistered,
@@ -16,6 +16,7 @@ import {
     MessageActionGroupDeleteUser,
     MessageActionGroupTitleChanged
 } from '../../services/sdk/messages/core.message_actions_pb';
+import GroupRepo from '../group';
 
 export default class MessageRepo {
     public static parseMessage(msg: UserMessage.AsObject): IMessage {
@@ -71,6 +72,7 @@ export default class MessageRepo {
     private db: DexieMessageDB;
     private sdk: SDK;
     private userRepo: UserRepo;
+    private groupRepo: GroupRepo;
     private userId: string;
     private rtlDetector: RTLDetector;
     private lazyMap: { [key: number]: IMessage } = {};
@@ -83,6 +85,7 @@ export default class MessageRepo {
         this.db = this.dbService.getDB();
         this.sdk = SDK.getInstance();
         this.userRepo = UserRepo.getInstance();
+        this.groupRepo = GroupRepo.getInstance();
         this.rtlDetector = RTLDetector.getInstance();
         this.updateThrottle = throttle(this.insertToDb, 1000);
     }
@@ -114,7 +117,7 @@ export default class MessageRepo {
     public getMany({peer, limit, before, after}: any, fnCallback?: (resMsgs: IMessage[]) => void): Promise<IMessage[]> {
         limit = limit || 30;
         return new Promise((resolve, reject) => {
-            this.getManyCache({peerId: peer.getId(), limit, before, after}).then((res) => {
+            this.getManyCache({limit, before, after}, peer).then((res) => {
                 const len = res.length;
                 if (len < limit) {
                     let maxId = null;
@@ -134,6 +137,7 @@ export default class MessageRepo {
                     const lim = limit - len;
                     this.sdk.getMessageHistory(peer, {maxId, limit: lim}).then((remoteRes) => {
                         this.userRepo.importBulk(remoteRes.usersList);
+                        this.groupRepo.importBulk(remoteRes.groupsList);
                         remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList);
                         return this.transform(remoteRes.messagesList);
                     }).then((remoteRes) => {
@@ -154,6 +158,7 @@ export default class MessageRepo {
             }).catch((err) => {
                 this.sdk.getMessageHistory(peer, {maxId: before - 1, limit}).then((remoteRes) => {
                     this.userRepo.importBulk(remoteRes.usersList);
+                    this.groupRepo.importBulk(remoteRes.groupsList);
                     remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList);
                     return this.transform(remoteRes.messagesList);
                 }).then((remoteRes) => {
@@ -166,7 +171,7 @@ export default class MessageRepo {
         });
     }
 
-    public getManyCache({peerId, limit, before, after}: any): Promise<IMessage[]> {
+    public getManyCache({limit, before, after}: any, peer: InputPeer): Promise<IMessage[]> {
         const pipe = this.db.messages.where('[peerid+id]');
         let pipe2: Dexie.Collection<IMessage, number>;
         let mode = 0x0;
@@ -176,6 +181,8 @@ export default class MessageRepo {
         if (after !== null && after !== undefined) {
             mode = mode | 0x2;
         }
+        limit = limit || 30;
+        const peerId = peer.getId() || '';
         switch (mode) {
             // none
             default:
@@ -184,11 +191,11 @@ export default class MessageRepo {
                 break;
             // before
             case 0x1:
-                pipe2 = pipe.between([peerId, Dexie.minKey], [peerId, before - 1], true, true);
+                pipe2 = pipe.between([peerId, Dexie.minKey], [peerId, before], true, true);
                 break;
             // after
             case 0x2:
-                pipe2 = pipe.between([peerId, after + 1], [peerId, Dexie.maxKey], true, true);
+                pipe2 = pipe.between([peerId, after], [peerId, Dexie.maxKey], true, true);
                 break;
             // between
             case 0x3:
@@ -201,7 +208,40 @@ export default class MessageRepo {
         pipe2.filter((item: IMessage) => {
             return item.temp !== true && (item.id || 0) > 0;
         });
-        return pipe2.limit(limit).toArray();
+        return pipe2.limit(limit + 1).toArray().then((res) => {
+            const hasHole = res.some((msg) => {
+                return (msg.messagetype === C_MESSAGE_TYPE.Hole);
+            });
+            if (!hasHole) {
+                // Trims start of result
+                if (res.length > 0) {
+                    if (mode === 0x2) {
+                        if (res[0].id === after) {
+                            res.shift();
+                        }
+                    } else {
+                        if (res[res.length - 1].id === after) {
+                            res.shift();
+                        }
+                    }
+                }
+                // Trims end of result
+                if (res.length === limit + 1) {
+                    res.pop();
+                }
+                return res;
+            } else {
+                return this.checkHoles(peer, res, (mode === 0x2), limit).then((remoteRes) => {
+                    this.userRepo.importBulk(remoteRes.usersList);
+                    this.groupRepo.importBulk(remoteRes.groupsList);
+                    remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList);
+                    return this.transform(remoteRes.messagesList);
+                }).then((remoteRes) => {
+                    this.importBulk(remoteRes, true);
+                    return remoteRes;
+                });
+            }
+        });
     }
 
     public get(id: number, peer?: InputPeer | null): Promise<IMessage> {
@@ -211,12 +251,12 @@ export default class MessageRepo {
                 return;
             }
             this.db.messages.get(id).then((res: IMessage) => {
-                resolve(res);
-            }).catch(() => {
-                if (this.lazyMap.hasOwnProperty(id)) {
-                    resolve(cloneDeep(this.lazyMap[id]));
-                    return;
+                if (res) {
+                    resolve(res);
+                } else {
+                    throw Error('not found');
                 }
+            }).catch(() => {
                 if (peer) {
                     this.sdk.getMessageHistory(peer, {minId: id, maxId: id}).then((remoteRes) => {
                         if (remoteRes.messagesList.length === 0) {
@@ -349,6 +389,60 @@ export default class MessageRepo {
             //
         }).catch((err) => {
             window.console.log(err);
+        });
+    }
+
+    private checkHoles(peer: InputPeer, res: IMessage[], asc: boolean, limit: number) {
+        let query = {};
+        if (asc) {
+            query = {
+                limit,
+                minId: res[0].id || 0,
+            };
+        } else {
+            query = {
+                limit,
+                maxId: res[0].id || 0,
+            };
+        }
+        return this.sdk.getMessageHistory(peer, query).then((remoteRes) => {
+            return this.modifyHoles(peer.getId() || '', remoteRes.messagesList, asc).then(() => {
+                return remoteRes;
+            });
+        });
+    }
+
+    private modifyHoles(peerId: string, res: UserMessage.AsObject[], asc: boolean) {
+        let max = 0;
+        let min = Infinity;
+        res.forEach((item) => {
+            if (item.id && item.id > max) {
+                max = item.id;
+            }
+            if (item.id && item.id < min) {
+                min = item.id;
+            }
+        });
+        return this.removeHolesInRange(peerId, min, max, asc);
+    }
+
+    private removeHolesInRange(peerId: string, min: number, max: number, asc: boolean) {
+        return this.db.messages.where('[peerid+id]').between([peerId, min], [peerId, max], true, true).filter((item) => {
+            return (item.messagetype === C_MESSAGE_TYPE.Hole);
+        }).delete().finally(() => {
+            if (asc) {
+                return this.db.messages.put({
+                    id: max + 0.5,
+                    messagetype: C_MESSAGE_TYPE.Hole,
+                    peerid: peerId,
+                });
+            } else {
+                return this.db.messages.put({
+                    id: max - 0.5,
+                    messagetype: C_MESSAGE_TYPE.Hole,
+                    peerid: peerId,
+                });
+            }
         });
     }
 }

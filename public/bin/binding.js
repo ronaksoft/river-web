@@ -183,4 +183,4 @@ setInterval(() => {
             initWebSocket()
         }
     }
-}, 10000);
+}, 30000);

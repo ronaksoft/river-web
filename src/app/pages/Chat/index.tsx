@@ -1560,7 +1560,7 @@ class Chat extends React.Component<IProps, IState> {
             if (messages.length > 0) {
                 after = messages[messages.length - 1].id || 0;
             }
-            this.messageRepo.getManyCache({peerId: peer.getId(), after}).then((msgs) => {
+            this.messageRepo.getManyCache({after}, peer).then((msgs) => {
                 const dataMsg = this.modifyMessages(this.state.messages, msgs, true);
 
                 this.setState({
