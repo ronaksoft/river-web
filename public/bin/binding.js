@@ -10,7 +10,7 @@ workerMessage = (cmd, data) => {
     });
 };
 
-fetch('bin/river.wasm').then((response) => {
+fetch('bin/river.wasm?v5').then((response) => {
     return response.arrayBuffer();
 }).then((bytes) => {
     workerMessage('init', bytes);
