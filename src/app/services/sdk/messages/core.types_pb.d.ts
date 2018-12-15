@@ -655,15 +655,15 @@ export class GroupParticipant extends jspb.Message {
   getUserid(): number | undefined;
   setUserid(value: number): void;
 
-  hasInviterid(): boolean;
-  clearInviterid(): void;
-  getInviterid(): number | undefined;
-  setInviterid(value: number): void;
+  hasFirstname(): boolean;
+  clearFirstname(): void;
+  getFirstname(): string | undefined;
+  setFirstname(value: string): void;
 
-  hasDate(): boolean;
-  clearDate(): void;
-  getDate(): number | undefined;
-  setDate(value: number): void;
+  hasLastname(): boolean;
+  clearLastname(): void;
+  getLastname(): string | undefined;
+  setLastname(value: string): void;
 
   hasType(): boolean;
   clearType(): void;
@@ -688,8 +688,8 @@ export class GroupParticipant extends jspb.Message {
 export namespace GroupParticipant {
   export type AsObject = {
     userid?: number,
-    inviterid?: number,
-    date?: number,
+    firstname?: string,
+    lastname?: string,
     type?: ParticipantType,
     accesshash?: number,
   }
@@ -714,16 +714,15 @@ export enum PeerType {
 export enum GroupFlags {
   GROUPFLAGSEMPTY = 0,
   GROUPFLAGSCREATOR = 1,
-  GROUPFLAGSLEFT = 2,
-  GROUPFLAGSKICKED = 3,
-  GROUPFLAGSADMIN = 4,
-  GROUPFLAGSADMINSENABLED = 5,
-  GROUPFLAGSDEACTIVATED = 6,
+  GROUPFLAGSNONPARTICIPANT = 2,
+  GROUPFLAGSADMIN = 3,
+  GROUPFLAGSADMINSENABLED = 4,
+  GROUPFLAGSDEACTIVATED = 5,
 }
 
 export enum ParticipantType {
-  PARTICIPANTTYPECREATOR = 0,
+  PARTICIPANTTYPEMEMBER = 0,
   PARTICIPANTTYPEADMIN = 1,
-  PARTICIPANTMEMBER = 2,
+  PARTICIPANTTYPECREATOR = 2,
 }
 

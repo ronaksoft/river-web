@@ -253,6 +253,11 @@ export class UpdateMessagesDeleted extends jspb.Message {
   setMessageidsList(value: Array<number>): void;
   addMessageids(value: number, index?: number): number;
 
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.Peer | undefined;
+  setPeer(value?: core_types_pb.Peer): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateMessagesDeleted.AsObject;
   static toObject(includeInstance: boolean, msg: UpdateMessagesDeleted): UpdateMessagesDeleted.AsObject;
@@ -268,6 +273,7 @@ export namespace UpdateMessagesDeleted {
     ucount?: number,
     updateid?: number,
     messageidsList: Array<number>,
+    peer?: core_types_pb.Peer.AsObject,
   }
 }
 
@@ -520,6 +526,184 @@ export namespace UpdateNotifySettings {
     userid?: string,
     notifypeer: core_types_pb.InputPeer.AsObject,
     settings: core_types_pb.PeerNotifySettings.AsObject,
+  }
+}
+
+export class UpdateGroupParticipantAdd extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  hasGroupid(): boolean;
+  clearGroupid(): void;
+  getGroupid(): string | undefined;
+  setGroupid(value: string): void;
+
+  hasUserid(): boolean;
+  clearUserid(): void;
+  getUserid(): string | undefined;
+  setUserid(value: string): void;
+
+  hasInviterid(): boolean;
+  clearInviterid(): void;
+  getInviterid(): string | undefined;
+  setInviterid(value: string): void;
+
+  hasDate(): boolean;
+  clearDate(): void;
+  getDate(): number | undefined;
+  setDate(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateGroupParticipantAdd.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateGroupParticipantAdd): UpdateGroupParticipantAdd.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateGroupParticipantAdd, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateGroupParticipantAdd;
+  static deserializeBinaryFromReader(message: UpdateGroupParticipantAdd, reader: jspb.BinaryReader): UpdateGroupParticipantAdd;
+}
+
+export namespace UpdateGroupParticipantAdd {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+    groupid?: string,
+    userid?: string,
+    inviterid?: string,
+    date?: number,
+  }
+}
+
+export class UpdateGroupParticipantDeleted extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  hasGroupid(): boolean;
+  clearGroupid(): void;
+  getGroupid(): string | undefined;
+  setGroupid(value: string): void;
+
+  hasUserid(): boolean;
+  clearUserid(): void;
+  getUserid(): string | undefined;
+  setUserid(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateGroupParticipantDeleted.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateGroupParticipantDeleted): UpdateGroupParticipantDeleted.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateGroupParticipantDeleted, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateGroupParticipantDeleted;
+  static deserializeBinaryFromReader(message: UpdateGroupParticipantDeleted, reader: jspb.BinaryReader): UpdateGroupParticipantDeleted;
+}
+
+export namespace UpdateGroupParticipantDeleted {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+    groupid?: string,
+    userid?: string,
+  }
+}
+
+export class UpdateGroupParticipantAdmin extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  hasGroupid(): boolean;
+  clearGroupid(): void;
+  getGroupid(): string | undefined;
+  setGroupid(value: string): void;
+
+  hasUserid(): boolean;
+  clearUserid(): void;
+  getUserid(): string | undefined;
+  setUserid(value: string): void;
+
+  hasIsadmin(): boolean;
+  clearIsadmin(): void;
+  getIsadmin(): boolean | undefined;
+  setIsadmin(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateGroupParticipantAdmin.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateGroupParticipantAdmin): UpdateGroupParticipantAdmin.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateGroupParticipantAdmin, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateGroupParticipantAdmin;
+  static deserializeBinaryFromReader(message: UpdateGroupParticipantAdmin, reader: jspb.BinaryReader): UpdateGroupParticipantAdmin;
+}
+
+export namespace UpdateGroupParticipantAdmin {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+    groupid?: string,
+    userid?: string,
+    isadmin?: boolean,
+  }
+}
+
+export class UpdateGroupAdmins extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  hasGroupid(): boolean;
+  clearGroupid(): void;
+  getGroupid(): string | undefined;
+  setGroupid(value: string): void;
+
+  hasAdminenabled(): boolean;
+  clearAdminenabled(): void;
+  getAdminenabled(): boolean | undefined;
+  setAdminenabled(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateGroupAdmins.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateGroupAdmins): UpdateGroupAdmins.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateGroupAdmins, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateGroupAdmins;
+  static deserializeBinaryFromReader(message: UpdateGroupAdmins, reader: jspb.BinaryReader): UpdateGroupAdmins;
+}
+
+export namespace UpdateGroupAdmins {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+    groupid?: string,
+    adminenabled?: boolean,
   }
 }
 

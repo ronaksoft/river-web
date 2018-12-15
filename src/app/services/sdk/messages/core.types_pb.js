@@ -4619,8 +4619,8 @@ proto.msg.GroupParticipant.prototype.toObject = function(opt_includeInstance) {
 proto.msg.GroupParticipant.toObject = function(includeInstance, msg) {
   var f, obj = {
     userid: jspb.Message.getField(msg, 1),
-    inviterid: jspb.Message.getField(msg, 2),
-    date: jspb.Message.getField(msg, 3),
+    firstname: jspb.Message.getField(msg, 2),
+    lastname: jspb.Message.getField(msg, 3),
     type: jspb.Message.getField(msg, 4),
     accesshash: jspb.Message.getField(msg, 5)
   };
@@ -4664,19 +4664,19 @@ proto.msg.GroupParticipant.deserializeBinaryFromReader = function(msg, reader) {
       msg.setUserid(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setInviterid(value);
+      var value = /** @type {string} */ (reader.readString());
+      msg.setFirstname(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setDate(value);
+      var value = /** @type {string} */ (reader.readString());
+      msg.setLastname(value);
       break;
     case 4:
       var value = /** @type {!proto.msg.ParticipantType} */ (reader.readEnum());
       msg.setType(value);
       break;
     case 5:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {number} */ (reader.readUint64());
       msg.setAccesshash(value);
       break;
     default:
@@ -4715,16 +4715,16 @@ proto.msg.GroupParticipant.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
+  f = /** @type {string} */ (jspb.Message.getField(message, 2));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeString(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeString(
       3,
       f
     );
@@ -4738,7 +4738,7 @@ proto.msg.GroupParticipant.serializeBinaryToWriter = function(message, writer) {
   }
   f = /** @type {number} */ (jspb.Message.getField(message, 5));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeUint64(
       5,
       f
     );
@@ -4776,21 +4776,21 @@ proto.msg.GroupParticipant.prototype.hasUserid = function() {
 
 
 /**
- * required int64 InviterID = 2;
- * @return {number}
+ * required string FirstName = 2;
+ * @return {string}
  */
-proto.msg.GroupParticipant.prototype.getInviterid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+proto.msg.GroupParticipant.prototype.getFirstname = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
-/** @param {number} value */
-proto.msg.GroupParticipant.prototype.setInviterid = function(value) {
+/** @param {string} value */
+proto.msg.GroupParticipant.prototype.setFirstname = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
 
-proto.msg.GroupParticipant.prototype.clearInviterid = function() {
+proto.msg.GroupParticipant.prototype.clearFirstname = function() {
   jspb.Message.setField(this, 2, undefined);
 };
 
@@ -4799,27 +4799,27 @@ proto.msg.GroupParticipant.prototype.clearInviterid = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.msg.GroupParticipant.prototype.hasInviterid = function() {
+proto.msg.GroupParticipant.prototype.hasFirstname = function() {
   return jspb.Message.getField(this, 2) != null;
 };
 
 
 /**
- * required int64 Date = 3;
- * @return {number}
+ * required string LastName = 3;
+ * @return {string}
  */
-proto.msg.GroupParticipant.prototype.getDate = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+proto.msg.GroupParticipant.prototype.getLastname = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
-/** @param {number} value */
-proto.msg.GroupParticipant.prototype.setDate = function(value) {
+/** @param {string} value */
+proto.msg.GroupParticipant.prototype.setLastname = function(value) {
   jspb.Message.setField(this, 3, value);
 };
 
 
-proto.msg.GroupParticipant.prototype.clearDate = function() {
+proto.msg.GroupParticipant.prototype.clearLastname = function() {
   jspb.Message.setField(this, 3, undefined);
 };
 
@@ -4828,7 +4828,7 @@ proto.msg.GroupParticipant.prototype.clearDate = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.msg.GroupParticipant.prototype.hasDate = function() {
+proto.msg.GroupParticipant.prototype.hasLastname = function() {
   return jspb.Message.getField(this, 3) != null;
 };
 
@@ -4863,7 +4863,7 @@ proto.msg.GroupParticipant.prototype.hasType = function() {
 
 
 /**
- * required int64 AccessHash = 5;
+ * required uint64 AccessHash = 5;
  * @return {number}
  */
 proto.msg.GroupParticipant.prototype.getAccesshash = function() {
@@ -4919,20 +4919,19 @@ proto.msg.PeerType = {
 proto.msg.GroupFlags = {
   GROUPFLAGSEMPTY: 0,
   GROUPFLAGSCREATOR: 1,
-  GROUPFLAGSLEFT: 2,
-  GROUPFLAGSKICKED: 3,
-  GROUPFLAGSADMIN: 4,
-  GROUPFLAGSADMINSENABLED: 5,
-  GROUPFLAGSDEACTIVATED: 6
+  GROUPFLAGSNONPARTICIPANT: 2,
+  GROUPFLAGSADMIN: 3,
+  GROUPFLAGSADMINSENABLED: 4,
+  GROUPFLAGSDEACTIVATED: 5
 };
 
 /**
  * @enum {number}
  */
 proto.msg.ParticipantType = {
-  PARTICIPANTTYPECREATOR: 0,
+  PARTICIPANTTYPEMEMBER: 0,
   PARTICIPANTTYPEADMIN: 1,
-  PARTICIPANTMEMBER: 2
+  PARTICIPANTTYPECREATOR: 2
 };
 
 goog.object.extend(exports, proto.msg);

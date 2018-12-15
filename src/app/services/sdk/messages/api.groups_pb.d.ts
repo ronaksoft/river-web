@@ -144,3 +144,65 @@ export namespace GroupsGetFull {
   }
 }
 
+export class GroupsToggleAdmins extends jspb.Message {
+  hasGroupid(): boolean;
+  clearGroupid(): void;
+  getGroupid(): string | undefined;
+  setGroupid(value: string): void;
+
+  hasAdminenabled(): boolean;
+  clearAdminenabled(): void;
+  getAdminenabled(): boolean | undefined;
+  setAdminenabled(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GroupsToggleAdmins.AsObject;
+  static toObject(includeInstance: boolean, msg: GroupsToggleAdmins): GroupsToggleAdmins.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: GroupsToggleAdmins, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GroupsToggleAdmins;
+  static deserializeBinaryFromReader(message: GroupsToggleAdmins, reader: jspb.BinaryReader): GroupsToggleAdmins;
+}
+
+export namespace GroupsToggleAdmins {
+  export type AsObject = {
+    groupid?: string,
+    adminenabled?: boolean,
+  }
+}
+
+export class GroupsUpdateAdmin extends jspb.Message {
+  hasGroupid(): boolean;
+  clearGroupid(): void;
+  getGroupid(): string | undefined;
+  setGroupid(value: string): void;
+
+  hasUser(): boolean;
+  clearUser(): void;
+  getUser(): core_types_pb.InputUser;
+  setUser(value?: core_types_pb.InputUser): void;
+
+  hasAdmin(): boolean;
+  clearAdmin(): void;
+  getAdmin(): boolean | undefined;
+  setAdmin(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GroupsUpdateAdmin.AsObject;
+  static toObject(includeInstance: boolean, msg: GroupsUpdateAdmin): GroupsUpdateAdmin.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: GroupsUpdateAdmin, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GroupsUpdateAdmin;
+  static deserializeBinaryFromReader(message: GroupsUpdateAdmin, reader: jspb.BinaryReader): GroupsUpdateAdmin;
+}
+
+export namespace GroupsUpdateAdmin {
+  export type AsObject = {
+    groupid?: string,
+    user: core_types_pb.InputUser.AsObject,
+    admin?: boolean,
+  }
+}
+
