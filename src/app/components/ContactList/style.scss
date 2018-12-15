@@ -76,6 +76,10 @@
           margin: 0 0 4px;
           color: var(--dark);
           @include font-bold;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 210px;
         }
         .phone {
           font-size: 14px;
