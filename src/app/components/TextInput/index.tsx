@@ -10,14 +10,15 @@ import RTLDetector from '../../services/utilities/rtl_detector';
 import {IMessage} from '../../repository/message/interface';
 import UserName from '../UserName';
 import {C_MSG_MODE} from './consts';
+import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
-import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 
 interface IProps {
     clearPreviewMessage?: () => void;
-    disable: boolean;
+    disableMode: number;
+    onAction: (cmd: string) => void;
     onBulkAction: (cmd: string) => void;
     onMessage: (text: string, {mode, message}?: any) => void;
     onTyping?: (typing: boolean) => void;
@@ -25,18 +26,20 @@ interface IProps {
     previewMessageMode?: number;
     ref?: (ref: any) => void;
     selectable: boolean;
+    selectableDisable: boolean;
     text?: string;
     userId?: string;
 }
 
 interface IState {
-    disable: boolean;
+    disableMode: number;
     emojiAnchorEl: any;
     previewMessage: IMessage | null;
     previewMessageHeight: number;
     previewMessageMode: number;
     rtl: boolean;
     selectable: boolean;
+    selectableDisable: boolean;
     userId: string;
 }
 
@@ -51,13 +54,14 @@ class TextInput extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
-            disable: props.disable,
+            disableMode: props.disableMode,
             emojiAnchorEl: null,
             previewMessage: props.previewMessage || null,
             previewMessageHeight: 0,
             previewMessageMode: props.previewMessageMode || C_MSG_MODE.Normal,
             rtl: false,
             selectable: props.selectable,
+            selectableDisable: props.selectableDisable,
             userId: props.userId || '',
         };
 
@@ -71,10 +75,11 @@ class TextInput extends React.Component<IProps, IState> {
 
     public componentWillReceiveProps(newProps: IProps) {
         this.setState({
-            disable: newProps.disable,
+            disableMode: newProps.disableMode,
             previewMessage: newProps.previewMessage || null,
             previewMessageMode: newProps.previewMessageMode || C_MSG_MODE.Normal,
             selectable: newProps.selectable,
+            selectableDisable: newProps.selectableDisable,
             userId: newProps.userId || '',
         }, () => {
             this.animatePreviewMessage();
@@ -86,40 +91,56 @@ class TextInput extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {previewMessage, previewMessageMode, previewMessageHeight, selectable, disable} = this.state;
-        return (
-            <div className="write">
-                {previewMessage && <div className="previews" style={{height: previewMessageHeight + 'px'}}>
-                    <div className="preview-container">
-                        <div
-                            className={'preview-message-wrapper ' + this.getPreviewCN(previewMessageMode, previewMessage.senderid || '')}>
-                            <span className="preview-bar"/>
-                            {Boolean(previewMessageMode === C_MSG_MODE.Reply) && <div className="preview-message">
-                                <UserName className="preview-message-user" id={previewMessage.senderid || ''}
-                                          you={true}/>
-                                <div className="preview-message-body">
-                                    <div className={'inner ' + (previewMessage.rtl ? 'rtl' : 'ltr')}
-                                    >{previewMessage.body}</div>
-                                </div>
-                            </div>}
-                            {Boolean(previewMessageMode === C_MSG_MODE.Edit) && <div className="preview-message">
-                                <div className="preview-message-user">Edit message</div>
-                            </div>}
+        const {previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable, disableMode} = this.state;
+
+        if (!selectable && disableMode !== 0x0) {
+            if (disableMode === 0x1) {
+                return (<div className="input-placeholder">
+                    You have left the group
+                    <span className="btn" onClick={this.props.onAction.bind(this, 'remove_dialog')}>Delete and Exit</span>
+                </div>);
+            } else if (disableMode === 0x2) {
+                return (<div className="input-placeholder">
+                    You have been removed from this group
+                    <span className="btn" onClick={this.props.onAction.bind(this, 'remove_dialog')}>Delete and Exit</span>
+                </div>);
+            } else {
+                return '';
+            }
+        } else {
+            return (
+                <div className="write">
+                    {previewMessage && <div className="previews" style={{height: previewMessageHeight + 'px'}}>
+                        <div className="preview-container">
+                            <div
+                                className={'preview-message-wrapper ' + this.getPreviewCN(previewMessageMode, previewMessage.senderid || '')}>
+                                <span className="preview-bar"/>
+                                {Boolean(previewMessageMode === C_MSG_MODE.Reply) && <div className="preview-message">
+                                    <UserName className="preview-message-user" id={previewMessage.senderid || ''}
+                                              you={true}/>
+                                    <div className="preview-message-body">
+                                        <div className={'inner ' + (previewMessage.rtl ? 'rtl' : 'ltr')}
+                                        >{previewMessage.body}</div>
+                                    </div>
+                                </div>}
+                                {Boolean(previewMessageMode === C_MSG_MODE.Edit) && <div className="preview-message">
+                                    <div className="preview-message-user">Edit message</div>
+                                </div>}
+                            </div>
                         </div>
-                    </div>
-                    <div className="preview-clear">
+                        <div className="preview-clear">
                         <span onClick={this.clearPreviewMessage}>
                             <IconButton aria-label="Delete" className="btn-clear">
                                 <ClearRounded/>
                             </IconButton>
                         </span>
-                    </div>
-                </div>}
-                {Boolean(!selectable) && <div className="inputs">
-                    <div className="user">
-                        <UserAvatar id={this.state.userId} className="user-avatar"/>
-                    </div>
-                    <div className={'input ' + (this.state.rtl ? 'rtl' : 'ltr')}>
+                        </div>
+                    </div>}
+                    {Boolean(!selectable) && <div className="inputs">
+                        <div className="user">
+                            <UserAvatar id={this.state.userId} className="user-avatar"/>
+                        </div>
+                        <div className={'input ' + (this.state.rtl ? 'rtl' : 'ltr')}>
                         <Textarea
                             className={'f-textarea'}
                             inputRef={this.textareaRefHandler}
@@ -129,57 +150,58 @@ class TextInput extends React.Component<IProps, IState> {
                             onKeyDown={this.inputKeyDown}
                             style={{direction: (this.state.rtl ? 'rtl' : 'ltr')}}
                         />
-                        <div className="write-link">
-                            <a href="javascript:;"
-                               className="smiley"
-                               aria-owns="emoji-menu"
-                               aria-haspopup="true"
-                               onClick={this.emojiHandleClick}>
-                                <SentimentSatisfiedRounded/>
-                            </a>
-                            <PopUpMenu anchorEl={this.state.emojiAnchorEl} onClose={this.emojiHandleClose}>
-                                <Picker custom={[]} onSelect={this.emojiSelect} native={true} showPreview={false}/>
-                            </PopUpMenu>
-                            <a href="javascript:;" className="send" onClick={this.submitMessage}>
-                                <SendRounded/>
-                            </a>
+                            <div className="write-link">
+                                <a href="javascript:;"
+                                   className="smiley"
+                                   aria-owns="emoji-menu"
+                                   aria-haspopup="true"
+                                   onClick={this.emojiHandleClick}>
+                                    <SentimentSatisfiedRounded/>
+                                </a>
+                                <PopUpMenu anchorEl={this.state.emojiAnchorEl} onClose={this.emojiHandleClose}>
+                                    <Picker custom={[]} onSelect={this.emojiSelect} native={true} showPreview={false}/>
+                                </PopUpMenu>
+                                <a href="javascript:;" className="send" onClick={this.submitMessage}>
+                                    <SendRounded/>
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                </div>}
-                {Boolean(selectable && !previewMessage) && <div className="actions">
-                    <div className="left-action">
-                        <Tooltip
-                            title="Close"
-                            placement="top"
-                        >
-                            <IconButton aria-label="Close" onClick={this.props.onBulkAction.bind(this, 'close')}>
-                                <ClearRounded/>
-                            </IconButton>
-                        </Tooltip>
-                    </div>
-                    <div className="right-action">
-                        <Tooltip
-                            title="Remove"
-                            placement="top"
-                        >
-                            <IconButton aria-label="Remove" onClick={this.props.onBulkAction.bind(this, 'remove')}
-                                        disabled={disable}>
-                                <DeleteRounded/>
-                            </IconButton>
-                        </Tooltip>
-                        <Tooltip
-                            title="Forward"
-                            placement="top"
-                        >
-                            <IconButton aria-label="Forward" onClick={this.props.onBulkAction.bind(this, 'forward')}
-                                        disabled={disable}>
-                                <ForwardRounded/>
-                            </IconButton>
-                        </Tooltip>
-                    </div>
-                </div>}
-            </div>
-        );
+                    </div>}
+                    {Boolean(selectable && !previewMessage) && <div className="actions">
+                        <div className="left-action">
+                            <Tooltip
+                                title="Close"
+                                placement="top"
+                            >
+                                <IconButton aria-label="Close" onClick={this.props.onBulkAction.bind(this, 'close')}>
+                                    <ClearRounded/>
+                                </IconButton>
+                            </Tooltip>
+                        </div>
+                        <div className="right-action">
+                            <Tooltip
+                                title="Remove"
+                                placement="top"
+                            >
+                                <IconButton aria-label="Remove" onClick={this.props.onBulkAction.bind(this, 'remove')}
+                                            disabled={selectableDisable}>
+                                    <DeleteRounded/>
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip
+                                title="Forward"
+                                placement="top"
+                            >
+                                <IconButton aria-label="Forward" onClick={this.props.onBulkAction.bind(this, 'forward')}
+                                            disabled={selectableDisable}>
+                                    <ForwardRounded/>
+                                </IconButton>
+                            </Tooltip>
+                        </div>
+                    </div>}
+                </div>
+            );
+        }
     }
 
     private getPreviewCN(mode: number, senderid: string) {

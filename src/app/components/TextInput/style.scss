@@ -200,6 +200,23 @@
   }
 }
 
+.input-placeholder {
+  display: flex;
+  height: 50px;
+  justify-content: center;
+  align-items: center;
+  color: var(--red);
+  text-transform: uppercase;
+  .btn {
+    cursor: pointer;
+    font-weight: bold;
+    margin: 0 6px;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
 .mobile-view {
   .write {
     .inputs {

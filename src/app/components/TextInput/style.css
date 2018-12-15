@@ -208,6 +208,20 @@ input {
         .write .previews .preview-clear .btn-clear svg {
           font-size: 20px; }
 
+.input-placeholder {
+  display: flex;
+  height: 50px;
+  justify-content: center;
+  align-items: center;
+  color: var(--red);
+  text-transform: uppercase; }
+  .input-placeholder .btn {
+    cursor: pointer;
+    font-weight: bold;
+    margin: 0 6px; }
+    .input-placeholder .btn:hover {
+      text-decoration: underline; }
+
 .mobile-view .write .inputs .input textarea {
   font-size: 16px;
   line-height: 20px;
