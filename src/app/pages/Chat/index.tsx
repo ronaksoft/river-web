@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Dialog from '../../components/Dialog/index';
 import {IMessage} from '../../repository/message/interface';
-import Message from '../../components/Message/index';
+import Message, {highlighMessage} from '../../components/Message/index';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -1951,9 +1951,21 @@ class Chat extends React.Component<IProps, IState> {
         }
         const index = findIndex(messages, {id});
         if (index > 0) {
-            window.console.log(id);
             this.messageComponent.list.scrollToRow(index);
-        }
+            setTimeout(() => {
+                highlighMessage(id);
+            }, 100);
+        }/* else {
+            // if ((messages[0].id || 0) < id) {
+                messages.unshift({
+                    id: (messages[0].id || 0) - 0.4,
+                    messagetype: C_MESSAGE_TYPE.Gap,
+                });
+                this.messageComponent.cache.clear(0, 0);
+                this.messageComponent.list.forceUpdateGrid();
+                this.messageComponent.list.scrollToRow(0);
+            // }
+        }*/
     }
 }
 

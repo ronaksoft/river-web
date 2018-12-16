@@ -188,13 +188,13 @@ export default class SyncManager {
             // TODO: check
             this.messageRepo.flush();
             setTimeout(() => {
-                data.forEach((item) => {
-                    if (item.readinboxmaxid) {
-                        this.messageRepo.getUnreadCount(item.peerid || '', item.readinboxmaxid || 0).then((res) => {
-                            item.unreadcount = res;
-                        });
-                    }
-                });
+                // data.forEach((item) => {
+                //     if (item.readinboxmaxid) {
+                //         this.messageRepo.getUnreadCount(item.peerid || '', item.readinboxmaxid || 0).then((res) => {
+                //             item.unreadcount = res;
+                //         });
+                //     }
+                // });
                 this.dialogRepo.lazyUpsert(data);
                 this.dialogRepo.flush();
             }, 500);

@@ -61,7 +61,7 @@ class BottomBar extends React.Component<IProps, IState> {
                     return (
                         <a onClick={this.onClickHandler.bind(this, item.page)} key={index}
                            className={item.page === selected ? 'active' : ''}>
-                            {Boolean(item.badge) && <Badge color="secondary" badgeContent={unreadCounter}
+                            {Boolean(item.badge) && <Badge color="primary" badgeContent={unreadCounter}
                                                            invisible={Boolean(unreadCounter === 0)}>{item.icon}</Badge>}
                             {!Boolean(item.badge) && <span>{item.icon}</span>}
                             <span className="title">{item.title}</span>

@@ -12,9 +12,9 @@ import MessageStatus from '../MessageStatus';
 import {MoreVert} from '@material-ui/icons';
 import UserName from '../UserName';
 import Checkbox from '@material-ui/core/Checkbox';
+import MessageForwarded from '../MessageForwarded';
 
 import './style.css';
-import MessageForwarded from '../MessageForwarded';
 
 interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
@@ -53,7 +53,7 @@ export const highlighMessage = (id: number) => {
             if (el) {
                 el.classList.remove('highlight');
             }
-        }, 500);
+        }, 1050);
     }
 };
 
@@ -274,6 +274,8 @@ class Message extends React.Component<IProps, IState> {
         switch (message.messagetype) {
             case C_MESSAGE_TYPE.Hole:
                 return '';
+            case C_MESSAGE_TYPE.Gap:
+                return (<div style={style} className="bubble-gap"><div className="gap"/></div>);
             case C_MESSAGE_TYPE.NewMessage:
                 return (
                     <div style={style} className="bubble-wrapper">

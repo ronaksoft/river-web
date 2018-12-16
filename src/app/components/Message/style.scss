@@ -2,10 +2,10 @@
 
 @keyframes bubbleHighlight {
   from {
-
+    background-color: rgba(255, 255, 255, 0.7);
   }
   to {
-
+    background-color: rgba(255, 255, 255, 0.0);
   }
 }
 
@@ -50,6 +50,12 @@
 
 .ReactVirtualized__Grid__innerScrollContainer {
   width: 100% !important;
+}
+
+.bubble-gap {
+  .gap {
+    height: 1000px;
+  }
 }
 
 .bubble-wrapper {
@@ -176,9 +182,12 @@
         right: 0;
         bottom: 0;
         left: 0;
-
+        border-radius: 5px;
+        animation-name: bubbleHighlight;
+        animation-duration: 1s;
+        animation-iteration-count: 1;
+        animation-timing-function: ease-in;
       }
-      //animation-name: ;
     }
   }
   &.you {
