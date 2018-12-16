@@ -21,7 +21,13 @@ import {
     StarsRounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
-import {InputPeer, InputUser, ParticipantType, PeerNotifySettings} from '../../services/sdk/messages/core.types_pb';
+import {
+    GroupFlags,
+    InputPeer,
+    InputUser,
+    ParticipantType,
+    PeerNotifySettings
+} from '../../services/sdk/messages/core.types_pb';
 import SDK from '../../services/sdk';
 import GroupAvatar from '../GroupAvatar';
 import {IGroup} from '../../repository/group/interface';
@@ -31,7 +37,7 @@ import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import FormControl from '@material-ui/core/FormControl';
-import {IUser} from '../../repository/user/interface';
+import {IParticipant, IUser} from '../../repository/user/interface';
 import {TextAvatar} from '../UserAvatar';
 import Menu from '@material-ui/core/Menu/Menu';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';
@@ -51,6 +57,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel/FormControlLabe
 import Radio from '@material-ui/core/Radio/Radio';
 import DialogActions from '@material-ui/core/DialogActions/DialogActions';
 import Button from '@material-ui/core/Button/Button';
+import Switch from '@material-ui/core/Switch/Switch';
 
 // Todo: add member, kick member, promote member and etc.
 interface IProps {
@@ -61,7 +68,7 @@ interface IProps {
 
 interface IState {
     addMemberDialogEnable: boolean;
-    currentUser: IUser | null;
+    currentUser: IParticipant | null;
     dialog: IDialog | null;
     forwardLimit: number;
     group: IGroup | null;
@@ -70,7 +77,7 @@ interface IState {
     notifySettingDialogOpen: boolean;
     notifyValue: string;
     page: string;
-    participants: IUser[];
+    participants: IParticipant[];
     peer: InputPeer | null;
     title: string;
     titleEdit: boolean;
@@ -189,7 +196,21 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                 <Checkbox
                                     className={'checkbox ' + (isMuted(dialog.notifysettings) ? 'checked' : '')}
                                     color="primary" checked={isMuted(dialog.notifysettings)}
-                                    onChange={this.muteChangeHandler}/>
+                                    onChange={this.muteChangeHandler}
+                                    indeterminate={dialog.notifysettings ? (dialog.notifysettings.muteuntil || 0) > 0 : false}
+                                />
+                            </div>
+                        </div>}
+                        {Boolean(group && (group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMIN) > -1 || group.flagsList.indexOf(GroupFlags.GROUPFLAGSCREATOR) > -1)) &&
+                        <div className="kk-card notify-settings">
+                            <div className="label">All Members Admin</div>
+                            <div className="value switch">
+                                {group && <Switch
+                                    checked={group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMINSENABLED) === -1}
+                                    className="admin-switch"
+                                    color="default"
+                                    onChange={this.toggleAdminsHandler}
+                                />}
                             </div>
                         </div>}
                         {group && <div className="participant kk-card">
@@ -377,25 +398,30 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
 
     /* Decides what content the participants' "more" menu must have */
     private contextMenuItem() {
-        const {currentUser} = this.state;
-        if (!currentUser) {
+        const {group, currentUser} = this.state;
+        if (!group || !currentUser) {
             return;
         }
-        const menuItems = [{
-            cmd: 'remove',
-            title: 'Remove',
-        }];
-        if (currentUser.type === ParticipantType.PARTICIPANTTYPEMEMBER) {
+        const menuItems = [];
+        if (group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMIN) > -1 || group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMINSENABLED) === -1) {
             menuItems.push({
-                cmd: 'promote',
-                title: 'Promote',
+                cmd: 'remove',
+                title: 'Remove',
             });
-        }
-        if (currentUser.type === ParticipantType.PARTICIPANTTYPEADMIN) {
-            menuItems.push({
-                cmd: 'demote',
-                title: 'Demote',
-            });
+            if (currentUser.type === ParticipantType.PARTICIPANTTYPEMEMBER) {
+                menuItems.push({
+                    cmd: 'promote',
+                    title: 'Promote',
+                });
+            }
+            if (currentUser.type === ParticipantType.PARTICIPANTTYPEADMIN) {
+                menuItems.push({
+                    cmd: 'demote',
+                    title: 'Demote',
+                });
+            }
+        } else {
+            return (<span>You have no authority!</span>);
         }
         return menuItems.map((item, index) => {
             return (<MenuItem key={index} onClick={this.moreCmdHandler.bind(this, item.cmd)}
@@ -410,13 +436,13 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             return;
         }
         const user = new InputUser();
-        user.setUserid(currentUser.id || '');
+        user.setUserid(currentUser.userid || '');
         user.setAccesshash('');
         this.moreCloseHandler();
         switch (cmd) {
             case 'remove':
                 this.sdk.groupRemoveMember(peer, user).then(() => {
-                    const index = findIndex(participants, {id: currentUser.id});
+                    const index = findIndex(participants, {userid: currentUser.userid});
                     if (index > -1) {
                         participants.splice(index, 1);
                         group.participants = participants.length;
@@ -429,7 +455,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                 break;
             case 'promote':
                 this.sdk.groupUpdateAdmin(peer, user, true).then(() => {
-                    const index = findIndex(participants, {id: currentUser.id});
+                    const index = findIndex(participants, {userid: currentUser.userid});
                     if (index > -1) {
                         participants[index].type = ParticipantType.PARTICIPANTTYPEADMIN;
                         this.setState({
@@ -440,7 +466,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                 break;
             case 'demote':
                 this.sdk.groupUpdateAdmin(peer, user, false).then(() => {
-                    const index = findIndex(participants, {id: currentUser.id});
+                    const index = findIndex(participants, {userid: currentUser.userid});
                     if (index > -1) {
                         participants[index].type = ParticipantType.PARTICIPANTTYPEMEMBER;
                         this.setState({
@@ -628,6 +654,35 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     private notifySettingDialogCloseHandler = () => {
         this.setState({
             notifySettingDialogOpen: false,
+        });
+    }
+
+    /* Toggle admin handler */
+    private toggleAdminsHandler = (e: any) => {
+        if (this.loading) {
+            return;
+        }
+        const {peer, group} = this.state;
+        if (!peer || !group) {
+            return;
+        }
+        this.loading = true;
+        const toggleAdmin = () => {
+            const index = group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMINSENABLED);
+            if (index > -1) {
+                group.flagsList.splice(index, 1);
+            } else {
+                group.flagsList.push(GroupFlags.GROUPFLAGSADMINSENABLED);
+            }
+            this.setState({
+                group,
+            });
+        };
+        toggleAdmin();
+        this.sdk.groupToggleAdmin(peer, !e.currentTarget.checked).then(() => {
+            this.loading = false;
+        }).catch(() => {
+            toggleAdmin();
         });
     }
 }

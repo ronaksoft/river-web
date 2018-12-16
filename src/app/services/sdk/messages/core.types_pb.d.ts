@@ -652,8 +652,8 @@ export namespace GroupFull {
 export class GroupParticipant extends jspb.Message {
   hasUserid(): boolean;
   clearUserid(): void;
-  getUserid(): number | undefined;
-  setUserid(value: number): void;
+  getUserid(): string | undefined;
+  setUserid(value: string): void;
 
   hasFirstname(): boolean;
   clearFirstname(): void;
@@ -687,7 +687,7 @@ export class GroupParticipant extends jspb.Message {
 
 export namespace GroupParticipant {
   export type AsObject = {
-    userid?: number,
+    userid?: string,
     firstname?: string,
     lastname?: string,
     type?: ParticipantType,

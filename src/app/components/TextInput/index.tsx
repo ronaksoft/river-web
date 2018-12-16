@@ -2,8 +2,8 @@ import * as React from 'react';
 import Textarea from 'react-textarea-autosize';
 import {Picker} from 'emoji-mart';
 import PopUpMenu from '../PopUpMenu';
-import {throttle, cloneDeep} from 'lodash';
-import {SentimentSatisfiedRounded, SendRounded, ClearRounded, ForwardRounded, DeleteRounded} from '@material-ui/icons';
+import {cloneDeep, throttle} from 'lodash';
+import {ClearRounded, DeleteRounded, ForwardRounded, SendRounded, SentimentSatisfiedRounded} from '@material-ui/icons';
 import {IconButton} from '@material-ui/core';
 import UserAvatar from '../UserAvatar';
 import RTLDetector from '../../services/utilities/rtl_detector';
@@ -11,17 +11,19 @@ import {IMessage} from '../../repository/message/interface';
 import UserName from '../UserName';
 import {C_MSG_MODE} from './consts';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
+import {GroupFlags, InputPeer, PeerType} from '../../services/sdk/messages/core.types_pb';
+import GroupRepo from '../../repository/group';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
 
 interface IProps {
     clearPreviewMessage?: () => void;
-    disableMode: number;
     onAction: (cmd: string) => void;
     onBulkAction: (cmd: string) => void;
     onMessage: (text: string, {mode, message}?: any) => void;
     onTyping?: (typing: boolean) => void;
+    peer: InputPeer | null;
     previewMessage?: IMessage;
     previewMessageMode?: number;
     ref?: (ref: any) => void;
@@ -32,8 +34,9 @@ interface IProps {
 }
 
 interface IState {
-    disableMode: number;
+    disableAuthority: number;
     emojiAnchorEl: any;
+    peer: InputPeer | null;
     previewMessage: IMessage | null;
     previewMessageHeight: number;
     previewMessageMode: number;
@@ -49,13 +52,15 @@ class TextInput extends React.Component<IProps, IState> {
     private typingTimeout: any = null;
     private rtlDetector: RTLDetector;
     private rtlDetectorThrottle: any = null;
+    private groupRepo: GroupRepo;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
-            disableMode: props.disableMode,
+            disableAuthority: 0x0,
             emojiAnchorEl: null,
+            peer: props.peer,
             previewMessage: props.previewMessage || null,
             previewMessageHeight: 0,
             previewMessageMode: props.previewMessageMode || C_MSG_MODE.Normal,
@@ -71,11 +76,18 @@ class TextInput extends React.Component<IProps, IState> {
 
         this.rtlDetector = RTLDetector.getInstance();
         this.rtlDetectorThrottle = throttle(this.detectRTL, 1000);
+
+        this.groupRepo = GroupRepo.getInstance();
+
+        this.checkAuthority();
+    }
+
+    public componentDidMount() {
+        window.addEventListener('Group_DB_Updated', this.checkAuthority);
     }
 
     public componentWillReceiveProps(newProps: IProps) {
         this.setState({
-            disableMode: newProps.disableMode,
             previewMessage: newProps.previewMessage || null,
             previewMessageMode: newProps.previewMessageMode || C_MSG_MODE.Normal,
             selectable: newProps.selectable,
@@ -88,22 +100,32 @@ class TextInput extends React.Component<IProps, IState> {
         if (newProps.previewMessageMode === C_MSG_MODE.Edit && newProps.previewMessage) {
             this.textarea.value = newProps.previewMessage.body;
         }
+        if (this.state.peer !== newProps.peer) {
+            window.console.log('toh');
+            this.setState({
+                peer: newProps.peer,
+            }, () => {
+                this.checkAuthority();
+            });
+        }
+    }
+
+    public componentWillUnmount() {
+        window.removeEventListener('Group_DB_Updated', this.checkAuthority);
     }
 
     public render() {
-        const {previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable, disableMode} = this.state;
+        const {previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable, disableAuthority} = this.state;
 
-        if (!selectable && disableMode !== 0x0) {
-            if (disableMode === 0x1) {
+        if (!selectable && disableAuthority !== 0x0) {
+            if (disableAuthority === 0x1) {
                 return (<div className="input-placeholder">
-                    You have left the group
-                    <span className="btn" onClick={this.props.onAction.bind(this, 'remove_dialog')}>Delete and Exit</span>
+                    You are no longer in this group
+                    <span className="btn"
+                          onClick={this.props.onAction.bind(this, 'remove_dialog')}>Delete and Exit</span>
                 </div>);
-            } else if (disableMode === 0x2) {
-                return (<div className="input-placeholder">
-                    You have been removed from this group
-                    <span className="btn" onClick={this.props.onAction.bind(this, 'remove_dialog')}>Delete and Exit</span>
-                </div>);
+            } else if (disableAuthority === 0x2) {
+                return (<div className="input-placeholder">Group is deactivated</div>);
             } else {
                 return '';
             }
@@ -376,6 +398,38 @@ class TextInput extends React.Component<IProps, IState> {
         const elem: any = document.querySelector('.' + className);
         if (elem) {
             elem.focus();
+        }
+    }
+
+    /* Check authority for composing message and etc. */
+    private checkAuthority = (data?: any) => {
+        const {peer} = this.state;
+        if (!peer) {
+            return;
+        }
+        if (data && data.detail.ids.indexOf(peer.getId()) === -1) {
+            return;
+        }
+        if (peer.getType() === PeerType.PEERGROUP) {
+            this.groupRepo.get(peer.getId() || '').then((res) => {
+                if (res.flagsList.indexOf(GroupFlags.GROUPFLAGSNONPARTICIPANT) > -1) {
+                    this.setState({
+                        disableAuthority: 0x1,
+                    });
+                } else if (res.flagsList.indexOf(GroupFlags.GROUPFLAGSDEACTIVATED) > -1) {
+                    this.setState({
+                        disableAuthority: 0x2,
+                    });
+                } else {
+                    this.setState({
+                        disableAuthority: 0x0,
+                    });
+                }
+            });
+        } else {
+            this.setState({
+                disableAuthority: 0x0,
+            });
         }
     }
 }

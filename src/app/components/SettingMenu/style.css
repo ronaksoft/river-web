@@ -286,10 +286,10 @@ html[theme="dark"] .setting-menu .font-size-container button {
 html[theme="dark"] .setting-menu .font-size-container div[role="progressbar"] {
   background-color: var(--dark-low); }
   html[theme="dark"] .setting-menu .font-size-container div[role="progressbar"] > div {
-    background-color: var(--dark-accent-medium); }
+    background-color: var(--river); }
 
 html[theme="dark"] .setting-menu .setting-switch span {
-  color: var(--dark-accent-medium) !important; }
+  color: var(--river) !important; }
 
 html[theme="dark"] .setting-menu .setting-switch-label > span {
   color: var(--light); }

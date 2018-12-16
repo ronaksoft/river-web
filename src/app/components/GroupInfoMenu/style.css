@@ -109,6 +109,8 @@ input {
     .group-info-menu .notify-settings .value {
       width: 50px;
       text-align: right; }
+      .group-info-menu .notify-settings .value.switch {
+        width: 80px; }
   .group-info-menu .participant {
     padding: 16px 0 0; }
     .group-info-menu .participant label {
@@ -283,6 +285,8 @@ html[theme="dark"] .group-info-menu {
     color: var(--white); }
   html[theme="dark"] .group-info-menu .notify-settings .label {
     color: var(--white); }
+  html[theme="dark"] .group-info-menu .notify-settings .value .admin-switch span {
+    color: var(--river) !important; }
   html[theme="dark"] .group-info-menu .participant .contact-item:after {
     background-color: var(--dark-low); }
   html[theme="dark"] .group-info-menu .participant .contact-item .admin-wrapper svg {

@@ -568,19 +568,7 @@ class Chat extends React.Component<IProps, IState> {
             cmd: 'setting',
             title: 'Settings',
         }];
-        let inputDisable: number = 0x0;
-        if (this.state.messages.length > 0) {
-            const lastMessage = this.state.messages[this.state.messages.length - 1];
-            if (lastMessage.messageaction === C_MESSAGE_ACTION.MessageActionGroupDeleteUser) {
-                if (lastMessage.actiondata && lastMessage.actiondata.useridsList && lastMessage.actiondata.useridsList.indexOf(this.connInfo.UserID) > -1) {
-                    if (lastMessage.senderid === this.connInfo.UserID) {
-                        inputDisable = 0x1;
-                    } else {
-                        inputDisable = 0x2;
-                    }
-                }
-            }
-        }
+
         return (
             <div className="bg">
                 <div className="wrapper">
@@ -681,6 +669,7 @@ class Chat extends React.Component<IProps, IState> {
                                          selectedIds={messageSelectedIds}
                                          onSelectedIdsChange={this.messageSelectedIdsChangeHandler}
                                          onSelectableChange={this.messageSelectableChangeHandler}
+                                         onJumpToMessage={this.messageJumpToMessageHandler}
                                 />
                             </div>
                             <div className="attachments" hidden={!this.state.toggleAttachment}>
@@ -694,7 +683,7 @@ class Chat extends React.Component<IProps, IState> {
                                        selectable={messageSelectable}
                                        selectableDisable={Boolean(messageSelectable && Object.keys(messageSelectedIds).length === 0)}
                                        onBulkAction={this.textInputBulkActionHandler}
-                                       disableMode={inputDisable} onAction={this.textInputActionHandler}
+                                       onAction={this.textInputActionHandler} peer={peer}
                             />}
                         </div>}
                         {selectedDialogId === 'null' && <div className="column-center">
@@ -1952,6 +1941,19 @@ class Chat extends React.Component<IProps, IState> {
             return !isMuted(dialogs[index].notifysettings);
         }
         return true;
+    }
+
+    /* Jump to message handler */
+    private messageJumpToMessageHandler = (id: number) => {
+        const {peer, messages} = this.state;
+        if (!peer || !messages) {
+            return;
+        }
+        const index = findIndex(messages, {id});
+        if (index > 0) {
+            window.console.log(id);
+            this.messageComponent.list.scrollToRow(index);
+        }
     }
 }
 

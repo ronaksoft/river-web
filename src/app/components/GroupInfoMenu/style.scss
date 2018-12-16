@@ -80,6 +80,9 @@
     .value {
       width: 50px;
       text-align: right;
+      &.switch {
+        width: 80px;
+      }
     }
   }
   .participant {
@@ -301,6 +304,11 @@ html[theme="dark"] {
     .notify-settings {
       .label {
         color: var(--white);
+      }
+      .value .admin-switch {
+        span {
+          color: var(--river) !important;
+        }
       }
     }
     .participant {

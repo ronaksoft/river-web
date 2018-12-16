@@ -380,7 +380,7 @@ class SettingMenu extends React.Component<IProps, IState> {
         if (!el) {
             return;
         }
-        if (e.target.checked) {
+        if (e.currentTarget.checked) {
             el.setAttribute('theme', 'dark');
             localStorage.setItem('river.theme.color', 'dark');
         } else {
@@ -388,7 +388,7 @@ class SettingMenu extends React.Component<IProps, IState> {
             localStorage.setItem('river.theme.color', 'light');
         }
         this.setState({
-            checked: e.target.checked,
+            checked: e.currentTarget.checked,
         });
     }
 

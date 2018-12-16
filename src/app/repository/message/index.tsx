@@ -359,6 +359,14 @@ export default class MessageRepo {
         this.updateThrottle();
     }
 
+    public insertHole(peerId: string, id: number, asc: boolean) {
+        return this.db.messages.put({
+            id: id + (asc ? 0.5 : -0.5),
+            messagetype: C_MESSAGE_TYPE.Hole,
+            peerid: peerId,
+        });
+    }
+
     private updateMap = (message: IMessage, temp?: boolean) => {
         message.me = (message.senderid === this.userId);
         message.rtl = this.rtlDetector.direction(message.body || '');
@@ -430,19 +438,18 @@ export default class MessageRepo {
         return this.db.messages.where('[peerid+id]').between([peerId, min], [peerId, max], true, true).filter((item) => {
             return (item.messagetype === C_MESSAGE_TYPE.Hole);
         }).delete().finally(() => {
-            if (asc) {
-                return this.db.messages.put({
-                    id: max + 0.5,
-                    messagetype: C_MESSAGE_TYPE.Hole,
-                    peerid: peerId,
-                });
-            } else {
-                return this.db.messages.put({
-                    id: max - 0.5,
-                    messagetype: C_MESSAGE_TYPE.Hole,
-                    peerid: peerId,
-                });
-            }
+            // @ts-ignore
+            return this.db.messages.get((asc ? max : min)).then((res) => {
+                if (!res) {
+                    if (asc) {
+                        return this.insertHole(peerId, max, true);
+                    } else {
+                        return this.insertHole(peerId, min, false);
+                    }
+                } else {
+                    return Promise.resolve();
+                }
+            });
         });
     }
 }

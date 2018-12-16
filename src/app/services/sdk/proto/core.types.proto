@@ -166,7 +166,7 @@ enum ParticipantType {
 
 // GroupParticipant
 message GroupParticipant {
-    required int64 UserID = 1;
+    required int64 UserID = 1 [jstype = JS_STRING];
     required string FirstName = 2;
     required string LastName = 3;
     required ParticipantType Type = 4;

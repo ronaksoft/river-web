@@ -312,13 +312,13 @@ html[theme="dark"] {
       div[role="progressbar"] {
         background-color: var(--dark-low);
         > div {
-          background-color: var(--dark-accent-medium);
+          background-color: var(--river);
         }
       }
     }
     .setting-switch {
       span {
-        color: var(--dark-accent-medium) !important;
+        color: var(--river) !important;
       }
     }
     .setting-switch-label {

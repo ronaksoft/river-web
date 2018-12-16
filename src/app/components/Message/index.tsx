@@ -19,15 +19,16 @@ import MessageForwarded from '../MessageForwarded';
 interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
     items: IMessage[];
+    onJumpToMessage: (id: number, e: any) => void;
     onLoadMore?: () => any;
+    onSelectableChange: (selectable: boolean) => void;
+    onSelectedIdsChange: (selectedIds: { [key: number]: boolean }) => void;
     peer: InputPeer | null;
     readId: number;
     rendered?: (info: any) => void;
-    showDate?: (timestamp: number | null) => void;
     selectable: boolean;
     selectedIds: { [key: number]: boolean };
-    onSelectedIdsChange: (selectedIds: { [key: number]: boolean }) => void;
-    onSelectableChange: (selectable: boolean) => void;
+    showDate?: (timestamp: number | null) => void;
 }
 
 interface IState {
@@ -43,6 +44,18 @@ interface IState {
     selectable: boolean;
     selectedIds: { [key: string]: boolean };
 }
+
+export const highlighMessage = (id: number) => {
+    const el = document.querySelector(`.bubble-wrapper .bubble.b_${id}`);
+    if (el) {
+        el.classList.add('highlight');
+        setTimeout(() => {
+            if (el) {
+                el.classList.remove('highlight');
+            }
+        }, 500);
+    }
+};
 
 class Message extends React.Component<IProps, IState> {
     public list: List;
@@ -259,6 +272,8 @@ class Message extends React.Component<IProps, IState> {
             return '';
         }
         switch (message.messagetype) {
+            case C_MESSAGE_TYPE.Hole:
+                return '';
             case C_MESSAGE_TYPE.NewMessage:
                 return (
                     <div style={style} className="bubble-wrapper">
@@ -299,7 +314,9 @@ class Message extends React.Component<IProps, IState> {
                                 <UserName className="name" uniqueColor={false} id={message.senderid || ''}/>}
                                 {Boolean(message.replyto && message.replyto !== 0) &&
                                 <MessagePreview message={message} peer={peer}
-                                                onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>}
+                                                onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}
+                                                onClick={this.props.onJumpToMessage.bind(this, message.replyto)}
+                                />}
                                 {Boolean(message.fwdsenderid && message.fwdsenderid !== '0') &&
                                 <MessageForwarded message={message} peer={peer}
                                                   onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>}
