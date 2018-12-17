@@ -183,7 +183,11 @@ export default class DialogRepo {
             const updateItems: IDialog[] = result;
             updateItems.map((dialog: IDialog) => {
                 const t = find(tempDialogs, {peerid: dialog.peerid});
-                return merge(dialog, t);
+                if (t) {
+                    return this.mergeCheck(dialog, t);
+                } else {
+                    return dialog;
+                }
             });
             return this.createMany([...createItems, ...updateItems]);
         }).catch((err: any) => {
@@ -203,6 +207,17 @@ export default class DialogRepo {
         this.updateThrottle();
     }
 
+    private mergeCheck(dialog: IDialog, newDialog: IDialog): IDialog {
+        const d = merge(dialog, newDialog);
+        if (d.readinboxmaxid !== undefined && dialog.readinboxmaxid !== undefined && d.readinboxmaxid < dialog.readinboxmaxid) {
+            d.readinboxmaxid = dialog.readinboxmaxid;
+        }
+        if (d.readoutboxmaxid !== undefined && dialog.readoutboxmaxid !== undefined && d.readoutboxmaxid < dialog.readoutboxmaxid) {
+            d.readoutboxmaxid = dialog.readoutboxmaxid;
+        }
+        return d;
+    }
+
     private updateMap = (dialog: IDialog, messageMap?: { [key: number]: IMessage }) => {
         if (messageMap &&
             dialog.topmessageid) {
@@ -219,7 +234,7 @@ export default class DialogRepo {
         }
         if (this.lazyMap.hasOwnProperty(dialog.peerid || 0)) {
             const t = this.lazyMap[dialog.peerid || 0];
-            this.lazyMap[dialog.peerid || 0] = merge(dialog, t);
+            this.lazyMap[dialog.peerid || 0] = this.mergeCheck(dialog, t);
         } else {
             this.lazyMap[dialog.peerid || 0] = dialog;
         }
