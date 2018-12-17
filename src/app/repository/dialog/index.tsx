@@ -68,8 +68,8 @@ export default class DialogRepo {
 
     public get(id: string): Promise<IDialog> {
         return this.db.dialogs.get(id).then((dialog) => {
-            if (this.lazyMap.hasOwnProperty(id)) {
-                return merge(dialog, this.lazyMap[id]);
+            if (this.lazyMap.hasOwnProperty(id) && dialog) {
+                return this.mergeCheck(dialog, this.lazyMap[id]);
             } else {
                 return dialog;
             }
