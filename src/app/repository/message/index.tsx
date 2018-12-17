@@ -212,7 +212,7 @@ export default class MessageRepo {
         pipe2.filter((item: IMessage) => {
             return item.temp !== true && (item.id || 0) > 0;
         });
-        return pipe2.limit(limit + 1).toArray().then((res) => {
+        return pipe2.limit(limit + 2).toArray().then((res) => {
             const hasHole = res.some((msg) => {
                 return (msg.messagetype === C_MESSAGE_TYPE.Hole);
             });
