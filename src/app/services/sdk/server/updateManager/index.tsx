@@ -40,7 +40,7 @@ export default class UpdateManager {
     private messageDropList: { [key: string]: UpdateNewMessage.AsObject[] } = {};
     private newMessageThrottle: any;
     private newMessageDropThrottle: any;
-    private active: boolean = false;
+    private active: boolean = true;
 
     public constructor() {
         window.console.log('Update manager started');

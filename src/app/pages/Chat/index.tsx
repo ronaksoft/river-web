@@ -1397,7 +1397,8 @@ class Chat extends React.Component<IProps, IState> {
         const lastId = this.syncManager.getLastUpdateId();
         return new Promise((resolve, reject) => {
             this.sdk.getUpdateState().then((res) => {
-                if ((res.updateid || 0) - lastId > 1000) {
+                // TODO: check
+                if ((res.updateid || 0) - lastId > 100) {
                     reject({
                         err: 'too_late',
                     });
@@ -1487,6 +1488,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private snapshot() {
+        this.messageRepo.truncate();
         this.updateManager.disable();
         this.setState({
             isUpdating: true,

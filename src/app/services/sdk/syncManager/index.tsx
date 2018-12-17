@@ -187,17 +187,8 @@ export default class SyncManager {
         if (data.length > 0) {
             // TODO: check
             this.messageRepo.flush();
-            setTimeout(() => {
-                // data.forEach((item) => {
-                //     if (item.readinboxmaxid) {
-                //         this.messageRepo.getUnreadCount(item.peerid || '', item.readinboxmaxid || 0).then((res) => {
-                //             item.unreadcount = res;
-                //         });
-                //     }
-                // });
-                this.dialogRepo.lazyUpsert(data);
-                this.dialogRepo.flush();
-            }, 500);
+            this.dialogRepo.lazyUpsert(data);
+            this.dialogRepo.flush();
             setTimeout(() => {
                 this.broadcastEvent('Dialog_DB_Updated', {ids: keys});
             }, 1000);
@@ -217,6 +208,7 @@ export default class SyncManager {
         });
         if (data.length > 0) {
             this.messageRepo.lazyUpsert(data);
+            this.messageRepo.flush();
             setTimeout(() => {
                 this.broadcastEvent('Message_DB_Updated', {
                     ids: keys,

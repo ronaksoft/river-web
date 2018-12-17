@@ -107,6 +107,10 @@ export default class MessageRepo {
         return this.db.messages.bulkPut(msgs);
     }
 
+    public truncate() {
+        return this.db.messages.clear();
+    }
+
     public removeMany(ids: number[]) {
         ids.map((id) => {
             delete this.lazyMap[id];
