@@ -224,7 +224,7 @@ export default class MessageRepo {
                             res.shift();
                         }
                     } else {
-                        if (res[res.length - 1].id === after) {
+                        if (res[0].id === before) {
                             res.shift();
                         }
                     }
