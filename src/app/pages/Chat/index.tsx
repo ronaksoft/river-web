@@ -1524,10 +1524,10 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private dialogDBUpdatedHandler = (event: any) => {
-        const {dialogs} = this.state;
         const data = event.detail;
         this.dialogRepo.getManyCache({}).then((res) => {
-            this.dialogsSortThrottle(res);
+            this.dialogsSort(res);
+            const {dialogs} = this.state;
             data.ids.forEach((id: string) => {
                 if (this.dialogMap.hasOwnProperty(id) && dialogs[this.dialogMap[id]]) {
                     const maxReadInbox = dialogs[this.dialogMap[id]].readinboxmaxid || 0;
