@@ -664,7 +664,7 @@ class Chat extends React.Component<IProps, IState> {
                                 <PopUpDate timestamp={popUpDate}/>
                                 <Message ref={this.messageRefHandler}
                                          items={this.state.messages}
-                                         onLoadMore={this.onMessageScroll}
+                                         onLoadMoreBefore={this.messageLoadMoreBeforeHandler}
                                          readId={this.state.maxReadId}
                                          contextMenu={this.messageContextMenuHandler}
                                          peer={peer}
@@ -674,6 +674,7 @@ class Chat extends React.Component<IProps, IState> {
                                          onSelectedIdsChange={this.messageSelectedIdsChangeHandler}
                                          onSelectableChange={this.messageSelectableChangeHandler}
                                          onJumpToMessage={this.messageJumpToMessageHandler}
+                                         onLoadMoreAfter={this.messageLoadMoreAfterHandler}
                                 />
                             </div>
                             <div className="attachments" hidden={!this.state.toggleAttachment}>
@@ -1008,7 +1009,7 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private onMessageScroll = () => {
+    private messageLoadMoreBeforeHandler = () => {
         if (this.isLoading) {
             return;
         }
@@ -1111,6 +1112,50 @@ class Chat extends React.Component<IProps, IState> {
         });
         return {
             maxId,
+            msgs: defaultMessages,
+        };
+    }
+
+    private modifyMessagesBetween(defaultMessages: IMessage[], messages: IMessage[], id: number): { msgs: IMessage[], index: number } {
+        const index = findIndex(defaultMessages, {id});
+        if (index === -1) {
+            return {
+                index,
+                msgs: this.modifyMessages(defaultMessages, messages, false).msgs,
+            };
+        }
+        let cnt = 1;
+        if (defaultMessages[index].messagetype === C_MESSAGE_TYPE.Gap) {
+            defaultMessages.splice(index, 1);
+            cnt = 0;
+        }
+        messages.forEach((msg, key) => {
+            // avatar breakpoint
+            msg.avatar = (((index + cnt) - 1) > -1 && msg.senderid !== defaultMessages[((index + cnt) - 1)].senderid);
+            window.console.log(msg.senderid, defaultMessages[((index + cnt) - 1)].senderid);
+            // date breakpoint
+            if (((index + cnt) - 1) > -1 && !TimeUtililty.isInSameDay(msg.createdon, defaultMessages[((index + cnt) - 1)].createdon)) {
+                defaultMessages.splice(index + cnt, 0, {
+                    createdon: msg.createdon,
+                    id: msg.id,
+                    messagetype: C_MESSAGE_TYPE.Date,
+                    senderid: msg.senderid,
+                });
+                msg.avatar = true;
+                cnt++;
+            }
+            defaultMessages.splice(index + cnt, 0, msg);
+            cnt++;
+        });
+        window.console.log(defaultMessages[(index + cnt) -1].body, defaultMessages[(index + cnt) -1].id);
+        defaultMessages.splice(index + cnt, 0, {
+            createdon: defaultMessages[(index + cnt) -1].createdon,
+            id: defaultMessages[(index + cnt) -1].id,
+            messagetype: C_MESSAGE_TYPE.Gap,
+            senderid: defaultMessages[(index + cnt) -1].senderid,
+        });
+        return {
+            index,
             msgs: defaultMessages,
         };
     }
@@ -1969,6 +2014,9 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Jump to message handler */
     private messageJumpToMessageHandler = (id: number) => {
+        if (this.state.isUpdating) {
+            return;
+        }
         const {peer, messages} = this.state;
         if (!peer || !messages) {
             return;
@@ -1979,18 +2027,82 @@ class Chat extends React.Component<IProps, IState> {
             setTimeout(() => {
                 highlighMessage(id);
             }, 100);
+        } else {
+            // if ((messages[0].id || 0) < id) {
+            this.isLoading = true;
+            if (messages[0].messagetype !== C_MESSAGE_TYPE.Gap) {
+                messages.unshift({
+                    createdon: (messages[0].createdon || 0),
+                    id: (messages[0].id || 0),
+                    messagetype: C_MESSAGE_TYPE.Gap,
+                    senderid: (messages[0].senderid || '')
+                });
+            }
+            this.messageComponent.cache.clear(0, 0);
+            this.messageComponent.list.forceUpdateGrid();
+            this.messageComponent.list.scrollToRow(0);
+
+            this.messageRepo.getManyCache({after: id - 1, limit: 25}, peer).then((res) => {
+                if (res.length === 0) {
+                    this.isLoading = false;
+                    return;
+                }
+                res.push({
+                    createdon: res[0].createdon,
+                    id: (res[0].id || 0),
+                    messagetype: C_MESSAGE_TYPE.Gap,
+                    senderid: (res[0].senderid || '')
+                });
+                res = res.reverse();
+                const dataMsg = this.modifyMessagesBetween(messages, res, id);
+                this.setState({
+                    messages: dataMsg.msgs,
+                });
+                for (let i = 0; i <= res.length; i++) {
+                    this.messageComponent.cache.clear(i, 0);
+                }
+                this.messageComponent.list.recomputeGridSize();
+                this.messageComponent.list.scrollToRow(0);
+                setTimeout(() => {
+                    this.isLoading = false;
+                    highlighMessage(id);
+                }, 100);
+            }).catch(() => {
+                this.isLoading = false;
+            });
         }
-        /* else {
-                    // if ((messages[0].id || 0) < id) {
-                        messages.unshift({
-                            id: (messages[0].id || 0) - 0.4,
-                            messagetype: C_MESSAGE_TYPE.Gap,
-                        });
-                        this.messageComponent.cache.clear(0, 0);
-                        this.messageComponent.list.forceUpdateGrid();
-                        this.messageComponent.list.scrollToRow(0);
-                    // }
-                }*/
+    }
+
+    /* Message load after */
+    private messageLoadMoreAfterHandler = (id: number) => {
+        window.console.log('messageLoadMoreAfterHandler', id);
+        if (this.isLoading) {
+            return;
+        }
+        const {peer, messages} = this.state;
+        if (!peer || !messages) {
+            return;
+        }
+        this.isLoading = true;
+        this.messageRepo.getManyCache({after: id, limit: 25}, peer).then((res) => {
+            if (res.length === 0) {
+                this.isLoading = false;
+                return;
+            }
+            const dataMsg = this.modifyMessagesBetween(messages, res, id);
+            this.setState({
+                messages: dataMsg.msgs,
+            });
+            for (let i = dataMsg.index; i <= dataMsg.msgs.length; i++) {
+                this.messageComponent.cache.clear(i, 0);
+            }
+            this.messageComponent.list.recomputeGridSize();
+            setTimeout(() => {
+                this.isLoading = false;
+            }, 100);
+        }).catch(() => {
+            this.isLoading = false;
+        });
     }
 }
 

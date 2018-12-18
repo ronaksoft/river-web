@@ -14,6 +14,8 @@ interface IState {
 }
 
 class LiveDate extends React.Component<IProps, IState> {
+    private interval: any = null;
+
     constructor(props: IProps) {
         super(props);
 
@@ -25,7 +27,7 @@ class LiveDate extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        setInterval(() => {
+        this.interval = setInterval(() => {
             this.setState({
                 toggle: false,
             }, () => {
@@ -34,6 +36,10 @@ class LiveDate extends React.Component<IProps, IState> {
                 });
             });
         }, 10000);
+    }
+
+    public componentWillUnmount() {
+        clearInterval(this.interval);
     }
 
     public componentWillReceiveProps(newProps: IProps) {

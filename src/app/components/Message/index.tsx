@@ -20,7 +20,8 @@ interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
     items: IMessage[];
     onJumpToMessage: (id: number, e: any) => void;
-    onLoadMore?: () => any;
+    onLoadMoreAfter?: (id: number) => any;
+    onLoadMoreBefore?: () => any;
     onSelectableChange: (selectable: boolean) => void;
     onSelectedIdsChange: (selectedIds: { [key: number]: boolean }) => void;
     peer: InputPeer | null;
@@ -148,7 +149,7 @@ class Message extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {items, moreAnchorEl, peer, selectable} = this.state;
+        const {items, moreAnchorEl, peer, selectable, listStyle} = this.state;
         return (
             <AutoSizer>
                 {({width, height}: any) => (
@@ -167,7 +168,7 @@ class Message extends React.Component<IProps, IState> {
                             scrollToIndex={this.state.scrollIndex}
                             onRowsRendered={this.onRowsRenderedHandler}
                             onScroll={this.onScroll}
-                            style={this.state.listStyle}
+                            style={listStyle}
                             className={'chat active-chat' + (this.state.noTransition ? ' no-transition' : '')}
                         />
                         <Menu
@@ -275,7 +276,9 @@ class Message extends React.Component<IProps, IState> {
             case C_MESSAGE_TYPE.Hole:
                 return '';
             case C_MESSAGE_TYPE.Gap:
-                return (<div style={style} className="bubble-gap"><div className="gap"/></div>);
+                return (<div style={style} className="bubble-gap">
+                    <div className="gap"/>
+                </div>);
             case C_MESSAGE_TYPE.NewMessage:
                 return (
                     <div style={style} className="bubble-wrapper">
@@ -387,8 +390,8 @@ class Message extends React.Component<IProps, IState> {
         }
         if (params.clientHeight < params.scrollHeight && params.scrollTop < 2) {
             this.topOfList = true;
-            if (typeof this.props.onLoadMore === 'function') {
-                this.props.onLoadMore();
+            if (typeof this.props.onLoadMoreBefore === 'function') {
+                this.props.onLoadMoreBefore();
             }
         }
     }
@@ -437,6 +440,7 @@ class Message extends React.Component<IProps, IState> {
     private onRowsRenderedHandler = (data: any) => {
         const {items} = this.state;
         if (data.startIndex > -1) {
+            // Show/Hide date
             if (items[data.startIndex].messagetype === C_MESSAGE_TYPE.Date ||
                 (items[data.startIndex + 1] && items[data.startIndex + 1].messagetype === C_MESSAGE_TYPE.Date)) {
                 if (this.props.showDate) {
@@ -445,6 +449,13 @@ class Message extends React.Component<IProps, IState> {
             } else {
                 if (this.props.showDate) {
                     this.props.showDate(items[data.startIndex].createdon || 0);
+                }
+            }
+
+            // On load more after
+            if (data.stopIndex > -1) {
+                if (items[data.stopIndex].messagetype === C_MESSAGE_TYPE.Gap && items[data.stopIndex].id && this.props.onLoadMoreAfter) {
+                    this.props.onLoadMoreAfter(items[data.stopIndex].id || 0);
                 }
             }
         }
