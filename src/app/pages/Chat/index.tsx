@@ -18,7 +18,7 @@ import DialogRepo from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
 import Uploader from '../../components/Uploader/index';
 import TextInput from '../../components/TextInput/index';
-import {cloneDeep, findIndex, throttle, trimStart} from 'lodash';
+import {cloneDeep, findIndex, throttle, trimStart, intersectionBy, find} from 'lodash';
 import SDK from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
 import {
@@ -1498,29 +1498,41 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private snapshot() {
-        this.messageRepo.truncate();
+        // this.messageRepo.truncate();
         this.updateManager.disable();
         this.setState({
             isUpdating: true,
         });
-        this.dialogRepo.getSnapshot({}).then((res) => {
-            this.dialogsSortThrottle(res.dialogs);
-            this.syncManager.setLastUpdateId(res.updateid || 0);
-            this.updateManager.enable();
-            this.setState({
-                isUpdating: false,
-            }, () => {
-                if (res.dialogs.length > 0) {
-                    this.startSyncing();
-                }
-            });
-        }).catch(() => {
-            this.updateManager.enable();
-            this.setState({
-                isUpdating: false,
+        this.dialogRepo.getManyCache({}).then((oldDialogs) => {
+            this.dialogRepo.getSnapshot({}).then((res) => {
+                // Insert holes on snapshot if it has difference
+                const sameItems: IDialog[] = intersectionBy(oldDialogs, res.dialogs, 'peerid');
+                sameItems.forEach((dialog) => {
+                    const d = find(res.dialogs, {peerid: dialog.peerid});
+                    if (d && dialog.topmessageid) {
+                        if (dialog.topmessageid !== d.topmessageid) {
+                            this.messageRepo.insertHole(dialog.peerid || '', dialog.topmessageid, true);
+                        }
+                    }
+                });
+                // Sorts dialogs by last update
+                this.dialogsSortThrottle(res.dialogs);
+                this.syncManager.setLastUpdateId(res.updateid || 0);
+                this.updateManager.enable();
+                this.setState({
+                    isUpdating: false,
+                }, () => {
+                    if (res.dialogs.length > 0) {
+                        this.startSyncing();
+                    }
+                });
+            }).catch(() => {
+                this.updateManager.enable();
+                this.setState({
+                    isUpdating: false,
+                });
             });
         });
-        return;
     }
 
     private wsCloseHandler = () => {

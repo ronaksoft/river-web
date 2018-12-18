@@ -130,13 +130,7 @@ export default class DialogRepo {
             dialogs.map((dialog) => {
                 const msg = messageMap[dialog.topmessageid || 0];
                 if (msg) {
-                    dialog.action_code = msg.messageaction;
-                    dialog.action_data = msg.actiondata;
-                    dialog.preview = (msg.body || '').substr(0, 64);
-                    dialog.preview_me = (msg.senderid === this.userId);
-                    dialog.last_update = msg.createdon;
-                    dialog.target_id = msg.peerid;
-                    dialog.sender_id = msg.senderid;
+                    dialog = this.applyMessage(dialog, msg);
                 }
                 return dialog;
             });
@@ -150,7 +144,7 @@ export default class DialogRepo {
     public getManyCache({skip, limit}: any): Promise<IDialog[]> {
         return this.db.dialogs
             .orderBy('last_update').reverse()
-            .offset(skip || 0).limit(limit || 30).toArray();
+            .offset(skip || 0).limit(limit || 1000).toArray();
     }
 
     public importBulk(dialogs: IDialog[], messageMap?: { [key: number]: IMessage }): Promise<any> {
@@ -159,13 +153,7 @@ export default class DialogRepo {
                 dialog.topmessageid) {
                 const msg = messageMap[dialog.topmessageid || 0];
                 if (msg) {
-                    dialog.action_code = msg.messageaction;
-                    dialog.action_data = msg.actiondata;
-                    dialog.preview = (msg.body || '').substr(0, 64);
-                    dialog.preview_me = (msg.senderid === this.userId);
-                    dialog.last_update = msg.createdon;
-                    dialog.target_id = msg.peerid;
-                    dialog.sender_id = msg.senderid;
+                    dialog = this.applyMessage(dialog, msg);
                 }
             }
             return dialog;
@@ -228,13 +216,7 @@ export default class DialogRepo {
             dialog.topmessageid) {
             const msg = messageMap[dialog.topmessageid || 0];
             if (msg) {
-                dialog.action_code = msg.messageaction;
-                dialog.action_data = msg.actiondata;
-                dialog.preview = (msg.body || '').substr(0, 64);
-                dialog.preview_me = (msg.senderid === this.userId);
-                dialog.last_update = msg.createdon;
-                dialog.target_id = msg.peerid;
-                dialog.sender_id = msg.senderid;
+                dialog = this.applyMessage(dialog, msg);
             }
         }
         if (this.lazyMap.hasOwnProperty(dialog.peerid || 0)) {
@@ -259,5 +241,16 @@ export default class DialogRepo {
         }).catch((err) => {
             window.console.log(err);
         });
+    }
+
+    private applyMessage(dialog: IDialog, msg: IMessage): IDialog {
+        dialog.action_code = msg.messageaction;
+        dialog.action_data = msg.actiondata;
+        dialog.preview = (msg.body || '').substr(0, 64);
+        dialog.preview_me = (msg.senderid === this.userId);
+        dialog.last_update = msg.createdon;
+        dialog.target_id = msg.peerid;
+        dialog.sender_id = msg.senderid;
+        return dialog;
     }
 }

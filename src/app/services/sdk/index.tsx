@@ -213,7 +213,6 @@ export default class SDK {
         if (replyTo) {
             data.setReplyto(replyTo);
         }
-        window.console.log(peer.getAccesshash());
         return this.server.send(C_MSG.MessagesSend, data.serializeBinary());
     }
 
@@ -233,7 +232,7 @@ export default class SDK {
         data.setLimit(limit || 0);
         data.setMinid(minId || 0);
         data.setMaxid(maxId || 0);
-        return this.server.send(C_MSG.MessagesGetHistory, data.serializeBinary());
+        return this.server.send(C_MSG.MessagesGetHistory, data.serializeBinary(), true);
     }
 
     public typing(peer: InputPeer, type: TypingAction): Promise<MessagesMany.AsObject> {
