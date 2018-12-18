@@ -32,5 +32,11 @@ http {
             root   /ronak/app;
             index  index.html;
         }
+
+        location ~* \.html$ {
+           expires 0;
+           add_header Pragma public;
+           add_header Cache-Control "public";
+        }
     }
 }

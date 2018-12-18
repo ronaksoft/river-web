@@ -18,7 +18,7 @@ import DialogRepo from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
 import Uploader from '../../components/Uploader/index';
 import TextInput from '../../components/TextInput/index';
-import {cloneDeep, findIndex, throttle, trimStart, intersectionBy, find} from 'lodash';
+import {cloneDeep, findIndex, throttle, trimStart, intersectionBy, differenceBy, find} from 'lodash';
 import SDK from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
 import {
@@ -1116,12 +1116,13 @@ class Chat extends React.Component<IProps, IState> {
         };
     }
 
-    private modifyMessagesBetween(defaultMessages: IMessage[], messages: IMessage[], id: number): { msgs: IMessage[], index: number } {
+    private modifyMessagesBetween(defaultMessages: IMessage[], messages: IMessage[], id: number): { msgs: IMessage[], index: number, lastIndex: number } {
         const index = findIndex(defaultMessages, {id});
         if (index === -1) {
             return {
                 index,
-                msgs: this.modifyMessages(defaultMessages, messages, false).msgs,
+                lastIndex: -1,
+                msgs: this.modifyMessages(defaultMessages, messages, false).msgs
             };
         }
         let cnt = 1;
@@ -1129,10 +1130,16 @@ class Chat extends React.Component<IProps, IState> {
             defaultMessages.splice(index, 1);
             cnt = 0;
         }
-        messages.forEach((msg, key) => {
+        const check = false;
+        messages.forEach((msg) => {
+            if (check) {
+                return;
+            }
+            // if (msg.id === defaultMessages[index + cnt].id) {
+            //     check = true;
+            // }
             // avatar breakpoint
             msg.avatar = (((index + cnt) - 1) > -1 && msg.senderid !== defaultMessages[((index + cnt) - 1)].senderid);
-            window.console.log(msg.senderid, defaultMessages[((index + cnt) - 1)].senderid);
             // date breakpoint
             if (((index + cnt) - 1) > -1 && !TimeUtililty.isInSameDay(msg.createdon, defaultMessages[((index + cnt) - 1)].createdon)) {
                 defaultMessages.splice(index + cnt, 0, {
@@ -1147,16 +1154,18 @@ class Chat extends React.Component<IProps, IState> {
             defaultMessages.splice(index + cnt, 0, msg);
             cnt++;
         });
-        window.console.log(defaultMessages[(index + cnt) -1].body, defaultMessages[(index + cnt) -1].id);
-        defaultMessages.splice(index + cnt, 0, {
-            createdon: defaultMessages[(index + cnt) -1].createdon,
-            id: defaultMessages[(index + cnt) -1].id,
-            messagetype: C_MESSAGE_TYPE.Gap,
-            senderid: defaultMessages[(index + cnt) -1].senderid,
-        });
+        if (!check) {
+            defaultMessages.splice(index + cnt, 0, {
+                createdon: defaultMessages[(index + cnt) - 1].createdon,
+                id: defaultMessages[(index + cnt) - 1].id,
+                messagetype: C_MESSAGE_TYPE.Gap,
+                senderid: defaultMessages[(index + cnt) - 1].senderid,
+            });
+        }
         return {
             index,
-            msgs: defaultMessages,
+            lastIndex: (index + cnt) - 1,
+            msgs: defaultMessages
         };
     }
 
@@ -1552,12 +1561,18 @@ class Chat extends React.Component<IProps, IState> {
             this.dialogRepo.getSnapshot({}).then((res) => {
                 // Insert holes on snapshot if it has difference
                 const sameItems: IDialog[] = intersectionBy(oldDialogs, res.dialogs, 'peerid');
+                const newItems: IDialog[] = differenceBy(res.dialogs, oldDialogs, 'peerid');
                 sameItems.forEach((dialog) => {
                     const d = find(res.dialogs, {peerid: dialog.peerid});
                     if (d && dialog.topmessageid) {
                         if (dialog.topmessageid !== d.topmessageid) {
                             this.messageRepo.insertHole(dialog.peerid || '', dialog.topmessageid, true);
                         }
+                    }
+                });
+                newItems.forEach((dialog) => {
+                    if (dialog.topmessageid) {
+                        this.messageRepo.insertHole(dialog.peerid || '', dialog.topmessageid, false);
                     }
                 });
                 // Sorts dialogs by last update
@@ -2042,23 +2057,23 @@ class Chat extends React.Component<IProps, IState> {
             this.messageComponent.list.forceUpdateGrid();
             this.messageComponent.list.scrollToRow(0);
 
-            this.messageRepo.getManyCache({after: id - 1, limit: 25}, peer).then((res) => {
+            this.messageRepo.getMany({peer, after: id - 1, limit: 25}).then((res) => {
+                window.console.log(res);
                 if (res.length === 0) {
                     this.isLoading = false;
                     return;
                 }
                 res.push({
-                    createdon: res[0].createdon,
-                    id: (res[0].id || 0),
+                    createdon: res[res.length - 1].createdon,
+                    id: (res[res.length - 1].id || 0),
                     messagetype: C_MESSAGE_TYPE.Gap,
-                    senderid: (res[0].senderid || '')
+                    senderid: (res[res.length - 1].senderid || '')
                 });
-                res = res.reverse();
                 const dataMsg = this.modifyMessagesBetween(messages, res, id);
                 this.setState({
                     messages: dataMsg.msgs,
                 });
-                for (let i = 0; i <= res.length; i++) {
+                for (let i = dataMsg.index; i <= dataMsg.msgs.length; i++) {
                     this.messageComponent.cache.clear(i, 0);
                 }
                 this.messageComponent.list.recomputeGridSize();
@@ -2067,7 +2082,8 @@ class Chat extends React.Component<IProps, IState> {
                     this.isLoading = false;
                     highlighMessage(id);
                 }, 100);
-            }).catch(() => {
+            }).catch((err) => {
+                window.console.log(err);
                 this.isLoading = false;
             });
         }
@@ -2084,7 +2100,8 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         this.isLoading = true;
-        this.messageRepo.getManyCache({after: id, limit: 25}, peer).then((res) => {
+        this.messageRepo.getMany({peer, after: id, limit: 25}).then((res) => {
+            window.console.log(res);
             if (res.length === 0) {
                 this.isLoading = false;
                 return;
@@ -2097,10 +2114,14 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageComponent.cache.clear(i, 0);
             }
             this.messageComponent.list.recomputeGridSize();
+            // if (dataMsg.lastIndex !== -1) {
+            //     this.messageComponent.list.scrollToRow(dataMsg.lastIndex);
+            // }
             setTimeout(() => {
                 this.isLoading = false;
             }, 100);
-        }).catch(() => {
+        }).catch((err) => {
+            window.console.log(err);
             this.isLoading = false;
         });
     }

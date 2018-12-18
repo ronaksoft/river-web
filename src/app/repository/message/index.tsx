@@ -119,19 +119,27 @@ export default class MessageRepo {
     }
 
     public getMany({peer, limit, before, after}: any, fnCallback?: (resMsgs: IMessage[]) => void): Promise<IMessage[]> {
+        window.console.log({peer, limit, before, after});
         limit = limit || 30;
         return new Promise((resolve, reject) => {
             this.getManyCache({limit, before, after}, peer).then((res) => {
                 const len = res.length;
                 if (len < limit) {
                     let maxId = null;
+                    let minId = null;
                     if (before !== undefined) {
                         maxId = before - 1;
                     }
-                    if (len > 0) {
+                    if (after !== undefined) {
+                        minId = after + 1;
+                    }
+                    if (len > 0 && before !== undefined) {
                         maxId = (res[len - 1].id || 0) - 1;
                     }
-                    if (maxId === 0) {
+                    if (len > 0 && after !== undefined) {
+                        minId = (res[len - 1].id || 0) + 1;
+                    }
+                    if (maxId === 0 || minId === 0) {
                         resolve(res);
                         return;
                     }
@@ -139,7 +147,7 @@ export default class MessageRepo {
                         resolve(res);
                     }
                     const lim = limit - len;
-                    this.sdk.getMessageHistory(peer, {maxId, limit: lim}).then((remoteRes) => {
+                    this.sdk.getMessageHistory(peer, {maxId, minId, limit: lim}).then((remoteRes) => {
                         this.userRepo.importBulk(remoteRes.usersList);
                         this.groupRepo.importBulk(remoteRes.groupsList);
                         remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList);
@@ -160,7 +168,15 @@ export default class MessageRepo {
                     resolve(res);
                 }
             }).catch((err) => {
-                this.sdk.getMessageHistory(peer, {maxId: before - 1, limit}).then((remoteRes) => {
+                let maxId = null;
+                let minId = null;
+                if (before !== undefined) {
+                    maxId = before - 1;
+                }
+                if (after !== undefined) {
+                    minId = after + 1;
+                }
+                this.sdk.getMessageHistory(peer, {maxId, minId, limit}).then((remoteRes) => {
                     this.userRepo.importBulk(remoteRes.usersList);
                     this.groupRepo.importBulk(remoteRes.groupsList);
                     remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList);
@@ -216,6 +232,7 @@ export default class MessageRepo {
             const hasHole = res.some((msg) => {
                 return (msg.messagetype === C_MESSAGE_TYPE.Hole);
             });
+            window.console.log(hasHole);
             if (!hasHole) {
                 // Trims start of result
                 if (res.length > 0) {
@@ -447,8 +464,10 @@ export default class MessageRepo {
             return this.db.messages.get((asc ? max : min)).then((res) => {
                 if (!res) {
                     if (asc) {
+                        window.console.log('insert hole asc');
                         return this.insertHole(peerId, max, true);
                     } else {
+                        window.console.log('insert hole desc');
                         return this.insertHole(peerId, min, false);
                     }
                 } else {
