@@ -173,6 +173,8 @@ export default class SyncManager {
                 dialogs[dialog.peerid || 0] = merge(d, dialog);
             }
         } else {
+            dialog.readinboxmaxid = 0;
+            dialog.readoutboxmaxid = 0;
             dialogs[dialog.peerid || 0] = dialog;
         }
         return dialogs;

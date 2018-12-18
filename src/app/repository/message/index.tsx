@@ -312,6 +312,7 @@ export default class MessageRepo {
         return this.db.messages.where('id').anyOf(ids).toArray().then((result) => {
             const createItems: IMessage[] = differenceBy(msgs, result, 'id');
             const updateItems: IMessage[] = result;
+            window.console.log("messages update", result.length);
             updateItems.map((msg: IMessage) => {
                 const t = find(msgs, {id: msg.id});
                 if (t && t.temp === true && msg.temp === false) {
@@ -335,7 +336,7 @@ export default class MessageRepo {
     }
 
     public getUnreadCount(peerId: string, minId: number): Promise<number> {
-        if (!minId) {
+        if (minId === undefined) {
             return Promise.reject('bad input');
         }
         return this.db.messages.where('[peerid+id]')

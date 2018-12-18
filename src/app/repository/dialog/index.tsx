@@ -215,6 +215,11 @@ export default class DialogRepo {
         if (d.readoutboxmaxid !== undefined && dialog.readoutboxmaxid !== undefined && d.readoutboxmaxid < dialog.readoutboxmaxid) {
             d.readoutboxmaxid = dialog.readoutboxmaxid;
         }
+        if (newDialog.force !== true && d.topmessageid !== undefined && dialog.topmessageid !== undefined && d.topmessageid < dialog.topmessageid) {
+            d.readoutboxmaxid = dialog.readoutboxmaxid;
+        } else if (newDialog.force === true) {
+            delete d.force;
+        }
         return d;
     }
 

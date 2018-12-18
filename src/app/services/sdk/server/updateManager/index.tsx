@@ -89,6 +89,7 @@ export default class UpdateManager {
         window.console.log('on update, current:', currentUpdateId, 'min:', minId, 'max:', maxId);
         if (currentUpdateId + 1 !== minId && (minId || 0) > currentUpdateId) {
             this.callHandlers(C_MSG.OutOfSync, {});
+            this.disable();
             return;
         }
         if (maxId && maxId !== 0) {

@@ -101,7 +101,6 @@ class TextInput extends React.Component<IProps, IState> {
             this.textarea.value = newProps.previewMessage.body;
         }
         if (this.state.peer !== newProps.peer) {
-            window.console.log('toh');
             this.setState({
                 peer: newProps.peer,
             }, () => {

@@ -240,8 +240,8 @@ class Chat extends React.Component<IProps, IState> {
                     isUpdating: true,
                 });
             }).catch(() => {
+                this.updateManager.enable();
                 if (this.state.isUpdating) {
-                    this.updateManager.enable();
                     this.setState({
                         isUpdating: false,
                     });
@@ -510,6 +510,10 @@ class Chat extends React.Component<IProps, IState> {
             });
         } else {
             const peer = this.getPeerByDialogId(selectedId);
+            // Clear read history in dialog change
+            if (this.state.peer && peer && this.state.peer.getId() !== peer.getId()) {
+                this.readHistoryMaxId = null;
+            }
             this.setState({
                 leftMenu: 'chat',
                 peer,
@@ -1298,6 +1302,9 @@ class Chat extends React.Component<IProps, IState> {
                 dialogs[index].peerid = id;
                 dialogs[index].peertype = msg.peertype;
                 toUpdateDialog = dialogs[index];
+                if (force) {
+                    toUpdateDialog.force = force;
+                }
             }
         } else {
             const dialog: IDialog = {
@@ -1344,6 +1351,9 @@ class Chat extends React.Component<IProps, IState> {
         const {dialogs} = this.state;
         if (this.dialogMap.hasOwnProperty(peerid)) {
             const index = this.dialogMap[peerid];
+            if (!dialogs[index]) {
+                return;
+            }
             if (maxInbox && maxInbox > (dialogs[index].readinboxmaxid || 0)) {
                 dialogs[index].readinboxmaxid = maxInbox;
             }
@@ -1398,7 +1408,7 @@ class Chat extends React.Component<IProps, IState> {
         return new Promise((resolve, reject) => {
             this.sdk.getUpdateState().then((res) => {
                 // TODO: check
-                if ((res.updateid || 0) - lastId > 100) {
+                if ((res.updateid || 0) - lastId > 1000) {
                     reject({
                         err: 'too_late',
                     });
@@ -1435,8 +1445,8 @@ class Chat extends React.Component<IProps, IState> {
                             isUpdating: true,
                         });
                     }).catch(() => {
+                        this.updateManager.enable();
                         if (this.state.isUpdating) {
-                            this.updateManager.enable();
                             this.setState({
                                 isUpdating: false,
                             });
