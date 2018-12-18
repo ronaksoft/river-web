@@ -2029,7 +2029,7 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Jump to message handler */
     private messageJumpToMessageHandler = (id: number) => {
-        if (this.state.isUpdating) {
+        if (this.isLoading) {
             return;
         }
         const {peer, messages} = this.state;
@@ -2057,6 +2057,7 @@ class Chat extends React.Component<IProps, IState> {
             this.messageComponent.list.forceUpdateGrid();
             this.messageComponent.list.scrollToRow(0);
 
+            window.console.log(id -1);
             this.messageRepo.getMany({peer, after: id - 1, limit: 25}).then((res) => {
                 window.console.log(res);
                 if (res.length === 0) {
@@ -2091,7 +2092,6 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Message load after */
     private messageLoadMoreAfterHandler = (id: number) => {
-        window.console.log('messageLoadMoreAfterHandler', id);
         if (this.isLoading) {
             return;
         }
@@ -2099,6 +2099,7 @@ class Chat extends React.Component<IProps, IState> {
         if (!peer || !messages) {
             return;
         }
+        window.console.log('messageLoadMoreAfterHandler', id);
         this.isLoading = true;
         this.messageRepo.getMany({peer, after: id, limit: 25}).then((res) => {
             window.console.log(res);

@@ -51,12 +51,6 @@ http {
             index  index.html;
         }
 
-        location ~* \.html$ {
-           expires 0;
-           add_header Pragma public;
-           add_header Cache-Control "public";
-        }
-
         location /ws {
             # redirect all HTTP traffic to http://new.river.im
             proxy_pass http://new.river.im;

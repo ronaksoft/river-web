@@ -192,6 +192,7 @@ export default class MessageRepo {
     }
 
     public getManyCache({limit, before, after}: any, peer: InputPeer): Promise<IMessage[]> {
+        window.console.log({limit, before, after});
         const pipe = this.db.messages.where('[peerid+id]');
         let pipe2: Dexie.Collection<IMessage, number>;
         let mode = 0x0;
@@ -252,7 +253,7 @@ export default class MessageRepo {
                 }
                 return res;
             } else {
-                return this.checkHoles(peer, res, (mode === 0x2), limit).then((remoteRes) => {
+                return this.checkHoles(peer, (mode === 0x2 ? after + 1 : before - 1), (mode === 0x2), limit).then((remoteRes) => {
                     this.userRepo.importBulk(remoteRes.usersList);
                     this.groupRepo.importBulk(remoteRes.groupsList);
                     remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList);
@@ -422,20 +423,22 @@ export default class MessageRepo {
         });
     }
 
-    private checkHoles(peer: InputPeer, res: IMessage[], asc: boolean, limit: number) {
+    private checkHoles(peer: InputPeer, id: number, asc: boolean, limit: number) {
         let query = {};
         if (asc) {
             query = {
                 limit,
-                minId: res[0].id || 0,
+                minId: id,
             };
         } else {
             query = {
                 limit,
-                maxId: res[0].id || 0,
+                maxId: id,
             };
         }
+        window.console.log(peer.toObject(), query);
         return this.sdk.getMessageHistory(peer, query).then((remoteRes) => {
+            window.console.log(remoteRes.messagesList);
             return this.modifyHoles(peer.getId() || '', remoteRes.messagesList, asc).then(() => {
                 return remoteRes;
             });

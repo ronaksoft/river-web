@@ -227,6 +227,7 @@ export default class SDK {
     }
 
     public getMessageHistory(peer: InputPeer, {limit, minId, maxId}: any): Promise<MessagesMany.AsObject> {
+        window.console.log({limit, minId, maxId});
         const data = new MessagesGetHistory();
         data.setPeer(peer);
         data.setLimit(limit || 0);
