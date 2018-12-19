@@ -87,7 +87,7 @@ export default class MessageRepo {
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
         this.rtlDetector = RTLDetector.getInstance();
-        this.updateThrottle = throttle(this.insertToDb, 1000);
+        this.updateThrottle = throttle(this.insertToDb, 300);
     }
 
     public loadConnInfo() {
@@ -231,7 +231,7 @@ export default class MessageRepo {
             const hasHole = res.some((msg) => {
                 return (msg.messagetype === C_MESSAGE_TYPE.Hole);
             });
-            window.console.log(hasHole);
+            window.console.log('has hole:', hasHole);
             if (!hasHole) {
                 // Trims start of result
                 if (res.length > 0) {
@@ -459,17 +459,19 @@ export default class MessageRepo {
         return this.db.messages.where('[peerid+id]').between([peerId, min - 1], [peerId, max + 1], true, true).filter((item) => {
             return (item.messagetype === C_MESSAGE_TYPE.Hole);
         }).delete().finally(() => {
-            // @ts-ignore
-            return this.get((asc ? max : min)).then((res) => {
-                if (!res) {
-                    if (asc) {
-                        return this.insertHole(peerId, max, true);
-                    } else {
-                        return this.insertHole(peerId, min, false);
+            const promises: Array<Promise<IMessage|undefined>> = [];
+            promises.push(this.db.messages.get(min - 1));
+            promises.push(this.db.messages.get(max + 1));
+            return new Promise((resolve) => {
+                Promise.all(promises).then((resArr) => {
+                    if (!resArr[0]) {
+                        this.insertHole(peerId, min, true);
                     }
-                } else {
-                    return Promise.resolve();
-                }
+                    if (!resArr[1]) {
+                        this.insertHole(peerId, max, true);
+                    }
+                    resolve();
+                });
             });
         });
     }
