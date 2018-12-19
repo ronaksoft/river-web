@@ -1108,13 +1108,9 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private modifyMessagesBetween(defaultMessages: IMessage[], messages: IMessage[], id: number): { msgs: IMessage[], index: number, lastIndex: number } {
-        window.console.log('gap cnt: ', defaultMessages.filter((item) => {
-            return item.messagetype === C_MESSAGE_TYPE.Gap;
-        }));
         const index = findIndex(defaultMessages, {id, messagetype: C_MESSAGE_TYPE.Gap});
         let cnt = 1;
         if (index !== -1 && defaultMessages[index].messagetype === C_MESSAGE_TYPE.Gap) {
-            window.console.log('remove gap', defaultMessages[index].id);
             defaultMessages.splice(index, 1);
             cnt = 0;
         }
@@ -1123,9 +1119,10 @@ class Chat extends React.Component<IProps, IState> {
             if (check || msg.messagetype === C_MESSAGE_TYPE.Gap) {
                 return;
             }
-            window.console.log(index + cnt, defaultMessages[index + cnt].id, defaultMessages[index + cnt].messagetype, msg.id, msg.messagetype);
             if (msg.id === defaultMessages[index + cnt].id) {
-                window.console.log('check');
+                if (defaultMessages[index + cnt].messagetype === C_MESSAGE_TYPE.Gap) {
+                    defaultMessages.splice(index + cnt, 1);
+                }
                 check = true;
             }
             if (check) {
@@ -1156,9 +1153,6 @@ class Chat extends React.Component<IProps, IState> {
                 senderid: defaultMessages[(index + cnt) - 1].senderid,
             });
         }
-        window.console.log('gap cnt: ', defaultMessages.filter((item) => {
-            return item.messagetype === C_MESSAGE_TYPE.Gap;
-        }).length);
         return {
             index,
             lastIndex: (index + cnt) - 1,

@@ -264,7 +264,7 @@ export default class MessageRepo {
         });
     }
 
-    public get(id: number, peer?: InputPeer | null): Promise<IMessage> {
+    public get(id: number, peer?: InputPeer | null): Promise<IMessage | null> {
         return new Promise((resolve, reject) => {
             if (this.lazyMap.hasOwnProperty(id)) {
                 resolve(this.lazyMap[id]);
@@ -280,7 +280,7 @@ export default class MessageRepo {
                 if (peer) {
                     this.sdk.getMessageHistory(peer, {minId: id, maxId: id}).then((remoteRes) => {
                         if (remoteRes.messagesList.length === 0) {
-                            reject();
+                            resolve(null);
                         } else {
                             const message = MessageRepo.parseMessage(remoteRes.messagesList[0]);
                             this.lazyUpsert([message], true);
@@ -456,11 +456,11 @@ export default class MessageRepo {
     }
 
     private removeHolesInRange(peerId: string, min: number, max: number, asc: boolean) {
-        return this.db.messages.where('[peerid+id]').between([peerId, min], [peerId, max], true, true).filter((item) => {
+        return this.db.messages.where('[peerid+id]').between([peerId, min - 1], [peerId, max + 1], true, true).filter((item) => {
             return (item.messagetype === C_MESSAGE_TYPE.Hole);
         }).delete().finally(() => {
             // @ts-ignore
-            return this.db.messages.get((asc ? max : min)).then((res) => {
+            return this.get((asc ? max : min)).then((res) => {
                 if (!res) {
                     if (asc) {
                         return this.insertHole(peerId, max, true);
