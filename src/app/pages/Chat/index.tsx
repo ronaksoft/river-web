@@ -945,7 +945,11 @@ class Chat extends React.Component<IProps, IState> {
         };
 
         window.console.time('DB benchmark:');
-        this.messageRepo.getMany({peer, limit: 25}, (resMsgs) => {
+        let before = 100000000;
+        if (this.dialogMap.hasOwnProperty(dialogId) && this.state.dialogs[this.dialogMap[dialogId]]) {
+            before = (this.state.dialogs[this.dialogMap[dialogId]].topmessageid || 0) + 1;
+        }
+        this.messageRepo.getMany({peer, limit: 25, before}, (resMsgs) => {
             const dataMsg = this.modifyMessages(this.state.messages, resMsgs, false);
             this.setState({
                 messages: dataMsg.msgs,
