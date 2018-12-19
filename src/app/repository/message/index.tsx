@@ -119,7 +119,6 @@ export default class MessageRepo {
     }
 
     public getMany({peer, limit, before, after}: any, fnCallback?: (resMsgs: IMessage[]) => void): Promise<IMessage[]> {
-        window.console.log({peer, limit, before, after});
         limit = limit || 30;
         return new Promise((resolve, reject) => {
             this.getManyCache({limit, before, after}, peer).then((res) => {
@@ -192,7 +191,6 @@ export default class MessageRepo {
     }
 
     public getManyCache({limit, before, after}: any, peer: InputPeer): Promise<IMessage[]> {
-        window.console.log({limit, before, after});
         const pipe = this.db.messages.where('[peerid+id]');
         let pipe2: Dexie.Collection<IMessage, number>;
         let mode = 0x0;
@@ -436,9 +434,7 @@ export default class MessageRepo {
                 maxId: id,
             };
         }
-        window.console.log(peer.toObject(), query);
         return this.sdk.getMessageHistory(peer, query).then((remoteRes) => {
-            window.console.log(remoteRes.messagesList);
             return this.modifyHoles(peer.getId() || '', remoteRes.messagesList, asc).then(() => {
                 return remoteRes;
             });
@@ -467,10 +463,8 @@ export default class MessageRepo {
             return this.db.messages.get((asc ? max : min)).then((res) => {
                 if (!res) {
                     if (asc) {
-                        window.console.log('insert hole asc');
                         return this.insertHole(peerId, max, true);
                     } else {
-                        window.console.log('insert hole desc');
                         return this.insertHole(peerId, min, false);
                     }
                 } else {

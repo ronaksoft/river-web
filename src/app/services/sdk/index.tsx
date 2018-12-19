@@ -227,13 +227,12 @@ export default class SDK {
     }
 
     public getMessageHistory(peer: InputPeer, {limit, minId, maxId}: any): Promise<MessagesMany.AsObject> {
-        window.console.log({limit, minId, maxId});
         const data = new MessagesGetHistory();
         data.setPeer(peer);
         data.setLimit(limit || 0);
         data.setMinid(minId || 0);
         data.setMaxid(maxId || 0);
-        return this.server.send(C_MSG.MessagesGetHistory, data.serializeBinary(), true);
+        return this.server.send(C_MSG.MessagesGetHistory, data.serializeBinary(), false);
     }
 
     public typing(peer: InputPeer, type: TypingAction): Promise<MessagesMany.AsObject> {

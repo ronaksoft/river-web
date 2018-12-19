@@ -1118,30 +1118,24 @@ class Chat extends React.Component<IProps, IState> {
 
     private modifyMessagesBetween(defaultMessages: IMessage[], messages: IMessage[], id: number): { msgs: IMessage[], index: number, lastIndex: number } {
         const index = findIndex(defaultMessages, {id});
-        if (index === -1) {
-            return {
-                index,
-                lastIndex: -1,
-                msgs: this.modifyMessages(defaultMessages, messages, false).msgs
-            };
-        }
         let cnt = 1;
-        if (defaultMessages[index].messagetype === C_MESSAGE_TYPE.Gap) {
+        if (index !== -1 && defaultMessages[index].messagetype === C_MESSAGE_TYPE.Gap) {
             defaultMessages.splice(index, 1);
             cnt = 0;
         }
-        const check = false;
+        let check = false;
         messages.forEach((msg) => {
             if (check) {
                 return;
             }
-            // if (msg.id === defaultMessages[index + cnt].id) {
-            //     check = true;
-            // }
+            if (msg.id === defaultMessages[index + cnt].id) {
+                check = true;
+            }
+            const iter = ((index + cnt) - 1);
             // avatar breakpoint
-            msg.avatar = (((index + cnt) - 1) > -1 && msg.senderid !== defaultMessages[((index + cnt) - 1)].senderid);
+            msg.avatar = (iter === -1) || (iter > -1 && msg.senderid !== defaultMessages[iter].senderid);
             // date breakpoint
-            if (((index + cnt) - 1) > -1 && !TimeUtililty.isInSameDay(msg.createdon, defaultMessages[((index + cnt) - 1)].createdon)) {
+            if ((iter === -1) || (iter > -1 && !TimeUtililty.isInSameDay(msg.createdon, defaultMessages[iter].createdon))) {
                 defaultMessages.splice(index + cnt, 0, {
                     createdon: msg.createdon,
                     id: msg.id,
@@ -2045,6 +2039,7 @@ class Chat extends React.Component<IProps, IState> {
         } else {
             // if ((messages[0].id || 0) < id) {
             this.isLoading = true;
+            this.messageComponent.setLoading(true);
             if (messages[0].messagetype !== C_MESSAGE_TYPE.Gap) {
                 messages.unshift({
                     createdon: (messages[0].createdon || 0),
@@ -2057,11 +2052,10 @@ class Chat extends React.Component<IProps, IState> {
             this.messageComponent.list.forceUpdateGrid();
             this.messageComponent.list.scrollToRow(0);
 
-            window.console.log(id -1);
             this.messageRepo.getMany({peer, after: id - 1, limit: 25}).then((res) => {
-                window.console.log(res);
                 if (res.length === 0) {
                     this.isLoading = false;
+                    this.messageComponent.setLoading(false);
                     return;
                 }
                 res.push({
@@ -2081,11 +2075,13 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageComponent.list.scrollToRow(0);
                 setTimeout(() => {
                     this.isLoading = false;
+                    this.messageComponent.setLoading(false);
                     highlighMessage(id);
                 }, 100);
             }).catch((err) => {
                 window.console.log(err);
                 this.isLoading = false;
+                this.messageComponent.setLoading(false);
             });
         }
     }
@@ -2101,8 +2097,8 @@ class Chat extends React.Component<IProps, IState> {
         }
         window.console.log('messageLoadMoreAfterHandler', id);
         this.isLoading = true;
+        this.messageComponent.setLoading(true);
         this.messageRepo.getMany({peer, after: id, limit: 25}).then((res) => {
-            window.console.log(res);
             if (res.length === 0) {
                 this.isLoading = false;
                 return;
@@ -2119,10 +2115,12 @@ class Chat extends React.Component<IProps, IState> {
             //     this.messageComponent.list.scrollToRow(dataMsg.lastIndex);
             // }
             setTimeout(() => {
+                this.messageComponent.setLoading(false);
                 this.isLoading = false;
             }, 100);
         }).catch((err) => {
             window.console.log(err);
+            this.messageComponent.setLoading(false);
             this.isLoading = false;
         });
     }

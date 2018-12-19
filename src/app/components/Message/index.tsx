@@ -35,6 +35,7 @@ interface IProps {
 interface IState {
     items: IMessage[];
     listStyle?: React.CSSProperties;
+    loading: boolean;
     moreAnchorEl: any;
     moreIndex: number;
     noTransition: boolean;
@@ -69,6 +70,7 @@ class Message extends React.Component<IProps, IState> {
 
         this.state = {
             items: props.items,
+            loading: false,
             moreAnchorEl: null,
             moreIndex: -1,
             noTransition: false,
@@ -146,6 +148,14 @@ class Message extends React.Component<IProps, IState> {
                 this.list.forceUpdateGrid();
             });
         }
+    }
+
+    public setLoading(loading: boolean) {
+        this.setState({
+            loading,
+        }, () => {
+            this.list.forceUpdateGrid();
+        });
     }
 
     public render() {
@@ -277,7 +287,11 @@ class Message extends React.Component<IProps, IState> {
                 return '';
             case C_MESSAGE_TYPE.Gap:
                 return (<div style={style} className="bubble-gap">
-                    <div className="gap"/>
+                    <div className="gap">
+                        {this.state.loading && <div className="loading">
+                            <span className="loader"/>
+                        </div>}
+                    </div>
                 </div>);
             case C_MESSAGE_TYPE.NewMessage:
                 return (
