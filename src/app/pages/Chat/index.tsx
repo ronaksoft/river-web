@@ -264,7 +264,7 @@ class Chat extends React.Component<IProps, IState> {
                     messages: dataMsg.msgs,
                 }, () => {
                     setTimeout(() => {
-                        this.animateToEnd();
+                        this.messageComponent.animateToEnd();
                     }, 200);
                 });
                 const {peer} = this.state;
@@ -912,19 +912,6 @@ class Chat extends React.Component<IProps, IState> {
         this.messageComponent = value;
     }
 
-    private animateToEnd() {
-        const el = document.querySelector('.chat.active-chat');
-        if (el) {
-            const eldiv = el.querySelector('.chat.active-chat > div');
-            if (eldiv) {
-                el.scroll({
-                    behavior: 'smooth',
-                    top: eldiv.clientHeight,
-                });
-            }
-        }
-    }
-
     private getMessagesByDialogId(dialogId: string, force?: boolean) {
         const {peer} = this.state;
         if (peer === null) {
@@ -1121,19 +1108,28 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private modifyMessagesBetween(defaultMessages: IMessage[], messages: IMessage[], id: number): { msgs: IMessage[], index: number, lastIndex: number } {
-        const index = findIndex(defaultMessages, {id});
+        window.console.log('gap cnt: ', defaultMessages.filter((item) => {
+            return item.messagetype === C_MESSAGE_TYPE.Gap;
+        }));
+        const index = findIndex(defaultMessages, {id, messagetype: C_MESSAGE_TYPE.Gap});
         let cnt = 1;
         if (index !== -1 && defaultMessages[index].messagetype === C_MESSAGE_TYPE.Gap) {
+            window.console.log('remove gap', defaultMessages[index].id);
             defaultMessages.splice(index, 1);
             cnt = 0;
         }
         let check = false;
         messages.forEach((msg) => {
-            if (check) {
+            if (check || msg.messagetype === C_MESSAGE_TYPE.Gap) {
                 return;
             }
+            window.console.log(index + cnt, defaultMessages[index + cnt].id, defaultMessages[index + cnt].messagetype, msg.id, msg.messagetype);
             if (msg.id === defaultMessages[index + cnt].id) {
+                window.console.log('check');
                 check = true;
+            }
+            if (check) {
+                return;
             }
             const iter = ((index + cnt) - 1);
             // avatar breakpoint
@@ -1160,6 +1156,9 @@ class Chat extends React.Component<IProps, IState> {
                 senderid: defaultMessages[(index + cnt) - 1].senderid,
             });
         }
+        window.console.log('gap cnt: ', defaultMessages.filter((item) => {
+            return item.messagetype === C_MESSAGE_TYPE.Gap;
+        }).length);
         return {
             index,
             lastIndex: (index + cnt) - 1,
@@ -1250,11 +1249,15 @@ class Chat extends React.Component<IProps, IState> {
             message.avatar = true;
         }
         messages.push(message);
+        this.isLoading = true;
         this.setState({
             messages,
         }, () => {
             setTimeout(() => {
-                this.animateToEnd();
+                this.messageComponent.animateToEnd();
+                setTimeout(() => {
+                    this.isLoading = false;
+                }, 1000);
             }, 200);
         });
         this.messageRepo.lazyUpsert([message]);
@@ -1638,7 +1641,7 @@ class Chat extends React.Component<IProps, IState> {
                     messages: dataMsg.msgs,
                 }, () => {
                     setTimeout(() => {
-                        this.animateToEnd();
+                        this.messageComponent.animateToEnd();
                     }, 200);
                 });
 
@@ -2034,6 +2037,7 @@ class Chat extends React.Component<IProps, IState> {
         if (!peer || !messages) {
             return;
         }
+        window.console.log('messageJumpToMessageHandler', id);
         const index = findIndex(messages, {id});
         if (index > 0) {
             this.messageComponent.list.scrollToRow(index);
@@ -2062,12 +2066,6 @@ class Chat extends React.Component<IProps, IState> {
                     this.messageComponent.setLoading(false);
                     return;
                 }
-                res.push({
-                    createdon: res[res.length - 1].createdon,
-                    id: (res[res.length - 1].id || 0),
-                    messagetype: C_MESSAGE_TYPE.Gap,
-                    senderid: (res[res.length - 1].senderid || '')
-                });
                 const dataMsg = this.modifyMessagesBetween(messages, res, id);
                 this.setState({
                     messages: dataMsg.msgs,

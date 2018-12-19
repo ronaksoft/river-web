@@ -64,6 +64,17 @@ class Message extends React.Component<IProps, IState> {
     public cache: CellMeasurerCache;
     private listCount: number;
     private topOfList: boolean = false;
+    private messageScroll: {
+        overscanStartIndex: number;
+        overscanStopIndex: number;
+        startIndex: number;
+        stopIndex: number;
+    } = {
+        overscanStartIndex: 0,
+        overscanStopIndex: 0,
+        startIndex: 0,
+        stopIndex: 0,
+    };
 
     constructor(props: IProps) {
         super(props);
@@ -156,6 +167,34 @@ class Message extends React.Component<IProps, IState> {
         }, () => {
             this.list.forceUpdateGrid();
         });
+    }
+
+    public animateToEnd() {
+        const {items} = this.state;
+        if (!items) {
+            return;
+        }
+        let jump = false;
+        for (let i = this.messageScroll.startIndex; i < items.length; i++) {
+            if (items[i] && items[i].messagetype === C_MESSAGE_TYPE.Gap) {
+                jump = true;
+                break;
+            }
+        }
+        if (this.list && jump) {
+            this.list.scrollToRow(items.length);
+        } else {
+            const el = document.querySelector('.chat.active-chat');
+            if (el) {
+                const eldiv = el.querySelector('.chat.active-chat > div');
+                if (eldiv) {
+                    el.scroll({
+                        behavior: 'smooth',
+                        top: eldiv.clientHeight,
+                    });
+                }
+            }
+        }
     }
 
     public render() {
@@ -473,6 +512,8 @@ class Message extends React.Component<IProps, IState> {
                 }
             }
         }
+
+        this.messageScroll = data;
 
         if (this.props.rendered) {
             this.props.rendered(data);
