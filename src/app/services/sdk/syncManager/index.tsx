@@ -18,6 +18,13 @@ import UpdateManager from '../server/updateManager';
 import GroupRepo from '../../../repository/group';
 import {IGroup} from '../../../repository/group/interface';
 import {Group} from '../messages/core.types_pb';
+import {C_MESSAGE_ACTION} from '../../../repository/message/consts';
+
+export interface IRemoveDialog {
+    maxId: number;
+    peerId: string;
+    remove: boolean;
+}
 
 export default class SyncManager {
     public static getInstance() {
@@ -75,6 +82,7 @@ export default class SyncManager {
 
     private updateMany(envelopes: UpdateEnvelope.AsObject[], groups: Group.AsObject[]) {
         let dialogs: { [key: number]: IDialog } = {};
+        const toRemoveDialogs: IRemoveDialog[] = [];
         const messages: { [key: number]: IMessage } = {};
         const toRemoveMessages: number[] = [];
         const users: { [key: number]: IUser } = {};
@@ -85,7 +93,16 @@ export default class SyncManager {
                 case C_MSG.UpdateNewMessage:
                     const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
                     users[updateNewMessage.sender.id || 0] = updateNewMessage.sender;
-                    messages[updateNewMessage.message.id || 0] = MessageRepo.parseMessage(updateNewMessage.message);
+                    const message = MessageRepo.parseMessage(updateNewMessage.message);
+                    messages[updateNewMessage.message.id || 0] = message;
+                    // Message Clear History
+                    if (message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
+                        toRemoveDialogs.push({
+                            maxId: message.actiondata.maxid || 0,
+                            peerId: message.peerid || '',
+                            remove: message.actiondata.pb_delete || false,
+                        });
+                    }
                     dialogs = this.updateDialog(dialogs, {
                         accesshash: updateNewMessage.accesshash,
                         action_code: updateNewMessage.message.messageaction,
@@ -152,7 +169,7 @@ export default class SyncManager {
         });
         this.updateMessageDB(messages, toRemoveMessages);
         this.updateUserDB(users);
-        this.updateDialogDB(dialogs);
+        this.updateDialogDB(dialogs, toRemoveDialogs);
         this.updateGroupDB(groups);
     }
 
@@ -180,7 +197,15 @@ export default class SyncManager {
         return dialogs;
     }
 
-    private updateDialogDB(dialogs: { [key: number]: IDialog }) {
+    private updateDialogDB(dialogs: { [key: number]: IDialog }, toRemoveDialogs: IRemoveDialog[]) {
+        toRemoveDialogs.forEach((item) => {
+            if (item.remove) {
+                this.dialogRepo.remove(item.peerId);
+            }
+            if (item.maxId > 0) {
+                this.messageRepo.clearHistory(item.peerId, item.maxId);
+            }
+        });
         const data: IDialog[] = [];
         const keys = Object.keys(dialogs);
         keys.forEach((key) => {
