@@ -18,7 +18,6 @@ build:mobile:
     - npm run build
     - mkdir -p $BUILD_DIR/app
     - cp -r ./build/* $BUILD_DIR/app
-    - cp ./nginx.conf $BUILD_DIR/app/
     - cp ./nginx.conf.template $BUILD_DIR/app/
     - cp ./nginx-ssl.conf.template $BUILD_DIR/app/
 
