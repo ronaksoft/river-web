@@ -1215,6 +1215,9 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageRepo.remove(message.id || 0).catch(() => {
                     //
                 });
+                if (msg.messageid) {
+                    this.sendReadHistory(peer, msg.messageid);
+                }
                 message.id = msg.messageid;
                 this.messageRepo.lazyUpsert([message]);
                 this.updateDialogs(message, '0');
