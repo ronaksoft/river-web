@@ -44,7 +44,7 @@ export default class DialogRepo {
         this.messageRepo = MessageRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
-        this.updateThrottle = throttle(this.insertToDb, 1000);
+        this.updateThrottle = throttle(this.insertToDb, 300);
         this.userId = SDK.getInstance().getConnInfo().UserID || '0';
     }
 
@@ -185,7 +185,7 @@ export default class DialogRepo {
 
     public flush() {
         this.updateThrottle.cancel();
-        this.insertToDb();
+        return this.insertToDb();
     }
 
     public lazyUpsert(dialogs: IDialog[], messageMap?: { [key: number]: IMessage }) {
@@ -221,7 +221,7 @@ export default class DialogRepo {
         }
         if (this.lazyMap.hasOwnProperty(dialog.peerid || 0)) {
             const t = this.lazyMap[dialog.peerid || 0];
-            this.lazyMap[dialog.peerid || 0] = this.mergeCheck(dialog, t);
+            this.lazyMap[dialog.peerid || 0] = this.mergeCheck(t, dialog);
         } else {
             this.lazyMap[dialog.peerid || 0] = dialog;
         }
@@ -233,13 +233,12 @@ export default class DialogRepo {
             dialogs.push(cloneDeep(this.lazyMap[key]));
         });
         if (dialogs.length === 0) {
-            return;
+            return Promise.resolve();
         }
         this.lazyMap = {};
-        this.upsert(dialogs).then((info) => {
+        return this.upsert(dialogs).then((info) => {
             this.updateManager.flushLastUpdateId();
-        }).catch((err) => {
-            window.console.log(err);
+            return info;
         });
     }
 

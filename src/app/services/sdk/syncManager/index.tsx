@@ -215,10 +215,15 @@ export default class SyncManager {
             // TODO: check
             this.messageRepo.flush();
             this.dialogRepo.lazyUpsert(data);
-            this.dialogRepo.flush();
-            setTimeout(() => {
-                this.broadcastEvent('Dialog_DB_Updated', {ids: keys});
-            }, 1000);
+            this.dialogRepo.flush().then(() => {
+                setTimeout(() => {
+                    this.broadcastEvent('Dialog_DB_Updated', {ids: keys});
+                }, 100);
+            }).catch(() => {
+                setTimeout(() => {
+                    this.broadcastEvent('Dialog_DB_Updated', {ids: keys});
+                }, 100);
+            });
         }
     }
 

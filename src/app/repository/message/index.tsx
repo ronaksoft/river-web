@@ -366,6 +366,8 @@ export default class MessageRepo {
     }
 
     public flush() {
+        return;
+        // Disabling debouncer
         this.updateThrottle.cancel();
         this.insertToDb();
     }
@@ -374,6 +376,16 @@ export default class MessageRepo {
         if (this.userId === '0' || this.userId === '') {
             this.loadConnInfo();
         }
+        // Start
+        messages.forEach((message) => {
+            message.me = (message.senderid === this.userId);
+            message.rtl = this.rtlDetector.direction(message.body || '');
+            message.temp = (temp === true);
+        });
+        this.upsert(messages);
+        // End
+        return;
+        // Disabling debouncer
         cloneDeep(messages).forEach((message) => {
             this.updateMap(message, temp);
         });
@@ -416,8 +428,6 @@ export default class MessageRepo {
         this.lazyMap = {};
         this.upsert(messages).then(() => {
             //
-        }).catch((err) => {
-            window.console.log(err);
         });
     }
 

@@ -87,7 +87,7 @@ export default class UpdateManager {
         const minId = data.minupdateid;
         const maxId = data.maxupdateid;
         window.console.log('on update, current:', currentUpdateId, 'min:', minId, 'max:', maxId);
-        if (currentUpdateId + 1 !== minId && (minId || 0) > currentUpdateId) {
+        if (currentUpdateId + 1 !== minId && !(minId === 0 && maxId === 0)) {
             this.callHandlers(C_MSG.OutOfSync, {});
             this.disable();
             return;
