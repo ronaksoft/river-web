@@ -110,10 +110,17 @@ class MessagePreview extends React.Component<IProps, IState> {
     private getMessage() {
         const {message, peer} = this.state;
         this.messageRepo.get(message.replyto || 0, peer).then((res) => {
-            this.setState({
-                error: false,
-                previewMessage: res,
-            });
+            if (res) {
+                this.setState({
+                    error: false,
+                    previewMessage: res,
+                });
+            } else {
+                this.setState({
+                    error: true,
+                    previewMessage: res,
+                });
+            }
         }).catch(() => {
             this.setState({
                 error: true,

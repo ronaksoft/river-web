@@ -1,0 +1,148 @@
+*, *:before, *:after {
+  box-sizing: border-box; }
+
+:root {
+  --river: #27AE60;
+  --river-dark: #2E8F57;
+  --river-light: #29C16D;
+  --white: #FFF;
+  --black: #000;
+  --black-text: #323D47;
+  --bg: #F8F8F8;
+  --grey: #999;
+  --dark: #1A1A1A;
+  --light: #E6E6E6;
+  --wrapper: 1200px;
+  --blue: #00B0FF;
+  --light-blue: rgba(54, 115, 249, 0.2);
+  --green: #DCf8C6;
+  --message-chat: #EFEFF0;
+  --color-hover: rgba(50, 61, 71, 0.07);
+  --color-hover-dark: rgba(50, 61, 71, 0.12);
+  --color-text-hover: rgba(50, 61, 71, 0.64);
+  --header-color: #eee;
+  --dark-low: #191919;
+  --dark-medium: #232323;
+  --dark-high: #333333;
+  --dark-hover: rgba(183, 222, 255, 0.07);
+  --dark-hover-light: rgba(183, 222, 255, 0.12);
+  --dark-accent-low: #003367;
+  --dark-accent-medium: #004783;
+  --dark-accent-high: #005EAE;
+  --red: #cc0000; }
+
+body {
+  background-color: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
+  font-weight: 400;
+  background-size: cover;
+  background-repeat: no-repeat; }
+
+input {
+  font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
+  font-weight: 400; }
+
+.user-dialog .user-info-menu {
+  width: 300px;
+  background: var(--bg); }
+  .user-dialog .user-info-menu .info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 20px 10px; }
+    .user-dialog .user-info-menu .info .avatar {
+      height: 200px;
+      width: 200px;
+      border-radius: 50%;
+      display: inline-block;
+      font-size: 75px; }
+    .user-dialog .user-info-menu .info .line {
+      padding: 16px 10px 0;
+      text-align: left;
+      width: 100%; }
+      .user-dialog .user-info-menu .info .line .input-edit {
+        margin-bottom: 10px; }
+    .user-dialog .user-info-menu .info .created-on {
+      padding: 0 10px;
+      text-align: left;
+      width: 100%;
+      color: var(--grey); }
+  .user-dialog .user-info-menu .add-as-contact {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--river);
+    height: 40px;
+    cursor: pointer;
+    width: 100%; }
+    .user-dialog .user-info-menu .add-as-contact:hover {
+      background-color: var(--color-hover); }
+  .user-dialog .user-info-menu .actions-bar {
+    height: 86px;
+    padding: 18px 0 22px;
+    text-align: center; }
+    .user-dialog .user-info-menu .actions-bar .add-action {
+      display: inline-flex;
+      height: 46px;
+      width: 46px;
+      border-radius: 50%;
+      background: var(--river);
+      color: var(--white);
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+      transition: all 0.2s; }
+      .user-dialog .user-info-menu .actions-bar .add-action svg {
+        font-size: 40px; }
+      .user-dialog .user-info-menu .actions-bar .add-action:hover {
+        background: var(--river-dark);
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4); }
+  .user-dialog .user-info-menu .notify-settings {
+    display: flex; }
+    .user-dialog .user-info-menu .notify-settings .label {
+      flex: 1;
+      text-align: left;
+      line-height: 48px;
+      padding-left: 12px; }
+    .user-dialog .user-info-menu .notify-settings .value {
+      width: 50px;
+      text-align: right; }
+  .user-dialog .user-info-menu .form-control {
+    display: flex; }
+    .user-dialog .user-info-menu .form-control .inner {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap; }
+    .user-dialog .user-info-menu .form-control .action {
+      width: 48px; }
+  .user-dialog .user-info-menu .kk-card {
+    margin-bottom: 10px;
+    background-color: var(--white);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); }
+
+html[theme="dark"] .user-dialog .user-info-menu {
+  background-color: var(--dark-high); }
+  html[theme="dark"] .user-dialog .user-info-menu .info .line, html[theme="dark"] .user-dialog .user-info-menu .info .input-edit input, html[theme="dark"] .user-dialog .user-info-menu .info .input-edit label, html[theme="dark"] .user-dialog .user-info-menu .info .input-edit svg {
+    color: var(--white); }
+  html[theme="dark"] .user-dialog .user-info-menu .notify-settings .label {
+    color: var(--white); }
+  html[theme="dark"] .user-dialog .user-info-menu .form-control .action svg {
+    color: var(--white); }
+  html[theme="dark"] .user-dialog .user-info-menu .kk-card {
+    background-color: var(--dark-medium); }
+
+html[theme="dark"] .user-dialog .checkbox:not(.checked) {
+  color: var(--white); }
+
+html[theme="dark"] .user-dialog .notify-setting-dialog div[role="document"] > div {
+  background-color: var(--dark); }
+  html[theme="dark"] .user-dialog .notify-setting-dialog div[role="document"] > div h2, html[theme="dark"] .user-dialog .notify-setting-dialog div[role="document"] > div p, html[theme="dark"] .user-dialog .notify-setting-dialog div[role="document"] > div .dialog-content span {
+    color: var(--white); }

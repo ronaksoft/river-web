@@ -67,15 +67,16 @@ class UserName extends React.Component<IProps, IState> {
     public render() {
         const {onlyFirstName, defaultString} = this.props;
         const {user, className, prefix} = this.state;
-        let style = {};
+        const style = {
+            color: 'auto',
+            cursor: 'pointer',
+        };
         if (this.props.uniqueColor === true) {
-            style = {
-                color: GetUniqueColor(`${user.firstname}${user.lastname}`, SecondaryColors),
-            };
+            style.color = GetUniqueColor(`${user.firstname}${user.lastname}`, SecondaryColors);
         }
         return (
             <span className={className}
-                  style={style}>{(user && user.id) ? (onlyFirstName ? prefix + user.firstname : `${prefix}${user.firstname} ${user.lastname}`) : (defaultString || '')}</span>
+                  style={style} onClick={this.clickHandler}>{(user && user.id) ? (onlyFirstName ? prefix + user.firstname : `${prefix}${user.firstname} ${user.lastname}`) : (defaultString || '')}</span>
         );
     }
 
@@ -121,6 +122,28 @@ class UserName extends React.Component<IProps, IState> {
                 }
             });
         });
+    }
+
+    /* Click on user handler */
+    private clickHandler = (e: any) => {
+        const {user} = this.state;
+        if (!user) {
+            return;
+        }
+        e.stopPropagation();
+        e.preventDefault();
+        this.broadcastEvent('User_Dialog_Open', {
+            id: user.id,
+        });
+    }
+
+    /* Broadcast global event */
+    private broadcastEvent(name: string, data: any) {
+        const event = new CustomEvent(name, {
+            bubbles: true,
+            detail: data,
+        });
+        window.dispatchEvent(event);
     }
 }
 

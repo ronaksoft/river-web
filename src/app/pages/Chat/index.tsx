@@ -72,6 +72,7 @@ import Button from '@material-ui/core/Button/Button';
 import ContactList from '../../components/ContactList';
 
 import './style.css';
+import UserDialog from '../../components/UserDialog';
 
 interface IProps {
     history?: any;
@@ -131,6 +132,7 @@ class Chat extends React.Component<IProps, IState> {
     private readHistoryMaxId: number | null = null;
     private isMobileView: boolean = false;
     private mobileBackTimeout: any = null;
+    private userDialogComponent: UserDialog;
 
     constructor(props: IProps) {
         super(props);
@@ -289,18 +291,18 @@ class Chat extends React.Component<IProps, IState> {
                 }
             }
             data.messages.forEach((message) => {
-                if (message.senderid !== this.connInfo.UserID && message.peerid !== this.state.selectedDialogId) {
-                    this.updateDialogsCounter(message.peerid || '', {unreadCounterIncrease: 1});
-                }
                 // Clear the message history
                 if (message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
                     this.messageRepo.clearHistory(message.peerid || '', message.actiondata.maxid).then(() => {
+                        this.updateDialogsCounter(message.peerid || '', {unreadCounter: 0});
                         if (message.actiondata.pb_delete) {
                             this.dialogRemove(message.peerid || '');
                         } else if (data.peerid === this.state.selectedDialogId) {
                             this.props.history.push(`/conversation/${data.peerid}`);
                         }
                     });
+                } else if (message.senderid !== this.connInfo.UserID && message.peerid !== this.state.selectedDialogId) {
+                    this.updateDialogsCounter(message.peerid || '', {unreadCounterIncrease: 1});
                 }
             });
         }));
@@ -550,7 +552,8 @@ class Chat extends React.Component<IProps, IState> {
                 default:
                 case 'chat':
                     return (<Dialog items={this.state.dialogs} selectedId={selectedDialogId} isTypingList={isTypingList}
-                                    cancelIsTyping={this.cancelIsTypingHandler} onContextMenu={this.dialogContextMenuHandler}/>);
+                                    cancelIsTyping={this.cancelIsTypingHandler}
+                                    onContextMenu={this.dialogContextMenuHandler}/>);
                 case 'setting':
                     return (<SettingMenu updateMessages={this.settingUpdateMessage} subMenu={leftMenuSub}
                                          onClose={this.bottomBarSelectHandler.bind(this, 'chat')}
@@ -772,6 +775,7 @@ class Chat extends React.Component<IProps, IState> {
                         </div>}
                     </div>}
                 </OverlayDialog>
+                <UserDialog ref={this.userDialogRefHandler}/>
             </div>
         );
     }
@@ -904,16 +908,16 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private rightMenuRefHandler = (value: any) => {
-        this.rightMenu = value;
+    private rightMenuRefHandler = (elem: any) => {
+        this.rightMenu = elem;
     }
 
-    private popUpDateRefHandler = (value: any) => {
-        this.popUpDateComponent = value;
+    private popUpDateRefHandler = (elem: any) => {
+        this.popUpDateComponent = elem;
     }
 
-    private messageRefHandler = (value: any) => {
-        this.messageComponent = value;
+    private messageRefHandler = (elem: any) => {
+        this.messageComponent = elem;
     }
 
     private getMessagesByDialogId(dialogId: string, force?: boolean) {
@@ -2130,15 +2134,26 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
+    /* UserDialog ref handler */
+    private userDialogRefHandler = (elem: any) => {
+        this.userDialogComponent = elem;
+    }
+
     /* Context menu handler */
     private dialogContextMenuHandler = (cmd: string, dialog: IDialog) => {
-        const {peer, dialogs} = this.state;
-        if (!peer || !dialogs) {
+        const {dialogs} = this.state;
+        if (!dialogs) {
             return;
         }
+        const peer = new InputPeer();
+        if (dialog.peertype) {
+            peer.setType(dialog.peertype);
+        }
+        peer.setId(dialog.peerid || '');
+        peer.setAccesshash(dialog.accesshash || '0');
         switch (cmd) {
             case 'info':
-                this.toggleRightMenu();
+                this.userDialogComponent.openDialog(peer);
                 break;
             case 'block':
                 break;

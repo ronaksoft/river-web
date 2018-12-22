@@ -185,7 +185,7 @@ class Dialog extends React.Component<IProps, IState> {
         };
         const menuTypes = {
             1: [4, 1, 3, 5],
-            2: [4, 1, 2],
+            2: [1, 2],
         };
         const menuItems: any[] = [];
         const peerType = items[moreIndex].peertype;

@@ -46,7 +46,8 @@ input {
   font-weight: 400; }
 
 .message-preview {
-  height: 42px; }
+  height: 42px;
+  cursor: pointer; }
   .message-preview .preview-container {
     display: flex;
     overflow: hidden;
