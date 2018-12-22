@@ -155,14 +155,14 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                             <div className="title">
                                 {!titleEdit && <div className="form-control">
                                     <div className="inner">{group.title}</div>
-                                    <div className="action">
+                                    {this.hasAuthority(group) && <div className="action">
                                         <IconButton
                                             aria-label="Edit title"
                                             onClick={this.onTitleEditHandler}
                                         >
                                             <EditRounded/>
                                         </IconButton>
-                                    </div>
+                                    </div>}
                                 </div>}
                                 {titleEdit &&
                                 <FormControl fullWidth={true} className="title-edit">
@@ -403,7 +403,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             return;
         }
         const menuItems = [];
-        if (group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMIN) > -1 || group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMINSENABLED) === -1) {
+        if (this.hasAuthority(group)) {
             menuItems.push({
                 cmd: 'remove',
                 title: 'Remove',
@@ -569,22 +569,10 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                 this.setState({
                     group,
                     participants,
-                }, () => {
-                    // setTimeout(() => {
-                    //     this.broadcastEvent('Dialog_Remove', {id: peer.getId()});
-                    // }, 1000);
                 });
             }
         });
     }
-
-    // private broadcastEvent(name: string, data: any) {
-    //     const event = new CustomEvent(name, {
-    //         bubbles: true,
-    //         detail: data,
-    //     });
-    //     window.dispatchEvent(event);
-    // }
 
     /* On mute value changed */
     private muteChangeHandler = (e: any) => {
@@ -684,6 +672,11 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         }).catch(() => {
             toggleAdmin();
         });
+    }
+
+    /* hasAuthority checks user permission for group actions */
+    private hasAuthority(group: IGroup) {
+        return group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMIN) > -1 || group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMINSENABLED) === -1;
     }
 }
 

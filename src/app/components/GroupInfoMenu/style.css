@@ -221,7 +221,8 @@ input {
   .group-info-menu .contact-box {
     flex: 1; }
   .group-info-menu .form-control {
-    display: flex; }
+    display: flex;
+    height: 48px; }
     .group-info-menu .form-control .inner {
       flex: 1;
       display: flex;
