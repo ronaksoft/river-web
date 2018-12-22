@@ -4,13 +4,14 @@ import UserName from '../UserName';
 import {IDialog} from '../../repository/dialog/interface';
 import LiveDate from '../LiveDate';
 import {DoneAllRounded, DoneRounded, ScheduleRounded, NotificationsOffRounded} from '@material-ui/icons';
-import {PeerType} from '../../services/sdk/messages/core.types_pb';
+import {PeerNotifySettings, PeerType} from '../../services/sdk/messages/core.types_pb';
 import GroupAvatar from '../GroupAvatar';
 import GroupName from '../GroupName';
 import {C_MESSAGE_ACTION} from '../../repository/message/consts';
+import {isMuted} from '../UserInfoMenu';
+import {isEqual} from 'lodash';
 
 import './style.css';
-import {isMuted} from '../UserInfoMenu';
 
 interface IProps {
     cancelIsTyping?: (id: string) => void;
@@ -24,7 +25,9 @@ interface IState {
 }
 
 class DialogMessage extends React.Component<IProps, IState> {
-    // private isTypingTimout: any = null;
+    private lastUpdate: number | undefined;
+    private notifySetting: PeerNotifySettings.AsObject | undefined;
+    private isTyping: { [key: string]: any };
 
     constructor(props: IProps) {
         super(props);
@@ -36,19 +39,24 @@ class DialogMessage extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        // this.handleTypingTimeout();
+        //
     }
 
     public componentWillReceiveProps(newProps: IProps) {
-        // if (this.state.dialog === newProps.dialog) {
-        //     return;
-        // }
-        this.setState({
-            dialog: newProps.dialog,
-            isTyping: newProps.isTyping,
-        }, () => {
-            // this.handleTypingTimeout();
-        });
+        if (this.state.dialog !== newProps.dialog || this.lastUpdate !== newProps.dialog.last_update || !isEqual(this.notifySetting, newProps.dialog.notifysettings)) {
+            this.setState({
+                dialog: newProps.dialog,
+                isTyping: newProps.isTyping,
+            });
+            this.lastUpdate = newProps.dialog.last_update;
+            this.notifySetting = newProps.dialog.notifysettings;
+            this.isTyping = newProps.isTyping;
+        } else if (!isEqual(this.isTyping, newProps.isTyping)) {
+            this.setState({
+                isTyping: newProps.isTyping,
+            });
+            this.isTyping = newProps.isTyping;
+        }
     }
 
     public render() {

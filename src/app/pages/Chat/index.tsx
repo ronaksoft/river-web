@@ -18,7 +18,7 @@ import DialogRepo from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
 import Uploader from '../../components/Uploader/index';
 import TextInput from '../../components/TextInput/index';
-import {cloneDeep, findIndex, throttle, trimStart, intersectionBy, differenceBy, find} from 'lodash';
+import {clone, findIndex, throttle, trimStart, intersectionBy, differenceBy, find} from 'lodash';
 import SDK from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
 import {
@@ -101,7 +101,6 @@ interface IState {
     moreInfoAnchorEl: any;
     openNewMessage: boolean;
     peer: InputPeer | null;
-    popUpDate: number | null;
     rightMenu: boolean;
     selectedDialogId: string;
     textInputMessage?: IMessage;
@@ -113,6 +112,7 @@ interface IState {
 class Chat extends React.Component<IProps, IState> {
     private isInChat: boolean = true;
     private rightMenu: any = null;
+    private popUpDateComponent: PopUpDate;
     private messageComponent: Message;
     private messageRepo: MessageRepo;
     private dialogRepo: DialogRepo;
@@ -129,7 +129,6 @@ class Chat extends React.Component<IProps, IState> {
     private dialogMap: { [key: string]: number } = {};
     private dialogsSortThrottle: any = null;
     private readHistoryMaxId: number | null = null;
-    private popUpDateTime: any;
     private isMobileView: boolean = false;
     private mobileBackTimeout: any = null;
 
@@ -157,7 +156,6 @@ class Chat extends React.Component<IProps, IState> {
             moreInfoAnchorEl: null,
             openNewMessage: false,
             peer: null,
-            popUpDate: null,
             rightMenu: false,
             selectedDialogId: props.match.params.id,
             textInputMessageMode: C_MSG_MODE.Normal,
@@ -542,7 +540,7 @@ class Chat extends React.Component<IProps, IState> {
     public render() {
         const {
             confirmDialogMode, confirmDialogOpen, moreInfoAnchorEl, chatMoreAnchorEl, isTypingList, leftMenu, leftMenuSub, leftOverlay,
-            textInputMessage, textInputMessageMode, peer, selectedDialogId, popUpDate, messageSelectable,
+            textInputMessage, textInputMessageMode, peer, selectedDialogId, messageSelectable,
             messageSelectedIds, forwardRecipientDialogOpen, forwardRecipients, unreadCounter,
         } = this.state;
         const leftMenuRender = () => {
@@ -661,7 +659,7 @@ class Chat extends React.Component<IProps, IState> {
                             </span>
                             </div>
                             <div className="conversation" hidden={this.state.toggleAttachment}>
-                                <PopUpDate timestamp={popUpDate}/>
+                                <PopUpDate ref={this.popUpDateRefHandler}/>
                                 <Message ref={this.messageRefHandler}
                                          items={this.state.messages}
                                          onLoadMoreBefore={this.messageLoadMoreBeforeHandler}
@@ -906,6 +904,10 @@ class Chat extends React.Component<IProps, IState> {
 
     private rightMenuRefHandler = (value: any) => {
         this.rightMenu = value;
+    }
+
+    private popUpDateRefHandler = (value: any) => {
+        this.popUpDateComponent = value;
     }
 
     private messageRefHandler = (value: any) => {
@@ -1400,8 +1402,8 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private updateDialogsCounter(peerid: string, {maxInbox, maxOutbox, unreadCounter, unreadCounterIncrease}: any) {
-        const {dialogs} = this.state;
         if (this.dialogMap.hasOwnProperty(peerid)) {
+            const {dialogs} = this.state;
             const index = this.dialogMap[peerid];
             if (!dialogs[index]) {
                 return;
@@ -1435,7 +1437,7 @@ class Chat extends React.Component<IProps, IState> {
             }
             return i2.last_update - i1.last_update;
         });
-        const td = cloneDeep(dialogs);
+        const td = clone(dialogs);
         let unreadCounter = 0;
         td.forEach((d) => {
             if (d && d.unreadcount) {
@@ -1813,17 +1815,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private messageShowDateHandler = (timestamp: number) => {
-        if (this.state.popUpDate !== timestamp) {
-            this.setState({
-                popUpDate: timestamp,
-            });
-        }
-        clearTimeout(this.popUpDateTime);
-        this.popUpDateTime = setTimeout(() => {
-            this.setState({
-                popUpDate: null,
-            });
-        }, 3000);
+        this.popUpDateComponent.updateDate(timestamp);
     }
 
     private cancelIsTypingHandler = (id: string) => {

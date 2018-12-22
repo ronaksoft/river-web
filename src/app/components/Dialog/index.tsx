@@ -52,15 +52,13 @@ class Dialog extends React.Component<IProps, IState> {
                 this.list.recomputeRowHeights();
             });
         } else {
-            // @ts-ignore
-            const index = findIndex(this.state.items, {id: newProps.selectedId});
+            const index = findIndex(this.state.items, {peerid: newProps.selectedId});
             this.setState({
                 isTypingList: newProps.isTypingList,
                 items: newProps.items,
                 scrollIndex: index,
                 selectedId: newProps.selectedId,
             }, () => {
-                this.list.recomputeRowHeights();
                 this.list.forceUpdateGrid();
             });
         }
@@ -96,7 +94,7 @@ class Dialog extends React.Component<IProps, IState> {
         const data = this.state.items[index];
         const isTyping = this.state.isTypingList.hasOwnProperty(data.peerid || '') ? this.state.isTypingList[data.peerid || ''] : {};
         return (
-            <div style={style} key={index}>
+            <div style={style} key={data.peerid || key}>
                 <Link to={`/conversation/${data.peerid}`}>
                     <div className={'dialog' + (data.peerid === this.state.selectedId ? ' active' : '')}>
                         <DialogMessage dialog={data} isTyping={isTyping}/>

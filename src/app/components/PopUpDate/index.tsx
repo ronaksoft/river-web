@@ -5,7 +5,6 @@ import './style.css';
 
 interface IProps {
     className?: string;
-    timestamp: number | null;
 }
 
 interface IState {
@@ -14,25 +13,34 @@ interface IState {
 }
 
 class PopUpDate extends React.Component<IProps, IState> {
-    private lastTimestamp: number | undefined;
+    private popUpDateTimeout: any;
+    private lastTimestamp: number | null | undefined;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
             className: props.className || '',
-            timestamp: props.timestamp,
+            timestamp: 0,
         };
 
-        this.lastTimestamp = props.timestamp || 0;
+        this.lastTimestamp = 0;
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
-        this.setState({
-            timestamp: newProps.timestamp,
-        }, () => {
-            this.lastTimestamp = newProps.timestamp || 0;
-        });
+    public updateDate(timestamp: number | null) {
+        if (this.lastTimestamp !== timestamp) {
+            this.setState({
+                timestamp,
+            }, () => {
+                this.lastTimestamp = timestamp;
+                clearTimeout(this.popUpDateTimeout);
+                this.popUpDateTimeout = setTimeout(() => {
+                    this.setState({
+                        timestamp: null,
+                    });
+                }, 3000);
+            });
+        }
     }
 
     public render() {
@@ -40,7 +48,7 @@ class PopUpDate extends React.Component<IProps, IState> {
         return (
             <div className="pop-up-date-container">
                 <span className={'pop-up-date ' + className + (timestamp ? ' down' : '')}>
-                    {timestamp ? TimeUtililty.dynamicDate(timestamp) : TimeUtililty.dynamicDate(this.lastTimestamp)}
+                    {timestamp ? TimeUtililty.dynamicDate(timestamp) : TimeUtililty.dynamicDate(this.lastTimestamp || 0)}
                 </span>
             </div>
         );
