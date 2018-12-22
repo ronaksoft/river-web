@@ -915,6 +915,10 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private getMessagesByDialogId(dialogId: string, force?: boolean) {
+        if (this.isLoading) {
+            return;
+        }
+        this.isLoading = true;
         const {peer} = this.state;
         if (peer === null) {
             return;
@@ -944,9 +948,7 @@ class Chat extends React.Component<IProps, IState> {
                 messages: dataMsg.msgs,
             }, () => {
                 this.messageComponent.list.recomputeRowHeights();
-                this.messageComponent.forceUpdate(() => {
-                    this.isLoading = false;
-                });
+                this.messageComponent.list.forceUpdateGrid();
             });
         }).then((data) => {
             window.console.timeEnd('DB benchmark:');
@@ -985,6 +987,7 @@ class Chat extends React.Component<IProps, IState> {
                 if (messages.length > 0) {
                     this.sendReadHistory(peer, dataMsg.maxId);
                 }
+                this.isLoading = false;
             });
         }).catch((err: any) => {
             window.console.warn(err);
@@ -999,6 +1002,7 @@ class Chat extends React.Component<IProps, IState> {
                 textInputMessage: undefined,
                 textInputMessageMode: C_MSG_MODE.Normal,
             });
+            this.isLoading = false;
         });
     }
 
@@ -1006,6 +1010,7 @@ class Chat extends React.Component<IProps, IState> {
         if (this.isLoading) {
             return;
         }
+
         this.isLoading = true;
         const {peer} = this.state;
         if (peer === null) {
@@ -1017,6 +1022,7 @@ class Chat extends React.Component<IProps, IState> {
             peer,
         }).then((data) => {
             if (data.length === 0) {
+                this.isLoading = false;
                 return;
             }
             const messages = this.state.messages;
