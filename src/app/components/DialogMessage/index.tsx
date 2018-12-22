@@ -3,7 +3,7 @@ import UserAvatar from '../UserAvatar';
 import UserName from '../UserName';
 import {IDialog} from '../../repository/dialog/interface';
 import LiveDate from '../LiveDate';
-import {DoneAllRounded, DoneRounded, ScheduleRounded, NotificationsOffRounded} from '@material-ui/icons';
+import {DoneAllRounded, DoneRounded, ScheduleRounded, NotificationsOffRounded, MoreVert} from '@material-ui/icons';
 import {PeerNotifySettings, PeerType} from '../../services/sdk/messages/core.types_pb';
 import GroupAvatar from '../GroupAvatar';
 import GroupName from '../GroupName';
@@ -17,6 +17,7 @@ interface IProps {
     cancelIsTyping?: (id: string) => void;
     dialog: IDialog;
     isTyping: { [key: string]: any };
+    onContextMenuOpen: (e: any) => void;
 }
 
 interface IState {
@@ -84,6 +85,9 @@ class DialogMessage extends React.Component<IProps, IState> {
                 {isTypingRender(ids, dialog)}
                 {(dialog.unreadcount && dialog.unreadcount > 0) ? (
                     <span className="unread">{dialog.unreadcount > 99 ? '+99' : dialog.unreadcount}</span>) : ''}
+                <div className="more" onClick={this.props.onContextMenuOpen}>
+                    <MoreVert/>
+                </div>
             </div>
         );
     }
@@ -162,6 +166,8 @@ class DialogMessage extends React.Component<IProps, IState> {
                     return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
                                                                         you={true} onlyFirstName={true}/> changed the Title to '{dialog.action_data.grouptitle}'</span>);
                 }
+            case C_MESSAGE_ACTION.MessageActionClearHistory:
+                return (<span className="preview-message">History cleared</span>);
             default:
                 return (<span className="preview-message">{dialog.preview}</span>);
         }

@@ -85,24 +85,25 @@ input {
 .ReactVirtualized__Grid__innerScrollContainer {
   width: 100% !important; }
 
-.bubble-gap .gap {
+.bubble-gap .gap, .bubble-wrapper .gap {
   height: 1000px;
   text-align: center; }
-  .bubble-gap .gap .loading {
-    height: 24px;
-    width: 24px;
-    border-radius: 50%;
-    background-color: rgba(0, 0, 0, 0.31);
-    box-shadow: 0 0 6px rgba(0, 0, 0, 0.16);
-    display: inline-block;
-    padding: 4.5px 4px 3.5px; }
-    .bubble-gap .gap .loading .loader {
-      height: 16px;
-      width: 16px;
-      background-size: 100% 100%;
-      background-repeat: no-repeat;
-      background-image: url(../../../asset/image/loading/w.svg);
-      display: inline-block; }
+
+.bubble-gap .loading, .bubble-wrapper .loading {
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.31);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.16);
+  display: inline-block;
+  padding: 4.5px 4px 3.5px; }
+  .bubble-gap .loading .loader, .bubble-wrapper .loading .loader {
+    height: 16px;
+    width: 16px;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-image: url(../../../asset/image/loading/w.svg);
+    display: inline-block; }
 
 .bubble-wrapper {
   position: relative;
@@ -341,9 +342,11 @@ html[theme="dark"] .bubble-wrapper .system-message {
 html[theme="dark"] .bubble-wrapper .checkbox:not(.checked) {
   color: var(--white); }
 
-html[theme="dark"] .bubble-gap .gap .loading {
+html[theme="dark"] .bubble-gap .loading,
+html[theme="dark"] .bubble-wrapper .loading {
   background-color: rgba(255, 255, 255, 0.5); }
-  html[theme="dark"] .bubble-gap .gap .loading .loader {
+  html[theme="dark"] .bubble-gap .loading .loader,
+  html[theme="dark"] .bubble-wrapper .loading .loader {
     background-image: url(../../../asset/image/loading/b.svg); }
 
 html[theme="dark"] .selectable .bubble-wrapper:hover {

@@ -341,7 +341,11 @@ class Message extends React.Component<IProps, IState> {
             case C_MESSAGE_TYPE.Date:
                 return (
                     <div style={style} className="bubble-wrapper">
-                        <span className="date">{TimeUtility.dynamicDate(message.createdon || 0)}</span>
+                        {!Boolean(this.state.loading && index === 0) &&
+                        <span className="date">{TimeUtility.dynamicDate(message.createdon || 0)}</span>}
+                        {Boolean(this.state.loading && index === 0) && <div className="loading">
+                            <span className="loader"/>
+                        </div>}
                     </div>
                 );
             case C_MESSAGE_TYPE.Normal:
@@ -599,6 +603,8 @@ class Message extends React.Component<IProps, IState> {
                     return (<span className="system-message"><UserName className="user" id={message.senderid || ''}
                                                                        you={true}/> Changed the Title to '{message.actiondata.grouptitle}'</span>);
                 }
+            case C_MESSAGE_ACTION.MessageActionClearHistory:
+                return (<span className="system-message">History cleared</span>);
             default:
                 return '';
         }

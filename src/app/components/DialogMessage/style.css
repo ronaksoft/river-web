@@ -94,7 +94,8 @@ input {
     top: 14px;
     right: 8px;
     padding: 0 0 5px 5px;
-    color: var(--grey); }
+    color: var(--grey);
+    transition: right 0.2s; }
   .dialog-wrapper .preview {
     font-size: 14px;
     line-height: 17px;
@@ -130,6 +131,26 @@ input {
     background-color: var(--river);
     color: #fff;
     border-radius: 8px; }
+  .dialog-wrapper .more {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    height: 26px;
+    width: 20px;
+    display: none;
+    cursor: pointer;
+    background-color: inherit;
+    z-index: 10; }
+    .dialog-wrapper .more svg {
+      height: 26px;
+      font-size: 26px;
+      color: var(--grey); }
+  .dialog-wrapper:hover .more {
+    display: block; }
+  .dialog-wrapper:hover .name {
+    min-width: 196px; }
+  .dialog-wrapper:hover .time {
+    right: 22px; }
 
 html[theme="dark"] .dialog-wrapper .name {
   color: var(--light); }

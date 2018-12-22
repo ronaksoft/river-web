@@ -221,9 +221,9 @@ class Chat extends React.Component<IProps, IState> {
                 }
             });
 
-            this.isLoading = false;
+            this.setLoading(false);
         }).catch(() => {
-            this.isLoading = false;
+            this.setLoading(false);
         });
 
         // Update: Out of sync (internal)
@@ -297,6 +297,8 @@ class Chat extends React.Component<IProps, IState> {
                     this.messageRepo.clearHistory(message.peerid || '', message.actiondata.maxid).then(() => {
                         if (message.actiondata.pb_delete) {
                             this.dialogRemove(message.peerid || '');
+                        } else if (data.peerid === this.state.selectedDialogId) {
+                            this.props.history.push(`/conversation/${data.peerid}`);
                         }
                     });
                 }
@@ -548,7 +550,7 @@ class Chat extends React.Component<IProps, IState> {
                 default:
                 case 'chat':
                     return (<Dialog items={this.state.dialogs} selectedId={selectedDialogId} isTypingList={isTypingList}
-                                    cancelIsTyping={this.cancelIsTypingHandler}/>);
+                                    cancelIsTyping={this.cancelIsTypingHandler} onContextMenu={this.dialogContextMenuHandler}/>);
                 case 'setting':
                     return (<SettingMenu updateMessages={this.settingUpdateMessage} subMenu={leftMenuSub}
                                          onClose={this.bottomBarSelectHandler.bind(this, 'chat')}
@@ -918,11 +920,13 @@ class Chat extends React.Component<IProps, IState> {
         if (this.isLoading) {
             return;
         }
-        this.isLoading = true;
+
         const {peer} = this.state;
         if (peer === null) {
             return;
         }
+
+        this.setLoading(true);
 
         let messages: IMessage[] = [];
 
@@ -987,7 +991,7 @@ class Chat extends React.Component<IProps, IState> {
                 if (messages.length > 0) {
                     this.sendReadHistory(peer, dataMsg.maxId);
                 }
-                this.isLoading = false;
+                this.setLoading(false);
             });
         }).catch((err: any) => {
             window.console.warn(err);
@@ -1002,7 +1006,7 @@ class Chat extends React.Component<IProps, IState> {
                 textInputMessage: undefined,
                 textInputMessageMode: C_MSG_MODE.Normal,
             });
-            this.isLoading = false;
+            this.setLoading(false);
         });
     }
 
@@ -1011,18 +1015,21 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
-        this.isLoading = true;
+
         const {peer} = this.state;
         if (peer === null) {
             return;
         }
+
+        this.setLoading(true);
+
         this.messageRepo.getMany({
             before: this.state.messages[0].id,
             limit: 20,
             peer,
         }).then((data) => {
             if (data.length === 0) {
-                this.isLoading = false;
+                this.setLoading(false);
                 return;
             }
             const messages = this.state.messages;
@@ -1038,11 +1045,11 @@ class Chat extends React.Component<IProps, IState> {
                 }
                 this.messageComponent.list.recomputeGridSize();
                 setTimeout(() => {
-                    this.isLoading = false;
+                    this.setLoading(false);
                 }, 100);
             });
         }).catch(() => {
-            this.isLoading = false;
+            this.setLoading(false);
         });
     }
 
@@ -2041,8 +2048,7 @@ class Chat extends React.Component<IProps, IState> {
             }, 100);
         } else {
             // if ((messages[0].id || 0) < id) {
-            this.isLoading = true;
-            this.messageComponent.setLoading(true);
+            this.setLoading(true);
             if (messages[0].messagetype !== C_MESSAGE_TYPE.Gap) {
                 messages.unshift({
                     createdon: (messages[0].createdon || 0),
@@ -2057,8 +2063,7 @@ class Chat extends React.Component<IProps, IState> {
 
             this.messageRepo.getMany({peer, after: id - 1, limit: 25}).then((res) => {
                 if (res.length === 0) {
-                    this.isLoading = false;
-                    this.messageComponent.setLoading(false);
+                    this.setLoading(false);
                     return;
                 }
                 const dataMsg = this.modifyMessagesBetween(messages, res, id);
@@ -2071,14 +2076,12 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageComponent.list.recomputeGridSize();
                 this.messageComponent.list.scrollToRow(0);
                 setTimeout(() => {
-                    this.isLoading = false;
-                    this.messageComponent.setLoading(false);
+                    this.setLoading(false);
                     highlighMessage(id);
                 }, 100);
             }).catch((err) => {
                 window.console.log(err);
-                this.isLoading = false;
-                this.messageComponent.setLoading(false);
+                this.setLoading(false);
             });
         }
     }
@@ -2093,11 +2096,10 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         window.console.log('messageLoadMoreAfterHandler', id);
-        this.isLoading = true;
-        this.messageComponent.setLoading(true);
+        this.setLoading(true);
         this.messageRepo.getMany({peer, after: id, limit: 25}).then((res) => {
             if (res.length === 0) {
-                this.isLoading = false;
+                this.setLoading(false);
                 return;
             }
             const dataMsg = this.modifyMessagesBetween(messages, res, id);
@@ -2112,14 +2114,47 @@ class Chat extends React.Component<IProps, IState> {
             //     this.messageComponent.list.scrollToRow(dataMsg.lastIndex);
             // }
             setTimeout(() => {
-                this.messageComponent.setLoading(false);
-                this.isLoading = false;
+                this.setLoading(false);
             }, 100);
         }).catch((err) => {
             window.console.log(err);
-            this.messageComponent.setLoading(false);
-            this.isLoading = false;
+            this.setLoading(false);
         });
+    }
+
+    /* Set loading flag */
+    private setLoading(loading: boolean) {
+        this.isLoading = loading;
+        if (this.messageComponent) {
+            this.messageComponent.setLoading(loading);
+        }
+    }
+
+    /* Context menu handler */
+    private dialogContextMenuHandler = (cmd: string, dialog: IDialog) => {
+        const {peer, dialogs} = this.state;
+        if (!peer || !dialogs) {
+            return;
+        }
+        switch (cmd) {
+            case 'info':
+                this.toggleRightMenu();
+                break;
+            case 'block':
+                break;
+            case 'remove':
+                if (dialog.topmessageid) {
+                    this.sdk.clearMessage(peer, dialog.topmessageid, true);
+                }
+                break;
+            case 'clear':
+                if (dialog.topmessageid) {
+                    this.sdk.clearMessage(peer, dialog.topmessageid, false);
+                }
+                break;
+            default:
+                break;
+        }
     }
 }
 

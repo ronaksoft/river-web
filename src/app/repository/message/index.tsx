@@ -357,7 +357,7 @@ export default class MessageRepo {
         }
         return this.db.messages.where('[peerid+id]')
             .between([peerId, minId + 1], [peerId, Dexie.maxKey], true, true).filter((item) => {
-                return item.temp !== true && item.me !== true && ((item.id || 0) >= minId);
+                return item.temp !== true && item.me !== true && ((item.id || 0) >= minId) && item.messagetype !== C_MESSAGE_TYPE.Hole;
             }).count();
     }
 

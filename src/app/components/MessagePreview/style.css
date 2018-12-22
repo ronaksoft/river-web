@@ -124,4 +124,4 @@ input {
   padding-top: 5px; }
 
 html[theme="dark"] .message-preview .preview-container .preview-message-wrapper .preview-message {
-  background-color: rgba(255, 255, 255, 0.1); }
+  background-color: rgba(0, 0, 0, 0.2); }
