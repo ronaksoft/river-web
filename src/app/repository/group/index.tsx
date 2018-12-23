@@ -2,6 +2,7 @@ import DB from '../../services/db/user';
 import {IGroup} from './interface';
 import {differenceBy, find, merge, uniqBy} from 'lodash';
 import {DexieUserDB} from '../../services/db/dexie/user';
+import {IContact} from '../contact/interface';
 
 export default class GroupRepo {
     public static getInstance() {
@@ -39,6 +40,14 @@ export default class GroupRepo {
             this.dbService.setGroup(g);
             return g;
         });
+    }
+
+    public getManyCache({keyword, limit}: any): Promise<IContact[]> {
+        if (!keyword) {
+            return this.db.groups.limit(limit || 100).toArray();
+        }
+        return this.db.groups
+            .where('title').startsWithIgnoreCase(keyword).limit(limit || 12).toArray();
     }
 
     public importBulk(groups: IGroup[]): Promise<any> {

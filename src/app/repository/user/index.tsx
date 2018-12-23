@@ -3,6 +3,7 @@ import {IUser} from './interface';
 import {differenceBy, find, merge, uniqBy} from 'lodash';
 import SDK from "../../services/sdk";
 import {DexieUserDB} from '../../services/db/dexie/user';
+import {IContact} from '../contact/interface';
 
 export default class UserRepo {
     public static getInstance() {
@@ -46,6 +47,15 @@ export default class UserRepo {
             this.dbService.setUser(u);
             return u;
         });
+    }
+
+    public getManyCache({keyword, limit}: any): Promise<IContact[]> {
+        if (!keyword) {
+            return this.db.users.orderBy('firstname').limit(limit || 100).toArray();
+        }
+        return this.db.users
+            .where('firstname').startsWithIgnoreCase(keyword)
+            .or('lastname').startsWithIgnoreCase(keyword).limit(limit || 12).toArray();
     }
 
     public importBulk(users: IUser[]): Promise<any> {

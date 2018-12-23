@@ -181,6 +181,7 @@ class ContactList extends React.Component<IProps, IState> {
         }
     }
 
+    /* No Rows Renderer */
     private noRowsRenderer = () => {
         return (
             <div className="no-result">

@@ -8,10 +8,17 @@ import {IMessage} from '../message/interface';
 import UpdateManager from '../../services/sdk/server/updateManager';
 import {DexieDialogDB} from '../../services/db/dexie/dialog';
 import GroupRepo from '../group';
+import {IContact} from '../contact/interface';
+import ContactRepo from '../contact';
 
 interface IDialogWithUpdateId {
     dialogs: IDialog[];
     updateid: number;
+}
+
+export interface IDialogWithContact {
+    dialogs: IDialog[];
+    contacts: IContact[];
 }
 
 export default class DialogRepo {
@@ -31,6 +38,7 @@ export default class DialogRepo {
     private messageRepo: MessageRepo;
     private userId: string;
     private userRepo: UserRepo;
+    private contactRepo: ContactRepo;
     private groupRepo: GroupRepo;
     private lazyMap: { [key: number]: IDialog } = {};
     private readonly updateThrottle: any = null;
@@ -43,6 +51,7 @@ export default class DialogRepo {
         this.sdk = SDK.getInstance();
         this.messageRepo = MessageRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
+        this.contactRepo = ContactRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
         this.updateThrottle = throttle(this.insertToDb, 300);
         this.userId = SDK.getInstance().getConnInfo().UserID || '0';
@@ -145,6 +154,32 @@ export default class DialogRepo {
         return this.db.dialogs
             .orderBy('last_update').reverse()
             .offset(skip || 0).limit(limit || 1000).toArray();
+    }
+
+    public search({skip, limit, keyword}: any): Promise<IDialogWithContact> {
+        const promises: any[] = [];
+        limit = limit || 12;
+        promises.push(this.userRepo.getManyCache({limit, keyword}));
+        promises.push(this.contactRepo.getManyCache({limit, keyword}));
+        promises.push(this.groupRepo.getManyCache({limit, keyword}));
+        return new Promise<IDialogWithContact>((resolve, reject) => {
+            const ids: { [key: string]: boolean } = {};
+            Promise.all(promises).then((arrRes) => {
+                arrRes.forEach((res) => {
+                    res.forEach((item: any) => {
+                        if (!ids.hasOwnProperty(item.id)) {
+                            ids[item.id] = true;
+                        }
+                    });
+                });
+                this.db.dialogs.where('peerid').anyOf(Object.keys(ids)).offset(skip || 0).limit(limit).toArray().then((res) => {
+                    resolve({
+                        contacts: arrRes[1] || [],
+                        dialogs: res,
+                    });
+                });
+            }).catch(reject);
+        });
     }
 
     public importBulk(dialogs: IDialog[], messageMap?: { [key: number]: IMessage }): Promise<any> {
