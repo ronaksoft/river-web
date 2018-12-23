@@ -42,14 +42,28 @@ export default class ContactRepo {
         return this.dbService.getContact(id);
     }
 
-    public get(id: string): Promise<IContact> {
+    public get(id: string, unsafe?: boolean): Promise<IContact> {
         const contact = this.dbService.getContact(id);
-        if (contact) {
-            return Promise.resolve(contact);
+        if (unsafe === true) {
+            if (contact) {
+                return Promise.resolve(contact);
+            }
+        } else {
+            if (contact && contact.temp !== true) {
+                return Promise.resolve(contact);
+            }
         }
         return this.db.contacts.get(id).then((c: IContact) => {
             if (c) {
-                this.dbService.setContact(c);
+                if (unsafe === true) {
+                    this.dbService.setContact(c);
+                } else {
+                    if (c && c.temp !== true) {
+                        return Promise.resolve(c);
+                    } else {
+                        return Promise.reject();
+                    }
+                }
             } else {
                 return Promise.reject();
             }
@@ -89,7 +103,9 @@ export default class ContactRepo {
         return this.db.contacts
             .where('firstname').startsWithIgnoreCase(keyword)
             .or('lastname').startsWithIgnoreCase(keyword)
-            .or('phone').startsWithIgnoreCase(keyword).limit(limit || 100).toArray();
+            .or('phone').startsWithIgnoreCase(keyword).filter((item) => {
+                return item.temp !== true;
+            }).limit(limit || 100).toArray();
     }
 
     public importBulk(contacts: IContact[]): Promise<any> {
@@ -106,7 +122,13 @@ export default class ContactRepo {
             const updateItems: IContact[] = result;
             updateItems.map((contact: IContact) => {
                 const t = find(contacts, {id: contact.id});
-                return merge(contact, t);
+                if (t && t.temp === true && contact.temp === false) {
+                    const d = merge(contact, t);
+                    d.temp = false;
+                    return d;
+                } else {
+                    return merge(contact, t);
+                }
             });
             return this.createMany([...createItems, ...updateItems]);
         }).then((res) => {
@@ -117,7 +139,7 @@ export default class ContactRepo {
 
     private broadcastEvent(name: string, data: any) {
         const event = new CustomEvent(name, {
-            bubbles: true,
+            bubbles: false,
             detail: data,
         });
         window.dispatchEvent(event);

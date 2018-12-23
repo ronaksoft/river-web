@@ -7,6 +7,7 @@ interface IUser extends User.AsObject {
 interface IParticipant extends IUser {
     userid?: string;
     type?: ParticipantType;
+    accesshash?: string;
 }
 
 export {IUser, IParticipant};

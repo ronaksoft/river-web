@@ -82,6 +82,20 @@
         text-align: right;
       }
     }
+    .send-message {
+      display: flex;
+      height: 48px;
+      color: var(--river);
+      text-decoration: none;
+      text-transform: none;
+      justify-content: center;
+      align-items: center;
+      svg {
+        margin-right: 12px;
+        font-size: 24px;
+        color: var(--river);
+      }
+    }
     .form-control {
       display: flex;
       .inner {

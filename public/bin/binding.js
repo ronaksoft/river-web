@@ -40,7 +40,7 @@ wasmWorker.onmessage = (e) => {
             break;
         case 'fnCallback':
             const fnCallbackEvent = new CustomEvent('fnCallbackEvent', {
-                bubbles: true,
+                bubbles: false,
                 detail: {
                     reqId: d.data.reqId,
                     constructor: d.data.constructor,
@@ -51,7 +51,7 @@ wasmWorker.onmessage = (e) => {
             break;
         case 'fnUpdate':
             const fnUpdateEvent = new CustomEvent('fnUpdate', {
-                bubbles: true,
+                bubbles: false,
                 detail: d.data,
             });
             window.dispatchEvent(fnUpdateEvent);
@@ -63,7 +63,7 @@ wasmWorker.onmessage = (e) => {
             break;
         case 'wsError':
             const fnErrorEvent = new CustomEvent('fnErrorEvent', {
-                bubbles: true,
+                bubbles: false,
                 detail: {
                     reqId: d.data.reqId,
                     constructor: d.data.constructor,
@@ -74,7 +74,7 @@ wasmWorker.onmessage = (e) => {
             break;
         case 'authProgress':
             const authProgress = new CustomEvent('authProgress', {
-                bubbles: true,
+                bubbles: false,
                 detail: d.data,
             });
             window.dispatchEvent(authProgress);
@@ -86,7 +86,7 @@ wasmWorker.onmessage = (e) => {
             }
             started = true;
             const fnStarted = new CustomEvent('fnStarted', {
-                bubbles: true,
+                bubbles: false,
                 detail: d.data,
             });
             window.dispatchEvent(fnStarted);
@@ -98,7 +98,7 @@ const ping = new Uint8Array([0x50, 0x49, 0x4e, 0x47]);
 
 function fnCallback(reqId, constructor, data) {
     const fnCallbackEvent = new CustomEvent('fnCallbackEvent', {
-        bubbles: true,
+        bubbles: false,
         detail: {
             reqId: reqId,
             constructor: constructor,

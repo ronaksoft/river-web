@@ -70,7 +70,7 @@ class DialogMessage extends React.Component<IProps, IState> {
                 {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
                 <UserAvatar className="avatar" id={dialog.target_id || ''}/>}
                 {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
-                <UserName className="name" id={dialog.target_id || ''}/>}
+                <UserName className="name" id={dialog.target_id || ''} noDetail={true}/>}
                 {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
                 <GroupAvatar className="avatar" id={dialog.target_id || ''}/>}
                 {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
@@ -109,7 +109,7 @@ class DialogMessage extends React.Component<IProps, IState> {
             return (
                 <span className="preview-message">
                     {Boolean(dialog.peertype === PeerType.PEERGROUP && dialog.sender_id) && <span className="sender">
-                    <UserName id={dialog.sender_id || ''} onlyFirstName={true} you={true}/>: </span>}
+                    <UserName id={dialog.sender_id || ''} onlyFirstName={true} you={true} noDetail={true}/>: </span>}
                     {dialog.preview}
                 </span>
             );
@@ -117,54 +117,59 @@ class DialogMessage extends React.Component<IProps, IState> {
         switch (dialog.action_code) {
             case C_MESSAGE_ACTION.MessageActionContactRegistered:
                 return (<span className="preview-message">
-                    <UserName className="sender" id={dialog.sender_id || ''}/> joined River</span>);
+                    <UserName className="sender" id={dialog.sender_id || ''} noDetail={true}/> joined River</span>);
             case C_MESSAGE_ACTION.MessageActionGroupCreated:
                 return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
-                                                                    you={true} onlyFirstName={true}/> created the Group</span>);
+                                                                    you={true} onlyFirstName={true} noDetail={true}/> created the Group</span>);
             case C_MESSAGE_ACTION.MessageActionGroupAddUser:
                 if (!dialog.action_data) {
                     return (<span className="preview-message">
-                        <UserName className="sender" id={dialog.sender_id || ''} you={true} onlyFirstName={true}/> added a User</span>);
+                        <UserName className="sender" id={dialog.sender_id || ''} you={true} onlyFirstName={true}
+                                  noDetail={true}/> added a User</span>);
                 } else {
                     return (<span className="preview-message">
                         <UserName className="sender" id={dialog.sender_id || ''}
-                                  you={true}
-                                  onlyFirstName={true}/> added {dialog.action_data.useridsList.map((id: string, index: number) => {
+                                  you={true} onlyFirstName={true}
+                                  noDetail={true}/> added {dialog.action_data.useridsList.map((id: string, index: number) => {
                         return (
                             <span key={index}>
                                 {index !== 0 ? ', ' : ''}
-                                <UserName className="target-user" id={id} you={true}/></span>
+                                <UserName className="target-user" id={id} you={true} noDetail={true}/></span>
                         );
                     })}</span>);
                 }
             case C_MESSAGE_ACTION.MessageActionGroupDeleteUser:
                 if (!dialog.action_data) {
                     return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
-                                                                        you={true} onlyFirstName={true}/> removed a User</span>);
+                                                                        you={true} onlyFirstName={true}
+                                                                        noDetail={true}/> removed a User</span>);
                 } else {
                     if (dialog.action_data.useridsList.indexOf(dialog.sender_id) > -1) {
                         return (
                             <span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
-                                                                        you={true} onlyFirstName={true}/> left</span>);
+                                                                        you={true} onlyFirstName={true}
+                                                                        noDetail={true}/> left</span>);
                     }
                     return (<span className="preview-message">
                     <UserName className="sender" id={dialog.sender_id || ''}
-                              you={true}
-                              onlyFirstName={true}/> removed {dialog.action_data.useridsList.map((id: string, index: number) => {
+                              you={true} onlyFirstName={true}
+                              noDetail={true}/> removed {dialog.action_data.useridsList.map((id: string, index: number) => {
                         return (
                             <span key={index}>
                             {index !== 0 ? ', ' : ''}
-                                <UserName className="target-user" id={id} you={true}/></span>
+                                <UserName className="target-user" id={id} you={true} noDetail={true}/></span>
                         );
                     })}</span>);
                 }
             case C_MESSAGE_ACTION.MessageActionGroupTitleChanged:
                 if (!dialog.action_data) {
                     return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
-                                                                        you={true} onlyFirstName={true}/> changed the Title</span>);
+                                                                        you={true} onlyFirstName={true}
+                                                                        noDetail={true}/> changed the Title</span>);
                 } else {
                     return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
-                                                                        you={true} onlyFirstName={true}/> changed the Title to '{dialog.action_data.grouptitle}'</span>);
+                                                                        you={true} onlyFirstName={true}
+                                                                        noDetail={true}/> changed the Title to '{dialog.action_data.grouptitle}'</span>);
                 }
             case C_MESSAGE_ACTION.MessageActionClearHistory:
                 return (<span className="preview-message">History cleared</span>);

@@ -672,8 +672,8 @@ export class GroupParticipant extends jspb.Message {
 
   hasAccesshash(): boolean;
   clearAccesshash(): void;
-  getAccesshash(): number | undefined;
-  setAccesshash(value: number): void;
+  getAccesshash(): string | undefined;
+  setAccesshash(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GroupParticipant.AsObject;
@@ -691,7 +691,7 @@ export namespace GroupParticipant {
     firstname?: string,
     lastname?: string,
     type?: ParticipantType,
-    accesshash?: number,
+    accesshash?: string,
   }
 }
 

@@ -279,7 +279,7 @@ export default class SyncManager {
 
     private broadcastEvent(name: string, data: any) {
         const event = new CustomEvent(name, {
-            bubbles: true,
+            bubbles: false,
             detail: data,
         });
         window.dispatchEvent(event);

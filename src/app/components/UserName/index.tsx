@@ -8,6 +8,7 @@ interface IProps {
     className?: string;
     defaultString?: string;
     id: string;
+    noDetail?: boolean;
     onlyFirstName?: boolean;
     prefix?: string;
     uniqueColor?: boolean;
@@ -127,7 +128,7 @@ class UserName extends React.Component<IProps, IState> {
     /* Click on user handler */
     private clickHandler = (e: any) => {
         const {user} = this.state;
-        if (!user) {
+        if (!user || this.props.noDetail === true) {
             return;
         }
         e.stopPropagation();
@@ -140,7 +141,7 @@ class UserName extends React.Component<IProps, IState> {
     /* Broadcast global event */
     private broadcastEvent(name: string, data: any) {
         const event = new CustomEvent(name, {
-            bubbles: true,
+            bubbles: false,
             detail: data,
         });
         window.dispatchEvent(event);

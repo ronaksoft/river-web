@@ -4676,7 +4676,7 @@ proto.msg.GroupParticipant.deserializeBinaryFromReader = function(msg, reader) {
       msg.setType(value);
       break;
     case 5:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {string} */ (reader.readUint64String());
       msg.setAccesshash(value);
       break;
     default:
@@ -4736,9 +4736,9 @@ proto.msg.GroupParticipant.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 5));
+  f = /** @type {string} */ (jspb.Message.getField(message, 5));
   if (f != null) {
-    writer.writeUint64(
+    writer.writeUint64String(
       5,
       f
     );
@@ -4864,14 +4864,14 @@ proto.msg.GroupParticipant.prototype.hasType = function() {
 
 /**
  * required uint64 AccessHash = 5;
- * @return {number}
+ * @return {string}
  */
 proto.msg.GroupParticipant.prototype.getAccesshash = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.GroupParticipant.prototype.setAccesshash = function(value) {
   jspb.Message.setField(this, 5, value);
 };

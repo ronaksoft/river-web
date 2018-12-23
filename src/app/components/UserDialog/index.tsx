@@ -9,26 +9,27 @@
 
 import * as React from 'react';
 import {IContact} from '../../repository/contact/interface';
-import {AddRounded, CheckRounded, EditRounded} from '@material-ui/icons';
+import {AddRounded, CheckRounded, EditRounded, SendRounded} from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
-import {InputPeer, PeerNotifySettings, PeerType, PhoneContact} from '../../services/sdk/messages/core.types_pb';
+import {InputPeer, PeerType, PhoneContact} from '../../services/sdk/messages/core.types_pb';
 import SDK from '../../services/sdk';
 import UserAvatar from '../UserAvatar';
 import ContactRepo from '../../repository/contact';
 import TextField from '@material-ui/core/TextField/TextField';
 import UserRepo from '../../repository/user';
 import UniqueId from '../../services/uniqueId';
-import DialogRepo from '../../repository/dialog';
-import {IDialog} from '../../repository/dialog/interface';
-import Checkbox from '@material-ui/core/Checkbox/Checkbox';
-import DialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent/DialogContent';
+// import DialogRepo from '../../repository/dialog';
+// import {IDialog} from '../../repository/dialog/interface';
+// import Checkbox from '@material-ui/core/Checkbox/Checkbox';
+// import DialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
+// import DialogContent from '@material-ui/core/DialogContent/DialogContent';
 import Dialog from '@material-ui/core/Dialog/Dialog';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Button from '@material-ui/core/Button/Button';
-import DialogActions from '@material-ui/core/DialogActions/DialogActions';
+// import Radio from '@material-ui/core/Radio';
+// import RadioGroup from '@material-ui/core/RadioGroup';
+// import FormControlLabel from '@material-ui/core/FormControlLabel';
+// import Button from '@material-ui/core/Button/Button';
+// import DialogActions from '@material-ui/core/DialogActions/DialogActions';
+import {Link} from 'react-router-dom';
 
 import './style.css';
 
@@ -37,7 +38,7 @@ interface IProps {
 }
 
 interface IState {
-    dialog: IDialog | null;
+    // dialog: IDialog | null;
     edit: boolean;
     firstname: string;
     isInContact: boolean;
@@ -46,36 +47,22 @@ interface IState {
     notifyValue: string;
     peer: InputPeer | null;
     phone: string;
+    sendMessageEnable: boolean;
     user: IContact | null;
     userDialogOpen: boolean;
 }
 
-export const isMuted = (notifySettings?: PeerNotifySettings.AsObject) => {
-    if (!notifySettings) {
-        return false;
-    } else if (notifySettings.muteuntil === -1) {
-        return false;
-    } else if (notifySettings.muteuntil === -2) {
-        return true;
-    } else if ((notifySettings.muteuntil || 0) > 0) {
-        const now = Math.floor(Date.now() / 1000);
-        return (now <= (notifySettings.muteuntil || 0));
-    } else {
-        return false;
-    }
-};
-
 class UserDialog extends React.Component<IProps, IState> {
     private contactRepo: ContactRepo;
     private userRepo: UserRepo;
-    private dialogRepo: DialogRepo;
+    // private dialogRepo: DialogRepo;
     private sdk: SDK;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
-            dialog: null,
+            // dialog: null,
             edit: false,
             firstname: '',
             isInContact: false,
@@ -84,6 +71,7 @@ class UserDialog extends React.Component<IProps, IState> {
             notifyValue: '-1',
             peer: null,
             phone: '',
+            sendMessageEnable: false,
             user: null,
             userDialogOpen: false,
         };
@@ -92,8 +80,8 @@ class UserDialog extends React.Component<IProps, IState> {
         this.contactRepo = ContactRepo.getInstance();
         // User Repository singleton
         this.userRepo = UserRepo.getInstance();
-        // Dialog Repository singleton
-        this.dialogRepo = DialogRepo.getInstance();
+        // // Dialog Repository singleton
+        // this.dialogRepo = DialogRepo.getInstance();
         // SDK singleton
         this.sdk = SDK.getInstance();
     }
@@ -119,6 +107,7 @@ class UserDialog extends React.Component<IProps, IState> {
             notifyValue: '-1',
             peer,
             phone: '',
+            sendMessageEnable: false,
             user: null,
             userDialogOpen: true,
         }, () => {
@@ -127,7 +116,10 @@ class UserDialog extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {user, edit, firstname, lastname, phone, isInContact, dialog, notifySettingDialogOpen, notifyValue, userDialogOpen} = this.state;
+        const {user, edit, firstname, lastname, phone, isInContact, /*dialog, notifySettingDialogOpen, notifyValue,*/ userDialogOpen, sendMessageEnable} = this.state;
+        // if (!dialog) {
+        //     return '';
+        // }
         return (
             <Dialog
                 open={userDialogOpen}
@@ -210,7 +202,7 @@ class UserDialog extends React.Component<IProps, IState> {
                             <AddRounded/> Add as contact
                         </div>}
                     </div>}
-                    {dialog && <div className="kk-card notify-settings">
+                    {/*{dialog && <div className="kk-card notify-settings">
                         <div className="label">Mute</div>
                         <div className="value">
                             <Checkbox
@@ -218,8 +210,13 @@ class UserDialog extends React.Component<IProps, IState> {
                                 color="primary" checked={isMuted(dialog.notifysettings)}
                                 onChange={this.muteChangeHandler}/>
                         </div>
+                    </div>}*/}
+                    {sendMessageEnable && <div className="kk-card">
+                        <Link className="send-message" to={`/conversation/${user ? user.id : 'null'}`} onClick={this.close}>
+                            <SendRounded/> Send Message
+                        </Link>
                     </div>}
-                    <Dialog
+                    {/*<Dialog
                         open={notifySettingDialogOpen}
                         onClose={this.notifySettingDialogCloseHandler}
                         maxWidth="xs"
@@ -252,7 +249,7 @@ class UserDialog extends React.Component<IProps, IState> {
                                 Apply
                             </Button>
                         </DialogActions>
-                    </Dialog>
+                    </Dialog>*/}
                 </div>
             </Dialog>
         );
@@ -265,11 +262,12 @@ class UserDialog extends React.Component<IProps, IState> {
             return;
         }
 
-        this.contactRepo.get(peer.getId() || '').then((res) => {
+        this.contactRepo.get(peer.getId() || '', true).then((res) => {
             this.setState({
                 firstname: res.firstname || '',
-                isInContact: true,
+                isInContact: (res.temp !== true),
                 lastname: res.lastname || '',
+                sendMessageEnable: true,
                 user: res,
             });
         }).catch(() => {
@@ -278,16 +276,17 @@ class UserDialog extends React.Component<IProps, IState> {
                     firstname: res.firstname || '',
                     isInContact: false,
                     lastname: res.lastname || '',
+                    sendMessageEnable: false,
                     user: res,
                 });
             });
         });
 
-        this.dialogRepo.get(peer.getId() || '').then((dialog) => {
-            this.setState({
-                dialog,
-            });
-        });
+        // this.dialogRepo.get(peer.getId() || '').then((dialog) => {
+        //     this.setState({
+        //         dialog,
+        //     });
+        // });
     }
 
     private onEditHandler = () => {
@@ -352,76 +351,76 @@ class UserDialog extends React.Component<IProps, IState> {
         });
     }
 
-    /* On mute value changed */
-    private muteChangeHandler = (e: any) => {
-        const {peer, dialog} = this.state;
-        if (!peer || !dialog) {
-            return;
-        }
-        if (e.currentTarget.checked) {
-            let notifyValue = '-1';
-            if (dialog && dialog.notifysettings) {
-                notifyValue = String(dialog.notifysettings.muteuntil);
-            }
-            this.setState({
-                notifySettingDialogOpen: true,
-                notifyValue,
-            });
-        } else {
-            this.saveNotifySettings(-1);
-        }
-    }
+    // /* On mute value changed */
+    // private muteChangeHandler = (e: any) => {
+    //     const {peer, dialog} = this.state;
+    //     if (!peer || !dialog) {
+    //         return;
+    //     }
+    //     if (e.currentTarget.checked) {
+    //         let notifyValue = '-1';
+    //         if (dialog && dialog.notifysettings) {
+    //             notifyValue = String(dialog.notifysettings.muteuntil);
+    //         }
+    //         this.setState({
+    //             notifySettingDialogOpen: true,
+    //             notifyValue,
+    //         });
+    //     } else {
+    //         this.saveNotifySettings(-1);
+    //     }
+    // }
 
-    /* Apply notify settings */
-    private applyNotifySettings = () => {
-        this.saveNotifySettings(parseInt(this.state.notifyValue, 10));
-    }
+    // /* Apply notify settings */
+    // private applyNotifySettings = () => {
+    //     this.saveNotifySettings(parseInt(this.state.notifyValue, 10));
+    // }
 
-    /* Save notify settings */
-    private saveNotifySettings(mode: number) {
-        const {peer, dialog} = this.state;
-        if (!peer || !dialog) {
-            return;
-        }
-        const settings = new PeerNotifySettings();
-        if (mode < 0) {
-            settings.setMuteuntil(mode);
-        } else if (mode > 0) {
-            mode += Math.floor(Date.now() / 1000);
-        }
-        settings.setFlags(0);
-        settings.setSound('');
-        settings.setMuteuntil(mode);
-        this.sdk.setNotifySettings(peer, settings).then(() => {
-            dialog.notifysettings = settings.toObject();
-            this.setState({
-                dialog,
-            });
-            this.setState({
-                notifySettingDialogOpen: false,
-                notifyValue: String(dialog.notifysettings.muteuntil),
-            });
-        }).catch(() => {
-            this.setState({
-                notifySettingDialogOpen: false,
-                notifyValue: '-1',
-            });
-        });
-    }
+    // /* Save notify settings */
+    // private saveNotifySettings(mode: number) {
+    //     const {peer, dialog} = this.state;
+    //     if (!peer || !dialog) {
+    //         return;
+    //     }
+    //     const settings = new PeerNotifySettings();
+    //     if (mode < 0) {
+    //         settings.setMuteuntil(mode);
+    //     } else if (mode > 0) {
+    //         mode += Math.floor(Date.now() / 1000);
+    //     }
+    //     settings.setFlags(0);
+    //     settings.setSound('');
+    //     settings.setMuteuntil(mode);
+    //     this.sdk.setNotifySettings(peer, settings).then(() => {
+    //         dialog.notifysettings = settings.toObject();
+    //         this.setState({
+    //             dialog,
+    //         });
+    //         this.setState({
+    //             notifySettingDialogOpen: false,
+    //             notifyValue: String(dialog.notifysettings.muteuntil),
+    //         });
+    //     }).catch(() => {
+    //         this.setState({
+    //             notifySettingDialogOpen: false,
+    //             notifyValue: '-1',
+    //         });
+    //     });
+    // }
 
-    /* Notify settings Radio group change value handler */
-    private notifyValueChangeHandler = (e: any, val: string) => {
-        this.setState({
-            notifyValue: val,
-        });
-    }
-
-    /* Close notify settings */
-    private notifySettingDialogCloseHandler = () => {
-        this.setState({
-            notifySettingDialogOpen: false,
-        });
-    }
+    // /* Notify settings Radio group change value handler */
+    // private notifyValueChangeHandler = (e: any, val: string) => {
+    //     this.setState({
+    //         notifyValue: val,
+    //     });
+    // }
+    //
+    // /* Close notify settings */
+    // private notifySettingDialogCloseHandler = () => {
+    //     this.setState({
+    //         notifySettingDialogOpen: false,
+    //     });
+    // }
 
     /* User dialog close handler */
     private userDialogCloseHandler = () => {
@@ -438,6 +437,13 @@ class UserDialog extends React.Component<IProps, IState> {
         peer.setType(PeerType.PEERUSER);
         peer.setAccesshash('0');
         this.openDialog(peer);
+    }
+
+    /* Close dialog */
+    private close = () => {
+        this.setState({
+            userDialogOpen: false,
+        });
     }
 }
 

@@ -112,6 +112,18 @@ input {
     .user-dialog .user-info-menu .notify-settings .value {
       width: 50px;
       text-align: right; }
+  .user-dialog .user-info-menu .send-message {
+    display: flex;
+    height: 48px;
+    color: var(--river);
+    text-decoration: none;
+    text-transform: none;
+    justify-content: center;
+    align-items: center; }
+    .user-dialog .user-info-menu .send-message svg {
+      margin-right: 12px;
+      font-size: 24px;
+      color: var(--river); }
   .user-dialog .user-info-menu .form-control {
     display: flex; }
     .user-dialog .user-info-menu .form-control .inner {

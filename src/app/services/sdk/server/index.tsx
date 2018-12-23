@@ -132,7 +132,7 @@ export default class Server {
      */
     private sendRequest(request: IServerRequest) {
         const fnCallbackEvent = new CustomEvent('fnCallEvent', {
-            bubbles: true,
+            bubbles: false,
             detail: request,
         });
         window.console.warn(C_MSG_NAME[request.constructor], request.reqId);
@@ -168,7 +168,7 @@ export default class Server {
             data.setEnvelopesList(envs);
             data.setLength(envs.length);
             const fnCallbackEvent = new CustomEvent('fnCallEvent', {
-                bubbles: true,
+                bubbles: false,
                 detail: {
                     constructor: C_MSG.MessageContainer,
                     data: data.serializeBinary(),

@@ -58,6 +58,7 @@ import Radio from '@material-ui/core/Radio/Radio';
 import DialogActions from '@material-ui/core/DialogActions/DialogActions';
 import Button from '@material-ui/core/Button/Button';
 import Switch from '@material-ui/core/Switch/Switch';
+import ContactRepo from '../../repository/contact';
 
 // Todo: add member, kick member, promote member and etc.
 interface IProps {
@@ -86,8 +87,10 @@ interface IState {
 class GroupInfoMenu extends React.Component<IProps, IState> {
     private groupRepo: GroupRepo;
     private dialogRepo: DialogRepo;
+    private contactRepo: ContactRepo;
     private sdk: SDK;
     private loading: boolean = false;
+    private userId: string;
 
     constructor(props: IProps) {
         super(props);
@@ -113,8 +116,12 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         this.groupRepo = GroupRepo.getInstance();
         // Dialog Repository singleton
         this.dialogRepo = DialogRepo.getInstance();
+        // Contact Repository singleton
+        this.contactRepo = ContactRepo.getInstance();
         // SDK singleton
         this.sdk = SDK.getInstance();
+
+        this.userId = SDK.getInstance().getConnInfo().UserID || '';
     }
 
     public componentDidMount() {
@@ -201,34 +208,36 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                 />
                             </div>
                         </div>}
-                        {Boolean(group && (group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMIN) > -1 || group.flagsList.indexOf(GroupFlags.GROUPFLAGSCREATOR) > -1)) &&
-                        <div className="kk-card notify-settings">
-                            <div className="label">All Members Admin</div>
-                            <div className="value switch">
-                                {group && <Switch
-                                    checked={group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMINSENABLED) === -1}
-                                    className="admin-switch"
-                                    color="default"
-                                    onChange={this.toggleAdminsHandler}
-                                />}
-                            </div>
-                        </div>}
+                        {group && <React.Fragment>
+                            {this.hasAuthority(group) && <div className="kk-card notify-settings">
+                                <div className="label">All Members Admin</div>
+                                <div className="value switch">
+                                    <Switch
+                                        checked={group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMINSENABLED) === -1}
+                                        className="admin-switch"
+                                        color="default"
+                                        onChange={this.toggleAdminsHandler}
+                                    />
+                                </div>
+                            </div>}
+                        </React.Fragment>}
                         {group && <div className="participant kk-card">
                             <label>{group.participants} participants</label>
-                            {participants.map((contact, index) => {
+                            {participants.map((participant, index) => {
                                 return (
                                     <div key={index}
-                                         className={'contact-item' + (contact.type !== ParticipantType.PARTICIPANTTYPEMEMBER ? ' admin' : '')}>
-                                        <span className="avatar">{contact.avatar ? <img
-                                            src={contact.avatar}/> : TextAvatar(contact.firstname, contact.lastname)}</span>
-                                        {contact.type === ParticipantType.PARTICIPANTTYPECREATOR &&
+                                         className={'contact-item' + (participant.type !== ParticipantType.PARTICIPANTTYPEMEMBER ? ' admin' : '')}>
+                                        <span className="avatar">{participant.avatar ? <img
+                                            src={participant.avatar}/> : TextAvatar(participant.firstname, participant.lastname)}</span>
+                                        {participant.type === ParticipantType.PARTICIPANTTYPECREATOR &&
                                         <div className="admin-wrapper"><StarsRounded/></div>}
-                                        {contact.type === ParticipantType.PARTICIPANTTYPEADMIN &&
+                                        {participant.type === ParticipantType.PARTICIPANTTYPEADMIN &&
                                         <div className="admin-wrapper"><StarRateRounded/></div>}
-                                        <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>
+                                        <span className="name"
+                                              onClick={this.participantClickHandler.bind(this, participant.userid, participant.accesshash)}>{`${participant.firstname} ${participant.lastname}`}{this.userId === participant.userid ? ' (you)' : ''}</span>
                                         <span
-                                            className="username">{contact.username ? contact.username : 'no username'}</span>
-                                        <div className="more" onClick={this.moreOpenHandler.bind(this, contact)}>
+                                            className="username">{participant.username ? participant.username : 'no username'}</span>
+                                        <div className="more" onClick={this.moreOpenHandler.bind(this, participant)}>
                                             <MoreVert/>
                                         </div>
                                     </div>
@@ -335,6 +344,17 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         this.loading = true;
         this.sdk.groupGetFull(peer).then((res) => {
             this.groupRepo.importBulk([res.group]);
+            const contacts: IContact[] = [];
+            res.participantsList.forEach((list) => {
+                contacts.push({
+                    accesshash: list.accesshash,
+                    firstname: list.firstname,
+                    id: list.userid,
+                    lastname: list.lastname,
+                    temp: true,
+                });
+            });
+            this.contactRepo.importBulk(contacts);
             this.setState({
                 group: res.group,
                 participants: res.participantsList,
@@ -677,6 +697,23 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     /* hasAuthority checks user permission for group actions */
     private hasAuthority(group: IGroup) {
         return group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMIN) > -1 || group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMINSENABLED) === -1;
+    }
+
+    /* Participant onClick handler */
+    private participantClickHandler = (id: string, accesshash: string) => {
+        this.broadcastEvent('User_Dialog_Open', {
+            accesshash,
+            id,
+        });
+    }
+
+    /* Broadcast global event */
+    private broadcastEvent(name: string, data: any) {
+        const event = new CustomEvent(name, {
+            bubbles: false,
+            detail: data,
+        });
+        window.dispatchEvent(event);
     }
 }
 

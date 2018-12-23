@@ -170,6 +170,6 @@ message GroupParticipant {
     required string FirstName = 2;
     required string LastName = 3;
     required ParticipantType Type = 4;
-    required uint64 AccessHash = 5;
+    required uint64 AccessHash = 5 [jstype = JS_STRING];
 }
 

@@ -70,9 +70,10 @@ import DialogContentText from '@material-ui/core/DialogContentText/DialogContent
 import DialogActions from '@material-ui/core/DialogActions/DialogActions';
 import Button from '@material-ui/core/Button/Button';
 import ContactList from '../../components/ContactList';
+import UserDialog from '../../components/UserDialog';
 
 import './style.css';
-import UserDialog from '../../components/UserDialog';
+import {IGroup} from '../../repository/group/interface';
 
 interface IProps {
     history?: any;
@@ -87,6 +88,7 @@ interface IState {
     dialogs: IDialog[];
     forwardRecipientDialogOpen: boolean;
     forwardRecipients: IContact[];
+    group: IGroup | null;
     isChatView: boolean;
     isConnecting: boolean;
     isTyping: boolean;
@@ -143,6 +145,7 @@ class Chat extends React.Component<IProps, IState> {
             dialogs: [],
             forwardRecipientDialogOpen: false,
             forwardRecipients: [],
+            group: null,
             isChatView: false,
             isConnecting: true,
             isTyping: false,
@@ -207,11 +210,12 @@ class Chat extends React.Component<IProps, IState> {
                 }
             });
 
+            const selectedId = this.props.match.params.id;
             this.setState({
                 dialogs: res,
+                selectedDialogId: selectedId,
                 unreadCounter,
             }, () => {
-                const selectedId = this.props.match.params.id;
                 if (selectedId !== 'null') {
                     const peer = this.getPeerByDialogId(selectedId);
                     this.setState({
@@ -280,16 +284,8 @@ class Chat extends React.Component<IProps, IState> {
                 this.updateDialogs(message, data.accessHashes[index] || '0');
             });
 
-            if (!this.isInChat && data.senderIds.indexOf(this.connInfo.UserID || '') === -1 && data.messages.length > 0 && this.canNotify(data.messages[0].peerid || '')) {
-                if (data.messages.length === 1) {
-                    this.notify(
-                        `Message from ${data.senders[0].firstname} ${data.senders[0].lastname}`,
-                        (data.messages[0].body || '').substr(0, 64), data.messages[0].peerid || 'null');
-                } else {
-                    this.notify(
-                        `${data.messages.length} messages in ${data.messages[0].peerid}`, '', data.messages[0].peerid || 'null');
-                }
-            }
+            this.notifyMessage(data);
+
             data.messages.forEach((message) => {
                 // Clear the message history
                 if (message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
@@ -507,6 +503,7 @@ class Chat extends React.Component<IProps, IState> {
         const selectedId = newProps.match.params.id;
         if (selectedId === 'null') {
             this.setState({
+                group: null,
                 peer: null,
                 selectedDialogId: 'null',
             });
@@ -517,8 +514,10 @@ class Chat extends React.Component<IProps, IState> {
                 this.readHistoryMaxId = null;
             }
             this.setState({
+                group: null,
                 leftMenu: 'chat',
                 peer,
+                selectedDialogId: selectedId,
             }, () => {
                 this.getMessagesByDialogId(selectedId, true);
             });
@@ -812,6 +811,8 @@ class Chat extends React.Component<IProps, IState> {
             return (<span>Updating...</span>);
         } else if (dialog && ids.length > 0) {
             return (isTypingRender(ids, dialog));
+        } else if (dialog && dialog.peertype === PeerType.PEERGROUP && this.state.group) {
+            return (<span>{this.state.group.participants} members</span>);
         } else {
             return (<span>last seen recently</span>);
         }
@@ -921,13 +922,33 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private getMessagesByDialogId(dialogId: string, force?: boolean) {
-        if (this.isLoading) {
+        // if (this.isLoading) {
+        //     return;
+        // }
+
+        const {peer, dialogs} = this.state;
+        if (!peer || !dialogs) {
             return;
         }
 
-        const {peer} = this.state;
-        if (peer === null) {
-            return;
+        let dialog: IDialog | null = null;
+        if (this.dialogMap.hasOwnProperty(dialogId) && this.state.dialogs[this.dialogMap[dialogId]]) {
+            dialog = this.state.dialogs[this.dialogMap[dialogId]];
+            if (dialog.peertype === PeerType.PEERGROUP && dialog.peerid) {
+                this.groupRepo.get(dialog.peerid || '').then((group) => {
+                    this.setState({
+                        group,
+                    });
+                }).catch(() => {
+                    this.setState({
+                        group: null,
+                    });
+                });
+            } else {
+                this.setState({
+                    group: null,
+                });
+            }
         }
 
         this.setLoading(true);
@@ -945,12 +966,17 @@ class Chat extends React.Component<IProps, IState> {
             });
         };
 
-        window.console.time('DB benchmark:');
         let before = 100000000;
-        if (this.dialogMap.hasOwnProperty(dialogId) && this.state.dialogs[this.dialogMap[dialogId]]) {
-            before = (this.state.dialogs[this.dialogMap[dialogId]].topmessageid || 0) + 1;
+        if (dialog) {
+            before = (dialog.topmessageid || 0) + 1;
         }
         this.messageRepo.getMany({peer, limit: 25, before}, (resMsgs) => {
+            // Checks peerid on transition
+            if (this.state.selectedDialogId !== dialogId) {
+                this.setLoading(false);
+                return;
+            }
+
             const dataMsg = this.modifyMessages(this.state.messages, resMsgs, false);
             this.setState({
                 messages: dataMsg.msgs,
@@ -959,7 +985,12 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageComponent.list.forceUpdateGrid();
             });
         }).then((data) => {
-            window.console.timeEnd('DB benchmark:');
+            // Checks peerid on transition
+            if (this.state.selectedDialogId !== dialogId) {
+                this.setLoading(false);
+                return;
+            }
+
             if (data.length === 0) {
                 messages = [];
             } else {
@@ -968,9 +999,9 @@ class Chat extends React.Component<IProps, IState> {
 
             let maxReadId = 0;
             let maxReadInbox = 0;
-            if (this.dialogMap.hasOwnProperty(dialogId) && this.state.dialogs[this.dialogMap[dialogId]]) {
-                maxReadId = this.state.dialogs[this.dialogMap[dialogId]].readoutboxmaxid || 0;
-                maxReadInbox = this.state.dialogs[this.dialogMap[dialogId]].readinboxmaxid || 0;
+            if (dialog) {
+                maxReadId = dialog.readoutboxmaxid || 0;
+                maxReadInbox = dialog.readinboxmaxid || 0;
             }
 
             const dataMsg = this.modifyMessages([], messages, true, maxReadInbox);
@@ -982,7 +1013,6 @@ class Chat extends React.Component<IProps, IState> {
                 messageSelectable: false,
                 messageSelectedIds: {},
                 messages: dataMsg.msgs,
-                selectedDialogId: dialogId,
                 textInputMessage: undefined,
                 textInputMessageMode: C_MSG_MODE.Normal,
             }, () => {
@@ -1000,13 +1030,13 @@ class Chat extends React.Component<IProps, IState> {
         }).catch((err: any) => {
             window.console.warn(err);
             this.setState({
+                group: null,
                 isChatView: true,
                 isTyping: false,
                 maxReadId: 0,
                 messageSelectable: false,
                 messageSelectedIds: {},
                 messages: [],
-                selectedDialogId: dialogId,
                 textInputMessage: undefined,
                 textInputMessageMode: C_MSG_MODE.Normal,
             });
@@ -1019,11 +1049,12 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
-
         const {peer} = this.state;
-        if (peer === null) {
+        if (!peer) {
             return;
         }
+
+        const dialogId = peer.getId() || '';
 
         this.setLoading(true);
 
@@ -1032,7 +1063,8 @@ class Chat extends React.Component<IProps, IState> {
             limit: 20,
             peer,
         }).then((data) => {
-            if (data.length === 0) {
+            // Checks peerid on transition
+            if (this.state.selectedDialogId !== dialogId || data.length === 0) {
                 this.setLoading(false);
                 return;
             }
@@ -1066,7 +1098,10 @@ class Chat extends React.Component<IProps, IState> {
             }
             if (push) {
                 // avatar breakpoint
-                msg.avatar = (key === 0 && (defaultMessages.length === 0 || (defaultMessages.length > 0 && msg.senderid !== defaultMessages[defaultMessages.length - 1].senderid))) || (key > 0 && msg.senderid !== messages[key - 1].senderid);
+                msg.avatar =
+                    (key === 0 && (defaultMessages.length === 0 || (defaultMessages.length > 0 && msg.senderid !== defaultMessages[defaultMessages.length - 1].senderid))) ||
+                    (key > 0 && msg.senderid !== messages[key - 1].senderid) ||
+                    (key > 0 && messages[key - 1].messageaction !== C_MESSAGE_ACTION.MessageActionNope);
 
                 // date breakpoint
                 if ((key === 0 && (defaultMessages.length === 0 || (defaultMessages.length > 0 && !TimeUtililty.isInSameDay(msg.createdon, defaultMessages[defaultMessages.length - 1].createdon))))
@@ -1101,7 +1136,7 @@ class Chat extends React.Component<IProps, IState> {
                 }
 
                 // avatar breakpoint
-                defaultMessages[0].avatar = (msg.senderid !== defaultMessages[0].senderid);
+                defaultMessages[0].avatar = (msg.senderid !== defaultMessages[0].senderid || defaultMessages[0].messageaction !== C_MESSAGE_ACTION.MessageActionNope);
                 msg.avatar = (messages.length - 1 === key);
                 // end of avatar breakpoint
 
@@ -1669,6 +1704,38 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
+    /* Notify on new message received */
+    private notifyMessage(data: INewMessageBulkUpdate) {
+        if (!(!this.isInChat && data.senderIds.indexOf(this.connInfo.UserID || '') === -1 && data.messages.length > 0 && this.canNotify(data.messages[0].peerid || ''))) {
+            return;
+        }
+        if (data.peertype === PeerType.PEERGROUP) {
+            this.groupRepo.get(data.peerid).then((group) => {
+                let groupTitle = 'Group';
+                if (group) {
+                    groupTitle = group.title || 'Group';
+                }
+                if (data.messages.length === 1) {
+                    this.notify(
+                        `Message from ${data.senders[0].firstname} ${data.senders[0].lastname} in ${groupTitle}`,
+                        (data.messages[0].body || '').substr(0, 64), data.messages[0].peerid || 'null');
+                } else {
+                    this.notify(
+                        `${data.messages.length} messages in ${groupTitle}`, '', data.messages[0].peerid || 'null');
+                }
+            });
+        } else {
+            if (data.messages.length === 1) {
+                this.notify(
+                    `Message from ${data.senders[0].firstname} ${data.senders[0].lastname}`,
+                    (data.messages[0].body || '').substr(0, 64), data.messages[0].peerid || 'null');
+            } else {
+                this.notify(
+                    `${data.messages.length} messages from ${data.senders[0].firstname} ${data.senders[0].lastname}`, '', data.messages[0].peerid || 'null');
+            }
+        }
+    }
+
     private notify = (title: string, body: string, id: string) => {
         if (Notification.permission === 'granted') {
             const options = {
@@ -2043,6 +2110,7 @@ class Chat extends React.Component<IProps, IState> {
         if (!peer || !messages) {
             return;
         }
+
         window.console.log('messageJumpToMessageHandler', id);
         const index = findIndex(messages, {id});
         if (index > 0) {
@@ -2065,8 +2133,10 @@ class Chat extends React.Component<IProps, IState> {
             this.messageComponent.list.forceUpdateGrid();
             this.messageComponent.list.scrollToRow(0);
 
+            const dialogId = peer.getId() || '';
+
             this.messageRepo.getMany({peer, after: id - 1, limit: 25}).then((res) => {
-                if (res.length === 0) {
+                if (this.state.selectedDialogId !== dialogId || res.length === 0) {
                     this.setLoading(false);
                     return;
                 }
@@ -2099,10 +2169,13 @@ class Chat extends React.Component<IProps, IState> {
         if (!peer || !messages) {
             return;
         }
+
+        const dialogId = peer.getId() || '';
+
         window.console.log('messageLoadMoreAfterHandler', id);
         this.setLoading(true);
         this.messageRepo.getMany({peer, after: id, limit: 25}).then((res) => {
-            if (res.length === 0) {
+            if (this.state.selectedDialogId !== dialogId || res.length === 0) {
                 this.setLoading(false);
                 return;
             }
