@@ -496,7 +496,7 @@ class Message extends React.Component<IProps, IState> {
 
     private onRowsRenderedHandler = (data: any) => {
         const {items} = this.state;
-        if (data.startIndex > -1) {
+        if (data.startIndex > -1 && items[data.startIndex]) {
             // Show/Hide date
             if (items[data.startIndex].messagetype === C_MESSAGE_TYPE.Date ||
                 (items[data.startIndex + 1] && items[data.startIndex + 1].messagetype === C_MESSAGE_TYPE.Date)) {
@@ -510,7 +510,7 @@ class Message extends React.Component<IProps, IState> {
             }
 
             // On load more after
-            if (data.stopIndex > -1) {
+            if (data.stopIndex > -1 && items[data.stopIndex]) {
                 if (items[data.stopIndex].messagetype === C_MESSAGE_TYPE.Gap && items[data.stopIndex].id && this.props.onLoadMoreAfter) {
                     this.props.onLoadMoreAfter(items[data.stopIndex].id || 0);
                 }

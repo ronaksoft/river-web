@@ -17,7 +17,8 @@ import Chip from '@material-ui/core/Chip';
 import UserName from '../UserName';
 import {NotInterestedRounded} from '@material-ui/icons';
 import {IDialog} from '../../repository/dialog/interface';
-import DialogRepo, {IDialogWithContact} from '../../repository/dialog';
+import SearchRepo from '../../repository/search';
+import {IDialogWithContact} from '../../repository/search/interface';
 import {PeerType} from '../../services/sdk/messages/core.types_pb';
 import GroupAvatar from '../GroupAvatar';
 import GroupName from '../GroupName';
@@ -55,7 +56,7 @@ class SearchList extends React.Component<IProps, IState> {
     private inputePeerRes: IDialogWithContact = {dialogs: [], contacts: []};
     // @ts-ignore
     private list: List;
-    private dialogRepo: DialogRepo;
+    private searchRepo: SearchRepo;
     private searchDebounce: any;
     private defaultInputePeer: IDialogWithContact;
 
@@ -70,7 +71,7 @@ class SearchList extends React.Component<IProps, IState> {
             title: '',
         };
 
-        this.dialogRepo = DialogRepo.getInstance();
+        this.searchRepo = SearchRepo.getInstance();
         this.searchDebounce = debounce(this.search, 512);
     }
 
@@ -199,7 +200,7 @@ class SearchList extends React.Component<IProps, IState> {
 
     /* Get all contacts */
     private getDefault() {
-        this.dialogRepo.search({}).then((res) => {
+        this.searchRepo.search({}).then((res) => {
             this.defaultInputePeer = res;
             this.inputePeerRes = clone(res);
             this.setState({
@@ -227,7 +228,7 @@ class SearchList extends React.Component<IProps, IState> {
 
     /* For debouncing the query in order to have best performance */
     private search = (text: string) => {
-        this.dialogRepo.search({keyword: text, limit: 12}).then((res) => {
+        this.searchRepo.search({keyword: text, limit: 12}).then((res) => {
             this.inputePeerRes = clone(res || []);
             this.setState({
                 inputPeers: this.getTrimmedList(this.state.selectedInputPeers),
@@ -322,7 +323,7 @@ class SearchList extends React.Component<IProps, IState> {
                 mode: 'contact',
             });
         });
-        return differenceBy(items, [...selectedInputPeers], 'id');
+        return differenceBy(items, selectedInputPeers, 'id');
     }
 
     /* Dispatch any changes on edit */

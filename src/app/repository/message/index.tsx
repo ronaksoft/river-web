@@ -118,10 +118,10 @@ export default class MessageRepo {
         return this.db.messages.bulkDelete(ids);
     }
 
-    public getMany({peer, limit, before, after}: any, fnCallback?: (resMsgs: IMessage[]) => void): Promise<IMessage[]> {
+    public getMany({peer, limit, before, after, ignoreMax}: any, fnCallback?: (resMsgs: IMessage[]) => void): Promise<IMessage[]> {
         limit = limit || 30;
         return new Promise((resolve, reject) => {
-            this.getManyCache({limit, before, after}, peer).then((res) => {
+            this.getManyCache({limit, before, after, ignoreMax}, peer, fnCallback).then((res) => {
                 const len = res.length;
                 if (len < limit) {
                     let maxId = null;
@@ -142,9 +142,9 @@ export default class MessageRepo {
                         resolve(res);
                         return;
                     }
-                    if (typeof fnCallback === 'function') {
-                        resolve(res);
-                    }
+                    // if (typeof fnCallback === 'function') {
+                    //     fnCallback(res);
+                    // }
                     const lim = limit - len;
                     this.sdk.getMessageHistory(peer, {maxId, minId, limit: lim}).then((remoteRes) => {
                         this.userRepo.importBulk(remoteRes.usersList);
@@ -153,11 +153,7 @@ export default class MessageRepo {
                         return this.transform(remoteRes.messagesList);
                     }).then((remoteRes) => {
                         this.importBulk(remoteRes, true);
-                        if (typeof fnCallback === 'function') {
-                            fnCallback(remoteRes);
-                        } else {
-                            resolve([...res, ...remoteRes]);
-                        }
+                        resolve([...res, ...remoteRes]);
                     }).catch((err2) => {
                         if (fnCallback === undefined) {
                             reject(err2);
@@ -182,7 +178,12 @@ export default class MessageRepo {
                     return this.transform(remoteRes.messagesList);
                 }).then((remoteRes) => {
                     this.importBulk(remoteRes, true);
-                    resolve(remoteRes);
+                    if (typeof fnCallback === 'function') {
+                        fnCallback(remoteRes);
+                        resolve([]);
+                    } else {
+                        resolve(remoteRes);
+                    }
                 }).catch((err2) => {
                     reject(err2);
                 });
@@ -190,7 +191,8 @@ export default class MessageRepo {
         });
     }
 
-    public getManyCache({limit, before, after}: any, peer: InputPeer): Promise<IMessage[]> {
+    public getManyCache({limit, before, after, ignoreMax}: any, peer: InputPeer, fnCallback?: (resMsgs: IMessage[]) => void): Promise<IMessage[]> {
+        ignoreMax = ignoreMax || false;
         const pipe = this.db.messages.where('[peerid+id]');
         let pipe2: Dexie.Collection<IMessage, number>;
         let mode = 0x0;
@@ -210,6 +212,7 @@ export default class MessageRepo {
                 break;
             // before
             case 0x1:
+                before = (ignoreMax ? before - 1 : before);
                 pipe2 = pipe.between([peerId, Dexie.minKey], [peerId, before], true, true);
                 break;
             // after
@@ -227,8 +230,16 @@ export default class MessageRepo {
         pipe2.filter((item: IMessage) => {
             return item.temp !== true && (item.id || 0) > 0;
         });
-        return pipe2.limit(limit + 2).toArray().then((res) => {
+        return pipe2.limit(limit + (ignoreMax ? 1 : 2)).toArray().then((res) => {
+            const cacheMsgs: IMessage[] = [];
             const hasHole = res.some((msg) => {
+                if (fnCallback && ignoreMax && mode === 0x1) {
+                    if (msg.messagetype === C_MESSAGE_TYPE.Hole) {
+                        fnCallback(cacheMsgs);
+                        return true;
+                    }
+                    cacheMsgs.push(msg);
+                }
                 return (msg.messagetype === C_MESSAGE_TYPE.Hole);
             });
             window.console.log('has hole:', hasHole);
@@ -240,7 +251,7 @@ export default class MessageRepo {
                             res.shift();
                         }
                     } else {
-                        if (res[0].id === before) {
+                        if (res[0].id === before && !ignoreMax) {
                             res.shift();
                         }
                     }
@@ -249,9 +260,15 @@ export default class MessageRepo {
                 if (res.length === limit + 1) {
                     res.pop();
                 }
-                return res;
+
+                if (fnCallback) {
+                    fnCallback(res);
+                    return [];
+                } else {
+                    return res;
+                }
             } else {
-                return this.checkHoles(peer, (mode === 0x2 ? after + 1 : before - 1), (mode === 0x2), limit).then((remoteRes) => {
+                return this.checkHoles(peer, (mode === 0x2 ? after + 1 : before - (ignoreMax ? 0 : 1)), (mode === 0x2), limit, ignoreMax).then((remoteRes) => {
                     this.userRepo.importBulk(remoteRes.usersList);
                     this.groupRepo.importBulk(remoteRes.groupsList);
                     remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList);
@@ -357,7 +374,8 @@ export default class MessageRepo {
         }
         return this.db.messages.where('[peerid+id]')
             .between([peerId, minId + 1], [peerId, Dexie.maxKey], true, true).filter((item) => {
-                return item.temp !== true && item.me !== true && ((item.id || 0) >= minId) && item.messagetype !== C_MESSAGE_TYPE.Hole;
+                return item.temp !== true && item.me !== true && ((item.id || 0) >= minId) &&
+                    (item.messagetype === C_MESSAGE_TYPE.Normal || item.messagetype !== C_MESSAGE_TYPE.System);
             }).count();
     }
 
@@ -431,7 +449,7 @@ export default class MessageRepo {
         });
     }
 
-    private checkHoles(peer: InputPeer, id: number, asc: boolean, limit: number) {
+    private checkHoles(peer: InputPeer, id: number, asc: boolean, limit: number, ignoreMax: boolean) {
         let query = {};
         if (asc) {
             query = {
@@ -445,13 +463,13 @@ export default class MessageRepo {
             };
         }
         return this.sdk.getMessageHistory(peer, query).then((remoteRes) => {
-            return this.modifyHoles(peer.getId() || '', remoteRes.messagesList, asc).then(() => {
+            return this.modifyHoles(peer.getId() || '', remoteRes.messagesList, asc, ignoreMax).then(() => {
                 return remoteRes;
             });
         });
     }
 
-    private modifyHoles(peerId: string, res: UserMessage.AsObject[], asc: boolean) {
+    private modifyHoles(peerId: string, res: UserMessage.AsObject[], asc: boolean, ignoreMax: boolean) {
         let max = 0;
         let min = Infinity;
         res.forEach((item) => {
@@ -462,14 +480,14 @@ export default class MessageRepo {
                 min = item.id;
             }
         });
-        return this.removeHolesInRange(peerId, min, max, asc);
+        return this.removeHolesInRange(peerId, min, max, asc, ignoreMax);
     }
 
-    private removeHolesInRange(peerId: string, min: number, max: number, asc: boolean) {
+    private removeHolesInRange(peerId: string, min: number, max: number, asc: boolean, ignoreMax: boolean) {
         return this.db.messages.where('[peerid+id]').between([peerId, min - 1], [peerId, max + 1], true, true).filter((item) => {
             return (item.messagetype === C_MESSAGE_TYPE.Hole);
         }).delete().finally(() => {
-            const promises: Array<Promise<IMessage|undefined>> = [];
+            const promises: Array<Promise<IMessage | undefined>> = [];
             promises.push(this.db.messages.get(min - 1));
             promises.push(this.db.messages.get(max + 1));
             return new Promise((resolve) => {
@@ -477,7 +495,7 @@ export default class MessageRepo {
                     if (!resArr[0]) {
                         this.insertHole(peerId, min, true);
                     }
-                    if (!resArr[1]) {
+                    if (!resArr[1] && !ignoreMax) {
                         this.insertHole(peerId, max, true);
                     }
                     resolve();

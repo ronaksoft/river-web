@@ -434,6 +434,7 @@ class Chat extends React.Component<IProps, IState> {
             });
             const {messages, dialogs} = this.state;
             let updateView = false;
+            // TODO: check server
             data.messageidsList.map((id) => {
                 const dialogIndex = findIndex(dialogs, {topmessageid: id});
                 if (dialogIndex > -1) {
@@ -441,7 +442,7 @@ class Chat extends React.Component<IProps, IState> {
                     peer.setId(dialogs[dialogIndex].peerid || '');
                     peer.setAccesshash(dialogs[dialogIndex].accesshash || '0');
                     if (id > 1) {
-                        this.messageRepo.getMany({peer, before: (id - 1), limit: 1}).then((res) => {
+                        this.messageRepo.getMany({peer, before: id, limit: 1}).then((res) => {
                             if (res.length > 0) {
                                 this.updateDialogs(res[0], dialogs[dialogIndex].accesshash || '0', true);
                             }
@@ -517,8 +518,12 @@ class Chat extends React.Component<IProps, IState> {
             this.setState({
                 group: null,
                 leftMenu: 'chat',
+                messageSelectable: false,
+                messageSelectedIds: {},
                 peer,
                 selectedDialogId: selectedId,
+                textInputMessage: undefined,
+                textInputMessageMode: C_MSG_MODE.Normal,
             }, () => {
                 this.getMessagesByDialogId(selectedId, true);
             });
@@ -971,21 +976,8 @@ class Chat extends React.Component<IProps, IState> {
         if (dialog) {
             before = (dialog.topmessageid || 0) + 1;
         }
-        this.messageRepo.getMany({peer, limit: 25, before}, (resMsgs) => {
-            // Checks peerid on transition
-            if (this.state.selectedDialogId !== dialogId) {
-                this.setLoading(false);
-                return;
-            }
-
-            const dataMsg = this.modifyMessages(this.state.messages, resMsgs, false);
-            this.setState({
-                messages: dataMsg.msgs,
-            }, () => {
-                this.messageComponent.list.recomputeRowHeights();
-                this.messageComponent.list.forceUpdateGrid();
-            });
-        }).then((data) => {
+        let minId: number = 0;
+        this.messageRepo.getMany({peer, limit: 25, before, ignoreMax: true}, (data) => {
             // Checks peerid on transition
             if (this.state.selectedDialogId !== dialogId) {
                 this.setLoading(false);
@@ -1006,16 +998,13 @@ class Chat extends React.Component<IProps, IState> {
             }
 
             const dataMsg = this.modifyMessages([], messages, true, maxReadInbox);
+            minId = dataMsg.minId;
 
             this.setState({
                 isChatView: true,
                 isTyping: false,
                 maxReadId,
-                messageSelectable: false,
-                messageSelectedIds: {},
                 messages: dataMsg.msgs,
-                textInputMessage: undefined,
-                textInputMessageMode: C_MSG_MODE.Normal,
             }, () => {
                 if (messages.length > 0) {
                     window.console.log('maxReadId', maxReadId, 'maxId', dataMsg.maxId);
@@ -1027,6 +1016,25 @@ class Chat extends React.Component<IProps, IState> {
                     this.sendReadHistory(peer, dataMsg.maxId);
                 }
                 this.setLoading(false);
+            });
+        }).then((resMsgs) => {
+            // Checks peerid on transition
+            if (this.state.selectedDialogId !== dialogId) {
+                this.setLoading(false);
+                return;
+            }
+
+            const minIdIndex = findIndex(resMsgs, {id: minId});
+            if (minIdIndex > -1) {
+                resMsgs.splice(0, minIdIndex + 1);
+            }
+
+            const dataMsg = this.modifyMessages(this.state.messages, resMsgs, false);
+            this.setState({
+                messages: dataMsg.msgs,
+            }, () => {
+                this.messageComponent.list.recomputeRowHeights();
+                this.messageComponent.list.forceUpdateGrid();
             });
         }).catch((err: any) => {
             window.console.warn(err);
@@ -1090,12 +1098,16 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private modifyMessages(defaultMessages: IMessage[], messages: IMessage[], push: boolean, messageReadId?: number): { maxId: number, msgs: IMessage[] } {
+    private modifyMessages(defaultMessages: IMessage[], messages: IMessage[], push: boolean, messageReadId?: number): { maxId: number, minId: number, msgs: IMessage[] } {
         let maxId = 0;
+        let minId = Infinity;
         let newMessageFlag = false;
         messages.forEach((msg, key) => {
             if (msg.id && msg.id > maxId) {
                 maxId = msg.id;
+            }
+            if (msg.id && msg.id < minId) {
+                minId = msg.id;
             }
             if (push) {
                 // avatar breakpoint
@@ -1158,6 +1170,7 @@ class Chat extends React.Component<IProps, IState> {
         });
         return {
             maxId,
+            minId,
             msgs: defaultMessages,
         };
     }

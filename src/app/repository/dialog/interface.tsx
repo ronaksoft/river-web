@@ -11,4 +11,9 @@ interface IDialog extends Dialog.AsObject {
     target_id?: string;
 }
 
-export {IDialog};
+interface IDialogWithUpdateId {
+    dialogs: IDialog[];
+    updateid: number;
+}
+
+export {IDialog, IDialogWithUpdateId};
