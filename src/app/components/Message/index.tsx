@@ -36,9 +36,9 @@ interface IState {
     items: IMessage[];
     listStyle?: React.CSSProperties;
     loading: boolean;
+    loadingPersist: boolean;
     moreAnchorEl: any;
     moreIndex: number;
-    noTransition: boolean;
     peer: InputPeer | null;
     readId: number;
     readIdInit: number;
@@ -64,6 +64,7 @@ class Message extends React.Component<IProps, IState> {
     public cache: CellMeasurerCache;
     private listCount: number;
     private topOfList: boolean = false;
+    private loadingTimeout: any = null;
     private messageScroll: {
         overscanStartIndex: number;
         overscanStopIndex: number;
@@ -82,9 +83,9 @@ class Message extends React.Component<IProps, IState> {
         this.state = {
             items: props.items,
             loading: false,
+            loadingPersist: false,
             moreAnchorEl: null,
             moreIndex: -1,
-            noTransition: false,
             peer: props.peer,
             readId: props.readId,
             readIdInit: -1,
@@ -101,13 +102,9 @@ class Message extends React.Component<IProps, IState> {
 
     public componentDidMount() {
         this.fitList(true);
-        setTimeout(() => {
-            this.setState({
-                noTransition: false,
-            });
-        }, 50);
         this.listCount = this.props.items.length;
         this.topOfList = false;
+        window.console.log('componentDidMount');
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -117,17 +114,11 @@ class Message extends React.Component<IProps, IState> {
                 items: newProps.items,
                 moreAnchorEl: null,
                 moreIndex: -1,
-                noTransition: true,
                 peer: newProps.peer,
                 readIdInit: newProps.readId,
                 scrollIndex: newProps.items.length - 1,
             }, () => {
                 this.fitList(true);
-                setTimeout(() => {
-                    this.setState({
-                        noTransition: false,
-                    });
-                }, 250);
             });
             this.listCount = newProps.items.length;
             this.topOfList = false;
@@ -162,9 +153,23 @@ class Message extends React.Component<IProps, IState> {
     }
 
     public setLoading(loading: boolean) {
-        this.setState({
+        const state: any = {
             loading,
-        }, () => {
+        };
+        if (loading) {
+            state.loadingPersist = true;
+        }
+        this.setState(state, () => {
+            if (this.state.loading) {
+                clearTimeout(this.loadingTimeout);
+                this.loadingTimeout = setTimeout(() => {
+                    this.setState({
+                        loadingPersist: false,
+                    }, () => {
+                        this.list.forceUpdateGrid();
+                    });
+                }, 500);
+            }
             this.list.forceUpdateGrid();
         });
     }
@@ -218,7 +223,7 @@ class Message extends React.Component<IProps, IState> {
                             onRowsRendered={this.onRowsRenderedHandler}
                             onScroll={this.onScroll}
                             style={listStyle}
-                            className={'chat active-chat' + (this.state.noTransition ? ' no-transition' : '')}
+                            className="chat active-chat"
                         />
                         <Menu
                             anchorEl={moreAnchorEl}
@@ -327,7 +332,7 @@ class Message extends React.Component<IProps, IState> {
             case C_MESSAGE_TYPE.Gap:
                 return (<div style={style} className="bubble-gap">
                     <div className="gap">
-                        {this.state.loading && <div className="loading">
+                        {Boolean(this.state.loading || this.state.loadingPersist) && <div className="loading">
                             <span className="loader"/>
                         </div>}
                     </div>
@@ -341,9 +346,10 @@ class Message extends React.Component<IProps, IState> {
             case C_MESSAGE_TYPE.Date:
                 return (
                     <div style={style} className="bubble-wrapper">
-                        {!Boolean(this.state.loading && index === 0) &&
+                        {!Boolean((this.state.loading || this.state.loadingPersist) && index === 0) &&
                         <span className="date">{TimeUtility.dynamicDate(message.createdon || 0)}</span>}
-                        {Boolean(this.state.loading && index === 0) && <div className="loading">
+                        {Boolean((this.state.loading || this.state.loadingPersist) && index === 0) &&
+                        <div className="loading">
                             <span className="loader"/>
                         </div>}
                     </div>

@@ -44,6 +44,11 @@ export class Dialog extends jspb.Message {
   getNotifysettings(): PeerNotifySettings | undefined;
   setNotifysettings(value?: PeerNotifySettings): void;
 
+  hasMentionedcount(): boolean;
+  clearMentionedcount(): void;
+  getMentionedcount(): number | undefined;
+  setMentionedcount(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Dialog.AsObject;
   static toObject(includeInstance: boolean, msg: Dialog): Dialog.AsObject;
@@ -64,6 +69,7 @@ export namespace Dialog {
     unreadcount?: number,
     accesshash?: string,
     notifysettings?: PeerNotifySettings.AsObject,
+    mentionedcount?: number,
   }
 }
 
@@ -184,6 +190,16 @@ export class User extends jspb.Message {
   getUsername(): string | undefined;
   setUsername(value: string): void;
 
+  hasStatus(): boolean;
+  clearStatus(): void;
+  getStatus(): UserStatus | undefined;
+  setStatus(value: UserStatus): void;
+
+  hasRestricted(): boolean;
+  clearRestricted(): void;
+  getRestricted(): boolean | undefined;
+  setRestricted(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): User.AsObject;
   static toObject(includeInstance: boolean, msg: User): User.AsObject;
@@ -200,6 +216,8 @@ export namespace User {
     firstname?: string,
     lastname?: string,
     username?: string,
+    status?: UserStatus,
+    restricted?: boolean,
   }
 }
 
@@ -349,6 +367,11 @@ export class UserMessage extends jspb.Message {
   getMessageactiondata_asB64(): string;
   setMessageactiondata(value: Uint8Array | string): void;
 
+  clearEntitiesList(): void;
+  getEntitiesList(): Array<MessageEntity>;
+  setEntitiesList(value: Array<MessageEntity>): void;
+  addEntities(value?: MessageEntity, index?: number): MessageEntity;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UserMessage.AsObject;
   static toObject(includeInstance: boolean, msg: UserMessage): UserMessage.AsObject;
@@ -378,6 +401,47 @@ export namespace UserMessage {
     replyto?: number,
     messageaction?: number,
     messageactiondata?: Uint8Array | string,
+    entitiesList?: Array<MessageEntity.AsObject>,
+  }
+}
+
+export class MessageEntity extends jspb.Message {
+  hasType(): boolean;
+  clearType(): void;
+  getType(): MessageEntityType | undefined;
+  setType(value: MessageEntityType): void;
+
+  hasOffset(): boolean;
+  clearOffset(): void;
+  getOffset(): number | undefined;
+  setOffset(value: number): void;
+
+  hasLength(): boolean;
+  clearLength(): void;
+  getLength(): number | undefined;
+  setLength(value: number): void;
+
+  hasUserid(): boolean;
+  clearUserid(): void;
+  getUserid(): number | undefined;
+  setUserid(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessageEntity.AsObject;
+  static toObject(includeInstance: boolean, msg: MessageEntity): MessageEntity.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessageEntity, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessageEntity;
+  static deserializeBinaryFromReader(message: MessageEntity, reader: jspb.BinaryReader): MessageEntity;
+}
+
+export namespace MessageEntity {
+  export type AsObject = {
+    type?: MessageEntityType,
+    offset?: number,
+    length?: number,
+    userid?: number,
   }
 }
 
@@ -539,6 +603,11 @@ export class InputFile extends jspb.Message {
   getFilename(): string | undefined;
   setFilename(value: string): void;
 
+  hasMd5checksum(): boolean;
+  clearMd5checksum(): void;
+  getMd5checksum(): string | undefined;
+  setMd5checksum(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): InputFile.AsObject;
   static toObject(includeInstance: boolean, msg: InputFile): InputFile.AsObject;
@@ -554,6 +623,35 @@ export namespace InputFile {
     fileid?: string,
     totalparts?: number,
     filename?: string,
+    md5checksum?: string,
+  }
+}
+
+export class InputDocument extends jspb.Message {
+  hasId(): boolean;
+  clearId(): void;
+  getId(): string | undefined;
+  setId(value: string): void;
+
+  hasAccesshash(): boolean;
+  clearAccesshash(): void;
+  getAccesshash(): string | undefined;
+  setAccesshash(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): InputDocument.AsObject;
+  static toObject(includeInstance: boolean, msg: InputDocument): InputDocument.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: InputDocument, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): InputDocument;
+  static deserializeBinaryFromReader(message: InputDocument, reader: jspb.BinaryReader): InputDocument;
+}
+
+export namespace InputDocument {
+  export type AsObject = {
+    id?: string,
+    accesshash?: string,
   }
 }
 
@@ -709,6 +807,28 @@ export enum PeerType {
   PEERGROUP = 2,
   PEERSUPERGROUP = 3,
   PEERCHANNEL = 4,
+}
+
+export enum UserStatus {
+  USERSTATUSOFFLINE = 0,
+  USERSTATUSONLINE = 1,
+  USERSTATUSRECENTLY = 2,
+  USERSTATUSLASTWEEK = 3,
+  USERSTATUSLASTMONTH = 4,
+}
+
+export enum MessageEntityType {
+  MESSAGEENTITYTYPEBOLD = 0,
+  MESSAGEENTITYTYPEITALIC = 1,
+  MESSAGEENTITYTYPEMENTION = 2,
+  MESSAGEENTITYTYPEURL = 3,
+  MESSAGEENTITYTYPEEMAIL = 4,
+  MESSAGEENTITYTYPEHASHTAG = 5,
+}
+
+export enum DocumentType {
+  DOCUMENTTYPEUNKNOWN = 0,
+  DOCUMENTTYPEPHOTO = 1,
 }
 
 export enum GroupFlags {

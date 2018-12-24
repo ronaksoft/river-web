@@ -15,11 +15,13 @@ var core_types_pb = require('./core.types_pb.js');
 goog.exportSymbol('proto.msg.AuthAuthorization', null, global);
 goog.exportSymbol('proto.msg.AuthCheckPhone', null, global);
 goog.exportSymbol('proto.msg.AuthCheckedPhone', null, global);
+goog.exportSymbol('proto.msg.AuthDestroyKey', null, global);
 goog.exportSymbol('proto.msg.AuthLogin', null, global);
 goog.exportSymbol('proto.msg.AuthLogout', null, global);
 goog.exportSymbol('proto.msg.AuthRecall', null, global);
 goog.exportSymbol('proto.msg.AuthRecalled', null, global);
 goog.exportSymbol('proto.msg.AuthRegister', null, global);
+goog.exportSymbol('proto.msg.AuthResendCode', null, global);
 goog.exportSymbol('proto.msg.AuthSendCode', null, global);
 goog.exportSymbol('proto.msg.AuthSentCode', null, global);
 
@@ -1066,6 +1068,203 @@ proto.msg.AuthSendCode.prototype.hasPhone = function() {
  * @extends {jspb.Message}
  * @constructor
  */
+proto.msg.AuthResendCode = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.msg.AuthResendCode, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.msg.AuthResendCode.displayName = 'proto.msg.AuthResendCode';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.msg.AuthResendCode.prototype.toObject = function(opt_includeInstance) {
+  return proto.msg.AuthResendCode.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.msg.AuthResendCode} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.AuthResendCode.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    phone: jspb.Message.getField(msg, 1),
+    phonecodehash: jspb.Message.getField(msg, 2)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.msg.AuthResendCode}
+ */
+proto.msg.AuthResendCode.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.msg.AuthResendCode;
+  return proto.msg.AuthResendCode.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.msg.AuthResendCode} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.msg.AuthResendCode}
+ */
+proto.msg.AuthResendCode.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPhone(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPhonecodehash(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.msg.AuthResendCode.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.msg.AuthResendCode.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.msg.AuthResendCode} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.AuthResendCode.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
+  if (f != null) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+};
+
+
+/**
+ * required string Phone = 1;
+ * @return {string}
+ */
+proto.msg.AuthResendCode.prototype.getPhone = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.AuthResendCode.prototype.setPhone = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+proto.msg.AuthResendCode.prototype.clearPhone = function() {
+  jspb.Message.setField(this, 1, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AuthResendCode.prototype.hasPhone = function() {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * required string PhoneCodeHash = 2;
+ * @return {string}
+ */
+proto.msg.AuthResendCode.prototype.getPhonecodehash = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.AuthResendCode.prototype.setPhonecodehash = function(value) {
+  jspb.Message.setField(this, 2, value);
+};
+
+
+proto.msg.AuthResendCode.prototype.clearPhonecodehash = function() {
+  jspb.Message.setField(this, 2, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AuthResendCode.prototype.hasPhonecodehash = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
 proto.msg.AuthRecall = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -1208,6 +1407,122 @@ proto.msg.AuthRecall.prototype.clearClientid = function() {
  */
 proto.msg.AuthRecall.prototype.hasClientid = function() {
   return jspb.Message.getField(this, 1) != null;
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.msg.AuthDestroyKey = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.msg.AuthDestroyKey, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.msg.AuthDestroyKey.displayName = 'proto.msg.AuthDestroyKey';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.msg.AuthDestroyKey.prototype.toObject = function(opt_includeInstance) {
+  return proto.msg.AuthDestroyKey.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.msg.AuthDestroyKey} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.AuthDestroyKey.toObject = function(includeInstance, msg) {
+  var f, obj = {
+
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.msg.AuthDestroyKey}
+ */
+proto.msg.AuthDestroyKey.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.msg.AuthDestroyKey;
+  return proto.msg.AuthDestroyKey.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.msg.AuthDestroyKey} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.msg.AuthDestroyKey}
+ */
+proto.msg.AuthDestroyKey.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.msg.AuthDestroyKey.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.msg.AuthDestroyKey.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.msg.AuthDestroyKey} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.AuthDestroyKey.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
 };
 
 

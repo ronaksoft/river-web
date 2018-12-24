@@ -150,6 +150,34 @@ export namespace AuthSendCode {
   }
 }
 
+export class AuthResendCode extends jspb.Message {
+  hasPhone(): boolean;
+  clearPhone(): void;
+  getPhone(): string | undefined;
+  setPhone(value: string): void;
+
+  hasPhonecodehash(): boolean;
+  clearPhonecodehash(): void;
+  getPhonecodehash(): string | undefined;
+  setPhonecodehash(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AuthResendCode.AsObject;
+  static toObject(includeInstance: boolean, msg: AuthResendCode): AuthResendCode.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AuthResendCode, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AuthResendCode;
+  static deserializeBinaryFromReader(message: AuthResendCode, reader: jspb.BinaryReader): AuthResendCode;
+}
+
+export namespace AuthResendCode {
+  export type AsObject = {
+    phone?: string,
+    phonecodehash?: string,
+  }
+}
+
 export class AuthRecall extends jspb.Message {
   hasClientid(): boolean;
   clearClientid(): void;
@@ -169,6 +197,22 @@ export class AuthRecall extends jspb.Message {
 export namespace AuthRecall {
   export type AsObject = {
     clientid?: string,
+  }
+}
+
+export class AuthDestroyKey extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AuthDestroyKey.AsObject;
+  static toObject(includeInstance: boolean, msg: AuthDestroyKey): AuthDestroyKey.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AuthDestroyKey, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AuthDestroyKey;
+  static deserializeBinaryFromReader(message: AuthDestroyKey, reader: jspb.BinaryReader): AuthDestroyKey;
+}
+
+export namespace AuthDestroyKey {
+  export type AsObject = {
   }
 }
 

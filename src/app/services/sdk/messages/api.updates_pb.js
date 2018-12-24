@@ -3471,7 +3471,7 @@ proto.msg.UpdateNotifySettings.toObject = function(includeInstance, msg) {
     ucount: jspb.Message.getField(msg, 100),
     updateid: jspb.Message.getField(msg, 101),
     userid: jspb.Message.getField(msg, 1),
-    notifypeer: (f = msg.getNotifypeer()) && core_types_pb.InputPeer.toObject(includeInstance, f),
+    notifypeer: (f = msg.getNotifypeer()) && core_types_pb.Peer.toObject(includeInstance, f),
     settings: (f = msg.getSettings()) && core_types_pb.PeerNotifySettings.toObject(includeInstance, f)
   };
 
@@ -3522,8 +3522,8 @@ proto.msg.UpdateNotifySettings.deserializeBinaryFromReader = function(msg, reade
       msg.setUserid(value);
       break;
     case 2:
-      var value = new core_types_pb.InputPeer;
-      reader.readMessage(value,core_types_pb.InputPeer.deserializeBinaryFromReader);
+      var value = new core_types_pb.Peer;
+      reader.readMessage(value,core_types_pb.Peer.deserializeBinaryFromReader);
       msg.setNotifypeer(value);
       break;
     case 3:
@@ -3586,7 +3586,7 @@ proto.msg.UpdateNotifySettings.serializeBinaryToWriter = function(message, write
     writer.writeMessage(
       2,
       f,
-      core_types_pb.InputPeer.serializeBinaryToWriter
+      core_types_pb.Peer.serializeBinaryToWriter
     );
   }
   f = message.getSettings();
@@ -3688,16 +3688,16 @@ proto.msg.UpdateNotifySettings.prototype.hasUserid = function() {
 
 
 /**
- * required InputPeer NotifyPeer = 2;
- * @return {!proto.msg.InputPeer}
+ * required Peer NotifyPeer = 2;
+ * @return {!proto.msg.Peer}
  */
 proto.msg.UpdateNotifySettings.prototype.getNotifypeer = function() {
-  return /** @type{!proto.msg.InputPeer} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputPeer, 2, 1));
+  return /** @type{!proto.msg.Peer} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.Peer, 2, 1));
 };
 
 
-/** @param {!proto.msg.InputPeer} value */
+/** @param {!proto.msg.Peer} value */
 proto.msg.UpdateNotifySettings.prototype.setNotifypeer = function(value) {
   jspb.Message.setWrapperField(this, 2, value);
 };

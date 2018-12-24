@@ -501,8 +501,8 @@ export class UpdateNotifySettings extends jspb.Message {
 
   hasNotifypeer(): boolean;
   clearNotifypeer(): void;
-  getNotifypeer(): core_types_pb.InputPeer;
-  setNotifypeer(value?: core_types_pb.InputPeer): void;
+  getNotifypeer(): core_types_pb.Peer;
+  setNotifypeer(value?: core_types_pb.Peer): void;
 
   hasSettings(): boolean;
   clearSettings(): void;
@@ -524,7 +524,7 @@ export namespace UpdateNotifySettings {
     ucount?: number,
     updateid?: number,
     userid?: string,
-    notifypeer: core_types_pb.InputPeer.AsObject,
+    notifypeer: core_types_pb.Peer.AsObject,
     settings: core_types_pb.PeerNotifySettings.AsObject,
   }
 }

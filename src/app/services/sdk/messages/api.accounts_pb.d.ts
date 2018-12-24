@@ -33,10 +33,10 @@ export namespace AccountSetNotifySettings {
 }
 
 export class AccountGetNotifySettings extends jspb.Message {
-  clearPeerList(): void;
-  getPeerList(): Array<core_types_pb.InputPeer>;
-  setPeerList(value: Array<core_types_pb.InputPeer>): void;
-  addPeer(value?: core_types_pb.InputPeer, index?: number): core_types_pb.InputPeer;
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.InputPeer;
+  setPeer(value?: core_types_pb.InputPeer): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountGetNotifySettings.AsObject;
@@ -50,7 +50,7 @@ export class AccountGetNotifySettings extends jspb.Message {
 
 export namespace AccountGetNotifySettings {
   export type AsObject = {
-    peerList: Array<core_types_pb.InputPeer.AsObject>,
+    peer: core_types_pb.InputPeer.AsObject,
   }
 }
 
@@ -210,5 +210,133 @@ export namespace AccountUpdateUsername {
   export type AsObject = {
     username?: string,
   }
+}
+
+export class AccountChangePhone extends jspb.Message {
+  hasPhone(): boolean;
+  clearPhone(): void;
+  getPhone(): string | undefined;
+  setPhone(value: string): void;
+
+  hasPhonecodehash(): boolean;
+  clearPhonecodehash(): void;
+  getPhonecodehash(): string | undefined;
+  setPhonecodehash(value: string): void;
+
+  hasPhonecode(): boolean;
+  clearPhonecode(): void;
+  getPhonecode(): string | undefined;
+  setPhonecode(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountChangePhone.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountChangePhone): AccountChangePhone.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountChangePhone, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountChangePhone;
+  static deserializeBinaryFromReader(message: AccountChangePhone, reader: jspb.BinaryReader): AccountChangePhone;
+}
+
+export namespace AccountChangePhone {
+  export type AsObject = {
+    phone?: string,
+    phonecodehash?: string,
+    phonecode?: string,
+  }
+}
+
+export class AccountSetPrivacy extends jspb.Message {
+  hasKey(): boolean;
+  clearKey(): void;
+  getKey(): AccountPrivacyKey | undefined;
+  setKey(value: AccountPrivacyKey): void;
+
+  clearValuesList(): void;
+  getValuesList(): Array<AccountPrivacyValue>;
+  setValuesList(value: Array<AccountPrivacyValue>): void;
+  addValues(value: AccountPrivacyValue, index?: number): AccountPrivacyValue;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountSetPrivacy.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountSetPrivacy): AccountSetPrivacy.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountSetPrivacy, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountSetPrivacy;
+  static deserializeBinaryFromReader(message: AccountSetPrivacy, reader: jspb.BinaryReader): AccountSetPrivacy;
+}
+
+export namespace AccountSetPrivacy {
+  export type AsObject = {
+    key?: AccountPrivacyKey,
+    valuesList: Array<AccountPrivacyValue>,
+  }
+}
+
+export class AccountGetPrivacy extends jspb.Message {
+  hasKey(): boolean;
+  clearKey(): void;
+  getKey(): AccountPrivacyKey | undefined;
+  setKey(value: AccountPrivacyKey): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountGetPrivacy.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountGetPrivacy): AccountGetPrivacy.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountGetPrivacy, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountGetPrivacy;
+  static deserializeBinaryFromReader(message: AccountGetPrivacy, reader: jspb.BinaryReader): AccountGetPrivacy;
+}
+
+export namespace AccountGetPrivacy {
+  export type AsObject = {
+    key?: AccountPrivacyKey,
+  }
+}
+
+export class AccountPrivacyRules extends jspb.Message {
+  clearRulesList(): void;
+  getRulesList(): Array<AccountPrivacyValue>;
+  setRulesList(value: Array<AccountPrivacyValue>): void;
+  addRules(value: AccountPrivacyValue, index?: number): AccountPrivacyValue;
+
+  clearUsersList(): void;
+  getUsersList(): Array<core_types_pb.User>;
+  setUsersList(value: Array<core_types_pb.User>): void;
+  addUsers(value?: core_types_pb.User, index?: number): core_types_pb.User;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountPrivacyRules.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountPrivacyRules): AccountPrivacyRules.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountPrivacyRules, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountPrivacyRules;
+  static deserializeBinaryFromReader(message: AccountPrivacyRules, reader: jspb.BinaryReader): AccountPrivacyRules;
+}
+
+export namespace AccountPrivacyRules {
+  export type AsObject = {
+    rulesList: Array<AccountPrivacyValue>,
+    usersList: Array<core_types_pb.User.AsObject>,
+  }
+}
+
+export enum AccountPrivacyKey {
+  ACCOUNTPRIVACYKEYCHATNONE = 0,
+  ACCOUNTPRIVACYKEYCHATINVITE = 1,
+  ACCOUNTPRIVACYKEYSTATUSTIMESTAMP = 2,
+  ACCOUNTPRIVACYKEYPHONECALL = 3,
+}
+
+export enum AccountPrivacyValue {
+  ACCOUNTPRIVACYVALUEALLOWALL = 0,
+  ACCOUNTPRIVACYVALUEALLOWCONTACTS = 1,
+  ACCOUNTPRIVACYVALUEALLOWUSERS = 2,
+  ACCOUNTPRIVACYVALUEDISALLOWALL = 3,
+  ACCOUNTPRIVACYVALUEDISALLOWCONTACTS = 4,
+  ACCOUNTPRIVACYVALUEDISALLOWUSERS = 5,
 }
 

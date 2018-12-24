@@ -139,6 +139,8 @@ input {
     margin-bottom: 10px;
     background-color: var(--white);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); }
+    .user-dialog .user-info-menu .kk-card:last-of-type {
+      margin-bottom: 0; }
 
 html[theme="dark"] .user-dialog .user-info-menu {
   background-color: var(--dark-high); }

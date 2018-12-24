@@ -37,7 +37,7 @@ import {
 import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from './messages/api.updates_pb';
 import {Bool} from './messages/core.messages_pb';
 import {
-    AccountCheckUsername,
+    AccountCheckUsername, AccountGetNotifySettings,
     AccountRegisterDevice, AccountSetNotifySettings,
     AccountUpdateProfile,
     AccountUpdateUsername
@@ -50,6 +50,7 @@ import {
     GroupsGetFull, GroupsToggleAdmins,
     GroupsUpdateAdmin
 } from './messages/api.groups_pb';
+import * as core_types_pb from './messages/core.types_pb';
 
 export default class SDK {
     public static getInstance() {
@@ -204,7 +205,7 @@ export default class SDK {
         return this.server.send(C_MSG.MessagesGetDialogs, data.serializeBinary());
     }
 
-    public sendMessage(body: string, peer: InputPeer, replyTo?: number): Promise<MessagesSent.AsObject> {
+    public sendMessage(body: string, peer: InputPeer, replyTo?: number, entities?: core_types_pb.MessageEntity[]): Promise<MessagesSent.AsObject> {
         const data = new MessagesSend();
         // this.msgId++;
         data.setRandomid(parseInt(Math.random().toFixed(10).split('.')[1], 10));
@@ -212,6 +213,9 @@ export default class SDK {
         data.setPeer(peer);
         if (replyTo) {
             data.setReplyto(replyTo);
+        }
+        if (entities) {
+            data.setEntitiesList(entities);
         }
         return this.server.send(C_MSG.MessagesSend, data.serializeBinary());
     }
@@ -328,6 +332,12 @@ export default class SDK {
         data.setPeer(peer);
         data.setSettings(settings);
         return this.server.send(C_MSG.AccountSetNotifySettings, data.serializeBinary(), true);
+    }
+
+    public getNotifySettings(peer: InputPeer): Promise<PeerNotifySettings.AsObject> {
+        const data = new AccountGetNotifySettings();
+        data.setPeer(peer);
+        return this.server.send(C_MSG.AccountGetNotifySettings, data.serializeBinary(), true);
     }
 
     public groupCreate(users: InputUser[], title: string): Promise<Group.AsObject> {

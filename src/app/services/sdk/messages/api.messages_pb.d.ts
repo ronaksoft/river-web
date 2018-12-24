@@ -25,6 +25,16 @@ export class MessagesSend extends jspb.Message {
   getReplyto(): number | undefined;
   setReplyto(value: number): void;
 
+  hasCleardraft(): boolean;
+  clearCleardraft(): void;
+  getCleardraft(): boolean | undefined;
+  setCleardraft(value: boolean): void;
+
+  clearEntitiesList(): void;
+  getEntitiesList(): Array<core_types_pb.MessageEntity>;
+  setEntitiesList(value: Array<core_types_pb.MessageEntity>): void;
+  addEntities(value?: core_types_pb.MessageEntity, index?: number): core_types_pb.MessageEntity;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesSend.AsObject;
   static toObject(includeInstance: boolean, msg: MessagesSend): MessagesSend.AsObject;
@@ -41,6 +51,62 @@ export namespace MessagesSend {
     peer: core_types_pb.InputPeer.AsObject,
     body?: string,
     replyto?: number,
+    cleardraft?: boolean,
+    entitiesList: Array<core_types_pb.MessageEntity.AsObject>,
+  }
+}
+
+export class MessagesSendMedia extends jspb.Message {
+  hasRandomid(): boolean;
+  clearRandomid(): void;
+  getRandomid(): number | undefined;
+  setRandomid(value: number): void;
+
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.InputPeer;
+  setPeer(value?: core_types_pb.InputPeer): void;
+
+  hasMediatype(): boolean;
+  clearMediatype(): void;
+  getMediatype(): MediaType | undefined;
+  setMediatype(value: MediaType): void;
+
+  hasMediadata(): boolean;
+  clearMediadata(): void;
+  getMediadata(): Uint8Array | string;
+  getMediadata_asU8(): Uint8Array;
+  getMediadata_asB64(): string;
+  setMediadata(value: Uint8Array | string): void;
+
+  hasReplyto(): boolean;
+  clearReplyto(): void;
+  getReplyto(): number | undefined;
+  setReplyto(value: number): void;
+
+  hasCleardraft(): boolean;
+  clearCleardraft(): void;
+  getCleardraft(): boolean | undefined;
+  setCleardraft(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessagesSendMedia.AsObject;
+  static toObject(includeInstance: boolean, msg: MessagesSendMedia): MessagesSendMedia.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessagesSendMedia, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessagesSendMedia;
+  static deserializeBinaryFromReader(message: MessagesSendMedia, reader: jspb.BinaryReader): MessagesSendMedia;
+}
+
+export namespace MessagesSendMedia {
+  export type AsObject = {
+    randomid?: number,
+    peer: core_types_pb.InputPeer.AsObject,
+    mediatype?: MediaType,
+    mediadata: Uint8Array | string,
+    replyto?: number,
+    cleardraft?: boolean,
   }
 }
 
@@ -81,40 +147,6 @@ export namespace MessagesEdit {
     peer: core_types_pb.InputPeer.AsObject,
     body?: string,
     messageid?: number,
-  }
-}
-
-export class MessagesSendMedia extends jspb.Message {
-  hasRandomid(): boolean;
-  clearRandomid(): void;
-  getRandomid(): number | undefined;
-  setRandomid(value: number): void;
-
-  hasPeer(): boolean;
-  clearPeer(): void;
-  getPeer(): core_types_pb.InputPeer;
-  setPeer(value?: core_types_pb.InputPeer): void;
-
-  hasFile(): boolean;
-  clearFile(): void;
-  getFile(): core_types_pb.InputFile;
-  setFile(value?: core_types_pb.InputFile): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): MessagesSendMedia.AsObject;
-  static toObject(includeInstance: boolean, msg: MessagesSendMedia): MessagesSendMedia.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: MessagesSendMedia, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): MessagesSendMedia;
-  static deserializeBinaryFromReader(message: MessagesSendMedia, reader: jspb.BinaryReader): MessagesSendMedia;
-}
-
-export namespace MessagesSendMedia {
-  export type AsObject = {
-    randomid?: number,
-    peer: core_types_pb.InputPeer.AsObject,
-    file: core_types_pb.InputFile.AsObject,
   }
 }
 
@@ -524,5 +556,14 @@ export namespace MessagesMany {
     usersList: Array<core_types_pb.User.AsObject>,
     groupsList: Array<core_types_pb.Group.AsObject>,
   }
+}
+
+export enum MediaType {
+  MEDIATYPEEMPTY = 0,
+  MEDIATYPEUPLOADEDPHOTO = 1,
+  MEDIATYPEPHOTO = 2,
+  MEDIATYPEUPLOADEDDOCUMENT = 3,
+  MEDIATYPEDOCUMENT = 4,
+  MEDIATYPECONTACT = 5,
 }
 
