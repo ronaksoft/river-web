@@ -46,7 +46,6 @@ input {
   font-weight: 400; }
 
 .write {
-  display: flex;
   position: absolute;
   bottom: 0;
   left: 0;
@@ -55,6 +54,41 @@ input {
   border-width: 1px 1px 1px 0;
   background-color: #F4F4F5;
   flex-direction: column; }
+  .write .suggestion-list-container {
+    transition: height 0.1s; }
+    .write .suggestion-list-container .mention__suggestions {
+      position: static !important;
+      background-color: transparent !important;
+      top: auto !important;
+      left: auto !important;
+      overflow: hidden;
+      margin-top: 8px !important; }
+      .write .suggestion-list-container .mention__suggestions .mention__suggestions__list {
+        white-space: nowrap;
+        text-align: left; }
+        .write .suggestion-list-container .mention__suggestions .mention__suggestions__list .mention__suggestions__item {
+          font-size: 12px; }
+          .write .suggestion-list-container .mention__suggestions .mention__suggestions__list .mention__suggestions__item .inner {
+            display: flex;
+            flex-direction: row;
+            padding: 3px 8px; }
+            .write .suggestion-list-container .mention__suggestions .mention__suggestions__list .mention__suggestions__item .inner.focused {
+              background-color: var(--white); }
+            .write .suggestion-list-container .mention__suggestions .mention__suggestions__list .mention__suggestions__item .inner .avatar {
+              height: 32px;
+              width: 32px;
+              margin-right: 8px; }
+            .write .suggestion-list-container .mention__suggestions .mention__suggestions__list .mention__suggestions__item .inner .info {
+              flex: 1;
+              display: flex;
+              justify-content: center;
+              align-items: end;
+              flex-direction: column; }
+              .write .suggestion-list-container .mention__suggestions .mention__suggestions__list .mention__suggestions__item .inner .info .name {
+                margin-top: 3px; }
+              .write .suggestion-list-container .mention__suggestions .mention__suggestions__list .mention__suggestions__item .inner .info .username {
+                color: var(--grey);
+                margin-top: 3px; }
   .write .inputs {
     display: flex;
     min-height: 50px; }
@@ -84,29 +118,44 @@ input {
       margin: 8px 0;
       z-index: 2;
       display: flex; }
-      .write .inputs .input textarea {
-        font-size: 12px;
+      .write .inputs .input .textarea-container {
+        direction: ltr;
+        font-size: 12px !important;
         line-height: 1.25em;
-        float: left;
-        width: calc(100% - 8px);
-        height: 32px;
-        min-height: 32px;
-        padding: 7px 10px 8px;
-        color: var(--dark);
         border: 1px solid rgba(50, 61, 71, 0.16);
         border-radius: 3px;
-        outline: none;
-        background-color: #fff;
-        resize: none;
-        margin: 0;
-        font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
-        font-weight: 400; }
+        background-color: #fff !important;
+        min-height: 32px;
+        width: calc(100% - 8px);
+        max-height: 120px;
+        overflow-y: scroll;
+        z-index: 10;
+        padding: 6px; }
+        .write .inputs .input .textarea-container .mention {
+          position: static !important; }
+          .write .inputs .input .textarea-container .mention .mention__control .mention__highlighter {
+            position: absolute !important;
+            left: 9px;
+            top: 9px !important; }
+            .write .inputs .input .textarea-container .mention .mention__control .mention__highlighter .mention-item {
+              border-bottom: 1px solid var(--grey); }
+          .write .inputs .input .textarea-container .mention .mention__control textarea {
+            height: 20px !important; }
+            .write .inputs .input .textarea-container .mention .mention__control textarea._2-line {
+              height: 40px !important; }
+            .write .inputs .input .textarea-container .mention .mention__control textarea._3-line {
+              height: 60px !important; }
+            .write .inputs .input .textarea-container .mention .mention__control textarea._4-line {
+              height: 80px !important; }
+            .write .inputs .input .textarea-container .mention .mention__control textarea._5-line {
+              height: 100px !important; }
       .write .inputs .input .write-link {
         position: absolute;
         right: 12px;
         top: 50%;
         height: 32px;
-        transform: translateY(-50%); }
+        transform: translateY(-50%);
+        z-index: 11; }
         .write .inputs .input .write-link a {
           position: relative;
           height: 32px;
@@ -119,7 +168,8 @@ input {
           .write .inputs .input .write-link a:hover svg {
             fill: var(--grey); }
       .write .inputs .input.rtl textarea {
-        padding-right: 60px; }
+        padding-right: 60px;
+        direction: rtl; }
   .write .actions {
     display: flex;
     min-height: 50px; }
@@ -222,17 +272,18 @@ input {
     .input-placeholder .btn:hover {
       text-decoration: underline; }
 
-.mobile-view .write .inputs .input textarea {
-  font-size: 16px;
-  line-height: 20px;
-  padding: 5px 10px; }
-
 html[theme="dark"] .write {
   border: 1px solid var(--dark-medium);
   background-color: var(--dark-medium); }
-  html[theme="dark"] .write .inputs .input textarea {
-    background-color: var(--dark-low);
+  html[theme="dark"] .write .suggestion-list-container .mention__suggestions .mention__suggestions__list .mention__suggestions__item {
     color: var(--light); }
+    html[theme="dark"] .write .suggestion-list-container .mention__suggestions .mention__suggestions__list .mention__suggestions__item .inner.focused {
+      background-color: var(--dark-high); }
+  html[theme="dark"] .write .inputs .input .textarea-container {
+    background-color: var(--dark-low) !important;
+    color: var(--light) !important; }
+    html[theme="dark"] .write .inputs .input .textarea-container textarea {
+      color: var(--light) !important; }
   html[theme="dark"] .write .actions svg {
     color: var(--white); }
   html[theme="dark"] .write .actions [disabled] svg {
@@ -258,17 +309,23 @@ html[theme="dark"] .emoji-mart {
   html[theme="dark"] .emoji-mart .emoji-mart-search-icon {
     fill: var(--light); }
 
-html[font="1"] .write .inputs .input textarea {
+html[font="1"] .write .inputs .input .textarea-container {
   font-size: 12px; }
 
-html[font="2"] .write .inputs .input textarea {
+html[font="2"] .write .inputs .input .textarea-container {
   font-size: 14px; }
 
-html[font="3"] .write .inputs .input textarea {
+html[font="3"] .write .inputs .input .textarea-container {
   font-size: 16px; }
 
-html[font="4"] .write .inputs .input textarea {
+html[font="4"] .write .inputs .input .textarea-container {
   font-size: 18px; }
 
-html[font="5"] .write .inputs .input textarea {
+html[font="5"] .write .inputs .input .textarea-container {
   font-size: 20px; }
+
+.mobile-view .write .inputs .input .textarea-container {
+  font-size: 16px;
+  line-height: 20px; }
+  .mobile-view .write .inputs .input .textarea-container textarea {
+    padding: 5px 10px; }

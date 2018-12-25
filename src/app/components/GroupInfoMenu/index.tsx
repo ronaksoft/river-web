@@ -343,7 +343,9 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         }
         this.loading = true;
         this.sdk.groupGetFull(peer).then((res) => {
-            this.groupRepo.importBulk([res.group]);
+            const group: IGroup = res.group;
+            group.participantList = res.participantsList;
+            this.groupRepo.importBulk([group]);
             const contacts: IContact[] = [];
             res.participantsList.forEach((list) => {
                 contacts.push({

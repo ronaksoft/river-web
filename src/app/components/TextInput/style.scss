@@ -1,7 +1,7 @@
 @import '../../../style/common';
 
 .write {
-  display: flex;
+  //display: flex;
   position: absolute;
   bottom: 0;
   left: 0;
@@ -10,6 +10,51 @@
   border-width: 1px 1px 1px 0;
   background-color: #F4F4F5;
   flex-direction: column;
+  .suggestion-list-container {
+    transition: height 0.1s;
+    .mention__suggestions {
+      position: static !important;
+      background-color: transparent !important;
+      top: auto !important;
+      left: auto !important;
+      overflow: hidden;
+      margin-top: 8px !important;
+      .mention__suggestions__list {
+        white-space: nowrap;
+        text-align: left;
+        .mention__suggestions__item {
+          font-size: 12px;
+          .inner {
+            display: flex;
+            flex-direction: row;
+            padding: 3px 8px;
+            &.focused {
+              background-color: var(--white);
+            }
+            .avatar {
+              height: 32px;
+              width: 32px;
+              margin-right: 8px;
+            }
+            .info {
+              flex: 1;
+              display: flex;
+              justify-content: center;
+              align-items: end;
+              flex-direction: column;
+              .name {
+                margin-top: 3px;
+              }
+              .username {
+                color: var(--grey);
+                margin-top: 3px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
   .inputs {
     display: flex;
     min-height: 50px;
@@ -43,22 +88,47 @@
       margin: 8px 0;
       z-index: 2;
       display: flex;
-      textarea {
-        font-size: 12px;
+      .textarea-container {
+        direction: ltr;
+        font-size: 12px !important;
         line-height: 1.25em;
-        float: left;
-        width: calc(100% - 8px);
-        height: 32px;
-        min-height: 32px;
-        padding: 7px 10px 8px;
-        color: var(--dark);
         border: 1px solid rgba(50, 61, 71, 0.16);
         border-radius: 3px;
-        outline: none;
-        background-color: #fff;
-        resize: none;
-        margin: 0;
-        @include font;
+        background-color: #fff !important;
+        min-height: 32px;
+        width: calc(100% - 8px);
+        max-height: 120px;
+        overflow-y: scroll;
+        z-index: 10;
+        padding: 6px;
+        .mention {
+          position: static !important;
+          .mention__control {
+            .mention__highlighter {
+              position: absolute !important;
+              left: 9px;
+              top: 9px !important;
+              .mention-item {
+                border-bottom: 1px solid var(--grey);
+              }
+            }
+            textarea {
+              height: 20px !important;
+              &._2-line {
+                height: 40px !important;
+              }
+              &._3-line {
+                height: 60px !important;
+              }
+              &._4-line {
+                height: 80px !important;
+              }
+              &._5-line {
+                height: 100px !important;
+              }
+            }
+          }
+        }
       }
       .write-link {
         position: absolute;
@@ -66,6 +136,7 @@
         top: 50%;
         height: 32px;
         transform: translateY(-50%);
+        z-index: 11;
         a {
           position: relative;
           height: 32px;
@@ -85,6 +156,7 @@
       }
       &.rtl textarea {
         padding-right: 60px;
+        direction: rtl;
       }
     }
   }
@@ -217,29 +289,24 @@
   }
 }
 
-.mobile-view {
-  .write {
-    .inputs {
-      .input {
-        textarea {
-          font-size: 16px;
-          line-height: 20px;
-          padding: 5px 10px;
-        }
-      }
-    }
-  }
-}
-
 html[theme="dark"] {
   .write {
     border: 1px solid var(--dark-medium);
     background-color: var(--dark-medium);
+    .suggestion-list-container .mention__suggestions .mention__suggestions__list .mention__suggestions__item {
+      color: var(--light);
+      .inner.focused {
+        background-color: var(--dark-high);
+      }
+    }
     .inputs {
       .input {
-        textarea {
-          background-color: var(--dark-low);
-          color: var(--light);
+        .textarea-container {
+          background-color: var(--dark-low) !important;
+          color: var(--light) !important;
+          textarea {
+            color: var(--light) !important;
+          }
         }
       }
     }
@@ -283,32 +350,47 @@ html[theme="dark"] {
 }
 
 html[font="1"] {
-  .write .inputs .input textarea {
+  .write .inputs .input .textarea-container {
     font-size: 12px;
   }
 }
 
 html[font="2"] {
-  .write .inputs .input textarea {
+  .write .inputs .input .textarea-container {
     font-size: 14px;
   }
 }
 
 html[font="3"] {
-  .write .inputs .input textarea {
+  .write .inputs .input .textarea-container {
     font-size: 16px;
   }
 }
 
 html[font="4"] {
-  .write .inputs .input textarea {
+  .write .inputs .input .textarea-container {
     font-size: 18px;
   }
 }
 
 html[font="5"] {
-  .write .inputs .input textarea {
+  .write .inputs .input .textarea-container {
     font-size: 20px;
   }
 }
 
+.mobile-view {
+  .write {
+    .inputs {
+      .input {
+        .textarea-container {
+          font-size: 16px;
+          line-height: 20px;
+          textarea {
+            padding: 5px 10px;
+          }
+        }
+      }
+    }
+  }
+}

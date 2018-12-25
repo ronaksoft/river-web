@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Textarea from 'react-textarea-autosize';
 import {Picker} from 'emoji-mart';
 import PopUpMenu from '../PopUpMenu';
 import {cloneDeep, throttle} from 'lodash';
@@ -11,11 +10,16 @@ import {IMessage} from '../../repository/message/interface';
 import UserName from '../UserName';
 import {C_MSG_MODE} from './consts';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
-import {GroupFlags, InputPeer, PeerType} from '../../services/sdk/messages/core.types_pb';
+import {GroupFlags, GroupParticipant, InputPeer, PeerType} from '../../services/sdk/messages/core.types_pb';
 import GroupRepo from '../../repository/group';
+// @ts-ignore
+import {MentionsInput, Mention} from 'react-mentions';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
+import ContactRepo from '../../repository/contact';
+import SDK from '../../services/sdk';
+import {IContact} from '../../repository/contact/interface';
 
 interface IProps {
     clearPreviewMessage?: () => void;
@@ -44,15 +48,43 @@ interface IState {
     selectable: boolean;
     selectableDisable: boolean;
     userId: string;
+    textareaValue: string;
 }
 
+interface IMentions {
+    display: string;
+    id: string;
+    index: number;
+    plainTextIndex: number;
+    type?: string;
+}
+
+const defaultMentionInputStyle = {
+    input: {
+        border: 'none',
+        height: '20px',
+        maxHeight: '100px',
+        minHeight: '20px',
+        outline: 'none',
+        overflow: 'auto',
+        position: 'relative',
+    },
+};
+
 class TextInput extends React.Component<IProps, IState> {
+    // @ts-ignore
+    private mentionContainer: any = null;
     private textarea: any = null;
     private typingThrottle: any = null;
     private typingTimeout: any = null;
     private rtlDetector: RTLDetector;
     private rtlDetectorThrottle: any = null;
     private groupRepo: GroupRepo;
+    private contactRepo: ContactRepo;
+    private lastLines: number = 1;
+    private sdk: SDK;
+    private lastMentions: IMentions[];
+    private lastMentionsCount: number = 0;
 
     constructor(props: IProps) {
         super(props);
@@ -67,6 +99,7 @@ class TextInput extends React.Component<IProps, IState> {
             rtl: false,
             selectable: props.selectable,
             selectableDisable: props.selectableDisable,
+            textareaValue: '',
             userId: props.userId || '',
         };
 
@@ -78,6 +111,8 @@ class TextInput extends React.Component<IProps, IState> {
         this.rtlDetectorThrottle = throttle(this.detectRTL, 1000);
 
         this.groupRepo = GroupRepo.getInstance();
+        this.contactRepo = ContactRepo.getInstance();
+        this.sdk = SDK.getInstance();
 
         this.checkAuthority();
     }
@@ -95,7 +130,7 @@ class TextInput extends React.Component<IProps, IState> {
             userId: newProps.userId || '',
         }, () => {
             this.animatePreviewMessage();
-            this.focus('f-textarea');
+            this.focus('.mention textara');
         });
         if (newProps.previewMessageMode === C_MSG_MODE.Edit && newProps.previewMessage) {
             this.textarea.value = newProps.previewMessage.body;
@@ -114,7 +149,7 @@ class TextInput extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable, disableAuthority} = this.state;
+        const {previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable, disableAuthority, textareaValue} = this.state;
 
         if (!selectable && disableAuthority !== 0x0) {
             if (disableAuthority === 0x1) {
@@ -157,20 +192,32 @@ class TextInput extends React.Component<IProps, IState> {
                         </span>
                         </div>
                     </div>}
+                    <div ref={this.mentionContainerRefHandler} className="suggestion-list-container"/>
                     {Boolean(!selectable) && <div className="inputs">
                         <div className="user">
                             <UserAvatar id={this.state.userId} className="user-avatar"/>
                         </div>
                         <div className={'input ' + (this.state.rtl ? 'rtl' : 'ltr')}>
-                        <Textarea
-                            className={'f-textarea'}
-                            inputRef={this.textareaRefHandler}
-                            maxRows={5}
-                            placeholder="Type your message here..."
-                            onKeyUp={this.sendMessage}
-                            onKeyDown={this.inputKeyDown}
-                            style={{direction: (this.state.rtl ? 'rtl' : 'ltr')}}
-                        />
+                            <div className="textarea-container">
+                                <MentionsInput value={textareaValue}
+                                               onChange={this.handleChange}
+                                               inputRef={this.textareaRefHandler}
+                                               onKeyUp={this.sendMessage}
+                                               onKeyDown={this.inputKeyDown}
+                                               className="mention"
+                                               placeholder="Type your message here..."
+                                               style={defaultMentionInputStyle}
+                                               suggestionsPortalHost={this.mentionContainer}
+                                               onBlur={this.textareaBlurHandler}
+                                >
+                                    <Mention
+                                        trigger="@"
+                                        data={this.searchMention}
+                                        className="mention-item"
+                                        renderSuggestion={this.renderSuggestion}
+                                    />
+                                </MentionsInput>
+                            </div>
                             <div className="write-link">
                                 <a href="javascript:;"
                                    className="smiley"
@@ -253,8 +300,13 @@ class TextInput extends React.Component<IProps, IState> {
             }
         }
         this.textarea.value = '';
+        this.lastMentions = [];
+        this.lastMentionsCount = 0;
         this.setState({
             emojiAnchorEl: null,
+            textareaValue: '',
+        }, () => {
+            this.computeLines();
         });
         if (this.props.onTyping && this.state.previewMessageMode !== C_MSG_MODE.Edit) {
             this.props.onTyping(false);
@@ -269,6 +321,10 @@ class TextInput extends React.Component<IProps, IState> {
         const {previewMessage, previewMessageMode} = this.state;
         this.rtlDetectorThrottle(e.target.value);
         if (e.key === 'Enter' && !e.shiftKey) {
+            if (this.lastMentions.length !== this.lastMentionsCount) {
+                this.lastMentionsCount = this.lastMentions.length;
+                return;
+            }
             if (this.props.onMessage) {
                 if (previewMessageMode === C_MSG_MODE.Normal) {
                     this.props.onMessage(e.target.value);
@@ -282,8 +338,13 @@ class TextInput extends React.Component<IProps, IState> {
                 }
             }
             e.target.value = '';
+            this.lastMentions = [];
+            this.lastMentionsCount = 0;
             this.setState({
                 emojiAnchorEl: null,
+                textareaValue: '',
+            }, () => {
+                this.computeLines();
             });
         }
         if (this.props.onTyping && this.state.previewMessageMode !== C_MSG_MODE.Edit) {
@@ -318,6 +379,10 @@ class TextInput extends React.Component<IProps, IState> {
                 }
             }
         }
+    }
+
+    private mentionContainerRefHandler = (value: any) => {
+        this.mentionContainer = value;
     }
 
     private textareaRefHandler = (value: any) => {
@@ -393,8 +458,9 @@ class TextInput extends React.Component<IProps, IState> {
         }, 50);
     }
 
-    private focus(className: string) {
-        const elem: any = document.querySelector('.' + className);
+    /* Focus on elem by query */
+    private focus(query: string) {
+        const elem: any = document.querySelector(query);
         if (elem) {
             elem.focus();
         }
@@ -430,6 +496,109 @@ class TextInput extends React.Component<IProps, IState> {
                 disableAuthority: 0x0,
             });
         }
+    }
+
+    /* Textarea change handler */
+    private handleChange = (value: any, a: any, b: any, mentions: IMentions[]) => {
+        this.lastMentions = mentions;
+        this.setState({
+            textareaValue: value.target.value,
+        }, () => {
+            this.computeLines();
+        });
+    }
+
+    /* Compute line height based on break lines */
+    private computeLines() {
+        let lines = this.state.textareaValue.split('\n').length;
+        if (lines < 1) {
+            lines = 1;
+        }
+        if (lines > 5) {
+            lines = 5;
+        }
+        if (this.textarea && this.lastLines !== lines) {
+            this.textarea.classList.remove('_1-line', '_2-line', '_3-line', '_4-line', '_5-line');
+            this.textarea.classList.add(`_${lines}-line`);
+            this.lastLines = lines;
+        }
+    }
+
+    /* Search mention in group */
+    private searchMention = (keyword: string, callback: any) => {
+        const {peer} = this.state;
+        if (!peer) {
+            callback([]);
+            return;
+        }
+        if (peer.getType() !== PeerType.PEERGROUP) {
+            callback([]);
+            return;
+        }
+        // Search engine
+        const searchParticipant = (word: string, participants: GroupParticipant.AsObject[]) => {
+            const users: any[] = [];
+            const reg = new RegExp(word);
+            participants.forEach((participant) => {
+                if ((participant.lastname && reg.test(participant.lastname)) || (participant.firstname && reg.test(participant.firstname))) {
+                    users.push({
+                        display: `${participant.firstname} ${participant.lastname}`,
+                        id: participant.userid,
+                        username: /*participant.username*/ 'efe',
+                    });
+                }
+            });
+            callback(users);
+        };
+        // Get from server if participants were not in group
+        const getRemoteGroupFull = () => {
+            this.sdk.groupGetFull(peer).then((res) => {
+                if (res && res.participantsList) {
+                    searchParticipant(keyword, res.participantsList);
+                }
+                this.groupRepo.importBulk([res.group]);
+                const contacts: IContact[] = [];
+                res.participantsList.forEach((list) => {
+                    contacts.push({
+                        accesshash: list.accesshash,
+                        firstname: list.firstname,
+                        id: list.userid,
+                        lastname: list.lastname,
+                        temp: true,
+                    });
+                });
+                this.contactRepo.importBulk(contacts);
+            }).catch(() => {
+                callback([]);
+            });
+        };
+        this.groupRepo.get(peer.getId() || '').then((group) => {
+            if (group && group.participantList) {
+                searchParticipant(keyword, group.participantList);
+            } else {
+                getRemoteGroupFull();
+            }
+        }).catch(() => {
+            getRemoteGroupFull();
+        });
+    }
+
+    /* Suggestion renderer */
+    private renderSuggestion = (a: any, b: any, c: any, d: any, focused: any) => {
+        return (<div className={'inner ' + (focused ? 'focused' : '')}>
+            <div className="avatar">
+                <UserAvatar id={a.id}/>
+            </div>
+            <div className="info">
+                <UserName id={a.id} className="name"/>
+                {Boolean(a.username) && <span className="username">{a.username}</span>}
+            </div>
+        </div>);
+    }
+
+    /* Textarea on blur */
+    private textareaBlurHandler = () => {
+        window.console.log('textareaBlurHandler');
     }
 }
 
