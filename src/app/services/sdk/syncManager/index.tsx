@@ -93,7 +93,7 @@ export default class SyncManager {
                 case C_MSG.UpdateNewMessage:
                     const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
                     users[updateNewMessage.sender.id || 0] = updateNewMessage.sender;
-                    const message = MessageRepo.parseMessage(updateNewMessage.message);
+                    const message = MessageRepo.parseMessage(updateNewMessage.message, this.updateManager.getUserId());
                     messages[updateNewMessage.message.id || 0] = message;
                     // Message Clear History
                     if (message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
@@ -132,7 +132,7 @@ export default class SyncManager {
                     break;
                 case C_MSG.UpdateMessageEdited:
                     const updateMessageEdited = UpdateMessageEdited.deserializeBinary(data).toObject();
-                    messages[updateMessageEdited.message.id || 0] = MessageRepo.parseMessage(updateMessageEdited.message);
+                    messages[updateMessageEdited.message.id || 0] = MessageRepo.parseMessage(updateMessageEdited.message, this.updateManager.getUserId());
                     break;
                 case C_MSG.UpdateMessagesDeleted:
                     const updateMessagesDeleted = UpdateMessagesDeleted.deserializeBinary(data).toObject();

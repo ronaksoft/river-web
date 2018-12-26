@@ -3,7 +3,14 @@ import UserAvatar from '../UserAvatar';
 import UserName from '../UserName';
 import {IDialog} from '../../repository/dialog/interface';
 import LiveDate from '../LiveDate';
-import {DoneAllRounded, DoneRounded, ScheduleRounded, NotificationsOffRounded, MoreVert} from '@material-ui/icons';
+import {
+    DoneAllRounded,
+    DoneRounded,
+    ScheduleRounded,
+    NotificationsOffRounded,
+    MoreVert,
+    AlternateEmailRounded
+} from '@material-ui/icons';
 import {PeerNotifySettings, PeerType} from '../../services/sdk/messages/core.types_pb';
 import GroupAvatar from '../GroupAvatar';
 import GroupName from '../GroupName';
@@ -65,7 +72,8 @@ class DialogMessage extends React.Component<IProps, IState> {
         const ids = Object.keys(isTyping);
         const muted = isMuted(dialog.notifysettings);
         return (
-            <div className={'dialog-wrapper' + (muted ? ' muted' : '')}>
+            <div
+                className={'dialog-wrapper' + (muted ? ' muted' : '') + ((dialog.mentionedcount && dialog.mentionedcount > 0) ? ' has-mention' : '')}>
                 {muted && <div className="muted-wrapper"><NotificationsOffRounded/></div>}
                 {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
                 <UserAvatar className="avatar" id={dialog.target_id || ''}/>}
@@ -85,6 +93,8 @@ class DialogMessage extends React.Component<IProps, IState> {
                 {isTypingRender(ids, dialog)}
                 {(dialog.unreadcount && dialog.unreadcount > 0) ? (
                     <span className="unread">{dialog.unreadcount > 99 ? '+99' : dialog.unreadcount}</span>) : ''}
+                {Boolean(dialog.mentionedcount && dialog.mentionedcount > 0) &&
+                <span className="mention"><AlternateEmailRounded/></span>}
                 <div className="more" onClick={this.props.onContextMenuOpen}>
                     <MoreVert/>
                 </div>

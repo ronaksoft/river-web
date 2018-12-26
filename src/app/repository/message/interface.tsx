@@ -6,6 +6,7 @@ interface IMessage extends UserMessage.AsObject {
     rtl?: boolean;
     temp?: boolean;
     actiondata?: any;
+    mention_me?: boolean;
 }
 
 export {IMessage};

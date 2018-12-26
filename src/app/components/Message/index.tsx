@@ -3,7 +3,7 @@ import {AutoSizer, CellMeasurer, CellMeasurerCache, List} from 'react-virtualize
 import {IMessage} from '../../repository/message/interface';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import {InputPeer, PeerType} from "../../services/sdk/messages/core.types_pb";
+import {InputPeer, MessageEntityType, PeerType} from "../../services/sdk/messages/core.types_pb";
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from "../../repository/message/consts";
 import TimeUtility from '../../services/utilities/time';
 import UserAvatar from '../UserAvatar';
@@ -13,6 +13,7 @@ import {MoreVert} from '@material-ui/icons';
 import UserName from '../UserName';
 import Checkbox from '@material-ui/core/Checkbox';
 import MessageForwarded from '../MessageForwarded';
+import {clone} from 'lodash';
 
 import './style.css';
 
@@ -104,7 +105,6 @@ class Message extends React.Component<IProps, IState> {
         this.fitList(true);
         this.listCount = this.props.items.length;
         this.topOfList = false;
-        window.console.log('componentDidMount');
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -389,7 +389,7 @@ class Message extends React.Component<IProps, IState> {
                                 <MessageForwarded message={message} peer={peer}
                                                   onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>}
                                 <div className={'inner ' + (message.rtl ? 'rtl' : 'ltr')}
-                                     onDoubleClick={this.selectText}>{message.body}</div>
+                                     onDoubleClick={this.selectText}>{this.renderBody(message)}</div>
                                 <MessageStatus status={message.me || false} id={message.id} readId={readId}
                                                time={message.createdon || 0} editedTime={message.editedon || 0}
                                                onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>
@@ -650,6 +650,74 @@ class Message extends React.Component<IProps, IState> {
             this.props.onSelectedIdsChange(selectedIds);
             this.list.forceUpdateGrid();
         });
+    }
+
+    /* Render body based on entities */
+    private renderBody(message: IMessage) {
+        if (!message.entitiesList || message.entitiesList.length === 0) {
+            return message.body;
+        } else {
+            const sortedEntities = clone(message.entitiesList);
+            // Sort fragments from entities
+            sortedEntities.sort((i1, i2) => {
+                if (!i1.offset || !i2.offset) {
+                    return 0;
+                }
+                return i1.offset - i2.offset;
+            });
+            const elems: any[] = [];
+            const body = message.body || '';
+            const bodyLen = body.length - 1;
+            // Put fragments in order
+            sortedEntities.forEach((entity, i) => {
+                if (i === 0 && entity.offset !== 0) {
+                    elems.push({
+                        str: body.substr(0, entity.offset),
+                        type: 'none',
+                    });
+                }
+                if (i > 0 && i < bodyLen && ((sortedEntities[i - 1].offset || 0) + (sortedEntities[i - 1].length || 0)) !== (entity.offset || 0)) {
+                    elems.push({
+                        str: body.substr((sortedEntities[i - 1].offset || 0) + (sortedEntities[i - 1].length || 0), (entity.offset || 0) - ((sortedEntities[i - 1].offset || 0) + (sortedEntities[i - 1].length || 0))),
+                        type: 'none',
+                    });
+                }
+                elems.push({
+                    str: body.substr(entity.offset || 0, (entity.length || 0)),
+                    type: entity.type,
+                    userId: entity.userid,
+                });
+                if (i === (sortedEntities.length - 1) && (bodyLen) !== (entity.offset || 0) + (entity.length || 0)) {
+                    elems.push({
+                        str: body.substr((entity.offset || 0) + (entity.length || 0)),
+                        type: 'none',
+                    });
+                }
+            });
+            return elems.map((elem, i) => {
+                switch (elem.type) {
+                    case MessageEntityType.MESSAGEENTITYTYPEMENTION:
+                        if (elem.str.indexOf('@') === 0) {
+                            return (
+                                <UserName key={i} className="_mention" id={elem.userId} username={true} prefix="@"/>);
+                        } else {
+                            return (<UserName key={i} className="_mention" id={elem.userId}/>);
+                        }
+                    case MessageEntityType.MESSAGEENTITYTYPEBOLD:
+                        return (<span key={i} className="_bold">{elem.str}</span>);
+                    case MessageEntityType.MESSAGEENTITYTYPEITALIC:
+                        return (<span key={i} className="_italic">{elem.str}</span>);
+                    case MessageEntityType.MESSAGEENTITYTYPEEMAIL:
+                        return (<span key={i} className="_mail">{elem.str}</span>);
+                    case MessageEntityType.MESSAGEENTITYTYPEHASHTAG:
+                        return (<span key={i} className="_hashtag">{elem.str}</span>);
+                    case MessageEntityType.MESSAGEENTITYTYPEURL:
+                        return (<span key={i} className="_url">{elem.str}</span>);
+                    default:
+                        return (<span key={i}>{elem.str}</span>);
+                }
+            });
+        }
     }
 }
 

@@ -138,7 +138,7 @@ export default class Server {
         window.console.warn(C_MSG_NAME[request.constructor], request.reqId);
         request.timeout = setTimeout(() => {
             this.dispatchTimeout(request.reqId);
-        }, 180000);
+        }, 10000);
         window.dispatchEvent(fnCallbackEvent);
     }
 
@@ -146,7 +146,7 @@ export default class Server {
         window.console.warn(C_MSG_NAME[request.constructor], request.reqId);
         request.timeout = setTimeout(() => {
             this.dispatchTimeout(request.reqId);
-        }, 180000);
+        }, 10000);
         const data = new MessageEnvelope();
         data.setConstructor(request.constructor);
         data.setMessage(request.data);
@@ -193,13 +193,18 @@ export default class Server {
     }
 
     private response({reqId, constructor, data}: any) {
-        window.console.warn(C_MSG_NAME[constructor], reqId);
+        if (constructor !== C_MSG.Error) {
+            window.console.warn(C_MSG_NAME[constructor], reqId);
+        }
         if (!this.messageListeners[reqId]) {
             return;
         }
         // @ts-ignore
         const arr = Uint8Array.from(atob(data), c => c.charCodeAt(0));
         const res = Presenter.getMessage(constructor, arr);
+        if (constructor === C_MSG.Error) {
+            window.console.error(C_MSG_NAME[constructor], reqId, res.toObject());
+        }
         if (res) {
             if (constructor === C_MSG.Error) {
                 if (this.messageListeners[reqId].reject) {

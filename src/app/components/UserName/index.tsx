@@ -12,7 +12,9 @@ interface IProps {
     onlyFirstName?: boolean;
     prefix?: string;
     uniqueColor?: boolean;
+    unsafe?: boolean;
     you?: boolean;
+    username?: boolean;
 }
 
 interface IState {
@@ -75,10 +77,19 @@ class UserName extends React.Component<IProps, IState> {
         if (this.props.uniqueColor === true) {
             style.color = GetUniqueColor(`${user.firstname}${user.lastname}`, SecondaryColors);
         }
-        return (
-            <span className={className}
-                  style={style} onClick={this.clickHandler}>{(user && user.id) ? (onlyFirstName ? prefix + user.firstname : `${prefix}${user.firstname} ${user.lastname}`) : (defaultString || '')}</span>
-        );
+        if (this.props.username === true) {
+            return (
+                <span className={className}
+                      style={style}
+                      onClick={this.clickHandler}>{(user && user.id) ? `${prefix}${user.username}` : (defaultString || '')}</span>
+            );
+        } else {
+            return (
+                <span className={className}
+                      style={style}
+                      onClick={this.clickHandler}>{(user && user.id) ? (onlyFirstName ? prefix + user.firstname : `${prefix}${user.firstname} ${user.lastname}`) : (defaultString || '')}</span>
+            );
+        }
     }
 
     private getUser = (data?: any) => {
@@ -100,7 +111,7 @@ class UserName extends React.Component<IProps, IState> {
             return;
         }
 
-        this.contactRepo.get(this.state.id).then((contact) => {
+        this.contactRepo.get(this.state.id, this.props.unsafe).then((contact) => {
             this.setState({
                 user: {
                     _id: contact.id,

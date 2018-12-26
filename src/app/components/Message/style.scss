@@ -173,6 +173,24 @@
         direction: ltr;
         text-align: left;
       }
+      ._mention {
+        font-weight: bold;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+      ._bold {
+        font-weight: bold;
+      }
+      ._italic {
+        font-style: italic;
+      }
+      ._mail {
+      }
+      ._url {
+      }
+      ._hashtag {
+      }
     }
     .more {
       position: absolute;

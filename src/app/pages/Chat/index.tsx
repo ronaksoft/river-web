@@ -74,6 +74,7 @@ import {IGroup} from '../../repository/group/interface';
 import SearchList, {IInputPeer} from '../../components/SearchList';
 
 import './style.css';
+import * as core_types_pb from '../../services/sdk/messages/core.types_pb';
 
 interface IProps {
     history?: any;
@@ -181,6 +182,7 @@ class Chat extends React.Component<IProps, IState> {
         this.dialogsSortThrottle = throttle(this.dialogsSort, 500);
         this.isInChat = (document.visibilityState === 'visible');
         this.isMobileView = (window.innerWidth < 600);
+        this.updateManager.setUserId(this.connInfo.UserID || '');
     }
 
     public componentDidMount() {
@@ -290,7 +292,10 @@ class Chat extends React.Component<IProps, IState> {
                 // Clear the message history
                 if (message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
                     this.messageRepo.clearHistory(message.peerid || '', message.actiondata.maxid).then(() => {
-                        this.updateDialogsCounter(message.peerid || '', {unreadCounter: 0});
+                        this.updateDialogsCounter(message.peerid || '', {
+                            mentionCounter: 0,
+                            unreadCounter: 0,
+                        });
                         if (message.actiondata.pb_delete) {
                             this.dialogRemove(message.peerid || '');
                         } else if (data.peerid === this.state.selectedDialogId) {
@@ -298,7 +303,10 @@ class Chat extends React.Component<IProps, IState> {
                         }
                     });
                 } else if (message.senderid !== this.connInfo.UserID && message.peerid !== this.state.selectedDialogId) {
-                    this.updateDialogsCounter(message.peerid || '', {unreadCounterIncrease: 1});
+                    this.updateDialogsCounter(message.peerid || '', {
+                        mentionCounterIncrease: (message.mention_me ? 1 : 0),
+                        unreadCounterIncrease: 1,
+                    });
                 }
             });
         }));
@@ -390,11 +398,17 @@ class Chat extends React.Component<IProps, IState> {
             const peerId = data.peer.id || '';
             this.updateDialogsCounter(peerId, {maxInbox: data.maxid});
             if (peerId !== this.state.selectedDialogId) {
-                this.messageRepo.getUnreadCount(peerId, data.maxid || 0).then((res) => {
-                    this.updateDialogsCounter(peerId, {unreadCounter: res});
+                this.messageRepo.getUnreadCount(peerId, data.maxid || 0).then((count) => {
+                    this.updateDialogsCounter(peerId, {
+                        mentionCounter: count.mention,
+                        unreadCounter: count.message,
+                    });
                 });
             } else {
-                this.updateDialogsCounter(peerId, {unreadCounter: 0});
+                this.updateDialogsCounter(peerId, {
+                    mentionCounter: 0,
+                    unreadCounter: 0,
+                });
             }
         }));
 
@@ -427,7 +441,10 @@ class Chat extends React.Component<IProps, IState> {
                         const dialogIndex = this.dialogMap[res.peerid || ''];
                         const dialog = dialogs[dialogIndex];
                         this.messageRepo.getUnreadCount(res.peerid || '', dialog.readinboxmaxid || 0).then((count) => {
-                            this.updateDialogsCounter(res.peerid || '', {unreadCounter: count});
+                            this.updateDialogsCounter(res.peerid || '', {
+                                mentionCounter: count.mention,
+                                unreadCounter: count.message
+                            });
                         });
                     }
                 });
@@ -1042,12 +1059,6 @@ class Chat extends React.Component<IProps, IState> {
                 group: null,
                 isChatView: true,
                 isTyping: false,
-                maxReadId: 0,
-                messageSelectable: false,
-                messageSelectedIds: {},
-                messages: [],
-                textInputMessage: undefined,
-                textInputMessageMode: C_MSG_MODE.Normal,
             });
             this.setLoading(false);
         });
@@ -1272,9 +1283,17 @@ class Chat extends React.Component<IProps, IState> {
                 replyTo = param.message.id;
             }
 
+            let entities;
+            if (param && param.entities) {
+                message.entitiesList = param.entities.map((entity: core_types_pb.MessageEntity) => {
+                    return entity.toObject();
+                });
+                entities = param.entities;
+            }
+
             this.pushMessage(message);
 
-            this.sdk.sendMessage(text, peer, replyTo).then((msg) => {
+            this.sdk.sendMessage(text, peer, replyTo, entities).then((msg) => {
                 const {messages} = this.state;
                 const index = findIndex(messages, {id: message.id});
                 if (index) {
@@ -1467,7 +1486,7 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private updateDialogsCounter(peerId: string, {maxInbox, maxOutbox, unreadCounter, unreadCounterIncrease}: any) {
+    private updateDialogsCounter(peerId: string, {maxInbox, maxOutbox, unreadCounter, unreadCounterIncrease, mentionCounter, mentionCounterIncrease}: any) {
         if (this.dialogMap.hasOwnProperty(peerId)) {
             const {dialogs} = this.state;
             const index = this.dialogMap[peerId];
@@ -1490,6 +1509,17 @@ class Chat extends React.Component<IProps, IState> {
             }
             if (unreadCounter !== null && unreadCounter !== undefined) {
                 dialogs[index].unreadcount = unreadCounter;
+            }
+            if (mentionCounterIncrease === 1) {
+                if (dialogs[index].mentionedcount) {
+                    // @ts-ignore
+                    dialogs[index].mentionedcount++;
+                } else {
+                    dialogs[index].mentionedcount = 1;
+                }
+            }
+            if (mentionCounter !== null && mentionCounter !== undefined) {
+                dialogs[index].mentionedcount = mentionCounter;
             }
             this.dialogsSortThrottle(dialogs);
             this.dialogRepo.lazyUpsert([dialogs[index]]);
@@ -1669,6 +1699,8 @@ class Chat extends React.Component<IProps, IState> {
 
     private fnStartedHandler = () => {
         this.messageRepo.loadConnInfo();
+        this.connInfo = this.sdk.getConnInfo();
+        this.updateManager.setUserId(this.connInfo.UserID || '');
     }
 
     private dialogDBUpdatedHandler = (event: any) => {
@@ -1680,7 +1712,10 @@ class Chat extends React.Component<IProps, IState> {
                 if (this.dialogMap.hasOwnProperty(id) && dialogs[this.dialogMap[id]]) {
                     const maxReadInbox = dialogs[this.dialogMap[id]].readinboxmaxid || 0;
                     this.messageRepo.getUnreadCount(id, maxReadInbox).then((count) => {
-                        this.updateDialogsCounter(id, {unreadCounter: count});
+                        this.updateDialogsCounter(id, {
+                            mentionCounter: count.mention,
+                            unreadCounter: count.message,
+                        });
                     });
                 }
             });
@@ -1860,8 +1895,11 @@ class Chat extends React.Component<IProps, IState> {
             if (dialog && ((dialog.readinboxmaxid || 0) < msgId || (dialog.unreadcount || 0) > 0)) {
                 this.sdk.setMessagesReadHistory(peer, msgId);
                 this.updateDialogsCounter(peerId, {maxInbox: msgId});
-                this.messageRepo.getUnreadCount(peerId, msgId).then((res) => {
-                    this.updateDialogsCounter(peerId, {unreadCounter: res});
+                this.messageRepo.getUnreadCount(peerId, msgId).then((count) => {
+                    this.updateDialogsCounter(peerId, {
+                        mentionCounter: count.mention,
+                        unreadCounter: count.message,
+                    });
                 });
             }
         }

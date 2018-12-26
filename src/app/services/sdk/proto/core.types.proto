@@ -69,6 +69,7 @@ message User {
     required string Username = 4;
     required UserStatus Status = 5;
     required bool Restricted = 6;
+    required fixed64 AccessHash = 7 [jstype = JS_STRING];
 }
 
 // ContactUser
@@ -100,8 +101,8 @@ message UserMessage {
     required bool ContentRead = 13;
     required bool Inbox = 14;
     required int64 ReplyTo = 15;
-    required int32 MessageAction = 16;
-    required bytes MessageActionData = 17;
+    optional int32 MessageAction = 16;
+    optional bytes MessageActionData = 17;
     repeated MessageEntity Entities = 18;
 }
 
@@ -120,7 +121,7 @@ message MessageEntity {
     required MessageEntityType Type = 1;
     required int32 Offset = 2;
     required int32 Length = 3;
-    optional int64 UserID = 4;
+    optional int64 UserID = 4 [jstype = JS_STRING];
 }
 
 // RSAPublicKey
@@ -214,5 +215,6 @@ message GroupParticipant {
     required string LastName = 3;
     required ParticipantType Type = 4;
     required uint64 AccessHash = 5 [jstype = JS_STRING];
+    required string Username = 6;
 }
 

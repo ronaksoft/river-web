@@ -1,10 +1,10 @@
 import MessageDB from '../../services/db/message';
 import {IMessage} from './interface';
-import {differenceBy, find, merge, cloneDeep, throttle} from 'lodash';
+import {cloneDeep, differenceBy, find, merge, throttle} from 'lodash';
 import SDK from '../../services/sdk';
 import UserRepo from '../user';
 import RTLDetector from '../../services/utilities/rtl_detector';
-import {InputPeer, UserMessage} from '../../services/sdk/messages/core.types_pb';
+import {InputPeer, MessageEntityType, UserMessage} from '../../services/sdk/messages/core.types_pb';
 import Dexie from 'dexie';
 import {DexieMessageDB} from '../../services/db/dexie/message';
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from './consts';
@@ -19,13 +19,18 @@ import {
 import GroupRepo from '../group';
 
 export default class MessageRepo {
-    public static parseMessage(msg: UserMessage.AsObject): IMessage {
+    public static parseMessage(msg: UserMessage.AsObject, userId: string): IMessage {
+        const out: IMessage = msg;
+        if (msg.entitiesList && msg.entitiesList.length > 0) {
+            out.mention_me = msg.entitiesList.some((entity) => {
+                return entity.type === MessageEntityType.MESSAGEENTITYTYPEMENTION && entity.userid === userId;
+            });
+        }
         if (!msg.messageactiondata) {
-            return msg;
+            return out;
         }
         // @ts-ignore
         const data: Uint8Array = msg.messageactiondata;
-        const out: IMessage = msg;
         switch (msg.messageaction) {
             case C_MESSAGE_ACTION.MessageActionNope:
                 break;
@@ -52,9 +57,9 @@ export default class MessageRepo {
         return out;
     }
 
-    public static parseMessageMany(msg: UserMessage.AsObject[]): IMessage[] {
+    public static parseMessageMany(msg: UserMessage.AsObject[], userId: string): IMessage[] {
         return msg.map((m) => {
-            return this.parseMessage(m);
+            return this.parseMessage(m, userId);
         });
     }
 
@@ -149,7 +154,7 @@ export default class MessageRepo {
                     this.sdk.getMessageHistory(peer, {maxId, minId, limit: lim}).then((remoteRes) => {
                         this.userRepo.importBulk(remoteRes.usersList);
                         this.groupRepo.importBulk(remoteRes.groupsList);
-                        remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList);
+                        remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userId);
                         return this.transform(remoteRes.messagesList);
                     }).then((remoteRes) => {
                         this.importBulk(remoteRes, true);
@@ -174,7 +179,7 @@ export default class MessageRepo {
                 this.sdk.getMessageHistory(peer, {maxId, minId, limit}).then((remoteRes) => {
                     this.userRepo.importBulk(remoteRes.usersList);
                     this.groupRepo.importBulk(remoteRes.groupsList);
-                    remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList);
+                    remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userId);
                     return this.transform(remoteRes.messagesList);
                 }).then((remoteRes) => {
                     this.importBulk(remoteRes, true);
@@ -271,7 +276,7 @@ export default class MessageRepo {
                 return this.checkHoles(peer, (mode === 0x2 ? after + 1 : before - (ignoreMax ? 0 : 1)), (mode === 0x2), limit, ignoreMax).then((remoteRes) => {
                     this.userRepo.importBulk(remoteRes.usersList);
                     this.groupRepo.importBulk(remoteRes.groupsList);
-                    remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList);
+                    remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userId);
                     return this.transform(remoteRes.messagesList);
                 }).then((remoteRes) => {
                     this.importBulk(remoteRes, true);
@@ -299,7 +304,7 @@ export default class MessageRepo {
                         if (remoteRes.messagesList.length === 0) {
                             resolve(null);
                         } else {
-                            const message = MessageRepo.parseMessage(remoteRes.messagesList[0]);
+                            const message = MessageRepo.parseMessage(remoteRes.messagesList[0], this.userId);
                             this.lazyUpsert([message], true);
                             resolve(message);
                         }
@@ -349,11 +354,11 @@ export default class MessageRepo {
             updateItems.map((msg: IMessage) => {
                 const t = find(msgs, {id: msg.id});
                 if (t && t.temp === true && msg.temp === false) {
-                    const d = merge(msg, t);
+                    const d = this.mergeCheck(msg, t);
                     d.temp = false;
                     return d;
                 } else {
-                    return merge(msg, t);
+                    return msg;
                 }
             });
             return this.createMany([...createItems, ...updateItems]);
@@ -368,15 +373,26 @@ export default class MessageRepo {
         return this.db.messages.delete(id);
     }
 
-    public getUnreadCount(peerId: string, minId: number): Promise<number> {
+    public getUnreadCount(peerId: string, minId: number): Promise<{ message: number, mention: number }> {
         if (minId === undefined) {
             return Promise.reject('bad input');
         }
-        return this.db.messages.where('[peerid+id]')
-            .between([peerId, minId + 1], [peerId, Dexie.maxKey], true, true).filter((item) => {
+        return new Promise((resolve, reject) => {
+            let mention = 0;
+            this.db.messages.where('[peerid+id]')
+                .between([peerId, minId + 1], [peerId, Dexie.maxKey], true, true).filter((item) => {
+                if (item.temp !== true && item.me !== true && ((item.id || 0) >= minId) && item.mention_me === true) {
+                    mention += 1;
+                }
                 return item.temp !== true && item.me !== true && ((item.id || 0) >= minId) &&
                     (item.messagetype === C_MESSAGE_TYPE.Normal || item.messagetype !== C_MESSAGE_TYPE.System);
-            }).count();
+            }).count().then((count) => {
+                resolve({
+                    mention,
+                    message: count
+                });
+            }).catch(reject);
+        });
     }
 
     public clearHistory(peerId: string, messageId: number): Promise<any> {
@@ -425,10 +441,10 @@ export default class MessageRepo {
         if (this.lazyMap.hasOwnProperty(message.id || 0)) {
             const t = this.lazyMap[message.id || 0];
             if (t && t.temp === false && temp) {
-                this.lazyMap[message.id || 0] = merge(message, t);
+                this.lazyMap[message.id || 0] = this.mergeCheck(message, t);
                 this.lazyMap[message.id || 0].temp = false;
             } else {
-                this.lazyMap[message.id || 0] = merge(message, t);
+                this.lazyMap[message.id || 0] = this.mergeCheck(message, t);
             }
         } else {
             this.lazyMap[message.id || 0] = message;
@@ -502,5 +518,11 @@ export default class MessageRepo {
                 });
             });
         });
+    }
+
+    private mergeCheck(message: IMessage, newMessage: IMessage): IMessage {
+        const d = merge(message, newMessage);
+        d.entitiesList = newMessage.entitiesList;
+        return d;
     }
 }

@@ -41,6 +41,7 @@ export default class UpdateManager {
     private newMessageThrottle: any;
     private newMessageDropThrottle: any;
     private active: boolean = true;
+    private userId: string = '';
 
     public constructor() {
         window.console.log('Update manager started');
@@ -73,6 +74,14 @@ export default class UpdateManager {
         localStorage.setItem('river.last_update_id', JSON.stringify({
             lastId: this.lastUpdateId,
         }));
+    }
+
+    public setUserId(userId: string) {
+        this.userId = userId;
+    }
+
+    public getUserId() {
+        return this.userId;
     }
 
     public parseUpdate(bytes: string) {
@@ -246,7 +255,7 @@ export default class UpdateManager {
                 const data = list[key].shift();
                 if (data) {
                     batchUpdate.accessHashes.push(data.accesshash || '');
-                    batchUpdate.messages.push(MessageRepo.parseMessage(data.message));
+                    batchUpdate.messages.push(MessageRepo.parseMessage(data.message, this.userId));
                     batchUpdate.senderIds.push(data.sender.id || '');
                     batchUpdate.senders.push(data.sender);
                     batchUpdate.peerid = data.message.peerid || '';

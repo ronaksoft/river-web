@@ -83,11 +83,16 @@
       font-weight: bold;
     }
   }
+  &.has-mention {
+    .preview {
+      width: 68%;
+    }
+  }
   .unread {
     font-size: 11px;
     position: absolute;
     top: 30px;
-    right: 14px;
+    right: 8px;
     height: 16px;
     min-width: 16px;
     max-width: 32px;
@@ -99,6 +104,22 @@
     background-color: var(--river);
     color: #fff;
     border-radius: 8px;
+  }
+  .mention {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    background-color: var(--river);
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    svg {
+      font-size: 12px;
+      color: var(--white);
+    }
   }
   .more {
     position: absolute;

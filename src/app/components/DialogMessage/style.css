@@ -115,11 +115,13 @@ input {
         vertical-align: bottom; }
     .dialog-wrapper .preview .sender {
       font-weight: bold; }
+  .dialog-wrapper.has-mention .preview {
+    width: 68%; }
   .dialog-wrapper .unread {
     font-size: 11px;
     position: absolute;
     top: 30px;
-    right: 14px;
+    right: 8px;
     height: 16px;
     min-width: 16px;
     max-width: 32px;
@@ -131,6 +133,20 @@ input {
     background-color: var(--river);
     color: #fff;
     border-radius: 8px; }
+  .dialog-wrapper .mention {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    background-color: var(--river);
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center; }
+    .dialog-wrapper .mention svg {
+      font-size: 12px;
+      color: var(--white); }
   .dialog-wrapper .more {
     position: absolute;
     top: 6px;

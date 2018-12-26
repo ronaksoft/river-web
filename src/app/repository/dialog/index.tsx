@@ -94,7 +94,7 @@ export default class DialogRepo {
 
     public getMany({skip, limit}: any): Promise<IDialog[]> {
         return this.sdk.getDialogs(skip || 0, limit || 30).then((remoteRes) => {
-            remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList);
+            remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userId);
             this.messageRepo.importBulk(remoteRes.messagesList);
             const messageMap: { [key: number]: IMessage } = {};
             remoteRes.messagesList.forEach((msg) => {
@@ -112,7 +112,7 @@ export default class DialogRepo {
             this.loadConnInfo();
         }
         return this.sdk.getDialogs(skip || 0, limit || 30).then((remoteRes) => {
-            remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList);
+            remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userId);
             this.messageRepo.importBulk(remoteRes.messagesList);
             const messageMap: { [key: number]: IMessage } = {};
             remoteRes.messagesList.forEach((msg) => {

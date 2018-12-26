@@ -10,10 +10,17 @@ import {IMessage} from '../../repository/message/interface';
 import UserName from '../UserName';
 import {C_MSG_MODE} from './consts';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
-import {GroupFlags, GroupParticipant, InputPeer, PeerType} from '../../services/sdk/messages/core.types_pb';
+import * as core_types_pb from '../../services/sdk/messages/core.types_pb';
+import {
+    GroupFlags,
+    GroupParticipant,
+    InputPeer,
+    MessageEntityType,
+    PeerType
+} from '../../services/sdk/messages/core.types_pb';
 import GroupRepo from '../../repository/group';
 // @ts-ignore
-import {MentionsInput, Mention} from 'react-mentions';
+import {Mention, MentionsInput} from 'react-mentions';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
@@ -83,7 +90,7 @@ class TextInput extends React.Component<IProps, IState> {
     private contactRepo: ContactRepo;
     private lastLines: number = 1;
     private sdk: SDK;
-    private lastMentions: IMentions[];
+    private mentions: IMentions[];
     private lastMentionsCount: number = 0;
 
     constructor(props: IProps) {
@@ -212,6 +219,7 @@ class TextInput extends React.Component<IProps, IState> {
                                 >
                                     <Mention
                                         trigger="@"
+                                        type="mention"
                                         data={this.searchMention}
                                         className="mention-item"
                                         renderSuggestion={this.renderSuggestion}
@@ -287,11 +295,15 @@ class TextInput extends React.Component<IProps, IState> {
         const {previewMessage, previewMessageMode} = this.state;
         if (this.props.onMessage) {
             if (this.props.onMessage) {
+                const entities = this.generateEntities();
                 if (previewMessageMode === C_MSG_MODE.Normal) {
-                    this.props.onMessage(this.textarea.value);
+                    this.props.onMessage(this.textarea.value, {
+                        entities,
+                    });
                 } else if (previewMessageMode !== C_MSG_MODE.Normal) {
                     const message = cloneDeep(previewMessage);
                     this.props.onMessage(this.textarea.value, {
+                        entities,
                         message,
                         mode: previewMessageMode,
                     });
@@ -300,7 +312,7 @@ class TextInput extends React.Component<IProps, IState> {
             }
         }
         this.textarea.value = '';
-        this.lastMentions = [];
+        this.mentions = [];
         this.lastMentionsCount = 0;
         this.setState({
             emojiAnchorEl: null,
@@ -321,16 +333,20 @@ class TextInput extends React.Component<IProps, IState> {
         const {previewMessage, previewMessageMode} = this.state;
         this.rtlDetectorThrottle(e.target.value);
         if (e.key === 'Enter' && !e.shiftKey) {
-            if (this.lastMentions.length !== this.lastMentionsCount) {
-                this.lastMentionsCount = this.lastMentions.length;
+            if (this.mentions.length !== this.lastMentionsCount) {
+                this.lastMentionsCount = this.mentions.length;
                 return;
             }
             if (this.props.onMessage) {
+                const entities = this.generateEntities();
                 if (previewMessageMode === C_MSG_MODE.Normal) {
-                    this.props.onMessage(e.target.value);
+                    this.props.onMessage(e.target.value, {
+                        entities,
+                    });
                 } else if (previewMessageMode !== C_MSG_MODE.Normal) {
                     const message = cloneDeep(previewMessage);
                     this.props.onMessage(e.target.value, {
+                        entities,
                         message,
                         mode: previewMessageMode,
                     });
@@ -338,7 +354,7 @@ class TextInput extends React.Component<IProps, IState> {
                 }
             }
             e.target.value = '';
-            this.lastMentions = [];
+            this.mentions = [];
             this.lastMentionsCount = 0;
             this.setState({
                 emojiAnchorEl: null,
@@ -500,7 +516,7 @@ class TextInput extends React.Component<IProps, IState> {
 
     /* Textarea change handler */
     private handleChange = (value: any, a: any, b: any, mentions: IMentions[]) => {
-        this.lastMentions = mentions;
+        this.mentions = mentions;
         this.setState({
             textareaValue: value.target.value,
         }, () => {
@@ -539,15 +555,21 @@ class TextInput extends React.Component<IProps, IState> {
         const searchParticipant = (word: string, participants: GroupParticipant.AsObject[]) => {
             const users: any[] = [];
             const reg = new RegExp(word);
-            participants.forEach((participant) => {
-                if ((participant.lastname && reg.test(participant.lastname)) || (participant.firstname && reg.test(participant.firstname))) {
+            for (const [i, participant] of participants.entries()) {
+                if ((participant.lastname && reg.test(participant.lastname)) ||
+                    (participant.firstname && reg.test(participant.firstname)) ||
+                    (participant.username && reg.test(participant.username))) {
                     users.push({
-                        display: `${participant.firstname} ${participant.lastname}`,
+                        display: participant.username ? `@${participant.username}` : `${participant.firstname} ${participant.lastname}`,
                         id: participant.userid,
-                        username: /*participant.username*/ 'efe',
+                        index: i,
+                        username: participant.username,
                     });
                 }
-            });
+                if (users.length >= 7) {
+                    break;
+                }
+            }
             callback(users);
         };
         // Get from server if participants were not in group
@@ -565,6 +587,7 @@ class TextInput extends React.Component<IProps, IState> {
                         id: list.userid,
                         lastname: list.lastname,
                         temp: true,
+                        username: list.username,
                     });
                 });
                 this.contactRepo.importBulk(contacts);
@@ -590,7 +613,7 @@ class TextInput extends React.Component<IProps, IState> {
                 <UserAvatar id={a.id}/>
             </div>
             <div className="info">
-                <UserName id={a.id} className="name"/>
+                <UserName id={a.id} className="name" unsafe={true}/>
                 {Boolean(a.username) && <span className="username">{a.username}</span>}
             </div>
         </div>);
@@ -599,6 +622,23 @@ class TextInput extends React.Component<IProps, IState> {
     /* Textarea on blur */
     private textareaBlurHandler = () => {
         window.console.log('textareaBlurHandler');
+    }
+
+    /* Generate entities for message */
+    private generateEntities(): core_types_pb.MessageEntity[] | null {
+        if (this.mentions.length === 0) {
+            return null;
+        }
+        const entities: core_types_pb.MessageEntity[] = [];
+        this.mentions.forEach((mention) => {
+            const entity = new core_types_pb.MessageEntity();
+            entity.setOffset(mention.plainTextIndex);
+            entity.setLength(mention.display.length);
+            entity.setType(MessageEntityType.MESSAGEENTITYTYPEMENTION);
+            entity.setUserid(mention.id);
+            entities.push(entity);
+        });
+        return entities;
     }
 }
 

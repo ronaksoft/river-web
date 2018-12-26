@@ -1247,7 +1247,8 @@ proto.msg.User.toObject = function(includeInstance, msg) {
     lastname: jspb.Message.getField(msg, 3),
     username: jspb.Message.getField(msg, 4),
     status: jspb.Message.getField(msg, 5),
-    restricted: jspb.Message.getField(msg, 6)
+    restricted: jspb.Message.getField(msg, 6),
+    accesshash: jspb.Message.getField(msg, 7)
   };
 
   if (includeInstance) {
@@ -1307,6 +1308,10 @@ proto.msg.User.deserializeBinaryFromReader = function(msg, reader) {
     case 6:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setRestricted(value);
+      break;
+    case 7:
+      var value = /** @type {string} */ (reader.readFixed64String());
+      msg.setAccesshash(value);
       break;
     default:
       reader.skipField();
@@ -1376,6 +1381,13 @@ proto.msg.User.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeBool(
       6,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 7));
+  if (f != null) {
+    writer.writeFixed64String(
+      7,
       f
     );
   }
@@ -1555,6 +1567,35 @@ proto.msg.User.prototype.clearRestricted = function() {
  */
 proto.msg.User.prototype.hasRestricted = function() {
   return jspb.Message.getField(this, 6) != null;
+};
+
+
+/**
+ * required fixed64 AccessHash = 7;
+ * @return {string}
+ */
+proto.msg.User.prototype.getAccesshash = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, "0"));
+};
+
+
+/** @param {string} value */
+proto.msg.User.prototype.setAccesshash = function(value) {
+  jspb.Message.setField(this, 7, value);
+};
+
+
+proto.msg.User.prototype.clearAccesshash = function() {
+  jspb.Message.setField(this, 7, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.User.prototype.hasAccesshash = function() {
+  return jspb.Message.getField(this, 7) != null;
 };
 
 
@@ -2741,7 +2782,7 @@ proto.msg.UserMessage.prototype.hasReplyto = function() {
 
 
 /**
- * required int32 MessageAction = 16;
+ * optional int32 MessageAction = 16;
  * @return {number}
  */
 proto.msg.UserMessage.prototype.getMessageaction = function() {
@@ -2770,7 +2811,7 @@ proto.msg.UserMessage.prototype.hasMessageaction = function() {
 
 
 /**
- * required bytes MessageActionData = 17;
+ * optional bytes MessageActionData = 17;
  * @return {!(string|Uint8Array)}
  */
 proto.msg.UserMessage.prototype.getMessageactiondata = function() {
@@ -2779,7 +2820,7 @@ proto.msg.UserMessage.prototype.getMessageactiondata = function() {
 
 
 /**
- * required bytes MessageActionData = 17;
+ * optional bytes MessageActionData = 17;
  * This is a type-conversion wrapper around `getMessageactiondata()`
  * @return {string}
  */
@@ -2790,7 +2831,7 @@ proto.msg.UserMessage.prototype.getMessageactiondata_asB64 = function() {
 
 
 /**
- * required bytes MessageActionData = 17;
+ * optional bytes MessageActionData = 17;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getMessageactiondata()`
@@ -2953,7 +2994,7 @@ proto.msg.MessageEntity.deserializeBinaryFromReader = function(msg, reader) {
       msg.setLength(value);
       break;
     case 4:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setUserid(value);
       break;
     default:
@@ -3006,9 +3047,9 @@ proto.msg.MessageEntity.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 4));
+  f = /** @type {string} */ (jspb.Message.getField(message, 4));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       4,
       f
     );
@@ -3105,14 +3146,14 @@ proto.msg.MessageEntity.prototype.hasLength = function() {
 
 /**
  * optional int64 UserID = 4;
- * @return {number}
+ * @return {string}
  */
 proto.msg.MessageEntity.prototype.getUserid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.MessageEntity.prototype.setUserid = function(value) {
   jspb.Message.setField(this, 4, value);
 };
@@ -5322,7 +5363,8 @@ proto.msg.GroupParticipant.toObject = function(includeInstance, msg) {
     firstname: jspb.Message.getField(msg, 2),
     lastname: jspb.Message.getField(msg, 3),
     type: jspb.Message.getField(msg, 4),
-    accesshash: jspb.Message.getField(msg, 5)
+    accesshash: jspb.Message.getField(msg, 5),
+    username: jspb.Message.getField(msg, 6)
   };
 
   if (includeInstance) {
@@ -5378,6 +5420,10 @@ proto.msg.GroupParticipant.deserializeBinaryFromReader = function(msg, reader) {
     case 5:
       var value = /** @type {string} */ (reader.readUint64String());
       msg.setAccesshash(value);
+      break;
+    case 6:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setUsername(value);
       break;
     default:
       reader.skipField();
@@ -5440,6 +5486,13 @@ proto.msg.GroupParticipant.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeUint64String(
       5,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 6));
+  if (f != null) {
+    writer.writeString(
+      6,
       f
     );
   }
@@ -5588,6 +5641,35 @@ proto.msg.GroupParticipant.prototype.clearAccesshash = function() {
  */
 proto.msg.GroupParticipant.prototype.hasAccesshash = function() {
   return jspb.Message.getField(this, 5) != null;
+};
+
+
+/**
+ * required string Username = 6;
+ * @return {string}
+ */
+proto.msg.GroupParticipant.prototype.getUsername = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.GroupParticipant.prototype.setUsername = function(value) {
+  jspb.Message.setField(this, 6, value);
+};
+
+
+proto.msg.GroupParticipant.prototype.clearUsername = function() {
+  jspb.Message.setField(this, 6, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.GroupParticipant.prototype.hasUsername = function() {
+  return jspb.Message.getField(this, 6) != null;
 };
 
 

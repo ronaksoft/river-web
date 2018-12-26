@@ -22,6 +22,7 @@ let instance;
 let socket = null;
 let connected = false;
 let pingCounter = 0;
+let tryCounter = 0;
 
 wasmWorker.onmessage = (e) => {
     const d = e.data;
@@ -127,6 +128,7 @@ function Uint8ToBase64(u8a) {
 }
 
 const initWebSocket = () => {
+    tryCounter++;
     if (window.location.protocol === 'https:') {
         socket = new WebSocket('wss://' + window.location.host + '/ws');
     } else {
@@ -137,30 +139,40 @@ const initWebSocket = () => {
     // Connection opened
     socket.onopen = () => {
         console.log('Hello Server!', new Date());
+        socket.send(ping);
         pingCounter = 0;
+        tryCounter = 0;
         connected = true;
         if (started) {
             const event = new CustomEvent('wsOpen');
             window.dispatchEvent(event);
         }
         workerMessage('wsOpen');
-    };
 
-    // Listen for messages
-    socket.onmessage = (event) => {
-        if (checkPong(event.data)) {
-            pingCounter = 0;
-        } else {
-            workerMessage('receive', Uint8ToBase64(new Uint8Array(event.data)));
-        }
-    };
+        // Listen for messages
+        socket.onmessage = (event) => {
+            if (checkPong(event.data)) {
+                pingCounter = 0;
+            } else {
+                workerMessage('receive', Uint8ToBase64(new Uint8Array(event.data)));
+            }
+        };
 
-    // Listen for messages
-    socket.onclose = () => {
-        connected = false;
-        const event = new CustomEvent('wsClose');
-        window.dispatchEvent(event);
-        initWebSocket();
+        // Listen for messages
+        socket.onclose = () => {
+            connected = false;
+            const event = new CustomEvent('wsClose');
+            window.dispatchEvent(event);
+            if (tryCounter === 0) {
+                setTimeout(() => {
+                    initWebSocket();
+                }, 1000);
+            } else {
+                setTimeout(() => {
+                    initWebSocket();
+                }, 5000 + Math.floor(Math.random() * 3000));
+            }
+        };
     };
 };
 

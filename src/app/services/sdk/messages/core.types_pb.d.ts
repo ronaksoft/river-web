@@ -200,6 +200,11 @@ export class User extends jspb.Message {
   getRestricted(): boolean | undefined;
   setRestricted(value: boolean): void;
 
+  hasAccesshash(): boolean;
+  clearAccesshash(): void;
+  getAccesshash(): string | undefined;
+  setAccesshash(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): User.AsObject;
   static toObject(includeInstance: boolean, msg: User): User.AsObject;
@@ -218,6 +223,7 @@ export namespace User {
     username?: string,
     status?: UserStatus,
     restricted?: boolean,
+    accesshash?: string,
   }
 }
 
@@ -423,8 +429,8 @@ export class MessageEntity extends jspb.Message {
 
   hasUserid(): boolean;
   clearUserid(): void;
-  getUserid(): number | undefined;
-  setUserid(value: number): void;
+  getUserid(): string | undefined;
+  setUserid(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessageEntity.AsObject;
@@ -441,7 +447,7 @@ export namespace MessageEntity {
     type?: MessageEntityType,
     offset?: number,
     length?: number,
-    userid?: number,
+    userid?: string,
   }
 }
 
@@ -773,6 +779,11 @@ export class GroupParticipant extends jspb.Message {
   getAccesshash(): string | undefined;
   setAccesshash(value: string): void;
 
+  hasUsername(): boolean;
+  clearUsername(): void;
+  getUsername(): string | undefined;
+  setUsername(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GroupParticipant.AsObject;
   static toObject(includeInstance: boolean, msg: GroupParticipant): GroupParticipant.AsObject;
@@ -790,6 +801,7 @@ export namespace GroupParticipant {
     lastname?: string,
     type?: ParticipantType,
     accesshash?: string,
+    username?: string,
   }
 }
 
