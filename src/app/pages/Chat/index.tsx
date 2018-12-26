@@ -100,7 +100,7 @@ interface IState {
     leftOverlay: boolean;
     maxReadId: number;
     messageSelectable: boolean;
-    messageSelectedIds: { [key: number]: boolean };
+    messageSelectedIds: { [key: number]: number };
     messages: IMessage[];
     moreInfoAnchorEl: any;
     openNewMessage: boolean;
@@ -1757,7 +1757,7 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Notify on new message received */
     private notifyMessage(data: INewMessageBulkUpdate) {
-        if (!(!this.isInChat && data.senderIds.indexOf(this.connInfo.UserID || '') === -1 && data.messages.length > 0 && this.canNotify(data.messages[0].peerid || ''))) {
+        if (!(!this.isInChat && data.senderIds.indexOf(this.connInfo.UserID || '') === -1 && data.messages.length > 0 && this.canNotify(data.messages[0].peerid || '')) || (data.messages.length === 1 && data.messages[0].mention_me !== true)) {
             return;
         }
         if (data.peertype === PeerType.PEERGROUP) {
@@ -1767,9 +1767,15 @@ class Chat extends React.Component<IProps, IState> {
                     groupTitle = group.title || 'Group';
                 }
                 if (data.messages.length === 1) {
-                    this.notify(
-                        `Message from ${data.senders[0].firstname} ${data.senders[0].lastname} in ${groupTitle}`,
-                        (data.messages[0].body || '').substr(0, 64), data.messages[0].peerid || 'null');
+                    if (data.messages[0].mention_me === true) {
+                        this.notify(
+                            `${data.senders[0].firstname} ${data.senders[0].lastname} mentioned you in ${groupTitle}`,
+                            (data.messages[0].body || '').substr(0, 64), data.messages[0].peerid || 'null');
+                    } else {
+                        this.notify(
+                            `Message from ${data.senders[0].firstname} ${data.senders[0].lastname} in ${groupTitle}`,
+                            (data.messages[0].body || '').substr(0, 64), data.messages[0].peerid || 'null');
+                    }
                 } else {
                     this.notify(
                         `${data.messages.length} messages in ${groupTitle}`, '', data.messages[0].peerid || 'null');
@@ -2037,7 +2043,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* On message selected ids change */
-    private messageSelectedIdsChangeHandler = (selectedIds: { [key: number]: boolean }) => {
+    private messageSelectedIdsChangeHandler = (selectedIds: { [key: number]: number }) => {
         this.setState({
             messageSelectedIds: selectedIds,
         });
@@ -2059,8 +2065,21 @@ class Chat extends React.Component<IProps, IState> {
                 });
                 break;
             case 'remove':
+                let noRevoke = true;
+                const {messages} = this.state;
+                const now = Math.floor(Date.now() / 1000);
+                // Checks if revoke is unavailable
+                for (const i in this.state.messageSelectedIds) {
+                    if (this.state.messageSelectedIds.hasOwnProperty(i)) {
+                        const msg = messages[this.state.messageSelectedIds[i]];
+                        if (msg && (msg.me !== true || (now - (msg.createdon || 0)) >= 86400)) {
+                            noRevoke = false;
+                            break;
+                        }
+                    }
+                }
                 this.setState({
-                    confirmDialogMode: 'remove_message',
+                    confirmDialogMode: (noRevoke? 'remove_message_revoke' : 'remove_message'),
                     confirmDialogOpen: true,
                 });
                 break;
