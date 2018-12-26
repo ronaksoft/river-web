@@ -192,7 +192,8 @@ input {
         direction: ltr;
         text-align: left; }
       .bubble-wrapper .bubble > .inner ._mention {
-        font-weight: bold; }
+        font-weight: bold;
+        display: inline-block; }
         .bubble-wrapper .bubble > .inner ._mention:hover {
           text-decoration: underline; }
       .bubble-wrapper .bubble > .inner ._bold {

@@ -354,6 +354,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                     id: list.userid,
                     lastname: list.lastname,
                     temp: true,
+                    username: list.username,
                 });
             });
             this.contactRepo.importBulk(contacts);

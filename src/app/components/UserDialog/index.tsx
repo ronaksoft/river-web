@@ -265,7 +265,7 @@ class UserDialog extends React.Component<IProps, IState> {
                 firstname: res.firstname || '',
                 isInContact: (res.temp !== true),
                 lastname: res.lastname || '',
-                sendMessageEnable: true,
+                sendMessageEnable: Boolean(res.accesshash && res.accesshash.length > 0),
                 user: res,
             });
         }).catch(() => {
@@ -274,7 +274,7 @@ class UserDialog extends React.Component<IProps, IState> {
                     firstname: res.firstname || '',
                     isInContact: false,
                     lastname: res.lastname || '',
-                    sendMessageEnable: false,
+                    sendMessageEnable: Boolean(res.accesshash && res.accesshash.length > 0),
                     user: res,
                 });
             });

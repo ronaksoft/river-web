@@ -215,7 +215,6 @@ class TextInput extends React.Component<IProps, IState> {
                                                placeholder="Type your message here..."
                                                style={defaultMentionInputStyle}
                                                suggestionsPortalHost={this.mentionContainer}
-                                               onBlur={this.textareaBlurHandler}
                                 >
                                     <Mention
                                         trigger="@"
@@ -331,37 +330,40 @@ class TextInput extends React.Component<IProps, IState> {
 
     private sendMessage = (e: any) => {
         const {previewMessage, previewMessageMode} = this.state;
-        this.rtlDetectorThrottle(e.target.value);
+        const text = e.target.value;
+        this.rtlDetectorThrottle(text);
         if (e.key === 'Enter' && !e.shiftKey) {
-            if (this.mentions.length !== this.lastMentionsCount) {
-                this.lastMentionsCount = this.mentions.length;
-                return;
-            }
-            if (this.props.onMessage) {
-                const entities = this.generateEntities();
-                if (previewMessageMode === C_MSG_MODE.Normal) {
-                    this.props.onMessage(e.target.value, {
-                        entities,
-                    });
-                } else if (previewMessageMode !== C_MSG_MODE.Normal) {
-                    const message = cloneDeep(previewMessage);
-                    this.props.onMessage(e.target.value, {
-                        entities,
-                        message,
-                        mode: previewMessageMode,
-                    });
-                    this.clearPreviewMessage();
+            setTimeout(() => {
+                if (this.mentions.length !== this.lastMentionsCount) {
+                    this.lastMentionsCount = this.mentions.length;
+                    return;
                 }
-            }
-            e.target.value = '';
-            this.mentions = [];
-            this.lastMentionsCount = 0;
-            this.setState({
-                emojiAnchorEl: null,
-                textareaValue: '',
-            }, () => {
-                this.computeLines();
-            });
+                if (this.props.onMessage) {
+                    const entities = this.generateEntities();
+                    if (previewMessageMode === C_MSG_MODE.Normal) {
+                        this.props.onMessage(text, {
+                            entities,
+                        });
+                    } else if (previewMessageMode !== C_MSG_MODE.Normal) {
+                        const message = cloneDeep(previewMessage);
+                        this.props.onMessage(text, {
+                            entities,
+                            message,
+                            mode: previewMessageMode,
+                        });
+                        this.clearPreviewMessage();
+                    }
+                }
+                this.textarea.value = '';
+                this.mentions = [];
+                this.lastMentionsCount = 0;
+                this.setState({
+                    emojiAnchorEl: null,
+                    textareaValue: '',
+                }, () => {
+                    this.computeLines();
+                });
+            }, 10);
         }
         if (this.props.onTyping && this.state.previewMessageMode !== C_MSG_MODE.Edit) {
             if (e.target.value.length === 0) {
@@ -554,7 +556,7 @@ class TextInput extends React.Component<IProps, IState> {
         // Search engine
         const searchParticipant = (word: string, participants: GroupParticipant.AsObject[]) => {
             const users: any[] = [];
-            const reg = new RegExp(word);
+            const reg = new RegExp(word, "i");
             for (const [i, participant] of participants.entries()) {
                 if ((participant.lastname && reg.test(participant.lastname)) ||
                     (participant.firstname && reg.test(participant.firstname)) ||
@@ -617,11 +619,6 @@ class TextInput extends React.Component<IProps, IState> {
                 {Boolean(a.username) && <span className="username">{a.username}</span>}
             </div>
         </div>);
-    }
-
-    /* Textarea on blur */
-    private textareaBlurHandler = () => {
-        window.console.log('textareaBlurHandler');
     }
 
     /* Generate entities for message */

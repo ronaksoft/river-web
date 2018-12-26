@@ -57,7 +57,6 @@ export default class GroupRepo {
 
     public upsert(groups: IGroup[]): Promise<any> {
         const ids = groups.map((group) => {
-            this.dbService.setGroup(group);
             return group.id || '';
         });
         return this.db.groups.where('id').anyOf(ids).toArray().then((result) => {
@@ -67,7 +66,11 @@ export default class GroupRepo {
                 const t = find(groups, {id: group.id});
                 return merge(group, t);
             });
-            return this.createMany([...createItems, ...updateItems]);
+            const list = [...createItems, ...updateItems];
+            list.forEach((item) => {
+                this.dbService.setGroup(item);
+            });
+            return this.createMany(list);
         }).then((res) => {
             this.broadcastEvent('Group_DB_Updated', {ids});
             return res;

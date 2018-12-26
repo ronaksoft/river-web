@@ -175,6 +175,7 @@
       }
       ._mention {
         font-weight: bold;
+        display: inline-block;
         &:hover {
           text-decoration: underline;
         }

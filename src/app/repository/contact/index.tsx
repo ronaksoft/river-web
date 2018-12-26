@@ -114,7 +114,6 @@ export default class ContactRepo {
 
     public upsert(contacts: IContact[]): Promise<any> {
         const ids = contacts.map((contact) => {
-            this.dbService.setContact(contact);
             return contact.id || '';
         });
         return this.db.contacts.where('id').anyOf(ids).toArray().then((result) => {
@@ -130,7 +129,11 @@ export default class ContactRepo {
                     return merge(contact, t);
                 }
             });
-            return this.createMany([...createItems, ...updateItems]);
+            const list = [...createItems, ...updateItems];
+            list.forEach((item) => {
+                this.dbService.setContact(item);
+            });
+            return this.createMany(list);
         }).then((res) => {
             this.broadcastEvent('User_DB_Updated', {ids});
             return res;

@@ -75,7 +75,11 @@ export default class UserRepo {
                 const t = find(users, {id: user.id});
                 return merge(user, t);
             });
-            return this.createMany([...createItems, ...updateItems]);
+            const list = [...createItems, ...updateItems];
+            list.forEach((item) => {
+                this.dbService.setUser(item);
+            });
+            return this.createMany(list);
         });
     }
 }

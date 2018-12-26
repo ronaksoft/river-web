@@ -268,7 +268,7 @@ class Message extends React.Component<IProps, IState> {
         };
         const menuTypes = {
             1: [1, 2, 3, 4],
-            2: [1, 2],
+            2: [1, 2, 4],
             3: [5],
         };
         const menuItems: any[] = [];
@@ -280,11 +280,11 @@ class Message extends React.Component<IProps, IState> {
             });
         } else if (me === true && id && id > 0) {
             menuTypes[1].forEach((key) => {
-                if (key === 4) {
+                /*if (key === 4) {
                     if ((Math.floor(Date.now() / 1000) - (items[moreIndex].createdon || 0)) < 86400) {
                         menuItems.push(menuItem[key]);
                     }
-                } else if (key === 3) {
+                } else */if (key === 3) {
                     if ((Math.floor(Date.now() / 1000) - (items[moreIndex].createdon || 0)) < 86400 &&
                         (items[moreIndex].fwdsenderid === '0' || !items[moreIndex].fwdsenderid)) {
                         menuItems.push(menuItem[key]);
@@ -673,13 +673,13 @@ class Message extends React.Component<IProps, IState> {
                 if (i === 0 && entity.offset !== 0) {
                     elems.push({
                         str: body.substr(0, entity.offset),
-                        type: 'none',
+                        type: -1,
                     });
                 }
                 if (i > 0 && i < bodyLen && ((sortedEntities[i - 1].offset || 0) + (sortedEntities[i - 1].length || 0)) !== (entity.offset || 0)) {
                     elems.push({
                         str: body.substr((sortedEntities[i - 1].offset || 0) + (sortedEntities[i - 1].length || 0), (entity.offset || 0) - ((sortedEntities[i - 1].offset || 0) + (sortedEntities[i - 1].length || 0))),
-                        type: 'none',
+                        type: -1,
                     });
                 }
                 elems.push({
@@ -690,7 +690,7 @@ class Message extends React.Component<IProps, IState> {
                 if (i === (sortedEntities.length - 1) && (bodyLen) !== (entity.offset || 0) + (entity.length || 0)) {
                     elems.push({
                         str: body.substr((entity.offset || 0) + (entity.length || 0)),
-                        type: 'none',
+                        type: -1,
                     });
                 }
             });
@@ -699,9 +699,10 @@ class Message extends React.Component<IProps, IState> {
                     case MessageEntityType.MESSAGEENTITYTYPEMENTION:
                         if (elem.str.indexOf('@') === 0) {
                             return (
-                                <UserName key={i} className="_mention" id={elem.userId} username={true} prefix="@"/>);
+                                <UserName key={i} className="_mention" id={elem.userId} username={true} prefix="@"
+                                          unsafe={true}/>);
                         } else {
-                            return (<UserName key={i} className="_mention" id={elem.userId}/>);
+                            return (<UserName key={i} className="_mention" id={elem.userId} unsafe={true}/>);
                         }
                     case MessageEntityType.MESSAGEENTITYTYPEBOLD:
                         return (<span key={i} className="_bold">{elem.str}</span>);

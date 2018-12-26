@@ -118,6 +118,7 @@ class UserName extends React.Component<IProps, IState> {
                     firstname: contact.firstname,
                     id: contact.id,
                     lastname: contact.lastname,
+                    username: contact.username,
                 },
             });
         }).catch(() => {

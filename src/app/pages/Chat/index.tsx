@@ -84,7 +84,7 @@ interface IProps {
 
 interface IState {
     chatMoreAnchorEl: any;
-    confirmDialogMode: 'none' | 'logout' | 'remove_message';
+    confirmDialogMode: 'none' | 'logout' | 'remove_message' | 'remove_message_revoke';
     confirmDialogOpen: boolean;
     dialogs: IDialog[];
     forwardRecipientDialogOpen: boolean;
@@ -759,7 +759,8 @@ class Chat extends React.Component<IProps, IState> {
                             </Button>
                         </DialogActions>
                     </div>}
-                    {Boolean(confirmDialogMode === 'remove_message') && <div>
+                    {Boolean(confirmDialogMode === 'remove_message' || confirmDialogMode === 'remove_message_revoke') &&
+                    <div>
                         <DialogTitle>Remove Message?</DialogTitle>
                         <DialogContent>
                             <DialogContentText>
@@ -774,9 +775,10 @@ class Chat extends React.Component<IProps, IState> {
                                     autoFocus={true}>
                                 Remove
                             </Button>
+                            {Boolean(confirmDialogMode === 'remove_message_revoke') &&
                             <Button onClick={this.removeMessageHandler.bind(this, true)} color="primary">
                                 Remove (for all)
-                            </Button>
+                            </Button>}
                         </DialogActions>
                     </div>}
                 </OverlayDialog>
@@ -1927,8 +1929,12 @@ class Chat extends React.Component<IProps, IState> {
             case 'remove':
                 const messageSelectedIds = {};
                 messageSelectedIds[message.id || 0] = true;
+                let removeMode: any = 'remove_message';
+                if ((Math.floor(Date.now() / 1000) - (message.createdon || 0)) < 86400 && message.me === true) {
+                    removeMode = 'remove_message_revoke';
+                }
                 this.setState({
-                    confirmDialogMode: 'remove_message',
+                    confirmDialogMode: removeMode,
                     confirmDialogOpen: true,
                     messageSelectedIds,
                 });
