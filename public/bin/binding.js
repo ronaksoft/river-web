@@ -148,31 +148,31 @@ const initWebSocket = () => {
             window.dispatchEvent(event);
         }
         workerMessage('wsOpen');
+    };
 
-        // Listen for messages
-        socket.onmessage = (event) => {
-            if (checkPong(event.data)) {
-                pingCounter = 0;
-            } else {
-                workerMessage('receive', Uint8ToBase64(new Uint8Array(event.data)));
-            }
-        };
+    // Listen for messages
+    socket.onmessage = (event) => {
+        if (checkPong(event.data)) {
+            pingCounter = 0;
+        } else {
+            workerMessage('receive', Uint8ToBase64(new Uint8Array(event.data)));
+        }
+    };
 
-        // Listen for messages
-        socket.onclose = () => {
-            connected = false;
-            const event = new CustomEvent('wsClose');
-            window.dispatchEvent(event);
-            if (tryCounter === 0) {
-                setTimeout(() => {
-                    initWebSocket();
-                }, 1000);
-            } else {
-                setTimeout(() => {
-                    initWebSocket();
-                }, 5000 + Math.floor(Math.random() * 3000));
-            }
-        };
+    // Listen for messages
+    socket.onclose = () => {
+        connected = false;
+        const event = new CustomEvent('wsClose');
+        window.dispatchEvent(event);
+        if (tryCounter === 0) {
+            setTimeout(() => {
+                initWebSocket();
+            }, 1000);
+        } else {
+            setTimeout(() => {
+                initWebSocket();
+            }, 5000 + Math.floor(Math.random() * 3000));
+        }
     };
 };
 
