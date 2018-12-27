@@ -85,7 +85,7 @@ export default class SyncManager {
         const toRemoveDialogs: IRemoveDialog[] = [];
         const messages: { [key: number]: IMessage } = {};
         const toRemoveMessages: number[] = [];
-        const users: { [key: number]: IUser } = {};
+        let users: { [key: number]: IUser } = {};
         envelopes.forEach((envelope) => {
             // @ts-ignore
             const data: Uint8Array = envelope.update;
@@ -111,10 +111,12 @@ export default class SyncManager {
                         peerid: updateNewMessage.message.peerid,
                         peertype: updateNewMessage.message.peertype,
                         preview: (updateNewMessage.message.body || '').substr(0, 64),
+                        preview_me: (this.updateManager.getUserId() === updateNewMessage.message.senderid),
                         sender_id: updateNewMessage.message.senderid,
                         target_id: updateNewMessage.message.peerid,
                         topmessageid: updateNewMessage.message.id,
                     });
+                    users = this.updateUser(users, updateNewMessage.sender);
                     break;
                 case C_MSG.UpdateReadHistoryInbox:
                     const updateReadHistoryInbox = UpdateReadHistoryInbox.deserializeBinary(data).toObject();
@@ -190,8 +192,8 @@ export default class SyncManager {
                 dialogs[dialog.peerid || 0] = merge(d, dialog);
             }
         } else {
-            dialog.readinboxmaxid = 0;
-            dialog.readoutboxmaxid = 0;
+            // dialog.readinboxmaxid = 0;
+            // dialog.readoutboxmaxid = 0;
             dialogs[dialog.peerid || 0] = dialog;
         }
         return dialogs;
@@ -248,6 +250,16 @@ export default class SyncManager {
                 });
             }, 1000);
         }
+    }
+
+    private updateUser(users: { [key: number]: IUser }, user: IUser) {
+        const d: IUser = users[user.id || 0];
+        if (d) {
+            users[user.id || 0] = merge(d, user);
+        } else {
+            users[user.id || 0] = user;
+        }
+        return users;
     }
 
     private updateUserDB(users: { [key: number]: IUser }) {
