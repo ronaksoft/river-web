@@ -124,13 +124,13 @@ class SearchList extends React.Component<IProps, IState> {
             return (<span/>);
         }
         if (value.mode === 'contact' && value.contact) {
-            return (<Chip key={key} avatar={<UserAvatar id={value.contact.id}/>} tabIndex={-1}
-                          label={<UserName id={value.contact.id}/>}
+            return (<Chip key={key} avatar={<UserAvatar id={value.contact.id} noDetail={true}/>} tabIndex={-1}
+                          label={<UserName id={value.contact.id} noDetail={true}/>}
                           onDelete={this.removeItemHandler.bind(this, value)} className="chip"/>);
         } else if (value.mode === 'dialog' && value.dialog) {
             if (value.dialog.peertype === PeerType.PEERUSER || value.dialog.peertype === PeerType.PEERSELF) {
-                return (<Chip key={key} avatar={<UserAvatar id={value.dialog.peerid}/>} tabIndex={-1}
-                              label={<UserName id={value.dialog.peerid}/>}
+                return (<Chip key={key} avatar={<UserAvatar id={value.dialog.peerid} noDetail={true}/>} tabIndex={-1}
+                              label={<UserName id={value.dialog.peerid} noDetail={true}/>}
                               onDelete={this.removeItemHandler.bind(this, value)} className="chip"/>);
             } else if (value.dialog.peertype === PeerType.PEERGROUP) {
                 return (<Chip key={key} avatar={<GroupAvatar id={value.dialog.peerid}/>} tabIndex={-1}
@@ -174,7 +174,7 @@ class SearchList extends React.Component<IProps, IState> {
                 <div style={style} key={index} className="search-item"
                      onClick={this.addItemHandler.bind(this, inputPeer)}>
                     {Boolean(inputPeer.dialog.peertype === PeerType.PEERUSER || inputPeer.dialog.peertype === PeerType.PEERSELF) &&
-                    <UserAvatar className="avatar" id={inputPeer.dialog.target_id || ''}/>}
+                    <UserAvatar className="avatar" id={inputPeer.dialog.target_id || ''} noDetail={true}/>}
                     {Boolean(inputPeer.dialog.peertype === PeerType.PEERUSER || inputPeer.dialog.peertype === PeerType.PEERSELF) &&
                     <UserName className="name" id={inputPeer.dialog.target_id || ''} noDetail={true}/>}
                     {Boolean(inputPeer.dialog.peertype === PeerType.PEERGROUP) &&

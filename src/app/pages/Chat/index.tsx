@@ -1711,9 +1711,13 @@ class Chat extends React.Component<IProps, IState> {
             this.dialogsSort(res);
             const {dialogs} = this.state;
             data.ids.forEach((id: string) => {
+                window.console.log('dialogDBUpdated data.id:', id);
                 if (this.dialogMap.hasOwnProperty(id) && dialogs[this.dialogMap[id]]) {
+                    window.console.log('dialogDBUpdated peerId:', dialogs[this.dialogMap[id]].peerid);
                     const maxReadInbox = dialogs[this.dialogMap[id]].readinboxmaxid || 0;
+                    window.console.log('dialogDBUpdated maxReadInbox:', maxReadInbox);
                     this.messageRepo.getUnreadCount(id, maxReadInbox).then((count) => {
+                        window.console.log('dialogDBUpdated getUnreadCount:', count);
                         this.updateDialogsCounter(id, {
                             mentionCounter: count.mention,
                             unreadCounter: count.message,
@@ -1736,7 +1740,7 @@ class Chat extends React.Component<IProps, IState> {
             if (messages.length > 0) {
                 after = messages[messages.length - 1].id || 0;
             }
-            this.messageRepo.getManyCache({after}, peer).then((msgs) => {
+            this.messageRepo.getManyCache({after, limit: 100}, peer).then((msgs) => {
                 const dataMsg = this.modifyMessages(this.state.messages, msgs, true);
 
                 this.setState({

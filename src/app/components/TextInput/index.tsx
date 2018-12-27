@@ -612,10 +612,10 @@ class TextInput extends React.Component<IProps, IState> {
     private renderSuggestion = (a: any, b: any, c: any, d: any, focused: any) => {
         return (<div className={'inner ' + (focused ? 'focused' : '')}>
             <div className="avatar">
-                <UserAvatar id={a.id}/>
+                <UserAvatar id={a.id} noDetail={true}/>
             </div>
             <div className="info">
-                <UserName id={a.id} className="name" unsafe={true}/>
+                <UserName id={a.id} className="name" unsafe={true} noDetail={true}/>
                 {Boolean(a.username) && <span className="username">{a.username}</span>}
             </div>
         </div>);

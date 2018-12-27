@@ -127,7 +127,7 @@ class UserDialog extends React.Component<IProps, IState> {
                 <div className="user-info-menu">
                     {user && <div className="info kk-card">
                         <div className="avatar">
-                            <UserAvatar id={user.id || ''}/>
+                            <UserAvatar id={user.id || ''} noDetail={true}/>
                         </div>
                         <div className="line">
                             {!edit && <div className="form-control">

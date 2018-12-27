@@ -133,7 +133,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                     <div className="page page-1">
                         {user && <div className="info kk-card">
                             <div className="avatar">
-                                <UserAvatar id={user.id || ''}/>
+                                <UserAvatar id={user.id || ''} noDetail={true}/>
                             </div>
                             <div className="line">
                                 {!edit && <div className="form-control">

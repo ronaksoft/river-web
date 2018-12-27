@@ -190,7 +190,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                                         <FaceRounded/>
                                     </div>
                                     <div className="icon-secondary">
-                                        <UserAvatar className="avatar" id={this.userId || ''}/>
+                                        <UserAvatar className="avatar" id={this.userId || ''} noDetail={true}/>
                                     </div>
                                 </div>
                                 Account ({phone})
@@ -270,7 +270,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                             </div>
                             {user && <div className="info kk-card">
                                 <div className="avatar">
-                                    <UserAvatar id={user.id || ''}/>
+                                    <UserAvatar id={user.id || ''} noDetail={true}/>
                                 </div>
                                 <div className="line">
                                     {!editProfile && <div className="form-control">

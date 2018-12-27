@@ -8,6 +8,7 @@ import ContactRepo from '../../repository/contact';
 interface IProps {
     className?: string;
     id: string;
+    noDetail?: boolean;
 }
 
 interface IState {
@@ -151,7 +152,7 @@ class UserAvatar extends React.Component<IProps, IState> {
     public render() {
         const {user, className} = this.state;
         return (
-            <span className={className}>{(user && user.avatar) ?
+            <span className={className} onClick={this.clickHandler}>{(user && user.avatar) ?
                 <img src={user.avatar}/> : TextAvatar(user.firstname, user.lastname)}</span>
         );
     }
@@ -187,6 +188,28 @@ class UserAvatar extends React.Component<IProps, IState> {
                 }
             });
         });
+    }
+
+    /* Click on user handler */
+    private clickHandler = (e: any) => {
+        const {user} = this.state;
+        if (!user || this.props.noDetail === true) {
+            return;
+        }
+        e.stopPropagation();
+        e.preventDefault();
+        this.broadcastEvent('User_Dialog_Open', {
+            id: user.id,
+        });
+    }
+
+    /* Broadcast global event */
+    private broadcastEvent(name: string, data: any) {
+        const event = new CustomEvent(name, {
+            bubbles: false,
+            detail: data,
+        });
+        window.dispatchEvent(event);
     }
 }
 

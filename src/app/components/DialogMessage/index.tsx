@@ -76,7 +76,7 @@ class DialogMessage extends React.Component<IProps, IState> {
                 className={'dialog-wrapper' + (muted ? ' muted' : '') + ((dialog.mentionedcount && dialog.mentionedcount > 0) ? ' has-mention' : '')}>
                 {muted && <div className="muted-wrapper"><NotificationsOffRounded/></div>}
                 {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
-                <UserAvatar className="avatar" id={dialog.target_id || ''}/>}
+                <UserAvatar className="avatar" id={dialog.target_id || ''} noDetail={true}/>}
                 {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
                 <UserName className="name" id={dialog.target_id || ''} noDetail={true}/>}
                 {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
