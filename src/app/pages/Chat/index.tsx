@@ -1765,7 +1765,7 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Notify on new message received */
     private notifyMessage(data: INewMessageBulkUpdate) {
-        if (!(!this.isInChat && data.senderIds.indexOf(this.connInfo.UserID || '') === -1 && data.messages.length > 0 && this.canNotify(data.messages[0].peerid || '')) || (data.messages.length === 1 && data.messages[0].mention_me !== true)) {
+        if (!(!this.isInChat && data.senderIds.indexOf(this.connInfo.UserID || '') === -1 && data.messages.length > 0 && this.canNotify(data.messages[0].peerid || '')) && (data.messages.length === 1 && data.messages[0].mention_me !== true)) {
             return;
         }
         if (data.peertype === PeerType.PEERGROUP) {
