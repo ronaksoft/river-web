@@ -557,10 +557,12 @@ class TextInput extends React.Component<IProps, IState> {
         const searchParticipant = (word: string, participants: GroupParticipant.AsObject[]) => {
             const users: any[] = [];
             const reg = new RegExp(word, "i");
+            const userId = this.sdk.getConnInfo().UserID;
             for (const [i, participant] of participants.entries()) {
-                if ((participant.lastname && reg.test(participant.lastname)) ||
+                if (userId !== participant.userid &&
+                    ((participant.lastname && reg.test(participant.lastname)) ||
                     (participant.firstname && reg.test(participant.firstname)) ||
-                    (participant.username && reg.test(participant.username))) {
+                    (participant.username && reg.test(participant.username)))) {
                     users.push({
                         display: participant.username ? `@${participant.username}` : `${participant.firstname} ${participant.lastname}`,
                         id: participant.userid,

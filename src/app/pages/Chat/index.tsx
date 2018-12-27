@@ -1528,7 +1528,7 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private dialogsSort(dialogs: IDialog[], callback?: any) {
+    private dialogsSort(dialogs: IDialog[], callback?: (ds: IDialog[]) => void) {
         dialogs.sort((i1, i2) => {
             if (!i1.last_update || !i2.last_update) {
                 return 0;
@@ -1553,7 +1553,7 @@ class Chat extends React.Component<IProps, IState> {
                 }
             });
             if (callback) {
-                callback();
+                callback(td);
             }
         });
     }
@@ -1711,8 +1711,7 @@ class Chat extends React.Component<IProps, IState> {
     private dialogDBUpdatedHandler = (event: any) => {
         const data = event.detail;
         this.dialogRepo.getManyCache({}).then((res) => {
-            this.dialogsSort(res, () => {
-                const {dialogs} = this.state;
+            this.dialogsSort(res, (dialogs) => {
                 data.ids.forEach((id: string) => {
                     window.console.log('dialogDBUpdated data.id:', id);
                     if (this.dialogMap.hasOwnProperty(id) && dialogs[this.dialogMap[id]]) {
