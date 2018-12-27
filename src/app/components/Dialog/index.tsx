@@ -47,6 +47,8 @@ class Dialog extends React.Component<IProps, IState> {
     public componentDidMount() {
         this.list.recomputeRowHeights();
         this.list.forceUpdateGrid();
+        const index = findIndex(this.state.items, {peerid: this.state.selectedId});
+        this.list.scrollToRow(index);
     }
 
     public componentWillReceiveProps(newProps: IProps) {
