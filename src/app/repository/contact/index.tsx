@@ -8,6 +8,7 @@ export default class ContactRepo {
     public static getInstance() {
         if (!this.instance) {
             this.instance = new ContactRepo();
+            this.instance.getAll();
         }
 
         return this.instance;

@@ -130,6 +130,7 @@ class Message extends React.Component<IProps, IState> {
                     this.fitList();
                 });
             } else {
+                // TODO: fix
                 this.list.scrollToRow((newProps.items.length - this.listCount));
             }
             this.listCount = newProps.items.length;

@@ -140,7 +140,10 @@ class TextInput extends React.Component<IProps, IState> {
             this.focus('.mention textara');
         });
         if (newProps.previewMessageMode === C_MSG_MODE.Edit && newProps.previewMessage) {
-            this.textarea.value = newProps.previewMessage.body;
+            // this.textarea.value = newProps.previewMessage.body;
+            this.setState({
+                textareaValue: newProps.previewMessage.body || '',
+            });
         }
         if (this.state.peer !== newProps.peer) {
             this.setState({
