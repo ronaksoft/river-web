@@ -13,11 +13,16 @@ import {IContact} from '../../repository/contact/interface';
 import ContactRepo from '../../repository/contact';
 import {debounce, findIndex, differenceBy, clone} from 'lodash';
 import UserAvatar, {TextAvatar} from '../UserAvatar';
+import TextField from '@material-ui/core/TextField';
 import ChipInput from 'material-ui-chip-input';
 import Chip from '@material-ui/core/Chip';
 import UserName from '../UserName';
-import {NotInterestedRounded} from '@material-ui/icons';
+import {MoreVert, NotInterestedRounded} from '@material-ui/icons';
 import XRegExp from 'xregexp';
+import Menu from '@material-ui/core/Menu/Menu';
+import MenuItem from '@material-ui/core/MenuItem/MenuItem';
+import {Link} from 'react-router-dom';
+import Scrollbars from 'react-custom-scrollbars';
 
 import './style.css';
 
@@ -25,16 +30,25 @@ interface IProps {
     contacts?: IContact[];
     hiddenContacts?: IContact[];
     onChange?: (contacts: IContact[]) => void;
+    onContextMenuAction?: (cmd: string, contact: IContact, e: any) => void;
+    noRowsRenderer?: () => JSX.Element;
+    mode: 'chip' | 'link';
 }
 
 interface IState {
     contacts: IContact[];
     hiddenContacts: IContact[];
+    moreAnchorEl: any;
+    moreIndex: number;
     page: string;
     selectedContacts: IContact[];
-    scrollIndex: number;
     title: string;
 }
+
+const listStyle: React.CSSProperties = {
+    overflowX: 'visible',
+    overflowY: 'visible',
+};
 
 export const categorizeContact = (contacts: IContact[]): IContact[] => {
     const list = clone(contacts);
@@ -76,10 +90,9 @@ export const categorizeContact = (contacts: IContact[]): IContact[] => {
 
 class ContactList extends React.Component<IProps, IState> {
     private contactsRes: IContact[] = [];
-    // @ts-ignore
     private list: List;
     private contactRepo: ContactRepo;
-    private searchDebounce: any;
+    private readonly searchDebounce: any;
     private defaultContact: IContact[];
 
     constructor(props: IProps) {
@@ -88,8 +101,9 @@ class ContactList extends React.Component<IProps, IState> {
         this.state = {
             contacts: [],
             hiddenContacts: props.hiddenContacts || [],
+            moreAnchorEl: null,
+            moreIndex: -1,
             page: '1',
-            scrollIndex: -1,
             selectedContacts: props.contacts || [],
             title: '',
         };
@@ -113,12 +127,16 @@ class ContactList extends React.Component<IProps, IState> {
         });
     }
 
+    public reload() {
+        this.getDefault();
+    }
+
     public render() {
-        const {contacts, scrollIndex, selectedContacts} = this.state;
+        const {contacts, selectedContacts, moreAnchorEl} = this.state;
         return (
             <div className="contact-list">
                 <div className="contact-input-container">
-                    <ChipInput
+                    {Boolean(this.props.mode === 'chip') && <ChipInput
                         label="Search contacts"
                         value={selectedContacts}
                         chipRenderer={this.chipRenderer}
@@ -127,23 +145,50 @@ class ContactList extends React.Component<IProps, IState> {
                         onDelete={this.removeMemberHandler}
                         // @ts-ignore
                         classes={{}}
-                    />
+                    />}
+                    {Boolean(this.props.mode === 'link') && <TextField
+                        label="Search..."
+                        fullWidth={true}
+                        inputProps={{
+                            maxLength: 32,
+                        }}
+                        onChange={this.searchChangeHandler}
+                    />}
                 </div>
                 <div className="contact-list-container">
                     <AutoSizer>
                         {({width, height}: any) => (
-                            <List
-                                ref={this.refHandler}
-                                rowHeight={this.getHeight}
-                                rowRenderer={this.rowRender}
-                                rowCount={contacts.length}
-                                overscanRowCount={0}
-                                scrollToIndex={scrollIndex}
-                                width={width}
-                                height={height}
-                                className="contact-container"
-                                noRowsRenderer={this.noRowsRenderer}
-                            />
+                            <React.Fragment>
+                                <Scrollbars
+                                    autoHide={true}
+                                    style={{
+                                        height: height + 'px',
+                                        width: width + 'px',
+                                    }}
+                                    onScroll={this.handleScroll}
+                                >
+                                    <List
+                                        ref={this.refHandler}
+                                        rowHeight={this.getHeight}
+                                        rowRenderer={this.rowRender}
+                                        rowCount={contacts.length}
+                                        overscanRowCount={0}
+                                        width={width}
+                                        height={height}
+                                        className="contact-container"
+                                        noRowsRenderer={this.props.noRowsRenderer || this.noRowsRenderer}
+                                        style={listStyle}
+                                    />
+                                </Scrollbars>
+                                <Menu
+                                    anchorEl={moreAnchorEl}
+                                    open={Boolean(moreAnchorEl)}
+                                    onClose={this.moreCloseHandler}
+                                    className="kk-context-menu"
+                                >
+                                    {this.contextMenuItem()}
+                                </Menu>
+                            </React.Fragment>
                         )}
                     </AutoSizer>
                 </div>
@@ -151,9 +196,18 @@ class ContactList extends React.Component<IProps, IState> {
         );
     }
 
+    /* Custom Scrollbars handler */
+    private handleScroll = (e: any) => {
+        const {scrollTop} = e.target;
+        if (this.list.Grid) {
+            this.list.Grid.handleScrollEvent({scrollTop});
+        }
+    }
+
     /* Chip renderer for select input */
     private chipRenderer = ({value, text}: any, key: any): React.ReactNode => {
-        return (<Chip key={key} avatar={<UserAvatar id={value.id} noDetail={true}/>} tabIndex={-1} label={<UserName id={value.id} noDetail={true}/>}
+        return (<Chip key={key} avatar={<UserAvatar id={value.id} noDetail={true}/>} tabIndex={-1}
+                      label={<UserName id={value.id} noDetail={true}/>}
                       onDelete={this.removeMemberHandler.bind(this, value)} className="chip"/>);
     }
 
@@ -168,16 +222,39 @@ class ContactList extends React.Component<IProps, IState> {
         if (contact.category) {
             return (<div style={style} key={index} className="category-item">{contact.category}</div>);
         } else {
-            return (
-                <div style={style} key={index} className="contact-item"
-                     onClick={this.addMemberHandler.bind(this, contact)}>
-                <span className="avatar">
-                    {contact.avatar ? <img src={contact.avatar}/> : TextAvatar(contact.firstname, contact.lastname)}
-                </span>
-                    <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>
-                    <span className="phone">{contact.phone ? contact.phone : 'no phone'}</span>
-                </div>
-            );
+            if (this.props.mode === 'chip') {
+                return (
+                    <div style={style} key={index} className="contact-item"
+                         onClick={this.addMemberHandler.bind(this, contact)}>
+                    <span className="avatar">
+                        {contact.avatar ? <img src={contact.avatar}/> : TextAvatar(contact.firstname, contact.lastname)}
+                    </span>
+                        <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>
+                        <span className="phone">{contact.phone ? contact.phone : 'no phone'}</span>
+                        {Boolean(this.props.onContextMenuAction) &&
+                        <div className="more" onClick={this.contextMenuOpenHandler.bind(this, index)}>
+                            <MoreVert/>
+                        </div>}
+                    </div>
+                );
+            } else {
+                return (
+                    <div style={style} key={index} className="contact-item">
+                        <Link to={`/conversation/${contact.id}`}>
+                            <span className="avatar">
+                                {contact.avatar ?
+                                    <img src={contact.avatar}/> : TextAvatar(contact.firstname, contact.lastname)}
+                            </span>
+                            <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>
+                            <span className="phone">{contact.phone ? contact.phone : 'no phone'}</span>
+                            {Boolean(this.props.onContextMenuAction) &&
+                            <div className="more" onClick={this.contextMenuOpenHandler.bind(this, index)}>
+                                <MoreVert/>
+                            </div>}
+                        </Link>
+                    </div>
+                );
+            }
         }
     }
 
@@ -287,6 +364,54 @@ class ContactList extends React.Component<IProps, IState> {
         } else {
             return 64;
         }
+    }
+
+    /* Context menu open handler */
+    private contextMenuOpenHandler = (index: number, e: any) => {
+        const {contacts} = this.state;
+        if (!contacts || index === -1) {
+            return;
+        }
+        e.preventDefault();
+        e.stopPropagation();
+        this.setState({
+            moreAnchorEl: e.currentTarget,
+            moreIndex: index,
+        });
+    }
+
+    /* Context menu close handler */
+    private moreCloseHandler = () => {
+        this.setState({
+            moreAnchorEl: null,
+        });
+    }
+
+    /* Context menu items renderer */
+    private contextMenuItem() {
+        if (!this.props.onContextMenuAction) {
+            return;
+        }
+        const {contacts, moreIndex} = this.state;
+        if (!contacts[moreIndex]) {
+            return '';
+        }
+        const menuItems = [{
+            cmd: 'remove',
+            color: '#cc0000',
+            title: 'Remove',
+        }];
+        return menuItems.map((item, index) => {
+            let style = {};
+            if (item.color) {
+                style = {
+                    color: item.color,
+                };
+            }
+            // @ts-ignore
+            return (<MenuItem onClick={this.props.onContextMenuAction.bind(this, item.cmd, contacts[moreIndex])}
+                              key={index} className="context-item" style={style}>{item.title}</MenuItem>);
+        });
     }
 }
 

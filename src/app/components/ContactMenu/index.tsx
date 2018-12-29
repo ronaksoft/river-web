@@ -8,12 +8,7 @@
 */
 
 import * as React from 'react';
-import {List, AutoSizer, Index} from 'react-virtualized';
-import {IContact} from '../../repository/contact/interface';
 import ContactRepo from '../../repository/contact';
-import {debounce} from 'lodash';
-import {Link} from 'react-router-dom';
-import {TextAvatar} from '../UserAvatar';
 import TextField from '@material-ui/core/TextField/TextField';
 import {CheckRounded, PersonAddRounded, PersonRounded} from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
@@ -24,16 +19,15 @@ import Dialog from '@material-ui/core/Dialog/Dialog';
 import SDK from '../../services/sdk';
 import {PhoneContact} from '../../services/sdk/messages/core.types_pb';
 import UniqueId from '../../services/uniqueId';
+import ContactList from '../ContactList';
 
 import './style.css';
-import {categorizeContact} from '../ContactList';
 
 interface IProps {
     id?: number;
 }
 
 interface IState {
-    contacts: IContact[];
     firstname: string;
     lastname: string;
     newContactDialogOpen: boolean;
@@ -44,17 +38,14 @@ interface IState {
 
 class ContactMenu extends React.Component<IProps, IState> {
     // @ts-ignore
-    private list: any;
+    private contactListComponent: ContactList;
     private contactRepo: ContactRepo;
-    private searchDebounce: any;
-    private defaultContact: IContact[];
     private sdk: SDK;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
-            contacts: [],
             firstname: '',
             lastname: '',
             newContactDialogOpen: false,
@@ -64,16 +55,15 @@ class ContactMenu extends React.Component<IProps, IState> {
         };
 
         this.contactRepo = ContactRepo.getInstance();
-        this.searchDebounce = debounce(this.search, 512);
         this.sdk = SDK.getInstance();
     }
 
     public componentDidMount() {
-        this.getContacts();
+        // this.getContacts();
     }
 
     public render() {
-        const {firstname, lastname, phone, contacts, newContactDialogOpen, scrollIndex} = this.state;
+        const {firstname, lastname, phone, newContactDialogOpen} = this.state;
         return (
             <div className="contacts">
                 <div className="menu-header">
@@ -93,33 +83,8 @@ class ContactMenu extends React.Component<IProps, IState> {
                         </Tooltip>
                     </span>
                 </div>
-                <div className="search-container">
-                    <TextField
-                        label="Search..."
-                        fullWidth={true}
-                        inputProps={{
-                            maxLength: 32,
-                        }}
-                        onChange={this.searchChangeHandler}
-                    />
-                </div>
                 <div className="contact-box">
-                    <AutoSizer>
-                        {({width, height}: any) => (
-                            <List
-                                ref={this.refHandler}
-                                rowHeight={this.getHeight}
-                                rowRenderer={this.rowRender}
-                                rowCount={contacts.length}
-                                overscanRowCount={0}
-                                scrollToIndex={scrollIndex}
-                                width={width}
-                                height={height}
-                                className="contact-container"
-                                noRowsRenderer={this.noRowsRenderer}
-                            />
-                        )}
-                    </AutoSizer>
+                    <ContactList ref={this.contactListRefHandler} noRowsRenderer={this.noRowsRenderer} mode="link"/>
                 </div>
                 <Dialog
                     open={newContactDialogOpen}
@@ -152,7 +117,8 @@ class ContactMenu extends React.Component<IProps, IState> {
                             onChange={this.phoneHandleChange}
                             value={phone}
                         />
-                        {Boolean(firstname.length > 0 && lastname.length > 0 && phone.length > 5) && <div className="actions-bar">
+                        {Boolean(firstname.length > 0 && lastname.length > 0 && phone.length > 5) &&
+                        <div className="actions-bar">
                             <div className="add-action" onClick={this.createContactHandler}>
                                 <CheckRounded/>
                             </div>
@@ -163,8 +129,8 @@ class ContactMenu extends React.Component<IProps, IState> {
         );
     }
 
-    private refHandler = (value: any) => {
-        this.list = value;
+    private contactListRefHandler = (ref: any) => {
+        this.contactListComponent = ref;
     }
 
     private noRowsRenderer = () => {
@@ -173,60 +139,6 @@ class ContactMenu extends React.Component<IProps, IState> {
                 <PersonRounded/>
                 add a contact : )
             </div>);
-    }
-
-    private rowRender = ({index, key, parent, style}: any): any => {
-        const contact = this.state.contacts[index];
-        if (contact.category) {
-            return (<div style={style} key={index} className="category-item">{contact.category}</div>);
-        } else {
-            return (
-                <div style={style} key={index} className="contact-item">
-                    <Link to={`/conversation/${contact.id}`}>
-                    <span className="avatar">
-                        {contact.avatar ? <img src={contact.avatar}/> : TextAvatar(contact.firstname, contact.lastname)}
-                    </span>
-                        <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>
-                        <span className="phone">{contact.phone ? contact.phone : 'no phone'}</span>
-                    </Link>
-                </div>
-            );
-        }
-    }
-
-    private searchChangeHandler = (e: any) => {
-        const text = e.currentTarget.value;
-        if (text.length > 0) {
-            this.searchDebounce(text);
-        } else {
-            this.searchDebounce.cancel();
-            this.setState({
-                contacts: categorizeContact(this.defaultContact),
-            });
-        }
-    }
-
-    private search = (text: string) => {
-        this.contactRepo.getManyCache({keyword: text, limit: 12}).then((res) => {
-            this.setState({
-                contacts: categorizeContact(res) || [],
-            }, () => {
-                this.list.recomputeRowHeights();
-                this.list.forceUpdateGrid();
-            });
-        });
-    }
-
-    private getContacts() {
-        this.contactRepo.getAll().then((res) => {
-            this.defaultContact = res;
-            this.setState({
-                contacts: categorizeContact(res),
-            }, () => {
-                this.list.recomputeRowHeights();
-                this.list.forceUpdateGrid();
-            });
-        });
     }
 
     private newContactOpenHandler = () => {
@@ -272,7 +184,7 @@ class ContactMenu extends React.Component<IProps, IState> {
         this.sdk.contactImport(true, contacts).then((data) => {
             data.usersList.forEach((user) => {
                 this.contactRepo.importBulk([user]).then(() => {
-                    this.getContacts();
+                    this.contactListComponent.reload();
                 });
             });
             this.setState({
@@ -287,16 +199,6 @@ class ContactMenu extends React.Component<IProps, IState> {
                 phone: '',
             });
         });
-    }
-
-    /* Get dynamic height */
-    private getHeight = (param: Index): number => {
-        const contact = this.state.contacts[param.index];
-        if (contact.category) {
-            return 40;
-        } else {
-            return 64;
-        }
     }
 }
 

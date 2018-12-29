@@ -65,7 +65,7 @@ class NewMessage extends React.Component<IProps, IState> {
                                     </IconButton>
                                     Choose Recipient(s)
                                 </div>
-                                <ContactList onChange={this.addRecipientChangeHandler}/>
+                                <ContactList onChange={this.addRecipientChangeHandler} mode="chip"/>
                                 {Boolean(recipients.length > 0) && <div className="actions-bar">
                                     <div className="add-action" onClick={this.nextStepHandler}>
                                         <ArrowForwardRounded/>

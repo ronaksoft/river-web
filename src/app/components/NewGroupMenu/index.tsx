@@ -51,7 +51,7 @@ class NewGroupMenu extends React.Component<IProps, IState> {
                             <label>Create a New Group</label>
                         </div>
                         <div className="contact-box">
-                            <ContactList onChange={this.contactListChangeHandler}/>
+                            <ContactList onChange={this.contactListChangeHandler} mode="chip"/>
                         </div>
                         {Boolean(selectedContacts.length > 0) && <div className="actions-bar">
                             <div className="add-action" onClick={this.onNextHandler}>

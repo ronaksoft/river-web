@@ -54,17 +54,24 @@ class LiveDate extends React.Component<IProps, IState> {
         if (diff < 86400) {
             return 10000;
         } else {
-            return 3600000;
+            return -1; // 3600000;
         }
     }
 
     private runInterval() {
         clearInterval(this.interval);
-        this.interval = setInterval(() => {
+        const intervalTime = this.getIntervalTime(this.state.time);
+        if (intervalTime === -1) {
             this.setState({
                 time: this.state.time,
             });
-        }, this.getIntervalTime(this.state.time));
+        } else {
+            this.interval = setInterval(() => {
+                this.setState({
+                    time: this.state.time,
+                });
+            }, intervalTime);
+        }
     }
 }
 

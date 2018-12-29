@@ -10,6 +10,7 @@ import MenuItem from '@material-ui/core/MenuItem/MenuItem';
 import {PeerType} from '../../services/sdk/messages/core.types_pb';
 
 import './style.css';
+import Scrollbars from 'react-custom-scrollbars';
 
 interface IProps {
     cancelIsTyping: (id: string) => void;
@@ -27,6 +28,11 @@ interface IState {
     selectedId: string;
     scrollIndex: number;
 }
+
+const listStyle: React.CSSProperties = {
+    overflowX: 'visible',
+    overflowY: 'visible',
+};
 
 class Dialog extends React.Component<IProps, IState> {
     private list: List;
@@ -80,18 +86,28 @@ class Dialog extends React.Component<IProps, IState> {
             <AutoSizer>
                 {({width, height}: any) => (
                     <React.Fragment>
-                        <List
-                            ref={this.refHandler}
-                            rowHeight={64}
-                            rowRenderer={this.rowRender}
-                            rowCount={items.length}
-                            overscanRowCount={0}
-                            scrollToIndex={this.state.scrollIndex}
-                            width={width}
-                            height={height}
-                            className="dialog-container"
-                            noRowsRenderer={this.noRowsRenderer}
-                        />
+                        <Scrollbars
+                            autoHide={true}
+                            style={{
+                                height: height + 'px',
+                                width: width + 'px',
+                            }}
+                            onScroll={this.handleScroll}
+                        >
+                            <List
+                                ref={this.refHandler}
+                                rowHeight={64}
+                                rowRenderer={this.rowRender}
+                                rowCount={items.length}
+                                overscanRowCount={0}
+                                scrollToIndex={this.state.scrollIndex}
+                                width={width}
+                                height={height}
+                                className="dialog-container"
+                                noRowsRenderer={this.noRowsRenderer}
+                                style={listStyle}
+                            />
+                        </Scrollbars>
                         <Menu
                             anchorEl={moreAnchorEl}
                             open={Boolean(moreAnchorEl)}
@@ -104,6 +120,14 @@ class Dialog extends React.Component<IProps, IState> {
                 )}
             </AutoSizer>
         );
+    }
+
+    /* Custom Scrollbars handler */
+    private handleScroll = (e: any) => {
+        const {scrollTop} = e.target;
+        if (this.list.Grid) {
+            this.list.Grid.handleScrollEvent({scrollTop});
+        }
     }
 
     private refHandler = (value: any) => {
