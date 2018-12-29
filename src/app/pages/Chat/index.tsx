@@ -11,7 +11,8 @@ import {
     MessageRounded,
     MoreVertRounded,
     PersonAddRounded,
-    SendRounded
+    SendRounded,
+    SearchRounded,
 } from '@material-ui/icons';
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
@@ -116,6 +117,7 @@ interface IState {
 class Chat extends React.Component<IProps, IState> {
     private isInChat: boolean = true;
     private rightMenu: any = null;
+    private dialogComponent: Dialog;
     private popUpDateComponent: PopUpDate;
     private messageComponent: Message;
     private messageRepo: MessageRepo;
@@ -573,7 +575,7 @@ class Chat extends React.Component<IProps, IState> {
             switch (leftMenu) {
                 default:
                 case 'chat':
-                    return (<Dialog items={this.state.dialogs} selectedId={selectedDialogId} isTypingList={isTypingList}
+                    return (<Dialog ref={this.dialogRefHandler} items={this.state.dialogs} selectedId={selectedDialogId} isTypingList={isTypingList}
                                     cancelIsTyping={this.cancelIsTypingHandler}
                                     onContextMenu={this.dialogContextMenuHandler}/>);
                 case 'setting':
@@ -611,11 +613,23 @@ class Chat extends React.Component<IProps, IState> {
                                 </span>
                                 <div className="actions">
                                     <Tooltip
+                                        title="Search"
+                                        placement="bottom"
+                                    >
+                                        <IconButton
+                                            aria-label="Search"
+                                            aria-haspopup="true"
+                                            onClick={this.onSearchHandler}
+                                        >
+                                            <SearchRounded/>
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip
                                         title="New Message"
                                         placement="bottom"
                                     >
                                         <IconButton
-                                            aria-label="Attachment"
+                                            aria-label="New Message"
                                             aria-haspopup="true"
                                             onClick={this.onNewMessageOpen}
                                         >
@@ -934,16 +948,20 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private rightMenuRefHandler = (elem: any) => {
-        this.rightMenu = elem;
+    private dialogRefHandler = (ref: any) => {
+        this.dialogComponent = ref;
     }
 
-    private popUpDateRefHandler = (elem: any) => {
-        this.popUpDateComponent = elem;
+    private rightMenuRefHandler = (ref: any) => {
+        this.rightMenu = ref;
     }
 
-    private messageRefHandler = (elem: any) => {
-        this.messageComponent = elem;
+    private popUpDateRefHandler = (ref: any) => {
+        this.popUpDateComponent = ref;
+    }
+
+    private messageRefHandler = (ref: any) => {
+        this.messageComponent = ref;
     }
 
     private getMessagesByDialogId(dialogId: string, force?: boolean) {
@@ -2341,6 +2359,11 @@ class Chat extends React.Component<IProps, IState> {
         if (this.messageComponent) {
             this.messageComponent.setScrollMode(mode);
         }
+    }
+
+    /* On search click handler */
+    private onSearchHandler = () => {
+        this.dialogComponent.toggleSearch();
     }
 }
 

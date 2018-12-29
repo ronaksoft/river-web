@@ -45,60 +45,74 @@ input {
   font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
   font-weight: 400; }
 
-.dialog-container {
+.dialogs {
+  display: flex;
+  flex-direction: column;
   height: 100%; }
-  .dialog-container .dialog {
-    position: relative;
-    width: 100%;
-    height: 64px;
-    padding: 8px;
-    cursor: pointer;
-    text-align: left; }
-    .dialog-container .dialog:after {
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      display: block;
-      width: 100%;
-      height: 1px;
-      content: '';
-      background-color: var(--light);
-      transform: translate(-50%, 0); }
-    .dialog-container .dialog:hover {
-      border: 0;
-      background-color: var(--color-hover); }
-      .dialog-container .dialog:hover > span {
-        color: var(--color-text-hover);
-        background: transparent; }
-    .dialog-container .dialog.active {
-      border: 0;
-      background-color: var(--color-hover-dark); }
-      .dialog-container .dialog.active > span {
-        color: var(--color-text-hover);
-        background: transparent; }
-  .dialog-container .no-result {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-size: 30px;
-    font-weight: 100;
-    color: var(--grey); }
-    .dialog-container .no-result svg {
-      margin: 0 0 32px;
-      color: inherit;
-      font-size: 75px; }
+  .dialogs .dialog-search {
+    height: 0;
+    padding: 0 12px;
+    overflow: hidden;
+    transition: height 0.1s ease-out; }
+    .dialogs .dialog-search.open {
+      height: 64px; }
+  .dialogs .dialog-list {
+    flex: 1;
+    overflow: hidden; }
+    .dialogs .dialog-list .dialog-container {
+      height: 100%; }
+      .dialogs .dialog-list .dialog-container .dialog {
+        position: relative;
+        width: 100%;
+        height: 64px;
+        padding: 8px;
+        cursor: pointer;
+        text-align: left; }
+        .dialogs .dialog-list .dialog-container .dialog:after {
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          display: block;
+          width: 100%;
+          height: 1px;
+          content: '';
+          background-color: var(--light);
+          transform: translate(-50%, 0); }
+        .dialogs .dialog-list .dialog-container .dialog:hover {
+          border: 0;
+          background-color: var(--color-hover); }
+          .dialogs .dialog-list .dialog-container .dialog:hover > span {
+            color: var(--color-text-hover);
+            background: transparent; }
+        .dialogs .dialog-list .dialog-container .dialog.active {
+          border: 0;
+          background-color: var(--color-hover-dark); }
+          .dialogs .dialog-list .dialog-container .dialog.active > span {
+            color: var(--color-text-hover);
+            background: transparent; }
+      .dialogs .dialog-list .dialog-container .no-result {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-size: 30px;
+        font-weight: 100;
+        color: var(--grey); }
+        .dialogs .dialog-list .dialog-container .no-result svg {
+          margin: 0 0 32px;
+          color: inherit;
+          font-size: 75px; }
 
-html[theme="dark"] .dialog-container .dialog:after {
+html[theme="dark"] .dialogs .dialog-list .dialog-container .dialog:after {
   background-color: var(--dark-low); }
 
-html[theme="dark"] .dialog-container .dialog:hover {
+html[theme="dark"] .dialogs .dialog-list .dialog-container .dialog:hover {
   background-color: var(--dark-hover); }
-  html[theme="dark"] .dialog-container .dialog:hover > span {
+  html[theme="dark"] .dialogs .dialog-list .dialog-container .dialog:hover > span {
     color: var(--color-text-hover); }
 
-html[theme="dark"] .dialog-container .dialog.active {
+html[theme="dark"] .dialogs .dialog-list .dialog-container .dialog.active {
   background-color: var(--dark-hover-light); }
-  html[theme="dark"] .dialog-container .dialog.active > span {
+  html[theme="dark"] .dialogs .dialog-list .dialog-container .dialog.active > span {
     color: var(--color-text-hover); }

@@ -1,16 +1,18 @@
 import * as React from 'react';
 import {List, AutoSizer} from 'react-virtualized';
 import {Link} from 'react-router-dom';
-import {findIndex} from 'lodash';
+import {findIndex, debounce, intersectionBy, clone} from 'lodash';
 import {IDialog} from '../../repository/dialog/interface';
 import DialogMessage from '../DialogMessage';
 import {MessageRounded} from '@material-ui/icons';
 import Menu from '@material-ui/core/Menu/Menu';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';
 import {PeerType} from '../../services/sdk/messages/core.types_pb';
+import Scrollbars from 'react-custom-scrollbars';
+import TextField from '@material-ui/core/TextField/TextField';
+import SearchRepo from '../../repository/search';
 
 import './style.css';
-import Scrollbars from 'react-custom-scrollbars';
 
 interface IProps {
     cancelIsTyping: (id: string) => void;
@@ -21,11 +23,14 @@ interface IProps {
 }
 
 interface IState {
+    ids: string[];
     isTypingList: { [key: string]: { [key: string]: any } };
     items: IDialog[];
     moreAnchorEl: any;
     moreIndex: number;
     selectedId: string;
+    searchEnable: boolean;
+    searchItems: IDialog[];
     scrollIndex: number;
 }
 
@@ -36,18 +41,27 @@ const listStyle: React.CSSProperties = {
 
 class Dialog extends React.Component<IProps, IState> {
     private list: List;
+    private searchRepo: SearchRepo;
+    private readonly searchDebounce: any;
+    private keyword: string = '';
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
+            ids: [],
             isTypingList: props.isTypingList,
             items: props.items,
             moreAnchorEl: null,
             moreIndex: -1,
             scrollIndex: -1,
+            searchEnable: false,
+            searchItems: clone(props.items),
             selectedId: props.selectedId,
         };
+
+        this.searchRepo = SearchRepo.getInstance();
+        this.searchDebounce = debounce(this.search, 512);
     }
 
     public componentDidMount() {
@@ -65,7 +79,7 @@ class Dialog extends React.Component<IProps, IState> {
                 scrollIndex: -1,
                 selectedId: newProps.selectedId,
             }, () => {
-                this.list.recomputeRowHeights();
+                this.filterItem();
             });
         } else {
             const index = findIndex(this.state.items, {peerid: newProps.selectedId});
@@ -75,50 +89,83 @@ class Dialog extends React.Component<IProps, IState> {
                 scrollIndex: index,
                 selectedId: newProps.selectedId,
             }, () => {
-                this.list.forceUpdateGrid();
+                this.filterItem();
             });
         }
     }
 
+    public toggleSearch() {
+        this.setState({
+            searchEnable: !this.state.searchEnable,
+        }, () => {
+            if (!this.state.searchEnable) {
+                this.searchDebounce.cancel();
+                this.keyword = '';
+                this.filterItem();
+            } else {
+                const el: any = document.querySelector('#dialog-search');
+                if (el) {
+                    el.value = '';
+                    el.focus();
+                }
+            }
+        });
+    }
+
     public render() {
-        const {items, moreAnchorEl} = this.state;
+        const {searchItems, searchEnable, moreAnchorEl} = this.state;
         return (
-            <AutoSizer>
-                {({width, height}: any) => (
-                    <React.Fragment>
-                        <Scrollbars
-                            autoHide={true}
-                            style={{
-                                height: height + 'px',
-                                width: width + 'px',
-                            }}
-                            onScroll={this.handleScroll}
-                        >
-                            <List
-                                ref={this.refHandler}
-                                rowHeight={64}
-                                rowRenderer={this.rowRender}
-                                rowCount={items.length}
-                                overscanRowCount={10}
-                                scrollToIndex={this.state.scrollIndex}
-                                width={width}
-                                height={height}
-                                className="dialog-container"
-                                noRowsRenderer={this.noRowsRenderer}
-                                style={listStyle}
-                            />
-                        </Scrollbars>
-                        <Menu
-                            anchorEl={moreAnchorEl}
-                            open={Boolean(moreAnchorEl)}
-                            onClose={this.moreCloseHandler}
-                            className="kk-context-menu"
-                        >
-                            {this.contextMenuItem()}
-                        </Menu>
-                    </React.Fragment>
-                )}
-            </AutoSizer>
+            <div className="dialogs">
+                <div className={'dialog-search' + (searchEnable ? ' open' : '')}>
+                    <TextField
+                        label="Search..."
+                        fullWidth={true}
+                        inputProps={{
+                            maxLength: 32,
+                        }}
+                        id="dialog-search"
+                        onChange={this.searchChangeHandler}
+                    />
+                </div>
+                <div className="dialog-list">
+                    <AutoSizer>
+                        {({width, height}: any) => (
+                            <React.Fragment>
+                                <Scrollbars
+                                    autoHide={true}
+                                    style={{
+                                        height: height + 'px',
+                                        width: width + 'px',
+                                    }}
+                                    onScroll={this.handleScroll}
+                                >
+                                    <List
+                                        ref={this.refHandler}
+                                        rowHeight={64}
+                                        rowRenderer={this.rowRender}
+                                        rowCount={searchItems.length}
+                                        overscanRowCount={10}
+                                        scrollToIndex={this.state.scrollIndex}
+                                        width={width}
+                                        height={height}
+                                        className="dialog-container"
+                                        noRowsRenderer={this.noRowsRenderer}
+                                        style={listStyle}
+                                    />
+                                </Scrollbars>
+                                <Menu
+                                    anchorEl={moreAnchorEl}
+                                    open={Boolean(moreAnchorEl)}
+                                    onClose={this.moreCloseHandler}
+                                    className="kk-context-menu"
+                                >
+                                    {this.contextMenuItem()}
+                                </Menu>
+                            </React.Fragment>
+                        )}
+                    </AutoSizer>
+                </div>
+            </div>
         );
     }
 
@@ -135,7 +182,7 @@ class Dialog extends React.Component<IProps, IState> {
     }
 
     private rowRender = ({index, key, parent, style}: any): any => {
-        const data = this.state.items[index];
+        const data = this.state.searchItems[index];
         const isTyping = this.state.isTypingList.hasOwnProperty(data.peerid || '') ? this.state.isTypingList[data.peerid || ''] : {};
         return (
             <div style={style} key={data.peerid || key}>
@@ -159,8 +206,8 @@ class Dialog extends React.Component<IProps, IState> {
 
     /* Context menu open handler */
     private contextMenuOpenHandler = (index: number, e: any) => {
-        const {items} = this.state;
-        if (!items || index === -1) {
+        const {searchItems} = this.state;
+        if (!searchItems || index === -1) {
             return;
         }
         e.preventDefault();
@@ -180,8 +227,8 @@ class Dialog extends React.Component<IProps, IState> {
 
     /* Context menu items renderer */
     private contextMenuItem() {
-        const {items, moreIndex} = this.state;
-        if (!items[moreIndex]) {
+        const {searchItems, moreIndex} = this.state;
+        if (!searchItems[moreIndex]) {
             return '';
         }
         const menuItem = {
@@ -214,7 +261,7 @@ class Dialog extends React.Component<IProps, IState> {
             2: [1, 2],
         };
         const menuItems: any[] = [];
-        const peerType = items[moreIndex].peertype;
+        const peerType = searchItems[moreIndex].peertype;
 
         if (peerType === PeerType.PEERUSER) {
             menuTypes[1].forEach((key) => {
@@ -244,6 +291,56 @@ class Dialog extends React.Component<IProps, IState> {
         }
         this.setState({
             moreAnchorEl: null,
+        });
+    }
+
+    private searchChangeHandler = (e: any) => {
+        const text = e.currentTarget.value;
+        if (!this.state.searchEnable || text.length === 0) {
+            this.searchDebounce.cancel();
+            this.keyword = '';
+            this.setState({
+                ids: [],
+            }, () => {
+                this.filterItem();
+            });
+        } else {
+            this.searchDebounce(text);
+        }
+    }
+
+    private search = (keyword: string) => {
+        this.keyword = keyword;
+        this.searchRepo.searchIds({keyword, limit: 100}).then((ids) => {
+            this.setState({
+                ids,
+            }, () => {
+                this.filterItem();
+            });
+        });
+    }
+
+    private filterItem(currentItems?: IDialog[]) {
+        const {ids, items} = this.state;
+        if (!currentItems) {
+            currentItems = items;
+        }
+        let searchItems: IDialog[] = [];
+        if (ids.length === 0 && this.keyword.length === 0 || !this.state.searchEnable) {
+            searchItems = clone(currentItems);
+        } else {
+            const peerIds = ids.map((id) => {
+                return {
+                    peerid: id,
+                };
+            });
+            searchItems = intersectionBy(currentItems, peerIds, 'peerid');
+        }
+        this.setState({
+            searchItems,
+        }, () => {
+            this.list.recomputeRowHeights();
+            this.list.forceUpdateGrid();
         });
     }
 }

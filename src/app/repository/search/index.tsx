@@ -28,6 +28,27 @@ export default class SearchRepo {
         this.groupRepo = GroupRepo.getInstance();
     }
 
+    public searchIds({skip, limit, keyword}: any): Promise<string[]> {
+        const promises: any[] = [];
+        limit = limit || 12;
+        promises.push(this.userRepo.getManyCache({limit, keyword}));
+        promises.push(this.contactRepo.getManyCache({limit, keyword}));
+        promises.push(this.groupRepo.getManyCache({limit, keyword}));
+        return new Promise<string[]>((resolve, reject) => {
+            const ids: { [key: string]: boolean } = {};
+            Promise.all(promises).then((arrRes) => {
+                arrRes.forEach((res) => {
+                    res.forEach((item: any) => {
+                        if (!ids.hasOwnProperty(item.id)) {
+                            ids[item.id] = true;
+                        }
+                    });
+                });
+                resolve(Object.keys(ids));
+            }).catch(reject);
+        });
+    }
+
     public search({skip, limit, keyword}: any): Promise<IDialogWithContact> {
         const promises: any[] = [];
         limit = limit || 12;

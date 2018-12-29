@@ -100,7 +100,7 @@ input {
         top: 0;
         right: 0;
         bottom: 0;
-        width: 100px; }
+        width: 150px; }
     .container .column-left .left-content {
       width: 100%;
       height: calc(100% - 52px); }
