@@ -30,7 +30,7 @@ interface IProps {
     contacts?: IContact[];
     hiddenContacts?: IContact[];
     onChange?: (contacts: IContact[]) => void;
-    onContextMenuAction?: (cmd: string, contact: IContact, e: any) => void;
+    onContextMenuAction?: (cmd: string, contact: IContact) => void;
     noRowsRenderer?: () => JSX.Element;
     mode: 'chip' | 'link';
 }
@@ -172,7 +172,7 @@ class ContactList extends React.Component<IProps, IState> {
                                         rowHeight={this.getHeight}
                                         rowRenderer={this.rowRender}
                                         rowCount={contacts.length}
-                                        overscanRowCount={0}
+                                        overscanRowCount={10}
                                         width={width}
                                         height={height}
                                         className="contact-container"
@@ -240,7 +240,7 @@ class ContactList extends React.Component<IProps, IState> {
             } else {
                 return (
                     <div style={style} key={index} className="contact-item">
-                        <Link to={`/conversation/${contact.id}`}>
+                        <Link to={`/chat/${contact.id}`}>
                             <span className="avatar">
                                 {contact.avatar ?
                                     <img src={contact.avatar}/> : TextAvatar(contact.firstname, contact.lastname)}
@@ -408,10 +408,19 @@ class ContactList extends React.Component<IProps, IState> {
                     color: item.color,
                 };
             }
-            // @ts-ignore
-            return (<MenuItem onClick={this.props.onContextMenuAction.bind(this, item.cmd, contacts[moreIndex])}
+            return (<MenuItem onClick={this.contextMenuActionHandler.bind(this, item.cmd, contacts[moreIndex])}
                               key={index} className="context-item" style={style}>{item.title}</MenuItem>);
         });
+    }
+
+    /* Context Menu action handler */
+    private contextMenuActionHandler = (cmd: string, contact: IContact, e: any) => {
+        this.moreCloseHandler();
+        if (this.props.onContextMenuAction) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.props.onContextMenuAction(cmd, contact);
+        }
     }
 }
 

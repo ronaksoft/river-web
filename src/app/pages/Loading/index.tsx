@@ -37,7 +37,7 @@ class Loading extends React.Component<IProps, IState> {
         window.addEventListener('fnStarted', this.fnStartedHandler);
         this.sdk.loadConnInfo();
         if ((this.sdk.getConnInfo().UserID || 0) > 0) {
-            this.props.history.push('/conversation/null');
+            this.props.history.push('/chat/null');
         } else if (this.sdk.getConnInfo().AuthID !== '0') {
             this.props.history.push('/signup');
         }
@@ -96,7 +96,7 @@ class Loading extends React.Component<IProps, IState> {
         const duration = event.detail.duration;
         if (duration === -1) {
             if ((this.sdk.getConnInfo().UserID || 0) > 0) {
-                this.props.history.push('/conversation/null');
+                this.props.history.push('/chat/null');
             } else {
                 this.props.history.push('/signup');
             }
@@ -106,7 +106,7 @@ class Loading extends React.Component<IProps, IState> {
             });
             setTimeout(() => {
                 if ((this.sdk.getConnInfo().UserID || 0) > 0) {
-                    this.props.history.push('/conversation/null');
+                    this.props.history.push('/chat/null');
                 } else {
                     this.props.history.push('/signup');
                 }

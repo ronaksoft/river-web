@@ -147,6 +147,17 @@
     height: 86px;
     padding: 18px 0 22px;
     text-align: center;
+    &.cancel {
+      padding: 12px 0;
+      color: var(--grey);
+      height: auto;
+      font-size: 12px;
+      cursor: pointer;
+      &.no-padding {
+        margin-top: -12px;
+        padding: 0;
+      }
+    }
     .add-action {
       display: inline-flex;
       height: 46px;

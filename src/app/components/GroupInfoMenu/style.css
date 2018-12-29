@@ -59,8 +59,7 @@ input {
       left: 0;
       height: calc(100% - 47px);
       width: 100%;
-      transition: left 0.2s ease-out;
-      overflow-y: scroll; }
+      transition: left 0.2s ease-out; }
       .group-info-menu .page-container .page.page-1 {
         left: 0; }
       .group-info-menu .page-container .page.page-2 {

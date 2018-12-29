@@ -81,7 +81,7 @@ class UserName extends React.Component<IProps, IState> {
             return (
                 <span className={className}
                       style={style}
-                      onClick={this.clickHandler}>{(user && user.id) ? `${prefix}${user.username}` : (defaultString || '')}</span>
+                      onClick={this.clickHandler}>{(user && user.id && user.username && user.username.length > 0) ? `${prefix}${user.username}` : (defaultString || '')}</span>
             );
         } else {
             return (

@@ -27,6 +27,7 @@ import './style.css';
 import ContactRepo from '../../repository/contact';
 import SDK from '../../services/sdk';
 import {IContact} from '../../repository/contact/interface';
+import {IGroup} from '../../repository/group/interface';
 
 interface IProps {
     clearPreviewMessage?: () => void;
@@ -368,6 +369,12 @@ class TextInput extends React.Component<IProps, IState> {
                 });
             }, 10);
         }
+        if (e.key === 'Tab') {
+            if (this.mentions.length !== this.lastMentionsCount) {
+                this.lastMentionsCount = this.mentions.length;
+                return;
+            }
+        }
         if (this.props.onTyping && this.state.previewMessageMode !== C_MSG_MODE.Edit) {
             if (e.target.value.length === 0) {
                 this.props.onTyping(false);
@@ -426,7 +433,11 @@ class TextInput extends React.Component<IProps, IState> {
     }
 
     private emojiSelect = (data: any) => {
-        this.textarea.value += data.native;
+        this.setState({
+            textareaValue: this.state.textareaValue + data.native,
+        }, () => {
+            this.computeLines();
+        });
     }
 
     private emojiHandleClose = () => {
@@ -531,6 +542,8 @@ class TextInput extends React.Component<IProps, IState> {
 
     /* Compute line height based on break lines */
     private computeLines() {
+        // const lineHeight = parseInt(window.getComputedStyle(this.textarea, null).getPropertyValue("font-size").replace(/^\D+/g, ''), 10) * 1.1;
+        // let lines = Math.floor((this.textarea.scrollHeight - 4) / lineHeight) + 1;
         let lines = this.state.textareaValue.split('\n').length;
         if (lines < 1) {
             lines = 1;
@@ -564,8 +577,8 @@ class TextInput extends React.Component<IProps, IState> {
             for (const [i, participant] of participants.entries()) {
                 if (userId !== participant.userid &&
                     ((participant.lastname && reg.test(participant.lastname)) ||
-                    (participant.firstname && reg.test(participant.firstname)) ||
-                    (participant.username && reg.test(participant.username)))) {
+                        (participant.firstname && reg.test(participant.firstname)) ||
+                        (participant.username && reg.test(participant.username)))) {
                     users.push({
                         display: participant.username ? `@${participant.username}` : `${participant.firstname} ${participant.lastname}`,
                         id: participant.userid,
@@ -582,10 +595,12 @@ class TextInput extends React.Component<IProps, IState> {
         // Get from server if participants were not in group
         const getRemoteGroupFull = () => {
             this.sdk.groupGetFull(peer).then((res) => {
+                const group: IGroup = res.group;
+                group.participantList = res.participantsList;
                 if (res && res.participantsList) {
                     searchParticipant(keyword, res.participantsList);
                 }
-                this.groupRepo.importBulk([res.group]);
+                this.groupRepo.importBulk([group]);
                 const contacts: IContact[] = [];
                 res.participantsList.forEach((list) => {
                     contacts.push({

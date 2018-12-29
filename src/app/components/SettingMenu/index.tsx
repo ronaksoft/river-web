@@ -351,11 +351,11 @@ class SettingMenu extends React.Component<IProps, IState> {
                                 </div>
                                 <div className="line">
                                     <div className="form-control pad">
-                                        <label>phone</label>
+                                        <label>Phone</label>
                                         <div className="inner">{phone}</div>
                                     </div>
                                 </div>
-                                {Boolean(editProfile && user && ((user.firstname !== firstname || user.lastname !== lastname))) &&
+                                {Boolean(editProfile && user && (user.firstname !== firstname || user.lastname !== lastname)) &&
                                 <div className="actions-bar">
                                     <div className="add-action" onClick={this.confirmProfileChangesHandler}>
                                         <CheckRounded/>
@@ -366,6 +366,11 @@ class SettingMenu extends React.Component<IProps, IState> {
                                     <div className="add-action" onClick={this.confirmUsernameChangeHandler}>
                                         <CheckRounded/>
                                     </div>
+                                </div>}
+                                {Boolean(editProfile || editUsername) && <div
+                                    className={'actions-bar cancel' + ((user && ((user.username !== username && usernameAvailable && usernameValid) || (user.firstname !== firstname || user.lastname !== lastname))) ? ' no-padding' : '')}
+                                    onClick={this.cancelHandler}>
+                                    Cancel
                                 </div>}
                             </div>}
                         </div>}
@@ -586,6 +591,22 @@ class SettingMenu extends React.Component<IProps, IState> {
         if (this.props.onSubPlaceChange) {
             this.props.onSubPlaceChange(this.state.pageContent);
         }
+    }
+
+    /* Cancel handler */
+    private cancelHandler = () => {
+        const {user} = this.state;
+        if (!user) {
+            return;
+        }
+        this.setState({
+            editProfile: false,
+            editUsername: false,
+            firstname: user.firstname || '',
+            lastname: user.lastname || '',
+            user,
+            username: user.username || '',
+        });
     }
 }
 

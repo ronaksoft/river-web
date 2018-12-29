@@ -12,7 +12,7 @@ import {
 import Server from './server';
 import {C_MSG} from './const';
 import {IConnInfo} from './interface';
-import {ContactsGet, ContactsImport, ContactsImported, ContactsMany} from './messages/api.contacts_pb';
+import {ContactsDelete, ContactsGet, ContactsImport, ContactsImported, ContactsMany} from './messages/api.contacts_pb';
 import {
     Group,
     GroupFull,
@@ -196,6 +196,12 @@ export default class SDK {
         const data = new ContactsGet();
         data.setMd5hash('');
         return this.server.send(C_MSG.ContactsGet, data.serializeBinary());
+    }
+
+    public removeContact(contactIds: string[]): Promise<Bool.AsObject> {
+        const data = new ContactsDelete();
+        data.setUseridsList(contactIds);
+        return this.server.send(C_MSG.ContactsDelete, data.serializeBinary());
     }
 
     public getDialogs(skip: number, limit: number): Promise<MessagesDialogs.AsObject> {

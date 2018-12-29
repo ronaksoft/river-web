@@ -43,6 +43,11 @@ export default class ContactRepo {
         return this.dbService.getContact(id);
     }
 
+    public remove(id: string) {
+        this.dbService.removeContact(id);
+        return this.db.contacts.delete(id);
+    }
+
     public get(id: string, unsafe?: boolean): Promise<IContact> {
         const contact = this.dbService.getContact(id);
         if (unsafe === true) {

@@ -43,6 +43,10 @@ export default class UserDB {
         return this.contacts[id];
     }
 
+    public removeContact(id: string) {
+        delete this.contacts[id];
+    }
+
     public setGroup(group: IGroup) {
         this.groups[group.id || 0] = group;
     }

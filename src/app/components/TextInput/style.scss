@@ -98,7 +98,6 @@
         min-height: 32px;
         width: calc(100% - 8px);
         max-height: 120px;
-        overflow-y: scroll;
         z-index: 10;
         padding: 6px;
         .mention {
@@ -113,18 +112,22 @@
               }
             }
             textarea {
-              height: 20px !important;
+              height: 1.1em !important;
+              padding-right: 60px;
+              overflow: hidden !important;
+              line-height: 1.1em;
               &._2-line {
-                height: 40px !important;
+                height: 2.4em !important;
               }
               &._3-line {
-                height: 60px !important;
+                height: 3.5em !important;
               }
               &._4-line {
-                height: 80px !important;
+                height: 4.7em !important;
               }
               &._5-line {
-                height: 100px !important;
+                height: 5.9em !important;
+                overflow: auto !important;
               }
             }
           }
@@ -155,7 +158,6 @@
         }
       }
       &.rtl textarea {
-        padding-right: 60px;
         direction: rtl;
       }
     }
@@ -350,32 +352,37 @@ html[theme="dark"] {
 }
 
 html[font="1"] {
-  .write .inputs .input .textarea-container {
-    font-size: 12px;
+  .write .inputs .input .textarea-container,
+  .write .inputs .input .textarea-container textarea {
+    font-size: 12px !important;
   }
 }
 
 html[font="2"] {
-  .write .inputs .input .textarea-container {
-    font-size: 14px;
+  .write .inputs .input .textarea-container,
+  .write .inputs .input .textarea-container textarea {
+    font-size: 14px !important;
   }
 }
 
 html[font="3"] {
-  .write .inputs .input .textarea-container {
-    font-size: 16px;
+  .write .inputs .input .textarea-container,
+  .write .inputs .input .textarea-container textarea {
+    font-size: 16px !important;
   }
 }
 
 html[font="4"] {
-  .write .inputs .input .textarea-container {
-    font-size: 18px;
+  .write .inputs .input .textarea-container,
+  .write .inputs .input .textarea-container textarea {
+    font-size: 18px !important;
   }
 }
 
 html[font="5"] {
-  .write .inputs .input .textarea-container {
-    font-size: 20px;
+  .write .inputs .input .textarea-container,
+  .write .inputs .input .textarea-container textarea {
+    font-size: 20px !important;
   }
 }
 
@@ -384,7 +391,7 @@ html[font="5"] {
     .inputs {
       .input {
         .textarea-container {
-          font-size: 16px;
+          font-size: 16px !important;
           line-height: 20px;
           textarea {
             padding: 5px 10px;

@@ -265,7 +265,7 @@ class Chat extends React.Component<IProps, IState> {
             });
             if (data.peerid === this.state.selectedDialogId) {
                 const dataMsg = this.modifyMessages(this.state.messages, data.messages.reverse(), true);
-
+                this.setScrollMode('none');
                 this.setState({
                     messages: dataMsg.msgs,
                 }, () => {
@@ -299,7 +299,7 @@ class Chat extends React.Component<IProps, IState> {
                         if (message.actiondata.pb_delete) {
                             this.dialogRemove(message.peerid || '');
                         } else if (data.peerid === this.state.selectedDialogId) {
-                            this.props.history.push(`/conversation/${data.peerid}`);
+                            this.props.history.push(`/chat/${data.peerid}`);
                         }
                     });
                 } else if (message.senderid !== this.connInfo.UserID && message.peerid !== this.state.selectedDialogId) {
@@ -1019,6 +1019,7 @@ class Chat extends React.Component<IProps, IState> {
             const dataMsg = this.modifyMessages([], messages, true, maxReadInbox);
             minId = dataMsg.minId;
 
+            this.setScrollMode('end');
             this.setState({
                 isChatView: true,
                 isTyping: false,
@@ -1049,6 +1050,7 @@ class Chat extends React.Component<IProps, IState> {
             }
 
             const dataMsg = this.modifyMessages(this.state.messages, resMsgs, false);
+            this.setScrollMode('end');
             this.setState({
                 messages: dataMsg.msgs,
             }, () => {
@@ -1094,6 +1096,7 @@ class Chat extends React.Component<IProps, IState> {
             const messsageSize = messages.length;
             const dataMsg = this.modifyMessages(messages, data, false);
 
+            this.setScrollMode('stay');
             this.setState({
                 messages: dataMsg.msgs,
             }, () => {
@@ -1336,6 +1339,7 @@ class Chat extends React.Component<IProps, IState> {
         }
         messages.push(message);
         this.isLoading = true;
+        this.setScrollMode('none');
         this.setState({
             messages,
         }, () => {
@@ -1745,7 +1749,7 @@ class Chat extends React.Component<IProps, IState> {
             }
             this.messageRepo.getManyCache({after, limit: 100}, peer).then((msgs) => {
                 const dataMsg = this.modifyMessages(this.state.messages, msgs, true);
-
+                this.setScrollMode('none');
                 this.setState({
                     messages: dataMsg.msgs,
                 }, () => {
@@ -1810,7 +1814,7 @@ class Chat extends React.Component<IProps, IState> {
             const notification = new Notification(title, options);
             notification.onclick = () => {
                 window.focus();
-                this.props.history.push(`/conversation/${id}`);
+                this.props.history.push(`/chat/${id}`);
             };
         }
     }
@@ -1869,7 +1873,7 @@ class Chat extends React.Component<IProps, IState> {
             };
             dialogs.push(dialog);
             this.dialogsSortThrottle(dialogs);
-            this.props.history.push(`/conversation/${res.id}`);
+            this.props.history.push(`/chat/${res.id}`);
         });
     }
 
@@ -1991,7 +1995,7 @@ class Chat extends React.Component<IProps, IState> {
             isChatView: false,
         }, () => {
             this.mobileBackTimeout = setTimeout(() => {
-                this.props.history.push('/conversation/null');
+                this.props.history.push('/chat/null');
             }, 1000);
         });
     }
@@ -2022,7 +2026,7 @@ class Chat extends React.Component<IProps, IState> {
                 dialogs,
             });
             this.dialogRepo.remove(id).then(() => {
-                this.props.history.push('/conversation/null');
+                this.props.history.push('/chat/null');
                 this.updateManager.enable();
                 this.setState({
                     isUpdating: false,
@@ -2226,6 +2230,7 @@ class Chat extends React.Component<IProps, IState> {
                     return;
                 }
                 const dataMsg = this.modifyMessagesBetween(messages, res, id);
+                this.setScrollMode('none');
                 this.setState({
                     messages: dataMsg.msgs,
                 });
@@ -2265,6 +2270,7 @@ class Chat extends React.Component<IProps, IState> {
                 return;
             }
             const dataMsg = this.modifyMessagesBetween(messages, res, id);
+            this.setScrollMode('none');
             this.setState({
                 messages: dataMsg.msgs,
             });
@@ -2327,6 +2333,13 @@ class Chat extends React.Component<IProps, IState> {
                 break;
             default:
                 break;
+        }
+    }
+
+    /* Set Message component scroll mode */
+    private setScrollMode(mode: 'none' | 'end' | 'stay') {
+        if (this.messageComponent) {
+            this.messageComponent.setScrollMode(mode);
         }
     }
 }

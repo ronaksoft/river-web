@@ -192,7 +192,7 @@ input {
         direction: ltr;
         text-align: left; }
       .bubble-wrapper .bubble > .inner ._mention {
-        font-weight: bold;
+        color: #2678b6;
         display: inline-block; }
         .bubble-wrapper .bubble > .inner ._mention:hover {
           text-decoration: underline; }
@@ -318,6 +318,9 @@ input {
 
 html[theme="dark"] .chat {
   border-color: var(--dark-low); }
+
+html[theme="dark"] .bubble-wrapper .bubble .inner ._mention {
+  color: #2d9fee; }
 
 html[theme="dark"] .bubble-wrapper.me .bubble {
   background-color: var(--dark-accent-low);

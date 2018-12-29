@@ -131,6 +131,7 @@ class UserDialog extends React.Component<IProps, IState> {
                         </div>
                         <div className="line">
                             {!edit && <div className="form-control">
+                                <label>First Name</label>
                                 <div className="inner">{user.firstname}</div>
                                 {isInContact && <div className="action">
                                     <IconButton
@@ -155,6 +156,7 @@ class UserDialog extends React.Component<IProps, IState> {
                         </div>
                         <div className="line">
                             {!edit && <div className="form-control">
+                                <label>Last Name</label>
                                 <div className="inner">{user.lastname}</div>
                                 {isInContact && <div className="action">
                                     <IconButton
@@ -188,11 +190,26 @@ class UserDialog extends React.Component<IProps, IState> {
                                 onChange={this.onPhoneChangeHandler}
                             />}
                         </div>
+                        {Boolean(isInContact && !edit) && <div className="line">
+                            <div className="form-control">
+                                <label>Phone</label>
+                                <div className="inner">{user.phone}</div>
+                            </div>
+                        </div>}
+                        {Boolean(user.username && user.username.length > 0) && <div className="line">
+                            <div className="form-control">
+                                <label>Username</label>
+                                <div className="inner">@{user.username}</div>
+                            </div>
+                        </div>}
                         {Boolean(edit && user && ((user.firstname !== firstname || user.lastname !== lastname) || !isInContact)) &&
                         <div className="actions-bar">
                             <div className="add-action" onClick={this.confirmChangesHandler}>
                                 <CheckRounded/>
                             </div>
+                        </div>}
+                        {Boolean(edit) && <div className="actions-bar cancel" onClick={this.cancelHandler}>
+                            Cancel
                         </div>}
                         {Boolean(!isInContact && !edit) &&
                         <div className="add-as-contact" onClick={this.addAsContactHandler}>
@@ -209,7 +226,7 @@ class UserDialog extends React.Component<IProps, IState> {
                         </div>
                     </div>}
                     {sendMessageEnable && <div className="kk-card">
-                        <Link className="send-message" to={`/conversation/${user ? user.id : 'null'}`}
+                        <Link className="send-message" to={`/chat/${user ? user.id : 'null'}`}
                               onClick={this.close}>
                             <SendRounded/> Send Message
                         </Link>
@@ -439,6 +456,19 @@ class UserDialog extends React.Component<IProps, IState> {
     private close = () => {
         this.setState({
             userDialogOpen: false,
+        });
+    }
+
+    /* Cancel handler */
+    private cancelHandler = () => {
+        const {user} = this.state;
+        if (!user) {
+            return;
+        }
+        this.setState({
+            edit: false,
+            firstname: user.firstname || '',
+            lastname: user.lastname || '',
         });
     }
 }

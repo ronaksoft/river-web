@@ -37,7 +37,9 @@ export default class GroupRepo {
             return Promise.resolve(group);
         }
         return this.db.groups.get(id).then((g: IGroup) => {
-            this.dbService.setGroup(g);
+            if (g) {
+                this.dbService.setGroup(g);
+            }
             return g;
         });
     }

@@ -224,7 +224,7 @@ class SignUp extends React.Component<IProps, IState> {
                 loading: false,
                 tries: this.state.tries + 1,
             });
-            this.props.history.push('/conversation/null');
+            this.props.history.push('/chat/null');
             this.dispatchWSOpenEvent();
             this.notification.initToken().then((token) => {
                 this.sdk.registerDevice(token, 0, '0.23.2', 'web', 'en', '1');
@@ -316,7 +316,7 @@ class SignUp extends React.Component<IProps, IState> {
                 loading: false,
                 tries: this.state.tries + 1,
             });
-            this.props.history.push('/conversation/null');
+            this.props.history.push('/chat/null');
             this.dispatchWSOpenEvent();
             this.notification.initToken().then((token) => {
                 this.sdk.registerDevice(token, 0, '0.23.5', 'web', 'en', '1');
@@ -369,7 +369,7 @@ class SignUp extends React.Component<IProps, IState> {
     private wsOpenHandler = () => {
         if ((this.sdk.getConnInfo().UserID || 0) > 0) {
             this.sdk.recall('0').then(() => {
-                this.props.history.push('/conversation/null');
+                this.props.history.push('/chat/null');
                 return;
             }).catch((err) => {
                 window.console.log(err);

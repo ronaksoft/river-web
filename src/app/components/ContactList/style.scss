@@ -107,6 +107,14 @@
             color: var(--grey);
           }
         }
+        &:hover {
+          .more {
+            display: block;
+          }
+          .name {
+            min-width: 186px;
+          }
+        }
       }
       .category-item {
         color: var(--river);

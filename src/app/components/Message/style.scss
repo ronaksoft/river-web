@@ -174,7 +174,7 @@
         text-align: left;
       }
       ._mention {
-        font-weight: bold;
+        color: #2678b6;
         display: inline-block;
         &:hover {
           text-decoration: underline;
@@ -347,6 +347,13 @@ html[theme="dark"] {
     border-color: var(--dark-low);
   }
   .bubble-wrapper {
+    .bubble {
+      .inner {
+        ._mention {
+          color: #2d9fee;
+        }
+      }
+    }
     &.me {
       .bubble {
         background-color: var(--dark-accent-low);

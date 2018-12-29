@@ -22,6 +22,7 @@ import UniqueId from '../../services/uniqueId';
 import ContactList from '../ContactList';
 
 import './style.css';
+import {IContact} from '../../repository/contact/interface';
 
 interface IProps {
     id?: number;
@@ -84,7 +85,8 @@ class ContactMenu extends React.Component<IProps, IState> {
                     </span>
                 </div>
                 <div className="contact-box">
-                    <ContactList ref={this.contactListRefHandler} noRowsRenderer={this.noRowsRenderer} mode="link"/>
+                    <ContactList ref={this.contactListRefHandler} noRowsRenderer={this.noRowsRenderer} mode="link"
+                                 onContextMenuAction={this.contextMenuActionHandler}/>
                 </div>
                 <Dialog
                     open={newContactDialogOpen}
@@ -199,6 +201,23 @@ class ContactMenu extends React.Component<IProps, IState> {
                 phone: '',
             });
         });
+    }
+
+    /* Context Menu action handler */
+    private contextMenuActionHandler = (cmd: string, contact: IContact) => {
+        switch (cmd) {
+            case 'remove':
+                const contactIds: string[] = [];
+                contactIds.push(contact.id || '');
+                this.sdk.removeContact(contactIds).then(() => {
+                    this.contactRepo.remove(contact.id || '').finally(() => {
+                        this.contactListComponent.reload();
+                    });
+                });
+                break;
+            default:
+                return;
+        }
     }
 }
 

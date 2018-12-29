@@ -15,7 +15,6 @@
       height: calc(100% - 47px);
       width: 100%;
       transition: left 0.2s ease-out;
-      overflow-y: scroll;
       &.page-1 {
         left: 0;
       }

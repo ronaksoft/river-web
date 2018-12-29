@@ -21,6 +21,7 @@
         padding: 16px 10px 0;
         text-align: left;
         width: 100%;
+        min-height: 48px;
         .input-edit {
           margin-bottom: 10px;
         }
@@ -48,6 +49,13 @@
       height: 86px;
       padding: 18px 0 22px;
       text-align: center;
+      &.cancel {
+        padding: 0;
+        color: var(--grey);
+        height: auto;
+        font-size: 12px;
+        cursor: pointer;
+      }
       .add-action {
         display: inline-flex;
         height: 46px;
@@ -97,7 +105,16 @@
       }
     }
     .form-control {
+      position: relative;
       display: flex;
+      padding-top: 16px;
+      label {
+        position: absolute;
+        top: 0;
+        left: 0;
+        color: var(--river);
+        font-size: 12px;
+      }
       .inner {
         flex: 1;
         display: flex;

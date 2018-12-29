@@ -10,7 +10,7 @@
 import * as React from 'react';
 import {AutoSizer, Index, List} from 'react-virtualized';
 import {IContact} from '../../repository/contact/interface';
-import {clone, debounce, differenceBy, findIndex} from 'lodash';
+import {clone, debounce, differenceBy, differenceWith, findIndex} from 'lodash';
 import UserAvatar, {TextAvatar} from '../UserAvatar';
 import ChipInput from 'material-ui-chip-input';
 import Chip from '@material-ui/core/Chip';
@@ -181,6 +181,7 @@ class SearchList extends React.Component<IProps, IState> {
                     <GroupAvatar className="avatar" id={inputPeer.dialog.target_id || ''}/>}
                     {Boolean(inputPeer.dialog.peertype === PeerType.PEERGROUP) &&
                     <GroupName className="name" id={inputPeer.dialog.target_id || ''}/>}
+                    <span className="phone">{inputPeer.dialog.preview}</span>
                 </div>
             );
         } else if (inputPeer.mode === 'label' && inputPeer.label) {
@@ -297,7 +298,9 @@ class SearchList extends React.Component<IProps, IState> {
                 mode: 'label',
             });
         }
-        this.inputePeerRes.dialogs.sort((i1, i2) => {
+        differenceWith(this.inputePeerRes.dialogs, selectedInputPeers, (i1, i2) => {
+            return i1.peerid === i2.id;
+        }).sort((i1, i2) => {
             if (!i1.last_update || !i2.last_update) {
                 return 0;
             }
@@ -316,7 +319,7 @@ class SearchList extends React.Component<IProps, IState> {
                 mode: 'label',
             });
         }
-        categorizeContact(this.inputePeerRes.contacts).forEach((item) => {
+        categorizeContact(differenceBy(this.inputePeerRes.contacts, selectedInputPeers, 'id')).forEach((item) => {
             items.push({
                 contact: item,
                 id: item.id,

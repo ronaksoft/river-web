@@ -99,7 +99,7 @@ class Dialog extends React.Component<IProps, IState> {
                                 rowHeight={64}
                                 rowRenderer={this.rowRender}
                                 rowCount={items.length}
-                                overscanRowCount={0}
+                                overscanRowCount={10}
                                 scrollToIndex={this.state.scrollIndex}
                                 width={width}
                                 height={height}
@@ -139,7 +139,7 @@ class Dialog extends React.Component<IProps, IState> {
         const isTyping = this.state.isTypingList.hasOwnProperty(data.peerid || '') ? this.state.isTypingList[data.peerid || ''] : {};
         return (
             <div style={style} key={data.peerid || key}>
-                <Link to={`/conversation/${data.peerid}`}>
+                <Link to={`/chat/${data.peerid}`}>
                     <div className={'dialog' + (data.peerid === this.state.selectedId ? ' active' : '')}>
                         <DialogMessage dialog={data} isTyping={isTyping}
                                        onContextMenuOpen={this.contextMenuOpenHandler.bind(this, index)}/>

@@ -128,7 +128,6 @@ input {
         min-height: 32px;
         width: calc(100% - 8px);
         max-height: 120px;
-        overflow-y: scroll;
         z-index: 10;
         padding: 6px; }
         .write .inputs .input .textarea-container .mention {
@@ -140,15 +139,19 @@ input {
             .write .inputs .input .textarea-container .mention .mention__control .mention__highlighter .mention-item {
               border-bottom: 1px solid var(--grey); }
           .write .inputs .input .textarea-container .mention .mention__control textarea {
-            height: 20px !important; }
+            height: 1.1em !important;
+            padding-right: 60px;
+            overflow: hidden !important;
+            line-height: 1.1em; }
             .write .inputs .input .textarea-container .mention .mention__control textarea._2-line {
-              height: 40px !important; }
+              height: 2.4em !important; }
             .write .inputs .input .textarea-container .mention .mention__control textarea._3-line {
-              height: 60px !important; }
+              height: 3.5em !important; }
             .write .inputs .input .textarea-container .mention .mention__control textarea._4-line {
-              height: 80px !important; }
+              height: 4.7em !important; }
             .write .inputs .input .textarea-container .mention .mention__control textarea._5-line {
-              height: 100px !important; }
+              height: 5.9em !important;
+              overflow: auto !important; }
       .write .inputs .input .write-link {
         position: absolute;
         right: 12px;
@@ -168,7 +171,6 @@ input {
           .write .inputs .input .write-link a:hover svg {
             fill: var(--grey); }
       .write .inputs .input.rtl textarea {
-        padding-right: 60px;
         direction: rtl; }
   .write .actions {
     display: flex;
@@ -309,23 +311,28 @@ html[theme="dark"] .emoji-mart {
   html[theme="dark"] .emoji-mart .emoji-mart-search-icon {
     fill: var(--light); }
 
-html[font="1"] .write .inputs .input .textarea-container {
-  font-size: 12px; }
+html[font="1"] .write .inputs .input .textarea-container,
+html[font="1"] .write .inputs .input .textarea-container textarea {
+  font-size: 12px !important; }
 
-html[font="2"] .write .inputs .input .textarea-container {
-  font-size: 14px; }
+html[font="2"] .write .inputs .input .textarea-container,
+html[font="2"] .write .inputs .input .textarea-container textarea {
+  font-size: 14px !important; }
 
-html[font="3"] .write .inputs .input .textarea-container {
-  font-size: 16px; }
+html[font="3"] .write .inputs .input .textarea-container,
+html[font="3"] .write .inputs .input .textarea-container textarea {
+  font-size: 16px !important; }
 
-html[font="4"] .write .inputs .input .textarea-container {
-  font-size: 18px; }
+html[font="4"] .write .inputs .input .textarea-container,
+html[font="4"] .write .inputs .input .textarea-container textarea {
+  font-size: 18px !important; }
 
-html[font="5"] .write .inputs .input .textarea-container {
-  font-size: 20px; }
+html[font="5"] .write .inputs .input .textarea-container,
+html[font="5"] .write .inputs .input .textarea-container textarea {
+  font-size: 20px !important; }
 
 .mobile-view .write .inputs .input .textarea-container {
-  font-size: 16px;
+  font-size: 16px !important;
   line-height: 20px; }
   .mobile-view .write .inputs .input .textarea-container textarea {
     padding: 5px 10px; }
