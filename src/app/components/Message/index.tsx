@@ -190,7 +190,7 @@ class Message extends React.Component<IProps, IState> {
                 const eldiv = el.querySelector('.chat.active-chat > div');
                 if (eldiv) {
                     el.scroll({
-                        behavior: (instant === true) ? 'instant' : 'smooth',
+                        behavior: (instant === true) ? 'auto' : 'smooth',
                         top: eldiv.clientHeight + 100,
                     });
                 }
