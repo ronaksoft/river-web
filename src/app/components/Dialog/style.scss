@@ -74,6 +74,11 @@
 
 html[theme="dark"] {
   .dialogs {
+    .dialog-search {
+      label, input {
+        color: var(--white);
+      }
+    }
     .dialog-list {
       .dialog-container {
         .dialog {

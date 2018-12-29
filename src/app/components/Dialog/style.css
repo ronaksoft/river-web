@@ -104,6 +104,9 @@ input {
           color: inherit;
           font-size: 75px; }
 
+html[theme="dark"] .dialogs .dialog-search label, html[theme="dark"] .dialogs .dialog-search input {
+  color: var(--white); }
+
 html[theme="dark"] .dialogs .dialog-list .dialog-container .dialog:after {
   background-color: var(--dark-low); }
 

@@ -14,7 +14,7 @@
     "proto": "node bin/proto.js"
   },
   "dependencies": {
-    "@material-ui/core": "^3.7.1",
+    "@material-ui/core": "3.5.1",
     "@material-ui/icons": "^3.0.1",
     "@types/react-custom-scrollbars": "^4.0.5",
     "@types/xregexp": "^3.0.29",
