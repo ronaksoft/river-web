@@ -21,19 +21,21 @@ import {
 import GroupRepo from '../../repository/group';
 // @ts-ignore
 import {Mention, MentionsInput} from 'react-mentions';
-
-import 'emoji-mart/css/emoji-mart.css';
-import './style.css';
 import ContactRepo from '../../repository/contact';
 import SDK from '../../services/sdk';
 import {IContact} from '../../repository/contact/interface';
 import {IGroup} from '../../repository/group/interface';
+import DialogRepo from '../../repository/dialog';
+import {IDraft} from '../../repository/dialog/interface';
+
+import 'emoji-mart/css/emoji-mart.css';
+import './style.css';
 
 interface IProps {
-    clearPreviewMessage?: () => void;
     onAction: (cmd: string) => void;
     onBulkAction: (cmd: string) => void;
     onMessage: (text: string, {mode, message}?: any) => void;
+    onPreviewMessageChange?: (previewMessage: IMessage | undefined, previewMessageMode: number) => void;
     onTyping?: (typing: boolean) => void;
     peer: InputPeer | null;
     previewMessage?: IMessage;
@@ -89,6 +91,7 @@ class TextInput extends React.Component<IProps, IState> {
     private rtlDetectorThrottle: any = null;
     private groupRepo: GroupRepo;
     private contactRepo: ContactRepo;
+    private dialogRepo: DialogRepo;
     private lastLines: number = 1;
     private sdk: SDK;
     private mentions: IMentions[];
@@ -120,6 +123,7 @@ class TextInput extends React.Component<IProps, IState> {
 
         this.groupRepo = GroupRepo.getInstance();
         this.contactRepo = ContactRepo.getInstance();
+        this.dialogRepo = DialogRepo.getInstance();
         this.sdk = SDK.getInstance();
 
         this.checkAuthority();
@@ -127,9 +131,18 @@ class TextInput extends React.Component<IProps, IState> {
 
     public componentDidMount() {
         window.addEventListener('Group_DB_Updated', this.checkAuthority);
+        this.initDraft(null, this.state.peer, 0, null);
     }
 
     public componentWillReceiveProps(newProps: IProps) {
+        if (newProps.previewMessageMode === C_MSG_MODE.Edit && newProps.previewMessage) {
+            // this.textarea.value = newProps.previewMessage.body;
+            this.setState({
+                textareaValue: newProps.previewMessage.body || '',
+            });
+        } else {
+            this.initDraft(this.state.peer, newProps.peer, this.state.previewMessageMode, this.state.previewMessage);
+        }
         this.setState({
             previewMessage: newProps.previewMessage || null,
             previewMessageMode: newProps.previewMessageMode || C_MSG_MODE.Normal,
@@ -138,14 +151,8 @@ class TextInput extends React.Component<IProps, IState> {
             userId: newProps.userId || '',
         }, () => {
             this.animatePreviewMessage();
-            this.focus('.mention textara');
+            this.focus('.mention textarea');
         });
-        if (newProps.previewMessageMode === C_MSG_MODE.Edit && newProps.previewMessage) {
-            // this.textarea.value = newProps.previewMessage.body;
-            this.setState({
-                textareaValue: newProps.previewMessage.body || '',
-            });
-        }
         if (this.state.peer !== newProps.peer) {
             this.setState({
                 peer: newProps.peer,
@@ -177,7 +184,8 @@ class TextInput extends React.Component<IProps, IState> {
         } else {
             return (
                 <div className="write">
-                    {previewMessage && <div className="previews" style={{height: previewMessageHeight + 'px'}}>
+                    {(!selectable && previewMessage) &&
+                    <div className="previews" style={{height: previewMessageHeight + 'px'}}>
                         <div className="preview-container">
                             <div
                                 className={'preview-message-wrapper ' + this.getPreviewCN(previewMessageMode, previewMessage.senderid || '')}>
@@ -196,7 +204,7 @@ class TextInput extends React.Component<IProps, IState> {
                             </div>
                         </div>
                         <div className="preview-clear">
-                        <span onClick={this.clearPreviewMessage}>
+                        <span onClick={this.clearPreviewMessage.bind(this, false)}>
                             <IconButton aria-label="Delete" className="btn-clear">
                                 <ClearRounded/>
                             </IconButton>
@@ -311,7 +319,7 @@ class TextInput extends React.Component<IProps, IState> {
                         message,
                         mode: previewMessageMode,
                     });
-                    this.clearPreviewMessage();
+                    this.clearPreviewMessage(true);
                 }
             }
         }
@@ -356,7 +364,7 @@ class TextInput extends React.Component<IProps, IState> {
                             message,
                             mode: previewMessageMode,
                         });
-                        this.clearPreviewMessage();
+                        this.clearPreviewMessage(true);
                     }
                 }
                 this.textarea.value = '';
@@ -454,17 +462,20 @@ class TextInput extends React.Component<IProps, IState> {
         });
     }
 
-    private clearPreviewMessage = () => {
+    private clearPreviewMessage = (removeDraft?: boolean) => {
         this.setState({
             previewMessageHeight: 0,
         });
+        if (removeDraft && this.state.peer) {
+            this.dialogRepo.removeDraft(this.state.peer.getId() || '');
+        }
         setTimeout(() => {
             this.setState({
                 previewMessage: null,
                 previewMessageMode: C_MSG_MODE.Normal,
             });
-            if (this.props.clearPreviewMessage) {
-                this.props.clearPreviewMessage();
+            if (this.props.onPreviewMessageChange) {
+                this.props.onPreviewMessageChange(undefined, C_MSG_MODE.Normal);
             }
         }, 102);
     }
@@ -656,6 +667,67 @@ class TextInput extends React.Component<IProps, IState> {
             entities.push(entity);
         });
         return entities;
+    }
+
+    /* Checks draft for save and restore */
+    private initDraft(oldPeer: InputPeer | null, newPeer: InputPeer | null, mode: number, message: IMessage | null) {
+        if (!newPeer) {
+            return;
+        }
+        if (oldPeer === newPeer) {
+            return;
+        }
+        if (oldPeer && oldPeer.getId() === newPeer.getId()) {
+            return;
+        }
+
+        if (oldPeer) {
+            const oldPeerObj = oldPeer.toObject();
+            const draft: IDraft = {
+                message: !message ? undefined : message,
+                mode,
+                peerid: oldPeerObj.id || '',
+                text: this.state.textareaValue,
+            };
+            if (draft.text.length > 0 || (mode && mode !== C_MSG_MODE.Normal)) {
+                this.dialogRepo.saveDraft(draft);
+            } else {
+                this.dialogRepo.removeDraft(oldPeerObj.id || '');
+            }
+        }
+
+        const newPeerObj = newPeer.toObject();
+        this.dialogRepo.getDraft(newPeerObj.id || '').then((res) => {
+            if (res) {
+                if (res.message && res.mode !== C_MSG_MODE.Normal) {
+                    this.changePreviewMessage(res.text, res.mode, res.message, () => {
+                        this.animatePreviewMessage();
+                    });
+                } else {
+                    this.changePreviewMessage(res.text, C_MSG_MODE.Normal, null);
+                }
+            } else {
+                this.changePreviewMessage('', C_MSG_MODE.Normal, null);
+            }
+        }).catch(() => {
+            this.changePreviewMessage('', C_MSG_MODE.Normal, null);
+        });
+    }
+
+    /* Modify textarea and preview message */
+    private changePreviewMessage(text: string, mode: number | undefined, msg: IMessage | null, callback?: any) {
+        this.setState({
+            previewMessage: msg,
+            previewMessageMode: mode || C_MSG_MODE.Normal,
+            textareaValue: text,
+        }, () => {
+            if (this.props.onPreviewMessageChange) {
+                this.props.onPreviewMessageChange(!this.state.previewMessage ? undefined : this.state.previewMessage, this.state.previewMessageMode);
+            }
+            if (callback) {
+                callback();
+            }
+        });
     }
 }
 

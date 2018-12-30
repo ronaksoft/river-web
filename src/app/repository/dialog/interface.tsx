@@ -1,4 +1,5 @@
 import {Dialog} from '../../services/sdk/messages/core.types_pb';
+import {IMessage} from '../message/interface';
 
 interface IDialog extends Dialog.AsObject {
     action_code?: number;
@@ -16,4 +17,11 @@ interface IDialogWithUpdateId {
     updateid: number;
 }
 
-export {IDialog, IDialogWithUpdateId};
+interface IDraft {
+    peerid: string;
+    text: string;
+    mode?: number;
+    message?: IMessage;
+}
+
+export {IDialog, IDialogWithUpdateId, IDraft};

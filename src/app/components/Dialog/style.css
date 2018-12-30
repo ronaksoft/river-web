@@ -51,11 +51,14 @@ input {
   height: 100%; }
   .dialogs .dialog-search {
     height: 0;
-    padding: 0 12px;
+    padding: 0 12px 0;
     overflow: hidden;
-    transition: height 0.1s ease-out; }
+    transition: height 0.1s ease-out, padding 0.1s ease-out; }
     .dialogs .dialog-search.open {
+      padding-top: 6px;
       height: 64px; }
+    .dialogs .dialog-search .adornment {
+      margin: -8px -8px 8px 0; }
   .dialogs .dialog-list {
     flex: 1;
     overflow: hidden; }
@@ -104,7 +107,7 @@ input {
           color: inherit;
           font-size: 75px; }
 
-html[theme="dark"] .dialogs .dialog-search label, html[theme="dark"] .dialogs .dialog-search input {
+html[theme="dark"] .dialogs .dialog-search label, html[theme="dark"] .dialogs .dialog-search input, html[theme="dark"] .dialogs .dialog-search svg {
   color: var(--white); }
 
 html[theme="dark"] .dialogs .dialog-list .dialog-container .dialog:after {

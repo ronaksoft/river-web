@@ -1,5 +1,5 @@
 import DB from '../../services/db/dialog';
-import {IDialog, IDialogWithUpdateId} from './interface';
+import {IDialog, IDialogWithUpdateId, IDraft} from './interface';
 import {throttle, differenceBy, find, merge, uniqBy, cloneDeep} from 'lodash';
 import SDK from '../../services/sdk';
 import UserRepo from '../user';
@@ -47,6 +47,22 @@ export default class DialogRepo {
         SDK.getInstance().loadConnInfo();
         this.userId = SDK.getInstance().getConnInfo().UserID || '0';
     }
+
+    /* Drafts Start*/
+
+    public saveDraft(draft: IDraft) {
+        return this.db.drafts.put(draft);
+    }
+
+    public getDraft(peerId: string) {
+        return this.db.drafts.get(peerId);
+    }
+
+    public removeDraft(peerId: string) {
+        return this.db.drafts.delete(peerId);
+    }
+
+    /* Drafts End */
 
     public create(dialog: IDialog) {
         return this.db.dialogs.put(dialog);

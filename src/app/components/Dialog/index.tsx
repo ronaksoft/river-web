@@ -4,13 +4,17 @@ import {Link} from 'react-router-dom';
 import {findIndex, debounce, intersectionBy, clone} from 'lodash';
 import {IDialog} from '../../repository/dialog/interface';
 import DialogMessage from '../DialogMessage';
-import {MessageRounded} from '@material-ui/icons';
+import {CloseRounded, MessageRounded} from '@material-ui/icons';
 import Menu from '@material-ui/core/Menu/Menu';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';
 import {PeerType} from '../../services/sdk/messages/core.types_pb';
 import Scrollbars from 'react-custom-scrollbars';
-import TextField from '@material-ui/core/TextField/TextField';
 import SearchRepo from '../../repository/search';
+import InputLabel from '@material-ui/core/InputLabel/InputLabel';
+import Input from '@material-ui/core/Input/Input';
+import InputAdornment from '@material-ui/core/InputAdornment/InputAdornment';
+import IconButton from '@material-ui/core/IconButton/IconButton';
+import FormControl from '@material-ui/core/FormControl/FormControl';
 
 import './style.css';
 
@@ -117,15 +121,27 @@ class Dialog extends React.Component<IProps, IState> {
         return (
             <div className="dialogs">
                 <div className={'dialog-search' + (searchEnable ? ' open' : '')}>
-                    <TextField
-                        label="Search..."
-                        fullWidth={true}
-                        inputProps={{
-                            maxLength: 32,
-                        }}
-                        id="dialog-search"
-                        onChange={this.searchChangeHandler}
-                    />
+                    <FormControl fullWidth={true} className="title-edit">
+                        <InputLabel htmlFor="adornment-title">Search...</InputLabel>
+                        <Input
+                            id="dialog-search"
+                            type="text"
+                            inputProps={{
+                                maxLength: 32,
+                            }}
+                            onChange={this.searchChangeHandler}
+                            endAdornment={
+                                <InputAdornment position="end" className="adornment">
+                                    <IconButton
+                                        aria-label="Confirm changes"
+                                        onClick={this.closeSearchHandler}
+                                    >
+                                        <CloseRounded/>
+                                    </IconButton>
+                                </InputAdornment>
+                            }
+                        />
+                    </FormControl>
                 </div>
                 <div className="dialog-list">
                     <AutoSizer>
@@ -342,6 +358,11 @@ class Dialog extends React.Component<IProps, IState> {
             this.list.recomputeRowHeights();
             this.list.forceUpdateGrid();
         });
+    }
+
+    /* Search close handler */
+    private closeSearchHandler = () => {
+        this.toggleSearch();
     }
 }
 

@@ -524,6 +524,7 @@ class Message extends React.Component<IProps, IState> {
     }
 
     private selectText = (e: any) => {
+        e.stopPropagation();
         const elem = e.currentTarget;
         // @ts-ignore
         if (document.selection) { // IE

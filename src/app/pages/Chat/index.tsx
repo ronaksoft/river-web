@@ -541,8 +541,6 @@ class Chat extends React.Component<IProps, IState> {
                 messageSelectedIds: {},
                 peer,
                 selectedDialogId: selectedId,
-                textInputMessage: undefined,
-                textInputMessageMode: C_MSG_MODE.Normal,
             }, () => {
                 this.getMessagesByDialogId(selectedId, true);
             });
@@ -575,7 +573,8 @@ class Chat extends React.Component<IProps, IState> {
             switch (leftMenu) {
                 default:
                 case 'chat':
-                    return (<Dialog ref={this.dialogRefHandler} items={this.state.dialogs} selectedId={selectedDialogId} isTypingList={isTypingList}
+                    return (<Dialog ref={this.dialogRefHandler} items={this.state.dialogs} selectedId={selectedDialogId}
+                                    isTypingList={isTypingList}
                                     cancelIsTyping={this.cancelIsTypingHandler}
                                     onContextMenu={this.dialogContextMenuHandler}/>);
                 case 'setting':
@@ -723,7 +722,7 @@ class Chat extends React.Component<IProps, IState> {
                             <TextInput onMessage={this.onMessageHandler} onTyping={this.onTyping}
                                        userId={this.connInfo.UserID} previewMessage={textInputMessage}
                                        previewMessageMode={textInputMessageMode}
-                                       clearPreviewMessage={this.clearPreviewMessageHandler}
+                                       onPreviewMessageChange={this.textInputPreviewMessageChangeHandler}
                                        selectable={messageSelectable}
                                        selectableDisable={Boolean(messageSelectable && Object.keys(messageSelectedIds).length === 0)}
                                        onBulkAction={this.textInputBulkActionHandler}
@@ -1802,22 +1801,22 @@ class Chat extends React.Component<IProps, IState> {
                             (data.messages[0].body || '').substr(0, 64), data.messages[0].peerid || 'null');
                     } else {
                         this.notify(
-                            `Message from ${data.senders[0].firstname} ${data.senders[0].lastname} in ${groupTitle}`,
+                            `New message from ${data.senders[0].firstname} ${data.senders[0].lastname} in ${groupTitle}`,
                             (data.messages[0].body || '').substr(0, 64), data.messages[0].peerid || 'null');
                     }
                 } else {
                     this.notify(
-                        `${data.messages.length} messages in ${groupTitle}`, '', data.messages[0].peerid || 'null');
+                        `${data.messages.length} new messages in ${groupTitle}`, '', data.messages[0].peerid || 'null');
                 }
             });
         } else {
             if (data.messages.length === 1) {
                 this.notify(
-                    `Message from ${data.senders[0].firstname} ${data.senders[0].lastname}`,
+                    `New message from ${data.senders[0].firstname} ${data.senders[0].lastname}`,
                     (data.messages[0].body || '').substr(0, 64), data.messages[0].peerid || 'null');
             } else {
                 this.notify(
-                    `${data.messages.length} messages from ${data.senders[0].firstname} ${data.senders[0].lastname}`, '', data.messages[0].peerid || 'null');
+                    `${data.messages.length} new messages from ${data.senders[0].firstname} ${data.senders[0].lastname}`, '', data.messages[0].peerid || 'null');
             }
         }
     }
@@ -1985,10 +1984,10 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private clearPreviewMessageHandler = () => {
+    private textInputPreviewMessageChangeHandler = (previewMessage: IMessage, previewMessageMode: number) => {
         this.setState({
-            textInputMessage: undefined,
-            textInputMessageMode: C_MSG_MODE.Normal,
+            textInputMessage: previewMessage,
+            textInputMessageMode: previewMessageMode,
         });
     }
 

@@ -86,7 +86,9 @@ class MessagePreview extends React.Component<IProps, IState> {
                     <div className={'preview-message-wrapper ' + this.getPreviewCN(previewMessage.senderid || '')}>
                         <span className="preview-bar"/>
                         <div className="preview-message">
-                            <UserName className="preview-message-user" id={previewMessage.senderid || ''} you={true}/>
+                            <div className="preview-message-user">
+                                <UserName id={previewMessage.senderid || ''} you={true}/>
+                            </div>
                             <div className="preview-message-body">
                                 <div
                                     className={'inner ' + (previewMessage.rtl ? 'rtl' : 'ltr')}>{previewMessage.body}</div>

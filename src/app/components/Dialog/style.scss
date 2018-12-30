@@ -6,11 +6,15 @@
   height: 100%;
   .dialog-search {
     height: 0;
-    padding: 0 12px;
+    padding: 0 12px 0;
     overflow: hidden;
-    transition: height 0.1s ease-out;
+    transition: height 0.1s ease-out, padding 0.1s ease-out;
     &.open {
+      padding-top: 6px;
       height: 64px;
+    }
+    .adornment {
+      margin: -8px -8px 8px 0;
     }
   }
   .dialog-list {
@@ -75,7 +79,7 @@
 html[theme="dark"] {
   .dialogs {
     .dialog-search {
-      label, input {
+      label, input, svg {
         color: var(--white);
       }
     }
