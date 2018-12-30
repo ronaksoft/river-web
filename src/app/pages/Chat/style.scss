@@ -96,6 +96,8 @@
     flex: 1;
     height: 100%;
     overflow: hidden;
+    flex-direction: column;
+    display: flex;
     .top {
       position: relative;
       width: 100%;
@@ -146,14 +148,16 @@
     }
     .conversation {
       width: 100%;
-      height: calc(100% - 100px);
+      //height: calc(100% - 100px);
+      flex: 1;
       background-color: rgba(168, 144, 106, 0.3);
       background-repeat: repeat;
       background-size: 100px;
     }
     .attachments {
       width: 100%;
-      height: calc(100% - 48px);
+      flex: 1;
+      //height: calc(100% - 48px);
     }
     .start-messaging {
       width: 100%;

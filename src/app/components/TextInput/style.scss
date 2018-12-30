@@ -2,14 +2,13 @@
 
 .write {
   //display: flex;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  //position: absolute;
+  //bottom: 0;
+  //left: 0;
+  //right: 0;
   border: 1px solid var(--light);
   border-width: 1px 1px 1px 0;
   background-color: #F4F4F5;
-  flex-direction: column;
   .suggestion-list-container {
     transition: height 0.1s;
     .mention__suggestions {
