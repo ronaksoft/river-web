@@ -5832,10 +5832,10 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
-material-ui-chip-input@^1.0.0-beta.8:
-  version "1.0.0-beta.8"
-  resolved "https://registry.yarnpkg.com/material-ui-chip-input/-/material-ui-chip-input-1.0.0-beta.8.tgz#1752aea40a0de723d39b3255d8df6622c61456a0"
-  integrity sha512-Yqljgimr+AfLO2WPoErbU/YwYSB5N1IN4yjUQb6qEUyZcM5W+499JN+6lmNYJdr/oG9gUxRKHX7q0J2yH7NtTQ==
+material-ui-chip-input@1.0.0-beta.9:
+  version "1.0.0-beta.9"
+  resolved "https://registry.yarnpkg.com/material-ui-chip-input/-/material-ui-chip-input-1.0.0-beta.9.tgz#9c76dade6f6cc7a5972c1223d3cb4b22e093d6fc"
+  integrity sha512-UPTT3DJTu90heZaJO1b8HMaPLltiFo9oNarZmrKD2JSYmdkdnP0K20XozoXHGTZZ/kfy6WTVuDnSyGKSHWh7Nw==
   dependencies:
     classnames "^2.2.5"
     prop-types "^15.6.1"
