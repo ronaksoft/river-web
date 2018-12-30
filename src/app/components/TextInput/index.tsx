@@ -215,6 +215,7 @@ class TextInput extends React.Component<IProps, IState> {
                                                inputRef={this.textareaRefHandler}
                                                onKeyUp={this.sendMessage}
                                                onKeyDown={this.inputKeyDown}
+                                               allowSpaceInQuery={true}
                                                className="mention"
                                                placeholder="Type your message here..."
                                                style={defaultMentionInputStyle}
@@ -576,8 +577,7 @@ class TextInput extends React.Component<IProps, IState> {
             const userId = this.sdk.getConnInfo().UserID;
             for (const [i, participant] of participants.entries()) {
                 if (userId !== participant.userid &&
-                    ((participant.lastname && reg.test(participant.lastname)) ||
-                        (participant.firstname && reg.test(participant.firstname)) ||
+                    (reg.test(`${participant.firstname} ${participant.lastname}`) ||
                         (participant.username && reg.test(participant.username)))) {
                     users.push({
                         display: participant.username ? `@${participant.username}` : `${participant.firstname} ${participant.lastname}`,
