@@ -699,7 +699,8 @@ class Message extends React.Component<IProps, IState> {
                                 <UserName key={i} className="_mention" id={elem.userId} username={true} prefix="@"
                                           unsafe={true} defaultString={elem.str.substr(1)}/>);
                         } else {
-                            return (<UserName key={i} className="_mention" id={elem.userId} unsafe={true}/>);
+                            return (<UserName key={i} className="_mention" id={elem.userId} unsafe={true}
+                                              defaultString={elem.str}/>);
                         }
                     case MessageEntityType.MESSAGEENTITYTYPEBOLD:
                         return (<span key={i} className="_bold">{elem.str}</span>);

@@ -131,95 +131,97 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                     <label>User Info</label>
                 </div>
                 <div className={'page-container page-' + page}>
-                    <Scrollbars
-                        autoHide={true}
-                    >
-                        <div className="page page-1">
-                            {user && <div className="info kk-card">
-                                <div className="avatar">
-                                    <UserAvatar id={user.id || ''} noDetail={true}/>
-                                </div>
-                                <div className="line">
-                                    {!edit && <div className="form-control">
-                                        <div className="inner">{user.firstname}</div>
-                                        {isInContact && <div className="action">
-                                            <IconButton
-                                                aria-label="Edit title"
-                                                onClick={this.onEditHandler}
-                                            >
-                                                <EditRounded/>
-                                            </IconButton>
+                    <div className="page page-1">
+                        <Scrollbars
+                            autoHide={true}
+                        >
+                            <div>
+                                {user && <div className="info kk-card">
+                                    <div className="avatar">
+                                        <UserAvatar id={user.id || ''} noDetail={true}/>
+                                    </div>
+                                    <div className="line">
+                                        {!edit && <div className="form-control">
+                                            <div className="inner">{user.firstname}</div>
+                                            {isInContact && <div className="action">
+                                                <IconButton
+                                                    aria-label="Edit title"
+                                                    onClick={this.onEditHandler}
+                                                >
+                                                    <EditRounded/>
+                                                </IconButton>
+                                            </div>}
                                         </div>}
-                                    </div>}
-                                    {edit &&
-                                    <TextField
-                                        label="First Name"
-                                        fullWidth={true}
-                                        inputProps={{
-                                            maxLength: 32,
-                                        }}
-                                        value={firstname}
-                                        className="input-edit"
-                                        onChange={this.onFirstnameChangeHandler}
-                                    />}
-                                </div>
-                                <div className="line">
-                                    {!edit && <div className="form-control">
-                                        <div className="inner">{user.lastname}</div>
-                                        {isInContact && <div className="action">
-                                            <IconButton
-                                                aria-label="Edit title"
-                                                onClick={this.onEditHandler}
-                                            >
-                                                <EditRounded/>
-                                            </IconButton>
+                                        {edit &&
+                                        <TextField
+                                            label="First Name"
+                                            fullWidth={true}
+                                            inputProps={{
+                                                maxLength: 32,
+                                            }}
+                                            value={firstname}
+                                            className="input-edit"
+                                            onChange={this.onFirstnameChangeHandler}
+                                        />}
+                                    </div>
+                                    <div className="line">
+                                        {!edit && <div className="form-control">
+                                            <div className="inner">{user.lastname}</div>
+                                            {isInContact && <div className="action">
+                                                <IconButton
+                                                    aria-label="Edit title"
+                                                    onClick={this.onEditHandler}
+                                                >
+                                                    <EditRounded/>
+                                                </IconButton>
+                                            </div>}
                                         </div>}
+                                        {edit &&
+                                        <TextField
+                                            label="Last Name"
+                                            fullWidth={true}
+                                            inputProps={{
+                                                maxLength: 32,
+                                            }}
+                                            value={lastname}
+                                            className="input-edit"
+                                            onChange={this.onLastnameChangeHandler}
+                                        />}
+                                        {Boolean(edit && !isInContact) &&
+                                        <TextField
+                                            label="Phone"
+                                            fullWidth={true}
+                                            inputProps={{
+                                                maxLength: 32,
+                                            }}
+                                            value={phone}
+                                            className="input-edit"
+                                            onChange={this.onPhoneChangeHandler}
+                                        />}
+                                    </div>
+                                    {Boolean(edit && user && ((user.firstname !== firstname || user.lastname !== lastname) || !isInContact)) &&
+                                    <div className="actions-bar">
+                                        <div className="add-action" onClick={this.confirmChangesHandler}>
+                                            <CheckRounded/>
+                                        </div>
                                     </div>}
-                                    {edit &&
-                                    <TextField
-                                        label="Last Name"
-                                        fullWidth={true}
-                                        inputProps={{
-                                            maxLength: 32,
-                                        }}
-                                        value={lastname}
-                                        className="input-edit"
-                                        onChange={this.onLastnameChangeHandler}
-                                    />}
-                                    {Boolean(edit && !isInContact) &&
-                                    <TextField
-                                        label="Phone"
-                                        fullWidth={true}
-                                        inputProps={{
-                                            maxLength: 32,
-                                        }}
-                                        value={phone}
-                                        className="input-edit"
-                                        onChange={this.onPhoneChangeHandler}
-                                    />}
-                                </div>
-                                {Boolean(edit && user && ((user.firstname !== firstname || user.lastname !== lastname) || !isInContact)) &&
-                                <div className="actions-bar">
-                                    <div className="add-action" onClick={this.confirmChangesHandler}>
-                                        <CheckRounded/>
+                                    {Boolean(!isInContact && !edit) &&
+                                    <div className="add-as-contact" onClick={this.addAsContactHandler}>
+                                        <AddRounded/> Add as contact
+                                    </div>}
+                                </div>}
+                                {dialog && <div className="kk-card notify-settings">
+                                    <div className="label">Mute</div>
+                                    <div className="value">
+                                        <Checkbox
+                                            className={'checkbox ' + (isMuted(dialog.notifysettings) ? 'checked' : '')}
+                                            color="primary" checked={isMuted(dialog.notifysettings)}
+                                            onChange={this.muteChangeHandler}/>
                                     </div>
                                 </div>}
-                                {Boolean(!isInContact && !edit) &&
-                                <div className="add-as-contact" onClick={this.addAsContactHandler}>
-                                    <AddRounded/> Add as contact
-                                </div>}
-                            </div>}
-                            {dialog && <div className="kk-card notify-settings">
-                                <div className="label">Mute</div>
-                                <div className="value">
-                                    <Checkbox
-                                        className={'checkbox ' + (isMuted(dialog.notifysettings) ? 'checked' : '')}
-                                        color="primary" checked={isMuted(dialog.notifysettings)}
-                                        onChange={this.muteChangeHandler}/>
-                                </div>
-                            </div>}
-                        </div>
-                    </Scrollbars>
+                            </div>
+                        </Scrollbars>
+                    </div>
                 </div>
                 <Dialog
                     open={notifySettingDialogOpen}

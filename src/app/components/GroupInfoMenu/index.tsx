@@ -155,111 +155,111 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                     <label>Group Info</label>
                 </div>
                 <div className={'page-container page-' + page}>
-                    <Scrollbars
-                        autoHide={true}
-                    >
-                        <div className="page page-1">
-                            {group && <div className="info kk-card">
-                                <div className="avatar">
-                                    <GroupAvatar id={group.id || ''}/>
-                                </div>
-                                <div className="title">
-                                    {!titleEdit && <div className="form-control">
-                                        <div className="inner">{group.title}</div>
-                                        {this.hasAuthority(group) && <div className="action">
-                                            <IconButton
-                                                aria-label="Edit title"
-                                                onClick={this.onTitleEditHandler}
-                                            >
-                                                <EditRounded/>
-                                            </IconButton>
+
+                    <div className="page page-1">
+                        <Scrollbars
+                            autoHide={true}
+                        >
+                            <div>
+                                {group && <div className="info kk-card">
+                                    <div className="avatar">
+                                        <GroupAvatar id={group.id || ''}/>
+                                    </div>
+                                    <div className="title">
+                                        {!titleEdit && <div className="form-control">
+                                            <div className="inner">{group.title}</div>
+                                            {this.hasAuthority(group) && <div className="action">
+                                                <IconButton
+                                                    aria-label="Edit title"
+                                                    onClick={this.onTitleEditHandler}
+                                                >
+                                                    <EditRounded/>
+                                                </IconButton>
+                                            </div>}
                                         </div>}
-                                    </div>}
-                                    {titleEdit &&
-                                    <FormControl fullWidth={true} className="title-edit">
-                                        <InputLabel htmlFor="adornment-title">Title</InputLabel>
-                                        <Input
-                                            id="adornment-title"
-                                            type="text"
-                                            value={title}
-                                            onChange={this.onTitleChangeHandler}
-                                            endAdornment={
-                                                <InputAdornment position="end">
-                                                    <IconButton
-                                                        aria-label="Confirm changes"
-                                                        onClick={this.onTitleConfirmHandler}
-                                                    >
-                                                        {Boolean(group.title === title) ? <CloseRounded/> :
-                                                            <CheckRounded/>}
-                                                    </IconButton>
-                                                </InputAdornment>
-                                            }
-                                        />
-                                    </FormControl>}
-                                </div>
-                                <div className="created-on">
-                                    Created {TimeUtility.dynamicDate(group.createdon || 0)}
-                                </div>
-                            </div>}
-                            {dialog && <div className="kk-card notify-settings">
-                                <div className="label">Mute</div>
-                                <div className="value">
-                                    <Checkbox
-                                        className={'checkbox ' + (isMuted(dialog.notifysettings) ? 'checked' : '')}
-                                        color="primary" checked={isMuted(dialog.notifysettings)}
-                                        onChange={this.muteChangeHandler}
-                                        indeterminate={dialog.notifysettings ? (dialog.notifysettings.muteuntil || 0) > 0 : false}
-                                    />
-                                </div>
-                            </div>}
-                            {group && <React.Fragment>
-                                {this.hasAuthority(group) && <div className="kk-card notify-settings">
-                                    <div className="label">All Members Admin</div>
-                                    <div className="value switch">
-                                        <Switch
-                                            checked={group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMINSENABLED) === -1}
-                                            className="admin-switch"
-                                            color="default"
-                                            onChange={this.toggleAdminsHandler}
+                                        {titleEdit &&
+                                        <FormControl fullWidth={true} className="title-edit">
+                                            <InputLabel htmlFor="adornment-title">Title</InputLabel>
+                                            <Input
+                                                id="adornment-title"
+                                                type="text"
+                                                value={title}
+                                                onChange={this.onTitleChangeHandler}
+                                                endAdornment={
+                                                    <InputAdornment position="end">
+                                                        <IconButton
+                                                            aria-label="Confirm changes"
+                                                            onClick={this.onTitleConfirmHandler}
+                                                        >
+                                                            {Boolean(group.title === title) ? <CloseRounded/> :
+                                                                <CheckRounded/>}
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                }
+                                            />
+                                        </FormControl>}
+                                    </div>
+                                    <div className="created-on">
+                                        Created {TimeUtility.dynamicDate(group.createdon || 0)}
+                                    </div>
+                                </div>}
+                                {dialog && <div className="kk-card notify-settings">
+                                    <div className="label">Mute</div>
+                                    <div className="value">
+                                        <Checkbox
+                                            className={'checkbox ' + (isMuted(dialog.notifysettings) ? 'checked' : '')}
+                                            color="primary" checked={isMuted(dialog.notifysettings)}
+                                            onChange={this.muteChangeHandler}
+                                            indeterminate={dialog.notifysettings ? (dialog.notifysettings.muteuntil || 0) > 0 : false}
                                         />
                                     </div>
                                 </div>}
-                            </React.Fragment>}
-                            {group && <div className="participant kk-card">
-                                <label>{group.participants} participants</label>
-                                {participants.map((participant, index) => {
-                                    return (
-                                        <div key={index}
-                                             className={'contact-item' + (participant.type !== ParticipantType.PARTICIPANTTYPEMEMBER ? ' admin' : '')}>
+                                {group && <React.Fragment>
+                                    {this.hasAuthority(group) && <div className="kk-card notify-settings">
+                                        <div className="label">All Members Admin</div>
+                                        <div className="value switch">
+                                            <Switch
+                                                checked={group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMINSENABLED) === -1}
+                                                className="admin-switch"
+                                                color="default"
+                                                onChange={this.toggleAdminsHandler}
+                                            />
+                                        </div>
+                                    </div>}
+                                </React.Fragment>}
+                                {group && <div className="participant kk-card">
+                                    <label>{group.participants} participants</label>
+                                    {participants.map((participant, index) => {
+                                        return (
+                                            <div key={index}
+                                                 className={'contact-item' + (participant.type !== ParticipantType.PARTICIPANTTYPEMEMBER ? ' admin' : '')}>
                                         <span className="avatar">{participant.avatar ? <img
                                             src={participant.avatar}/> : TextAvatar(participant.firstname, participant.lastname)}</span>
-                                            {participant.type === ParticipantType.PARTICIPANTTYPECREATOR &&
-                                            <div className="admin-wrapper"><StarsRounded/></div>}
-                                            {participant.type === ParticipantType.PARTICIPANTTYPEADMIN &&
-                                            <div className="admin-wrapper"><StarRateRounded/></div>}
-                                            <span className="name"
-                                                  onClick={this.participantClickHandler.bind(this, participant.userid, participant.accesshash)}>{`${participant.firstname} ${participant.lastname}`}{this.userId === participant.userid ? ' (you)' : ''}</span>
-                                            <span
-                                                className="username">{participant.username ? participant.username : 'no username'}</span>
-                                            <div className="more"
-                                                 onClick={this.moreOpenHandler.bind(this, participant)}>
-                                                <MoreVert/>
+                                                {participant.type === ParticipantType.PARTICIPANTTYPECREATOR &&
+                                                <div className="admin-wrapper"><StarsRounded/></div>}
+                                                {participant.type === ParticipantType.PARTICIPANTTYPEADMIN &&
+                                                <div className="admin-wrapper"><StarRateRounded/></div>}
+                                                <span className="name"
+                                                      onClick={this.participantClickHandler.bind(this, participant.userid, participant.accesshash)}>{`${participant.firstname} ${participant.lastname}`}{this.userId === participant.userid ? ' (you)' : ''}</span>
+                                                <span
+                                                    className="username">{participant.username ? participant.username : 'no username'}</span>
+                                                <div className="more"
+                                                     onClick={this.moreOpenHandler.bind(this, participant)}>
+                                                    <MoreVert/>
+                                                </div>
                                             </div>
-                                        </div>
-                                    );
-                                })}
-                                <div className="add-member" onClick={this.addMemberDialogOpenHandler}>
-                                    <AddRounded/> Add member
+                                        );
+                                    })}
+                                    <div className="add-member" onClick={this.addMemberDialogOpenHandler}>
+                                        <AddRounded/> Add member
+                                    </div>
+                                </div>}
+                                <div className="leave-group kk-card" onClick={this.leaveGroupHandler}>
+                                    <ExitToAppRounded/> Leave the '{group ? group.title : ''}'
                                 </div>
-                            </div>}
-                            <div className="leave-group kk-card" onClick={this.leaveGroupHandler}>
-                                <ExitToAppRounded/> Leave the '{group ? group.title : ''}'
                             </div>
-                            {/*<div className="contact-box">
-                            hey
-                        </div>*/}
-                        </div>
-                    </Scrollbars>
+                        </Scrollbars>
+                    </div>
                 </div>
                 <Menu
                     anchorEl={moreAnchorEl}
