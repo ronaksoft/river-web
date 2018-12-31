@@ -31,6 +31,7 @@ interface IState {
 
 class App extends React.Component<{}, IState> {
     private mainRepo: MainRepo;
+    private isElectron: boolean = false;
 
     constructor(props: {}) {
         super(props);
@@ -41,6 +42,12 @@ class App extends React.Component<{}, IState> {
         };
 
         this.mainRepo = MainRepo.getInstance();
+
+        // @ts-ignore
+        if (window && window.process) {
+            ElectronService.getInstance();
+            this.isElectron = true;
+        }
     }
 
     public componentDidMount() {
@@ -49,11 +56,6 @@ class App extends React.Component<{}, IState> {
                 alertOpen: true,
             });
         });
-
-        // @ts-ignore
-        if (window && window.process && window.process.electron) {
-            ElectronService.getInstance();
-        }
 
         const el = document.querySelector('html');
         if (el) {
@@ -66,7 +68,7 @@ class App extends React.Component<{}, IState> {
     public render() {
         const {alertOpen, clearingSiteData} = this.state;
         return (
-            <div className="App">
+            <div className={'App' + (this.isElectron ? ' is-electron' : '')}>
                 <MuiThemeProvider theme={theme}>
                     {Routes}
                 </MuiThemeProvider>

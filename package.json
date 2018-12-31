@@ -16,7 +16,7 @@
     "build": "npm-run-all build-css build-js",
     "test": "react-scripts-ts test --env=jsdom",
     "eject": "react-scripts-ts eject",
-    "electron-start": "concurrently \"cross-env BROWSER=none npm run start\" \"wait-on http://localhost:3000 && electron .\"",
+    "elec": "concurrently \"cross-env BROWSER=none npm run start\" \"wait-on http://localhost:3000 && electron --inspect=5858 .\"",
     "pack": "electron-builder --dir"
   },
   "dependencies": {

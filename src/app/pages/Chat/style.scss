@@ -621,3 +621,16 @@ html[theme="dark"] {
     }
   }
 }
+
+.App.is-electron {
+  .wrapper {
+    height: 100vh !important;
+    width: 100vh !important;
+    display: flex;
+    align-items: center;
+  }
+  .container {
+    height: 100vh !important;
+    width: 100vh !important;
+  }
+}
