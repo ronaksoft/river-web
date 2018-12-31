@@ -57,7 +57,7 @@ input {
       position: absolute;
       top: 0;
       left: 0;
-      height: calc(100% - 47px);
+      height: calc(100% - 48px);
       width: 100%;
       transition: left 0.2s ease-out; }
       .user-info-menu .page-container .page.page-1 {
@@ -71,7 +71,7 @@ input {
   .user-info-menu .menu-header {
     background-color: var(--bg);
     text-align: left;
-    height: 47px;
+    height: 48px;
     color: var(--dark-medium); }
     .user-info-menu .menu-header label {
       padding: 10px 10px 10px 0; }
