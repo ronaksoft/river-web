@@ -1,7 +1,12 @@
 {
-  "name": "web-chat",
+  "name": "river",
   "version": "0.1.0",
   "private": true,
+  "description": "River chat",
+  "author": "Hamidreza KK <hamidrezakks@gmail.com>",
+  "license": "Ronak",
+  "homepage": "./",
+  "main": "public/electron.js",
   "scripts": {
     "build-css": "node-sass-chokidar src/ -o src/",
     "watch-css": "npm run build-css && node-sass-chokidar src/ -o src/ --watch --recursive",
@@ -11,7 +16,8 @@
     "build": "npm-run-all build-css build-js",
     "test": "react-scripts-ts test --env=jsdom",
     "eject": "react-scripts-ts eject",
-    "proto": "node bin/proto.js"
+    "electron-start": "concurrently \"cross-env BROWSER=none npm run start\" \"wait-on http://localhost:3000 && electron .\"",
+    "pack": "electron-builder --dir"
   },
   "dependencies": {
     "@material-ui/core": "3.5.1",
@@ -56,6 +62,9 @@
     "@types/react-router-dom": "^4.3.0",
     "@types/react-textarea-autosize": "^4.3.3",
     "@types/react-virtualized": "^9.18.9",
+    "electron": "^4.0.0",
+    "electron-devtools-installer": "^2.2.4",
+    "electron-is-dev": "^1.0.1",
     "node-sass-chokidar": "^1.3.4",
     "npm-run-all": "^4.1.5",
     "react-async-script-loader": "^0.3.0",
