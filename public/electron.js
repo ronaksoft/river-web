@@ -56,6 +56,17 @@ createWindow = () => {
             });
     }
 
+    mainWindow.webContents.executeJavaScript(`
+        var path = require('path');
+        module.paths.push(path.resolve('node_modules'));
+        module.paths.push(path.resolve('../node_modules'));
+        module.paths.push(path.resolve(__dirname, '..', '..', 'electron', 'node_modules'));
+        module.paths.push(path.resolve(__dirname, '..', '..', 'electron.asar', 'node_modules'));
+        module.paths.push(path.resolve(__dirname, '..', '..', 'app', 'node_modules'));
+        module.paths.push(path.resolve(__dirname, '..', '..', 'app.asar', 'node_modules'));
+        path = undefined;
+    `);
+
     mainWindow.once('ready-to-show', () => {
         mainWindow.show();
 
