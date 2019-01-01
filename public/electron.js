@@ -1,16 +1,22 @@
 /* tslint:disable */
-const {app, BrowserWindow, shell, ipcMain, Menu, TouchBar} = require('electron');
-const {TouchBarButton, TouchBarLabel, TouchBarSpacer} = TouchBar;
-
-const path = require('path');
+const {app, BrowserWindow, shell, ipcMain, Menu} = require('electron');
 const isDev = require('electron-is-dev');
 
 let mainWindow;
+let sizeMode = 'desktop';
+
+if (isDev) {
+    require('electron-debug')();
+}
+
+const callReact = (cmd, params) => {
+    mainWindow.webContents.send(cmd, params);
+};
 
 createWindow = () => {
     mainWindow = new BrowserWindow({
         backgroundColor: '#27AE60',
-        minWidth: 880,
+        minWidth: 316,
         show: false,
         webPreferences: {
             nodeIntegration: false,
@@ -57,65 +63,82 @@ createWindow = () => {
             shell.openExternal(arg);
         });
     });
+
+    mainWindow.on('resize', () => {
+        const width = mainWindow.getBounds().width;
+        if (width < 600 && sizeMode !== 'responsive') {
+            sizeMode = 'responsive';
+            callReact('sizeMode', sizeMode)
+        } else if (width >= 600 && sizeMode !== 'desktop') {
+            sizeMode = 'desktop';
+            callReact('sizeMode', sizeMode)
+        }
+    });
 };
 
 generateMenu = () => {
     const template = [
         {
             label: 'File',
-            submenu: [{role: 'about'}, {role: 'quit'}],
-        }/*,
+            submenu: [
+                {role: 'about'},
+                {role: 'quit'},
+                {type: 'separator'},
+                {
+                    click() {
+                        callReact('settings', {});
+                    },
+                    label: 'Preferences',
+                },
+                {type: 'separator'},
+                {
+                    click() {
+                        callReact('logout', {});
+                    },
+                    label: 'Log Out',
+                },
+            ],
+        },
         {
             label: 'Edit',
             submenu: [
-                { role: 'undo' },
-                { role: 'redo' },
-                { type: 'separator' },
-                { role: 'cut' },
-                { role: 'copy' },
-                { role: 'paste' },
-                { role: 'pasteandmatchstyle' },
-                { role: 'delete' },
-                { role: 'selectall' },
+                {role: 'undo'},
+                {role: 'redo'},
+                {type: 'separator'},
+                {role: 'cut'},
+                {role: 'copy'},
+                {role: 'paste'},
+                {role: 'pasteandmatchstyle'},
+                {role: 'delete'},
+                {role: 'selectall'},
             ],
         },
         {
             label: 'View',
             submenu: [
-                { role: 'reload' },
-                { role: 'forcereload' },
-                { role: 'toggledevtools' },
-                { type: 'separator' },
-                { role: 'resetzoom' },
-                { role: 'zoomin' },
-                { role: 'zoomout' },
-                { type: 'separator' },
-                { role: 'togglefullscreen' },
+                {role: 'reload'},
+                {role: 'forcereload'},
+                {role: 'toggledevtools'},
+                {type: 'separator'},
+                {role: 'resetzoom'},
+                {role: 'zoomin'},
+                {role: 'zoomout'},
+                {type: 'separator'},
+                {role: 'togglefullscreen'},
             ],
-        },
-        {
-            role: 'window',
-            submenu: [{ role: 'minimize' }, { role: 'close' }],
-        },*/
+        }
         , {
             role: 'help',
             submenu: [
                 {
                     click() {
-                        require('electron').shell.openExternal(
-                            'https://getstream.io/winds',
-                        );
+                        const {dialog} = require('electron').remote;
+                        const dialogOptions = {type: 'info', buttons: ['OK', 'Cancel'], message: 'Do it?'};
+                        dialog.showMessageBox(dialogOptions, i => console.log(i));
+
                     },
-                    label: 'Learn More',
-                },
-                {
-                    click() {
-                        require('electron').shell.openExternal(
-                            'https://github.com/GetStream/Winds/issues',
-                        );
-                    },
-                    label: 'File Issue on GitHub',
-                },
+                    label: 'About',
+                }
             ],
         },
     ];
@@ -141,3 +164,5 @@ app.on('activate', () => {
 ipcMain.on('load-page', (event, arg) => {
     mainWindow.loadURL(arg);
 });
+
+

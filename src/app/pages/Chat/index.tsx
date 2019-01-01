@@ -73,9 +73,10 @@ import Button from '@material-ui/core/Button/Button';
 import UserDialog from '../../components/UserDialog';
 import {IGroup} from '../../repository/group/interface';
 import SearchList, {IInputPeer} from '../../components/SearchList';
+import * as core_types_pb from '../../services/sdk/messages/core.types_pb';
 
 import './style.css';
-import * as core_types_pb from '../../services/sdk/messages/core.types_pb';
+import ElectronService, {C_ELECTRON_SUBJECT} from '../../services/electron';
 
 interface IProps {
     history?: any;
@@ -138,6 +139,7 @@ class Chat extends React.Component<IProps, IState> {
     private isMobileView: boolean = false;
     private mobileBackTimeout: any = null;
     private userDialogComponent: UserDialog;
+    private electronService: ElectronService;
 
     constructor(props: IProps) {
         super(props);
@@ -185,6 +187,7 @@ class Chat extends React.Component<IProps, IState> {
         this.isInChat = (document.visibilityState === 'visible');
         this.isMobileView = (window.innerWidth < 600);
         this.updateManager.setUserId(this.connInfo.UserID || '');
+        this.electronService = ElectronService.getInstance();
     }
 
     public componentDidMount() {
@@ -204,320 +207,48 @@ class Chat extends React.Component<IProps, IState> {
         window.addEventListener('Message_DB_Updated', this.messageDBUpdatedHandler);
 
         // Get latest cached dialogs
-        this.dialogRepo.getManyCache({}).then((res) => {
-            let unreadCounter = 0;
-            // Map indexes in order to to find them with O(1)
-            res.forEach((dialog, index) => {
-                this.dialogMap[dialog.peerid || ''] = index;
-                if (dialog && dialog.unreadcount) {
-                    unreadCounter += dialog.unreadcount;
-                }
-            });
-
-            const selectedId = this.props.match.params.id;
-            this.setState({
-                dialogs: res,
-                selectedDialogId: selectedId,
-                unreadCounter,
-            }, () => {
-                if (selectedId !== 'null') {
-                    const peer = this.getPeerByDialogId(selectedId);
-                    this.setState({
-                        leftMenu: 'chat',
-                        peer,
-                    }, () => {
-                        this.getMessagesByDialogId(selectedId, true);
-                    });
-                }
-            });
-
-            this.setLoading(false);
-        }).catch(() => {
-            this.setLoading(false);
-        });
+        this.initDialogs();
 
         // Update: Out of sync (internal)
-        this.eventReferences.push(this.updateManager.listen(C_MSG.OutOfSync, () => {
-            if (this.state.isUpdating) {
-                return;
-            }
-            window.console.log('snapshot!');
-            this.checkSync().then(() => {
-                this.updateManager.disable();
-                this.setState({
-                    isUpdating: true,
-                });
-            }).catch(() => {
-                this.updateManager.enable();
-                if (this.state.isUpdating) {
-                    this.setState({
-                        isUpdating: false,
-                    });
-                }
-            });
-        }));
+        this.eventReferences.push(this.updateManager.listen(C_MSG.OutOfSync, this.outOfSyncHandler));
 
         // Update: New Message Received
-        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNewMessage, (data: INewMessageBulkUpdate) => {
-            if (this.state.isUpdating) {
-                return;
-            }
-            data.messages.forEach((message) => {
-                message.me = (this.connInfo.UserID === message.senderid);
-            });
-            if (data.peerid === this.state.selectedDialogId) {
-                const dataMsg = this.modifyMessages(this.state.messages, data.messages.reverse(), true);
-                this.setScrollMode('none');
-                this.setState({
-                    messages: dataMsg.msgs,
-                }, () => {
-                    setTimeout(() => {
-                        this.messageComponent.animateToEnd();
-                    }, 200);
-                });
-                const {peer} = this.state;
-                this.sendReadHistory(peer, dataMsg.maxId);
-                if (!this.isInChat) {
-                    this.readHistoryMaxId = dataMsg.maxId;
-                }
-            }
-            this.messageRepo.lazyUpsert(data.messages);
-            this.userRepo.importBulk(data.senders);
-
-            data.messages.forEach((message, index) => {
-                this.updateDialogs(message, data.accessHashes[index] || '0');
-            });
-
-            this.notifyMessage(data);
-
-            data.messages.forEach((message) => {
-                // Clear the message history
-                if (message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
-                    this.messageRepo.clearHistory(message.peerid || '', message.actiondata.maxid).then(() => {
-                        this.updateDialogsCounter(message.peerid || '', {
-                            mentionCounter: 0,
-                            unreadCounter: 0,
-                        });
-                        if (message.actiondata.pb_delete) {
-                            this.dialogRemove(message.peerid || '');
-                        } else if (data.peerid === this.state.selectedDialogId) {
-                            this.props.history.push(`/chat/${data.peerid}`);
-                        }
-                    });
-                } else if (message.senderid !== this.connInfo.UserID && message.peerid !== this.state.selectedDialogId) {
-                    this.updateDialogsCounter(message.peerid || '', {
-                        mentionCounterIncrease: (message.mention_me ? 1 : 0),
-                        unreadCounterIncrease: 1,
-                    });
-                }
-            });
-        }));
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNewMessage, this.updateNewMessageHandler));
 
         // Update: Message Dropped (internal)
-        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNewMessageDrop, (data: INewMessageBulkUpdate) => {
-            if (this.state.isUpdating) {
-                return;
-            }
-            data.messages.forEach((message, index) => {
-                this.updateDialogs(message, data.accessHashes[index] || '0');
-            });
-            this.messageRepo.lazyUpsert(data.messages);
-            this.userRepo.importBulk(data.senders);
-        }));
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNewMessageDrop, this.updateMessageDropHandler));
 
         // Update: Message Edited
-        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateMessageEdited, (data: UpdateMessageEdited.AsObject) => {
-            if (this.state.isUpdating) {
-                return;
-            }
-            this.messageRepo.lazyUpsert([data.message]);
-            if (this.dialogMap.hasOwnProperty(data.message.peerid || '')) {
-                const {dialogs} = this.state;
-                const index = this.dialogMap[data.message.peerid || ''];
-                if (dialogs[index].topmessageid === data.message.id) {
-                    this.updateDialogs(data.message, dialogs[index].accesshash || '0');
-                }
-            }
-            if (this.state.selectedDialogId === data.message.peerid) {
-                const {messages} = this.state;
-                const index = findIndex(messages, {id: data.message.id});
-                if (index > -1) {
-                    messages[index] = data.message;
-                    messages[index].me = (this.connInfo.UserID === data.message.senderid);
-                    this.messageComponent.list.forceUpdateGrid();
-                }
-            }
-        }));
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateMessageEdited, this.updateMessageEditHandler));
 
         // Update: User is typing
-        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUserTyping, (data: UpdateUserTyping.AsObject) => {
-            if (this.state.isUpdating) {
-                return;
-            }
-            const {isTypingList} = this.state;
-            if (data.action === TypingAction.TYPINGACTIONTYPING) {
-                const fn = setTimeout(() => {
-                    if (isTypingList.hasOwnProperty(data.peerid || '')) {
-                        if (isTypingList[data.peerid || ''].hasOwnProperty(data.userid || 0)) {
-                            delete isTypingList[data.peerid || ''][data.userid || 0];
-                            this.setState({
-                                isTypingList,
-                            });
-                        }
-                    }
-                }, 5000);
-                if (!isTypingList.hasOwnProperty(data.peerid || '')) {
-                    isTypingList[data.peerid || ''] = {};
-                    isTypingList[data.peerid || ''][data.userid || 0] = fn;
-                } else {
-                    if (isTypingList[data.peerid || ''].hasOwnProperty(data.userid || 0)) {
-                        clearTimeout(isTypingList[data.peerid || ''][data.userid || 0]);
-                    }
-                    isTypingList[data.peerid || ''][data.userid || 0] = fn;
-                }
-                this.setState({
-                    isTypingList,
-                });
-            } else if (data.action === TypingAction.TYPINGACTIONCANCEL) {
-                if (isTypingList.hasOwnProperty(data.peerid || '')) {
-                    if (isTypingList[data.peerid || ''].hasOwnProperty(data.userid || 0)) {
-                        clearTimeout(isTypingList[data.peerid || ''][data.userid || 0]);
-                        delete isTypingList[data.peerid || ''][data.userid || 0];
-                        this.setState({
-                            isTypingList,
-                        });
-                    }
-                }
-            }
-        }));
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUserTyping, this.updateUserTypeHandler));
 
         // Update: Read Inbox History
-        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateReadHistoryInbox, (data: UpdateReadHistoryInbox.AsObject) => {
-            if (this.state.isUpdating) {
-                return;
-            }
-            window.console.log('UpdateMaxInbox:', data.maxid);
-            const peerId = data.peer.id || '';
-            this.updateDialogsCounter(peerId, {maxInbox: data.maxid});
-            if (peerId !== this.state.selectedDialogId) {
-                this.messageRepo.getUnreadCount(peerId, data.maxid || 0).then((count) => {
-                    this.updateDialogsCounter(peerId, {
-                        mentionCounter: count.mention,
-                        unreadCounter: count.message,
-                    });
-                });
-            } else {
-                this.updateDialogsCounter(peerId, {
-                    mentionCounter: 0,
-                    unreadCounter: 0,
-                });
-            }
-        }));
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateReadHistoryInbox, this.updateReadInboxHandler));
 
         // Update: Read Outbox History
-        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateReadHistoryOutbox, (data: UpdateReadHistoryOutbox.AsObject) => {
-            if (this.state.isUpdating) {
-                return;
-            }
-            window.console.log('UpdateMaxOutbox:', data.maxid, data.peer.id);
-            this.updateDialogsCounter(data.peer.id || '', {maxOutbox: data.maxid});
-            if (data.peer.id === this.state.selectedDialogId) {
-                this.setState({
-                    maxReadId: data.maxid || 0,
-                });
-            }
-        }));
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateReadHistoryOutbox, this.updateReadOutboxHandler));
 
         // Update: Message Delete
-        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateMessagesDeleted, (data: UpdateMessagesDeleted.AsObject) => {
-            if (this.state.isUpdating) {
-                return;
-            }
-            let firstMessageId = 0;
-            if (data.messageidsList.length > 0) {
-                firstMessageId = data.messageidsList[0];
-            }
-            this.messageRepo.get(firstMessageId).then((res) => {
-                this.messageRepo.removeMany(data.messageidsList).then(() => {
-                    if (firstMessageId && res) {
-                        const dialogIndex = this.dialogMap[res.peerid || ''];
-                        const dialog = dialogs[dialogIndex];
-                        this.messageRepo.getUnreadCount(res.peerid || '', dialog.readinboxmaxid || 0).then((count) => {
-                            this.updateDialogsCounter(res.peerid || '', {
-                                mentionCounter: count.mention,
-                                unreadCounter: count.message
-                            });
-                        });
-                    }
-                });
-            });
-            const {messages, dialogs} = this.state;
-            let updateView = false;
-            // TODO: check server
-            data.messageidsList.map((id) => {
-                const dialogIndex = findIndex(dialogs, {topmessageid: id});
-                if (dialogIndex > -1) {
-                    const peer = new InputPeer();
-                    peer.setId(dialogs[dialogIndex].peerid || '');
-                    peer.setAccesshash(dialogs[dialogIndex].accesshash || '0');
-                    if (id > 1) {
-                        this.messageRepo.getMany({peer, before: id, limit: 1}).then((res) => {
-                            if (res.length > 0) {
-                                this.updateDialogs(res[0], dialogs[dialogIndex].accesshash || '0', true);
-                            }
-                        });
-                    }
-                }
-                const index = findIndex(messages, {id});
-                if (index > -1) {
-                    updateView = true;
-                    this.messageComponent.cache.clear(index, 0);
-                    messages.splice(index, 1);
-                }
-            });
-            if (updateView) {
-                this.messageComponent.list.recomputeGridSize();
-            }
-        }));
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateMessagesDeleted, this.updateMessageDeleteHandler));
 
         // Update: Username
-        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUsername, (data: UpdateUsername.AsObject) => {
-            if (this.state.isUpdating) {
-                return;
-            }
-            this.userRepo.importBulk([{
-                firstname: data.firstname,
-                id: data.userid,
-                lastname: data.lastname,
-                username: data.username,
-            }]);
-        }));
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUsername, this.updateUsernameHandler));
 
         // Update: Notify Settings
-        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNotifySettings, (data: UpdateNotifySettings.AsObject) => {
-            if (this.state.isUpdating) {
-                return;
-            }
-            this.updateDialogsNotifySettings(data.notifypeer.id || '', data.settings);
-        }));
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNotifySettings, this.updateNotifySettingsHandler));
 
         // Update: Users
-        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUsers, (data: User[]) => {
-            if (this.state.isUpdating) {
-                return;
-            }
-            // @ts-ignore
-            this.userRepo.importBulk(data);
-        }));
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUsers, this.updateUserHandler));
 
         // Update: Groups
-        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateGroups, (data: Group[]) => {
-            if (this.state.isUpdating) {
-                return;
-            }
-            // @ts-ignore
-            this.groupRepo.importBulk(data);
-        }));
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateGroups, this.updateGroupHandler));
+
+        // Electron events
+        this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.Setting, this.electronSettingsHandler));
+        this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.Logout, this.electronLogoutHandler));
+        this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.SizeMode, this.electronSizeModeHandler));
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -577,7 +308,7 @@ class Chat extends React.Component<IProps, IState> {
                                     isTypingList={isTypingList}
                                     cancelIsTyping={this.cancelIsTypingHandler}
                                     onContextMenu={this.dialogContextMenuHandler}/>);
-                case 'setting':
+                case 'settings':
                     return (<SettingMenu updateMessages={this.settingUpdateMessage} subMenu={leftMenuSub}
                                          onClose={this.bottomBarSelectHandler.bind(this, 'chat')}
                                          onSubPlaceChange={this.leftMenuSubPageChangeHandler}/>);
@@ -595,7 +326,7 @@ class Chat extends React.Component<IProps, IState> {
             cmd: 'account',
             title: 'Account Info',
         }, {
-            cmd: 'setting',
+            cmd: 'settings',
             title: 'Settings',
         }];
 
@@ -935,13 +666,13 @@ class Chat extends React.Component<IProps, IState> {
                 break;
             case 'account':
                 this.setState({
-                    leftMenu: 'setting',
+                    leftMenu: 'settings',
                     leftMenuSub: 'account',
                 });
                 break;
-            case 'setting':
+            case 'settings':
                 this.setState({
-                    leftMenu: 'setting',
+                    leftMenu: 'settings',
                 });
                 break;
         }
@@ -961,6 +692,340 @@ class Chat extends React.Component<IProps, IState> {
 
     private messageRefHandler = (ref: any) => {
         this.messageComponent = ref;
+    }
+
+    /* Init dialogs */
+    private initDialogs = () => {
+        this.dialogRepo.getManyCache({}).then((res) => {
+            let unreadCounter = 0;
+            // Map indexes in order to to find them with O(1)
+            res.forEach((dialog, index) => {
+                this.dialogMap[dialog.peerid || ''] = index;
+                if (dialog && dialog.unreadcount) {
+                    unreadCounter += dialog.unreadcount;
+                }
+            });
+
+            const selectedId = this.props.match.params.id;
+            this.setState({
+                dialogs: res,
+                selectedDialogId: selectedId,
+                unreadCounter,
+            }, () => {
+                if (selectedId !== 'null') {
+                    const peer = this.getPeerByDialogId(selectedId);
+                    this.setState({
+                        leftMenu: 'chat',
+                        peer,
+                    }, () => {
+                        this.getMessagesByDialogId(selectedId, true);
+                    });
+                }
+            });
+
+            this.setLoading(false);
+        }).catch(() => {
+            this.setLoading(false);
+        });
+    }
+
+    /* Out of sync handler */
+    private outOfSyncHandler = () => {
+        if (this.state.isUpdating) {
+            return;
+        }
+        window.console.log('snapshot!');
+        this.checkSync().then(() => {
+            this.updateManager.disable();
+            this.setState({
+                isUpdating: true,
+            });
+        }).catch(() => {
+            this.updateManager.enable();
+            if (this.state.isUpdating) {
+                this.setState({
+                    isUpdating: false,
+                });
+            }
+        });
+    }
+
+    /* Update new message handler */
+    private updateNewMessageHandler = (data: INewMessageBulkUpdate) => {
+        if (this.state.isUpdating) {
+            return;
+        }
+        data.messages.forEach((message) => {
+            message.me = (this.connInfo.UserID === message.senderid);
+        });
+        if (data.peerid === this.state.selectedDialogId) {
+            const dataMsg = this.modifyMessages(this.state.messages, data.messages.reverse(), true);
+            this.setScrollMode('none');
+            this.setState({
+                messages: dataMsg.msgs,
+            }, () => {
+                setTimeout(() => {
+                    this.messageComponent.animateToEnd();
+                }, 200);
+            });
+            const {peer} = this.state;
+            this.sendReadHistory(peer, dataMsg.maxId);
+            if (!this.isInChat) {
+                this.readHistoryMaxId = dataMsg.maxId;
+            }
+        }
+        this.messageRepo.lazyUpsert(data.messages);
+        this.userRepo.importBulk(data.senders);
+
+        data.messages.forEach((message, index) => {
+            this.updateDialogs(message, data.accessHashes[index] || '0');
+        });
+
+        this.notifyMessage(data);
+
+        data.messages.forEach((message) => {
+            // Clear the message history
+            if (message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
+                this.messageRepo.clearHistory(message.peerid || '', message.actiondata.maxid).then(() => {
+                    this.updateDialogsCounter(message.peerid || '', {
+                        mentionCounter: 0,
+                        unreadCounter: 0,
+                    });
+                    if (message.actiondata.pb_delete) {
+                        this.dialogRemove(message.peerid || '');
+                    } else if (data.peerid === this.state.selectedDialogId) {
+                        this.props.history.push(`/chat/${data.peerid}`);
+                    }
+                });
+            } else if (message.senderid !== this.connInfo.UserID && message.peerid !== this.state.selectedDialogId) {
+                this.updateDialogsCounter(message.peerid || '', {
+                    mentionCounterIncrease: (message.mention_me ? 1 : 0),
+                    unreadCounterIncrease: 1,
+                });
+            }
+        });
+    }
+
+    /* Update drop message */
+    private updateMessageDropHandler = (data: INewMessageBulkUpdate) => {
+        if (this.state.isUpdating) {
+            return;
+        }
+        data.messages.forEach((message, index) => {
+            this.updateDialogs(message, data.accessHashes[index] || '0');
+        });
+        this.messageRepo.lazyUpsert(data.messages);
+        this.userRepo.importBulk(data.senders);
+    }
+
+    /* Update message edit */
+    private updateMessageEditHandler = (data: UpdateMessageEdited.AsObject) => {
+        if (this.state.isUpdating) {
+            return;
+        }
+        this.messageRepo.lazyUpsert([data.message]);
+        if (this.dialogMap.hasOwnProperty(data.message.peerid || '')) {
+            const {dialogs} = this.state;
+            const index = this.dialogMap[data.message.peerid || ''];
+            if (dialogs[index].topmessageid === data.message.id) {
+                this.updateDialogs(data.message, dialogs[index].accesshash || '0');
+            }
+        }
+        if (this.state.selectedDialogId === data.message.peerid) {
+            const {messages} = this.state;
+            const index = findIndex(messages, {id: data.message.id});
+            if (index > -1) {
+                messages[index] = data.message;
+                messages[index].me = (this.connInfo.UserID === data.message.senderid);
+                this.messageComponent.list.forceUpdateGrid();
+            }
+        }
+    }
+
+    /* Update user typing */
+    private updateUserTypeHandler = (data: UpdateUserTyping.AsObject) => {
+        if (this.state.isUpdating) {
+            return;
+        }
+        const {isTypingList} = this.state;
+        if (data.action === TypingAction.TYPINGACTIONTYPING) {
+            const fn = setTimeout(() => {
+                if (isTypingList.hasOwnProperty(data.peerid || '')) {
+                    if (isTypingList[data.peerid || ''].hasOwnProperty(data.userid || 0)) {
+                        delete isTypingList[data.peerid || ''][data.userid || 0];
+                        this.setState({
+                            isTypingList,
+                        });
+                    }
+                }
+            }, 5000);
+            if (!isTypingList.hasOwnProperty(data.peerid || '')) {
+                isTypingList[data.peerid || ''] = {};
+                isTypingList[data.peerid || ''][data.userid || 0] = fn;
+            } else {
+                if (isTypingList[data.peerid || ''].hasOwnProperty(data.userid || 0)) {
+                    clearTimeout(isTypingList[data.peerid || ''][data.userid || 0]);
+                }
+                isTypingList[data.peerid || ''][data.userid || 0] = fn;
+            }
+            this.setState({
+                isTypingList,
+            });
+        } else if (data.action === TypingAction.TYPINGACTIONCANCEL) {
+            if (isTypingList.hasOwnProperty(data.peerid || '')) {
+                if (isTypingList[data.peerid || ''].hasOwnProperty(data.userid || 0)) {
+                    clearTimeout(isTypingList[data.peerid || ''][data.userid || 0]);
+                    delete isTypingList[data.peerid || ''][data.userid || 0];
+                    this.setState({
+                        isTypingList,
+                    });
+                }
+            }
+        }
+    }
+
+    /* Update read history inbox handler */
+    private updateReadInboxHandler = (data: UpdateReadHistoryInbox.AsObject) => {
+        if (this.state.isUpdating) {
+            return;
+        }
+        window.console.log('UpdateMaxInbox:', data.maxid);
+        const peerId = data.peer.id || '';
+        this.updateDialogsCounter(peerId, {maxInbox: data.maxid});
+        if (peerId !== this.state.selectedDialogId) {
+            this.messageRepo.getUnreadCount(peerId, data.maxid || 0).then((count) => {
+                this.updateDialogsCounter(peerId, {
+                    mentionCounter: count.mention,
+                    unreadCounter: count.message,
+                });
+            });
+        } else {
+            this.updateDialogsCounter(peerId, {
+                mentionCounter: 0,
+                unreadCounter: 0,
+            });
+        }
+    }
+
+    /* Update read history outbox handler */
+    private updateReadOutboxHandler = (data: UpdateReadHistoryOutbox.AsObject) => {
+        if (this.state.isUpdating) {
+            return;
+        }
+        window.console.log('UpdateMaxOutbox:', data.maxid, data.peer.id);
+        this.updateDialogsCounter(data.peer.id || '', {maxOutbox: data.maxid});
+        if (data.peer.id === this.state.selectedDialogId) {
+            this.setState({
+                maxReadId: data.maxid || 0,
+            });
+        }
+    }
+
+    /* Update message delete handler */
+    private updateMessageDeleteHandler = (data: UpdateMessagesDeleted.AsObject) => {
+        if (this.state.isUpdating) {
+            return;
+        }
+        let firstMessageId = 0;
+        if (data.messageidsList.length > 0) {
+            firstMessageId = data.messageidsList[0];
+        }
+        this.messageRepo.get(firstMessageId).then((res) => {
+            this.messageRepo.removeMany(data.messageidsList).then(() => {
+                if (firstMessageId && res) {
+                    const dialogIndex = this.dialogMap[res.peerid || ''];
+                    const dialog = dialogs[dialogIndex];
+                    this.messageRepo.getUnreadCount(res.peerid || '', dialog.readinboxmaxid || 0).then((count) => {
+                        this.updateDialogsCounter(res.peerid || '', {
+                            mentionCounter: count.mention,
+                            unreadCounter: count.message
+                        });
+                    });
+                }
+            });
+        });
+        const {messages, dialogs} = this.state;
+        let updateView = false;
+        // TODO: check server
+        data.messageidsList.map((id) => {
+            const dialogIndex = findIndex(dialogs, {topmessageid: id});
+            if (dialogIndex > -1) {
+                const peer = new InputPeer();
+                peer.setId(dialogs[dialogIndex].peerid || '');
+                peer.setAccesshash(dialogs[dialogIndex].accesshash || '0');
+                if (id > 1) {
+                    this.messageRepo.getMany({peer, before: id, limit: 1}).then((res) => {
+                        if (res.length > 0) {
+                            this.updateDialogs(res[0], dialogs[dialogIndex].accesshash || '0', true);
+                        }
+                    });
+                }
+            }
+            const index = findIndex(messages, {id});
+            if (index > -1) {
+                updateView = true;
+                this.messageComponent.cache.clear(index, 0);
+                messages.splice(index, 1);
+            }
+        });
+        if (updateView) {
+            this.messageComponent.list.recomputeGridSize();
+        }
+    }
+
+    /* Update username handler */
+    private updateUsernameHandler = (data: UpdateUsername.AsObject) => {
+        if (this.state.isUpdating) {
+            return;
+        }
+        this.userRepo.importBulk([{
+            firstname: data.firstname,
+            id: data.userid,
+            lastname: data.lastname,
+            username: data.username,
+        }]);
+    }
+
+    /* Update notify settings handler */
+    private updateNotifySettingsHandler = (data: UpdateNotifySettings.AsObject) => {
+        if (this.state.isUpdating) {
+            return;
+        }
+        this.updateDialogsNotifySettings(data.notifypeer.id || '', data.settings);
+    }
+
+    /* Update user handler */
+    private updateUserHandler = (data: User[]) => {
+        if (this.state.isUpdating) {
+            return;
+        }
+        // @ts-ignore
+        this.userRepo.importBulk(data);
+    }
+
+    /* Update group handler */
+    private updateGroupHandler = (data: Group[]) => {
+        if (this.state.isUpdating) {
+            return;
+        }
+        // @ts-ignore
+        this.groupRepo.importBulk(data);
+    }
+
+    /* Electron preferences click handler */
+    private electronSettingsHandler = () => {
+        this.bottomBarSelectHandler('settings');
+    }
+
+    /* Electron log out click handler */
+    private electronLogoutHandler = () => {
+        this.bottomBarSelectHandler('logout');
+    }
+
+    /* Electron size mode change handler */
+    private electronSizeModeHandler = (mode: string) => {
+        this.isMobileView = (mode === 'responsive');
+        this.forceUpdate();
     }
 
     private getMessagesByDialogId(dialogId: string, force?: boolean) {

@@ -192,6 +192,16 @@
       }
     }
   }
+  .column-right {
+    width: 0;
+    height: 100%;
+    flex: none;
+    overflow: hidden;
+    transition: width 0.2s;
+    &.active {
+      width: 318px;
+    }
+  }
   &.mobile-view {
     width: 200vw;
     transition: margin-left 0.3s;
@@ -205,15 +215,15 @@
         padding-left: 40px;
       }
     }
-  }
-  .column-right {
-    width: 0;
-    height: 100%;
-    flex: none;
-    overflow: hidden;
-    transition: width 0.2s;
-    &.active {
-      width: 318px;
+    .column-right {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 120;
+      &.active {
+        width: 100vw;
+      }
     }
   }
 }
@@ -625,12 +635,16 @@ html[theme="dark"] {
 .App.is-electron {
   .wrapper {
     height: 100vh !important;
-    width: 100vh !important;
+    width: 100vw !important;
     display: flex;
     align-items: center;
   }
-  .container {
+  .container:not(.mobile-view) {
     height: 100vh !important;
-    width: 100vh !important;
+    width: 100vw !important;
+  }
+  .container.mobile-view {
+    height: 100vh !important;
+    width: 200vw !important;
   }
 }

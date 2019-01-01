@@ -48,7 +48,7 @@ class BottomBar extends React.Component<IProps, IState> {
             title: 'Chats',
         }, {
             icon: <SettingsRounded/>,
-            page: 'setting',
+            page: 'settings',
             title: 'Settings',
         }, {
             icon: <ExitToAppRounded/>,

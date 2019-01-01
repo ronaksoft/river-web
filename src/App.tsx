@@ -11,7 +11,6 @@ import MainRepo from './app/repository';
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 
 import './App.css';
-import ElectronService from './app/services/electron';
 
 const theme = createMuiTheme({
     palette: {
@@ -44,8 +43,7 @@ class App extends React.Component<{}, IState> {
         this.mainRepo = MainRepo.getInstance();
 
         // @ts-ignore
-        if (window && window.process) {
-            ElectronService.getInstance();
+        if (window.isElectron) {
             this.isElectron = true;
         }
     }

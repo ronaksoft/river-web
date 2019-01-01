@@ -205,6 +205,14 @@ input {
       .container .column-center .start-messaging .start-messaging-footer {
         height: 50px;
         background-color: rgba(255, 255, 255, 0.2); }
+  .container .column-right {
+    width: 0;
+    height: 100%;
+    flex: none;
+    overflow: hidden;
+    transition: width 0.2s; }
+    .container .column-right.active {
+      width: 318px; }
   .container.mobile-view {
     width: 200vw;
     transition: margin-left 0.3s; }
@@ -216,14 +224,14 @@ input {
       .container.mobile-view .column-left .top,
       .container.mobile-view .column-center .top {
         padding-left: 40px; }
-  .container .column-right {
-    width: 0;
-    height: 100%;
-    flex: none;
-    overflow: hidden;
-    transition: width 0.2s; }
-    .container .column-right.active {
-      width: 318px; }
+    .container.mobile-view .column-right {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 120; }
+      .container.mobile-view .column-right.active {
+        width: 100vw; }
 
 html[bg="1"] .container .column-center .conversation,
 html[bg="1"] .container .column-center .start-messaging {
@@ -475,3 +483,17 @@ html[theme="dark"] .forward-recipient-dialog .dialog-content {
   background-color: var(--dark); }
   html[theme="dark"] .forward-recipient-dialog .dialog-content .actions-bar {
     background-color: var(--dark-medium); }
+
+.App.is-electron .wrapper {
+  height: 100vh !important;
+  width: 100vw !important;
+  display: flex;
+  align-items: center; }
+
+.App.is-electron .container:not(.mobile-view) {
+  height: 100vh !important;
+  width: 100vw !important; }
+
+.App.is-electron .container.mobile-view {
+  height: 100vh !important;
+  width: 200vw !important; }
