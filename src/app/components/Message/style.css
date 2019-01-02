@@ -54,7 +54,7 @@
   --dark-blue-hover: rgba(46,162,254, 0.5);
   --dark-blue-hover-light: rgba(46,162,254, 0.3);
   --dark-blue-accent-low: #3E6A96;
-  --dark-blue-accent-medium: #232F40;
+  --dark-blue-accent-medium: #344359;
   --red: #cc0000; }
 
 body {
@@ -292,7 +292,7 @@ input {
     font-size: 12.5px;
     line-height: 21px;
     text-transform: uppercase;
-    margin-bottom: 8px; }
+    margin-top: 8px; }
   .bubble-wrapper > .system-message {
     background-color: rgba(0, 0, 0, 0.31);
     border-radius: 7.5px;
@@ -449,6 +449,8 @@ html[font="2"] .bubble-wrapper .bubble {
 html[font="3"] .bubble-wrapper .bubble {
   font-size: 16px;
   padding-bottom: 16px; }
+  html[font="3"] .bubble-wrapper .bubble > .inner {
+    padding-bottom: 2px !important; }
 
 html[font="3"] .bubble-wrapper .message-status {
   height: 11px; }
@@ -458,6 +460,8 @@ html[font="3"] .bubble-wrapper .message-status {
 html[font="4"] .bubble-wrapper .bubble {
   font-size: 18px;
   padding-bottom: 16px; }
+  html[font="4"] .bubble-wrapper .bubble > .inner {
+    padding-bottom: 4px !important; }
 
 html[font="4"] .bubble-wrapper .message-status {
   height: 11px; }
@@ -467,8 +471,40 @@ html[font="4"] .bubble-wrapper .message-status {
 html[font="5"] .bubble-wrapper .bubble {
   font-size: 20px;
   padding-bottom: 17px; }
+  html[font="5"] .bubble-wrapper .bubble > .inner {
+    padding-bottom: 6px !important; }
 
 html[font="5"] .bubble-wrapper .message-status {
   height: 12px; }
   html[font="5"] .bubble-wrapper .message-status .time {
     font-size: 12px; }
+
+html[bubble="2"] .bubble-wrapper {
+  padding-bottom: 4px; }
+  html[bubble="2"] .bubble-wrapper .avatar {
+    top: 6px; }
+  html[bubble="2"] .bubble-wrapper .arrow {
+    display: none; }
+  html[bubble="2"] .bubble-wrapper .bubble {
+    border-radius: 20px;
+    min-width: 91px;
+    padding-bottom: 16px; }
+    html[bubble="2"] .bubble-wrapper .bubble > .inner {
+      padding: 8px 12px 0 8px; }
+    html[bubble="2"] .bubble-wrapper .bubble .name {
+      padding: 4px 12px 0 8px; }
+  html[bubble="2"] .bubble-wrapper.avatar.you .bubble > .inner {
+    padding: 2px 12px 0 8px; }
+
+html[bubble="4"] .bubble-wrapper {
+  padding-bottom: 4px; }
+  html[bubble="4"] .bubble-wrapper .bubble {
+    border-radius: 10px;
+    min-width: 91px;
+    padding-bottom: 16px; }
+    html[bubble="4"] .bubble-wrapper .bubble > .inner {
+      padding: 8px 12px 0 8px; }
+    html[bubble="4"] .bubble-wrapper .bubble .name {
+      padding: 4px 12px 0 8px; }
+  html[bubble="4"] .bubble-wrapper.avatar.you .bubble > .inner {
+    padding: 2px 12px 0 8px; }

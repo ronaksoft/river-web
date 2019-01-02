@@ -284,7 +284,7 @@
     font-size: 12.5px;
     line-height: 21px;
     text-transform: uppercase;
-    margin-bottom: 8px;
+    margin-top: 8px;
   }
   > .system-message {
     background-color: rgba(0, 0, 0, 0.31);
@@ -501,6 +501,9 @@ html[font="3"] {
     .bubble {
       font-size: 16px;
       padding-bottom: 16px;
+      > .inner {
+        padding-bottom: 2px !important;
+      }
     }
     .message-status {
       height: 11px;
@@ -516,6 +519,9 @@ html[font="4"] {
     .bubble {
       font-size: 18px;
       padding-bottom: 16px;
+      > .inner {
+        padding-bottom: 4px !important;
+      }
     }
     .message-status {
       height: 11px;
@@ -531,6 +537,9 @@ html[font="5"] {
     .bubble {
       font-size: 20px;
       padding-bottom: 17px;
+      > .inner {
+        padding-bottom: 6px !important;
+      }
     }
     .message-status {
       height: 12px;
@@ -540,3 +549,106 @@ html[font="5"] {
     }
   }
 }
+
+html[bubble="2"] {
+  .bubble-wrapper {
+    padding-bottom: 4px;
+    .avatar {
+      top: 6px;
+    }
+    .arrow {
+      display: none;
+    }
+    .bubble {
+      border-radius: 20px;
+      min-width: 91px;
+      padding-bottom: 16px;
+      > .inner {
+        padding: 8px 12px 0 8px;
+      }
+      .name {
+        padding: 4px 12px 0 8px;
+      }
+    }
+    &.avatar.you {
+      .bubble {
+        > .inner {
+          padding: 2px 12px 0 8px;
+        }
+      }
+    }
+  }
+}
+
+html[bubble="4"] {
+  .bubble-wrapper {
+    padding-bottom: 4px;
+    .bubble {
+      border-radius: 10px;
+      min-width: 91px;
+      padding-bottom: 16px;
+      > .inner {
+        padding: 8px 12px 0 8px;
+      }
+      .name {
+        padding: 4px 12px 0 8px;
+      }
+    }
+    &.avatar.you {
+      .bubble {
+        > .inner {
+          padding: 2px 12px 0 8px;
+        }
+      }
+    }
+  }
+}
+
+//html[bubble="3"] {
+//  .bubble-wrapper {
+//    padding-bottom: 4px;
+//    .avatar {
+//      top: 6px;
+//    }
+//    .arrow {
+//      display: none;
+//    }
+//    .bubble {
+//      min-width: 91px;
+//      padding-bottom: 16px;
+//      > .inner {
+//        padding: 8px 12px 0 8px;
+//      }
+//      .name {
+//        padding: 4px 12px 0 8px;
+//      }
+//    }
+//    &.me {
+//      .bubble {
+//        border-radius: 20px 3px 3px 20px;
+//      }
+//    }
+//    &.you {
+//      .bubble {
+//        border-radius: 3px 20px 20px 3px;
+//      }
+//    }
+//    &.avatar.you {
+//      .bubble {
+//        > .inner {
+//          padding: 2px 12px 0 8px;
+//        }
+//      }
+//    }
+//  }
+//  .bubble-wrapper._bubble.me._last {
+//    .bubble {
+//      border-bottom-right-radius: 20px;
+//    }
+//  }
+//  .bubble-wrapper._bubble.you._last {
+//    .bubble {
+//      border-bottom-left-radius: 20px;
+//    }
+//  }
+//}

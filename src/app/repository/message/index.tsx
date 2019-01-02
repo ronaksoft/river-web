@@ -518,7 +518,7 @@ export default class MessageRepo {
             return new Promise((resolve) => {
                 Promise.all(promises).then((resArr) => {
                     if (!resArr[0]) {
-                        this.insertHole(peerId, min, true);
+                        this.insertHole(peerId, min, false);
                     }
                     if (!resArr[1] && !ignoreMax) {
                         this.insertHole(peerId, max, true);

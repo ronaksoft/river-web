@@ -566,6 +566,9 @@ class SettingMenu extends React.Component<IProps, IState> {
             }
             localStorage.setItem('river.theme.bubble', id);
             el.setAttribute('bubble', id);
+            if (this.props.updateMessages) {
+                this.props.updateMessages();
+            }
         });
     }
 

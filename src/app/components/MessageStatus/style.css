@@ -54,7 +54,7 @@
   --dark-blue-hover: rgba(46,162,254, 0.5);
   --dark-blue-hover-light: rgba(46,162,254, 0.3);
   --dark-blue-accent-low: #3E6A96;
-  --dark-blue-accent-medium: #232F40;
+  --dark-blue-accent-medium: #344359;
   --red: #cc0000; }
 
 body {
@@ -112,3 +112,13 @@ html[theme="dark-blue"] .message-status {
 
 html[theme="dark-blue"] .me .bubble .message-status {
   color: rgba(255, 255, 255, 0.5); }
+
+html[bubble="2"] .message-status {
+  left: 11px;
+  right: 11px;
+  bottom: 6px; }
+
+html[bubble="4"] .message-status {
+  left: 6px;
+  right: 6px;
+  bottom: 4px; }

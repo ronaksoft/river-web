@@ -51,7 +51,10 @@ export const bubbles = [{
 },{
     id: '2',
     title: 'Curve'
-},{
+}/*,{
     id: '3',
     title: 'Tear'
+}*/, {
+    id: '4',
+    title: 'Pad'
 }];

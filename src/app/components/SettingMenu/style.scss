@@ -307,6 +307,14 @@
           border-radius: 20px 3px 20px 20px;
         }
       }
+      &.bubble-4 {
+        &:after, &:before {
+          border-radius: 5px;
+        }
+        &:before {
+          border-radius: 5px;
+        }
+      }
     }
     .title-bar {
       background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.3) 70%, rgba(0, 0, 0, 0) 100%);

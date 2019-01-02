@@ -54,7 +54,7 @@
   --dark-blue-hover: rgba(46,162,254, 0.5);
   --dark-blue-hover-light: rgba(46,162,254, 0.3);
   --dark-blue-accent-low: #3E6A96;
-  --dark-blue-accent-medium: #232F40;
+  --dark-blue-accent-medium: #344359;
   --red: #cc0000; }
 
 body {
@@ -322,6 +322,13 @@ input {
     .setting-menu .background-container .item.bubble-3:before,
     .setting-menu .bubble-container .item.bubble-3:before {
       border-radius: 20px 3px 20px 20px; }
+    .setting-menu .background-container .item.bubble-4:after, .setting-menu .background-container .item.bubble-4:before,
+    .setting-menu .bubble-container .item.bubble-4:after,
+    .setting-menu .bubble-container .item.bubble-4:before {
+      border-radius: 5px; }
+    .setting-menu .background-container .item.bubble-4:before,
+    .setting-menu .bubble-container .item.bubble-4:before {
+      border-radius: 5px; }
   .setting-menu .background-container .title-bar,
   .setting-menu .bubble-container .title-bar {
     background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.3) 70%, rgba(0, 0, 0, 0) 100%);
