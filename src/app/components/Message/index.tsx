@@ -375,7 +375,7 @@ class Message extends React.Component<IProps, IState> {
                         </div>
                     );
                 } else {
-                    const last = false;
+                    // let last = false;
                     // if ((this.state.items.length - 1 === index)) {
                     //     last = true;
                     // } else {
@@ -386,7 +386,7 @@ class Message extends React.Component<IProps, IState> {
                     // }
                     return (
                         <div style={style}
-                             className={'bubble-wrapper _bubble' + (last ? ' _last' : '') + (message.me ? ' me' : ' you') + (message.avatar ? ' avatar' : '') + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '')}
+                             className={'bubble-wrapper _bubble' + (message.me ? ' me' : ' you') + (message.avatar ? ' avatar' : '') + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '')}
                              onClick={this.toggleSelectHandler.bind(this, message.id || 0, index)}
                              onDoubleClick={this.selectMessage.bind(this, index)}
                         >
