@@ -119,3 +119,34 @@ html[theme="dark"] {
     }
   }
 }
+
+html[theme="dark-blue"] {
+  .dialogs {
+    .dialog-search {
+      label, input, svg {
+        color: var(--white);
+      }
+    }
+    .dialog-list {
+      .dialog-container {
+        .dialog {
+          &:after {
+            background-color: var(--dark-blue-low);
+          }
+          &:hover {
+            background-color: var(--dark-blue-hover-light);
+            > span {
+              color: var(--color-text-hover);
+            }
+          }
+          &.active {
+            background-color: var(--dark-blue-hover);
+            > span {
+              color: var(--color-text-hover);
+            }
+          }
+        }
+      }
+    }
+  }
+}

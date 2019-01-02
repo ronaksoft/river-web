@@ -37,6 +37,7 @@
   --color-hover-dark: rgba(50, 61, 71, 0.12);
   --color-text-hover: rgba(50, 61, 71, 0.64);
   --header-color: #eee;
+  --light-mention: #2678b6;
   --dark-low: #191919;
   --dark-medium: #232323;
   --dark-high: #333333;
@@ -45,6 +46,15 @@
   --dark-accent-low: #003367;
   --dark-accent-medium: #004783;
   --dark-accent-high: #005EAE;
+  --dark-mention: #2d9fee;
+  --dark-blue-low: #1A212E;
+  --dark-blue-medium: #232F40;
+  --dark-blue-high: #14395f;
+  --dark-blue-high-alt: #2EA2FE;
+  --dark-blue-hover: rgba(46,162,254, 0.5);
+  --dark-blue-hover-light: rgba(46,162,254, 0.3);
+  --dark-blue-accent-low: #3E6A96;
+  --dark-blue-accent-medium: #232F40;
   --red: #cc0000; }
 
 body {
@@ -173,21 +183,42 @@ input {
     .user-dialog .user-info-menu .kk-card:last-of-type {
       margin-bottom: 0; }
 
-html[theme="dark"] .user-dialog .user-info-menu {
+html[theme="dark"] .user-dialog .user-info-menu,
+html[theme="dark-blue"] .user-dialog .user-info-menu {
   background-color: var(--dark-high); }
-  html[theme="dark"] .user-dialog .user-info-menu .info .line, html[theme="dark"] .user-dialog .user-info-menu .info .input-edit input, html[theme="dark"] .user-dialog .user-info-menu .info .input-edit label, html[theme="dark"] .user-dialog .user-info-menu .info .input-edit svg {
+  html[theme="dark"] .user-dialog .user-info-menu .info .line, html[theme="dark"] .user-dialog .user-info-menu .info .input-edit input, html[theme="dark"] .user-dialog .user-info-menu .info .input-edit label, html[theme="dark"] .user-dialog .user-info-menu .info .input-edit svg,
+  html[theme="dark-blue"] .user-dialog .user-info-menu .info .line,
+  html[theme="dark-blue"] .user-dialog .user-info-menu .info .input-edit input,
+  html[theme="dark-blue"] .user-dialog .user-info-menu .info .input-edit label,
+  html[theme="dark-blue"] .user-dialog .user-info-menu .info .input-edit svg {
     color: var(--white); }
-  html[theme="dark"] .user-dialog .user-info-menu .notify-settings .label {
+  html[theme="dark"] .user-dialog .user-info-menu .notify-settings .label,
+  html[theme="dark-blue"] .user-dialog .user-info-menu .notify-settings .label {
     color: var(--white); }
-  html[theme="dark"] .user-dialog .user-info-menu .form-control .action svg {
+  html[theme="dark"] .user-dialog .user-info-menu .form-control .action svg,
+  html[theme="dark-blue"] .user-dialog .user-info-menu .form-control .action svg {
     color: var(--white); }
-  html[theme="dark"] .user-dialog .user-info-menu .kk-card {
+  html[theme="dark"] .user-dialog .user-info-menu .kk-card,
+  html[theme="dark-blue"] .user-dialog .user-info-menu .kk-card {
     background-color: var(--dark-medium); }
 
-html[theme="dark"] .user-dialog .checkbox:not(.checked) {
+html[theme="dark"] .user-dialog .checkbox:not(.checked),
+html[theme="dark-blue"] .user-dialog .checkbox:not(.checked) {
   color: var(--white); }
 
-html[theme="dark"] .user-dialog .notify-setting-dialog div[role="document"] > div {
+html[theme="dark"] .user-dialog .notify-setting-dialog div[role="document"] > div,
+html[theme="dark-blue"] .user-dialog .notify-setting-dialog div[role="document"] > div {
   background-color: var(--dark); }
-  html[theme="dark"] .user-dialog .notify-setting-dialog div[role="document"] > div h2, html[theme="dark"] .user-dialog .notify-setting-dialog div[role="document"] > div p, html[theme="dark"] .user-dialog .notify-setting-dialog div[role="document"] > div .dialog-content span {
+  html[theme="dark"] .user-dialog .notify-setting-dialog div[role="document"] > div h2, html[theme="dark"] .user-dialog .notify-setting-dialog div[role="document"] > div p, html[theme="dark"] .user-dialog .notify-setting-dialog div[role="document"] > div .dialog-content span,
+  html[theme="dark-blue"] .user-dialog .notify-setting-dialog div[role="document"] > div h2,
+  html[theme="dark-blue"] .user-dialog .notify-setting-dialog div[role="document"] > div p,
+  html[theme="dark-blue"] .user-dialog .notify-setting-dialog div[role="document"] > div .dialog-content span {
     color: var(--white); }
+
+html[theme="dark-blue"] .user-dialog .user-info-menu {
+  background-color: var(--dark-blue-high); }
+  html[theme="dark-blue"] .user-dialog .user-info-menu .kk-card {
+    background-color: var(--dark-blue-medium); }
+
+html[theme="dark-blue"] .user-dialog .notify-setting-dialog div[role="document"] > div {
+  background-color: var(--dark-blue-low); }

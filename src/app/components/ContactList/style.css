@@ -37,6 +37,7 @@
   --color-hover-dark: rgba(50, 61, 71, 0.12);
   --color-text-hover: rgba(50, 61, 71, 0.64);
   --header-color: #eee;
+  --light-mention: #2678b6;
   --dark-low: #191919;
   --dark-medium: #232323;
   --dark-high: #333333;
@@ -45,6 +46,15 @@
   --dark-accent-low: #003367;
   --dark-accent-medium: #004783;
   --dark-accent-high: #005EAE;
+  --dark-mention: #2d9fee;
+  --dark-blue-low: #1A212E;
+  --dark-blue-medium: #232F40;
+  --dark-blue-high: #14395f;
+  --dark-blue-high-alt: #2EA2FE;
+  --dark-blue-hover: rgba(46,162,254, 0.5);
+  --dark-blue-hover-light: rgba(46,162,254, 0.3);
+  --dark-blue-accent-low: #3E6A96;
+  --dark-blue-accent-medium: #232F40;
   --red: #cc0000; }
 
 body {
@@ -182,3 +192,17 @@ html[theme="dark"] .contact-list .contact-list-container .contact-container .con
 
 html[theme="dark"] .contact-list .contact-list-container .contact-container .contact-item .name {
   color: var(--light); }
+
+html[theme="dark-blue"] .contact-list .contact-input-container {
+  color: var(--white); }
+  html[theme="dark-blue"] .contact-list .contact-input-container .chip {
+    background-color: var(--dark-blue-high);
+    color: var(--white); }
+  html[theme="dark-blue"] .contact-list .contact-input-container label, html[theme="dark-blue"] .contact-list .contact-input-container input {
+    color: var(--white); }
+
+html[theme="dark-blue"] .contact-list .contact-list-container .contact-container .contact-item:after {
+  background-color: var(--dark-blue-low); }
+
+html[theme="dark-blue"] .contact-list .contact-list-container .contact-container .contact-item .name {
+  color: var(--white); }

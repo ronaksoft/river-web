@@ -6,7 +6,6 @@
     Auditor: HamidrezaKK
     Copyright Ronak Software Group 2018
 */
-
 @import '../../../style/common';
 
 .write {
@@ -299,7 +298,8 @@
   }
 }
 
-html[theme="dark"] {
+html[theme="dark"],
+html[theme="dark-blue"] {
   .write {
     border: 1px solid var(--dark-medium);
     background-color: var(--dark-medium);
@@ -355,6 +355,48 @@ html[theme="dark"] {
     }
     .emoji-mart-search-icon {
       fill: var(--light);
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .write {
+    border: 1px solid var(--dark-blue-medium);
+    background-color: var(--dark-blue-medium);
+    .suggestion-list-container .mention__suggestions .mention__suggestions__list .mention__suggestions__item {
+      color: var(--white);
+      .inner.focused {
+        background-color: var(--dark-blue-hover);
+        .username {
+          color: var(--light);
+        }
+      }
+    }
+    .inputs {
+      .input {
+        .textarea-container {
+          background-color: var(--dark-blue-low) !important;
+        }
+      }
+    }
+    .actions {
+      svg {
+        color: var(--dark-blue-high);
+      }
+      [disabled] svg {
+        color: var(--grey);
+      }
+    }
+  }
+  .emoji-mart {
+    background-color: var(--dark-blue-medium);
+    border-color: var(--dark-blue-high);
+    .emoji-mart-bar {
+      border-color: var(--dark-blue-low);
+    }
+    .emoji-mart-search input {
+      background-color: var(--dark-blue-low);
+      border-color: var(--dark-blue-high);
     }
   }
 }

@@ -37,6 +37,7 @@
   --color-hover-dark: rgba(50, 61, 71, 0.12);
   --color-text-hover: rgba(50, 61, 71, 0.64);
   --header-color: #eee;
+  --light-mention: #2678b6;
   --dark-low: #191919;
   --dark-medium: #232323;
   --dark-high: #333333;
@@ -45,6 +46,15 @@
   --dark-accent-low: #003367;
   --dark-accent-medium: #004783;
   --dark-accent-high: #005EAE;
+  --dark-mention: #2d9fee;
+  --dark-blue-low: #1A212E;
+  --dark-blue-medium: #232F40;
+  --dark-blue-high: #14395f;
+  --dark-blue-high-alt: #2EA2FE;
+  --dark-blue-hover: rgba(46,162,254, 0.5);
+  --dark-blue-hover-light: rgba(46,162,254, 0.3);
+  --dark-blue-accent-low: #3E6A96;
+  --dark-blue-accent-medium: #232F40;
   --red: #cc0000; }
 
 body {
@@ -285,42 +295,81 @@ input {
     .input-placeholder .btn:hover {
       text-decoration: underline; }
 
-html[theme="dark"] .write {
+html[theme="dark"] .write,
+html[theme="dark-blue"] .write {
   border: 1px solid var(--dark-medium);
   background-color: var(--dark-medium); }
-  html[theme="dark"] .write .suggestion-list-container .mention__suggestions .mention__suggestions__list .mention__suggestions__item {
+  html[theme="dark"] .write .suggestion-list-container .mention__suggestions .mention__suggestions__list .mention__suggestions__item,
+  html[theme="dark-blue"] .write .suggestion-list-container .mention__suggestions .mention__suggestions__list .mention__suggestions__item {
     color: var(--light); }
-    html[theme="dark"] .write .suggestion-list-container .mention__suggestions .mention__suggestions__list .mention__suggestions__item .inner.focused {
+    html[theme="dark"] .write .suggestion-list-container .mention__suggestions .mention__suggestions__list .mention__suggestions__item .inner.focused,
+    html[theme="dark-blue"] .write .suggestion-list-container .mention__suggestions .mention__suggestions__list .mention__suggestions__item .inner.focused {
       background-color: var(--dark-high); }
-  html[theme="dark"] .write .inputs .input .textarea-container {
+  html[theme="dark"] .write .inputs .input .textarea-container,
+  html[theme="dark-blue"] .write .inputs .input .textarea-container {
     background-color: var(--dark-low) !important;
     color: var(--light) !important; }
-    html[theme="dark"] .write .inputs .input .textarea-container textarea {
+    html[theme="dark"] .write .inputs .input .textarea-container textarea,
+    html[theme="dark-blue"] .write .inputs .input .textarea-container textarea {
       color: var(--light) !important; }
-  html[theme="dark"] .write .actions svg {
+  html[theme="dark"] .write .actions svg,
+  html[theme="dark-blue"] .write .actions svg {
     color: var(--white); }
-  html[theme="dark"] .write .actions [disabled] svg {
+  html[theme="dark"] .write .actions [disabled] svg,
+  html[theme="dark-blue"] .write .actions [disabled] svg {
     color: var(--grey); }
-  html[theme="dark"] .write .previews {
+  html[theme="dark"] .write .previews,
+  html[theme="dark-blue"] .write .previews {
     color: var(--light);
     fill: var(--light); }
-    html[theme="dark"] .write .previews .preview-container .preview-message-wrapper {
+    html[theme="dark"] .write .previews .preview-container .preview-message-wrapper,
+    html[theme="dark-blue"] .write .previews .preview-container .preview-message-wrapper {
       background-color: rgba(255, 255, 255, 0.07); }
 
-html[theme="dark"] .emoji-mart {
+html[theme="dark"] .emoji-mart,
+html[theme="dark-blue"] .emoji-mart {
   background-color: var(--dark-medium);
   border-color: var(--dark-high); }
-  html[theme="dark"] .emoji-mart .emoji-mart-bar {
+  html[theme="dark"] .emoji-mart .emoji-mart-bar,
+  html[theme="dark-blue"] .emoji-mart .emoji-mart-bar {
     border-color: var(--dark-low); }
-  html[theme="dark"] .emoji-mart .emoji-mart-search input {
+  html[theme="dark"] .emoji-mart .emoji-mart-search input,
+  html[theme="dark-blue"] .emoji-mart .emoji-mart-search input {
     background-color: var(--dark-low);
     border-color: var(--dark-high);
     color: var(--light); }
-  html[theme="dark"] .emoji-mart .emoji-mart-category-label span {
+  html[theme="dark"] .emoji-mart .emoji-mart-category-label span,
+  html[theme="dark-blue"] .emoji-mart .emoji-mart-category-label span {
     background-color: transparent;
     color: var(--light); }
-  html[theme="dark"] .emoji-mart .emoji-mart-search-icon {
+  html[theme="dark"] .emoji-mart .emoji-mart-search-icon,
+  html[theme="dark-blue"] .emoji-mart .emoji-mart-search-icon {
     fill: var(--light); }
+
+html[theme="dark-blue"] .write {
+  border: 1px solid var(--dark-blue-medium);
+  background-color: var(--dark-blue-medium); }
+  html[theme="dark-blue"] .write .suggestion-list-container .mention__suggestions .mention__suggestions__list .mention__suggestions__item {
+    color: var(--white); }
+    html[theme="dark-blue"] .write .suggestion-list-container .mention__suggestions .mention__suggestions__list .mention__suggestions__item .inner.focused {
+      background-color: var(--dark-blue-hover); }
+      html[theme="dark-blue"] .write .suggestion-list-container .mention__suggestions .mention__suggestions__list .mention__suggestions__item .inner.focused .username {
+        color: var(--light); }
+  html[theme="dark-blue"] .write .inputs .input .textarea-container {
+    background-color: var(--dark-blue-low) !important; }
+  html[theme="dark-blue"] .write .actions svg {
+    color: var(--dark-blue-high); }
+  html[theme="dark-blue"] .write .actions [disabled] svg {
+    color: var(--grey); }
+
+html[theme="dark-blue"] .emoji-mart {
+  background-color: var(--dark-blue-medium);
+  border-color: var(--dark-blue-high); }
+  html[theme="dark-blue"] .emoji-mart .emoji-mart-bar {
+    border-color: var(--dark-blue-low); }
+  html[theme="dark-blue"] .emoji-mart .emoji-mart-search input {
+    background-color: var(--dark-blue-low);
+    border-color: var(--dark-blue-high); }
 
 html[font="1"] .write .inputs .input .textarea-container,
 html[font="1"] .write .inputs .input .textarea-container textarea {

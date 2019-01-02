@@ -154,7 +154,8 @@
   }
 }
 
-html[theme="dark"] {
+html[theme="dark"],
+html[theme="dark-blue"] {
   .new-group-menu {
     .menu-header {
       background-color: var(--dark-high);
@@ -190,6 +191,31 @@ html[theme="dark"] {
       &.no-bg {
         background-color: transparent;
       }
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .new-group-menu {
+    .menu-header {
+      background-color: var(--dark-blue-high);
+    }
+    .input-container {
+      .chip {
+        background-color: var(--dark-blue-high);
+      }
+    }
+    .contact-box {
+      .contact-container {
+        .contact-item {
+          &:after {
+            background-color: var(--dark-blue-low);
+          }
+        }
+      }
+    }
+    .actions-bar {
+      background-color: var(--dark-blue-high);
     }
   }
 }

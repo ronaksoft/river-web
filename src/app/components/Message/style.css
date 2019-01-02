@@ -37,6 +37,7 @@
   --color-hover-dark: rgba(50, 61, 71, 0.12);
   --color-text-hover: rgba(50, 61, 71, 0.64);
   --header-color: #eee;
+  --light-mention: #2678b6;
   --dark-low: #191919;
   --dark-medium: #232323;
   --dark-high: #333333;
@@ -45,6 +46,15 @@
   --dark-accent-low: #003367;
   --dark-accent-medium: #004783;
   --dark-accent-high: #005EAE;
+  --dark-mention: #2d9fee;
+  --dark-blue-low: #1A212E;
+  --dark-blue-medium: #232F40;
+  --dark-blue-high: #14395f;
+  --dark-blue-high-alt: #2EA2FE;
+  --dark-blue-hover: rgba(46,162,254, 0.5);
+  --dark-blue-hover-light: rgba(46,162,254, 0.3);
+  --dark-blue-accent-low: #3E6A96;
+  --dark-blue-accent-medium: #232F40;
   --red: #cc0000; }
 
 body {
@@ -208,7 +218,7 @@ input {
         direction: ltr;
         text-align: left; }
       .bubble-wrapper .bubble > .inner ._mention {
-        color: #2678b6;
+        color: var(--light-mention);
         display: inline-block; }
         .bubble-wrapper .bubble > .inner ._mention:hover {
           text-decoration: underline; }
@@ -332,56 +342,95 @@ input {
 .mobile-view .bubble-wrapper.you .bubble {
   margin-left: 10px; }
 
-html[theme="dark"] .chat {
+html[theme="dark"] .chat,
+html[theme="dark-blue"] .chat {
   border-color: var(--dark-low); }
 
-html[theme="dark"] .bubble-wrapper .bubble .inner ._mention {
-  color: #2d9fee; }
+html[theme="dark"] .bubble-wrapper .bubble .inner ._mention,
+html[theme="dark-blue"] .bubble-wrapper .bubble .inner ._mention {
+  color: var(--dark-mention); }
 
-html[theme="dark"] .bubble-wrapper.me .bubble {
+html[theme="dark"] .bubble-wrapper.me .bubble,
+html[theme="dark-blue"] .bubble-wrapper.me .bubble {
   background-color: var(--dark-accent-low);
   color: #eee; }
-  html[theme="dark"] .bubble-wrapper.me .bubble > .name {
+  html[theme="dark"] .bubble-wrapper.me .bubble > .name,
+  html[theme="dark-blue"] .bubble-wrapper.me .bubble > .name {
     color: #eee; }
 
-html[theme="dark"] .bubble-wrapper.me .arrow:after {
+html[theme="dark"] .bubble-wrapper.me .arrow:after,
+html[theme="dark-blue"] .bubble-wrapper.me .arrow:after {
   background-color: var(--dark-accent-low);
   color: #eee; }
 
-html[theme="dark"] .bubble-wrapper.you .bubble {
+html[theme="dark"] .bubble-wrapper.you .bubble,
+html[theme="dark-blue"] .bubble-wrapper.you .bubble {
   background-color: var(--dark-accent-medium);
   color: #eee; }
-  html[theme="dark"] .bubble-wrapper.you .bubble > .name {
+  html[theme="dark"] .bubble-wrapper.you .bubble > .name,
+  html[theme="dark-blue"] .bubble-wrapper.you .bubble > .name {
     color: #eee; }
 
-html[theme="dark"] .bubble-wrapper.you .arrow:after {
+html[theme="dark"] .bubble-wrapper.you .arrow:after,
+html[theme="dark-blue"] .bubble-wrapper.you .arrow:after {
   background-color: var(--dark-accent-medium);
   color: #eee; }
 
-html[theme="dark"] .bubble-wrapper > .date {
+html[theme="dark"] .bubble-wrapper > .date,
+html[theme="dark-blue"] .bubble-wrapper > .date {
   background-color: var(--dark-high);
   text-shadow: none;
   color: var(--grey); }
 
-html[theme="dark"] .bubble-wrapper .system-message {
+html[theme="dark"] .bubble-wrapper .system-message,
+html[theme="dark-blue"] .bubble-wrapper .system-message {
   background-color: rgba(255, 255, 255, 0.5);
   color: var(--dark); }
 
-html[theme="dark"] .bubble-wrapper .checkbox:not(.checked) {
+html[theme="dark"] .bubble-wrapper .checkbox:not(.checked),
+html[theme="dark-blue"] .bubble-wrapper .checkbox:not(.checked) {
   color: var(--white); }
 
 html[theme="dark"] .bubble-gap .loading,
-html[theme="dark"] .bubble-wrapper .loading {
+html[theme="dark"] .bubble-wrapper .loading,
+html[theme="dark-blue"] .bubble-gap .loading,
+html[theme="dark-blue"] .bubble-wrapper .loading {
   background-color: rgba(255, 255, 255, 0.5); }
   html[theme="dark"] .bubble-gap .loading .loader,
-  html[theme="dark"] .bubble-wrapper .loading .loader {
+  html[theme="dark"] .bubble-wrapper .loading .loader,
+  html[theme="dark-blue"] .bubble-gap .loading .loader,
+  html[theme="dark-blue"] .bubble-wrapper .loading .loader {
     background-image: url(../../../asset/image/loading/b.svg); }
 
-html[theme="dark"] .selectable .bubble-wrapper:hover {
+html[theme="dark"] .selectable .bubble-wrapper:hover,
+html[theme="dark-blue"] .selectable .bubble-wrapper:hover {
   background-color: var(--dark-hover-light); }
 
-html[theme="dark"] .selectable .bubble-wrapper.selected {
+html[theme="dark"] .selectable .bubble-wrapper.selected,
+html[theme="dark-blue"] .selectable .bubble-wrapper.selected {
   background-color: #27AE6020; }
+
+html[theme="dark-blue"] .chat {
+  border-color: var(--dark-blue-low); }
+
+html[theme="dark-blue"] .bubble-wrapper .bubble .inner ._mention {
+  color: var(--dark-blue-mention); }
+
+html[theme="dark-blue"] .bubble-wrapper.me .bubble {
+  background-color: var(--dark-blue-accent-low); }
+
+html[theme="dark-blue"] .bubble-wrapper.me .arrow:after {
+  background-color: var(--dark-blue-accent-low); }
+
+html[theme="dark-blue"] .bubble-wrapper.you .bubble {
+  background-color: var(--dark-blue-accent-medium); }
+
+html[theme="dark-blue"] .bubble-wrapper.you .arrow:after {
+  background-color: var(--dark-blue-accent-medium); }
+
+html[theme="dark-blue"] .bubble-wrapper > .date {
+  background-color: var(--dark-blue-hover);
+  color: var(--white); }
 
 html[font="0"] .bubble-wrapper .bubble {
   font-size: 10px; }

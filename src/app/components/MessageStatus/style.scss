@@ -46,9 +46,18 @@
 
 html[theme="dark"] {
   .message-status {
-    color: var(--grey)
+    color: var(--grey);
   }
   .me .bubble .message-status {
     color: var(--grey);
+  }
+}
+
+html[theme="dark-blue"] {
+  .message-status {
+    color: rgba(255, 255, 255, 0.5);
+  }
+  .me .bubble .message-status {
+    color: rgba(255, 255, 255, 0.5);
   }
 }

@@ -55,3 +55,13 @@ html[theme="dark"] {
     }
   }
 }
+
+html[theme="dark-blue"] {
+  .pop-up-date-container {
+    .pop-up-date {
+      background-color: var(--dark-blue-hover);
+      text-shadow: none;
+      color: var(--white);
+    }
+  }
+}

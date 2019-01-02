@@ -59,3 +59,19 @@ html[theme="dark"] {
     }
   }
 }
+
+
+html[theme="dark-blue"] {
+  .message-forwarded {
+    .forwarded-container {
+      .forwarded-message-wrapper {
+        .forwarded-bar {
+          background-color: var(--dark-blue-low);
+        }
+        .preview-message {
+          background-color: rgba(0, 0, 0, 0.20);
+        }
+      }
+    }
+  }
+}

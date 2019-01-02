@@ -37,6 +37,7 @@
   --color-hover-dark: rgba(50, 61, 71, 0.12);
   --color-text-hover: rgba(50, 61, 71, 0.64);
   --header-color: #eee;
+  --light-mention: #2678b6;
   --dark-low: #191919;
   --dark-medium: #232323;
   --dark-high: #333333;
@@ -45,6 +46,15 @@
   --dark-accent-low: #003367;
   --dark-accent-medium: #004783;
   --dark-accent-high: #005EAE;
+  --dark-mention: #2d9fee;
+  --dark-blue-low: #1A212E;
+  --dark-blue-medium: #232F40;
+  --dark-blue-high: #14395f;
+  --dark-blue-high-alt: #2EA2FE;
+  --dark-blue-hover: rgba(46,162,254, 0.5);
+  --dark-blue-hover-light: rgba(46,162,254, 0.3);
+  --dark-blue-accent-low: #3E6A96;
+  --dark-blue-accent-medium: #232F40;
   --red: #cc0000; }
 
 body {
@@ -183,21 +193,39 @@ input {
       background: var(--river-dark);
       box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4); }
 
-html[theme="dark"] .contacts .menu-header {
+html[theme="dark"] .contacts .menu-header,
+html[theme="dark-blue"] .contacts .menu-header {
   background-color: var(--dark-high);
   color: var(--white); }
 
-html[theme="dark"] .contacts .search-container label, html[theme="dark"] .contacts .search-container input {
+html[theme="dark"] .contacts .search-container label, html[theme="dark"] .contacts .search-container input,
+html[theme="dark-blue"] .contacts .search-container label,
+html[theme="dark-blue"] .contacts .search-container input {
   color: var(--white); }
 
-html[theme="dark"] .contacts .contact-box .contact-container .contact-item:after {
+html[theme="dark"] .contacts .contact-box .contact-container .contact-item:after,
+html[theme="dark-blue"] .contacts .contact-box .contact-container .contact-item:after {
   background-color: var(--dark-low); }
 
-html[theme="dark"] .contacts .contact-box .contact-container .contact-item .name {
+html[theme="dark"] .contacts .contact-box .contact-container .contact-item .name,
+html[theme="dark-blue"] .contacts .contact-box .contact-container .contact-item .name {
   color: var(--light); }
 
-html[theme="dark"] .add-contact-dialog div[role="document"] > div {
+html[theme="dark"] .add-contact-dialog div[role="document"] > div,
+html[theme="dark-blue"] .add-contact-dialog div[role="document"] > div {
   background: var(--dark);
   color: var(--white); }
-  html[theme="dark"] .add-contact-dialog div[role="document"] > div h2, html[theme="dark"] .add-contact-dialog div[role="document"] > div input, html[theme="dark"] .add-contact-dialog div[role="document"] > div label {
+  html[theme="dark"] .add-contact-dialog div[role="document"] > div h2, html[theme="dark"] .add-contact-dialog div[role="document"] > div input, html[theme="dark"] .add-contact-dialog div[role="document"] > div label,
+  html[theme="dark-blue"] .add-contact-dialog div[role="document"] > div h2,
+  html[theme="dark-blue"] .add-contact-dialog div[role="document"] > div input,
+  html[theme="dark-blue"] .add-contact-dialog div[role="document"] > div label {
     color: var(--white); }
+
+html[theme="dark-blue"] .contacts .menu-header {
+  background-color: var(--dark-blue-high); }
+
+html[theme="dark-blue"] .contacts .contact-box .contact-container .contact-item:after {
+  background-color: var(--dark-blue-low); }
+
+html[theme="dark-blue"] .add-contact-dialog div[role="document"] > div {
+  background: var(--dark-blue-low); }

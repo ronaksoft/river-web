@@ -6,7 +6,6 @@
     Auditor: HamidrezaKK
     Copyright Ronak Software Group 2018
 */
-
 @import '../../../style/common';
 
 .bg {
@@ -338,7 +337,8 @@ html[bg="14"] {
   }
 }
 
-html[theme="dark"][bg="1"] {
+html[theme="dark"][bg="1"],
+html[theme="dark-blue"][bg="1"] {
   .container .column-center .conversation,
   .container .column-center .start-messaging {
     background-image: url(../../../asset/image/bgl/4-point-stars.svg);
@@ -346,14 +346,16 @@ html[theme="dark"][bg="1"] {
   }
 }
 
-html[theme="dark"][bg="2"] {
+html[theme="dark"][bg="2"],
+html[theme="dark-blue"][bg="2"] {
   .container .column-center .conversation,
   .container .column-center .start-messaging {
     background-image: url(../../../asset/image/bgl/anchors-away.svg);
   }
 }
 
-html[theme="dark"][bg="3"] {
+html[theme="dark"][bg="3"],
+html[theme="dark-blue"][bg="3"] {
   .container .column-center .conversation,
   .container .column-center .start-messaging {
     background-image: url(../../../asset/image/bgl/bank-note.svg);
@@ -361,77 +363,88 @@ html[theme="dark"][bg="3"] {
   }
 }
 
-html[theme="dark"][bg="4"] {
+html[theme="dark"][bg="4"],
+html[theme="dark-blue"][bg="4"] {
   .container .column-center .conversation,
   .container .column-center .start-messaging {
     background-image: url(../../../asset/image/bgl/bubbles.svg);
   }
 }
 
-html[theme="dark"][bg="5"] {
+html[theme="dark"][bg="5"],
+html[theme="dark-blue"][bg="5"] {
   .container .column-center .conversation,
   .container .column-center .start-messaging {
     background-image: url(../../../asset/image/bgl/glamorous.svg);
   }
 }
 
-html[theme="dark"][bg="6"] {
+html[theme="dark"][bg="6"],
+html[theme="dark-blue"][bg="6"] {
   .container .column-center .conversation,
   .container .column-center .start-messaging {
     background-image: url(../../../asset/image/bgl/hideout.svg);
   }
 }
 
-html[theme="dark"][bg="7"] {
+html[theme="dark"][bg="7"],
+html[theme="dark-blue"][bg="7"] {
   .container .column-center .conversation,
   .container .column-center .start-messaging {
     background-image: url(../../../asset/image/bgl/i-like-food.svg);
   }
 }
 
-html[theme="dark"][bg="8"] {
+html[theme="dark"][bg="8"],
+html[theme="dark-blue"][bg="8"] {
   .container .column-center .conversation,
   .container .column-center .start-messaging {
     background-image: url(../../../asset/image/bgl/jigsaw.svg);
   }
 }
 
-html[theme="dark"][bg="9"] {
+html[theme="dark"][bg="9"],
+html[theme="dark-blue"][bg="9"] {
   .container .column-center .conversation,
   .container .column-center .start-messaging {
     background-image: url(../../../asset/image/bgl/plus.svg);
   }
 }
 
-html[theme="dark"][bg="10"] {
+html[theme="dark"][bg="10"],
+html[theme="dark-blue"][bg="10"] {
   .container .column-center .conversation,
   .container .column-center .start-messaging {
     background-image: url(../../../asset/image/bgl/rounded-plus-connected.svg);
   }
 }
 
-html[theme="dark"][bg="11"] {
+html[theme="dark"][bg="11"],
+html[theme="dark-blue"][bg="11"] {
   .container .column-center .conversation,
   .container .column-center .start-messaging {
     background-image: url(../../../asset/image/bgl/skulls.svg);
   }
 }
 
-html[theme="dark"][bg="12"] {
+html[theme="dark"][bg="12"],
+html[theme="dark-blue"][bg="12"] {
   .container .column-center .conversation,
   .container .column-center .start-messaging {
     background-image: url(../../../asset/image/bgl/squares-in-squares.svg);
   }
 }
 
-html[theme="dark"][bg="13"] {
+html[theme="dark"][bg="13"],
+html[theme="dark-blue"][bg="13"] {
   .container .column-center .conversation,
   .container .column-center .start-messaging {
     background-image: url(../../../asset/image/bgl/tic-tac-toe.svg);
   }
 }
 
-html[theme="dark"][bg="14"] {
+html[theme="dark"][bg="14"],
+html[theme="dark-blue"][bg="14"] {
   .container .column-center .conversation,
   .container .column-center .start-messaging {
     background-image: url(../../../asset/image/bgl/topography.svg);
@@ -537,7 +550,8 @@ html[theme="dark"][bg="14"] {
   }
 }
 
-html[theme="dark"] {
+html[theme="dark"],
+html[theme="dark-blue"] {
   .bg {
     background-color: #171717;
   }
@@ -545,7 +559,6 @@ html[theme="dark"] {
     background-color: var(--dark-medium);
     .column-left {
       border: 1px solid transparent;
-      //border-right: 1px solid var(--dark-low);
       background-color: var(--dark-medium);
       .actions {
         svg {
@@ -636,6 +649,64 @@ html[theme="dark"] {
       background-color: var(--dark);
       .actions-bar {
         background-color: var(--dark-medium);
+      }
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .container {
+    background-color: var(--dark-blue-medium);
+    .column-left {
+      background-color: var(--dark-blue-medium);
+      .top-bar {
+        background-color: var(--dark-blue-medium);
+        &:after {
+          background-color: var(--dark-blue-medium);
+        }
+      }
+      .left-overlay {
+        background-color: var(--dark-blue-medium);
+      }
+    }
+    .column-center {
+      .top {
+        background-color: var(--dark-blue-medium);
+      }
+      .conversation {
+        background-color: var(--dark-blue-low);
+      }
+      .start-messaging {
+        background-color: var(--dark-blue-low);
+      }
+    }
+  }
+
+  .kk-context-menu {
+    > div[role="document"] {
+      background-color: var(--dark-blue-medium);
+    }
+    ul {
+      background-color: var(--dark-blue-medium);
+    }
+    &.darker {
+      > div[role="document"], ul {
+        background-color: var(--dark-blue-low);
+      }
+    }
+  }
+  .confirm-dialog {
+    div[role="document"] {
+      > div {
+        background-color: var(--dark-blue-low);
+      }
+    }
+  }
+  .forward-recipient-dialog {
+    .dialog-content {
+      background-color: var(--dark-blue-low);
+      .actions-bar {
+        background-color: var(--dark-blue-medium);
       }
     }
   }

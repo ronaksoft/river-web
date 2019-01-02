@@ -32,6 +32,7 @@ import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
 import Scrollbars from 'react-custom-scrollbars';
+import {backgrounds, bubbles} from './vars/theme';
 
 import './style.css';
 
@@ -54,58 +55,12 @@ interface IState {
     pageContent: string;
     phone: string;
     selectedBackground: string;
+    selectedBubble: string;
     user: IContact | null;
     username: string;
     usernameAvailable: boolean;
     usernameValid: boolean;
 }
-
-const backgrounds = [{
-    id: '-1',
-    title: 'None',
-}, {
-    id: '1',
-    title: '4 Point Star',
-}, {
-    id: '2',
-    title: 'Anchors Away',
-}, {
-    id: '3',
-    title: 'Bank Note',
-}, {
-    id: '4',
-    title: 'Bubbles',
-}, {
-    id: '5',
-    title: 'Glamorous',
-}, {
-    id: '6',
-    title: 'Hideout',
-}, {
-    id: '7',
-    title: 'I Like Food',
-}, {
-    id: '8',
-    title: 'Jigsaw',
-}, {
-    id: '9',
-    title: 'Plus',
-}, {
-    id: '10',
-    title: 'Rounded Plus Connected',
-}, {
-    id: '11',
-    title: 'Skulls',
-}, {
-    id: '12',
-    title: 'Squares in Squares',
-}, {
-    id: '13',
-    title: 'Tic Tac Toe',
-}, {
-    id: '14',
-    title: 'Topography',
-}];
 
 class SettingMenu extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
@@ -131,6 +86,7 @@ class SettingMenu extends React.Component<IProps, IState> {
             pageContent: props.subMenu || 'none',
             phone: this.sdk.getConnInfo().Phone || '',
             selectedBackground: '-1',
+            selectedBubble: '1',
             user: null,
             username: '',
             usernameAvailable: false,
@@ -150,7 +106,7 @@ class SettingMenu extends React.Component<IProps, IState> {
         }
         const theme = el.getAttribute('theme');
         this.setState({
-            darkMode: (theme === 'dark' || theme === 'dark-theme'),
+            darkMode: (theme === 'dark' || theme === 'dark-blue'),
             darkModeBlue: (theme === 'dark-blue'),
             fontSize: parseInt(el.getAttribute('font') || '2', 10),
             selectedBackground: el.getAttribute('bg') || '-1',
@@ -198,14 +154,14 @@ class SettingMenu extends React.Component<IProps, IState> {
                                     onChange={this.nightModeHandler}
                                 />
                             } label="Night mode"/>
-                            <FormControlLabel className="setting-switch-label" control={
+                            {this.state.darkMode && <FormControlLabel className="setting-switch-label" control={
                                 <Switch
                                     checked={this.state.darkModeBlue}
-                                    className="setting-switch"
+                                    className="setting-switch blue"
                                     color="default"
                                     onChange={this.nightModeBlueHandler}
                                 />
-                            } label="Blue"/>
+                            } label="Blue"/>}
                             <div className="page-anchor" onClick={this.accountPageHandler}>
                                 <div className="icon">
                                     <div className="icon-primary">
@@ -247,14 +203,15 @@ class SettingMenu extends React.Component<IProps, IState> {
                                                 onChange={this.nightModeHandler}
                                             />
                                         } label="Night mode"/>
+                                        {this.state.darkMode &&
                                         <FormControlLabel className="setting-switch-label" control={
                                             <Switch
                                                 checked={this.state.darkModeBlue}
-                                                className="setting-switch"
+                                                className="setting-switch blue"
                                                 color="default"
                                                 onChange={this.nightModeBlueHandler}
                                             />
-                                        } label="Blue"/>
+                                        } label="Blue"/>}
                                         <label className="label font-size-label">Font Size</label>
                                         <MobileStepper
                                             variant="progress"
@@ -275,12 +232,28 @@ class SettingMenu extends React.Component<IProps, IState> {
                                                 </Button>
                                             }
                                         />
-                                        <label className="label">Background</label>
+                                        <label className="label">Bubble</label>
+                                        <GridList className="bubble-container" cellHeight={100} spacing={6}>
+                                            {bubbles.map((bubble, index) => (
+                                                <GridListTile key={index} cols={1} rows={1}
+                                                              onClick={this.selectBubbleHandler.bind(this, bubble.id)}>
+                                                    <div
+                                                        className={'item bubble-' + bubble.id + ' bg-' + this.state.selectedBackground}/>
+                                                    <GridListTileBar
+                                                        className={'title-bar ' + (this.state.selectedBubble === bubble.id ? 'selected' : '')}
+                                                        title={bubble.title}
+                                                        titlePosition="bottom"
+                                                    />
+                                                </GridListTile>
+                                            ))}
+                                        </GridList>
+                                        <label className="label padding-top">Background</label>
                                         <GridList className="background-container" cellHeight={100} spacing={6}>
                                             {backgrounds.map((bg, index) => (
                                                 <GridListTile key={index} cols={1} rows={1}
                                                               onClick={this.selectBackgroundHandler.bind(this, bg.id)}>
-                                                    <div className={'bg-item bg-' + bg.id}/>
+                                                    <div
+                                                        className={'item bg-' + bg.id + ' bubble-' + this.state.selectedBubble}/>
                                                     <GridListTileBar
                                                         className={'title-bar ' + (this.state.selectedBackground === bg.id ? 'selected' : '')}
                                                         title={bg.title}
@@ -580,6 +553,19 @@ class SettingMenu extends React.Component<IProps, IState> {
             }
             localStorage.setItem('river.theme.bg', id);
             el.setAttribute('bg', id);
+        });
+    }
+
+    private selectBubbleHandler = (id: string) => {
+        this.setState({
+            selectedBubble: id,
+        }, () => {
+            const el = document.querySelector('html');
+            if (!el) {
+                return;
+            }
+            localStorage.setItem('river.theme.bubble', id);
+            el.setAttribute('bubble', id);
         });
     }
 

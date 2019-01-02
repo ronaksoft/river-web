@@ -37,6 +37,7 @@
   --color-hover-dark: rgba(50, 61, 71, 0.12);
   --color-text-hover: rgba(50, 61, 71, 0.64);
   --header-color: #eee;
+  --light-mention: #2678b6;
   --dark-low: #191919;
   --dark-medium: #232323;
   --dark-high: #333333;
@@ -45,6 +46,15 @@
   --dark-accent-low: #003367;
   --dark-accent-medium: #004783;
   --dark-accent-high: #005EAE;
+  --dark-mention: #2d9fee;
+  --dark-blue-low: #1A212E;
+  --dark-blue-medium: #232F40;
+  --dark-blue-high: #14395f;
+  --dark-blue-high-alt: #2EA2FE;
+  --dark-blue-hover: rgba(46,162,254, 0.5);
+  --dark-blue-hover-light: rgba(46,162,254, 0.3);
+  --dark-blue-accent-low: #3E6A96;
+  --dark-blue-accent-medium: #232F40;
   --red: #cc0000; }
 
 body {
@@ -309,61 +319,89 @@ html[bg="14"] .container .column-center .start-messaging {
   background-size: 300px; }
 
 html[theme="dark"][bg="1"] .container .column-center .conversation,
-html[theme="dark"][bg="1"] .container .column-center .start-messaging {
+html[theme="dark"][bg="1"] .container .column-center .start-messaging,
+html[theme="dark-blue"][bg="1"] .container .column-center .conversation,
+html[theme="dark-blue"][bg="1"] .container .column-center .start-messaging {
   background-image: url(../../../asset/image/bgl/4-point-stars.svg);
   background-size: 50px; }
 
 html[theme="dark"][bg="2"] .container .column-center .conversation,
-html[theme="dark"][bg="2"] .container .column-center .start-messaging {
+html[theme="dark"][bg="2"] .container .column-center .start-messaging,
+html[theme="dark-blue"][bg="2"] .container .column-center .conversation,
+html[theme="dark-blue"][bg="2"] .container .column-center .start-messaging {
   background-image: url(../../../asset/image/bgl/anchors-away.svg); }
 
 html[theme="dark"][bg="3"] .container .column-center .conversation,
-html[theme="dark"][bg="3"] .container .column-center .start-messaging {
+html[theme="dark"][bg="3"] .container .column-center .start-messaging,
+html[theme="dark-blue"][bg="3"] .container .column-center .conversation,
+html[theme="dark-blue"][bg="3"] .container .column-center .start-messaging {
   background-image: url(../../../asset/image/bgl/bank-note.svg);
   background-size: 200px; }
 
 html[theme="dark"][bg="4"] .container .column-center .conversation,
-html[theme="dark"][bg="4"] .container .column-center .start-messaging {
+html[theme="dark"][bg="4"] .container .column-center .start-messaging,
+html[theme="dark-blue"][bg="4"] .container .column-center .conversation,
+html[theme="dark-blue"][bg="4"] .container .column-center .start-messaging {
   background-image: url(../../../asset/image/bgl/bubbles.svg); }
 
 html[theme="dark"][bg="5"] .container .column-center .conversation,
-html[theme="dark"][bg="5"] .container .column-center .start-messaging {
+html[theme="dark"][bg="5"] .container .column-center .start-messaging,
+html[theme="dark-blue"][bg="5"] .container .column-center .conversation,
+html[theme="dark-blue"][bg="5"] .container .column-center .start-messaging {
   background-image: url(../../../asset/image/bgl/glamorous.svg); }
 
 html[theme="dark"][bg="6"] .container .column-center .conversation,
-html[theme="dark"][bg="6"] .container .column-center .start-messaging {
+html[theme="dark"][bg="6"] .container .column-center .start-messaging,
+html[theme="dark-blue"][bg="6"] .container .column-center .conversation,
+html[theme="dark-blue"][bg="6"] .container .column-center .start-messaging {
   background-image: url(../../../asset/image/bgl/hideout.svg); }
 
 html[theme="dark"][bg="7"] .container .column-center .conversation,
-html[theme="dark"][bg="7"] .container .column-center .start-messaging {
+html[theme="dark"][bg="7"] .container .column-center .start-messaging,
+html[theme="dark-blue"][bg="7"] .container .column-center .conversation,
+html[theme="dark-blue"][bg="7"] .container .column-center .start-messaging {
   background-image: url(../../../asset/image/bgl/i-like-food.svg); }
 
 html[theme="dark"][bg="8"] .container .column-center .conversation,
-html[theme="dark"][bg="8"] .container .column-center .start-messaging {
+html[theme="dark"][bg="8"] .container .column-center .start-messaging,
+html[theme="dark-blue"][bg="8"] .container .column-center .conversation,
+html[theme="dark-blue"][bg="8"] .container .column-center .start-messaging {
   background-image: url(../../../asset/image/bgl/jigsaw.svg); }
 
 html[theme="dark"][bg="9"] .container .column-center .conversation,
-html[theme="dark"][bg="9"] .container .column-center .start-messaging {
+html[theme="dark"][bg="9"] .container .column-center .start-messaging,
+html[theme="dark-blue"][bg="9"] .container .column-center .conversation,
+html[theme="dark-blue"][bg="9"] .container .column-center .start-messaging {
   background-image: url(../../../asset/image/bgl/plus.svg); }
 
 html[theme="dark"][bg="10"] .container .column-center .conversation,
-html[theme="dark"][bg="10"] .container .column-center .start-messaging {
+html[theme="dark"][bg="10"] .container .column-center .start-messaging,
+html[theme="dark-blue"][bg="10"] .container .column-center .conversation,
+html[theme="dark-blue"][bg="10"] .container .column-center .start-messaging {
   background-image: url(../../../asset/image/bgl/rounded-plus-connected.svg); }
 
 html[theme="dark"][bg="11"] .container .column-center .conversation,
-html[theme="dark"][bg="11"] .container .column-center .start-messaging {
+html[theme="dark"][bg="11"] .container .column-center .start-messaging,
+html[theme="dark-blue"][bg="11"] .container .column-center .conversation,
+html[theme="dark-blue"][bg="11"] .container .column-center .start-messaging {
   background-image: url(../../../asset/image/bgl/skulls.svg); }
 
 html[theme="dark"][bg="12"] .container .column-center .conversation,
-html[theme="dark"][bg="12"] .container .column-center .start-messaging {
+html[theme="dark"][bg="12"] .container .column-center .start-messaging,
+html[theme="dark-blue"][bg="12"] .container .column-center .conversation,
+html[theme="dark-blue"][bg="12"] .container .column-center .start-messaging {
   background-image: url(../../../asset/image/bgl/squares-in-squares.svg); }
 
 html[theme="dark"][bg="13"] .container .column-center .conversation,
-html[theme="dark"][bg="13"] .container .column-center .start-messaging {
+html[theme="dark"][bg="13"] .container .column-center .start-messaging,
+html[theme="dark-blue"][bg="13"] .container .column-center .conversation,
+html[theme="dark-blue"][bg="13"] .container .column-center .start-messaging {
   background-image: url(../../../asset/image/bgl/tic-tac-toe.svg); }
 
 html[theme="dark"][bg="14"] .container .column-center .conversation,
-html[theme="dark"][bg="14"] .container .column-center .start-messaging {
+html[theme="dark"][bg="14"] .container .column-center .start-messaging,
+html[theme="dark-blue"][bg="14"] .container .column-center .conversation,
+html[theme="dark-blue"][bg="14"] .container .column-center .start-messaging {
   background-image: url(../../../asset/image/bgl/topography.svg);
   background-size: 300px; }
 
@@ -438,67 +476,128 @@ html[theme="dark"][bg="14"] .container .column-center .start-messaging {
       .forward-recipient-dialog .dialog-content .actions-bar .add-action.send:hover svg {
         transform: rotate(-30deg); }
 
-html[theme="dark"] .bg {
+html[theme="dark"] .bg,
+html[theme="dark-blue"] .bg {
   background-color: #171717; }
 
-html[theme="dark"] .container {
+html[theme="dark"] .container,
+html[theme="dark-blue"] .container {
   background-color: var(--dark-medium); }
-  html[theme="dark"] .container .column-left {
+  html[theme="dark"] .container .column-left,
+  html[theme="dark-blue"] .container .column-left {
     border: 1px solid transparent;
     background-color: var(--dark-medium); }
-    html[theme="dark"] .container .column-left .actions svg {
+    html[theme="dark"] .container .column-left .actions svg,
+    html[theme="dark-blue"] .container .column-left .actions svg {
       color: var(--light); }
-    html[theme="dark"] .container .column-left .top-bar {
+    html[theme="dark"] .container .column-left .top-bar,
+    html[theme="dark-blue"] .container .column-left .top-bar {
       background-color: var(--dark-medium); }
-      html[theme="dark"] .container .column-left .top-bar:after {
+      html[theme="dark"] .container .column-left .top-bar:after,
+      html[theme="dark-blue"] .container .column-left .top-bar:after {
         background-color: var(--dark-medium); }
-    html[theme="dark"] .container .column-left .left-overlay {
+    html[theme="dark"] .container .column-left .left-overlay,
+    html[theme="dark-blue"] .container .column-left .left-overlay {
       background-color: var(--dark-medium); }
-  html[theme="dark"] .container .column-center .top {
+  html[theme="dark"] .container .column-center .top,
+  html[theme="dark-blue"] .container .column-center .top {
     background-color: var(--dark-medium); }
-    html[theme="dark"] .container .column-center .top .back-to-chats svg {
+    html[theme="dark"] .container .column-center .top .back-to-chats svg,
+    html[theme="dark-blue"] .container .column-center .top .back-to-chats svg {
       color: var(--light); }
-    html[theme="dark"] .container .column-center .top span {
+    html[theme="dark"] .container .column-center .top span,
+    html[theme="dark-blue"] .container .column-center .top span {
       color: var(--light); }
-      html[theme="dark"] .container .column-center .top span .name {
+      html[theme="dark"] .container .column-center .top span .name,
+      html[theme="dark-blue"] .container .column-center .top span .name {
         color: var(--light); }
-  html[theme="dark"] .container .column-center .conversation {
+  html[theme="dark"] .container .column-center .conversation,
+  html[theme="dark-blue"] .container .column-center .conversation {
     background-color: var(--dark-low); }
-  html[theme="dark"] .container .column-center .start-messaging {
+  html[theme="dark"] .container .column-center .start-messaging,
+  html[theme="dark-blue"] .container .column-center .start-messaging {
     background-color: var(--dark-low); }
-    html[theme="dark"] .container .column-center .start-messaging .start-messaging-header {
+    html[theme="dark"] .container .column-center .start-messaging .start-messaging-header,
+    html[theme="dark-blue"] .container .column-center .start-messaging .start-messaging-header {
       background-color: transparent; }
-    html[theme="dark"] .container .column-center .start-messaging .start-messaging-img {
+    html[theme="dark"] .container .column-center .start-messaging .start-messaging-img,
+    html[theme="dark-blue"] .container .column-center .start-messaging .start-messaging-img {
       width: 100%;
       height: calc(100% - 150px);
       background-position: center center;
       background-size: contain;
       background-repeat: no-repeat; }
-    html[theme="dark"] .container .column-center .start-messaging .start-messaging-title {
+    html[theme="dark"] .container .column-center .start-messaging .start-messaging-title,
+    html[theme="dark-blue"] .container .column-center .start-messaging .start-messaging-title {
       visibility: hidden; }
-    html[theme="dark"] .container .column-center .start-messaging .start-messaging-footer {
+    html[theme="dark"] .container .column-center .start-messaging .start-messaging-footer,
+    html[theme="dark-blue"] .container .column-center .start-messaging .start-messaging-footer {
       background-color: transparent; }
 
-html[theme="dark"] .kk-context-menu > div[role="document"] {
+html[theme="dark"] .kk-context-menu > div[role="document"],
+html[theme="dark-blue"] .kk-context-menu > div[role="document"] {
   background-color: var(--dark-medium); }
 
-html[theme="dark"] .kk-context-menu ul {
+html[theme="dark"] .kk-context-menu ul,
+html[theme="dark-blue"] .kk-context-menu ul {
   background-color: var(--dark-medium); }
-  html[theme="dark"] .kk-context-menu ul .context-item {
+  html[theme="dark"] .kk-context-menu ul .context-item,
+  html[theme="dark-blue"] .kk-context-menu ul .context-item {
     color: var(--light); }
 
-html[theme="dark"] .kk-context-menu.darker > div[role="document"], html[theme="dark"] .kk-context-menu.darker ul {
+html[theme="dark"] .kk-context-menu.darker > div[role="document"], html[theme="dark"] .kk-context-menu.darker ul,
+html[theme="dark-blue"] .kk-context-menu.darker > div[role="document"],
+html[theme="dark-blue"] .kk-context-menu.darker ul {
   background-color: var(--dark-low); }
 
-html[theme="dark"] .confirm-dialog div[role="document"] > div {
+html[theme="dark"] .confirm-dialog div[role="document"] > div,
+html[theme="dark-blue"] .confirm-dialog div[role="document"] > div {
   background-color: var(--dark); }
-  html[theme="dark"] .confirm-dialog div[role="document"] > div h2, html[theme="dark"] .confirm-dialog div[role="document"] > div p {
+  html[theme="dark"] .confirm-dialog div[role="document"] > div h2, html[theme="dark"] .confirm-dialog div[role="document"] > div p,
+  html[theme="dark-blue"] .confirm-dialog div[role="document"] > div h2,
+  html[theme="dark-blue"] .confirm-dialog div[role="document"] > div p {
     color: var(--white); }
 
-html[theme="dark"] .forward-recipient-dialog .dialog-content {
+html[theme="dark"] .forward-recipient-dialog .dialog-content,
+html[theme="dark-blue"] .forward-recipient-dialog .dialog-content {
   background-color: var(--dark); }
-  html[theme="dark"] .forward-recipient-dialog .dialog-content .actions-bar {
+  html[theme="dark"] .forward-recipient-dialog .dialog-content .actions-bar,
+  html[theme="dark-blue"] .forward-recipient-dialog .dialog-content .actions-bar {
     background-color: var(--dark-medium); }
+
+html[theme="dark-blue"] .container {
+  background-color: var(--dark-blue-medium); }
+  html[theme="dark-blue"] .container .column-left {
+    background-color: var(--dark-blue-medium); }
+    html[theme="dark-blue"] .container .column-left .top-bar {
+      background-color: var(--dark-blue-medium); }
+      html[theme="dark-blue"] .container .column-left .top-bar:after {
+        background-color: var(--dark-blue-medium); }
+    html[theme="dark-blue"] .container .column-left .left-overlay {
+      background-color: var(--dark-blue-medium); }
+  html[theme="dark-blue"] .container .column-center .top {
+    background-color: var(--dark-blue-medium); }
+  html[theme="dark-blue"] .container .column-center .conversation {
+    background-color: var(--dark-blue-low); }
+  html[theme="dark-blue"] .container .column-center .start-messaging {
+    background-color: var(--dark-blue-low); }
+
+html[theme="dark-blue"] .kk-context-menu > div[role="document"] {
+  background-color: var(--dark-blue-medium); }
+
+html[theme="dark-blue"] .kk-context-menu ul {
+  background-color: var(--dark-blue-medium); }
+
+html[theme="dark-blue"] .kk-context-menu.darker > div[role="document"], html[theme="dark-blue"] .kk-context-menu.darker ul {
+  background-color: var(--dark-blue-low); }
+
+html[theme="dark-blue"] .confirm-dialog div[role="document"] > div {
+  background-color: var(--dark-blue-low); }
+
+html[theme="dark-blue"] .forward-recipient-dialog .dialog-content {
+  background-color: var(--dark-blue-low); }
+  html[theme="dark-blue"] .forward-recipient-dialog .dialog-content .actions-bar {
+    background-color: var(--dark-blue-medium); }
 
 .App.is-electron .wrapper {
   height: 100vh !important;
