@@ -1,3 +1,12 @@
+/*
+    Creation Time: 2018 - Oct - 14
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+
 import * as React from 'react';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
@@ -22,6 +31,7 @@ import {debounce} from 'lodash';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
+import Scrollbars from 'react-custom-scrollbars';
 
 import './style.css';
 
@@ -33,7 +43,8 @@ interface IProps {
 }
 
 interface IState {
-    checked: boolean;
+    darkMode: boolean;
+    darkModeBlue: boolean;
     editProfile: boolean;
     editUsername: boolean;
     firstname: string;
@@ -109,7 +120,8 @@ class SettingMenu extends React.Component<IProps, IState> {
         this.userId = this.sdk.getConnInfo().UserID || '';
 
         this.state = {
-            checked: false,
+            darkMode: false,
+            darkModeBlue: false,
             editProfile: false,
             editUsername: false,
             firstname: '',
@@ -136,8 +148,10 @@ class SettingMenu extends React.Component<IProps, IState> {
         if (!el) {
             return;
         }
+        const theme = el.getAttribute('theme');
         this.setState({
-            checked: (el.getAttribute('theme') === 'dark'),
+            darkMode: (theme === 'dark' || theme === 'dark-theme'),
+            darkModeBlue: (theme === 'dark-blue'),
             fontSize: parseInt(el.getAttribute('font') || '2', 10),
             selectedBackground: el.getAttribute('bg') || '-1',
         });
@@ -175,15 +189,23 @@ class SettingMenu extends React.Component<IProps, IState> {
                             </IconButton>
                             <label>Settings</label>
                         </div>
-                        <div className="menu-content">
+                        <div className="menu-content padding-side">
                             <FormControlLabel className="setting-switch-label" control={
                                 <Switch
-                                    checked={this.state.checked}
+                                    checked={this.state.darkMode}
                                     className="setting-switch"
                                     color="default"
                                     onChange={this.nightModeHandler}
                                 />
                             } label="Night mode"/>
+                            <FormControlLabel className="setting-switch-label" control={
+                                <Switch
+                                    checked={this.state.darkModeBlue}
+                                    className="setting-switch"
+                                    color="default"
+                                    onChange={this.nightModeBlueHandler}
+                                />
+                            } label="Blue"/>
                             <div className="page-anchor" onClick={this.accountPageHandler}>
                                 <div className="icon">
                                     <div className="icon-primary">
@@ -201,7 +223,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                         </div>
                     </div>
                     <div className="page page-2">
-                        {Boolean(pageContent === 'theme') && <div>
+                        {Boolean(pageContent === 'theme') && <React.Fragment>
                             <div className="menu-header">
                                 <IconButton
                                     aria-label="Prev"
@@ -213,50 +235,64 @@ class SettingMenu extends React.Component<IProps, IState> {
                                 <label>Theme</label>
                             </div>
                             <div className="menu-content">
-                                <FormControlLabel className="setting-switch-label" control={
-                                    <Switch
-                                        checked={this.state.checked}
-                                        className="setting-switch"
-                                        color="default"
-                                        onChange={this.nightModeHandler}
-                                    />
-                                } label="Night mode"/>
-                                <label className="label font-size-label">Font Size</label>
-                                <MobileStepper
-                                    variant="progress"
-                                    steps={6}
-                                    position="static"
-                                    activeStep={this.state.fontSize}
-                                    className="font-size-container"
-                                    nextButton={
-                                        <Button size="small" onClick={this.handleNext}
-                                                disabled={this.state.fontSize === 5}>
-                                            <KeyboardArrowRight/>
-                                        </Button>
-                                    }
-                                    backButton={
-                                        <Button size="small" onClick={this.handleBack}
-                                                disabled={this.state.fontSize === 0}>
-                                            <KeyboardArrowLeft/>
-                                        </Button>
-                                    }
-                                />
-                                <label className="label">Background</label>
-                                <GridList className="background-container" cellHeight={100} spacing={6}>
-                                    {backgrounds.map((bg, index) => (
-                                        <GridListTile key={index} cols={1} rows={1}
-                                                      onClick={this.selectBackgroundHandler.bind(this, bg.id)}>
-                                            <div className={'bg-item bg-' + bg.id}/>
-                                            <GridListTileBar
-                                                className={'title-bar ' + (this.state.selectedBackground === bg.id ? 'selected' : '')}
-                                                title={bg.title}
-                                                titlePosition="bottom"
+                                <Scrollbars
+                                    autoHide={true}
+                                >
+                                    <div className="padding-side">
+                                        <FormControlLabel className="setting-switch-label" control={
+                                            <Switch
+                                                checked={this.state.darkMode}
+                                                className="setting-switch"
+                                                color="default"
+                                                onChange={this.nightModeHandler}
                                             />
-                                        </GridListTile>
-                                    ))}
-                                </GridList>
+                                        } label="Night mode"/>
+                                        <FormControlLabel className="setting-switch-label" control={
+                                            <Switch
+                                                checked={this.state.darkModeBlue}
+                                                className="setting-switch"
+                                                color="default"
+                                                onChange={this.nightModeBlueHandler}
+                                            />
+                                        } label="Blue"/>
+                                        <label className="label font-size-label">Font Size</label>
+                                        <MobileStepper
+                                            variant="progress"
+                                            steps={6}
+                                            position="static"
+                                            activeStep={this.state.fontSize}
+                                            className="font-size-container"
+                                            nextButton={
+                                                <Button size="small" onClick={this.handleNext}
+                                                        disabled={this.state.fontSize === 5}>
+                                                    <KeyboardArrowRight/>
+                                                </Button>
+                                            }
+                                            backButton={
+                                                <Button size="small" onClick={this.handleBack}
+                                                        disabled={this.state.fontSize === 0}>
+                                                    <KeyboardArrowLeft/>
+                                                </Button>
+                                            }
+                                        />
+                                        <label className="label">Background</label>
+                                        <GridList className="background-container" cellHeight={100} spacing={6}>
+                                            {backgrounds.map((bg, index) => (
+                                                <GridListTile key={index} cols={1} rows={1}
+                                                              onClick={this.selectBackgroundHandler.bind(this, bg.id)}>
+                                                    <div className={'bg-item bg-' + bg.id}/>
+                                                    <GridListTileBar
+                                                        className={'title-bar ' + (this.state.selectedBackground === bg.id ? 'selected' : '')}
+                                                        title={bg.title}
+                                                        titlePosition="bottom"
+                                                    />
+                                                </GridListTile>
+                                            ))}
+                                        </GridList>
+                                    </div>
+                                </Scrollbars>
                             </div>
-                        </div>}
+                        </React.Fragment>}
                         {Boolean(pageContent === 'account') && <div>
                             <div className="menu-header">
                                 <IconButton
@@ -380,21 +416,40 @@ class SettingMenu extends React.Component<IProps, IState> {
         );
     }
 
+    /* Dark mode change handler */
     private nightModeHandler = (e: any) => {
+        this.setState({
+            darkMode: e.currentTarget.checked,
+        }, () => {
+            this.applyTheme();
+        });
+    }
+
+    /* Dark mode blue change handler */
+    private nightModeBlueHandler = (e: any) => {
+        this.setState({
+            darkModeBlue: e.currentTarget.checked,
+        }, () => {
+            this.applyTheme();
+        });
+    }
+
+    /* Apply theme in both localStorage and DOM */
+    private applyTheme() {
         const el = document.querySelector('html');
         if (!el) {
             return;
         }
-        if (e.currentTarget.checked) {
-            el.setAttribute('theme', 'dark');
-            localStorage.setItem('river.theme.color', 'dark');
-        } else {
-            el.setAttribute('theme', 'light');
-            localStorage.setItem('river.theme.color', 'light');
+        let theme = 'light';
+        if (this.state.darkMode) {
+            if (this.state.darkModeBlue) {
+                theme = 'dark-blue';
+            } else {
+                theme = 'dark';
+            }
         }
-        this.setState({
-            checked: e.currentTarget.checked,
-        });
+        el.setAttribute('theme', theme);
+        localStorage.setItem('river.theme.color', theme);
     }
 
     private handleNext = () => {

@@ -1,3 +1,12 @@
+/*
+    Creation Time: 2018 - Dec - 31
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+
 import {IpcRenderer} from 'electron';
 
 export const C_ELECTRON_SUBJECT = {

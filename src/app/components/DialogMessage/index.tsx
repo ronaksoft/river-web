@@ -1,3 +1,12 @@
+/*
+    Creation Time: 2018 - Sep - 29
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+
 import * as React from 'react';
 import UserAvatar from '../UserAvatar';
 import UserName from '../UserName';
@@ -74,16 +83,18 @@ class DialogMessage extends React.Component<IProps, IState> {
         return (
             <div
                 className={'dialog-wrapper' + (muted ? ' muted' : '') + ((dialog.mentionedcount && dialog.mentionedcount > 0) ? ' has-mention' : '')}>
-                {muted && <div className="muted-wrapper"><NotificationsOffRounded/></div>}
                 {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
                 <UserAvatar className="avatar" id={dialog.target_id || ''} noDetail={true}/>}
-                {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
-                <UserName className="name" id={dialog.target_id || ''} noDetail={true}/>}
                 {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
                 <GroupAvatar className="avatar" id={dialog.target_id || ''}/>}
-                {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
-                <GroupName className="name" id={dialog.target_id || ''}/>}
-                <LiveDate className="time" time={dialog.last_update || 0}/>
+                <div className="dialog-top-bar">
+                    {muted && <div className="muted-wrapper"><NotificationsOffRounded/></div>}
+                    {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
+                    <UserName className="name" id={dialog.target_id || ''} noDetail={true}/>}
+                    {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
+                    <GroupName className="name" id={dialog.target_id || ''}/>}
+                    <LiveDate className="time" time={dialog.last_update || 0}/>
+                </div>
                 {Boolean(ids.length === 0) && <span className="preview">
                     {dialog.preview_me && <span className="status">
                         {this.getStatus(dialog.topmessageid || 0, dialog.readoutboxmaxid || 0)}

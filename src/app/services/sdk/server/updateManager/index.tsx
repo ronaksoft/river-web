@@ -1,3 +1,12 @@
+/*
+    Creation Time: 2018 - Oct - 03
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+
 import {C_MSG} from '../../const';
 import {UpdateContainer, UpdateEnvelope} from '../../messages/core.messages_pb';
 import {

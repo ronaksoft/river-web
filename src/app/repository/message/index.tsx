@@ -1,3 +1,12 @@
+/*
+    Creation Time: 2018 - Aug - 25
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+
 import MessageDB from '../../services/db/message';
 import {IMessage} from './interface';
 import {cloneDeep, differenceBy, find, merge, throttle} from 'lodash';

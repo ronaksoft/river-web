@@ -1,3 +1,12 @@
+/*
+    Creation Time: 2018 - Sep - 26
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+
 import * as React from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import {ArrowForwardRounded, KeyboardBackspaceRounded, CloseRounded, SendRounded} from '@material-ui/icons';

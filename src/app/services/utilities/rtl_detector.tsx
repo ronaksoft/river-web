@@ -1,3 +1,12 @@
+/*
+    Creation Time: 2018 - Oct - 09
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+
 export default class RTLDetector {
     public static getInstance() {
         if (!this.instance) {

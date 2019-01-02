@@ -1,3 +1,12 @@
+/*
+    Creation Time: 2018 - Nov - 26
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+
 import DB from '../../services/db/user';
 import {IGroup} from './interface';
 import {differenceBy, find, merge, uniqBy} from 'lodash';

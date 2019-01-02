@@ -1,11 +1,12 @@
-/**
- * @file utilities/time.tsx
- * @author Hamidreza KK <hamidrezakks@gmail.com>
- * @desc Tools for formatting a timestamp
- * @export {TimeUntiles}
- * Documented by: Hamidreza KK
- * Date of documentation:  2018-09-30
- */
+/*
+    Creation Time: 2018 - Sep - 30
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+
 import * as moment from 'moment';
 
 /**

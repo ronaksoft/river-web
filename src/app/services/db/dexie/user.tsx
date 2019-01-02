@@ -1,3 +1,12 @@
+/*
+    Creation Time: 2018 - Nov - 18
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+
 import {IUser} from '../../../repository/user/interface';
 import {IGroup} from '../../../repository/group/interface';
 import {IContact} from '../../../repository/contact/interface';

@@ -1,3 +1,12 @@
+/*
+    Creation Time: 2018 - Aug - 29
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+
 import {IUser} from '../../repository/user/interface';
 import {IContact} from '../../repository/contact/interface';
 import {DexieUserDB} from './dexie/user';

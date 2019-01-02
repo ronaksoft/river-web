@@ -1,3 +1,12 @@
+/*
+    Creation Time: 2018 - Oct - 05
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+
 import * as React from 'react';
 import TimeUtililty from '../../services/utilities/time';
 import {DoneRounded, DoneAllRounded, ScheduleRounded} from '@material-ui/icons';

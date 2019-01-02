@@ -1,3 +1,12 @@
+/*
+    Creation Time: 2018 - Nov - 18
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+
 import Dexie from 'dexie';
 import {IMessage} from '../../../repository/message/interface';
 import {IMessageHole} from '../../../repository/messageHole/interface';

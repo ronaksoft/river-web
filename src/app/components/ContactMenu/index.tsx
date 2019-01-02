@@ -20,9 +20,9 @@ import SDK from '../../services/sdk';
 import {PhoneContact} from '../../services/sdk/messages/core.types_pb';
 import UniqueId from '../../services/uniqueId';
 import ContactList from '../ContactList';
+import {IContact} from '../../repository/contact/interface';
 
 import './style.css';
-import {IContact} from '../../repository/contact/interface';
 
 interface IProps {
     id?: number;

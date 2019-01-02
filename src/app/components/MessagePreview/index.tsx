@@ -1,10 +1,19 @@
+/*
+    Creation Time: 2018 - Oct - 16
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+
 import * as React from 'react';
+import {IMessage} from '../../repository/message/interface';
+import UserName from '../UserName';
+import MessageRepo from '../../repository/message';
+import {InputPeer} from '../../services/sdk/messages/core.types_pb';
 
 import './style.css';
-import {IMessage} from "../../repository/message/interface";
-import UserName from "../UserName";
-import MessageRepo from "../../repository/message";
-import {InputPeer} from "../../services/sdk/messages/core.types_pb";
 
 interface IProps {
     message: IMessage;

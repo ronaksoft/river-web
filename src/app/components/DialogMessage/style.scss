@@ -1,8 +1,18 @@
+/*
+    Creation Time: 2018 - Sep - 29
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+
 @import '../../../style/common';
 
 .dialog-wrapper {
   height: 48px;
   width: 100%;
+  user-select: none;
   .avatar {
     width: 48px;
     height: 48px;
@@ -17,48 +27,47 @@
       border-radius: 50%;
     }
   }
-  .muted-wrapper {
-    position: absolute;
-    height: 16px;
-    width: 16px;
-    top: 11px;
-    left: 64px;
-    svg {
-      font-size: 16px;
-      color: var(--dark);
-    }
-  }
-  .name {
-    display: inline-block;
+  .dialog-top-bar {
+    display: inline-flex;
     min-width: 200px;
-    width: calc(100% - 120px);
-    font-size: 12px;
-    line-height: 23px;
+    width: calc(100% - 60px);
     margin: 0 0 4px;
-    color: var(--dark);
-    @include font-bold;
-    svg {
-      font-size: 15px;
-      margin-right: 6px;
-      vertical-align: sub;
+    align-items: center;
+    .muted-wrapper {
+      height: 16px;
+      width: 16px;
+      svg {
+        font-size: 16px;
+        color: var(--dark);
+      }
     }
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    .name {
+      flex: 1;
+      font-size: 12px;
+      line-height: 23px;
+      color: var(--dark);
+      @include font-bold;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      svg {
+        font-size: 15px;
+        margin-right: 6px;
+        vertical-align: sub;
+      }
+    }
+    .time {
+      font-size: 11px;
+      color: var(--grey);
+      transition: right 0.2s;
+    }
   }
   &.muted {
-    .name {
-      padding-left: 16px;
+    .dialog-top-bar {
+      .name {
+        padding-left: 4px;
+      }
     }
-  }
-  .time {
-    font-size: 11px;
-    position: absolute;
-    top: 14px;
-    right: 8px;
-    padding: 0 0 5px 5px;
-    color: var(--grey);
-    transition: right 0.2s;
   }
   .preview {
     font-size: 14px;
@@ -141,11 +150,8 @@
     .more {
       display: block;
     }
-    .name {
-      min-width: 196px;
-    }
-    .time {
-      right: 22px;
+    .dialog-top-bar {
+      width: calc(100% - 76px);
     }
   }
 }

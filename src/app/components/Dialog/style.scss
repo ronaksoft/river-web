@@ -1,3 +1,12 @@
+/*
+    Creation Time: 2018 - Aug - 18
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+
 @import '../../../style/common';
 
 .dialogs {
@@ -22,6 +31,10 @@
     overflow: hidden;
     .dialog-container {
       height: 100%;
+      a {
+        text-decoration: none;
+        text-transform: none;
+      }
       .dialog {
         position: relative;
         width: 100%;

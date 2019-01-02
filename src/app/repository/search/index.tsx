@@ -1,9 +1,17 @@
+/*
+    Creation Time: 2018 - Dec - 24
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+
 import {IDialogWithContact} from './interface';
 import DialogRepo from '../dialog';
 import UserRepo from '../user';
 import GroupRepo from '../group';
 import ContactRepo from '../contact';
-
 
 export default class SearchRepo {
     public static getInstance() {

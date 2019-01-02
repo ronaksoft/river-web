@@ -1,3 +1,19 @@
+/*
+    Creation Time: 2018 - Sep - 29
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+/*
+    Creation Time: 2018 - Aug - 18
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
 *, *:before, *:after {
   box-sizing: border-box; }
 
@@ -47,7 +63,8 @@ input {
 
 .dialog-wrapper {
   height: 48px;
-  width: 100%; }
+  width: 100%;
+  user-select: none; }
   .dialog-wrapper .avatar {
     width: 48px;
     height: 48px;
@@ -60,42 +77,38 @@ input {
       height: 48px;
       object-fit: cover;
       border-radius: 50%; }
-  .dialog-wrapper .muted-wrapper {
-    position: absolute;
-    height: 16px;
-    width: 16px;
-    top: 11px;
-    left: 64px; }
-    .dialog-wrapper .muted-wrapper svg {
-      font-size: 16px;
-      color: var(--dark); }
-  .dialog-wrapper .name {
-    display: inline-block;
+  .dialog-wrapper .dialog-top-bar {
+    display: inline-flex;
     min-width: 200px;
-    width: calc(100% - 120px);
-    font-size: 12px;
-    line-height: 23px;
+    width: calc(100% - 60px);
     margin: 0 0 4px;
-    color: var(--dark);
-    font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis; }
-    .dialog-wrapper .name svg {
-      font-size: 15px;
-      margin-right: 6px;
-      vertical-align: sub; }
-  .dialog-wrapper.muted .name {
-    padding-left: 16px; }
-  .dialog-wrapper .time {
-    font-size: 11px;
-    position: absolute;
-    top: 14px;
-    right: 8px;
-    padding: 0 0 5px 5px;
-    color: var(--grey);
-    transition: right 0.2s; }
+    align-items: center; }
+    .dialog-wrapper .dialog-top-bar .muted-wrapper {
+      height: 16px;
+      width: 16px; }
+      .dialog-wrapper .dialog-top-bar .muted-wrapper svg {
+        font-size: 16px;
+        color: var(--dark); }
+    .dialog-wrapper .dialog-top-bar .name {
+      flex: 1;
+      font-size: 12px;
+      line-height: 23px;
+      color: var(--dark);
+      font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis; }
+      .dialog-wrapper .dialog-top-bar .name svg {
+        font-size: 15px;
+        margin-right: 6px;
+        vertical-align: sub; }
+    .dialog-wrapper .dialog-top-bar .time {
+      font-size: 11px;
+      color: var(--grey);
+      transition: right 0.2s; }
+  .dialog-wrapper.muted .dialog-top-bar .name {
+    padding-left: 4px; }
   .dialog-wrapper .preview {
     font-size: 14px;
     line-height: 17px;
@@ -163,10 +176,8 @@ input {
       color: var(--grey); }
   .dialog-wrapper:hover .more {
     display: block; }
-  .dialog-wrapper:hover .name {
-    min-width: 196px; }
-  .dialog-wrapper:hover .time {
-    right: 22px; }
+  .dialog-wrapper:hover .dialog-top-bar {
+    width: calc(100% - 76px); }
 
 html[theme="dark"] .dialog-wrapper .name {
   color: var(--light); }

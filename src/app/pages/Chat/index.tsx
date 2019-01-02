@@ -1,3 +1,12 @@
+/*
+    Creation Time: 2018 - Aug - 18
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+
 import * as React from 'react';
 import Dialog from '../../components/Dialog/index';
 import {IMessage} from '../../repository/message/interface';
@@ -74,9 +83,9 @@ import UserDialog from '../../components/UserDialog';
 import {IGroup} from '../../repository/group/interface';
 import SearchList, {IInputPeer} from '../../components/SearchList';
 import * as core_types_pb from '../../services/sdk/messages/core.types_pb';
+import ElectronService, {C_ELECTRON_SUBJECT} from '../../services/electron';
 
 import './style.css';
-import ElectronService, {C_ELECTRON_SUBJECT} from '../../services/electron';
 
 interface IProps {
     history?: any;

@@ -1,14 +1,23 @@
+/*
+    Creation Time: 2018 - Sep - 25
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+
 import * as React from 'react';
 import SDK from '../../services/sdk';
 // @ts-ignore
 import ReactPhoneInput from 'react-phone-input-2';
 import Snackbar from '@material-ui/core/Snackbar';
-
-import './style.css';
 import {Refresh} from '@material-ui/icons';
 import {C_ERR, C_ERR_ITEM} from "../../services/sdk/const";
 import RiverLogo from '../../components/RiverLogo';
 import NotificationService from '../../services/notification';
+
+import './style.css';
 
 interface IProps {
     match?: any;

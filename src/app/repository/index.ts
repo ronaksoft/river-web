@@ -1,3 +1,12 @@
+/*
+    Creation Time: 2018 - Oct - 10
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+
 import UserDB from '../services/db/user';
 import MessageDB from '../services/db/message';
 import DialogDB from '../services/db/dialog';

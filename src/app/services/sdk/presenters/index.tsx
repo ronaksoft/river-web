@@ -1,3 +1,12 @@
+/*
+    Creation Time: 2018 - Sep - 09
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+
 import {C_MSG} from '../const';
 import {AuthSentCode, AuthCheckedPhone, AuthAuthorization, AuthRecalled} from '../messages/api.auth_pb';
 import {ContactsImported, ContactsMany} from '../messages/api.contacts_pb';
