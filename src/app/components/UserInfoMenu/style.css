@@ -225,7 +225,7 @@ html[theme="dark-blue"] .notify-setting-dialog div[role="document"] > div {
 html[theme="dark-blue"] .user-info-menu {
   background-color: var(--dark-blue-low); }
   html[theme="dark-blue"] .user-info-menu .menu-header {
-    background-color: var(--dark-high); }
+    background-color: var(--dark-blue-high); }
   html[theme="dark-blue"] .user-info-menu .kk-card {
     background-color: var(--dark-blue-medium); }
 

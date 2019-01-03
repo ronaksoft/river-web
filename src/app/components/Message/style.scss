@@ -89,6 +89,9 @@
   display: inline-block;
   width: 100%;
   padding-bottom: 2px;
+  &.date-padding {
+    padding-bottom: 8px;
+  }
   .arrow {
     position: absolute;
     top: 6px;
@@ -284,7 +287,6 @@
     font-size: 12.5px;
     line-height: 21px;
     text-transform: uppercase;
-    margin-top: 8px;
   }
   > .system-message {
     background-color: rgba(0, 0, 0, 0.31);
@@ -569,11 +571,19 @@ html[bubble="2"] {
       .name {
         padding: 4px 12px 0 8px;
       }
+      .more {
+        top: 4px;
+        right: 8px;
+      }
     }
-    &.avatar.you {
-      .bubble {
-        > .inner {
-          padding: 2px 12px 0 8px;
+  }
+  .group {
+    .bubble-wrapper {
+      &.avatar.you {
+        .bubble {
+          > .inner {
+            padding: 2px 12px 0 8px;
+          }
         }
       }
     }
@@ -583,6 +593,9 @@ html[bubble="2"] {
 html[bubble="4"] {
   .bubble-wrapper {
     padding-bottom: 4px;
+    .arrow {
+      width: 20px;
+    }
     .bubble {
       border-radius: 10px;
       min-width: 91px;
@@ -594,10 +607,14 @@ html[bubble="4"] {
         padding: 4px 12px 0 8px;
       }
     }
-    &.avatar.you {
-      .bubble {
-        > .inner {
-          padding: 2px 12px 0 8px;
+  }
+  .group {
+    .bubble-wrapper {
+      &.avatar.you {
+        .bubble {
+          > .inner {
+            padding: 2px 12px 0 8px;
+          }
         }
       }
     }

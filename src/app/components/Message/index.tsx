@@ -227,7 +227,7 @@ class Message extends React.Component<IProps, IState> {
                             rowHeight={this.cache.rowHeight}
                             rowRenderer={this.rowRender}
                             rowCount={items.length}
-                            overscanRowCount={0}
+                            overscanRowCount={10}
                             width={width}
                             height={height}
                             estimatedRowSize={41}
@@ -357,7 +357,7 @@ class Message extends React.Component<IProps, IState> {
                 );
             case C_MESSAGE_TYPE.Date:
                 return (
-                    <div style={style} className="bubble-wrapper">
+                    <div style={style} className="bubble-wrapper date-padding">
                         {!Boolean((this.state.loading || this.state.loadingPersist) && index === 0) &&
                         <span className="date">{TimeUtility.dynamicDate(message.createdon || 0)}</span>}
                         {Boolean((this.state.loading || this.state.loadingPersist) && index === 0) &&
@@ -761,7 +761,7 @@ class Message extends React.Component<IProps, IState> {
     /* Try to find correct position */
     private checkScroll(id: number, tries?: number) {
         const el = document.querySelector(`.bubble-wrapper .bubble.b_${id}`);
-        if (this.scrollTop > 10 && el) {
+        if (this.scrollTop > 0 && el) {
             if (el.parentElement) {
                 const scroll = parseInt(window.getComputedStyle(el.parentElement).getPropertyValue('top').replace(/^\D+/g, ''), 10);
                 this.list.scrollToPosition(scroll);

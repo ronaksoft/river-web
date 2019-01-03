@@ -236,11 +236,9 @@ input {
     .setting-menu .form-control .action {
       height: 48px;
       width: 48px; }
-  .setting-menu .background-container li,
-  .setting-menu .bubble-container li {
+  .setting-menu .theme-container li {
     cursor: pointer; }
-  .setting-menu .background-container .item,
-  .setting-menu .bubble-container .item {
+  .setting-menu .theme-container .item {
     position: relative;
     width: 100%;
     height: 100%;
@@ -250,9 +248,7 @@ input {
     background-repeat: repeat;
     background-size: 50px;
     background-position: center center; }
-    .setting-menu .background-container .item:after, .setting-menu .background-container .item:before,
-    .setting-menu .bubble-container .item:after,
-    .setting-menu .bubble-container .item:before {
+    .setting-menu .theme-container .item:after, .setting-menu .theme-container .item:before {
       position: absolute;
       content: '';
       top: 10%;
@@ -261,84 +257,76 @@ input {
       width: 50%;
       border-radius: 3px;
       background: var(--white); }
-    .setting-menu .background-container .item:before,
-    .setting-menu .bubble-container .item:before {
+    .setting-menu .theme-container .item:before {
       top: 45%;
       left: auto;
       right: 10%;
       background: var(--green); }
-    .setting-menu .background-container .item.bg-1,
-    .setting-menu .bubble-container .item.bg-1 {
+    .setting-menu .theme-container .item.bg-1 {
       background-image: url(../../../asset/image/bgd/4-point-stars.svg);
       background-size: 20px; }
-    .setting-menu .background-container .item.bg-2,
-    .setting-menu .bubble-container .item.bg-2 {
+    .setting-menu .theme-container .item.bg-2 {
       background-image: url(../../../asset/image/bgd/anchors-away.svg); }
-    .setting-menu .background-container .item.bg-3,
-    .setting-menu .bubble-container .item.bg-3 {
+    .setting-menu .theme-container .item.bg-3 {
       background-image: url(../../../asset/image/bgd/bank-note.svg); }
-    .setting-menu .background-container .item.bg-4,
-    .setting-menu .bubble-container .item.bg-4 {
+    .setting-menu .theme-container .item.bg-4 {
       background-image: url(../../../asset/image/bgd/bubbles.svg); }
-    .setting-menu .background-container .item.bg-5,
-    .setting-menu .bubble-container .item.bg-5 {
+    .setting-menu .theme-container .item.bg-5 {
       background-image: url(../../../asset/image/bgd/glamorous.svg); }
-    .setting-menu .background-container .item.bg-6,
-    .setting-menu .bubble-container .item.bg-6 {
+    .setting-menu .theme-container .item.bg-6 {
       background-image: url(../../../asset/image/bgd/hideout.svg); }
-    .setting-menu .background-container .item.bg-7,
-    .setting-menu .bubble-container .item.bg-7 {
+    .setting-menu .theme-container .item.bg-7 {
       background-image: url(../../../asset/image/bgd/i-like-food.svg); }
-    .setting-menu .background-container .item.bg-8,
-    .setting-menu .bubble-container .item.bg-8 {
+    .setting-menu .theme-container .item.bg-8 {
       background-image: url(../../../asset/image/bgd/jigsaw.svg); }
-    .setting-menu .background-container .item.bg-9,
-    .setting-menu .bubble-container .item.bg-9 {
+    .setting-menu .theme-container .item.bg-9 {
       background-image: url(../../../asset/image/bgd/plus.svg); }
-    .setting-menu .background-container .item.bg-10,
-    .setting-menu .bubble-container .item.bg-10 {
+    .setting-menu .theme-container .item.bg-10 {
       background-image: url(../../../asset/image/bgd/rounded-plus-connected.svg); }
-    .setting-menu .background-container .item.bg-11,
-    .setting-menu .bubble-container .item.bg-11 {
+    .setting-menu .theme-container .item.bg-11 {
       background-image: url(../../../asset/image/bgd/skulls.svg); }
-    .setting-menu .background-container .item.bg-12,
-    .setting-menu .bubble-container .item.bg-12 {
+    .setting-menu .theme-container .item.bg-12 {
       background-image: url(../../../asset/image/bgd/squares-in-squares.svg); }
-    .setting-menu .background-container .item.bg-13,
-    .setting-menu .bubble-container .item.bg-13 {
+    .setting-menu .theme-container .item.bg-13 {
       background-image: url(../../../asset/image/bgd/tic-tac-toe.svg); }
-    .setting-menu .background-container .item.bg-14,
-    .setting-menu .bubble-container .item.bg-14 {
+    .setting-menu .theme-container .item.bg-14 {
       background-image: url(../../../asset/image/bgd/topography.svg);
       background-size: 200px; }
-    .setting-menu .background-container .item.bubble-2:after, .setting-menu .background-container .item.bubble-2:before,
-    .setting-menu .bubble-container .item.bubble-2:after,
-    .setting-menu .bubble-container .item.bubble-2:before {
+    .setting-menu .theme-container .item.bubble-2:after, .setting-menu .theme-container .item.bubble-2:before {
       border-radius: 20px; }
-    .setting-menu .background-container .item.bubble-3:after, .setting-menu .background-container .item.bubble-3:before,
-    .setting-menu .bubble-container .item.bubble-3:after,
-    .setting-menu .bubble-container .item.bubble-3:before {
+    .setting-menu .theme-container .item.bubble-3:after, .setting-menu .theme-container .item.bubble-3:before {
       border-radius: 3px 20px 20px 20px; }
-    .setting-menu .background-container .item.bubble-3:before,
-    .setting-menu .bubble-container .item.bubble-3:before {
+    .setting-menu .theme-container .item.bubble-3:before {
       border-radius: 20px 3px 20px 20px; }
-    .setting-menu .background-container .item.bubble-4:after, .setting-menu .background-container .item.bubble-4:before,
-    .setting-menu .bubble-container .item.bubble-4:after,
-    .setting-menu .bubble-container .item.bubble-4:before {
+    .setting-menu .theme-container .item.bubble-4:after, .setting-menu .theme-container .item.bubble-4:before {
       border-radius: 5px; }
-    .setting-menu .background-container .item.bubble-4:before,
-    .setting-menu .bubble-container .item.bubble-4:before {
+    .setting-menu .theme-container .item.bubble-4:before {
       border-radius: 5px; }
-  .setting-menu .background-container .title-bar,
-  .setting-menu .bubble-container .title-bar {
+    .setting-menu .theme-container .item.theme-light {
+      background-color: rgba(168, 144, 106, 0.3) !important; }
+      .setting-menu .theme-container .item.theme-light:after {
+        background: var(--white) !important; }
+      .setting-menu .theme-container .item.theme-light:before {
+        background: var(--green) !important; }
+    .setting-menu .theme-container .item.theme-dark {
+      background-color: var(--dark) !important; }
+      .setting-menu .theme-container .item.theme-dark:after {
+        background: var(--dark-accent-medium) !important; }
+      .setting-menu .theme-container .item.theme-dark:before {
+        background: var(--dark-accent-low) !important; }
+    .setting-menu .theme-container .item.theme-dark-blue {
+      background-color: var(--dark-blue-low) !important; }
+      .setting-menu .theme-container .item.theme-dark-blue:after {
+        background: var(--dark-blue-accent-medium) !important; }
+      .setting-menu .theme-container .item.theme-dark-blue:before {
+        background: var(--dark-blue-accent-low) !important; }
+  .setting-menu .theme-container .title-bar {
     background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.3) 70%, rgba(0, 0, 0, 0) 100%);
     height: 38px;
     border-radius: 0 0 6px 6px; }
-    .setting-menu .background-container .title-bar.selected,
-    .setting-menu .bubble-container .title-bar.selected {
+    .setting-menu .theme-container .title-bar.selected {
       background: linear-gradient(to top, #2E8F57AA 0%, #2E8F5777 70%, rgba(0, 0, 0, 0) 100%); }
-    .setting-menu .background-container .title-bar div,
-    .setting-menu .bubble-container .title-bar div {
+    .setting-menu .theme-container .title-bar div {
       font-size: 13px; }
   .setting-menu .kk-card {
     margin-bottom: 10px;
@@ -399,96 +387,60 @@ html[theme="dark"] .setting-menu .form-control .action svg,
 html[theme="dark-blue"] .setting-menu .form-control .action svg {
   color: var(--white); }
 
-html[theme="dark"] .setting-menu .background-container .item,
-html[theme="dark"] .setting-menu .bubble-container .item,
-html[theme="dark-blue"] .setting-menu .background-container .item,
-html[theme="dark-blue"] .setting-menu .bubble-container .item {
+html[theme="dark"] .setting-menu .theme-container .item,
+html[theme="dark-blue"] .setting-menu .theme-container .item {
   background-color: var(--dark); }
-  html[theme="dark"] .setting-menu .background-container .item:after,
-  html[theme="dark"] .setting-menu .bubble-container .item:after,
-  html[theme="dark-blue"] .setting-menu .background-container .item:after,
-  html[theme="dark-blue"] .setting-menu .bubble-container .item:after {
+  html[theme="dark"] .setting-menu .theme-container .item:after,
+  html[theme="dark-blue"] .setting-menu .theme-container .item:after {
     background: var(--dark-accent-medium); }
-  html[theme="dark"] .setting-menu .background-container .item:before,
-  html[theme="dark"] .setting-menu .bubble-container .item:before,
-  html[theme="dark-blue"] .setting-menu .background-container .item:before,
-  html[theme="dark-blue"] .setting-menu .bubble-container .item:before {
+  html[theme="dark"] .setting-menu .theme-container .item:before,
+  html[theme="dark-blue"] .setting-menu .theme-container .item:before {
     background: var(--dark-accent-low); }
-  html[theme="dark"] .setting-menu .background-container .item.bg-1,
-  html[theme="dark"] .setting-menu .bubble-container .item.bg-1,
-  html[theme="dark-blue"] .setting-menu .background-container .item.bg-1,
-  html[theme="dark-blue"] .setting-menu .bubble-container .item.bg-1 {
+  html[theme="dark"] .setting-menu .theme-container .item.bg-1,
+  html[theme="dark-blue"] .setting-menu .theme-container .item.bg-1 {
     background-image: url(../../../asset/image/bgl/4-point-stars.svg); }
-  html[theme="dark"] .setting-menu .background-container .item.bg-2,
-  html[theme="dark"] .setting-menu .bubble-container .item.bg-2,
-  html[theme="dark-blue"] .setting-menu .background-container .item.bg-2,
-  html[theme="dark-blue"] .setting-menu .bubble-container .item.bg-2 {
+  html[theme="dark"] .setting-menu .theme-container .item.bg-2,
+  html[theme="dark-blue"] .setting-menu .theme-container .item.bg-2 {
     background-image: url(../../../asset/image/bgl/anchors-away.svg); }
-  html[theme="dark"] .setting-menu .background-container .item.bg-3,
-  html[theme="dark"] .setting-menu .bubble-container .item.bg-3,
-  html[theme="dark-blue"] .setting-menu .background-container .item.bg-3,
-  html[theme="dark-blue"] .setting-menu .bubble-container .item.bg-3 {
+  html[theme="dark"] .setting-menu .theme-container .item.bg-3,
+  html[theme="dark-blue"] .setting-menu .theme-container .item.bg-3 {
     background-image: url(../../../asset/image/bgl/bank-note.svg); }
-  html[theme="dark"] .setting-menu .background-container .item.bg-4,
-  html[theme="dark"] .setting-menu .bubble-container .item.bg-4,
-  html[theme="dark-blue"] .setting-menu .background-container .item.bg-4,
-  html[theme="dark-blue"] .setting-menu .bubble-container .item.bg-4 {
+  html[theme="dark"] .setting-menu .theme-container .item.bg-4,
+  html[theme="dark-blue"] .setting-menu .theme-container .item.bg-4 {
     background-image: url(../../../asset/image/bgl/bubbles.svg); }
-  html[theme="dark"] .setting-menu .background-container .item.bg-5,
-  html[theme="dark"] .setting-menu .bubble-container .item.bg-5,
-  html[theme="dark-blue"] .setting-menu .background-container .item.bg-5,
-  html[theme="dark-blue"] .setting-menu .bubble-container .item.bg-5 {
+  html[theme="dark"] .setting-menu .theme-container .item.bg-5,
+  html[theme="dark-blue"] .setting-menu .theme-container .item.bg-5 {
     background-image: url(../../../asset/image/bgl/glamorous.svg); }
-  html[theme="dark"] .setting-menu .background-container .item.bg-6,
-  html[theme="dark"] .setting-menu .bubble-container .item.bg-6,
-  html[theme="dark-blue"] .setting-menu .background-container .item.bg-6,
-  html[theme="dark-blue"] .setting-menu .bubble-container .item.bg-6 {
+  html[theme="dark"] .setting-menu .theme-container .item.bg-6,
+  html[theme="dark-blue"] .setting-menu .theme-container .item.bg-6 {
     background-image: url(../../../asset/image/bgl/hideout.svg); }
-  html[theme="dark"] .setting-menu .background-container .item.bg-7,
-  html[theme="dark"] .setting-menu .bubble-container .item.bg-7,
-  html[theme="dark-blue"] .setting-menu .background-container .item.bg-7,
-  html[theme="dark-blue"] .setting-menu .bubble-container .item.bg-7 {
+  html[theme="dark"] .setting-menu .theme-container .item.bg-7,
+  html[theme="dark-blue"] .setting-menu .theme-container .item.bg-7 {
     background-image: url(../../../asset/image/bgl/i-like-food.svg); }
-  html[theme="dark"] .setting-menu .background-container .item.bg-8,
-  html[theme="dark"] .setting-menu .bubble-container .item.bg-8,
-  html[theme="dark-blue"] .setting-menu .background-container .item.bg-8,
-  html[theme="dark-blue"] .setting-menu .bubble-container .item.bg-8 {
+  html[theme="dark"] .setting-menu .theme-container .item.bg-8,
+  html[theme="dark-blue"] .setting-menu .theme-container .item.bg-8 {
     background-image: url(../../../asset/image/bgl/jigsaw.svg); }
-  html[theme="dark"] .setting-menu .background-container .item.bg-9,
-  html[theme="dark"] .setting-menu .bubble-container .item.bg-9,
-  html[theme="dark-blue"] .setting-menu .background-container .item.bg-9,
-  html[theme="dark-blue"] .setting-menu .bubble-container .item.bg-9 {
+  html[theme="dark"] .setting-menu .theme-container .item.bg-9,
+  html[theme="dark-blue"] .setting-menu .theme-container .item.bg-9 {
     background-image: url(../../../asset/image/bgl/plus.svg); }
-  html[theme="dark"] .setting-menu .background-container .item.bg-10,
-  html[theme="dark"] .setting-menu .bubble-container .item.bg-10,
-  html[theme="dark-blue"] .setting-menu .background-container .item.bg-10,
-  html[theme="dark-blue"] .setting-menu .bubble-container .item.bg-10 {
+  html[theme="dark"] .setting-menu .theme-container .item.bg-10,
+  html[theme="dark-blue"] .setting-menu .theme-container .item.bg-10 {
     background-image: url(../../../asset/image/bgl/rounded-plus-connected.svg); }
-  html[theme="dark"] .setting-menu .background-container .item.bg-11,
-  html[theme="dark"] .setting-menu .bubble-container .item.bg-11,
-  html[theme="dark-blue"] .setting-menu .background-container .item.bg-11,
-  html[theme="dark-blue"] .setting-menu .bubble-container .item.bg-11 {
+  html[theme="dark"] .setting-menu .theme-container .item.bg-11,
+  html[theme="dark-blue"] .setting-menu .theme-container .item.bg-11 {
     background-image: url(../../../asset/image/bgl/skulls.svg); }
-  html[theme="dark"] .setting-menu .background-container .item.bg-12,
-  html[theme="dark"] .setting-menu .bubble-container .item.bg-12,
-  html[theme="dark-blue"] .setting-menu .background-container .item.bg-12,
-  html[theme="dark-blue"] .setting-menu .bubble-container .item.bg-12 {
+  html[theme="dark"] .setting-menu .theme-container .item.bg-12,
+  html[theme="dark-blue"] .setting-menu .theme-container .item.bg-12 {
     background-image: url(../../../asset/image/bgl/squares-in-squares.svg); }
-  html[theme="dark"] .setting-menu .background-container .item.bg-13,
-  html[theme="dark"] .setting-menu .bubble-container .item.bg-13,
-  html[theme="dark-blue"] .setting-menu .background-container .item.bg-13,
-  html[theme="dark-blue"] .setting-menu .bubble-container .item.bg-13 {
+  html[theme="dark"] .setting-menu .theme-container .item.bg-13,
+  html[theme="dark-blue"] .setting-menu .theme-container .item.bg-13 {
     background-image: url(../../../asset/image/bgl/tic-tac-toe.svg); }
-  html[theme="dark"] .setting-menu .background-container .item.bg-14,
-  html[theme="dark"] .setting-menu .bubble-container .item.bg-14,
-  html[theme="dark-blue"] .setting-menu .background-container .item.bg-14,
-  html[theme="dark-blue"] .setting-menu .bubble-container .item.bg-14 {
+  html[theme="dark"] .setting-menu .theme-container .item.bg-14,
+  html[theme="dark-blue"] .setting-menu .theme-container .item.bg-14 {
     background-image: url(../../../asset/image/bgl/topography.svg); }
 
-html[theme="dark"] .setting-menu .background-container .title-bar.selected,
-html[theme="dark"] .setting-menu .bubble-container .title-bar.selected,
-html[theme="dark-blue"] .setting-menu .background-container .title-bar.selected,
-html[theme="dark-blue"] .setting-menu .bubble-container .title-bar.selected {
+html[theme="dark"] .setting-menu .theme-container .title-bar.selected,
+html[theme="dark-blue"] .setting-menu .theme-container .title-bar.selected {
   background: linear-gradient(to top, #00478399 0%, #00478344 70%, rgba(0, 0, 0, 0) 100%); }
 
 html[theme="dark"] .setting-menu .kk-card,
@@ -501,14 +453,11 @@ html[theme="dark-blue"] .setting-menu .menu-header {
 html[theme="dark-blue"] .setting-menu .font-size-container div[role="progressbar"] {
   background-color: var(--dark-blue-low); }
 
-html[theme="dark-blue"] .setting-menu .background-container .item,
-html[theme="dark-blue"] .setting-menu .bubble-container .item {
+html[theme="dark-blue"] .setting-menu .theme-container .item {
   background-color: var(--dark-blue-low); }
-  html[theme="dark-blue"] .setting-menu .background-container .item:after,
-  html[theme="dark-blue"] .setting-menu .bubble-container .item:after {
+  html[theme="dark-blue"] .setting-menu .theme-container .item:after {
     background: var(--dark-blue-accent-medium); }
-  html[theme="dark-blue"] .setting-menu .background-container .item:before,
-  html[theme="dark-blue"] .setting-menu .bubble-container .item:before {
+  html[theme="dark-blue"] .setting-menu .theme-container .item:before {
     background: var(--dark-blue-accent-low); }
 
 html[theme="dark-blue"] .setting-menu .kk-card {

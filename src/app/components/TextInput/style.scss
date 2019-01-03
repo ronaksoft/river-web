@@ -246,18 +246,19 @@
         }
         &.edit {
           .preview-bar {
-            background-color: #b30000
+            background-color: #b30000;
           }
           .preview-message .preview-message-user {
-            color: #b30000
+            color: #b30000;
+            line-height: 16px;
           }
         }
         &.reply-you {
           .preview-bar {
-            background-color: #6bcbef
+            background-color: #6bcbef;
           }
           .preview-message .preview-message-user {
-            color: #6bcbef
+            color: #6bcbef;
           }
         }
       }
@@ -334,6 +335,14 @@ html[theme="dark-blue"] {
       .preview-container {
         .preview-message-wrapper {
           background-color: rgba(255, 255, 255, 0.07);
+          &.edit {
+            .preview-bar {
+              background-color: #e10000;
+            }
+            .preview-message .preview-message-user {
+              color: #e10000;
+            }
+          }
         }
       }
     }
@@ -381,7 +390,7 @@ html[theme="dark-blue"] {
     }
     .actions {
       svg {
-        color: var(--dark-blue-high);
+        color: var(--dark-blue-high-alt);
       }
       [disabled] svg {
         color: var(--grey);

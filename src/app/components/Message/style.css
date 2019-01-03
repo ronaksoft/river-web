@@ -136,6 +136,8 @@ input {
   display: inline-block;
   width: 100%;
   padding-bottom: 2px; }
+  .bubble-wrapper.date-padding {
+    padding-bottom: 8px; }
   .bubble-wrapper .arrow {
     position: absolute;
     top: 6px;
@@ -291,8 +293,7 @@ input {
     flex: none;
     font-size: 12.5px;
     line-height: 21px;
-    text-transform: uppercase;
-    margin-top: 8px; }
+    text-transform: uppercase; }
   .bubble-wrapper > .system-message {
     background-color: rgba(0, 0, 0, 0.31);
     border-radius: 7.5px;
@@ -493,11 +494,17 @@ html[bubble="2"] .bubble-wrapper {
       padding: 8px 12px 0 8px; }
     html[bubble="2"] .bubble-wrapper .bubble .name {
       padding: 4px 12px 0 8px; }
-  html[bubble="2"] .bubble-wrapper.avatar.you .bubble > .inner {
-    padding: 2px 12px 0 8px; }
+    html[bubble="2"] .bubble-wrapper .bubble .more {
+      top: 4px;
+      right: 8px; }
+
+html[bubble="2"] .group .bubble-wrapper.avatar.you .bubble > .inner {
+  padding: 2px 12px 0 8px; }
 
 html[bubble="4"] .bubble-wrapper {
   padding-bottom: 4px; }
+  html[bubble="4"] .bubble-wrapper .arrow {
+    width: 20px; }
   html[bubble="4"] .bubble-wrapper .bubble {
     border-radius: 10px;
     min-width: 91px;
@@ -506,5 +513,6 @@ html[bubble="4"] .bubble-wrapper {
       padding: 8px 12px 0 8px; }
     html[bubble="4"] .bubble-wrapper .bubble .name {
       padding: 4px 12px 0 8px; }
-  html[bubble="4"] .bubble-wrapper.avatar.you .bubble > .inner {
-    padding: 2px 12px 0 8px; }
+
+html[bubble="4"] .group .bubble-wrapper.avatar.you .bubble > .inner {
+  padding: 2px 12px 0 8px; }

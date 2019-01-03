@@ -262,7 +262,8 @@ input {
         .write .previews .preview-container .preview-message-wrapper.edit .preview-bar {
           background-color: #b30000; }
         .write .previews .preview-container .preview-message-wrapper.edit .preview-message .preview-message-user {
-          color: #b30000; }
+          color: #b30000;
+          line-height: 16px; }
         .write .previews .preview-container .preview-message-wrapper.reply-you .preview-bar {
           background-color: #6bcbef; }
         .write .previews .preview-container .preview-message-wrapper.reply-you .preview-message .preview-message-user {
@@ -325,6 +326,12 @@ html[theme="dark-blue"] .write {
     html[theme="dark"] .write .previews .preview-container .preview-message-wrapper,
     html[theme="dark-blue"] .write .previews .preview-container .preview-message-wrapper {
       background-color: rgba(255, 255, 255, 0.07); }
+      html[theme="dark"] .write .previews .preview-container .preview-message-wrapper.edit .preview-bar,
+      html[theme="dark-blue"] .write .previews .preview-container .preview-message-wrapper.edit .preview-bar {
+        background-color: #e10000; }
+      html[theme="dark"] .write .previews .preview-container .preview-message-wrapper.edit .preview-message .preview-message-user,
+      html[theme="dark-blue"] .write .previews .preview-container .preview-message-wrapper.edit .preview-message .preview-message-user {
+        color: #e10000; }
 
 html[theme="dark"] .emoji-mart,
 html[theme="dark-blue"] .emoji-mart {
@@ -358,7 +365,7 @@ html[theme="dark-blue"] .write {
   html[theme="dark-blue"] .write .inputs .input .textarea-container {
     background-color: var(--dark-blue-low) !important; }
   html[theme="dark-blue"] .write .actions svg {
-    color: var(--dark-blue-high); }
+    color: var(--dark-blue-high-alt); }
   html[theme="dark-blue"] .write .actions [disabled] svg {
     color: var(--grey); }
 

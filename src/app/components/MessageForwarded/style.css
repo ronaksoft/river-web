@@ -119,14 +119,16 @@ html[bubble="2"] .bubble-wrapper.me .message-forwarded .forwarded-container .for
   position: relative;
   overflow: hidden;
   border-top-right-radius: 18px;
-  border-top-left-radius: 18px; }
+  border-top-left-radius: 18px;
+  border-bottom-left-radius: 5px; }
   html[bubble="2"] .bubble-wrapper.you:not(.avatar) .message-forwarded .forwarded-container .forwarded-message-wrapper .forwarded-bar,
   html[bubble="2"] .bubble-wrapper.me .message-forwarded .forwarded-container .forwarded-message-wrapper .forwarded-bar {
     position: absolute;
-    top: 8px;
+    top: 0;
     width: 4px;
     bottom: 0;
-    left: 0; }
+    left: 0;
+    border-radius: 0; }
   html[bubble="2"] .bubble-wrapper.you:not(.avatar) .message-forwarded .forwarded-container .forwarded-message-wrapper .preview-message,
   html[bubble="2"] .bubble-wrapper.me .message-forwarded .forwarded-container .forwarded-message-wrapper .preview-message {
     border-top-right-radius: 18px;
@@ -138,15 +140,15 @@ html[bubble="4"] .bubble-wrapper.you:not(.avatar) .message-forwarded .forwarded-
 html[bubble="4"] .bubble-wrapper.me .message-forwarded .forwarded-container .forwarded-message-wrapper {
   position: relative;
   overflow: hidden;
-  border-top-right-radius: 8px;
-  border-top-left-radius: 8px; }
+  border-radius: 8px; }
   html[bubble="4"] .bubble-wrapper.you:not(.avatar) .message-forwarded .forwarded-container .forwarded-message-wrapper .forwarded-bar,
   html[bubble="4"] .bubble-wrapper.me .message-forwarded .forwarded-container .forwarded-message-wrapper .forwarded-bar {
     position: absolute;
-    top: 4px;
+    top: 0;
     width: 4px;
     bottom: 0;
-    left: 0; }
+    left: 0;
+    border-radius: 0; }
   html[bubble="4"] .bubble-wrapper.you:not(.avatar) .message-forwarded .forwarded-container .forwarded-message-wrapper .preview-message,
   html[bubble="4"] .bubble-wrapper.me .message-forwarded .forwarded-container .forwarded-message-wrapper .preview-message {
     border-top-right-radius: 8px;

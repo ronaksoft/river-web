@@ -84,12 +84,14 @@ html[bubble="2"] {
           overflow: hidden;
           border-top-right-radius: 18px;
           border-top-left-radius: 18px;
+          border-bottom-left-radius: 5px;
           .forwarded-bar {
             position: absolute;
-            top: 8px;
+            top: 0;
             width: 4px;
             bottom: 0;
             left: 0;
+            border-radius: 0;
           }
           .preview-message {
             border-top-right-radius: 18px;
@@ -111,14 +113,14 @@ html[bubble="4"] {
         .forwarded-message-wrapper {
           position: relative;
           overflow: hidden;
-          border-top-right-radius: 8px;
-          border-top-left-radius: 8px;
+          border-radius: 8px;
           .forwarded-bar {
             position: absolute;
-            top: 4px;
+            top: 0;
             width: 4px;
             bottom: 0;
             left: 0;
+            border-radius: 0;
           }
           .preview-message {
             border-top-right-radius: 8px;
