@@ -10,7 +10,7 @@
 import * as React from 'react';
 import {List, AutoSizer} from 'react-virtualized';
 import {Link} from 'react-router-dom';
-import {findIndex, debounce, intersectionBy, clone} from 'lodash';
+import {debounce, intersectionBy, clone} from 'lodash';
 import {IDialog} from '../../repository/dialog/interface';
 import DialogMessage from '../DialogMessage';
 import {CloseRounded, MessageRounded} from '@material-ui/icons';
@@ -80,8 +80,8 @@ class Dialog extends React.Component<IProps, IState> {
     public componentDidMount() {
         this.list.recomputeRowHeights();
         this.list.forceUpdateGrid();
-        const index = findIndex(this.state.items, {peerid: this.state.selectedId});
-        this.list.scrollToRow(index);
+        // const index = findIndex(this.state.items, {peerid: this.state.selectedId});
+        // this.list.scrollToRow(index);
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -95,11 +95,11 @@ class Dialog extends React.Component<IProps, IState> {
                 this.filterItem();
             });
         } else {
-            const index = findIndex(this.state.items, {peerid: newProps.selectedId});
+            // const index = findIndex(this.state.items, {peerid: newProps.selectedId});
             this.setState({
                 isTypingList: newProps.isTypingList,
                 items: newProps.items,
-                scrollIndex: index,
+                scrollIndex: -1,
                 selectedId: newProps.selectedId,
             }, () => {
                 this.filterItem();
@@ -366,6 +366,7 @@ class Dialog extends React.Component<IProps, IState> {
         }, () => {
             this.list.recomputeRowHeights();
             this.list.forceUpdateGrid();
+            this.list.scrollToPosition(0);
         });
     }
 
