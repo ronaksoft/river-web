@@ -144,10 +144,10 @@ input {
         font-size: 12px !important;
         line-height: 1.25em;
         border: 1px solid rgba(50, 61, 71, 0.16);
-        border-radius: 3px;
+        border-radius: 17px;
         background-color: #fff !important;
         min-height: 32px;
-        width: calc(100% - 8px);
+        width: 100%;
         max-height: 120px;
         z-index: 10;
         padding: 6px; }
@@ -155,13 +155,14 @@ input {
           position: static !important; }
           .write .inputs .input .textarea-container .mention .mention__control .mention__highlighter {
             position: absolute !important;
-            left: 9px;
-            top: 9px !important; }
+            left: 21px;
+            top: 3px !important; }
             .write .inputs .input .textarea-container .mention .mention__control .mention__highlighter .mention-item {
               border-bottom: 1px solid var(--grey); }
           .write .inputs .input .textarea-container .mention .mention__control textarea {
             height: 1.1em !important;
-            padding-right: 60px;
+            padding-right: 26px;
+            padding-left: 12px;
             overflow: hidden !important;
             line-height: 1.1em; }
             .write .inputs .input .textarea-container .mention .mention__control textarea._2-line {
@@ -173,26 +174,75 @@ input {
             .write .inputs .input .textarea-container .mention .mention__control textarea._5-line {
               height: 5.9em !important;
               overflow: auto !important; }
-      .write .inputs .input .write-link {
+            .write .inputs .input .textarea-container .mention .mention__control textarea::placeholder {
+              vertical-align: center; }
+      .write .inputs .input .emoji-wrapper {
         position: absolute;
-        right: 12px;
+        right: 6px;
         top: 50%;
         height: 32px;
         transform: translateY(-50%);
         z-index: 11; }
-        .write .inputs .input .write-link a {
+        .write .inputs .input .emoji-wrapper .icon {
           position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           height: 32px;
-          margin: 0 2px;
-          display: inline-block; }
-          .write .inputs .input .write-link a svg {
-            fill: var(--light);
-            font-size: 20px;
-            height: 32px; }
-          .write .inputs .input .write-link a:hover svg {
-            fill: var(--grey); }
+          cursor: pointer; }
+          .write .inputs .input .emoji-wrapper .icon svg {
+            color: var(--grey);
+            font-size: 24px;
+            height: 24px; }
+          .write .inputs .input .emoji-wrapper .icon:hover svg {
+            color: var(--dark); }
       .write .inputs .input.rtl textarea {
         direction: rtl; }
+    .write .inputs .input-actions {
+      display: flex;
+      justify-content: end;
+      align-items: center;
+      padding: 0 8px;
+      width: 88px;
+      transition: width 0.2s linear;
+      flex-direction: row-reverse; }
+      .write .inputs .input-actions .icon {
+        cursor: pointer;
+        padding: 0 6px;
+        line-height: 0; }
+        .write .inputs .input-actions .icon svg {
+          color: var(--grey); }
+        .write .inputs .input-actions .icon:hover svg {
+          color: var(--dark-medium); }
+      .write .inputs .input-actions .send {
+        display: none; }
+    .write .inputs.mode-voice .input-actions {
+      width: 52px; }
+      .write .inputs.mode-voice .input-actions .attachment, .write .inputs.mode-voice .input-actions .send {
+        display: none; }
+      .write .inputs.mode-voice .input-actions .voice {
+        position: relative;
+        display: block; }
+        .write .inputs.mode-voice .input-actions .voice svg {
+          position: relative;
+          z-index: 20; }
+        .write .inputs.mode-voice .input-actions .voice:before {
+          position: absolute;
+          content: '';
+          top: 50%;
+          left: 50%;
+          height: 50px;
+          width: 50px;
+          border-radius: 50%;
+          opacity: 0.5;
+          background-color: var(--river);
+          transform: translate(-50%, -50%); }
+    .write .inputs.mode-text .input-actions {
+      width: 52px; }
+      .write .inputs.mode-text .input-actions .voice, .write .inputs.mode-text .input-actions .attachment {
+        display: none; }
+      .write .inputs.mode-text .input-actions .send {
+        display: block; }
   .write .actions {
     display: flex;
     min-height: 50px; }
@@ -313,6 +363,12 @@ html[theme="dark-blue"] .write {
     html[theme="dark"] .write .inputs .input .textarea-container textarea,
     html[theme="dark-blue"] .write .inputs .input .textarea-container textarea {
       color: var(--light) !important; }
+  html[theme="dark"] .write .inputs .input .emoji-wrapper .icon:hover svg,
+  html[theme="dark-blue"] .write .inputs .input .emoji-wrapper .icon:hover svg {
+    color: var(--light); }
+  html[theme="dark"] .write .inputs .input-actions .icon:hover svg,
+  html[theme="dark-blue"] .write .inputs .input-actions .icon:hover svg {
+    color: var(--light); }
   html[theme="dark"] .write .actions svg,
   html[theme="dark-blue"] .write .actions svg {
     color: var(--white); }
@@ -322,7 +378,7 @@ html[theme="dark-blue"] .write {
   html[theme="dark"] .write .previews,
   html[theme="dark-blue"] .write .previews {
     color: var(--light);
-    fill: var(--light); }
+    color: var(--light); }
     html[theme="dark"] .write .previews .preview-container .preview-message-wrapper,
     html[theme="dark-blue"] .write .previews .preview-container .preview-message-wrapper {
       background-color: rgba(255, 255, 255, 0.07); }
@@ -351,7 +407,7 @@ html[theme="dark-blue"] .emoji-mart {
     color: var(--light); }
   html[theme="dark"] .emoji-mart .emoji-mart-search-icon,
   html[theme="dark-blue"] .emoji-mart .emoji-mart-search-icon {
-    fill: var(--light); }
+    color: var(--light); }
 
 html[theme="dark-blue"] .write {
   border: 1px solid var(--dark-blue-medium);

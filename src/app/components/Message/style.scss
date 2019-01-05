@@ -576,6 +576,16 @@ html[bubble="2"] {
         right: 8px;
       }
     }
+    &.me {
+      .bubble.edited {
+        min-width: 115px;
+      }
+    }
+    &.you {
+      .bubble.edited {
+        min-width: 95px;
+      }
+    }
   }
   .group {
     .bubble-wrapper {
@@ -605,6 +615,16 @@ html[bubble="4"] {
       }
       .name {
         padding: 4px 12px 0 8px;
+      }
+    }
+    &.me {
+      .bubble.edited {
+        min-width: 115px;
+      }
+    }
+    &.you {
+      .bubble.edited {
+        min-width: 95px;
       }
     }
   }

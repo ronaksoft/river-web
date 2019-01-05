@@ -11,7 +11,15 @@ import * as React from 'react';
 import {Picker} from 'emoji-mart';
 import PopUpMenu from '../PopUpMenu';
 import {cloneDeep, throttle} from 'lodash';
-import {ClearRounded, DeleteRounded, ForwardRounded, SendRounded, SentimentSatisfiedRounded} from '@material-ui/icons';
+import {
+    ClearRounded,
+    DeleteRounded,
+    ForwardRounded,
+    SendRounded,
+    SentimentSatisfiedRounded,
+    AttachFileRounded,
+    KeyboardVoiceRounded
+} from '@material-ui/icons';
 import {IconButton} from '@material-ui/core';
 import UserAvatar from '../UserAvatar';
 import RTLDetector from '../../services/utilities/rtl_detector';
@@ -36,6 +44,9 @@ import {IContact} from '../../repository/contact/interface';
 import {IGroup} from '../../repository/group/interface';
 import DialogRepo from '../../repository/dialog';
 import {IDraft} from '../../repository/dialog/interface';
+// @ts-ignore
+import Recorder from 'opus-recorder/dist/recorder.min';
+
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
@@ -105,6 +116,9 @@ class TextInput extends React.Component<IProps, IState> {
     private sdk: SDK;
     private mentions: IMentions[];
     private lastMentionsCount: number = 0;
+    private inputsRef: any = null;
+    private inputsMode: 'voice' | 'text' | 'attachment' | 'default' = 'default';
+    private recorder: Recorder;
 
     constructor(props: IProps) {
         super(props);
@@ -136,6 +150,25 @@ class TextInput extends React.Component<IProps, IState> {
         this.sdk = SDK.getInstance();
 
         this.checkAuthority();
+
+        this.recorder = new Recorder({
+            encoderPath: '/recorder/encoderWorker.min.js',
+            maxFramesPerPage: 16,
+            monitorGain: 0,
+            numberOfChannels: 1,
+            recordingGain: 1,
+            streamPages: true,
+            wavBitDepth: 16,
+        });
+
+        this.recorder.ondataavailable = (typedArray: any) => {
+            this.visualize(typedArray);
+        };
+
+        // @ts-ignore
+        this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        window.console.log('recorder', this.recorder);
     }
 
     public componentDidMount() {
@@ -221,7 +254,7 @@ class TextInput extends React.Component<IProps, IState> {
                         </div>
                     </div>}
                     <div ref={this.mentionContainerRefHandler} className="suggestion-list-container"/>
-                    {Boolean(!selectable) && <div className="inputs">
+                    {Boolean(!selectable) && <div ref={this.inputsHandler} className={`inputs mode-${this.inputsMode}`}>
                         <div className="user">
                             <UserAvatar id={this.state.userId} className="user-avatar"/>
                         </div>
@@ -247,20 +280,25 @@ class TextInput extends React.Component<IProps, IState> {
                                     />
                                 </MentionsInput>
                             </div>
-                            <div className="write-link">
-                                <a href="javascript:;"
-                                   className="smiley"
-                                   aria-owns="emoji-menu"
-                                   aria-haspopup="true"
-                                   onClick={this.emojiHandleClick}>
+                            <div className="emoji-wrapper">
+                                <span className="icon" onClick={this.emojiHandleClick}>
                                     <SentimentSatisfiedRounded/>
-                                </a>
+                                </span>
                                 <PopUpMenu anchorEl={this.state.emojiAnchorEl} onClose={this.emojiHandleClose}>
                                     <Picker custom={[]} onSelect={this.emojiSelect} native={true} showPreview={false}/>
                                 </PopUpMenu>
-                                <a href="javascript:;" className="send" onClick={this.submitMessage}>
-                                    <SendRounded/>
-                                </a>
+                            </div>
+                        </div>
+                        <div className="input-actions">
+                            <div className="icon voice" onMouseDown={this.onVoiceHandler}
+                                 onMouseUp={this.onVoiceEndHandler}>
+                                <KeyboardVoiceRounded/>
+                            </div>
+                            <div className="icon attachment">
+                                <AttachFileRounded/>
+                            </div>
+                            <div className="icon send" onClick={this.submitMessage}>
+                                <SendRounded/>
                             </div>
                         </div>
                     </div>}
@@ -565,7 +603,8 @@ class TextInput extends React.Component<IProps, IState> {
     private computeLines() {
         // const lineHeight = parseInt(window.getComputedStyle(this.textarea, null).getPropertyValue("font-size").replace(/^\D+/g, ''), 10) * 1.1;
         // let lines = Math.floor((this.textarea.scrollHeight - 4) / lineHeight) + 1;
-        let lines = this.state.textareaValue.split('\n').length;
+        const text = this.state.textareaValue;
+        let lines = text.split('\n').length;
         if (lines < 1) {
             lines = 1;
         }
@@ -576,6 +615,15 @@ class TextInput extends React.Component<IProps, IState> {
             this.textarea.classList.remove('_1-line', '_2-line', '_3-line', '_4-line', '_5-line');
             this.textarea.classList.add(`_${lines}-line`);
             this.lastLines = lines;
+        }
+        if (text.length === 0) {
+            if (this.inputsMode !== 'default') {
+                this.setInputMode('default');
+            }
+        } else {
+            if (this.inputsMode !== 'text') {
+                this.setInputMode('text');
+            }
         }
     }
 
@@ -736,8 +784,90 @@ class TextInput extends React.Component<IProps, IState> {
             if (callback) {
                 callback();
             }
+            this.computeLines();
         });
     }
+
+    private inputsHandler = (ref: any) => {
+        this.inputsRef = ref;
+    }
+
+    /* On record voice handler */
+    private onVoiceHandler = () => {
+        this.recorder.start();
+        this.setInputMode('voice');
+    }
+
+    /* On record voice handler */
+    private onVoiceEndHandler = () => {
+        this.setInputMode('default');
+        this.recorder.stop();
+    }
+
+    /* Set input mode */
+    private setInputMode(mode: 'voice' | 'text' | 'attachment' | 'default') {
+        if (!this.inputsRef) {
+            return;
+        }
+        this.inputsRef.classList.remove('mode-voice', 'mode-text', 'mode-attachment', 'mode-default');
+        this.inputsRef.classList.add(`mode-${mode}`);
+        this.inputsMode = mode;
+    }
+
+    private visualize = (arr: Uint8Array) => {
+        const len = arr.length;
+        const step = Math.floor(len/10);
+        let val = 0;
+        for (let i = 0; i < 10; i++) {
+            val += arr[i*step];
+        }
+        window.console.log(val/10);
+    }
+
+    // private getAverageVolume(buff: any) {
+    //     let values = 0;
+    //     const length = buff.length;
+    //     // get all the frequency amplitudes
+    //     for (let i = 0; i < length; i++) {
+    //         values += buff[i];
+    //     }
+    //     return values / length;
+    // }
+    //
+    // private normalize(x: number) {
+    //     x = -0.0204398621181 * x * x + 2.87341884341 * x;
+    //     if (x < 0) {
+    //         x = 0;
+    //     }
+    //     if (x > 100) {
+    //         x = 100;
+    //     }
+    //     return Math.floor(x);
+    // }
+
+    // /* Insert at selection */
+    // private insertAtCursor(text: string) {
+    //     const textVal = this.state.textareaValue;
+    //     // IE support
+    //     // @ts-ignore
+    //     if (document.selection) {
+    //         this.textarea.focus();
+    //         // @ts-ignore
+    //         const sel: any = document.selection.createRange();
+    //         sel.text = text;
+    //         return sel.text;
+    //     }
+    //     // @ts-ignore
+    //     else if (myField.selectionStart || myField.selectionStart === 0) {
+    //         const startPos = this.textarea.selectionStart;
+    //         const endPos = this.textarea.selectionEnd;
+    //         return textVal.substring(0, startPos)
+    //             + text
+    //             + textVal.substring(endPos, textVal.length);
+    //     } else {
+    //         textVal += myValue;
+    //     }
+    // }
 }
 
 export default TextInput;

@@ -7023,6 +7023,11 @@ optjs@~3.2.2:
   resolved "https://registry.yarnpkg.com/optjs/-/optjs-3.2.2.tgz#69a6ce89c442a44403141ad2f9b370bd5bb6f4ee"
   integrity sha1-aabOicRCpEQDFBrS+bNwvVu29O4=
 
+opus-recorder@^6.1.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/opus-recorder/-/opus-recorder-6.1.0.tgz#0fbfc7a5116462ff79c34175de8a99110d2d762c"
+  integrity sha512-aKaNdFlpRXzfWq1+lONbxjL9m3yVLZeq+f2pNXWINzjivUG3q81JBuzGBWh2jyI5VGGiDJEp7NpNJq0h3jJktA==
+
 original@>=0.0.5:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/original/-/original-1.0.2.tgz#e442a61cffe1c5fd20a65f3261c26663b303f25f"
