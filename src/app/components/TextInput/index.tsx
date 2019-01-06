@@ -77,8 +77,9 @@ interface IState {
     rtl: boolean;
     selectable: boolean;
     selectableDisable: boolean;
-    userId: string;
     textareaValue: string;
+    userId: string;
+    voiceMode: 'lock' | 'down' | 'up';
 }
 
 interface IMentions {
@@ -102,7 +103,6 @@ const defaultMentionInputStyle = {
 };
 
 class TextInput extends React.Component<IProps, IState> {
-    // @ts-ignore
     private mentionContainer: any = null;
     private textarea: any = null;
     private typingThrottle: any = null;
@@ -114,11 +114,18 @@ class TextInput extends React.Component<IProps, IState> {
     private dialogRepo: DialogRepo;
     private lastLines: number = 1;
     private sdk: SDK;
-    private mentions: IMentions[];
+    private mentions: IMentions[] = [];
     private lastMentionsCount: number = 0;
     private inputsRef: any = null;
+    private waveRef: any = null;
+    // @ts-ignore
+    private canvasRef: any = null;
     private inputsMode: 'voice' | 'text' | 'attachment' | 'default' = 'default';
     private recorder: Recorder;
+    private timerRef: any = null;
+    private timerInterval: any = null;
+    private timerDuration: number = 0;
+    private voiceMouseIn: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -135,6 +142,7 @@ class TextInput extends React.Component<IProps, IState> {
             selectableDisable: props.selectableDisable,
             textareaValue: '',
             userId: props.userId || '',
+            voiceMode: 'up',
         };
 
         if (this.props.ref) {
@@ -151,28 +159,13 @@ class TextInput extends React.Component<IProps, IState> {
 
         this.checkAuthority();
 
-        this.recorder = new Recorder({
-            encoderPath: '/recorder/encoderWorker.min.js',
-            maxFramesPerPage: 16,
-            monitorGain: 0,
-            numberOfChannels: 1,
-            recordingGain: 1,
-            streamPages: true,
-            wavBitDepth: 16,
-        });
-
-        this.recorder.ondataavailable = (typedArray: any) => {
-            this.visualize(typedArray);
-        };
-
         // @ts-ignore
-        this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-        window.console.log('recorder', this.recorder);
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
     }
 
     public componentDidMount() {
         window.addEventListener('Group_DB_Updated', this.checkAuthority);
+        window.addEventListener('mouseup', this.windowMouseUp);
         this.initDraft(null, this.state.peer, 0, null);
     }
 
@@ -206,10 +199,11 @@ class TextInput extends React.Component<IProps, IState> {
 
     public componentWillUnmount() {
         window.removeEventListener('Group_DB_Updated', this.checkAuthority);
+        window.removeEventListener('mouseup', this.windowMouseUp);
     }
 
     public render() {
-        const {previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable, disableAuthority, textareaValue} = this.state;
+        const {previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable, disableAuthority, textareaValue, voiceMode} = this.state;
 
         if (!selectable && disableAuthority !== 0x0) {
             if (disableAuthority === 0x1) {
@@ -254,7 +248,8 @@ class TextInput extends React.Component<IProps, IState> {
                         </div>
                     </div>}
                     <div ref={this.mentionContainerRefHandler} className="suggestion-list-container"/>
-                    {Boolean(!selectable) && <div ref={this.inputsHandler} className={`inputs mode-${this.inputsMode}`}>
+                    {Boolean(!selectable) &&
+                    <div ref={this.inputsRefHandler} className={`inputs mode-${this.inputsMode}`}>
                         <div className="user">
                             <UserAvatar id={this.state.userId} className="user-avatar"/>
                         </div>
@@ -289,10 +284,25 @@ class TextInput extends React.Component<IProps, IState> {
                                 </PopUpMenu>
                             </div>
                         </div>
+                        <div className="voice-preview">
+                            <div className="timer">
+                                <span className="bulb"/>
+                                <span ref={this.timerRefHandler}>00:00</span>
+                            </div>
+                            <div className="preview">
+                                <canvas ref={this.canvasRefHandler}/>
+                            </div>
+                            <div className="cancel" onClick={this.onVoiceRecordEndHandler}>
+                                cancel
+                            </div>
+                        </div>
                         <div className="input-actions">
-                            <div className="icon voice" onMouseDown={this.onVoiceHandler}
-                                 onMouseUp={this.onVoiceEndHandler}>
-                                <KeyboardVoiceRounded/>
+                            <div className="icon voice" onMouseDown={this.voiceMouseDownHandler}
+                                 onMouseUp={this.voiceMouseUpHandler} onMouseEnter={this.voiceMouseEnterHandler}
+                                 onMouseLeave={this.voiceMouseLeaveHandler}>
+                                {Boolean(voiceMode !== 'lock') && <KeyboardVoiceRounded/>}
+                                {Boolean(voiceMode === 'lock') && <SendRounded/>}
+                                <span ref={this.waveRefHandler} className="wave"/>
                             </div>
                             <div className="icon attachment">
                                 <AttachFileRounded/>
@@ -788,20 +798,107 @@ class TextInput extends React.Component<IProps, IState> {
         });
     }
 
-    private inputsHandler = (ref: any) => {
+    /* Inputs ref handler */
+    private inputsRefHandler = (ref: any) => {
         this.inputsRef = ref;
     }
 
-    /* On record voice handler */
-    private onVoiceHandler = () => {
-        this.recorder.start();
-        this.setInputMode('voice');
+    /* Wave ref handler */
+    private waveRefHandler = (ref: any) => {
+        this.waveRef = ref;
+    }
+
+    /* Canvas ref handler */
+    private canvasRefHandler = (ref: any) => {
+        this.canvasRef = ref;
+    }
+
+    /* Timer ref handler */
+    private timerRefHandler = (ref: any) => {
+        this.timerRef = ref;
     }
 
     /* On record voice handler */
-    private onVoiceEndHandler = () => {
+    private voiceRecord() {
+        if (!this.recorder) {
+            this.initRecorder();
+        }
+        this.setInputMode('voice');
+        this.recorder.start().then(() => {
+            this.startTimer();
+            const audioAnalyser = this.recorder.audioContext.createAnalyser();
+            audioAnalyser.minDecibels = -100;
+            audioAnalyser.fftSize = 64;
+            this.recorder.sourceNode.connect(audioAnalyser);
+            const data = new Uint8Array(audioAnalyser.frequencyBinCount);
+
+            const loop = () => {
+                if (this.inputsMode === 'voice') {
+                    setTimeout(() => {
+                        requestAnimationFrame(loop); // we'll loop every 60th of a second to check
+                    }, 50);
+                }
+                audioAnalyser.getByteFrequencyData(data); // get current data
+                this.visualize(data);
+            };
+            loop();
+        });
+    }
+
+    /* On record voice handler */
+    private onVoiceRecordEndHandler = () => {
         this.setInputMode('default');
+        this.stopTimer();
         this.recorder.stop();
+    }
+
+    /* Voice anchor mouse down handler */
+    private voiceMouseDownHandler = () => {
+        this.voiceMouseIn = true;
+        this.setState({
+            voiceMode: 'down',
+        });
+        this.voiceRecord();
+    }
+
+    /* Voice anchor mouse up handler */
+    private voiceMouseUpHandler = (e: any) => {
+        e.stopPropagation();
+        this.setState({
+            voiceMode: 'up',
+        });
+    }
+
+    /* Voice anchor mouse Enter handler */
+    private voiceMouseEnterHandler = () => {
+        if (!this.voiceMouseIn) {
+            return;
+        }
+        if (this.state.voiceMode !== 'down') {
+            this.setState({
+                voiceMode: 'down',
+            });
+        }
+    }
+
+    /* Voice anchor mouse down handler */
+    private voiceMouseLeaveHandler = () => {
+        if (!this.voiceMouseIn) {
+            return;
+        }
+        if (this.state.voiceMode !== 'lock') {
+            this.setState({
+                voiceMode: 'lock',
+            });
+        }
+    }
+
+    /* Window click handler */
+    private windowMouseUp = () => {
+        if (!this.voiceMouseIn) {
+            return;
+        }
+        this.voiceMouseIn = false;
     }
 
     /* Set input mode */
@@ -815,35 +912,85 @@ class TextInput extends React.Component<IProps, IState> {
     }
 
     private visualize = (arr: Uint8Array) => {
+        if (!this.waveRef) {
+            return;
+        }
         const len = arr.length;
-        const step = Math.floor(len/10);
+        const step = Math.floor(len / 10);
         let val = 0;
         for (let i = 0; i < 10; i++) {
-            val += arr[i*step];
+            val += arr[i * step];
         }
-        window.console.log(val/10);
+        val = this.normalize(val / 10);
+        this.waveRef.style.height = val + 'px';
+        this.waveRef.style.width = val + 'px';
+        window.console.log(val);
     }
 
-    // private getAverageVolume(buff: any) {
-    //     let values = 0;
-    //     const length = buff.length;
-    //     // get all the frequency amplitudes
-    //     for (let i = 0; i < length; i++) {
-    //         values += buff[i];
-    //     }
-    //     return values / length;
-    // }
-    //
-    // private normalize(x: number) {
-    //     x = -0.0204398621181 * x * x + 2.87341884341 * x;
-    //     if (x < 0) {
-    //         x = 0;
-    //     }
-    //     if (x > 100) {
-    //         x = 100;
-    //     }
-    //     return Math.floor(x);
-    // }
+    /* Initialize opus recorder and bind listeners */
+    private initRecorder() {
+        this.recorder = new Recorder({
+            encoderPath: '/recorder/encoderWorker.min.js',
+            maxFramesPerPage: 16,
+            monitorGain: 0,
+            numberOfChannels: 1,
+            recordingGain: 1,
+            wavBitDepth: 16,
+        });
+
+        this.recorder.ondataavailable = (typedArray: any) => {
+            // window.console.log(typedArray);
+            const dataBlob = new Blob([typedArray], {type: 'audio/ogg'});
+            const url = URL.createObjectURL(dataBlob);
+            const audio = document.createElement('audio');
+            audio.src = url;
+            audio.play();
+        };
+    }
+
+    /* Normalize the wave amount */
+    private normalize(x: number) {
+        // x = -0.0204398621181 * x * x + 2.87341884341 * x;
+        if (x < 30) {
+            x = 30;
+        }
+        if (x > 100) {
+            x = 100;
+        }
+        return Math.floor(x);
+    }
+
+    /* Start voice recorder timer */
+    private startTimer() {
+        clearInterval(this.timerInterval);
+        this.timerDuration = 0;
+        this.displayTimer();
+        this.timerInterval = setInterval(() => {
+            this.timerDuration++;
+            this.displayTimer();
+        }, 1000);
+    }
+
+    /* Start voice recorder timer */
+    private stopTimer() {
+        clearInterval(this.timerInterval);
+    }
+
+    /* Display voice recorder timer */
+    private displayTimer() {
+        if (!this.timerRef) {
+            return;
+        }
+        let sec: string | number = this.timerDuration % 60;
+        let min: string | number = Math.floor(this.timerDuration / 60);
+        if (sec < 10) {
+            sec = `0${sec}`;
+        }
+        if (min < 10) {
+            min = `0${min}`;
+        }
+        this.timerRef.innerHTML = `${min}:${sec}`;
+    }
 
     // /* Insert at selection */
     // private insertAtCursor(text: string) {

@@ -198,6 +198,40 @@ input {
             color: var(--dark); }
       .write .inputs .input.rtl textarea {
         direction: rtl; }
+    .write .inputs .voice-preview {
+      display: none;
+      flex: 1;
+      margin: 8px 0;
+      z-index: 2;
+      align-items: center;
+      vertical-align: center;
+      font-size: 13px; }
+      .write .inputs .voice-preview .timer {
+        position: relative;
+        width: 80px;
+        padding-left: 30px; }
+        .write .inputs .voice-preview .timer .bulb {
+          position: absolute;
+          top: 50%;
+          left: 16px;
+          height: 8px;
+          width: 8px;
+          border-radius: 50%;
+          background-color: var(--red);
+          transform: translateY(-50%);
+          animation-name: bulbBlink;
+          animation-duration: 1s;
+          animation-iteration-count: infinite;
+          animation-timing-function: linear; }
+      .write .inputs .voice-preview .preview {
+        flex: 1; }
+        .write .inputs .voice-preview .preview canvas {
+          width: 100%;
+          height: 32px; }
+      .write .inputs .voice-preview .cancel {
+        color: var(--red);
+        padding: 0 12px;
+        cursor: pointer; }
     .write .inputs .input-actions {
       display: flex;
       justify-content: end;
@@ -216,6 +250,12 @@ input {
           color: var(--dark-medium); }
       .write .inputs .input-actions .send {
         display: none; }
+      .write .inputs .input-actions .voice .wave {
+        display: none; }
+    .write .inputs.mode-voice .input {
+      display: none; }
+    .write .inputs.mode-voice .voice-preview {
+      display: flex; }
     .write .inputs.mode-voice .input-actions {
       width: 52px; }
       .write .inputs.mode-voice .input-actions .attachment, .write .inputs.mode-voice .input-actions .send {
@@ -225,14 +265,18 @@ input {
         display: block; }
         .write .inputs.mode-voice .input-actions .voice svg {
           position: relative;
-          z-index: 20; }
-        .write .inputs.mode-voice .input-actions .voice:before {
+          z-index: 20;
+          color: var(--light) !important; }
+          .write .inputs.mode-voice .input-actions .voice svg:hover {
+            color: var(--light) !important; }
+        .write .inputs.mode-voice .input-actions .voice .wave {
           position: absolute;
+          display: block;
           content: '';
           top: 50%;
           left: 50%;
-          height: 50px;
-          width: 50px;
+          height: 30px;
+          width: 30px;
           border-radius: 50%;
           opacity: 0.5;
           background-color: var(--river);
@@ -366,6 +410,9 @@ html[theme="dark-blue"] .write {
   html[theme="dark"] .write .inputs .input .emoji-wrapper .icon:hover svg,
   html[theme="dark-blue"] .write .inputs .input .emoji-wrapper .icon:hover svg {
     color: var(--light); }
+  html[theme="dark"] .write .inputs .voice-preview,
+  html[theme="dark-blue"] .write .inputs .voice-preview {
+    color: var(--light); }
   html[theme="dark"] .write .inputs .input-actions .icon:hover svg,
   html[theme="dark-blue"] .write .inputs .input-actions .icon:hover svg {
     color: var(--light); }
@@ -460,3 +507,11 @@ html[font="5"] .write .inputs .input .textarea-container textarea {
   .mobile-view .write .inputs .input .textarea-container textarea {
     padding: 5px 10px;
     font-size: 16px !important; }
+
+@keyframes bulbBlink {
+  0% {
+    opacity: 0.4; }
+  50% {
+    opacity: 1; }
+  100% {
+    opacity: 0.4; } }

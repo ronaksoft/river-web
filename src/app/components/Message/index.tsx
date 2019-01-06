@@ -202,7 +202,7 @@ class Message extends React.Component<IProps, IState> {
                     if (eldiv) {
                         el.scroll({
                             behavior: 'smooth',
-                            top: eldiv.clientHeight + 100,
+                            top: eldiv.clientHeight + 1000,
                         });
                     }
                 }
@@ -739,6 +739,7 @@ class Message extends React.Component<IProps, IState> {
 
     /* Modify scroll position based on scroll mode */
     private modifyScroll(items: IMessage[]) {
+        window.console.log('modifyScroll');
         switch (this.scrollMode) {
             case 'stay':
                 const index = (items.length - this.listCount) + 1;

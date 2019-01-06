@@ -169,6 +169,46 @@
         direction: rtl;
       }
     }
+    .voice-preview {
+      display: none;
+      flex: 1;
+      margin: 8px 0;
+      z-index: 2;
+      align-items: center;
+      vertical-align: center;
+      font-size: 13px;
+      .timer {
+        position: relative;
+        width: 80px;
+        padding-left: 30px;
+        .bulb {
+          position: absolute;
+          top: 50%;
+          left: 16px;
+          height: 8px;
+          width: 8px;
+          border-radius: 50%;
+          background-color: var(--red);
+          transform: translateY(-50%);
+          animation-name: bulbBlink;
+          animation-duration: 1s;
+          animation-iteration-count: infinite;
+          animation-timing-function: linear;
+        }
+      }
+      .preview {
+        flex: 1;
+        canvas {
+          width: 100%;
+          height: 32px;
+        }
+      }
+      .cancel {
+        color: var(--red);
+        padding: 0 12px;
+        cursor: pointer;
+      }
+    }
     .input-actions {
       display: flex;
       justify-content: end;
@@ -193,8 +233,19 @@
       .send {
         display: none;
       }
+      .voice {
+        .wave {
+          display: none;
+        }
+      }
     }
     &.mode-voice {
+      .input {
+        display: none;
+      }
+      .voice-preview {
+        display: flex;
+      }
       .input-actions {
         width: 52px;
         .attachment, .send {
@@ -206,14 +257,19 @@
           svg {
             position: relative;
             z-index: 20;
+            color: var(--light) !important;
+            &:hover {
+              color: var(--light) !important;
+            }
           }
-          &:before {
+          .wave {
             position: absolute;
+            display: block;
             content: '';
             top: 50%;
             left: 50%;
-            height: 50px;
-            width: 50px;
+            height: 30px;
+            width: 30px;
             border-radius: 50%;
             opacity: 0.5;
             background-color: var(--river);
@@ -392,6 +448,9 @@ html[theme="dark-blue"] {
           }
         }
       }
+      .voice-preview {
+        color: var(--light);
+      }
       .input-actions {
         .icon:hover {
           svg {
@@ -538,5 +597,17 @@ html[font="5"] {
         }
       }
     }
+  }
+}
+
+@keyframes bulbBlink {
+  0% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.4;
   }
 }
