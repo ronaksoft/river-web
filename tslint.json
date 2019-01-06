@@ -12,7 +12,8 @@
       "always"
     ],
     "no-bitwise": false,
-    "no-var-requires": false
+    "no-var-requires": false,
+    "prefer-for-of": false
   },
   "linterOptions": {
     "exclude": [

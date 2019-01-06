@@ -47,7 +47,6 @@ import {IDraft} from '../../repository/dialog/interface';
 // @ts-ignore
 import Recorder from 'opus-recorder/dist/recorder.min';
 
-
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
 
@@ -118,14 +117,16 @@ class TextInput extends React.Component<IProps, IState> {
     private lastMentionsCount: number = 0;
     private inputsRef: any = null;
     private waveRef: any = null;
-    // @ts-ignore
     private canvasRef: any = null;
+    private canvasCtx: CanvasRenderingContext2D | null = null;
     private inputsMode: 'voice' | 'text' | 'attachment' | 'default' = 'default';
     private recorder: Recorder;
     private timerRef: any = null;
     private timerInterval: any = null;
     private timerDuration: number = 0;
     private voiceMouseIn: boolean = false;
+    private bars: number[] = [];
+    private canvasSize: { height: number, width: number } = {height: 0, width: 0};
 
     constructor(props: IProps) {
         super(props);
@@ -166,6 +167,7 @@ class TextInput extends React.Component<IProps, IState> {
     public componentDidMount() {
         window.addEventListener('Group_DB_Updated', this.checkAuthority);
         window.addEventListener('mouseup', this.windowMouseUp);
+        window.addEventListener('resize', this.windowResizeHandler);
         this.initDraft(null, this.state.peer, 0, null);
     }
 
@@ -200,6 +202,7 @@ class TextInput extends React.Component<IProps, IState> {
     public componentWillUnmount() {
         window.removeEventListener('Group_DB_Updated', this.checkAuthority);
         window.removeEventListener('mouseup', this.windowMouseUp);
+        window.removeEventListener('resize', this.windowResizeHandler);
     }
 
     public render() {
@@ -292,7 +295,7 @@ class TextInput extends React.Component<IProps, IState> {
                             <div className="preview">
                                 <canvas ref={this.canvasRefHandler}/>
                             </div>
-                            <div className="cancel" onClick={this.onVoiceRecordEndHandler}>
+                            <div className="cancel" onClick={this.voiceCancelHandler}>
                                 cancel
                             </div>
                         </div>
@@ -811,6 +814,11 @@ class TextInput extends React.Component<IProps, IState> {
     /* Canvas ref handler */
     private canvasRefHandler = (ref: any) => {
         this.canvasRef = ref;
+        this.canvasCtx = ref.getContext('2d');
+        if (this.canvasCtx) {
+            // this.canvasCtx.scale(2, 2);
+            setTimeout(this.windowResizeHandler, 100);
+        }
     }
 
     /* Timer ref handler */
@@ -818,35 +826,38 @@ class TextInput extends React.Component<IProps, IState> {
         this.timerRef = ref;
     }
 
-    /* On record voice handler */
+    /* On record voice start handler */
     private voiceRecord() {
         if (!this.recorder) {
             this.initRecorder();
         }
         this.setInputMode('voice');
+        this.bars = [];
         this.recorder.start().then(() => {
             this.startTimer();
             const audioAnalyser = this.recorder.audioContext.createAnalyser();
             audioAnalyser.minDecibels = -100;
-            audioAnalyser.fftSize = 64;
+            audioAnalyser.fftSize = 256;
+            audioAnalyser.smoothingTimeConstant = 0.1;
+
             this.recorder.sourceNode.connect(audioAnalyser);
             const data = new Uint8Array(audioAnalyser.frequencyBinCount);
 
             const loop = () => {
-                if (this.inputsMode === 'voice') {
-                    setTimeout(() => {
-                        requestAnimationFrame(loop); // we'll loop every 60th of a second to check
-                    }, 50);
+                if (this.inputsMode !== 'voice') {
+                    return;
                 }
                 audioAnalyser.getByteFrequencyData(data); // get current data
-                this.visualize(data);
+                this.visualize(data, () => {
+                    loop();
+                });
             };
             loop();
         });
     }
 
-    /* On record voice handler */
-    private onVoiceRecordEndHandler = () => {
+    /* On record voice end handler */
+    private voiceRecordEnd = () => {
         this.setInputMode('default');
         this.stopTimer();
         this.recorder.stop();
@@ -867,6 +878,7 @@ class TextInput extends React.Component<IProps, IState> {
         this.setState({
             voiceMode: 'up',
         });
+        this.voiceRecordEnd();
     }
 
     /* Voice anchor mouse Enter handler */
@@ -901,6 +913,31 @@ class TextInput extends React.Component<IProps, IState> {
         this.voiceMouseIn = false;
     }
 
+    /* Window resize handler */
+    private windowResizeHandler = () => {
+        const el = document.querySelector('.write .inputs');
+        if (el) {
+            this.canvasSize = {
+                height: 34,
+                width: (el.clientWidth - 243),
+            };
+            if (this.canvasRef && this.canvasCtx) {
+                this.canvasRef.style.height = (this.canvasSize.height) + 'px';
+                this.canvasRef.style.width = (this.canvasSize.width) + 'px';
+                this.canvasCtx.canvas.height = (this.canvasSize.height);
+                this.canvasCtx.canvas.width = (this.canvasSize.width);
+            }
+        }
+    }
+
+    /* Voice record cancel handler */
+    private voiceCancelHandler = () => {
+        this.voiceRecordEnd();
+        this.setState({
+            voiceMode: 'up',
+        });
+    }
+
     /* Set input mode */
     private setInputMode(mode: 'voice' | 'text' | 'attachment' | 'default') {
         if (!this.inputsRef) {
@@ -911,7 +948,7 @@ class TextInput extends React.Component<IProps, IState> {
         this.inputsMode = mode;
     }
 
-    private visualize = (arr: Uint8Array) => {
+    private visualize = (arr: Uint8Array, callback: () => void) => {
         if (!this.waveRef) {
             return;
         }
@@ -921,10 +958,12 @@ class TextInput extends React.Component<IProps, IState> {
         for (let i = 0; i < 10; i++) {
             val += arr[i * step];
         }
-        val = this.normalize(val / 10);
+        val = val / 10;
+        this.bars.push(val);
+        val = this.normalize(val);
         this.waveRef.style.height = val + 'px';
         this.waveRef.style.width = val + 'px';
-        window.console.log(val);
+        this.displayBars(callback);
     }
 
     /* Initialize opus recorder and bind listeners */
@@ -990,6 +1029,39 @@ class TextInput extends React.Component<IProps, IState> {
             min = `0${min}`;
         }
         this.timerRef.innerHTML = `${min}:${sec}`;
+    }
+
+    private displayBars(callback: () => void) {
+        if (!this.canvasCtx) {
+            requestAnimationFrame(callback);
+            return;
+        }
+
+        this.canvasCtx.clearRect(0, 0, this.canvasSize.width, this.canvasSize.height);
+
+        const barWidth = 4;
+        const barSpace = 2;
+        let barHeight;
+        let x = 0;
+
+        const ratio = this.canvasSize.height / 256.0;
+
+        let offset = 0;
+        if ((this.canvasSize.width / ((barWidth + barSpace) * this.bars.length)) < 1) {
+            offset = this.bars.length - Math.floor(this.canvasSize.width / (barWidth + barSpace));
+        }
+
+        for (let i = offset; i < this.bars.length; i++) {
+            barHeight = Math.floor(this.bars[i] * ratio);
+
+            this.canvasCtx.fillStyle = '#E6E6E6';
+            this.canvasCtx.fillRect(x, this.canvasSize.height - barHeight, barWidth, this.canvasSize.height);
+
+            x += barWidth + barSpace;
+        }
+        setTimeout(() => {
+            requestAnimationFrame(callback);
+        }, 50);
     }
 
     // /* Insert at selection */
