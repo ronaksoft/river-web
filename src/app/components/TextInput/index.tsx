@@ -18,7 +18,8 @@ import {
     SendRounded,
     SentimentSatisfiedRounded,
     AttachFileRounded,
-    KeyboardVoiceRounded
+    KeyboardVoiceRounded,
+    StopRounded,
 } from '@material-ui/icons';
 import {IconButton} from '@material-ui/core';
 import UserAvatar from '../UserAvatar';
@@ -78,7 +79,7 @@ interface IState {
     selectableDisable: boolean;
     textareaValue: string;
     userId: string;
-    voiceMode: 'lock' | 'down' | 'up';
+    voiceMode: 'lock' | 'down' | 'up' | 'play';
 }
 
 interface IMentions {
@@ -127,6 +128,7 @@ class TextInput extends React.Component<IProps, IState> {
     private voiceMouseIn: boolean = false;
     private bars: number[] = [];
     private canvasSize: { height: number, width: number } = {height: 0, width: 0};
+    private voice: Blob;
 
     constructor(props: IProps) {
         super(props);
@@ -206,7 +208,7 @@ class TextInput extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable, disableAuthority, textareaValue, voiceMode} = this.state;
+        const {previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable, disableAuthority, textareaValue} = this.state;
 
         if (!selectable && disableAuthority !== 0x0) {
             if (disableAuthority === 0x1) {
@@ -302,10 +304,8 @@ class TextInput extends React.Component<IProps, IState> {
                         <div className="input-actions">
                             <div className="icon voice" onMouseDown={this.voiceMouseDownHandler}
                                  onMouseUp={this.voiceMouseUpHandler} onMouseEnter={this.voiceMouseEnterHandler}
-                                 onMouseLeave={this.voiceMouseLeaveHandler}>
-                                {Boolean(voiceMode !== 'lock') && <KeyboardVoiceRounded/>}
-                                {Boolean(voiceMode === 'lock') && <SendRounded/>}
-                                <span ref={this.waveRefHandler} className="wave"/>
+                                 onMouseLeave={this.voiceMouseLeaveHandler} onClick={this.voiceMouseClickHandler}>
+                                {this.getVoiceIcon()}
                             </div>
                             <div className="icon attachment">
                                 <AttachFileRounded/>
@@ -349,6 +349,25 @@ class TextInput extends React.Component<IProps, IState> {
                     </div>}
                 </div>
             );
+        }
+    }
+
+    private getVoiceIcon() {
+        switch (this.state.voiceMode) {
+            case 'lock':
+                return (<React.Fragment>
+                    <StopRounded/>
+                    <span ref={this.waveRefHandler} className="wave"/>
+                </React.Fragment>);
+            case 'play':
+                return (<React.Fragment>
+                    <SendRounded/>
+                </React.Fragment>);
+            default:
+                return (<React.Fragment>
+                    <span ref={this.waveRefHandler} className="wave"/>
+                    <KeyboardVoiceRounded/>
+                </React.Fragment>);
         }
     }
 
@@ -847,6 +866,9 @@ class TextInput extends React.Component<IProps, IState> {
                 if (this.inputsMode !== 'voice') {
                     return;
                 }
+                if (this.state.voiceMode !== 'lock' && this.state.voiceMode !== 'down') {
+                    return;
+                }
                 audioAnalyser.getByteFrequencyData(data); // get current data
                 this.visualize(data, () => {
                     loop();
@@ -858,27 +880,32 @@ class TextInput extends React.Component<IProps, IState> {
 
     /* On record voice end handler */
     private voiceRecordEnd = () => {
-        this.setInputMode('default');
         this.stopTimer();
         this.recorder.stop();
     }
 
     /* Voice anchor mouse down handler */
     private voiceMouseDownHandler = () => {
-        this.voiceMouseIn = true;
-        this.setState({
-            voiceMode: 'down',
-        });
-        this.voiceRecord();
+        if (this.state.voiceMode !== 'lock') {
+            this.voiceMouseIn = true;
+            this.setState({
+                voiceMode: 'down',
+            });
+            this.voiceRecord();
+        }
     }
 
     /* Voice anchor mouse up handler */
     private voiceMouseUpHandler = (e: any) => {
-        e.stopPropagation();
-        this.setState({
-            voiceMode: 'up',
-        });
-        this.voiceRecordEnd();
+        if (this.state.voiceMode !== 'lock') {
+            e.stopPropagation();
+            this.setState({
+                voiceMode: 'up',
+            });
+            this.voiceMouseIn = false;
+            this.voiceRecordEnd();
+            this.setInputMode('default');
+        }
     }
 
     /* Voice anchor mouse Enter handler */
@@ -901,6 +928,16 @@ class TextInput extends React.Component<IProps, IState> {
         if (this.state.voiceMode !== 'lock') {
             this.setState({
                 voiceMode: 'lock',
+            });
+        }
+    }
+
+    /* Voice anchor mouse down handler */
+    private voiceMouseClickHandler = () => {
+        if (this.state.voiceMode === 'lock') {
+            this.voiceRecordEnd();
+            this.setState({
+                voiceMode: 'play',
             });
         }
     }
@@ -933,6 +970,7 @@ class TextInput extends React.Component<IProps, IState> {
     /* Voice record cancel handler */
     private voiceCancelHandler = () => {
         this.voiceRecordEnd();
+        this.setInputMode('default');
         this.setState({
             voiceMode: 'up',
         });
@@ -979,11 +1017,14 @@ class TextInput extends React.Component<IProps, IState> {
 
         this.recorder.ondataavailable = (typedArray: any) => {
             // window.console.log(typedArray);
-            const dataBlob = new Blob([typedArray], {type: 'audio/ogg'});
-            const url = URL.createObjectURL(dataBlob);
-            const audio = document.createElement('audio');
-            audio.src = url;
-            audio.play();
+            this.voice = new Blob([typedArray], {type: 'audio/ogg'});
+
+            if (this.state.voiceMode === 'play') {
+                const url = URL.createObjectURL(this.voice);
+                const audio = document.createElement('audio');
+                audio.src = url;
+                audio.play();
+            }
         };
     }
 

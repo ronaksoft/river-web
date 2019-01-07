@@ -239,7 +239,8 @@
         }
       }
     }
-    &.mode-voice {
+    &.mode-voice,
+    &.mode-play {
       .input {
         display: none;
       }
