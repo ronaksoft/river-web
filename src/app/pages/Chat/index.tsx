@@ -1169,6 +1169,10 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
+        if (this.state.messages[0].id === 1) {
+            return;
+        }
+
         const dialogId = peer.getId() || '';
 
         this.setLoading(true);
