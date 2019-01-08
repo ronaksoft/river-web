@@ -1,0 +1,60 @@
+/*
+    Creation Time: 2019 - Jan - 08
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+.voice-player {
+  display: flex;
+  padding: 0 6px;
+  height: 32px;
+  align-items: center;
+  justify-content: center; }
+  .voice-player .play-action {
+    width: 32px;
+    height: 20px;
+    padding: 0 8px 0 4px;
+    cursor: pointer; }
+    .voice-player .play-action svg {
+      font-size: 20px;
+      color: var(--grey); }
+    .voice-player .play-action:hover svg {
+      color: var(--dark); }
+  .voice-player .play-preview {
+    position: relative;
+    flex: 1;
+    height: 20px;
+    user-select: none; }
+    .voice-player .play-preview canvas {
+      width: 100%;
+      height: 20px; }
+    .voice-player .play-preview .play-preview-overlay {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      overflow: hidden;
+      transition: width 0.1s linear; }
+      .voice-player .play-preview .play-preview-overlay.no-transition {
+        transition: none; }
+      .voice-player .play-preview .play-preview-overlay img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 20px;
+        width: auto; }
+  .voice-player .play-timer {
+    width: 50px;
+    font-size: 12px;
+    line-height: 12px; }
+
+html[theme="dark"] .voice-player .play-action svg,
+html[theme="dark-blue"] .voice-player .play-action svg {
+  color: var(--light); }
+
+html[theme="dark"] .voice-player .play-action:hover svg,
+html[theme="dark-blue"] .voice-player .play-action:hover svg {
+  color: var(--light); }

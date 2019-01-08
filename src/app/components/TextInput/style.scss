@@ -169,7 +169,7 @@
         direction: rtl;
       }
     }
-    .voice-preview {
+    .voice-recorder {
       display: none;
       flex: 1;
       margin: 8px 0;
@@ -208,6 +208,27 @@
         padding: 0 12px;
         cursor: pointer;
       }
+      .play-remove {
+        padding: 0 8px;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        svg {
+          color: var(--grey);
+        }
+        &:hover {
+          svg {
+            color: var(--dark);
+          }
+        }
+      }
+      .play-frame {
+        flex: 1;
+        border-radius: 16px;
+        background-color: var(--white);
+        border: 1px solid rgba(50, 61, 71, 0.16);
+      }
     }
     .input-actions {
       display: flex;
@@ -244,7 +265,7 @@
       .input {
         display: none;
       }
-      .voice-preview {
+      .voice-recorder {
         display: flex;
       }
       .input-actions {
@@ -258,9 +279,9 @@
           svg {
             position: relative;
             z-index: 20;
-            color: var(--light) !important;
+            color: var(--grey);
             &:hover {
-              color: var(--light) !important;
+              color: var(--dark);
             }
           }
           .wave {
@@ -449,8 +470,21 @@ html[theme="dark-blue"] {
           }
         }
       }
-      .voice-preview {
+      .voice-recorder {
         color: var(--light);
+        .play-remove {
+          svg {
+            color: var(--light);
+          }
+          &:hover {
+            svg {
+              color: var(--light);
+            }
+          }
+        }
+        .play-frame {
+          background-color: var(--dark-low);
+        }
       }
       .input-actions {
         .icon:hover {
@@ -524,6 +558,11 @@ html[theme="dark-blue"] {
       .input {
         .textarea-container {
           background-color: var(--dark-blue-low) !important;
+        }
+      }
+      .voice-recorder {
+        .play-frame {
+          background-color: var(--dark-blue-low);
         }
       }
     }

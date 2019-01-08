@@ -647,7 +647,7 @@ class Chat extends React.Component<IProps, IState> {
                     this.messageComponent.list.scrollToRow(this.state.messages.length - 1);
                 }, 100);
             });
-        }, 200);
+        }, 100);
     }
 
     private chatMoreOpenHandler = (event: any) => {
@@ -775,7 +775,7 @@ class Chat extends React.Component<IProps, IState> {
             }, () => {
                 setTimeout(() => {
                     this.messageComponent.animateToEnd();
-                }, 200);
+                }, 100);
             });
             const {peer} = this.state;
             this.sendReadHistory(peer, dataMsg.maxId);
@@ -1443,7 +1443,7 @@ class Chat extends React.Component<IProps, IState> {
                 setTimeout(() => {
                     this.isLoading = false;
                 }, 1000);
-            }, 200);
+            }, 100);
         });
         this.messageRepo.lazyUpsert([message]);
     }
@@ -1850,7 +1850,7 @@ class Chat extends React.Component<IProps, IState> {
                 }, () => {
                     setTimeout(() => {
                         this.messageComponent.animateToEnd();
-                    }, 200);
+                    }, 100);
                 });
 
                 this.sendReadHistory(peer, dataMsg.maxId);

@@ -50,6 +50,7 @@ import Recorder from 'opus-recorder/dist/recorder.min';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
+import VoicePlayer from '../VoicePlayer';
 
 interface IProps {
     onAction: (cmd: string) => void;
@@ -127,8 +128,18 @@ class TextInput extends React.Component<IProps, IState> {
     private timerDuration: number = 0;
     private voiceMouseIn: boolean = false;
     private bars: number[] = [];
-    private canvasSize: { height: number, width: number } = {height: 0, width: 0};
+    private canvasConfig: { height: number, width: number, barWidth: number, barSpace: number, totalWith: number, ratio: number, maxBars: number, color: string } = {
+        barSpace: 2,
+        barWidth: 2,
+        color: '#1A1A1A',
+        height: 0,
+        maxBars: 200,
+        ratio: 1,
+        totalWith: 4,
+        width: 0,
+    };
     private voice: Blob;
+    private voicePlayerRef: VoicePlayer;
 
     constructor(props: IProps) {
         super(props);
@@ -170,6 +181,7 @@ class TextInput extends React.Component<IProps, IState> {
         window.addEventListener('Group_DB_Updated', this.checkAuthority);
         window.addEventListener('mouseup', this.windowMouseUp);
         window.addEventListener('resize', this.windowResizeHandler);
+        window.addEventListener('Theme_Changed', this.windowResizeHandler);
         this.initDraft(null, this.state.peer, 0, null);
     }
 
@@ -205,10 +217,11 @@ class TextInput extends React.Component<IProps, IState> {
         window.removeEventListener('Group_DB_Updated', this.checkAuthority);
         window.removeEventListener('mouseup', this.windowMouseUp);
         window.removeEventListener('resize', this.windowResizeHandler);
+        window.removeEventListener('Theme_Changed', this.windowResizeHandler);
     }
 
     public render() {
-        const {previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable, disableAuthority, textareaValue} = this.state;
+        const {previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable, disableAuthority, textareaValue, voiceMode} = this.state;
 
         if (!selectable && disableAuthority !== 0x0) {
             if (disableAuthority === 0x1) {
@@ -289,17 +302,25 @@ class TextInput extends React.Component<IProps, IState> {
                                 </PopUpMenu>
                             </div>
                         </div>
-                        <div className="voice-preview">
-                            <div className="timer">
-                                <span className="bulb"/>
-                                <span ref={this.timerRefHandler}>00:00</span>
-                            </div>
-                            <div className="preview">
-                                <canvas ref={this.canvasRefHandler}/>
-                            </div>
-                            <div className="cancel" onClick={this.voiceCancelHandler}>
-                                cancel
-                            </div>
+                        <div className="voice-recorder">
+                            {Boolean(this.inputsMode === 'voice' && voiceMode !== 'play') && <React.Fragment>
+                                <div className="timer">
+                                    <span className="bulb"/>
+                                    <span ref={this.timerRefHandler}>00:00</span>
+                                </div>
+                                <div className="preview">
+                                    <canvas ref={this.canvasRefHandler}/>
+                                </div>
+                                <div className="cancel" onClick={this.voiceCancelHandler}>
+                                    Cancel
+                                </div>
+                            </React.Fragment>}
+                            {Boolean(this.inputsMode === 'voice' && voiceMode === 'play') && <React.Fragment>
+                                <div className="play-remove" onClick={this.voiceCancelHandler}>
+                                    <DeleteRounded/>
+                                </div>
+                                <VoicePlayer ref={this.voicePlayerRefHandler} className="play-frame" maxValue={255.0}/>
+                            </React.Fragment>}
                         </div>
                         <div className="input-actions">
                             <div className="icon voice" onMouseDown={this.voiceMouseDownHandler}
@@ -832,12 +853,23 @@ class TextInput extends React.Component<IProps, IState> {
 
     /* Canvas ref handler */
     private canvasRefHandler = (ref: any) => {
+        if (!ref) {
+            return;
+        }
         this.canvasRef = ref;
         this.canvasCtx = ref.getContext('2d');
         if (this.canvasCtx) {
             // this.canvasCtx.scale(2, 2);
-            setTimeout(this.windowResizeHandler, 100);
+            setTimeout(this.windowResizeHandler, 10);
         }
+    }
+
+    /* Voice Player ref handler */
+    private voicePlayerRefHandler = (ref: any) => {
+        if (!ref) {
+            return;
+        }
+        this.voicePlayerRef = ref;
     }
 
     /* Timer ref handler */
@@ -952,17 +984,20 @@ class TextInput extends React.Component<IProps, IState> {
 
     /* Window resize handler */
     private windowResizeHandler = () => {
-        const el = document.querySelector('.write .inputs');
+        const el = document.querySelector('.write .inputs .voice-recorder .preview, .write .inputs .voice-recorder .play-preview');
         if (el) {
-            this.canvasSize = {
-                height: 34,
-                width: (el.clientWidth - 243),
-            };
+            this.canvasConfig.height = el.clientHeight;
+            this.canvasConfig.width = el.clientWidth;
+            this.canvasConfig.totalWith = this.canvasConfig.barWidth + this.canvasConfig.barSpace;
+            this.canvasConfig.ratio = (this.canvasConfig.height - 1) / 255.0;
+            this.canvasConfig.maxBars = Math.floor(this.canvasConfig.width / (this.canvasConfig.barWidth + this.canvasConfig.barSpace));
+            const htmlEl = document.querySelector('html');
+            if (htmlEl) {
+                this.canvasConfig.color = htmlEl.getAttribute('theme') === 'light' ? '#1A1A1A' : '#E6E6E6';
+            }
             if (this.canvasRef && this.canvasCtx) {
-                this.canvasRef.style.height = (this.canvasSize.height) + 'px';
-                this.canvasRef.style.width = (this.canvasSize.width) + 'px';
-                this.canvasCtx.canvas.height = (this.canvasSize.height);
-                this.canvasCtx.canvas.width = (this.canvasSize.width);
+                this.canvasCtx.canvas.height = (this.canvasConfig.height);
+                this.canvasCtx.canvas.width = (this.canvasConfig.width);
             }
         }
     }
@@ -1020,10 +1055,12 @@ class TextInput extends React.Component<IProps, IState> {
             this.voice = new Blob([typedArray], {type: 'audio/ogg'});
 
             if (this.state.voiceMode === 'play') {
-                const url = URL.createObjectURL(this.voice);
-                const audio = document.createElement('audio');
-                audio.src = url;
-                audio.play();
+                this.computeFinalBars();
+                this.voicePlayerRef.setData({
+                    bars: this.bars,
+                    duration: this.timerDuration,
+                    voice: this.voice,
+                });
             }
         };
     }
@@ -1072,37 +1109,59 @@ class TextInput extends React.Component<IProps, IState> {
         this.timerRef.innerHTML = `${min}:${sec}`;
     }
 
-    private displayBars(callback: () => void) {
+    private displayBars(callback?: () => void) {
         if (!this.canvasCtx) {
-            requestAnimationFrame(callback);
+            if (callback) {
+                requestAnimationFrame(callback);
+            }
             return;
         }
 
-        this.canvasCtx.clearRect(0, 0, this.canvasSize.width, this.canvasSize.height);
+        this.canvasCtx.clearRect(0, 0, this.canvasConfig.width, this.canvasConfig.height);
 
-        const barWidth = 4;
-        const barSpace = 2;
         let barHeight;
         let x = 0;
 
-        const ratio = this.canvasSize.height / 256.0;
-
         let offset = 0;
-        if ((this.canvasSize.width / ((barWidth + barSpace) * this.bars.length)) < 1) {
-            offset = this.bars.length - Math.floor(this.canvasSize.width / (barWidth + barSpace));
+        if ((this.canvasConfig.width / (this.canvasConfig.totalWith * this.bars.length)) < 1) {
+            offset = this.bars.length - this.canvasConfig.maxBars;
         }
 
         for (let i = offset; i < this.bars.length; i++) {
-            barHeight = Math.floor(this.bars[i] * ratio);
+            barHeight = Math.floor(this.bars[i] * this.canvasConfig.ratio) + 1;
 
-            this.canvasCtx.fillStyle = '#E6E6E6';
-            this.canvasCtx.fillRect(x, this.canvasSize.height - barHeight, barWidth, this.canvasSize.height);
+            this.canvasCtx.fillStyle = this.canvasConfig.color;
+            this.canvasCtx.fillRect(x, this.canvasConfig.height - barHeight, this.canvasConfig.barWidth, this.canvasConfig.height);
 
-            x += barWidth + barSpace;
+            x += this.canvasConfig.totalWith;
         }
         setTimeout(() => {
-            requestAnimationFrame(callback);
+            if (callback) {
+                requestAnimationFrame(callback);
+            }
         }, 50);
+    }
+
+    /* Compute final bars */
+    private computeFinalBars() {
+        const sampleCount = 200;
+        const trimmedBars: number[] = [];
+        const step = this.bars.length / sampleCount;
+        const getSampleAvg = (from: number, to: number) => {
+            const count = 5;
+            const sampleStep = (to - from) / count;
+            let val = 0;
+            for (let i = from; i < to; i += sampleStep) {
+                val += this.bars[Math.floor(i)];
+            }
+            return Math.floor(val / count);
+        };
+
+        for (let i = 0, cnt = 0; i < this.bars.length && cnt < 200; i += step, cnt++) {
+            trimmedBars.push(getSampleAvg(i, i + step));
+        }
+
+        this.bars = trimmedBars;
     }
 
     // /* Insert at selection */

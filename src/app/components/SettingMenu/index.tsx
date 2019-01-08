@@ -379,7 +379,7 @@ class SettingMenu extends React.Component<IProps, IState> {
     /* Dark mode change handler */
     private nightModeHandler = (e: any) => {
         this.setState({
-            selectedTheme: e.currentTarget.checked? 'dark' : 'light',
+            selectedTheme: e.currentTarget.checked ? 'dark' : 'light',
         }, () => {
             this.applyTheme();
         });
@@ -393,6 +393,7 @@ class SettingMenu extends React.Component<IProps, IState> {
         }
         el.setAttribute('theme', this.state.selectedTheme);
         localStorage.setItem('river.theme.color', this.state.selectedTheme);
+        this.broadcastEvent('Theme_Changed', null);
     }
 
     private handleNext = () => {
@@ -517,12 +518,7 @@ class SettingMenu extends React.Component<IProps, IState> {
         this.setState({
             selectedTheme: id,
         }, () => {
-            const el = document.querySelector('html');
-            if (!el) {
-                return;
-            }
-            localStorage.setItem('river.theme.color', id);
-            el.setAttribute('theme', id);
+            this.applyTheme();
         });
     }
 
@@ -634,6 +630,15 @@ class SettingMenu extends React.Component<IProps, IState> {
             user,
             username: user.username || '',
         });
+    }
+
+    /* Broadcast Global Event */
+    private broadcastEvent(name: string, data: any) {
+        const event = new CustomEvent(name, {
+            bubbles: false,
+            detail: data,
+        });
+        window.dispatchEvent(event);
     }
 }
 

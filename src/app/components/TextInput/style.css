@@ -198,7 +198,7 @@ input {
             color: var(--dark); }
       .write .inputs .input.rtl textarea {
         direction: rtl; }
-    .write .inputs .voice-preview {
+    .write .inputs .voice-recorder {
       display: none;
       flex: 1;
       margin: 8px 0;
@@ -206,11 +206,11 @@ input {
       align-items: center;
       vertical-align: center;
       font-size: 13px; }
-      .write .inputs .voice-preview .timer {
+      .write .inputs .voice-recorder .timer {
         position: relative;
         width: 80px;
         padding-left: 30px; }
-        .write .inputs .voice-preview .timer .bulb {
+        .write .inputs .voice-recorder .timer .bulb {
           position: absolute;
           top: 50%;
           left: 16px;
@@ -223,15 +223,30 @@ input {
           animation-duration: 1s;
           animation-iteration-count: infinite;
           animation-timing-function: linear; }
-      .write .inputs .voice-preview .preview {
+      .write .inputs .voice-recorder .preview {
         flex: 1; }
-        .write .inputs .voice-preview .preview canvas {
+        .write .inputs .voice-recorder .preview canvas {
           width: 100%;
           height: 32px; }
-      .write .inputs .voice-preview .cancel {
+      .write .inputs .voice-recorder .cancel {
         color: var(--red);
         padding: 0 12px;
         cursor: pointer; }
+      .write .inputs .voice-recorder .play-remove {
+        padding: 0 8px;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center; }
+        .write .inputs .voice-recorder .play-remove svg {
+          color: var(--grey); }
+        .write .inputs .voice-recorder .play-remove:hover svg {
+          color: var(--dark); }
+      .write .inputs .voice-recorder .play-frame {
+        flex: 1;
+        border-radius: 16px;
+        background-color: var(--white);
+        border: 1px solid rgba(50, 61, 71, 0.16); }
     .write .inputs .input-actions {
       display: flex;
       justify-content: end;
@@ -252,24 +267,24 @@ input {
         display: none; }
       .write .inputs .input-actions .voice .wave {
         display: none; }
-    .write .inputs.mode-voice .input {
+    .write .inputs.mode-voice .input, .write .inputs.mode-play .input {
       display: none; }
-    .write .inputs.mode-voice .voice-preview {
+    .write .inputs.mode-voice .voice-recorder, .write .inputs.mode-play .voice-recorder {
       display: flex; }
-    .write .inputs.mode-voice .input-actions {
+    .write .inputs.mode-voice .input-actions, .write .inputs.mode-play .input-actions {
       width: 52px; }
-      .write .inputs.mode-voice .input-actions .attachment, .write .inputs.mode-voice .input-actions .send {
+      .write .inputs.mode-voice .input-actions .attachment, .write .inputs.mode-voice .input-actions .send, .write .inputs.mode-play .input-actions .attachment, .write .inputs.mode-play .input-actions .send {
         display: none; }
-      .write .inputs.mode-voice .input-actions .voice {
+      .write .inputs.mode-voice .input-actions .voice, .write .inputs.mode-play .input-actions .voice {
         position: relative;
         display: block; }
-        .write .inputs.mode-voice .input-actions .voice svg {
+        .write .inputs.mode-voice .input-actions .voice svg, .write .inputs.mode-play .input-actions .voice svg {
           position: relative;
           z-index: 20;
-          color: var(--light) !important; }
-          .write .inputs.mode-voice .input-actions .voice svg:hover {
-            color: var(--light) !important; }
-        .write .inputs.mode-voice .input-actions .voice .wave {
+          color: var(--grey); }
+          .write .inputs.mode-voice .input-actions .voice svg:hover, .write .inputs.mode-play .input-actions .voice svg:hover {
+            color: var(--dark); }
+        .write .inputs.mode-voice .input-actions .voice .wave, .write .inputs.mode-play .input-actions .voice .wave {
           position: absolute;
           display: block;
           content: '';
@@ -410,9 +425,18 @@ html[theme="dark-blue"] .write {
   html[theme="dark"] .write .inputs .input .emoji-wrapper .icon:hover svg,
   html[theme="dark-blue"] .write .inputs .input .emoji-wrapper .icon:hover svg {
     color: var(--light); }
-  html[theme="dark"] .write .inputs .voice-preview,
-  html[theme="dark-blue"] .write .inputs .voice-preview {
+  html[theme="dark"] .write .inputs .voice-recorder,
+  html[theme="dark-blue"] .write .inputs .voice-recorder {
     color: var(--light); }
+    html[theme="dark"] .write .inputs .voice-recorder .play-remove svg,
+    html[theme="dark-blue"] .write .inputs .voice-recorder .play-remove svg {
+      color: var(--light); }
+    html[theme="dark"] .write .inputs .voice-recorder .play-remove:hover svg,
+    html[theme="dark-blue"] .write .inputs .voice-recorder .play-remove:hover svg {
+      color: var(--light); }
+    html[theme="dark"] .write .inputs .voice-recorder .play-frame,
+    html[theme="dark-blue"] .write .inputs .voice-recorder .play-frame {
+      background-color: var(--dark-low); }
   html[theme="dark"] .write .inputs .input-actions .icon:hover svg,
   html[theme="dark-blue"] .write .inputs .input-actions .icon:hover svg {
     color: var(--light); }
@@ -467,6 +491,8 @@ html[theme="dark-blue"] .write {
         color: var(--light); }
   html[theme="dark-blue"] .write .inputs .input .textarea-container {
     background-color: var(--dark-blue-low) !important; }
+  html[theme="dark-blue"] .write .inputs .voice-recorder .play-frame {
+    background-color: var(--dark-blue-low); }
   html[theme="dark-blue"] .write .actions svg {
     color: var(--dark-blue-high-alt); }
   html[theme="dark-blue"] .write .actions [disabled] svg {
