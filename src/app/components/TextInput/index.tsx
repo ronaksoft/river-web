@@ -128,6 +128,7 @@ class TextInput extends React.Component<IProps, IState> {
     private timerDuration: number = 0;
     private voiceMouseIn: boolean = false;
     private bars: number[] = [];
+    private maxBarVal: number = 0;
     private canvasConfig: { height: number, width: number, barWidth: number, barSpace: number, totalWith: number, ratio: number, maxBars: number, color: string } = {
         barSpace: 2,
         barWidth: 2,
@@ -884,6 +885,7 @@ class TextInput extends React.Component<IProps, IState> {
         }
         this.setInputMode('voice');
         this.bars = [];
+        this.maxBarVal = 0;
         this.recorder.start().then(() => {
             this.startTimer();
             const audioAnalyser = this.recorder.audioContext.createAnalyser();
@@ -1033,6 +1035,9 @@ class TextInput extends React.Component<IProps, IState> {
         }
         val = val / 10;
         this.bars.push(val);
+        if (val > this.maxBarVal) {
+            this.maxBarVal = val;
+        }
         val = this.normalize(val);
         this.waveRef.style.height = val + 'px';
         this.waveRef.style.width = val + 'px';
@@ -1127,8 +1132,12 @@ class TextInput extends React.Component<IProps, IState> {
             offset = this.bars.length - this.canvasConfig.maxBars;
         }
 
+        let normRatio = (255 / this.maxBarVal);
+        if (normRatio > 3) {
+            normRatio = 3;
+        }
         for (let i = offset; i < this.bars.length; i++) {
-            barHeight = Math.floor(this.bars[i] * this.canvasConfig.ratio) + 1;
+            barHeight = Math.floor(this.bars[i] * this.canvasConfig.ratio * normRatio) + 1;
 
             this.canvasCtx.fillStyle = this.canvasConfig.color;
             this.canvasCtx.fillRect(x, this.canvasConfig.height - barHeight, this.canvasConfig.barWidth, this.canvasConfig.height);
@@ -1147,6 +1156,7 @@ class TextInput extends React.Component<IProps, IState> {
         const sampleCount = 200;
         const trimmedBars: number[] = [];
         const step = this.bars.length / sampleCount;
+        const normRatio = 255 / this.maxBarVal;
         const getSampleAvg = (from: number, to: number) => {
             const count = 5;
             const sampleStep = (to - from) / count;
@@ -1154,7 +1164,11 @@ class TextInput extends React.Component<IProps, IState> {
             for (let i = from; i < to; i += sampleStep) {
                 val += this.bars[Math.floor(i)];
             }
-            return Math.floor(val / count);
+            val = Math.floor((val / count) * normRatio);
+            if (val > 255) {
+                val = 255;
+            }
+            return val;
         };
 
         for (let i = 0, cnt = 0; i < this.bars.length && cnt < 200; i += step, cnt++) {
