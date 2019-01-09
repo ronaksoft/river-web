@@ -2,6 +2,7 @@
 // file: api.files.proto
 
 import * as jspb from "google-protobuf";
+import * as core_types_pb from "./core.types_pb";
 
 export class FileSavePart extends jspb.Message {
   hasFileid(): boolean;
@@ -48,8 +49,8 @@ export namespace FileSavePart {
 export class FileGet extends jspb.Message {
   hasLocation(): boolean;
   clearLocation(): void;
-  getLocation(): FileLocation;
-  setLocation(value?: FileLocation): void;
+  getLocation(): core_types_pb.InputFileLocation;
+  setLocation(value?: core_types_pb.InputFileLocation): void;
 
   hasOffset(): boolean;
   clearOffset(): void;
@@ -73,49 +74,9 @@ export class FileGet extends jspb.Message {
 
 export namespace FileGet {
   export type AsObject = {
-    location: FileLocation.AsObject,
+    location: core_types_pb.InputFileLocation.AsObject,
     offset?: number,
     limit?: number,
-  }
-}
-
-export class FileLocation extends jspb.Message {
-  hasPartitionid(): boolean;
-  clearPartitionid(): void;
-  getPartitionid(): string | undefined;
-  setPartitionid(value: string): void;
-
-  hasFileid(): boolean;
-  clearFileid(): void;
-  getFileid(): string | undefined;
-  setFileid(value: string): void;
-
-  hasAccesshash(): boolean;
-  clearAccesshash(): void;
-  getAccesshash(): string | undefined;
-  setAccesshash(value: string): void;
-
-  hasTotalparts(): boolean;
-  clearTotalparts(): void;
-  getTotalparts(): number | undefined;
-  setTotalparts(value: number): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): FileLocation.AsObject;
-  static toObject(includeInstance: boolean, msg: FileLocation): FileLocation.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: FileLocation, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): FileLocation;
-  static deserializeBinaryFromReader(message: FileLocation, reader: jspb.BinaryReader): FileLocation;
-}
-
-export namespace FileLocation {
-  export type AsObject = {
-    partitionid?: string,
-    fileid?: string,
-    accesshash?: string,
-    totalparts?: number,
   }
 }
 

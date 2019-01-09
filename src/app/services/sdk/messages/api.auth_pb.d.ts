@@ -227,6 +227,11 @@ export class AuthRecalled extends jspb.Message {
   getTimestamp(): number | undefined;
   setTimestamp(value: number): void;
 
+  clearAvailableclustersList(): void;
+  getAvailableclustersList(): Array<core_types_pb.Cluster>;
+  setAvailableclustersList(value: Array<core_types_pb.Cluster>): void;
+  addAvailableclusters(value?: core_types_pb.Cluster, index?: number): core_types_pb.Cluster;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AuthRecalled.AsObject;
   static toObject(includeInstance: boolean, msg: AuthRecalled): AuthRecalled.AsObject;
@@ -241,6 +246,7 @@ export namespace AuthRecalled {
   export type AsObject = {
     clientid?: string,
     timestamp?: number,
+    availableclustersList: Array<core_types_pb.Cluster.AsObject>,
   }
 }
 

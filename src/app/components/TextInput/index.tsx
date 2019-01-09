@@ -1121,6 +1121,7 @@ class TextInput extends React.Component<IProps, IState> {
         }
     }
 
+    /* Display voice bars */
     private displayBars(callback?: () => void) {
         if (!this.canvasCtx) {
             if (callback) {
@@ -1135,6 +1136,7 @@ class TextInput extends React.Component<IProps, IState> {
         let x = 0;
 
         let offset = 0;
+        // Only display last fitting items
         if ((this.canvasConfig.width / (this.canvasConfig.totalWith * this.bars.length)) < 1) {
             offset = this.bars.length - this.canvasConfig.maxBars;
         }

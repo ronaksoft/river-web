@@ -69,8 +69,8 @@ export class MessagesSendMedia extends jspb.Message {
 
   hasMediatype(): boolean;
   clearMediatype(): void;
-  getMediatype(): MediaType | undefined;
-  setMediatype(value: MediaType): void;
+  getMediatype(): InputMediaType | undefined;
+  setMediatype(value: InputMediaType): void;
 
   hasMediadata(): boolean;
   clearMediadata(): void;
@@ -103,7 +103,7 @@ export namespace MessagesSendMedia {
   export type AsObject = {
     randomid?: number,
     peer: core_types_pb.InputPeer.AsObject,
-    mediatype?: MediaType,
+    mediatype?: InputMediaType,
     mediadata: Uint8Array | string,
     replyto?: number,
     cleardraft?: boolean,
@@ -558,12 +558,12 @@ export namespace MessagesMany {
   }
 }
 
-export enum MediaType {
-  MEDIATYPEEMPTY = 0,
-  MEDIATYPEUPLOADEDPHOTO = 1,
-  MEDIATYPEPHOTO = 2,
-  MEDIATYPEUPLOADEDDOCUMENT = 3,
-  MEDIATYPEDOCUMENT = 4,
-  MEDIATYPECONTACT = 5,
+export enum InputMediaType {
+  INPUTMEDIATYPEEMPTY = 0,
+  INPUTMEDIATYPEUPLOADEDPHOTO = 1,
+  INPUTMEDIATYPEPHOTO = 2,
+  INPUTMEDIATYPECONTACT = 3,
+  INPUTMEDIATYPEUPLOADEDDOCUMENT = 4,
+  INPUTMEDIATYPEDOCUMENT = 5,
 }
 

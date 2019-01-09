@@ -4,6 +4,8 @@ let run;
 let initSDK = null;
 let loadConnInfo = null;
 let fnCall = null;
+let fnEncrypt = null;
+let fnDecrypt = null;
 let receive = null;
 let wsOpen = null;
 
@@ -42,6 +44,16 @@ self.onmessage = function (e) {
         case 'fnCall':
             if (fnCall) {
                 fnCall(d.data.reqId, d.data.constructor, d.data.payload);
+            }
+            break;
+        case 'fnEncrypt':
+            if (fnEncrypt) {
+                fnEncrypt(d.data.reqId, d.data.constructor, d.data.payload);
+            }
+            break;
+        case 'fnDecrypt':
+            if (fnDecrypt) {
+                fnDecrypt(d.data);
             }
             break;
         case 'loadConnInfo':
@@ -104,5 +116,28 @@ fnCallback = (reqId, constructor, data) => {
 fnStarted = (duration) => {
     workerMessage('fnStarted', {
         duration,
+    });
+};
+
+setFnEncrypt = (callback) => {
+    fnEncrypt = callback;
+};
+
+fnEncryptCallback = (reqId, b64) => {
+    workerMessage('fnEncryptCallback', {
+        reqId,
+        data: b64,
+    });
+};
+
+setFnDecrypt = (callback) => {
+    fnDecrypt = callback;
+};
+
+fnDecryptCallback = (reqId, constructor, data) => {
+    workerMessage('fnDecryptCallback', {
+        reqId,
+        constructor,
+        data,
     });
 };

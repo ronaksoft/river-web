@@ -86,6 +86,7 @@ import * as core_types_pb from '../../services/sdk/messages/core.types_pb';
 import ElectronService, {C_ELECTRON_SUBJECT} from '../../services/electron';
 
 import './style.css';
+import FileServer from '../../services/sdk/fileServer';
 
 interface IProps {
     history?: any;
@@ -148,6 +149,7 @@ class Chat extends React.Component<IProps, IState> {
     private isMobileView: boolean = false;
     private mobileBackTimeout: any = null;
     private userDialogComponent: UserDialog;
+    private fileServer: FileServer;
     private electronService: ElectronService;
 
     constructor(props: IProps) {
@@ -181,6 +183,7 @@ class Chat extends React.Component<IProps, IState> {
             toggleAttachment: false,
             unreadCounter: 0,
         };
+        this.fileServer = FileServer.getInstance();
         this.sdk = SDK.getInstance();
         this.sdk.loadConnInfo();
         this.connInfo = this.sdk.getConnInfo();
@@ -425,6 +428,13 @@ class Chat extends React.Component<IProps, IState> {
                                 >
                                     <Attachment/>
                                 </IconButton>*/}
+                                    <IconButton
+                                        aria-label="Attachment"
+                                        aria-haspopup="true"
+                                        onClick={this.sendFakeFileHandler}
+                                    >
+                                    <InfoOutlined/>
+                                </IconButton>
                                     <Tooltip
                                         title={(peer && peer.getType() === PeerType.PEERGROUP) ? 'Group Info' : 'Contact Info'}>
                                     <IconButton
@@ -2441,6 +2451,15 @@ class Chat extends React.Component<IProps, IState> {
     /* On search click handler */
     private onSearchHandler = () => {
         this.dialogComponent.toggleSearch();
+    }
+
+    private sendFakeFileHandler = () => {
+        const data = new Uint8Array(1000);
+        for (let i = 0; i < 1000; i++) {
+            data.fill(Math.floor(Math.random() * 255), i, i);
+        }
+        window.console.log(data);
+        this.fileServer.sendFile(data);
     }
 }
 

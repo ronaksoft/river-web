@@ -169,6 +169,108 @@ export namespace InputUser {
   }
 }
 
+export class InputFileLocation extends jspb.Message {
+  hasFileid(): boolean;
+  clearFileid(): void;
+  getFileid(): string | undefined;
+  setFileid(value: string): void;
+
+  hasAccesshash(): boolean;
+  clearAccesshash(): void;
+  getAccesshash(): string | undefined;
+  setAccesshash(value: string): void;
+
+  hasVersion(): boolean;
+  clearVersion(): void;
+  getVersion(): number | undefined;
+  setVersion(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): InputFileLocation.AsObject;
+  static toObject(includeInstance: boolean, msg: InputFileLocation): InputFileLocation.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: InputFileLocation, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): InputFileLocation;
+  static deserializeBinaryFromReader(message: InputFileLocation, reader: jspb.BinaryReader): InputFileLocation;
+}
+
+export namespace InputFileLocation {
+  export type AsObject = {
+    fileid?: string,
+    accesshash?: string,
+    version?: number,
+  }
+}
+
+export class FileLocation extends jspb.Message {
+  hasClusterid(): boolean;
+  clearClusterid(): void;
+  getClusterid(): number | undefined;
+  setClusterid(value: number): void;
+
+  hasFileid(): boolean;
+  clearFileid(): void;
+  getFileid(): string | undefined;
+  setFileid(value: string): void;
+
+  hasAccesshash(): boolean;
+  clearAccesshash(): void;
+  getAccesshash(): string | undefined;
+  setAccesshash(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): FileLocation.AsObject;
+  static toObject(includeInstance: boolean, msg: FileLocation): FileLocation.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: FileLocation, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): FileLocation;
+  static deserializeBinaryFromReader(message: FileLocation, reader: jspb.BinaryReader): FileLocation;
+}
+
+export namespace FileLocation {
+  export type AsObject = {
+    clusterid?: number,
+    fileid?: string,
+    accesshash?: string,
+  }
+}
+
+export class UserPhoto extends jspb.Message {
+  hasPhotobig(): boolean;
+  clearPhotobig(): void;
+  getPhotobig(): FileLocation;
+  setPhotobig(value?: FileLocation): void;
+
+  hasPhotosmall(): boolean;
+  clearPhotosmall(): void;
+  getPhotosmall(): FileLocation;
+  setPhotosmall(value?: FileLocation): void;
+
+  hasPhotoid(): boolean;
+  clearPhotoid(): void;
+  getPhotoid(): number | undefined;
+  setPhotoid(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UserPhoto.AsObject;
+  static toObject(includeInstance: boolean, msg: UserPhoto): UserPhoto.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UserPhoto, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UserPhoto;
+  static deserializeBinaryFromReader(message: UserPhoto, reader: jspb.BinaryReader): UserPhoto;
+}
+
+export namespace UserPhoto {
+  export type AsObject = {
+    photobig: FileLocation.AsObject,
+    photosmall: FileLocation.AsObject,
+    photoid?: number,
+  }
+}
+
 export class User extends jspb.Message {
   hasId(): boolean;
   clearId(): void;
@@ -205,6 +307,11 @@ export class User extends jspb.Message {
   getAccesshash(): string | undefined;
   setAccesshash(value: string): void;
 
+  hasPhoto(): boolean;
+  clearPhoto(): void;
+  getPhoto(): UserPhoto | undefined;
+  setPhoto(value?: UserPhoto): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): User.AsObject;
   static toObject(includeInstance: boolean, msg: User): User.AsObject;
@@ -224,6 +331,7 @@ export namespace User {
     status?: UserStatus,
     restricted?: boolean,
     accesshash?: string,
+    photo?: UserPhoto.AsObject,
   }
 }
 
@@ -378,6 +486,18 @@ export class UserMessage extends jspb.Message {
   setEntitiesList(value: Array<MessageEntity>): void;
   addEntities(value?: MessageEntity, index?: number): MessageEntity;
 
+  hasMediatype(): boolean;
+  clearMediatype(): void;
+  getMediatype(): MediaType | undefined;
+  setMediatype(value: MediaType): void;
+
+  hasMedia(): boolean;
+  clearMedia(): void;
+  getMedia(): Uint8Array | string;
+  getMedia_asU8(): Uint8Array;
+  getMedia_asB64(): string;
+  setMedia(value: Uint8Array | string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UserMessage.AsObject;
   static toObject(includeInstance: boolean, msg: UserMessage): UserMessage.AsObject;
@@ -408,6 +528,8 @@ export namespace UserMessage {
     messageaction?: number,
     messageactiondata?: Uint8Array | string,
     entitiesList?: Array<MessageEntity.AsObject>,
+    mediatype?: MediaType,
+    media?: Uint8Array | string,
   }
 }
 
@@ -614,6 +736,11 @@ export class InputFile extends jspb.Message {
   getMd5checksum(): string | undefined;
   setMd5checksum(value: string): void;
 
+  hasClusterid(): boolean;
+  clearClusterid(): void;
+  getClusterid(): number | undefined;
+  setClusterid(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): InputFile.AsObject;
   static toObject(includeInstance: boolean, msg: InputFile): InputFile.AsObject;
@@ -630,34 +757,7 @@ export namespace InputFile {
     totalparts?: number,
     filename?: string,
     md5checksum?: string,
-  }
-}
-
-export class InputDocument extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): string | undefined;
-  setId(value: string): void;
-
-  hasAccesshash(): boolean;
-  clearAccesshash(): void;
-  getAccesshash(): string | undefined;
-  setAccesshash(value: string): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): InputDocument.AsObject;
-  static toObject(includeInstance: boolean, msg: InputDocument): InputDocument.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: InputDocument, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): InputDocument;
-  static deserializeBinaryFromReader(message: InputDocument, reader: jspb.BinaryReader): InputDocument;
-}
-
-export namespace InputDocument {
-  export type AsObject = {
-    id?: string,
-    accesshash?: string,
+    clusterid?: number,
   }
 }
 
@@ -805,6 +905,46 @@ export namespace GroupParticipant {
   }
 }
 
+export class Cluster extends jspb.Message {
+  hasId(): boolean;
+  clearId(): void;
+  getId(): number | undefined;
+  setId(value: number): void;
+
+  hasIp(): boolean;
+  clearIp(): void;
+  getIp(): string | undefined;
+  setIp(value: string): void;
+
+  hasDomain(): boolean;
+  clearDomain(): void;
+  getDomain(): string | undefined;
+  setDomain(value: string): void;
+
+  hasLocation(): boolean;
+  clearLocation(): void;
+  getLocation(): string | undefined;
+  setLocation(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Cluster.AsObject;
+  static toObject(includeInstance: boolean, msg: Cluster): Cluster.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Cluster, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Cluster;
+  static deserializeBinaryFromReader(message: Cluster, reader: jspb.BinaryReader): Cluster;
+}
+
+export namespace Cluster {
+  export type AsObject = {
+    id?: number,
+    ip?: string,
+    domain?: string,
+    location?: string,
+  }
+}
+
 export enum TypingAction {
   TYPINGACTIONTYPING = 0,
   TYPINGACTIONRECORDINGVOICE = 1,
@@ -829,6 +969,13 @@ export enum UserStatus {
   USERSTATUSLASTMONTH = 4,
 }
 
+export enum MediaType {
+  MEDIATYPEEMPTY = 0,
+  MEDIATYPEPHOTO = 1,
+  MEDIATYPEDOCUMENT = 2,
+  MEDIATYPECONTACT = 3,
+}
+
 export enum MessageEntityType {
   MESSAGEENTITYTYPEBOLD = 0,
   MESSAGEENTITYTYPEITALIC = 1,
@@ -836,11 +983,6 @@ export enum MessageEntityType {
   MESSAGEENTITYTYPEURL = 3,
   MESSAGEENTITYTYPEEMAIL = 4,
   MESSAGEENTITYTYPEHASHTAG = 5,
-}
-
-export enum DocumentType {
-  DOCUMENTTYPEUNKNOWN = 0,
-  DOCUMENTTYPEPHOTO = 1,
 }
 
 export enum GroupFlags {

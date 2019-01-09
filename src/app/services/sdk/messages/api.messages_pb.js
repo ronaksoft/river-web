@@ -12,7 +12,7 @@ var goog = jspb;
 var global = Function('return this')();
 
 var core_types_pb = require('./core.types_pb.js');
-goog.exportSymbol('proto.msg.MediaType', null, global);
+goog.exportSymbol('proto.msg.InputMediaType', null, global);
 goog.exportSymbol('proto.msg.MessagesClearHistory', null, global);
 goog.exportSymbol('proto.msg.MessagesDelete', null, global);
 goog.exportSymbol('proto.msg.MessagesDialogs', null, global);
@@ -505,7 +505,7 @@ proto.msg.MessagesSendMedia.deserializeBinaryFromReader = function(msg, reader) 
       msg.setPeer(value);
       break;
     case 3:
-      var value = /** @type {!proto.msg.MediaType} */ (reader.readEnum());
+      var value = /** @type {!proto.msg.InputMediaType} */ (reader.readEnum());
       msg.setMediatype(value);
       break;
     case 4:
@@ -564,7 +564,7 @@ proto.msg.MessagesSendMedia.serializeBinaryToWriter = function(message, writer) 
       core_types_pb.InputPeer.serializeBinaryToWriter
     );
   }
-  f = /** @type {!proto.msg.MediaType} */ (jspb.Message.getField(message, 3));
+  f = /** @type {!proto.msg.InputMediaType} */ (jspb.Message.getField(message, 3));
   if (f != null) {
     writer.writeEnum(
       3,
@@ -655,15 +655,15 @@ proto.msg.MessagesSendMedia.prototype.hasPeer = function() {
 
 
 /**
- * required MediaType MediaType = 3;
- * @return {!proto.msg.MediaType}
+ * required InputMediaType MediaType = 3;
+ * @return {!proto.msg.InputMediaType}
  */
 proto.msg.MessagesSendMedia.prototype.getMediatype = function() {
-  return /** @type {!proto.msg.MediaType} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+  return /** @type {!proto.msg.InputMediaType} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
-/** @param {!proto.msg.MediaType} value */
+/** @param {!proto.msg.InputMediaType} value */
 proto.msg.MessagesSendMedia.prototype.setMediatype = function(value) {
   jspb.Message.setField(this, 3, value);
 };
@@ -4040,13 +4040,13 @@ proto.msg.MessagesMany.prototype.clearGroupsList = function() {
 /**
  * @enum {number}
  */
-proto.msg.MediaType = {
-  MEDIATYPEEMPTY: 0,
-  MEDIATYPEUPLOADEDPHOTO: 1,
-  MEDIATYPEPHOTO: 2,
-  MEDIATYPEUPLOADEDDOCUMENT: 3,
-  MEDIATYPEDOCUMENT: 4,
-  MEDIATYPECONTACT: 5
+proto.msg.InputMediaType = {
+  INPUTMEDIATYPEEMPTY: 0,
+  INPUTMEDIATYPEUPLOADEDPHOTO: 1,
+  INPUTMEDIATYPEPHOTO: 2,
+  INPUTMEDIATYPECONTACT: 3,
+  INPUTMEDIATYPEUPLOADEDDOCUMENT: 4,
+  INPUTMEDIATYPEDOCUMENT: 5
 };
 
 goog.object.extend(exports, proto.msg);

@@ -11,18 +11,20 @@ var jspb = require('google-protobuf');
 var goog = jspb;
 var global = Function('return this')();
 
+goog.exportSymbol('proto.msg.Cluster', null, global);
 goog.exportSymbol('proto.msg.ContactUser', null, global);
 goog.exportSymbol('proto.msg.DHGroup', null, global);
 goog.exportSymbol('proto.msg.Dialog', null, global);
-goog.exportSymbol('proto.msg.DocumentType', null, global);
+goog.exportSymbol('proto.msg.FileLocation', null, global);
 goog.exportSymbol('proto.msg.Group', null, global);
 goog.exportSymbol('proto.msg.GroupFlags', null, global);
 goog.exportSymbol('proto.msg.GroupFull', null, global);
 goog.exportSymbol('proto.msg.GroupParticipant', null, global);
-goog.exportSymbol('proto.msg.InputDocument', null, global);
 goog.exportSymbol('proto.msg.InputFile', null, global);
+goog.exportSymbol('proto.msg.InputFileLocation', null, global);
 goog.exportSymbol('proto.msg.InputPeer', null, global);
 goog.exportSymbol('proto.msg.InputUser', null, global);
+goog.exportSymbol('proto.msg.MediaType', null, global);
 goog.exportSymbol('proto.msg.MessageEntity', null, global);
 goog.exportSymbol('proto.msg.MessageEntityType', null, global);
 goog.exportSymbol('proto.msg.ParticipantType', null, global);
@@ -34,6 +36,7 @@ goog.exportSymbol('proto.msg.RSAPublicKey', null, global);
 goog.exportSymbol('proto.msg.TypingAction', null, global);
 goog.exportSymbol('proto.msg.User', null, global);
 goog.exportSymbol('proto.msg.UserMessage', null, global);
+goog.exportSymbol('proto.msg.UserPhoto', null, global);
 goog.exportSymbol('proto.msg.UserStatus', null, global);
 
 /**
@@ -1206,6 +1209,726 @@ proto.msg.InputUser.prototype.hasAccesshash = function() {
  * @extends {jspb.Message}
  * @constructor
  */
+proto.msg.InputFileLocation = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.msg.InputFileLocation, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.msg.InputFileLocation.displayName = 'proto.msg.InputFileLocation';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.msg.InputFileLocation.prototype.toObject = function(opt_includeInstance) {
+  return proto.msg.InputFileLocation.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.msg.InputFileLocation} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.InputFileLocation.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    fileid: jspb.Message.getField(msg, 2),
+    accesshash: jspb.Message.getField(msg, 3),
+    version: jspb.Message.getField(msg, 4)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.msg.InputFileLocation}
+ */
+proto.msg.InputFileLocation.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.msg.InputFileLocation;
+  return proto.msg.InputFileLocation.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.msg.InputFileLocation} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.msg.InputFileLocation}
+ */
+proto.msg.InputFileLocation.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 2:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setFileid(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readFixed64String());
+      msg.setAccesshash(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setVersion(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.msg.InputFileLocation.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.msg.InputFileLocation.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.msg.InputFileLocation} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.InputFileLocation.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = /** @type {string} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeInt64String(
+      2,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeFixed64String(
+      3,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 4));
+  if (f != null) {
+    writer.writeInt32(
+      4,
+      f
+    );
+  }
+};
+
+
+/**
+ * required int64 FileID = 2;
+ * @return {string}
+ */
+proto.msg.InputFileLocation.prototype.getFileid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, "0"));
+};
+
+
+/** @param {string} value */
+proto.msg.InputFileLocation.prototype.setFileid = function(value) {
+  jspb.Message.setField(this, 2, value);
+};
+
+
+proto.msg.InputFileLocation.prototype.clearFileid = function() {
+  jspb.Message.setField(this, 2, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.InputFileLocation.prototype.hasFileid = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * required fixed64 AccessHash = 3;
+ * @return {string}
+ */
+proto.msg.InputFileLocation.prototype.getAccesshash = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, "0"));
+};
+
+
+/** @param {string} value */
+proto.msg.InputFileLocation.prototype.setAccesshash = function(value) {
+  jspb.Message.setField(this, 3, value);
+};
+
+
+proto.msg.InputFileLocation.prototype.clearAccesshash = function() {
+  jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.InputFileLocation.prototype.hasAccesshash = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * required int32 Version = 4;
+ * @return {number}
+ */
+proto.msg.InputFileLocation.prototype.getVersion = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.InputFileLocation.prototype.setVersion = function(value) {
+  jspb.Message.setField(this, 4, value);
+};
+
+
+proto.msg.InputFileLocation.prototype.clearVersion = function() {
+  jspb.Message.setField(this, 4, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.InputFileLocation.prototype.hasVersion = function() {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.msg.FileLocation = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.msg.FileLocation, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.msg.FileLocation.displayName = 'proto.msg.FileLocation';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.msg.FileLocation.prototype.toObject = function(opt_includeInstance) {
+  return proto.msg.FileLocation.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.msg.FileLocation} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.FileLocation.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    clusterid: jspb.Message.getField(msg, 1),
+    fileid: jspb.Message.getField(msg, 2),
+    accesshash: jspb.Message.getField(msg, 3)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.msg.FileLocation}
+ */
+proto.msg.FileLocation.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.msg.FileLocation;
+  return proto.msg.FileLocation.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.msg.FileLocation} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.msg.FileLocation}
+ */
+proto.msg.FileLocation.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setClusterid(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setFileid(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readFixed64String());
+      msg.setAccesshash(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.msg.FileLocation.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.msg.FileLocation.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.msg.FileLocation} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.FileLocation.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  if (f != null) {
+    writer.writeInt32(
+      1,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeInt64String(
+      2,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeFixed64String(
+      3,
+      f
+    );
+  }
+};
+
+
+/**
+ * required int32 ClusterID = 1;
+ * @return {number}
+ */
+proto.msg.FileLocation.prototype.getClusterid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.FileLocation.prototype.setClusterid = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+proto.msg.FileLocation.prototype.clearClusterid = function() {
+  jspb.Message.setField(this, 1, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.FileLocation.prototype.hasClusterid = function() {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * required int64 FileID = 2;
+ * @return {string}
+ */
+proto.msg.FileLocation.prototype.getFileid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, "0"));
+};
+
+
+/** @param {string} value */
+proto.msg.FileLocation.prototype.setFileid = function(value) {
+  jspb.Message.setField(this, 2, value);
+};
+
+
+proto.msg.FileLocation.prototype.clearFileid = function() {
+  jspb.Message.setField(this, 2, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.FileLocation.prototype.hasFileid = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * required fixed64 AccessHash = 3;
+ * @return {string}
+ */
+proto.msg.FileLocation.prototype.getAccesshash = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, "0"));
+};
+
+
+/** @param {string} value */
+proto.msg.FileLocation.prototype.setAccesshash = function(value) {
+  jspb.Message.setField(this, 3, value);
+};
+
+
+proto.msg.FileLocation.prototype.clearAccesshash = function() {
+  jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.FileLocation.prototype.hasAccesshash = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.msg.UserPhoto = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.msg.UserPhoto, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.msg.UserPhoto.displayName = 'proto.msg.UserPhoto';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.msg.UserPhoto.prototype.toObject = function(opt_includeInstance) {
+  return proto.msg.UserPhoto.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.msg.UserPhoto} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.UserPhoto.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    photobig: (f = msg.getPhotobig()) && proto.msg.FileLocation.toObject(includeInstance, f),
+    photosmall: (f = msg.getPhotosmall()) && proto.msg.FileLocation.toObject(includeInstance, f),
+    photoid: jspb.Message.getField(msg, 3)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.msg.UserPhoto}
+ */
+proto.msg.UserPhoto.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.msg.UserPhoto;
+  return proto.msg.UserPhoto.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.msg.UserPhoto} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.msg.UserPhoto}
+ */
+proto.msg.UserPhoto.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = new proto.msg.FileLocation;
+      reader.readMessage(value,proto.msg.FileLocation.deserializeBinaryFromReader);
+      msg.setPhotobig(value);
+      break;
+    case 2:
+      var value = new proto.msg.FileLocation;
+      reader.readMessage(value,proto.msg.FileLocation.deserializeBinaryFromReader);
+      msg.setPhotosmall(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setPhotoid(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.msg.UserPhoto.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.msg.UserPhoto.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.msg.UserPhoto} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.UserPhoto.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getPhotobig();
+  if (f != null) {
+    writer.writeMessage(
+      1,
+      f,
+      proto.msg.FileLocation.serializeBinaryToWriter
+    );
+  }
+  f = message.getPhotosmall();
+  if (f != null) {
+    writer.writeMessage(
+      2,
+      f,
+      proto.msg.FileLocation.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeInt64(
+      3,
+      f
+    );
+  }
+};
+
+
+/**
+ * required FileLocation PhotoBig = 1;
+ * @return {!proto.msg.FileLocation}
+ */
+proto.msg.UserPhoto.prototype.getPhotobig = function() {
+  return /** @type{!proto.msg.FileLocation} */ (
+    jspb.Message.getWrapperField(this, proto.msg.FileLocation, 1, 1));
+};
+
+
+/** @param {!proto.msg.FileLocation} value */
+proto.msg.UserPhoto.prototype.setPhotobig = function(value) {
+  jspb.Message.setWrapperField(this, 1, value);
+};
+
+
+proto.msg.UserPhoto.prototype.clearPhotobig = function() {
+  jspb.Message.setField(this, 1, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UserPhoto.prototype.hasPhotobig = function() {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * required FileLocation PhotoSmall = 2;
+ * @return {!proto.msg.FileLocation}
+ */
+proto.msg.UserPhoto.prototype.getPhotosmall = function() {
+  return /** @type{!proto.msg.FileLocation} */ (
+    jspb.Message.getWrapperField(this, proto.msg.FileLocation, 2, 1));
+};
+
+
+/** @param {!proto.msg.FileLocation} value */
+proto.msg.UserPhoto.prototype.setPhotosmall = function(value) {
+  jspb.Message.setWrapperField(this, 2, value);
+};
+
+
+proto.msg.UserPhoto.prototype.clearPhotosmall = function() {
+  jspb.Message.setField(this, 2, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UserPhoto.prototype.hasPhotosmall = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * required int64 PhotoID = 3;
+ * @return {number}
+ */
+proto.msg.UserPhoto.prototype.getPhotoid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.UserPhoto.prototype.setPhotoid = function(value) {
+  jspb.Message.setField(this, 3, value);
+};
+
+
+proto.msg.UserPhoto.prototype.clearPhotoid = function() {
+  jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UserPhoto.prototype.hasPhotoid = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
 proto.msg.User = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -1248,7 +1971,8 @@ proto.msg.User.toObject = function(includeInstance, msg) {
     username: jspb.Message.getField(msg, 4),
     status: jspb.Message.getField(msg, 5),
     restricted: jspb.Message.getField(msg, 6),
-    accesshash: jspb.Message.getField(msg, 7)
+    accesshash: jspb.Message.getField(msg, 7),
+    photo: (f = msg.getPhoto()) && proto.msg.UserPhoto.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -1312,6 +2036,11 @@ proto.msg.User.deserializeBinaryFromReader = function(msg, reader) {
     case 7:
       var value = /** @type {string} */ (reader.readFixed64String());
       msg.setAccesshash(value);
+      break;
+    case 8:
+      var value = new proto.msg.UserPhoto;
+      reader.readMessage(value,proto.msg.UserPhoto.deserializeBinaryFromReader);
+      msg.setPhoto(value);
       break;
     default:
       reader.skipField();
@@ -1389,6 +2118,14 @@ proto.msg.User.serializeBinaryToWriter = function(message, writer) {
     writer.writeFixed64String(
       7,
       f
+    );
+  }
+  f = message.getPhoto();
+  if (f != null) {
+    writer.writeMessage(
+      8,
+      f,
+      proto.msg.UserPhoto.serializeBinaryToWriter
     );
   }
 };
@@ -1596,6 +2333,36 @@ proto.msg.User.prototype.clearAccesshash = function() {
  */
 proto.msg.User.prototype.hasAccesshash = function() {
   return jspb.Message.getField(this, 7) != null;
+};
+
+
+/**
+ * optional UserPhoto Photo = 8;
+ * @return {?proto.msg.UserPhoto}
+ */
+proto.msg.User.prototype.getPhoto = function() {
+  return /** @type{?proto.msg.UserPhoto} */ (
+    jspb.Message.getWrapperField(this, proto.msg.UserPhoto, 8));
+};
+
+
+/** @param {?proto.msg.UserPhoto|undefined} value */
+proto.msg.User.prototype.setPhoto = function(value) {
+  jspb.Message.setWrapperField(this, 8, value);
+};
+
+
+proto.msg.User.prototype.clearPhoto = function() {
+  this.setPhoto(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.User.prototype.hasPhoto = function() {
+  return jspb.Message.getField(this, 8) != null;
 };
 
 
@@ -2073,7 +2840,9 @@ proto.msg.UserMessage.toObject = function(includeInstance, msg) {
     messageaction: jspb.Message.getField(msg, 16),
     messageactiondata: msg.getMessageactiondata_asB64(),
     entitiesList: jspb.Message.toObjectList(msg.getEntitiesList(),
-    proto.msg.MessageEntity.toObject, includeInstance)
+    proto.msg.MessageEntity.toObject, includeInstance),
+    mediatype: jspb.Message.getField(msg, 19),
+    media: msg.getMedia_asB64()
   };
 
   if (includeInstance) {
@@ -2182,6 +2951,14 @@ proto.msg.UserMessage.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.msg.MessageEntity;
       reader.readMessage(value,proto.msg.MessageEntity.deserializeBinaryFromReader);
       msg.addEntities(value);
+      break;
+    case 19:
+      var value = /** @type {!proto.msg.MediaType} */ (reader.readEnum());
+      msg.setMediatype(value);
+      break;
+    case 20:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setMedia(value);
       break;
     default:
       reader.skipField();
@@ -2337,6 +3114,20 @@ proto.msg.UserMessage.serializeBinaryToWriter = function(message, writer) {
       18,
       f,
       proto.msg.MessageEntity.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {!proto.msg.MediaType} */ (jspb.Message.getField(message, 19));
+  if (f != null) {
+    writer.writeEnum(
+      19,
+      f
+    );
+  }
+  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 20));
+  if (f != null) {
+    writer.writeBytes(
+      20,
+      f
     );
   }
 };
@@ -2891,6 +3682,88 @@ proto.msg.UserMessage.prototype.addEntities = function(opt_value, opt_index) {
 
 proto.msg.UserMessage.prototype.clearEntitiesList = function() {
   this.setEntitiesList([]);
+};
+
+
+/**
+ * optional MediaType MediaType = 19;
+ * @return {!proto.msg.MediaType}
+ */
+proto.msg.UserMessage.prototype.getMediatype = function() {
+  return /** @type {!proto.msg.MediaType} */ (jspb.Message.getFieldWithDefault(this, 19, 0));
+};
+
+
+/** @param {!proto.msg.MediaType} value */
+proto.msg.UserMessage.prototype.setMediatype = function(value) {
+  jspb.Message.setField(this, 19, value);
+};
+
+
+proto.msg.UserMessage.prototype.clearMediatype = function() {
+  jspb.Message.setField(this, 19, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UserMessage.prototype.hasMediatype = function() {
+  return jspb.Message.getField(this, 19) != null;
+};
+
+
+/**
+ * optional bytes Media = 20;
+ * @return {!(string|Uint8Array)}
+ */
+proto.msg.UserMessage.prototype.getMedia = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 20, ""));
+};
+
+
+/**
+ * optional bytes Media = 20;
+ * This is a type-conversion wrapper around `getMedia()`
+ * @return {string}
+ */
+proto.msg.UserMessage.prototype.getMedia_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getMedia()));
+};
+
+
+/**
+ * optional bytes Media = 20;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getMedia()`
+ * @return {!Uint8Array}
+ */
+proto.msg.UserMessage.prototype.getMedia_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getMedia()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.msg.UserMessage.prototype.setMedia = function(value) {
+  jspb.Message.setField(this, 20, value);
+};
+
+
+proto.msg.UserMessage.prototype.clearMedia = function() {
+  jspb.Message.setField(this, 20, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UserMessage.prototype.hasMedia = function() {
+  return jspb.Message.getField(this, 20) != null;
 };
 
 
@@ -4216,7 +5089,8 @@ proto.msg.InputFile.toObject = function(includeInstance, msg) {
     fileid: jspb.Message.getField(msg, 1),
     totalparts: jspb.Message.getField(msg, 2),
     filename: jspb.Message.getField(msg, 3),
-    md5checksum: jspb.Message.getField(msg, 4)
+    md5checksum: jspb.Message.getField(msg, 4),
+    clusterid: jspb.Message.getField(msg, 5)
   };
 
   if (includeInstance) {
@@ -4268,6 +5142,10 @@ proto.msg.InputFile.deserializeBinaryFromReader = function(msg, reader) {
     case 4:
       var value = /** @type {string} */ (reader.readString());
       msg.setMd5checksum(value);
+      break;
+    case 5:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setClusterid(value);
       break;
     default:
       reader.skipField();
@@ -4323,6 +5201,13 @@ proto.msg.InputFile.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeString(
       4,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 5));
+  if (f != null) {
+    writer.writeInt32(
+      5,
       f
     );
   }
@@ -4445,162 +5330,23 @@ proto.msg.InputFile.prototype.hasMd5checksum = function() {
 };
 
 
-
 /**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
+ * required int32 ClusterID = 5;
+ * @return {number}
  */
-proto.msg.InputDocument = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.msg.InputDocument, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  proto.msg.InputDocument.displayName = 'proto.msg.InputDocument';
-}
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto suitable for use in Soy templates.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
- * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
- *     for transitional soy proto support: http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.msg.InputDocument.prototype.toObject = function(opt_includeInstance) {
-  return proto.msg.InputDocument.toObject(opt_includeInstance, this);
+proto.msg.InputFile.prototype.getClusterid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Whether to include the JSPB
- *     instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.msg.InputDocument} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.msg.InputDocument.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    id: jspb.Message.getField(msg, 1),
-    accesshash: jspb.Message.getField(msg, 2)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.msg.InputDocument}
- */
-proto.msg.InputDocument.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.msg.InputDocument;
-  return proto.msg.InputDocument.deserializeBinaryFromReader(msg, reader);
+/** @param {number} value */
+proto.msg.InputFile.prototype.setClusterid = function(value) {
+  jspb.Message.setField(this, 5, value);
 };
 
 
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.msg.InputDocument} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.msg.InputDocument}
- */
-proto.msg.InputDocument.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readInt64String());
-      msg.setId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readFixed64String());
-      msg.setAccesshash(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.msg.InputDocument.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.msg.InputDocument.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.msg.InputDocument} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.msg.InputDocument.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
-    writer.writeInt64String(
-      1,
-      f
-    );
-  }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
-    writer.writeFixed64String(
-      2,
-      f
-    );
-  }
-};
-
-
-/**
- * required int64 ID = 1;
- * @return {string}
- */
-proto.msg.InputDocument.prototype.getId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
-};
-
-
-/** @param {string} value */
-proto.msg.InputDocument.prototype.setId = function(value) {
-  jspb.Message.setField(this, 1, value);
-};
-
-
-proto.msg.InputDocument.prototype.clearId = function() {
-  jspb.Message.setField(this, 1, undefined);
+proto.msg.InputFile.prototype.clearClusterid = function() {
+  jspb.Message.setField(this, 5, undefined);
 };
 
 
@@ -4608,37 +5354,8 @@ proto.msg.InputDocument.prototype.clearId = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.msg.InputDocument.prototype.hasId = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required fixed64 AccessHash = 2;
- * @return {string}
- */
-proto.msg.InputDocument.prototype.getAccesshash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, "0"));
-};
-
-
-/** @param {string} value */
-proto.msg.InputDocument.prototype.setAccesshash = function(value) {
-  jspb.Message.setField(this, 2, value);
-};
-
-
-proto.msg.InputDocument.prototype.clearAccesshash = function() {
-  jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.msg.InputDocument.prototype.hasAccesshash = function() {
-  return jspb.Message.getField(this, 2) != null;
+proto.msg.InputFile.prototype.hasClusterid = function() {
+  return jspb.Message.getField(this, 5) != null;
 };
 
 
@@ -5673,6 +6390,285 @@ proto.msg.GroupParticipant.prototype.hasUsername = function() {
 };
 
 
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.msg.Cluster = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.msg.Cluster, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.msg.Cluster.displayName = 'proto.msg.Cluster';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.msg.Cluster.prototype.toObject = function(opt_includeInstance) {
+  return proto.msg.Cluster.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.msg.Cluster} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.Cluster.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    id: jspb.Message.getField(msg, 1),
+    ip: jspb.Message.getField(msg, 2),
+    domain: jspb.Message.getField(msg, 3),
+    location: jspb.Message.getField(msg, 4)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.msg.Cluster}
+ */
+proto.msg.Cluster.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.msg.Cluster;
+  return proto.msg.Cluster.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.msg.Cluster} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.msg.Cluster}
+ */
+proto.msg.Cluster.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setId(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setIp(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setDomain(value);
+      break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setLocation(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.msg.Cluster.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.msg.Cluster.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.msg.Cluster} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.Cluster.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  if (f != null) {
+    writer.writeInt32(
+      1,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 4));
+  if (f != null) {
+    writer.writeString(
+      4,
+      f
+    );
+  }
+};
+
+
+/**
+ * required int32 ID = 1;
+ * @return {number}
+ */
+proto.msg.Cluster.prototype.getId = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.Cluster.prototype.setId = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+proto.msg.Cluster.prototype.clearId = function() {
+  jspb.Message.setField(this, 1, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.Cluster.prototype.hasId = function() {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * required string IP = 2;
+ * @return {string}
+ */
+proto.msg.Cluster.prototype.getIp = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.Cluster.prototype.setIp = function(value) {
+  jspb.Message.setField(this, 2, value);
+};
+
+
+proto.msg.Cluster.prototype.clearIp = function() {
+  jspb.Message.setField(this, 2, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.Cluster.prototype.hasIp = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * required string Domain = 3;
+ * @return {string}
+ */
+proto.msg.Cluster.prototype.getDomain = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.Cluster.prototype.setDomain = function(value) {
+  jspb.Message.setField(this, 3, value);
+};
+
+
+proto.msg.Cluster.prototype.clearDomain = function() {
+  jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.Cluster.prototype.hasDomain = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * required string Location = 4;
+ * @return {string}
+ */
+proto.msg.Cluster.prototype.getLocation = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.Cluster.prototype.setLocation = function(value) {
+  jspb.Message.setField(this, 4, value);
+};
+
+
+proto.msg.Cluster.prototype.clearLocation = function() {
+  jspb.Message.setField(this, 4, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.Cluster.prototype.hasLocation = function() {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+
 /**
  * @enum {number}
  */
@@ -5709,6 +6705,16 @@ proto.msg.UserStatus = {
 /**
  * @enum {number}
  */
+proto.msg.MediaType = {
+  MEDIATYPEEMPTY: 0,
+  MEDIATYPEPHOTO: 1,
+  MEDIATYPEDOCUMENT: 2,
+  MEDIATYPECONTACT: 3
+};
+
+/**
+ * @enum {number}
+ */
 proto.msg.MessageEntityType = {
   MESSAGEENTITYTYPEBOLD: 0,
   MESSAGEENTITYTYPEITALIC: 1,
@@ -5716,14 +6722,6 @@ proto.msg.MessageEntityType = {
   MESSAGEENTITYTYPEURL: 3,
   MESSAGEENTITYTYPEEMAIL: 4,
   MESSAGEENTITYTYPEHASHTAG: 5
-};
-
-/**
- * @enum {number}
- */
-proto.msg.DocumentType = {
-  DOCUMENTTYPEUNKNOWN: 0,
-  DOCUMENTTYPEPHOTO: 1
 };
 
 /**
