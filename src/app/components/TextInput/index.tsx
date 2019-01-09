@@ -1088,9 +1088,9 @@ class TextInput extends React.Component<IProps, IState> {
         this.timerDuration = 0;
         this.displayTimer();
         this.timerInterval = setInterval(() => {
-            this.timerDuration++;
+            this.timerDuration += 0.1;
             this.displayTimer();
-        }, 1000);
+        }, 100);
     }
 
     /* Start voice recorder timer */
@@ -1103,8 +1103,9 @@ class TextInput extends React.Component<IProps, IState> {
         if (!this.timerRef) {
             return;
         }
-        let sec: string | number = this.timerDuration % 60;
-        let min: string | number = Math.floor(this.timerDuration / 60);
+        const duration = Math.floor(this.timerDuration);
+        let sec: string | number = duration % 60;
+        let min: string | number = Math.floor(duration / 60);
         if (sec < 10) {
             sec = `0${sec}`;
         }
@@ -1112,6 +1113,12 @@ class TextInput extends React.Component<IProps, IState> {
             min = `0${min}`;
         }
         this.timerRef.innerHTML = `${min}:${sec}`;
+        if (this.timerDuration > 0 && this.timerDuration < 0.5) {
+            this.timerRef.parentElement.classList.add('blink');
+        }
+        if (this.timerDuration === 0) {
+            this.timerRef.parentElement.classList.remove('blink');
+        }
     }
 
     private displayBars(callback?: () => void) {

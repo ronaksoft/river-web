@@ -190,10 +190,14 @@
           border-radius: 50%;
           background-color: var(--red);
           transform: translateY(-50%);
-          animation-name: bulbBlink;
-          animation-duration: 1s;
-          animation-iteration-count: infinite;
-          animation-timing-function: linear;
+        }
+        &.blink {
+          .bulb {
+            animation-name: bulbBlink;
+            animation-duration: 1s;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+          }
         }
       }
       .preview {

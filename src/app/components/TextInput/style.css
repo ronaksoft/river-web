@@ -218,7 +218,8 @@ input {
           width: 8px;
           border-radius: 50%;
           background-color: var(--red);
-          transform: translateY(-50%);
+          transform: translateY(-50%); }
+        .write .inputs .voice-recorder .timer.blink .bulb {
           animation-name: bulbBlink;
           animation-duration: 1s;
           animation-iteration-count: infinite;
