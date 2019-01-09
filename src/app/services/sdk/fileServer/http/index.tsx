@@ -7,6 +7,8 @@
     Copyright Ronak Software Group 2019
 */
 
+import Presenter from '../../presenters';
+
 export interface IHttpRequest {
     constructor: number;
     data: Uint8Array;
@@ -20,16 +22,12 @@ export default class Http {
     private sentQueue: number[] = [];
     private dataCenterUrl: string = 'file.river.im';
 
-    public constructor() {
+    public constructor(bytes: ArrayBuffer) {
         this.reqId = 0;
         this.worker = new Worker('/bin/worker.js');
 
-        fetch('/bin/river.wasm?v7').then((response) => {
-            return response.arrayBuffer();
-        }).then((bytes) => {
-            this.workerMessage('init', bytes);
-            this.initWorkerEvent();
-        });
+        this.workerMessage('init', bytes);
+        this.initWorkerEvent();
     }
 
     public send(constructor: number, data: Uint8Array) {
@@ -104,16 +102,21 @@ export default class Http {
                 'Content-Type': 'application/protobuf',
             },
             method: 'POST'
-        }).then((data) => {
+        }).then((response) => {
+            return response.arrayBuffer();
+        }).then((bytes) => {
             if (this.messageListeners.hasOwnProperty(reqId)) {
-                window.console.log(data);
-                // this.workerMessage('fnDecrypt', );
+                const data = new Uint8Array(bytes);
+                this.workerMessage('fnDecrypt', this.uint8ToBase64(data));
             }
         });
     }
 
     private resolveDecrypt(reqId: number, constructor: number, base64: string) {
-        //
+        // @ts-ignore
+        const u8a = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+        const res = Presenter.getMessage(constructor, u8a);
+        this.messageListeners[reqId].resolve(res.toObject());
     }
 
     /* Post message to worker */

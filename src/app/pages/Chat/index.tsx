@@ -2454,12 +2454,10 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private sendFakeFileHandler = () => {
-        const data = new Uint8Array(1000);
-        for (let i = 0; i < 1000; i++) {
-            data.fill(Math.floor(Math.random() * 255), i, i);
-        }
-        window.console.log(data);
-        this.fileServer.sendFile(data);
+        const data = new Uint8Array(255 * 1024);
+        this.fileServer.sendFile(data).then((res) => {
+            window.console.log(res);
+        });
     }
 }
 

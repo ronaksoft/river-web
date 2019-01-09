@@ -9,6 +9,9 @@
 
 import Http from './http';
 import {C_MSG} from '../const';
+import {FileSavePart} from '../messages/api.files_pb';
+import UniqueId from '../../uniqueId';
+import {Bool} from '../messages/core.messages_pb';
 
 const C_FILE_SERVER_HTTP_WORKER_NUM = 4;
 
@@ -34,16 +37,26 @@ export default class FileServer {
         });
     }
 
-    public sendFile(data: Uint8Array): Promise<any> {
+    public sendFile(bytes: Uint8Array): Promise<Bool.AsObject> {
         if (this.httpWorkers.length === 0) {
             return Promise.reject('file server is not started yet');
         }
-        return this.httpWorkers[0].send(C_MSG.FileSavePart, data);
+        const id = String(UniqueId.getRandomId());
+        const data = new FileSavePart();
+        data.setBytes(bytes);
+        data.setPartid(1);
+        data.setTotalparts(1);
+        data.setFileid(id);
+        return this.httpWorkers[0].send(C_MSG.FileSavePart, data.serializeBinary());
     }
 
     private initFileServer() {
-        for (let i = 0; i < C_FILE_SERVER_HTTP_WORKER_NUM; i++) {
-            this.httpWorkers[i] = new Http();
-        }
+        fetch('/bin/river.wasm?v7').then((response) => {
+            return response.arrayBuffer();
+        }).then((bytes) => {
+            for (let i = 0; i < C_FILE_SERVER_HTTP_WORKER_NUM; i++) {
+                this.httpWorkers[i] = new Http(bytes);
+            }
+        });
     }
 }
