@@ -51,6 +51,7 @@ import VoicePlayer from '../VoicePlayer';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
+import {to4bitResolution} from './utils';
 
 interface IProps {
     onAction: (cmd: string) => void;
@@ -66,7 +67,7 @@ interface IProps {
     selectableDisable: boolean;
     text?: string;
     userId?: string;
-    onVoice: (voice: Blob, waveform: number[]) => void;
+    onVoice: (voice: Blob, waveform: number[], duration: number) => void;
 }
 
 interface IState {
@@ -975,7 +976,7 @@ class TextInput extends React.Component<IProps, IState> {
                 voiceMode: 'play',
             });
         } else if (this.state.voiceMode === 'play') {
-            this.props.onVoice(this.voice, this.bars);
+            this.props.onVoice(this.voice, to4bitResolution(this.bars), this.timerDuration);
         }
     }
 

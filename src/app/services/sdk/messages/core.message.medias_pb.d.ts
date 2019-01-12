@@ -1,5 +1,5 @@
 // package: msg
-// file: core.message_medias.proto
+// file: core.message.medias.proto
 
 import * as jspb from "google-protobuf";
 import * as core_types_pb from "./core.types_pb";
@@ -386,7 +386,7 @@ export class InputMediaUploadedDocument extends jspb.Message {
 
   hasThumbnail(): boolean;
   clearThumbnail(): void;
-  getThumbnail(): core_types_pb.InputFile;
+  getThumbnail(): core_types_pb.InputFile | undefined;
   setThumbnail(value?: core_types_pb.InputFile): void;
 
   hasMimetype(): boolean;
@@ -422,7 +422,7 @@ export class InputMediaUploadedDocument extends jspb.Message {
 export namespace InputMediaUploadedDocument {
   export type AsObject = {
     file: core_types_pb.InputFile.AsObject,
-    thumbnail: core_types_pb.InputFile.AsObject,
+    thumbnail?: core_types_pb.InputFile.AsObject,
     mimetype?: string,
     caption?: string,
     stickersList: Array<InputDocument.AsObject>,
@@ -509,6 +509,21 @@ export namespace MediaDocument {
 }
 
 export class MediaContact extends jspb.Message {
+  hasPhone(): boolean;
+  clearPhone(): void;
+  getPhone(): string | undefined;
+  setPhone(value: string): void;
+
+  hasFirstname(): boolean;
+  clearFirstname(): void;
+  getFirstname(): string | undefined;
+  setFirstname(value: string): void;
+
+  hasLastname(): boolean;
+  clearLastname(): void;
+  getLastname(): string | undefined;
+  setLastname(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MediaContact.AsObject;
   static toObject(includeInstance: boolean, msg: MediaContact): MediaContact.AsObject;
@@ -521,6 +536,9 @@ export class MediaContact extends jspb.Message {
 
 export namespace MediaContact {
   export type AsObject = {
+    phone?: string,
+    firstname?: string,
+    lastname?: string,
   }
 }
 
@@ -545,7 +563,7 @@ export enum DocumentAttributeType {
   ATTRIBUTETYPEAUDIO = 1,
   ATTRIBUTETYPEVIDEO = 2,
   ATTRIBUTETYPEPHOTO = 3,
-  ATTRIBUTETYPEFILENAME = 4,
+  ATTRIBUTETYPEFILE = 4,
   ATTRIBUTEANIMATED = 5,
 }
 

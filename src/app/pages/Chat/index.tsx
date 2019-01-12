@@ -20,19 +20,21 @@ import {
     MessageRounded,
     MoreVertRounded,
     PersonAddRounded,
-    SendRounded,
     SearchRounded,
+    SendRounded,
 } from '@material-ui/icons';
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
 import Uploader from '../../components/Uploader/index';
 import TextInput from '../../components/TextInput/index';
-import {clone, findIndex, throttle, trimStart, intersectionBy, differenceBy, find} from 'lodash';
+import {clone, differenceBy, find, findIndex, intersectionBy, throttle, trimStart} from 'lodash';
 import SDK from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
+import * as core_types_pb from '../../services/sdk/messages/core.types_pb';
 import {
     Group,
+    InputFile,
     InputPeer,
     InputUser,
     PeerNotifySettings,
@@ -46,7 +48,8 @@ import UpdateManager, {INewMessageBulkUpdate} from '../../services/sdk/server/up
 import {C_MSG} from '../../services/sdk/const';
 import {
     UpdateMessageEdited,
-    UpdateMessagesDeleted, UpdateNotifySettings,
+    UpdateMessagesDeleted,
+    UpdateNotifySettings,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox,
     UpdateUsername,
@@ -82,11 +85,17 @@ import Button from '@material-ui/core/Button/Button';
 import UserDialog from '../../components/UserDialog';
 import {IGroup} from '../../repository/group/interface';
 import SearchList, {IInputPeer} from '../../components/SearchList';
-import * as core_types_pb from '../../services/sdk/messages/core.types_pb';
 import ElectronService, {C_ELECTRON_SUBJECT} from '../../services/electron';
+import FileManager from '../../services/sdk/fileServer';
+import {InputMediaType} from '../../services/sdk/messages/api.messages_pb';
+import {
+    DocumentAttribute,
+    DocumentAttributeAudio,
+    DocumentAttributeType,
+    InputMediaUploadedDocument
+} from '../../services/sdk/messages/core.message.medias_pb';
 
 import './style.css';
-import FileServer from '../../services/sdk/fileServer';
 
 interface IProps {
     history?: any;
@@ -149,8 +158,10 @@ class Chat extends React.Component<IProps, IState> {
     private isMobileView: boolean = false;
     private mobileBackTimeout: any = null;
     private userDialogComponent: UserDialog;
-    private fileServer: FileServer;
+    private fileManager: FileManager;
     private electronService: ElectronService;
+    // @ts-ignore
+    private clusterList: core_types_pb.Cluster.AsObject[] = [];
 
     constructor(props: IProps) {
         super(props);
@@ -183,7 +194,7 @@ class Chat extends React.Component<IProps, IState> {
             toggleAttachment: false,
             unreadCounter: 0,
         };
-        this.fileServer = FileServer.getInstance();
+        this.fileManager = FileManager.getInstance();
         this.sdk = SDK.getInstance();
         this.sdk.loadConnInfo();
         this.connInfo = this.sdk.getConnInfo();
@@ -428,13 +439,6 @@ class Chat extends React.Component<IProps, IState> {
                                 >
                                     <Attachment/>
                                 </IconButton>*/}
-                                    <IconButton
-                                        aria-label="Attachment"
-                                        aria-haspopup="true"
-                                        onClick={this.sendFakeFileHandler}
-                                    >
-                                    <InfoOutlined/>
-                                </IconButton>
                                     <Tooltip
                                         title={(peer && peer.getType() === PeerType.PEERGROUP) ? 'Group Info' : 'Contact Info'}>
                                     <IconButton
@@ -1249,6 +1253,7 @@ class Chat extends React.Component<IProps, IState> {
                     });
                     msg.avatar = true;
                 }
+
                 if (messageReadId !== undefined && !newMessageFlag && (msg.id || 0) > messageReadId) {
                     defaultMessages.push({
                         id: (msg.id || 0) + 0.5,
@@ -1735,7 +1740,8 @@ class Chat extends React.Component<IProps, IState> {
         this.setState({
             isConnecting: false,
         });
-        this.sdk.recall('0').then(() => {
+        this.sdk.recall('0').then((res) => {
+            this.clusterList = res.availableclustersList;
             this.startSyncing();
         }).catch((err) => {
             window.console.log(err);
@@ -2454,17 +2460,107 @@ class Chat extends React.Component<IProps, IState> {
         this.dialogComponent.toggleSearch();
     }
 
-    private sendFakeFileHandler = () => {
-        // const data = new Uint8Array(255 * 1024);
-        // this.fileServer.sendFile(data).then((res) => {
-        //     window.console.log(res);
-        // });
-    }
-
     /* TextInput send voice handler */
-    private textInputVoiceHandler = (blob: Blob, waveForm: number[]) => {
-        const id = String(UniqueId.getRandomId());
-        this.fileServer.sendFile(id, blob);
+    private textInputVoiceHandler = (blob: Blob, waveForm: number[], duration: number) => {
+        const {peer} = this.state;
+        if (peer === null) {
+            return;
+        }
+
+        // const id = -UniqueId.getRandomId();
+
+        const fileId = String(UniqueId.getRandomId());
+
+        let clusterId: number = 0;
+        if (this.clusterList.length > 0) {
+            clusterId = this.clusterList[0].id || 0;
+        }
+
+        const u8aWaveForm = new Uint8Array(waveForm);
+
+        const attr1Data = new DocumentAttributeAudio();
+        attr1Data.setAlbum('');
+        attr1Data.setDuration(Math.floor(duration * 1000));
+        attr1Data.setTitle('');
+        attr1Data.setPerformer('');
+        attr1Data.setVoice(true);
+        attr1Data.setWaveform(u8aWaveForm);
+
+        const attr1 = new DocumentAttribute();
+        attr1.setData(attr1Data.serializeBinary());
+        attr1.setType(DocumentAttributeType.ATTRIBUTETYPEAUDIO);
+
+        const attributesList: DocumentAttribute[] = [];
+        attributesList.push(attr1);
+
+        const inputFile = new InputFile();
+        inputFile.setClusterid(clusterId);
+        inputFile.setFileid(fileId);
+        inputFile.setFilename(`voice_${Date.now()}.ogg`);
+        inputFile.setMd5checksum('');
+        inputFile.setTotalparts(1);
+
+        const mediaData = new InputMediaUploadedDocument();
+        mediaData.setCaption('');
+        mediaData.setMimetype('audio/ogg');
+        mediaData.setStickersList([]);
+        mediaData.setThumbnail(undefined);
+        mediaData.setAttributesList(attributesList);
+        mediaData.setFile(inputFile);
+
+        this.fileManager.sendFile(fileId, blob, (e) => {
+            window.console.log('progress', e);
+            this.sdk.sendMediaMessage(peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, mediaData.serializeBinary()).then((res) => {
+                window.console.log(res);
+            });
+        });
+        // const message: IMessage = {
+        //     createdon: Math.floor(Date.now() / 1000),
+        //     id,
+        //     me: true,
+        //     mediatype: MediaType.MEDIATYPEDOCUMENT,
+        //     messageaction: C_MESSAGE_ACTION.MessageActionNope,
+        //     peerid: this.state.selectedDialogId,
+        //     peertype: peer.getType(),
+        //     senderid: this.connInfo.UserID,
+        // };
+        //
+        // let replyTo;
+        // if (param && param.mode === C_MSG_MODE.Reply) {
+        //     message.replyto = param.message.id;
+        //     replyTo = param.message.id;
+        // }
+        //
+        // let entities;
+        // if (param && param.entities) {
+        //     message.entitiesList = param.entities.map((entity: core_types_pb.MessageEntity) => {
+        //         return entity.toObject();
+        //     });
+        //     entities = param.entities;
+        // }
+        //
+        // this.pushMessage(message);
+        //
+        // this.sdk.sendMessage(text, peer, replyTo, entities).then((msg) => {
+        //     const {messages} = this.state;
+        //     const index = findIndex(messages, {id: message.id});
+        //     if (index) {
+        //         this.messageComponent.cache.clear(index, 0);
+        //     }
+        //     this.messageRepo.remove(message.id || 0).catch(() => {
+        //         //
+        //     });
+        //     if (msg.messageid) {
+        //         this.sendReadHistory(peer, msg.messageid);
+        //     }
+        //     message.id = msg.messageid;
+        //     this.messageRepo.lazyUpsert([message]);
+        //     this.updateDialogs(message, '0');
+        //     // Force update messages
+        //     this.messageComponent.list.forceUpdateGrid();
+        // }).catch((err) => {
+        //     window.console.log(err);
+        // });
     }
 }
 

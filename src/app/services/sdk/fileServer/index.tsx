@@ -16,35 +16,45 @@ import {ITempFile} from '../../../repository/file/interface';
 
 const C_FILE_SERVER_HTTP_WORKER_NUM = 1;
 
-interface IChunk {
+interface IFileProgress {
     download: number;
+    upload: number;
+    state: 'loading' | 'complete';
+}
+
+interface IChunkUpdate {
+    download: number;
+    downloadSize: number;
+    upload: number;
+    uploadSize: number;
+}
+
+interface IChunk {
     id: string;
     last: boolean;
     part: number;
-    size: number;
-    upload: number;
 }
 
 interface IChunksInfo {
     chunks: IChunk[];
     interval: any;
-    onDownloadProgress?: (e: any) => void;
-    onUploadProgress?: (e: any) => void;
+    onProgress?: (e: IFileProgress) => void;
     size: number;
     totalParts: number;
+    updates: IChunkUpdate[];
     uploaded: number;
 }
 
-export default class FileServer {
+export default class FileManager {
     public static getInstance() {
         if (!this.instance) {
-            this.instance = new FileServer();
+            this.instance = new FileManager();
         }
 
         return this.instance;
     }
 
-    private static instance: FileServer;
+    private static instance: FileManager;
 
     private fileSeverInitialized: boolean = false;
     private httpWorkers: Http[] = [];
@@ -62,7 +72,7 @@ export default class FileServer {
     }
 
     /* send the whole file */
-    public sendFile(id: string, blob: Blob, onUploadProgress?: (e: any) => void, onDownloadProgress?: (e: any) => void) {
+    public sendFile(id: string, blob: Blob, onProgress?: (e: IFileProgress) => void) {
         const chunks = this.chunkBlob(blob);
         const saveFileToDBPromises: any[] = [];
         chunks.forEach((chunk, index) => {
@@ -76,7 +86,7 @@ export default class FileServer {
         window.console.time('sendFile');
         Promise.all(saveFileToDBPromises).then(() => {
             window.console.log('saveFileToDBPromises');
-            this.prepareChunks(id, chunks, blob.size, onUploadProgress, onDownloadProgress);
+            this.prepareChunks(id, chunks, blob.size, onProgress);
             this.startQueue(id);
         });
     }
@@ -89,19 +99,13 @@ export default class FileServer {
         this.queuedFile.push(id);
         const message = this.fileChunkQueue[id];
         message.interval = setInterval(() => {
-            this.dispatchProgress(id);
+            this.dispatchProgress(id, 'loading');
         }, 500);
         this.startUploading(id);
     }
 
     /* Start upload for selected queue */
     private startUploading(id: string) {
-        const uploadProgress = (e: any) => {
-            window.console.log(e);
-        };
-        const downloadProgress = (e: any) => {
-            window.console.log(e);
-        };
         if (this.fileChunkQueue.hasOwnProperty(id)) {
             const chunkInfo = this.fileChunkQueue[id];
             if (chunkInfo.chunks.length > 0) {
@@ -112,7 +116,23 @@ export default class FileServer {
                         chunk = this.fileChunkQueue[id].chunks.shift();
                     }
                     if (chunk) {
-                        this.upload(id, chunk.part, chunkInfo.totalParts, uploadProgress, downloadProgress).then((res) => {
+                        const part = chunk.part;
+                        const uploadProgress = (e: any) => {
+                            if (this.fileChunkQueue.hasOwnProperty(id)) {
+                                const index = part - 1;
+                                this.fileChunkQueue[id].updates[index].upload = e.loaded;
+                                this.fileChunkQueue[id].updates[index].uploadSize = e.total;
+                            }
+                        };
+                        const downloadProgress = (e: any) => {
+                            if (this.fileChunkQueue.hasOwnProperty(id)) {
+                                const index = part - 1;
+                                this.fileChunkQueue[id].updates[index].download = e.loaded;
+                                this.fileChunkQueue[id].updates[index].downloadSize = e.total;
+                                window.console.log(this.fileChunkQueue[id].updates[index].download);
+                            }
+                        };
+                        this.upload(id, part, chunkInfo.totalParts, uploadProgress, downloadProgress).then((res) => {
                             this.startUploading(id);
                             if (chunk) {
                                 window.console.log(`${chunk.part}/${chunkInfo.totalParts} uploaded`, res);
@@ -125,10 +145,14 @@ export default class FileServer {
                     }
                 }
             } else {
-                delete this.fileChunkQueue[id];
                 const index = this.queuedFile.indexOf(id);
                 if (index > -1) {
                     this.queuedFile.splice(index, 1);
+                }
+                if (this.fileChunkQueue.hasOwnProperty(id)) {
+                    clearInterval(this.fileChunkQueue[id].interval);
+                    this.dispatchProgress(id, 'complete');
+                    delete this.fileChunkQueue[id];
                 }
                 window.console.timeEnd('sendFile');
             }
@@ -164,47 +188,49 @@ export default class FileServer {
     }
 
     /* Dispatch progress */
-    private dispatchProgress(id: string) {
+    private dispatchProgress(id: string, state: 'loading' | 'complete') {
         if (!this.fileChunkQueue.hasOwnProperty(id)) {
             return;
         }
         const message = this.fileChunkQueue[id];
-        if (!message.onUploadProgress && !message.onDownloadProgress) {
+        if (!message.onProgress) {
             return;
         }
         let download = 0;
         let upload = 0;
-        message.chunks.forEach((chunk) => {
-            upload += chunk.upload;
-            download += chunk.download;
+        message.updates.forEach((update) => {
+            upload += update.upload;
+            download += update.download;
         });
-        if (message.onUploadProgress) {
-            message.onUploadProgress(upload);
-        }
-        if (message.onDownloadProgress) {
-            message.onDownloadProgress(download);
-        }
+        message.onProgress({
+            download,
+            state,
+            upload,
+        });
     }
 
     /* Prepare chunks for queue */
-    private prepareChunks(id: string, chunks: Blob[], size: number, onUploadProgress?: (e: any) => void, onDownloadProgress?: (e: any) => void) {
+    private prepareChunks(id: string, chunks: Blob[], size: number, onProgress?: (e: IFileProgress) => void) {
         this.fileChunkQueue[id] = {
             chunks: [],
             interval: null,
-            onDownloadProgress,
-            onUploadProgress,
+            onProgress,
             size,
             totalParts: chunks.length,
+            updates: [],
             uploaded: 0,
         };
         chunks.forEach((chunk, index) => {
             this.fileChunkQueue[id].chunks.push({
-                download: 0,
                 id,
                 last: (chunks.length - 1 === index),
                 part: index + 1,
-                size: chunk.size,
+            });
+            this.fileChunkQueue[id].updates.push({
+                download: 0,
+                downloadSize: 0,
                 upload: 0,
+                uploadSize: chunk.size,
             });
         });
         // Clear the allocated chunks in RAM
@@ -236,6 +262,7 @@ export default class FileServer {
         return chunks;
     }
 
+    /* Init file manager WASM worker */
     private initFileServer() {
         fetch('/bin/river.wasm?v7').then((response) => {
             return response.arrayBuffer();

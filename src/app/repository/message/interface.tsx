@@ -16,6 +16,8 @@ interface IMessage extends UserMessage.AsObject {
     temp?: boolean;
     actiondata?: any;
     mention_me?: boolean;
+    mediadata?: any;
+    attributes?: any[];
 }
 
 export {IMessage};

@@ -33,13 +33,14 @@ import {
     User
 } from './messages/core.types_pb';
 import {
+    InputMediaType,
     MessagesClearHistory,
     MessagesDelete,
     MessagesDialogs, MessagesEdit, MessagesForward,
     MessagesGetDialogs,
     MessagesGetHistory,
     MessagesMany, MessagesReadHistory,
-    MessagesSend,
+    MessagesSend, MessagesSendMedia,
     MessagesSent,
     MessagesSetTyping
 } from './messages/api.messages_pb';
@@ -222,10 +223,10 @@ export default class SDK {
 
     public sendMessage(body: string, peer: InputPeer, replyTo?: number, entities?: core_types_pb.MessageEntity[]): Promise<MessagesSent.AsObject> {
         const data = new MessagesSend();
-        // this.msgId++;
         data.setRandomid(parseInt(Math.random().toFixed(10).split('.')[1], 10));
         data.setBody(body);
         data.setPeer(peer);
+        data.setCleardraft(false);
         if (replyTo) {
             data.setReplyto(replyTo);
         }
@@ -237,12 +238,24 @@ export default class SDK {
 
     public editMessage(id: number, body: string, peer: InputPeer): Promise<MessagesSent.AsObject> {
         const data = new MessagesEdit();
-        // this.msgId++;
         data.setRandomid(parseInt(Math.random().toFixed(10).split('.')[1], 10));
         data.setBody(body);
         data.setPeer(peer);
         data.setMessageid(id);
         return this.server.send(C_MSG.MessagesEdit, data.serializeBinary());
+    }
+
+    public sendMediaMessage(peer: InputPeer, mediaType: InputMediaType, mediaData: Uint8Array, replyTo?: number): Promise<MessagesSent.AsObject> {
+        const data = new MessagesSendMedia();
+        data.setRandomid(parseInt(Math.random().toFixed(10).split('.')[1], 10));
+        data.setPeer(peer);
+        data.setMediatype(mediaType);
+        data.setMediadata(mediaData);
+        data.setCleardraft(false);
+        if (replyTo) {
+            data.setReplyto(replyTo);
+        }
+        return this.server.send(C_MSG.MessagesSendMedia, data.serializeBinary());
     }
 
     public getMessageHistory(peer: InputPeer, {limit, minId, maxId}: any): Promise<MessagesMany.AsObject> {

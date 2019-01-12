@@ -1,5 +1,5 @@
 // package: msg
-// file: core.message_actions.proto
+// file: core.message.actions.proto
 
 import * as jspb from "google-protobuf";
 

@@ -252,10 +252,10 @@ export class AccountSetPrivacy extends jspb.Message {
   getKey(): AccountPrivacyKey | undefined;
   setKey(value: AccountPrivacyKey): void;
 
-  clearValuesList(): void;
-  getValuesList(): Array<AccountPrivacyValue>;
-  setValuesList(value: Array<AccountPrivacyValue>): void;
-  addValues(value: AccountPrivacyValue, index?: number): AccountPrivacyValue;
+  clearRulesList(): void;
+  getRulesList(): Array<AccountPrivacyRule>;
+  setRulesList(value: Array<AccountPrivacyRule>): void;
+  addRules(value?: AccountPrivacyRule, index?: number): AccountPrivacyRule;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountSetPrivacy.AsObject;
@@ -270,7 +270,7 @@ export class AccountSetPrivacy extends jspb.Message {
 export namespace AccountSetPrivacy {
   export type AsObject = {
     key?: AccountPrivacyKey,
-    valuesList: Array<AccountPrivacyValue>,
+    rulesList: Array<AccountPrivacyRule.AsObject>,
   }
 }
 
@@ -298,14 +298,9 @@ export namespace AccountGetPrivacy {
 
 export class AccountPrivacyRules extends jspb.Message {
   clearRulesList(): void;
-  getRulesList(): Array<AccountPrivacyValue>;
-  setRulesList(value: Array<AccountPrivacyValue>): void;
-  addRules(value: AccountPrivacyValue, index?: number): AccountPrivacyValue;
-
-  clearUsersList(): void;
-  getUsersList(): Array<core_types_pb.User>;
-  setUsersList(value: Array<core_types_pb.User>): void;
-  addUsers(value?: core_types_pb.User, index?: number): core_types_pb.User;
+  getRulesList(): Array<AccountPrivacyRule>;
+  setRulesList(value: Array<AccountPrivacyRule>): void;
+  addRules(value?: AccountPrivacyRule, index?: number): AccountPrivacyRule;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountPrivacyRules.AsObject;
@@ -319,24 +314,53 @@ export class AccountPrivacyRules extends jspb.Message {
 
 export namespace AccountPrivacyRules {
   export type AsObject = {
-    rulesList: Array<AccountPrivacyValue>,
-    usersList: Array<core_types_pb.User.AsObject>,
+    rulesList: Array<AccountPrivacyRule.AsObject>,
+  }
+}
+
+export class AccountPrivacyRule extends jspb.Message {
+  hasPrivacytype(): boolean;
+  clearPrivacytype(): void;
+  getPrivacytype(): AccountPrivacyType | undefined;
+  setPrivacytype(value: AccountPrivacyType): void;
+
+  hasData(): boolean;
+  clearData(): void;
+  getData(): Uint8Array | string;
+  getData_asU8(): Uint8Array;
+  getData_asB64(): string;
+  setData(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountPrivacyRule.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountPrivacyRule): AccountPrivacyRule.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountPrivacyRule, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountPrivacyRule;
+  static deserializeBinaryFromReader(message: AccountPrivacyRule, reader: jspb.BinaryReader): AccountPrivacyRule;
+}
+
+export namespace AccountPrivacyRule {
+  export type AsObject = {
+    privacytype?: AccountPrivacyType,
+    data: Uint8Array | string,
   }
 }
 
 export enum AccountPrivacyKey {
-  ACCOUNTPRIVACYKEYCHATNONE = 0,
+  ACCOUNTPRIVACYKEYNONE = 0,
   ACCOUNTPRIVACYKEYCHATINVITE = 1,
   ACCOUNTPRIVACYKEYSTATUSTIMESTAMP = 2,
   ACCOUNTPRIVACYKEYPHONECALL = 3,
 }
 
-export enum AccountPrivacyValue {
-  ACCOUNTPRIVACYVALUEALLOWALL = 0,
-  ACCOUNTPRIVACYVALUEALLOWCONTACTS = 1,
-  ACCOUNTPRIVACYVALUEALLOWUSERS = 2,
-  ACCOUNTPRIVACYVALUEDISALLOWALL = 3,
-  ACCOUNTPRIVACYVALUEDISALLOWCONTACTS = 4,
-  ACCOUNTPRIVACYVALUEDISALLOWUSERS = 5,
+export enum AccountPrivacyType {
+  ACCOUNTPRIVACYTYPEALLOWALL = 0,
+  ACCOUNTPRIVACYTYPEALLOWCONTACTS = 1,
+  ACCOUNTPRIVACYTYPEALLOWUSERS = 2,
+  ACCOUNTPRIVACYTYPEDISALLOWALL = 3,
+  ACCOUNTPRIVACYTYPEDISALLOWCONTACTS = 4,
+  ACCOUNTPRIVACYTYPEDISALLOWUSERS = 5,
 }
 

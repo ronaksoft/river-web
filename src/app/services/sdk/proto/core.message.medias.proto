@@ -11,13 +11,13 @@ import "core.types.proto";
     Copyright Ronak Software Group 2018
 */
 
-// Document Attribute Type
+// DocumentAttributeType
 enum DocumentAttributeType {
     AttributeTypeNone = 0;
     AttributeTypeAudio = 1;
     AttributeTypeVideo = 2;
     AttributeTypePhoto = 3;
-    AttributeTypeFilename = 4;
+    AttributeTypeFile = 4;
     AttributeAnimated = 5;
 }
 
@@ -109,7 +109,7 @@ message InputMediaContact {
 // InputMediaUploadedDocument
 message InputMediaUploadedDocument {
     required InputFile File = 1;
-    required InputFile Thumbnail = 2;
+    optional InputFile Thumbnail = 2;
     required string MimeType = 3;
     required string Caption = 4;
     repeated InputDocument Stickers = 5;
@@ -136,7 +136,9 @@ message MediaDocument {
 
 // MediaContact
 message MediaContact {
-
+    required string Phone = 1;
+    required string FirstName = 2;
+    required string LastName = 3;
 }
 
 // MediaWebPage

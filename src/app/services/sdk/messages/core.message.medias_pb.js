@@ -2937,23 +2937,23 @@ proto.msg.InputMediaUploadedDocument.prototype.hasFile = function() {
 
 
 /**
- * required InputFile Thumbnail = 2;
- * @return {!proto.msg.InputFile}
+ * optional InputFile Thumbnail = 2;
+ * @return {?proto.msg.InputFile}
  */
 proto.msg.InputMediaUploadedDocument.prototype.getThumbnail = function() {
-  return /** @type{!proto.msg.InputFile} */ (
-    jspb.Message.getWrapperField(this, core_types_pb.InputFile, 2, 1));
+  return /** @type{?proto.msg.InputFile} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.InputFile, 2));
 };
 
 
-/** @param {!proto.msg.InputFile} value */
+/** @param {?proto.msg.InputFile|undefined} value */
 proto.msg.InputMediaUploadedDocument.prototype.setThumbnail = function(value) {
   jspb.Message.setWrapperField(this, 2, value);
 };
 
 
 proto.msg.InputMediaUploadedDocument.prototype.clearThumbnail = function() {
-  jspb.Message.setField(this, 2, undefined);
+  this.setThumbnail(undefined);
 };
 
 
@@ -3690,7 +3690,9 @@ proto.msg.MediaContact.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.MediaContact.toObject = function(includeInstance, msg) {
   var f, obj = {
-
+    phone: jspb.Message.getField(msg, 1),
+    firstname: jspb.Message.getField(msg, 2),
+    lastname: jspb.Message.getField(msg, 3)
   };
 
   if (includeInstance) {
@@ -3727,6 +3729,18 @@ proto.msg.MediaContact.deserializeBinaryFromReader = function(msg, reader) {
     }
     var field = reader.getFieldNumber();
     switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPhone(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setFirstname(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setLastname(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -3756,6 +3770,114 @@ proto.msg.MediaContact.prototype.serializeBinary = function() {
  */
 proto.msg.MediaContact.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
+  if (f != null) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+};
+
+
+/**
+ * required string Phone = 1;
+ * @return {string}
+ */
+proto.msg.MediaContact.prototype.getPhone = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.MediaContact.prototype.setPhone = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+proto.msg.MediaContact.prototype.clearPhone = function() {
+  jspb.Message.setField(this, 1, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.MediaContact.prototype.hasPhone = function() {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * required string FirstName = 2;
+ * @return {string}
+ */
+proto.msg.MediaContact.prototype.getFirstname = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.MediaContact.prototype.setFirstname = function(value) {
+  jspb.Message.setField(this, 2, value);
+};
+
+
+proto.msg.MediaContact.prototype.clearFirstname = function() {
+  jspb.Message.setField(this, 2, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.MediaContact.prototype.hasFirstname = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * required string LastName = 3;
+ * @return {string}
+ */
+proto.msg.MediaContact.prototype.getLastname = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.MediaContact.prototype.setLastname = function(value) {
+  jspb.Message.setField(this, 3, value);
+};
+
+
+proto.msg.MediaContact.prototype.clearLastname = function() {
+  jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.MediaContact.prototype.hasLastname = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 
@@ -3883,7 +4005,7 @@ proto.msg.DocumentAttributeType = {
   ATTRIBUTETYPEAUDIO: 1,
   ATTRIBUTETYPEVIDEO: 2,
   ATTRIBUTETYPEPHOTO: 3,
-  ATTRIBUTETYPEFILENAME: 4,
+  ATTRIBUTETYPEFILE: 4,
   ATTRIBUTEANIMATED: 5
 };
 

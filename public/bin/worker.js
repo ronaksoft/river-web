@@ -131,7 +131,6 @@ fnEncryptCallback = (reqId, b64) => {
 };
 
 setFnDecrypt = (callback) => {
-    console.log(callback);
     fnDecrypt = callback;
 };
 

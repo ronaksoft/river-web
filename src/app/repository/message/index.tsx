@@ -13,21 +13,61 @@ import {cloneDeep, differenceBy, find, merge, throttle} from 'lodash';
 import SDK from '../../services/sdk';
 import UserRepo from '../user';
 import RTLDetector from '../../services/utilities/rtl_detector';
-import {InputPeer, MessageEntityType, UserMessage} from '../../services/sdk/messages/core.types_pb';
+import {InputPeer, MediaType, MessageEntityType, UserMessage} from '../../services/sdk/messages/core.types_pb';
 import Dexie from 'dexie';
 import {DexieMessageDB} from '../../services/db/dexie/message';
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from './consts';
+import GroupRepo from '../group';
+import {
+    DocumentAttribute,
+    DocumentAttributeAudio,
+    DocumentAttributeFile,
+    DocumentAttributePhoto,
+    DocumentAttributeType,
+    DocumentAttributeVideo,
+    MediaContact,
+    MediaDocument,
+    MediaPhoto
+} from '../../services/sdk/messages/core.message.medias_pb';
 import {
     MessageActionClearHistory,
     MessageActionContactRegistered,
     MessageActionGroupAddUser,
     MessageActionGroupCreated,
     MessageActionGroupDeleteUser,
-    MessageActionGroupTitleChanged
-} from '../../services/sdk/messages/core.message_actions_pb';
-import GroupRepo from '../group';
+    MessageActionGroupTitleChanged,
+} from '../../services/sdk/messages/core.message.actions_pb';
 
 export default class MessageRepo {
+    public static parseAttributes(attrs: DocumentAttribute.AsObject[]) {
+        const attrOut: any[] = [];
+        attrs.forEach((attr) => {
+            switch (attr.type) {
+                case DocumentAttributeType.ATTRIBUTETYPEAUDIO:
+                    // @ts-ignore
+                    attrOut.push(DocumentAttributeAudio.deserializeBinary(attr.data).toObject());
+                    delete attr.data;
+                    break;
+                case DocumentAttributeType.ATTRIBUTETYPEFILE:
+                    // @ts-ignore
+                    attrOut.push(DocumentAttributeFile.deserializeBinary(attr.data).toObject());
+                    delete attr.data;
+                    break;
+                case DocumentAttributeType.ATTRIBUTETYPEPHOTO:
+                    // @ts-ignore
+                    attrOut.push(DocumentAttributePhoto.deserializeBinary(attr.data).toObject());
+                    delete attr.data;
+                    break;
+                case DocumentAttributeType.ATTRIBUTETYPEVIDEO:
+                    // @ts-ignore
+                    attrOut.push(DocumentAttributeVideo.deserializeBinary(attr.data).toObject());
+                    delete attr.data;
+                    break;
+            }
+        });
+        return attrOut;
+    }
+
     public static parseMessage(msg: UserMessage.AsObject, userId: string): IMessage {
         const out: IMessage = msg;
         if (msg.entitiesList && msg.entitiesList.length > 0) {
@@ -35,34 +75,54 @@ export default class MessageRepo {
                 return entity.type === MessageEntityType.MESSAGEENTITYTYPEMENTION && entity.userid === userId;
             });
         }
-        if (!msg.messageactiondata) {
-            return out;
+        if (msg.media) {
+            // @ts-ignore
+            const mediaData: Uint8Array = msg.media;
+            switch (msg.mediatype) {
+                case MediaType.MEDIATYPEEMPTY:
+                    break;
+                case MediaType.MEDIATYPEPHOTO:
+                    out.mediadata = MediaPhoto.deserializeBinary(mediaData).toObject();
+                    break;
+                case MediaType.MEDIATYPEDOCUMENT:
+                    out.mediadata = MediaDocument.deserializeBinary(mediaData).toObject();
+                    if (out.mediadata.doc && out.mediadata.doc.attributesList) {
+                        out.attributes = this.parseAttributes(out.mediadata.doc.attributesList);
+                    }
+                    break;
+                case MediaType.MEDIATYPECONTACT:
+                    out.mediadata = MediaContact.deserializeBinary(mediaData).toObject();
+                    break;
+            }
+            delete out.media;
         }
-        // @ts-ignore
-        const data: Uint8Array = msg.messageactiondata;
-        switch (msg.messageaction) {
-            case C_MESSAGE_ACTION.MessageActionNope:
-                break;
-            case C_MESSAGE_ACTION.MessageActionGroupTitleChanged:
-                out.actiondata = MessageActionGroupTitleChanged.deserializeBinary(data).toObject();
-                break;
-            case C_MESSAGE_ACTION.MessageActionGroupCreated:
-                out.actiondata = MessageActionGroupCreated.deserializeBinary(data).toObject();
-                break;
-            case C_MESSAGE_ACTION.MessageActionGroupDeleteUser:
-                out.actiondata = MessageActionGroupDeleteUser.deserializeBinary(data).toObject();
-                break;
-            case C_MESSAGE_ACTION.MessageActionGroupAddUser:
-                out.actiondata = MessageActionGroupAddUser.deserializeBinary(data).toObject();
-                break;
-            case C_MESSAGE_ACTION.MessageActionContactRegistered:
-                out.actiondata = MessageActionContactRegistered.deserializeBinary(data).toObject();
-                break;
-            case C_MESSAGE_ACTION.MessageActionClearHistory:
-                out.actiondata = MessageActionClearHistory.deserializeBinary(data).toObject();
-                break;
+        if (msg.messageactiondata) {
+            // @ts-ignore
+            const actionData: Uint8Array = msg.messageactiondata;
+            switch (msg.messageaction) {
+                case C_MESSAGE_ACTION.MessageActionNope:
+                    break;
+                case C_MESSAGE_ACTION.MessageActionGroupTitleChanged:
+                    out.actiondata = MessageActionGroupTitleChanged.deserializeBinary(actionData).toObject();
+                    break;
+                case C_MESSAGE_ACTION.MessageActionGroupCreated:
+                    out.actiondata = MessageActionGroupCreated.deserializeBinary(actionData).toObject();
+                    break;
+                case C_MESSAGE_ACTION.MessageActionGroupDeleteUser:
+                    out.actiondata = MessageActionGroupDeleteUser.deserializeBinary(actionData).toObject();
+                    break;
+                case C_MESSAGE_ACTION.MessageActionGroupAddUser:
+                    out.actiondata = MessageActionGroupAddUser.deserializeBinary(actionData).toObject();
+                    break;
+                case C_MESSAGE_ACTION.MessageActionContactRegistered:
+                    out.actiondata = MessageActionContactRegistered.deserializeBinary(actionData).toObject();
+                    break;
+                case C_MESSAGE_ACTION.MessageActionClearHistory:
+                    out.actiondata = MessageActionClearHistory.deserializeBinary(actionData).toObject();
+                    break;
+            }
+            delete out.messageactiondata;
         }
-        delete out.messageactiondata;
         return out;
     }
 
