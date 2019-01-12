@@ -8,6 +8,7 @@
 */
 
 import Presenter from '../../presenters';
+import axios from 'axios';
 
 export interface IHttpRequest {
     constructor: number;
@@ -21,16 +22,18 @@ export default class Http {
     private messageListeners: object = {};
     private sentQueue: number[] = [];
     private dataCenterUrl: string = 'file.river.im';
+    private workerId: number = 0;
 
-    public constructor(bytes: ArrayBuffer) {
+    public constructor(bytes: ArrayBuffer, id: number) {
         this.reqId = 0;
         this.worker = new Worker('/bin/worker.js');
+        this.workerId = id;
 
         this.workerMessage('init', bytes);
         this.initWorkerEvent();
     }
 
-    public send(constructor: number, data: Uint8Array) {
+    public send(constructor: number, data: Uint8Array, onUploadProgress?: (e: any) => void, onDownloadProgress?: (e: any) => void) {
         let internalResolve = null;
         let internalReject = null;
 
@@ -51,10 +54,11 @@ export default class Http {
          * Add request to the queue manager
          */
         this.messageListeners[reqId] = {
+            onDownloadProgress,
+            onUploadProgress,
             reject: internalReject,
             request,
             resolve: internalResolve,
-            state: 0,
         };
 
         this.sentQueue.push(reqId);
@@ -72,9 +76,11 @@ export default class Http {
                     break;
                 case 'fnEncryptCallback':
                     this.resolveEncrypt(d.data.reqId, d.data.data);
+                    window.console.timeEnd(`${this.workerId} fnEncrypt`);
                     break;
                 case 'fnDecryptCallback':
                     this.resolveDecrypt(d.data.reqId, d.data.constructor, d.data.data);
+                    window.console.timeEnd(`${this.workerId} fnDecrypt`);
                     break;
                 default:
                     break;
@@ -84,6 +90,7 @@ export default class Http {
 
     /* Send http request */
     private sendRequest(request: IHttpRequest) {
+        window.console.time(`${this.workerId} fnEncrypt`);
         this.workerMessage('fnEncrypt', {
             constructor: request.constructor,
             payload: this.uint8ToBase64(request.data),
@@ -92,21 +99,26 @@ export default class Http {
     }
 
     private resolveEncrypt(reqId: number, base64: string) {
+        if (!this.messageListeners.hasOwnProperty(reqId)) {
+            return;
+        }
+        const message = this.messageListeners[reqId];
         // @ts-ignore
         const u8a = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
-        const blob = new Blob([u8a]);
-        fetch(`http://${this.dataCenterUrl}`, {
-            body: blob,
+        axios.post(`http://${this.dataCenterUrl}`, u8a, {
             headers: {
                 'Accept': 'application/protobuf',
                 'Content-Type': 'application/protobuf',
             },
-            method: 'POST'
+            onDownloadProgress: message.onDownloadProgress,
+            onUploadProgress: message.onUploadProgress,
+            responseType: 'arraybuffer',
         }).then((response) => {
-            return response.arrayBuffer();
+            return response.data;
         }).then((bytes) => {
             if (this.messageListeners.hasOwnProperty(reqId)) {
                 const data = new Uint8Array(bytes);
+                window.console.time('fnDecrypt');
                 this.workerMessage('fnDecrypt', this.uint8ToBase64(data));
             }
         });

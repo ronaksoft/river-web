@@ -477,6 +477,7 @@ class Chat extends React.Component<IProps, IState> {
                                        selectableDisable={Boolean(messageSelectable && Object.keys(messageSelectedIds).length === 0)}
                                        onBulkAction={this.textInputBulkActionHandler}
                                        onAction={this.textInputActionHandler} peer={peer}
+                                       onVoice={this.textInputVoiceHandler}
                             />}
                         </div>}
                         {selectedDialogId === 'null' && <div className="column-center">
@@ -2454,10 +2455,16 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private sendFakeFileHandler = () => {
-        const data = new Uint8Array(255 * 1024);
-        this.fileServer.sendFile(data).then((res) => {
-            window.console.log(res);
-        });
+        // const data = new Uint8Array(255 * 1024);
+        // this.fileServer.sendFile(data).then((res) => {
+        //     window.console.log(res);
+        // });
+    }
+
+    /* TextInput send voice handler */
+    private textInputVoiceHandler = (blob: Blob, waveForm: number[]) => {
+        const id = String(UniqueId.getRandomId());
+        this.fileServer.sendFile(id, blob);
     }
 }
 

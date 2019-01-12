@@ -47,10 +47,10 @@ import DialogRepo from '../../repository/dialog';
 import {IDraft} from '../../repository/dialog/interface';
 // @ts-ignore
 import Recorder from 'opus-recorder/dist/recorder.min';
+import VoicePlayer from '../VoicePlayer';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
-import VoicePlayer from '../VoicePlayer';
 
 interface IProps {
     onAction: (cmd: string) => void;
@@ -66,6 +66,7 @@ interface IProps {
     selectableDisable: boolean;
     text?: string;
     userId?: string;
+    onVoice: (voice: Blob, waveform: number[]) => void;
 }
 
 interface IState {
@@ -920,7 +921,7 @@ class TextInput extends React.Component<IProps, IState> {
 
     /* Voice anchor mouse down handler */
     private voiceMouseDownHandler = () => {
-        if (this.state.voiceMode !== 'lock') {
+        if (this.state.voiceMode !== 'lock' && this.state.voiceMode !== 'play') {
             this.voiceMouseIn = true;
             this.setState({
                 voiceMode: 'down',
@@ -931,7 +932,7 @@ class TextInput extends React.Component<IProps, IState> {
 
     /* Voice anchor mouse up handler */
     private voiceMouseUpHandler = (e: any) => {
-        if (this.state.voiceMode !== 'lock') {
+        if (this.state.voiceMode !== 'lock' && this.state.voiceMode !== 'play') {
             e.stopPropagation();
             this.setState({
                 voiceMode: 'up',
@@ -973,6 +974,8 @@ class TextInput extends React.Component<IProps, IState> {
             this.setState({
                 voiceMode: 'play',
             });
+        } else if (this.state.voiceMode === 'play') {
+            this.props.onVoice(this.voice, this.bars);
         }
     }
 
