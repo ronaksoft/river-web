@@ -48,15 +48,15 @@ import {IDraft} from '../../repository/dialog/interface';
 // @ts-ignore
 import Recorder from 'opus-recorder/dist/recorder.min';
 import VoicePlayer from '../VoicePlayer';
+import {to4bitResolution} from './utils';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
-import {to4bitResolution} from './utils';
 
 interface IProps {
     onAction: (cmd: string) => void;
     onBulkAction: (cmd: string) => void;
-    onMessage: (text: string, {mode, message}?: any) => void;
+    onMessage: (text: string, {mode, message, entities}?: any) => void;
     onPreviewMessageChange?: (previewMessage: IMessage | undefined, previewMessageMode: number) => void;
     onTyping?: (typing: boolean) => void;
     peer: InputPeer | null;
@@ -67,7 +67,7 @@ interface IProps {
     selectableDisable: boolean;
     text?: string;
     userId?: string;
-    onVoice: (voice: Blob, waveform: number[], duration: number) => void;
+    onVoice: (voice: Blob, waveform: number[], duration: number, {mode, message}?: any) => void;
 }
 
 interface IState {
@@ -976,7 +976,13 @@ class TextInput extends React.Component<IProps, IState> {
                 voiceMode: 'play',
             });
         } else if (this.state.voiceMode === 'play') {
-            this.props.onVoice(this.voice, to4bitResolution(this.bars), this.timerDuration);
+            const {previewMessage, previewMessageMode} = this.state;
+            const message = cloneDeep(previewMessage);
+            this.props.onMessage(this.textarea.value,);
+            this.props.onVoice(this.voice, to4bitResolution(this.bars), this.timerDuration, {
+                message,
+                mode: previewMessageMode,
+            });
         }
     }
 

@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import {PlayArrowRounded, PauseRounded} from '@material-ui/icons';
+import {PlayArrowRounded, PauseRounded, CloseRounded} from '@material-ui/icons';
 
 import './style.css';
 
@@ -20,7 +20,7 @@ interface IProps {
 
 interface IState {
     className: string;
-    playState: 'play' | 'pause' | 'seek_play' | 'seek_pause';
+    playState: 'play' | 'pause' | 'seek_play' | 'seek_pause' | 'upload' | 'download';
 }
 
 export interface IVoicePlayerData {
@@ -51,20 +51,28 @@ class VoicePlayer extends React.Component<IProps, IState> {
     private audio: HTMLAudioElement;
     private playerInterval: any = null;
     private onSeek: boolean = false;
-    private perciseDuration: number = 0;
+    private preciseDuration: number = 0;
+    private circleProgressRef: any = null;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
             className: props.className || '',
-            playState: 'pause',
+            playState: 'upload',
         };
     }
 
     public componentDidMount() {
         window.addEventListener('mouseup', this.windowMouseUpHandler);
         window.addEventListener('Theme_Changed', this.themeChangedHandler);
+
+        const v = 0;
+        // setInterval(() => {
+        if (this.circleProgressRef) {
+            this.circleProgressRef.style.strokeDasharray = `${v} 75`;
+        }
+        // }, 300);
     }
 
     public componentWillUnmount() {
@@ -74,7 +82,7 @@ class VoicePlayer extends React.Component<IProps, IState> {
 
     public setData(data: IVoicePlayerData) {
         this.duration = data.duration;
-        this.perciseDuration = data.duration;
+        this.preciseDuration = data.duration;
         this.displayTimer();
         this.bars = data.bars;
         setTimeout(() => {
@@ -95,6 +103,14 @@ class VoicePlayer extends React.Component<IProps, IState> {
                     <PlayArrowRounded onClick={this.playVoiceHandler}/>}
                     {Boolean(playState === 'play' || playState === 'seek_play') &&
                     <PauseRounded onClick={this.pauseVoiceHandler}/>}
+                    {Boolean(playState === 'upload') && <React.Fragment>
+                        <CloseRounded/>
+                        <div className="progress">
+                            <svg viewBox="0 0 32 32">
+                                <circle ref={this.progressRefHandler} r="12" cx="16" cy="16"/>
+                            </svg>
+                        </div>
+                    </React.Fragment>}
                 </div>
                 <div className="play-preview" onMouseDown={this.barMouseDownHandler}
                      onMouseMove={this.barMouseMoveHandler}>
@@ -213,7 +229,7 @@ class VoicePlayer extends React.Component<IProps, IState> {
         this.audio = document.createElement('audio');
         this.audio.src = URL.createObjectURL(this.voice);
         this.audio.onloadedmetadata = () => {
-            this.perciseDuration = this.audio.duration;
+            this.preciseDuration = this.audio.duration;
         };
         this.audio.load();
     }
@@ -228,7 +244,7 @@ class VoicePlayer extends React.Component<IProps, IState> {
             this.audio.onended = () => {
                 this.stopPlayerInterval();
                 this.seekAudio(0);
-                this.displayTimer(this.perciseDuration);
+                this.displayTimer(this.preciseDuration);
                 this.setState({
                     playState: 'pause',
                 });
@@ -249,7 +265,7 @@ class VoicePlayer extends React.Component<IProps, IState> {
     private seekAudio(ratio: number) {
         this.playVoiceBarRef.style.width = `${ratio * 100}%`;
         if (this.audio) {
-            const time = this.perciseDuration * ratio;
+            const time = this.preciseDuration * ratio;
             this.audio.currentTime = time;
         }
     }
@@ -326,6 +342,11 @@ class VoicePlayer extends React.Component<IProps, IState> {
     /* Player double click handler */
     private doubleClickHandler = (e: any) => {
         e.stopPropagation();
+    }
+
+    /* Progress circle ref handler */
+    private progressRefHandler = (ref: any) => {
+        this.circleProgressRef = ref;
     }
 }
 

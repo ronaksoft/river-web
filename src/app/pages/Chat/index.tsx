@@ -36,7 +36,7 @@ import {
     Group,
     InputFile,
     InputPeer,
-    InputUser,
+    InputUser, MediaType,
     PeerNotifySettings,
     PeerType,
     TypingAction,
@@ -89,10 +89,11 @@ import ElectronService, {C_ELECTRON_SUBJECT} from '../../services/electron';
 import FileManager from '../../services/sdk/fileServer';
 import {InputMediaType} from '../../services/sdk/messages/api.messages_pb';
 import {
+    Document,
     DocumentAttribute,
     DocumentAttributeAudio,
     DocumentAttributeType,
-    InputMediaUploadedDocument
+    InputMediaUploadedDocument, MediaDocument
 } from '../../services/sdk/messages/core.message.medias_pb';
 
 import './style.css';
@@ -2461,13 +2462,15 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* TextInput send voice handler */
-    private textInputVoiceHandler = (blob: Blob, waveForm: number[], duration: number) => {
+    private textInputVoiceHandler = (blob: Blob, waveForm: number[], duration: number, param?: any) => {
         const {peer} = this.state;
         if (peer === null) {
             return;
         }
 
-        // const id = -UniqueId.getRandomId();
+        const now = Math.floor(Date.now() / 1000);
+
+        const id = -UniqueId.getRandomId();
 
         const fileId = String(UniqueId.getRandomId());
 
@@ -2508,59 +2511,68 @@ class Chat extends React.Component<IProps, IState> {
         mediaData.setAttributesList(attributesList);
         mediaData.setFile(inputFile);
 
+        const tempDocument = new Document();
+        tempDocument.setAccesshash('');
+        tempDocument.setAttributesList(attributesList);
+        tempDocument.setClusterid(0);
+        tempDocument.setDate(now);
+        tempDocument.setId(fileId);
+        tempDocument.setFilesize(blob.size);
+        tempDocument.setMimetype('audio/ogg');
+        tempDocument.setVersion(0);
+
+        const mediaDocument = new MediaDocument();
+        mediaDocument.setTtlinseconds(0);
+        mediaDocument.setCaption('');
+        mediaDocument.setDoc(tempDocument);
+
+        const message: IMessage = {
+            attributes: attributesList.map((attr) => {
+                return attr.toObject();
+            }),
+            createdon: now,
+            id,
+            me: true,
+            mediadata: mediaDocument.toObject(),
+            mediatype: MediaType.MEDIATYPEDOCUMENT,
+            messageaction: C_MESSAGE_ACTION.MessageActionNope,
+            messagetype: C_MESSAGE_TYPE.Voice,
+            peerid: this.state.selectedDialogId,
+            peertype: peer.getType(),
+            senderid: this.connInfo.UserID,
+        };
+
+        let replyTo: any;
+        if (param && param.mode === C_MSG_MODE.Reply) {
+            message.replyto = param.message.id;
+            replyTo = param.message.id;
+        }
+
+        this.pushMessage(message);
+
         this.fileManager.sendFile(fileId, blob, (e) => {
             window.console.log('progress', e);
-            this.sdk.sendMediaMessage(peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, mediaData.serializeBinary()).then((res) => {
+            this.sdk.sendMediaMessage(peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, mediaData.serializeBinary(), replyTo).then((res) => {
                 window.console.log(res);
+                const {messages} = this.state;
+                const index = findIndex(messages, {id: message.id});
+                if (index) {
+                    this.messageComponent.cache.clear(index, 0);
+                }
+                this.messageRepo.remove(message.id || 0).catch(() => {
+                    //
+                });
+                if (res.messageid) {
+                    this.sendReadHistory(peer, res.messageid);
+                }
+                message.id = res.messageid;
+                this.messageRepo.lazyUpsert([message]);
+                this.updateDialogs(message, '0');
+
+                // Force update messages
+                this.messageComponent.list.forceUpdateGrid();
             });
         });
-        // const message: IMessage = {
-        //     createdon: Math.floor(Date.now() / 1000),
-        //     id,
-        //     me: true,
-        //     mediatype: MediaType.MEDIATYPEDOCUMENT,
-        //     messageaction: C_MESSAGE_ACTION.MessageActionNope,
-        //     peerid: this.state.selectedDialogId,
-        //     peertype: peer.getType(),
-        //     senderid: this.connInfo.UserID,
-        // };
-        //
-        // let replyTo;
-        // if (param && param.mode === C_MSG_MODE.Reply) {
-        //     message.replyto = param.message.id;
-        //     replyTo = param.message.id;
-        // }
-        //
-        // let entities;
-        // if (param && param.entities) {
-        //     message.entitiesList = param.entities.map((entity: core_types_pb.MessageEntity) => {
-        //         return entity.toObject();
-        //     });
-        //     entities = param.entities;
-        // }
-        //
-        // this.pushMessage(message);
-        //
-        // this.sdk.sendMessage(text, peer, replyTo, entities).then((msg) => {
-        //     const {messages} = this.state;
-        //     const index = findIndex(messages, {id: message.id});
-        //     if (index) {
-        //         this.messageComponent.cache.clear(index, 0);
-        //     }
-        //     this.messageRepo.remove(message.id || 0).catch(() => {
-        //         //
-        //     });
-        //     if (msg.messageid) {
-        //         this.sendReadHistory(peer, msg.messageid);
-        //     }
-        //     message.id = msg.messageid;
-        //     this.messageRepo.lazyUpsert([message]);
-        //     this.updateDialogs(message, '0');
-        //     // Force update messages
-        //     this.messageComponent.list.forceUpdateGrid();
-        // }).catch((err) => {
-        //     window.console.log(err);
-        // });
     }
 }
 

@@ -9,15 +9,19 @@
 
 .voice-player {
   display: flex;
-  padding: 0 6px;
+  padding: 0 6px 0 0;
   height: 32px;
   align-items: center;
   justify-content: center;
   .play-action {
+    position: relative;
     width: 32px;
-    height: 20px;
-    padding: 0 8px 0 4px;
+    height: 32px;
+    padding: 0;
     cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     svg {
       font-size: 20px;
       color: var(--grey);
@@ -25,6 +29,28 @@
     &:hover {
       svg {
         color: var(--dark);
+      }
+    }
+    .progress {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 32px;
+      width: 32px;
+      animation-name: rotateDonut;
+      animation-duration: 3s;
+      animation-iteration-count: infinite;
+      animation-timing-function: linear;
+      svg {
+        height: 32px;
+        width: 32px;
+        circle {
+          fill: transparent;
+          stroke: var(--grey);
+          stroke-width: 3px;
+          stroke-dasharray: 75 75;
+          transition: stroke-dashoffset 0.1s ease;
+        }
       }
     }
   }
@@ -77,5 +103,14 @@ html[theme="dark-blue"] {
         }
       }
     }
+  }
+}
+
+@keyframes rotateDonut {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
