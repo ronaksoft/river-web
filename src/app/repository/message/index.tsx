@@ -39,13 +39,19 @@ import {
 } from '../../services/sdk/messages/core.message.actions_pb';
 
 export default class MessageRepo {
-    public static parseAttributes(attrs: DocumentAttribute.AsObject[]) {
+    public static parseAttributes(attrs: DocumentAttribute.AsObject[], flags: { voice: boolean }) {
+        flags.voice = false;
         const attrOut: any[] = [];
         attrs.forEach((attr) => {
             switch (attr.type) {
                 case DocumentAttributeType.ATTRIBUTETYPEAUDIO:
                     // @ts-ignore
-                    attrOut.push(DocumentAttributeAudio.deserializeBinary(attr.data).toObject());
+                    const audioAttr = DocumentAttributeAudio.deserializeBinary(attr.data).toObject();
+                    window.console.log(audioAttr);
+                    attrOut.push(audioAttr);
+                    if (audioAttr.voice) {
+                        flags.voice = true;
+                    }
                     delete attr.data;
                     break;
                 case DocumentAttributeType.ATTRIBUTETYPEFILE:
@@ -87,7 +93,11 @@ export default class MessageRepo {
                 case MediaType.MEDIATYPEDOCUMENT:
                     out.mediadata = MediaDocument.deserializeBinary(mediaData).toObject();
                     if (out.mediadata.doc && out.mediadata.doc.attributesList) {
-                        out.attributes = this.parseAttributes(out.mediadata.doc.attributesList);
+                        const flags: { voice: boolean } = {voice: false};
+                        out.attributes = this.parseAttributes(out.mediadata.doc.attributesList, flags);
+                        if (flags.voice) {
+                            out.messagetype = C_MESSAGE_TYPE.Voice;
+                        }
                     }
                     break;
                 case MediaType.MEDIATYPECONTACT:

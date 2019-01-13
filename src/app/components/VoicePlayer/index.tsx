@@ -89,7 +89,7 @@ class VoicePlayer extends React.Component<IProps, IState> {
     public render() {
         const {className, playState} = this.state;
         return (
-            <div className={'voice-player ' + className}>
+            <div className={'voice-player ' + className} onDoubleClick={this.doubleClickHandler}>
                 <div className="play-action">
                     {Boolean(playState === 'pause' || playState === 'seek_pause') &&
                     <PlayArrowRounded onClick={this.playVoiceHandler}/>}
@@ -321,6 +321,11 @@ class VoicePlayer extends React.Component<IProps, IState> {
         this.windowResizeHandler();
         this.displayCompleteBars(true);
         this.displayCompleteBars(false);
+    }
+
+    /* Player double click handler */
+    private doubleClickHandler = (e: any) => {
+        e.stopPropagation();
     }
 }
 

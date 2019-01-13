@@ -37,7 +37,7 @@
         overflow: hidden;
         flex-grow: 1;
         flex-direction: column;
-        background-color: rgba(0, 0, 0, 0.05);
+        background-color: var(--glaas-dark-low);
         border-top-right-radius: 5px;
         border-bottom-right-radius: 5px;
         .preview-message-user {

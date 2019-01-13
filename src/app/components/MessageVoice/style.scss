@@ -1,0 +1,18 @@
+/*
+    Creation Time: 2019 - Jan - 13
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2019
+*/
+@import '../../../style/common';
+
+.message-voice {
+  background-color: var(--glaas-dark-low);
+  border-radius: 5px;
+  .voice-player .play-timer {
+    width: 40px;
+    color: var(--grey-low);
+  }
+}

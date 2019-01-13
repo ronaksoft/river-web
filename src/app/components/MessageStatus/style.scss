@@ -6,7 +6,6 @@
     Auditor: HamidrezaKK
     Copyright Ronak Software Group 2018
 */
-
 @import '../../../style/common';
 
 .message-status {
@@ -19,7 +18,7 @@
   min-width: 70px;
   line-height: 0;
   text-align: right;
-  color: #555;
+  color: var(--grey-low);
   font-size: 10px;
   white-space: nowrap;
   .icon {
@@ -41,7 +40,19 @@
 }
 
 .me .bubble .message-status {
-  color: #555;
+  color: var(--grey-low);
+}
+
+.voice .bubble .message-status {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  position: relative;
+  top: auto;
+  right: auto;
+  bottom: auto;
+  left: auto;
+  height: 32px;
 }
 
 html[theme="dark"] {
@@ -70,7 +81,7 @@ html[bubble="2"] {
   }
 }
 
-html[bubble="4"]{
+html[bubble="4"] {
   .message-status {
     left: 6px;
     right: 6px;

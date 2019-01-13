@@ -9,6 +9,7 @@
 
 import Presenter from '../../presenters';
 import axios from 'axios';
+import {base64ToU8a, uint8ToBase64} from './utils';
 
 export interface IHttpRequest {
     constructor: number;
@@ -93,7 +94,7 @@ export default class Http {
         window.console.time(`${this.workerId} fnEncrypt`);
         this.workerMessage('fnEncrypt', {
             constructor: request.constructor,
-            payload: this.uint8ToBase64(request.data),
+            payload: uint8ToBase64(request.data),
             reqId: request.reqId,
         });
     }
@@ -103,8 +104,7 @@ export default class Http {
             return;
         }
         const message = this.messageListeners[reqId];
-        // @ts-ignore
-        const u8a = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+        const u8a = base64ToU8a(base64);
         axios.post(`http://${this.dataCenterUrl}`, u8a, {
             headers: {
                 'Accept': 'application/protobuf',
@@ -118,8 +118,8 @@ export default class Http {
         }).then((bytes) => {
             if (this.messageListeners.hasOwnProperty(reqId)) {
                 const data = new Uint8Array(bytes);
-                window.console.time('fnDecrypt');
-                this.workerMessage('fnDecrypt', this.uint8ToBase64(data));
+                window.console.time(`${this.workerId} fnDecrypt`);
+                this.workerMessage('fnDecrypt', uint8ToBase64(data));
             }
         });
     }
@@ -137,15 +137,5 @@ export default class Http {
             cmd,
             data,
         });
-    }
-
-    /* Convert Uint8array to base64 */
-    private uint8ToBase64(u8a: Uint8Array) {
-        const CHUNK_SZ = 0x8000;
-        const c = [];
-        for (let i = 0; i < u8a.length; i += CHUNK_SZ) {
-            c.push(String.fromCharCode.apply(null, u8a.subarray(i, i + CHUNK_SZ)));
-        }
-        return btoa(c.join(''));
     }
 }

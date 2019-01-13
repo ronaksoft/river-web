@@ -12,7 +12,7 @@ import {AutoSizer, CellMeasurer, CellMeasurerCache, List, ScrollParams} from 're
 import {IMessage} from '../../repository/message/interface';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import {InputPeer, MessageEntityType, PeerType} from "../../services/sdk/messages/core.types_pb";
+import {InputPeer, MediaType, MessageEntityType, PeerType} from "../../services/sdk/messages/core.types_pb";
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from "../../repository/message/consts";
 import TimeUtility from '../../services/utilities/time';
 import UserAvatar from '../UserAvatar';
@@ -25,6 +25,7 @@ import MessageForwarded from '../MessageForwarded';
 import {clone} from 'lodash';
 
 import './style.css';
+import MessageVoice from '../MessageVoice';
 
 interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
@@ -386,7 +387,7 @@ class Message extends React.Component<IProps, IState> {
                     // }
                     return (
                         <div style={style}
-                             className={'bubble-wrapper _bubble' + (message.me ? ' me' : ' you') + (message.avatar ? ' avatar' : '') + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '')}
+                             className={'bubble-wrapper _bubble' + (message.me ? ' me' : ' you') + (message.avatar ? ' avatar' : '') + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '') + (message.messagetype === C_MESSAGE_TYPE.Voice ? ' voice' : '')}
                              onClick={this.toggleSelectHandler.bind(this, message.id || 0, index)}
                              onDoubleClick={this.selectMessage.bind(this, index)}
                         >
@@ -409,8 +410,7 @@ class Message extends React.Component<IProps, IState> {
                                 {Boolean(message.fwdsenderid && message.fwdsenderid !== '0') &&
                                 <MessageForwarded message={message} peer={peer}
                                                   onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>}
-                                <div className={'inner ' + (message.rtl ? 'rtl' : 'ltr')}
-                                     onDoubleClick={this.selectText}>{this.renderBody(message)}</div>
+                                {this.renderMessageBody(message, peer)}
                                 <MessageStatus status={message.me || false} id={message.id} readId={readId}
                                                time={message.createdon || 0} editedTime={message.editedon || 0}
                                                onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>
@@ -777,6 +777,22 @@ class Message extends React.Component<IProps, IState> {
                     this.checkScroll(id, tries);
                 });
             }
+        }
+    }
+
+    /* Message body renderer */
+    private renderMessageBody(message: IMessage, peer: InputPeer | null) {
+        if (message.mediatype !== MediaType.MEDIATYPEEMPTY && message.mediatype !== undefined) {
+            if (message.messagetype === C_MESSAGE_TYPE.Voice) {
+                return (<MessageVoice message={message} peer={peer}/>);
+            } else {
+                return '';
+            }
+        } else {
+            return (
+                <div className={'inner ' + (message.rtl ? 'rtl' : 'ltr')}
+                     onDoubleClick={this.selectText}>{this.renderBody(message)}</div>
+            );
         }
     }
 }

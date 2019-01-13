@@ -92,6 +92,17 @@
   &.date-padding {
     padding-bottom: 8px;
   }
+  &.voice {
+    height: 44px;
+    .bubble {
+      padding: 6px !important;
+      display: flex;
+      flex-direction: row;
+      .message-voice {
+
+      }
+    }
+  }
   .arrow {
     position: absolute;
     top: 6px;

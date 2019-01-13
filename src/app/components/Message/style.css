@@ -26,6 +26,7 @@
   --black-text: #323D47;
   --bg: #F8F8F8;
   --grey: #999;
+  --grey-low: #555;
   --dark: #1A1A1A;
   --light: #E6E6E6;
   --wrapper: 1200px;
@@ -38,6 +39,7 @@
   --color-text-hover: rgba(50, 61, 71, 0.64);
   --header-color: #eee;
   --light-mention: #2678b6;
+  --glaas-dark-low: rgba(0, 0, 0, 0.05);
   --dark-low: #191919;
   --dark-medium: #232323;
   --dark-high: #333333;
@@ -138,6 +140,12 @@ input {
   padding-bottom: 2px; }
   .bubble-wrapper.date-padding {
     padding-bottom: 8px; }
+  .bubble-wrapper.voice {
+    height: 44px; }
+    .bubble-wrapper.voice .bubble {
+      padding: 6px !important;
+      display: flex;
+      flex-direction: row; }
   .bubble-wrapper .arrow {
     position: absolute;
     top: 6px;

@@ -15,6 +15,7 @@ export const C_MESSAGE_TYPE = {
     NewMessage: -3,
     Normal: 2,
     System: 1,
+    Voice: -6,
 };
 
 export const C_MESSAGE_ACTION = {
