@@ -66,6 +66,7 @@ class MessageVoice extends React.Component<IProps, IState> {
         this.voicePlayerRef.setData({
             bars: info.bars,
             duration: info.duration / 1000,
+            state: 'pause',
             voice: new Blob([]),
         });
     }

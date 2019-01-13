@@ -8,7 +8,7 @@
 */
 
 import MessageDB from '../../services/db/message';
-import {IMessage} from './interface';
+import {IMessage, IPendingMessage} from './interface';
 import {cloneDeep, differenceBy, find, merge, throttle} from 'lodash';
 import SDK from '../../services/sdk';
 import UserRepo from '../user';
@@ -181,6 +181,21 @@ export default class MessageRepo {
 
     public getCurrentUserId(): string {
         return this.userId;
+    }
+
+    /* Add pending message */
+    public addPending(pending: IPendingMessage) {
+        return this.db.pendingMessages.put(pending);
+    }
+
+    /* Get pending message by randomId */
+    public getPending(id: number) {
+        return this.db.pendingMessages.get(id);
+    }
+
+    /* Remove pending message */
+    public removePending(id: number) {
+        return this.db.pendingMessages.delete(id);
     }
 
     public create(msg: IMessage) {

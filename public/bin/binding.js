@@ -23,6 +23,7 @@ let socket = null;
 let connected = false;
 let pingCounter = 0;
 let tryCounter = 0;
+let initTimeout = null;
 
 wasmWorker.onmessage = (e) => {
     const d = e.data;
@@ -118,6 +119,29 @@ window.addEventListener('fnCallEvent', (event) => {
     });
 });
 
+window.addEventListener('online', () => {
+    initWebSocket();
+});
+
+window.addEventListener('offline', () => {
+    closeWire();
+});
+
+const closeWire = () => {
+    connected = false;
+    const event = new CustomEvent('wsClose');
+    window.dispatchEvent(event);
+    if (tryCounter === 0) {
+        initTimeout = setTimeout(() => {
+            initWebSocket();
+        }, 1000);
+    } else {
+        initTimeout = setTimeout(() => {
+            initWebSocket();
+        }, 5000 + Math.floor(Math.random() * 3000));
+    }
+};
+
 function Uint8ToBase64(u8a) {
     const CHUNK_SZ = 0x8000;
     const c = [];
@@ -128,6 +152,8 @@ function Uint8ToBase64(u8a) {
 }
 
 const initWebSocket = () => {
+    clearTimeout(initTimeout);
+
     tryCounter++;
     if (window.location.protocol === 'https:') {
         socket = new WebSocket('wss://' + window.location.host + '/ws');
@@ -161,18 +187,7 @@ const initWebSocket = () => {
 
     // Listen for messages
     socket.onclose = () => {
-        connected = false;
-        const event = new CustomEvent('wsClose');
-        window.dispatchEvent(event);
-        if (tryCounter === 0) {
-            setTimeout(() => {
-                initWebSocket();
-            }, 1000);
-        } else {
-            setTimeout(() => {
-                initWebSocket();
-            }, 5000 + Math.floor(Math.random() * 3000));
-        }
+        closeWire();
     };
 };
 

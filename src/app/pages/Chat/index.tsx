@@ -47,7 +47,7 @@ import {IDialog} from '../../repository/dialog/interface';
 import UpdateManager, {INewMessageBulkUpdate} from '../../services/sdk/server/updateManager';
 import {C_MSG} from '../../services/sdk/const';
 import {
-    UpdateMessageEdited,
+    UpdateMessageEdited, UpdateMessageID,
     UpdateMessagesDeleted,
     UpdateNotifySettings,
     UpdateReadHistoryInbox,
@@ -56,7 +56,7 @@ import {
     UpdateUserTyping
 } from '../../services/sdk/messages/api.updates_pb';
 import UserName from '../../components/UserName';
-import SyncManager from '../../services/sdk/syncManager';
+import SyncManager, {C_SYNC_UPDATE} from '../../services/sdk/syncManager';
 import UserRepo from '../../repository/user';
 import RiverLogo from '../../components/RiverLogo';
 import MainRepo from '../../repository';
@@ -242,6 +242,9 @@ class Chat extends React.Component<IProps, IState> {
         // Update: Message Dropped (internal)
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNewMessageDrop, this.updateMessageDropHandler));
 
+        // Update: MessageId
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateMessageID, this.updateMessageIDHandler));
+
         // Update: Message Edited
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateMessageEdited, this.updateMessageEditHandler));
 
@@ -268,6 +271,11 @@ class Chat extends React.Component<IProps, IState> {
 
         // Update: Groups
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateGroups, this.updateGroupHandler));
+
+        // Sync: MessageId
+        this.eventReferences.push(this.syncManager.listen(C_SYNC_UPDATE.MessageId, this.updateMessageIDHandler));
+
+        // TODO: add timestamp to pending message
 
         // Electron events
         this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.Setting, this.electronSettingsHandler));
@@ -803,6 +811,9 @@ class Chat extends React.Component<IProps, IState> {
         this.userRepo.importBulk(data.senders);
 
         data.messages.forEach((message, index) => {
+            setTimeout(() => {
+                this.checkPendingMessage(message);
+            }, 200);
             this.updateDialogs(message, data.accessHashes[index] || '0');
         });
 
@@ -837,6 +848,9 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         data.messages.forEach((message, index) => {
+            setTimeout(() => {
+                this.checkPendingMessage(message);
+            }, 200);
             this.updateDialogs(message, data.accessHashes[index] || '0');
         });
         this.messageRepo.lazyUpsert(data.messages);
@@ -1366,12 +1380,14 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
+        const randomId = UniqueId.getRandomId();
+
         if (param && param.mode === C_MSG_MODE.Edit) {
             const {messages} = this.state;
             const message: IMessage = param.message;
             message.body = text;
             message.editedon = Math.floor(Date.now() / 1000);
-            this.sdk.editMessage(message.id || 0, text, peer).then(() => {
+            this.sdk.editMessage(randomId, message.id || 0, text, peer).then(() => {
                 const index = findIndex(messages, {id: message.id});
                 if (index > -1) {
                     messages[index] = message;
@@ -1410,15 +1426,20 @@ class Chat extends React.Component<IProps, IState> {
 
             this.pushMessage(message);
 
-            this.sdk.sendMessage(text, peer, replyTo, entities).then((msg) => {
+            this.messageRepo.addPending({
+                id: randomId,
+                message_id: id,
+            });
+
+            this.sdk.sendMessage(randomId, text, peer, replyTo, entities).then((msg) => {
                 const {messages} = this.state;
                 const index = findIndex(messages, {id: message.id});
                 if (index) {
                     this.messageComponent.cache.clear(index, 0);
                 }
-                this.messageRepo.remove(message.id || 0).catch(() => {
-                    //
-                });
+                // this.messageRepo.remove(message.id || 0).then(() => {
+                //     this.messageRepo.removePending(randomId);
+                // });
                 if (msg.messageid) {
                     this.sendReadHistory(peer, msg.messageid);
                 }
@@ -1479,11 +1500,12 @@ class Chat extends React.Component<IProps, IState> {
 
     private onNewMessageHandler = (contacts: IContact[], text: string) => {
         contacts.forEach((contact) => {
+            const randomId = UniqueId.getRandomId();
             const peer = new InputPeer();
             peer.setType(PeerType.PEERUSER);
             peer.setAccesshash(contact.accesshash || '');
             peer.setId(contact.id || '');
-            this.sdk.sendMessage(text, peer).then((msg) => {
+            this.sdk.sendMessage(randomId, text, peer).then((msg) => {
                 window.console.log(msg);
             });
         });
@@ -2470,6 +2492,8 @@ class Chat extends React.Component<IProps, IState> {
 
         const now = Math.floor(Date.now() / 1000);
 
+        const randomId = UniqueId.getRandomId();
+
         const id = -UniqueId.getRandomId();
 
         const fileId = String(UniqueId.getRandomId());
@@ -2527,9 +2551,7 @@ class Chat extends React.Component<IProps, IState> {
         mediaDocument.setDoc(tempDocument);
 
         const message: IMessage = {
-            attributes: attributesList.map((attr) => {
-                return attr.toObject();
-            }),
+            attributes: [attr1Data.toObject()],
             createdon: now,
             id,
             me: true,
@@ -2550,18 +2572,24 @@ class Chat extends React.Component<IProps, IState> {
 
         this.pushMessage(message);
 
+        this.messageRepo.addPending({
+            file_ids: [fileId],
+            id: randomId,
+            message_id: id,
+        });
+
         this.fileManager.sendFile(fileId, blob, (e) => {
             window.console.log('progress', e);
-            this.sdk.sendMediaMessage(peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, mediaData.serializeBinary(), replyTo).then((res) => {
+            this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, mediaData.serializeBinary(), replyTo).then((res) => {
                 window.console.log(res);
                 const {messages} = this.state;
                 const index = findIndex(messages, {id: message.id});
                 if (index) {
                     this.messageComponent.cache.clear(index, 0);
                 }
-                this.messageRepo.remove(message.id || 0).catch(() => {
-                    //
-                });
+                // this.messageRepo.remove(message.id || 0).catch(() => {
+                //     //
+                // });
                 if (res.messageid) {
                     this.sendReadHistory(peer, res.messageid);
                 }
@@ -2572,6 +2600,35 @@ class Chat extends React.Component<IProps, IState> {
                 // Force update messages
                 this.messageComponent.list.forceUpdateGrid();
             });
+        });
+    }
+
+    /* update message id */
+    private updateMessageIDHandler = (data: UpdateMessageID.AsObject) => {
+        if (!data.randomid) {
+            return;
+        }
+        const randomId = data.randomid || 0;
+        this.messageRepo.getPending(randomId).then((res) => {
+            if (res) {
+                this.messageRepo.removePending(randomId).then(() => {
+                    this.messageRepo.addPending({
+                        file_ids: res.file_ids,
+                        id: data.messageid || 0,
+                        message_id: res.message_id,
+                    });
+                });
+            }
+        });
+    }
+
+    /* Check pending message */
+    private checkPendingMessage(message: IMessage) {
+        this.messageRepo.getPending(message.id || 0).then((res) => {
+            if (res) {
+                this.messageRepo.remove(res.id);
+                this.messageRepo.removePending(res.id);
+            }
         });
     }
 }

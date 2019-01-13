@@ -27,6 +27,7 @@ export interface IVoicePlayerData {
     bars: number[];
     voice: Blob;
     duration: number;
+    state: 'pause' | 'upload' | 'download';
 }
 
 class VoicePlayer extends React.Component<IProps, IState> {
@@ -92,6 +93,11 @@ class VoicePlayer extends React.Component<IProps, IState> {
         }, 100);
         this.voice = data.voice;
         this.prepareVoice();
+        if (data.state) {
+            this.setState({
+                playState: data.state,
+            });
+        }
     }
 
     public render() {

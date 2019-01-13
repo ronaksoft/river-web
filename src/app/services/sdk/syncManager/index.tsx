@@ -11,7 +11,7 @@ import {C_MSG} from '../const';
 import {UpdateEnvelope} from '../messages/core.messages_pb';
 import {
     UpdateDifference,
-    UpdateMessageEdited, UpdateMessagesDeleted,
+    UpdateMessageEdited, UpdateMessageID, UpdateMessagesDeleted,
     UpdateNewMessage, UpdateNotifySettings,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox, UpdateUsername,
@@ -35,6 +35,14 @@ export interface IRemoveDialog {
     remove: boolean;
 }
 
+export const C_SYNC_UPDATE = {
+    Dialog: 0x2,
+    Group: 0x4,
+    Message: 0x1,
+    MessageId: 0x5,
+    User: 0x3,
+};
+
 export default class SyncManager {
     public static getInstance() {
         if (!this.instance) {
@@ -52,6 +60,8 @@ export default class SyncManager {
     private userRepo: UserRepo;
     // @ts-ignore
     private groupRepo: GroupRepo;
+    private fnIndex: number = 0;
+    private fnQueue: any = {};
 
     public constructor() {
         window.console.log('Sync manager started');
@@ -89,11 +99,26 @@ export default class SyncManager {
         });
     }
 
+    public listen(eventConstructor: number, fn: any): (() => void) | null {
+        if (!eventConstructor) {
+            return null;
+        }
+        this.fnIndex++;
+        if (!this.fnQueue.hasOwnProperty(eventConstructor)) {
+            this.fnQueue[eventConstructor] = {};
+        }
+        this.fnQueue[eventConstructor][this.fnIndex] = fn;
+        return () => {
+            delete this.fnQueue[eventConstructor][this.fnIndex];
+        };
+    }
+
     private updateMany(envelopes: UpdateEnvelope.AsObject[], groups: Group.AsObject[]) {
         let dialogs: { [key: number]: IDialog } = {};
         const toRemoveDialogs: IRemoveDialog[] = [];
         const messages: { [key: number]: IMessage } = {};
         const toRemoveMessages: number[] = [];
+
         let users: { [key: number]: IUser } = {};
         envelopes.forEach((envelope) => {
             // @ts-ignore
@@ -126,6 +151,9 @@ export default class SyncManager {
                         topmessageid: updateNewMessage.message.id,
                     });
                     users = this.updateUser(users, updateNewMessage.sender);
+                    break;
+                case C_MSG.UpdateMessageID:
+                    this.updateMessageId(UpdateMessageID.deserializeBinary(data).toObject());
                     break;
                 case C_MSG.UpdateReadHistoryInbox:
                     const updateReadHistoryInbox = UpdateReadHistoryInbox.deserializeBinary(data).toObject();
@@ -296,6 +324,23 @@ export default class SyncManager {
                 this.broadcastEvent('Group_DB_Updated', {ids: keys});
             });
         }
+    }
+
+    private updateMessageId(messageId: UpdateMessageID.AsObject) {
+        this.callHandlers(C_SYNC_UPDATE.MessageId, messageId);
+    }
+
+    private callHandlers(update: number, data: any) {
+        if (!this.fnQueue[update]) {
+            return;
+        }
+        const keys = Object.keys(this.fnQueue[update]);
+        keys.forEach((key) => {
+            const fn = this.fnQueue[update][key];
+            if (fn) {
+                fn(data);
+            }
+        });
     }
 
     private broadcastEvent(name: string, data: any) {

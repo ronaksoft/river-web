@@ -8,12 +8,13 @@
 */
 
 import Dexie from 'dexie';
-import {IMessage} from '../../../repository/message/interface';
+import {IMessage, IPendingMessage} from '../../../repository/message/interface';
 import {IMessageHole} from '../../../repository/messageHole/interface';
 
 export class DexieMessageDB extends Dexie {
     public messageHoles: Dexie.Table<IMessageHole, any>;
     public messages: Dexie.Table<IMessage, number>;
+    public pendingMessages: Dexie.Table<IPendingMessage, number>;
 
     constructor() {
         super('message_db');
@@ -25,6 +26,7 @@ export class DexieMessageDB extends Dexie {
         this.version(1).stores({
             // messageHoles: `[peerid+min+max]`,
             messages: `id,peerid,[peerid+id]`,
+            pendingMessages: `id`,
         });
     }
 }

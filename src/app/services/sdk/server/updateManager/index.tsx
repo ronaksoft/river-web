@@ -156,6 +156,7 @@ export default class UpdateManager {
             case C_MSG.UpdateMessageID:
                 const updateMessageId = UpdateMessageID.deserializeBinary(data).toObject();
                 this.rndMsgMap[updateMessageId.messageid || 0] = true;
+                this.callHandlers(C_MSG.UpdateMessageID, updateMessageId);
                 break;
         }
     }

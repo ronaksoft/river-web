@@ -20,4 +20,10 @@ interface IMessage extends UserMessage.AsObject {
     attributes?: any[];
 }
 
-export {IMessage};
+interface IPendingMessage {
+    id: number;
+    message_id: number;
+    file_ids?: string[];
+}
+
+export {IMessage, IPendingMessage};

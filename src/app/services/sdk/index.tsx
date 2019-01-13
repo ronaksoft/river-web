@@ -221,9 +221,9 @@ export default class SDK {
         return this.server.send(C_MSG.MessagesGetDialogs, data.serializeBinary());
     }
 
-    public sendMessage(body: string, peer: InputPeer, replyTo?: number, entities?: core_types_pb.MessageEntity[]): Promise<MessagesSent.AsObject> {
+    public sendMessage(randomId: number, body: string, peer: InputPeer, replyTo?: number, entities?: core_types_pb.MessageEntity[]): Promise<MessagesSent.AsObject> {
         const data = new MessagesSend();
-        data.setRandomid(parseInt(Math.random().toFixed(10).split('.')[1], 10));
+        data.setRandomid(randomId);
         data.setBody(body);
         data.setPeer(peer);
         data.setCleardraft(false);
@@ -236,18 +236,18 @@ export default class SDK {
         return this.server.send(C_MSG.MessagesSend, data.serializeBinary());
     }
 
-    public editMessage(id: number, body: string, peer: InputPeer): Promise<MessagesSent.AsObject> {
+    public editMessage(randomId: number, id: number, body: string, peer: InputPeer): Promise<MessagesSent.AsObject> {
         const data = new MessagesEdit();
-        data.setRandomid(parseInt(Math.random().toFixed(10).split('.')[1], 10));
+        data.setRandomid(randomId);
         data.setBody(body);
         data.setPeer(peer);
         data.setMessageid(id);
         return this.server.send(C_MSG.MessagesEdit, data.serializeBinary());
     }
 
-    public sendMediaMessage(peer: InputPeer, mediaType: InputMediaType, mediaData: Uint8Array, replyTo?: number): Promise<MessagesSent.AsObject> {
+    public sendMediaMessage(randomId: number, peer: InputPeer, mediaType: InputMediaType, mediaData: Uint8Array, replyTo?: number): Promise<MessagesSent.AsObject> {
         const data = new MessagesSendMedia();
-        data.setRandomid(parseInt(Math.random().toFixed(10).split('.')[1], 10));
+        data.setRandomid(randomId);
         data.setPeer(peer);
         data.setMediatype(mediaType);
         data.setMediadata(mediaData);

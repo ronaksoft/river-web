@@ -1074,6 +1074,7 @@ class TextInput extends React.Component<IProps, IState> {
                 this.voicePlayerRef.setData({
                     bars: this.bars,
                     duration: this.timerDuration,
+                    state: 'pause',
                     voice: this.voice,
                 });
             }
