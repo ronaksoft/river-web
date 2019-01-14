@@ -8,13 +8,18 @@
 */
 
 import * as moment from 'moment';
+import RiverTime from './river_time';
 
 /**
  * @class TimeUntiles
  * @desc Formats a timestamp (usually provided by Cyrus) in full and dynamic formats
  */
 class TimeUntiles {
+    private riverTime: RiverTime;
 
+    constructor() {
+        this.riverTime = RiverTime.getInstance();
+    }
     /**
      * @func full
      * @desc Formats the given timestamp in full mode
@@ -78,7 +83,7 @@ class TimeUntiles {
         }
 
         const date = moment(timestamp * 1000);
-        const current = Date.now();
+        const current = this.riverTime.milliNow();
 
         const justNow = moment().startOf('minute');
         if (date.isSameOrAfter(justNow)) {
@@ -109,7 +114,7 @@ class TimeUntiles {
         }
 
         const date = moment(timestamp * 1000);
-        const current = Date.now();
+        const current = this.riverTime.milliNow();
 
         const today = moment(current).startOf('day');
         if (date.isSameOrAfter(today)) {

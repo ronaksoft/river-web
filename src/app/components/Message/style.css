@@ -196,6 +196,19 @@ input {
     left: 0;
     height: 32px;
     width: 32px; }
+  .bubble-wrapper .error {
+    position: absolute;
+    right: 2px;
+    top: 50%;
+    transform: translateY(-12px);
+    height: 20px;
+    width: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center; }
+    .bubble-wrapper .error svg {
+      font-size: 16px;
+      color: var(--red); }
   .bubble-wrapper .bubble {
     position: relative;
     font-size: 14px;
@@ -287,6 +300,10 @@ input {
     margin-right: 10px; }
     .bubble-wrapper.me .bubble.edited {
       min-width: 100px; }
+  .bubble-wrapper.me.has-error .arrow {
+    right: 14px; }
+  .bubble-wrapper.me.has-error .bubble {
+    margin-right: 24px; }
   .bubble-wrapper > .date {
     background-color: rgba(225, 245, 254, 0.92);
     border-radius: 7.5px;
@@ -527,6 +544,8 @@ html[bubble="4"] .bubble-wrapper {
       padding: 4px 12px 0 8px; }
   html[bubble="4"] .bubble-wrapper.me .bubble.edited {
     min-width: 115px; }
+  html[bubble="4"] .bubble-wrapper.me.has-error .arrow {
+    right: 10px; }
   html[bubble="4"] .bubble-wrapper.you .bubble.edited {
     min-width: 95px; }
 

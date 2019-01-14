@@ -36,7 +36,8 @@ import {
     Group,
     InputFile,
     InputPeer,
-    InputUser, MediaType,
+    InputUser,
+    MediaType,
     PeerNotifySettings,
     PeerType,
     TypingAction,
@@ -47,7 +48,8 @@ import {IDialog} from '../../repository/dialog/interface';
 import UpdateManager, {INewMessageBulkUpdate} from '../../services/sdk/server/updateManager';
 import {C_MSG} from '../../services/sdk/const';
 import {
-    UpdateMessageEdited, UpdateMessageID,
+    UpdateMessageEdited,
+    UpdateMessageID,
     UpdateMessagesDeleted,
     UpdateNotifySettings,
     UpdateReadHistoryInbox,
@@ -93,10 +95,13 @@ import {
     DocumentAttribute,
     DocumentAttributeAudio,
     DocumentAttributeType,
-    InputMediaUploadedDocument, MediaDocument
+    InputMediaUploadedDocument,
+    MediaDocument
 } from '../../services/sdk/messages/core.message.medias_pb';
 
 import './style.css';
+import RiverTime from '../../services/utilities/river_time';
+import FileRepo from '../../repository/file';
 
 interface IProps {
     history?: any;
@@ -146,6 +151,7 @@ class Chat extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
     private contactRepo: ContactRepo;
     private groupRepo: GroupRepo;
+    private fileRepo: FileRepo;
     private mainRepo: MainRepo;
     private isLoading: boolean = false;
     private sdk: SDK;
@@ -161,8 +167,7 @@ class Chat extends React.Component<IProps, IState> {
     private userDialogComponent: UserDialog;
     private fileManager: FileManager;
     private electronService: ElectronService;
-    // @ts-ignore
-    private clusterList: core_types_pb.Cluster.AsObject[] = [];
+    private riverTime: RiverTime;
 
     constructor(props: IProps) {
         super(props);
@@ -195,6 +200,7 @@ class Chat extends React.Component<IProps, IState> {
             toggleAttachment: false,
             unreadCounter: 0,
         };
+        this.riverTime = RiverTime.getInstance();
         this.fileManager = FileManager.getInstance();
         this.sdk = SDK.getInstance();
         this.sdk.loadConnInfo();
@@ -204,6 +210,7 @@ class Chat extends React.Component<IProps, IState> {
         this.contactRepo = ContactRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
         this.dialogRepo = DialogRepo.getInstance();
+        this.fileRepo = FileRepo.getInstance();
         this.mainRepo = MainRepo.getInstance();
         this.updateManager = UpdateManager.getInstance();
         this.syncManager = SyncManager.getInstance();
@@ -811,9 +818,6 @@ class Chat extends React.Component<IProps, IState> {
         this.userRepo.importBulk(data.senders);
 
         data.messages.forEach((message, index) => {
-            setTimeout(() => {
-                this.checkPendingMessage(message);
-            }, 200);
             this.updateDialogs(message, data.accessHashes[index] || '0');
         });
 
@@ -848,9 +852,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         data.messages.forEach((message, index) => {
-            setTimeout(() => {
-                this.checkPendingMessage(message);
-            }, 200);
+            this.checkPendingMessage(message.id || 0);
             this.updateDialogs(message, data.accessHashes[index] || '0');
         });
         this.messageRepo.lazyUpsert(data.messages);
@@ -1386,7 +1388,7 @@ class Chat extends React.Component<IProps, IState> {
             const {messages} = this.state;
             const message: IMessage = param.message;
             message.body = text;
-            message.editedon = Math.floor(Date.now() / 1000);
+            message.editedon = this.riverTime.now();
             this.sdk.editMessage(randomId, message.id || 0, text, peer).then(() => {
                 const index = findIndex(messages, {id: message.id});
                 if (index > -1) {
@@ -1401,7 +1403,7 @@ class Chat extends React.Component<IProps, IState> {
             const id = -UniqueId.getRandomId();
             const message: IMessage = {
                 body: text,
-                createdon: Math.floor(Date.now() / 1000),
+                createdon: this.riverTime.now(),
                 id,
                 me: true,
                 messageaction: C_MESSAGE_ACTION.MessageActionNope,
@@ -1764,10 +1766,8 @@ class Chat extends React.Component<IProps, IState> {
             isConnecting: false,
         });
         this.sdk.recall('0').then((res) => {
-            this.clusterList = res.availableclustersList;
             this.startSyncing();
-        }).catch((err) => {
-            window.console.log(err);
+            window.console.log(res);
         });
     }
 
@@ -1871,11 +1871,16 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private messageDBUpdatedHandler = (event: any) => {
+        const data = event.detail;
+        if (data.ids) {
+            data.ids.forEach((id: number) => {
+                this.checkPendingMessage(id);
+            });
+        }
         const {peer, messages} = this.state;
         if (!peer) {
             return;
         }
-        const data = event.detail;
         if (data.peerids && data.peerids.indexOf(this.state.selectedDialogId) > -1) {
             // this.getMessagesByDialogId(this.state.selectedDialogId);
             let after = 0;
@@ -2082,7 +2087,7 @@ class Chat extends React.Component<IProps, IState> {
                 const messageSelectedIds = {};
                 messageSelectedIds[message.id || 0] = true;
                 let removeMode: any = 'remove_message';
-                if ((Math.floor(Date.now() / 1000) - (message.createdon || 0)) < 86400 && message.me === true) {
+                if ((this.riverTime.now() - (message.createdon || 0)) < 86400 && message.me === true) {
                     removeMode = 'remove_message_revoke';
                 }
                 this.setState({
@@ -2213,7 +2218,7 @@ class Chat extends React.Component<IProps, IState> {
             case 'remove':
                 let noRevoke = true;
                 const {messages} = this.state;
-                const now = Math.floor(Date.now() / 1000);
+                const now = this.riverTime.now();
                 // Checks if revoke is unavailable
                 for (const i in this.state.messageSelectedIds) {
                     if (this.state.messageSelectedIds.hasOwnProperty(i)) {
@@ -2490,18 +2495,10 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
-        const now = Math.floor(Date.now() / 1000);
-
+        const now = this.riverTime.now();
         const randomId = UniqueId.getRandomId();
-
         const id = -UniqueId.getRandomId();
-
         const fileId = String(UniqueId.getRandomId());
-
-        let clusterId: number = 0;
-        if (this.clusterList.length > 0) {
-            clusterId = this.clusterList[0].id || 0;
-        }
 
         const u8aWaveForm = new Uint8Array(waveForm);
 
@@ -2521,9 +2518,9 @@ class Chat extends React.Component<IProps, IState> {
         attributesList.push(attr1);
 
         const inputFile = new InputFile();
-        inputFile.setClusterid(clusterId);
+        inputFile.setClusterid(0);
         inputFile.setFileid(fileId);
-        inputFile.setFilename(`voice_${Date.now()}.ogg`);
+        inputFile.setFilename(`voice_${now}.ogg`);
         inputFile.setMd5checksum('');
         inputFile.setTotalparts(1);
 
@@ -2580,16 +2577,15 @@ class Chat extends React.Component<IProps, IState> {
 
         this.fileManager.sendFile(fileId, blob, (e) => {
             window.console.log('progress', e);
+        }).then(() => {
             this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, mediaData.serializeBinary(), replyTo).then((res) => {
                 window.console.log(res);
                 const {messages} = this.state;
                 const index = findIndex(messages, {id: message.id});
-                if (index) {
+                if (index > -1) {
                     this.messageComponent.cache.clear(index, 0);
                 }
-                // this.messageRepo.remove(message.id || 0).catch(() => {
-                //     //
-                // });
+
                 if (res.messageid) {
                     this.sendReadHistory(peer, res.messageid);
                 }
@@ -2600,6 +2596,13 @@ class Chat extends React.Component<IProps, IState> {
                 // Force update messages
                 this.messageComponent.list.forceUpdateGrid();
             });
+        }).catch(() => {
+            const {messages} = this.state;
+            const index = findIndex(messages, {id});
+            if (index > -1) {
+                messages[index].error = true;
+                this.messageComponent.list.forceUpdateGrid();
+            }
         });
     }
 
@@ -2623,13 +2626,41 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Check pending message */
-    private checkPendingMessage(message: IMessage) {
-        this.messageRepo.getPending(message.id || 0).then((res) => {
-            if (res) {
-                this.messageRepo.remove(res.id);
-                this.messageRepo.removePending(res.id);
-            }
-        });
+    private checkPendingMessage(id: number) {
+        setTimeout(() => {
+            this.messageRepo.getPending(id).then((res) => {
+                if (res) {
+                    this.messageRepo.remove(res.message_id);
+                    this.messageRepo.removePending(res.id);
+                    window.console.log(res);
+                    if (res.file_ids && res.file_ids.length > 0) {
+                        window.console.log(res.file_ids);
+                        this.messageRepo.get(id).then((msg) => {
+                            window.console.log(msg);
+                            if (msg) {
+                                // TODO complete for other type, sth like thumbnails
+                                if (res.file_ids) {
+                                    this.modifyTempFiles(res.file_ids[0], msg);
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        }, 200);
+    }
+
+    /* Modify temp chunks */
+    private modifyTempFiles(id: string, message: IMessage) {
+        switch (message.mediatype) {
+            case MediaType.MEDIATYPEDOCUMENT:
+                const mediaDocument: MediaDocument.AsObject = message.mediadata;
+                window.console.log(mediaDocument);
+                if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
+                    this.fileRepo.persistTempFiles(id, mediaDocument.doc.id, mediaDocument.doc.mimetype || 'application/octet-stream');
+                }
+                break;
+        }
     }
 }
 

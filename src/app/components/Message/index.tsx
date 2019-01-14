@@ -23,9 +23,11 @@ import UserName from '../UserName';
 import Checkbox from '@material-ui/core/Checkbox';
 import MessageForwarded from '../MessageForwarded';
 import {clone} from 'lodash';
+import MessageVoice from '../MessageVoice';
+import RiverTime from '../../services/utilities/river_time';
+import {ErrorRounded} from '@material-ui/icons';
 
 import './style.css';
-import MessageVoice from '../MessageVoice';
 
 interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
@@ -88,6 +90,7 @@ class Message extends React.Component<IProps, IState> {
         startIndex: 0,
         stopIndex: 0,
     };
+    private riverTime: RiverTime;
 
     constructor(props: IProps) {
         super(props);
@@ -104,6 +107,7 @@ class Message extends React.Component<IProps, IState> {
             selectable: props.selectable,
             selectedIds: props.selectedIds,
         };
+        this.riverTime = RiverTime.getInstance();
         this.cache = new CellMeasurerCache({
             fixedWidth: true,
             keyMapper: this.keyMapperHandler,
@@ -277,28 +281,33 @@ class Message extends React.Component<IProps, IState> {
                 cmd: 'cancel',
                 title: 'Cancel',
             },
+            6: {
+                cmd: 'resend',
+                title: 'Resend',
+            },
         };
         const menuTypes = {
             1: [1, 2, 3, 4],
             2: [1, 2, 4],
-            3: [5],
+            3: [5, 6],
         };
         const menuItems: any[] = [];
         const id = items[moreIndex].id;
         const me = items[moreIndex].me;
         if (id && id < 0) {
             menuTypes[3].forEach((key) => {
-                menuItems.push(menuItem[key]);
+                if (key === 6) {
+                    if (items[moreIndex].error) {
+                        menuItems.push(menuItem[key]);
+                    }
+                } else {
+                    menuItems.push(menuItem[key]);
+                }
             });
         } else if (me === true && id && id > 0) {
             menuTypes[1].forEach((key) => {
-                /*if (key === 4) {
-                    if ((Math.floor(Date.now() / 1000) - (items[moreIndex].createdon || 0)) < 86400) {
-                        menuItems.push(menuItem[key]);
-                    }
-                } else */
                 if (key === 3) {
-                    if ((Math.floor(Date.now() / 1000) - (items[moreIndex].createdon || 0)) < 86400 &&
+                    if ((this.riverTime.now() - (items[moreIndex].createdon || 0)) < 86400 &&
                         (items[moreIndex].fwdsenderid === '0' || !items[moreIndex].fwdsenderid)) {
                         menuItems.push(menuItem[key]);
                     }
@@ -387,7 +396,7 @@ class Message extends React.Component<IProps, IState> {
                     // }
                     return (
                         <div style={style}
-                             className={'bubble-wrapper _bubble' + (message.me ? ' me' : ' you') + (message.avatar ? ' avatar' : '') + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '') + (message.messagetype === C_MESSAGE_TYPE.Voice ? ' voice' : '')}
+                             className={'bubble-wrapper _bubble' + (message.me ? ' me' : ' you') + (message.avatar ? ' avatar' : '') + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '') + (message.messagetype === C_MESSAGE_TYPE.Voice ? ' voice' : '') + ((message.me && message.error) ? ' has-error' : '')}
                              onClick={this.toggleSelectHandler.bind(this, message.id || 0, index)}
                              onDoubleClick={this.selectMessage.bind(this, index)}
                         >
@@ -398,8 +407,10 @@ class Message extends React.Component<IProps, IState> {
                                 className={'checkbox ' + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? 'checked' : '')}
                                 color="primary" checked={this.state.selectedIds.hasOwnProperty(message.id || 0)}
                                 onChange={this.selectMessageHandler.bind(this, message.id || 0, index)}/>}
-                            {(message.avatar && message.senderid) && (<div className="arrow"/>)}
-                            <div className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')}>
+                            {Boolean(message.avatar && message.senderid) && (<div className="arrow"/>)}
+                            {Boolean(message.me && message.error) && <span className="error"><ErrorRounded/></span>}
+                            <div
+                                className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')}>
                                 {Boolean(peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me) &&
                                 <UserName className="name" uniqueColor={false} id={message.senderid || ''}/>}
                                 {Boolean(message.replyto && message.replyto !== 0) &&

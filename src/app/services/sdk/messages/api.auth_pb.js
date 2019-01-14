@@ -1538,19 +1538,12 @@ proto.msg.AuthDestroyKey.serializeBinaryToWriter = function(message, writer) {
  * @constructor
  */
 proto.msg.AuthRecalled = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.msg.AuthRecalled.repeatedFields_, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.msg.AuthRecalled, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   proto.msg.AuthRecalled.displayName = 'proto.msg.AuthRecalled';
 }
-/**
- * List of repeated fields within this message type.
- * @private {!Array<number>}
- * @const
- */
-proto.msg.AuthRecalled.repeatedFields_ = [3];
-
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -1581,9 +1574,7 @@ proto.msg.AuthRecalled.prototype.toObject = function(opt_includeInstance) {
 proto.msg.AuthRecalled.toObject = function(includeInstance, msg) {
   var f, obj = {
     clientid: jspb.Message.getField(msg, 1),
-    timestamp: jspb.Message.getField(msg, 2),
-    availableclustersList: jspb.Message.toObjectList(msg.getAvailableclustersList(),
-    core_types_pb.Cluster.toObject, includeInstance)
+    timestamp: jspb.Message.getField(msg, 2)
   };
 
   if (includeInstance) {
@@ -1628,11 +1619,6 @@ proto.msg.AuthRecalled.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {number} */ (reader.readInt64());
       msg.setTimestamp(value);
       break;
-    case 3:
-      var value = new core_types_pb.Cluster;
-      reader.readMessage(value,core_types_pb.Cluster.deserializeBinaryFromReader);
-      msg.addAvailableclusters(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -1674,14 +1660,6 @@ proto.msg.AuthRecalled.serializeBinaryToWriter = function(message, writer) {
     writer.writeInt64(
       2,
       f
-    );
-  }
-  f = message.getAvailableclustersList();
-  if (f.length > 0) {
-    writer.writeRepeatedMessage(
-      3,
-      f,
-      core_types_pb.Cluster.serializeBinaryToWriter
     );
   }
 };
@@ -1742,37 +1720,6 @@ proto.msg.AuthRecalled.prototype.clearTimestamp = function() {
  */
 proto.msg.AuthRecalled.prototype.hasTimestamp = function() {
   return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * repeated Cluster AvailableClusters = 3;
- * @return {!Array.<!proto.msg.Cluster>}
- */
-proto.msg.AuthRecalled.prototype.getAvailableclustersList = function() {
-  return /** @type{!Array.<!proto.msg.Cluster>} */ (
-    jspb.Message.getRepeatedWrapperField(this, core_types_pb.Cluster, 3));
-};
-
-
-/** @param {!Array.<!proto.msg.Cluster>} value */
-proto.msg.AuthRecalled.prototype.setAvailableclustersList = function(value) {
-  jspb.Message.setRepeatedWrapperField(this, 3, value);
-};
-
-
-/**
- * @param {!proto.msg.Cluster=} opt_value
- * @param {number=} opt_index
- * @return {!proto.msg.Cluster}
- */
-proto.msg.AuthRecalled.prototype.addAvailableclusters = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.msg.Cluster, opt_index);
-};
-
-
-proto.msg.AuthRecalled.prototype.clearAvailableclustersList = function() {
-  this.setAvailableclustersList([]);
 };
 
 

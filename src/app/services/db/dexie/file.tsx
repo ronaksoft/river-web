@@ -22,7 +22,7 @@ export class DexieFileDB extends Dexie {
         // (Here's where the implicit table props are dynamically created)
         //
         this.version(1).stores({
-            files: `id`,
+            files: `id,hash`,
             temps: `[id+part]`,
         });
     }

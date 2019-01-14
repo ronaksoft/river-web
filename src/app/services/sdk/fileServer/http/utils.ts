@@ -8,6 +8,12 @@ export const uint8ToBase64 = (u8a: Uint8Array) => {
     return btoa(c.join(''));
 };
 
+/* Convert ArrayBuffer to base64 */
+export const arrayBufferToBase64 = (arr: ArrayBuffer) => {
+    const u8a = new Uint8Array(arr);
+    return uint8ToBase64(u8a);
+};
+
 /* Convert Uint8array to base64 */
 export const base64ToU8a = (base64: string) => {
     // @ts-ignore

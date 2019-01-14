@@ -170,6 +170,11 @@ export namespace InputUser {
 }
 
 export class InputFileLocation extends jspb.Message {
+  hasClusterid(): boolean;
+  clearClusterid(): void;
+  getClusterid(): number | undefined;
+  setClusterid(value: number): void;
+
   hasFileid(): boolean;
   clearFileid(): void;
   getFileid(): string | undefined;
@@ -197,6 +202,7 @@ export class InputFileLocation extends jspb.Message {
 
 export namespace InputFileLocation {
   export type AsObject = {
+    clusterid?: number,
     fileid?: string,
     accesshash?: string,
     version?: number,
@@ -902,46 +908,6 @@ export namespace GroupParticipant {
     type?: ParticipantType,
     accesshash?: string,
     username?: string,
-  }
-}
-
-export class Cluster extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): number | undefined;
-  setId(value: number): void;
-
-  hasIp(): boolean;
-  clearIp(): void;
-  getIp(): string | undefined;
-  setIp(value: string): void;
-
-  hasDomain(): boolean;
-  clearDomain(): void;
-  getDomain(): string | undefined;
-  setDomain(value: string): void;
-
-  hasLocation(): boolean;
-  clearLocation(): void;
-  getLocation(): string | undefined;
-  setLocation(value: string): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): Cluster.AsObject;
-  static toObject(includeInstance: boolean, msg: Cluster): Cluster.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: Cluster, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): Cluster;
-  static deserializeBinaryFromReader(message: Cluster, reader: jspb.BinaryReader): Cluster;
-}
-
-export namespace Cluster {
-  export type AsObject = {
-    id?: number,
-    ip?: string,
-    domain?: string,
-    location?: string,
   }
 }
 

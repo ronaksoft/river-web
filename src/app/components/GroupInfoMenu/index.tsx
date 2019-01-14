@@ -58,10 +58,10 @@ import Button from '@material-ui/core/Button/Button';
 import Switch from '@material-ui/core/Switch/Switch';
 import ContactRepo from '../../repository/contact';
 import Scrollbars from 'react-custom-scrollbars';
+import RiverTime from '../../services/utilities/river_time';
 
 import './style.css';
 
-// Todo: add member, kick member, promote member and etc.
 interface IProps {
     peer: InputPeer | null;
     onClose?: () => void;
@@ -92,6 +92,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     private sdk: SDK;
     private loading: boolean = false;
     private userId: string;
+    private riverTime: RiverTime;
 
     constructor(props: IProps) {
         super(props);
@@ -112,7 +113,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             title: '',
             titleEdit: false,
         };
-
+        // RiverTime singleton
+        this.riverTime = RiverTime.getInstance();
         // Group Repository singleton
         this.groupRepo = GroupRepo.getInstance();
         // Dialog Repository singleton
@@ -638,7 +640,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         if (mode < 0) {
             settings.setMuteuntil(mode);
         } else if (mode > 0) {
-            mode += Math.floor(Date.now() / 1000);
+            mode += this.riverTime.now();
         }
         settings.setFlags(0);
         settings.setSound('');

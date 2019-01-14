@@ -30,10 +30,10 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button/Button';
 import DialogActions from '@material-ui/core/DialogActions/DialogActions';
 import Scrollbars from 'react-custom-scrollbars';
+import RiverTime from '../../services/utilities/river_time';
 
 import './style.css';
 
-// Todo: add member, kick member, promote member and etc.
 interface IProps {
     onClose: () => void;
     peer: InputPeer | null;
@@ -61,8 +61,7 @@ export const isMuted = (notifySettings?: PeerNotifySettings.AsObject) => {
     } else if (notifySettings.muteuntil === -2) {
         return true;
     } else if ((notifySettings.muteuntil || 0) > 0) {
-        const now = Math.floor(Date.now() / 1000);
-        return (now <= (notifySettings.muteuntil || 0));
+        return (RiverTime.getInstance().now() <= (notifySettings.muteuntil || 0));
     } else {
         return false;
     }
@@ -73,6 +72,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
     private dialogRepo: DialogRepo;
     private sdk: SDK;
+    private riverTime: RiverTime;
 
     constructor(props: IProps) {
         super(props);
@@ -90,7 +90,8 @@ class UserInfoMenu extends React.Component<IProps, IState> {
             phone: '',
             user: null,
         };
-
+        // RiverTime singleton
+        this.riverTime = RiverTime.getInstance();
         // Contact Repository singleton
         this.contactRepo = ContactRepo.getInstance();
         // User Repository singleton
@@ -390,7 +391,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
         if (mode < 0) {
             settings.setMuteuntil(mode);
         } else if (mode > 0) {
-            mode += Math.floor(Date.now() / 1000);
+            mode += this.riverTime.now();
         }
         settings.setFlags(0);
         settings.setSound('');

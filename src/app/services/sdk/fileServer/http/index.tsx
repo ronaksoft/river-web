@@ -17,10 +17,18 @@ export interface IHttpRequest {
     reqId: number;
 }
 
+interface IMessageListener {
+    onDownloadProgress?: (e: any) => void;
+    onUploadProgress?: (e: any) => void;
+    reject: any;
+    request: IHttpRequest;
+    resolve: any;
+}
+
 export default class Http {
     private worker: Worker;
     private reqId: number;
-    private messageListeners: object = {};
+    private messageListeners: { [key: number]: IMessageListener } = {};
     private sentQueue: number[] = [];
     private dataCenterUrl: string = 'file.river.im';
     private workerId: number = 0;
@@ -120,6 +128,10 @@ export default class Http {
                 const data = new Uint8Array(bytes);
                 window.console.time(`${this.workerId} fnDecrypt`);
                 this.workerMessage('fnDecrypt', uint8ToBase64(data));
+            }
+        }).catch((err) => {
+            if (this.messageListeners.hasOwnProperty(reqId)) {
+                this.messageListeners[reqId].reject(err);
             }
         });
     }

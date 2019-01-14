@@ -31,6 +31,7 @@ import {Link} from 'react-router-dom';
 
 import './style.css';
 import {isMuted} from '../UserInfoMenu';
+import RiverTime from '../../services/utilities/river_time';
 
 interface IProps {
     onClose?: () => void;
@@ -54,8 +55,8 @@ interface IState {
 class UserDialog extends React.Component<IProps, IState> {
     private contactRepo: ContactRepo;
     private userRepo: UserRepo;
-    // private dialogRepo: DialogRepo;
     private sdk: SDK;
+    private riverTime: RiverTime;
 
     constructor(props: IProps) {
         super(props);
@@ -74,7 +75,8 @@ class UserDialog extends React.Component<IProps, IState> {
             user: null,
             userDialogOpen: false,
         };
-
+        // RiverTime singleton
+        this.riverTime = RiverTime.getInstance();
         // Contact Repository singleton
         this.contactRepo = ContactRepo.getInstance();
         // User Repository singleton
@@ -400,7 +402,7 @@ class UserDialog extends React.Component<IProps, IState> {
         if (mode < 0) {
             settings.setMuteuntil(mode);
         } else if (mode > 0) {
-            mode += Math.floor(Date.now() / 1000);
+            mode += this.riverTime.now();
         }
         settings.setFlags(0);
         settings.setSound('');

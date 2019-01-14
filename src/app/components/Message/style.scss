@@ -161,6 +161,21 @@
     height: 32px;
     width: 32px;
   }
+  .error {
+    position: absolute;
+    right: 2px;
+    top: 50%;
+    transform: translateY(-12px);
+    height: 20px;
+    width: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    svg {
+      font-size: 16px;
+      color: var(--red);
+    }
+  }
   .bubble {
     position: relative;
     font-size: 14px;
@@ -280,6 +295,14 @@
       margin-right: 10px;
       &.edited {
         min-width: 100px;
+      }
+    }
+    &.has-error {
+      .arrow {
+        right: 14px;
+      }
+      .bubble {
+        margin-right: 24px;
       }
     }
   }
@@ -631,6 +654,9 @@ html[bubble="4"] {
     &.me {
       .bubble.edited {
         min-width: 115px;
+      }
+      &.has-error .arrow {
+        right: 10px;
       }
     }
     &.you {

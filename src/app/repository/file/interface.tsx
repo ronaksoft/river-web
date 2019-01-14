@@ -10,6 +10,8 @@
 interface IFile {
     id: string;
     data: Blob;
+    hash: string;
+    size: number;
 }
 
 interface ITempFile {

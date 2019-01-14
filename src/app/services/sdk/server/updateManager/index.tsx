@@ -59,6 +59,7 @@ export default class UpdateManager {
         this.newMessageDropThrottle = throttle(this.executeNewMessageDropThrottle, 300);
     }
 
+    /* Loads last update id form localStorage */
     public loadLastUpdateId(): number {
         const data = localStorage.getItem('river.last_update_id');
         if (data) {

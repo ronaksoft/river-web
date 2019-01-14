@@ -18,6 +18,7 @@ interface IMessage extends UserMessage.AsObject {
     mention_me?: boolean;
     mediadata?: any;
     attributes?: any[];
+    error?: boolean;
 }
 
 interface IPendingMessage {

@@ -10,6 +10,7 @@
 import * as React from 'react';
 
 import TimeUtility from '../../services/utilities/time';
+import RiverTime from '../../services/utilities/river_time';
 
 interface IProps {
     className?: string;
@@ -23,6 +24,7 @@ interface IState {
 
 class LiveDate extends React.Component<IProps, IState> {
     private interval: any = null;
+    private riverTime: RiverTime;
 
     constructor(props: IProps) {
         super(props);
@@ -31,6 +33,8 @@ class LiveDate extends React.Component<IProps, IState> {
             className: props.className || '',
             time: props.time,
         };
+
+        this.riverTime = RiverTime.getInstance();
     }
 
     public componentDidMount() {
@@ -59,7 +63,7 @@ class LiveDate extends React.Component<IProps, IState> {
     }
 
     private getIntervalTime(time: number) {
-        const diff = Math.floor(Date.now() / 1000) - time;
+        const diff = this.riverTime.now() - time;
         if (diff < 86400) {
             return 10000;
         } else {
