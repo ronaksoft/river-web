@@ -26,7 +26,7 @@ export class DexieMessageDB extends Dexie {
         this.version(1).stores({
             // messageHoles: `[peerid+min+max]`,
             messages: `id,peerid,[peerid+id]`,
-            pendingMessages: `id`,
+            pendingMessages: `id,message_id`,
         });
     }
 }

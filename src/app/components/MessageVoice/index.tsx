@@ -65,9 +65,8 @@ class MessageVoice extends React.Component<IProps, IState> {
         });
         this.voicePlayerRef.setData({
             bars: info.bars,
-            duration: info.duration / 1000,
-            state: 'pause',
-            voice: new Blob([]),
+            duration: info.duration,
+            state: ((message.id || 0) < 0) ? 'upload' : 'pause',
         });
     }
 
@@ -78,7 +77,8 @@ class MessageVoice extends React.Component<IProps, IState> {
     public render() {
         return (
             <div className="message-voice">
-                <VoicePlayer ref={this.voicePlayerRefHandler} className="play-frame" maxValue={16.0}/>
+                <VoicePlayer ref={this.voicePlayerRefHandler} className="play-frame" maxValue={16.0}
+                             message={this.props.message}/>
             </div>
         );
     }

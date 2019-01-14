@@ -30,7 +30,7 @@ export default class Http {
     private reqId: number;
     private messageListeners: { [key: number]: IMessageListener } = {};
     private sentQueue: number[] = [];
-    private dataCenterUrl: string = 'file.river.im';
+    private dataCenterUrl: string = 'new.river.im/file';
     private workerId: number = 0;
 
     public constructor(bytes: ArrayBuffer, id: number) {

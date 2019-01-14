@@ -47,7 +47,6 @@ export default class MessageRepo {
                 case DocumentAttributeType.ATTRIBUTETYPEAUDIO:
                     // @ts-ignore
                     const audioAttr = DocumentAttributeAudio.deserializeBinary(attr.data).toObject();
-                    window.console.log(audioAttr);
                     attrOut.push(audioAttr);
                     if (audioAttr.voice) {
                         flags.voice = true;
@@ -193,6 +192,11 @@ export default class MessageRepo {
         return this.db.pendingMessages.get(id);
     }
 
+    /* Get pending message by messageId */
+    public getPendingByMessageId(id: number) {
+        return this.db.pendingMessages.where('message_id').equals(id).first();
+    }
+
     /* Remove pending message */
     public removePending(id: number) {
         return this.db.pendingMessages.delete(id);
@@ -217,8 +221,12 @@ export default class MessageRepo {
         return this.db.messages.bulkDelete(ids);
     }
 
-    public getMany({peer, limit, before, after, ignoreMax}: any, fnCallback?: (resMsgs: IMessage[]) => void): Promise<IMessage[]> {
+    public getMany({peer, limit, before, after, ignoreMax}: any, callback?: (resMsgs: IMessage[]) => void): Promise<IMessage[]> {
         limit = limit || 30;
+        let fnCallback = callback;
+        if (ignoreMax && callback) {
+            fnCallback = this.getPeerPendingMessage(peer, callback);
+        }
         return new Promise((resolve, reject) => {
             this.getManyCache({limit, before, after, ignoreMax}, peer, fnCallback).then((res) => {
                 const len = res.length;
@@ -451,6 +459,8 @@ export default class MessageRepo {
                     const d = this.mergeCheck(msg, t);
                     d.temp = false;
                     return d;
+                } else if (t) {
+                    return this.mergeCheck(msg, t);
                 } else {
                     return msg;
                 }
@@ -526,6 +536,18 @@ export default class MessageRepo {
             messagetype: C_MESSAGE_TYPE.Hole,
             peerid: peerId,
         });
+    }
+
+    private getPeerPendingMessage(peer: InputPeer, fnCallback: (resMsgs: IMessage[]) => void) {
+        const peerId = peer.getId() || '';
+        const fn = (msg: IMessage[]) => {
+            this.db.messages.where('[peerid+id]').between([peerId, Dexie.minKey], [peerId, -1], true, true).toArray().then((items) => {
+                fnCallback(items.concat(msg));
+            }).catch(() => {
+                fnCallback(msg);
+            });
+        };
+        return fn;
     }
 
     private updateMap = (message: IMessage, temp?: boolean) => {

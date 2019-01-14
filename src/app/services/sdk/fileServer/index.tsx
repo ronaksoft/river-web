@@ -17,10 +17,12 @@ import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from './const/const';
 
 const C_FILE_SERVER_HTTP_WORKER_NUM = 1;
 
-interface IFileProgress {
+export interface IFileProgress {
     download: number;
-    upload: number;
     state: 'loading' | 'complete';
+    totalDownload: number;
+    totalUpload: number;
+    upload: number;
 }
 
 interface IChunkUpdate {
@@ -113,27 +115,35 @@ export default class FileManager {
     }
 
     /* Retry uploading/downloading file */
-    public retry(id: string): Promise<any> {
-        if (this.fileTransferQueue.hasOwnProperty(id)) {
-            this.fileTransferQueue[id].retry = 0;
+    public retry(id: string, onProgress?: (e: IFileProgress) => void): Promise<any> {
+        return this.fileRepo.getTempsById(id).then((temps) => {
+            if (temps.length > 0) {
+                let internalResolve = null;
+                let internalReject = null;
 
-            let internalResolve = null;
-            let internalReject = null;
+                const promise = new Promise((res, rej) => {
+                    internalResolve = res;
+                    internalReject = rej;
+                });
 
-            const promise = new Promise((res, rej) => {
-                internalResolve = res;
-                internalReject = rej;
-            });
+                let size = 0;
+                const blobs = temps.map((temp) => {
+                    size += temp.data.size;
+                    return temp.data;
+                });
 
-            this.fileTransferQueue[id].resolve = internalResolve;
-            this.fileTransferQueue[id].reject = internalReject;
+                this.prepareTransfer(id, blobs, size, true, internalResolve, internalReject, onProgress);
 
-            this.startQueue();
+                this.startQueue();
 
-            return promise;
-        } else {
-            return Promise.reject();
-        }
+                return promise;
+            } else {
+                return Promise.reject({
+                    code: C_FILE_ERR_CODE.NO_TEMP_FILES,
+                    message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.NO_TEMP_FILES],
+                });
+            }
+        });
     }
 
     /* Start upload/download queue */
@@ -260,13 +270,17 @@ export default class FileManager {
         }
         let download = 0;
         let upload = 0;
+        let totalDownload = 0;
         message.updates.forEach((update) => {
             upload += update.upload;
             download += update.download;
+            totalDownload += update.downloadSize;
         });
         message.onProgress({
             download,
             state,
+            totalDownload,
+            totalUpload: this.fileTransferQueue[id].size,
             upload,
         });
     }

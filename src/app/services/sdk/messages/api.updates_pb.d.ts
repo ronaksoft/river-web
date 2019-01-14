@@ -707,3 +707,43 @@ export namespace UpdateGroupAdmins {
   }
 }
 
+export class UpdateReadMessagesContents extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  clearMessageidsList(): void;
+  getMessageidsList(): Array<number>;
+  setMessageidsList(value: Array<number>): void;
+  addMessageids(value: number, index?: number): number;
+
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.Peer;
+  setPeer(value?: core_types_pb.Peer): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateReadMessagesContents.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateReadMessagesContents): UpdateReadMessagesContents.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateReadMessagesContents, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateReadMessagesContents;
+  static deserializeBinaryFromReader(message: UpdateReadMessagesContents, reader: jspb.BinaryReader): UpdateReadMessagesContents;
+}
+
+export namespace UpdateReadMessagesContents {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+    messageidsList: Array<number>,
+    peer: core_types_pb.Peer.AsObject,
+  }
+}
+

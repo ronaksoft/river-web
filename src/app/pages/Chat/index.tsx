@@ -98,10 +98,11 @@ import {
     InputMediaUploadedDocument,
     MediaDocument
 } from '../../services/sdk/messages/core.message.medias_pb';
-
-import './style.css';
 import RiverTime from '../../services/utilities/river_time';
 import FileRepo from '../../repository/file';
+import ProgressBroadcaster from '../../services/progress';
+
+import './style.css';
 
 interface IProps {
     history?: any;
@@ -168,6 +169,7 @@ class Chat extends React.Component<IProps, IState> {
     private fileManager: FileManager;
     private electronService: ElectronService;
     private riverTime: RiverTime;
+    private progressBroadcaster: ProgressBroadcaster;
 
     constructor(props: IProps) {
         super(props);
@@ -218,6 +220,7 @@ class Chat extends React.Component<IProps, IState> {
         this.isInChat = (document.visibilityState === 'visible');
         this.isMobileView = (window.innerWidth < 600);
         this.updateManager.setUserId(this.connInfo.UserID || '');
+        this.progressBroadcaster = ProgressBroadcaster.getInstance();
         this.electronService = ElectronService.getInstance();
     }
 
@@ -1400,7 +1403,7 @@ class Chat extends React.Component<IProps, IState> {
                 window.console.log(err);
             });
         } else {
-            const id = -UniqueId.getRandomId();
+            const id = -this.riverTime.milliNow();
             const message: IMessage = {
                 body: text,
                 createdon: this.riverTime.now(),
@@ -1436,7 +1439,7 @@ class Chat extends React.Component<IProps, IState> {
             this.sdk.sendMessage(randomId, text, peer, replyTo, entities).then((msg) => {
                 const {messages} = this.state;
                 const index = findIndex(messages, {id: message.id});
-                if (index) {
+                if (index > -1) {
                     this.messageComponent.cache.clear(index, 0);
                 }
                 // this.messageRepo.remove(message.id || 0).then(() => {
@@ -2101,6 +2104,9 @@ class Chat extends React.Component<IProps, IState> {
                     messageSelectable: true,
                 });
                 break;
+            case 'resend':
+                this.resendMessage(message);
+                break;
             default:
                 window.console.log(cmd, message);
                 break;
@@ -2497,14 +2503,14 @@ class Chat extends React.Component<IProps, IState> {
 
         const now = this.riverTime.now();
         const randomId = UniqueId.getRandomId();
-        const id = -UniqueId.getRandomId();
+        const id = -this.riverTime.milliNow();
         const fileId = String(UniqueId.getRandomId());
 
         const u8aWaveForm = new Uint8Array(waveForm);
 
         const attr1Data = new DocumentAttributeAudio();
         attr1Data.setAlbum('');
-        attr1Data.setDuration(Math.floor(duration * 1000));
+        attr1Data.setDuration(Math.floor(duration));
         attr1Data.setTitle('');
         attr1Data.setPerformer('');
         attr1Data.setVoice(true);
@@ -2518,7 +2524,6 @@ class Chat extends React.Component<IProps, IState> {
         attributesList.push(attr1);
 
         const inputFile = new InputFile();
-        inputFile.setClusterid(0);
         inputFile.setFileid(fileId);
         inputFile.setFilename(`voice_${now}.ogg`);
         inputFile.setMd5checksum('');
@@ -2569,17 +2574,20 @@ class Chat extends React.Component<IProps, IState> {
 
         this.pushMessage(message);
 
+        const data = mediaData.serializeBinary();
+
         this.messageRepo.addPending({
+            data,
             file_ids: [fileId],
             id: randomId,
             message_id: id,
         });
 
-        this.fileManager.sendFile(fileId, blob, (e) => {
-            window.console.log('progress', e);
+        this.fileManager.sendFile(fileId, blob, (progress) => {
+            this.progressBroadcaster.publish(id, progress);
         }).then(() => {
-            this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, mediaData.serializeBinary(), replyTo).then((res) => {
-                window.console.log(res);
+            this.progressBroadcaster.remove(id);
+            this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, replyTo).then((res) => {
                 const {messages} = this.state;
                 const index = findIndex(messages, {id: message.id});
                 if (index > -1) {
@@ -2597,10 +2605,52 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageComponent.list.forceUpdateGrid();
             });
         }).catch(() => {
+            this.progressBroadcaster.remove(id);
             const {messages} = this.state;
             const index = findIndex(messages, {id});
             if (index > -1) {
                 messages[index].error = true;
+                this.messageRepo.importBulk([messages[index]], false);
+                this.messageComponent.list.forceUpdateGrid();
+            }
+        });
+    }
+
+    /* Resend media message */
+    private resendMediaMessage(randomId: number, message: IMessage, fileId: string, data: any) {
+        const {peer} = this.state;
+        if (peer === null) {
+            return;
+        }
+
+        this.fileManager.retry(fileId, (progress) => {
+            this.progressBroadcaster.publish(message.id || 0, progress);
+        }).then(() => {
+            this.progressBroadcaster.remove(message.id || 0);
+            this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, message.replyto).then((res) => {
+                const {messages} = this.state;
+                const index = findIndex(messages, {id: message.id});
+                if (index > -1) {
+                    this.messageComponent.cache.clear(index, 0);
+                }
+
+                if (res.messageid) {
+                    this.sendReadHistory(peer, res.messageid);
+                }
+                message.id = res.messageid;
+                this.messageRepo.lazyUpsert([message]);
+                this.updateDialogs(message, '0');
+
+                // Force update messages
+                this.messageComponent.list.forceUpdateGrid();
+            });
+        }).catch(() => {
+            this.progressBroadcaster.remove(message.id || 0);
+            const {messages} = this.state;
+            const index = findIndex(messages, {id: message.id});
+            if (index > -1) {
+                messages[index].error = true;
+                this.messageRepo.importBulk([messages[index]], false);
                 this.messageComponent.list.forceUpdateGrid();
             }
         });
@@ -2632,11 +2682,8 @@ class Chat extends React.Component<IProps, IState> {
                 if (res) {
                     this.messageRepo.remove(res.message_id);
                     this.messageRepo.removePending(res.id);
-                    window.console.log(res);
                     if (res.file_ids && res.file_ids.length > 0) {
-                        window.console.log(res.file_ids);
                         this.messageRepo.get(id).then((msg) => {
-                            window.console.log(msg);
                             if (msg) {
                                 // TODO complete for other type, sth like thumbnails
                                 if (res.file_ids) {
@@ -2655,11 +2702,27 @@ class Chat extends React.Component<IProps, IState> {
         switch (message.mediatype) {
             case MediaType.MEDIATYPEDOCUMENT:
                 const mediaDocument: MediaDocument.AsObject = message.mediadata;
-                window.console.log(mediaDocument);
                 if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
                     this.fileRepo.persistTempFiles(id, mediaDocument.doc.id, mediaDocument.doc.mimetype || 'application/octet-stream');
                 }
                 break;
+        }
+    }
+
+    /* Resend message */
+    private resendMessage(message: IMessage) {
+        if (message.mediatype !== MediaType.MEDIATYPEEMPTY) {
+            this.messageRepo.getPendingByMessageId(message.id || 0).then((res) => {
+                if (res && res.file_ids && res.file_ids.length === 1) {
+                    const {messages} = this.state;
+                    const index = findIndex(messages, {id: message.id});
+                    if (index > -1) {
+                        messages[index].error = false;
+                        this.messageComponent.list.forceUpdateGrid();
+                    }
+                    this.resendMediaMessage(res.id, message, res.file_ids[0], res.data);
+                }
+            });
         }
     }
 }

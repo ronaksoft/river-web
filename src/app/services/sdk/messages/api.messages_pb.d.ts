@@ -438,6 +438,34 @@ export namespace MessagesForward {
   }
 }
 
+export class MessagesReadContents extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): core_types_pb.InputPeer;
+  setPeer(value?: core_types_pb.InputPeer): void;
+
+  clearMessageidsList(): void;
+  getMessageidsList(): Array<number>;
+  setMessageidsList(value: Array<number>): void;
+  addMessageids(value: number, index?: number): number;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessagesReadContents.AsObject;
+  static toObject(includeInstance: boolean, msg: MessagesReadContents): MessagesReadContents.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessagesReadContents, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessagesReadContents;
+  static deserializeBinaryFromReader(message: MessagesReadContents, reader: jspb.BinaryReader): MessagesReadContents;
+}
+
+export namespace MessagesReadContents {
+  export type AsObject = {
+    peer: core_types_pb.InputPeer.AsObject,
+    messageidsList: Array<number>,
+  }
+}
+
 export class MessagesDialogs extends jspb.Message {
   clearDialogsList(): void;
   getDialogsList(): Array<core_types_pb.Dialog>;

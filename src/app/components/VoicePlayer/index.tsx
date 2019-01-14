@@ -9,13 +9,17 @@
 
 import * as React from 'react';
 import {PlayArrowRounded, PauseRounded, CloseRounded} from '@material-ui/icons';
+import ProgressBroadcaster from '../../services/progress';
+import {IMessage} from '../../repository/message/interface';
 
 import './style.css';
+import {IFileProgress} from '../../services/sdk/fileServer';
 
 interface IProps {
     className?: string;
     maxValue: number;
     sampleCount?: number;
+    message?: IMessage;
 }
 
 interface IState {
@@ -25,7 +29,7 @@ interface IState {
 
 export interface IVoicePlayerData {
     bars: number[];
-    voice: Blob;
+    voice?: Blob;
     duration: number;
     state: 'pause' | 'upload' | 'download';
 }
@@ -54,6 +58,8 @@ class VoicePlayer extends React.Component<IProps, IState> {
     private onSeek: boolean = false;
     private preciseDuration: number = 0;
     private circleProgressRef: any = null;
+    private eventReferences: any[] = [];
+    private progressBroadcaster: ProgressBroadcaster;
 
     constructor(props: IProps) {
         super(props);
@@ -62,26 +68,23 @@ class VoicePlayer extends React.Component<IProps, IState> {
             className: props.className || '',
             playState: 'upload',
         };
+
+        this.progressBroadcaster = ProgressBroadcaster.getInstance();
     }
 
     public componentDidMount() {
         window.addEventListener('mouseup', this.windowMouseUpHandler);
         window.addEventListener('Theme_Changed', this.themeChangedHandler);
-
-        const v = 0;
-        // setInterval(() => {
-        if (this.circleProgressRef) {
-            this.circleProgressRef.style.strokeDasharray = `${v} 75`;
-        }
-        // }, 300);
     }
 
     public componentWillUnmount() {
+        this.removeAllListeners();
         window.removeEventListener('mouseup', this.windowMouseUpHandler);
         window.removeEventListener('Theme_Changed', this.themeChangedHandler);
     }
 
     public setData(data: IVoicePlayerData) {
+        const {message} = this.props;
         this.duration = data.duration;
         this.preciseDuration = data.duration;
         this.displayTimer();
@@ -91,12 +94,20 @@ class VoicePlayer extends React.Component<IProps, IState> {
             this.displayCompleteBars(true);
             this.displayCompleteBars(false);
         }, 100);
-        this.voice = data.voice;
-        this.prepareVoice();
+        if (data.voice) {
+            this.voice = data.voice;
+            this.prepareVoice();
+        }
         if (data.state) {
             this.setState({
                 playState: data.state,
             });
+            if (data.state === 'upload' && message) {
+                this.removeAllListeners();
+                this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
+            } else if (data.state === 'download' && message) {
+                this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
+            }
         }
     }
 
@@ -353,6 +364,31 @@ class VoicePlayer extends React.Component<IProps, IState> {
     /* Progress circle ref handler */
     private progressRefHandler = (ref: any) => {
         this.circleProgressRef = ref;
+    }
+
+    /* Upload progress handler */
+    private uploadProgressHandler = (progress: IFileProgress) => {
+        let v = 3;
+        if (progress.state !== 'complete' && progress.download > 0) {
+            v = (progress.upload / progress.totalUpload) * 73;
+        } else if (progress.state === 'complete') {
+            v = 75;
+        }
+        if (v < 3) {
+            v = 3;
+        }
+        if (this.circleProgressRef) {
+            this.circleProgressRef.style.strokeDasharray = `${v} 75`;
+        }
+    }
+
+    /* Remove all listeners */
+    private removeAllListeners() {
+        this.eventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
+        });
     }
 }
 

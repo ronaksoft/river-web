@@ -25,6 +25,7 @@ interface IPendingMessage {
     id: number;
     message_id: number;
     file_ids?: string[];
+    data?: any;
 }
 
 export {IMessage, IPendingMessage};

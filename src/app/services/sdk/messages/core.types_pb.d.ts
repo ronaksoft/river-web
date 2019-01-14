@@ -742,11 +742,6 @@ export class InputFile extends jspb.Message {
   getMd5checksum(): string | undefined;
   setMd5checksum(value: string): void;
 
-  hasClusterid(): boolean;
-  clearClusterid(): void;
-  getClusterid(): number | undefined;
-  setClusterid(value: number): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): InputFile.AsObject;
   static toObject(includeInstance: boolean, msg: InputFile): InputFile.AsObject;
@@ -763,7 +758,6 @@ export namespace InputFile {
     totalparts?: number,
     filename?: string,
     md5checksum?: string,
-    clusterid?: number,
   }
 }
 

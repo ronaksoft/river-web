@@ -5129,8 +5129,7 @@ proto.msg.InputFile.toObject = function(includeInstance, msg) {
     fileid: jspb.Message.getField(msg, 1),
     totalparts: jspb.Message.getField(msg, 2),
     filename: jspb.Message.getField(msg, 3),
-    md5checksum: jspb.Message.getField(msg, 4),
-    clusterid: jspb.Message.getField(msg, 5)
+    md5checksum: jspb.Message.getField(msg, 4)
   };
 
   if (includeInstance) {
@@ -5182,10 +5181,6 @@ proto.msg.InputFile.deserializeBinaryFromReader = function(msg, reader) {
     case 4:
       var value = /** @type {string} */ (reader.readString());
       msg.setMd5checksum(value);
-      break;
-    case 5:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setClusterid(value);
       break;
     default:
       reader.skipField();
@@ -5241,13 +5236,6 @@ proto.msg.InputFile.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeString(
       4,
-      f
-    );
-  }
-  f = /** @type {number} */ (jspb.Message.getField(message, 5));
-  if (f != null) {
-    writer.writeInt32(
-      5,
       f
     );
   }
@@ -5367,35 +5355,6 @@ proto.msg.InputFile.prototype.clearMd5checksum = function() {
  */
 proto.msg.InputFile.prototype.hasMd5checksum = function() {
   return jspb.Message.getField(this, 4) != null;
-};
-
-
-/**
- * required int32 ClusterID = 5;
- * @return {number}
- */
-proto.msg.InputFile.prototype.getClusterid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
-};
-
-
-/** @param {number} value */
-proto.msg.InputFile.prototype.setClusterid = function(value) {
-  jspb.Message.setField(this, 5, value);
-};
-
-
-proto.msg.InputFile.prototype.clearClusterid = function() {
-  jspb.Message.setField(this, 5, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.msg.InputFile.prototype.hasClusterid = function() {
-  return jspb.Message.getField(this, 5) != null;
 };
 
 

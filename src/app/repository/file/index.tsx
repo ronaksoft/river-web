@@ -85,7 +85,6 @@ export default class FileRepo {
                 // @ts-ignore
                 const data: ArrayBuffer = event.target.result;
                 window.crypto.subtle.digest('SHA-256', data).then((res) => {
-                    window.console.log(res);
                     resolve(arrayBufferToBase64(res));
                 });
             };
