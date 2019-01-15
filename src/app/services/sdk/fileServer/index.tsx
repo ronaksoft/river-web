@@ -14,6 +14,7 @@ import {Bool} from '../messages/core.messages_pb';
 import FileRepo from '../../../repository/file';
 import {ITempFile} from '../../../repository/file/interface';
 import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from './const/const';
+import {findIndex} from 'lodash';
 
 const C_FILE_SERVER_HTTP_WORKER_NUM = 1;
 
@@ -33,6 +34,7 @@ interface IChunkUpdate {
 }
 
 interface IChunk {
+    cancel: any;
     id: string;
     last: boolean;
     part: number;
@@ -146,6 +148,23 @@ export default class FileManager {
         });
     }
 
+    /* Cancel request */
+    public cancel(id: string) {
+        if (this.fileTransferQueue.hasOwnProperty(id)) {
+            this.fileTransferQueue[id].chunks.forEach((chunk) => {
+                if (chunk.cancel) {
+                    chunk.cancel();
+                }
+            });
+            this.fileTransferQueue[id].reject({
+                code: C_FILE_ERR_CODE.REQUEST_CANCELLED,
+                message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.REQUEST_CANCELLED],
+            });
+            delete this.fileTransferQueue[id];
+            this.clearQueueById(id);
+        }
+    }
+
     /* Start upload/download queue */
     private startQueue() {
         if (this.onWireFile.length < C_MAX_QUEUE_SIZE && this.queuedFile.length > 0) {
@@ -193,16 +212,26 @@ export default class FileManager {
                                 this.fileTransferQueue[id].updates[index].downloadSize = e.total;
                             }
                         };
-                        this.upload(id, part, chunkInfo.totalParts, uploadProgress, downloadProgress).then((res) => {
+                        const cancelHandler = (fn: any) => {
+                            if (this.fileTransferQueue.hasOwnProperty(id)) {
+                                const index = findIndex(this.fileTransferQueue[id].chunks, {part});
+                                if (index > -1) {
+                                    this.fileTransferQueue[id].chunks[index].cancel = fn;
+                                }
+                            }
+                        };
+                        this.upload(id, part, chunkInfo.totalParts, cancelHandler, uploadProgress, downloadProgress).then((res) => {
                             this.startUploading(id);
                             if (chunk) {
                                 window.console.log(`${chunk.part}/${chunkInfo.totalParts} uploaded`, res);
                             }
-                        }).catch(() => {
-                            if (chunk) {
-                                this.fileTransferQueue[id].chunks.push(chunk);
-                                this.fileTransferQueue[id].retry++;
-                                this.startUploading(id);
+                        }).catch((err) => {
+                            if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
+                                if (chunk) {
+                                    this.fileTransferQueue[id].chunks.push(chunk);
+                                    this.fileTransferQueue[id].retry++;
+                                    this.startUploading(id);
+                                }
                             }
                         });
                     }
@@ -232,11 +261,11 @@ export default class FileManager {
     }
 
     /* Upload parts */
-    private upload(id: string, part: number, totalParts: number, onUploadProgress?: (e: any) => void, onDownloadProgress?: (e: any) => void): Promise<any> {
+    private upload(id: string, part: number, totalParts: number, cancel: any, onUploadProgress?: (e: any) => void, onDownloadProgress?: (e: any) => void): Promise<any> {
         return this.fileRepo.getTemp(id, part).then((blob) => {
             if (blob) {
                 return this.convertBlobToU8a(blob.data).then((u8a: Uint8Array) => {
-                    return this.sendFileChunk(id, part, totalParts, u8a, onUploadProgress, onDownloadProgress);
+                    return this.sendFileChunk(id, part, totalParts, u8a, cancel, onUploadProgress, onDownloadProgress);
                 });
             } else {
                 return Promise.reject();
@@ -302,6 +331,7 @@ export default class FileManager {
         };
         chunks.forEach((chunk, index) => {
             this.fileTransferQueue[id].chunks.push({
+                cancel: null,
                 id,
                 last: (chunks.length - 1 === index),
                 part: index + 1,
@@ -325,7 +355,7 @@ export default class FileManager {
     }
 
     /* Send chunk over http */
-    private sendFileChunk(id: string, partNum: number, totalParts: number, bytes: Uint8Array, onUploadProgress?: (e: any) => void, onDownloadProgress?: (e: any) => void): Promise<Bool.AsObject> {
+    private sendFileChunk(id: string, partNum: number, totalParts: number, bytes: Uint8Array, cancel: any, onUploadProgress?: (e: any) => void, onDownloadProgress?: (e: any) => void): Promise<Bool.AsObject> {
         if (this.httpWorkers.length === 0) {
             return Promise.reject('file server is not started yet');
         }
@@ -334,7 +364,7 @@ export default class FileManager {
         data.setPartid(partNum);
         data.setTotalparts(totalParts);
         data.setBytes(bytes);
-        return this.httpWorkers[0].send(C_MSG.FileSavePart, data.serializeBinary(), onUploadProgress, onDownloadProgress);
+        return this.httpWorkers[0].send(C_MSG.FileSavePart, data.serializeBinary(), cancel, onUploadProgress, onDownloadProgress);
     }
 
     /* Chunk File */

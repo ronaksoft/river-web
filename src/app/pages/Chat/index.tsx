@@ -1769,8 +1769,10 @@ class Chat extends React.Component<IProps, IState> {
             isConnecting: false,
         });
         this.sdk.recall('0').then((res) => {
+            if (res.timestamp) {
+                this.riverTime.setServerTime(res.timestamp);
+            }
             this.startSyncing();
-            window.console.log(res);
         });
     }
 

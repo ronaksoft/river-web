@@ -10,6 +10,7 @@
 import Presenter from '../../presenters';
 import axios from 'axios';
 import {base64ToU8a, uint8ToBase64} from './utils';
+import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from '../const/const';
 
 export interface IHttpRequest {
     constructor: number;
@@ -18,6 +19,7 @@ export interface IHttpRequest {
 }
 
 interface IMessageListener {
+    cancel: any;
     onDownloadProgress?: (e: any) => void;
     onUploadProgress?: (e: any) => void;
     reject: any;
@@ -42,7 +44,7 @@ export default class Http {
         this.initWorkerEvent();
     }
 
-    public send(constructor: number, data: Uint8Array, onUploadProgress?: (e: any) => void, onDownloadProgress?: (e: any) => void) {
+    public send(constructor: number, data: Uint8Array, cancel: (fnCancel: any) => void, onUploadProgress?: (e: any) => void, onDownloadProgress?: (e: any) => void) {
         let internalResolve = null;
         let internalReject = null;
 
@@ -63,6 +65,7 @@ export default class Http {
          * Add request to the queue manager
          */
         this.messageListeners[reqId] = {
+            cancel: null,
             onDownloadProgress,
             onUploadProgress,
             reject: internalReject,
@@ -70,9 +73,27 @@ export default class Http {
             resolve: internalResolve,
         };
 
+        cancel(() => {
+            this.cancelRequest(reqId);
+        });
+
         this.sentQueue.push(reqId);
 
         return promise;
+    }
+
+    private cancelRequest(id: number) {
+        if (!this.messageListeners.hasOwnProperty(id)) {
+            return;
+        }
+        this.messageListeners[id].reject({
+            code: C_FILE_ERR_CODE.REQUEST_CANCELLED,
+            message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.REQUEST_CANCELLED],
+        });
+        if (this.messageListeners[id].cancel) {
+            this.messageListeners[id].cancel();
+        }
+        delete this.messageListeners[id];
     }
 
     private initWorkerEvent() {
@@ -113,7 +134,11 @@ export default class Http {
         }
         const message = this.messageListeners[reqId];
         const u8a = base64ToU8a(base64);
+        const cancelToken = new axios.CancelToken((c) => {
+            this.messageListeners[reqId].cancel = c;
+        });
         axios.post(`http://${this.dataCenterUrl}`, u8a, {
+            cancelToken,
             headers: {
                 'Accept': 'application/protobuf',
                 'Content-Type': 'application/protobuf',
@@ -131,16 +156,25 @@ export default class Http {
             }
         }).catch((err) => {
             if (this.messageListeners.hasOwnProperty(reqId)) {
-                this.messageListeners[reqId].reject(err);
+                if (!axios.isCancel(err)) {
+                    this.messageListeners[reqId].reject(err);
+                }
             }
         });
     }
 
     private resolveDecrypt(reqId: number, constructor: number, base64: string) {
-        // @ts-ignore
-        const u8a = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+        if (!this.messageListeners.hasOwnProperty(reqId)) {
+            return;
+        }
+        const u8a = base64ToU8a(base64);
         const res = Presenter.getMessage(constructor, u8a);
         this.messageListeners[reqId].resolve(res.toObject());
+        delete this.messageListeners[reqId];
+        const index = this.sentQueue.indexOf(reqId);
+        if (index > -1) {
+            this.sentQueue.splice(index);
+        }
     }
 
     /* Post message to worker */

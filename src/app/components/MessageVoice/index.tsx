@@ -27,22 +27,27 @@ interface IProps {
 }
 
 interface IState {
-    error: boolean;
+    message: IMessage;
 }
 
 class MessageVoice extends React.Component<IProps, IState> {
     private voicePlayerRef: VoicePlayer;
+    private lastId: number = 0;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
-            error: false,
+            message: props.message,
         };
+
+        if (props.message) {
+            this.lastId = props.message.id || 0;
+        }
     }
 
     public componentDidMount() {
-        const {message} = this.props;
+        const {message} = this.state;
         const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
         const info: {
             bars: number[],
@@ -66,19 +71,27 @@ class MessageVoice extends React.Component<IProps, IState> {
         this.voicePlayerRef.setData({
             bars: info.bars,
             duration: info.duration,
-            state: ((message.id || 0) < 0) ? 'upload' : 'pause',
+            state: this.getVoiceState(message),
         });
     }
 
-    // public componentWillReceiveProps(newProps: IProps) {
-    //     //
-    // }
+    public componentWillReceiveProps(newProps: IProps) {
+        const {message} = this.state;
+        if (newProps.message && this.lastId !== newProps.message.id) {
+            this.lastId = newProps.message.id || 0;
+            this.setState({
+                message: newProps.message,
+            }, () => {
+                this.voicePlayerRef.setVoiceState(this.getVoiceState(message));
+            });
+        }
+    }
 
     public render() {
         return (
             <div className="message-voice">
-                <VoicePlayer ref={this.voicePlayerRefHandler} className="play-frame" maxValue={16.0}
-                             message={this.props.message}/>
+                <VoicePlayer ref={this.voicePlayerRefHandler} className="play-frame"
+                             maxValue={16.0} message={this.state.message} onAction={this.actionHandler}/>
             </div>
         );
     }
@@ -89,6 +102,23 @@ class MessageVoice extends React.Component<IProps, IState> {
             return;
         }
         this.voicePlayerRef = ref;
+    }
+
+    /* Get voice state for player */
+    private getVoiceState(message: IMessage) {
+        const id = message.id || 0;
+        if (id <= 0) {
+            return 'progress';
+        } else if (id > 0 && !message.downloaded) {
+            return 'download';
+        } else {
+            return 'pause';
+        }
+    }
+
+    /* Voice action handler */
+    private actionHandler = (cmd: 'cancel' | 'download') => {
+        window.console.log(cmd);
     }
 }
 

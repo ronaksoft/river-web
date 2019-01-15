@@ -43,8 +43,11 @@
           fill: transparent;
           stroke: var(--grey);
           stroke-width: 3px;
-          stroke-dasharray: 75 75;
+          stroke-dasharray: 3 75;
           transition: stroke-dashoffset 0.1s ease; }
+    .voice-player .play-action .action {
+      position: relative;
+      z-index: 10; }
   .voice-player .play-preview {
     position: relative;
     flex: 1;

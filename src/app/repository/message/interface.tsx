@@ -19,6 +19,7 @@ interface IMessage extends UserMessage.AsObject {
     mediadata?: any;
     attributes?: any[];
     error?: boolean;
+    downloaded?: boolean;
 }
 
 interface IPendingMessage {

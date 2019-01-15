@@ -8,30 +8,31 @@
 */
 
 import * as React from 'react';
-import {PlayArrowRounded, PauseRounded, CloseRounded} from '@material-ui/icons';
+import {PlayArrowRounded, PauseRounded, CloseRounded, ArrowDownwardRounded} from '@material-ui/icons';
 import ProgressBroadcaster from '../../services/progress';
 import {IMessage} from '../../repository/message/interface';
+import {IFileProgress} from '../../services/sdk/fileServer';
 
 import './style.css';
-import {IFileProgress} from '../../services/sdk/fileServer';
 
 interface IProps {
     className?: string;
     maxValue: number;
     sampleCount?: number;
     message?: IMessage;
+    onAction?: (cmd: 'cancel' | 'download') => void;
 }
 
 interface IState {
     className: string;
-    playState: 'play' | 'pause' | 'seek_play' | 'seek_pause' | 'upload' | 'download';
+    playState: 'play' | 'pause' | 'seek_play' | 'seek_pause' | 'progress' | 'download';
 }
 
 export interface IVoicePlayerData {
     bars: number[];
     voice?: Blob;
     duration: number;
-    state: 'pause' | 'upload' | 'download';
+    state: 'pause' | 'progress' | 'download';
 }
 
 class VoicePlayer extends React.Component<IProps, IState> {
@@ -66,7 +67,7 @@ class VoicePlayer extends React.Component<IProps, IState> {
 
         this.state = {
             className: props.className || '',
-            playState: 'upload',
+            playState: 'pause',
         };
 
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
@@ -84,7 +85,6 @@ class VoicePlayer extends React.Component<IProps, IState> {
     }
 
     public setData(data: IVoicePlayerData) {
-        const {message} = this.props;
         this.duration = data.duration;
         this.preciseDuration = data.duration;
         this.displayTimer();
@@ -98,14 +98,17 @@ class VoicePlayer extends React.Component<IProps, IState> {
             this.voice = data.voice;
             this.prepareVoice();
         }
-        if (data.state) {
+        this.setVoiceState(data.state);
+    }
+
+    public setVoiceState(state: 'play' | 'pause' | 'seek_play' | 'seek_pause' | 'progress' | 'download') {
+        const {message} = this.props;
+        if (state) {
             this.setState({
-                playState: data.state,
+                playState: state,
             });
-            if (data.state === 'upload' && message) {
+            if (state === 'progress' && message) {
                 this.removeAllListeners();
-                this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
-            } else if (data.state === 'download' && message) {
                 this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
             }
         }
@@ -120,13 +123,15 @@ class VoicePlayer extends React.Component<IProps, IState> {
                     <PlayArrowRounded onClick={this.playVoiceHandler}/>}
                     {Boolean(playState === 'play' || playState === 'seek_play') &&
                     <PauseRounded onClick={this.pauseVoiceHandler}/>}
-                    {Boolean(playState === 'upload') && <React.Fragment>
-                        <CloseRounded/>
+                    {Boolean(playState === 'download') &&
+                    <ArrowDownwardRounded onClick={this.downloadVoiceHandler}/>}
+                    {Boolean(playState === 'progress') && <React.Fragment>
                         <div className="progress">
                             <svg viewBox="0 0 32 32">
                                 <circle ref={this.progressRefHandler} r="12" cx="16" cy="16"/>
                             </svg>
                         </div>
+                        <CloseRounded className="action" onClick={this.cancelVoiceHandler}/>
                     </React.Fragment>}
                 </div>
                 <div className="play-preview" onMouseDown={this.barMouseDownHandler}
@@ -304,6 +309,9 @@ class VoicePlayer extends React.Component<IProps, IState> {
     /* Bar mouse down handler */
     private barMouseDownHandler = (e: any) => {
         const {playState} = this.state;
+        if (playState === 'progress' || playState === 'download') {
+            return;
+        }
         this.onSeek = true;
         const rect = e.currentTarget.getBoundingClientRect();
         const ratio = (e.clientX - rect.left) / rect.width;
@@ -333,6 +341,9 @@ class VoicePlayer extends React.Component<IProps, IState> {
 
     /* Window mouse up handler */
     private windowMouseUpHandler = () => {
+        if (this.onSeek) {
+            return;
+        }
         const {playState} = this.state;
         this.onSeek = false;
         if (playState === 'seek_play' || playState === 'seek_pause') {
@@ -368,6 +379,9 @@ class VoicePlayer extends React.Component<IProps, IState> {
 
     /* Upload progress handler */
     private uploadProgressHandler = (progress: IFileProgress) => {
+        if (!this.circleProgressRef) {
+            return;
+        }
         let v = 3;
         if (progress.state !== 'complete' && progress.download > 0) {
             v = (progress.upload / progress.totalUpload) * 73;
@@ -377,9 +391,7 @@ class VoicePlayer extends React.Component<IProps, IState> {
         if (v < 3) {
             v = 3;
         }
-        if (this.circleProgressRef) {
-            this.circleProgressRef.style.strokeDasharray = `${v} 75`;
-        }
+        this.circleProgressRef.style.strokeDasharray = `${v} 75`;
     }
 
     /* Remove all listeners */
@@ -389,6 +401,20 @@ class VoicePlayer extends React.Component<IProps, IState> {
                 canceller();
             }
         });
+    }
+
+    /* Download voice handler */
+    private downloadVoiceHandler = () => {
+        if (this.props.onAction) {
+            this.props.onAction('download');
+        }
+    }
+
+    /* Cancel voice handler */
+    private cancelVoiceHandler = () => {
+        if (this.props.onAction) {
+            this.props.onAction('cancel');
+        }
     }
 }
 
