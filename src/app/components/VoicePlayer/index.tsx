@@ -14,6 +14,7 @@ import {IMessage} from '../../repository/message/interface';
 import {IFileProgress} from '../../services/sdk/fileServer';
 
 import './style.css';
+import FileRepo from '../../repository/file';
 
 interface IProps {
     className?: string;
@@ -30,9 +31,10 @@ interface IState {
 
 export interface IVoicePlayerData {
     bars: number[];
-    voice?: Blob;
     duration: number;
     state: 'pause' | 'progress' | 'download';
+    voice?: Blob;
+    voiceId?: string;
 }
 
 class VoicePlayer extends React.Component<IProps, IState> {
@@ -61,6 +63,8 @@ class VoicePlayer extends React.Component<IProps, IState> {
     private circleProgressRef: any = null;
     private eventReferences: any[] = [];
     private progressBroadcaster: ProgressBroadcaster;
+    private voiceId: string | undefined;
+    private fileRepo: FileRepo;
 
     constructor(props: IProps) {
         super(props);
@@ -71,6 +75,7 @@ class VoicePlayer extends React.Component<IProps, IState> {
         };
 
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
+        this.fileRepo = FileRepo.getInstance();
     }
 
     public componentDidMount() {
@@ -84,6 +89,7 @@ class VoicePlayer extends React.Component<IProps, IState> {
         window.removeEventListener('Theme_Changed', this.themeChangedHandler);
     }
 
+    /* Set voice metadata and file */
     public setData(data: IVoicePlayerData) {
         this.duration = data.duration;
         this.preciseDuration = data.duration;
@@ -99,8 +105,12 @@ class VoicePlayer extends React.Component<IProps, IState> {
             this.prepareVoice();
         }
         this.setVoiceState(data.state);
+        if (data.voiceId) {
+            this.voiceId = data.voiceId;
+        }
     }
 
+    /* Set voice state */
     public setVoiceState(state: 'play' | 'pause' | 'seek_play' | 'seek_pause' | 'progress' | 'download') {
         const {message} = this.props;
         if (state) {
@@ -112,6 +122,11 @@ class VoicePlayer extends React.Component<IProps, IState> {
                 this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
             }
         }
+    }
+
+    /* Set voice Id */
+    public setVoiceId(id?: string) {
+        this.voiceId = id;
     }
 
     public render() {
@@ -258,6 +273,23 @@ class VoicePlayer extends React.Component<IProps, IState> {
 
     /* Play voice handler */
     private playVoiceHandler = () => {
+        if (this.voice) {
+            this.playVoice();
+        } else if (this.voiceId) {
+            this.fileRepo.get(this.voiceId).then((res) => {
+                if (res) {
+                    this.voice = res.data;
+                    this.prepareVoice();
+                    this.playVoice();
+                } else {
+                    // TODO: get from server!
+                }
+            });
+        }
+    }
+
+    /* Play voice */
+    private playVoice() {
         this.audio.play().then(() => {
             this.setState({
                 playState: 'play',

@@ -78,6 +78,10 @@ export default class FileRepo {
         return this.db.files.add(file);
     }
 
+    public get(id: string) {
+        return this.db.files.get(id);
+    }
+
     private createHash(blob: Blob): Promise<string> {
         return new Promise((resolve) => {
             const fileReader = new FileReader();

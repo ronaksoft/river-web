@@ -160,8 +160,8 @@ export default class FileManager {
                 code: C_FILE_ERR_CODE.REQUEST_CANCELLED,
                 message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.REQUEST_CANCELLED],
             });
-            delete this.fileTransferQueue[id];
             this.clearQueueById(id);
+            delete this.fileTransferQueue[id];
         }
     }
 

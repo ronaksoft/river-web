@@ -162,7 +162,7 @@ class Chat extends React.Component<IProps, IState> {
     private connInfo: IConnInfo;
     private eventReferences: any[] = [];
     private dialogMap: { [key: string]: number } = {};
-    private dialogsSortThrottle: any = null;
+    private readonly dialogsSortThrottle: any = null;
     private readHistoryMaxId: number | null = null;
     private isMobileView: boolean = false;
     private mobileBackTimeout: any = null;
@@ -2604,7 +2604,10 @@ class Chat extends React.Component<IProps, IState> {
                 if (res.messageid) {
                     this.sendReadHistory(peer, res.messageid);
                 }
+
                 message.id = res.messageid;
+                message.downloaded = true;
+
                 this.messageRepo.lazyUpsert([message]);
                 this.updateDialogs(message, '0');
 
@@ -2646,7 +2649,10 @@ class Chat extends React.Component<IProps, IState> {
                 if (res.messageid) {
                     this.sendReadHistory(peer, res.messageid);
                 }
+
                 message.id = res.messageid;
+                message.downloaded = true;
+
                 this.messageRepo.lazyUpsert([message]);
                 this.updateDialogs(message, '0');
 
@@ -2714,7 +2720,21 @@ class Chat extends React.Component<IProps, IState> {
             case MediaType.MEDIATYPEDOCUMENT:
                 const mediaDocument: MediaDocument.AsObject = message.mediadata;
                 if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
-                    this.fileRepo.persistTempFiles(id, mediaDocument.doc.id, mediaDocument.doc.mimetype || 'application/octet-stream');
+                    this.fileRepo.persistTempFiles(id, mediaDocument.doc.id, mediaDocument.doc.mimetype || 'application/octet-stream').then(() => {
+                        this.messageRepo.get(message.id || 0).then((msg) => {
+                            if (msg) {
+                                msg.downloaded = true;
+                                if (this.state.messages) {
+                                    const index = findIndex(this.state.messages, {id: msg.id});
+                                    if (index > -1) {
+                                        this.state.messages[index] = msg;
+                                        this.messageComponent.list.forceUpdateGrid();
+                                    }
+                                }
+                                this.messageRepo.lazyUpsert([msg]);
+                            }
+                        });
+                    });
                 }
                 break;
         }
@@ -2744,6 +2764,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.cancelSend(message.id || 0);
                 break;
             case 'download':
+                window.console.log(message);
                 break;
         }
     }

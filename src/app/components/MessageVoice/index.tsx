@@ -34,6 +34,7 @@ interface IState {
 class MessageVoice extends React.Component<IProps, IState> {
     private voicePlayerRef: VoicePlayer;
     private lastId: number = 0;
+    private voiceId: string = '';
 
     constructor(props: IProps) {
         super(props);
@@ -50,6 +51,9 @@ class MessageVoice extends React.Component<IProps, IState> {
     public componentDidMount() {
         const {message} = this.state;
         const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
+        if (!message || !messageMediaDocument.doc) {
+            return;
+        }
         const info: {
             bars: number[],
             duration: number,
@@ -69,10 +73,12 @@ class MessageVoice extends React.Component<IProps, IState> {
                 }
             }
         });
+        this.voiceId = messageMediaDocument.doc.id || '';
         this.voicePlayerRef.setData({
             bars: info.bars,
             duration: info.duration,
             state: this.getVoiceState(message),
+            voiceId: messageMediaDocument.doc.id,
         });
     }
 
@@ -84,7 +90,13 @@ class MessageVoice extends React.Component<IProps, IState> {
                 message: newProps.message,
             }, () => {
                 this.voicePlayerRef.setVoiceState(this.getVoiceState(message));
+                this.getVoiceId();
             });
+        }
+        const messageMediaDocument: MediaDocument.AsObject = newProps.message.mediadata;
+        if (messageMediaDocument && messageMediaDocument.doc && messageMediaDocument.doc.id !== this.voiceId) {
+            this.voiceId = messageMediaDocument.doc.id || '';
+            this.voicePlayerRef.setVoiceId(this.voiceId);
         }
     }
 
@@ -95,6 +107,13 @@ class MessageVoice extends React.Component<IProps, IState> {
                              maxValue={16.0} message={this.state.message} onAction={this.actionHandler}/>
             </div>
         );
+    }
+
+    /* Get voice data */
+    private getVoiceId() {
+        const {message} = this.state;
+        const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
+        this.voicePlayerRef.setVoiceId(messageMediaDocument.doc.id);
     }
 
     /* Voice Player ref handler */
