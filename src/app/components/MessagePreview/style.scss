@@ -37,7 +37,7 @@
         overflow: hidden;
         flex-grow: 1;
         flex-direction: column;
-        background-color: var(--glaas-dark-low);
+        background-color: var(--glass-dark-low);
         border-top-right-radius: 5px;
         border-bottom-right-radius: 5px;
         .preview-message-user {
@@ -119,7 +119,7 @@ html[theme="dark-blue"] {
     .preview-container {
       .preview-message-wrapper {
         .preview-message {
-          background-color: rgba(0, 0, 0, 0.20);
+          background-color: var(--glass-dark-high);
         }
       }
     }

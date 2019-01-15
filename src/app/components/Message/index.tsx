@@ -422,10 +422,12 @@ class Message extends React.Component<IProps, IState> {
                                 {Boolean(message.fwdsenderid && message.fwdsenderid !== '0') &&
                                 <MessageForwarded message={message} peer={peer}
                                                   onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>}
-                                {this.renderMessageBody(message, peer)}
-                                <MessageStatus status={message.me || false} id={message.id} readId={readId}
-                                               time={message.createdon || 0} editedTime={message.editedon || 0}
-                                               onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>
+                                <div className="bubble-body">
+                                    {this.renderMessageBody(message, peer)}
+                                    <MessageStatus status={message.me || false} id={message.id} readId={readId}
+                                                   time={message.createdon || 0} editedTime={message.editedon || 0}
+                                                   onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>
+                                </div>
                                 <div className="more" onClick={this.contextMenuHandler.bind(this, index)}>
                                     <MoreVert/>
                                 </div>

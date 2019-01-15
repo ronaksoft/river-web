@@ -9,10 +9,31 @@
 @import '../../../style/common';
 
 .message-voice {
-  background-color: var(--glaas-dark-low);
+  background-color: var(--glass-dark-low);
   border-radius: 5px;
   .voice-player .play-timer {
     width: 40px;
+    padding-top: 2px;
     color: var(--grey-low);
+  }
+}
+
+html[theme="dark"],
+html[theme="dark-blue"] {
+  .message-voice {
+    background-color: var(--glass-dark-high);
+    .voice-player .play-timer {
+      color: var(--light);
+    }
+  }
+}
+
+html[bubble="2"] {
+  .message-voice {
+    border-radius: 16px;
+    .voice-player .play-timer {
+      padding-right: 6px;
+      width: 46px;
+    }
   }
 }

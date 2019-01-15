@@ -52,7 +52,7 @@ html[theme="dark"] {
           background-color: var(--dark-low);
         }
         .preview-message {
-          background-color: rgba(0, 0, 0, 0.20);
+          background-color: var(--glass-dark-high);
         }
       }
     }
@@ -67,7 +67,7 @@ html[theme="dark-blue"] {
           background-color: var(--dark-blue-low);
         }
         .preview-message {
-          background-color: rgba(0, 0, 0, 0.20);
+          background-color: var(--glass-dark-high);
         }
       }
     }

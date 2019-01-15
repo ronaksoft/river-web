@@ -39,7 +39,8 @@
   --color-text-hover: rgba(50, 61, 71, 0.64);
   --header-color: #eee;
   --light-mention: #2678b6;
-  --glaas-dark-low: rgba(0, 0, 0, 0.05);
+  --glass-dark-low: rgba(0, 0, 0, 0.05);
+  --glass-dark-high: rgba(0, 0, 0, 0.20);
   --dark-low: #191919;
   --dark-medium: #232323;
   --dark-high: #333333;
@@ -143,9 +144,11 @@ input {
   .bubble-wrapper.voice {
     height: 44px; }
     .bubble-wrapper.voice .bubble {
-      padding: 6px !important;
-      display: flex;
-      flex-direction: row; }
+      padding: 3px !important; }
+      .bubble-wrapper.voice .bubble .bubble-body {
+        padding: 3px !important;
+        display: flex;
+        flex-direction: row; }
   .bubble-wrapper .arrow {
     position: absolute;
     top: 6px;

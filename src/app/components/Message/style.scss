@@ -95,11 +95,11 @@
   &.voice {
     height: 44px;
     .bubble {
-      padding: 6px !important;
-      display: flex;
-      flex-direction: row;
-      .message-voice {
-
+      padding: 3px !important;
+      .bubble-body {
+        padding: 3px !important;
+        display: flex;
+        flex-direction: row;
       }
     }
   }

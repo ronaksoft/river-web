@@ -576,7 +576,9 @@ class TextInput extends React.Component<IProps, IState> {
             this.setState({
                 previewMessage: null,
                 previewMessageMode: C_MSG_MODE.Normal,
+                voiceMode: 'up',
             });
+            this.setInputMode('default');
             if (this.props.onPreviewMessageChange) {
                 this.props.onPreviewMessageChange(undefined, C_MSG_MODE.Normal);
             }
@@ -976,14 +978,19 @@ class TextInput extends React.Component<IProps, IState> {
                 voiceMode: 'play',
             });
         } else if (this.state.voiceMode === 'play') {
-            const {previewMessage, previewMessageMode} = this.state;
-            const message = cloneDeep(previewMessage);
-            this.props.onMessage(this.textarea.value,);
-            this.props.onVoice(this.voice, to4bitResolution(this.bars), this.timerDuration, {
-                message,
-                mode: previewMessageMode,
-            });
+            this.sendVoice();
         }
+    }
+
+    /* Send voice */
+    private sendVoice() {
+        const {previewMessage, previewMessageMode} = this.state;
+        const message = cloneDeep(previewMessage);
+        this.props.onVoice(this.voice, to4bitResolution(this.bars), this.timerDuration, {
+            message,
+            mode: previewMessageMode,
+        });
+        this.clearPreviewMessage(true);
     }
 
     /* Window click handler */
@@ -1066,9 +1073,7 @@ class TextInput extends React.Component<IProps, IState> {
         });
 
         this.recorder.ondataavailable = (typedArray: any) => {
-            // window.console.log(typedArray);
             this.voice = new Blob([typedArray], {type: 'audio/ogg'});
-
             if (this.state.voiceMode === 'play') {
                 this.computeFinalBars();
                 this.voicePlayerRef.setData({
@@ -1077,13 +1082,15 @@ class TextInput extends React.Component<IProps, IState> {
                     state: 'pause',
                     voice: this.voice,
                 });
+            } else if (this.state.voiceMode === 'up') {
+                this.computeFinalBars();
+                this.sendVoice();
             }
         };
     }
 
     /* Normalize the wave amount */
     private normalize(x: number) {
-        // x = -0.0204398621181 * x * x + 2.87341884341 * x;
         if (x < 30) {
             x = 30;
         }
