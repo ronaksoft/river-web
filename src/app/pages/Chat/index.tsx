@@ -101,6 +101,7 @@ import {
 import RiverTime from '../../services/utilities/river_time';
 import FileRepo from '../../repository/file';
 import ProgressBroadcaster from '../../services/progress';
+import {C_FILE_ERR_CODE} from '../../services/sdk/fileServer/const/const';
 
 import './style.css';
 
@@ -486,6 +487,7 @@ class Chat extends React.Component<IProps, IState> {
                                          onSelectableChange={this.messageSelectableChangeHandler}
                                          onJumpToMessage={this.messageJumpToMessageHandler}
                                          onLoadMoreAfter={this.messageLoadMoreAfterHandler}
+                                         onAttachmentAction={this.messageAttachmentActionHandler}
                                 />
                             </div>
                             <div className="attachments" hidden={!this.state.toggleAttachment}>
@@ -2109,6 +2111,9 @@ class Chat extends React.Component<IProps, IState> {
             case 'resend':
                 this.resendMessage(message);
                 break;
+            case 'cancel':
+                this.cancelSend(message.id || 0);
+                break;
             default:
                 window.console.log(cmd, message);
                 break;
@@ -2606,14 +2611,16 @@ class Chat extends React.Component<IProps, IState> {
                 // Force update messages
                 this.messageComponent.list.forceUpdateGrid();
             });
-        }).catch(() => {
+        }).catch((err) => {
             this.progressBroadcaster.remove(id);
-            const {messages} = this.state;
-            const index = findIndex(messages, {id});
-            if (index > -1) {
-                messages[index].error = true;
-                this.messageRepo.importBulk([messages[index]], false);
-                this.messageComponent.list.forceUpdateGrid();
+            if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
+                const {messages} = this.state;
+                const index = findIndex(messages, {id});
+                if (index > -1) {
+                    messages[index].error = true;
+                    this.messageRepo.importBulk([messages[index]], false);
+                    this.messageComponent.list.forceUpdateGrid();
+                }
             }
         });
     }
@@ -2646,14 +2653,16 @@ class Chat extends React.Component<IProps, IState> {
                 // Force update messages
                 this.messageComponent.list.forceUpdateGrid();
             });
-        }).catch(() => {
+        }).catch((err) => {
             this.progressBroadcaster.remove(message.id || 0);
-            const {messages} = this.state;
-            const index = findIndex(messages, {id: message.id});
-            if (index > -1) {
-                messages[index].error = true;
-                this.messageRepo.importBulk([messages[index]], false);
-                this.messageComponent.list.forceUpdateGrid();
+            if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
+                const {messages} = this.state;
+                const index = findIndex(messages, {id: message.id});
+                if (index > -1) {
+                    messages[index].error = true;
+                    this.messageRepo.importBulk([messages[index]], false);
+                    this.messageComponent.list.forceUpdateGrid();
+                }
             }
         });
     }
@@ -2726,6 +2735,49 @@ class Chat extends React.Component<IProps, IState> {
                 }
             });
         }
+    }
+
+    /* Attachment action handler */
+    private messageAttachmentActionHandler = (cmd: 'cancel' | 'download', message: IMessage) => {
+        switch (cmd) {
+            case 'cancel':
+                this.cancelSend(message.id || 0);
+                break;
+            case 'download':
+                break;
+        }
+    }
+
+    /* Cancel sending message */
+    private cancelSend(id: number) {
+        const removeMessage = () => {
+            this.messageRepo.remove(id).then(() => {
+                const {messages} = this.state;
+                if (messages) {
+                    const index = findIndex(messages, {id});
+                    if (index > -1) {
+                        this.messageComponent.cache.clear(index, 0);
+                        messages.splice(index, 1);
+                        this.messageComponent.list.forceUpdateGrid();
+                        this.messageComponent.list.recomputeGridSize();
+                    }
+                }
+            });
+        };
+        this.messageRepo.getPendingByMessageId(id).then((res) => {
+            if (res) {
+                if (res.file_ids) {
+                    res.file_ids.forEach((fileId) => {
+                        this.fileManager.cancel(fileId);
+                        this.fileRepo.removeTempsById(fileId);
+                    });
+                }
+                this.messageRepo.removePending(res.id);
+                removeMessage();
+            } else {
+                removeMessage();
+            }
+        });
     }
 }
 

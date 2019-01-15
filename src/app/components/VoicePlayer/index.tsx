@@ -20,7 +20,7 @@ interface IProps {
     maxValue: number;
     sampleCount?: number;
     message?: IMessage;
-    onAction?: (cmd: 'cancel' | 'download') => void;
+    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download') => void;
 }
 
 interface IState {
@@ -413,7 +413,11 @@ class VoicePlayer extends React.Component<IProps, IState> {
     /* Cancel voice handler */
     private cancelVoiceHandler = () => {
         if (this.props.onAction) {
-            this.props.onAction('cancel');
+            if (this.props.message && (this.props.message.id || 0) < 0) {
+                this.props.onAction('cancel');
+            } else {
+                this.props.onAction('cancel_download');
+            }
         }
     }
 }

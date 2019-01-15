@@ -24,6 +24,7 @@ import './style.css';
 interface IProps {
     message: IMessage;
     peer: InputPeer | null;
+    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download', message: IMessage) => void;
 }
 
 interface IState {
@@ -117,8 +118,10 @@ class MessageVoice extends React.Component<IProps, IState> {
     }
 
     /* Voice action handler */
-    private actionHandler = (cmd: 'cancel' | 'download') => {
-        window.console.log(cmd);
+    private actionHandler = (cmd: 'cancel' | 'download' | 'cancel_download') => {
+        if (this.props.onAction) {
+            this.props.onAction(cmd, this.state.message);
+        }
     }
 }
 

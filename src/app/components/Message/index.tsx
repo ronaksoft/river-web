@@ -32,6 +32,7 @@ import './style.css';
 interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
     items: IMessage[];
+    onAttachmentAction?: (cmd: 'cancel' | 'download', message: IMessage) => void;
     onJumpToMessage: (id: number, e: any) => void;
     onLoadMoreAfter?: (id: number) => any;
     onLoadMoreBefore?: () => any;
@@ -795,7 +796,7 @@ class Message extends React.Component<IProps, IState> {
     private renderMessageBody(message: IMessage, peer: InputPeer | null) {
         if (message.mediatype !== MediaType.MEDIATYPEEMPTY && message.mediatype !== undefined) {
             if (message.messagetype === C_MESSAGE_TYPE.Voice) {
-                return (<MessageVoice message={message} peer={peer}/>);
+                return (<MessageVoice message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
             } else {
                 return '';
             }
