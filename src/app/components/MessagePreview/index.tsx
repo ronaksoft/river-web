@@ -14,6 +14,7 @@ import MessageRepo from '../../repository/message';
 import {InputPeer} from '../../services/sdk/messages/core.types_pb';
 
 import './style.css';
+import {getMessageTitle} from '../Dialog/utils';
 
 interface IProps {
     message: IMessage;
@@ -99,8 +100,7 @@ class MessagePreview extends React.Component<IProps, IState> {
                                 <UserName id={previewMessage.senderid || ''} you={true}/>
                             </div>
                             <div className="preview-message-body">
-                                <div
-                                    className={'inner ' + (previewMessage.rtl ? 'rtl' : 'ltr')}>{previewMessage.body}</div>
+                                {this.getMessageBody(previewMessage)}
                             </div>
                         </div>
                     </div>
@@ -138,6 +138,15 @@ class MessagePreview extends React.Component<IProps, IState> {
                 previewMessage: null,
             });
         });
+    }
+
+    /* Get message body */
+    private getMessageBody(msg: IMessage) {
+        if ((msg.body || '').length > 0) {
+            return (<div className={'inner ' + (msg.rtl ? 'rtl' : 'ltr')}>{msg.body}</div>);
+        } else {
+            return (<div className={'inner'}>{getMessageTitle(msg)}</div>);
+        }
     }
 }
 

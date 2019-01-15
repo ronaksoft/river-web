@@ -17,6 +17,7 @@ import {IMessage} from '../message/interface';
 import UpdateManager from '../../services/sdk/server/updateManager';
 import {DexieDialogDB} from '../../services/db/dexie/dialog';
 import GroupRepo from '../group';
+import {getMessageTitle} from '../../components/Dialog/utils';
 
 export default class DialogRepo {
     public static getInstance() {
@@ -269,7 +270,7 @@ export default class DialogRepo {
     private applyMessage(dialog: IDialog, msg: IMessage): IDialog {
         dialog.action_code = msg.messageaction;
         dialog.action_data = msg.actiondata;
-        dialog.preview = (msg.body || '').substr(0, 64);
+        dialog.preview = getMessageTitle(msg);
         dialog.preview_me = (msg.senderid === this.userId);
         dialog.last_update = msg.createdon;
         dialog.target_id = msg.peerid;

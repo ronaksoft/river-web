@@ -102,6 +102,7 @@ import RiverTime from '../../services/utilities/river_time';
 import FileRepo from '../../repository/file';
 import ProgressBroadcaster from '../../services/progress';
 import {C_FILE_ERR_CODE} from '../../services/sdk/fileServer/const/const';
+import {getMessageTitle} from '../../components/Dialog/utils';
 
 import './style.css';
 
@@ -1571,7 +1572,6 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         const {dialogs} = this.state;
-        const preview = (msg.body || '').substr(0, 64);
         const previewMe = (this.connInfo.UserID === msg.senderid);
         let toUpdateDialog: IDialog | null = null;
         if (this.dialogMap.hasOwnProperty(id)) {
@@ -1580,7 +1580,7 @@ class Chat extends React.Component<IProps, IState> {
                 dialogs[index].action_code = msg.messageaction;
                 dialogs[index].action_data = msg.actiondata;
                 dialogs[index].topmessageid = msg.id;
-                dialogs[index].preview = preview;
+                dialogs[index].preview = getMessageTitle(msg);
                 dialogs[index].preview_me = previewMe;
                 dialogs[index].sender_id = msg.senderid;
                 dialogs[index].target_id = msg.peerid;
@@ -1599,7 +1599,7 @@ class Chat extends React.Component<IProps, IState> {
                 last_update: msg.createdon,
                 peerid: id,
                 peertype: msg.peertype,
-                preview,
+                preview: getMessageTitle(msg),
                 preview_me: previewMe,
                 sender_id: msg.senderid,
                 target_id: msg.peerid,
