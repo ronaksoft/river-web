@@ -197,7 +197,7 @@
       color: var(--dark-medium);
       font-weight: 300;
     }
-    > .inner {
+    .inner {
       direction: ltr;
       padding: 4px 4px 0 4px;
       white-space: pre-wrap;
@@ -537,7 +537,7 @@ html[font="3"] {
     .bubble {
       font-size: 16px;
       padding-bottom: 16px;
-      > .inner {
+      .inner {
         padding-bottom: 2px !important;
       }
     }
@@ -555,7 +555,7 @@ html[font="4"] {
     .bubble {
       font-size: 18px;
       padding-bottom: 16px;
-      > .inner {
+      .inner {
         padding-bottom: 4px !important;
       }
     }
@@ -573,7 +573,7 @@ html[font="5"] {
     .bubble {
       font-size: 20px;
       padding-bottom: 17px;
-      > .inner {
+      .inner {
         padding-bottom: 6px !important;
       }
     }
@@ -599,7 +599,7 @@ html[bubble="2"] {
       border-radius: 20px;
       min-width: 91px;
       padding-bottom: 16px;
-      > .inner {
+      .inner {
         padding: 8px 12px 0 8px;
       }
       .name {
@@ -644,7 +644,7 @@ html[bubble="4"] {
       border-radius: 10px;
       min-width: 91px;
       padding-bottom: 16px;
-      > .inner {
+      .inner {
         padding: 8px 12px 0 8px;
       }
       .name {
@@ -709,7 +709,7 @@ html[bubble="4"] {
 //    }
 //    &.avatar.you {
 //      .bubble {
-//        > .inner {
+//        .inner {
 //          padding: 2px 12px 0 8px;
 //        }
 //      }
