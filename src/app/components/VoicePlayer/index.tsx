@@ -349,6 +349,9 @@ class VoicePlayer extends React.Component<IProps, IState> {
     private startPlayerInterval() {
         clearInterval(this.playerInterval);
         this.playerInterval = setInterval(() => {
+            if (!this.playVoiceBarRef || !this.audio) {
+                return;
+            }
             this.playVoiceBarRef.style.width = `${((this.audio.currentTime / this.audio.duration) * 100)}%`;
             this.displayTimer(this.audio.currentTime);
         }, 100);

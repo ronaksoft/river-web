@@ -42,7 +42,7 @@
         .voice-player .play-action .progress svg circle {
           fill: transparent;
           stroke: var(--grey);
-          stroke-width: 3px;
+          stroke-width: 2px;
           stroke-dasharray: 3 75;
           transition: stroke-dashoffset 0.1s ease; }
     .voice-player .play-action .action {
@@ -84,6 +84,10 @@ html[theme="dark-blue"] .voice-player .play-action svg {
 html[theme="dark"] .voice-player .play-action:hover svg,
 html[theme="dark-blue"] .voice-player .play-action:hover svg {
   color: var(--light); }
+
+html[theme="dark"] .voice-player .play-action .progress svg circle,
+html[theme="dark-blue"] .voice-player .play-action .progress svg circle {
+  stroke: var(--light); }
 
 @keyframes rotateDonut {
   from {

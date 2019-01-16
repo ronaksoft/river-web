@@ -262,6 +262,31 @@
         .wave {
           display: none;
         }
+        .lock-wrapper {
+          position: absolute;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          left: 50%;
+          top: 0;
+          height: 0;
+          width: 0;
+          transform: translate(-50%, -50%);
+          background-color: var(--white);
+          border-radius: 50%;
+          border: 1px solid var(--light);
+          overflow: hidden;
+          transition: all 0.2s;
+          svg {
+            font-size: 16px;
+            color: var(--red) !important;
+          }
+          &.show {
+            top: -32px;
+            height: 24px;
+            width: 24px;
+          }
+        }
       }
     }
     &.mode-voice,
@@ -496,6 +521,12 @@ html[theme="dark-blue"] {
             color: var(--light);
           }
         }
+        .voice {
+          .lock-wrapper {
+            background-color: var(--dark-medium);
+            border-color: var(--dark-low);
+          }
+        }
       }
     }
     .actions {
@@ -567,6 +598,14 @@ html[theme="dark-blue"] {
       .voice-recorder {
         .play-frame {
           background-color: var(--dark-blue-low);
+        }
+      }
+      .input-actions {
+        .voice {
+          .lock-wrapper {
+            background-color: var(--dark-blue-medium);
+            border-color: var(--dark-blue-low);
+          }
         }
       }
     }

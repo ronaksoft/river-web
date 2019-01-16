@@ -271,6 +271,28 @@ input {
         display: none; }
       .write .inputs .input-actions .voice .wave {
         display: none; }
+      .write .inputs .input-actions .voice .lock-wrapper {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        left: 50%;
+        top: 0;
+        height: 0;
+        width: 0;
+        transform: translate(-50%, -50%);
+        background-color: var(--white);
+        border-radius: 50%;
+        border: 1px solid var(--light);
+        overflow: hidden;
+        transition: all 0.2s; }
+        .write .inputs .input-actions .voice .lock-wrapper svg {
+          font-size: 16px;
+          color: var(--red) !important; }
+        .write .inputs .input-actions .voice .lock-wrapper.show {
+          top: -32px;
+          height: 24px;
+          width: 24px; }
     .write .inputs.mode-voice .input, .write .inputs.mode-play .input {
       display: none; }
     .write .inputs.mode-voice .voice-recorder, .write .inputs.mode-play .voice-recorder {
@@ -444,6 +466,10 @@ html[theme="dark-blue"] .write {
   html[theme="dark"] .write .inputs .input-actions .icon:hover svg,
   html[theme="dark-blue"] .write .inputs .input-actions .icon:hover svg {
     color: var(--light); }
+  html[theme="dark"] .write .inputs .input-actions .voice .lock-wrapper,
+  html[theme="dark-blue"] .write .inputs .input-actions .voice .lock-wrapper {
+    background-color: var(--dark-medium);
+    border-color: var(--dark-low); }
   html[theme="dark"] .write .actions svg,
   html[theme="dark-blue"] .write .actions svg {
     color: var(--white); }
@@ -497,6 +523,9 @@ html[theme="dark-blue"] .write {
     background-color: var(--dark-blue-low) !important; }
   html[theme="dark-blue"] .write .inputs .voice-recorder .play-frame {
     background-color: var(--dark-blue-low); }
+  html[theme="dark-blue"] .write .inputs .input-actions .voice .lock-wrapper {
+    background-color: var(--dark-blue-medium);
+    border-color: var(--dark-blue-low); }
   html[theme="dark-blue"] .write .actions svg {
     color: var(--dark-blue-high-alt); }
   html[theme="dark-blue"] .write .actions [disabled] svg {

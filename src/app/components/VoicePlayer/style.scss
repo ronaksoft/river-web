@@ -47,7 +47,7 @@
         circle {
           fill: transparent;
           stroke: var(--grey);
-          stroke-width: 3px;
+          stroke-width: 2px;
           stroke-dasharray: 3 75;
           transition: stroke-dashoffset 0.1s ease;
         }
@@ -104,6 +104,13 @@ html[theme="dark-blue"] {
       &:hover {
         svg {
           color: var(--light);
+        }
+      }
+      .progress {
+        svg {
+          circle {
+            stroke: var(--light);
+          }
         }
       }
     }

@@ -20,6 +20,7 @@ import {
     AttachFileRounded,
     KeyboardVoiceRounded,
     StopRounded,
+    LockRounded,
 } from '@material-ui/icons';
 import {IconButton} from '@material-ui/core';
 import UserAvatar from '../UserAvatar';
@@ -331,6 +332,9 @@ class TextInput extends React.Component<IProps, IState> {
                                  onMouseUp={this.voiceMouseUpHandler} onMouseEnter={this.voiceMouseEnterHandler}
                                  onMouseLeave={this.voiceMouseLeaveHandler} onClick={this.voiceMouseClickHandler}>
                                 {this.getVoiceIcon()}
+                                <div className={'lock-wrapper' + (this.state.voiceMode === 'lock' ? ' show' : '')}>
+                                    <LockRounded/>
+                                </div>
                             </div>
                             <div className="icon attachment">
                                 <AttachFileRounded/>
@@ -1006,7 +1010,7 @@ class TextInput extends React.Component<IProps, IState> {
     private windowResizeHandler = () => {
         const el = document.querySelector('.write .inputs .voice-recorder .preview, .write .inputs .voice-recorder .play-preview');
         if (el) {
-            this.canvasConfig.height = el.clientHeight;
+            this.canvasConfig.height = el.clientHeight - 4;
             this.canvasConfig.width = el.clientWidth;
             this.canvasConfig.totalWith = this.canvasConfig.barWidth + this.canvasConfig.barSpace;
             this.canvasConfig.ratio = (this.canvasConfig.height - 1) / 255.0;
