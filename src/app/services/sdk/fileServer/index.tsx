@@ -269,7 +269,15 @@ export default class FileManager {
                                 window.console.log(`${chunk.part}/${chunkInfo.totalParts} uploaded`);
                             }
                         }).catch((err) => {
-                            if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
+                            window.console.log(err);
+                            if (err.code === C_FILE_ERR_CODE.NO_WORKER) {
+                                if (chunk) {
+                                    this.fileTransferQueue[id].sendChunks.unshift(chunk);
+                                }
+                                setTimeout(() => {
+                                    this.startUploading(id);
+                                }, 500);
+                            } else if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
                                 if (chunk) {
                                     this.fileTransferQueue[id].sendChunks.push(chunk);
                                     this.fileTransferQueue[id].retry++;
@@ -331,18 +339,21 @@ export default class FileManager {
                     };
                     if (chunkInfo.fileLocation) {
                         this.download(chunkInfo.fileLocation, chunk.part, chunk.offset, chunk.limit, cancelHandler, uploadProgress, downloadProgress).then((res) => {
+                            window.console.log('download', chunk.part);
                             this.startDownloading(id);
                             if (chunk) {
                                 window.console.log(`${chunk.part}/${chunkInfo.totalParts} downloaded`);
                             }
                         }).catch((err) => {
-                            window.console.log(err);
-                            if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
-                                if (chunk) {
-                                    this.fileTransferQueue[id].receiveChunks.push(chunk);
-                                    this.fileTransferQueue[id].retry++;
+                            if (err.code === C_FILE_ERR_CODE.NO_WORKER) {
+                                this.fileTransferQueue[id].receiveChunks.unshift(chunk);
+                                setTimeout(() => {
                                     this.startDownloading(id);
-                                }
+                                }, 500);
+                            } else if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
+                                this.fileTransferQueue[id].receiveChunks.push(chunk);
+                                this.fileTransferQueue[id].retry++;
+                                this.startDownloading(id);
                             }
                         });
                     }
@@ -544,8 +555,11 @@ export default class FileManager {
 
     /* Send chunk over http */
     private sendFileChunk(id: string, partNum: number, totalParts: number, bytes: Uint8Array, cancel: any, onUploadProgress?: (e: any) => void, onDownloadProgress?: (e: any) => void): Promise<Bool> {
-        if (this.httpWorkers.length === 1) {
-            return Promise.reject('file server is not started yet');
+        if (this.httpWorkers.length === 0 || (this.httpWorkers.length >= 1 && !this.httpWorkers[1].isReady())) {
+            return Promise.reject({
+                code: C_FILE_ERR_CODE.NO_WORKER,
+                message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.NO_WORKER],
+            });
         }
         const data = new FileSavePart();
         data.setFileid(id);
@@ -557,8 +571,11 @@ export default class FileManager {
 
     /* Receive chunk over http */
     private receiveFileChunk(location: core_types_pb.InputFileLocation, offset: number, limit: number, cancel: any, onUploadProgress?: (e: any) => void, onDownloadProgress?: (e: any) => void): Promise<File> {
-        if (this.httpWorkers.length === 0) {
-            return Promise.reject('file server is not started yet');
+        if (this.httpWorkers.length === 0 || (this.httpWorkers.length >= 0 && !this.httpWorkers[0].isReady())) {
+            return Promise.reject({
+                code: C_FILE_ERR_CODE.NO_WORKER,
+                message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.NO_WORKER],
+            });
         }
         const data = new FileGet();
         data.setOffset(offset);
@@ -584,10 +601,10 @@ export default class FileManager {
         }).then((bytes) => {
             for (let i = 0; i < C_FILE_SERVER_HTTP_WORKER_NUM; i++) {
                 this.httpWorkers[i] = new Http(bytes, i + 1);
-                this.httpWorkers[i].ready(() => {
-                    this.startDownloadQueue();
-                    this.startUploadQueue();
-                });
+                // this.httpWorkers[i].ready(() => {
+                //     this.startDownloadQueue();
+                //     this.startUploadQueue();
+                // });
             }
         });
     }

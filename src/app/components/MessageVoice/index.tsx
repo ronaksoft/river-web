@@ -149,6 +149,8 @@ class MessageVoice extends React.Component<IProps, IState> {
             this.props.onAction(cmd, this.state.message);
             if (cmd === 'download') {
                 this.voicePlayerRef.setVoiceState('progress');
+            } else if (cmd === 'cancel_download') {
+                this.voicePlayerRef.setVoiceState('download');
             }
         }
     }

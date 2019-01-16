@@ -2758,13 +2758,16 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Attachment action handler */
-    private messageAttachmentActionHandler = (cmd: 'cancel' | 'download', message: IMessage) => {
+    private messageAttachmentActionHandler = (cmd: 'cancel' | 'download' | 'cancel_download', message: IMessage) => {
         switch (cmd) {
             case 'cancel':
                 this.cancelSend(message.id || 0);
                 break;
             case 'download':
                 this.downloadFile(message);
+                break;
+            case 'cancel_download':
+                this.cancelDownloadFile(message);
                 break;
         }
     }
@@ -2826,6 +2829,18 @@ class Chat extends React.Component<IProps, IState> {
                         window.console.log(err);
                         this.progressBroadcaster.remove(msg.id || 0);
                     });
+                }
+                break;
+        }
+    }
+
+    /* Cancel download file */
+    private cancelDownloadFile(msg: IMessage) {
+        switch (msg.mediatype) {
+            case MediaType.MEDIATYPEDOCUMENT:
+                const mediaDocument: MediaDocument.AsObject = msg.mediadata;
+                if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
+                    this.fileManager.cancel(mediaDocument.doc.id);
                 }
                 break;
         }

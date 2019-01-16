@@ -132,7 +132,7 @@ class TextInput extends React.Component<IProps, IState> {
     private bars: number[] = [];
     private maxBarVal: number = 0;
     private canvasConfig: { height: number, width: number, barWidth: number, barSpace: number, totalWith: number, ratio: number, maxBars: number, color: string } = {
-        barSpace: 2,
+        barSpace: 1,
         barWidth: 2,
         color: '#1A1A1A',
         height: 0,
@@ -143,6 +143,7 @@ class TextInput extends React.Component<IProps, IState> {
     };
     private voice: Blob;
     private voicePlayerRef: VoicePlayer;
+    private voiceCanceled: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -1023,6 +1024,7 @@ class TextInput extends React.Component<IProps, IState> {
 
     /* Voice record cancel handler */
     private voiceCancelHandler = () => {
+        this.voiceCanceled = true;
         this.voiceRecordEnd();
         this.setInputMode('default');
         this.setState({
@@ -1073,6 +1075,10 @@ class TextInput extends React.Component<IProps, IState> {
         });
 
         this.recorder.ondataavailable = (typedArray: any) => {
+            if (this.voiceCanceled) {
+                this.voiceCanceled = false;
+                return;
+            }
             this.voice = new Blob([typedArray], {type: 'audio/ogg'});
             if (this.state.voiceMode === 'play') {
                 this.computeFinalBars();

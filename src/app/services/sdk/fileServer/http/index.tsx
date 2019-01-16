@@ -34,6 +34,7 @@ export default class Http {
     private sentQueue: number[] = [];
     private dataCenterUrl: string = 'new.river.im/file';
     private workerId: number = 0;
+    private isWorkerReady: boolean = false;
     private readyHandler: any = null;
 
     public constructor(bytes: ArrayBuffer, id: number) {
@@ -52,6 +53,11 @@ export default class Http {
     /* Worker is ready handler */
     public ready(fn: any) {
         this.readyHandler = fn;
+    }
+
+    /* Return isWorkerReady */
+    public isReady() {
+        return this.isWorkerReady;
     }
 
     public send(constructor: number, data: Uint8Array, cancel: (fnCancel: any) => void, onUploadProgress?: (e: any) => void, onDownloadProgress?: (e: any) => void) {
@@ -116,6 +122,7 @@ export default class Http {
                     if (this.readyHandler) {
                         this.readyHandler();
                     }
+                    this.isWorkerReady = true;
                     break;
                 case 'fnEncryptCallback':
                     this.resolveEncrypt(d.data.reqId, d.data.data);

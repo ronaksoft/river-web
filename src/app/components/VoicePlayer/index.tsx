@@ -42,13 +42,13 @@ class VoicePlayer extends React.Component<IProps, IState> {
     private voice: Blob;
     private duration: number;
     private canvasConfig: { height: number, width: number, barWidth: number, barSpace: number, totalWith: number, ratio: number, maxBars: number, color: string } = {
-        barSpace: 2,
+        barSpace: 1,
         barWidth: 2,
         color: '#1A1A1A',
         height: 0,
         maxBars: 200,
         ratio: 1,
-        totalWith: 4,
+        totalWith: 3,
         width: 0,
     };
     private canvasRef: any = null;
@@ -81,12 +81,14 @@ class VoicePlayer extends React.Component<IProps, IState> {
     public componentDidMount() {
         window.addEventListener('mouseup', this.windowMouseUpHandler);
         window.addEventListener('Theme_Changed', this.themeChangedHandler);
+        window.addEventListener('Voice_Played', this.voicePlayedHandler);
     }
 
     public componentWillUnmount() {
         this.removeAllListeners();
         window.removeEventListener('mouseup', this.windowMouseUpHandler);
         window.removeEventListener('Theme_Changed', this.themeChangedHandler);
+        window.removeEventListener('Voice_Played', this.voicePlayedHandler);
         this.emptyAllocatedRAM();
     }
 
@@ -295,6 +297,7 @@ class VoicePlayer extends React.Component<IProps, IState> {
             this.playVoiceHandler();
             return;
         }
+        this.broadcastEvent('Voice_Played', {});
         this.audio.play().then(() => {
             this.setState({
                 playState: 'play',
@@ -319,6 +322,18 @@ class VoicePlayer extends React.Component<IProps, IState> {
         });
         this.audio.pause();
         this.stopPlayerInterval();
+    }
+
+    /* Stop voice handler */
+    private stopVoiceHandler = () => {
+        if (this.audio && this.state.playState === 'play') {
+            this.setState({
+                playState: 'pause',
+            });
+            this.audio.pause();
+            this.seekAudio(0);
+            this.stopPlayerInterval();
+        }
     }
 
     /* Seek voice */
@@ -466,6 +481,22 @@ class VoicePlayer extends React.Component<IProps, IState> {
         }
         // @ts-ignore
         this.voice = null;
+        // @ts-ignore
+        this.audio = null;
+    }
+
+    /* Voice played handler */
+    private voicePlayedHandler = () => {
+        this.stopVoiceHandler();
+    }
+
+    /* Broadcast event */
+    private broadcastEvent(name: string, data: any) {
+        const event = new CustomEvent(name, {
+            bubbles: false,
+            detail: data,
+        });
+        window.dispatchEvent(event);
     }
 }
 
