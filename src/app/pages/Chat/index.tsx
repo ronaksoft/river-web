@@ -2802,10 +2802,10 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Download file */
-    private downloadFile(message: IMessage) {
-        switch (message.mediatype) {
+    private downloadFile(msg: IMessage) {
+        switch (msg.mediatype) {
             case MediaType.MEDIATYPEDOCUMENT:
-                const mediaDocument: MediaDocument.AsObject = message.mediadata;
+                const mediaDocument: MediaDocument.AsObject = msg.mediadata;
                 if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
                     const fileLocation = new InputFileLocation();
                     fileLocation.setAccesshash(mediaDocument.doc.accesshash || '');
@@ -2814,17 +2814,17 @@ class Chat extends React.Component<IProps, IState> {
                     fileLocation.setVersion(mediaDocument.doc.version || 0);
                     window.console.log(mediaDocument);
                     this.fileManager.receiveFile(fileLocation, mediaDocument.doc.filesize || 0, mediaDocument.doc.mimetype || 'application/octet-stream', (progress) => {
-                        this.progressBroadcaster.publish(message.id || 0, progress);
+                        this.progressBroadcaster.publish(msg.id || 0, progress);
                     }).then(() => {
-                        this.progressBroadcaster.remove(message.id || 0);
-                        message.downloaded = true;
-                        this.messageRepo.lazyUpsert([message]);
+                        this.progressBroadcaster.remove(msg.id || 0);
+                        msg.downloaded = true;
+                        this.messageRepo.lazyUpsert([msg]);
                         // Force update messages
                         this.messageComponent.list.forceUpdateGrid();
                         window.console.log('done');
                     }).catch((err) => {
                         window.console.log(err);
-                        this.progressBroadcaster.remove(message.id || 0);
+                        this.progressBroadcaster.remove(msg.id || 0);
                     });
                 }
                 break;

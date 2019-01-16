@@ -46,6 +46,7 @@ class MessageVoice extends React.Component<IProps, IState> {
 
         if (props.message) {
             this.lastId = props.message.id || 0;
+            this.downloaded = props.message.downloaded || false;
         }
     }
 
@@ -99,9 +100,10 @@ class MessageVoice extends React.Component<IProps, IState> {
             this.voiceId = messageMediaDocument.doc.id || '';
             this.voicePlayerRef.setVoiceId(this.voiceId);
         }
-        if (message.downloaded !== this.downloaded) {
-            this.downloaded = true;
-            this.voicePlayerRef.setVoiceState(this.getVoiceState(message));
+        if ((newProps.message.downloaded || false) !== this.downloaded) {
+            window.console.log(newProps.message);
+            this.downloaded = (newProps.message.downloaded || false);
+            this.voicePlayerRef.setVoiceState(this.getVoiceState(newProps.message));
         }
     }
 

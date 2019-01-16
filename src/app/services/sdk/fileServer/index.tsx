@@ -266,7 +266,7 @@ export default class FileManager {
                         this.upload(id, part, chunkInfo.totalParts, cancelHandler, uploadProgress, downloadProgress).then((res) => {
                             this.startUploading(id);
                             if (chunk) {
-                                window.console.log(`${chunk.part}/${chunkInfo.totalParts} uploaded`, res);
+                                window.console.log(`${chunk.part}/${chunkInfo.totalParts} uploaded`);
                             }
                         }).catch((err) => {
                             if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
@@ -333,7 +333,7 @@ export default class FileManager {
                         this.download(chunkInfo.fileLocation, chunk.part, chunk.offset, chunk.limit, cancelHandler, uploadProgress, downloadProgress).then((res) => {
                             this.startDownloading(id);
                             if (chunk) {
-                                window.console.log(`${chunk.part}/${chunkInfo.totalParts} downloaded`, res);
+                                window.console.log(`${chunk.part}/${chunkInfo.totalParts} downloaded`);
                             }
                         }).catch((err) => {
                             window.console.log(err);
@@ -505,7 +505,7 @@ export default class FileManager {
         for (let i = 0; i < totalParts; i++) {
             let limit = C_DOWNLOAD_CHUNK_SIZE;
             if (i === (totalParts - 1)) {
-                limit = size - (totalParts * C_DOWNLOAD_CHUNK_SIZE);
+                limit = size - ((totalParts - 1) * C_DOWNLOAD_CHUNK_SIZE);
             }
             chunks.push({
                 cancel: null,

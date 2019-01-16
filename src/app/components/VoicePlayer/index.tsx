@@ -87,6 +87,7 @@ class VoicePlayer extends React.Component<IProps, IState> {
         this.removeAllListeners();
         window.removeEventListener('mouseup', this.windowMouseUpHandler);
         window.removeEventListener('Theme_Changed', this.themeChangedHandler);
+        this.emptyAllocatedRAM();
     }
 
     /* Set voice metadata and file */
@@ -290,8 +291,11 @@ class VoicePlayer extends React.Component<IProps, IState> {
 
     /* Play voice */
     private playVoice() {
+        if (!this.audio) {
+            this.playVoiceHandler();
+            return;
+        }
         this.audio.play().then(() => {
-            URL.revokeObjectURL(this.audio.src);
             this.setState({
                 playState: 'play',
             });
@@ -303,6 +307,7 @@ class VoicePlayer extends React.Component<IProps, IState> {
                 this.setState({
                     playState: 'pause',
                 });
+                this.emptyAllocatedRAM();
             };
         });
     }
@@ -374,11 +379,11 @@ class VoicePlayer extends React.Component<IProps, IState> {
 
     /* Window mouse up handler */
     private windowMouseUpHandler = () => {
+        this.onSeek = false;
         if (this.onSeek) {
             return;
         }
         const {playState} = this.state;
-        this.onSeek = false;
         if (playState === 'seek_play' || playState === 'seek_pause') {
             if (playState === 'seek_play') {
                 this.setState({
@@ -452,6 +457,15 @@ class VoicePlayer extends React.Component<IProps, IState> {
                 this.props.onAction('cancel_download');
             }
         }
+    }
+
+    /* Empty allocated RAM */
+    private emptyAllocatedRAM() {
+        if (this.audio && this.audio.src) {
+            URL.revokeObjectURL(this.audio.src);
+        }
+        // @ts-ignore
+        this.voice = null;
     }
 }
 
