@@ -20,6 +20,7 @@ import {
     UpdateReadHistoryOutbox, UpdateState,
     UpdateUserTyping
 } from '../messages/api.updates_pb';
+import {File} from '../messages/api.files_pb';
 
 export default class UniqueId {
     public static getMessage(constructor: number, data: Uint8Array): any {
@@ -60,6 +61,8 @@ export default class UniqueId {
                 return User.deserializeBinary(data);
             case C_MSG.PeerNotifySettings:
                 return PeerNotifySettings.deserializeBinary(data);
+            case C_MSG.File:
+                return File.deserializeBinary(data);
             default:
                 return null;
         }

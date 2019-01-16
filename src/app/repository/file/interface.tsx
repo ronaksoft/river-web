@@ -7,6 +7,8 @@
     Copyright Ronak Software Group 2019
 */
 
+import {FileType} from '../../services/sdk/messages/api.files_pb';
+
 interface IFile {
     id: string;
     data: Blob;
@@ -18,6 +20,8 @@ interface ITempFile {
     id: string;
     part: number;
     data: Blob;
+    type?: FileType;
+    modifiedtime?: number;
 }
 
 export {IFile, ITempFile};

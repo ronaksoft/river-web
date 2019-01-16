@@ -34,7 +34,7 @@ import NewMessage from '../../components/NewMessage';
 import * as core_types_pb from '../../services/sdk/messages/core.types_pb';
 import {
     Group,
-    InputFile,
+    InputFile, InputFileLocation,
     InputPeer,
     InputUser,
     MediaType,
@@ -2764,7 +2764,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.cancelSend(message.id || 0);
                 break;
             case 'download':
-                window.console.log(message);
+                this.downloadFile(message);
                 break;
         }
     }
@@ -2799,6 +2799,36 @@ class Chat extends React.Component<IProps, IState> {
                 removeMessage();
             }
         });
+    }
+
+    /* Download file */
+    private downloadFile(message: IMessage) {
+        switch (message.mediatype) {
+            case MediaType.MEDIATYPEDOCUMENT:
+                const mediaDocument: MediaDocument.AsObject = message.mediadata;
+                if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
+                    const fileLocation = new InputFileLocation();
+                    fileLocation.setAccesshash(mediaDocument.doc.accesshash || '');
+                    fileLocation.setClusterid(mediaDocument.doc.clusterid || 0);
+                    fileLocation.setFileid(mediaDocument.doc.id);
+                    fileLocation.setVersion(mediaDocument.doc.version || 0);
+                    window.console.log(mediaDocument);
+                    this.fileManager.receiveFile(fileLocation, mediaDocument.doc.filesize || 0, mediaDocument.doc.mimetype || 'application/octet-stream', (progress) => {
+                        this.progressBroadcaster.publish(message.id || 0, progress);
+                    }).then(() => {
+                        this.progressBroadcaster.remove(message.id || 0);
+                        message.downloaded = true;
+                        this.messageRepo.lazyUpsert([message]);
+                        // Force update messages
+                        this.messageComponent.list.forceUpdateGrid();
+                        window.console.log('done');
+                    }).catch((err) => {
+                        window.console.log(err);
+                        this.progressBroadcaster.remove(message.id || 0);
+                    });
+                }
+                break;
+        }
     }
 }
 

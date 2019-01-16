@@ -35,6 +35,7 @@ class MessageVoice extends React.Component<IProps, IState> {
     private voicePlayerRef: VoicePlayer;
     private lastId: number = 0;
     private voiceId: string = '';
+    private downloaded: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -98,6 +99,10 @@ class MessageVoice extends React.Component<IProps, IState> {
             this.voiceId = messageMediaDocument.doc.id || '';
             this.voicePlayerRef.setVoiceId(this.voiceId);
         }
+        if (message.downloaded !== this.downloaded) {
+            this.downloaded = true;
+            this.voicePlayerRef.setVoiceState(this.getVoiceState(message));
+        }
     }
 
     public render() {
@@ -140,6 +145,9 @@ class MessageVoice extends React.Component<IProps, IState> {
     private actionHandler = (cmd: 'cancel' | 'download' | 'cancel_download') => {
         if (this.props.onAction) {
             this.props.onAction(cmd, this.state.message);
+            if (cmd === 'download') {
+                this.voicePlayerRef.setVoiceState('progress');
+            }
         }
     }
 }

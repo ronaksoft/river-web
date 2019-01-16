@@ -34,6 +34,7 @@ export default class Http {
     private sentQueue: number[] = [];
     private dataCenterUrl: string = 'new.river.im/file';
     private workerId: number = 0;
+    private readyHandler: any = null;
 
     public constructor(bytes: ArrayBuffer, id: number) {
         this.reqId = 0;
@@ -48,6 +49,11 @@ export default class Http {
         this.initWorkerEvent();
     }
 
+    /* Worker is ready handler */
+    public ready(fn: any) {
+        this.readyHandler = fn;
+    }
+
     public send(constructor: number, data: Uint8Array, cancel: (fnCancel: any) => void, onUploadProgress?: (e: any) => void, onDownloadProgress?: (e: any) => void) {
         let internalResolve = null;
         let internalReject = null;
@@ -59,7 +65,7 @@ export default class Http {
             reqId,
         };
 
-        const promise = new Promise((res, rej) => {
+        const promise = new Promise<any>((res, rej) => {
             internalResolve = res;
             internalReject = rej;
             this.sendRequest(request);
@@ -107,6 +113,9 @@ export default class Http {
                 case 'loadConnInfo':
                     this.workerMessage('loadConnInfo', localStorage.getItem('river.conn.info'));
                     this.workerMessage('initSDK', {});
+                    if (this.readyHandler) {
+                        this.readyHandler();
+                    }
                     break;
                 case 'fnEncryptCallback':
                     this.resolveEncrypt(d.data.reqId, d.data.data);
@@ -137,11 +146,10 @@ export default class Http {
             return;
         }
         const message = this.messageListeners[reqId];
-        const u8a = base64ToU8a(base64);
         const cancelToken = new axios.CancelToken((c) => {
             this.messageListeners[reqId].cancel = c;
         });
-        axios.post(`http://${this.dataCenterUrl}`, u8a, {
+        axios.post(`http://${this.dataCenterUrl}`, base64ToU8a(base64), {
             cancelToken,
             headers: {
                 'Accept': 'application/protobuf',
@@ -171,9 +179,8 @@ export default class Http {
         if (!this.messageListeners.hasOwnProperty(reqId)) {
             return;
         }
-        const u8a = base64ToU8a(base64);
-        const res = Presenter.getMessage(constructor, u8a);
-        this.messageListeners[reqId].resolve(res.toObject());
+        const res = Presenter.getMessage(constructor, base64ToU8a(base64));
+        this.messageListeners[reqId].resolve(res);
         delete this.messageListeners[reqId];
         const index = this.sentQueue.indexOf(reqId);
         if (index > -1) {

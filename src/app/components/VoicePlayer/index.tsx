@@ -291,6 +291,7 @@ class VoicePlayer extends React.Component<IProps, IState> {
     /* Play voice */
     private playVoice() {
         this.audio.play().then(() => {
+            URL.revokeObjectURL(this.audio.src);
             this.setState({
                 playState: 'play',
             });
@@ -416,7 +417,7 @@ class VoicePlayer extends React.Component<IProps, IState> {
         }
         let v = 3;
         if (progress.state !== 'complete' && progress.download > 0) {
-            v = (progress.upload / progress.totalUpload) * 73;
+            v = progress.progress * 73;
         } else if (progress.state === 'complete') {
             v = 75;
         }

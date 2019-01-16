@@ -51,14 +51,20 @@ export default class FileRepo {
     }
 
     public persistTempFiles(id: string, docId: string, mimeType: string) {
-        return this.getTempsById(id).then((temps) => {
-            const blobs: Blob[] = [];
-            temps.forEach((temp) => {
-                blobs.push(temp.data);
-            });
-            const blob = new Blob(blobs, {type: mimeType});
-            this.removeTempsById(id);
-            return this.createWithHash(docId, blob);
+        return this.get(docId).then((file) => {
+            if (file) {
+                return file.hash;
+            } else {
+                return this.getTempsById(id).then((temps) => {
+                    const blobs: Blob[] = [];
+                    temps.forEach((temp) => {
+                        blobs.push(temp.data);
+                    });
+                    const blob = new Blob(blobs, {type: mimeType});
+                    this.removeTempsById(id);
+                    return this.createWithHash(docId, blob);
+                });
+            }
         });
     }
 

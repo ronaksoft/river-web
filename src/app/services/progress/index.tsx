@@ -45,6 +45,7 @@ export default class ProgressBroadcaster {
                 fnQueue: [],
                 progress: {
                     download: 0,
+                    progress: 0.0,
                     state: 'loading',
                     totalDownload: 0,
                     totalUpload: 0,
