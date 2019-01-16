@@ -69,6 +69,7 @@ interface IProps {
     text?: string;
     userId?: string;
     onVoice: (voice: Blob, waveform: number[], duration: number, {mode, message}?: any) => void;
+    onFileSelected: (file: File) => void;
 }
 
 interface IState {
@@ -145,6 +146,7 @@ class TextInput extends React.Component<IProps, IState> {
     private voice: Blob;
     private voicePlayerRef: VoicePlayer;
     private voiceCanceled: boolean = false;
+    private fileInputRef: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -243,6 +245,8 @@ class TextInput extends React.Component<IProps, IState> {
         } else {
             return (
                 <div className="write">
+                    <input ref={this.fileInputRefHandler} type="file" style={{display: 'none'}}
+                           onChange={this.fileChangeHandler}/>
                     {(!selectable && previewMessage) &&
                     <div className="previews" style={{height: previewMessageHeight + 'px'}}>
                         <div className="preview-container">
@@ -336,7 +340,7 @@ class TextInput extends React.Component<IProps, IState> {
                                     <LockRounded/>
                                 </div>
                             </div>
-                            <div className="icon attachment">
+                            <div className="icon attachment" onClick={this.openFileDialog}>
                                 <AttachFileRounded/>
                             </div>
                             <div className="icon send" onClick={this.submitMessage}>
@@ -1213,6 +1217,25 @@ class TextInput extends React.Component<IProps, IState> {
         }
 
         this.bars = trimmedBars;
+    }
+
+    /* File input ref handler */
+    private fileInputRefHandler = (ref: any) => {
+        this.fileInputRef = ref;
+    }
+
+    /* Open file dialog */
+    private openFileDialog = () => {
+        if (this.fileInputRef) {
+            this.fileInputRef.click();
+        }
+    }
+
+    /* File change handler */
+    private fileChangeHandler = (e: any) => {
+        if (this.props.onFileSelected && e.currentTarget.files.length > 0) {
+            this.props.onFileSelected(e.currentTarget.files[0]);
+        }
     }
 
     // /* Insert at selection */

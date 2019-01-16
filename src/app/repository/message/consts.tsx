@@ -10,6 +10,7 @@
 export const C_MESSAGE_TYPE = {
     Date: -1,
     End: -4,
+    File: -7,
     Gap: -5,
     Hole: -2,
     NewMessage: -3,

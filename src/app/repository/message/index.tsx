@@ -39,8 +39,9 @@ import {
 } from '../../services/sdk/messages/core.message.actions_pb';
 
 export default class MessageRepo {
-    public static parseAttributes(attrs: DocumentAttribute.AsObject[], flags: { voice: boolean }) {
+    public static parseAttributes(attrs: DocumentAttribute.AsObject[], flags: { voice: boolean, file: boolean }) {
         flags.voice = false;
+        flags.file = false;
         const attrOut: any[] = [];
         attrs.forEach((attr) => {
             switch (attr.type) {
@@ -56,6 +57,7 @@ export default class MessageRepo {
                 case DocumentAttributeType.ATTRIBUTETYPEFILE:
                     // @ts-ignore
                     attrOut.push(DocumentAttributeFile.deserializeBinary(attr.data).toObject());
+                    flags.file = true;
                     delete attr.data;
                     break;
                 case DocumentAttributeType.ATTRIBUTETYPEPHOTO:
@@ -92,9 +94,11 @@ export default class MessageRepo {
                 case MediaType.MEDIATYPEDOCUMENT:
                     out.mediadata = MediaDocument.deserializeBinary(mediaData).toObject();
                     if (out.mediadata.doc && out.mediadata.doc.attributesList) {
-                        const flags: { voice: boolean } = {voice: false};
+                        const flags: { voice: boolean, file: boolean } = {voice: false, file: false};
                         out.attributes = this.parseAttributes(out.mediadata.doc.attributesList, flags);
-                        if (flags.voice) {
+                        if (flags.file) {
+                            out.messagetype = C_MESSAGE_TYPE.File;
+                        } else if (flags.voice) {
                             out.messagetype = C_MESSAGE_TYPE.Voice;
                         }
                     }

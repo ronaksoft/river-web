@@ -28,6 +28,7 @@ import RiverTime from '../../services/utilities/river_time';
 import {ErrorRounded} from '@material-ui/icons';
 
 import './style.css';
+import MessageFile from '../MessageFile';
 
 interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
@@ -799,6 +800,8 @@ class Message extends React.Component<IProps, IState> {
         if (message.mediatype !== MediaType.MEDIATYPEEMPTY && message.mediatype !== undefined) {
             if (message.messagetype === C_MESSAGE_TYPE.Voice) {
                 return (<MessageVoice message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
+            } else if (message.messagetype === C_MESSAGE_TYPE.File) {
+                return (<MessageFile message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
             } else {
                 return '';
             }

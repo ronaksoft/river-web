@@ -101,7 +101,6 @@ class MessageVoice extends React.Component<IProps, IState> {
             this.voicePlayerRef.setVoiceId(this.voiceId);
         }
         if ((newProps.message.downloaded || false) !== this.downloaded) {
-            window.console.log(newProps.message);
             this.downloaded = (newProps.message.downloaded || false);
             this.voicePlayerRef.setVoiceState(this.getVoiceState(newProps.message));
         }

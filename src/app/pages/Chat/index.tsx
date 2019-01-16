@@ -93,7 +93,7 @@ import {InputMediaType} from '../../services/sdk/messages/api.messages_pb';
 import {
     Document,
     DocumentAttribute,
-    DocumentAttributeAudio,
+    DocumentAttributeAudio, DocumentAttributeFile,
     DocumentAttributeType,
     InputMediaUploadedDocument,
     MediaDocument
@@ -504,6 +504,7 @@ class Chat extends React.Component<IProps, IState> {
                                        onBulkAction={this.textInputBulkActionHandler}
                                        onAction={this.textInputActionHandler} peer={peer}
                                        onVoice={this.textInputVoiceHandler}
+                                       onFileSelected={this.textInputFileSelectHandler}
                             />}
                         </div>}
                         {selectedDialogId === 'null' && <div className="column-center">
@@ -2844,6 +2845,128 @@ class Chat extends React.Component<IProps, IState> {
                 }
                 break;
         }
+    }
+
+    /* TextInput file select handler */
+    private textInputFileSelectHandler = (file: File) => {
+        const fileReader = new FileReader();
+        fileReader.onloadend = (e: any) => {
+            const blob = new Blob([e.target.result], {type: file.type});
+
+            const {peer} = this.state;
+            if (peer === null) {
+                return;
+            }
+
+            window.console.log(blob, file);
+
+            const now = this.riverTime.now();
+            const randomId = UniqueId.getRandomId();
+            const id = -this.riverTime.milliNow();
+            const fileId = String(UniqueId.getRandomId());
+
+            const attr1Data = new DocumentAttributeFile();
+            attr1Data.setFilename(file.name);
+
+            const attr1 = new DocumentAttribute();
+            attr1.setData(attr1Data.serializeBinary());
+            attr1.setType(DocumentAttributeType.ATTRIBUTETYPEFILE);
+
+            const attributesList: DocumentAttribute[] = [];
+            attributesList.push(attr1);
+
+            const inputFile = new InputFile();
+            inputFile.setFileid(fileId);
+            inputFile.setFilename(file.name);
+            inputFile.setMd5checksum('');
+            inputFile.setTotalparts(1);
+
+            const mediaData = new InputMediaUploadedDocument();
+            mediaData.setCaption('');
+            mediaData.setMimetype(file.name);
+            mediaData.setStickersList([]);
+            mediaData.setThumbnail(undefined);
+            mediaData.setAttributesList(attributesList);
+            mediaData.setFile(inputFile);
+
+            const tempDocument = new Document();
+            tempDocument.setAccesshash('');
+            tempDocument.setAttributesList(attributesList);
+            tempDocument.setClusterid(0);
+            tempDocument.setDate(now);
+            tempDocument.setId(fileId);
+            tempDocument.setFilesize(blob.size);
+            tempDocument.setMimetype(file.type);
+            tempDocument.setVersion(0);
+
+            const mediaDocument = new MediaDocument();
+            mediaDocument.setTtlinseconds(0);
+            mediaDocument.setCaption('');
+            mediaDocument.setDoc(tempDocument);
+
+            const message: IMessage = {
+                attributes: [attr1Data.toObject()],
+                createdon: now,
+                id,
+                me: true,
+                mediadata: mediaDocument.toObject(),
+                mediatype: MediaType.MEDIATYPEDOCUMENT,
+                messageaction: C_MESSAGE_ACTION.MessageActionNope,
+                messagetype: C_MESSAGE_TYPE.File,
+                peerid: this.state.selectedDialogId,
+                peertype: peer.getType(),
+                senderid: this.connInfo.UserID,
+            };
+
+            this.pushMessage(message);
+
+            const data = mediaData.serializeBinary();
+
+            this.messageRepo.addPending({
+                data,
+                file_ids: [fileId],
+                id: randomId,
+                message_id: id,
+            });
+
+            this.fileManager.sendFile(fileId, blob, (progress) => {
+                this.progressBroadcaster.publish(id, progress);
+            }).then(() => {
+                this.progressBroadcaster.remove(id);
+                this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data).then((res) => {
+                    const {messages} = this.state;
+                    const index = findIndex(messages, {id: message.id});
+                    if (index > -1) {
+                        this.messageComponent.cache.clear(index, 0);
+                    }
+
+                    if (res.messageid) {
+                        this.sendReadHistory(peer, res.messageid);
+                    }
+
+                    message.id = res.messageid;
+                    message.downloaded = true;
+
+                    this.messageRepo.lazyUpsert([message]);
+                    this.updateDialogs(message, '0');
+
+                    // Force update messages
+                    this.messageComponent.list.forceUpdateGrid();
+                });
+            }).catch((err) => {
+                this.progressBroadcaster.remove(id);
+                if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
+                    const {messages} = this.state;
+                    const index = findIndex(messages, {id});
+                    if (index > -1) {
+                        messages[index].error = true;
+                        this.messageRepo.importBulk([messages[index]], false);
+                        this.messageComponent.list.forceUpdateGrid();
+                    }
+                }
+            });
+        };
+        fileReader.readAsArrayBuffer(file);
     }
 }
 
