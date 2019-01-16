@@ -596,7 +596,7 @@ export default class FileManager {
 
     /* Init file manager WASM worker */
     private initFileServer() {
-        fetch('/bin/river.wasm?v7').then((response) => {
+        fetch('/bin/river.wasm?v8').then((response) => {
             return response.arrayBuffer();
         }).then((bytes) => {
             for (let i = 0; i < C_FILE_SERVER_HTTP_WORKER_NUM; i++) {

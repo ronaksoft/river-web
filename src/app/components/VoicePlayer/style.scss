@@ -49,7 +49,7 @@
           stroke: var(--grey);
           stroke-width: 2px;
           stroke-dasharray: 3 75;
-          transition: stroke-dashoffset 0.1s ease;
+          transition: stroke-dasharray 0.1s ease;
         }
       }
     }
