@@ -1,4 +1,4 @@
-const wasmWorker = new Worker('bin/worker.js');
+const wasmWorker = new Worker('bin/worker.js?v8');
 wasmWorker.onerror = (e) => {
     console.log(e);
 };
