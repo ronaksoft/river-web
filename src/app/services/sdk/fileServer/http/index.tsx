@@ -40,6 +40,10 @@ export default class Http {
         this.worker = new Worker('/bin/worker.js');
         this.workerId = id;
 
+        if (window.location.protocol === 'https:') {
+            this.dataCenterUrl = 'https://' + window.location.host + '/file';
+        }
+
         this.workerMessage('init', bytes);
         this.initWorkerEvent();
     }

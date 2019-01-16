@@ -68,5 +68,12 @@ http {
             proxy_set_header Upgrade ${DOLLAR}http_upgrade;
             proxy_set_header Connection "upgrade";
         }
+
+        location /file {
+            proxy_pass http://new.river.im/file;
+            proxy_set_header X-Real-IP ${DOLLAR}remote_addr;
+            proxy_set_header Host new.river.im;
+            proxy_set_header X-Forwarded-For ${DOLLAR}proxy_add_x_forwarded_for;
+        }
     }
 }
