@@ -12,9 +12,9 @@ import {PlayArrowRounded, PauseRounded, CloseRounded, ArrowDownwardRounded} from
 import ProgressBroadcaster from '../../services/progress';
 import {IMessage} from '../../repository/message/interface';
 import {IFileProgress} from '../../services/sdk/fileServer';
+import AudioPlayer, {C_INSTANT_AUDIO, IAudioEvent} from '../../services/audioPlayer';
 
 import './style.css';
-import FileRepo from '../../repository/file';
 
 interface IProps {
     className?: string;
@@ -59,12 +59,11 @@ class VoicePlayer extends React.Component<IProps, IState> {
     private audio: HTMLAudioElement;
     private playerInterval: any = null;
     private onSeek: boolean = false;
-    private preciseDuration: number = 0;
     private circleProgressRef: any = null;
     private eventReferences: any[] = [];
     private progressBroadcaster: ProgressBroadcaster;
     private voiceId: string | undefined;
-    private fileRepo: FileRepo;
+    private audioPlayer: AudioPlayer;
 
     constructor(props: IProps) {
         super(props);
@@ -75,27 +74,27 @@ class VoicePlayer extends React.Component<IProps, IState> {
         };
 
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
-        this.fileRepo = FileRepo.getInstance();
+        this.audioPlayer = AudioPlayer.getInstance();
     }
 
     public componentDidMount() {
         window.addEventListener('mouseup', this.windowMouseUpHandler);
         window.addEventListener('Theme_Changed', this.themeChangedHandler);
-        window.addEventListener('Voice_Played', this.voicePlayedHandler);
+        if (this.props.message && (this.props.message.id || 0) > 0) {
+            this.eventReferences.push(this.audioPlayer.listen(this.props.message.id || 0, this.audioPlayerHandler));
+        }
     }
 
     public componentWillUnmount() {
         this.removeAllListeners();
         window.removeEventListener('mouseup', this.windowMouseUpHandler);
         window.removeEventListener('Theme_Changed', this.themeChangedHandler);
-        window.removeEventListener('Voice_Played', this.voicePlayedHandler);
-        this.emptyAllocatedRAM();
     }
 
     /* Set voice metadata and file */
     public setData(data: IVoicePlayerData) {
+        const {message} = this.props;
         this.duration = data.duration;
-        this.preciseDuration = data.duration;
         this.displayTimer();
         this.bars = data.bars;
         setTimeout(() => {
@@ -105,11 +104,15 @@ class VoicePlayer extends React.Component<IProps, IState> {
         }, 100);
         if (data.voice) {
             this.voice = data.voice;
-            this.prepareVoice();
+            this.eventReferences.push(this.audioPlayer.listen(C_INSTANT_AUDIO, this.audioPlayerHandler));
+            this.audioPlayer.setInstantVoice(this.voice);
         }
         this.setVoiceState(data.state);
         if (data.voiceId) {
             this.voiceId = data.voiceId;
+            if (message) {
+                this.audioPlayer.addToPlaylist(message.id || 0, this.voiceId, message.downloaded || false);
+            }
         }
     }
 
@@ -129,7 +132,11 @@ class VoicePlayer extends React.Component<IProps, IState> {
 
     /* Set voice Id */
     public setVoiceId(id?: string) {
+        const {message} = this.props;
         this.voiceId = id;
+        if (this.voiceId && message) {
+            this.audioPlayer.addToPlaylist(message.id || 0, this.voiceId, message.downloaded || false);
+        }
     }
 
     public render() {
@@ -264,84 +271,38 @@ class VoicePlayer extends React.Component<IProps, IState> {
         }
     }
 
-    /* Play voice */
-    private prepareVoice() {
-        this.audio = document.createElement('audio');
-        this.audio.src = URL.createObjectURL(this.voice);
-        this.audio.onloadedmetadata = () => {
-            this.preciseDuration = this.audio.duration;
-        };
-        this.audio.load();
-    }
-
     /* Play voice handler */
     private playVoiceHandler = () => {
+        const {message} = this.props;
         if (this.voice) {
-            this.playVoice();
-        } else if (this.voiceId) {
-            this.fileRepo.get(this.voiceId).then((res) => {
-                if (res) {
-                    this.voice = res.data;
-                    this.prepareVoice();
-                    this.playVoice();
-                } else {
-                    // TODO: get from server!
-                }
-            });
-        }
-    }
-
-    /* Play voice */
-    private playVoice() {
-        if (!this.audio) {
-            this.playVoiceHandler();
-            return;
-        }
-        this.broadcastEvent('Voice_Played', {});
-        this.audio.play().then(() => {
-            this.setState({
-                playState: 'play',
-            });
-            this.startPlayerInterval();
-            this.audio.onended = () => {
-                this.stopPlayerInterval();
-                this.seekAudio(0);
-                this.displayTimer(this.preciseDuration);
-                this.setState({
-                    playState: 'pause',
+            if (!this.audioPlayer.play(C_INSTANT_AUDIO)) {
+                this.audioPlayer.setInstantVoice(this.voice, () => {
+                    this.audioPlayer.play(C_INSTANT_AUDIO);
                 });
-                this.emptyAllocatedRAM();
-            };
-        });
+            }
+        } else if (this.voiceId && message) {
+            this.audioPlayer.play(message.id || 0);
+        }
     }
 
     /* Pause voice handler */
     private pauseVoiceHandler = () => {
-        this.setState({
-            playState: 'pause',
-        });
-        this.audio.pause();
-        this.stopPlayerInterval();
-    }
-
-    /* Stop voice handler */
-    private stopVoiceHandler = () => {
-        if (this.audio && this.state.playState === 'play') {
-            this.setState({
-                playState: 'pause',
-            });
-            this.audio.pause();
-            this.seekAudio(0);
-            this.stopPlayerInterval();
+        const {message} = this.props;
+        if (this.voice) {
+            this.audioPlayer.pause(C_INSTANT_AUDIO);
+        } else if (this.voiceId && message) {
+            this.audioPlayer.pause(message.id || 0);
         }
     }
 
     /* Seek voice */
     private seekAudio(ratio: number) {
         this.playVoiceBarRef.style.width = `${ratio * 100}%`;
-        if (this.audio) {
-            const time = this.preciseDuration * ratio;
-            this.audio.currentTime = time;
+        const {message} = this.props;
+        if (this.voice) {
+            this.audioPlayer.seekTo(C_INSTANT_AUDIO, ratio);
+        } else if (this.voiceId && message) {
+            this.audioPlayer.seekTo(message.id || 0, ratio);
         }
     }
 
@@ -477,30 +438,24 @@ class VoicePlayer extends React.Component<IProps, IState> {
         }
     }
 
-    /* Empty allocated RAM */
-    private emptyAllocatedRAM() {
-        if (this.audio && this.audio.src) {
-            URL.revokeObjectURL(this.audio.src);
+    private audioPlayerHandler = (event: IAudioEvent) => {
+        this.playVoiceBarRef.style.width = `${event.progress * 100}%`;
+        this.displayTimer(event.currentTime);
+        if (this.state.playState !== event.state) {
+            this.setState({
+                playState: event.state,
+            });
         }
-        // @ts-ignore
-        this.voice = null;
-        // @ts-ignore
-        this.audio = null;
     }
 
-    /* Voice played handler */
-    private voicePlayedHandler = () => {
-        this.stopVoiceHandler();
-    }
-
-    /* Broadcast event */
-    private broadcastEvent(name: string, data: any) {
-        const event = new CustomEvent(name, {
-            bubbles: false,
-            detail: data,
-        });
-        window.dispatchEvent(event);
-    }
+    // /* Broadcast event */
+    // private broadcastEvent(name: string, data: any) {
+    //     const event = new CustomEvent(name, {
+    //         bubbles: false,
+    //         detail: data,
+    //     });
+    //     window.dispatchEvent(event);
+    // }
 }
 
 export default VoicePlayer;

@@ -96,10 +96,10 @@ export default class MessageRepo {
                     if (out.mediadata.doc && out.mediadata.doc.attributesList) {
                         const flags: { voice: boolean, file: boolean } = {voice: false, file: false};
                         out.attributes = this.parseAttributes(out.mediadata.doc.attributesList, flags);
-                        if (flags.file) {
-                            out.messagetype = C_MESSAGE_TYPE.File;
-                        } else if (flags.voice) {
+                        if (flags.voice) {
                             out.messagetype = C_MESSAGE_TYPE.Voice;
+                        } else if (flags.file) {
+                            out.messagetype = C_MESSAGE_TYPE.File;
                         }
                     }
                     break;
