@@ -32,7 +32,7 @@ export default class Http {
     private reqId: number;
     private messageListeners: { [key: number]: IMessageListener } = {};
     private sentQueue: number[] = [];
-    private dataCenterUrl: string = 'new.river.im/file';
+    private dataCenterUrl: string = 'http://new.river.im/file';
     private workerId: number = 0;
     private isWorkerReady: boolean = false;
     private readyHandler: any = null;
@@ -156,7 +156,7 @@ export default class Http {
         const cancelToken = new axios.CancelToken((c) => {
             this.messageListeners[reqId].cancel = c;
         });
-        axios.post(`http://${this.dataCenterUrl}`, base64ToU8a(base64), {
+        axios.post(this.dataCenterUrl, base64ToU8a(base64), {
             cancelToken,
             headers: {
                 'Accept': 'application/protobuf',
