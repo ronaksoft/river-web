@@ -2827,11 +2827,11 @@ class Chat extends React.Component<IProps, IState> {
                         const index = findIndex(messages, {id: msg.id});
                         if (index > -1) {
                             this.messageComponent.cache.clear(index, 0);
+                            this.messageComponent.list.recomputeRowHeights();
+                            this.messageComponent.list.recomputeGridSize();
                         }
                         msg.downloaded = true;
                         this.messageRepo.lazyUpsert([msg]);
-                        this.messageComponent.list.recomputeRowHeights();
-                        this.messageComponent.list.recomputeGridSize();
                         // Force update messages
                         this.messageComponent.list.forceUpdateGrid();
                         window.console.log('done');
