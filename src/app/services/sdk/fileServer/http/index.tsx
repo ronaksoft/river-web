@@ -33,6 +33,7 @@ export default class Http {
     private messageListeners: { [key: number]: IMessageListener } = {};
     private sentQueue: number[] = [];
     private dataCenterUrl: string = 'http://new.river.im/file';
+    // @ts-ignore
     private workerId: number = 0;
     private isWorkerReady: boolean = false;
     private readyHandler: any = null;
@@ -128,11 +129,10 @@ export default class Http {
                     break;
                 case 'fnEncryptCallback':
                     this.resolveEncrypt(d.data.reqId, d.data.data);
-                    window.console.timeEnd(`${this.workerId} fnEncrypt`);
                     break;
                 case 'fnDecryptCallback':
                     this.resolveDecrypt(d.data.reqId, d.data.constructor, d.data.data);
-                    window.console.timeEnd(`${this.workerId} fnDecrypt`);
+                    window.console.log(`${d.data.reqId} fnDecrypt`);
                     break;
                 default:
                     break;
@@ -142,7 +142,6 @@ export default class Http {
 
     /* Send http request */
     private sendRequest(request: IHttpRequest) {
-        window.console.time(`${this.workerId} fnEncrypt`);
         this.workerMessage('fnEncrypt', {
             constructor: request.constructor,
             payload: uint8ToBase64(request.data),
@@ -172,8 +171,8 @@ export default class Http {
         }).then((bytes) => {
             if (this.messageListeners.hasOwnProperty(reqId)) {
                 const data = new Uint8Array(bytes);
-                window.console.time(`${this.workerId} fnDecrypt`);
                 this.workerMessage('fnDecrypt', uint8ToBase64(data));
+                window.console.log(`${reqId} fnDecrypt`);
             }
         }).catch((err) => {
             if (this.messageListeners.hasOwnProperty(reqId)) {

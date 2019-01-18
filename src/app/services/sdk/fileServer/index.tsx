@@ -48,10 +48,13 @@ interface IReceiveChunk {
 }
 
 interface IChunksInfo {
+    completed: boolean;
+    doneParts: number;
     fileLocation?: core_types_pb.InputFileLocation;
     interval: any;
     mimeType?: string;
     onProgress?: (e: IFileProgress) => void;
+    pipelines: number;
     receiveChunks: IReceiveChunk[];
     reject: any;
     resolve: any;
@@ -64,9 +67,11 @@ interface IChunksInfo {
 }
 
 const C_FILE_SERVER_HTTP_WORKER_NUM = 2;
-const C_MAX_UPLOAD_QUEUE_SIZE = 1;
+const C_MAX_UPLOAD_QUEUE_SIZE = 2;
+const C_MAX_UPLOAD_PIPELINE_SIZE = 4;
 const C_UPLOAD_CHUNK_SIZE = 256 * 1024;
-const C_MAX_DOWNLOAD_QUEUE_SIZE = 1;
+const C_MAX_DOWNLOAD_QUEUE_SIZE = 4;
+const C_MAX_DOWNLOAD_PIPELINE_SIZE = 4;
 const C_DOWNLOAD_CHUNK_SIZE = 256 * 1024;
 const C_MAX_RETRIES = 10;
 
@@ -192,7 +197,11 @@ export default class FileManager {
                 code: C_FILE_ERR_CODE.REQUEST_CANCELLED,
                 message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.REQUEST_CANCELLED],
             });
-            this.clearQueueById(id);
+            if (this.fileTransferQueue[id].upload) {
+                this.clearUploadQueueById(id);
+            } else {
+                this.clearDownloadQueueById(id);
+            }
             delete this.fileTransferQueue[id];
         }
     }
@@ -205,6 +214,7 @@ export default class FileManager {
                 this.onWireUploads.push(id);
                 this.startUploading(id);
             }
+            this.startUploadQueue();
         }
     }
 
@@ -216,6 +226,7 @@ export default class FileManager {
                 this.onWireDownloads.push(id);
                 this.startDownloading(id);
             }
+            this.startDownloadQueue();
         }
     }
 
@@ -223,7 +234,7 @@ export default class FileManager {
     private startUploading(id: string) {
         if (this.fileTransferQueue.hasOwnProperty(id)) {
             if (this.fileTransferQueue[id].retry > C_MAX_RETRIES) {
-                this.clearQueueById(id);
+                this.clearUploadQueueById(id);
                 this.fileTransferQueue[id].reject({
                     code: C_FILE_ERR_CODE.MAX_TRY,
                     message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.MAX_TRY],
@@ -263,13 +274,20 @@ export default class FileManager {
                                 }
                             }
                         };
+                        this.fileTransferQueue[id].pipelines++;
                         this.upload(id, part, chunkInfo.totalParts, cancelHandler, uploadProgress, downloadProgress).then((res) => {
+                            if (this.fileTransferQueue.hasOwnProperty(id)) {
+                                this.fileTransferQueue[id].doneParts++;
+                                this.fileTransferQueue[id].pipelines--;
+                            }
                             this.startUploading(id);
                             if (chunk) {
                                 window.console.log(`${chunk.part}/${chunkInfo.totalParts} uploaded`);
                             }
                         }).catch((err) => {
-                            window.console.log(err);
+                            if (this.fileTransferQueue.hasOwnProperty(id)) {
+                                this.fileTransferQueue[id].pipelines--;
+                            }
                             if (err.code === C_FILE_ERR_CODE.NO_WORKER) {
                                 if (chunk) {
                                     this.fileTransferQueue[id].sendChunks.unshift(chunk);
@@ -287,13 +305,23 @@ export default class FileManager {
                         });
                     }
                 }
-            } else {
-                this.clearQueueById(id);
+            } else if (chunkInfo.doneParts === chunkInfo.totalParts) {
                 if (this.fileTransferQueue.hasOwnProperty(id)) {
+                    if (this.fileTransferQueue[id].completed) {
+                        return;
+                    }
+                    this.fileTransferQueue[id].completed = true;
+                    this.clearUploadQueueById(id);
                     this.dispatchProgress(id, 'complete');
                     this.fileTransferQueue[id].resolve();
                     delete this.fileTransferQueue[id];
                 }
+                this.startUploadQueue();
+            }
+        }
+        if (this.fileTransferQueue.hasOwnProperty(id)) {
+            if (this.fileTransferQueue[id].sendChunks.length > 1 && this.fileTransferQueue[id].pipelines < C_MAX_UPLOAD_PIPELINE_SIZE) {
+                this.startUploading(id);
             }
         }
     }
@@ -302,7 +330,7 @@ export default class FileManager {
     private startDownloading(id: string) {
         if (this.fileTransferQueue.hasOwnProperty(id)) {
             if (this.fileTransferQueue[id].retry > C_MAX_RETRIES) {
-                this.clearQueueById(id);
+                this.clearDownloadQueueById(id);
                 this.fileTransferQueue[id].reject({
                     code: C_FILE_ERR_CODE.MAX_TRY,
                     message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.MAX_TRY],
@@ -338,13 +366,21 @@ export default class FileManager {
                         }
                     };
                     if (chunkInfo.fileLocation) {
+                        this.fileTransferQueue[id].pipelines++;
                         this.download(chunkInfo.fileLocation, chunk.part, chunk.offset, chunk.limit, cancelHandler, uploadProgress, downloadProgress).then((res) => {
+                            if (this.fileTransferQueue.hasOwnProperty(id)) {
+                                this.fileTransferQueue[id].doneParts++;
+                                this.fileTransferQueue[id].pipelines--;
+                            }
                             window.console.log('download', chunk.part);
                             this.startDownloading(id);
                             if (chunk) {
                                 window.console.log(`${chunk.part}/${chunkInfo.totalParts} downloaded`);
                             }
                         }).catch((err) => {
+                            if (this.fileTransferQueue.hasOwnProperty(id)) {
+                                this.fileTransferQueue[id].pipelines--;
+                            }
                             if (err.code === C_FILE_ERR_CODE.NO_WORKER) {
                                 this.fileTransferQueue[id].receiveChunks.unshift(chunk);
                                 setTimeout(() => {
@@ -358,9 +394,13 @@ export default class FileManager {
                         });
                     }
                 }
-            } else {
-                this.clearQueueById(id);
+            } else if (chunkInfo.doneParts === chunkInfo.totalParts) {
                 if (this.fileTransferQueue.hasOwnProperty(id)) {
+                    if (this.fileTransferQueue[id].completed) {
+                        return;
+                    }
+                    this.fileTransferQueue[id].completed = true;
+                    this.clearDownloadQueueById(id);
                     this.dispatchProgress(id, 'complete');
                     this.fileRepo.persistTempFiles(id, id, this.fileTransferQueue[id].mimeType || 'application/octet-stream').then(() => {
                         this.fileTransferQueue[id].resolve();
@@ -370,12 +410,20 @@ export default class FileManager {
                         delete this.fileTransferQueue[id];
                     });
                 }
+                this.startDownloadQueue();
+            } else {
+                window.console.log(chunkInfo.doneParts);
+            }
+        }
+        if (this.fileTransferQueue.hasOwnProperty(id)) {
+            if (this.fileTransferQueue[id].receiveChunks.length > 1 && this.fileTransferQueue[id].pipelines < C_MAX_DOWNLOAD_PIPELINE_SIZE) {
+                this.startDownloading(id);
             }
         }
     }
 
-    /* Clear queue by id */
-    private clearQueueById(id: string) {
+    /* Clear upload queue by id */
+    private clearUploadQueueById(id: string) {
         clearInterval(this.fileTransferQueue[id].interval);
         const index = this.uploadQueue.indexOf(id);
         if (index > -1) {
@@ -384,6 +432,19 @@ export default class FileManager {
         const wireIndex = this.onWireUploads.indexOf(id);
         if (wireIndex > -1) {
             this.onWireUploads.splice(wireIndex, 1);
+        }
+    }
+
+    /* Clear download queue by id */
+    private clearDownloadQueueById(id: string) {
+        clearInterval(this.fileTransferQueue[id].interval);
+        const index = this.downloadQueue.indexOf(id);
+        if (index > -1) {
+            this.downloadQueue.splice(index, 1);
+        }
+        const wireIndex = this.onWireDownloads.indexOf(id);
+        if (wireIndex > -1) {
+            this.onWireDownloads.splice(wireIndex, 1);
         }
     }
 
@@ -471,8 +532,11 @@ export default class FileManager {
     /* Prepare upload transfer */
     private prepareUploadTransfer(id: string, chunks: Blob[], size: number, resolve: any, reject: any, onProgress?: (e: IFileProgress) => void) {
         this.fileTransferQueue[id] = {
+            completed: false,
+            doneParts: 0,
             interval: null,
             onProgress,
+            pipelines: 0,
             receiveChunks: [],
             reject,
             resolve,
@@ -533,10 +597,13 @@ export default class FileManager {
             });
         }
         this.fileTransferQueue[id] = {
+            completed: false,
+            doneParts: 0,
             fileLocation: file,
             interval: null,
             mimeType,
             onProgress,
+            pipelines: 0,
             receiveChunks: chunks,
             reject,
             resolve,
@@ -601,10 +668,9 @@ export default class FileManager {
         }).then((bytes) => {
             for (let i = 0; i < C_FILE_SERVER_HTTP_WORKER_NUM; i++) {
                 this.httpWorkers[i] = new Http(bytes, i + 1);
-                // this.httpWorkers[i].ready(() => {
-                //     this.startDownloadQueue();
-                //     this.startUploadQueue();
-                // });
+                this.httpWorkers[i].ready(() => {
+                    window.console.log(`Http WASM worker ${i} is ready`);
+                });
             }
         });
     }
