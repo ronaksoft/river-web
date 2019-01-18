@@ -400,7 +400,12 @@ class VoicePlayer extends React.Component<IProps, IState> {
             return;
         }
         let v = 3;
-        if (progress.state !== 'complete' && progress.download > 0) {
+        if (progress.state === 'failed') {
+            this.setState({
+                playState: 'download',
+            });
+            return;
+        } else if (progress.state !== 'complete' && progress.download > 0) {
             v = progress.progress * 73;
         } else if (progress.state === 'complete') {
             v = 75;

@@ -31,6 +31,17 @@ export default class ProgressBroadcaster {
     private constructor() {
     }
 
+    public failed(id: number) {
+        this.callHandlers(id, {
+            download: 0,
+            progress: 0,
+            state:'failed',
+            totalDownload: 0,
+            totalUpload: 0,
+            upload: 0,
+        });
+    }
+
     public publish(id: number, progress: IFileProgress) {
         this.callHandlers(id, progress);
     }

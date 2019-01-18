@@ -2828,6 +2828,7 @@ class Chat extends React.Component<IProps, IState> {
                         window.console.log('done');
                     }).catch((err) => {
                         window.console.log(err);
+                        this.progressBroadcaster.failed(msg.id || 0);
                         this.progressBroadcaster.remove(msg.id || 0);
                     });
                 }

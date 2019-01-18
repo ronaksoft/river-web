@@ -19,7 +19,7 @@ import * as core_types_pb from '../messages/core.types_pb';
 
 export interface IFileProgress {
     download: number;
-    state: 'loading' | 'complete';
+    state: 'loading' | 'complete' | 'failed';
     totalDownload: number;
     totalUpload: number;
     upload: number;
