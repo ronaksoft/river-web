@@ -103,6 +103,7 @@ import FileRepo from '../../repository/file';
 import ProgressBroadcaster from '../../services/progress';
 import {C_FILE_ERR_CODE} from '../../services/sdk/fileServer/const/const';
 import {getMessageTitle} from '../../components/Dialog/utils';
+import {saveAs} from 'file-saver';
 
 import './style.css';
 
@@ -2759,7 +2760,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Attachment action handler */
-    private messageAttachmentActionHandler = (cmd: 'cancel' | 'download' | 'cancel_download', message: IMessage) => {
+    private messageAttachmentActionHandler = (cmd: 'cancel' | 'download' | 'cancel_download' | 'view', message: IMessage) => {
         switch (cmd) {
             case 'cancel':
                 this.cancelSend(message.id || 0);
@@ -2769,6 +2770,8 @@ class Chat extends React.Component<IProps, IState> {
                 break;
             case 'cancel_download':
                 this.cancelDownloadFile(message);
+            case 'view':
+                this.viewFile(message);
                 break;
         }
     }
@@ -2816,13 +2819,19 @@ class Chat extends React.Component<IProps, IState> {
                     fileLocation.setClusterid(mediaDocument.doc.clusterid || 0);
                     fileLocation.setFileid(mediaDocument.doc.id);
                     fileLocation.setVersion(mediaDocument.doc.version || 0);
-                    window.console.log(mediaDocument);
                     this.fileManager.receiveFile(fileLocation, mediaDocument.doc.filesize || 0, mediaDocument.doc.mimetype || 'application/octet-stream', (progress) => {
                         this.progressBroadcaster.publish(msg.id || 0, progress);
                     }).then(() => {
                         this.progressBroadcaster.remove(msg.id || 0);
+                        const {messages} = this.state;
+                        const index = findIndex(messages, {id: msg.id});
+                        if (index > -1) {
+                            this.messageComponent.cache.clear(index, 0);
+                        }
                         msg.downloaded = true;
                         this.messageRepo.lazyUpsert([msg]);
+                        this.messageComponent.list.recomputeRowHeights();
+                        this.messageComponent.list.recomputeGridSize();
                         // Force update messages
                         this.messageComponent.list.forceUpdateGrid();
                         window.console.log('done');
@@ -2968,6 +2977,37 @@ class Chat extends React.Component<IProps, IState> {
             });
         };
         fileReader.readAsArrayBuffer(file);
+    }
+
+    /* View file by type */
+    private viewFile(msg: IMessage) {
+        switch (msg.mediatype) {
+            case MediaType.MEDIATYPEDOCUMENT:
+                const mediaDocument: MediaDocument.AsObject = msg.mediadata;
+                if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
+                    this.fileRepo.get(mediaDocument.doc.id).then((res) => {
+                        if (res) {
+                            saveAs(res.data, this.getFileName(msg));
+                        }
+                    });
+                }
+                break;
+        }
+    }
+
+    private getFileName(message: IMessage) {
+        let name = '';
+        const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
+        messageMediaDocument.doc.attributesList.forEach((attr, index) => {
+            if (attr.type === DocumentAttributeType.ATTRIBUTETYPEFILE && message.attributes) {
+                const docAttr: DocumentAttributeFile.AsObject = message.attributes[index];
+                name = docAttr.filename || '';
+            }
+        });
+        if (name.length === 0) {
+            name = `${this.riverTime.milliNow()}`;
+        }
+        return name;
     }
 }
 

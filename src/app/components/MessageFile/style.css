@@ -74,39 +74,64 @@ input {
   font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
   font-weight: 400; }
 
-.message-file .file-action {
-  position: relative;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  cursor: pointer;
+.message-file .file-content {
   display: flex;
-  justify-content: center;
-  align-items: center; }
-  .message-file .file-action svg {
-    font-size: 20px;
-    color: var(--grey); }
-  .message-file .file-action:hover svg {
-    color: var(--dark); }
-  .message-file .file-action .progress {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 32px;
-    width: 32px;
-    animation-name: rotateDonut;
-    animation-duration: 3s;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear; }
-    .message-file .file-action .progress svg {
-      height: 32px;
-      width: 32px; }
-      .message-file .file-action .progress svg circle {
-        fill: transparent;
-        stroke: var(--grey);
-        stroke-width: 2px;
-        stroke-dasharray: 3 75;
-        transition: stroke-dasharray 0.1s ease; }
-  .message-file .file-action .action {
+  flex-direction: row; }
+  .message-file .file-content .file-action {
     position: relative;
-    z-index: 10; }
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center; }
+    .message-file .file-content .file-action svg {
+      font-size: 20px;
+      color: var(--grey); }
+    .message-file .file-content .file-action:hover svg {
+      color: var(--dark); }
+    .message-file .file-content .file-action .progress {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 32px;
+      width: 32px;
+      animation-name: rotateDonut;
+      animation-duration: 3s;
+      animation-iteration-count: infinite;
+      animation-timing-function: linear; }
+      .message-file .file-content .file-action .progress svg {
+        height: 32px;
+        width: 32px; }
+        .message-file .file-content .file-action .progress svg circle {
+          fill: transparent;
+          stroke: var(--grey);
+          stroke-width: 2px;
+          stroke-dasharray: 3 75;
+          transition: stroke-dasharray 0.1s ease; }
+    .message-file .file-content .file-action .action {
+      position: relative;
+      z-index: 10; }
+  .message-file .file-content .file-info {
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center; }
+    .message-file .file-content .file-info .file-download {
+      font-size: 12px;
+      color: var(--light-mention);
+      cursor: pointer; }
+
+html[theme="dark"] .message-file .file-content .file-action svg,
+html[theme="dark-blue"] .message-file .file-content .file-action svg {
+  color: var(--light); }
+
+html[theme="dark"] .message-file .file-content .file-action:hover svg,
+html[theme="dark-blue"] .message-file .file-content .file-action:hover svg {
+  color: var(--light); }
+
+html[theme="dark"] .message-file .file-content .file-action .progress svg circle,
+html[theme="dark-blue"] .message-file .file-content .file-action .progress svg circle {
+  stroke: var(--light); }

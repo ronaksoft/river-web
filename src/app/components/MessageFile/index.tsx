@@ -10,8 +10,12 @@
 import * as React from 'react';
 import {IMessage} from '../../repository/message/interface';
 import {InputPeer} from '../../services/sdk/messages/core.types_pb';
-import {MediaDocument} from '../../services/sdk/messages/core.message.medias_pb';
-import {ArrowDownwardRounded, CloseRounded} from '@material-ui/icons';
+import {
+    DocumentAttributeFile,
+    DocumentAttributeType,
+    MediaDocument
+} from '../../services/sdk/messages/core.message.medias_pb';
+import {CloseRounded, CloudDownloadRounded, InsertDriveFileRounded} from '@material-ui/icons';
 import {IFileProgress} from '../../services/sdk/fileServer';
 import ProgressBroadcaster from '../../services/progress';
 
@@ -24,6 +28,8 @@ interface IProps {
 }
 
 interface IState {
+    caption: string;
+    fileName: string;
     fileState: 'download' | 'view' | 'progress';
     message: IMessage;
 }
@@ -39,7 +45,11 @@ class MessageFile extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
 
+        const info = this.getFileInfo(props.message);
+
         this.state = {
+            caption: info.caption,
+            fileName: info.name,
             fileState: this.getFileState(props.message),
             message: props.message,
         };
@@ -65,21 +75,28 @@ class MessageFile extends React.Component<IProps, IState> {
     public componentWillReceiveProps(newProps: IProps) {
         if (newProps.message && this.lastId !== newProps.message.id) {
             this.lastId = newProps.message.id || 0;
+            const info = this.getFileInfo(newProps.message);
             this.setState({
+                caption: info.caption,
+                fileName: info.name,
                 fileState: this.getFileState(newProps.message),
                 message: newProps.message,
             }, () => {
-                this.getVoiceId();
                 this.initProgress();
             });
         }
         const messageMediaDocument: MediaDocument.AsObject = newProps.message.mediadata;
         if (messageMediaDocument && messageMediaDocument.doc && messageMediaDocument.doc.id !== this.fileId) {
             this.fileId = messageMediaDocument.doc.id || '';
-
+            this.setState({
+                message: newProps.message,
+            });
         }
         if ((newProps.message.downloaded || false) !== this.downloaded) {
             this.downloaded = (newProps.message.downloaded || false);
+            this.setState({
+                fileState: this.getFileState(newProps.message),
+            });
         }
     }
 
@@ -88,23 +105,31 @@ class MessageFile extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {fileState} = this.state;
+        const {caption, fileName, fileState} = this.state;
         return (
             <div className="message-file">
-                <div className="file-action">
-                    {Boolean(fileState === 'view') &&
-                    <ArrowDownwardRounded onClick={this.viewFileHandler}/>}
-                    {Boolean(fileState === 'download') &&
-                    <ArrowDownwardRounded onClick={this.downloadFileHandler}/>}
-                    {Boolean(fileState === 'progress') && <React.Fragment>
-                        <div className="progress">
-                            <svg viewBox="0 0 32 32">
-                                <circle ref={this.progressRefHandler} r="12" cx="16" cy="16"/>
-                            </svg>
-                        </div>
-                        <CloseRounded className="action" onClick={this.cancelFileHandler}/>
-                    </React.Fragment>}
+                <div className="file-content">
+                    <div className="file-action">
+                        {Boolean(fileState === 'view') &&
+                        <InsertDriveFileRounded/>}
+                        {Boolean(fileState === 'download') &&
+                        <CloudDownloadRounded onClick={this.downloadFileHandler}/>}
+                        {Boolean(fileState === 'progress') && <React.Fragment>
+                            <div className="progress">
+                                <svg viewBox="0 0 32 32">
+                                    <circle ref={this.progressRefHandler} r="12" cx="16" cy="16"/>
+                                </svg>
+                            </div>
+                            <CloseRounded className="action" onClick={this.cancelFileHandler}/>
+                        </React.Fragment>}
+                    </div>
+                    <div className="file-info">
+                        <div className="file-name">{fileName}</div>
+                        {Boolean(fileState === 'view') &&
+                        <div className="file-download" onClick={this.viewFileHandler}>Download</div>}
+                    </div>
                 </div>
+                {Boolean(caption.length > 0) && <div className="file-caption">{caption}</div>}
             </div>
         );
     }
@@ -118,15 +143,8 @@ class MessageFile extends React.Component<IProps, IState> {
         });
     }
 
-    /* Get voice data */
-    private getVoiceId() {
-        const {message} = this.state;
-        window.console.log(message);
-    }
-
     /* Get file state */
     private getFileState(message: IMessage) {
-        window.console.log(message);
         const id = message.id || 0;
         if (id <= 0) {
             return 'progress';
@@ -148,7 +166,12 @@ class MessageFile extends React.Component<IProps, IState> {
             return;
         }
         let v = 3;
-        if (progress.state !== 'complete' && progress.download > 0) {
+        if (progress.state === 'failed') {
+            this.setState({
+                fileState: 'download',
+            });
+            return;
+        } else if (progress.state !== 'complete' && progress.download > 0) {
             v = progress.progress * 73;
         } else if (progress.state === 'complete') {
             v = 75;
@@ -162,7 +185,11 @@ class MessageFile extends React.Component<IProps, IState> {
     private downloadFileHandler = () => {
         if (this.props.onAction) {
             this.props.onAction('download', this.state.message);
-            this.initProgress();
+            this.setState({
+                fileState: 'progress',
+            }, () => {
+                this.initProgress();
+            });
         }
     }
 
@@ -190,6 +217,25 @@ class MessageFile extends React.Component<IProps, IState> {
                 this.props.onAction('cancel_download', this.state.message);
             }
         }
+    }
+
+    private getFileInfo(message: IMessage): { name: string, caption: string } {
+        const info: { name: string, caption: string } = {
+            caption: '',
+            name: '',
+        };
+        const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
+        info.caption = messageMediaDocument.caption || '';
+        if (!message.attributes) {
+            return info;
+        }
+        messageMediaDocument.doc.attributesList.forEach((attr, index) => {
+            if (attr.type === DocumentAttributeType.ATTRIBUTETYPEFILE && message.attributes) {
+                const docAttr: DocumentAttributeFile.AsObject = message.attributes[index];
+                info.name = docAttr.filename || '';
+            }
+        });
+        return info;
     }
 }
 

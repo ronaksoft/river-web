@@ -545,7 +545,7 @@ export default class FileManager {
             size,
             totalParts,
             updates,
-            upload: true,
+            upload: false,
         };
         this.downloadQueue.push(id);
         this.fileTransferQueue[id].interval = setInterval(() => {
