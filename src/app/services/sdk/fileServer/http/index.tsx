@@ -119,6 +119,8 @@ export default class Http {
                 case 'loadConnInfo':
                     this.workerMessage('loadConnInfo', localStorage.getItem('river.conn.info'));
                     this.workerMessage('initSDK', {});
+                    break;
+                case 'fnStarted':
                     if (this.readyHandler) {
                         this.readyHandler();
                     }

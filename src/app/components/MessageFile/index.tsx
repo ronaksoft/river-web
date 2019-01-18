@@ -126,7 +126,7 @@ class MessageFile extends React.Component<IProps, IState> {
                     <div className="file-info">
                         <div className="file-name">{fileName}</div>
                         {Boolean(fileState === 'view') &&
-                        <div className="file-download" onClick={this.viewFileHandler}>Download</div>}
+                        <div className="file-download" onClick={this.viewFileHandler}>Save</div>}
                     </div>
                 </div>
                 {Boolean(caption.length > 0) && <div className="file-caption">{caption}</div>}

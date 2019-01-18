@@ -119,14 +119,17 @@ class VoicePlayer extends React.Component<IProps, IState> {
     /* Set voice state */
     public setVoiceState(state: 'play' | 'pause' | 'seek_play' | 'seek_pause' | 'progress' | 'download') {
         const {message} = this.props;
-        if (state) {
-            this.setState({
-                playState: state,
-            });
-            if (state === 'progress' && message) {
-                this.removeAllListeners();
-                this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
-            }
+
+        this.setState({
+            playState: state,
+        });
+        if (state === 'progress' && message) {
+            this.removeAllListeners();
+            this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
+        }
+        if (state === 'pause' && message) {
+            this.removeAllListeners();
+            this.eventReferences.push(this.audioPlayer.listen(message.id || 0, this.audioPlayerHandler));
         }
     }
 

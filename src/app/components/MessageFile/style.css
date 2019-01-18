@@ -135,3 +135,6 @@ html[theme="dark-blue"] .message-file .file-content .file-action:hover svg {
 html[theme="dark"] .message-file .file-content .file-action .progress svg circle,
 html[theme="dark-blue"] .message-file .file-content .file-action .progress svg circle {
   stroke: var(--light); }
+
+html[theme="dark-blue"] .message-file .file-content .file-info .file-download {
+  color: var(--dark-blue-mention); }

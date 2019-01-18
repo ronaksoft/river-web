@@ -99,3 +99,15 @@ html[theme="dark-blue"] {
     }
   }
 }
+
+html[theme="dark-blue"] {
+  .message-file {
+    .file-content {
+      .file-info {
+        .file-download {
+          color: var(--dark-blue-mention);
+        }
+      }
+    }
+  }
+}
