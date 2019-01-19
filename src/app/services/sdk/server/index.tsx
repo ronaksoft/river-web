@@ -252,7 +252,7 @@ export default class Server {
     private updateThrottler() {
         this.dispatchUpdate();
         setInterval(() => {
-            this.updateThrottler();
+            this.dispatchUpdate();
         }, 50);
     }
 
