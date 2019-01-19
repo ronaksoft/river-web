@@ -140,7 +140,9 @@ class Message extends React.Component<IProps, IState> {
             this.topOfList = false;
         } else if (this.state.items === newProps.items && this.listCount !== newProps.items.length) {
             if (!this.topOfList) {
-                this.fitList();
+                setTimeout(() => {
+                    this.fitList();
+                }, 100);
             }
             this.modifyScroll(newProps.items);
             this.listCount = newProps.items.length;
@@ -451,7 +453,7 @@ class Message extends React.Component<IProps, IState> {
             }
             const list = document.querySelector('.chat.active-chat > div');
             if (list) {
-                const diff = this.list.props.height - list.clientHeight;
+                const diff = this.list.props.height - list.scrollHeight;
                 if (diff > 0) {
                     this.setState({
                         listStyle: {
@@ -469,7 +471,7 @@ class Message extends React.Component<IProps, IState> {
             if (forceScroll === true) {
                 this.list.scrollToPosition(1000000);
             }
-        }, 50);
+        }, 200);
     }
 
     private onScroll = (params: ScrollParams) => {

@@ -13,14 +13,14 @@ import UserName from '../UserName';
 import {IDialog} from '../../repository/dialog/interface';
 import LiveDate from '../LiveDate';
 import {
+    AlternateEmailRounded,
     DoneAllRounded,
     DoneRounded,
-    ScheduleRounded,
-    NotificationsOffRounded,
     MoreVert,
-    AlternateEmailRounded
+    NotificationsOffRounded,
+    ScheduleRounded
 } from '@material-ui/icons';
-import {PeerNotifySettings, PeerType} from '../../services/sdk/messages/core.types_pb';
+import {PeerNotifySettings, PeerType, TypingAction} from '../../services/sdk/messages/core.types_pb';
 import GroupAvatar from '../GroupAvatar';
 import GroupName from '../GroupName';
 import {C_MESSAGE_ACTION} from '../../repository/message/consts';
@@ -32,13 +32,13 @@ import './style.css';
 interface IProps {
     cancelIsTyping?: (id: string) => void;
     dialog: IDialog;
-    isTyping: { [key: string]: any };
+    isTyping: { [key: string]: { fn: any, action: TypingAction } };
     onContextMenuOpen: (e: any) => void;
 }
 
 interface IState {
     dialog: IDialog;
-    isTyping: { [key: string]: any };
+    isTyping: { [key: string]: { fn: any, action: TypingAction } };
 }
 
 class DialogMessage extends React.Component<IProps, IState> {
@@ -101,7 +101,7 @@ class DialogMessage extends React.Component<IProps, IState> {
                     </span>}
                     {this.renderPreviewMessage(dialog)}
                 </span>}
-                {isTypingRender(ids, dialog)}
+                {isTypingRender(isTyping, dialog)}
                 {(dialog.unreadcount && dialog.unreadcount > 0) ? (
                     <span className="unread">{dialog.unreadcount > 99 ? '+99' : dialog.unreadcount}</span>) : ''}
                 {Boolean(dialog.mentionedcount && dialog.mentionedcount > 0) &&
@@ -200,12 +200,21 @@ class DialogMessage extends React.Component<IProps, IState> {
     }
 }
 
-export const isTypingRender = (ids: string[], dialog: IDialog) => {
+export const isTypingRender = (typingList: { [key: string]: { fn: any, action: TypingAction } }, dialog: IDialog) => {
+    const ids = Object.keys(typingList);
     if (ids.length === 0) {
         return '';
     }
     if (dialog.peertype === PeerType.PEERUSER) {
-        return (<span className="preview">is typing...</span>);
+        if (typingList[ids[0]].action === TypingAction.TYPINGACTIONTYPING) {
+            return (<span className="preview">is typing...</span>);
+        } else if (typingList[ids[0]].action === TypingAction.TYPINGACTIONRECORDINGVOICE) {
+            return (<span className="preview">is uploading voice...</span>);
+        } else if (typingList[ids[0]].action === TypingAction.TYPINGACTIONUPLOADING) {
+            return (<span className="preview">is uploading file...</span>);
+        } else {
+            return (<span className="preview">is typing...</span>);
+        }
     } else {
         return (<span className="preview">
                 {ids.slice(0, 2).map((id, index) => {

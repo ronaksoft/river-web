@@ -294,7 +294,7 @@ export default class FileManager {
                                 }
                                 setTimeout(() => {
                                     this.startUploading(id);
-                                }, 500);
+                                }, 1000);
                             } else if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
                                 if (chunk) {
                                     this.fileTransferQueue[id].sendChunks.push(chunk);
@@ -319,7 +319,7 @@ export default class FileManager {
                 this.startUploadQueue();
             }
         }
-        if (this.fileTransferQueue.hasOwnProperty(id)) {
+        if (this.httpWorkers.length > 1 && this.httpWorkers[1].isReady() && this.fileTransferQueue.hasOwnProperty(id)) {
             if (this.fileTransferQueue[id].sendChunks.length > 1 && this.fileTransferQueue[id].pipelines < C_MAX_UPLOAD_PIPELINE_SIZE) {
                 this.startUploading(id);
             }
@@ -372,7 +372,6 @@ export default class FileManager {
                                 this.fileTransferQueue[id].doneParts++;
                                 this.fileTransferQueue[id].pipelines--;
                             }
-                            window.console.log('download', chunk.part);
                             this.startDownloading(id);
                             if (chunk) {
                                 window.console.log(`${chunk.part}/${chunkInfo.totalParts} downloaded`);
@@ -385,7 +384,7 @@ export default class FileManager {
                                 this.fileTransferQueue[id].receiveChunks.unshift(chunk);
                                 setTimeout(() => {
                                     this.startDownloading(id);
-                                }, 500);
+                                }, 1000);
                             } else if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
                                 this.fileTransferQueue[id].receiveChunks.push(chunk);
                                 this.fileTransferQueue[id].retry++;
@@ -411,12 +410,10 @@ export default class FileManager {
                     });
                 }
                 this.startDownloadQueue();
-            } else {
-                window.console.log(chunkInfo.doneParts);
             }
         }
-        if (this.fileTransferQueue.hasOwnProperty(id)) {
-            if (this.fileTransferQueue[id].receiveChunks.length > 1 && this.fileTransferQueue[id].pipelines < C_MAX_DOWNLOAD_PIPELINE_SIZE) {
+        if (this.httpWorkers.length > 0 && this.httpWorkers[0].isReady() && this.fileTransferQueue.hasOwnProperty(id)) {
+            if (this.fileTransferQueue[id].receiveChunks.length > 0 && this.fileTransferQueue[id].pipelines < C_MAX_DOWNLOAD_PIPELINE_SIZE) {
                 this.startDownloading(id);
             }
         }
@@ -663,7 +660,7 @@ export default class FileManager {
 
     /* Init file manager WASM worker */
     private initFileServer() {
-        fetch('/bin/river.wasm?v10').then((response) => {
+        fetch('/bin/river.wasm?v11').then((response) => {
             return response.arrayBuffer();
         }).then((bytes) => {
             for (let i = 0; i < C_FILE_SERVER_HTTP_WORKER_NUM; i++) {

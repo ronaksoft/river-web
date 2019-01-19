@@ -12,15 +12,15 @@ import {Picker} from 'emoji-mart';
 import PopUpMenu from '../PopUpMenu';
 import {cloneDeep, throttle} from 'lodash';
 import {
+    AttachFileRounded,
     ClearRounded,
     DeleteRounded,
     ForwardRounded,
+    KeyboardVoiceRounded,
+    LockRounded,
     SendRounded,
     SentimentSatisfiedRounded,
-    AttachFileRounded,
-    KeyboardVoiceRounded,
     StopRounded,
-    LockRounded,
 } from '@material-ui/icons';
 import {IconButton} from '@material-ui/core';
 import UserAvatar from '../UserAvatar';
@@ -35,7 +35,8 @@ import {
     GroupParticipant,
     InputPeer,
     MessageEntityType,
-    PeerType
+    PeerType,
+    TypingAction
 } from '../../services/sdk/messages/core.types_pb';
 import GroupRepo from '../../repository/group';
 // @ts-ignore
@@ -59,7 +60,7 @@ interface IProps {
     onBulkAction: (cmd: string) => void;
     onMessage: (text: string, {mode, message, entities}?: any) => void;
     onPreviewMessageChange?: (previewMessage: IMessage | undefined, previewMessageMode: number) => void;
-    onTyping?: (typing: boolean) => void;
+    onTyping?: (typing: TypingAction) => void;
     peer: InputPeer | null;
     previewMessage?: IMessage;
     previewMessageMode?: number;
@@ -444,12 +445,8 @@ class TextInput extends React.Component<IProps, IState> {
         }, () => {
             this.computeLines();
         });
-        if (this.props.onTyping && this.state.previewMessageMode !== C_MSG_MODE.Edit) {
-            this.props.onTyping(false);
-            if (this.typingThrottle !== null) {
-                this.typingThrottle.cancel();
-            }
-            this.typingThrottle = null;
+        if (this.state.previewMessageMode !== C_MSG_MODE.Edit) {
+            this.setTyping(TypingAction.TYPINGACTIONCANCEL);
         }
     }
 
@@ -457,7 +454,9 @@ class TextInput extends React.Component<IProps, IState> {
         const {previewMessage, previewMessageMode} = this.state;
         const text = e.target.value;
         this.rtlDetectorThrottle(text);
+        let cancelTyping = false;
         if (e.key === 'Enter' && !e.shiftKey) {
+            cancelTyping = true;
             setTimeout(() => {
                 if (this.mentions.length !== this.lastMentionsCount) {
                     this.lastMentionsCount = this.mentions.length;
@@ -496,36 +495,11 @@ class TextInput extends React.Component<IProps, IState> {
                 return;
             }
         }
-        if (this.props.onTyping && this.state.previewMessageMode !== C_MSG_MODE.Edit) {
-            if (e.target.value.length === 0) {
-                this.props.onTyping(false);
-                if (this.typingThrottle !== null) {
-                    this.typingThrottle.cancel();
-                }
-                this.typingThrottle = null;
+        if (this.state.previewMessageMode !== C_MSG_MODE.Edit) {
+            if (cancelTyping) {
+                this.setTyping(TypingAction.TYPINGACTIONCANCEL);
             } else {
-                if (this.typingThrottle === null) {
-                    this.typingThrottle = throttle(() => {
-                        if (this.props.onTyping) {
-                            this.props.onTyping(true);
-                        } else {
-                            if (this.typingThrottle !== null) {
-                                this.typingThrottle.cancel();
-                            }
-                        }
-                    }, 5000);
-                } else {
-                    this.typingThrottle();
-                    clearTimeout(this.typingTimeout);
-                    this.typingTimeout = setTimeout(() => {
-                        if (this.typingThrottle !== null) {
-                            this.typingThrottle.cancel();
-                        }
-                        if (this.props.onTyping) {
-                            this.props.onTyping(false);
-                        }
-                    }, 5000);
-                }
+                this.setTyping(TypingAction.TYPINGACTIONTYPING);
             }
         }
     }
@@ -1120,14 +1094,16 @@ class TextInput extends React.Component<IProps, IState> {
         this.timerDuration = 0;
         this.displayTimer();
         this.timerInterval = setInterval(() => {
-            this.timerDuration += 0.1;
+            this.timerDuration += 0.2;
             this.displayTimer();
-        }, 100);
+            this.setTyping(TypingAction.TYPINGACTIONRECORDINGVOICE);
+        }, 200);
     }
 
     /* Start voice recorder timer */
     private stopTimer() {
         clearInterval(this.timerInterval);
+        this.setTyping(TypingAction.TYPINGACTIONCANCEL);
     }
 
     /* Display voice recorder timer */
@@ -1235,6 +1211,43 @@ class TextInput extends React.Component<IProps, IState> {
     private fileChangeHandler = (e: any) => {
         if (this.props.onFileSelected && e.currentTarget.files.length > 0) {
             this.props.onFileSelected(e.currentTarget.files[0]);
+        }
+    }
+
+    /* Set typing */
+    private setTyping(typing: TypingAction) {
+        if (!this.props.onTyping) {
+            return;
+        }
+        if (typing === TypingAction.TYPINGACTIONCANCEL) {
+            this.props.onTyping(TypingAction.TYPINGACTIONCANCEL);
+            if (this.typingThrottle !== null) {
+                this.typingThrottle.cancel();
+            }
+            this.typingThrottle = null;
+        } else {
+            if (this.typingThrottle === null) {
+                this.typingThrottle = throttle(() => {
+                    if (this.props.onTyping) {
+                        this.props.onTyping(typing);
+                    } else {
+                        if (this.typingThrottle !== null) {
+                            this.typingThrottle.cancel();
+                        }
+                    }
+                }, 5000);
+            } else {
+                this.typingThrottle();
+                clearTimeout(this.typingTimeout);
+                this.typingTimeout = setTimeout(() => {
+                    if (this.typingThrottle !== null) {
+                        this.typingThrottle.cancel();
+                    }
+                    if (this.props.onTyping) {
+                        this.props.onTyping(TypingAction.TYPINGACTIONCANCEL);
+                    }
+                }, 5000);
+            }
         }
     }
 

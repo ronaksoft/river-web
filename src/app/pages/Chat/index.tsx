@@ -34,7 +34,8 @@ import NewMessage from '../../components/NewMessage';
 import * as core_types_pb from '../../services/sdk/messages/core.types_pb';
 import {
     Group,
-    InputFile, InputFileLocation,
+    InputFile,
+    InputFileLocation,
     InputPeer,
     InputUser,
     MediaType,
@@ -93,7 +94,8 @@ import {InputMediaType} from '../../services/sdk/messages/api.messages_pb';
 import {
     Document,
     DocumentAttribute,
-    DocumentAttributeAudio, DocumentAttributeFile,
+    DocumentAttributeAudio,
+    DocumentAttributeFile,
     DocumentAttributeType,
     InputMediaUploadedDocument,
     MediaDocument
@@ -124,7 +126,7 @@ interface IState {
     isChatView: boolean;
     isConnecting: boolean;
     isTyping: boolean;
-    isTypingList: { [key: string]: { [key: string]: any } };
+    isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } };
     isUpdating: boolean;
     leftMenu: string;
     leftMenuSub: string;
@@ -618,16 +620,18 @@ class Chat extends React.Component<IProps, IState> {
         if (this.dialogMap.hasOwnProperty(dialogId)) {
             dialog = this.state.dialogs[this.dialogMap[dialogId]];
         }
-        let ids: string[] = [];
+        let typingList: { [key: string]: { fn: any, action: TypingAction } } = {};
+        let ids: number = 0;
         if (dialog && this.state.isTypingList.hasOwnProperty(dialog.peerid || '')) {
-            ids = Object.keys(this.state.isTypingList[dialog.peerid || '']);
+            typingList = this.state.isTypingList[dialog.peerid || ''];
+            ids = Object.keys(typingList).length;
         }
         if (this.state.isConnecting) {
             return (<span>Connecting...</span>);
         } else if (this.state.isUpdating) {
             return (<span>Updating...</span>);
-        } else if (dialog && ids.length > 0) {
-            return (isTypingRender(ids, dialog));
+        } else if (dialog && ids > 0) {
+            return (isTypingRender(typingList, dialog));
         } else if (dialog && dialog.peertype === PeerType.PEERGROUP && this.state.group) {
             return (<span>{this.state.group.participants} members</span>);
         } else {
@@ -882,7 +886,9 @@ class Chat extends React.Component<IProps, IState> {
         }
         if (this.state.selectedDialogId === data.message.peerid) {
             const {messages} = this.state;
-            const index = findIndex(messages, {id: data.message.id});
+            const index = findIndex(messages, (o) => {
+                return o.id === data.message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+            });
             if (index > -1) {
                 messages[index] = data.message;
                 messages[index].me = (this.connInfo.UserID === data.message.senderid);
@@ -897,7 +903,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         const {isTypingList} = this.state;
-        if (data.action === TypingAction.TYPINGACTIONTYPING) {
+        if (data.action !== TypingAction.TYPINGACTIONCANCEL) {
             const fn = setTimeout(() => {
                 if (isTypingList.hasOwnProperty(data.peerid || '')) {
                     if (isTypingList[data.peerid || ''].hasOwnProperty(data.userid || 0)) {
@@ -910,12 +916,18 @@ class Chat extends React.Component<IProps, IState> {
             }, 5000);
             if (!isTypingList.hasOwnProperty(data.peerid || '')) {
                 isTypingList[data.peerid || ''] = {};
-                isTypingList[data.peerid || ''][data.userid || 0] = fn;
+                isTypingList[data.peerid || ''][data.userid || 0] = {
+                    action: data.action || TypingAction.TYPINGACTIONTYPING,
+                    fn,
+                };
             } else {
                 if (isTypingList[data.peerid || ''].hasOwnProperty(data.userid || 0)) {
-                    clearTimeout(isTypingList[data.peerid || ''][data.userid || 0]);
+                    clearTimeout(isTypingList[data.peerid || ''][data.userid || 0].fn);
                 }
-                isTypingList[data.peerid || ''][data.userid || 0] = fn;
+                isTypingList[data.peerid || ''][data.userid || 0] = {
+                    action: data.action || TypingAction.TYPINGACTIONTYPING,
+                    fn,
+                };
             }
             this.setState({
                 isTypingList,
@@ -923,7 +935,7 @@ class Chat extends React.Component<IProps, IState> {
         } else if (data.action === TypingAction.TYPINGACTIONCANCEL) {
             if (isTypingList.hasOwnProperty(data.peerid || '')) {
                 if (isTypingList[data.peerid || ''].hasOwnProperty(data.userid || 0)) {
-                    clearTimeout(isTypingList[data.peerid || ''][data.userid || 0]);
+                    clearTimeout(isTypingList[data.peerid || ''][data.userid || 0].fn);
                     delete isTypingList[data.peerid || ''][data.userid || 0];
                     this.setState({
                         isTypingList,
@@ -1010,7 +1022,9 @@ class Chat extends React.Component<IProps, IState> {
                     });
                 }
             }
-            const index = findIndex(messages, {id});
+            const index = findIndex(messages, (o) => {
+                return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+            });
             if (index > -1) {
                 updateView = true;
                 this.messageComponent.cache.clear(index, 0);
@@ -1398,7 +1412,9 @@ class Chat extends React.Component<IProps, IState> {
             message.body = text;
             message.editedon = this.riverTime.now();
             this.sdk.editMessage(randomId, message.id || 0, text, peer).then(() => {
-                const index = findIndex(messages, {id: message.id});
+                const index = findIndex(messages, (o) => {
+                    return o.id === message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                });
                 if (index > -1) {
                     messages[index] = message;
                     this.messageComponent.list.forceUpdateGrid();
@@ -1443,7 +1459,9 @@ class Chat extends React.Component<IProps, IState> {
 
             this.sdk.sendMessage(randomId, text, peer, replyTo, entities).then((msg) => {
                 const {messages} = this.state;
-                const index = findIndex(messages, {id: message.id});
+                const index = findIndex(messages, (o) => {
+                    return o.id === message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                });
                 if (index > -1) {
                     this.messageComponent.cache.clear(index, 0);
                 }
@@ -1521,19 +1539,13 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private onTyping = (typing: boolean) => {
+    private onTyping = (typing: TypingAction) => {
         const {peer} = this.state;
         if (peer === null) {
             return;
         }
 
-        let action: TypingAction;
-        if (typing) {
-            action = TypingAction.TYPINGACTIONTYPING;
-        } else {
-            action = TypingAction.TYPINGACTIONCANCEL;
-        }
-        this.sdk.typing(peer, action).then((data) => {
+        this.sdk.typing(peer, typing).then((data) => {
             window.console.debug(data);
         }).catch((err) => {
             window.console.debug(err);
@@ -2356,7 +2368,9 @@ class Chat extends React.Component<IProps, IState> {
         }
 
         window.console.log('messageJumpToMessageHandler', id);
-        const index = findIndex(messages, {id});
+        const index = findIndex(messages, (o) => {
+            return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+        });
         if (index > 0) {
             this.messageComponent.list.scrollToRow(index);
             setTimeout(() => {
@@ -2598,7 +2612,9 @@ class Chat extends React.Component<IProps, IState> {
             this.progressBroadcaster.remove(id);
             this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, replyTo).then((res) => {
                 const {messages} = this.state;
-                const index = findIndex(messages, {id: message.id});
+                const index = findIndex(messages, (o) => {
+                    return o.id === message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                });
                 if (index > -1) {
                     this.messageComponent.cache.clear(index, 0);
                 }
@@ -2620,7 +2636,9 @@ class Chat extends React.Component<IProps, IState> {
             this.progressBroadcaster.remove(id);
             if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
                 const {messages} = this.state;
-                const index = findIndex(messages, {id});
+                const index = findIndex(messages, (o) => {
+                    return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                });
                 if (index > -1) {
                     messages[index].error = true;
                     this.messageRepo.importBulk([messages[index]], false);
@@ -2643,7 +2661,9 @@ class Chat extends React.Component<IProps, IState> {
             this.progressBroadcaster.remove(message.id || 0);
             this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, message.replyto).then((res) => {
                 const {messages} = this.state;
-                const index = findIndex(messages, {id: message.id});
+                const index = findIndex(messages, (o) => {
+                    return o.id === message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                });
                 if (index > -1) {
                     this.messageComponent.cache.clear(index, 0);
                 }
@@ -2665,7 +2685,9 @@ class Chat extends React.Component<IProps, IState> {
             this.progressBroadcaster.remove(message.id || 0);
             if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
                 const {messages} = this.state;
-                const index = findIndex(messages, {id: message.id});
+                const index = findIndex(messages, (o) => {
+                    return o.id === message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                });
                 if (index > -1) {
                     messages[index].error = true;
                     this.messageRepo.importBulk([messages[index]], false);
@@ -2727,7 +2749,9 @@ class Chat extends React.Component<IProps, IState> {
                             if (msg) {
                                 msg.downloaded = true;
                                 if (this.state.messages) {
-                                    const index = findIndex(this.state.messages, {id: msg.id});
+                                    const index = findIndex(this.state.messages, (o) => {
+                                        return o.id === msg.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                                    });
                                     if (index > -1) {
                                         this.state.messages[index] = msg;
                                         this.messageComponent.list.forceUpdateGrid();
@@ -2748,7 +2772,9 @@ class Chat extends React.Component<IProps, IState> {
             this.messageRepo.getPendingByMessageId(message.id || 0).then((res) => {
                 if (res && res.file_ids && res.file_ids.length === 1) {
                     const {messages} = this.state;
-                    const index = findIndex(messages, {id: message.id});
+                    const index = findIndex(messages, (o) => {
+                        return o.id === message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                    });
                     if (index > -1) {
                         messages[index].error = false;
                         this.messageComponent.list.forceUpdateGrid();
@@ -2782,7 +2808,9 @@ class Chat extends React.Component<IProps, IState> {
             this.messageRepo.remove(id).then(() => {
                 const {messages} = this.state;
                 if (messages) {
-                    const index = findIndex(messages, {id});
+                    const index = findIndex(messages, (o) => {
+                        return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                    });
                     if (index > -1) {
                         this.messageComponent.cache.clear(index, 0);
                         messages.splice(index, 1);
@@ -2936,7 +2964,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.progressBroadcaster.remove(id);
                 this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data).then((res) => {
                     const {messages} = this.state;
-                    const index = findIndex(messages, {id: message.id});
+                    const index = findIndex(messages, {id: message.id, messagetype: C_MESSAGE_TYPE.File});
                     if (index > -1) {
                         this.messageComponent.cache.clear(index, 0);
                     }
@@ -2958,7 +2986,9 @@ class Chat extends React.Component<IProps, IState> {
                 this.progressBroadcaster.remove(id);
                 if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
                     const {messages} = this.state;
-                    const index = findIndex(messages, {id});
+                    const index = findIndex(messages, (o) => {
+                        return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                    });
                     if (index > -1) {
                         messages[index].error = true;
                         this.messageRepo.importBulk([messages[index]], false);

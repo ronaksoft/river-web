@@ -40,7 +40,7 @@ export default class Http {
 
     public constructor(bytes: any, id: number) {
         this.reqId = 0;
-        this.worker = new Worker('/bin/worker.js?v9');
+        this.worker = new Worker('/bin/worker.js?v11');
         this.workerId = id;
 
         if (window.location.protocol === 'https:') {

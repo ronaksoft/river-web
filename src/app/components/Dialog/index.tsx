@@ -16,7 +16,7 @@ import DialogMessage from '../DialogMessage';
 import {CloseRounded, MessageRounded} from '@material-ui/icons';
 import Menu from '@material-ui/core/Menu/Menu';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';
-import {PeerType} from '../../services/sdk/messages/core.types_pb';
+import {PeerType, TypingAction} from '../../services/sdk/messages/core.types_pb';
 import Scrollbars from 'react-custom-scrollbars';
 import SearchRepo from '../../repository/search';
 import InputLabel from '@material-ui/core/InputLabel/InputLabel';
@@ -29,7 +29,7 @@ import './style.css';
 
 interface IProps {
     cancelIsTyping: (id: string) => void;
-    isTypingList: { [key: string]: { [key: string]: any } };
+    isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } };
     items: IDialog[];
     onContextMenu?: (cmd: string, dialog: IDialog) => void;
     selectedId: string;
@@ -37,7 +37,7 @@ interface IProps {
 
 interface IState {
     ids: string[];
-    isTypingList: { [key: string]: { [key: string]: any } };
+    isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } };
     items: IDialog[];
     moreAnchorEl: any;
     moreIndex: number;
