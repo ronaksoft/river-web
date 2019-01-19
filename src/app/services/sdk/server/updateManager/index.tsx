@@ -20,6 +20,7 @@ import {throttle} from 'lodash';
 import {User} from '../../messages/core.types_pb';
 import {IMessage} from '../../../../repository/message/interface';
 import MessageRepo from '../../../../repository/message';
+import {base64ToU8a} from '../../fileServer/http/utils';
 
 export interface INewMessageBulkUpdate {
     accessHashes: string[];
@@ -98,9 +99,7 @@ export default class UpdateManager {
         if (!this.active) {
             return;
         }
-        // @ts-ignore
-        const arr = Uint8Array.from(atob(bytes), c => c.charCodeAt(0));
-        const data = UpdateContainer.deserializeBinary(arr).toObject();
+        const data = UpdateContainer.deserializeBinary(base64ToU8a(bytes)).toObject();
         const updates = data.updatesList;
         const currentUpdateId = this.lastUpdateId;
         const minId = data.minupdateid;

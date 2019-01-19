@@ -52,7 +52,6 @@ export default class Server {
             return;
         } else {
             this.socket.setCallback((data: any) => {
-                window.console.log(data);
                 this.response(data);
             });
 
@@ -253,7 +252,7 @@ export default class Server {
     private updateThrottler() {
         this.dispatchUpdate();
         setInterval(() => {
-            this.dispatchUpdate();
+            this.updateThrottler();
         }, 50);
     }
 

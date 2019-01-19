@@ -38,9 +38,9 @@ export default class Http {
     private isWorkerReady: boolean = false;
     private readyHandler: any = null;
 
-    public constructor(bytes: ArrayBuffer, id: number) {
+    public constructor(bytes: any, id: number) {
         this.reqId = 0;
-        this.worker = new Worker('/bin/worker.js');
+        this.worker = new Worker('/bin/worker.js?v9');
         this.workerId = id;
 
         if (window.location.protocol === 'https:') {

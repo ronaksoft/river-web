@@ -18,11 +18,17 @@ workerMessage = (cmd, data) => {
     });
 };
 
+const base64ToBuffer = (base64) => {
+    return Uint8Array.from(atob(base64), c => c.charCodeAt(0)).buffer;
+};
+
 self.onmessage = function (e) {
     const d = e.data;
     switch (d.cmd) {
         case 'init':
+            console.time('init');
             WebAssembly.instantiate(d.data, go.importObject).then((res) => {
+                console.timeEnd('init');
                 run = go.run(res.instance);
             });
             break;
