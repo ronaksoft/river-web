@@ -17,8 +17,6 @@ fetch('bin/river.wasm?v8').then((response) => {
 });
 
 let started = false;
-let run;
-let instance;
 let socket = null;
 let connected = false;
 let pingCounter = 0;
@@ -97,18 +95,6 @@ wasmWorker.onmessage = (e) => {
 };
 
 const ping = new Uint8Array([0x50, 0x49, 0x4e, 0x47]);
-
-function fnCallback(reqId, constructor, data) {
-    const fnCallbackEvent = new CustomEvent('fnCallbackEvent', {
-        bubbles: false,
-        detail: {
-            reqId: reqId,
-            constructor: constructor,
-            data: data
-        }
-    });
-    window.dispatchEvent(fnCallbackEvent);
-}
 
 window.addEventListener('fnCallEvent', (event) => {
     const data = event.detail;

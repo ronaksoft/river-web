@@ -317,11 +317,12 @@ func (r *River) send(msgEnvelope *msg.MessageEnvelope, webSocket bool) {
 	}
 }
 
-func (r *River) receive(message *[]byte, webSocket bool) {
+func (r *River) receive(message []byte, webSocket bool) {
 	res := msg.ProtoMessage{}
 
 	// If it is a BINARY message
-	res.Unmarshal(*message)
+
+	res.Unmarshal(message)
 	if res.AuthID == 0 {
 		receivedEnvelope := new(msg.MessageEnvelope)
 		err := receivedEnvelope.Unmarshal(res.Payload)

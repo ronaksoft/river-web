@@ -132,7 +132,6 @@ export default class Http {
                     break;
                 case 'fnDecryptCallback':
                     this.resolveDecrypt(d.data.reqId, d.data.constructor, d.data.data);
-                    window.console.log(`${d.data.reqId} fnDecrypt`);
                     break;
                 default:
                     break;
@@ -172,7 +171,6 @@ export default class Http {
             if (this.messageListeners.hasOwnProperty(reqId)) {
                 const data = new Uint8Array(bytes);
                 this.workerMessage('fnDecrypt', uint8ToBase64(data));
-                window.console.log(`${reqId} fnDecrypt`);
             }
         }).catch((err) => {
             if (this.messageListeners.hasOwnProperty(reqId)) {

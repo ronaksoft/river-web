@@ -28,6 +28,7 @@ import GroupRepo from '../../../repository/group';
 import {IGroup} from '../../../repository/group/interface';
 import {Group} from '../messages/core.types_pb';
 import {C_MESSAGE_ACTION} from '../../../repository/message/consts';
+import {getMessageTitle} from '../../../components/Dialog/utils';
 
 export interface IRemoveDialog {
     maxId: number;
@@ -144,7 +145,7 @@ export default class SyncManager {
                         last_update: updateNewMessage.message.createdon,
                         peerid: updateNewMessage.message.peerid,
                         peertype: updateNewMessage.message.peertype,
-                        preview: (updateNewMessage.message.body || '').substr(0, 64),
+                        preview: getMessageTitle(updateNewMessage.message),
                         preview_me: (this.updateManager.getUserId() === updateNewMessage.message.senderid),
                         sender_id: updateNewMessage.message.senderid,
                         target_id: updateNewMessage.message.peerid,

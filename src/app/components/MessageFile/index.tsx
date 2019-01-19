@@ -34,6 +34,12 @@ interface IState {
     message: IMessage;
 }
 
+interface IFileInfo {
+    name: string;
+    caption: string;
+    size: number;
+}
+
 class MessageFile extends React.Component<IProps, IState> {
     private lastId: number = 0;
     private fileId: string = '';
@@ -41,11 +47,14 @@ class MessageFile extends React.Component<IProps, IState> {
     private circleProgressRef: any = null;
     private eventReferences: any[] = [];
     private progressBroadcaster: ProgressBroadcaster;
+    private fileSizeRef: any = null;
+    private fileSize: number = 0;
 
     constructor(props: IProps) {
         super(props);
 
         const info = this.getFileInfo(props.message);
+        this.fileSize = info.size;
 
         this.state = {
             caption: info.caption,
@@ -68,6 +77,7 @@ class MessageFile extends React.Component<IProps, IState> {
         if (!message || !messageMediaDocument.doc) {
             return;
         }
+        this.displayFileSize(0);
         this.fileId = messageMediaDocument.doc.id || '';
         this.initProgress();
     }
@@ -76,6 +86,8 @@ class MessageFile extends React.Component<IProps, IState> {
         if (newProps.message && this.lastId !== newProps.message.id) {
             this.lastId = newProps.message.id || 0;
             const info = this.getFileInfo(newProps.message);
+            this.fileSize = info.size;
+            this.displayFileSize(0);
             this.setState({
                 caption: info.caption,
                 fileName: info.name,
@@ -127,6 +139,8 @@ class MessageFile extends React.Component<IProps, IState> {
                         <div className="file-name">{fileName}</div>
                         {Boolean(fileState === 'view') &&
                         <div className="file-download" onClick={this.viewFileHandler}>Save</div>}
+                        {Boolean(fileState !== 'view') &&
+                        <div className="file-size" ref={this.fileSizeRefHandler}>0 KB</div>}
                     </div>
                 </div>
                 {Boolean(caption.length > 0) && <div className="file-caption">{caption}</div>}
@@ -162,6 +176,7 @@ class MessageFile extends React.Component<IProps, IState> {
 
     /* Upload progress handler */
     private uploadProgressHandler = (progress: IFileProgress) => {
+        this.displayFileSize(progress.download);
         if (!this.circleProgressRef) {
             return;
         }
@@ -182,6 +197,7 @@ class MessageFile extends React.Component<IProps, IState> {
         this.circleProgressRef.style.strokeDasharray = `${v} 75`;
     }
 
+    /* Download file handler */
     private downloadFileHandler = () => {
         if (this.props.onAction) {
             this.props.onAction('download', this.state.message);
@@ -193,6 +209,7 @@ class MessageFile extends React.Component<IProps, IState> {
         }
     }
 
+    /* Initialize progress bar */
     private initProgress() {
         if (this.state.fileState === 'progress') {
             const {message} = this.props;
@@ -203,12 +220,14 @@ class MessageFile extends React.Component<IProps, IState> {
         }
     }
 
+    /* View file */
     private viewFileHandler = () => {
         if (this.props.onAction) {
             this.props.onAction('view', this.state.message);
         }
     }
 
+    /* Cancel file download/upload */
     private cancelFileHandler = () => {
         if (this.props.onAction) {
             if (this.props.message && (this.props.message.id || 0) < 0) {
@@ -219,13 +238,16 @@ class MessageFile extends React.Component<IProps, IState> {
         }
     }
 
-    private getFileInfo(message: IMessage): { name: string, caption: string } {
-        const info: { name: string, caption: string } = {
+    /* Get file info (name and caption) */
+    private getFileInfo(message: IMessage): IFileInfo {
+        const info: IFileInfo = {
             caption: '',
             name: '',
+            size: 0,
         };
         const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
         info.caption = messageMediaDocument.caption || '';
+        info.size = messageMediaDocument.doc.filesize || 0;
         if (!message.attributes) {
             return info;
         }
@@ -236,6 +258,36 @@ class MessageFile extends React.Component<IProps, IState> {
             }
         });
         return info;
+    }
+
+    /* File size ref handler */
+    private fileSizeRefHandler = (ref: any) => {
+        this.fileSizeRef = ref;
+    }
+
+    /* Display file size */
+    private displayFileSize(loaded: number) {
+        if (!this.fileSizeRef) {
+            return;
+        }
+        if (loaded <= 0) {
+            this.fileSizeRef.innerText = `${this.getHumanReadableSize(this.fileSize)}`;
+        } else {
+            this.fileSizeRef.innerText = `${this.getHumanReadableSize(loaded)} / ${this.getHumanReadableSize(this.fileSize)}`;
+        }
+    }
+
+    /* Get human readable size */
+    private getHumanReadableSize(size: number) {
+        if (size < 1024) {
+            return `${size} B`;
+        } else if (size < 1048576) { // 1024 * 1024
+            return `${(size / 1024).toFixed(1)} KB`;
+        } else if (size < 1073741824) { // 1024 * 1024 * 1024
+            return `${(size / 1048576).toFixed(1)} MB`;
+        } else {
+            return `${(size / 1073741824).toFixed(1)} GB`;
+        }
     }
 }
 

@@ -2823,13 +2823,6 @@ class Chat extends React.Component<IProps, IState> {
                         this.progressBroadcaster.publish(msg.id || 0, progress);
                     }).then(() => {
                         this.progressBroadcaster.remove(msg.id || 0);
-                        const {messages} = this.state;
-                        const index = findIndex(messages, {id: msg.id});
-                        if (index > -1) {
-                            this.messageComponent.cache.clear(index, 0);
-                            this.messageComponent.list.recomputeRowHeights();
-                            this.messageComponent.list.recomputeGridSize();
-                        }
                         msg.downloaded = true;
                         this.messageRepo.lazyUpsert([msg]);
                         // Force update messages
@@ -2867,8 +2860,6 @@ class Chat extends React.Component<IProps, IState> {
             if (peer === null) {
                 return;
             }
-
-            window.console.log(blob, file);
 
             const now = this.riverTime.now();
             const randomId = UniqueId.getRandomId();

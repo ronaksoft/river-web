@@ -74,7 +74,7 @@ func fnCall(args []js.Value) {
 func wsReceive(args []js.Value) {
 	enc, err := base64.StdEncoding.DecodeString(args[0].String())
 	if err == nil {
-		river.receive(&enc, true)
+		river.receive(enc, true)
 	}
 }
 
@@ -94,7 +94,7 @@ func fnEncrypt(args []js.Value) {
 func fnDecrypt(args []js.Value) {
 	enc, err := base64.StdEncoding.DecodeString(args[0].String())
 	if err == nil {
-		river.receive(&enc, false)
+		river.receive(enc, false)
 	}
 }
 

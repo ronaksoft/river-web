@@ -12,6 +12,8 @@ import Presenter from '../presenters';
 import UpdateManager from './updateManager';
 import {MessageContainer, MessageEnvelope} from '../messages/core.messages_pb';
 import {throttle} from 'lodash';
+import Socket from './socket';
+import {base64ToU8a} from '../fileServer/http/utils';
 
 export interface IServerRequest {
     constructor: number;
@@ -31,69 +33,54 @@ export default class Server {
 
     private static instance: Server;
 
-    /**
-     * @name Server#reqId
-     * @private
-     * @type {number}
-     * @memberof Server
-     */
+    private socket: Socket;
     private reqId: number;
-
-    /**
-     * @name Server#messageListeners
-     * @private
-     * @type {object}
-     * @memberof Server
-     */
     private messageListeners: object = {};
-
     private sentQueue: number[] = [];
-
     private updateQueue: any[] = [];
-
     private updateManager: UpdateManager;
-
     private isConnected: boolean = false;
-
     private requestQueue: MessageEnvelope[] = [];
-
     private executeSendThrottledRequestThrottle: any;
 
     public constructor() {
+        this.socket = Socket.getInstance();
         this.reqId = 0;
         const version = this.shouldMigrate(localStorage.getItem('river.version'));
         if (version !== false) {
             this.migrate(version);
             return;
         } else {
-            window.addEventListener('fnCallbackEvent', (event: any) => {
-                this.response(event.detail);
+            this.socket.setCallback((data: any) => {
+                window.console.log(data);
+                this.response(data);
             });
-            window.addEventListener('fnUpdate', (event: any) => {
-                this.update(event.detail);
+
+            this.socket.setUpdate((data: any) => {
+                this.update(data);
             });
-            window.addEventListener('fnErrorEvent', (event: any) => {
-                this.error(event.detail);
+
+            this.socket.setError((data: any) => {
+                this.error(data);
             });
+
             window.addEventListener('wsOpen', () => {
                 this.isConnected = true;
                 this.flushSentQueue();
                 this.executeSendThrottledRequestThrottle();
             });
+
             window.addEventListener('wsClose', () => {
                 this.isConnected = false;
             });
 
             this.updateThrottler();
             this.updateManager = UpdateManager.getInstance();
-
             this.executeSendThrottledRequestThrottle = throttle(this.executeSendThrottledRequest, 200);
         }
     }
 
-    /**
-     * Send a request to wasm worker over CustomEvent in window object
-     */
+    /* Send a request to WASM worker over CustomEvent in window object */
     public send(constructor: number, data: Uint8Array, instant?: boolean): Promise<any> {
         let internalResolve = null;
         let internalReject = null;
@@ -118,9 +105,7 @@ export default class Server {
             }
         });
 
-        /**
-         * Add request to the queue manager
-         */
+        /* Add request to the queue manager */
         this.messageListeners[reqId] = {
             reject: internalReject,
             request,
@@ -133,22 +118,13 @@ export default class Server {
         return promise;
     }
 
-    /**
-     * generates string from request and send to the api
-     * @private
-     * @param {*} request
-     * @memberof Server
-     */
+    /* Generate string from request and send to the api */
     private sendRequest(request: IServerRequest) {
-        const fnCallbackEvent = new CustomEvent('fnCallEvent', {
-            bubbles: false,
-            detail: request,
-        });
         window.console.warn(C_MSG_NAME[request.constructor], request.reqId);
         request.timeout = setTimeout(() => {
             this.dispatchTimeout(request.reqId);
         }, 10000);
-        window.dispatchEvent(fnCallbackEvent);
+        this.socket.send(request);
     }
 
     private sendThrottledRequest(request: IServerRequest) {
@@ -176,15 +152,13 @@ export default class Server {
             const data = new MessageContainer();
             data.setEnvelopesList(envs);
             data.setLength(envs.length);
-            const fnCallbackEvent = new CustomEvent('fnCallEvent', {
-                bubbles: false,
-                detail: {
-                    constructor: C_MSG.MessageContainer,
-                    data: data.serializeBinary(),
-                    reqId,
-                },
+
+            this.socket.send({
+                constructor: C_MSG.MessageContainer,
+                data: data.serializeBinary(),
+                reqId,
+                timeout: null,
             });
-            window.dispatchEvent(fnCallbackEvent);
             window.console.log('Compact:', envs.length);
         };
         let envelopes: MessageEnvelope[] = [];
@@ -208,9 +182,7 @@ export default class Server {
         if (!this.messageListeners[reqId]) {
             return;
         }
-        // @ts-ignore
-        const arr = Uint8Array.from(atob(data), c => c.charCodeAt(0));
-        const res = Presenter.getMessage(constructor, arr);
+        const res = Presenter.getMessage(constructor, base64ToU8a(data));
         if (constructor === C_MSG.Error) {
             window.console.error(C_MSG_NAME[constructor], reqId, res.toObject());
         }
@@ -235,9 +207,7 @@ export default class Server {
 
     private error({reqId, constructor, data}: any) {
         window.console.warn(C_MSG_NAME[constructor], reqId);
-        // @ts-ignore
-        const arr = Uint8Array.from(atob(data), c => c.charCodeAt(0));
-        const res = Presenter.getMessage(constructor, arr);
+        const res = Presenter.getMessage(constructor, base64ToU8a(data));
         if (res) {
             if (constructor === C_MSG.Error) {
                 const resp = res.toObject();
