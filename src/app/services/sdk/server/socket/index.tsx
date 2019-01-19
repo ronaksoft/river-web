@@ -36,7 +36,7 @@ export default class Socket {
     private fnError: any = null;
 
     public constructor() {
-        this.worker = new Worker('/bin/worker.js?v9');
+        this.worker = new Worker('/bin/worker.js?v10');
 
         fetch('/bin/river.wasm?v8').then((response) => {
             return response.arrayBuffer();

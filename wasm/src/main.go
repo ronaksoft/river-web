@@ -67,14 +67,14 @@ func fnCall(args []js.Value) {
 	constructor := int64(args[1].Int())
 	enc, err := base64.StdEncoding.DecodeString(args[2].String())
 	if err == nil {
-		river.ExecuteRemoteCommand(reqId, constructor, enc, nil)
+		river.ExecuteRemoteCommand(reqId, constructor, &enc, nil)
 	}
 }
 
 func wsReceive(args []js.Value) {
 	enc, err := base64.StdEncoding.DecodeString(args[0].String())
 	if err == nil {
-		river.receive(enc, true)
+		river.receive(&enc, true)
 	}
 }
 
@@ -87,14 +87,14 @@ func fnEncrypt(args []js.Value) {
 	constructor := int64(args[1].Int())
 	enc, err := base64.StdEncoding.DecodeString(args[2].String())
 	if err == nil {
-		river.ExecuteEncrypt(reqId, constructor, enc)
+		river.ExecuteEncrypt(reqId, constructor, &enc)
 	}
 }
 
 func fnDecrypt(args []js.Value) {
 	enc, err := base64.StdEncoding.DecodeString(args[0].String())
 	if err == nil {
-		river.receive(enc, false)
+		river.receive(&enc, false)
 	}
 }
 

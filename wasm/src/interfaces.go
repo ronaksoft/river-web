@@ -90,7 +90,7 @@ func (r *River) CreateAuthKey(callback Callback) (err error) {
 	r.ExecuteRemoteCommand(
 		_RandomUint64(),
 		msg.C_InitConnect,
-		req1Bytes,
+		&req1Bytes,
 		func(res *msg.MessageEnvelope) {
 			_LOG.Debug("Success Callback Called")
 			AuthProgress(12)
@@ -205,7 +205,7 @@ func (r *River) createAuthKeyStep2(clientNonce, serverNonce, serverPubFP, server
 	r.ExecuteRemoteCommand(
 		_RandomUint64(),
 		msg.C_InitCompleteAuth,
-		req2Bytes,
+		&req2Bytes,
 		func(res *msg.MessageEnvelope) {
 			switch res.Constructor {
 			case msg.C_InitAuthCompleted:
@@ -260,12 +260,12 @@ func (r *River) createAuthKeyStep2(clientNonce, serverNonce, serverPubFP, server
 	return
 }
 
-func (r *River) ExecuteRemoteCommand(requestID uint64, constructor int64, commandBytes []byte, successCB MessageHandler) {
+func (r *River) ExecuteRemoteCommand(requestID uint64, constructor int64, commandBytes *[]byte, successCB MessageHandler) {
 	//r.queueCtrl.executeCommand(requestID, constructor, commandBytes, timeoutCB, successCB)
 	_msg := new(msg.MessageEnvelope)
 	_msg.RequestID = requestID
 	_msg.Constructor = constructor
-	_msg.Message = commandBytes
+	_msg.Message = *commandBytes
 
 	if successCB != nil {
 		r.MessageQueue[requestID] = &successCB
@@ -273,11 +273,11 @@ func (r *River) ExecuteRemoteCommand(requestID uint64, constructor int64, comman
 	r.send(_msg, true)
 }
 
-func (r *River) ExecuteEncrypt(requestID uint64, constructor int64, commandBytes []byte) {
+func (r *River) ExecuteEncrypt(requestID uint64, constructor int64, commandBytes *[]byte) {
 	_msg := new(msg.MessageEnvelope)
 	_msg.RequestID = requestID
 	_msg.Constructor = constructor
-	_msg.Message = commandBytes
+	_msg.Message = *commandBytes
 
 	r.send(_msg, false)
 }
@@ -317,12 +317,12 @@ func (r *River) send(msgEnvelope *msg.MessageEnvelope, webSocket bool) {
 	}
 }
 
-func (r *River) receive(message []byte, webSocket bool) {
+func (r *River) receive(message *[]byte, webSocket bool) {
 	res := msg.ProtoMessage{}
 
 	// If it is a BINARY message
 
-	res.Unmarshal(message)
+	res.Unmarshal(*message)
 	if res.AuthID == 0 {
 		receivedEnvelope := new(msg.MessageEnvelope)
 		err := receivedEnvelope.Unmarshal(res.Payload)
