@@ -176,7 +176,12 @@ class MessageFile extends React.Component<IProps, IState> {
 
     /* Upload progress handler */
     private uploadProgressHandler = (progress: IFileProgress) => {
-        this.displayFileSize(progress.download);
+        const {message} = this.state;
+        if ((message.id || 0) > 0) {
+            this.displayFileSize(progress.download);
+        } else {
+            this.displayFileSize(progress.upload);
+        }
         if (!this.circleProgressRef) {
             return;
         }
