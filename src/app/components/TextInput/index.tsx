@@ -1053,6 +1053,7 @@ class TextInput extends React.Component<IProps, IState> {
             monitorGain: 0,
             numberOfChannels: 1,
             recordingGain: 1,
+            reuseWorker: true,
             wavBitDepth: 16,
         });
 
@@ -1250,6 +1251,13 @@ class TextInput extends React.Component<IProps, IState> {
             }
         }
     }
+
+    // /* Is voice started */
+    // private isVoiceStarted(data: Uint8Array) {
+    //     return data.some((byte) => {
+    //         return byte > 0;
+    //     });
+    // }
 
     // /* Insert at selection */
     // private insertAtCursor(text: string) {
