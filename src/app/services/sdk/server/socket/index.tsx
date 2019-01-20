@@ -135,8 +135,8 @@ export default class Socket {
         clearTimeout(this.initTimeout);
 
         this.tryCounter++;
-        if (this.testUrl.indexOf('ws://') > -1 || this.testUrl.indexOf('wss://') > -1) {
-            this.socket = new WebSocket(this.testUrl);
+        if (this.testUrl.length > 0) {
+            this.socket = new WebSocket(`ws://${this.testUrl}`);
         } else if (window.location.protocol === 'https:') {
             this.socket = new WebSocket('wss://' + window.location.host + '/ws');
         } else {

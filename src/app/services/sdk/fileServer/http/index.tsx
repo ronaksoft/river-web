@@ -37,13 +37,18 @@ export default class Http {
     private workerId: number = 0;
     private isWorkerReady: boolean = false;
     private readyHandler: any = null;
+    private testUrl: string = '';
 
     public constructor(bytes: any, id: number) {
+        this.testUrl = localStorage.getItem('river.test_url') || '';
+
         this.reqId = 0;
         this.worker = new Worker('/bin/worker.js?v11');
         this.workerId = id;
 
-        if (window.location.protocol === 'https:') {
+        if (this.testUrl.length > 0) {
+            this.dataCenterUrl = 'http://' + this.dataCenterUrl + '/file';
+        } else if (window.location.protocol === 'https:') {
             this.dataCenterUrl = 'https://' + window.location.host + '/file';
         }
 
