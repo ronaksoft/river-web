@@ -18,6 +18,7 @@ import {findIndex} from 'lodash';
 import * as core_types_pb from '../messages/core.types_pb';
 
 export interface IFileProgress {
+    active?: boolean;
     download: number;
     state: 'loading' | 'complete' | 'failed';
     totalDownload: number;

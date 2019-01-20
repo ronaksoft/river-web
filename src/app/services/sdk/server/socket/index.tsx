@@ -34,8 +34,11 @@ export default class Socket {
     private fnCallback: any = null;
     private fnUpdate: any = null;
     private fnError: any = null;
+    private testUrl: string = '';
 
     public constructor() {
+        this.testUrl = localStorage.getItem('river.test_url') || '';
+
         this.worker = new Worker('/bin/worker.js?v11');
 
         fetch('/bin/river.wasm?v11').then((response) => {
@@ -132,7 +135,9 @@ export default class Socket {
         clearTimeout(this.initTimeout);
 
         this.tryCounter++;
-        if (window.location.protocol === 'https:') {
+        if (this.testUrl.indexOf('ws://') > -1 || this.testUrl.indexOf('wss://') > -1) {
+            this.socket = new WebSocket(this.testUrl);
+        } else if (window.location.protocol === 'https:') {
             this.socket = new WebSocket('wss://' + window.location.host + '/ws');
         } else {
             this.socket = new WebSocket('ws://new.river.im');
@@ -142,6 +147,9 @@ export default class Socket {
         // Connection opened
         this.socket.onopen = () => {
             window.console.log('Hello Server!', new Date());
+            if (!this.socket.OPEN) {
+                return;
+            }
             this.socket.send(ping);
             this.pingCounter = 0;
             this.tryCounter = 0;

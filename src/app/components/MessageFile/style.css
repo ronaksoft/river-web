@@ -127,6 +127,9 @@ input {
     .message-file .file-content .file-info .file-size {
       font-size: 12px; }
 
+.message-file .file-caption {
+  padding: 0 6px; }
+
 html[theme="dark"] .message-file .file-content .file-action svg,
 html[theme="dark-blue"] .message-file .file-content .file-action svg {
   color: var(--light); }

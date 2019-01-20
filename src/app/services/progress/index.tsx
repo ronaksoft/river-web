@@ -33,9 +33,10 @@ export default class ProgressBroadcaster {
 
     public failed(id: number) {
         this.callHandlers(id, {
+            active: true,
             download: 0,
             progress: 0,
-            state:'failed',
+            state: 'failed',
             totalDownload: 0,
             totalUpload: 0,
             upload: 0,
@@ -43,6 +44,7 @@ export default class ProgressBroadcaster {
     }
 
     public publish(id: number, progress: IFileProgress) {
+        progress.active = true;
         this.callHandlers(id, progress);
     }
 
@@ -55,6 +57,7 @@ export default class ProgressBroadcaster {
             this.listeners[id] = {
                 fnQueue: [],
                 progress: {
+                    active: false,
                     download: 0,
                     progress: 0.0,
                     state: 'loading',
@@ -73,6 +76,19 @@ export default class ProgressBroadcaster {
         };
     }
 
+    /* Check if progress is active */
+    public isActive(id: number) {
+        if (!this.listeners.hasOwnProperty(id)) {
+            return false;
+        } else {
+            if (this.listeners[id].progress.active) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
     public remove(id: number) {
         if (this.listeners.hasOwnProperty(id)) {
             delete this.listeners[id];
@@ -83,6 +99,7 @@ export default class ProgressBroadcaster {
         if (!this.listeners.hasOwnProperty(id)) {
             return;
         }
+        this.listeners[id].progress = progress;
         const keys = Object.keys(this.listeners[id].fnQueue);
         keys.forEach((key) => {
             const fn = this.listeners[id].fnQueue[key];

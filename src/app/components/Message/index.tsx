@@ -453,7 +453,7 @@ class Message extends React.Component<IProps, IState> {
             }
             const list = document.querySelector('.chat.active-chat > div');
             if (list) {
-                const diff = this.list.props.height - list.scrollHeight;
+                const diff = (this.list.props.height - 8) - list.scrollHeight;
                 if (diff > 0) {
                     this.setState({
                         listStyle: {

@@ -75,7 +75,8 @@
   .voice-player .play-timer {
     width: 50px;
     font-size: 12px;
-    line-height: 12px; }
+    line-height: 12px;
+    text-align: center; }
 
 html[theme="dark"] .voice-player .play-action svg,
 html[theme="dark-blue"] .voice-player .play-action svg {

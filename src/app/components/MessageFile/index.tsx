@@ -217,6 +217,15 @@ class MessageFile extends React.Component<IProps, IState> {
                 this.removeAllListeners();
                 this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
             }
+        } else {
+            if (this.progressBroadcaster.isActive(message.id || 0)) {
+                this.setState({
+                    fileState: 'progress',
+                }, () => {
+                    this.removeAllListeners();
+                    this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
+                });
+            }
         }
     }
 
