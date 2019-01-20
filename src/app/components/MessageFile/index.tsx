@@ -211,8 +211,11 @@ class MessageFile extends React.Component<IProps, IState> {
 
     /* Initialize progress bar */
     private initProgress() {
+        const {message} = this.props;
+        if (!message) {
+            return;
+        }
         if (this.state.fileState === 'progress') {
-            const {message} = this.props;
             if (message) {
                 this.removeAllListeners();
                 this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
