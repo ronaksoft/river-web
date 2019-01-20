@@ -47,7 +47,7 @@ export default class Http {
         this.workerId = id;
 
         if (this.testUrl.length > 0) {
-            this.dataCenterUrl = 'http://' + this.dataCenterUrl + '/file';
+            this.dataCenterUrl = 'http://' + this.testUrl + '/file';
         } else if (window.location.protocol === 'https:') {
             this.dataCenterUrl = 'https://' + window.location.host + '/file';
         }
