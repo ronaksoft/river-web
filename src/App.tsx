@@ -119,7 +119,9 @@ class App extends React.Component<{}, IState> {
             clearingSiteData: true,
         });
         this.mainRepo.destroyDB().then(() => {
+            const testUrl = localStorage.getItem('river.test_url') || '';
             localStorage.clear();
+            localStorage.setItem('river.test_url', testUrl);
             this.setState({
                 alertOpen: false,
             }, () => {
