@@ -892,6 +892,9 @@ class Chat extends React.Component<IProps, IState> {
             if (index > -1) {
                 messages[index] = data.message;
                 messages[index].me = (this.connInfo.UserID === data.message.senderid);
+                this.messageComponent.cache.clear(index, 0);
+                this.messageComponent.list.recomputeRowHeights(index);
+                this.messageComponent.list.recomputeGridSize();
                 this.messageComponent.list.forceUpdateGrid();
             }
         }

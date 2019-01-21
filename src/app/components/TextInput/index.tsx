@@ -51,6 +51,7 @@ import {IDraft} from '../../repository/dialog/interface';
 import Recorder from 'opus-recorder/dist/recorder.min';
 import VoicePlayer from '../VoicePlayer';
 import {to4bitResolution} from './utils';
+import {measureNodeHeight} from './measureHeight';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
@@ -198,6 +199,11 @@ class TextInput extends React.Component<IProps, IState> {
             // this.textarea.value = newProps.previewMessage.body;
             this.setState({
                 textareaValue: newProps.previewMessage.body || '',
+            }, () => {
+                if (this.textarea) {
+                    this.detectRTL(this.textarea.value);
+                }
+                this.computeLines();
             });
         } else {
             this.initDraft(this.state.peer, newProps.peer, this.state.previewMessageMode, this.state.previewMessage);
@@ -642,10 +648,13 @@ class TextInput extends React.Component<IProps, IState> {
 
     /* Compute line height based on break lines */
     private computeLines() {
-        // const lineHeight = parseInt(window.getComputedStyle(this.textarea, null).getPropertyValue("font-size").replace(/^\D+/g, ''), 10) * 1.1;
-        // let lines = Math.floor((this.textarea.scrollHeight - 4) / lineHeight) + 1;
-        const text = this.state.textareaValue;
-        let lines = text.split('\n').length;
+        let lines = 1;
+        const nodeInfo = measureNodeHeight(this.textarea, 12, false, 1, 5);
+        if (nodeInfo) {
+            lines = nodeInfo.rowCount;
+        } else {
+            lines = this.textarea.value.split('\n').length;
+        }
         if (lines < 1) {
             lines = 1;
         }
@@ -657,7 +666,7 @@ class TextInput extends React.Component<IProps, IState> {
             this.textarea.classList.add(`_${lines}-line`);
             this.lastLines = lines;
         }
-        if (text.length === 0) {
+        if (this.textarea.value.length === 0) {
             if (this.inputsMode !== 'default') {
                 this.setInputMode('default');
             }
@@ -902,7 +911,11 @@ class TextInput extends React.Component<IProps, IState> {
     /* On record voice end handler */
     private voiceRecordEnd = () => {
         this.stopTimer();
-        this.recorder.stop();
+        try {
+            this.recorder.stop();
+        } catch (e) {
+            window.console.log(e);
+        }
     }
 
     /* Voice anchor mouse down handler */
@@ -1056,6 +1069,8 @@ class TextInput extends React.Component<IProps, IState> {
             reuseWorker: true,
             wavBitDepth: 16,
         });
+
+        this.recorder.loadWorker();
 
         this.recorder.ondataavailable = (typedArray: any) => {
             if (this.voiceCanceled) {

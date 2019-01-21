@@ -25,6 +25,7 @@ import GroupName from '../GroupName';
 import {categorizeContact} from '../ContactList';
 
 import './style.css';
+import Scrollbars from 'react-custom-scrollbars';
 
 interface ISeachItem {
     contact?: IContact;
@@ -52,13 +53,17 @@ interface IState {
     title: string;
 }
 
+const listStyle: React.CSSProperties = {
+    overflowX: 'visible',
+    overflowY: 'visible',
+};
+
 class SearchList extends React.Component<IProps, IState> {
-    private inputePeerRes: IDialogWithContact = {dialogs: [], contacts: []};
-    // @ts-ignore
+    private inputPeerRes: IDialogWithContact = {dialogs: [], contacts: []};
     private list: List;
     private searchRepo: SearchRepo;
-    private searchDebounce: any;
-    private defaultInputePeer: IDialogWithContact;
+    private defaultInputPeer: IDialogWithContact;
+    private readonly searchDebounce: any;
 
     constructor(props: IProps) {
         super(props);
@@ -99,23 +104,41 @@ class SearchList extends React.Component<IProps, IState> {
                 <div className="search-list-container">
                     <AutoSizer>
                         {({width, height}: any) => (
-                            <List
-                                ref={this.refHandler}
-                                rowHeight={this.getHeight}
-                                rowRenderer={this.rowRender}
-                                rowCount={inputPeers.length}
-                                overscanRowCount={0}
-                                scrollToIndex={scrollIndex}
-                                width={width}
-                                height={height}
-                                className="search-container"
-                                noRowsRenderer={this.noRowsRenderer}
-                            />
+                            <Scrollbars
+                                autoHide={true}
+                                style={{
+                                    height: height + 'px',
+                                    width: width + 'px',
+                                }}
+                                onScroll={this.handleScroll}
+                            >
+                                <List
+                                    ref={this.refHandler}
+                                    rowHeight={this.getHeight}
+                                    rowRenderer={this.rowRender}
+                                    rowCount={inputPeers.length}
+                                    overscanRowCount={0}
+                                    scrollToIndex={scrollIndex}
+                                    width={width}
+                                    height={height}
+                                    className="search-container"
+                                    noRowsRenderer={this.noRowsRenderer}
+                                    style={listStyle}
+                                />
+                            </Scrollbars>
                         )}
                     </AutoSizer>
                 </div>
             </div>
         );
+    }
+
+    /* Custom Scrollbars handler */
+    private handleScroll = (e: any) => {
+        const {scrollTop} = e.target;
+        if (this.list.Grid) {
+            this.list.Grid.handleScrollEvent({scrollTop});
+        }
     }
 
     /* Chip renderer for select input */
@@ -125,12 +148,12 @@ class SearchList extends React.Component<IProps, IState> {
         }
         if (value.mode === 'contact' && value.contact) {
             return (<Chip key={key} avatar={<UserAvatar id={value.contact.id} noDetail={true}/>} tabIndex={-1}
-                          label={<UserName id={value.contact.id} noDetail={true}/>}
+                          label={<UserName id={value.contact.id} noDetail={true} unsafe={true}/>}
                           onDelete={this.removeItemHandler.bind(this, value)} className="chip"/>);
         } else if (value.mode === 'dialog' && value.dialog) {
             if (value.dialog.peertype === PeerType.PEERUSER || value.dialog.peertype === PeerType.PEERSELF) {
                 return (<Chip key={key} avatar={<UserAvatar id={value.dialog.peerid} noDetail={true}/>} tabIndex={-1}
-                              label={<UserName id={value.dialog.peerid} noDetail={true}/>}
+                              label={<UserName id={value.dialog.peerid} noDetail={true} unsafe={true}/>}
                               onDelete={this.removeItemHandler.bind(this, value)} className="chip"/>);
             } else if (value.dialog.peertype === PeerType.PEERGROUP) {
                 return (<Chip key={key} avatar={<GroupAvatar id={value.dialog.peerid}/>} tabIndex={-1}
@@ -202,8 +225,8 @@ class SearchList extends React.Component<IProps, IState> {
     /* Get all contacts */
     private getDefault() {
         this.searchRepo.search({}).then((res) => {
-            this.defaultInputePeer = res;
-            this.inputePeerRes = clone(res);
+            this.defaultInputPeer = res;
+            this.inputPeerRes = clone(res);
             this.setState({
                 inputPeers: this.getTrimmedList([]),
             }, () => {
@@ -220,7 +243,7 @@ class SearchList extends React.Component<IProps, IState> {
             this.searchDebounce(text);
         } else {
             this.searchDebounce.cancel();
-            this.inputePeerRes = clone(this.defaultInputePeer);
+            this.inputPeerRes = clone(this.defaultInputPeer);
             this.setState({
                 inputPeers: this.getTrimmedList(this.state.selectedInputPeers),
             });
@@ -230,7 +253,7 @@ class SearchList extends React.Component<IProps, IState> {
     /* For debouncing the query in order to have best performance */
     private search = (text: string) => {
         this.searchRepo.search({keyword: text, limit: 12}).then((res) => {
-            this.inputePeerRes = clone(res || []);
+            this.inputPeerRes = clone(res || []);
             this.setState({
                 inputPeers: this.getTrimmedList(this.state.selectedInputPeers),
             }, () => {
@@ -292,13 +315,13 @@ class SearchList extends React.Component<IProps, IState> {
     /* Removes the selected items from the list */
     private getTrimmedList(selectedInputPeers: ISeachItem[]) {
         const items: ISeachItem[] = [];
-        if (this.inputePeerRes.dialogs.length > 0) {
+        if (this.inputPeerRes.dialogs.length > 0) {
             items.push({
                 label: 'Chats',
                 mode: 'label',
             });
         }
-        differenceWith(this.inputePeerRes.dialogs, selectedInputPeers, (i1, i2) => {
+        differenceWith(this.inputPeerRes.dialogs, selectedInputPeers, (i1, i2) => {
             return i1.peerid === i2.id;
         }).sort((i1, i2) => {
             if (!i1.last_update || !i2.last_update) {
@@ -306,20 +329,20 @@ class SearchList extends React.Component<IProps, IState> {
             }
             return i2.last_update - i1.last_update;
         });
-        this.inputePeerRes.dialogs.forEach((item) => {
+        this.inputPeerRes.dialogs.forEach((item) => {
             items.push({
                 dialog: item,
                 id: item.peerid,
                 mode: 'dialog',
             });
         });
-        if (this.inputePeerRes.contacts.length > 0) {
+        if (this.inputPeerRes.contacts.length > 0) {
             items.push({
                 label: 'Contacts',
                 mode: 'label',
             });
         }
-        categorizeContact(differenceBy(this.inputePeerRes.contacts, selectedInputPeers, 'id')).forEach((item) => {
+        categorizeContact(differenceBy(this.inputPeerRes.contacts, selectedInputPeers, 'id')).forEach((item) => {
             items.push({
                 contact: item,
                 id: item.id,

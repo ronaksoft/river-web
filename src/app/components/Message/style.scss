@@ -90,7 +90,8 @@
   width: 100%;
   padding-bottom: 2px;
   &.date-padding {
-    padding-bottom: 8px;
+    padding-bottom: 6px;
+    padding-top: 8px;
   }
   &.voice {
     height: 44px;
@@ -100,6 +101,10 @@
         padding: 3px !important;
         display: flex;
         flex-direction: row;
+        .message-status {
+          min-width: auto !important;
+          padding: 0 0 0 6px;
+        }
       }
     }
   }
@@ -294,7 +299,7 @@
       text-align: right;
       margin-right: 10px;
       &.edited {
-        min-width: 100px;
+        min-width: 106px;
       }
     }
     &.has-error {

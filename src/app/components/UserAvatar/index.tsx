@@ -173,21 +173,29 @@ class UserAvatar extends React.Component<IProps, IState> {
         if (data && data.detail.ids.indexOf(this.state.id) === -1) {
             return;
         }
-        this.contactRepo.get(this.state.id).then((contact) => {
-            this.setState({
-                user: {
-                    _id: contact.id,
-                    avatar: contact.avatar,
-                    firstname: contact.firstname,
-                    id: contact.id,
-                    lastname: contact.lastname,
-                },
-            });
+        this.contactRepo.get(this.state.id, true).then((contact) => {
+            if (contact) {
+                this.setState({
+                    user: {
+                        _id: contact.id,
+                        avatar: contact.avatar,
+                        firstname: contact.firstname,
+                        id: contact.id,
+                        lastname: contact.lastname,
+                    },
+                });
+            } else {
+                throw Error('not found');
+            }
         }).catch(() => {
             this.userRepo.get(this.state.id).then((user) => {
-                this.setState({
-                    user,
-                });
+                if (user) {
+                    this.setState({
+                        user,
+                    });
+                } else {
+                    throw Error('not found');
+                }
             }).catch(() => {
                 if (this.tryCount < 10) {
                     this.tryCount++;

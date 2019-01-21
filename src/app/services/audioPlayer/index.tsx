@@ -22,6 +22,7 @@ interface IAudioItem {
     event: IAudioEvent;
     fileId: string;
     fnQueue: { [key: number]: any };
+    peerId?: string;
 }
 
 export const C_INSTANT_AUDIO = -1;
@@ -40,42 +41,71 @@ export default class AudioPlayer {
     private audio: HTMLAudioElement;
     private fnIndex: number = 0;
     private tracks: { [key: number]: IAudioItem } = {};
+    private backUpTracks: { [key: number]: IAudioItem } = {};
     private playlist: number[] = [];
     private currentTrack: number = 0;
     private playerInterval: any = null;
     private fileRepo: FileRepo;
     private lastObjectUrl: string = '';
+    /* Set audio state */
+    private playingFromPeerId: string | undefined;
 
     private constructor() {
         this.audio = document.createElement('audio');
         this.fileRepo = FileRepo.getInstance();
     }
 
+    /* Set instant audio file with blob
+    *  This feature mainly being used in previewing recorded voice!
+    * */
     public setInstantVoice(blob: Blob, callback?: any) {
         this.prepareInstantAudio(blob, callback);
     }
 
-    public addToPlaylist(messageId: number, fileId: string, downloaded: boolean) {
-        if (!this.tracks.hasOwnProperty(messageId)) {
-            this.tracks[messageId] = {
-                downloaded,
-                duration: 0,
-                event: {
-                    currentTime: 0,
-                    currentTrack: 0,
-                    progress: 0,
-                    state: 'pause',
-                },
-                fileId,
-                fnQueue: [],
-            };
-            this.playlist.push(messageId);
-            if (this.playlist.length > 1) {
-                this.playlist.sort();
+    /* Add audio to playlist */
+    public addToPlaylist(messageId: number, peerId: string, fileId: string, downloaded: boolean) {
+        if (this.playingFromPeerId && this.playingFromPeerId !== peerId) {
+            if (!this.backUpTracks.hasOwnProperty(messageId)) {
+                this.backUpTracks[messageId] = {
+                    downloaded,
+                    duration: 0,
+                    event: {
+                        currentTime: 0,
+                        currentTrack: 0,
+                        progress: 0,
+                        state: 'pause',
+                    },
+                    fileId,
+                    fnQueue: [],
+                    peerId,
+                };
+            } else {
+                this.backUpTracks[messageId].downloaded = downloaded;
+                this.backUpTracks[messageId].fileId = fileId;
             }
         } else {
-            this.tracks[messageId].downloaded = downloaded;
-            this.tracks[messageId].fileId = fileId;
+            if (!this.tracks.hasOwnProperty(messageId)) {
+                this.tracks[messageId] = {
+                    downloaded,
+                    duration: 0,
+                    event: {
+                        currentTime: 0,
+                        currentTrack: 0,
+                        progress: 0,
+                        state: 'pause',
+                    },
+                    fileId,
+                    fnQueue: [],
+                    peerId,
+                };
+                this.playlist.push(messageId);
+                if (this.playlist.length > 1) {
+                    this.playlist.sort();
+                }
+            } else {
+                this.tracks[messageId].downloaded = downloaded;
+                this.tracks[messageId].fileId = fileId;
+            }
         }
     }
 
@@ -87,6 +117,7 @@ export default class AudioPlayer {
         this.audio = null;
     }
 
+    /* Play audio */
     public play(messageId: number) {
         // TODO: fix bad instant bug
         if (this.currentTrack !== messageId && messageId !== C_INSTANT_AUDIO) {
@@ -112,6 +143,7 @@ export default class AudioPlayer {
         return true;
     }
 
+    /* Pause audio */
     public pause(messageId: number) {
         if (this.audio && !this.audio.paused) {
             this.audio.pause();
@@ -120,6 +152,7 @@ export default class AudioPlayer {
         }
     }
 
+    /* Stop audio */
     public stop(messageId: number) {
         if (this.audio) {
             if (!this.audio.paused) {
@@ -130,6 +163,7 @@ export default class AudioPlayer {
         }
     }
 
+    /* Seek audio to given ratio (0.0 ~ 1.0) */
     public seekTo(messageId: number, ratio: number) {
         if (this.audio && this.tracks.hasOwnProperty(messageId)) {
             this.audio.currentTime = this.tracks[messageId].duration * ratio;
@@ -141,6 +175,7 @@ export default class AudioPlayer {
         }
     }
 
+    /* Next audio */
     public next() {
         if (this.currentTrack > 0) {
             const index = this.playlist.indexOf(this.currentTrack);
@@ -153,6 +188,7 @@ export default class AudioPlayer {
         }
     }
 
+    /* Prev audio */
     public prev() {
         if (this.currentTrack > 0) {
             const index = this.playlist.indexOf(this.currentTrack);
@@ -165,6 +201,7 @@ export default class AudioPlayer {
         }
     }
 
+    /* AudioPlayer event listener */
     public listen(messageId: number, fn: any): (() => void) | null {
         if (!messageId) {
             return null;
@@ -197,14 +234,20 @@ export default class AudioPlayer {
         };
     }
 
+    /* AudioPlayer remove track */
     public remove(id: number) {
         if (this.tracks.hasOwnProperty(id)) {
             delete this.tracks[id];
         }
     }
 
+    /* Get audio from database and prepare it for playing */
     private prepareTrack(messageId: number) {
         if (!this.tracks.hasOwnProperty(messageId)) {
+            if (!this.backUpTracks.hasOwnProperty(messageId)) {
+                this.copyFromBackup();
+                this.prepareTrack(messageId);
+            }
             return;
         }
         const fileId = this.tracks[messageId].fileId;
@@ -226,6 +269,7 @@ export default class AudioPlayer {
         });
     }
 
+    /* Prepare instant audio */
     private prepareInstantAudio(blob: Blob, callback?: any) {
         this.audio.src = URL.createObjectURL(blob);
         this.audio.onloadedmetadata = () => {
@@ -242,6 +286,7 @@ export default class AudioPlayer {
         };
     }
 
+    /* Set audio state */
     private setState(messageId: number, state: 'none' | 'play' | 'pause' | 'seek_play' | 'seek_pause', progress?: number) {
         if (this.tracks.hasOwnProperty(messageId)) {
             if (state !== 'none') {
@@ -254,10 +299,16 @@ export default class AudioPlayer {
                 this.tracks[messageId].event.currentTime = this.audio.currentTime;
             }
             this.tracks[messageId].event.currentTrack = this.currentTrack;
+            if (state === 'play') {
+                this.playingFromPeerId = this.tracks[messageId].peerId;
+            } else {
+                this.playingFromPeerId = undefined;
+            }
             this.callHandlers(messageId, this.tracks[messageId].event);
         }
     }
 
+    /* Call registered handlers */
     private callHandlers(messageId: number, event: IAudioEvent) {
         if (!this.tracks.hasOwnProperty(messageId)) {
             return;
@@ -285,5 +336,23 @@ export default class AudioPlayer {
     /* Stop player interval */
     private stopPlayerInterval() {
         clearInterval(this.playerInterval);
+    }
+
+    /* Copy track from backup (usually different peerId) */
+    private copyFromBackup() {
+        // @ts-ignore
+        const keys: number[] = Object.keys(this.backUpTracks);
+        if (keys.length === 0) {
+            this.backUpTracks = {};
+            return;
+        } else {
+            this.tracks = this.backUpTracks;
+            this.playlist = [];
+            keys.forEach((i) => {
+                this.playlist.push(i);
+            });
+            this.playlist.sort();
+            this.backUpTracks = {};
+        }
     }
 }

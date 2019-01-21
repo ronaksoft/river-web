@@ -121,20 +121,28 @@ class UserName extends React.Component<IProps, IState> {
         }
 
         this.contactRepo.get(this.state.id, this.props.unsafe).then((contact) => {
-            this.setState({
-                user: {
-                    _id: contact.id,
-                    firstname: contact.firstname,
-                    id: contact.id,
-                    lastname: contact.lastname,
-                    username: contact.username,
-                },
-            });
+            if (contact) {
+                this.setState({
+                    user: {
+                        _id: contact.id,
+                        firstname: contact.firstname,
+                        id: contact.id,
+                        lastname: contact.lastname,
+                        username: contact.username,
+                    },
+                });
+            } else {
+                throw Error('not found');
+            }
         }).catch(() => {
             this.userRepo.get(this.state.id).then((user) => {
-                this.setState({
-                    user,
-                });
+                if (user) {
+                    this.setState({
+                        user,
+                    });
+                } else {
+                    throw Error('not found');
+                }
             }).catch(() => {
                 if (this.tryCount < 10) {
                     this.tryCount++;

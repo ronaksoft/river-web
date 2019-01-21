@@ -141,7 +141,8 @@ input {
   width: 100%;
   padding-bottom: 2px; }
   .bubble-wrapper.date-padding {
-    padding-bottom: 8px; }
+    padding-bottom: 6px;
+    padding-top: 8px; }
   .bubble-wrapper.voice {
     height: 44px; }
     .bubble-wrapper.voice .bubble {
@@ -150,6 +151,9 @@ input {
         padding: 3px !important;
         display: flex;
         flex-direction: row; }
+        .bubble-wrapper.voice .bubble .bubble-body .message-status {
+          min-width: auto !important;
+          padding: 0 0 0 6px; }
   .bubble-wrapper .arrow {
     position: absolute;
     top: 6px;
@@ -303,7 +307,7 @@ input {
     text-align: right;
     margin-right: 10px; }
     .bubble-wrapper.me .bubble.edited {
-      min-width: 100px; }
+      min-width: 106px; }
   .bubble-wrapper.me.has-error .arrow {
     right: 14px; }
   .bubble-wrapper.me.has-error .bubble {

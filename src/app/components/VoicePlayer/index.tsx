@@ -111,25 +111,41 @@ class VoicePlayer extends React.Component<IProps, IState> {
         if (data.voiceId) {
             this.voiceId = data.voiceId;
             if (message) {
-                this.audioPlayer.addToPlaylist(message.id || 0, this.voiceId, message.downloaded || false);
+                this.audioPlayer.addToPlaylist(message.id || 0, message.peerid || '', this.voiceId, message.downloaded || false);
             }
         }
     }
 
     /* Set voice state */
     public setVoiceState(state: 'play' | 'pause' | 'seek_play' | 'seek_pause' | 'progress' | 'download') {
-        const {message} = this.props;
-
         this.setState({
             playState: state,
         });
-        if (state === 'progress' && message) {
+
+        const {message} = this.props;
+        if (!message) {
+            return;
+        }
+
+        if (state === 'progress') {
             this.removeAllListeners();
             this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
+        } else {
+            if (this.progressBroadcaster.isActive(message.id || 0)) {
+                this.setState({
+                    playState: 'progress',
+                }, () => {
+                    this.removeAllListeners();
+                    this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
+                });
+            }
         }
-        if (state === 'pause' && message) {
+        if (state === 'pause') {
             this.removeAllListeners();
             this.eventReferences.push(this.audioPlayer.listen(message.id || 0, this.audioPlayerHandler));
+            if (this.voiceId) {
+                this.audioPlayer.addToPlaylist(message.id || 0, message.peerid || '', this.voiceId, message.downloaded || false);
+            }
         }
     }
 
@@ -138,7 +154,7 @@ class VoicePlayer extends React.Component<IProps, IState> {
         const {message} = this.props;
         this.voiceId = id;
         if (this.voiceId && message) {
-            this.audioPlayer.addToPlaylist(message.id || 0, this.voiceId, message.downloaded || false);
+            this.audioPlayer.addToPlaylist(message.id || 0, message.peerid || '', this.voiceId, message.downloaded || false);
         }
     }
 

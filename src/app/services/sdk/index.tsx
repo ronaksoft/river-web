@@ -143,10 +143,6 @@ export default class SDK {
     }
 
     public sendCode(phone: string): Promise<AuthSentCode.AsObject> {
-        // dummy message, server bug
-        this.server.send(C_MSG.Bool, new Uint8Array(1), true).catch(() => {
-            //
-        });
         const data = new AuthSendCode;
         data.setPhone(phone);
         return this.server.send(C_MSG.AuthSendCode, data.serializeBinary(), true);
@@ -177,10 +173,6 @@ export default class SDK {
     }
 
     public recall(clientId: string): Promise<AuthRecalled.AsObject> {
-        // dummy message, server bug
-        this.server.send(C_MSG.Bool, new Uint8Array(1), true).catch(() => {
-            //
-        });
         const data = new AuthRecall();
         data.setClientid(clientId);
         return this.server.send(C_MSG.AuthRecall, data.serializeBinary(), true);

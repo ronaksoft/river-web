@@ -107,6 +107,9 @@ export default class Socket {
                     this.started = true;
                     this.dispatchEvent('fnStarted', d.data);
                     break;
+                case 'fnDecryptError':
+                    this.dispatchEvent('fnDecryptError', null);
+                    break;
             }
         };
     }

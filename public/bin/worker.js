@@ -147,3 +147,7 @@ fnDecryptCallback = (reqId, constructor, data) => {
         data,
     });
 };
+
+fnDecryptError = () => {
+    workerMessage('fnDecryptError', null);
+};

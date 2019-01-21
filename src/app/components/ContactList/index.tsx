@@ -207,7 +207,7 @@ class ContactList extends React.Component<IProps, IState> {
     /* Chip renderer for select input */
     private chipRenderer = ({value, text}: any, key: any): React.ReactNode => {
         return (<Chip key={key} avatar={<UserAvatar id={value.id} noDetail={true}/>} tabIndex={-1}
-                      label={<UserName id={value.id} noDetail={true}/>}
+                      label={<UserName id={value.id} noDetail={true} unsafe={true}/>}
                       onDelete={this.removeMemberHandler.bind(this, value)} className="chip"/>);
     }
 

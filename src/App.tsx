@@ -35,6 +35,7 @@ const theme = createMuiTheme({
 interface IState {
     alertOpen: boolean;
     clearingSiteData: boolean;
+    errorMessage: string;
 }
 
 class App extends React.Component<{}, IState> {
@@ -47,6 +48,7 @@ class App extends React.Component<{}, IState> {
         this.state = {
             alertOpen: false,
             clearingSiteData: false,
+            errorMessage: `You are receiving "Auth Error", do you like to clear all site data?`,
         };
 
         this.mainRepo = MainRepo.getInstance();
@@ -61,6 +63,14 @@ class App extends React.Component<{}, IState> {
         window.addEventListener('authErrorEvent', (event: any) => {
             this.setState({
                 alertOpen: true,
+                errorMessage: `You are receiving "Auth Error", do you like to clear all site data?`,
+            });
+        });
+
+        window.addEventListener('fnDecryptError', (event: any) => {
+            this.setState({
+                alertOpen: true,
+                errorMessage: `You are receiving "Decrypt Error", do you like to clear all site data?`,
             });
         });
 
@@ -74,7 +84,7 @@ class App extends React.Component<{}, IState> {
     }
 
     public render() {
-        const {alertOpen, clearingSiteData} = this.state;
+        const {alertOpen, clearingSiteData, errorMessage} = this.state;
         return (
             <div className={'App' + (this.isElectron ? ' is-electron' : '')}>
                 <MuiThemeProvider theme={theme}>
@@ -86,10 +96,11 @@ class App extends React.Component<{}, IState> {
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
                 >
-                    <DialogTitle>Auth Error</DialogTitle>
+                    <DialogTitle>Critical Error</DialogTitle>
                     <DialogContent>
                         {!clearingSiteData && <DialogContentText>
-                            You are receiving "Auth Error", do you like to clear all site data?
+                            {errorMessage}<br/>
+                            <i>This probably fix your problem!</i>
                         </DialogContentText>}
                     </DialogContent>
                     {!clearingSiteData && <DialogActions>
@@ -100,7 +111,8 @@ class App extends React.Component<{}, IState> {
                             Agree
                         </Button>
                     </DialogActions>}
-                    {clearingSiteData && <DialogActions>
+                    {clearingSiteData &&
+                    <DialogActions style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                         <CircularProgress/>
                     </DialogActions>}
                 </Dialog>

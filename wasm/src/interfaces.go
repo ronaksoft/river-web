@@ -343,6 +343,7 @@ func (r *River) receive(message *[]byte, webSocket bool) {
 				zap.Int64(_LK_SERVER_AUTH_ID, res.AuthID),
 				zap.String(_LK_MSG_KEY, hex.Dump(res.MessageKey)),
 			)
+			js.Global().Call("fnDecryptError")
 			return
 		}
 		receivedEncryptedPayload := new(msg.ProtoEncryptedPayload)
