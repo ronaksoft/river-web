@@ -20,7 +20,6 @@ goog.exportSymbol('proto.msg.DocumentAttributePhoto', null, global);
 goog.exportSymbol('proto.msg.DocumentAttributeType', null, global);
 goog.exportSymbol('proto.msg.DocumentAttributeVideo', null, global);
 goog.exportSymbol('proto.msg.DocumentType', null, global);
-goog.exportSymbol('proto.msg.InputDocument', null, global);
 goog.exportSymbol('proto.msg.InputMediaContact', null, global);
 goog.exportSymbol('proto.msg.InputMediaDocument', null, global);
 goog.exportSymbol('proto.msg.InputMediaPhoto', null, global);
@@ -1738,244 +1737,6 @@ proto.msg.Document.prototype.clearAttributesList = function() {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.msg.InputDocument = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.msg.InputDocument, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  proto.msg.InputDocument.displayName = 'proto.msg.InputDocument';
-}
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto suitable for use in Soy templates.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
- * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
- *     for transitional soy proto support: http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.msg.InputDocument.prototype.toObject = function(opt_includeInstance) {
-  return proto.msg.InputDocument.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Whether to include the JSPB
- *     instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.msg.InputDocument} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.msg.InputDocument.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    id: jspb.Message.getField(msg, 1),
-    accesshash: jspb.Message.getField(msg, 2),
-    clusterid: jspb.Message.getField(msg, 3)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.msg.InputDocument}
- */
-proto.msg.InputDocument.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.msg.InputDocument;
-  return proto.msg.InputDocument.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.msg.InputDocument} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.msg.InputDocument}
- */
-proto.msg.InputDocument.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readInt64String());
-      msg.setId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readFixed64String());
-      msg.setAccesshash(value);
-      break;
-    case 3:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setClusterid(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.msg.InputDocument.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.msg.InputDocument.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.msg.InputDocument} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.msg.InputDocument.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
-    writer.writeInt64String(
-      1,
-      f
-    );
-  }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
-    writer.writeFixed64String(
-      2,
-      f
-    );
-  }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
-  if (f != null) {
-    writer.writeInt32(
-      3,
-      f
-    );
-  }
-};
-
-
-/**
- * required int64 ID = 1;
- * @return {string}
- */
-proto.msg.InputDocument.prototype.getId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
-};
-
-
-/** @param {string} value */
-proto.msg.InputDocument.prototype.setId = function(value) {
-  jspb.Message.setField(this, 1, value);
-};
-
-
-proto.msg.InputDocument.prototype.clearId = function() {
-  jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.msg.InputDocument.prototype.hasId = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required fixed64 AccessHash = 2;
- * @return {string}
- */
-proto.msg.InputDocument.prototype.getAccesshash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, "0"));
-};
-
-
-/** @param {string} value */
-proto.msg.InputDocument.prototype.setAccesshash = function(value) {
-  jspb.Message.setField(this, 2, value);
-};
-
-
-proto.msg.InputDocument.prototype.clearAccesshash = function() {
-  jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.msg.InputDocument.prototype.hasAccesshash = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * required int32 ClusterID = 3;
- * @return {number}
- */
-proto.msg.InputDocument.prototype.getClusterid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
-};
-
-
-/** @param {number} value */
-proto.msg.InputDocument.prototype.setClusterid = function(value) {
-  jspb.Message.setField(this, 3, value);
-};
-
-
-proto.msg.InputDocument.prototype.clearClusterid = function() {
-  jspb.Message.setField(this, 3, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.msg.InputDocument.prototype.hasClusterid = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
 proto.msg.InputMediaUploadedPhoto = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, proto.msg.InputMediaUploadedPhoto.repeatedFields_, null);
 };
@@ -2021,7 +1782,7 @@ proto.msg.InputMediaUploadedPhoto.toObject = function(includeInstance, msg) {
   var f, obj = {
     caption: jspb.Message.getField(msg, 1),
     stickersList: jspb.Message.toObjectList(msg.getStickersList(),
-    proto.msg.InputDocument.toObject, includeInstance),
+    core_types_pb.InputDocument.toObject, includeInstance),
     file: (f = msg.getFile()) && core_types_pb.InputFile.toObject(includeInstance, f),
     attributesList: jspb.Message.toObjectList(msg.getAttributesList(),
     proto.msg.DocumentAttribute.toObject, includeInstance)
@@ -2066,8 +1827,8 @@ proto.msg.InputMediaUploadedPhoto.deserializeBinaryFromReader = function(msg, re
       msg.setCaption(value);
       break;
     case 2:
-      var value = new proto.msg.InputDocument;
-      reader.readMessage(value,proto.msg.InputDocument.deserializeBinaryFromReader);
+      var value = new core_types_pb.InputDocument;
+      reader.readMessage(value,core_types_pb.InputDocument.deserializeBinaryFromReader);
       msg.addStickers(value);
       break;
     case 3:
@@ -2121,7 +1882,7 @@ proto.msg.InputMediaUploadedPhoto.serializeBinaryToWriter = function(message, wr
     writer.writeRepeatedMessage(
       2,
       f,
-      proto.msg.InputDocument.serializeBinaryToWriter
+      core_types_pb.InputDocument.serializeBinaryToWriter
     );
   }
   f = message.getFile();
@@ -2178,7 +1939,7 @@ proto.msg.InputMediaUploadedPhoto.prototype.hasCaption = function() {
  */
 proto.msg.InputMediaUploadedPhoto.prototype.getStickersList = function() {
   return /** @type{!Array.<!proto.msg.InputDocument>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.msg.InputDocument, 2));
+    jspb.Message.getRepeatedWrapperField(this, core_types_pb.InputDocument, 2));
 };
 
 
@@ -2312,7 +2073,7 @@ proto.msg.InputMediaPhoto.prototype.toObject = function(opt_includeInstance) {
 proto.msg.InputMediaPhoto.toObject = function(includeInstance, msg) {
   var f, obj = {
     caption: jspb.Message.getField(msg, 1),
-    photo: (f = msg.getPhoto()) && proto.msg.InputDocument.toObject(includeInstance, f)
+    photo: (f = msg.getPhoto()) && core_types_pb.InputDocument.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -2354,8 +2115,8 @@ proto.msg.InputMediaPhoto.deserializeBinaryFromReader = function(msg, reader) {
       msg.setCaption(value);
       break;
     case 2:
-      var value = new proto.msg.InputDocument;
-      reader.readMessage(value,proto.msg.InputDocument.deserializeBinaryFromReader);
+      var value = new core_types_pb.InputDocument;
+      reader.readMessage(value,core_types_pb.InputDocument.deserializeBinaryFromReader);
       msg.setPhoto(value);
       break;
     default:
@@ -2399,7 +2160,7 @@ proto.msg.InputMediaPhoto.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       2,
       f,
-      proto.msg.InputDocument.serializeBinaryToWriter
+      core_types_pb.InputDocument.serializeBinaryToWriter
     );
   }
 };
@@ -2440,7 +2201,7 @@ proto.msg.InputMediaPhoto.prototype.hasCaption = function() {
  */
 proto.msg.InputMediaPhoto.prototype.getPhoto = function() {
   return /** @type{!proto.msg.InputDocument} */ (
-    jspb.Message.getWrapperField(this, proto.msg.InputDocument, 2, 1));
+    jspb.Message.getWrapperField(this, core_types_pb.InputDocument, 2, 1));
 };
 
 
@@ -2513,7 +2274,8 @@ proto.msg.InputMediaContact.toObject = function(includeInstance, msg) {
   var f, obj = {
     phone: jspb.Message.getField(msg, 1),
     firstname: jspb.Message.getField(msg, 2),
-    lastname: jspb.Message.getField(msg, 3)
+    lastname: jspb.Message.getField(msg, 3),
+    vcard: jspb.Message.getField(msg, 4)
   };
 
   if (includeInstance) {
@@ -2562,6 +2324,10 @@ proto.msg.InputMediaContact.deserializeBinaryFromReader = function(msg, reader) 
       var value = /** @type {string} */ (reader.readString());
       msg.setLastname(value);
       break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setVcard(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -2609,6 +2375,13 @@ proto.msg.InputMediaContact.serializeBinaryToWriter = function(message, writer) 
   if (f != null) {
     writer.writeString(
       3,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 4));
+  if (f != null) {
+    writer.writeString(
+      4,
       f
     );
   }
@@ -2702,6 +2475,35 @@ proto.msg.InputMediaContact.prototype.hasLastname = function() {
 };
 
 
+/**
+ * optional string VCard = 4;
+ * @return {string}
+ */
+proto.msg.InputMediaContact.prototype.getVcard = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.InputMediaContact.prototype.setVcard = function(value) {
+  jspb.Message.setField(this, 4, value);
+};
+
+
+proto.msg.InputMediaContact.prototype.clearVcard = function() {
+  jspb.Message.setField(this, 4, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.InputMediaContact.prototype.hasVcard = function() {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+
 
 /**
  * Generated by JsPbCodeGenerator.
@@ -2761,7 +2563,7 @@ proto.msg.InputMediaUploadedDocument.toObject = function(includeInstance, msg) {
     mimetype: jspb.Message.getField(msg, 3),
     caption: jspb.Message.getField(msg, 4),
     stickersList: jspb.Message.toObjectList(msg.getStickersList(),
-    proto.msg.InputDocument.toObject, includeInstance),
+    core_types_pb.InputDocument.toObject, includeInstance),
     attributesList: jspb.Message.toObjectList(msg.getAttributesList(),
     proto.msg.DocumentAttribute.toObject, includeInstance)
   };
@@ -2819,8 +2621,8 @@ proto.msg.InputMediaUploadedDocument.deserializeBinaryFromReader = function(msg,
       msg.setCaption(value);
       break;
     case 5:
-      var value = new proto.msg.InputDocument;
-      reader.readMessage(value,proto.msg.InputDocument.deserializeBinaryFromReader);
+      var value = new core_types_pb.InputDocument;
+      reader.readMessage(value,core_types_pb.InputDocument.deserializeBinaryFromReader);
       msg.addStickers(value);
       break;
     case 6:
@@ -2892,7 +2694,7 @@ proto.msg.InputMediaUploadedDocument.serializeBinaryToWriter = function(message,
     writer.writeRepeatedMessage(
       5,
       f,
-      proto.msg.InputDocument.serializeBinaryToWriter
+      core_types_pb.InputDocument.serializeBinaryToWriter
     );
   }
   f = message.getAttributesList();
@@ -3030,7 +2832,7 @@ proto.msg.InputMediaUploadedDocument.prototype.hasCaption = function() {
  */
 proto.msg.InputMediaUploadedDocument.prototype.getStickersList = function() {
   return /** @type{!Array.<!proto.msg.InputDocument>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.msg.InputDocument, 5));
+    jspb.Message.getRepeatedWrapperField(this, core_types_pb.InputDocument, 5));
 };
 
 
@@ -3134,7 +2936,7 @@ proto.msg.InputMediaDocument.prototype.toObject = function(opt_includeInstance) 
 proto.msg.InputMediaDocument.toObject = function(includeInstance, msg) {
   var f, obj = {
     caption: jspb.Message.getField(msg, 1),
-    document: (f = msg.getDocument()) && proto.msg.InputDocument.toObject(includeInstance, f)
+    document: (f = msg.getDocument()) && core_types_pb.InputDocument.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -3176,8 +2978,8 @@ proto.msg.InputMediaDocument.deserializeBinaryFromReader = function(msg, reader)
       msg.setCaption(value);
       break;
     case 2:
-      var value = new proto.msg.InputDocument;
-      reader.readMessage(value,proto.msg.InputDocument.deserializeBinaryFromReader);
+      var value = new core_types_pb.InputDocument;
+      reader.readMessage(value,core_types_pb.InputDocument.deserializeBinaryFromReader);
       msg.setDocument(value);
       break;
     default:
@@ -3221,7 +3023,7 @@ proto.msg.InputMediaDocument.serializeBinaryToWriter = function(message, writer)
     writer.writeMessage(
       2,
       f,
-      proto.msg.InputDocument.serializeBinaryToWriter
+      core_types_pb.InputDocument.serializeBinaryToWriter
     );
   }
 };
@@ -3262,7 +3064,7 @@ proto.msg.InputMediaDocument.prototype.hasCaption = function() {
  */
 proto.msg.InputMediaDocument.prototype.getDocument = function() {
   return /** @type{!proto.msg.InputDocument} */ (
-    jspb.Message.getWrapperField(this, proto.msg.InputDocument, 2, 1));
+    jspb.Message.getWrapperField(this, core_types_pb.InputDocument, 2, 1));
 };
 
 
@@ -3692,7 +3494,8 @@ proto.msg.MediaContact.toObject = function(includeInstance, msg) {
   var f, obj = {
     phone: jspb.Message.getField(msg, 1),
     firstname: jspb.Message.getField(msg, 2),
-    lastname: jspb.Message.getField(msg, 3)
+    lastname: jspb.Message.getField(msg, 3),
+    vcard: jspb.Message.getField(msg, 4)
   };
 
   if (includeInstance) {
@@ -3741,6 +3544,10 @@ proto.msg.MediaContact.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setLastname(value);
       break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setVcard(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -3788,6 +3595,13 @@ proto.msg.MediaContact.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeString(
       3,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 4));
+  if (f != null) {
+    writer.writeString(
+      4,
       f
     );
   }
@@ -3878,6 +3692,35 @@ proto.msg.MediaContact.prototype.clearLastname = function() {
  */
 proto.msg.MediaContact.prototype.hasLastname = function() {
   return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional string VCard = 4;
+ * @return {string}
+ */
+proto.msg.MediaContact.prototype.getVcard = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.MediaContact.prototype.setVcard = function(value) {
+  jspb.Message.setField(this, 4, value);
+};
+
+
+proto.msg.MediaContact.prototype.clearVcard = function() {
+  jspb.Message.setField(this, 4, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.MediaContact.prototype.hasVcard = function() {
+  return jspb.Message.getField(this, 4) != null;
 };
 
 

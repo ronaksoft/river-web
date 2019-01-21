@@ -1,0 +1,133 @@
+/*
+    Creation Time: 2019 - Jan - 13
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2019
+*/
+/*
+    Creation Time: 2018 - Aug - 18
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+*, *:before, *:after {
+  box-sizing: border-box; }
+
+:root {
+  --river: #27AE60;
+  --river-dark: #2E8F57;
+  --river-light: #29C16D;
+  --white: #FFF;
+  --black: #000;
+  --black-text: #323D47;
+  --bg: #F8F8F8;
+  --grey: #999;
+  --grey-low: #555;
+  --dark: #1A1A1A;
+  --light: #E6E6E6;
+  --wrapper: 1200px;
+  --blue: #00B0FF;
+  --light-blue: rgba(54, 115, 249, 0.2);
+  --green: #DCf8C6;
+  --message-chat: #EFEFF0;
+  --color-hover: rgba(50, 61, 71, 0.07);
+  --color-hover-dark: rgba(50, 61, 71, 0.12);
+  --color-text-hover: rgba(50, 61, 71, 0.64);
+  --header-color: #eee;
+  --light-mention: #2678b6;
+  --glass-dark-low: rgba(0, 0, 0, 0.05);
+  --glass-dark-high: rgba(0, 0, 0, 0.20);
+  --dark-low: #191919;
+  --dark-medium: #232323;
+  --dark-high: #333333;
+  --dark-hover: rgba(183, 222, 255, 0.07);
+  --dark-hover-light: rgba(183, 222, 255, 0.12);
+  --dark-accent-low: #003367;
+  --dark-accent-medium: #004783;
+  --dark-accent-high: #005EAE;
+  --dark-mention: #2d9fee;
+  --dark-blue-low: #1A212E;
+  --dark-blue-medium: #232F40;
+  --dark-blue-high: #14395f;
+  --dark-blue-high-alt: #2EA2FE;
+  --dark-blue-hover: rgba(46, 162, 254, 0.5);
+  --dark-blue-hover-light: rgba(46, 162, 254, 0.3);
+  --dark-blue-accent-low: #3E6A96;
+  --dark-blue-accent-medium: #344359;
+  --dark-blue-mention: #2eadff;
+  --red: #cc0000; }
+
+body {
+  background-color: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
+  font-weight: 400;
+  background-size: cover;
+  background-repeat: no-repeat; }
+
+input {
+  font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
+  font-weight: 400; }
+
+.message-contact {
+  padding: 0 0 0 6px; }
+  .message-contact .contact-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center; }
+    .message-contact .contact-content .contact-action {
+      position: relative;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      background-color: var(--glass-dark-low); }
+      .message-contact .contact-content .contact-action svg {
+        font-size: 20px;
+        color: var(--grey); }
+      .message-contact .contact-content .contact-action:hover svg {
+        color: var(--dark); }
+      .message-contact .contact-content .contact-action .action {
+        position: relative;
+        z-index: 10; }
+    .message-contact .contact-content .contact-info {
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center; }
+      .message-contact .contact-content .contact-info .contact-phone {
+        font-size: 12px;
+        color: var(--light-mention);
+        text-decoration: none;
+        text-transform: none; }
+
+html[theme="dark"] .message-contact .contact-content .contact-action,
+html[theme="dark-blue"] .message-contact .contact-content .contact-action {
+  background-color: var(--glass-dark-high); }
+  html[theme="dark"] .message-contact .contact-content .contact-action svg,
+  html[theme="dark-blue"] .message-contact .contact-content .contact-action svg {
+    color: var(--light); }
+  html[theme="dark"] .message-contact .contact-content .contact-action:hover svg,
+  html[theme="dark-blue"] .message-contact .contact-content .contact-action:hover svg {
+    color: var(--light); }
+
+html[theme="dark"] .message-contact .contact-content .contact-info .contact-phone,
+html[theme="dark-blue"] .message-contact .contact-content .contact-info .contact-phone {
+  color: var(--dark-mention); }
+
+html[theme="dark-blue"] .message-contact .contact-content .contact-action {
+  background-color: var(--glass-dark-high); }
+
+html[theme="dark-blue"] .message-contact .contact-content .contact-info .contact-phone {
+  color: var(--dark-blue-mention); }

@@ -26,6 +26,28 @@ export namespace UsersGet {
   }
 }
 
+export class UsersGetFull extends jspb.Message {
+  clearUsersList(): void;
+  getUsersList(): Array<core_types_pb.InputUser>;
+  setUsersList(value: Array<core_types_pb.InputUser>): void;
+  addUsers(value?: core_types_pb.InputUser, index?: number): core_types_pb.InputUser;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UsersGetFull.AsObject;
+  static toObject(includeInstance: boolean, msg: UsersGetFull): UsersGetFull.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UsersGetFull, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UsersGetFull;
+  static deserializeBinaryFromReader(message: UsersGetFull, reader: jspb.BinaryReader): UsersGetFull;
+}
+
+export namespace UsersGetFull {
+  export type AsObject = {
+    usersList: Array<core_types_pb.InputUser.AsObject>,
+  }
+}
+
 export class UsersMany extends jspb.Message {
   clearUsersList(): void;
   getUsersList(): Array<core_types_pb.User>;

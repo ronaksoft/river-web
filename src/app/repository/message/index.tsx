@@ -105,6 +105,7 @@ export default class MessageRepo {
                     break;
                 case MediaType.MEDIATYPECONTACT:
                     out.mediadata = MediaContact.deserializeBinary(mediaData).toObject();
+                    out.messagetype = C_MESSAGE_TYPE.Contact;
                     break;
             }
             delete out.media;

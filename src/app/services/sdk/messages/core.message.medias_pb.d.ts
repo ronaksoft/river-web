@@ -242,40 +242,6 @@ export namespace Document {
   }
 }
 
-export class InputDocument extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): string | undefined;
-  setId(value: string): void;
-
-  hasAccesshash(): boolean;
-  clearAccesshash(): void;
-  getAccesshash(): string | undefined;
-  setAccesshash(value: string): void;
-
-  hasClusterid(): boolean;
-  clearClusterid(): void;
-  getClusterid(): number | undefined;
-  setClusterid(value: number): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): InputDocument.AsObject;
-  static toObject(includeInstance: boolean, msg: InputDocument): InputDocument.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: InputDocument, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): InputDocument;
-  static deserializeBinaryFromReader(message: InputDocument, reader: jspb.BinaryReader): InputDocument;
-}
-
-export namespace InputDocument {
-  export type AsObject = {
-    id?: string,
-    accesshash?: string,
-    clusterid?: number,
-  }
-}
-
 export class InputMediaUploadedPhoto extends jspb.Message {
   hasCaption(): boolean;
   clearCaption(): void;
@@ -283,9 +249,9 @@ export class InputMediaUploadedPhoto extends jspb.Message {
   setCaption(value: string): void;
 
   clearStickersList(): void;
-  getStickersList(): Array<InputDocument>;
-  setStickersList(value: Array<InputDocument>): void;
-  addStickers(value?: InputDocument, index?: number): InputDocument;
+  getStickersList(): Array<core_types_pb.InputDocument>;
+  setStickersList(value: Array<core_types_pb.InputDocument>): void;
+  addStickers(value?: core_types_pb.InputDocument, index?: number): core_types_pb.InputDocument;
 
   hasFile(): boolean;
   clearFile(): void;
@@ -310,7 +276,7 @@ export class InputMediaUploadedPhoto extends jspb.Message {
 export namespace InputMediaUploadedPhoto {
   export type AsObject = {
     caption?: string,
-    stickersList: Array<InputDocument.AsObject>,
+    stickersList: Array<core_types_pb.InputDocument.AsObject>,
     file: core_types_pb.InputFile.AsObject,
     attributesList: Array<DocumentAttribute.AsObject>,
   }
@@ -324,8 +290,8 @@ export class InputMediaPhoto extends jspb.Message {
 
   hasPhoto(): boolean;
   clearPhoto(): void;
-  getPhoto(): InputDocument;
-  setPhoto(value?: InputDocument): void;
+  getPhoto(): core_types_pb.InputDocument;
+  setPhoto(value?: core_types_pb.InputDocument): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): InputMediaPhoto.AsObject;
@@ -340,7 +306,7 @@ export class InputMediaPhoto extends jspb.Message {
 export namespace InputMediaPhoto {
   export type AsObject = {
     caption?: string,
-    photo: InputDocument.AsObject,
+    photo: core_types_pb.InputDocument.AsObject,
   }
 }
 
@@ -360,6 +326,11 @@ export class InputMediaContact extends jspb.Message {
   getLastname(): string | undefined;
   setLastname(value: string): void;
 
+  hasVcard(): boolean;
+  clearVcard(): void;
+  getVcard(): string | undefined;
+  setVcard(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): InputMediaContact.AsObject;
   static toObject(includeInstance: boolean, msg: InputMediaContact): InputMediaContact.AsObject;
@@ -375,6 +346,7 @@ export namespace InputMediaContact {
     phone?: string,
     firstname?: string,
     lastname?: string,
+    vcard?: string,
   }
 }
 
@@ -400,9 +372,9 @@ export class InputMediaUploadedDocument extends jspb.Message {
   setCaption(value: string): void;
 
   clearStickersList(): void;
-  getStickersList(): Array<InputDocument>;
-  setStickersList(value: Array<InputDocument>): void;
-  addStickers(value?: InputDocument, index?: number): InputDocument;
+  getStickersList(): Array<core_types_pb.InputDocument>;
+  setStickersList(value: Array<core_types_pb.InputDocument>): void;
+  addStickers(value?: core_types_pb.InputDocument, index?: number): core_types_pb.InputDocument;
 
   clearAttributesList(): void;
   getAttributesList(): Array<DocumentAttribute>;
@@ -425,7 +397,7 @@ export namespace InputMediaUploadedDocument {
     thumbnail?: core_types_pb.InputFile.AsObject,
     mimetype?: string,
     caption?: string,
-    stickersList: Array<InputDocument.AsObject>,
+    stickersList: Array<core_types_pb.InputDocument.AsObject>,
     attributesList: Array<DocumentAttribute.AsObject>,
   }
 }
@@ -438,8 +410,8 @@ export class InputMediaDocument extends jspb.Message {
 
   hasDocument(): boolean;
   clearDocument(): void;
-  getDocument(): InputDocument;
-  setDocument(value?: InputDocument): void;
+  getDocument(): core_types_pb.InputDocument;
+  setDocument(value?: core_types_pb.InputDocument): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): InputMediaDocument.AsObject;
@@ -454,7 +426,7 @@ export class InputMediaDocument extends jspb.Message {
 export namespace InputMediaDocument {
   export type AsObject = {
     caption?: string,
-    document: InputDocument.AsObject,
+    document: core_types_pb.InputDocument.AsObject,
   }
 }
 
@@ -524,6 +496,11 @@ export class MediaContact extends jspb.Message {
   getLastname(): string | undefined;
   setLastname(value: string): void;
 
+  hasVcard(): boolean;
+  clearVcard(): void;
+  getVcard(): string | undefined;
+  setVcard(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MediaContact.AsObject;
   static toObject(includeInstance: boolean, msg: MediaContact): MediaContact.AsObject;
@@ -539,6 +516,7 @@ export namespace MediaContact {
     phone?: string,
     firstname?: string,
     lastname?: string,
+    vcard?: string,
   }
 }
 

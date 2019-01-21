@@ -166,6 +166,9 @@ class SettingMenu extends React.Component<IProps, IState> {
                                 <PaletteRounded/> Theme
                             </div>
                         </div>
+                        <div className="version">
+                            v23.0.1
+                        </div>
                     </div>
                     <div className="page page-2">
                         {Boolean(pageContent === 'theme') && <React.Fragment>

@@ -26,9 +26,10 @@ import {clone} from 'lodash';
 import MessageVoice from '../MessageVoice';
 import RiverTime from '../../services/utilities/river_time';
 import {ErrorRounded} from '@material-ui/icons';
+import MessageFile from '../MessageFile';
+import MessageContact from '../MessageContact';
 
 import './style.css';
-import MessageFile from '../MessageFile';
 
 interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
@@ -800,12 +801,15 @@ class Message extends React.Component<IProps, IState> {
     /* Message body renderer */
     private renderMessageBody(message: IMessage, peer: InputPeer | null) {
         if (message.mediatype !== MediaType.MEDIATYPEEMPTY && message.mediatype !== undefined) {
-            if (message.messagetype === C_MESSAGE_TYPE.Voice) {
-                return (<MessageVoice message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
-            } else if (message.messagetype === C_MESSAGE_TYPE.File) {
-                return (<MessageFile message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
-            } else {
-                return '';
+            switch (message.messagetype) {
+                case C_MESSAGE_TYPE.Voice:
+                    return (<MessageVoice message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
+                case C_MESSAGE_TYPE.File:
+                    return (<MessageFile message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
+                case C_MESSAGE_TYPE.Contact:
+                    return (<MessageContact message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
+                default:
+                    return '';
             }
         } else {
             return (

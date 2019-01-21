@@ -318,6 +318,11 @@ export class User extends jspb.Message {
   getPhoto(): UserPhoto | undefined;
   setPhoto(value?: UserPhoto): void;
 
+  hasBio(): boolean;
+  clearBio(): void;
+  getBio(): string | undefined;
+  setBio(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): User.AsObject;
   static toObject(includeInstance: boolean, msg: User): User.AsObject;
@@ -338,6 +343,7 @@ export namespace User {
     restricted?: boolean,
     accesshash?: string,
     photo?: UserPhoto.AsObject,
+    bio?: string,
   }
 }
 
@@ -761,6 +767,34 @@ export namespace InputFile {
   }
 }
 
+export class GroupPhoto extends jspb.Message {
+  hasPhotobig(): boolean;
+  clearPhotobig(): void;
+  getPhotobig(): FileLocation;
+  setPhotobig(value?: FileLocation): void;
+
+  hasPhotosmall(): boolean;
+  clearPhotosmall(): void;
+  getPhotosmall(): FileLocation;
+  setPhotosmall(value?: FileLocation): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GroupPhoto.AsObject;
+  static toObject(includeInstance: boolean, msg: GroupPhoto): GroupPhoto.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: GroupPhoto, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GroupPhoto;
+  static deserializeBinaryFromReader(message: GroupPhoto, reader: jspb.BinaryReader): GroupPhoto;
+}
+
+export namespace GroupPhoto {
+  export type AsObject = {
+    photobig: FileLocation.AsObject,
+    photosmall: FileLocation.AsObject,
+  }
+}
+
 export class Group extends jspb.Message {
   hasId(): boolean;
   clearId(): void;
@@ -792,6 +826,11 @@ export class Group extends jspb.Message {
   setFlagsList(value: Array<GroupFlags>): void;
   addFlags(value: GroupFlags, index?: number): GroupFlags;
 
+  hasPhoto(): boolean;
+  clearPhoto(): void;
+  getPhoto(): GroupPhoto | undefined;
+  setPhoto(value?: GroupPhoto): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Group.AsObject;
   static toObject(includeInstance: boolean, msg: Group): Group.AsObject;
@@ -810,6 +849,7 @@ export namespace Group {
     participants?: number,
     editedon?: number,
     flagsList: Array<GroupFlags>,
+    photo?: GroupPhoto.AsObject,
   }
 }
 
@@ -902,6 +942,40 @@ export namespace GroupParticipant {
     type?: ParticipantType,
     accesshash?: string,
     username?: string,
+  }
+}
+
+export class InputDocument extends jspb.Message {
+  hasId(): boolean;
+  clearId(): void;
+  getId(): string | undefined;
+  setId(value: string): void;
+
+  hasAccesshash(): boolean;
+  clearAccesshash(): void;
+  getAccesshash(): string | undefined;
+  setAccesshash(value: string): void;
+
+  hasClusterid(): boolean;
+  clearClusterid(): void;
+  getClusterid(): number | undefined;
+  setClusterid(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): InputDocument.AsObject;
+  static toObject(includeInstance: boolean, msg: InputDocument): InputDocument.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: InputDocument, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): InputDocument;
+  static deserializeBinaryFromReader(message: InputDocument, reader: jspb.BinaryReader): InputDocument;
+}
+
+export namespace InputDocument {
+  export type AsObject = {
+    id?: string,
+    accesshash?: string,
+    clusterid?: number,
   }
 }
 

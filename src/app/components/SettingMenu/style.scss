@@ -54,6 +54,16 @@
       padding: 0 10px;
     }
   }
+  .version {
+    padding: 12px 16px;
+    font-size: 12px;
+    color: var(--grey);
+    text-align: right;
+    opacity: 0.5;
+    &:hover {
+      opacity: 1;
+    }
+  }
   .page-anchor {
     padding: 10px;
     cursor: pointer;

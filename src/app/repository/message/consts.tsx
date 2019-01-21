@@ -8,6 +8,7 @@
 */
 
 export const C_MESSAGE_TYPE = {
+    Contact: -8,
     Date: -1,
     End: -4,
     File: -7,

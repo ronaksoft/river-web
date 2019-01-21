@@ -36,6 +36,44 @@ export namespace SystemGetDHGroups {
   }
 }
 
+export class SystemStartTrace extends jspb.Message {
+  hasClusterid(): boolean;
+  clearClusterid(): void;
+  getClusterid(): number | undefined;
+  setClusterid(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SystemStartTrace.AsObject;
+  static toObject(includeInstance: boolean, msg: SystemStartTrace): SystemStartTrace.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: SystemStartTrace, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SystemStartTrace;
+  static deserializeBinaryFromReader(message: SystemStartTrace, reader: jspb.BinaryReader): SystemStartTrace;
+}
+
+export namespace SystemStartTrace {
+  export type AsObject = {
+    clusterid?: number,
+  }
+}
+
+export class SystemStopTrace extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SystemStopTrace.AsObject;
+  static toObject(includeInstance: boolean, msg: SystemStopTrace): SystemStopTrace.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: SystemStopTrace, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SystemStopTrace;
+  static deserializeBinaryFromReader(message: SystemStopTrace, reader: jspb.BinaryReader): SystemStopTrace;
+}
+
+export namespace SystemStopTrace {
+  export type AsObject = {
+  }
+}
+
 export class SystemClientLog extends jspb.Message {
   hasDeviceid(): boolean;
   clearDeviceid(): void;

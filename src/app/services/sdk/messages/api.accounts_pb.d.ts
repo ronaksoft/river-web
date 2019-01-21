@@ -212,6 +212,50 @@ export namespace AccountUpdateUsername {
   }
 }
 
+export class AccountUploadPhoto extends jspb.Message {
+  hasFile(): boolean;
+  clearFile(): void;
+  getFile(): core_types_pb.InputFile;
+  setFile(value?: core_types_pb.InputFile): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountUploadPhoto.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountUploadPhoto): AccountUploadPhoto.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountUploadPhoto, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountUploadPhoto;
+  static deserializeBinaryFromReader(message: AccountUploadPhoto, reader: jspb.BinaryReader): AccountUploadPhoto;
+}
+
+export namespace AccountUploadPhoto {
+  export type AsObject = {
+    file: core_types_pb.InputFile.AsObject,
+  }
+}
+
+export class AccountUpdatePhoto extends jspb.Message {
+  hasPhoto(): boolean;
+  clearPhoto(): void;
+  getPhoto(): core_types_pb.InputDocument;
+  setPhoto(value?: core_types_pb.InputDocument): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountUpdatePhoto.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountUpdatePhoto): AccountUpdatePhoto.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountUpdatePhoto, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountUpdatePhoto;
+  static deserializeBinaryFromReader(message: AccountUpdatePhoto, reader: jspb.BinaryReader): AccountUpdatePhoto;
+}
+
+export namespace AccountUpdatePhoto {
+  export type AsObject = {
+    photo: core_types_pb.InputDocument.AsObject,
+  }
+}
+
 export class AccountChangePhone extends jspb.Message {
   hasPhone(): boolean;
   clearPhone(): void;

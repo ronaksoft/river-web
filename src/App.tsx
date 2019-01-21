@@ -79,7 +79,7 @@ class App extends React.Component<{}, IState> {
             el.setAttribute('theme', localStorage.getItem('river.theme.color') || 'light');
             el.setAttribute('font', localStorage.getItem('river.theme.font') || '2');
             el.setAttribute('bg', localStorage.getItem('river.theme.bg') || '2');
-            el.setAttribute('bubble', localStorage.getItem('river.theme.bubble') || '1');
+            el.setAttribute('bubble', localStorage.getItem('river.theme.bubble') || '4');
         }
     }
 
