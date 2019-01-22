@@ -582,16 +582,18 @@ html[theme="dark-blue"] {
     }
     .column-center {
       .top {
-        background-color: var(--dark-medium);
-        .back-to-chats {
-          svg {
-            color: var(--light);
+        .info-bar {
+          background-color: var(--dark-medium);
+          .back-to-chats {
+            svg {
+              color: var(--light);
+            }
           }
-        }
-        span {
-          color: var(--light);
-          .name {
+          span {
             color: var(--light);
+            .name {
+              color: var(--light);
+            }
           }
         }
       }
@@ -673,7 +675,9 @@ html[theme="dark-blue"] {
     }
     .column-center {
       .top {
-        background-color: var(--dark-blue-medium);
+        .info-bar {
+          background-color: var(--dark-blue-medium);
+        }
       }
       .conversation {
         background-color: var(--dark-blue-low);

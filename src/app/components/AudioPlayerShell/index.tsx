@@ -8,10 +8,12 @@
 */
 
 import * as React from 'react';
-import AudioPlayer from '../../services/audioPlayer';
+import AudioPlayer, {IAudioEvent, IAudioInfo} from '../../services/audioPlayer';
 import {CloseRounded, PauseRounded, PlayArrowRounded, SlowMotionVideoRounded} from '@material-ui/icons';
 
 import './style.css';
+import UserName from '../UserName';
+import {Link} from 'react-router-dom';
 
 interface IProps {
     className?: string;
@@ -19,7 +21,10 @@ interface IProps {
 
 interface IState {
     className: string;
+    fast: boolean;
+    peerId: string;
     playState: 'play' | 'pause' | 'seek_play' | 'seek_pause';
+    userId: string;
 }
 
 class AudioPlayerShell extends React.Component<IProps, IState> {
@@ -28,30 +33,39 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
     // @ts-ignore
     private eventReferences: any[] = [];
     private shellRef: any = null;
+    private messageId: number = 0;
+    private open: boolean = false;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
             className: props.className || '',
+            fast: false,
+            peerId: '',
             playState: 'pause',
+            userId: '',
         };
 
         this.audioPlayer = AudioPlayer.getInstance();
     }
 
     public componentDidMount() {
-        //
+        this.eventReferences.push(this.audioPlayer.globalListen(this.audioProgressHandler));
     }
 
     public componentWillUnmount() {
-        //
+        this.eventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
+        });
     }
 
     public render() {
-        const {className, playState} = this.state;
+        const {className, fast, peerId, playState, userId} = this.state;
         return (
-            <div ref={this.shellRefHandler} className={'audio-player-shell open ' + className}>
+            <div ref={this.shellRefHandler} className={'audio-player-shell ' + className}>
                 <div className="shell">
                     <div className="audio-player-play-action">
                         {Boolean(playState === 'pause' || playState === 'seek_pause') &&
@@ -59,9 +73,15 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
                         {Boolean(playState === 'play' || playState === 'seek_play') &&
                         <PauseRounded onClick={this.pauseHandler}/>}
                     </div>
-                    <div className="audio-player-content"/>
+                    <div className="audio-player-content">
+                        {Boolean(userId !== '') && <div className="audio-player-anchor">
+                            <Link to={`/chat/${peerId}`}>
+                                Playing from: <UserName className="user" id={userId} unsafe={true} noDetail={true}/>
+                            </Link>
+                        </div>}
+                    </div>
                     <div className="audio-player-action">
-                        <SlowMotionVideoRounded/>
+                        <SlowMotionVideoRounded className={(fast ? 'enable' : '')} onClick={this.fastToggleHandler}/>
                         <CloseRounded className="action" onClick={this.cancelHandler}/>
                     </div>
                 </div>
@@ -77,24 +97,78 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
         this.setState({
             playState: 'play',
         });
+        this.audioPlayer.play(this.messageId);
     }
 
     private pauseHandler = () => {
         this.setState({
             playState: 'pause',
         });
+        this.audioPlayer.pause(this.messageId);
     }
 
     private cancelHandler = () => {
-        //
-        this.openPlayer();
+        this.openPlayer(false);
+        if (this.state.playState === 'play') {
+            this.audioPlayer.pause(this.messageId);
+        }
     }
 
-    private openPlayer() {
+    private fastToggleHandler = () => {
+        this.setState({
+            fast: !this.state.fast,
+        }, () => {
+            this.audioPlayer.fast(this.state.fast);
+        });
+    }
+
+    private openPlayer(open?: boolean) {
         if (!this.shellRef) {
             return;
         }
-        this.shellRef.classList.toggle('open');
+        if (open === undefined) {
+            this.shellRef.classList.toggle('open');
+            this.open = !this.open;
+        } else {
+            if (open && !this.open) {
+                this.shellRef.classList.add('open');
+                this.open = true;
+            } else if (!open && this.open) {
+                this.shellRef.classList.remove('open');
+                this.open = false;
+            }
+        }
+    }
+
+    private setPlayState(e: IAudioEvent) {
+        if (e.state === 'play' || e.state === 'seek_play') {
+            this.openPlayer(true);
+        }
+        if (this.state.playState !== e.state) {
+            this.setState({
+                playState: e.state,
+            });
+        }
+    }
+
+    private audioProgressHandler = (info: IAudioInfo, e: IAudioEvent) => {
+        this.messageId = info.messageId;
+        if (info.userId !== '' && this.state.userId !== info.userId) {
+            this.setState({
+                userId: info.userId,
+            });
+        }
+        if (info.peerId !== '' && this.state.peerId !== info.peerId) {
+            this.setState({
+                peerId: info.peerId,
+            });
+        }
+        if (this.state.fast !== info.fast) {
+            this.setState({
+                fast: info.fast,
+            });
+        }
+        this.setPlayState(e);
     }
 }
 

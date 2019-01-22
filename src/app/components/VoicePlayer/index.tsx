@@ -111,7 +111,7 @@ class VoicePlayer extends React.Component<IProps, IState> {
         if (data.voiceId) {
             this.voiceId = data.voiceId;
             if (message) {
-                this.audioPlayer.addToPlaylist(message.id || 0, message.peerid || '', this.voiceId, message.downloaded || false);
+                this.audioPlayer.addToPlaylist(message.id || 0, message.peerid || '', this.voiceId, message.senderid || '', message.downloaded || false);
             }
         }
     }
@@ -144,7 +144,7 @@ class VoicePlayer extends React.Component<IProps, IState> {
             this.removeAllListeners();
             this.eventReferences.push(this.audioPlayer.listen(message.id || 0, this.audioPlayerHandler));
             if (this.voiceId) {
-                this.audioPlayer.addToPlaylist(message.id || 0, message.peerid || '', this.voiceId, message.downloaded || false);
+                this.audioPlayer.addToPlaylist(message.id || 0, message.peerid || '', this.voiceId, message.senderid || '', message.downloaded || false);
             }
         }
     }
@@ -154,7 +154,7 @@ class VoicePlayer extends React.Component<IProps, IState> {
         const {message} = this.props;
         this.voiceId = id;
         if (this.voiceId && message) {
-            this.audioPlayer.addToPlaylist(message.id || 0, message.peerid || '', this.voiceId, message.downloaded || false);
+            this.audioPlayer.addToPlaylist(message.id || 0, message.peerid || '', this.voiceId, message.senderid || '', message.downloaded || false);
         }
     }
 

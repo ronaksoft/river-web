@@ -504,17 +504,17 @@ html[theme="dark-blue"] .container {
     html[theme="dark"] .container .column-left .left-overlay,
     html[theme="dark-blue"] .container .column-left .left-overlay {
       background-color: var(--dark-medium); }
-  html[theme="dark"] .container .column-center .top,
-  html[theme="dark-blue"] .container .column-center .top {
+  html[theme="dark"] .container .column-center .top .info-bar,
+  html[theme="dark-blue"] .container .column-center .top .info-bar {
     background-color: var(--dark-medium); }
-    html[theme="dark"] .container .column-center .top .back-to-chats svg,
-    html[theme="dark-blue"] .container .column-center .top .back-to-chats svg {
+    html[theme="dark"] .container .column-center .top .info-bar .back-to-chats svg,
+    html[theme="dark-blue"] .container .column-center .top .info-bar .back-to-chats svg {
       color: var(--light); }
-    html[theme="dark"] .container .column-center .top span,
-    html[theme="dark-blue"] .container .column-center .top span {
+    html[theme="dark"] .container .column-center .top .info-bar span,
+    html[theme="dark-blue"] .container .column-center .top .info-bar span {
       color: var(--light); }
-      html[theme="dark"] .container .column-center .top span .name,
-      html[theme="dark-blue"] .container .column-center .top span .name {
+      html[theme="dark"] .container .column-center .top .info-bar span .name,
+      html[theme="dark-blue"] .container .column-center .top .info-bar span .name {
         color: var(--light); }
   html[theme="dark"] .container .column-center .conversation,
   html[theme="dark-blue"] .container .column-center .conversation {
@@ -580,7 +580,7 @@ html[theme="dark-blue"] .container {
         background-color: var(--dark-blue-medium); }
     html[theme="dark-blue"] .container .column-left .left-overlay {
       background-color: var(--dark-blue-medium); }
-  html[theme="dark-blue"] .container .column-center .top {
+  html[theme="dark-blue"] .container .column-center .top .info-bar {
     background-color: var(--dark-blue-medium); }
   html[theme="dark-blue"] .container .column-center .conversation {
     background-color: var(--dark-blue-low); }

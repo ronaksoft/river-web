@@ -8,7 +8,7 @@
 */
 .audio-player-shell {
   background-color: var(--header-color);
-  transition: all 0.2s;
+  transition: height 0.2s;
   height: 0;
   overflow: hidden; }
   .audio-player-shell.open {
@@ -29,9 +29,47 @@
       align-items: center;
       justify-content: center; }
     .audio-player-shell .shell .audio-player-content {
-      flex: 1; }
+      flex: 1;
+      align-items: center;
+      justify-content: flex-start;
+      display: flex; }
+      .audio-player-shell .shell .audio-player-content a {
+        text-decoration: none;
+        text-transform: none;
+        color: var(--grey); }
+      .audio-player-shell .shell .audio-player-content .audio-player-anchor {
+        font-size: 12px;
+        cursor: pointer;
+        text-align: left;
+        padding: 2px 6px 0; }
+        .audio-player-shell .shell .audio-player-content .audio-player-anchor .user {
+          font-weight: bold; }
     .audio-player-shell .shell .audio-player-action {
       display: flex;
       width: 48px;
       margin-right: 6px;
       justify-content: space-between; }
+      .audio-player-shell .shell .audio-player-action svg.enable {
+        color: var(--dark); }
+
+html[theme="dark"] .audio-player-shell {
+  background-color: var(--dark-medium); }
+  html[theme="dark"] .audio-player-shell.open {
+    border-color: var(--dark-low); }
+  html[theme="dark"] .audio-player-shell .shell svg {
+    color: var(--light); }
+  html[theme="dark"] .audio-player-shell .shell a {
+    color: var(--light); }
+  html[theme="dark"] .audio-player-shell .shell .audio-player-action svg.enable {
+    color: var(--dark-accent-high); }
+
+html[theme="dark-blue"] .audio-player-shell {
+  background-color: var(--dark-blue-medium); }
+  html[theme="dark-blue"] .audio-player-shell.open {
+    border-color: var(--dark-blue-low); }
+  html[theme="dark-blue"] .audio-player-shell .shell svg {
+    color: var(--light); }
+  html[theme="dark-blue"] .audio-player-shell .shell a {
+    color: var(--light); }
+  html[theme="dark-blue"] .audio-player-shell .shell .audio-player-action svg.enable {
+    color: var(--dark-blue-high-alt); }
