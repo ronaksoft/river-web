@@ -21,16 +21,37 @@ import ProgressBroadcaster from '../../services/progress';
 
 import './style.css';
 
+export const getFileInfo = (message: IMessage): IFileInfo => {
+    const info: IFileInfo = {
+        caption: '',
+        name: '',
+        size: 0,
+    };
+    const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
+    info.caption = messageMediaDocument.caption || '';
+    info.size = messageMediaDocument.doc.filesize || 0;
+    if (!message.attributes) {
+        return info;
+    }
+    messageMediaDocument.doc.attributesList.forEach((attr, index) => {
+        if (attr.type === DocumentAttributeType.ATTRIBUTETYPEFILE && message.attributes) {
+            const docAttr: DocumentAttributeFile.AsObject = message.attributes[index];
+            info.name = docAttr.filename || '';
+        }
+    });
+    return info;
+};
+
 interface IProps {
     message: IMessage;
     peer: InputPeer | null;
-    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view', message: IMessage) => void;
+    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', message: IMessage) => void;
 }
 
 interface IState {
     caption: string;
     fileName: string;
-    fileState: 'download' | 'view' | 'progress';
+    fileState: 'download' | 'view' | 'progress' | 'open';
     message: IMessage;
 }
 
@@ -44,6 +65,7 @@ class MessageFile extends React.Component<IProps, IState> {
     private lastId: number = 0;
     private fileId: string = '';
     private downloaded: boolean = false;
+    private saved: boolean = false;
     private circleProgressRef: any = null;
     private eventReferences: any[] = [];
     private progressBroadcaster: ProgressBroadcaster;
@@ -53,7 +75,7 @@ class MessageFile extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
 
-        const info = this.getFileInfo(props.message);
+        const info = getFileInfo(props.message);
         this.fileSize = info.size;
 
         this.state = {
@@ -66,6 +88,7 @@ class MessageFile extends React.Component<IProps, IState> {
         if (props.message) {
             this.lastId = props.message.id || 0;
             this.downloaded = props.message.downloaded || false;
+            this.saved = props.message.saved || false;
         }
 
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
@@ -85,7 +108,7 @@ class MessageFile extends React.Component<IProps, IState> {
     public componentWillReceiveProps(newProps: IProps) {
         if (newProps.message && this.lastId !== newProps.message.id) {
             this.lastId = newProps.message.id || 0;
-            const info = this.getFileInfo(newProps.message);
+            const info = getFileInfo(newProps.message);
             this.fileSize = info.size;
             this.displayFileSize(0);
             this.setState({
@@ -110,6 +133,13 @@ class MessageFile extends React.Component<IProps, IState> {
                 fileState: this.getFileState(newProps.message),
             });
         }
+        if ((newProps.message.saved || false) !== this.saved) {
+            this.saved = (newProps.message.saved || false);
+            this.setState({
+                fileState: this.getFileState(newProps.message),
+                message: newProps.message,
+            });
+        }
     }
 
     public componentWillUnmount() {
@@ -122,7 +152,7 @@ class MessageFile extends React.Component<IProps, IState> {
             <div className="message-file">
                 <div className="file-content">
                     <div className="file-action">
-                        {Boolean(fileState === 'view') &&
+                        {Boolean(fileState === 'view' || fileState === 'open') &&
                         <InsertDriveFileRounded/>}
                         {Boolean(fileState === 'download') &&
                         <CloudDownloadRounded onClick={this.downloadFileHandler}/>}
@@ -139,7 +169,9 @@ class MessageFile extends React.Component<IProps, IState> {
                         <div className="file-name">{fileName}</div>
                         {Boolean(fileState === 'view') &&
                         <div className="file-download" onClick={this.viewFileHandler}>Save</div>}
-                        {Boolean(fileState !== 'view') &&
+                        {Boolean(fileState === 'open') &&
+                        <div className="file-download" onClick={this.openFileHandler}>Open</div>}
+                        {Boolean(fileState !== 'view' && fileState !== 'open') &&
                         <div className="file-size" ref={this.fileSizeRefHandler}>0 KB</div>}
                     </div>
                 </div>
@@ -164,8 +196,10 @@ class MessageFile extends React.Component<IProps, IState> {
             return 'progress';
         } else if (id > 0 && !message.downloaded) {
             return 'download';
-        } else {
+        } else if (id > 0 && !message.saved) {
             return 'view';
+        } else {
+            return 'open';
         }
     }
 
@@ -244,6 +278,13 @@ class MessageFile extends React.Component<IProps, IState> {
         }
     }
 
+    /* Open file */
+    private openFileHandler = () => {
+        if (this.props.onAction) {
+            this.props.onAction('open', this.state.message);
+        }
+    }
+
     /* Cancel file download/upload */
     private cancelFileHandler = () => {
         if (this.props.onAction) {
@@ -253,28 +294,6 @@ class MessageFile extends React.Component<IProps, IState> {
                 this.props.onAction('cancel_download', this.state.message);
             }
         }
-    }
-
-    /* Get file info (name and caption) */
-    private getFileInfo(message: IMessage): IFileInfo {
-        const info: IFileInfo = {
-            caption: '',
-            name: '',
-            size: 0,
-        };
-        const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
-        info.caption = messageMediaDocument.caption || '';
-        info.size = messageMediaDocument.doc.filesize || 0;
-        if (!message.attributes) {
-            return info;
-        }
-        messageMediaDocument.doc.attributesList.forEach((attr, index) => {
-            if (attr.type === DocumentAttributeType.ATTRIBUTETYPEFILE && message.attributes) {
-                const docAttr: DocumentAttributeFile.AsObject = message.attributes[index];
-                info.name = docAttr.filename || '';
-            }
-        });
-        return info;
     }
 
     /* File size ref handler */

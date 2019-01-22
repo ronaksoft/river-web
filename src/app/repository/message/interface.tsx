@@ -20,6 +20,8 @@ interface IMessage extends UserMessage.AsObject {
     attributes?: any[];
     error?: boolean;
     downloaded?: boolean;
+    saved?: boolean;
+    savedPath?: string;
 }
 
 interface IPendingMessage {

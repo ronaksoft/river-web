@@ -30,6 +30,7 @@
     "axios": "^0.18.0",
     "dexie": "^2.0.4",
     "electron-debug": "^2.0.0",
+    "electron-dl": "^1.12.0",
     "electron-is-dev": "^1.0.1",
     "emoji-mart": "^2.8.1",
     "faker": "^4.1.0",

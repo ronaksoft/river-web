@@ -34,7 +34,7 @@ import './style.css';
 interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
     items: IMessage[];
-    onAttachmentAction?: (cmd: 'cancel' | 'download', message: IMessage) => void;
+    onAttachmentAction?: (cmd: 'cancel' | 'cancel_download' | 'download' | 'view' | 'open', message: IMessage) => void;
     onJumpToMessage: (id: number, e: any) => void;
     onLoadMoreAfter?: (id: number) => any;
     onLoadMoreBefore?: () => any;
@@ -290,10 +290,18 @@ class Message extends React.Component<IProps, IState> {
                 cmd: 'resend',
                 title: 'Resend',
             },
+            7: {
+                cmd: 'download',
+                title: 'Download',
+            },
+            8: {
+                cmd: 'save',
+                title: 'Save',
+            },
         };
         const menuTypes = {
-            1: [1, 2, 3, 4],
-            2: [1, 2, 4],
+            1: [1, 2, 3, 4, 7, 8],
+            2: [1, 2, 4, 7, 8],
             3: [5, 6],
         };
         const menuItems: any[] = [];
@@ -313,7 +321,17 @@ class Message extends React.Component<IProps, IState> {
             menuTypes[1].forEach((key) => {
                 if (key === 3) {
                     if ((this.riverTime.now() - (items[moreIndex].createdon || 0)) < 86400 &&
-                        (items[moreIndex].fwdsenderid === '0' || !items[moreIndex].fwdsenderid)) {
+                        (items[moreIndex].fwdsenderid === '0' || !items[moreIndex].fwdsenderid) &&
+                        items[moreIndex].messagetype === C_MESSAGE_TYPE.Normal
+                    ) {
+                        menuItems.push(menuItem[key]);
+                    }
+                } else if (key === 7) {
+                    if (!items[moreIndex].downloaded && [C_MESSAGE_TYPE.File, C_MESSAGE_TYPE.Voice].indexOf(items[moreIndex].messagetype || 0) > -1) {
+                        menuItems.push(menuItem[key]);
+                    }
+                } else if (key === 8) {
+                    if (items[moreIndex].downloaded && [C_MESSAGE_TYPE.File, C_MESSAGE_TYPE.Voice].indexOf(items[moreIndex].messagetype || 0) > -1) {
                         menuItems.push(menuItem[key]);
                     }
                 } else {
@@ -322,7 +340,17 @@ class Message extends React.Component<IProps, IState> {
             });
         } else if (me === false && id && id > 0) {
             menuTypes[2].forEach((key) => {
-                menuItems.push(menuItem[key]);
+                if (key === 7) {
+                    if (!items[moreIndex].downloaded && [C_MESSAGE_TYPE.File, C_MESSAGE_TYPE.Voice].indexOf(items[moreIndex].messagetype || 0) > -1) {
+                        menuItems.push(menuItem[key]);
+                    }
+                } else if (key === 8) {
+                    if (items[moreIndex].downloaded && [C_MESSAGE_TYPE.File, C_MESSAGE_TYPE.Voice].indexOf(items[moreIndex].messagetype || 0) > -1) {
+                        menuItems.push(menuItem[key]);
+                    }
+                } else {
+                    menuItems.push(menuItem[key]);
+                }
             });
         }
         return menuItems.map((item, index) => {

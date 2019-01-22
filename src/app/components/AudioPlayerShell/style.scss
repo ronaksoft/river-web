@@ -1,0 +1,53 @@
+/*
+    Creation Time: 2019 - Jan - 22
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2019
+*/
+
+.audio-player-shell {
+  background-color: var(--header-color);
+  transition: all 0.2s;
+  height: 0;
+  overflow: hidden;
+  &.open {
+    border-top: 1px solid var(--light);
+    height: auto;
+  }
+  .shell {
+    padding: 4px 6px;
+    display: flex;
+    svg {
+      font-size: 20px;
+      color: var(--grey);
+      cursor: pointer;
+      &:hover {
+        color: var(--dark);
+      }
+    }
+    .audio-player-play-action {
+      width: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .audio-player-content {
+      flex: 1;
+    }
+    .audio-player-action {
+      display: flex;
+      width: 48px;
+      margin-right: 6px;
+      justify-content: space-between;
+    }
+  }
+}
+
+html[theme="dark"],
+html[theme="dark-blue"] {
+  .audio-player-shell {
+  }
+}
+

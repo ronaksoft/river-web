@@ -24,7 +24,7 @@ import './style.css';
 interface IProps {
     message: IMessage;
     peer: InputPeer | null;
-    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download', message: IMessage) => void;
+    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'open', message: IMessage) => void;
 }
 
 interface IState {

@@ -1,6 +1,7 @@
 /* tslint:disable */
 const {app, BrowserWindow, shell, ipcMain, Menu} = require('electron');
 const isDev = require('electron-is-dev');
+const {download} = require('electron-dl');
 
 let mainWindow;
 let sizeMode = 'desktop';
@@ -173,6 +174,35 @@ app.on('activate', () => {
 
 ipcMain.on('load-page', (event, arg) => {
     mainWindow.loadURL(arg);
+});
+
+ipcMain.on('fnCall', (e, arg) => {
+    switch (arg.cmd) {
+        case 'download':
+            try {
+                download(BrowserWindow.getFocusedWindow(), arg.data.url, {
+                    filename: arg.data.fileName,
+                })
+                    .then((dl) => {
+                        callReact('fnCallback', {
+                            cmd: 'download',
+                            reqId: arg.reqId,
+                            data: {
+                                path: dl.getSavePath(),
+                            },
+                        });
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                    });
+            } catch (e) {
+                console.error(err);
+            }
+            break;
+        case 'revealFile':
+            shell.showItemInFolder(arg.data.path);
+            break;
+    }
 });
 
 

@@ -108,6 +108,8 @@ import {getMessageTitle} from '../../components/Dialog/utils';
 import {saveAs} from 'file-saver';
 
 import './style.css';
+import {getFileInfo} from '../../components/MessageFile';
+import AudioPlayerShell from '../../components/AudioPlayerShell';
 
 interface IProps {
     history?: any;
@@ -452,29 +454,26 @@ class Chat extends React.Component<IProps, IState> {
                         </div>
                         {selectedDialogId !== 'null' && <div className="column-center">
                             <div className="top">
-                                {this.isMobileView ? (<div className="back-to-chats" onClick={this.backToChatsHandler}>
-                                    <KeyboardArrowLeftRounded/></div>) : ''}
-                                {this.getChatTitle()}
-                                <span className="buttons">
-                                {/*<IconButton
-                                    aria-label="Attachment"
-                                    aria-haspopup="true"
-                                    onClick={this.attachmentToggleHandler}
-                                >
-                                    <Attachment/>
-                                </IconButton>*/}
-                                    <Tooltip
-                                        title={(peer && peer.getType() === PeerType.PEERGROUP) ? 'Group Info' : 'Contact Info'}>
-                                    <IconButton
-                                        aria-label="More"
-                                        aria-owns={moreInfoAnchorEl ? 'long-menu' : undefined}
-                                        aria-haspopup="true"
-                                        onClick={this.toggleRightMenu}
-                                    >
-                                        <InfoOutlined/>
-                                    </IconButton>
-                                </Tooltip>
-                            </span>
+                                <div className="info-bar">
+                                    {this.isMobileView ? (
+                                        <div className="back-to-chats" onClick={this.backToChatsHandler}>
+                                            <KeyboardArrowLeftRounded/></div>) : ''}
+                                    {this.getChatTitle()}
+                                    <div className="buttons">
+                                        <Tooltip
+                                            title={(peer && peer.getType() === PeerType.PEERGROUP) ? 'Group Info' : 'Contact Info'}>
+                                            <IconButton
+                                                aria-label="More"
+                                                aria-owns={moreInfoAnchorEl ? 'long-menu' : undefined}
+                                                aria-haspopup="true"
+                                                onClick={this.toggleRightMenu}
+                                            >
+                                                <InfoOutlined/>
+                                            </IconButton>
+                                        </Tooltip>
+                                    </div>
+                                </div>
+                                <AudioPlayerShell/>
                             </div>
                             <div className="conversation" hidden={this.state.toggleAttachment}>
                                 <PopUpDate ref={this.popUpDateRefHandler}/>
@@ -2131,6 +2130,12 @@ class Chat extends React.Component<IProps, IState> {
             case 'cancel':
                 this.cancelSend(message.id || 0);
                 break;
+            case 'download':
+                this.downloadFile(message);
+                break;
+            case 'save':
+                this.viewFile(message);
+                break;
             default:
                 window.console.log(cmd, message);
                 break;
@@ -2789,7 +2794,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Attachment action handler */
-    private messageAttachmentActionHandler = (cmd: 'cancel' | 'download' | 'cancel_download' | 'view', message: IMessage) => {
+    private messageAttachmentActionHandler = (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', message: IMessage) => {
         switch (cmd) {
             case 'cancel':
                 this.cancelSend(message.id || 0);
@@ -2799,8 +2804,12 @@ class Chat extends React.Component<IProps, IState> {
                 break;
             case 'cancel_download':
                 this.cancelDownloadFile(message);
+                break;
             case 'view':
                 this.viewFile(message);
+                break;
+            case 'open':
+                this.openFile(message);
                 break;
         }
     }
@@ -3011,7 +3020,11 @@ class Chat extends React.Component<IProps, IState> {
                 if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
                     this.fileRepo.get(mediaDocument.doc.id).then((res) => {
                         if (res) {
-                            saveAs(res.data, this.getFileName(msg));
+                            if (ElectronService.isElectron()) {
+                                this.downloadWithElectron(res.data, msg);
+                            } else {
+                                saveAs(res.data, this.getFileName(msg));
+                            }
                         }
                     });
                 }
@@ -3032,6 +3045,37 @@ class Chat extends React.Component<IProps, IState> {
             name = `${this.riverTime.milliNow()}`;
         }
         return name;
+    }
+
+    private downloadWithElectron(blob: Blob, message: IMessage) {
+        const fileInfo = getFileInfo(message);
+        if (fileInfo.name.length === 0) {
+            fileInfo.name = `downloaded_${this.riverTime.now()}`;
+        }
+        const objectUrl = URL.createObjectURL(blob);
+        this.electronService.download(objectUrl, fileInfo.name).then((res) => {
+            const {messages} = this.state;
+            const index = findIndex(messages, {id: message.id, messagetype: C_MESSAGE_TYPE.File});
+            if (index > -1) {
+                this.messageComponent.cache.clear(index, 0);
+            }
+
+            message.saved = true;
+            message.savedPath = res.path;
+            this.messageRepo.lazyUpsert([message]);
+            // Force update messages
+            this.messageComponent.list.forceUpdateGrid();
+            window.console.log(res);
+        }).catch((err) => {
+            window.console.log(err);
+        });
+    }
+
+    /* Open file and focus on folder */
+    private openFile(message: IMessage) {
+        if (message && message.savedPath) {
+            this.electronService.revealFile(message.savedPath);
+        }
     }
 }
 
