@@ -9,9 +9,11 @@
 @import '../../../style/common';
 
 .message-file {
+  padding: 0 0 0 6px;
   .file-content {
     display: flex;
     flex-direction: row;
+    align-items: center;
     .file-action {
       position: relative;
       width: 32px;
@@ -21,6 +23,8 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      border-radius: 50%;
+      background-color: var(--glass-dark-low);
       svg {
         font-size: 20px;
         color: var(--grey);
@@ -86,6 +90,7 @@ html[theme="dark-blue"] {
   .message-file {
     .file-content {
       .file-action {
+        background-color: var(--glass-dark-high);
         svg {
           color: var(--light);
         }
@@ -100,6 +105,11 @@ html[theme="dark-blue"] {
               stroke: var(--light);
             }
           }
+        }
+      }
+      .file-info {
+        .file-download {
+          color: var(--dark-mention);
         }
       }
     }

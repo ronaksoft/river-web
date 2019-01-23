@@ -97,11 +97,17 @@ export default class FileManager {
     private onWireDownloads: string[] = [];
 
     public constructor() {
-        window.addEventListener('fnStarted', () => {
+        if (localStorage.getItem('river.conn.info')) {
             if (!this.fileSeverInitialized) {
                 this.initFileServer();
             }
-        });
+        } else {
+            if (!this.fileSeverInitialized) {
+                window.addEventListener('fnStarted', () => {
+                    this.initFileServer();
+                });
+            }
+        }
         this.fileRepo = FileRepo.getInstance();
     }
 
@@ -576,9 +582,9 @@ export default class FileManager {
         const chunks: IReceiveChunk[] = [];
         const updates: IChunkUpdate[] = [];
         for (let i = 0; i < totalParts; i++) {
-            let limit = C_DOWNLOAD_CHUNK_SIZE;
+            let limit = C_DOWNLOAD_CHUNK_SIZE - 1;
             if (i === (totalParts - 1)) {
-                limit = size - ((totalParts - 1) * C_DOWNLOAD_CHUNK_SIZE);
+                limit = (size - ((totalParts - 1) * C_DOWNLOAD_CHUNK_SIZE));
             }
             chunks.push({
                 cancel: null,
@@ -661,6 +667,7 @@ export default class FileManager {
 
     /* Init file manager WASM worker */
     private initFileServer() {
+        this.fileSeverInitialized = true;
         fetch('/bin/river.wasm?v11').then((response) => {
             return response.arrayBuffer();
         }).then((bytes) => {
