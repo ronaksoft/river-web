@@ -418,7 +418,7 @@ html[theme="dark-blue"] {
       color: var(--light);
     }
     .info {
-      .line, .input-edit input, .input-edit label, .input-edit svg {
+      .line, .input-edit input, .input-edit textarea, .input-edit label, .input-edit svg {
         color: var(--white);
       }
     }

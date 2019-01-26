@@ -153,9 +153,9 @@ export default class FileManager {
             internalReject = rej;
         });
 
-        this.prepareDownloadTransfer(location, size, mimeType, internalResolve, internalReject, onProgress);
-
-        this.startDownloadQueue();
+        this.prepareDownloadTransfer(location, size, mimeType, internalResolve, internalReject, () => {
+            this.startDownloadQueue();
+        }, onProgress);
 
         return promise;
     }
@@ -576,7 +576,7 @@ export default class FileManager {
     }
 
     /* Prepare download transfer */
-    private prepareDownloadTransfer(file: core_types_pb.InputFileLocation, size: number, mimeType: string, resolve: any, reject: any, onProgress?: (e: IFileProgress) => void) {
+    private prepareDownloadTransfer(file: core_types_pb.InputFileLocation, size: number, mimeType: string, resolve: any, reject: any, doneCallback: () => void, onProgress?: (e: IFileProgress) => void) {
         const id = file.getFileid() || '';
         const totalParts = Math.ceil(size / C_DOWNLOAD_CHUNK_SIZE);
         const chunks: IReceiveChunk[] = [];
@@ -595,9 +595,9 @@ export default class FileManager {
 
             updates.push({
                 download: 0,
-                downloadSize: 0,
+                downloadSize: limit,
                 upload: 0,
-                uploadSize: limit,
+                uploadSize: 0,
             });
         }
         this.fileTransferQueue[id] = {
@@ -618,7 +618,26 @@ export default class FileManager {
             updates,
             upload: false,
         };
-        this.downloadQueue.push(id);
+        this.fileRepo.getTempsById(id).then((res) => {
+            res.forEach((temp) => {
+                const index = findIndex(this.fileTransferQueue[id].receiveChunks, {part: temp.part});
+                if (index > -1) {
+                    this.fileTransferQueue[id].receiveChunks.splice(index, 1);
+                    this.fileTransferQueue[id].updates[temp.part - 1] = {
+                        download: temp.data.size,
+                        downloadSize: temp.data.size,
+                        upload: 100,
+                        uploadSize: 100,
+                    };
+                    this.fileTransferQueue[id].doneParts++;
+                }
+            });
+            this.downloadQueue.push(id);
+            doneCallback();
+        }).catch(() => {
+            this.downloadQueue.push(id);
+            doneCallback();
+        });
         this.fileTransferQueue[id].interval = setInterval(() => {
             this.dispatchProgress(id, 'loading');
         }, 500);

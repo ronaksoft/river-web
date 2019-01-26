@@ -388,9 +388,10 @@ html[theme="dark"] .setting-menu .label,
 html[theme="dark-blue"] .setting-menu .label {
   color: var(--light); }
 
-html[theme="dark"] .setting-menu .info .line, html[theme="dark"] .setting-menu .info .input-edit input, html[theme="dark"] .setting-menu .info .input-edit label, html[theme="dark"] .setting-menu .info .input-edit svg,
+html[theme="dark"] .setting-menu .info .line, html[theme="dark"] .setting-menu .info .input-edit input, html[theme="dark"] .setting-menu .info .input-edit textarea, html[theme="dark"] .setting-menu .info .input-edit label, html[theme="dark"] .setting-menu .info .input-edit svg,
 html[theme="dark-blue"] .setting-menu .info .line,
 html[theme="dark-blue"] .setting-menu .info .input-edit input,
+html[theme="dark-blue"] .setting-menu .info .input-edit textarea,
 html[theme="dark-blue"] .setting-menu .info .input-edit label,
 html[theme="dark-blue"] .setting-menu .info .input-edit svg {
   color: var(--white); }

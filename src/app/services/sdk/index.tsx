@@ -61,6 +61,7 @@ import {
     GroupsUpdateAdmin
 } from './messages/api.groups_pb';
 import * as core_types_pb from './messages/core.types_pb';
+import {UsersGetFull} from './messages/api.users_pb';
 
 export default class SDK {
     public static getInstance() {
@@ -348,11 +349,18 @@ export default class SDK {
         return this.server.send(C_MSG.AccountUpdateUsername, data.serializeBinary(), true);
     }
 
-    public updateProfile(firstname: string, lastname: string): Promise<Bool.AsObject> {
+    public updateProfile(firstname: string, lastname: string, bio: string): Promise<Bool.AsObject> {
         const data = new AccountUpdateProfile();
         data.setFirstname(firstname);
         data.setLastname(lastname);
+        data.setBio(bio);
         return this.server.send(C_MSG.AccountUpdateProfile, data.serializeBinary(), true);
+    }
+
+    public getUserFull(usersInput: core_types_pb.InputUser[]): Promise<Bool.AsObject> {
+        const data = new UsersGetFull();
+        data.setUsersList(usersInput);
+        return this.server.send(C_MSG.UsersGetFull, data.serializeBinary(), true);
     }
 
     public setNotifySettings(peer: InputPeer, settings: PeerNotifySettings): Promise<Bool.AsObject> {

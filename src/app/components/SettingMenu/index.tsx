@@ -24,7 +24,6 @@ import {
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import UserAvatar from '../UserAvatar';
 import TextField from '@material-ui/core/TextField/TextField';
-import {IContact} from '../../repository/contact/interface';
 import UserRepo from '../../repository/user';
 import SDK from '../../services/sdk';
 import {debounce} from 'lodash';
@@ -35,6 +34,7 @@ import Scrollbars from 'react-custom-scrollbars';
 import {backgrounds, bubbles, themes} from './vars/theme';
 
 import './style.css';
+import {IUser} from '../../repository/user/interface';
 
 interface IProps {
     onClose?: () => void;
@@ -44,6 +44,7 @@ interface IProps {
 }
 
 interface IState {
+    bio: string;
     editProfile: boolean;
     editUsername: boolean;
     firstname: string;
@@ -55,7 +56,7 @@ interface IState {
     selectedBackground: string;
     selectedBubble: string;
     selectedTheme: string;
-    user: IContact | null;
+    user: IUser | null;
     username: string;
     usernameAvailable: boolean;
     usernameValid: boolean;
@@ -74,6 +75,7 @@ class SettingMenu extends React.Component<IProps, IState> {
         this.userId = this.sdk.getConnInfo().UserID || '';
 
         this.state = {
+            bio: '',
             editProfile: false,
             editUsername: false,
             firstname: '',
@@ -127,7 +129,7 @@ class SettingMenu extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {page, pageContent, user, editProfile, editUsername, firstname, lastname, phone, username, usernameAvailable, usernameValid} = this.state;
+        const {page, pageContent, user, editProfile, editUsername, bio, firstname, lastname, phone, username, usernameAvailable, usernameValid} = this.state;
         return (
             <div className="setting-menu">
                 <div className={'page-container page-' + page}>
@@ -167,7 +169,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                             </div>
                         </div>
                         <div className="version">
-                            v23.0.4
+                            v0.23.5
                         </div>
                     </div>
                     <div className="page page-2">
@@ -277,7 +279,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                                         <div className="inner">{user.firstname}</div>
                                         <div className="action">
                                             {!editUsername && <IconButton
-                                                aria-label="Edit title"
+                                                aria-label="Edit firstname"
                                                 onClick={this.onEditProfileHandler}
                                             >
                                                 <EditRounded/>
@@ -302,7 +304,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                                         <div className="inner">{user.lastname}</div>
                                         <div className="action">
                                             {!editUsername && <IconButton
-                                                aria-label="Edit title"
+                                                aria-label="Edit lastname"
                                                 onClick={this.onEditProfileHandler}
                                             >
                                                 <EditRounded/>
@@ -319,6 +321,33 @@ class SettingMenu extends React.Component<IProps, IState> {
                                         value={lastname}
                                         className="input-edit"
                                         onChange={this.onLastnameChangeHandler}
+                                    />}
+                                </div>
+                                <div className="line">
+                                    {!editProfile && <div className="form-control">
+                                        <label>Bio</label>
+                                        <div className="inner">{user.bio}</div>
+                                        <div className="action">
+                                            {!editUsername && <IconButton
+                                                aria-label="Edit bio"
+                                                onClick={this.onEditProfileHandler}
+                                            >
+                                                <EditRounded/>
+                                            </IconButton>}
+                                        </div>
+                                    </div>}
+                                    {editProfile &&
+                                    <TextField
+                                        label="Bio"
+                                        fullWidth={true}
+                                        inputProps={{
+                                            maxLength: 32,
+                                        }}
+                                        value={bio}
+                                        multiline={true}
+                                        rowsMax={3}
+                                        className="input-edit"
+                                        onChange={this.onBioChangeHandler}
                                     />}
                                 </div>
                                 <div className="line">
@@ -354,7 +383,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                                         <div className="inner">{phone}</div>
                                     </div>
                                 </div>
-                                {Boolean(editProfile && user && (user.firstname !== firstname || user.lastname !== lastname)) &&
+                                {Boolean(editProfile && user && (user.firstname !== firstname || user.lastname !== lastname || user.bio !== bio)) &&
                                 <div className="actions-bar">
                                     <div className="add-action" onClick={this.confirmProfileChangesHandler}>
                                         <CheckRounded/>
@@ -367,7 +396,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                                     </div>
                                 </div>}
                                 {Boolean(editProfile || editUsername) && <div
-                                    className={'actions-bar cancel' + ((user && ((user.username !== username && usernameAvailable && usernameValid) || (user.firstname !== firstname || user.lastname !== lastname))) ? ' no-padding' : '')}
+                                    className={'actions-bar cancel' + ((user && ((user.username !== username && usernameAvailable && usernameValid) || (user.firstname !== firstname || user.lastname !== lastname || user.bio !== bio))) ? ' no-padding' : '')}
                                     onClick={this.cancelHandler}>
                                     Cancel
                                 </div>}
@@ -450,6 +479,7 @@ class SettingMenu extends React.Component<IProps, IState> {
     private getUser() {
         this.userRepo.get(this.userId).then((res) => {
             this.setState({
+                bio: res.bio || '',
                 firstname: res.firstname || '',
                 lastname: res.lastname || '',
                 user: res,
@@ -491,6 +521,12 @@ class SettingMenu extends React.Component<IProps, IState> {
     private onLastnameChangeHandler = (e: any) => {
         this.setState({
             lastname: e.currentTarget.value,
+        });
+    }
+
+    private onBioChangeHandler = (e: any) => {
+        this.setState({
+            bio: e.currentTarget.value,
         });
     }
 
@@ -555,14 +591,16 @@ class SettingMenu extends React.Component<IProps, IState> {
     }
 
     private confirmProfileChangesHandler = () => {
-        const {firstname, lastname, user} = this.state;
+        const {firstname, lastname, bio, user} = this.state;
         if (!user) {
             return;
         }
-        this.sdk.updateProfile(firstname, lastname).then(() => {
+        this.sdk.updateProfile(firstname, lastname, bio).then(() => {
             user.firstname = firstname;
             user.lastname = lastname;
+            user.bio = bio;
             this.setState({
+                bio: user.bio || '',
                 editProfile: false,
                 firstname: user.firstname || '',
                 lastname: user.lastname || '',
@@ -571,6 +609,7 @@ class SettingMenu extends React.Component<IProps, IState> {
             this.userRepo.importBulk([user]);
         }).catch(() => {
             this.setState({
+                bio: '',
                 editProfile: false,
                 firstname: user.firstname || '',
                 lastname: user.lastname || '',

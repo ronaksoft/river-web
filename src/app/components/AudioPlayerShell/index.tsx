@@ -10,10 +10,10 @@
 import * as React from 'react';
 import AudioPlayer, {IAudioEvent, IAudioInfo} from '../../services/audioPlayer';
 import {CloseRounded, PauseRounded, PlayArrowRounded, SlowMotionVideoRounded} from '@material-ui/icons';
-
-import './style.css';
 import UserName from '../UserName';
 import {Link} from 'react-router-dom';
+
+import './style.css';
 
 interface IProps {
     className?: string;
@@ -22,15 +22,14 @@ interface IProps {
 interface IState {
     className: string;
     fast: boolean;
+    messageId: number;
     peerId: string;
     playState: 'play' | 'pause' | 'seek_play' | 'seek_pause';
     userId: string;
 }
 
 class AudioPlayerShell extends React.Component<IProps, IState> {
-    // @ts-ignore
     private audioPlayer: AudioPlayer;
-    // @ts-ignore
     private eventReferences: any[] = [];
     private shellRef: any = null;
     private messageId: number = 0;
@@ -42,6 +41,7 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
         this.state = {
             className: props.className || '',
             fast: false,
+            messageId: 0,
             peerId: '',
             playState: 'pause',
             userId: '',
@@ -63,7 +63,7 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {className, fast, peerId, playState, userId} = this.state;
+        const {className, fast, messageId, peerId, playState, userId} = this.state;
         return (
             <div ref={this.shellRefHandler} className={'audio-player-shell ' + className}>
                 <div className="shell">
@@ -75,7 +75,7 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
                     </div>
                     <div className="audio-player-content">
                         {Boolean(userId !== '') && <div className="audio-player-anchor">
-                            <Link to={`/chat/${peerId}`}>
+                            <Link to={`/chat/${peerId}/${messageId}`}>
                                 Playing from: <UserName className="user" id={userId} unsafe={true} noDetail={true}/>
                             </Link>
                         </div>}
@@ -161,6 +161,11 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
         if (info.peerId !== '' && this.state.peerId !== info.peerId) {
             this.setState({
                 peerId: info.peerId,
+            });
+        }
+        if (info.messageId !== 0 && this.state.messageId !== info.messageId) {
+            this.setState({
+                messageId: info.messageId,
             });
         }
         if (this.state.fast !== info.fast) {

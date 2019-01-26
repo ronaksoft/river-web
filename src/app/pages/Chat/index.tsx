@@ -302,6 +302,7 @@ class Chat extends React.Component<IProps, IState> {
 
     public componentWillReceiveProps(newProps: IProps) {
         const selectedId = newProps.match.params.id;
+        const selectedMessageId = newProps.match.params.mid;
         if (selectedId === 'null') {
             this.setState({
                 group: null,
@@ -322,7 +323,7 @@ class Chat extends React.Component<IProps, IState> {
                 peer,
                 selectedDialogId: selectedId,
             }, () => {
-                this.getMessagesByDialogId(selectedId, true);
+                this.getMessagesByDialogId(selectedId, true, selectedMessageId);
             });
         }
     }
@@ -758,6 +759,7 @@ class Chat extends React.Component<IProps, IState> {
             });
 
             const selectedId = this.props.match.params.id;
+            const selectedMessageId = this.props.match.params.mid;
             this.setState({
                 dialogs: res,
                 selectedDialogId: selectedId,
@@ -769,7 +771,7 @@ class Chat extends React.Component<IProps, IState> {
                         leftMenu: 'chat',
                         peer,
                     }, () => {
-                        this.getMessagesByDialogId(selectedId, true);
+                        this.getMessagesByDialogId(selectedId, true, selectedMessageId);
                     });
                 }
             });
@@ -1093,7 +1095,7 @@ class Chat extends React.Component<IProps, IState> {
         this.forceUpdate();
     }
 
-    private getMessagesByDialogId(dialogId: string, force?: boolean) {
+    private getMessagesByDialogId(dialogId: string, force?: boolean, messageId?: string) {
         // if (this.isLoading) {
         //     return;
         // }
@@ -1203,6 +1205,9 @@ class Chat extends React.Component<IProps, IState> {
             }, () => {
                 this.messageComponent.list.recomputeRowHeights();
                 this.messageComponent.list.forceUpdateGrid();
+                if (messageId && messageId !== '0') {
+                    this.messageJumpToMessageHandler(parseInt(messageId, 10));
+                }
             });
         }).catch((err: any) => {
             window.console.warn(err);

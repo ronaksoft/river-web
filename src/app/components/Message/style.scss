@@ -614,6 +614,11 @@ html[bubble="2"] {
         top: 4px;
         right: 8px;
       }
+      &.highlight {
+        &:before {
+          border-radius: 20px;
+        }
+      }
     }
     &.me {
       .bubble.edited {
@@ -654,6 +659,11 @@ html[bubble="4"] {
       }
       .name {
         padding: 4px 12px 0 8px;
+      }
+      &.highlight {
+        &:before {
+          border-radius: 10px;
+        }
       }
     }
     &.me {

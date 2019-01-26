@@ -15,6 +15,7 @@ import {
     DocumentAttributeType,
     MediaDocument
 } from '../../services/sdk/messages/core.message.medias_pb';
+// @ts-ignore
 import {CloseRounded, CloudDownloadRounded, InsertDriveFileRounded} from '@material-ui/icons';
 import {IFileProgress} from '../../services/sdk/fileServer';
 import ProgressBroadcaster from '../../services/progress';
@@ -159,7 +160,7 @@ class MessageFile extends React.Component<IProps, IState> {
                         {Boolean(fileState === 'progress') && <React.Fragment>
                             <div className="progress">
                                 <svg viewBox="0 0 32 32">
-                                    <circle ref={this.progressRefHandler} r="12" cx="16" cy="16"/>
+                                    <circle ref={this.progressRefHandler} r="14" cx="16" cy="16"/>
                                 </svg>
                             </div>
                             <CloseRounded className="action" onClick={this.cancelFileHandler}/>
@@ -226,9 +227,9 @@ class MessageFile extends React.Component<IProps, IState> {
             });
             return;
         } else if (progress.state !== 'complete' && progress.download > 0) {
-            v = progress.progress * 73;
+            v = progress.progress * 85;
         } else if (progress.state === 'complete') {
-            v = 75;
+            v = 88;
         }
         if (v < 3) {
             v = 3;

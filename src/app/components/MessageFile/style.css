@@ -114,7 +114,7 @@ input {
             fill: transparent;
             stroke: var(--grey);
             stroke-width: 2px;
-            stroke-dasharray: 3 75;
+            stroke-dasharray: 3 88;
             transition: stroke-dasharray 0.1s ease; }
       .message-file .file-content .file-action .action {
         position: relative;

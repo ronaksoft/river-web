@@ -530,6 +530,8 @@ html[bubble="2"] .bubble-wrapper {
     html[bubble="2"] .bubble-wrapper .bubble .more {
       top: 4px;
       right: 8px; }
+    html[bubble="2"] .bubble-wrapper .bubble.highlight:before {
+      border-radius: 20px; }
   html[bubble="2"] .bubble-wrapper.me .bubble.edited {
     min-width: 115px; }
   html[bubble="2"] .bubble-wrapper.you .bubble.edited {
@@ -550,6 +552,8 @@ html[bubble="4"] .bubble-wrapper {
       padding: 8px 12px 0 8px; }
     html[bubble="4"] .bubble-wrapper .bubble .name {
       padding: 4px 12px 0 8px; }
+    html[bubble="4"] .bubble-wrapper .bubble.highlight:before {
+      border-radius: 10px; }
   html[bubble="4"] .bubble-wrapper.me .bubble.edited {
     min-width: 115px; }
   html[bubble="4"] .bubble-wrapper.me.has-error .arrow {
