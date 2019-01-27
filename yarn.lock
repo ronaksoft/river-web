@@ -387,6 +387,13 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-image-crop@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@types/react-image-crop/-/react-image-crop-3.0.1.tgz#b9377c469e5586f2253de51af8c999406a9a6da0"
+  integrity sha512-ztTGbTPmYgw7hXZfiB/aGJslX3GtuujcW58xoOO8MpreA0iq+J0LWD+0a42kcRizdMuMqANH41J8ydVJoks3tA==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-router-dom@^4.3.0":
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/@types/react-router-dom/-/react-router-dom-4.3.1.tgz#71fe2918f8f60474a891520def40a63997dafe04"
@@ -8244,6 +8251,13 @@ react-fine-uploader@^1.1.1:
     fine-uploader-wrappers "^1.0.1"
     object-assign "4.1.1"
     react-transition-group "2.x"
+
+react-image-crop@^6.0.12:
+  version "6.0.12"
+  resolved "https://registry.yarnpkg.com/react-image-crop/-/react-image-crop-6.0.12.tgz#65e3dc22fb663ed41d5c25ec49ba3775b020ec9b"
+  integrity sha512-ngV/hMcyXyTyIcnzNA2fLZU8xoEOq7VT9Vvy7n2QThRBWy1CpmCRLJ+Kn5xg6CEZNe8HLikS6cq/uVjf97VLdg==
+  dependencies:
+    "@types/react-image-crop" "^3.0.1"
 
 react-is@^16.3.2:
   version "16.6.3"

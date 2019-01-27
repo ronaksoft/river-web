@@ -154,11 +154,37 @@
     flex-direction: column;
     padding: 20px 10px;
     .avatar {
+      position: relative;
       height: 200px;
       width: 200px;
       border-radius: 50%;
       display: inline-block;
       font-size: 75px;
+      .overlay {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-color: rgba(140, 140, 140, 0.85);
+        border-radius: 50%;
+        padding-top: 15px;
+        opacity: 0;
+        transition: opacity 0.2s;
+        cursor: pointer;
+        svg {
+          color: var(--light-alt);
+        }
+        .text {
+          font-size: 13px;
+          color: var(--light-alt);
+        }
+      }
+      &:hover {
+        .overlay {
+          opacity: 1;
+        }
+      }
     }
     .line {
       padding: 16px 10px 0;
@@ -379,6 +405,37 @@
   }
 }
 
+.picture-crop-dialog {
+  .picture-crop-header {
+    background-color: var(--river);
+    color: var(--white);
+    padding: 12px 16px;
+  }
+  .picture-crop-footer {
+    position: relative;
+    background-color: var(--header-color);
+    height: 36px;
+    .picture-action {
+      position: absolute;
+      height: 48px;
+      width: 48px;
+      top: -24px;
+      right: 24px;
+      border-radius: 50%;
+      background-color: var(--river);
+      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      svg {
+        color: var(--light);
+        font-size: 30px;
+      }
+    }
+  }
+}
+
 html[theme="dark"],
 html[theme="dark-blue"] {
   .setting-menu {
@@ -499,6 +556,11 @@ html[theme="dark-blue"] {
       background-color: var(--dark-medium);
     }
   }
+  .picture-crop-dialog {
+    .picture-crop-footer {
+      background-color: var(--dark-medium);
+    }
+  }
 }
 
 html[theme="dark-blue"] {
@@ -523,6 +585,11 @@ html[theme="dark-blue"] {
       }
     }
     .kk-card {
+      background-color: var(--dark-blue-medium);
+    }
+  }
+  .picture-crop-dialog {
+    .picture-crop-footer {
       background-color: var(--dark-blue-medium);
     }
   }

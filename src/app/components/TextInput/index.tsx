@@ -1227,6 +1227,9 @@ class TextInput extends React.Component<IProps, IState> {
     private fileChangeHandler = (e: any) => {
         if (this.props.onFileSelected && e.currentTarget.files.length > 0) {
             this.props.onFileSelected(e.currentTarget.files[0]);
+            if (this.fileInputRef) {
+                this.fileInputRef.value = '';
+            }
         }
     }
 
