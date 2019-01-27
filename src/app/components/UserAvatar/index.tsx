@@ -11,6 +11,7 @@ import * as React from 'react';
 import {IUser} from '../../repository/user/interface';
 import UserRepo from '../../repository/user';
 import ContactRepo from '../../repository/contact';
+import {BookmarkRounded} from '@material-ui/icons';
 
 import './style.css';
 
@@ -18,6 +19,7 @@ interface IProps {
     className?: string;
     id: string;
     noDetail?: boolean;
+    savedMessages?: boolean;
 }
 
 interface IState {
@@ -138,12 +140,14 @@ class UserAvatar extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        this.getUser();
-        window.addEventListener('User_DB_Updated', this.getUser);
+        if (!this.props.savedMessages) {
+            this.getUser();
+            window.addEventListener('User_DB_Updated', this.getUser);
+        }
     }
 
     public componentWillReceiveProps(newProps: IProps) {
-        if (this.state.id !== newProps.id) {
+        if (!this.props.savedMessages && this.state.id !== newProps.id) {
             this.tryTimeout = 0;
             clearTimeout(this.tryTimeout);
             this.setState({
@@ -155,15 +159,25 @@ class UserAvatar extends React.Component<IProps, IState> {
     }
 
     public componentWillUnmount() {
-        window.removeEventListener('User_DB_Updated', this.getUser);
+        if (!this.props.savedMessages) {
+            window.removeEventListener('User_DB_Updated', this.getUser);
+        }
     }
 
     public render() {
         const {user, className} = this.state;
-        return (
-            <span className={className} onClick={this.clickHandler}>{(user && user.avatar) ?
-                <img src={user.avatar}/> : TextAvatar(user.firstname, user.lastname)}</span>
-        );
+        if (this.props.savedMessages) {
+            return (
+                <span className={'saved-messages-avatar ' +className}>
+                    <BookmarkRounded/>
+                </span>
+            );
+        } else {
+            return (
+                <span className={className} onClick={this.clickHandler}>{(user && user.avatar) ?
+                    <img src={user.avatar}/> : TextAvatar(user.firstname, user.lastname)}</span>
+            );
+        }
     }
 
     private getUser = (data?: any) => {

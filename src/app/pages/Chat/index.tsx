@@ -607,7 +607,8 @@ class Chat extends React.Component<IProps, IState> {
         return (
             <span className="chat-title">
                 {Boolean(placeholder !== true && !isGroup) &&
-                <UserName id={this.state.selectedDialogId} className="name"/>}
+                <UserName id={this.state.selectedDialogId} className="name" you={true}
+                          youPlaceholder="Saved Messages"/>}
                 {Boolean(placeholder !== true && isGroup) &&
                 <GroupName id={this.state.selectedDialogId} className="name"/>}
                 {this.getChatStatus(selectedDialogId)}
@@ -1561,15 +1562,24 @@ class Chat extends React.Component<IProps, IState> {
 
     private getPeerByDialogId(id: string): InputPeer | null {
         if (!this.dialogMap.hasOwnProperty(id)) {
-            const contact = this.contactRepo.getInstant(id);
-            if (contact) {
+            // Saved messages
+            if (this.connInfo.UserID === id) {
                 const contactPeer = new InputPeer();
                 contactPeer.setType(PeerType.PEERUSER);
-                contactPeer.setAccesshash(contact.accesshash || '0');
-                contactPeer.setId(contact.id || '');
+                contactPeer.setAccesshash('0');
+                contactPeer.setId(id);
                 return contactPeer;
             } else {
-                return null;
+                const contact = this.contactRepo.getInstant(id);
+                if (contact) {
+                    const contactPeer = new InputPeer();
+                    contactPeer.setType(PeerType.PEERUSER);
+                    contactPeer.setAccesshash(contact.accesshash || '0');
+                    contactPeer.setId(contact.id || '');
+                    return contactPeer;
+                } else {
+                    return null;
+                }
             }
         }
         const index = this.dialogMap[id];
@@ -1622,6 +1632,7 @@ class Chat extends React.Component<IProps, IState> {
                 peertype: msg.peertype,
                 preview: getMessageTitle(msg),
                 preview_me: previewMe,
+                saved_messages: (this.connInfo.UserID === id),
                 sender_id: msg.senderid,
                 target_id: msg.peerid,
                 topmessageid: msg.id,

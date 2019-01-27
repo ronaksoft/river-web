@@ -147,6 +147,7 @@ export default class SyncManager {
                         peertype: updateNewMessage.message.peertype,
                         preview: getMessageTitle(updateNewMessage.message),
                         preview_me: (this.updateManager.getUserId() === updateNewMessage.message.senderid),
+                        saved_messages: (this.updateManager.getUserId() === updateNewMessage.message.peerid),
                         sender_id: updateNewMessage.message.senderid,
                         target_id: updateNewMessage.message.peerid,
                         topmessageid: updateNewMessage.message.id,

@@ -71,8 +71,16 @@
     align-items: center;
     justify-content: left;
     border-top: 1px solid var(--light);
-    > svg {
+    svg, a > svg {
       margin-right: 6px;
+    }
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: left;
+      text-transform: none;
+      text-decoration: none;
+      color: inherit;
     }
     .icon {
       position: relative;

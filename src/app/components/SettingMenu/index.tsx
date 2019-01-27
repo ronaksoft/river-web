@@ -20,6 +20,7 @@ import {
     FaceRounded,
     EditRounded,
     CheckRounded,
+    BookmarkRounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import UserAvatar from '../UserAvatar';
@@ -32,9 +33,10 @@ import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
 import Scrollbars from 'react-custom-scrollbars';
 import {backgrounds, bubbles, themes} from './vars/theme';
+import {IUser} from '../../repository/user/interface';
+import {Link} from 'react-router-dom';
 
 import './style.css';
-import {IUser} from '../../repository/user/interface';
 
 interface IProps {
     onClose?: () => void;
@@ -153,6 +155,9 @@ class SettingMenu extends React.Component<IProps, IState> {
                                     onChange={this.nightModeHandler}
                                 />
                             } label="Night mode"/>
+                            <div className="page-anchor">
+                                <Link to={`/chat/${this.userId}`}><BookmarkRounded/> Saved Messages</Link>
+                            </div>
                             <div className="page-anchor" onClick={this.accountPageHandler}>
                                 <div className="icon">
                                     <div className="icon-primary">
@@ -169,7 +174,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                             </div>
                         </div>
                         <div className="version">
-                            v0.23.5
+                            v0.23.6
                         </div>
                     </div>
                     <div className="page page-2">

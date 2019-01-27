@@ -125,8 +125,15 @@ input {
     align-items: center;
     justify-content: left;
     border-top: 1px solid var(--light); }
-    .setting-menu .page-anchor > svg {
+    .setting-menu .page-anchor svg, .setting-menu .page-anchor a > svg {
       margin-right: 6px; }
+    .setting-menu .page-anchor a {
+      display: flex;
+      align-items: center;
+      justify-content: left;
+      text-transform: none;
+      text-decoration: none;
+      color: inherit; }
     .setting-menu .page-anchor .icon {
       position: relative;
       width: 24px;

@@ -20,3 +20,12 @@
     font-weight: 100;
     letter-spacing: 3px;
     padding-left: 3px; }
+
+.saved-messages-avatar {
+  background-color: var(--river);
+  display: flex;
+  align-items: center;
+  justify-content: center; }
+  .saved-messages-avatar svg {
+    color: var(--light);
+    font-size: 30px; }

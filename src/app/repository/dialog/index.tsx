@@ -275,6 +275,7 @@ export default class DialogRepo {
         dialog.last_update = msg.createdon;
         dialog.target_id = msg.peerid;
         dialog.sender_id = msg.senderid;
+        dialog.saved_messages = (msg.peerid === this.userId);
         return dialog;
     }
 }

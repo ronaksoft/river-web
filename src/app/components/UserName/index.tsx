@@ -22,8 +22,9 @@ interface IProps {
     prefix?: string;
     uniqueColor?: boolean;
     unsafe?: boolean;
-    you?: boolean;
     username?: boolean;
+    you?: boolean;
+    youPlaceholder?: string;
 }
 
 interface IState {
@@ -31,7 +32,6 @@ interface IState {
     id: string;
     prefix: string;
     user: IUser;
-    you: boolean;
 }
 
 class UserName extends React.Component<IProps, IState> {
@@ -48,7 +48,6 @@ class UserName extends React.Component<IProps, IState> {
             id: props.id,
             prefix: props.prefix || '',
             user: {},
-            you: props.you || false,
         };
 
         this.userRepo = UserRepo.getInstance();
@@ -109,10 +108,10 @@ class UserName extends React.Component<IProps, IState> {
         if (data && data.detail.ids.indexOf(this.state.id) === -1) {
             return;
         }
-        if (this.state.you && this.userRepo.getCurrentUserId() === this.state.id) {
+        if (this.props.you && this.userRepo.getCurrentUserId() === this.state.id) {
             this.setState({
                 user: {
-                    firstname: 'You',
+                    firstname: this.props.youPlaceholder || 'You',
                     id: this.userRepo.getCurrentUserId(),
                     lastname: '',
                 },
