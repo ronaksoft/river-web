@@ -24,7 +24,7 @@ import {IConnInfo} from './interface';
 import {ContactsDelete, ContactsGet, ContactsImport, ContactsImported, ContactsMany} from './messages/api.contacts_pb';
 import {
     Group,
-    GroupFull,
+    GroupFull, InputFile,
     InputPeer,
     InputUser,
     PeerNotifySettings,
@@ -50,7 +50,7 @@ import {
     AccountCheckUsername, AccountGetNotifySettings,
     AccountRegisterDevice, AccountSetNotifySettings,
     AccountUpdateProfile,
-    AccountUpdateUsername
+    AccountUpdateUsername, AccountUploadPhoto
 } from './messages/api.accounts_pb';
 import {
     GroupsAddUser,
@@ -355,6 +355,12 @@ export default class SDK {
         data.setLastname(lastname);
         data.setBio(bio);
         return this.server.send(C_MSG.AccountUpdateProfile, data.serializeBinary(), true);
+    }
+
+    public uploadProfilePicture(file: InputFile): Promise<Bool.AsObject> {
+        const data = new AccountUploadPhoto();
+        data.setFile(file);
+        return this.server.send(C_MSG.AccountUploadPhoto, data.serializeBinary(), true);
     }
 
     public getUserFull(usersInput: core_types_pb.InputUser[]): Promise<Bool.AsObject> {

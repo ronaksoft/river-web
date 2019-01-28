@@ -234,7 +234,7 @@ class MessageFile extends React.Component<IProps, IState> {
         if (v < 3) {
             v = 3;
         }
-        this.circleProgressRef.style.strokeDasharray = `${v} 75`;
+        this.circleProgressRef.style.strokeDasharray = `${v} 88`;
     }
 
     /* Download file handler */

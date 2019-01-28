@@ -21,7 +21,7 @@ import {
     EditRounded,
     CheckRounded,
     BookmarkRounded,
-    PhotoCameraRounded,
+    PhotoCameraRounded, CloseRounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import UserAvatar from '../UserAvatar';
@@ -38,10 +38,14 @@ import {IUser} from '../../repository/user/interface';
 import {Link} from 'react-router-dom';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import ReactCrop, {Crop, PixelCrop} from 'react-image-crop';
-import FileManager from '../../services/sdk/fileServer';
+import FileManager, {IFileProgress} from '../../services/sdk/fileServer';
+import UniqueId from '../../services/uniqueId';
+import ProgressBroadcaster from '../../services/progress';
+import RiverTime from '../../services/utilities/river_time';
 
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
+import {InputFile} from '../../services/sdk/messages/core.types_pb';
 
 interface IProps {
     onClose?: () => void;
@@ -66,6 +70,7 @@ interface IState {
     selectedBackground: string;
     selectedBubble: string;
     selectedTheme: string;
+    uploadingPhoto: boolean;
     user: IUser | null;
     username: string;
     usernameAvailable: boolean;
@@ -81,6 +86,11 @@ class SettingMenu extends React.Component<IProps, IState> {
     private imageRef: any = null;
     private pixelCrop: PixelCrop;
     private fileManager: FileManager;
+    private progressBroadcaster: ProgressBroadcaster;
+    private riverTime: RiverTime;
+    private profileTempPhoto: string = '';
+    private circleProgressRef: any = null;
+    private fileId: string = '';
 
     constructor(props: IProps) {
         super(props);
@@ -101,13 +111,14 @@ class SettingMenu extends React.Component<IProps, IState> {
             profileCropperOpen: false,
             profilePictureCrop: {
                 aspect: 1,
-                width: 50,
+                width: 640,
                 x: 0,
                 y: 0,
             },
             selectedBackground: '-1',
             selectedBubble: '1',
             selectedTheme: 'light',
+            uploadingPhoto: false,
             user: null,
             username: '',
             usernameAvailable: false,
@@ -119,6 +130,8 @@ class SettingMenu extends React.Component<IProps, IState> {
             this.getUser();
         }
         this.fileManager = FileManager.getInstance();
+        this.progressBroadcaster = ProgressBroadcaster.getInstance();
+        this.riverTime = RiverTime.getInstance();
     }
 
     public componentDidMount() {
@@ -151,7 +164,7 @@ class SettingMenu extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {page, pageContent, user, editProfile, editUsername, bio, firstname, lastname, phone, username, usernameAvailable, usernameValid, profileCropperOpen, profilePictureFile, profilePictureCrop} = this.state;
+        const {page, pageContent, user, editProfile, editUsername, bio, firstname, lastname, phone, username, usernameAvailable, usernameValid, profileCropperOpen, profilePictureFile, profilePictureCrop, uploadingPhoto} = this.state;
         return (
             <div className="setting-menu">
                 <input ref={this.fileInputRefHandler} type="file" style={{display: 'none'}}
@@ -318,12 +331,25 @@ class SettingMenu extends React.Component<IProps, IState> {
                             </div>
                             {user && <div className="info kk-card">
                                 <div className="avatar">
-                                    <UserAvatar id={user.id || ''} noDetail={true}/>
-                                    <div className="overlay" onClick={this.openFileDialog}>
-                                        <PhotoCameraRounded/>
-                                        <div className="text">
-                                            CHANGE<br/>PROFILE<br/>PHOTO
-                                        </div>
+                                    {!uploadingPhoto && <UserAvatar id={user.id || ''} noDetail={true}/>}
+                                    {uploadingPhoto && <img src={this.profileTempPhoto} className="avatar-image"/>}
+                                    <div className={'overlay ' + (uploadingPhoto ? 'show' : '')}
+                                         onClick={this.openFileDialog}>
+                                        {!uploadingPhoto && <React.Fragment>
+                                            <PhotoCameraRounded/>
+                                            <div className="text">
+                                                CHANGE<br/>PROFILE<br/>PHOTO
+                                            </div>
+                                        </React.Fragment>}
+                                        {uploadingPhoto &&
+                                        <div className="progress-action">
+                                            <div className="progress">
+                                                <svg viewBox="0 0 32 32">
+                                                    <circle ref={this.progressRefHandler} r="14" cx="16" cy="16"/>
+                                                </svg>
+                                            </div>
+                                            <CloseRounded className="action" onClick={this.cancelFileHandler}/>
+                                        </div>}
                                     </div>
                                 </div>
                                 <div className="line">
@@ -734,7 +760,7 @@ class SettingMenu extends React.Component<IProps, IState> {
 
     /* Open file dialog */
     private openFileDialog = () => {
-        if (this.fileInputRef) {
+        if (!this.state.uploadingPhoto && this.fileInputRef) {
             this.fileInputRef.click();
         }
     }
@@ -794,7 +820,42 @@ class SettingMenu extends React.Component<IProps, IState> {
                 if (this.fileInputRef) {
                     this.fileInputRef.value = '';
                 }
-                this.fileManager.sendFile('122', blob);
+                const id = -this.riverTime.milliNow();
+                this.fileId = String(UniqueId.getRandomId());
+                const fn = this.progressBroadcaster.listen(id, this.uploadProgressHandler);
+                if (this.profileTempPhoto !== '') {
+                    URL.revokeObjectURL(this.profileTempPhoto);
+                }
+                this.profileTempPhoto = URL.createObjectURL(blob);
+                this.setState({
+                    uploadingPhoto: true,
+                });
+                this.fileManager.sendFile(this.fileId, blob, (progress) => {
+                    this.progressBroadcaster.publish(id, progress);
+                }).then(() => {
+                    this.progressBroadcaster.remove(id);
+                    if (fn) {
+                        fn();
+                    }
+                    const inputFile = new InputFile();
+                    inputFile.setFileid(this.fileId);
+                    inputFile.setFilename(`picture_${id}.ogg`);
+                    inputFile.setMd5checksum('');
+                    inputFile.setTotalparts(1);
+                    this.sdk.uploadProfilePicture(inputFile).then((res) => {
+                        this.setState({
+                            uploadingPhoto: false,
+                        });
+                    });
+                }).catch(() => {
+                    this.progressBroadcaster.remove(id);
+                    this.setState({
+                        uploadingPhoto: false,
+                    });
+                    if (fn) {
+                        fn();
+                    }
+                });
             });
         }
     }
@@ -831,6 +892,37 @@ class SettingMenu extends React.Component<IProps, IState> {
         } else {
             return Promise.reject();
         }
+    }
+
+    /* Upload progress handler */
+    private uploadProgressHandler = (progress: IFileProgress) => {
+        let v = 3;
+        if (progress.state === 'failed') {
+            this.setState({
+                uploadingPhoto: false,
+            });
+            return;
+        } else if (progress.state !== 'complete' && progress.download > 0) {
+            v = progress.progress * 85;
+        } else if (progress.state === 'complete') {
+            v = 88;
+        }
+        if (v < 3) {
+            v = 3;
+        }
+        if (this.circleProgressRef) {
+            this.circleProgressRef.style.strokeDasharray = `${v} 88`;
+        }
+    }
+
+    /* Progress circle ref handler */
+    private progressRefHandler = (ref: any) => {
+        this.circleProgressRef = ref;
+    }
+
+    /* Cancel file download/upload */
+    private cancelFileHandler = () => {
+        this.fileManager.cancel(this.fileId);
     }
 
     /* Broadcast Global Event */

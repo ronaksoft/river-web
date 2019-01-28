@@ -1450,7 +1450,7 @@ proto.msg.InputFileLocation.prototype.hasAccesshash = function() {
 
 
 /**
- * required int32 Version = 4;
+ * optional int32 Version = 4;
  * @return {number}
  */
 proto.msg.InputFileLocation.prototype.getVersion = function() {

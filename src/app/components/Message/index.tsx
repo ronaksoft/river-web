@@ -322,7 +322,7 @@ class Message extends React.Component<IProps, IState> {
                 if (key === 3) {
                     if ((this.riverTime.now() - (items[moreIndex].createdon || 0)) < 86400 &&
                         (items[moreIndex].fwdsenderid === '0' || !items[moreIndex].fwdsenderid) &&
-                        items[moreIndex].messagetype === C_MESSAGE_TYPE.Normal
+                        (items[moreIndex].messagetype === C_MESSAGE_TYPE.Normal || items[moreIndex].messagetype === 0)
                     ) {
                         menuItems.push(menuItem[key]);
                     }

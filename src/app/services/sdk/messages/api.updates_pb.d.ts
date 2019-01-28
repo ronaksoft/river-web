@@ -462,6 +462,11 @@ export class UpdateUsername extends jspb.Message {
   getLastname(): string | undefined;
   setLastname(value: string): void;
 
+  hasBio(): boolean;
+  clearBio(): void;
+  getBio(): string | undefined;
+  setBio(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateUsername.AsObject;
   static toObject(includeInstance: boolean, msg: UpdateUsername): UpdateUsername.AsObject;
@@ -480,6 +485,7 @@ export namespace UpdateUsername {
     username?: string,
     firstname?: string,
     lastname?: string,
+    bio?: string,
   }
 }
 
