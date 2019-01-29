@@ -17,7 +17,7 @@ import {
 } from '../../services/sdk/messages/core.message.medias_pb';
 // @ts-ignore
 import {CloseRounded, CloudDownloadRounded, InsertDriveFileRounded} from '@material-ui/icons';
-import {IFileProgress} from '../../services/sdk/fileServer';
+import {IFileProgress} from '../../services/sdk/fileManager';
 import ProgressBroadcaster from '../../services/progress';
 
 import './style.css';

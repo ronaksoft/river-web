@@ -38,7 +38,7 @@ import {IUser} from '../../repository/user/interface';
 import {Link} from 'react-router-dom';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import ReactCrop, {Crop, PixelCrop} from 'react-image-crop';
-import FileManager, {IFileProgress} from '../../services/sdk/fileServer';
+import FileManager, {IFileProgress} from '../../services/sdk/fileManager';
 import UniqueId from '../../services/uniqueId';
 import ProgressBroadcaster from '../../services/progress';
 import RiverTime from '../../services/utilities/river_time';

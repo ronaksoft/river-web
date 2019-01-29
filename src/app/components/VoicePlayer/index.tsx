@@ -11,7 +11,7 @@ import * as React from 'react';
 import {PlayArrowRounded, PauseRounded, CloseRounded, ArrowDownwardRounded} from '@material-ui/icons';
 import ProgressBroadcaster from '../../services/progress';
 import {IMessage} from '../../repository/message/interface';
-import {IFileProgress} from '../../services/sdk/fileServer';
+import {IFileProgress} from '../../services/sdk/fileManager';
 import AudioPlayer, {C_INSTANT_AUDIO, IAudioEvent} from '../../services/audioPlayer';
 
 import './style.css';

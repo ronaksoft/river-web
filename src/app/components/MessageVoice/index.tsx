@@ -16,7 +16,7 @@ import {
     DocumentAttributeType,
     MediaDocument
 } from '../../services/sdk/messages/core.message.medias_pb';
-import {base64ToU8a} from '../../services/sdk/fileServer/http/utils';
+import {base64ToU8a} from '../../services/sdk/fileManager/http/utils';
 import {from4bitResolution} from '../TextInput/utils';
 
 import './style.css';

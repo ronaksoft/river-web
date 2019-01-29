@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import {IFileProgress} from '../sdk/fileServer';
+import {IFileProgress} from '../sdk/fileManager';
 
 interface IProgressItem {
     fnQueue: { [key: number]: any };

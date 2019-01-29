@@ -13,7 +13,7 @@ import UpdateManager from './updateManager';
 import {MessageContainer, MessageEnvelope} from '../messages/core.messages_pb';
 import {throttle} from 'lodash';
 import Socket from './socket';
-import {base64ToU8a} from '../fileServer/http/utils';
+import {base64ToU8a} from '../fileManager/http/utils';
 
 export interface IServerRequest {
     constructor: number;

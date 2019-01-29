@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import {base64ToU8a, uint8ToBase64} from '../../fileServer/http/utils';
+import {base64ToU8a, uint8ToBase64} from '../../fileManager/http/utils';
 import {IServerRequest} from '../index';
 
 const ping = new Uint8Array([0x50, 0x49, 0x4e, 0x47]);

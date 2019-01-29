@@ -11,7 +11,7 @@ import DB from '../../services/db/file';
 import {IFile, ITempFile} from './interface';
 import {DexieFileDB} from '../../services/db/dexie/file';
 import Dexie from 'dexie';
-import {arrayBufferToBase64} from '../../services/sdk/fileServer/http/utils';
+import {arrayBufferToBase64} from '../../services/sdk/fileManager/http/utils';
 
 export default class FileRepo {
     public static getInstance() {

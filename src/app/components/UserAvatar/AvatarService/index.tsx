@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import FileManager from '../../../services/sdk/fileServer';
+import FileManager from '../../../services/sdk/fileManager';
 import UserRepo from '../../../repository/user';
 import {InputFileLocation} from '../../../services/sdk/messages/core.types_pb';
 import FileRepo from '../../../repository/file';
@@ -53,23 +53,23 @@ export default class AvatarService {
                     resolve(this.avatars[id].src);
                     return;
                 }
-            } else {
+            } else if (fileId !== '0') {
                 this.avatars[id] = {
                     fileId,
                     retries: 0,
                     src: '',
                 };
-            }
-            this.getLocalFile(id, fileId).then((res) => {
-                resolve(res);
-            }).catch(() => {
-                reject();
-                this.getRemoteFile(id, fileId).then((res) => {
+                this.getLocalFile(id, fileId).then((res) => {
                     resolve(res);
                 }).catch(() => {
                     reject();
+                    this.getRemoteFile(id, fileId).then((res) => {
+                        resolve(res);
+                    }).catch(() => {
+                        reject();
+                    });
                 });
-            });
+            }
         });
     }
 

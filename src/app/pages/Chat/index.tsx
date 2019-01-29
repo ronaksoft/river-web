@@ -89,7 +89,7 @@ import UserDialog from '../../components/UserDialog';
 import {IGroup} from '../../repository/group/interface';
 import SearchList, {IInputPeer} from '../../components/SearchList';
 import ElectronService, {C_ELECTRON_SUBJECT} from '../../services/electron';
-import FileManager from '../../services/sdk/fileServer';
+import FileManager from '../../services/sdk/fileManager';
 import {InputMediaType} from '../../services/sdk/messages/api.messages_pb';
 import {
     Document,
@@ -103,7 +103,7 @@ import {
 import RiverTime from '../../services/utilities/river_time';
 import FileRepo from '../../repository/file';
 import ProgressBroadcaster from '../../services/progress';
-import {C_FILE_ERR_CODE} from '../../services/sdk/fileServer/const/const';
+import {C_FILE_ERR_CODE} from '../../services/sdk/fileManager/const/const';
 import {getMessageTitle} from '../../components/Dialog/utils';
 import {saveAs} from 'file-saver';
 

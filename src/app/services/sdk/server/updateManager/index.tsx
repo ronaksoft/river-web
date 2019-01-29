@@ -20,7 +20,7 @@ import {throttle} from 'lodash';
 import {User} from '../../messages/core.types_pb';
 import {IMessage} from '../../../../repository/message/interface';
 import MessageRepo from '../../../../repository/message';
-import {base64ToU8a} from '../../fileServer/http/utils';
+import {base64ToU8a} from '../../fileManager/http/utils';
 
 export interface INewMessageBulkUpdate {
     accessHashes: string[];
