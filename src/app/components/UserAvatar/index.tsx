@@ -14,19 +14,7 @@ import ContactRepo from '../../repository/contact';
 import {BookmarkRounded} from '@material-ui/icons';
 
 import './style.css';
-
-interface IProps {
-    className?: string;
-    id: string;
-    noDetail?: boolean;
-    savedMessages?: boolean;
-}
-
-interface IState {
-    className: string;
-    id: string;
-    user: IUser;
-}
+import AvatarService from './AvatarService';
 
 const DefaultColors = [
     '#30496B',
@@ -120,11 +108,26 @@ const TextAvatar = (fname?: string, lname?: string) => {
     return (<span className="text-avatar" style={style}><span className="inner">{name}</span></span>);
 };
 
+interface IProps {
+    className?: string;
+    id: string;
+    noDetail?: boolean;
+    savedMessages?: boolean;
+}
+
+interface IState {
+    className: string;
+    id: string;
+    photo?: string;
+    user: IUser;
+}
+
 class UserAvatar extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
     private contactRepo: ContactRepo;
     private tryTimeout: any = null;
     private tryCount: number = 0;
+    private avatarService: AvatarService;
 
     constructor(props: IProps) {
         super(props);
@@ -137,6 +140,7 @@ class UserAvatar extends React.Component<IProps, IState> {
 
         this.userRepo = UserRepo.getInstance();
         this.contactRepo = ContactRepo.getInstance();
+        this.avatarService = AvatarService.getInstance();
     }
 
     public componentDidMount() {
@@ -165,17 +169,17 @@ class UserAvatar extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {user, className} = this.state;
+        const {user, className, photo} = this.state;
         if (this.props.savedMessages) {
             return (
-                <span className={'saved-messages-avatar ' +className}>
+                <span className={'saved-messages-avatar ' + className}>
                     <BookmarkRounded/>
                 </span>
             );
         } else {
             return (
-                <span className={className} onClick={this.clickHandler}>{(user && user.avatar) ?
-                    <img src={user.avatar}/> : TextAvatar(user.firstname, user.lastname)}</span>
+                <span className={className} onClick={this.clickHandler}>{(user && photo) ?
+                    <img src={photo}/> : TextAvatar(user.firstname, user.lastname)}</span>
             );
         }
     }
@@ -198,6 +202,9 @@ class UserAvatar extends React.Component<IProps, IState> {
                         lastname: contact.lastname,
                     },
                 });
+                this.userRepo.get(this.state.id).then((user) => {
+                    this.getAvatarPhoto(user);
+                });
             } else {
                 throw Error('not found');
             }
@@ -207,6 +214,7 @@ class UserAvatar extends React.Component<IProps, IState> {
                     this.setState({
                         user,
                     });
+                    this.getAvatarPhoto(user);
                 } else {
                     throw Error('not found');
                 }
@@ -219,6 +227,19 @@ class UserAvatar extends React.Component<IProps, IState> {
                 }
             });
         });
+    }
+
+    /* Get profile picture AKA avatar */
+    private getAvatarPhoto(user: IUser) {
+        if (user && user.photo && user.photo.photosmall.fileid && user.photo.photosmall.fileid !== '0') {
+            this.avatarService.getAvatar(user.id || '', user.photo.photosmall.fileid).then((photo) => {
+                if (photo !== '') {
+                    this.setState({
+                        photo,
+                    });
+                }
+            });
+        }
     }
 
     /* Click on user handler */

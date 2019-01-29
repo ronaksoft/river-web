@@ -294,20 +294,23 @@ export default class FileManager {
                         }).catch((err) => {
                             if (this.fileTransferQueue.hasOwnProperty(id)) {
                                 this.fileTransferQueue[id].pipelines--;
-                            }
-                            if (err.code === C_FILE_ERR_CODE.NO_WORKER) {
-                                if (chunk) {
-                                    this.fileTransferQueue[id].sendChunks.unshift(chunk);
+
+                                if (err.code === C_FILE_ERR_CODE.NO_WORKER) {
+                                    if (chunk) {
+                                        this.fileTransferQueue[id].sendChunks.unshift(chunk);
+                                    }
+                                    setTimeout(() => {
+                                        this.startUploading(id);
+                                    }, 1000);
+                                } else if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
+                                    if (chunk) {
+                                        this.fileTransferQueue[id].sendChunks.push(chunk);
+                                        this.fileTransferQueue[id].retry++;
+                                        this.startUploading(id);
+                                    }
                                 }
-                                setTimeout(() => {
-                                    this.startUploading(id);
-                                }, 1000);
-                            } else if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
-                                if (chunk) {
-                                    this.fileTransferQueue[id].sendChunks.push(chunk);
-                                    this.fileTransferQueue[id].retry++;
-                                    this.startUploading(id);
-                                }
+                            } else {
+                                this.startUploading(id);
                             }
                         });
                     }
@@ -386,15 +389,17 @@ export default class FileManager {
                         }).catch((err) => {
                             if (this.fileTransferQueue.hasOwnProperty(id)) {
                                 this.fileTransferQueue[id].pipelines--;
-                            }
-                            if (err.code === C_FILE_ERR_CODE.NO_WORKER) {
-                                this.fileTransferQueue[id].receiveChunks.unshift(chunk);
-                                setTimeout(() => {
+                                if (err.code === C_FILE_ERR_CODE.NO_WORKER) {
+                                    this.fileTransferQueue[id].receiveChunks.unshift(chunk);
+                                    setTimeout(() => {
+                                        this.startDownloading(id);
+                                    }, 1000);
+                                } else if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
+                                    this.fileTransferQueue[id].receiveChunks.push(chunk);
+                                    this.fileTransferQueue[id].retry++;
                                     this.startDownloading(id);
-                                }, 1000);
-                            } else if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
-                                this.fileTransferQueue[id].receiveChunks.push(chunk);
-                                this.fileTransferQueue[id].retry++;
+                                }
+                            } else {
                                 this.startDownloading(id);
                             }
                         });
@@ -578,27 +583,43 @@ export default class FileManager {
     /* Prepare download transfer */
     private prepareDownloadTransfer(file: core_types_pb.InputFileLocation, size: number, mimeType: string, resolve: any, reject: any, doneCallback: () => void, onProgress?: (e: IFileProgress) => void) {
         const id = file.getFileid() || '';
-        const totalParts = Math.ceil(size / C_DOWNLOAD_CHUNK_SIZE);
+        const totalParts = (size === 0) ? 1 : Math.ceil(size / C_DOWNLOAD_CHUNK_SIZE);
         const chunks: IReceiveChunk[] = [];
         const updates: IChunkUpdate[] = [];
-        for (let i = 0; i < totalParts; i++) {
-            let limit = C_DOWNLOAD_CHUNK_SIZE - 1;
-            if (i === (totalParts - 1)) {
-                limit = (size - ((totalParts - 1) * C_DOWNLOAD_CHUNK_SIZE));
-            }
+        if (size === 0) {
             chunks.push({
                 cancel: null,
-                limit,
-                offset: i * C_DOWNLOAD_CHUNK_SIZE,
-                part: i + 1,
+                limit: 0,
+                offset: 0,
+                part: 1,
             });
 
             updates.push({
                 download: 0,
-                downloadSize: limit,
+                downloadSize: 3 * 1024,
                 upload: 0,
                 uploadSize: 0,
             });
+        } else {
+            for (let i = 0; i < totalParts; i++) {
+                let limit = C_DOWNLOAD_CHUNK_SIZE;
+                if (i === (totalParts - 1)) {
+                    limit = (size - ((totalParts - 1) * C_DOWNLOAD_CHUNK_SIZE));
+                }
+                chunks.push({
+                    cancel: null,
+                    limit,
+                    offset: i * C_DOWNLOAD_CHUNK_SIZE,
+                    part: i + 1,
+                });
+
+                updates.push({
+                    download: 0,
+                    downloadSize: limit,
+                    upload: 0,
+                    uploadSize: 0,
+                });
+            }
         }
         this.fileTransferQueue[id] = {
             completed: false,

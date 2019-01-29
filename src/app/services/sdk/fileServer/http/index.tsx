@@ -11,6 +11,7 @@ import Presenter from '../../presenters';
 import axios from 'axios';
 import {base64ToU8a, uint8ToBase64} from './utils';
 import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from '../const/const';
+import {C_MSG} from '../../const';
 
 export interface IHttpRequest {
     constructor: number;
@@ -191,7 +192,11 @@ export default class Http {
             return;
         }
         const res = Presenter.getMessage(constructor, base64ToU8a(base64));
-        this.messageListeners[reqId].resolve(res);
+        if (constructor === C_MSG.Error) {
+            this.messageListeners[reqId].reject(res.toObject());
+        } else {
+            this.messageListeners[reqId].resolve(res);
+        }
         delete this.messageListeners[reqId];
         const index = this.sentQueue.indexOf(reqId);
         if (index > -1) {
