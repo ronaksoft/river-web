@@ -8,6 +8,7 @@
 */
 
 import FileRepo from '../../repository/file';
+import {clone} from 'lodash';
 
 export interface IAudioEvent {
     currentTime: number;
@@ -49,6 +50,7 @@ export default class AudioPlayer {
     private audio: HTMLAudioElement;
     private fnIndex: number = 0;
     private tracks: { [key: number]: IAudioItem } = {};
+    private tracksPeerId: string = '';
     private listeners: { [key: number]: any } = {};
     private backUpTracks: { [key: number]: IAudioItem } = {};
     private playlist: number[] = [];
@@ -56,9 +58,9 @@ export default class AudioPlayer {
     private playerInterval: any = null;
     private fileRepo: FileRepo;
     private lastObjectUrl: string = '';
-    /* Set audio state */
     private playingFromPeerId: string | undefined;
     private fastEnable: boolean;
+    private backUpPeerId: string = '';
 
     private constructor() {
         this.audio = document.createElement('audio');
@@ -75,6 +77,10 @@ export default class AudioPlayer {
     /* Add audio to playlist */
     public addToPlaylist(messageId: number, peerId: string, fileId: string, userId: string, downloaded: boolean) {
         if (this.playingFromPeerId && this.playingFromPeerId !== peerId) {
+            if (this.backUpPeerId !== peerId) {
+                this.backUpTracks = {};
+                this.backUpPeerId = peerId;
+            }
             if (!this.backUpTracks.hasOwnProperty(messageId)) {
                 this.backUpTracks[messageId] = {
                     downloaded,
@@ -97,6 +103,11 @@ export default class AudioPlayer {
                 this.backUpTracks[messageId].userId = userId;
             }
         } else {
+            if (this.tracksPeerId !== peerId) {
+                this.tracks = {};
+                this.tracksPeerId = peerId;
+                this.playlist = [];
+            }
             if (!this.tracks.hasOwnProperty(messageId)) {
                 this.tracks[messageId] = {
                     downloaded,
@@ -139,7 +150,9 @@ export default class AudioPlayer {
         if (this.fastEnable) {
             if (this.audio && !this.audio.paused) {
                 this.audio.playbackRate = 2.0;
-            } else if (this.audio) {
+            }
+        } else {
+            if (this.audio && !this.audio.paused) {
                 this.audio.playbackRate = 1.0;
             }
         }
@@ -192,6 +205,7 @@ export default class AudioPlayer {
                 this.audio.pause();
             }
             this.setState(messageId, 'pause', 0);
+            this.playingFromPeerId = undefined;
             this.stopPlayerInterval();
         }
     }
@@ -216,7 +230,11 @@ export default class AudioPlayer {
             if (index > -1 && this.playlist.length > nextIndex) {
                 if (this.tracks.hasOwnProperty(this.playlist[nextIndex]) && this.tracks[this.playlist[nextIndex]].downloaded) {
                     this.play(this.playlist[nextIndex]);
+                } else {
+                    this.playingFromPeerId = undefined;
                 }
+            } else {
+                this.playingFromPeerId = undefined;
             }
         }
     }
@@ -290,11 +308,11 @@ export default class AudioPlayer {
     /* Get audio from database and prepare it for playing */
     private prepareTrack(messageId: number) {
         if (!this.tracks.hasOwnProperty(messageId)) {
-            if (!this.backUpTracks.hasOwnProperty(messageId)) {
+            if (this.backUpTracks.hasOwnProperty(messageId)) {
                 this.copyFromBackup();
                 this.prepareTrack(messageId);
+                return;
             }
-            return;
         }
         const fileId = this.tracks[messageId].fileId;
         this.fileRepo.get(fileId).then((res) => {
@@ -347,8 +365,6 @@ export default class AudioPlayer {
             this.tracks[messageId].event.currentTrack = this.currentTrack;
             if (state === 'play') {
                 this.playingFromPeerId = this.tracks[messageId].peerId;
-            } else {
-                this.playingFromPeerId = undefined;
             }
             this.callHandlers(messageId, this.tracks[messageId].event);
         }
@@ -404,7 +420,7 @@ export default class AudioPlayer {
             this.backUpTracks = {};
             return;
         } else {
-            this.tracks = this.backUpTracks;
+            this.tracks = clone(this.backUpTracks);
             this.playlist = [];
             keys.forEach((i) => {
                 this.playlist.push(i);

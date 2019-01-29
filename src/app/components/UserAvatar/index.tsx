@@ -179,7 +179,7 @@ class UserAvatar extends React.Component<IProps, IState> {
         } else {
             return (
                 <span className={className} onClick={this.clickHandler}>{(user && photo) ?
-                    <img src={photo}/> : TextAvatar(user.firstname, user.lastname)}</span>
+                    <img className="avatar-image" src={photo}/> : TextAvatar(user.firstname, user.lastname)}</span>
             );
         }
     }
@@ -202,7 +202,7 @@ class UserAvatar extends React.Component<IProps, IState> {
                         lastname: contact.lastname,
                     },
                 });
-                this.userRepo.get(this.state.id).then((user) => {
+                this.userRepo.get(contact.id || '').then((user) => {
                     this.getAvatarPhoto(user);
                 });
             } else {
@@ -232,12 +232,17 @@ class UserAvatar extends React.Component<IProps, IState> {
     /* Get profile picture AKA avatar */
     private getAvatarPhoto(user: IUser) {
         if (user && user.photo && user.photo.photosmall.fileid && user.photo.photosmall.fileid !== '0') {
+            if (user.id !== this.state.user) {
+                this.avatarService.resetRetries(user.id || '');
+            }
             this.avatarService.getAvatar(user.id || '', user.photo.photosmall.fileid).then((photo) => {
                 if (photo !== '') {
                     this.setState({
                         photo,
                     });
                 }
+            }).catch(() => {
+                //
             });
         }
     }

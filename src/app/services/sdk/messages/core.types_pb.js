@@ -2502,7 +2502,8 @@ proto.msg.ContactUser.toObject = function(includeInstance, msg) {
     accesshash: jspb.Message.getField(msg, 4),
     phone: jspb.Message.getField(msg, 5),
     username: jspb.Message.getField(msg, 6),
-    clientid: jspb.Message.getField(msg, 7)
+    clientid: jspb.Message.getField(msg, 7),
+    photo: (f = msg.getPhoto()) && proto.msg.UserPhoto.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -2566,6 +2567,11 @@ proto.msg.ContactUser.deserializeBinaryFromReader = function(msg, reader) {
     case 7:
       var value = /** @type {string} */ (reader.readInt64String());
       msg.setClientid(value);
+      break;
+    case 8:
+      var value = new proto.msg.UserPhoto;
+      reader.readMessage(value,proto.msg.UserPhoto.deserializeBinaryFromReader);
+      msg.setPhoto(value);
       break;
     default:
       reader.skipField();
@@ -2643,6 +2649,14 @@ proto.msg.ContactUser.serializeBinaryToWriter = function(message, writer) {
     writer.writeInt64String(
       7,
       f
+    );
+  }
+  f = message.getPhoto();
+  if (f != null) {
+    writer.writeMessage(
+      8,
+      f,
+      proto.msg.UserPhoto.serializeBinaryToWriter
     );
   }
 };
@@ -2848,6 +2862,36 @@ proto.msg.ContactUser.prototype.clearClientid = function() {
  */
 proto.msg.ContactUser.prototype.hasClientid = function() {
   return jspb.Message.getField(this, 7) != null;
+};
+
+
+/**
+ * optional UserPhoto Photo = 8;
+ * @return {?proto.msg.UserPhoto}
+ */
+proto.msg.ContactUser.prototype.getPhoto = function() {
+  return /** @type{?proto.msg.UserPhoto} */ (
+    jspb.Message.getWrapperField(this, proto.msg.UserPhoto, 8));
+};
+
+
+/** @param {?proto.msg.UserPhoto|undefined} value */
+proto.msg.ContactUser.prototype.setPhoto = function(value) {
+  jspb.Message.setWrapperField(this, 8, value);
+};
+
+
+proto.msg.ContactUser.prototype.clearPhoto = function() {
+  this.setPhoto(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.ContactUser.prototype.hasPhoto = function() {
+  return jspb.Message.getField(this, 8) != null;
 };
 
 
@@ -6370,7 +6414,8 @@ proto.msg.GroupParticipant.toObject = function(includeInstance, msg) {
     lastname: jspb.Message.getField(msg, 3),
     type: jspb.Message.getField(msg, 4),
     accesshash: jspb.Message.getField(msg, 5),
-    username: jspb.Message.getField(msg, 6)
+    username: jspb.Message.getField(msg, 6),
+    photo: (f = msg.getPhoto()) && proto.msg.UserPhoto.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -6430,6 +6475,11 @@ proto.msg.GroupParticipant.deserializeBinaryFromReader = function(msg, reader) {
     case 6:
       var value = /** @type {string} */ (reader.readString());
       msg.setUsername(value);
+      break;
+    case 8:
+      var value = new proto.msg.UserPhoto;
+      reader.readMessage(value,proto.msg.UserPhoto.deserializeBinaryFromReader);
+      msg.setPhoto(value);
       break;
     default:
       reader.skipField();
@@ -6500,6 +6550,14 @@ proto.msg.GroupParticipant.serializeBinaryToWriter = function(message, writer) {
     writer.writeString(
       6,
       f
+    );
+  }
+  f = message.getPhoto();
+  if (f != null) {
+    writer.writeMessage(
+      8,
+      f,
+      proto.msg.UserPhoto.serializeBinaryToWriter
     );
   }
 };
@@ -6676,6 +6734,36 @@ proto.msg.GroupParticipant.prototype.clearUsername = function() {
  */
 proto.msg.GroupParticipant.prototype.hasUsername = function() {
   return jspb.Message.getField(this, 6) != null;
+};
+
+
+/**
+ * optional UserPhoto Photo = 8;
+ * @return {?proto.msg.UserPhoto}
+ */
+proto.msg.GroupParticipant.prototype.getPhoto = function() {
+  return /** @type{?proto.msg.UserPhoto} */ (
+    jspb.Message.getWrapperField(this, proto.msg.UserPhoto, 8));
+};
+
+
+/** @param {?proto.msg.UserPhoto|undefined} value */
+proto.msg.GroupParticipant.prototype.setPhoto = function(value) {
+  jspb.Message.setWrapperField(this, 8, value);
+};
+
+
+proto.msg.GroupParticipant.prototype.clearPhoto = function() {
+  this.setPhoto(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.GroupParticipant.prototype.hasPhoto = function() {
+  return jspb.Message.getField(this, 8) != null;
 };
 
 

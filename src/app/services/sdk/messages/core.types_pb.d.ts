@@ -383,6 +383,11 @@ export class ContactUser extends jspb.Message {
   getClientid(): string | undefined;
   setClientid(value: string): void;
 
+  hasPhoto(): boolean;
+  clearPhoto(): void;
+  getPhoto(): UserPhoto | undefined;
+  setPhoto(value?: UserPhoto): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ContactUser.AsObject;
   static toObject(includeInstance: boolean, msg: ContactUser): ContactUser.AsObject;
@@ -402,6 +407,7 @@ export namespace ContactUser {
     phone?: string,
     username?: string,
     clientid?: string,
+    photo?: UserPhoto.AsObject,
   }
 }
 
@@ -924,6 +930,11 @@ export class GroupParticipant extends jspb.Message {
   getUsername(): string | undefined;
   setUsername(value: string): void;
 
+  hasPhoto(): boolean;
+  clearPhoto(): void;
+  getPhoto(): UserPhoto | undefined;
+  setPhoto(value?: UserPhoto): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GroupParticipant.AsObject;
   static toObject(includeInstance: boolean, msg: GroupParticipant): GroupParticipant.AsObject;
@@ -942,6 +953,7 @@ export namespace GroupParticipant {
     type?: ParticipantType,
     accesshash?: string,
     username?: string,
+    photo?: UserPhoto.AsObject,
   }
 }
 

@@ -105,6 +105,7 @@ message ContactUser {
     required string Phone = 5;
     required string Username = 6;
     required int64 ClientID = 7 [jstype = JS_STRING];
+    optional UserPhoto Photo = 8;
 }
 
 // MediaType
@@ -192,7 +193,6 @@ message InputFile {
     required int32 TotalParts = 2;
     required string FileName = 3;
     required string MD5Checksum = 4;
-    //    required int32 ClusterID = 5;
 }
 
 // GroupFlags
@@ -246,6 +246,7 @@ message GroupParticipant {
     required ParticipantType Type = 4;
     required uint64 AccessHash = 5 [jstype = JS_STRING];
     required string Username = 6;
+    optional UserPhoto Photo = 8;
 }
 
 // InputDocument

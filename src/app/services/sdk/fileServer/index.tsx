@@ -384,7 +384,7 @@ export default class FileManager {
                             }
                             this.startDownloading(id);
                             if (chunk) {
-                                window.console.log(`${chunk.part}/${chunkInfo.totalParts} downloaded`);
+                                window.console.log(`${chunk.part}/${chunkInfo.totalParts} downloaded, size: ${res}`);
                             }
                         }).catch((err) => {
                             if (this.fileTransferQueue.hasOwnProperty(id)) {
@@ -471,7 +471,7 @@ export default class FileManager {
     }
 
     /* Download parts */
-    private download(fileLocation: core_types_pb.InputFileLocation, part: number, offset: number, limit: number, cancel: any, onUploadProgress?: (e: any) => void, onDownloadProgress?: (e: any) => void): Promise<any> {
+    private download(fileLocation: core_types_pb.InputFileLocation, part: number, offset: number, limit: number, cancel: any, onUploadProgress?: (e: any) => void, onDownloadProgress?: (e: any) => void): Promise<number> {
         return this.receiveFileChunk(fileLocation, offset, limit, cancel, onUploadProgress, onDownloadProgress).then((res) => {
             return this.fileRepo.setTemp({
                 data: new Blob([res.getBytes_asU8()]),
@@ -479,6 +479,8 @@ export default class FileManager {
                 modifiedtime: res.getModifiedtime(),
                 part,
                 type: res.getType(),
+            }).then(() => {
+                return res.getBytes_asU8().byteLength;
             });
         });
     }
