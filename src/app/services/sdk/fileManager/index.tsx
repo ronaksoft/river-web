@@ -387,6 +387,7 @@ export default class FileManager {
                                 window.console.log(`${chunk.part}/${chunkInfo.totalParts} downloaded, size: ${res}`);
                             }
                         }).catch((err) => {
+                            window.console.log(err);
                             if (this.fileTransferQueue.hasOwnProperty(id)) {
                                 this.fileTransferQueue[id].pipelines--;
                                 if (err.code === C_FILE_ERR_CODE.NO_WORKER) {
@@ -394,6 +395,8 @@ export default class FileManager {
                                     setTimeout(() => {
                                         this.startDownloading(id);
                                     }, 1000);
+                                } else if (err.code === 'E00' && err.items === 'not found') {
+                                    this.cancel(id);
                                 } else if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
                                     this.fileTransferQueue[id].receiveChunks.push(chunk);
                                     this.fileTransferQueue[id].retry++;
