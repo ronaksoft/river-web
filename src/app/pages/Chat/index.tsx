@@ -519,7 +519,9 @@ class Chat extends React.Component<IProps, IState> {
                         </div>}
                         {selectedDialogId === 'null' && <div className="column-center">
                             <div className="start-messaging">
-                                <div className="start-messaging-header"/>
+                                <div className="start-messaging-header">
+                                    {this.getConnectionStatus()}
+                                </div>
                                 <div className="start-messaging-img"/>
                                 <div className="start-messaging-title">Choose a chat to start messaging!</div>
                                 <div className="start-messaging-footer"/>
@@ -644,6 +646,16 @@ class Chat extends React.Component<IProps, IState> {
             return (<span>{this.state.group.participants} members</span>);
         } else {
             return (<span>last seen recently</span>);
+        }
+    }
+
+    private getConnectionStatus() {
+        if (this.state.isConnecting) {
+            return (<span>Connecting...</span>);
+        } else if (this.state.isUpdating) {
+            return (<span>Updating...</span>);
+        } else {
+            return '';
         }
     }
 

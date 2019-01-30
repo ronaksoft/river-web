@@ -211,17 +211,30 @@ export const isTypingRender = (typingList: { [key: string]: { fn: any, action: T
     if (ids.length === 0) {
         return '';
     }
-    if (dialog.peertype === PeerType.PEERUSER) {
-        if (typingList[ids[0]].action === TypingAction.TYPINGACTIONTYPING) {
-            return (<span className="preview">is typing...</span>);
-        } else if (typingList[ids[0]].action === TypingAction.TYPINGACTIONRECORDINGVOICE) {
-            return (<span className="preview">is uploading voice...</span>);
-        } else if (typingList[ids[0]].action === TypingAction.TYPINGACTIONUPLOADING) {
-            return (<span className="preview">is uploading file...</span>);
-        } else {
-            return (<span className="preview">is typing...</span>);
+    const getActionType = (action: number) => {
+        switch (action) {
+            default:
+            case TypingAction.TYPINGACTIONTYPING:
+                return 'typing...';
+            case TypingAction.TYPINGACTIONRECORDINGVOICE:
+                return 'recording voice...';
+            case TypingAction.TYPINGACTIONUPLOADING:
+                return 'uploading file...';
         }
+    };
+    if (dialog.peertype === PeerType.PEERUSER) {
+        return (<span className="preview">is {getActionType(typingList[ids[0]].action)}</span>);
     } else {
+        const types = {};
+        let distinct = 0;
+        ids.forEach((id) => {
+            if (!types.hasOwnProperty(typingList[id].action)) {
+                types[typingList[id].action] = 1;
+                distinct++;
+            } else {
+                types[typingList[id].action]++;
+            }
+        });
         return (<span className="preview">
                 {ids.slice(0, 2).map((id, index) => {
                     return (<span key={index}>
@@ -231,7 +244,7 @@ export const isTypingRender = (typingList: { [key: string]: { fn: any, action: T
                 })}
             {Boolean(ids.length > 2) && <span> & {ids.length - 2} more</span>}
             {ids.length === 1 ? ' is ' : ' are '}
-            typing...
+            {distinct > 1 ? ' doing ...' : getActionType(typingList[ids[0]].action)}
             </span>);
     }
 };

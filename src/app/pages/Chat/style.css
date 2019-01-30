@@ -525,7 +525,8 @@ html[theme="dark-blue"] .container {
     background-color: var(--dark-low); }
     html[theme="dark"] .container .column-center .start-messaging .start-messaging-header,
     html[theme="dark-blue"] .container .column-center .start-messaging .start-messaging-header {
-      background-color: transparent; }
+      background-color: transparent;
+      color: var(--light); }
     html[theme="dark"] .container .column-center .start-messaging .start-messaging-img,
     html[theme="dark-blue"] .container .column-center .start-messaging .start-messaging-img {
       width: 100%;
