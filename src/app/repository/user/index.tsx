@@ -93,6 +93,17 @@ export default class UserRepo {
                 this.dbService.setUser(item);
             });
             return this.createMany(list);
+        }).then((res) => {
+            this.broadcastEvent('User_DB_Updated', {ids});
+            return res;
         });
+    }
+
+    private broadcastEvent(name: string, data: any) {
+        const event = new CustomEvent(name, {
+            bubbles: false,
+            detail: data,
+        });
+        window.dispatchEvent(event);
     }
 }
