@@ -66,7 +66,6 @@ export default class AvatarService {
                 this.getLocalFile(id, fileId).then((res) => {
                     resolve(res);
                 }).catch(() => {
-                    reject();
                     this.getRemoteFile(id, fileId).then((res) => {
                         resolve(res);
                     }).catch(() => {

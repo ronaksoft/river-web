@@ -69,7 +69,6 @@ export default class CachedFileService {
                 this.getLocalFile(id).then((res) => {
                     resolve(res);
                 }).catch(() => {
-                    reject();
                     this.getRemoteFile(fileLocation, size).then((res) => {
                         resolve(res);
                     }).catch(() => {
