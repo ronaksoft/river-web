@@ -71,7 +71,7 @@ interface IProps {
     text?: string;
     userId?: string;
     onVoice: (voice: Blob, waveform: number[], duration: number, {mode, message}?: any) => void;
-    onFileSelected: (file: File) => void;
+    onFileSelected: (file: File, {mode, message}?: any) => void;
 }
 
 interface IState {
@@ -1229,7 +1229,13 @@ class TextInput extends React.Component<IProps, IState> {
     /* File change handler */
     private fileChangeHandler = (e: any) => {
         if (this.props.onFileSelected && e.currentTarget.files.length > 0) {
-            this.props.onFileSelected(e.currentTarget.files[0]);
+            const {previewMessage, previewMessageMode} = this.state;
+            const message = cloneDeep(previewMessage);
+            this.props.onFileSelected(e.currentTarget.files[0], {
+                message,
+                mode: previewMessageMode,
+            });
+            this.clearPreviewMessage(true);
             if (this.fileInputRef) {
                 this.fileInputRef.value = '';
             }

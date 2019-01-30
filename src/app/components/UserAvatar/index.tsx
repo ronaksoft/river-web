@@ -148,7 +148,7 @@ class UserAvatar extends React.Component<IProps, IState> {
         if (!this.props.savedMessages) {
             this.getUser();
             window.addEventListener('User_DB_Updated', this.getUser);
-            window.addEventListener('User_Photo_Updated', this.getUserPhoto);
+            window.addEventListener('Avatar_SRC_Updated', this.getUserPhoto);
         }
     }
 
@@ -167,7 +167,7 @@ class UserAvatar extends React.Component<IProps, IState> {
     public componentWillUnmount() {
         if (!this.props.savedMessages) {
             window.removeEventListener('User_DB_Updated', this.getUser);
-            window.removeEventListener('User_Photo_Updated', this.getUserPhoto);
+            window.removeEventListener('Avatar_SRC_Updated', this.getUserPhoto);
         }
     }
 

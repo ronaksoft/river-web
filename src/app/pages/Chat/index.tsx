@@ -2948,7 +2948,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* TextInput file select handler */
-    private textInputFileSelectHandler = (file: File) => {
+    private textInputFileSelectHandler = (file: File, param?: any) => {
         const fileReader = new FileReader();
         fileReader.onloadend = (e: any) => {
             const blob = new Blob([e.target.result], {type: file.type});
@@ -3016,6 +3016,12 @@ class Chat extends React.Component<IProps, IState> {
                 senderid: this.connInfo.UserID,
             };
 
+            let replyTo: any;
+            if (param && param.mode === C_MSG_MODE.Reply) {
+                message.replyto = param.message.id;
+                replyTo = param.message.id;
+            }
+
             this.pushMessage(message);
 
             const data = mediaData.serializeBinary();
@@ -3031,7 +3037,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.progressBroadcaster.publish(id, progress);
             }).then(() => {
                 this.progressBroadcaster.remove(id);
-                this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data).then((res) => {
+                this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, replyTo).then((res) => {
                     const {messages} = this.state;
                     const index = findIndex(messages, {id: message.id, messagetype: C_MESSAGE_TYPE.File});
                     if (index > -1) {
