@@ -12,9 +12,10 @@ import {IUser} from '../../repository/user/interface';
 import UserRepo from '../../repository/user';
 import ContactRepo from '../../repository/contact';
 import {BookmarkRounded} from '@material-ui/icons';
+import AvatarService from '../../services/avatarService';
+import {find} from 'lodash';
 
 import './style.css';
-import AvatarService from './AvatarService';
 
 const DefaultColors = [
     '#30496B',
@@ -147,6 +148,7 @@ class UserAvatar extends React.Component<IProps, IState> {
         if (!this.props.savedMessages) {
             this.getUser();
             window.addEventListener('User_DB_Updated', this.getUser);
+            window.addEventListener('User_Photo_Updated', this.getUserPhoto);
         }
     }
 
@@ -165,6 +167,7 @@ class UserAvatar extends React.Component<IProps, IState> {
     public componentWillUnmount() {
         if (!this.props.savedMessages) {
             window.removeEventListener('User_DB_Updated', this.getUser);
+            window.removeEventListener('User_Photo_Updated', this.getUserPhoto);
         }
     }
 
@@ -232,10 +235,32 @@ class UserAvatar extends React.Component<IProps, IState> {
     /* Get profile picture AKA avatar */
     private getAvatarPhoto(user: IUser) {
         if (user && user.photo && user.photo.photosmall.fileid && user.photo.photosmall.fileid !== '0') {
-            if (user.id !== this.state.user) {
+            if (user.id !== this.state.user.id) {
                 this.avatarService.resetRetries(user.id || '');
             }
             this.avatarService.getAvatar(user.id || '', user.photo.photosmall.fileid).then((photo) => {
+                if (photo !== '') {
+                    this.setState({
+                        photo,
+                    });
+                }
+            }).catch(() => {
+                //
+            });
+        }
+    }
+
+    /* Get user photo */
+    private getUserPhoto = (data?: any) => {
+        if (!this.state || this.state.id === '') {
+            return;
+        }
+        let item: any = null;
+        if (data && data.detail.items.length > 0) {
+            item = find(data.detail.items, {id: this.state.id});
+        }
+        if (item) {
+            this.avatarService.getAvatar(item.id, item.fileId).then((photo) => {
                 if (photo !== '') {
                     this.setState({
                         photo,

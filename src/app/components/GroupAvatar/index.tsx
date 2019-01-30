@@ -11,6 +11,8 @@ import * as React from 'react';
 import GroupRepo from '../../repository/group';
 import {IGroup} from '../../repository/group/interface';
 import {TextAvatar} from '../UserAvatar';
+import AvatarService from '../../services/avatarService';
+import {find} from 'lodash';
 
 import './style.css';
 
@@ -23,12 +25,14 @@ interface IState {
     className: string;
     group: IGroup | null;
     id: string;
+    photo?: string;
 }
 
 class GroupAvatar extends React.Component<IProps, IState> {
     private groupRepo: GroupRepo;
     private tryTimeout: any = null;
     private tryCount: number = 0;
+    private avatarService: AvatarService;
 
     constructor(props: IProps) {
         super(props);
@@ -40,11 +44,13 @@ class GroupAvatar extends React.Component<IProps, IState> {
         };
 
         this.groupRepo = GroupRepo.getInstance();
+        this.avatarService = AvatarService.getInstance();
     }
 
     public componentDidMount() {
         this.getGroup();
         window.addEventListener('Group_DB_Updated', this.getGroup);
+        window.addEventListener('Avatar_SRC_Updated', this.getGroupPhoto);
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -61,13 +67,14 @@ class GroupAvatar extends React.Component<IProps, IState> {
 
     public componentWillUnmount() {
         window.removeEventListener('Group_DB_Updated', this.getGroup);
+        window.removeEventListener('Avatar_SRC_Updated', this.getGroupPhoto);
     }
 
     public render() {
-        const {group, className} = this.state;
+        const {group, photo, className} = this.state;
         return (
-            <span className={className}>{(group && group.avatar) ?
-                <img src={group.avatar}/> : TextAvatar(group ? group.title : undefined)}</span>
+            <span className={className}>{(group && photo) ?
+                <img className="avatar-image" src={photo}/> : TextAvatar(group ? group.title : undefined)}</span>
         );
     }
 
@@ -84,6 +91,7 @@ class GroupAvatar extends React.Component<IProps, IState> {
             this.setState({
                 group,
             });
+            this.getAvatarPhoto(group);
         }).catch(() => {
             if (this.tryCount < 10) {
                 this.tryCount++;
@@ -92,6 +100,46 @@ class GroupAvatar extends React.Component<IProps, IState> {
                 }, 1000);
             }
         });
+    }
+
+    /* Get group picture AKA avatar */
+    private getAvatarPhoto(group: IGroup) {
+        if (group && group.photo && group.photo.photosmall.fileid && group.photo.photosmall.fileid !== '0') {
+            if (this.state.group && group.id !== this.state.group.id) {
+                this.avatarService.resetRetries(group.id || '');
+            }
+            this.avatarService.getAvatar(group.id || '', group.photo.photosmall.fileid).then((photo) => {
+                if (photo !== '') {
+                    this.setState({
+                        photo,
+                    });
+                }
+            }).catch(() => {
+                //
+            });
+        }
+    }
+
+    /* Get group photo */
+    private getGroupPhoto = (data?: any) => {
+        if (!this.state || this.state.id === '') {
+            return;
+        }
+        let item: any = null;
+        if (data && data.detail.items.length > 0) {
+            item = find(data.detail.items, {id: this.state.id});
+        }
+        if (item) {
+            this.avatarService.getAvatar(item.id, item.fileId).then((photo) => {
+                if (photo !== '') {
+                    this.setState({
+                        photo,
+                    });
+                }
+            }).catch(() => {
+                //
+            });
+        }
     }
 }
 

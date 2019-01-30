@@ -489,6 +489,46 @@ export namespace UpdateUsername {
   }
 }
 
+export class UpdateUserPhoto extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  hasUserid(): boolean;
+  clearUserid(): void;
+  getUserid(): string | undefined;
+  setUserid(value: string): void;
+
+  hasPhoto(): boolean;
+  clearPhoto(): void;
+  getPhoto(): core_types_pb.UserPhoto | undefined;
+  setPhoto(value?: core_types_pb.UserPhoto): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateUserPhoto.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateUserPhoto): UpdateUserPhoto.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateUserPhoto, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateUserPhoto;
+  static deserializeBinaryFromReader(message: UpdateUserPhoto, reader: jspb.BinaryReader): UpdateUserPhoto;
+}
+
+export namespace UpdateUserPhoto {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+    userid?: string,
+    photo?: core_types_pb.UserPhoto.AsObject,
+  }
+}
+
 export class UpdateNotifySettings extends jspb.Message {
   hasUcount(): boolean;
   clearUcount(): void;
@@ -710,6 +750,46 @@ export namespace UpdateGroupAdmins {
     updateid?: number,
     groupid?: string,
     adminenabled?: boolean,
+  }
+}
+
+export class UpdateGroupPhoto extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  hasGroupid(): boolean;
+  clearGroupid(): void;
+  getGroupid(): string | undefined;
+  setGroupid(value: string): void;
+
+  hasPhoto(): boolean;
+  clearPhoto(): void;
+  getPhoto(): core_types_pb.GroupPhoto | undefined;
+  setPhoto(value?: core_types_pb.GroupPhoto): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateGroupPhoto.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateGroupPhoto): UpdateGroupPhoto.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateGroupPhoto, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateGroupPhoto;
+  static deserializeBinaryFromReader(message: UpdateGroupPhoto, reader: jspb.BinaryReader): UpdateGroupPhoto;
+}
+
+export namespace UpdateGroupPhoto {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+    groupid?: string,
+    photo?: core_types_pb.GroupPhoto.AsObject,
   }
 }
 

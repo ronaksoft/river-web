@@ -106,6 +106,34 @@ export namespace AuthLogout {
   }
 }
 
+export class AuthLoginByToken extends jspb.Message {
+  hasToken(): boolean;
+  clearToken(): void;
+  getToken(): string | undefined;
+  setToken(value: string): void;
+
+  hasProvider(): boolean;
+  clearProvider(): void;
+  getProvider(): string | undefined;
+  setProvider(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AuthLoginByToken.AsObject;
+  static toObject(includeInstance: boolean, msg: AuthLoginByToken): AuthLoginByToken.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AuthLoginByToken, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AuthLoginByToken;
+  static deserializeBinaryFromReader(message: AuthLoginByToken, reader: jspb.BinaryReader): AuthLoginByToken;
+}
+
+export namespace AuthLoginByToken {
+  export type AsObject = {
+    token?: string,
+    provider?: string,
+  }
+}
+
 export class AuthCheckPhone extends jspb.Message {
   hasPhone(): boolean;
   clearPhone(): void;

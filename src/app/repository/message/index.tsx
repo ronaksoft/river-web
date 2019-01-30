@@ -34,7 +34,7 @@ import {
     MessageActionContactRegistered,
     MessageActionGroupAddUser,
     MessageActionGroupCreated,
-    MessageActionGroupDeleteUser,
+    MessageActionGroupDeleteUser, MessageActionGroupPhotoChanged,
     MessageActionGroupTitleChanged,
 } from '../../services/sdk/messages/core.message.actions_pb';
 
@@ -133,6 +133,9 @@ export default class MessageRepo {
                     break;
                 case C_MESSAGE_ACTION.MessageActionClearHistory:
                     out.actiondata = MessageActionClearHistory.deserializeBinary(actionData).toObject();
+                    break;
+                case C_MESSAGE_ACTION.MessageActionGroupPhotoChanged:
+                    out.actiondata = MessageActionGroupPhotoChanged.deserializeBinary(actionData).toObject();
                     break;
             }
             delete out.messageactiondata;

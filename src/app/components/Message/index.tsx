@@ -12,7 +12,14 @@ import {AutoSizer, CellMeasurer, CellMeasurerCache, List, ScrollParams} from 're
 import {IMessage} from '../../repository/message/interface';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import {InputPeer, MediaType, MessageEntityType, PeerType} from "../../services/sdk/messages/core.types_pb";
+import {
+    GroupPhoto,
+    InputFileLocation,
+    InputPeer,
+    MediaType,
+    MessageEntityType,
+    PeerType
+} from "../../services/sdk/messages/core.types_pb";
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from "../../repository/message/consts";
 import TimeUtility from '../../services/utilities/time';
 import UserAvatar from '../UserAvatar';
@@ -28,6 +35,7 @@ import RiverTime from '../../services/utilities/river_time';
 import {ErrorRounded} from '@material-ui/icons';
 import MessageFile from '../MessageFile';
 import MessageContact from '../MessageContact';
+import CachedPhoto from '../CachedPhoto';
 
 import './style.css';
 
@@ -672,6 +680,26 @@ class Message extends React.Component<IProps, IState> {
                 }
             case C_MESSAGE_ACTION.MessageActionClearHistory:
                 return (<span className="system-message">History cleared</span>);
+            case C_MESSAGE_ACTION.MessageActionGroupPhotoChanged:
+                if (!message.actiondata) {
+                    return (<span className="system-message"><UserName className="user" id={message.senderid || ''}
+                                                                       you={true}/> Changed the Group Photo</span>);
+                } else {
+                    const photo: GroupPhoto.AsObject = message.actiondata.photo;
+                    const fileLocation = new InputFileLocation();
+                    fileLocation.setVersion(0);
+                    fileLocation.setAccesshash(photo.photosmall.accesshash || '');
+                    fileLocation.setFileid(photo.photosmall.fileid || '');
+                    fileLocation.setClusterid(photo.photosmall.clusterid || 1);
+                    return (
+                        <div className="system-message-with-picture">
+                            <span className="system-message">
+                                <UserName className="user" id={message.senderid || ''} you={true}/> Changed Group Photo
+                            </span>
+                            <CachedPhoto className="picture" fileLocation={fileLocation.toObject()}/>
+                        </div>
+                    );
+                }
             default:
                 return '';
         }

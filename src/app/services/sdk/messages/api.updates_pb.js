@@ -20,6 +20,7 @@ goog.exportSymbol('proto.msg.UpdateGroupAdmins', null, global);
 goog.exportSymbol('proto.msg.UpdateGroupParticipantAdd', null, global);
 goog.exportSymbol('proto.msg.UpdateGroupParticipantAdmin', null, global);
 goog.exportSymbol('proto.msg.UpdateGroupParticipantDeleted', null, global);
+goog.exportSymbol('proto.msg.UpdateGroupPhoto', null, global);
 goog.exportSymbol('proto.msg.UpdateMessageEdited', null, global);
 goog.exportSymbol('proto.msg.UpdateMessageID', null, global);
 goog.exportSymbol('proto.msg.UpdateMessagesDeleted', null, global);
@@ -29,6 +30,7 @@ goog.exportSymbol('proto.msg.UpdateReadHistoryInbox', null, global);
 goog.exportSymbol('proto.msg.UpdateReadHistoryOutbox', null, global);
 goog.exportSymbol('proto.msg.UpdateReadMessagesContents', null, global);
 goog.exportSymbol('proto.msg.UpdateState', null, global);
+goog.exportSymbol('proto.msg.UpdateUserPhoto', null, global);
 goog.exportSymbol('proto.msg.UpdateUserStatus', null, global);
 goog.exportSymbol('proto.msg.UpdateUserTyping', null, global);
 goog.exportSymbol('proto.msg.UpdateUsername', null, global);
@@ -3474,6 +3476,288 @@ proto.msg.UpdateUsername.prototype.hasBio = function() {
  * @extends {jspb.Message}
  * @constructor
  */
+proto.msg.UpdateUserPhoto = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.msg.UpdateUserPhoto, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.msg.UpdateUserPhoto.displayName = 'proto.msg.UpdateUserPhoto';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.msg.UpdateUserPhoto.prototype.toObject = function(opt_includeInstance) {
+  return proto.msg.UpdateUserPhoto.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.msg.UpdateUserPhoto} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.UpdateUserPhoto.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    ucount: jspb.Message.getField(msg, 100),
+    updateid: jspb.Message.getField(msg, 101),
+    userid: jspb.Message.getField(msg, 1),
+    photo: (f = msg.getPhoto()) && core_types_pb.UserPhoto.toObject(includeInstance, f)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.msg.UpdateUserPhoto}
+ */
+proto.msg.UpdateUserPhoto.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.msg.UpdateUserPhoto;
+  return proto.msg.UpdateUserPhoto.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.msg.UpdateUserPhoto} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.msg.UpdateUserPhoto}
+ */
+proto.msg.UpdateUserPhoto.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 100:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setUcount(value);
+      break;
+    case 101:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setUpdateid(value);
+      break;
+    case 1:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setUserid(value);
+      break;
+    case 2:
+      var value = new core_types_pb.UserPhoto;
+      reader.readMessage(value,core_types_pb.UserPhoto.deserializeBinaryFromReader);
+      msg.setPhoto(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.msg.UpdateUserPhoto.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.msg.UpdateUserPhoto.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.msg.UpdateUserPhoto} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.UpdateUserPhoto.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = /** @type {number} */ (jspb.Message.getField(message, 100));
+  if (f != null) {
+    writer.writeInt32(
+      100,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 101));
+  if (f != null) {
+    writer.writeInt64(
+      101,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
+  if (f != null) {
+    writer.writeInt64String(
+      1,
+      f
+    );
+  }
+  f = message.getPhoto();
+  if (f != null) {
+    writer.writeMessage(
+      2,
+      f,
+      core_types_pb.UserPhoto.serializeBinaryToWriter
+    );
+  }
+};
+
+
+/**
+ * required int32 UCount = 100;
+ * @return {number}
+ */
+proto.msg.UpdateUserPhoto.prototype.getUcount = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 100, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.UpdateUserPhoto.prototype.setUcount = function(value) {
+  jspb.Message.setField(this, 100, value);
+};
+
+
+proto.msg.UpdateUserPhoto.prototype.clearUcount = function() {
+  jspb.Message.setField(this, 100, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateUserPhoto.prototype.hasUcount = function() {
+  return jspb.Message.getField(this, 100) != null;
+};
+
+
+/**
+ * required int64 UpdateID = 101;
+ * @return {number}
+ */
+proto.msg.UpdateUserPhoto.prototype.getUpdateid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 101, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.UpdateUserPhoto.prototype.setUpdateid = function(value) {
+  jspb.Message.setField(this, 101, value);
+};
+
+
+proto.msg.UpdateUserPhoto.prototype.clearUpdateid = function() {
+  jspb.Message.setField(this, 101, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateUserPhoto.prototype.hasUpdateid = function() {
+  return jspb.Message.getField(this, 101) != null;
+};
+
+
+/**
+ * required int64 UserID = 1;
+ * @return {string}
+ */
+proto.msg.UpdateUserPhoto.prototype.getUserid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
+};
+
+
+/** @param {string} value */
+proto.msg.UpdateUserPhoto.prototype.setUserid = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+proto.msg.UpdateUserPhoto.prototype.clearUserid = function() {
+  jspb.Message.setField(this, 1, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateUserPhoto.prototype.hasUserid = function() {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * optional UserPhoto Photo = 2;
+ * @return {?proto.msg.UserPhoto}
+ */
+proto.msg.UpdateUserPhoto.prototype.getPhoto = function() {
+  return /** @type{?proto.msg.UserPhoto} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.UserPhoto, 2));
+};
+
+
+/** @param {?proto.msg.UserPhoto|undefined} value */
+proto.msg.UpdateUserPhoto.prototype.setPhoto = function(value) {
+  jspb.Message.setWrapperField(this, 2, value);
+};
+
+
+proto.msg.UpdateUserPhoto.prototype.clearPhoto = function() {
+  this.setPhoto(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateUserPhoto.prototype.hasPhoto = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
 proto.msg.UpdateNotifySettings = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -5028,6 +5312,288 @@ proto.msg.UpdateGroupAdmins.prototype.clearAdminenabled = function() {
  * @return {!boolean}
  */
 proto.msg.UpdateGroupAdmins.prototype.hasAdminenabled = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.msg.UpdateGroupPhoto = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.msg.UpdateGroupPhoto, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.msg.UpdateGroupPhoto.displayName = 'proto.msg.UpdateGroupPhoto';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.msg.UpdateGroupPhoto.prototype.toObject = function(opt_includeInstance) {
+  return proto.msg.UpdateGroupPhoto.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.msg.UpdateGroupPhoto} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.UpdateGroupPhoto.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    ucount: jspb.Message.getField(msg, 100),
+    updateid: jspb.Message.getField(msg, 101),
+    groupid: jspb.Message.getField(msg, 1),
+    photo: (f = msg.getPhoto()) && core_types_pb.GroupPhoto.toObject(includeInstance, f)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.msg.UpdateGroupPhoto}
+ */
+proto.msg.UpdateGroupPhoto.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.msg.UpdateGroupPhoto;
+  return proto.msg.UpdateGroupPhoto.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.msg.UpdateGroupPhoto} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.msg.UpdateGroupPhoto}
+ */
+proto.msg.UpdateGroupPhoto.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 100:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setUcount(value);
+      break;
+    case 101:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setUpdateid(value);
+      break;
+    case 1:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setGroupid(value);
+      break;
+    case 2:
+      var value = new core_types_pb.GroupPhoto;
+      reader.readMessage(value,core_types_pb.GroupPhoto.deserializeBinaryFromReader);
+      msg.setPhoto(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.msg.UpdateGroupPhoto.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.msg.UpdateGroupPhoto.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.msg.UpdateGroupPhoto} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.UpdateGroupPhoto.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = /** @type {number} */ (jspb.Message.getField(message, 100));
+  if (f != null) {
+    writer.writeInt32(
+      100,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 101));
+  if (f != null) {
+    writer.writeInt64(
+      101,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
+  if (f != null) {
+    writer.writeInt64String(
+      1,
+      f
+    );
+  }
+  f = message.getPhoto();
+  if (f != null) {
+    writer.writeMessage(
+      2,
+      f,
+      core_types_pb.GroupPhoto.serializeBinaryToWriter
+    );
+  }
+};
+
+
+/**
+ * required int32 UCount = 100;
+ * @return {number}
+ */
+proto.msg.UpdateGroupPhoto.prototype.getUcount = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 100, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.UpdateGroupPhoto.prototype.setUcount = function(value) {
+  jspb.Message.setField(this, 100, value);
+};
+
+
+proto.msg.UpdateGroupPhoto.prototype.clearUcount = function() {
+  jspb.Message.setField(this, 100, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateGroupPhoto.prototype.hasUcount = function() {
+  return jspb.Message.getField(this, 100) != null;
+};
+
+
+/**
+ * required int64 UpdateID = 101;
+ * @return {number}
+ */
+proto.msg.UpdateGroupPhoto.prototype.getUpdateid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 101, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.UpdateGroupPhoto.prototype.setUpdateid = function(value) {
+  jspb.Message.setField(this, 101, value);
+};
+
+
+proto.msg.UpdateGroupPhoto.prototype.clearUpdateid = function() {
+  jspb.Message.setField(this, 101, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateGroupPhoto.prototype.hasUpdateid = function() {
+  return jspb.Message.getField(this, 101) != null;
+};
+
+
+/**
+ * required int64 GroupID = 1;
+ * @return {string}
+ */
+proto.msg.UpdateGroupPhoto.prototype.getGroupid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
+};
+
+
+/** @param {string} value */
+proto.msg.UpdateGroupPhoto.prototype.setGroupid = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+proto.msg.UpdateGroupPhoto.prototype.clearGroupid = function() {
+  jspb.Message.setField(this, 1, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateGroupPhoto.prototype.hasGroupid = function() {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * optional GroupPhoto Photo = 2;
+ * @return {?proto.msg.GroupPhoto}
+ */
+proto.msg.UpdateGroupPhoto.prototype.getPhoto = function() {
+  return /** @type{?proto.msg.GroupPhoto} */ (
+    jspb.Message.getWrapperField(this, core_types_pb.GroupPhoto, 2));
+};
+
+
+/** @param {?proto.msg.GroupPhoto|undefined} value */
+proto.msg.UpdateGroupPhoto.prototype.setPhoto = function(value) {
+  jspb.Message.setWrapperField(this, 2, value);
+};
+
+
+proto.msg.UpdateGroupPhoto.prototype.clearPhoto = function() {
+  this.setPhoto(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateGroupPhoto.prototype.hasPhoto = function() {
   return jspb.Message.getField(this, 2) != null;
 };
 

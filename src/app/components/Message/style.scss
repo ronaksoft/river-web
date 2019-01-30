@@ -327,7 +327,23 @@
     line-height: 21px;
     text-transform: uppercase;
   }
-  > .system-message {
+  .system-message-with-picture {
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .picture {
+      margin: 4px 0 0 12px;
+      height: 32px;
+      width: 32px;
+      img {
+        height: 32px;
+        width: 32px;
+        border-radius: 50%;
+      }
+    }
+  }
+  .system-message {
     background-color: rgba(0, 0, 0, 0.31);
     border-radius: 7.5px;
     padding: 1px 10px 2px 10px;

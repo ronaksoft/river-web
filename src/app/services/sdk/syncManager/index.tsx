@@ -14,7 +14,7 @@ import {
     UpdateMessageEdited, UpdateMessageID, UpdateMessagesDeleted,
     UpdateNewMessage, UpdateNotifySettings,
     UpdateReadHistoryInbox,
-    UpdateReadHistoryOutbox, UpdateUsername,
+    UpdateReadHistoryOutbox, UpdateUsername, UpdateUserPhoto,
 } from '../messages/api.updates_pb';
 import {IUser} from '../../../repository/user/interface';
 import {IMessage} from '../../../repository/message/interface';
@@ -119,7 +119,6 @@ export default class SyncManager {
         const toRemoveDialogs: IRemoveDialog[] = [];
         const messages: { [key: number]: IMessage } = {};
         const toRemoveMessages: number[] = [];
-
         let users: { [key: number]: IUser } = {};
         envelopes.forEach((envelope) => {
             // @ts-ignore
@@ -189,6 +188,7 @@ export default class SyncManager {
                     const updateUsername = UpdateUsername.deserializeBinary(data).toObject();
                     if (users.hasOwnProperty(updateUsername.userid || 0)) {
                         users[updateUsername.userid || 0] = merge(users[updateUsername.userid || 0], {
+                            bio: updateUsername.bio,
                             firstname: updateUsername.firstname,
                             id: updateUsername.userid,
                             lastname: updateUsername.lastname,
@@ -203,6 +203,15 @@ export default class SyncManager {
                         notifysettings: updateNotifySettings.settings,
                         peerid: updateNotifySettings.notifypeer.id,
                     });
+                    break;
+                case C_MSG.UpdateUserPhoto:
+                    const updateUserPhoto = UpdateUserPhoto.deserializeBinary(data).toObject();
+                    if (users.hasOwnProperty(updateUserPhoto.userid || 0)) {
+                        users[updateUserPhoto.userid || 0] = merge(users[updateUserPhoto.userid || 0], {
+                            id: updateUserPhoto.userid,
+                            photo: updateUserPhoto.photo,
+                        });
+                    }
                     break;
                 default:
                     break;

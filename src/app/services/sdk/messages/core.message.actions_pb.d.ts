@@ -2,6 +2,7 @@
 // file: core.message.actions.proto
 
 import * as jspb from "google-protobuf";
+import * as core_types_pb from "./core.types_pb";
 
 export class MessageActionGroupAddUser extends jspb.Message {
   clearUseridsList(): void;
@@ -94,6 +95,28 @@ export class MessageActionGroupTitleChanged extends jspb.Message {
 export namespace MessageActionGroupTitleChanged {
   export type AsObject = {
     grouptitle?: string,
+  }
+}
+
+export class MessageActionGroupPhotoChanged extends jspb.Message {
+  hasPhoto(): boolean;
+  clearPhoto(): void;
+  getPhoto(): core_types_pb.GroupPhoto | undefined;
+  setPhoto(value?: core_types_pb.GroupPhoto): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessageActionGroupPhotoChanged.AsObject;
+  static toObject(includeInstance: boolean, msg: MessageActionGroupPhotoChanged): MessageActionGroupPhotoChanged.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessageActionGroupPhotoChanged, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessageActionGroupPhotoChanged;
+  static deserializeBinaryFromReader(message: MessageActionGroupPhotoChanged, reader: jspb.BinaryReader): MessageActionGroupPhotoChanged;
+}
+
+export namespace MessageActionGroupPhotoChanged {
+  export type AsObject = {
+    photo?: core_types_pb.GroupPhoto.AsObject,
   }
 }
 

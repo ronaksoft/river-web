@@ -26,6 +26,7 @@ export const C_MESSAGE_ACTION = {
     MessageActionGroupAddUser: 0x03,
     MessageActionGroupCreated: 0x02,
     MessageActionGroupDeleteUser: 0x05,
+    MessageActionGroupPhotoChanged: 0x08,
     MessageActionGroupTitleChanged: 0x06,
     MessageActionNope: 0x00,
 };

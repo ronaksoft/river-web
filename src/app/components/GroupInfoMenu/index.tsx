@@ -16,13 +16,13 @@ import {
     EditRounded,
     ExitToAppRounded,
     MoreVert,
-    PersonAddRounded,
+    PersonAddRounded, PhotoCameraRounded,
     StarRateRounded,
     StarsRounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import {
-    GroupFlags,
+    GroupFlags, InputFile,
     InputPeer,
     InputUser,
     ParticipantType,
@@ -59,6 +59,10 @@ import Switch from '@material-ui/core/Switch/Switch';
 import ContactRepo from '../../repository/contact';
 import Scrollbars from 'react-custom-scrollbars';
 import RiverTime from '../../services/utilities/river_time';
+import Cropper from '../Cropper';
+import UniqueId from '../../services/uniqueId';
+import FileManager, {IFileProgress} from '../../services/sdk/fileManager';
+import ProgressBroadcaster from '../../services/progress';
 
 import './style.css';
 
@@ -83,6 +87,7 @@ interface IState {
     peer: InputPeer | null;
     title: string;
     titleEdit: boolean;
+    uploadingPhoto: boolean;
 }
 
 class GroupInfoMenu extends React.Component<IProps, IState> {
@@ -93,6 +98,12 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     private loading: boolean = false;
     private userId: string;
     private riverTime: RiverTime;
+    private fileManager: FileManager;
+    private progressBroadcaster: ProgressBroadcaster;
+    private profileTempPhoto: string = '';
+    private circleProgressRef: any = null;
+    private fileId: string = '';
+    private cropperRef: Cropper;
 
     constructor(props: IProps) {
         super(props);
@@ -112,6 +123,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             peer: props.peer,
             title: '',
             titleEdit: false,
+            uploadingPhoto: false,
         };
         // RiverTime singleton
         this.riverTime = RiverTime.getInstance();
@@ -125,6 +137,9 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         this.sdk = SDK.getInstance();
 
         this.userId = SDK.getInstance().getConnInfo().UserID || '';
+
+        this.fileManager = FileManager.getInstance();
+        this.progressBroadcaster = ProgressBroadcaster.getInstance();
     }
 
     public componentDidMount() {
@@ -143,9 +158,10 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {addMemberDialogEnable, group, page, participants, title, titleEdit, moreAnchorEl, dialog, notifySettingDialogOpen, notifyValue} = this.state;
+        const {addMemberDialogEnable, group, page, participants, title, titleEdit, moreAnchorEl, dialog, notifySettingDialogOpen, notifyValue, uploadingPhoto} = this.state;
         return (
             <div className="group-info-menu">
+                <Cropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={640}/>
                 <div className="menu-header">
                     <IconButton
                         aria-label="Close"
@@ -165,7 +181,27 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                             <div>
                                 {group && <div className="info kk-card">
                                     <div className="avatar">
-                                        <GroupAvatar id={group.id || ''}/>
+                                        {!uploadingPhoto && <GroupAvatar id={group.id || ''}/>}
+                                        {uploadingPhoto && <img src={this.profileTempPhoto} className="avatar-image"/>}
+                                        {this.hasAuthority(group) &&
+                                        <div className={'overlay ' + (uploadingPhoto ? 'show' : '')}
+                                             onClick={this.openFileDialog}>
+                                            {!uploadingPhoto && <React.Fragment>
+                                                <PhotoCameraRounded/>
+                                                <div className="text">
+                                                    CHANGE<br/>PROFILE<br/>PHOTO
+                                                </div>
+                                            </React.Fragment>}
+                                            {uploadingPhoto &&
+                                            <div className="progress-action">
+                                                <div className="progress">
+                                                    <svg viewBox="0 0 32 32">
+                                                        <circle ref={this.progressRefHandler} r="14" cx="16" cy="16"/>
+                                                    </svg>
+                                                </div>
+                                                <CloseRounded className="action" onClick={this.cancelFileHandler}/>
+                                            </div>}
+                                        </div>}
                                     </div>
                                     <div className="title">
                                         {!titleEdit && <div className="form-control">
@@ -221,7 +257,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                         <div className="label">All Members Admin</div>
                                         <div className="value switch">
                                             <Switch
-                                                checked={group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMINSENABLED) === -1}
+                                                checked={(group.flagsList || []).indexOf(GroupFlags.GROUPFLAGSADMINSENABLED) === -1}
                                                 className="admin-switch"
                                                 color="default"
                                                 onChange={this.toggleAdminsHandler}
@@ -687,15 +723,17 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         }
         this.loading = true;
         const toggleAdmin = () => {
-            const index = group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMINSENABLED);
-            if (index > -1) {
-                group.flagsList.splice(index, 1);
-            } else {
-                group.flagsList.push(GroupFlags.GROUPFLAGSADMINSENABLED);
+            if (group.flagsList) {
+                const index = group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMINSENABLED);
+                if (index > -1) {
+                    group.flagsList.splice(index, 1);
+                } else {
+                    group.flagsList.push(GroupFlags.GROUPFLAGSADMINSENABLED);
+                }
+                this.setState({
+                    group,
+                });
             }
-            this.setState({
-                group,
-            });
         };
         toggleAdmin();
         this.sdk.groupToggleAdmin(peer, !e.currentTarget.checked).then(() => {
@@ -707,7 +745,11 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
 
     /* hasAuthority checks user permission for group actions */
     private hasAuthority(group: IGroup) {
-        return group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMIN) > -1 || group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMINSENABLED) === -1;
+        if (group.flagsList) {
+            return group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMIN) > -1 || group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMINSENABLED) === -1;
+        } else {
+            return false;
+        }
     }
 
     /* Participant onClick handler */
@@ -716,6 +758,94 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             accesshash,
             id,
         });
+    }
+
+    /* Cropper ref handler */
+    private cropperRefHandler = (ref: any) => {
+        this.cropperRef = ref;
+    }
+
+    /* Open file dialog */
+    private openFileDialog = () => {
+        if (this.cropperRef) {
+            this.cropperRef.openFile();
+        }
+    }
+
+    /* Cropped image ready handler */
+    private croppedImageReadyHandler = (blob: Blob) => {
+        const {group} = this.state;
+        if (!group) {
+            return;
+        }
+
+        const id = -this.riverTime.milliNow();
+        this.fileId = String(UniqueId.getRandomId());
+        const fn = this.progressBroadcaster.listen(id, this.uploadProgressHandler);
+        if (this.profileTempPhoto !== '') {
+            URL.revokeObjectURL(this.profileTempPhoto);
+        }
+        this.profileTempPhoto = URL.createObjectURL(blob);
+        this.setState({
+            uploadingPhoto: true,
+        });
+        this.fileManager.sendFile(this.fileId, blob, (progress) => {
+            this.progressBroadcaster.publish(id, progress);
+        }).then(() => {
+            this.progressBroadcaster.remove(id);
+            if (fn) {
+                fn();
+            }
+            const inputFile = new InputFile();
+            inputFile.setFileid(this.fileId);
+            inputFile.setFilename(`picture_${id}.ogg`);
+            inputFile.setMd5checksum('');
+            inputFile.setTotalparts(1);
+            this.sdk.groupUploadPicture(group.id || '', inputFile).then((res) => {
+                this.setState({
+                    uploadingPhoto: false,
+                });
+            });
+        }).catch(() => {
+            this.progressBroadcaster.remove(id);
+            this.setState({
+                uploadingPhoto: false,
+            });
+            if (fn) {
+                fn();
+            }
+        });
+    }
+
+    /* Upload progress handler */
+    private uploadProgressHandler = (progress: IFileProgress) => {
+        let v = 3;
+        if (progress.state === 'failed') {
+            this.setState({
+                uploadingPhoto: false,
+            });
+            return;
+        } else if (progress.state !== 'complete' && progress.download > 0) {
+            v = progress.progress * 85;
+        } else if (progress.state === 'complete') {
+            v = 88;
+        }
+        if (v < 3) {
+            v = 3;
+        }
+        if (this.circleProgressRef) {
+            this.circleProgressRef.style.strokeDasharray = `${v} 88`;
+        }
+    }
+
+    /* Progress circle ref handler */
+    private progressRefHandler = (ref: any) => {
+        this.circleProgressRef = ref;
+    }
+
+    /* Cancel file download/upload */
+    private cancelFileHandler = () => {
+        this.fileManager.cancel(this.fileId);
     }
 
     /* Broadcast global event */

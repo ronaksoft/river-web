@@ -419,32 +419,6 @@ input {
     background-color: var(--white);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); }
 
-.picture-crop-dialog .picture-crop-header {
-  background-color: var(--river);
-  color: var(--white);
-  padding: 12px 16px; }
-
-.picture-crop-dialog .picture-crop-footer {
-  position: relative;
-  background-color: var(--header-color);
-  height: 36px; }
-  .picture-crop-dialog .picture-crop-footer .picture-action {
-    position: absolute;
-    height: 48px;
-    width: 48px;
-    top: -24px;
-    right: 24px;
-    border-radius: 50%;
-    background-color: var(--river);
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer; }
-    .picture-crop-dialog .picture-crop-footer .picture-action svg {
-      color: var(--light);
-      font-size: 30px; }
-
 html[theme="dark"] .setting-menu .menu-header,
 html[theme="dark-blue"] .setting-menu .menu-header {
   background-color: var(--dark-high);
@@ -560,10 +534,6 @@ html[theme="dark"] .setting-menu .kk-card,
 html[theme="dark-blue"] .setting-menu .kk-card {
   background-color: var(--dark-medium); }
 
-html[theme="dark"] .picture-crop-dialog .picture-crop-footer,
-html[theme="dark-blue"] .picture-crop-dialog .picture-crop-footer {
-  background-color: var(--dark-medium); }
-
 html[theme="dark-blue"] .setting-menu .menu-header {
   background-color: var(--dark-blue-high); }
 
@@ -578,7 +548,4 @@ html[theme="dark-blue"] .setting-menu .theme-container .item {
     background: var(--dark-blue-accent-low); }
 
 html[theme="dark-blue"] .setting-menu .kk-card {
-  background-color: var(--dark-blue-medium); }
-
-html[theme="dark-blue"] .picture-crop-dialog .picture-crop-footer {
   background-color: var(--dark-blue-medium); }

@@ -430,6 +430,34 @@ export namespace InputMediaDocument {
   }
 }
 
+export class InputMediaGeoLocation extends jspb.Message {
+  hasLat(): boolean;
+  clearLat(): void;
+  getLat(): number | undefined;
+  setLat(value: number): void;
+
+  hasLong(): boolean;
+  clearLong(): void;
+  getLong(): number | undefined;
+  setLong(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): InputMediaGeoLocation.AsObject;
+  static toObject(includeInstance: boolean, msg: InputMediaGeoLocation): InputMediaGeoLocation.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: InputMediaGeoLocation, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): InputMediaGeoLocation;
+  static deserializeBinaryFromReader(message: InputMediaGeoLocation, reader: jspb.BinaryReader): InputMediaGeoLocation;
+}
+
+export namespace InputMediaGeoLocation {
+  export type AsObject = {
+    lat?: number,
+    pb_long?: number,
+  }
+}
+
 export class MediaPhoto extends jspb.Message {
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MediaPhoto.AsObject;
@@ -517,6 +545,34 @@ export namespace MediaContact {
     firstname?: string,
     lastname?: string,
     vcard?: string,
+  }
+}
+
+export class MediaGeoLocation extends jspb.Message {
+  hasLat(): boolean;
+  clearLat(): void;
+  getLat(): number | undefined;
+  setLat(value: number): void;
+
+  hasLong(): boolean;
+  clearLong(): void;
+  getLong(): number | undefined;
+  setLong(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MediaGeoLocation.AsObject;
+  static toObject(includeInstance: boolean, msg: MediaGeoLocation): MediaGeoLocation.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MediaGeoLocation, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MediaGeoLocation;
+  static deserializeBinaryFromReader(message: MediaGeoLocation, reader: jspb.BinaryReader): MediaGeoLocation;
+}
+
+export namespace MediaGeoLocation {
+  export type AsObject = {
+    lat?: number,
+    pb_long?: number,
   }
 }
 

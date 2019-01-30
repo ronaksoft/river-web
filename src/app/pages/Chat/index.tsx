@@ -49,13 +49,14 @@ import {IDialog} from '../../repository/dialog/interface';
 import UpdateManager, {INewMessageBulkUpdate} from '../../services/sdk/server/updateManager';
 import {C_MSG} from '../../services/sdk/const';
 import {
+    UpdateGroupPhoto,
     UpdateMessageEdited,
     UpdateMessageID,
     UpdateMessagesDeleted,
     UpdateNotifySettings,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox,
-    UpdateUsername,
+    UpdateUsername, UpdateUserPhoto,
     UpdateUserTyping
 } from '../../services/sdk/messages/api.updates_pb';
 import UserName from '../../components/UserName';
@@ -106,10 +107,10 @@ import ProgressBroadcaster from '../../services/progress';
 import {C_FILE_ERR_CODE} from '../../services/sdk/fileManager/const/const';
 import {getMessageTitle} from '../../components/Dialog/utils';
 import {saveAs} from 'file-saver';
-
-import './style.css';
 import {getFileInfo} from '../../components/MessageFile';
 import AudioPlayerShell from '../../components/AudioPlayerShell';
+
+import './style.css';
 
 interface IProps {
     history?: any;
@@ -288,6 +289,12 @@ class Chat extends React.Component<IProps, IState> {
 
         // Update: Groups
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateGroups, this.updateGroupHandler));
+
+        // Update: User Photo
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUserPhoto, this.updateUserPhotoHandler));
+
+        // Update: Group Photo
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateGroupPhoto, this.updateGroupPhotoHandler));
 
         // Sync: MessageId
         this.eventReferences.push(this.syncManager.listen(C_SYNC_UPDATE.MessageId, this.updateMessageIDHandler));
@@ -1071,6 +1078,17 @@ class Chat extends React.Component<IProps, IState> {
         this.userRepo.importBulk(data);
     }
 
+    /* Update user photo handler */
+    private updateUserPhotoHandler = (data: UpdateUserPhoto.AsObject) => {
+        if (this.state.isUpdating) {
+            return;
+        }
+        this.userRepo.importBulk([{
+            id: data.userid,
+            photo: data.photo,
+        }]);
+    }
+
     /* Update group handler */
     private updateGroupHandler = (data: Group[]) => {
         if (this.state.isUpdating) {
@@ -1078,6 +1096,17 @@ class Chat extends React.Component<IProps, IState> {
         }
         // @ts-ignore
         this.groupRepo.importBulk(data);
+    }
+
+    /* Update group photo handler */
+    private updateGroupPhotoHandler = (data: UpdateGroupPhoto.AsObject) => {
+        if (this.state.isUpdating) {
+            return;
+        }
+        this.groupRepo.importBulk([{
+            id: data.groupid,
+            photo: data.photo,
+        }]);
     }
 
     /* Electron preferences click handler */
@@ -2872,7 +2901,7 @@ class Chat extends React.Component<IProps, IState> {
                 if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
                     const fileLocation = new InputFileLocation();
                     fileLocation.setAccesshash(mediaDocument.doc.accesshash || '');
-                    fileLocation.setClusterid(mediaDocument.doc.clusterid || 0);
+                    fileLocation.setClusterid(mediaDocument.doc.clusterid || 1);
                     fileLocation.setFileid(mediaDocument.doc.id);
                     fileLocation.setVersion(mediaDocument.doc.version || 0);
                     this.fileManager.receiveFile(fileLocation, mediaDocument.doc.filesize || 0, mediaDocument.doc.mimetype || 'application/octet-stream', (progress) => {

@@ -36,16 +36,15 @@ import Scrollbars from 'react-custom-scrollbars';
 import {backgrounds, bubbles, themes} from './vars/theme';
 import {IUser} from '../../repository/user/interface';
 import {Link} from 'react-router-dom';
-import Dialog from '@material-ui/core/Dialog/Dialog';
-import ReactCrop, {Crop, PixelCrop} from 'react-image-crop';
 import FileManager, {IFileProgress} from '../../services/sdk/fileManager';
 import UniqueId from '../../services/uniqueId';
 import ProgressBroadcaster from '../../services/progress';
 import RiverTime from '../../services/utilities/river_time';
+import {InputFile} from '../../services/sdk/messages/core.types_pb';
+import Cropper from '../Cropper';
 
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
-import {InputFile} from '../../services/sdk/messages/core.types_pb';
 
 interface IProps {
     onClose?: () => void;
@@ -82,15 +81,13 @@ class SettingMenu extends React.Component<IProps, IState> {
     private sdk: SDK;
     private userId: string;
     private usernameCheckDebounce: any;
-    private fileInputRef: any = null;
-    private imageRef: any = null;
-    private pixelCrop: PixelCrop;
     private fileManager: FileManager;
     private progressBroadcaster: ProgressBroadcaster;
     private riverTime: RiverTime;
     private profileTempPhoto: string = '';
     private circleProgressRef: any = null;
     private fileId: string = '';
+    private cropperRef: Cropper;
 
     constructor(props: IProps) {
         super(props);
@@ -164,31 +161,10 @@ class SettingMenu extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {page, pageContent, user, editProfile, editUsername, bio, firstname, lastname, phone, username, usernameAvailable, usernameValid, profileCropperOpen, profilePictureFile, profilePictureCrop, uploadingPhoto} = this.state;
+        const {page, pageContent, user, editProfile, editUsername, bio, firstname, lastname, phone, username, usernameAvailable, usernameValid, uploadingPhoto} = this.state;
         return (
             <div className="setting-menu">
-                <input ref={this.fileInputRefHandler} type="file" style={{display: 'none'}}
-                       onChange={this.fileChangeHandler} accept="image/gif, image/jpeg, image/png"/>
-                <Dialog
-                    open={profileCropperOpen}
-                    onClose={this.profileCropperCloseHandler}
-                    className="picture-crop-dialog"
-                >
-                    <div className="picture-crop-header">
-                        Crop Picture
-                    </div>
-                    {Boolean(profilePictureFile) &&
-                    <ReactCrop src={profilePictureFile || ''} crop={profilePictureCrop}
-                               onChange={this.cropperChangeHandler}
-                               onImageLoaded={this.imageLoadedHandler}
-                    />
-                    }
-                    <div className="picture-crop-footer">
-                        <div className="picture-action" onClick={this.cropPictureHandler}>
-                            <CheckRounded/>
-                        </div>
-                    </div>
-                </Dialog>
+                <Cropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={640}/>
                 <div className={'page-container page-' + page}>
                     <div className="page page-1">
                         <div className="menu-header">
@@ -229,7 +205,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                             </div>
                         </div>
                         <div className="version">
-                            v0.23.8
+                            v0.23.9
                         </div>
                     </div>
                     <div className="page page-2">
@@ -753,145 +729,56 @@ class SettingMenu extends React.Component<IProps, IState> {
         });
     }
 
-    /* File input ref handler */
-    private fileInputRefHandler = (ref: any) => {
-        this.fileInputRef = ref;
+    /* Cropper ref handler */
+    private cropperRefHandler = (ref: any) => {
+        this.cropperRef = ref;
     }
 
     /* Open file dialog */
     private openFileDialog = () => {
-        if (!this.state.uploadingPhoto && this.fileInputRef) {
-            this.fileInputRef.click();
+        if (this.cropperRef) {
+            this.cropperRef.openFile();
         }
     }
 
-    /* File change handler */
-    private fileChangeHandler = (e: any) => {
-        if (e.currentTarget.files.length > 0) {
-            const fileReader = new FileReader();
-            fileReader.addEventListener('load', () => {
-                // @ts-ignore
-                this.setState({
-                    profileCropperOpen: true,
-                    profilePictureFile: fileReader.result,
-                });
-            });
-            fileReader.readAsDataURL(e.target.files[0]);
+    /* Cropped image ready handler */
+    private croppedImageReadyHandler = (blob: Blob) => {
+        const id = -this.riverTime.milliNow();
+        this.fileId = String(UniqueId.getRandomId());
+        const fn = this.progressBroadcaster.listen(id, this.uploadProgressHandler);
+        if (this.profileTempPhoto !== '') {
+            URL.revokeObjectURL(this.profileTempPhoto);
         }
-    }
-
-    /* Profile cropper close handler */
-    private profileCropperCloseHandler = () => {
+        this.profileTempPhoto = URL.createObjectURL(blob);
         this.setState({
-            profileCropperOpen: false,
+            uploadingPhoto: true,
         });
-        if (this.fileInputRef) {
-            this.fileInputRef.value = '';
-        }
-    }
-
-    /* Profile crop handler */
-    private cropperChangeHandler = (crop: Crop, pixelCrop: PixelCrop) => {
-        this.pixelCrop = pixelCrop;
-        this.setState({
-            profilePictureCrop: crop,
-        });
-    }
-
-    /* Image loaded handler */
-    private imageLoadedHandler = (ref: any) => {
-        this.imageRef = ref;
-    }
-
-    /* Crop image handler */
-    private cropPictureHandler = () => {
-        const {profilePictureCrop} = this.state;
-        if (this.imageRef && profilePictureCrop.width && profilePictureCrop.height) {
-            this.getCroppedImg(this.imageRef, this.pixelCrop, 'newFile.jpeg').then((blob) => {
+        this.fileManager.sendFile(this.fileId, blob, (progress) => {
+            this.progressBroadcaster.publish(id, progress);
+        }).then(() => {
+            this.progressBroadcaster.remove(id);
+            if (fn) {
+                fn();
+            }
+            const inputFile = new InputFile();
+            inputFile.setFileid(this.fileId);
+            inputFile.setFilename(`picture_${id}.ogg`);
+            inputFile.setMd5checksum('');
+            inputFile.setTotalparts(1);
+            this.sdk.uploadProfilePicture(inputFile).then((res) => {
                 this.setState({
-                    profileCropperOpen: false,
-                    profilePictureCrop: {
-                        aspect: 1,
-                        width: 50,
-                        x: 0,
-                        y: 0,
-                    },
-                });
-                if (this.fileInputRef) {
-                    this.fileInputRef.value = '';
-                }
-                const id = -this.riverTime.milliNow();
-                this.fileId = String(UniqueId.getRandomId());
-                const fn = this.progressBroadcaster.listen(id, this.uploadProgressHandler);
-                if (this.profileTempPhoto !== '') {
-                    URL.revokeObjectURL(this.profileTempPhoto);
-                }
-                this.profileTempPhoto = URL.createObjectURL(blob);
-                this.setState({
-                    uploadingPhoto: true,
-                });
-                this.fileManager.sendFile(this.fileId, blob, (progress) => {
-                    this.progressBroadcaster.publish(id, progress);
-                }).then(() => {
-                    this.progressBroadcaster.remove(id);
-                    if (fn) {
-                        fn();
-                    }
-                    const inputFile = new InputFile();
-                    inputFile.setFileid(this.fileId);
-                    inputFile.setFilename(`picture_${id}.ogg`);
-                    inputFile.setMd5checksum('');
-                    inputFile.setTotalparts(1);
-                    this.sdk.uploadProfilePicture(inputFile).then((res) => {
-                        this.setState({
-                            uploadingPhoto: false,
-                        });
-                    });
-                }).catch(() => {
-                    this.progressBroadcaster.remove(id);
-                    this.setState({
-                        uploadingPhoto: false,
-                    });
-                    if (fn) {
-                        fn();
-                    }
+                    uploadingPhoto: false,
                 });
             });
-        }
-    }
-
-    /* Crop final image */
-    private getCroppedImg(image: any, pixelCrop: PixelCrop, fileName: string): Promise<Blob> {
-        const canvas = document.createElement('canvas');
-        canvas.width = pixelCrop.width;
-        canvas.height = pixelCrop.height;
-        const ctx = canvas.getContext('2d');
-
-        if (ctx) {
-            ctx.drawImage(
-                image,
-                pixelCrop.x,
-                pixelCrop.y,
-                pixelCrop.width,
-                pixelCrop.height,
-                0,
-                0,
-                pixelCrop.width,
-                pixelCrop.height,
-            );
-
-            return new Promise((resolve, reject) => {
-                canvas.toBlob((blob: Blob) => {
-                    if (!blob) {
-                        reject();
-                        return;
-                    }
-                    resolve(blob);
-                }, 'image/jpeg');
+        }).catch(() => {
+            this.progressBroadcaster.remove(id);
+            this.setState({
+                uploadingPhoto: false,
             });
-        } else {
-            return Promise.reject();
-        }
+            if (fn) {
+                fn();
+            }
+        });
     }
 
     /* Upload progress handler */

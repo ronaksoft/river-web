@@ -113,11 +113,77 @@ input {
     flex-direction: column;
     padding: 20px 10px; }
     .group-info-menu .info .avatar {
+      position: relative;
       height: 200px;
       width: 200px;
       border-radius: 50%;
       display: inline-block;
       font-size: 75px; }
+      .group-info-menu .info .avatar .avatar-image {
+        height: 200px;
+        width: 200px;
+        border-radius: 50%; }
+      .group-info-menu .info .avatar .overlay {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-color: rgba(140, 140, 140, 0.85);
+        border-radius: 50%;
+        opacity: 0;
+        transition: opacity 0.2s;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column; }
+        .group-info-menu .info .avatar .overlay.show {
+          opacity: 1; }
+        .group-info-menu .info .avatar .overlay svg {
+          color: var(--light-alt); }
+        .group-info-menu .info .avatar .overlay .text {
+          font-size: 13px;
+          color: var(--light-alt); }
+        .group-info-menu .info .avatar .overlay .progress-action {
+          position: relative;
+          height: 32px;
+          width: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center; }
+          .group-info-menu .info .avatar .overlay .progress-action .progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 32px;
+            width: 32px;
+            transform-origin: center center;
+            animation-name: rotateDonut;
+            animation-duration: 3s;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear; }
+            .group-info-menu .info .avatar .overlay .progress-action .progress svg {
+              position: absolute;
+              top: 0;
+              left: 0;
+              height: 32px;
+              width: 32px; }
+              .group-info-menu .info .avatar .overlay .progress-action .progress svg circle {
+                fill: transparent;
+                stroke: var(--white);
+                stroke-width: 2px;
+                stroke-dasharray: 3 88;
+                transition: stroke-dasharray 0.1s ease; }
+          .group-info-menu .info .avatar .overlay .progress-action > svg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 24px;
+            height: 24px;
+            transform: translate(-50%, -50%); }
+      .group-info-menu .info .avatar:hover .overlay {
+        opacity: 1; }
     .group-info-menu .info .title {
       padding: 16px 10px 0;
       text-align: left;

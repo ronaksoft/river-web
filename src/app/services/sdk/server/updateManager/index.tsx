@@ -10,10 +10,11 @@
 import {C_MSG} from '../../const';
 import {UpdateContainer, UpdateEnvelope} from '../../messages/core.messages_pb';
 import {
+    UpdateGroupPhoto,
     UpdateMessageEdited, UpdateMessageID, UpdateMessagesDeleted,
     UpdateNewMessage, UpdateNotifySettings,
     UpdateReadHistoryInbox,
-    UpdateReadHistoryOutbox, UpdateUsername,
+    UpdateReadHistoryOutbox, UpdateUsername, UpdateUserPhoto,
     UpdateUserTyping
 } from '../../messages/api.updates_pb';
 import {throttle} from 'lodash';
@@ -194,6 +195,12 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateNotifySettings:
                 this.callHandlers(C_MSG.UpdateNotifySettings, UpdateNotifySettings.deserializeBinary(data).toObject());
+                break;
+            case C_MSG.UpdateUserPhoto:
+                this.callHandlers(C_MSG.UpdateUserPhoto, UpdateUserPhoto.deserializeBinary(data).toObject());
+                break;
+            case C_MSG.UpdateGroupPhoto:
+                this.callHandlers(C_MSG.UpdateGroupPhoto, UpdateGroupPhoto.deserializeBinary(data).toObject());
                 break;
             default:
                 break;

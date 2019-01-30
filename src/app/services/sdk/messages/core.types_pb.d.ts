@@ -854,7 +854,7 @@ export namespace Group {
     createdon?: number,
     participants?: number,
     editedon?: number,
-    flagsList: Array<GroupFlags>,
+    flagsList?: Array<GroupFlags>,
     photo?: GroupPhoto.AsObject,
   }
 }
@@ -1020,6 +1020,7 @@ export enum MediaType {
   MEDIATYPEPHOTO = 1,
   MEDIATYPEDOCUMENT = 2,
   MEDIATYPECONTACT = 3,
+  MEDIATYPEGEOLOCATION = 4,
 }
 
 export enum MessageEntityType {

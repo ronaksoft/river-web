@@ -256,6 +256,22 @@ export namespace AccountUpdatePhoto {
   }
 }
 
+export class AccountRemovePhoto extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountRemovePhoto.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountRemovePhoto): AccountRemovePhoto.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountRemovePhoto, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountRemovePhoto;
+  static deserializeBinaryFromReader(message: AccountRemovePhoto, reader: jspb.BinaryReader): AccountRemovePhoto;
+}
+
+export namespace AccountRemovePhoto {
+  export type AsObject = {
+  }
+}
+
 export class AccountChangePhone extends jspb.Message {
   hasPhone(): boolean;
   clearPhone(): void;

@@ -458,37 +458,6 @@
   }
 }
 
-.picture-crop-dialog {
-  .picture-crop-header {
-    background-color: var(--river);
-    color: var(--white);
-    padding: 12px 16px;
-  }
-  .picture-crop-footer {
-    position: relative;
-    background-color: var(--header-color);
-    height: 36px;
-    .picture-action {
-      position: absolute;
-      height: 48px;
-      width: 48px;
-      top: -24px;
-      right: 24px;
-      border-radius: 50%;
-      background-color: var(--river);
-      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      svg {
-        color: var(--light);
-        font-size: 30px;
-      }
-    }
-  }
-}
-
 html[theme="dark"],
 html[theme="dark-blue"] {
   .setting-menu {
@@ -609,11 +578,6 @@ html[theme="dark-blue"] {
       background-color: var(--dark-medium);
     }
   }
-  .picture-crop-dialog {
-    .picture-crop-footer {
-      background-color: var(--dark-medium);
-    }
-  }
 }
 
 html[theme="dark-blue"] {
@@ -638,11 +602,6 @@ html[theme="dark-blue"] {
       }
     }
     .kk-card {
-      background-color: var(--dark-blue-medium);
-    }
-  }
-  .picture-crop-dialog {
-    .picture-crop-footer {
       background-color: var(--dark-blue-medium);
     }
   }

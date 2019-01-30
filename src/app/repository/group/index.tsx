@@ -75,7 +75,11 @@ export default class GroupRepo {
             const updateItems: IGroup[] = result;
             updateItems.map((group: IGroup) => {
                 const t = find(groups, {id: group.id});
-                return merge(group, t);
+                if (t) {
+                    return merge(group, t);
+                } else {
+                    return group;
+                }
             });
             const list = [...createItems, ...updateItems];
             list.forEach((item) => {

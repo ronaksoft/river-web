@@ -206,3 +206,31 @@ export namespace GroupsUpdateAdmin {
   }
 }
 
+export class GroupUploadPhoto extends jspb.Message {
+  hasGroupid(): boolean;
+  clearGroupid(): void;
+  getGroupid(): string | undefined;
+  setGroupid(value: string): void;
+
+  hasFile(): boolean;
+  clearFile(): void;
+  getFile(): core_types_pb.InputFile;
+  setFile(value?: core_types_pb.InputFile): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GroupUploadPhoto.AsObject;
+  static toObject(includeInstance: boolean, msg: GroupUploadPhoto): GroupUploadPhoto.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: GroupUploadPhoto, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GroupUploadPhoto;
+  static deserializeBinaryFromReader(message: GroupUploadPhoto, reader: jspb.BinaryReader): GroupUploadPhoto;
+}
+
+export namespace GroupUploadPhoto {
+  export type AsObject = {
+    groupid?: string,
+    file: core_types_pb.InputFile.AsObject,
+  }
+}
+

@@ -22,11 +22,13 @@ goog.exportSymbol('proto.msg.DocumentAttributeVideo', null, global);
 goog.exportSymbol('proto.msg.DocumentType', null, global);
 goog.exportSymbol('proto.msg.InputMediaContact', null, global);
 goog.exportSymbol('proto.msg.InputMediaDocument', null, global);
+goog.exportSymbol('proto.msg.InputMediaGeoLocation', null, global);
 goog.exportSymbol('proto.msg.InputMediaPhoto', null, global);
 goog.exportSymbol('proto.msg.InputMediaUploadedDocument', null, global);
 goog.exportSymbol('proto.msg.InputMediaUploadedPhoto', null, global);
 goog.exportSymbol('proto.msg.MediaContact', null, global);
 goog.exportSymbol('proto.msg.MediaDocument', null, global);
+goog.exportSymbol('proto.msg.MediaGeoLocation', null, global);
 goog.exportSymbol('proto.msg.MediaPhoto', null, global);
 goog.exportSymbol('proto.msg.MediaWebPage', null, global);
 
@@ -3099,6 +3101,203 @@ proto.msg.InputMediaDocument.prototype.hasDocument = function() {
  * @extends {jspb.Message}
  * @constructor
  */
+proto.msg.InputMediaGeoLocation = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.msg.InputMediaGeoLocation, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.msg.InputMediaGeoLocation.displayName = 'proto.msg.InputMediaGeoLocation';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.msg.InputMediaGeoLocation.prototype.toObject = function(opt_includeInstance) {
+  return proto.msg.InputMediaGeoLocation.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.msg.InputMediaGeoLocation} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.InputMediaGeoLocation.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    lat: +jspb.Message.getField(msg, 1),
+    pb_long: +jspb.Message.getField(msg, 2)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.msg.InputMediaGeoLocation}
+ */
+proto.msg.InputMediaGeoLocation.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.msg.InputMediaGeoLocation;
+  return proto.msg.InputMediaGeoLocation.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.msg.InputMediaGeoLocation} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.msg.InputMediaGeoLocation}
+ */
+proto.msg.InputMediaGeoLocation.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setLat(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setLong(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.msg.InputMediaGeoLocation.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.msg.InputMediaGeoLocation.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.msg.InputMediaGeoLocation} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.InputMediaGeoLocation.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  if (f != null) {
+    writer.writeFloat(
+      1,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeFloat(
+      2,
+      f
+    );
+  }
+};
+
+
+/**
+ * required float Lat = 1;
+ * @return {number}
+ */
+proto.msg.InputMediaGeoLocation.prototype.getLat = function() {
+  return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 1, 0.0));
+};
+
+
+/** @param {number} value */
+proto.msg.InputMediaGeoLocation.prototype.setLat = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+proto.msg.InputMediaGeoLocation.prototype.clearLat = function() {
+  jspb.Message.setField(this, 1, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.InputMediaGeoLocation.prototype.hasLat = function() {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * required float Long = 2;
+ * @return {number}
+ */
+proto.msg.InputMediaGeoLocation.prototype.getLong = function() {
+  return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 2, 0.0));
+};
+
+
+/** @param {number} value */
+proto.msg.InputMediaGeoLocation.prototype.setLong = function(value) {
+  jspb.Message.setField(this, 2, value);
+};
+
+
+proto.msg.InputMediaGeoLocation.prototype.clearLong = function() {
+  jspb.Message.setField(this, 2, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.InputMediaGeoLocation.prototype.hasLong = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
 proto.msg.MediaPhoto = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -3721,6 +3920,203 @@ proto.msg.MediaContact.prototype.clearVcard = function() {
  */
 proto.msg.MediaContact.prototype.hasVcard = function() {
   return jspb.Message.getField(this, 4) != null;
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.msg.MediaGeoLocation = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.msg.MediaGeoLocation, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.msg.MediaGeoLocation.displayName = 'proto.msg.MediaGeoLocation';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.msg.MediaGeoLocation.prototype.toObject = function(opt_includeInstance) {
+  return proto.msg.MediaGeoLocation.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.msg.MediaGeoLocation} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.MediaGeoLocation.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    lat: +jspb.Message.getField(msg, 1),
+    pb_long: +jspb.Message.getField(msg, 2)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.msg.MediaGeoLocation}
+ */
+proto.msg.MediaGeoLocation.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.msg.MediaGeoLocation;
+  return proto.msg.MediaGeoLocation.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.msg.MediaGeoLocation} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.msg.MediaGeoLocation}
+ */
+proto.msg.MediaGeoLocation.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setLat(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setLong(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.msg.MediaGeoLocation.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.msg.MediaGeoLocation.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.msg.MediaGeoLocation} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.MediaGeoLocation.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  if (f != null) {
+    writer.writeFloat(
+      1,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeFloat(
+      2,
+      f
+    );
+  }
+};
+
+
+/**
+ * required float Lat = 1;
+ * @return {number}
+ */
+proto.msg.MediaGeoLocation.prototype.getLat = function() {
+  return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 1, 0.0));
+};
+
+
+/** @param {number} value */
+proto.msg.MediaGeoLocation.prototype.setLat = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+proto.msg.MediaGeoLocation.prototype.clearLat = function() {
+  jspb.Message.setField(this, 1, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.MediaGeoLocation.prototype.hasLat = function() {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * required float Long = 2;
+ * @return {number}
+ */
+proto.msg.MediaGeoLocation.prototype.getLong = function() {
+  return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 2, 0.0));
+};
+
+
+/** @param {number} value */
+proto.msg.MediaGeoLocation.prototype.setLong = function(value) {
+  jspb.Message.setField(this, 2, value);
+};
+
+
+proto.msg.MediaGeoLocation.prototype.clearLong = function() {
+  jspb.Message.setField(this, 2, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.MediaGeoLocation.prototype.hasLong = function() {
+  return jspb.Message.getField(this, 2) != null;
 };
 
 

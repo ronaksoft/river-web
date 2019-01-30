@@ -58,7 +58,7 @@ import {
     GroupsDeleteUser,
     GroupsEditTitle,
     GroupsGetFull, GroupsToggleAdmins,
-    GroupsUpdateAdmin
+    GroupsUpdateAdmin, GroupUploadPhoto
 } from './messages/api.groups_pb';
 import * as core_types_pb from './messages/core.types_pb';
 import {UsersGetFull} from './messages/api.users_pb';
@@ -430,5 +430,12 @@ export default class SDK {
         data.setGroupid(peer.getId() || '');
         data.setAdminenabled(adminEnabled);
         return this.server.send(C_MSG.GroupsToggleAdmins, data.serializeBinary(), true);
+    }
+
+    public groupUploadPicture(groupId: string, file: InputFile): Promise<Bool.AsObject> {
+        const data = new GroupUploadPhoto();
+        data.setGroupid(groupId);
+        data.setFile(file);
+        return this.server.send(C_MSG.GroupUploadPhoto, data.serializeBinary(), true);
     }
 }

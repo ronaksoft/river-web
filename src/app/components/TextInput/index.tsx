@@ -615,11 +615,11 @@ class TextInput extends React.Component<IProps, IState> {
         }
         if (peer.getType() === PeerType.PEERGROUP) {
             this.groupRepo.get(peer.getId() || '').then((res) => {
-                if (res.flagsList.indexOf(GroupFlags.GROUPFLAGSNONPARTICIPANT) > -1) {
+                if ((res.flagsList || []).indexOf(GroupFlags.GROUPFLAGSNONPARTICIPANT) > -1) {
                     this.setState({
                         disableAuthority: 0x1,
                     });
-                } else if (res.flagsList.indexOf(GroupFlags.GROUPFLAGSDEACTIVATED) > -1) {
+                } else if ((res.flagsList || []).indexOf(GroupFlags.GROUPFLAGSDEACTIVATED) > -1) {
                     this.setState({
                         disableAuthority: 0x2,
                     });
@@ -648,6 +648,9 @@ class TextInput extends React.Component<IProps, IState> {
 
     /* Compute line height based on break lines */
     private computeLines() {
+        if (!this.textarea) {
+            return;
+        }
         let lines = 1;
         const nodeInfo = measureNodeHeight(this.textarea, 12, false, 1, 5);
         if (nodeInfo) {

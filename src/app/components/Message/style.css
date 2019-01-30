@@ -328,7 +328,20 @@ input {
     font-size: 12.5px;
     line-height: 21px;
     text-transform: uppercase; }
-  .bubble-wrapper > .system-message {
+  .bubble-wrapper .system-message-with-picture {
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center; }
+    .bubble-wrapper .system-message-with-picture .picture {
+      margin: 4px 0 0 12px;
+      height: 32px;
+      width: 32px; }
+      .bubble-wrapper .system-message-with-picture .picture img {
+        height: 32px;
+        width: 32px;
+        border-radius: 50%; }
+  .bubble-wrapper .system-message {
     background-color: rgba(0, 0, 0, 0.31);
     border-radius: 7.5px;
     padding: 1px 10px 2px 10px;
@@ -342,10 +355,10 @@ input {
     font-size: 12.5px;
     line-height: 21px;
     margin-top: 6px; }
-    .bubble-wrapper > .system-message > .user {
+    .bubble-wrapper .system-message > .user {
       text-transform: uppercase;
       font-style: italic; }
-    .bubble-wrapper > .system-message.divider:before, .bubble-wrapper > .system-message.divider:after {
+    .bubble-wrapper .system-message.divider:before, .bubble-wrapper .system-message.divider:after {
       content: '';
       position: absolute;
       left: 10px;
@@ -354,7 +367,7 @@ input {
       height: 1px;
       background: var(--grey);
       box-shadow: 0 1px 1px var(--grey); }
-    .bubble-wrapper > .system-message.divider:after {
+    .bubble-wrapper .system-message.divider:after {
       right: 10px;
       left: calc(50% + 60px); }
 

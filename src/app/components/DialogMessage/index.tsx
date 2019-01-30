@@ -196,6 +196,10 @@ class DialogMessage extends React.Component<IProps, IState> {
                 }
             case C_MESSAGE_ACTION.MessageActionClearHistory:
                 return (<span className="preview-message">History cleared</span>);
+            case C_MESSAGE_ACTION.MessageActionGroupPhotoChanged:
+                return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
+                                                                    you={true} onlyFirstName={true}
+                                                                    noDetail={true}/> changed the Group Photo</span>);
             default:
                 return (<span className="preview-message">{dialog.preview}</span>);
         }
