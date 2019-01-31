@@ -978,7 +978,8 @@ class Chat extends React.Component<IProps, IState> {
         const peerId = data.peer.id || '';
         this.updateDialogsCounter(peerId, {maxInbox: data.maxid});
         if (peerId !== this.state.selectedDialogId) {
-            this.messageRepo.getUnreadCount(peerId, data.maxid || 0).then((count) => {
+            const peer = this.getPeer(peerId);
+            this.messageRepo.getUnreadCount(peerId, data.maxid || 0, peer ? (peer.topmessageid || 0) : 0).then((count) => {
                 this.updateDialogsCounter(peerId, {
                     mentionCounter: count.mention,
                     unreadCounter: count.message,
@@ -1018,9 +1019,8 @@ class Chat extends React.Component<IProps, IState> {
         this.messageRepo.get(firstMessageId).then((res) => {
             this.messageRepo.removeMany(data.messageidsList).then(() => {
                 if (firstMessageId && res) {
-                    const dialogIndex = this.dialogMap[res.peerid || ''];
-                    const dialog = dialogs[dialogIndex];
-                    this.messageRepo.getUnreadCount(res.peerid || '', dialog.readinboxmaxid || 0).then((count) => {
+                    const peer = this.getPeer(res.peerid || '');
+                    this.messageRepo.getUnreadCount(res.peerid || '', peer ? (peer.readinboxmaxid || 0) : 0, peer ? (peer.topmessageid || 0) : 0).then((count) => {
                         this.updateDialogsCounter(res.peerid || '', {
                             mentionCounter: count.mention,
                             unreadCounter: count.message
@@ -1364,7 +1364,7 @@ class Chat extends React.Component<IProps, IState> {
                 }
 
                 // avatar breakpoint
-                defaultMessages[0].avatar = (msg.senderid !== defaultMessages[0].senderid || defaultMessages[0].messageaction !== C_MESSAGE_ACTION.MessageActionNope);
+                defaultMessages[0].avatar = (msg.senderid !== defaultMessages[0].senderid || (defaultMessages[0].messageaction || 0) !== C_MESSAGE_ACTION.MessageActionNope);
                 msg.avatar = (messages.length - 1 === key);
                 // end of avatar breakpoint
 
@@ -1746,6 +1746,15 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
+    private getPeer(peerId: string) {
+        if (this.dialogMap.hasOwnProperty(peerId)) {
+            const {dialogs} = this.state;
+            const index = this.dialogMap[peerId];
+            return dialogs[index];
+        }
+        return null;
+    }
+
     private dialogsSort(dialogs: IDialog[], callback?: (ds: IDialog[]) => void) {
         dialogs.sort((i1, i2) => {
             if (!i1.last_update || !i2.last_update) {
@@ -1937,7 +1946,8 @@ class Chat extends React.Component<IProps, IState> {
                         window.console.log('dialogDBUpdated peerId:', dialogs[this.dialogMap[id]].peerid);
                         const maxReadInbox = dialogs[this.dialogMap[id]].readinboxmaxid || 0;
                         window.console.log('dialogDBUpdated maxReadInbox:', maxReadInbox);
-                        this.messageRepo.getUnreadCount(id, maxReadInbox).then((count) => {
+                        const peer = this.getPeer(id);
+                        this.messageRepo.getUnreadCount(id, maxReadInbox, peer ? (peer.topmessageid || 0) : 0).then((count) => {
                             window.console.log('dialogDBUpdated getUnreadCount:', count);
                             this.updateDialogsCounter(id, {
                                 mentionCounter: count.mention,
@@ -2123,18 +2133,19 @@ class Chat extends React.Component<IProps, IState> {
         this.isInChat = false;
     }
 
-    private sendReadHistory(peer: InputPeer | null, msgId: number) {
-        if (!peer || !this.isInChat) {
+    private sendReadHistory(inputPeer: InputPeer | null, msgId: number) {
+        if (!inputPeer || !this.isInChat) {
             return;
         }
         const {selectedDialogId, dialogs} = this.state;
         if (this.dialogMap.hasOwnProperty(selectedDialogId)) {
             const dialog = dialogs[this.dialogMap[selectedDialogId]];
-            const peerId = peer.getId() || '';
+            const peerId = inputPeer.getId() || '';
             if (dialog && ((dialog.readinboxmaxid || 0) < msgId || (dialog.unreadcount || 0) > 0)) {
-                this.sdk.setMessagesReadHistory(peer, msgId);
+                this.sdk.setMessagesReadHistory(inputPeer, msgId);
                 this.updateDialogsCounter(peerId, {maxInbox: msgId});
-                this.messageRepo.getUnreadCount(peerId, msgId).then((count) => {
+                const peer = this.getPeer(peerId);
+                this.messageRepo.getUnreadCount(peerId, msgId, peer ? (peer.topmessageid || 0) : 0).then((count) => {
                     this.updateDialogsCounter(peerId, {
                         mentionCounter: count.mention,
                         unreadCounter: count.message,

@@ -485,14 +485,18 @@ export default class MessageRepo {
         return this.db.messages.delete(id);
     }
 
-    public getUnreadCount(peerId: string, minId: number): Promise<{ message: number, mention: number }> {
+    public getUnreadCount(peerId: string, minId: number, topMessageId: number): Promise<{ message: number, mention: number }> {
+        if (topMessageId === 0) {
+            // @ts-ignore
+            topMessageId = Dexie.maxKey;
+        }
         if (minId === undefined) {
             return Promise.reject('bad input');
         }
         return new Promise((resolve, reject) => {
             let mention = 0;
             this.db.messages.where('[peerid+id]')
-                .between([peerId, minId + 1], [peerId, Dexie.maxKey], true, true).filter((item) => {
+                .between([peerId, minId + 1], [peerId, topMessageId], true, true).filter((item) => {
                 if (item.temp !== true && item.me !== true && ((item.id || 0) >= minId) && item.mention_me === true) {
                     mention += 1;
                 }
