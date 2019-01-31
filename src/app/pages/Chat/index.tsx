@@ -1370,7 +1370,7 @@ class Chat extends React.Component<IProps, IState> {
 
                 defaultMessages.unshift(msg);
                 // date breakpoint
-                if (messages.length - 1 === key || !TimeUtililty.isInSameDay(msg.createdon, defaultMessages[0].createdon)) {
+                if (messages.length - 1 === key || (defaultMessages.length > 1 && !TimeUtililty.isInSameDay(msg.createdon, defaultMessages[1].createdon))) {
                     defaultMessages.unshift({
                         createdon: msg.createdon,
                         id: msg.id,
@@ -1968,7 +1968,7 @@ class Chat extends React.Component<IProps, IState> {
                 after = messages[messages.length - 1].id || 0;
             }
             this.messageRepo.getManyCache({after, limit: 100}, peer).then((msgs) => {
-                const dataMsg = this.modifyMessages(this.state.messages, msgs, true);
+                const dataMsg = this.modifyMessages(this.state.messages, msgs.reverse(), true);
                 this.setScrollMode('none');
                 this.setState({
                     messages: dataMsg.msgs,
