@@ -650,7 +650,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         if (e.currentTarget.checked) {
             let notifyValue = '-1';
             if (dialog && dialog.notifysettings) {
-                notifyValue = String(dialog.notifysettings.muteuntil);
+                notifyValue = String(dialog.notifysettings.muteuntil || -1);
             }
             this.setState({
                 notifySettingDialogOpen: true,

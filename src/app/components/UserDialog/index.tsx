@@ -377,7 +377,7 @@ class UserDialog extends React.Component<IProps, IState> {
             return;
         }
         if (e.currentTarget.checked) {
-            const notifyValue = String(notifySetting.muteuntil);
+            const notifyValue = String(notifySetting.muteuntil || -1);
             this.setState({
                 notifySettingDialogOpen: true,
                 notifyValue,
