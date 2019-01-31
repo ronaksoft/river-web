@@ -52,6 +52,7 @@ import Recorder from 'opus-recorder/dist/recorder.min';
 import VoicePlayer from '../VoicePlayer';
 import {to4bitResolution} from './utils';
 import {measureNodeHeight} from './measureHeight';
+import {getMessageTitle} from '../Dialog/utils';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
@@ -265,7 +266,7 @@ class TextInput extends React.Component<IProps, IState> {
                                               you={true}/>
                                     <div className="preview-message-body">
                                         <div className={'inner ' + (previewMessage.rtl ? 'rtl' : 'ltr')}
-                                        >{previewMessage.body}</div>
+                                        >{getMessageTitle(previewMessage)}</div>
                                     </div>
                                 </div>}
                                 {Boolean(previewMessageMode === C_MSG_MODE.Edit) && <div className="preview-message">
