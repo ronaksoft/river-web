@@ -219,19 +219,10 @@ input {
       width: 100%;
       height: 64px;
       padding: 8px;
-      text-align: left; }
-      .group-info-menu .participant .contact-item:after {
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        display: block;
-        width: 100%;
-        height: 1px;
-        content: '';
-        background-color: var(--light);
-        transform: translate(-50%, 0); }
-      .group-info-menu .participant .contact-item:last-of-type:after {
-        content: none; }
+      text-align: left;
+      border-bottom: 1px solid var(--light); }
+      .group-info-menu .participant .contact-item:last-of-type {
+        border-color: transparent !important; }
       .group-info-menu .participant .contact-item:hover {
         border: 0;
         background-color: var(--color-hover); }
@@ -395,18 +386,18 @@ html[theme="dark-blue"] .group-info-menu {
   html[theme="dark"] .group-info-menu .notify-settings .value .admin-switch span,
   html[theme="dark-blue"] .group-info-menu .notify-settings .value .admin-switch span {
     color: var(--river) !important; }
-  html[theme="dark"] .group-info-menu .participant .contact-item:after,
-  html[theme="dark-blue"] .group-info-menu .participant .contact-item:after {
-    background-color: var(--dark-low); }
-  html[theme="dark"] .group-info-menu .participant .contact-item .admin-wrapper svg,
-  html[theme="dark-blue"] .group-info-menu .participant .contact-item .admin-wrapper svg {
-    color: var(--white); }
-  html[theme="dark"] .group-info-menu .participant .contact-item .name,
-  html[theme="dark-blue"] .group-info-menu .participant .contact-item .name {
-    color: var(--light); }
-  html[theme="dark"] .group-info-menu .participant .contact-item .more svg,
-  html[theme="dark-blue"] .group-info-menu .participant .contact-item .more svg {
-    color: var(--white); }
+  html[theme="dark"] .group-info-menu .participant .contact-item,
+  html[theme="dark-blue"] .group-info-menu .participant .contact-item {
+    border-color: var(--dark-low); }
+    html[theme="dark"] .group-info-menu .participant .contact-item .admin-wrapper svg,
+    html[theme="dark-blue"] .group-info-menu .participant .contact-item .admin-wrapper svg {
+      color: var(--white); }
+    html[theme="dark"] .group-info-menu .participant .contact-item .name,
+    html[theme="dark-blue"] .group-info-menu .participant .contact-item .name {
+      color: var(--light); }
+    html[theme="dark"] .group-info-menu .participant .contact-item .more svg,
+    html[theme="dark-blue"] .group-info-menu .participant .contact-item .more svg {
+      color: var(--white); }
   html[theme="dark"] .group-info-menu .form-control .action svg,
   html[theme="dark-blue"] .group-info-menu .form-control .action svg {
     color: var(--white); }
@@ -434,8 +425,8 @@ html[theme="dark-blue"] .group-info-menu {
   background-color: var(--dark-blue-low); }
   html[theme="dark-blue"] .group-info-menu .menu-header {
     background-color: var(--dark-blue-high); }
-  html[theme="dark-blue"] .group-info-menu .participant .contact-item:after {
-    background-color: var(--dark-blue-low); }
+  html[theme="dark-blue"] .group-info-menu .participant .contact-item {
+    border-color: var(--dark-blue-low); }
   html[theme="dark-blue"] .group-info-menu .kk-card {
     background-color: var(--dark-blue-medium); }
 

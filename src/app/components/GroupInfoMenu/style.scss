@@ -185,21 +185,9 @@
       height: 64px;
       padding: 8px;
       text-align: left;
-      &:after {
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        display: block;
-        width: 100%;
-        height: 1px;
-        content: '';
-        background-color: var(--light);
-        transform: translate(-50%, 0);
-      }
+      border-bottom: 1px solid var(--light);
       &:last-of-type {
-        &:after {
-          content: none;
-        }
+        border-color: transparent !important;
       }
       &:hover {
         border: 0;
@@ -404,9 +392,7 @@ html[theme="dark-blue"] {
     }
     .participant {
       .contact-item {
-        &:after {
-          background-color: var(--dark-low);
-        }
+        border-color: var(--dark-low);
         .admin-wrapper {
           svg {
             color: var(--white);
@@ -461,9 +447,7 @@ html[theme="dark-blue"] {
     }
     .participant {
       .contact-item {
-        &:after {
-          background-color: var(--dark-blue-low);
-        }
+        border-color: var(--dark-blue-low);
       }
     }
     .kk-card {
