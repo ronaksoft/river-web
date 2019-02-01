@@ -169,7 +169,7 @@ class Dialog extends React.Component<IProps, IState> {
                                         rowHeight={64}
                                         rowRenderer={this.rowRender}
                                         rowCount={searchItems.length}
-                                        overscanRowCount={10}
+                                        overscanRowCount={30}
                                         scrollToIndex={this.state.scrollIndex}
                                         width={width}
                                         height={height}

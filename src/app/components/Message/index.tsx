@@ -102,6 +102,7 @@ class Message extends React.Component<IProps, IState> {
         stopIndex: 0,
     };
     private riverTime: RiverTime;
+    private lastHeight: number = 0;
 
     constructor(props: IProps) {
         super(props);
@@ -239,6 +240,7 @@ class Message extends React.Component<IProps, IState> {
                 {({width, height}: any) => (
                     <div
                         className={((peer && peer.getType() === PeerType.PEERGROUP) ? 'group' : 'user') + (selectable ? ' selectable' : '')}>
+                        {this.setHeight(height)}
                         <List
                             ref={this.refHandler}
                             deferredMeasurementCache={this.cache}
@@ -478,7 +480,7 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
-    private fitList(forceScroll?: boolean) {
+    private fitList(forceScroll?: boolean, instant?: boolean) {
         setTimeout(() => {
             if (this.state.items.length === 0) {
                 this.setState({
@@ -508,7 +510,7 @@ class Message extends React.Component<IProps, IState> {
             if (forceScroll === true) {
                 this.list.scrollToPosition(1000000);
             }
-        }, 200);
+        }, instant ? 0 : 200);
     }
 
     private onScroll = (params: ScrollParams) => {
@@ -872,6 +874,14 @@ class Message extends React.Component<IProps, IState> {
                 <div className={'inner ' + (message.rtl ? 'rtl' : 'ltr')}
                      onDoubleClick={this.selectText}>{this.renderBody(message)}</div>
             );
+        }
+    }
+
+    /* Set height to observe height changes */
+    private setHeight(height: number) {
+        if (this.lastHeight !== height) {
+            this.lastHeight = height;
+            this.fitList(false, true);
         }
     }
 }
