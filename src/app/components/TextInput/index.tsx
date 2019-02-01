@@ -53,6 +53,7 @@ import VoicePlayer from '../VoicePlayer';
 import {to4bitResolution} from './utils';
 import {measureNodeHeight} from './measureHeight';
 import {getMessageTitle} from '../Dialog/utils';
+import XRegExp from 'xregexp';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
@@ -765,18 +766,36 @@ class TextInput extends React.Component<IProps, IState> {
 
     /* Generate entities for message */
     private generateEntities(): core_types_pb.MessageEntity[] | null {
-        if (this.mentions.length === 0) {
-            return null;
-        }
         const entities: core_types_pb.MessageEntity[] = [];
-        this.mentions.forEach((mention) => {
-            const entity = new core_types_pb.MessageEntity();
-            entity.setOffset(mention.plainTextIndex);
-            entity.setLength(mention.display.length);
-            entity.setType(MessageEntityType.MESSAGEENTITYTYPEMENTION);
-            entity.setUserid(mention.id);
-            entities.push(entity);
-        });
+        if (this.mentions.length === 0) {
+            this.mentions.forEach((mention) => {
+                const entity = new core_types_pb.MessageEntity();
+                entity.setOffset(mention.plainTextIndex);
+                entity.setLength(mention.display.length);
+                entity.setType(MessageEntityType.MESSAGEENTITYTYPEMENTION);
+                entity.setUserid(mention.id);
+                entities.push(entity);
+            });
+        }
+        if (this.textarea) {
+            XRegExp.forEach(this.textarea.value, /\bhttps?:\/\/\S+/, (match) => {
+                const entity = new core_types_pb.MessageEntity();
+                entity.setOffset(match.index);
+                entity.setLength(match[0].length);
+                entity.setType(MessageEntityType.MESSAGEENTITYTYPEURL);
+                entity.setUserid('');
+                entities.push(entity);
+            });
+            const hashTagReg = XRegExp('#[\\p{L}_]+');
+            XRegExp.forEach(this.textarea.value, hashTagReg, (match) => {
+                const entity = new core_types_pb.MessageEntity();
+                entity.setOffset(match.index);
+                entity.setLength(match[0].length);
+                entity.setType(MessageEntityType.MESSAGEENTITYTYPEHASHTAG);
+                entity.setUserid('');
+                entities.push(entity);
+            });
+        }
         return entities;
     }
 

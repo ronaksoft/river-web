@@ -330,7 +330,7 @@ class Message extends React.Component<IProps, IState> {
                 if (key === 3) {
                     if ((this.riverTime.now() - (items[moreIndex].createdon || 0)) < 86400 &&
                         (items[moreIndex].fwdsenderid === '0' || !items[moreIndex].fwdsenderid) &&
-                        (items[moreIndex].messagetype === C_MESSAGE_TYPE.Normal || items[moreIndex].messagetype === 0)
+                        (items[moreIndex].messagetype === C_MESSAGE_TYPE.Normal || (items[moreIndex].messagetype || 0) === 0)
                     ) {
                         menuItems.push(menuItem[key]);
                     }
@@ -749,7 +749,7 @@ class Message extends React.Component<IProps, IState> {
             const sortedEntities = clone(message.entitiesList);
             // Sort fragments from entities
             sortedEntities.sort((i1, i2) => {
-                if (!i1.offset || !i2.offset) {
+                if (i1.offset === undefined || i2.offset === undefined) {
                     return 0;
                 }
                 return i1.offset - i2.offset;
@@ -803,7 +803,7 @@ class Message extends React.Component<IProps, IState> {
                     case MessageEntityType.MESSAGEENTITYTYPEHASHTAG:
                         return (<span key={i} className="_hashtag">{elem.str}</span>);
                     case MessageEntityType.MESSAGEENTITYTYPEURL:
-                        return (<span key={i} className="_url">{elem.str}</span>);
+                        return (<a key={i} href={elem.str} target="_blank" className="_url">{elem.str}</a>);
                     default:
                         return (<span key={i}>{elem.str}</span>);
                 }

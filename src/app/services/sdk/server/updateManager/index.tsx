@@ -171,6 +171,7 @@ export default class UpdateManager {
                 if (!this.rndMsgMap[updateNewMessage.message.id || 0]) {
                     this.throttledNewMessage(updateNewMessage);
                 } else {
+                    window.console.log('UpdateNewMessage drop on', 'msg id:', updateNewMessage.message.id);
                     this.throttledNewMessageDrop(updateNewMessage);
                     delete this.rndMsgMap[updateNewMessage.message.id || 0];
                 }

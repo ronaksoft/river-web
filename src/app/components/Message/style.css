@@ -259,6 +259,12 @@ input {
         font-weight: bold; }
       .bubble-wrapper .bubble .inner ._italic {
         font-style: italic; }
+      .bubble-wrapper .bubble .inner ._url {
+        color: var(--light-mention);
+        display: inline-block; }
+      .bubble-wrapper .bubble .inner ._hashtag {
+        color: var(--light-mention);
+        display: inline-block; }
     .bubble-wrapper .bubble .more {
       position: absolute;
       top: 3px;
@@ -396,8 +402,10 @@ html[theme="dark"] .chat,
 html[theme="dark-blue"] .chat {
   border-color: var(--dark-low); }
 
-html[theme="dark"] .bubble-wrapper .bubble .inner ._mention,
-html[theme="dark-blue"] .bubble-wrapper .bubble .inner ._mention {
+html[theme="dark"] .bubble-wrapper .bubble .inner ._mention, html[theme="dark"] .bubble-wrapper .bubble .inner ._hashtag, html[theme="dark"] .bubble-wrapper .bubble .inner ._url,
+html[theme="dark-blue"] .bubble-wrapper .bubble .inner ._mention,
+html[theme="dark-blue"] .bubble-wrapper .bubble .inner ._hashtag,
+html[theme="dark-blue"] .bubble-wrapper .bubble .inner ._url {
   color: var(--dark-mention); }
 
 html[theme="dark"] .bubble-wrapper.me .bubble,
@@ -463,7 +471,7 @@ html[theme="dark-blue"] .selectable .bubble-wrapper.selected {
 html[theme="dark-blue"] .chat {
   border-color: var(--dark-blue-low); }
 
-html[theme="dark-blue"] .bubble-wrapper .bubble .inner ._mention {
+html[theme="dark-blue"] .bubble-wrapper .bubble .inner ._mention, html[theme="dark-blue"] .bubble-wrapper .bubble .inner ._hashtag, html[theme="dark-blue"] .bubble-wrapper .bubble .inner _url {
   color: var(--dark-blue-mention); }
 
 html[theme="dark-blue"] .bubble-wrapper.me .bubble {

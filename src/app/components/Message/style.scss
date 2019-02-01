@@ -232,8 +232,12 @@
       ._mail {
       }
       ._url {
+        color: var(--light-mention);
+        display: inline-block;
       }
       ._hashtag {
+        color: var(--light-mention);
+        display: inline-block;
       }
     }
     .more {
@@ -417,7 +421,7 @@ html[theme="dark-blue"] {
   .bubble-wrapper {
     .bubble {
       .inner {
-        ._mention {
+        ._mention, ._hashtag, ._url {
           color: var(--dark-mention);
         }
       }
@@ -493,7 +497,7 @@ html[theme="dark-blue"] {
   .bubble-wrapper {
     .bubble {
       .inner {
-        ._mention {
+        ._mention, ._hashtag, _url {
           color: var(--dark-blue-mention);
         }
       }
