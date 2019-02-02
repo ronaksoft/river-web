@@ -3233,11 +3233,11 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private audioPlayerVisibleHandler = (visible: boolean) => {
-        setTimeout(() => {
-            if (this.messageComponent) {
-                this.messageComponent.fitList(false, true);
-            }
-        }, 210);
+        // setTimeout(() => {
+        //     if (this.messageComponent) {
+        //         this.messageComponent.fitList(false, true);
+        //     }
+        // }, 210);
     }
 }
 

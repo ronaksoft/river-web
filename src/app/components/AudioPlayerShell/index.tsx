@@ -35,6 +35,8 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
     private shellRef: any = null;
     private messageId: number = 0;
     private open: boolean = false;
+    // @ts-ignore
+    private progressRef: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -86,12 +88,17 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
                         <CloseRounded className="action" onClick={this.cancelHandler}/>
                     </div>
                 </div>
+                <div ref={this.progressRefHandler} className="shell-progress"/>
             </div>
         );
     }
 
     private shellRefHandler = (ref: any) => {
         this.shellRef = ref;
+    }
+
+    private progressRefHandler = (ref: any) => {
+        this.progressRef = ref;
     }
 
     private playHandler = () => {
@@ -176,6 +183,14 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
             });
         }
         this.setPlayState(e);
+        if (this.progressRef) {
+            this.progressRef.style.width = `${e.progress * 100}%`;
+            if (e.state === 'seek_play' || e.state === 'seek_pause' || e.state === 'pause') {
+                this.progressRef.classList.remove('with-transition');
+            } else {
+                this.progressRef.classList.add('with-transition');
+            }
+        }
     }
 }
 

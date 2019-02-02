@@ -355,6 +355,12 @@ export default class AudioPlayer {
         if (this.tracks.hasOwnProperty(messageId)) {
             if (state !== 'none') {
                 this.tracks[messageId].event.state = state;
+            } else {
+                if (this.tracks[messageId].event.state === 'seek_play') {
+                    this.tracks[messageId].event.state = 'play';
+                } else if (this.tracks[messageId].event.state === 'seek_pause') {
+                    this.tracks[messageId].event.state = 'pause';
+                }
             }
             if (progress !== undefined) {
                 this.tracks[messageId].event.progress = progress;

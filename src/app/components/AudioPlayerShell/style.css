@@ -7,13 +7,17 @@
     Copyright Ronak Software Group 2019
 */
 .audio-player-shell {
+  position: absolute;
   background-color: var(--header-color);
   transition: height 0.2s;
   height: 0;
-  overflow: hidden; }
+  overflow: hidden;
+  z-index: 100;
+  left: 0;
+  right: 0; }
   .audio-player-shell.open {
     border-top: 1px solid var(--light);
-    height: auto; }
+    height: 30px; }
   .audio-player-shell .shell {
     padding: 4px 6px;
     display: flex; }
@@ -51,6 +55,15 @@
       justify-content: space-between; }
       .audio-player-shell .shell .audio-player-action svg.enable {
         color: var(--dark); }
+  .audio-player-shell .shell-progress {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0%;
+    height: 1px;
+    background-color: var(--blue); }
+    .audio-player-shell .shell-progress.with-transition {
+      transition: width 0.1s linear; }
 
 html[theme="dark"] .audio-player-shell {
   background-color: var(--dark-medium); }
