@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import {ParticipantType, User} from '../../services/sdk/messages/core.types_pb';
+import {ParticipantType, User} from '../../services/sdk/messages/chat.core.types_pb';
 
 interface IUser extends User.AsObject {
     avatar?: string;

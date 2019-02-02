@@ -20,7 +20,7 @@ import {
     NotificationsOffRounded,
     ScheduleRounded
 } from '@material-ui/icons';
-import {PeerNotifySettings, PeerType, TypingAction} from '../../services/sdk/messages/core.types_pb';
+import {PeerNotifySettings, PeerType, TypingAction} from '../../services/sdk/messages/chat.core.types_pb';
 import GroupAvatar from '../GroupAvatar';
 import GroupName from '../GroupName';
 import {C_MESSAGE_ACTION} from '../../repository/message/consts';

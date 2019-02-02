@@ -44,7 +44,7 @@ export default class Http {
         this.testUrl = localStorage.getItem('river.test_url') || '';
 
         this.reqId = 0;
-        this.worker = new Worker('/bin/worker.js?v11');
+        this.worker = new Worker('/bin/worker.js?v12');
         this.workerId = id;
 
         if (this.testUrl.length > 0) {
@@ -125,7 +125,7 @@ export default class Http {
             switch (d.cmd) {
                 case 'loadConnInfo':
                     this.workerMessage('loadConnInfo', localStorage.getItem('river.conn.info'));
-                    this.workerMessage('initSDK', {});
+                    this.workerMessage('initSDK', 1);
                     break;
                 case 'fnStarted':
                     if (this.readyHandler) {

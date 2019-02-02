@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import {ContactUser} from '../../services/sdk/messages/core.types_pb';
+import {ContactUser} from '../../services/sdk/messages/chat.core.types_pb';
 
 interface IContact extends ContactUser.AsObject {
     avatar?: string;

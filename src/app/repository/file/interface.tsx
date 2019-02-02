@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import {FileType} from '../../services/sdk/messages/api.files_pb';
+import {FileType} from '../../services/sdk/messages/chat.api.files_pb';
 
 interface IFile {
     id: string;

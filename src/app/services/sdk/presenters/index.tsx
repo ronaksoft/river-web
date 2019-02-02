@@ -8,19 +8,19 @@
 */
 
 import {C_MSG} from '../const';
-import {AuthSentCode, AuthCheckedPhone, AuthAuthorization, AuthRecalled} from '../messages/api.auth_pb';
-import {ContactsImported, ContactsMany} from '../messages/api.contacts_pb';
-import {Bool, Error} from '../messages/core.messages_pb';
-import {MessagesDialogs, MessagesMany, MessagesSent} from '../messages/api.messages_pb';
-import {Dialog, Group, GroupFull, PeerNotifySettings, User} from '../messages/core.types_pb';
+import {AuthSentCode, AuthCheckedPhone, AuthAuthorization, AuthRecalled} from '../messages/chat.api.auth_pb';
+import {ContactsImported, ContactsMany} from '../messages/chat.api.contacts_pb';
+import {Bool, Error} from '../messages/chat.core.types_pb';
+import {MessagesDialogs, MessagesMany, MessagesSent} from '../messages/chat.api.messages_pb';
+import {Dialog, Group, GroupFull, PeerNotifySettings, User} from '../messages/chat.core.types_pb';
 import {
     UpdateDifference,
     UpdateNewMessage,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox, UpdateState,
     UpdateUserTyping
-} from '../messages/api.updates_pb';
-import {File} from '../messages/api.files_pb';
+} from '../messages/chat.api.updates_pb';
+import {File} from '../messages/chat.api.files_pb';
 
 export default class UniqueId {
     public static getMessage(constructor: number, data: Uint8Array): any {

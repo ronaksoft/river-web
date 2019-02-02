@@ -9,13 +9,13 @@
 
 import Http from './http';
 import {C_MSG} from '../const';
-import {File, FileGet, FileSavePart} from '../messages/api.files_pb';
-import {Bool} from '../messages/core.messages_pb';
+import {File, FileGet, FileSavePart} from '../messages/chat.api.files_pb';
+import {Bool} from '../messages/chat.core.types_pb';
 import FileRepo from '../../../repository/file';
 import {ITempFile} from '../../../repository/file/interface';
 import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from './const/const';
 import {findIndex} from 'lodash';
-import * as core_types_pb from '../messages/core.types_pb';
+import * as core_types_pb from '../messages/chat.core.types_pb';
 
 export interface IFileProgress {
     active?: boolean;
@@ -713,7 +713,7 @@ export default class FileManager {
     /* Init file manager WASM worker */
     private initFileServer() {
         this.fileSeverInitialized = true;
-        fetch('/bin/river.wasm?v11').then((response) => {
+        fetch('/bin/river.wasm?v12').then((response) => {
             return response.arrayBuffer();
         }).then((bytes) => {
             for (let i = 0; i < C_FILE_SERVER_HTTP_WORKER_NUM; i++) {

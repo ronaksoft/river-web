@@ -39,9 +39,9 @@ export default class Socket {
     public constructor() {
         this.testUrl = localStorage.getItem('river.test_url') || '';
 
-        this.worker = new Worker('/bin/worker.js?v11');
+        this.worker = new Worker('/bin/worker.js?v12');
 
-        fetch('/bin/river.wasm?v11').then((response) => {
+        fetch('/bin/river.wasm?v12').then((response) => {
             return response.arrayBuffer();
         }).then((bytes) => {
             this.workerMessage('init', bytes);
@@ -64,7 +64,7 @@ export default class Socket {
                 case 'loadConnInfo':
                     this.workerMessage('loadConnInfo', localStorage.getItem('river.conn.info'));
                     this.initWebSocket();
-                    this.workerMessage('initSDK', {});
+                    this.workerMessage('initSDK', 0);
                     setTimeout(() => {
                         this.dispatchEvent('wasmInit', null);
                     }, 50);

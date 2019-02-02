@@ -1,0 +1,145 @@
+syntax = "proto2";
+package msg;
+import "chat.core.types.proto";
+
+// AccountSetNotifySettings
+// @Function
+// @Return: Bool
+message AccountSetNotifySettings {
+    required InputPeer Peer = 1;
+    required PeerNotifySettings Settings = 2;
+}
+
+// AccountGetNotifySettings
+// @Function
+// @Return: NotifySettings
+message AccountGetNotifySettings {
+    required InputPeer Peer = 1;
+}
+
+// AccountRegisterDevice
+// @Function
+// @Return: Bool
+message AccountRegisterDevice {
+    required int32 TokenType = 1;
+    required string Token = 2;
+    required string DeviceModel = 3;
+    required string SystemVersion = 4;
+    required string AppVersion = 5;
+    required string LangCode = 6;
+}
+
+// AccountUnregisterDevice
+// @Function
+// @Return: Bool
+message AccountUnregisterDevice {
+    required int32 TokenType = 1;
+    required string Token = 2;
+}
+
+// AccountUpdateProfile
+// @Function
+// @Return: UserFull
+message AccountUpdateProfile {
+    required string FirstName = 1;
+    required string LastName = 2;
+    optional string Bio = 3;
+}
+
+// AccountCheckUsername
+// @Function
+// @Return: Bool
+message AccountCheckUsername {
+    required string Username = 1;
+}
+
+// AccountUpdateUsername
+// @Function
+// @Return: UserFull
+message AccountUpdateUsername {
+    required string Username = 1;
+}
+
+// AccountUploadPhoto
+// @Function
+// @Return: Bool
+message AccountUploadPhoto {
+    required InputFile File = 1;
+}
+
+// AccountUpdatePhoto
+// @Function
+// @Return: Bool
+message AccountUpdatePhoto {
+    required InputDocument Photo = 1;
+}
+
+// AccountRemotePhoto
+// @Function
+// @Return: Bool
+message AccountRemovePhoto {
+}
+
+// AccountChangePhone
+// @Function
+// @Return: User
+message AccountChangePhone {
+    required string Phone = 1;
+    required string PhoneCodeHash = 2;
+    required string PhoneCode = 3;
+}
+
+// AccountSetPrivacy
+// @Function
+// @Return: AccountPrivacyRules
+message AccountSetPrivacy {
+    required AccountPrivacyKey Key = 1;
+    repeated AccountPrivacyRule Rules = 2;
+}
+
+// AccountGetPrivacy
+// @Function
+// @Return: AccountPrivacyRules
+message AccountGetPrivacy {
+    required AccountPrivacyKey Key = 1;
+}
+
+// AccountGetActiveSessions
+// @Function
+// @Returns: AccountSessions
+message AccountGetActiveSessions {
+}
+
+// AccountSessions
+message AccountSessions {
+    repeated ActiveSession Sessions = 1;
+    required int64 ActiveAuthID = 2;
+}
+
+// AccountPrivacyKey
+enum AccountPrivacyKey {
+    AccountPrivacyKeyNone = 0;
+    AccountPrivacyKeyChatInvite = 1;
+    AccountPrivacyKeyStatusTimestamp = 2;
+    AccountPrivacyKeyPhoneCall = 3;
+}
+// AccountPrivacyValue
+enum AccountPrivacyType {
+    AccountPrivacyTypeAllowAll = 0;
+    AccountPrivacyTypeAllowContacts = 1;
+    AccountPrivacyTypeAllowUsers = 2;
+    AccountPrivacyTypeDisallowAll = 3;
+    AccountPrivacyTypeDisallowContacts = 4;
+    AccountPrivacyTypeDisallowUsers = 5;
+}
+
+// AccountPrivacyRules
+message AccountPrivacyRules {
+    repeated AccountPrivacyRule Rules = 1;
+}
+
+// AccountPrivacyRule
+message AccountPrivacyRule {
+    required AccountPrivacyType PrivacyType = 1;
+    required bytes Data = 2;
+}

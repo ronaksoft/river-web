@@ -14,6 +14,7 @@ var (
 	no             int
 	beforeUnloadCh = make(chan struct{})
 	connInfo       string
+	duration       int64
 )
 
 func main() {
@@ -56,8 +57,19 @@ func main() {
 }
 
 func initSDK(args []js.Value) {
-	var cb Callback = func(duration int64) {
+	isHttp := uint64(args[0].Int())
+	duration = 0
+	var startCb Callback = func(time int64) {
+		river.ConnInfo.SetServerTime(time)
 		js.Global().Call("fnStarted", duration)
+	}
+	var cb Callback = func(dur int64) {
+		duration = dur
+		if isHttp == 0 {
+			river.SetServerTime(startCb)
+		} else {
+			js.Global().Call("fnStarted", duration)
+		}
 	}
 	river.Start(connInfo, &cb)
 }

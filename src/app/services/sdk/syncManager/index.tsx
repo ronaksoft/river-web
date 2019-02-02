@@ -8,14 +8,14 @@
 */
 
 import {C_MSG} from '../const';
-import {UpdateEnvelope} from '../messages/core.messages_pb';
+import {UpdateEnvelope} from '../messages/chat.core.types_pb';
 import {
     UpdateDifference,
     UpdateMessageEdited, UpdateMessageID, UpdateMessagesDeleted,
     UpdateNewMessage, UpdateNotifySettings,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox, UpdateUsername, UpdateUserPhoto,
-} from '../messages/api.updates_pb';
+} from '../messages/chat.api.updates_pb';
 import {IUser} from '../../../repository/user/interface';
 import {IMessage} from '../../../repository/message/interface';
 import {IDialog} from '../../../repository/dialog/interface';
@@ -26,7 +26,7 @@ import UserRepo from '../../../repository/user';
 import UpdateManager from '../server/updateManager';
 import GroupRepo from '../../../repository/group';
 import {IGroup} from '../../../repository/group/interface';
-import {Group} from '../messages/core.types_pb';
+import {Group} from '../messages/chat.core.types_pb';
 import {C_MESSAGE_ACTION} from '../../../repository/message/consts';
 import {getMessageTitle} from '../../../components/Dialog/utils';
 

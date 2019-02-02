@@ -9,5 +9,5 @@ export const C_FILE_ERR_NAME = {
     0x01: 'max retry count exceeded',
     0x02: 'cannot find temp files',
     0x03: 'request cancelled',
-    0x04: 'file server is not started yet',
+    0x04: 'file manager is not started yet',
 };

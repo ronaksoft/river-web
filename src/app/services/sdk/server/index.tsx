@@ -10,7 +10,7 @@
 import {C_MSG, C_MSG_NAME} from '../const';
 import Presenter from '../presenters';
 import UpdateManager from './updateManager';
-import {MessageContainer, MessageEnvelope} from '../messages/core.messages_pb';
+import {MessageContainer, MessageEnvelope} from '../messages/chat.core.types_pb';
 import {throttle} from 'lodash';
 import Socket from './socket';
 import {base64ToU8a} from '../fileManager/http/utils';
@@ -119,7 +119,7 @@ export default class Server {
 
     /* Generate string from request and send to the api */
     private sendRequest(request: IServerRequest) {
-        window.console.warn(C_MSG_NAME[request.constructor], request.reqId);
+        window.console.log(`%c${C_MSG_NAME[request.constructor]} ${request.reqId}`, 'color: #f9d71c');
         request.timeout = setTimeout(() => {
             this.dispatchTimeout(request.reqId);
         }, 10000);
@@ -127,7 +127,7 @@ export default class Server {
     }
 
     private sendThrottledRequest(request: IServerRequest) {
-        window.console.warn(C_MSG_NAME[request.constructor], request.reqId);
+        window.console.log(`%c${C_MSG_NAME[request.constructor]} ${request.reqId}`, 'color: #f9d71c');
         request.timeout = setTimeout(() => {
             this.dispatchTimeout(request.reqId);
         }, 10000);
@@ -176,7 +176,7 @@ export default class Server {
 
     private response({reqId, constructor, data}: any) {
         if (constructor !== C_MSG.Error) {
-            window.console.warn(C_MSG_NAME[constructor], reqId);
+            window.console.log(`%c${C_MSG_NAME[constructor]} ${reqId}`, 'color: #f9d71c');
         }
         if (!this.messageListeners[reqId]) {
             return;
@@ -205,7 +205,7 @@ export default class Server {
     }
 
     private error({reqId, constructor, data}: any) {
-        window.console.warn(C_MSG_NAME[constructor], reqId);
+        window.console.log(`%c${C_MSG_NAME[constructor]} ${reqId}`, 'color: #f9d71c');
         const res = Presenter.getMessage(constructor, base64ToU8a(data));
         if (res) {
             if (constructor === C_MSG.Error) {
@@ -230,8 +230,11 @@ export default class Server {
             return;
         }
         if (item.reject) {
+            const name = C_MSG_NAME[item.request.constructor];
             item.reject({
+                constructor: name,
                 err: 'timeout',
+                reqId,
             });
         }
         this.cleanQueue(reqId);

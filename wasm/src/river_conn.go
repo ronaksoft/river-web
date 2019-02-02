@@ -5,6 +5,7 @@ import (
 	"syscall/js"
 	"encoding/json"
 	"strconv"
+	"time"
 )
 
 // easyjson:json
@@ -60,6 +61,7 @@ type RiverConnection struct {
 	Phone     string
 	FirstName string
 	LastName  string
+	DiffTime  int64
 }
 
 // easyjson:json
@@ -80,6 +82,7 @@ func NewRiverConnection(connInfo string) *RiverConnection {
 	if err := rc.Load(connInfo); err != nil {
 		rc.Save()
 	}
+	rc.DiffTime = 0
 	return rc
 }
 
@@ -121,4 +124,12 @@ func (v *RiverConnection) Load(connInfo string) error {
 	v.Username = vv.Username
 	v.UserID, _ = strconv.ParseInt(vv.UserID, 10, 64)
 	return nil
+}
+
+func (v *RiverConnection) SetServerTime(timestamp int64) {
+	v.DiffTime = timestamp - time.Now().Unix()
+}
+
+func (v *RiverConnection) Now() int64 {
+	return time.Now().Unix() + v.DiffTime
 }

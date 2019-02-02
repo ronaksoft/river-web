@@ -9,13 +9,13 @@
 
 import * as React from 'react';
 import {IMessage} from '../../repository/message/interface';
-import {InputPeer} from '../../services/sdk/messages/core.types_pb';
+import {InputPeer} from '../../services/sdk/messages/chat.core.types_pb';
 import VoicePlayer from '../VoicePlayer';
 import {
     DocumentAttributeAudio,
     DocumentAttributeType,
     MediaDocument
-} from '../../services/sdk/messages/core.message.medias_pb';
+} from '../../services/sdk/messages/chat.core.message.medias_pb';
 import {base64ToU8a} from '../../services/sdk/fileManager/http/utils';
 import {from4bitResolution} from '../TextInput/utils';
 

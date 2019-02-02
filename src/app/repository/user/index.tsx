@@ -53,7 +53,9 @@ export default class UserRepo {
             return Promise.resolve(user);
         }
         return this.db.users.get(id).then((u: IUser) => {
-            this.dbService.setUser(u);
+            if (u) {
+                this.dbService.setUser(u);
+            }
             return u;
         });
     }

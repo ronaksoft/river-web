@@ -34,7 +34,7 @@ self.onmessage = function (e) {
             break;
         case 'initSDK':
             if (initSDK) {
-                initSDK();
+                initSDK(d.data || 0);
             }
             break;
         case 'receive':

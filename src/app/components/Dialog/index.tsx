@@ -16,7 +16,7 @@ import DialogMessage from '../DialogMessage';
 import {CloseRounded, MessageRounded} from '@material-ui/icons';
 import Menu from '@material-ui/core/Menu/Menu';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';
-import {PeerType, TypingAction} from '../../services/sdk/messages/core.types_pb';
+import {PeerType, TypingAction} from '../../services/sdk/messages/chat.core.types_pb';
 import Scrollbars from 'react-custom-scrollbars';
 import SearchRepo from '../../repository/search';
 import InputLabel from '@material-ui/core/InputLabel/InputLabel';

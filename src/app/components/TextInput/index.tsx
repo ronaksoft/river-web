@@ -29,7 +29,7 @@ import {IMessage} from '../../repository/message/interface';
 import UserName from '../UserName';
 import {C_MSG_MODE} from './consts';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
-import * as core_types_pb from '../../services/sdk/messages/core.types_pb';
+import * as core_types_pb from '../../services/sdk/messages/chat.core.types_pb';
 import {
     GroupFlags,
     GroupParticipant,
@@ -37,7 +37,7 @@ import {
     MessageEntityType,
     PeerType,
     TypingAction
-} from '../../services/sdk/messages/core.types_pb';
+} from '../../services/sdk/messages/chat.core.types_pb';
 import GroupRepo from '../../repository/group';
 // @ts-ignore
 import {Mention, MentionsInput} from 'react-mentions';

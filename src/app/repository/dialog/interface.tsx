@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import {Dialog} from '../../services/sdk/messages/core.types_pb';
+import {Dialog} from '../../services/sdk/messages/chat.core.types_pb';
 import {IMessage} from '../message/interface';
 
 interface IDialog extends Dialog.AsObject {

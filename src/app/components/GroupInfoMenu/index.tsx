@@ -27,7 +27,7 @@ import {
     InputUser,
     ParticipantType,
     PeerNotifySettings
-} from '../../services/sdk/messages/core.types_pb';
+} from '../../services/sdk/messages/chat.core.types_pb';
 import SDK from '../../services/sdk';
 import GroupAvatar from '../GroupAvatar';
 import {IGroup} from '../../repository/group/interface';

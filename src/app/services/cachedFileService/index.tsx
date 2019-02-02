@@ -8,7 +8,7 @@
 */
 
 import FileManager from '../sdk/fileManager/index';
-import {InputFileLocation} from '../sdk/messages/core.types_pb';
+import {InputFileLocation} from '../sdk/messages/chat.core.types_pb';
 import FileRepo from '../../repository/file/index';
 
 interface IFile {

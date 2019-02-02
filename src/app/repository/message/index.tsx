@@ -13,7 +13,7 @@ import {cloneDeep, differenceBy, find, merge, throttle} from 'lodash';
 import SDK from '../../services/sdk';
 import UserRepo from '../user';
 import RTLDetector from '../../services/utilities/rtl_detector';
-import {InputPeer, MediaType, MessageEntityType, UserMessage} from '../../services/sdk/messages/core.types_pb';
+import {InputPeer, MediaType, MessageEntityType, UserMessage} from '../../services/sdk/messages/chat.core.types_pb';
 import Dexie from 'dexie';
 import {DexieMessageDB} from '../../services/db/dexie/message';
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from './consts';
@@ -28,7 +28,7 @@ import {
     MediaContact,
     MediaDocument,
     MediaPhoto
-} from '../../services/sdk/messages/core.message.medias_pb';
+} from '../../services/sdk/messages/chat.core.message.medias_pb';
 import {
     MessageActionClearHistory,
     MessageActionContactRegistered,
@@ -36,7 +36,7 @@ import {
     MessageActionGroupCreated,
     MessageActionGroupDeleteUser, MessageActionGroupPhotoChanged,
     MessageActionGroupTitleChanged,
-} from '../../services/sdk/messages/core.message.actions_pb';
+} from '../../services/sdk/messages/chat.core.message.actions_pb';
 
 export default class MessageRepo {
     public static parseAttributes(attrs: DocumentAttribute.AsObject[], flags: { voice: boolean, file: boolean }) {

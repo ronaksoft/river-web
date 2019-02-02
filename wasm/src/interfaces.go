@@ -3,7 +3,6 @@ package main
 import (
 	"git.ronaksoftware.com/customers/river/messages/ext"
 	"go.uber.org/zap"
-	"time"
 	"syscall/js"
 	"encoding/hex"
 	"fmt"
@@ -62,9 +61,9 @@ func (r *River) Start(connInfo string, callback *Callback) {
 			cb := *callback
 			cb(time)
 		})
-		if (authErr != nil) {
+		if authErr != nil {
 			authTryCount++
-			if (authTryCount < 10) {
+			if authTryCount < 10 {
 				r.Start(connInfo, callback)
 				return
 			}
@@ -136,7 +135,7 @@ func (r *River) CreateAuthKey(callback Callback) (err error) {
 func (r *River) createAuthKeyStep2(clientNonce, serverNonce, serverPubFP, serverDHFP, serverPQ uint64, callback *Callback) (err error) {
 	AuthProgress(17)
 	var duration int64 = 0
-	t := time.Now().Unix()
+	t := r.ConnInfo.Now()
 	// 2. Send InitCompleteAuth
 	req2 := new(msg.InitCompleteAuth)
 	req2.ServerNonce = serverNonce
@@ -198,7 +197,7 @@ func (r *River) createAuthKeyStep2(clientNonce, serverNonce, serverPubFP, server
 	req2.EncryptedPayload = encrypted
 	req2Bytes, _ := req2.Marshal()
 	_LOG.Info("2nd Step Started :: InitConnect")
-	duration = time.Now().Unix() - t
+	duration = r.ConnInfo.Now() - t
 	_LOG.Info("Duration:", zap.Int64("time(s)", duration))
 
 	AuthProgress(75)
@@ -286,7 +285,8 @@ func (r *River) send(msgEnvelope *msg.MessageEnvelope, webSocket bool) {
 	protoMessage := new(msg.ProtoMessage)
 	protoMessage.AuthID = r.authID
 	protoMessage.MessageKey = make([]byte, 32)
-	if r.authID == 0 {
+	if r.authID == 0 || msgEnvelope.Constructor == msg.C_SystemGetServerTime {
+		protoMessage.AuthID = 0
 		protoMessage.Payload, _ = msgEnvelope.Marshal()
 	} else {
 		r.messageSeq++
@@ -294,7 +294,7 @@ func (r *River) send(msgEnvelope *msg.MessageEnvelope, webSocket bool) {
 			ServerSalt: 234242, // TODO:: ServerSalt ?
 			Envelope:   msgEnvelope,
 		}
-		encryptedPayload.MessageID = uint64(time.Now().Unix()<<32 | r.messageSeq)
+		encryptedPayload.MessageID = uint64(r.ConnInfo.Now()<<32 | r.messageSeq)
 		unencryptedBytes, _ := encryptedPayload.Marshal()
 		encryptedPayloadBytes, _ := _Encrypt(r.authKey, unencryptedBytes)
 		messageKey := _GenerateMessageKey(r.authKey, unencryptedBytes)
@@ -308,8 +308,10 @@ func (r *River) send(msgEnvelope *msg.MessageEnvelope, webSocket bool) {
 		return
 	}
 	if webSocket {
-		if msgEnvelope.Constructor == msg.C_InitConnect || msgEnvelope.Constructor == msg.C_InitCompleteAuth {
+		if msgEnvelope.Constructor == msg.C_InitConnect || msgEnvelope.Constructor == msg.C_InitCompleteAuth || msgEnvelope.Constructor == msg.C_SystemGetServerTime {
 			r.LastMsg = msgEnvelope
+		} else {
+			r.LastMsg = nil
 		}
 		js.Global().Call("wsSend", base64.StdEncoding.EncodeToString(b))
 	} else {
@@ -425,4 +427,36 @@ func (r *River) RetryLast() {
 	if r.LastMsg != nil {
 		r.send(r.LastMsg, true)
 	}
+}
+
+func (r *River) SetServerTime(callback Callback) (err error) {
+	req := new(msg.SystemGetServerTime)
+	reqBytes, _ := req.Marshal()
+
+	r.ExecuteRemoteCommand(
+		_RandomUint64(),
+		msg.C_SystemGetServerTime,
+		&reqBytes,
+		func(res *msg.MessageEnvelope) {
+			var time int64 = 0
+			switch res.Constructor {
+			case msg.C_SystemServerTime:
+				x := new(msg.SystemServerTime)
+				err = x.Unmarshal(res.Message)
+				if err != nil {
+					_LOG.Error(err.Error(),
+						zap.String(_LK_DESC, "InitResponse Unmarshal"),
+					)
+				} else {
+					time = x.Timestamp
+				}
+				callback(time)
+			default:
+				err = ErrInvalidConstructor
+				callback(0)
+			}
+		},
+	)
+
+	return
 }

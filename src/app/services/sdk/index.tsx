@@ -17,21 +17,27 @@ import {
     AuthRegister,
     AuthSendCode,
     AuthSentCode
-} from './messages/api.auth_pb';
+} from './messages/chat.api.auth_pb';
 import Server from './server';
 import {C_MSG} from './const';
 import {IConnInfo} from './interface';
-import {ContactsDelete, ContactsGet, ContactsImport, ContactsImported, ContactsMany} from './messages/api.contacts_pb';
+import {
+    ContactsDelete,
+    ContactsGet,
+    ContactsImport,
+    ContactsImported,
+    ContactsMany
+} from './messages/chat.api.contacts_pb';
 import {
     Group,
     GroupFull, InputFile,
     InputPeer,
-    InputUser,
+    InputUser, MessageEntity,
     PeerNotifySettings,
     PhoneContact,
     TypingAction,
     User
-} from './messages/core.types_pb';
+} from './messages/chat.core.types_pb';
 import {
     InputMediaType,
     MessagesClearHistory,
@@ -43,15 +49,15 @@ import {
     MessagesSend, MessagesSendMedia,
     MessagesSent,
     MessagesSetTyping
-} from './messages/api.messages_pb';
-import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from './messages/api.updates_pb';
-import {Bool} from './messages/core.messages_pb';
+} from './messages/chat.api.messages_pb';
+import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from './messages/chat.api.updates_pb';
+import {Bool} from './messages/chat.core.types_pb';
 import {
     AccountCheckUsername, AccountGetNotifySettings,
     AccountRegisterDevice, AccountSetNotifySettings,
     AccountUpdateProfile,
     AccountUpdateUsername, AccountUploadPhoto
-} from './messages/api.accounts_pb';
+} from './messages/chat.api.accounts_pb';
 import {
     GroupsAddUser,
     GroupsCreate,
@@ -59,9 +65,8 @@ import {
     GroupsEditTitle,
     GroupsGetFull, GroupsToggleAdmins,
     GroupsUpdateAdmin, GroupUploadPhoto
-} from './messages/api.groups_pb';
-import * as core_types_pb from './messages/core.types_pb';
-import {UsersGetFull} from './messages/api.users_pb';
+} from './messages/chat.api.groups_pb';
+import {UsersGetFull} from './messages/chat.api.users_pb';
 
 export default class SDK {
     public static getInstance() {
@@ -222,7 +227,7 @@ export default class SDK {
         return this.server.send(C_MSG.MessagesGetDialogs, data.serializeBinary());
     }
 
-    public sendMessage(randomId: number, body: string, peer: InputPeer, replyTo?: number, entities?: core_types_pb.MessageEntity[]): Promise<MessagesSent.AsObject> {
+    public sendMessage(randomId: number, body: string, peer: InputPeer, replyTo?: number, entities?: MessageEntity[]): Promise<MessagesSent.AsObject> {
         const data = new MessagesSend();
         data.setRandomid(randomId);
         data.setBody(body);
@@ -363,7 +368,7 @@ export default class SDK {
         return this.server.send(C_MSG.AccountUploadPhoto, data.serializeBinary(), true);
     }
 
-    public getUserFull(usersInput: core_types_pb.InputUser[]): Promise<Bool.AsObject> {
+    public getUserFull(usersInput: InputUser[]): Promise<Bool.AsObject> {
         const data = new UsersGetFull();
         data.setUsersList(usersInput);
         return this.server.send(C_MSG.UsersGetFull, data.serializeBinary(), true);

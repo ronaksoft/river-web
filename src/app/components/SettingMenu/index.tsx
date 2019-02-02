@@ -40,7 +40,7 @@ import FileManager, {IFileProgress} from '../../services/sdk/fileManager';
 import UniqueId from '../../services/uniqueId';
 import ProgressBroadcaster from '../../services/progress';
 import RiverTime from '../../services/utilities/river_time';
-import {InputFile} from '../../services/sdk/messages/core.types_pb';
+import {InputFile} from '../../services/sdk/messages/chat.core.types_pb';
 import Cropper from '../Cropper';
 
 import './style.css';
@@ -205,7 +205,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                             </div>
                         </div>
                         <div className="version">
-                            v0.23.11
+                            v0.23.12
                         </div>
                     </div>
                     <div className="page page-2">

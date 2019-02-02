@@ -8,7 +8,7 @@
 */
 
 import {C_MSG} from '../../const';
-import {UpdateContainer, UpdateEnvelope} from '../../messages/core.messages_pb';
+import {UpdateContainer, UpdateEnvelope} from '../../messages/chat.core.types_pb';
 import {
     UpdateGroupPhoto,
     UpdateMessageEdited, UpdateMessageID, UpdateMessagesDeleted,
@@ -16,9 +16,9 @@ import {
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox, UpdateUsername, UpdateUserPhoto,
     UpdateUserTyping
-} from '../../messages/api.updates_pb';
+} from '../../messages/chat.api.updates_pb';
 import {throttle} from 'lodash';
-import {User} from '../../messages/core.types_pb';
+import {User} from '../../messages/chat.core.types_pb';
 import {IMessage} from '../../../../repository/message/interface';
 import MessageRepo from '../../../../repository/message';
 import {base64ToU8a} from '../../fileManager/http/utils';
@@ -157,6 +157,7 @@ export default class UpdateManager {
             case C_MSG.UpdateMessageID:
                 const updateMessageId = UpdateMessageID.deserializeBinary(data).toObject();
                 this.rndMsgMap[updateMessageId.messageid || 0] = true;
+                window.console.log(`%cUpdateMessageID`, 'color: #3E6A96;');
                 this.callHandlers(C_MSG.UpdateMessageID, updateMessageId);
                 break;
         }
@@ -171,7 +172,7 @@ export default class UpdateManager {
                 if (!this.rndMsgMap[updateNewMessage.message.id || 0]) {
                     this.throttledNewMessage(updateNewMessage);
                 } else {
-                    window.console.log('UpdateNewMessage drop on', 'msg id:', updateNewMessage.message.id);
+                    window.console.log(`%cUpdateNewMessage drop on msg id: ${updateNewMessage.message.id}`, 'color: #cc0000;');
                     this.throttledNewMessageDrop(updateNewMessage);
                     delete this.rndMsgMap[updateNewMessage.message.id || 0];
                 }

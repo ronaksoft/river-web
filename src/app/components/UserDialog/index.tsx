@@ -11,7 +11,7 @@ import * as React from 'react';
 import {IContact} from '../../repository/contact/interface';
 import {AddRounded, CheckRounded, EditRounded, SendRounded} from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
-import {InputPeer, PeerNotifySettings, PeerType, PhoneContact} from '../../services/sdk/messages/core.types_pb';
+import {InputPeer, PeerNotifySettings, PeerType, PhoneContact} from '../../services/sdk/messages/chat.core.types_pb';
 import SDK from '../../services/sdk';
 import UserAvatar from '../UserAvatar';
 import ContactRepo from '../../repository/contact';

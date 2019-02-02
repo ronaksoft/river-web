@@ -17,6 +17,7 @@ import './style.css';
 
 interface IProps {
     className?: string;
+    onVisible: (visible: boolean) => void;
 }
 
 interface IState {
@@ -138,6 +139,7 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
                 this.open = false;
             }
         }
+        this.props.onVisible(this.open);
     }
 
     private setPlayState(e: IAudioEvent) {

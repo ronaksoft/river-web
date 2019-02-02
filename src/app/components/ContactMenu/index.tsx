@@ -17,7 +17,7 @@ import DialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent/DialogContent';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import SDK from '../../services/sdk';
-import {PhoneContact} from '../../services/sdk/messages/core.types_pb';
+import {PhoneContact} from '../../services/sdk/messages/chat.core.types_pb';
 import UniqueId from '../../services/uniqueId';
 import ContactList from '../ContactList';
 import {IContact} from '../../repository/contact/interface';
