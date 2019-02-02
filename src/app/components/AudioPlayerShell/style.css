@@ -9,7 +9,7 @@
 .audio-player-shell {
   position: absolute;
   background-color: var(--header-color);
-  transition: height 0.2s;
+  transition: height 0.1s;
   height: 0;
   overflow: hidden;
   z-index: 100;
