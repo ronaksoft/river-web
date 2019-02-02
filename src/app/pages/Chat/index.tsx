@@ -1322,10 +1322,10 @@ class Chat extends React.Component<IProps, IState> {
         let minId = Infinity;
         let newMessageFlag = false;
         messages.forEach((msg, key) => {
-            if (msg.id && msg.id > maxId) {
+            if (msg.id && msg.id > maxId && msg.id > 0) {
                 maxId = msg.id;
             }
-            if (msg.id && msg.id < minId) {
+            if (msg.id && msg.id < minId && msg.id > 0) {
                 minId = msg.id;
             }
             if (push) {

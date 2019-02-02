@@ -202,10 +202,14 @@ class Message extends React.Component<IProps, IState> {
             return;
         }
         let jump = false;
-        for (let i = this.messageScroll.startIndex; i < items.length; i++) {
-            if (items[i] && items[i].messagetype === C_MESSAGE_TYPE.Gap) {
-                jump = true;
-                break;
+        if (items.length <= this.messageScroll.stopIndex) {
+            jump = true;
+        } else {
+            for (let i = this.messageScroll.startIndex; i < items.length; i++) {
+                if (items[i] && items[i].messagetype === C_MESSAGE_TYPE.Gap) {
+                    jump = true;
+                    break;
+                }
             }
         }
         if (this.list && jump) {
