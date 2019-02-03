@@ -835,11 +835,11 @@ class Chat extends React.Component<IProps, IState> {
             message.me = (this.connInfo.UserID === message.senderid);
         });
         if (data.peerid === this.state.selectedDialogId) {
-            const dataMsg = this.modifyMessages(this.state.messages, data.messages.reverse(), true);
-            const newMessages = differenceBy(dataMsg.msgs, this.state.messages, 'id');
+            const newMessages = differenceBy(data.messages.reverse(), this.state.messages, 'id');
+            const dataMsg = this.modifyMessages(this.state.messages, newMessages, true);
             this.setScrollMode('none');
             this.setState({
-                messages: newMessages,
+                messages: dataMsg.msgs,
             }, () => {
                 setTimeout(() => {
                     this.messageComponent.animateToEnd();
