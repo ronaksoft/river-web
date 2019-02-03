@@ -25,6 +25,18 @@
       align-items: center;
       border-radius: 50%;
       background-color: var(--glass-dark-low);
+      .extension {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-48%, -40%);
+        z-index: 100;
+        font-size: 6px;
+        font-weight: bold;
+        color: var(--white);
+        text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+        text-transform: uppercase;
+      }
       svg {
         font-size: 20px;
         color: var(--grey);
@@ -94,6 +106,10 @@ html[theme="dark-blue"] {
     .file-content {
       .file-action {
         background-color: var(--glass-dark-high);
+        .extension {
+          color: var(--dark-accent-low);
+          text-shadow: 0 0 1px rgba(255, 255, 255, 0.4);
+        }
         svg {
           color: var(--light);
         }
@@ -123,6 +139,9 @@ html[theme="dark-blue"] {
   .message-file {
     .file-content {
       .file-info {
+        .extension {
+          color: var(--dark-blue-medium);
+        }
         .file-download {
           color: var(--dark-blue-mention);
         }

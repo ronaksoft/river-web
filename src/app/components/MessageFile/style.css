@@ -93,6 +93,17 @@ input {
       align-items: center;
       border-radius: 50%;
       background-color: var(--glass-dark-low); }
+      .message-file .file-content .file-action .extension {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-48%, -40%);
+        z-index: 100;
+        font-size: 6px;
+        font-weight: bold;
+        color: var(--white);
+        text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+        text-transform: uppercase; }
       .message-file .file-content .file-action svg {
         font-size: 20px;
         color: var(--grey); }
@@ -143,6 +154,10 @@ input {
 html[theme="dark"] .message-file .file-content .file-action,
 html[theme="dark-blue"] .message-file .file-content .file-action {
   background-color: var(--glass-dark-high); }
+  html[theme="dark"] .message-file .file-content .file-action .extension,
+  html[theme="dark-blue"] .message-file .file-content .file-action .extension {
+    color: var(--dark-accent-low);
+    text-shadow: 0 0 1px rgba(255, 255, 255, 0.4); }
   html[theme="dark"] .message-file .file-content .file-action svg,
   html[theme="dark-blue"] .message-file .file-content .file-action svg {
     color: var(--light); }
@@ -156,6 +171,9 @@ html[theme="dark-blue"] .message-file .file-content .file-action {
 html[theme="dark"] .message-file .file-content .file-info .file-download,
 html[theme="dark-blue"] .message-file .file-content .file-info .file-download {
   color: var(--dark-mention); }
+
+html[theme="dark-blue"] .message-file .file-content .file-info .extension {
+  color: var(--dark-blue-medium); }
 
 html[theme="dark-blue"] .message-file .file-content .file-info .file-download {
   color: var(--dark-blue-mention); }
