@@ -76,7 +76,7 @@ export default class GroupRepo {
             updateItems.map((group: IGroup) => {
                 const t = find(groups, {id: group.id});
                 if (t) {
-                    return merge(group, t);
+                    return this.mergeCheck(group, t);
                 } else {
                     return group;
                 }
@@ -98,5 +98,11 @@ export default class GroupRepo {
             detail: data,
         });
         window.dispatchEvent(event);
+    }
+
+    private mergeCheck(group: IGroup, newGroup: IGroup): IGroup {
+        const d = merge(group, newGroup);
+        d.flagsList = newGroup.flagsList || [];
+        return d;
     }
 }
