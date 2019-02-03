@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import ContactRepo from '../../repository/contact';
+import UserRepo from '../../repository/user';
 import TextField from '@material-ui/core/TextField/TextField';
 import {CheckRounded, PersonAddRounded, PersonRounded} from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
@@ -20,7 +20,7 @@ import SDK from '../../services/sdk';
 import {PhoneContact} from '../../services/sdk/messages/chat.core.types_pb';
 import UniqueId from '../../services/uniqueId';
 import ContactList from '../ContactList';
-import {IContact} from '../../repository/contact/interface';
+import {IUser} from '../../repository/user/interface';
 
 import './style.css';
 
@@ -40,7 +40,7 @@ interface IState {
 class ContactMenu extends React.Component<IProps, IState> {
     // @ts-ignore
     private contactListComponent: ContactList;
-    private contactRepo: ContactRepo;
+    private userRepo: UserRepo;
     private sdk: SDK;
 
     constructor(props: IProps) {
@@ -55,7 +55,7 @@ class ContactMenu extends React.Component<IProps, IState> {
             selectedId: '-1',
         };
 
-        this.contactRepo = ContactRepo.getInstance();
+        this.userRepo = UserRepo.getInstance();
         this.sdk = SDK.getInstance();
     }
 
@@ -185,7 +185,7 @@ class ContactMenu extends React.Component<IProps, IState> {
         });
         this.sdk.contactImport(true, contacts).then((data) => {
             data.usersList.forEach((user) => {
-                this.contactRepo.importBulk([user]).then(() => {
+                this.userRepo.importBulk(true,[user]).then(() => {
                     this.contactListComponent.reload();
                 });
             });
@@ -204,13 +204,13 @@ class ContactMenu extends React.Component<IProps, IState> {
     }
 
     /* Context Menu action handler */
-    private contextMenuActionHandler = (cmd: string, contact: IContact) => {
+    private contextMenuActionHandler = (cmd: string, contact: IUser) => {
         switch (cmd) {
             case 'remove':
                 const contactIds: string[] = [];
                 contactIds.push(contact.id || '');
                 this.sdk.removeContact(contactIds).then(() => {
-                    this.contactRepo.remove(contact.id || '').finally(() => {
+                    this.userRepo.removeContact(contact.id || '').finally(() => {
                         this.contactListComponent.reload();
                     });
                 });

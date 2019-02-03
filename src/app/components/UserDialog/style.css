@@ -90,7 +90,8 @@ input {
       width: 200px;
       border-radius: 50%;
       display: inline-block;
-      font-size: 75px; }
+      font-size: 75px;
+      cursor: pointer; }
     .user-dialog .user-info-menu .info .line {
       padding: 16px 10px 0;
       text-align: left;

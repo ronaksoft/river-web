@@ -12,14 +12,14 @@ import Dialog from '@material-ui/core/Dialog';
 import {ArrowForwardRounded, KeyboardBackspaceRounded, CloseRounded, SendRounded} from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import ContactList from '../ContactList';
-import {IContact} from '../../repository/contact/interface';
+import {IUser} from '../../repository/user/interface';
 import TextField from '@material-ui/core/TextField';
 import {trimStart} from 'lodash';
 
 import './style.css';
 
 interface IProps {
-    onMessage?: (contacts: IContact[], text: string) => void;
+    onMessage?: (contacts: IUser[], text: string) => void;
     open: boolean;
     onClose: () => void;
 }
@@ -28,7 +28,7 @@ interface IState {
     open: boolean;
     page: string;
     phone: string;
-    recipients: IContact[];
+    recipients: IUser[];
     text: string;
 }
 
@@ -107,7 +107,8 @@ class NewMessage extends React.Component<IProps, IState> {
                                         value={text}
                                     />
                                 </div>
-                                {Boolean(recipients.length > 0 && text.length > 0) && <div className="actions-bar no-bg">
+                                {Boolean(recipients.length > 0 && text.length > 0) &&
+                                <div className="actions-bar no-bg">
                                     <div className="add-action send" onClick={this.composeHandler}>
                                         <SendRounded/>
                                     </div>
@@ -131,7 +132,7 @@ class NewMessage extends React.Component<IProps, IState> {
         this.props.onClose();
     }
 
-    private addRecipientChangeHandler = (users: IContact[]) => {
+    private addRecipientChangeHandler = (users: IUser[]) => {
         this.setState({
             recipients: users,
         });

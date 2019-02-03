@@ -9,10 +9,8 @@
 
 import * as React from 'react';
 import {List, AutoSizer, Index} from 'react-virtualized';
-import {IContact} from '../../repository/contact/interface';
-import ContactRepo from '../../repository/contact';
 import {debounce, findIndex, differenceBy, clone} from 'lodash';
-import UserAvatar, {TextAvatar} from '../UserAvatar';
+import UserAvatar from '../UserAvatar';
 import TextField from '@material-ui/core/TextField';
 import ChipInput from 'material-ui-chip-input';
 import Chip from '@material-ui/core/Chip';
@@ -23,25 +21,27 @@ import Menu from '@material-ui/core/Menu/Menu';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';
 import {Link} from 'react-router-dom';
 import Scrollbars from 'react-custom-scrollbars';
+import {IUser} from '../../repository/user/interface';
+import UserRepo from '../../repository/user';
 
 import './style.css';
 
 interface IProps {
-    contacts?: IContact[];
-    hiddenContacts?: IContact[];
-    onChange?: (contacts: IContact[]) => void;
-    onContextMenuAction?: (cmd: string, contact: IContact) => void;
+    contacts?: IUser[];
+    hiddenContacts?: IUser[];
+    onChange?: (contacts: IUser[]) => void;
+    onContextMenuAction?: (cmd: string, contact: IUser) => void;
     noRowsRenderer?: () => JSX.Element;
     mode: 'chip' | 'link';
 }
 
 interface IState {
-    contacts: IContact[];
-    hiddenContacts: IContact[];
+    contacts: IUser[];
+    hiddenContacts: IUser[];
     moreAnchorEl: any;
     moreIndex: number;
     page: string;
-    selectedContacts: IContact[];
+    selectedContacts: IUser[];
     title: string;
 }
 
@@ -50,7 +50,7 @@ const listStyle: React.CSSProperties = {
     overflowY: 'visible',
 };
 
-export const categorizeContact = (contacts: IContact[]): IContact[] => {
+export const categorizeContact = (contacts: IUser[]): IUser[] => {
     const list = clone(contacts);
     list.sort((a, b) => {
         const strA = ((a.firstname || '') + (a.lastname || '')).toLowerCase();
@@ -63,7 +63,7 @@ export const categorizeContact = (contacts: IContact[]): IContact[] => {
         }
         return 0;
     });
-    const outList: IContact[] = [];
+    const outList: IUser[] = [];
     let cat = '';
     let lastCat = '';
     const regChar = XRegExp('\\p{L}');
@@ -89,11 +89,11 @@ export const categorizeContact = (contacts: IContact[]): IContact[] => {
 };
 
 class ContactList extends React.Component<IProps, IState> {
-    private contactsRes: IContact[] = [];
+    private contactsRes: IUser[] = [];
     private list: List;
-    private contactRepo: ContactRepo;
+    private userRepo: UserRepo;
     private readonly searchDebounce: any;
-    private defaultContact: IContact[];
+    private defaultContact: IUser[];
 
     constructor(props: IProps) {
         super(props);
@@ -108,7 +108,7 @@ class ContactList extends React.Component<IProps, IState> {
             title: '',
         };
 
-        this.contactRepo = ContactRepo.getInstance();
+        this.userRepo = UserRepo.getInstance();
         this.searchDebounce = debounce(this.search, 512);
     }
 
@@ -227,7 +227,7 @@ class ContactList extends React.Component<IProps, IState> {
                     <div style={style} key={index} className="contact-item"
                          onClick={this.addMemberHandler.bind(this, contact)}>
                     <span className="avatar">
-                        {contact.avatar ? <img src={contact.avatar}/> : TextAvatar(contact.firstname, contact.lastname)}
+                        <UserAvatar id={contact.id || ''}/>
                     </span>
                         <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>
                         <span className="phone">{contact.phone ? contact.phone : 'no phone'}</span>
@@ -242,8 +242,7 @@ class ContactList extends React.Component<IProps, IState> {
                     <div style={style} key={index} className="contact-item">
                         <Link to={`/chat/${contact.id}`}>
                             <span className="avatar">
-                                {contact.avatar ?
-                                    <img src={contact.avatar}/> : TextAvatar(contact.firstname, contact.lastname)}
+                                <UserAvatar id={contact.id || ''}/>
                             </span>
                             <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>
                             <span className="phone">{contact.phone ? contact.phone : 'no phone'}</span>
@@ -270,7 +269,7 @@ class ContactList extends React.Component<IProps, IState> {
 
     /* Get all contacts */
     private getDefault() {
-        this.contactRepo.getAll().then((res) => {
+        this.userRepo.getAllContacts().then((res) => {
             this.defaultContact = res;
             this.contactsRes = clone(res);
             this.setState({
@@ -298,7 +297,7 @@ class ContactList extends React.Component<IProps, IState> {
 
     /* For debouncing the query in order to have best performance */
     private search = (text: string) => {
-        this.contactRepo.getManyCache({keyword: text, limit: 12}).then((res) => {
+        this.userRepo.getManyCache(true, {keyword: text, limit: 12}).then((res) => {
             this.contactsRes = clone(res || []);
             this.setState({
                 contacts: categorizeContact(this.getTrimmedList(this.state.selectedContacts)),
@@ -310,7 +309,7 @@ class ContactList extends React.Component<IProps, IState> {
     }
 
     /* Add member to selectedContacts */
-    private addMemberHandler = (contact: IContact) => {
+    private addMemberHandler = (contact: IUser) => {
         const {selectedContacts} = this.state;
         if (findIndex(selectedContacts, {id: contact.id || ''}) === -1) {
             selectedContacts.push(contact);
@@ -325,7 +324,7 @@ class ContactList extends React.Component<IProps, IState> {
     }
 
     /* Remove member from selectedContacts */
-    private removeMemberHandler = (contact: IContact) => {
+    private removeMemberHandler = (contact: IUser) => {
         const {selectedContacts} = this.state;
         if (!selectedContacts || !contact) {
             return;
@@ -344,7 +343,7 @@ class ContactList extends React.Component<IProps, IState> {
     }
 
     /* Removes the selected users from the list */
-    private getTrimmedList(selectedContacts: IContact[]) {
+    private getTrimmedList(selectedContacts: IUser[]) {
         return differenceBy(this.contactsRes, [...selectedContacts, ...this.state.hiddenContacts], 'id');
     }
 
@@ -414,7 +413,7 @@ class ContactList extends React.Component<IProps, IState> {
     }
 
     /* Context Menu action handler */
-    private contextMenuActionHandler = (cmd: string, contact: IContact, e: any) => {
+    private contextMenuActionHandler = (cmd: string, contact: IUser, e: any) => {
         this.moreCloseHandler();
         if (this.props.onContextMenuAction) {
             e.preventDefault();

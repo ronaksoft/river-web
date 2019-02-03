@@ -8,7 +8,6 @@
 */
 
 import * as React from 'react';
-import {IContact} from '../../repository/contact/interface';
 import {
     AddRounded,
     CheckRounded,
@@ -38,7 +37,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import FormControl from '@material-ui/core/FormControl';
 import {IParticipant, IUser} from '../../repository/user/interface';
-import {TextAvatar} from '../UserAvatar';
+import UserAvatar from '../UserAvatar';
 import Menu from '@material-ui/core/Menu/Menu';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';
 import {findIndex, trimStart} from 'lodash';
@@ -56,30 +55,32 @@ import Radio from '@material-ui/core/Radio/Radio';
 import DialogActions from '@material-ui/core/DialogActions/DialogActions';
 import Button from '@material-ui/core/Button/Button';
 import Switch from '@material-ui/core/Switch/Switch';
-import ContactRepo from '../../repository/contact';
+import UserRepo from '../../repository/user';
 import Scrollbars from 'react-custom-scrollbars';
 import RiverTime from '../../services/utilities/river_time';
 import Cropper from '../Cropper';
 import UniqueId from '../../services/uniqueId';
 import FileManager, {IFileProgress} from '../../services/sdk/fileManager';
 import ProgressBroadcaster from '../../services/progress';
+import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
 
 import './style.css';
 
 interface IProps {
     peer: InputPeer | null;
     onClose?: () => void;
-    onCreate?: (contacts: IContact[], title: string) => void;
+    onCreate?: (contacts: IUser[], title: string) => void;
 }
 
 interface IState {
     addMemberDialogEnable: boolean;
+    avatarMenuAnchorEl: any;
     currentUser: IParticipant | null;
     dialog: IDialog | null;
     forwardLimit: number;
     group: IGroup | null;
     moreAnchorEl: any;
-    newMembers: IContact[];
+    newMembers: IUser[];
     notifySettingDialogOpen: boolean;
     notifyValue: string;
     page: string;
@@ -93,7 +94,7 @@ interface IState {
 class GroupInfoMenu extends React.Component<IProps, IState> {
     private groupRepo: GroupRepo;
     private dialogRepo: DialogRepo;
-    private contactRepo: ContactRepo;
+    private userRepo: UserRepo;
     private sdk: SDK;
     private loading: boolean = false;
     private userId: string;
@@ -104,12 +105,14 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     private circleProgressRef: any = null;
     private fileId: string = '';
     private cropperRef: Cropper;
+    private documentViewerService: DocumentViewerService;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
             addMemberDialogEnable: false,
+            avatarMenuAnchorEl: null,
             currentUser: null,
             dialog: null,
             forwardLimit: 50,
@@ -131,8 +134,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         this.groupRepo = GroupRepo.getInstance();
         // Dialog Repository singleton
         this.dialogRepo = DialogRepo.getInstance();
-        // Contact Repository singleton
-        this.contactRepo = ContactRepo.getInstance();
+        // User Repository singleton
+        this.userRepo = UserRepo.getInstance();
         // SDK singleton
         this.sdk = SDK.getInstance();
 
@@ -140,6 +143,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
 
         this.fileManager = FileManager.getInstance();
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
+
+        this.documentViewerService = DocumentViewerService.getInstance();
     }
 
     public componentDidMount() {
@@ -158,7 +163,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {addMemberDialogEnable, group, page, participants, title, titleEdit, moreAnchorEl, dialog, notifySettingDialogOpen, notifyValue, uploadingPhoto} = this.state;
+        const {addMemberDialogEnable, avatarMenuAnchorEl, group, page, participants, title, titleEdit, moreAnchorEl, dialog, notifySettingDialogOpen, notifyValue, uploadingPhoto} = this.state;
         return (
             <div className="group-info-menu">
                 <Cropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={640}/>
@@ -180,12 +185,11 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                         >
                             <div>
                                 {group && <div className="info kk-card">
-                                    <div className="avatar">
+                                    <div className="avatar" onClick={this.avatarMenuAnchorOpenHandler}>
                                         {!uploadingPhoto && <GroupAvatar id={group.id || ''}/>}
                                         {uploadingPhoto && <img src={this.profileTempPhoto} className="avatar-image"/>}
                                         {this.hasAuthority(group) &&
-                                        <div className={'overlay ' + (uploadingPhoto ? 'show' : '')}
-                                             onClick={this.openFileDialog}>
+                                        <div className={'overlay ' + (uploadingPhoto ? 'show' : '')}>
                                             {!uploadingPhoto && <React.Fragment>
                                                 <PhotoCameraRounded/>
                                                 <div className="text">
@@ -271,8 +275,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                         return (
                                             <div key={index}
                                                  className={'contact-item' + (participant.type !== ParticipantType.PARTICIPANTTYPEMEMBER ? ' admin' : '')}>
-                                        <span className="avatar">{participant.avatar ? <img
-                                            src={participant.avatar}/> : TextAvatar(participant.firstname, participant.lastname)}</span>
+                                                <UserAvatar className="avatar" id={participant.userid || ''}/>
                                                 {participant.type === ParticipantType.PARTICIPANTTYPECREATOR &&
                                                 <div className="admin-wrapper"><StarsRounded/></div>}
                                                 {participant.type === ParticipantType.PARTICIPANTTYPEADMIN &&
@@ -358,6 +361,14 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                         </Button>
                     </DialogActions>
                 </Dialog>
+                <Menu
+                    anchorEl={avatarMenuAnchorEl}
+                    open={Boolean(avatarMenuAnchorEl)}
+                    onClose={this.avatarMenuAnchorCloseHandler}
+                    className="kk-context-menu"
+                >
+                    {this.avatarContextMenuItem()}
+                </Menu>
             </div>
         );
     }
@@ -390,18 +401,17 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             const group: IGroup = res.group;
             group.participantList = res.participantsList;
             this.groupRepo.importBulk([group]);
-            const contacts: IContact[] = [];
+            const contacts: IUser[] = [];
             res.participantsList.forEach((list) => {
                 contacts.push({
                     accesshash: list.accesshash,
                     firstname: list.firstname,
                     id: list.userid,
                     lastname: list.lastname,
-                    temp: true,
                     username: list.username,
                 });
             });
-            this.contactRepo.importBulk(contacts);
+            this.userRepo.importBulk(false, contacts);
             this.setState({
                 group: res.group,
                 participants: res.participantsList,
@@ -576,7 +586,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     }
 
     /* Sets the new member list */
-    private addMemberChangeHandler = (contacts: IContact[]) => {
+    private addMemberChangeHandler = (contacts: IUser[]) => {
         this.setState({
             newMembers: contacts,
         });
@@ -855,6 +865,77 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             detail: data,
         });
         window.dispatchEvent(event);
+    }
+
+    /* Avatar menu anchor close handler */
+    private avatarMenuAnchorCloseHandler = () => {
+        this.setState({
+            avatarMenuAnchorEl: null,
+        });
+    }
+
+    /* Avatar menu anchor open handler */
+    private avatarMenuAnchorOpenHandler = (e: any) => {
+        const {group} = this.state;
+        if (!group) {
+            return;
+        }
+        if (this.hasAuthority(group)) {
+            this.setState({
+                avatarMenuAnchorEl: e.currentTarget,
+            });
+        } else {
+            this.showAvatarHandler();
+        }
+    }
+
+    /* Decides what content the participants' "more" menu must have */
+    private avatarContextMenuItem() {
+        const menuItems = [{
+            cmd: 'show',
+            title: 'Show Photo',
+        }/*, {
+            cmd: 'remove',
+            title: 'Remove Photo',
+        }*/, {
+            cmd: 'change',
+            title: 'Change Photo',
+        }];
+        return menuItems.map((item, index) => {
+            return (<MenuItem key={index} onClick={this.avatarMoreCmdHandler.bind(this, item.cmd)}
+                              className="context-item">{item.title}</MenuItem>);
+        });
+    }
+
+    private avatarMoreCmdHandler = (cmd: 'show' | 'remove' | 'change') => {
+        switch (cmd) {
+            case 'show':
+                this.showAvatarHandler();
+                break;
+            case 'remove':
+                break;
+            case 'change':
+                this.openFileDialog();
+                break;
+        }
+        this.avatarMenuAnchorCloseHandler();
+    }
+
+    /* Show avatar handler */
+    private showAvatarHandler = () => {
+        const {group} = this.state;
+        if (!group || !group.photo) {
+            return;
+        }
+        const doc: IDocument = {
+            items: [{
+                caption: '',
+                fileLocation: group.photo.photobig,
+                thumbFileLocation: group.photo.photosmall,
+            }],
+            type: 'avatar'
+        };
+        this.documentViewerService.loadDocument(doc);
     }
 }
 

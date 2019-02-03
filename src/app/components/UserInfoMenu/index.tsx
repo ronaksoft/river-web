@@ -8,13 +8,12 @@
 */
 
 import * as React from 'react';
-import {IContact} from '../../repository/contact/interface';
+import {IUser} from '../../repository/user/interface';
 import {CloseRounded, CheckRounded, EditRounded, AddRounded} from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import {InputPeer, PeerNotifySettings, PhoneContact} from '../../services/sdk/messages/chat.core.types_pb';
 import SDK from '../../services/sdk';
 import UserAvatar from '../UserAvatar';
-import ContactRepo from '../../repository/contact';
 import TextField from '@material-ui/core/TextField/TextField';
 import UserRepo from '../../repository/user';
 import UniqueId from '../../services/uniqueId';
@@ -31,6 +30,7 @@ import Button from '@material-ui/core/Button/Button';
 import DialogActions from '@material-ui/core/DialogActions/DialogActions';
 import Scrollbars from 'react-custom-scrollbars';
 import RiverTime from '../../services/utilities/river_time';
+import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
 
 import './style.css';
 
@@ -50,7 +50,7 @@ interface IState {
     page: string;
     peer: InputPeer | null;
     phone: string;
-    user: IContact | null;
+    user: IUser | null;
 }
 
 export const isMuted = (notifySettings?: PeerNotifySettings.AsObject) => {
@@ -68,11 +68,11 @@ export const isMuted = (notifySettings?: PeerNotifySettings.AsObject) => {
 };
 
 class UserInfoMenu extends React.Component<IProps, IState> {
-    private contactRepo: ContactRepo;
     private userRepo: UserRepo;
     private dialogRepo: DialogRepo;
     private sdk: SDK;
     private riverTime: RiverTime;
+    private documentViewerService: DocumentViewerService;
 
     constructor(props: IProps) {
         super(props);
@@ -92,14 +92,14 @@ class UserInfoMenu extends React.Component<IProps, IState> {
         };
         // RiverTime singleton
         this.riverTime = RiverTime.getInstance();
-        // Contact Repository singleton
-        this.contactRepo = ContactRepo.getInstance();
         // User Repository singleton
         this.userRepo = UserRepo.getInstance();
         // Dialog Repository singleton
         this.dialogRepo = DialogRepo.getInstance();
         // SDK singleton
         this.sdk = SDK.getInstance();
+
+        this.documentViewerService = DocumentViewerService.getInstance();
     }
 
     public componentDidMount() {
@@ -138,7 +138,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                         >
                             <div>
                                 {user && <div className="info kk-card">
-                                    <div className="avatar">
+                                    <div className="avatar" onClick={this.showAvatarHandler}>
                                         <UserAvatar id={user.id || ''} noDetail={true}/>
                                     </div>
                                     <div className="line">
@@ -269,21 +269,12 @@ class UserInfoMenu extends React.Component<IProps, IState> {
             return;
         }
 
-        this.contactRepo.get(peer.getId() || '').then((res) => {
+        this.userRepo.get(peer.getId() || '').then((res) => {
             this.setState({
                 firstname: res.firstname || '',
-                isInContact: true,
+                isInContact: (res.is_contact === 1),
                 lastname: res.lastname || '',
                 user: res,
-            });
-        }).catch(() => {
-            this.userRepo.get(peer.getId() || '').then((res) => {
-                this.setState({
-                    firstname: res.firstname || '',
-                    isInContact: false,
-                    lastname: res.lastname || '',
-                    user: res,
-                });
             });
         });
 
@@ -332,7 +323,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
         });
         this.sdk.contactImport(true, contacts).then((data) => {
             data.usersList.forEach((item) => {
-                this.contactRepo.importBulk([item]);
+                this.userRepo.importBulk(true, [item]);
             });
             user.lastname = lastname;
             user.firstname = firstname;
@@ -425,6 +416,23 @@ class UserInfoMenu extends React.Component<IProps, IState> {
         this.setState({
             notifySettingDialogOpen: false,
         });
+    }
+
+    /* Show avatar handler */
+    private showAvatarHandler = () => {
+        const {user} = this.state;
+        if (!user || !user.photo) {
+            return;
+        }
+        const doc: IDocument = {
+            items: [{
+                caption: '',
+                fileLocation: user.photo.photobig,
+                thumbFileLocation: user.photo.photosmall,
+            }],
+            type: 'avatar'
+        };
+        this.documentViewerService.loadDocument(doc);
     }
 }
 

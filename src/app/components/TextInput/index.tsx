@@ -40,9 +40,9 @@ import {
 import GroupRepo from '../../repository/group';
 // @ts-ignore
 import {Mention, MentionsInput} from 'react-mentions';
-import ContactRepo from '../../repository/contact';
+import UserRepo from '../../repository/user';
 import SDK from '../../services/sdk';
-import {IContact} from '../../repository/contact/interface';
+import {IUser} from '../../repository/user/interface';
 import {IGroup} from '../../repository/group/interface';
 import DialogRepo from '../../repository/dialog';
 import {IDraft} from '../../repository/dialog/interface';
@@ -118,7 +118,7 @@ class TextInput extends React.Component<IProps, IState> {
     private rtlDetector: RTLDetector;
     private rtlDetectorThrottle: any = null;
     private groupRepo: GroupRepo;
-    private contactRepo: ContactRepo;
+    private userRepo: UserRepo;
     private dialogRepo: DialogRepo;
     private lastLines: number = 1;
     private sdk: SDK;
@@ -177,7 +177,7 @@ class TextInput extends React.Component<IProps, IState> {
         this.rtlDetectorThrottle = throttle(this.detectRTL, 1000);
 
         this.groupRepo = GroupRepo.getInstance();
-        this.contactRepo = ContactRepo.getInstance();
+        this.userRepo = UserRepo.getInstance();
         this.dialogRepo = DialogRepo.getInstance();
         this.sdk = SDK.getInstance();
 
@@ -723,18 +723,17 @@ class TextInput extends React.Component<IProps, IState> {
                     searchParticipant(keyword, res.participantsList);
                 }
                 this.groupRepo.importBulk([group]);
-                const contacts: IContact[] = [];
+                const contacts: IUser[] = [];
                 res.participantsList.forEach((list) => {
                     contacts.push({
                         accesshash: list.accesshash,
                         firstname: list.firstname,
                         id: list.userid,
                         lastname: list.lastname,
-                        temp: true,
                         username: list.username,
                     });
                 });
-                this.contactRepo.importBulk(contacts);
+                this.userRepo.importBulk(false, contacts);
             }).catch(() => {
                 callback([]);
             });

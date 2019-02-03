@@ -9,9 +9,9 @@
 
 import * as React from 'react';
 import {AutoSizer, Index, List} from 'react-virtualized';
-import {IContact} from '../../repository/contact/interface';
+import {IUser} from '../../repository/user/interface';
 import {clone, debounce, differenceBy, differenceWith, findIndex} from 'lodash';
-import UserAvatar, {TextAvatar} from '../UserAvatar';
+import UserAvatar from '../UserAvatar';
 import ChipInput from 'material-ui-chip-input';
 import Chip from '@material-ui/core/Chip';
 import UserName from '../UserName';
@@ -23,12 +23,12 @@ import {PeerType} from '../../services/sdk/messages/chat.core.types_pb';
 import GroupAvatar from '../GroupAvatar';
 import GroupName from '../GroupName';
 import {categorizeContact} from '../ContactList';
-
-import './style.css';
 import Scrollbars from 'react-custom-scrollbars';
 
+import './style.css';
+
 interface ISeachItem {
-    contact?: IContact;
+    contact?: IUser;
     dialog?: IDialog;
     id?: string;
     label?: string;
@@ -182,11 +182,7 @@ class SearchList extends React.Component<IProps, IState> {
                 return (
                     <div style={style} key={index} className="search-item"
                          onClick={this.addItemHandler.bind(this, inputPeer)}>
-                        <span className="avatar">
-                            {inputPeer.contact.avatar ?
-                                <img
-                                    src={inputPeer.contact.avatar}/> : TextAvatar(inputPeer.contact.firstname, inputPeer.contact.lastname)}
-                        </span>
+                        <UserAvatar className="avatar" id={inputPeer.contact.id || ''}/>
                         <span className="name">{`${inputPeer.contact.firstname} ${inputPeer.contact.lastname}`}</span>
                         <span className="phone">{inputPeer.contact.phone ? inputPeer.contact.phone : 'no phone'}</span>
                     </div>

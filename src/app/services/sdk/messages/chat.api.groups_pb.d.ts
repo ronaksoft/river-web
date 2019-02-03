@@ -206,7 +206,7 @@ export namespace GroupsUpdateAdmin {
   }
 }
 
-export class GroupUploadPhoto extends jspb.Message {
+export class GroupsUploadPhoto extends jspb.Message {
   hasGroupid(): boolean;
   clearGroupid(): void;
   getGroupid(): string | undefined;
@@ -218,16 +218,16 @@ export class GroupUploadPhoto extends jspb.Message {
   setFile(value?: chat_core_types_pb.InputFile): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): GroupUploadPhoto.AsObject;
-  static toObject(includeInstance: boolean, msg: GroupUploadPhoto): GroupUploadPhoto.AsObject;
+  toObject(includeInstance?: boolean): GroupsUploadPhoto.AsObject;
+  static toObject(includeInstance: boolean, msg: GroupsUploadPhoto): GroupsUploadPhoto.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: GroupUploadPhoto, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): GroupUploadPhoto;
-  static deserializeBinaryFromReader(message: GroupUploadPhoto, reader: jspb.BinaryReader): GroupUploadPhoto;
+  static serializeBinaryToWriter(message: GroupsUploadPhoto, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GroupsUploadPhoto;
+  static deserializeBinaryFromReader(message: GroupsUploadPhoto, reader: jspb.BinaryReader): GroupsUploadPhoto;
 }
 
-export namespace GroupUploadPhoto {
+export namespace GroupsUploadPhoto {
   export type AsObject = {
     groupid?: string,
     file: chat_core_types_pb.InputFile.AsObject,

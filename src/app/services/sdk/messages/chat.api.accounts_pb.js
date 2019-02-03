@@ -1548,7 +1548,8 @@ proto.msg.AccountUploadPhoto.prototype.toObject = function(opt_includeInstance) 
  */
 proto.msg.AccountUploadPhoto.toObject = function(includeInstance, msg) {
   var f, obj = {
-    file: (f = msg.getFile()) && chat_core_types_pb.InputFile.toObject(includeInstance, f)
+    file: (f = msg.getFile()) && chat_core_types_pb.InputFile.toObject(includeInstance, f),
+    returnobject: jspb.Message.getField(msg, 2)
   };
 
   if (includeInstance) {
@@ -1590,6 +1591,10 @@ proto.msg.AccountUploadPhoto.deserializeBinaryFromReader = function(msg, reader)
       reader.readMessage(value,chat_core_types_pb.InputFile.deserializeBinaryFromReader);
       msg.setFile(value);
       break;
+    case 2:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setReturnobject(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1627,6 +1632,13 @@ proto.msg.AccountUploadPhoto.serializeBinaryToWriter = function(message, writer)
       chat_core_types_pb.InputFile.serializeBinaryToWriter
     );
   }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeBool(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -1657,6 +1669,37 @@ proto.msg.AccountUploadPhoto.prototype.clearFile = function() {
  */
 proto.msg.AccountUploadPhoto.prototype.hasFile = function() {
   return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * optional bool ReturnObject = 2;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.msg.AccountUploadPhoto.prototype.getReturnobject = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 2, false));
+};
+
+
+/** @param {boolean} value */
+proto.msg.AccountUploadPhoto.prototype.setReturnobject = function(value) {
+  jspb.Message.setField(this, 2, value);
+};
+
+
+proto.msg.AccountUploadPhoto.prototype.clearReturnobject = function() {
+  jspb.Message.setField(this, 2, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AccountUploadPhoto.prototype.hasReturnobject = function() {
+  return jspb.Message.getField(this, 2) != null;
 };
 
 

@@ -76,12 +76,10 @@ import BottomBar from '../../components/BottomBar';
 import ContactMenu from '../../components/ContactMenu';
 import Tooltip from '@material-ui/core/Tooltip';
 import NewGroupMenu from '../../components/NewGroupMenu';
-import {IContact} from '../../repository/contact/interface';
 import GroupRepo from '../../repository/group';
 import GroupName from '../../components/GroupName';
 import GroupInfoMenu from '../../components/GroupInfoMenu';
 import UserInfoMenu, {isMuted} from '../../components/UserInfoMenu';
-import ContactRepo from '../../repository/contact';
 import {isTypingRender} from '../../components/DialogMessage';
 import OverlayDialog from '@material-ui/core/Dialog/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
@@ -112,8 +110,10 @@ import {getMessageTitle} from '../../components/Dialog/utils';
 import {saveAs} from 'file-saver';
 import {getFileInfo} from '../../components/MessageFile';
 import AudioPlayerShell from '../../components/AudioPlayerShell';
+import DocumentViewer from '../../components/DocumentViewer';
 
 import './style.css';
+import {IUser} from '../../repository/user/interface';
 
 interface IProps {
     history?: any;
@@ -161,7 +161,6 @@ class Chat extends React.Component<IProps, IState> {
     private messageRepo: MessageRepo;
     private dialogRepo: DialogRepo;
     private userRepo: UserRepo;
-    private contactRepo: ContactRepo;
     private groupRepo: GroupRepo;
     private fileRepo: FileRepo;
     private mainRepo: MainRepo;
@@ -220,7 +219,6 @@ class Chat extends React.Component<IProps, IState> {
         this.connInfo = this.sdk.getConnInfo();
         this.messageRepo = MessageRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
-        this.contactRepo = ContactRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
         this.dialogRepo = DialogRepo.getInstance();
         this.fileRepo = FileRepo.getInstance();
@@ -606,6 +604,7 @@ class Chat extends React.Component<IProps, IState> {
                     </div>}
                 </OverlayDialog>
                 <UserDialog ref={this.userDialogRefHandler}/>
+                <DocumentViewer/>
             </div>
         );
     }
@@ -852,7 +851,7 @@ class Chat extends React.Component<IProps, IState> {
             }
         }
         this.messageRepo.lazyUpsert(data.messages);
-        this.userRepo.importBulk(data.senders);
+        this.userRepo.importBulk(false, data.senders);
 
         data.messages.forEach((message, index) => {
             this.updateDialogs(message, data.accessHashes[index] || '0');
@@ -894,7 +893,7 @@ class Chat extends React.Component<IProps, IState> {
             this.updateDialogs(message, data.accessHashes[index] || '0');
         });
         this.messageRepo.lazyUpsert(data.messages);
-        this.userRepo.importBulk(data.senders);
+        this.userRepo.importBulk(false, data.senders);
     }
 
     /* Update message edit */
@@ -1070,7 +1069,8 @@ class Chat extends React.Component<IProps, IState> {
         if (this.state.isUpdating) {
             return;
         }
-        this.userRepo.importBulk([{
+        this.userRepo.importBulk(false, [{
+            bio: data.bio,
             firstname: data.firstname,
             id: data.userid,
             lastname: data.lastname,
@@ -1100,7 +1100,7 @@ class Chat extends React.Component<IProps, IState> {
         if (this.state.isUpdating) {
             return;
         }
-        this.userRepo.importBulk([{
+        this.userRepo.importBulk(false, [{
             id: data.userid,
             photo: data.photo,
         }]);
@@ -1590,7 +1590,7 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private onNewMessageHandler = (contacts: IContact[], text: string) => {
+    private onNewMessageHandler = (contacts: IUser[], text: string) => {
         contacts.forEach((contact) => {
             const randomId = UniqueId.getRandomId();
             const peer = new InputPeer();
@@ -1626,7 +1626,7 @@ class Chat extends React.Component<IProps, IState> {
                 contactPeer.setId(id);
                 return contactPeer;
             } else {
-                const contact = this.contactRepo.getInstant(id);
+                const contact = this.userRepo.getInstantContact(id);
                 if (contact) {
                     const contactPeer = new InputPeer();
                     contactPeer.setType(PeerType.PEERUSER);
@@ -1643,7 +1643,7 @@ class Chat extends React.Component<IProps, IState> {
         const peer = new InputPeer();
         peer.setType(dialogs[index].peertype || 0);
         if (dialogs[index].peertype === PeerType.PEERUSER && (!dialogs[index].accesshash || dialogs[index].accesshash === '0')) {
-            const contact = this.contactRepo.getInstant(id);
+            const contact = this.userRepo.getInstantContact(id);
             if (contact) {
                 dialogs[index].accesshash = contact.accesshash;
             }
@@ -2106,7 +2106,7 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private onGroupCreateHandler = (contacts: IContact[], title: string) => {
+    private onGroupCreateHandler = (contacts: IUser[], title: string) => {
         const users: InputUser[] = [];
         contacts.forEach((contact) => {
             const user = new InputUser();

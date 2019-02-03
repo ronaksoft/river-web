@@ -10,7 +10,6 @@
 import * as React from 'react';
 import {IUser} from '../../repository/user/interface';
 import UserRepo from '../../repository/user';
-import ContactRepo from '../../repository/contact';
 import {BookmarkRounded} from '@material-ui/icons';
 import AvatarService from '../../services/avatarService';
 import {find} from 'lodash';
@@ -125,7 +124,6 @@ interface IState {
 
 class UserAvatar extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
-    private contactRepo: ContactRepo;
     private tryTimeout: any = null;
     private tryCount: number = 0;
     private avatarService: AvatarService;
@@ -140,7 +138,6 @@ class UserAvatar extends React.Component<IProps, IState> {
         };
 
         this.userRepo = UserRepo.getInstance();
-        this.contactRepo = ContactRepo.getInstance();
         this.avatarService = AvatarService.getInstance();
     }
 
@@ -194,41 +191,23 @@ class UserAvatar extends React.Component<IProps, IState> {
         if (data && data.detail.ids.indexOf(this.state.id) === -1) {
             return;
         }
-        this.contactRepo.get(this.state.id, true).then((contact) => {
-            if (contact) {
+
+        this.userRepo.get(this.state.id).then((user) => {
+            if (user) {
                 this.setState({
-                    user: {
-                        _id: contact.id,
-                        avatar: contact.avatar,
-                        firstname: contact.firstname,
-                        id: contact.id,
-                        lastname: contact.lastname,
-                    },
+                    user,
                 });
-                this.userRepo.get(contact.id || '').then((user) => {
-                    this.getAvatarPhoto(user);
-                });
+                this.getAvatarPhoto(user);
             } else {
                 throw Error('not found');
             }
         }).catch(() => {
-            this.userRepo.get(this.state.id).then((user) => {
-                if (user) {
-                    this.setState({
-                        user,
-                    });
-                    this.getAvatarPhoto(user);
-                } else {
-                    throw Error('not found');
-                }
-            }).catch(() => {
-                if (this.tryCount < 10) {
-                    this.tryCount++;
-                    this.tryTimeout = setTimeout(() => {
-                        this.getUser();
-                    }, 1000);
-                }
-            });
+            if (this.tryCount < 10) {
+                this.tryCount++;
+                this.tryTimeout = setTimeout(() => {
+                    this.getUser();
+                }, 1000);
+            }
         });
     }
 

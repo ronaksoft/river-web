@@ -218,6 +218,11 @@ export class AccountUploadPhoto extends jspb.Message {
   getFile(): chat_core_types_pb.InputFile;
   setFile(value?: chat_core_types_pb.InputFile): void;
 
+  hasReturnobject(): boolean;
+  clearReturnobject(): void;
+  getReturnobject(): boolean | undefined;
+  setReturnobject(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountUploadPhoto.AsObject;
   static toObject(includeInstance: boolean, msg: AccountUploadPhoto): AccountUploadPhoto.AsObject;
@@ -231,6 +236,7 @@ export class AccountUploadPhoto extends jspb.Message {
 export namespace AccountUploadPhoto {
   export type AsObject = {
     file: chat_core_types_pb.InputFile.AsObject,
+    returnobject?: boolean,
   }
 }
 

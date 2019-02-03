@@ -11,7 +11,6 @@ import {IDialogWithContact} from './interface';
 import DialogRepo from '../dialog';
 import UserRepo from '../user';
 import GroupRepo from '../group';
-import ContactRepo from '../contact';
 
 export default class SearchRepo {
     public static getInstance() {
@@ -26,21 +25,18 @@ export default class SearchRepo {
 
     private dialogRepo: DialogRepo;
     private userRepo: UserRepo;
-    private contactRepo: ContactRepo;
     private groupRepo: GroupRepo;
 
     public constructor() {
         this.dialogRepo = DialogRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
-        this.contactRepo = ContactRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
     }
 
     public searchIds({skip, limit, keyword}: any): Promise<string[]> {
         const promises: any[] = [];
         limit = limit || 12;
-        promises.push(this.userRepo.getManyCache({limit, keyword}));
-        promises.push(this.contactRepo.getManyCache({limit, keyword}));
+        promises.push(this.userRepo.getManyCache(false, {limit, keyword}));
         promises.push(this.groupRepo.getManyCache({limit, keyword}));
         return new Promise<string[]>((resolve, reject) => {
             const ids: { [key: string]: boolean } = {};
@@ -61,8 +57,7 @@ export default class SearchRepo {
         const promises: any[] = [];
         limit = limit || 12;
         skip = skip || 0;
-        promises.push(this.userRepo.getManyCache({limit, keyword}));
-        promises.push(this.contactRepo.getManyCache({limit, keyword}));
+        promises.push(this.userRepo.getManyCache(false, {limit, keyword}));
         promises.push(this.groupRepo.getManyCache({limit, keyword}));
         return new Promise<IDialogWithContact>((resolve, reject) => {
             const ids: { [key: string]: boolean } = {};

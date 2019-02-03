@@ -42,6 +42,9 @@ import ProgressBroadcaster from '../../services/progress';
 import RiverTime from '../../services/utilities/river_time';
 import {InputFile} from '../../services/sdk/messages/chat.core.types_pb';
 import Cropper from '../Cropper';
+import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
+import Menu from '@material-ui/core/Menu/Menu';
+import MenuItem from '@material-ui/core/MenuItem/MenuItem';
 
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -54,6 +57,7 @@ interface IProps {
 }
 
 interface IState {
+    avatarMenuAnchorEl: any;
     bio: string;
     editProfile: boolean;
     editUsername: boolean;
@@ -88,6 +92,7 @@ class SettingMenu extends React.Component<IProps, IState> {
     private circleProgressRef: any = null;
     private fileId: string = '';
     private cropperRef: Cropper;
+    private documentViewerService: DocumentViewerService;
 
     constructor(props: IProps) {
         super(props);
@@ -96,6 +101,7 @@ class SettingMenu extends React.Component<IProps, IState> {
         this.userId = this.sdk.getConnInfo().UserID || '';
 
         this.state = {
+            avatarMenuAnchorEl: null,
             bio: '',
             editProfile: false,
             editUsername: false,
@@ -129,6 +135,8 @@ class SettingMenu extends React.Component<IProps, IState> {
         this.fileManager = FileManager.getInstance();
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
         this.riverTime = RiverTime.getInstance();
+
+        this.documentViewerService = DocumentViewerService.getInstance();
     }
 
     public componentDidMount() {
@@ -161,7 +169,7 @@ class SettingMenu extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {page, pageContent, user, editProfile, editUsername, bio, firstname, lastname, phone, username, usernameAvailable, usernameValid, uploadingPhoto} = this.state;
+        const {avatarMenuAnchorEl, page, pageContent, user, editProfile, editUsername, bio, firstname, lastname, phone, username, usernameAvailable, usernameValid, uploadingPhoto} = this.state;
         return (
             <div className="setting-menu">
                 <Cropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={640}/>
@@ -205,7 +213,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                             </div>
                         </div>
                         <div className="version">
-                            v0.23.14
+                            v0.23.20
                         </div>
                     </div>
                     <div className="page page-2">
@@ -306,11 +314,10 @@ class SettingMenu extends React.Component<IProps, IState> {
                                 <label>Account</label>
                             </div>
                             {user && <div className="info kk-card">
-                                <div className="avatar">
+                                <div className="avatar" onClick={this.avatarMenuAnchorOpenHandler}>
                                     {!uploadingPhoto && <UserAvatar id={user.id || ''} noDetail={true}/>}
                                     {uploadingPhoto && <img src={this.profileTempPhoto} className="avatar-image"/>}
-                                    <div className={'overlay ' + (uploadingPhoto ? 'show' : '')}
-                                         onClick={this.openFileDialog}>
+                                    <div className={'overlay ' + (uploadingPhoto ? 'show' : '')}>
                                         {!uploadingPhoto && <React.Fragment>
                                             <PhotoCameraRounded/>
                                             <div className="text">
@@ -459,6 +466,14 @@ class SettingMenu extends React.Component<IProps, IState> {
                         </div>}
                     </div>
                 </div>
+                <Menu
+                    anchorEl={avatarMenuAnchorEl}
+                    open={Boolean(avatarMenuAnchorEl)}
+                    onClose={this.avatarMenuAnchorCloseHandler}
+                    className="kk-context-menu"
+                >
+                    {this.avatarContextMenuItem()}
+                </Menu>
             </div>
         );
     }
@@ -661,7 +676,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                 lastname: user.lastname || '',
                 user,
             });
-            this.userRepo.importBulk([user]);
+            this.userRepo.importBulk(false, [user]);
         }).catch(() => {
             this.setState({
                 bio: '',
@@ -696,7 +711,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                 user,
                 username: user.username || '',
             });
-            this.userRepo.importBulk([user]);
+            this.userRepo.importBulk(false, [user]);
         }).catch(() => {
             this.setState({
                 editUsername: false,
@@ -810,6 +825,72 @@ class SettingMenu extends React.Component<IProps, IState> {
     /* Cancel file download/upload */
     private cancelFileHandler = () => {
         this.fileManager.cancel(this.fileId);
+    }
+
+    /* Avatar menu anchor close handler */
+    private avatarMenuAnchorCloseHandler = () => {
+        this.setState({
+            avatarMenuAnchorEl: null,
+        });
+    }
+
+    /* Avatar menu anchor open handler */
+    private avatarMenuAnchorOpenHandler = (e: any) => {
+        this.setState({
+            avatarMenuAnchorEl: e.currentTarget,
+        });
+    }
+
+    /* Decides what content the participants' "more" menu must have */
+    private avatarContextMenuItem() {
+        const menuItems = [{
+            cmd: 'show',
+            title: 'Show Photo',
+        }, {
+            cmd: 'remove',
+            title: 'Remove Photo',
+        }, {
+            cmd: 'change',
+            title: 'Change Photo',
+        }];
+        return menuItems.map((item, index) => {
+            return (<MenuItem key={index} onClick={this.avatarMoreCmdHandler.bind(this, item.cmd)}
+                              className="context-item">{item.title}</MenuItem>);
+        });
+    }
+
+    private avatarMoreCmdHandler = (cmd: 'show' | 'remove' | 'change') => {
+        switch (cmd) {
+            case 'show':
+                this.showAvatarHandler();
+                break;
+            case 'remove':
+                this.sdk.removeProfilePicture().then(() => {
+                    //
+                });
+                break;
+            case 'change':
+                this.openFileDialog();
+                break;
+        }
+        this.avatarMenuAnchorCloseHandler();
+    }
+
+    /* Show avatar handler */
+    private showAvatarHandler = () => {
+        const {user} = this.state;
+        if (!user || !user.photo) {
+            return;
+        }
+        const doc: IDocument = {
+            items: [{
+                caption: '',
+                fileLocation: user.photo.photobig,
+                thumbFileLocation: user.photo.photosmall,
+            }],
+            type: 'avatar'
+        };
+        this.documentViewerService.loadDocument(doc);
     }
 
     /* Broadcast Global Event */

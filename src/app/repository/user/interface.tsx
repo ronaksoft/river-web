@@ -10,8 +10,11 @@
 import {ParticipantType, User} from '../../services/sdk/messages/chat.core.types_pb';
 
 interface IUser extends User.AsObject {
-    avatar?: string;
-    bio?: string;
+    accesshash?: string;
+    category?: string;
+    clientid?: string;
+    is_contact?: number;
+    phone?: string;
 }
 
 interface IParticipant extends IUser {

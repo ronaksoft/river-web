@@ -262,7 +262,7 @@ export default class MessageRepo {
                     // }
                     const lim = limit - len;
                     this.sdk.getMessageHistory(peer, {maxId, minId, limit: lim}).then((remoteRes) => {
-                        this.userRepo.importBulk(remoteRes.usersList);
+                        this.userRepo.importBulk(false, remoteRes.usersList);
                         this.groupRepo.importBulk(remoteRes.groupsList);
                         remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userId);
                         return this.transform(remoteRes.messagesList);
@@ -287,7 +287,7 @@ export default class MessageRepo {
                     minId = after + 1;
                 }
                 this.sdk.getMessageHistory(peer, {maxId, minId, limit}).then((remoteRes) => {
-                    this.userRepo.importBulk(remoteRes.usersList);
+                    this.userRepo.importBulk(false, remoteRes.usersList);
                     this.groupRepo.importBulk(remoteRes.groupsList);
                     remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userId);
                     return this.transform(remoteRes.messagesList);
@@ -384,7 +384,7 @@ export default class MessageRepo {
                 }
             } else {
                 return this.checkHoles(peer, (mode === 0x2 ? after + 1 : before - (ignoreMax ? 0 : 1)), (mode === 0x2), limit, ignoreMax).then((remoteRes) => {
-                    this.userRepo.importBulk(remoteRes.usersList);
+                    this.userRepo.importBulk(false, remoteRes.usersList);
                     this.groupRepo.importBulk(remoteRes.groupsList);
                     remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userId);
                     return this.transform(remoteRes.messagesList);

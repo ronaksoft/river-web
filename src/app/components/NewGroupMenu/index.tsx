@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import {IContact} from '../../repository/contact/interface';
+import {IUser} from '../../repository/user/interface';
 import {trimStart} from 'lodash';
 import {KeyboardBackspaceRounded, ArrowForwardRounded, CheckRounded} from '@material-ui/icons';
 import TextField from '@material-ui/core/TextField';
@@ -19,12 +19,12 @@ import './style.css';
 
 interface IProps {
     onClose?: () => void;
-    onCreate?: (contacts: IContact[], title: string) => void;
+    onCreate?: (contacts: IUser[], title: string) => void;
 }
 
 interface IState {
     page: string;
-    selectedContacts: IContact[];
+    selectedContacts: IUser[];
     title: string;
 }
 
@@ -101,7 +101,7 @@ class NewGroupMenu extends React.Component<IProps, IState> {
         );
     }
 
-    private contactListChangeHandler = (contacts: IContact[]) => {
+    private contactListChangeHandler = (contacts: IUser[]) => {
         this.setState({
             selectedContacts: contacts,
         });

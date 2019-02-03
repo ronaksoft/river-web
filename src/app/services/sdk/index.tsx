@@ -54,7 +54,7 @@ import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from
 import {Bool} from './messages/chat.core.types_pb';
 import {
     AccountCheckUsername, AccountGetNotifySettings,
-    AccountRegisterDevice, AccountSetNotifySettings,
+    AccountRegisterDevice, AccountRemovePhoto, AccountSetNotifySettings,
     AccountUpdateProfile,
     AccountUpdateUsername, AccountUploadPhoto
 } from './messages/chat.api.accounts_pb';
@@ -64,7 +64,7 @@ import {
     GroupsDeleteUser,
     GroupsEditTitle,
     GroupsGetFull, GroupsToggleAdmins,
-    GroupsUpdateAdmin, GroupUploadPhoto
+    GroupsUpdateAdmin, GroupsUploadPhoto
 } from './messages/chat.api.groups_pb';
 import {UsersGetFull} from './messages/chat.api.users_pb';
 
@@ -368,6 +368,11 @@ export default class SDK {
         return this.server.send(C_MSG.AccountUploadPhoto, data.serializeBinary(), true);
     }
 
+    public removeProfilePicture(): Promise<Bool.AsObject> {
+        const data = new AccountRemovePhoto();
+        return this.server.send(C_MSG.AccountRemovePhoto, data.serializeBinary(), true);
+    }
+
     public getUserFull(usersInput: InputUser[]): Promise<Bool.AsObject> {
         const data = new UsersGetFull();
         data.setUsersList(usersInput);
@@ -438,9 +443,9 @@ export default class SDK {
     }
 
     public groupUploadPicture(groupId: string, file: InputFile): Promise<Bool.AsObject> {
-        const data = new GroupUploadPhoto();
+        const data = new GroupsUploadPhoto();
         data.setGroupid(groupId);
         data.setFile(file);
-        return this.server.send(C_MSG.GroupUploadPhoto, data.serializeBinary(), true);
+        return this.server.send(C_MSG.GroupsUploadPhoto, data.serializeBinary(), true);
     }
 }

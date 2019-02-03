@@ -126,7 +126,7 @@ export default class DialogRepo {
             remoteRes.messagesList.forEach((msg) => {
                 messageMap[msg.id || 0] = msg;
             });
-            this.userRepo.importBulk(remoteRes.usersList);
+            this.userRepo.importBulk(false, remoteRes.usersList);
             this.groupRepo.importBulk(remoteRes.groupsList);
             this.lazyUpsert(remoteRes.dialogsList, messageMap);
             return remoteRes.dialogsList;
@@ -144,7 +144,7 @@ export default class DialogRepo {
             remoteRes.messagesList.forEach((msg) => {
                 messageMap[msg.id || 0] = msg;
             });
-            this.userRepo.importBulk(remoteRes.usersList);
+            this.userRepo.importBulk(false, remoteRes.usersList);
             this.groupRepo.importBulk(remoteRes.groupsList);
             this.lazyUpsert(remoteRes.dialogsList, messageMap);
             const dialogs: IDialog[] = remoteRes.dialogsList;

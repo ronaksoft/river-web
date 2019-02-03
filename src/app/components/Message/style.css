@@ -573,7 +573,7 @@ html[bubble="4"] .bubble-wrapper {
     min-width: 91px;
     padding-bottom: 16px; }
     html[bubble="4"] .bubble-wrapper .bubble .inner {
-      padding: 8px 12px 0 8px; }
+      padding: 8px 12px 4px 8px; }
     html[bubble="4"] .bubble-wrapper .bubble .name {
       padding: 4px 12px 0 8px; }
     html[bubble="4"] .bubble-wrapper .bubble.highlight:before {
@@ -586,4 +586,4 @@ html[bubble="4"] .bubble-wrapper {
     min-width: 95px; }
 
 html[bubble="4"] .group .bubble-wrapper.avatar.you .bubble > .inner {
-  padding: 2px 12px 0 8px; }
+  padding: 2px 12px 4px 8px; }

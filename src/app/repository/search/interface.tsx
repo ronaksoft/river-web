@@ -7,10 +7,10 @@
     Copyright Ronak Software Group 2018
 */
 
-import {IContact} from '../contact/interface';
+import {IUser} from '../user/interface';
 import {IDialog} from '../dialog/interface';
 
 export interface IDialogWithContact {
     dialogs: IDialog[];
-    contacts: IContact[];
+    contacts: IUser[];
 }

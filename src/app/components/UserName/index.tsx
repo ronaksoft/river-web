@@ -10,7 +10,6 @@
 import * as React from 'react';
 import {IUser} from '../../repository/user/interface';
 import UserRepo from '../../repository/user';
-import ContactRepo from '../../repository/contact';
 import {GetUniqueColor, SecondaryColors} from '../UserAvatar';
 
 interface IProps {
@@ -36,7 +35,6 @@ interface IState {
 
 class UserName extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
-    private contactRepo: ContactRepo;
     private tryTimeout: any = null;
     private tryCount: number = 0;
 
@@ -51,7 +49,6 @@ class UserName extends React.Component<IProps, IState> {
         };
 
         this.userRepo = UserRepo.getInstance();
-        this.contactRepo = ContactRepo.getInstance();
     }
 
     public componentDidMount() {
@@ -119,37 +116,21 @@ class UserName extends React.Component<IProps, IState> {
             return;
         }
 
-        this.contactRepo.get(this.state.id, this.props.unsafe).then((contact) => {
-            if (contact) {
+        this.userRepo.get(this.state.id).then((user) => {
+            if (user) {
                 this.setState({
-                    user: {
-                        _id: contact.id,
-                        firstname: contact.firstname,
-                        id: contact.id,
-                        lastname: contact.lastname,
-                        username: contact.username,
-                    },
+                    user,
                 });
             } else {
                 throw Error('not found');
             }
         }).catch(() => {
-            this.userRepo.get(this.state.id).then((user) => {
-                if (user) {
-                    this.setState({
-                        user,
-                    });
-                } else {
-                    throw Error('not found');
-                }
-            }).catch(() => {
-                if (this.tryCount < 10) {
-                    this.tryCount++;
-                    this.tryTimeout = setTimeout(() => {
-                        this.getUser();
-                    }, 1000);
-                }
-            });
+            if (this.tryCount < 10) {
+                this.tryCount++;
+                this.tryTimeout = setTimeout(() => {
+                    this.getUser();
+                }, 1000);
+            }
         });
     }
 

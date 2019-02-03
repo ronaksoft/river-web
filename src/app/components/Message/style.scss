@@ -677,7 +677,7 @@ html[bubble="4"] {
       min-width: 91px;
       padding-bottom: 16px;
       .inner {
-        padding: 8px 12px 0 8px;
+        padding: 8px 12px 4px 8px;
       }
       .name {
         padding: 4px 12px 0 8px;
@@ -707,7 +707,7 @@ html[bubble="4"] {
       &.avatar.you {
         .bubble {
           > .inner {
-            padding: 2px 12px 0 8px;
+            padding: 2px 12px 4px 8px;
           }
         }
       }

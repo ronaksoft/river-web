@@ -1,0 +1,61 @@
+/*
+    Creation Time: 2019 - Feb - 02
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2019
+*/
+
+@keyframes kkFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.document-viewer-dialog {
+  div[role="document"] {
+    > div {
+      line-height: 0;
+      max-width: 640px;
+      background: transparent;
+      overflow: hidden;
+    }
+  }
+  .avatar-container {
+    position: relative;
+    width: 640px;
+    height: 640px;
+    .thumbnail {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      filter: blur(40px);
+      img {
+        height: 100%;
+        width: 100%;
+      }
+    }
+    .photo {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 1000;
+      img {
+        height: 100%;
+        width: 100%;
+        animation-name: kkFadeIn;
+        animation-duration: 0.3s;
+        animation-iteration-count: 1;
+        animation-timing-function: ease-out;
+      }
+    }
+  }
+}

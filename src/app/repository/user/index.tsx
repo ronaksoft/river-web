@@ -12,7 +12,7 @@ import {IUser} from './interface';
 import {differenceBy, find, merge, uniqBy} from 'lodash';
 import SDK from "../../services/sdk";
 import {DexieUserDB} from '../../services/db/dexie/user';
-import {IContact} from '../contact/interface';
+import Dexie from 'dexie';
 
 export default class UserRepo {
     public static getInstance() {
@@ -28,6 +28,7 @@ export default class UserRepo {
     private dbService: DB;
     private db: DexieUserDB;
     private sdk: SDK;
+    private contactImported: boolean = false;
 
     private constructor() {
         this.dbService = DB.getInstance();
@@ -60,35 +61,49 @@ export default class UserRepo {
         });
     }
 
-    public getManyCache({keyword, limit}: any): Promise<IContact[]> {
-        if (!keyword) {
-            return this.db.users.orderBy('firstname').limit(limit || 100).toArray();
+    public getInstantContact(id: string): IUser | null {
+        const contact = this.dbService.getUser(id);
+        if (contact && contact.is_contact) {
+            return contact;
+        } else {
+            return null;
         }
-        return this.db.users
-            .where('firstname').startsWithIgnoreCase(keyword)
-            .or('lastname').startsWithIgnoreCase(keyword).limit(limit || 12).toArray();
     }
 
-    public importBulk(users: IUser[]): Promise<any> {
+    public getManyCache(isContact: boolean, {keyword, limit}: any): Promise<IUser[]> {
+        const searchFilter = (u: IUser) => {
+            const reg = new RegExp(keyword || '', 'i');
+            return (reg.test(u.phone || '') || reg.test(u.username || '') || reg.test(u.firstname || '') || reg.test(u.lastname || ''));
+        };
+        if (isContact) {
+            if (!keyword) {
+                return this.db.users.where('[is_contact+username]').between([1, Dexie.minKey], [1, Dexie.maxKey], true, true).limit(limit || 1000).toArray();
+            }
+            return this.db.users.where('[is_contact+username]').between([1, Dexie.minKey], [1, Dexie.maxKey], true, true).filter(searchFilter).limit(limit || 12).toArray();
+        } else {
+            if (!keyword) {
+                return this.db.users.limit(limit || 1000).toArray();
+            }
+            return this.db.users.filter(searchFilter).limit(limit || 12).toArray();
+        }
+    }
+
+    public importBulk(isContact: boolean, users: IUser[]): Promise<any> {
         const tempUsers = uniqBy(users, 'id');
-        return this.upsert(tempUsers);
+        return this.upsert(isContact, tempUsers);
     }
 
-    public upsert(users: IUser[]): Promise<any> {
+    public upsert(isContact: boolean, users: IUser[]): Promise<any> {
         const ids = users.map((user) => {
             this.dbService.setUser(user);
+            user.is_contact = isContact ? 1 : 0;
             return user.id || '';
         });
         return this.db.users.where('id').anyOf(ids).toArray().then((result) => {
             const createItems: IUser[] = differenceBy(users, result, 'id');
             const updateItems: IUser[] = result;
             updateItems.map((user: IUser) => {
-                const t = find(users, {id: user.id});
-                if (t) {
-                    return merge(user, t);
-                } else {
-                    return user;
-                }
+                return this.mergeUser(users, user);
             });
             const list = [...createItems, ...updateItems];
             list.forEach((item) => {
@@ -99,6 +114,54 @@ export default class UserRepo {
             this.broadcastEvent('User_DB_Updated', {ids});
             return res;
         });
+    }
+
+    public getAllContacts(): Promise<IUser[]> {
+        return new Promise((resolve, reject) => {
+            if (this.contactImported) {
+                this.getManyCache(true, {}).then((res) => {
+                    resolve(res);
+                }).catch((err) => {
+                    this.sdk.getContacts().then((remoteRes) => {
+                        this.importBulk(true, remoteRes.usersList);
+                        resolve(remoteRes.usersList);
+                    }).catch((err2) => {
+                        reject(err2);
+                    });
+                });
+            } else {
+                this.contactImported = true;
+                this.sdk.getContacts().then((remoteRes) => {
+                    this.importBulk(true, remoteRes.usersList);
+                    resolve(remoteRes.usersList);
+                }).catch((err2) => {
+                    reject(err2);
+                });
+            }
+        });
+    }
+
+    public removeContact(id: string) {
+        return this.db.users.where('id').equals(id).first().then((user) => {
+            if (user) {
+                user.is_contact = 0;
+                this.dbService.setUser(user);
+                this.createMany([user]);
+            }
+        });
+    }
+
+    private mergeUser(users: IUser[], user: IUser) {
+        const t = find(users, {id: user.id});
+        if (t && t.is_contact === 1 && user.is_contact !== 1) {
+            const d = merge(user, t);
+            d.is_contact = 1;
+            return d;
+        } else if (t) {
+            return merge(user, t);
+        } else {
+            return user;
+        }
     }
 
     private broadcastEvent(name: string, data: any) {

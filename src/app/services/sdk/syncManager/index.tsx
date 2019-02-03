@@ -317,7 +317,7 @@ export default class SyncManager {
             data.push(users[key]);
         });
         if (data.length > 0) {
-            this.userRepo.importBulk(data).then(() => {
+            this.userRepo.importBulk(false, data).then(() => {
                 this.broadcastEvent('User_DB_Updated', {ids: keys});
             });
         }

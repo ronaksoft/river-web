@@ -11,7 +11,6 @@ import DB from '../../services/db/user';
 import {IGroup} from './interface';
 import {differenceBy, find, merge, uniqBy} from 'lodash';
 import {DexieUserDB} from '../../services/db/dexie/user';
-import {IContact} from '../contact/interface';
 
 export default class GroupRepo {
     public static getInstance() {
@@ -53,7 +52,7 @@ export default class GroupRepo {
         });
     }
 
-    public getManyCache({keyword, limit}: any): Promise<IContact[]> {
+    public getManyCache({keyword, limit}: any): Promise<IGroup[]> {
         if (!keyword) {
             return this.db.groups.limit(limit || 100).toArray();
         }

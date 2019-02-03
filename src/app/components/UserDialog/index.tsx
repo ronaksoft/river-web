@@ -8,15 +8,14 @@
 */
 
 import * as React from 'react';
-import {IContact} from '../../repository/contact/interface';
+import {IUser} from '../../repository/user/interface';
 import {AddRounded, CheckRounded, EditRounded, SendRounded} from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import {InputPeer, PeerNotifySettings, PeerType, PhoneContact} from '../../services/sdk/messages/chat.core.types_pb';
 import SDK from '../../services/sdk';
 import UserAvatar from '../UserAvatar';
-import ContactRepo from '../../repository/contact';
-import TextField from '@material-ui/core/TextField/TextField';
 import UserRepo from '../../repository/user';
+import TextField from '@material-ui/core/TextField/TextField';
 import UniqueId from '../../services/uniqueId';
 import Checkbox from '@material-ui/core/Checkbox/Checkbox';
 import DialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
@@ -28,10 +27,11 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button/Button';
 import DialogActions from '@material-ui/core/DialogActions/DialogActions';
 import {Link} from 'react-router-dom';
+import RiverTime from '../../services/utilities/river_time';
+import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
+import {isMuted} from '../UserInfoMenu';
 
 import './style.css';
-import {isMuted} from '../UserInfoMenu';
-import RiverTime from '../../services/utilities/river_time';
 
 interface IProps {
     onClose?: () => void;
@@ -48,15 +48,15 @@ interface IState {
     peer: InputPeer | null;
     phone: string;
     sendMessageEnable: boolean;
-    user: IContact | null;
+    user: IUser | null;
     userDialogOpen: boolean;
 }
 
 class UserDialog extends React.Component<IProps, IState> {
-    private contactRepo: ContactRepo;
     private userRepo: UserRepo;
     private sdk: SDK;
     private riverTime: RiverTime;
+    private documentViewerService: DocumentViewerService;
 
     constructor(props: IProps) {
         super(props);
@@ -77,12 +77,12 @@ class UserDialog extends React.Component<IProps, IState> {
         };
         // RiverTime singleton
         this.riverTime = RiverTime.getInstance();
-        // Contact Repository singleton
-        this.contactRepo = ContactRepo.getInstance();
         // User Repository singleton
         this.userRepo = UserRepo.getInstance();
         // SDK singleton
         this.sdk = SDK.getInstance();
+
+        this.documentViewerService = DocumentViewerService.getInstance();
     }
 
     public componentDidMount() {
@@ -128,7 +128,7 @@ class UserDialog extends React.Component<IProps, IState> {
             >
                 <div className="user-info-menu">
                     {user && <div className="info kk-card">
-                        <div className="avatar">
+                        <div className="avatar" onClick={this.showAvatarHandler}>
                             <UserAvatar id={user.id || ''} noDetail={true}/>
                         </div>
                         <div className="line">
@@ -202,6 +202,12 @@ class UserDialog extends React.Component<IProps, IState> {
                             <div className="form-control">
                                 <label>Username</label>
                                 <div className="inner">@{user.username}</div>
+                            </div>
+                        </div>}
+                        {Boolean(user.bio && user.bio.length > 0) && <div className="line">
+                            <div className="form-control">
+                                <label>Bio</label>
+                                <div className="inner">{user.bio}</div>
                             </div>
                         </div>}
                         {Boolean(edit && user && ((user.firstname !== firstname || user.lastname !== lastname) || !isInContact)) &&
@@ -279,23 +285,14 @@ class UserDialog extends React.Component<IProps, IState> {
             return;
         }
 
-        this.contactRepo.get(peer.getId() || '', true).then((res) => {
+
+        this.userRepo.get(peer.getId() || '').then((res) => {
             this.setState({
                 firstname: res.firstname || '',
-                isInContact: (res.temp !== true),
+                isInContact: (res.is_contact === 1),
                 lastname: res.lastname || '',
                 sendMessageEnable: Boolean(res.accesshash && res.accesshash.length > 0),
                 user: res,
-            });
-        }).catch(() => {
-            this.userRepo.get(peer.getId() || '').then((res) => {
-                this.setState({
-                    firstname: res.firstname || '',
-                    isInContact: false,
-                    lastname: res.lastname || '',
-                    sendMessageEnable: Boolean(res.accesshash && res.accesshash.length > 0),
-                    user: res,
-                });
             });
         });
 
@@ -346,7 +343,7 @@ class UserDialog extends React.Component<IProps, IState> {
         });
         this.sdk.contactImport(true, contacts).then((data) => {
             data.usersList.forEach((item) => {
-                this.contactRepo.importBulk([item]);
+                this.userRepo.importBulk(true, [item]);
             });
             user.lastname = lastname;
             user.firstname = firstname;
@@ -472,6 +469,23 @@ class UserDialog extends React.Component<IProps, IState> {
             firstname: user.firstname || '',
             lastname: user.lastname || '',
         });
+    }
+
+    /* Show avatar handler */
+    private showAvatarHandler = () => {
+        const {user} = this.state;
+        if (!user || !user.photo) {
+            return;
+        }
+        const doc: IDocument = {
+            items: [{
+                caption: '',
+                fileLocation: user.photo.photobig,
+                thumbFileLocation: user.photo.photosmall,
+            }],
+            type: 'avatar'
+        };
+        this.documentViewerService.loadDocument(doc);
     }
 }
 
