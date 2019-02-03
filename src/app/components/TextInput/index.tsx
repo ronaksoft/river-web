@@ -767,7 +767,7 @@ class TextInput extends React.Component<IProps, IState> {
     /* Generate entities for message */
     private generateEntities(): core_types_pb.MessageEntity[] | null {
         const entities: core_types_pb.MessageEntity[] = [];
-        if (this.mentions.length === 0) {
+        if (this.mentions.length > 0) {
             this.mentions.forEach((mention) => {
                 const entity = new core_types_pb.MessageEntity();
                 entity.setOffset(mention.plainTextIndex);
