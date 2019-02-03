@@ -29,11 +29,10 @@ import {IMessage} from '../../repository/message/interface';
 import UserName from '../UserName';
 import {C_MSG_MODE} from './consts';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
-import * as core_types_pb from '../../services/sdk/messages/chat.core.types_pb';
 import {
     GroupFlags,
     GroupParticipant,
-    InputPeer,
+    InputPeer, MessageEntity,
     MessageEntityType,
     PeerType,
     TypingAction
@@ -765,11 +764,11 @@ class TextInput extends React.Component<IProps, IState> {
     }
 
     /* Generate entities for message */
-    private generateEntities(): core_types_pb.MessageEntity[] | null {
-        const entities: core_types_pb.MessageEntity[] = [];
+    private generateEntities(): MessageEntity[] | null {
+        const entities: MessageEntity[] = [];
         if (this.mentions.length > 0) {
             this.mentions.forEach((mention) => {
-                const entity = new core_types_pb.MessageEntity();
+                const entity = new MessageEntity();
                 entity.setOffset(mention.plainTextIndex);
                 entity.setLength(mention.display.length);
                 entity.setType(MessageEntityType.MESSAGEENTITYTYPEMENTION);
@@ -779,7 +778,7 @@ class TextInput extends React.Component<IProps, IState> {
         }
         if (this.textarea) {
             XRegExp.forEach(this.textarea.value, /\bhttps?:\/\/\S+/, (match) => {
-                const entity = new core_types_pb.MessageEntity();
+                const entity = new MessageEntity();
                 entity.setOffset(match.index);
                 entity.setLength(match[0].length);
                 entity.setType(MessageEntityType.MESSAGEENTITYTYPEURL);
@@ -788,7 +787,7 @@ class TextInput extends React.Component<IProps, IState> {
             });
             const hashTagReg = XRegExp('#[\\p{L}_]+');
             XRegExp.forEach(this.textarea.value, hashTagReg, (match) => {
-                const entity = new core_types_pb.MessageEntity();
+                const entity = new MessageEntity();
                 entity.setOffset(match.index);
                 entity.setLength(match[0].length);
                 entity.setType(MessageEntityType.MESSAGEENTITYTYPEHASHTAG);
