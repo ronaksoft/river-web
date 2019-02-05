@@ -243,17 +243,17 @@
       transition: width 0.2s linear;
       flex-direction: row-reverse;
       .icon {
+        position: relative;
         cursor: pointer;
         padding: 0 6px;
         line-height: 0;
-        svg {
+        > svg {
           color: var(--grey);
-        }
-        &:hover {
-          svg {
+          &:hover {
             color: var(--dark-medium);
           }
         }
+
       }
       .send {
         display: none;
@@ -516,10 +516,8 @@ html[theme="dark-blue"] {
         }
       }
       .input-actions {
-        .icon:hover {
-          svg {
-            color: var(--light);
-          }
+        svg:hover {
+          color: var(--light);
         }
         .voice {
           .lock-wrapper {

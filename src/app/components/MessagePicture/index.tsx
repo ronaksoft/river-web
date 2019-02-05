@@ -1,5 +1,5 @@
 /*
-    Creation Time: 2019 - Jan - 16
+    Creation Time: 2019 - Feb - 05
     Created by:  (hamidrezakk)
     Maintainers:
        1.  HamidrezaKK (hamidrezakks@gmail.com)
@@ -10,112 +10,13 @@
 import * as React from 'react';
 import {IMessage} from '../../repository/message/interface';
 import {InputPeer} from '../../services/sdk/messages/chat.core.types_pb';
-import {
-    DocumentAttributeFile,
-    DocumentAttributeType,
-    MediaDocument
-} from '../../services/sdk/messages/chat.core.message.medias_pb';
-import {CloseRounded, CloudDownloadRounded, InsertDriveFileRounded} from '@material-ui/icons';
+import {MediaDocument} from '../../services/sdk/messages/chat.core.message.medias_pb';
+import {CloseRounded, CloudDownloadRounded} from '@material-ui/icons';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import ProgressBroadcaster from '../../services/progress';
+import {getFileInfo} from '../MessageFile';
 
 import './style.css';
-
-export const getFileInfo = (message: IMessage): IFileInfo => {
-    const info: IFileInfo = {
-        caption: '',
-        name: '',
-        size: 0,
-        type: '',
-    };
-    const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
-    info.caption = messageMediaDocument.caption || '';
-    info.size = messageMediaDocument.doc.filesize || 0;
-    info.type = messageMediaDocument.doc.mimetype || '';
-    if (!message.attributes) {
-        return info;
-    }
-    messageMediaDocument.doc.attributesList.forEach((attr, index) => {
-        if (attr.type === DocumentAttributeType.ATTRIBUTETYPEFILE && message.attributes) {
-            const docAttr: DocumentAttributeFile.AsObject = message.attributes[index];
-            info.name = docAttr.filename || '';
-        }
-    });
-    return info;
-};
-
-export const getFileExtension = (type: string) => {
-    switch (type) {
-        case 'text/plain':
-            return 'txt';
-        case 'text/markdown':
-            return 'md';
-        case 'image/bmp':
-            return 'bmp';
-        case 'image/tiff':
-            return 'tif';
-        case 'image/jpeg':
-            return 'jpg';
-        case 'image/gif':
-            return 'gif';
-        case 'image/ief':
-            return 'ief';
-        case 'image/png':
-            return 'png';
-        case 'image/vnd.dwg':
-            return 'dwg';
-        case 'image/svg+xml':
-            return 'svg';
-        case 'image/webp':
-            return 'webp';
-        case 'audio/aac':
-            return 'acc';
-        case 'audio/mpeg':
-            return 'mpg';
-        case 'audio/wma':
-            return 'wma';
-        case 'audio/mp4':
-            return 'm4a';
-        case 'audio/ogg':
-            return 'ogg';
-        case 'audio/x-matroska':
-            return '.mka';
-        case 'audio/flac':
-            return 'flac';
-        case 'video/mp4':
-            return 'mp4';
-        case 'video/3gp':
-            return '3gp';
-        case 'video/ogg':
-            return 'ogv';
-        case 'video/webm':
-            return 'webm';
-        case 'video/quicktime':
-            return 'move';
-        case 'video/x-matroska':
-            return 'mkv';
-        case 'video/x-matroska-3d':
-            return 'mk3d';
-        case 'application/vnd.android.package-archive':
-            return 'apk';
-        case 'application/exe':
-            return 'exe';
-        case 'application/msword':
-            return 'doc';
-        case 'application/vnd.ms-excel':
-            return 'xls';
-        case 'application/pdf':
-            return 'pdf';
-        case 'application/x-rar-compressed':
-            return 'rar';
-        case 'application/zip':
-            return 'zip';
-        case 'application/ogg':
-            return 'ogx';
-        default:
-            return '';
-    }
-};
 
 interface IProps {
     message: IMessage;
@@ -131,14 +32,7 @@ interface IState {
     type: string;
 }
 
-interface IFileInfo {
-    name: string;
-    caption: string;
-    size: number;
-    type: string;
-}
-
-class MessageFile extends React.Component<IProps, IState> {
+class MessagePicture extends React.Component<IProps, IState> {
     private lastId: number = 0;
     private fileId: string = '';
     private downloaded: boolean = false;
@@ -226,36 +120,27 @@ class MessageFile extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {caption, type, fileName, fileState} = this.state;
+        const {caption, fileState} = this.state;
         return (
-            <div className='message-file'>
-                <div className='file-content'>
-                    <div className='file-action'>
-                        {Boolean(fileState === 'view' || fileState === 'open') &&
-                        <React.Fragment>
-                            <InsertDriveFileRounded/>
-                            <span className='extension'>{getFileExtension(type)}</span>
-                        </React.Fragment>}
-                        {Boolean(fileState === 'download') &&
-                        <CloudDownloadRounded onClick={this.downloadFileHandler}/>}
-                        {Boolean(fileState === 'progress') && <React.Fragment>
-                            <div className='progress'>
-                                <svg viewBox='0 0 32 32'>
-                                    <circle ref={this.progressRefHandler} r='14' cx='16' cy='16'/>
-                                </svg>
-                            </div>
-                            <CloseRounded className='action' onClick={this.cancelFileHandler}/>
-                        </React.Fragment>}
+            <div className='message-picture'>
+                <div className='picture-content'>
+                    <div className='picture-thumb'>
+                        <div className='picture-action'>
+                            {Boolean(fileState === 'download') &&
+                            <CloudDownloadRounded onClick={this.downloadFileHandler}/>}
+                            {Boolean(fileState === 'progress') && <React.Fragment>
+                                <div className='progress'>
+                                    <svg viewBox='0 0 32 32'>
+                                        <circle ref={this.progressRefHandler} r='14' cx='16' cy='16'/>
+                                    </svg>
+                                </div>
+                                <CloseRounded className='action' onClick={this.cancelFileHandler}/>
+                            </React.Fragment>}
+                        </div>
                     </div>
-                    <div className='file-info'>
-                        <div className='file-name'>{fileName}</div>
-                        {Boolean(fileState === 'view') &&
-                        <div className='file-download' onClick={this.viewFileHandler}>Save</div>}
-                        {Boolean(fileState === 'open') &&
-                        <div className='file-download' onClick={this.openFileHandler}>Open</div>}
-                        {Boolean(fileState !== 'view' && fileState !== 'open') &&
-                        <div className='file-size' ref={this.fileSizeRefHandler}>0 KB</div>}
-                    </div>
+                    {/*<div className='picture-big'>
+                        hey
+                    </div>*/}
                 </div>
                 {Boolean(caption.length > 0) && <div className='file-caption'>{caption}</div>}
             </div>
@@ -353,20 +238,6 @@ class MessageFile extends React.Component<IProps, IState> {
         }
     }
 
-    /* View file */
-    private viewFileHandler = () => {
-        if (this.props.onAction) {
-            this.props.onAction('view', this.state.message);
-        }
-    }
-
-    /* Open file */
-    private openFileHandler = () => {
-        if (this.props.onAction) {
-            this.props.onAction('open', this.state.message);
-        }
-    }
-
     /* Cancel file download/upload */
     private cancelFileHandler = () => {
         if (this.props.onAction) {
@@ -376,11 +247,6 @@ class MessageFile extends React.Component<IProps, IState> {
                 this.props.onAction('cancel_download', this.state.message);
             }
         }
-    }
-
-    /* File size ref handler */
-    private fileSizeRefHandler = (ref: any) => {
-        this.fileSizeRef = ref;
     }
 
     /* Display file size */
@@ -409,4 +275,4 @@ class MessageFile extends React.Component<IProps, IState> {
     }
 }
 
-export default MessageFile;
+export default MessagePicture;

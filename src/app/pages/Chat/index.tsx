@@ -111,9 +111,9 @@ import {saveAs} from 'file-saver';
 import {getFileInfo} from '../../components/MessageFile';
 import AudioPlayerShell from '../../components/AudioPlayerShell';
 import DocumentViewer from '../../components/DocumentViewer';
+import {IUser} from '../../repository/user/interface';
 
 import './style.css';
-import {IUser} from '../../repository/user/interface';
 
 interface IProps {
     history?: any;
@@ -1007,6 +1007,10 @@ class Chat extends React.Component<IProps, IState> {
         if (data.peer.id === this.state.selectedDialogId) {
             this.setState({
                 maxReadId: data.maxid || 0,
+            }, () => {
+                if (this.messageComponent) {
+                    this.messageComponent.list.forceUpdateGrid();
+                }
             });
         }
     }

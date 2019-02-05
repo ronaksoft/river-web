@@ -53,6 +53,7 @@ import {to4bitResolution} from './utils';
 import {measureNodeHeight} from './measureHeight';
 import {getMessageTitle} from '../Dialog/utils';
 import XRegExp from 'xregexp';
+import SelectMedia from '../SelectMedia';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
@@ -83,6 +84,7 @@ interface IState {
     previewMessageHeight: number;
     previewMessageMode: number;
     rtl: boolean;
+    selectMediaOpen: boolean;
     selectable: boolean;
     selectableDisable: boolean;
     textareaValue: string;
@@ -162,6 +164,7 @@ class TextInput extends React.Component<IProps, IState> {
             previewMessageHeight: 0,
             previewMessageMode: props.previewMessageMode || C_MSG_MODE.Normal,
             rtl: false,
+            selectMediaOpen: false,
             selectable: props.selectable,
             selectableDisable: props.selectableDisable,
             textareaValue: '',
@@ -236,7 +239,7 @@ class TextInput extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable, disableAuthority, textareaValue, voiceMode} = this.state;
+        const {previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable, disableAuthority, textareaValue, voiceMode, selectMediaOpen} = this.state;
 
         if (!selectable && disableAuthority !== 0x0) {
             if (disableAuthority === 0x1) {
@@ -348,8 +351,10 @@ class TextInput extends React.Component<IProps, IState> {
                                     <LockRounded/>
                                 </div>
                             </div>
-                            <div className="icon attachment" onClick={this.openFileDialog}>
+                            <div className="icon attachment" onClick={this.openSelectMediaHandler}>
                                 <AttachFileRounded/>
+                                <SelectMedia open={selectMediaOpen} onClose={this.selectMediaCloseHandler}
+                                             onAction={this.selectMediaActionHandler}/>
                             </div>
                             <div className="icon send" onClick={this.submitMessage}>
                                 <SendRounded/>
@@ -1294,6 +1299,28 @@ class TextInput extends React.Component<IProps, IState> {
                     }
                 }, 5000);
             }
+        }
+    }
+
+    /* Open SelectMedia handler */
+    private openSelectMediaHandler = () => {
+        this.setState({
+            selectMediaOpen: !this.state.selectMediaOpen,
+        });
+    }
+
+    /* SelectMedia close handler */
+    private selectMediaCloseHandler = () => {
+        this.setState({
+            selectMediaOpen: false,
+        });
+    }
+
+    private selectMediaActionHandler = (cmd: string) => {
+        switch (cmd) {
+            case 'file':
+                this.openFileDialog();
+                break;
         }
     }
 

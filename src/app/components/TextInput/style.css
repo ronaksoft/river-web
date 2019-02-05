@@ -262,13 +262,14 @@ input {
       transition: width 0.2s linear;
       flex-direction: row-reverse; }
       .write .inputs .input-actions .icon {
+        position: relative;
         cursor: pointer;
         padding: 0 6px;
         line-height: 0; }
-        .write .inputs .input-actions .icon svg {
+        .write .inputs .input-actions .icon > svg {
           color: var(--grey); }
-        .write .inputs .input-actions .icon:hover svg {
-          color: var(--dark-medium); }
+          .write .inputs .input-actions .icon > svg:hover {
+            color: var(--dark-medium); }
       .write .inputs .input-actions .send {
         display: none; }
       .write .inputs .input-actions .voice .wave {
@@ -465,8 +466,8 @@ html[theme="dark-blue"] .write {
     html[theme="dark"] .write .inputs .voice-recorder .play-frame,
     html[theme="dark-blue"] .write .inputs .voice-recorder .play-frame {
       background-color: var(--dark-low); }
-  html[theme="dark"] .write .inputs .input-actions .icon:hover svg,
-  html[theme="dark-blue"] .write .inputs .input-actions .icon:hover svg {
+  html[theme="dark"] .write .inputs .input-actions svg:hover,
+  html[theme="dark-blue"] .write .inputs .input-actions svg:hover {
     color: var(--light); }
   html[theme="dark"] .write .inputs .input-actions .voice .lock-wrapper,
   html[theme="dark-blue"] .write .inputs .input-actions .voice .lock-wrapper {

@@ -22,6 +22,7 @@ createWindow = () => {
         webPreferences: {
             nodeIntegration: false,
             preload: __dirname + '/preload.js',
+            webSecurity: false,
         },
         height: 860,
         width: 1280,

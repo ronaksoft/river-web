@@ -12,6 +12,7 @@ import axios from 'axios';
 import {base64ToU8a, uint8ToBase64} from './utils';
 import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from '../const/const';
 import {C_MSG} from '../../const';
+import ElectronService from '../../../electron';
 
 export interface IHttpRequest {
     constructor: number;
@@ -49,7 +50,7 @@ export default class Http {
 
         if (this.testUrl.length > 0) {
             this.dataCenterUrl = 'http://' + this.testUrl + '/file';
-        } else if (window.location.protocol === 'https:') {
+        } else if (window.location.protocol === 'https:' && !ElectronService.isElectron()) {
             this.dataCenterUrl = 'https://' + window.location.host + '/file';
         }
 

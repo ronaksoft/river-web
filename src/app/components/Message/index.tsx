@@ -516,6 +516,7 @@ class Message extends React.Component<IProps, IState> {
     }
 
     private onScroll = (params: ScrollParams) => {
+        this.scrollTop = params.scrollTop;
         if (params.clientHeight < params.scrollHeight && params.scrollTop > 200) {
             this.topOfList = false;
         }
@@ -528,7 +529,6 @@ class Message extends React.Component<IProps, IState> {
                 this.props.onLoadMoreBefore();
             }
         }
-        this.scrollTop = params.scrollTop;
     }
 
     private contextMenuHandler = (index: number, e: any) => {

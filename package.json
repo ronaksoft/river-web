@@ -17,6 +17,7 @@
     "test": "react-scripts-ts test --env=jsdom",
     "eject": "react-scripts-ts eject",
     "elec": "concurrently \"cross-env BROWSER=none npm run start\" \"wait-on http://localhost:3000 && electron --inspect=5858 .\"",
+    "elec2": "electron --inspect=5858 .",
     "pack": "electron-builder --dir",
     "elec-dist": "npx build --x64 --macos --win --linux --c.mac.identity=null --c.extraMetadata.main=public/electron.js -p always",
     "elec-dist-mac": "npx build --x64 --macos --c.mac.identity=null --c.extraMetadata.main=public/electron.js -p always",
@@ -26,6 +27,7 @@
   "dependencies": {
     "@material-ui/core": "3.5.1",
     "@material-ui/icons": "^3.0.1",
+    "@material-ui/styles": "^3.0.0-alpha.10",
     "@types/react-custom-scrollbars": "^4.0.5",
     "@types/xregexp": "^3.0.29",
     "axios": "^0.18.0",
@@ -94,18 +96,10 @@
     },
     "mac": {
       "icon": "assets/icon.png",
-      "type": "distribution",
       "target": [
-        "pkg",
-        "dmg",
-        "mas"
+        "dmg"
       ],
       "category": "messaging"
-    },
-    "mas": {
-      "entitlements": "assets/entitlements.mas.plist",
-      "entitlementsInherit": "assets/entitlements.mas.inherit.plist",
-      "provisioningProfile": "assets/embedded.provisionprofile"
     },
     "win": {
       "target": "nsis",
