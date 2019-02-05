@@ -41,10 +41,9 @@ interface IState {
     items: IDialog[];
     moreAnchorEl: any;
     moreIndex: number;
-    selectedId: string;
     searchEnable: boolean;
     searchItems: IDialog[];
-    scrollIndex: number;
+    selectedId: string;
 }
 
 const listStyle: React.CSSProperties = {
@@ -67,7 +66,6 @@ class Dialog extends React.Component<IProps, IState> {
             items: props.items,
             moreAnchorEl: null,
             moreIndex: -1,
-            scrollIndex: -1,
             searchEnable: false,
             searchItems: clone(props.items),
             selectedId: props.selectedId,
@@ -89,7 +87,6 @@ class Dialog extends React.Component<IProps, IState> {
             this.setState({
                 isTypingList: newProps.isTypingList,
                 items: newProps.items,
-                scrollIndex: -1,
                 selectedId: newProps.selectedId,
             }, () => {
                 this.filterItem();
@@ -99,7 +96,6 @@ class Dialog extends React.Component<IProps, IState> {
             this.setState({
                 isTypingList: newProps.isTypingList,
                 items: newProps.items,
-                scrollIndex: -1,
                 selectedId: newProps.selectedId,
             }, () => {
                 this.filterItem();
@@ -170,7 +166,6 @@ class Dialog extends React.Component<IProps, IState> {
                                         rowRenderer={this.rowRender}
                                         rowCount={searchItems.length}
                                         overscanRowCount={30}
-                                        scrollToIndex={this.state.scrollIndex}
                                         width={width}
                                         height={height}
                                         className="dialog-container"
@@ -366,7 +361,6 @@ class Dialog extends React.Component<IProps, IState> {
         }, () => {
             this.list.recomputeRowHeights();
             this.list.forceUpdateGrid();
-            this.list.scrollToPosition(0);
         });
     }
 
