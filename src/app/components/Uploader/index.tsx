@@ -11,30 +11,45 @@ import * as React from 'react';
 import Dropzone, {FileWithPreview} from 'react-dropzone';
 import {DragEvent} from 'react';
 import Dialog from '@material-ui/core/Dialog/Dialog';
-import {AddRounded, CancelRounded, CheckRounded} from '@material-ui/icons';
+import {AddRounded, CancelRounded, CheckRounded, CropRounded} from '@material-ui/icons';
 import Scrollbars from 'react-custom-scrollbars';
 import TextField from '@material-ui/core/TextField/TextField';
+// @ts-ignore
+import readAndCompressImage from 'browser-image-resizer';
 
 import './style.css';
 
-interface IUploaderFile extends FileWithPreview {
+export interface IMediaItem {
+    caption?: string;
+    file: Blob;
+    fileType: string;
+    name: string;
+    thumb?: Blob;
+    thumbType?: string;
+}
+
+export interface IUploaderFile extends FileWithPreview {
     caption?: string;
 }
 
 interface IProps {
     accept: string;
+    onDone: (items: IMediaItem[]) => void;
 }
 
 interface IState {
     dialogOpen: boolean;
     items: IUploaderFile[];
     lastSelected: number;
+    loading: boolean;
     selected: number;
     show: boolean;
 }
 
 class MediaPreview extends React.Component<IProps, IState> {
     private dropzoneRef: Dropzone;
+    private imageRef: any;
+    private imageActionRef: any;
     private previewRefs: string[] = [];
 
     constructor(props: IProps) {
@@ -44,6 +59,7 @@ class MediaPreview extends React.Component<IProps, IState> {
             dialogOpen: false,
             items: [],
             lastSelected: 0,
+            loading: false,
             selected: 0,
             show: true,
         };
@@ -68,14 +84,18 @@ class MediaPreview extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {items, selected, lastSelected, dialogOpen} = this.state;
+        const {items, selected, lastSelected, dialogOpen, loading} = this.state;
         return (
             <Dialog
                 open={dialogOpen}
                 onClose={this.dialogCloseHandler}
                 className="uploader-dialog"
+                disableBackdropClick={loading}
             >
                 <div className="uploader-container">
+                    {loading && <div className="uploader-loader">
+                        <span>Converting...</span>
+                    </div>}
                     <div className="uploader-header">
                         <span>Upload Media</span>
                     </div>
@@ -91,7 +111,11 @@ class MediaPreview extends React.Component<IProps, IState> {
                                 {items.length > 0 && this.state.show && (
                                     <div className={'slide' + (selected > lastSelected ? ' left' : ' right')}
                                          onClick={this.slideClickHandler}>
-                                        <img className="front" src={items[selected].preview}/>
+                                        <img ref={this.imageRefHandler} className="front"
+                                             src={items[selected].preview}/>
+                                        <div ref={this.imageActionRefHandler} className="image-actions">
+                                            <CropRounded/>
+                                        </div>
                                         {Boolean(lastSelected !== selected && items[lastSelected]) && (
                                             <img className="back" src={items[lastSelected].preview}/>
                                         )}
@@ -115,7 +139,7 @@ class MediaPreview extends React.Component<IProps, IState> {
                                 value={(items[selected] ? (items[selected].caption || '') : '')}
                                 onChange={this.captionChangeHandler}
                             />
-                            <div className="attachment-action">
+                            <div className="attachment-action" onClick={this.doneHandler}>
                                 <CheckRounded/>
                             </div>
                         </div>
@@ -178,6 +202,7 @@ class MediaPreview extends React.Component<IProps, IState> {
             if (callback) {
                 callback();
             }
+            this.setImageActionSize();
         });
     }
 
@@ -255,6 +280,65 @@ class MediaPreview extends React.Component<IProps, IState> {
 
     private slideClickHandler = (e: any) => {
         e.stopPropagation();
+    }
+
+    private imageRefHandler = (ref: any) => {
+        this.imageRef = ref;
+    }
+
+    private imageActionRefHandler = (ref: any) => {
+        this.imageActionRef = ref;
+    }
+
+    private setImageActionSize() {
+        setTimeout(() => {
+            if (this.imageRef && this.imageActionRef) {
+                this.imageActionRef.style.height = `${this.imageRef.clientHeight}px`;
+                this.imageActionRef.style.width = `${this.imageRef.clientWidth}px`;
+            }
+        }, 50);
+    }
+
+    private doneHandler = () => {
+        const {items} = this.state;
+        this.setState({
+            loading: true,
+        });
+        const thumbConfig = {
+            autoRotate: true,
+            maxHeight: 100,
+            maxWidth: 100,
+            quality: 0.8,
+        };
+        const config = {
+            autoRotate: true,
+            maxHeight: 1000,
+            maxWidth: 1000,
+            quality: 0.8,
+        };
+        const promise: any[] = [];
+        items.forEach((item) => {
+            promise.push(readAndCompressImage(item, thumbConfig));
+            promise.push(readAndCompressImage(item, config));
+        });
+        Promise.all(promise).then((dist) => {
+            const output: IMediaItem[] = [];
+            for (let i = 0; i < items.length; i++) {
+                output.push({
+                    caption: items[i].caption,
+                    file: dist[i * 2],
+                    fileType: items[i].type,
+                    name: items[i].name,
+                    thumb: dist[i * 2 + 1],
+                    thumbType: items[i].type,
+                });
+            }
+            this.props.onDone(output);
+            this.dialogCloseHandler();
+            this.setState({
+                loading: false,
+            });
+        });
     }
 }
 

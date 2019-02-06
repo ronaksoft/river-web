@@ -16,6 +16,7 @@ export const C_MESSAGE_TYPE = {
     Hole: -2,
     NewMessage: -3,
     Normal: 2,
+    Picture: -9,
     System: 1,
     Voice: -6,
 };

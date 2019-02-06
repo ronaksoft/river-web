@@ -54,7 +54,7 @@ import {measureNodeHeight} from './measureHeight';
 import {getMessageTitle} from '../Dialog/utils';
 import XRegExp from 'xregexp';
 import SelectMedia from '../SelectMedia';
-import MediaPreview from '../Uploader';
+import MediaPreview, {IMediaItem} from '../Uploader';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
@@ -75,6 +75,7 @@ interface IProps {
     userId?: string;
     onVoice: (voice: Blob, waveform: number[], duration: number, {mode, message}?: any) => void;
     onFileSelected: (file: File, {mode, message}?: any) => void;
+    onMediaSelected?: (items: IMediaItem[], {mode, message}?: any) => void;
 }
 
 interface IState {
@@ -264,7 +265,8 @@ class TextInput extends React.Component<IProps, IState> {
                 <div className="write">
                     <input ref={this.fileInputRefHandler} type="file" style={{display: 'none'}}
                            onChange={this.fileChangeHandler} multiple={true} accept={this.getFileType()}/>
-                    <MediaPreview ref={this.mediaPreviewRefHandler} accept={this.getFileType()}/>
+                    <MediaPreview ref={this.mediaPreviewRefHandler} accept={this.getFileType()}
+                                  onDone={this.mediaPreviewDoneHandler}/>
                     {(!selectable && previewMessage) &&
                     <div className="previews" style={{height: previewMessageHeight + 'px'}}>
                         <div className="preview-container">
@@ -1368,6 +1370,17 @@ class TextInput extends React.Component<IProps, IState> {
             case 'file':
             default:
                 return '*';
+        }
+    }
+
+    private mediaPreviewDoneHandler = (items: IMediaItem[]) => {
+        const {previewMessage, previewMessageMode} = this.state;
+        const message = cloneDeep(previewMessage);
+        if (this.props.onMediaSelected) {
+            this.props.onMediaSelected(items, {
+                message,
+                mode: previewMessageMode,
+            });
         }
     }
 
