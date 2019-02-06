@@ -1,34 +1,41 @@
 /*
-    Creation Time: 2018 - Aug - 27
+    Creation Time: 2018 - Feb - 06
     Created by:  (hamidrezakk)
     Maintainers:
        1.  HamidrezaKK (hamidrezakks@gmail.com)
     Auditor: HamidrezaKK
-    Copyright Ronak Software Group 2018
+    Copyright Ronak Software Group 2019
 */
 
 import * as React from 'react';
 import Dropzone, {FileWithPreview} from 'react-dropzone';
+import {DragEvent} from 'react';
+import Dialog from '@material-ui/core/Dialog/Dialog';
+import {AddRounded} from '@material-ui/icons';
 
 import './style.css';
-import {DragEvent} from 'react';
 
 interface IProps {
-    items?: any[];
+    accept: string;
 }
 
 interface IState {
-    items: any[];
+    dialogOpen: boolean;
+    items: FileWithPreview[];
     lastSelected: number;
     selected: number;
     show: boolean;
 }
 
-class Uploader extends React.Component<IProps, IState> {
+class MediaPreview extends React.Component<IProps, IState> {
+    // @ts-ignore
+    private previewRefs: { [key: number]: string } = {};
+
     constructor(props: IProps) {
         super(props);
 
         this.state = {
+            dialogOpen: false,
             items: [],
             lastSelected: 0,
             selected: 0,
@@ -37,60 +44,75 @@ class Uploader extends React.Component<IProps, IState> {
     }
 
     // public componentWillReceiveProps(newProps: IProps) {
-    //     this.setState({
-    //         items: newProps.items,
-    //         selectedId: newProps.selectedId,
-    //     }, () => {
-    //         this.list.recomputeRowHeights();
-    //     });
+    //     //
     // }
 
+    public openDialog(items: File[]) {
+        this.setState({
+            dialogOpen: true,
+            items,
+        }, () => {
+            this.generatePreview();
+        });
+    }
+
     public render() {
-        const {selected, lastSelected} = this.state;
+        const {items, selected, lastSelected, dialogOpen} = this.state;
         return (
-            <div className="uploader-container">
-                <div className="attachment-preview-container">
-                    <Dropzone
-                        onDrop={this.onDrop}
-                        className="uploader-dropzone"
-                        // disableClick={true}
-                    >
-                        <div className="slider-attachment">
-                            {this.state.items.length > 0 && this.state.show && (
-                                <div className={'slide' + (selected > lastSelected ? ' left' : ' right')}>
-                                    <img className="front" src={this.state.items[selected].preview}/>
-                                    {lastSelected !== selected && (
-                                        <img className="back" src={this.state.items[lastSelected].preview}/>
-                                    )}
-                                </div>
-                            )}
+            <Dialog
+                open={dialogOpen}
+                onClose={this.dialogCloseHandler}
+                className="uploader-dialog"
+            >
+                <div className="uploader-container">
+                    <div className="attachment-preview-container">
+                        <Dropzone
+                            onDrop={this.onDrop}
+                            className="uploader-dropzone"
+                            // disableClick={true}
+                            accept={this.props.accept}
+                        >
+                            <div className="slider-attachment">
+                                {items.length > 0 && this.state.show && (
+                                    <div className={'slide' + (selected > lastSelected ? ' left' : ' right')}>
+                                        <img className="front" src={items[selected].preview}/>
+                                        {lastSelected !== selected && (
+                                            <img className="back" src={items[lastSelected].preview}/>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        </Dropzone>
+                    </div>
+                    <div className="attachments-slide-container">
+                        <div className="attachment-items">
+                            {items.length > 0 && items.map((file, index) => {
+                                return (
+                                    <div key={index}
+                                         className={'item' + (selected === index ? ' selected' : '')}
+                                         onClick={this.selectImage.bind(this, index)}
+                                    >
+                                        <div className="preview"
+                                             style={{backgroundImage: 'url(' + file.preview + ')'}}/>
+                                    </div>
+                                );
+                            })}
+                            <div key="add-file" className="item add-file">
+                                <AddRounded/>
+                                <span className="text">Add Media</span>
+                            </div>
                         </div>
-                    </Dropzone>
-                </div>
-                <div className="attachments-slide-container">
-                    <div>
-                        {this.state.items.map((file, index) => {
-                            return (
-                                <div key={index}
-                                     className={'item' + (selected === index ? ' selected' : '')}
-                                     onClick={this.selectImage.bind(this, index)}
-                                >
-                                    <div className="preview"
-                                         style={{backgroundImage: 'url(' + file.preview + ')'}}/>
-                                </div>
-                            );
-                        })}
-                        <div key="add-file" className="item add-file"/>
                     </div>
                 </div>
-            </div>
+            </Dialog>
         );
     }
 
     private onDrop = (accepted: FileWithPreview[], rejected: FileWithPreview[], event: DragEvent<HTMLDivElement>) => {
         window.console.log(accepted, rejected, event);
+        // @ts-ignore
         this.setState({
-            items: accepted,
+            items: [...this.state.items, accepted],
         });
     }
 
@@ -108,6 +130,26 @@ class Uploader extends React.Component<IProps, IState> {
             });
         });
     }
+
+    private dialogCloseHandler = () => {
+        this.setState({
+            dialogOpen: false,
+        });
+    }
+
+    private generatePreview() {
+        const {items} = this.state;
+        items.map((item, index) => {
+            if (!item.preview) {
+                item.preview = URL.createObjectURL(item);
+                this.previewRefs[index] = item.preview;
+            }
+            return items;
+        });
+        this.setState({
+            items,
+        });
+    }
 }
 
-export default Uploader;
+export default MediaPreview;

@@ -47,119 +47,119 @@
   }
 }
 
-.uploader-container {
-  height: 100%;
-  width: 100%;
-  background: #ddd;
-  .uploader-dropzone {
-    height: 100%;
-    width: 100%;
+.uploader-dialog {
+  div[role="document"] {
+    > div {
+      line-height: 0;
+      max-width: 640px;
+      background: transparent;
+      overflow: hidden;
+    }
   }
-  .slider-attachment {
-    width: 100%;
-    height: 100%;
-    padding: 25px;
-    .slide {
-      position: relative;
+  .uploader-container {
+    height: 600px;
+    width: 640px;
+    background: #ddd;
+    .uploader-dropzone {
+      height: 100%;
+      width: 100%;
+    }
+    .slider-attachment {
       width: 100%;
       height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      img.front {
+      padding: 25px;
+      .slide {
         position: relative;
+        width: 100%;
+        height: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
-        max-width: 100%;
-        max-height: 100%;
-        z-index: 2;
-        animation: splash 0.7s normal forwards ease-in-out;
-        animation-iteration-count: 1;
-      }
-      img.back {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        max-width: 100%;
-        max-height: 100%;
-        transform: translate(-50%, -50%);
-        z-index: 1;
-        animation: swipe-left 0.3s normal forwards ease-in-out;
-        animation-iteration-count: 1;
-      }
-      &.right img.back {
-        animation: swipe-right 0.3s normal forwards ease-in-out;
-      }
-    }
-  }
-  .attachment-preview-container {
-    height: calc(100% - 120px);
-  }
-  .attachments-slide-container {
-    height: 120px;
-    padding: 10px 0;
-    background-color: #ededee;
-    .item {
-      width: 100px;
-      height: 100px;
-      margin: 0 10px;
-      display: inline-block;
-      cursor: pointer;
-      background-color: #fff;
-      .preview {
-        position: relative;
-        background-size: cover;
-        width: 100px;
-        height: 100px;
-        transition: transform .1s ease-out;
-        &:before {
-          content: '';
+        img.front {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          max-width: 100%;
+          max-height: 100%;
+          z-index: 2;
+          animation: splash 0.7s normal forwards ease-in-out;
+          animation-iteration-count: 1;
+        }
+        img.back {
           position: absolute;
-          height: 40px;
-          width: 100%;
-          top: 0;
-          right: 0;
-          opacity: 0;
-          background: linear-gradient(10deg, transparent 0%, transparent 45%, rgba(0, 0, 0, 0.18) 75%, rgba(0, 0, 0, 0.4) 100%);
-          transition: opacity .1s ease-out;
-        }
-      }
-      &:hover {
-        .preview:before {
-          opacity: 1;
-        }
-      }
-      &.selected {
-        .preview {
-          transform: scale(0.93);
-          filter: blur(1px);
-        }
-      }
-      &.add-file {
-        position: relative;
-        background: #fff;
-        &:after {
-          position: absolute;
-          content: '+';
           top: 50%;
           left: 50%;
-          font-size: 70px;
-          line-height: 0.8em;
-          height: 70px;
-          width: 100px;
-          transform: translate(-50%, -60%);
+          max-width: 100%;
+          max-height: 100%;
+          transform: translate(-50%, -50%);
+          z-index: 1;
+          animation: swipe-left 0.3s normal forwards ease-in-out;
+          animation-iteration-count: 1;
         }
-        &:before {
-          position: absolute;
-          content: 'add file';
-          top: 75%;
-          left: 50%;
-          font-size: 15px;
-          line-height: 0.8em;
-          height: 15px;
+        &.right img.back {
+          animation: swipe-right 0.3s normal forwards ease-in-out;
+        }
+      }
+    }
+    .attachment-preview-container {
+      height: calc(100% - 120px);
+    }
+    .attachments-slide-container {
+      height: 120px;
+      padding: 10px 0;
+      background-color: #ededee;
+      .attachment-items {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        .item {
           width: 100px;
-          transform: translate(-50%, 0);
+          height: 100px;
+          margin: 0 10px;
+          display: inline-block;
+          cursor: pointer;
+          background-color: #fff;
+          .preview {
+            position: relative;
+            background-size: cover;
+            width: 100px;
+            height: 100px;
+            transition: transform .1s ease-out;
+            &:before {
+              content: '';
+              position: absolute;
+              height: 40px;
+              width: 100%;
+              top: 0;
+              right: 0;
+              opacity: 0;
+              background: linear-gradient(10deg, transparent 0%, transparent 45%, rgba(0, 0, 0, 0.18) 75%, rgba(0, 0, 0, 0.4) 100%);
+              transition: opacity .1s ease-out;
+            }
+          }
+          &:hover {
+            .preview:before {
+              opacity: 1;
+            }
+          }
+          &.selected {
+            .preview {
+              transform: scale(0.93);
+              filter: blur(1px);
+            }
+          }
+          &.add-file {
+            position: relative;
+            background: #fff;
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            flex-direction: column;
+            svg {
+              font-size: 36px;
+            }
+          }
         }
       }
     }

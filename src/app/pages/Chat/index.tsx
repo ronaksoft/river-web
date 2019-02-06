@@ -26,7 +26,6 @@ import {
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
-import Uploader from '../../components/Uploader/index';
 import TextInput from '../../components/TextInput/index';
 import {clone, differenceBy, find, findIndex, intersectionBy, throttle, trimStart} from 'lodash';
 import SDK from '../../services/sdk/index';
@@ -148,7 +147,6 @@ interface IState {
     selectedDialogId: string;
     textInputMessage?: IMessage;
     textInputMessageMode: number;
-    toggleAttachment: boolean;
     unreadCounter: number;
 }
 
@@ -209,7 +207,6 @@ class Chat extends React.Component<IProps, IState> {
             rightMenu: false,
             selectedDialogId: props.match.params.id,
             textInputMessageMode: C_MSG_MODE.Normal,
-            toggleAttachment: false,
             unreadCounter: 0,
         };
         this.riverTime = RiverTime.getInstance();
@@ -484,7 +481,7 @@ class Chat extends React.Component<IProps, IState> {
                                 </div>
                                 <AudioPlayerShell onVisible={this.audioPlayerVisibleHandler}/>
                             </div>
-                            <div className="conversation" hidden={this.state.toggleAttachment}>
+                            <div className="conversation">
                                 <PopUpDate ref={this.popUpDateRefHandler}/>
                                 <Message ref={this.messageRefHandler}
                                          items={this.state.messages}
@@ -502,10 +499,6 @@ class Chat extends React.Component<IProps, IState> {
                                          onAttachmentAction={this.messageAttachmentActionHandler}
                                 />
                             </div>
-                            <div className="attachments" hidden={!this.state.toggleAttachment}>
-                                <Uploader/>
-                            </div>
-                            {Boolean(!this.state.toggleAttachment) &&
                             <TextInput onMessage={this.onMessageHandler} onTyping={this.onTyping}
                                        userId={this.connInfo.UserID} previewMessage={textInputMessage}
                                        previewMessageMode={textInputMessageMode}
@@ -516,7 +509,7 @@ class Chat extends React.Component<IProps, IState> {
                                        onAction={this.textInputActionHandler} peer={peer}
                                        onVoice={this.textInputVoiceHandler}
                                        onFileSelected={this.textInputFileSelectHandler}
-                            />}
+                            />
                         </div>}
                         {selectedDialogId === 'null' && <div className="column-center">
                             <div className="start-messaging">

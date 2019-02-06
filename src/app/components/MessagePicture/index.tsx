@@ -122,27 +122,27 @@ class MessagePicture extends React.Component<IProps, IState> {
     public render() {
         const {caption, fileState} = this.state;
         return (
-            <div className='message-picture'>
-                <div className='picture-content'>
-                    <div className='picture-thumb'>
-                        <div className='picture-action'>
+            <div className="message-picture">
+                <div className="picture-content">
+                    <div className="picture-thumb">
+                        <div className="picture-action">
                             {Boolean(fileState === 'download') &&
                             <CloudDownloadRounded onClick={this.downloadFileHandler}/>}
                             {Boolean(fileState === 'progress') && <React.Fragment>
-                                <div className='progress'>
+                                <div className="progress">
                                     <svg viewBox='0 0 32 32'>
                                         <circle ref={this.progressRefHandler} r='14' cx='16' cy='16'/>
                                     </svg>
                                 </div>
-                                <CloseRounded className='action' onClick={this.cancelFileHandler}/>
+                                <CloseRounded className="action" onClick={this.cancelFileHandler}/>
                             </React.Fragment>}
                         </div>
                     </div>
-                    {/*<div className='picture-big'>
+                    {/*<div className="picture-big">
                         hey
                     </div>*/}
                 </div>
-                {Boolean(caption.length > 0) && <div className='file-caption'>{caption}</div>}
+                {Boolean(caption.length > 0) && <div className="file-caption">{caption}</div>}
             </div>
         );
     }

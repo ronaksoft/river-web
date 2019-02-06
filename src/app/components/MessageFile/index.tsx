@@ -228,36 +228,36 @@ class MessageFile extends React.Component<IProps, IState> {
     public render() {
         const {caption, type, fileName, fileState} = this.state;
         return (
-            <div className='message-file'>
-                <div className='file-content'>
-                    <div className='file-action'>
+            <div className="message-file">
+                <div className="file-content">
+                    <div className="file-action">
                         {Boolean(fileState === 'view' || fileState === 'open') &&
                         <React.Fragment>
                             <InsertDriveFileRounded/>
-                            <span className='extension'>{getFileExtension(type)}</span>
+                            <span className="extension">{getFileExtension(type)}</span>
                         </React.Fragment>}
                         {Boolean(fileState === 'download') &&
                         <CloudDownloadRounded onClick={this.downloadFileHandler}/>}
                         {Boolean(fileState === 'progress') && <React.Fragment>
-                            <div className='progress'>
+                            <div className="progress">
                                 <svg viewBox='0 0 32 32'>
                                     <circle ref={this.progressRefHandler} r='14' cx='16' cy='16'/>
                                 </svg>
                             </div>
-                            <CloseRounded className='action' onClick={this.cancelFileHandler}/>
+                            <CloseRounded className="action" onClick={this.cancelFileHandler}/>
                         </React.Fragment>}
                     </div>
-                    <div className='file-info'>
-                        <div className='file-name'>{fileName}</div>
+                    <div className="file-info">
+                        <div className="file-name">{fileName}</div>
                         {Boolean(fileState === 'view') &&
-                        <div className='file-download' onClick={this.viewFileHandler}>Save</div>}
+                        <div className="file-download" onClick={this.viewFileHandler}>Save</div>}
                         {Boolean(fileState === 'open') &&
-                        <div className='file-download' onClick={this.openFileHandler}>Open</div>}
+                        <div className="file-download" onClick={this.openFileHandler}>Open</div>}
                         {Boolean(fileState !== 'view' && fileState !== 'open') &&
-                        <div className='file-size' ref={this.fileSizeRefHandler}>0 KB</div>}
+                        <div className="file-size" ref={this.fileSizeRefHandler}>0 KB</div>}
                     </div>
                 </div>
-                {Boolean(caption.length > 0) && <div className='file-caption'>{caption}</div>}
+                {Boolean(caption.length > 0) && <div className="file-caption">{caption}</div>}
             </div>
         );
     }

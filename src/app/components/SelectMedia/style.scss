@@ -35,7 +35,7 @@
       width: 42px;
       border-radius: 50%;
       background-color: rgba(255, 255, 255, 1.0);
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
       opacity: 0;
       border: 1px solid transparent;
       transition: opacity 0.3s, background-color 0.3s;
@@ -44,25 +44,25 @@
         color: var(--grey);
       }
       &.photo {
-        border-color: #4CAF50;
+        //border-color: #4CAF50;
         svg {
           color: #4CAF50;
         }
       }
       &.video {
-        border-color: #F2C94C;
+        //border-color: #F2C94C;
         svg {
           color: #F2C94C;
         }
       }
       &.music {
-        border-color: #9B51E0;
+        //border-color: #9B51E0;
         svg {
           color: #9B51E0;
         }
       }
       &.file {
-        border-color: #2D9CDB;
+        //border-color: #2D9CDB;
         svg {
           color: #2D9CDB;
         }

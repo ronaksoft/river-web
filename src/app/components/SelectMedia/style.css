@@ -33,29 +33,21 @@
       width: 42px;
       border-radius: 50%;
       background-color: white;
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
       opacity: 0;
       border: 1px solid transparent;
       transition: opacity 0.3s, background-color 0.3s; }
       .select-media .media-input-container .media-item svg {
         font-size: 24px;
         color: var(--grey); }
-      .select-media .media-input-container .media-item.photo {
-        border-color: #4CAF50; }
-        .select-media .media-input-container .media-item.photo svg {
-          color: #4CAF50; }
-      .select-media .media-input-container .media-item.video {
-        border-color: #F2C94C; }
-        .select-media .media-input-container .media-item.video svg {
-          color: #F2C94C; }
-      .select-media .media-input-container .media-item.music {
-        border-color: #9B51E0; }
-        .select-media .media-input-container .media-item.music svg {
-          color: #9B51E0; }
-      .select-media .media-input-container .media-item.file {
-        border-color: #2D9CDB; }
-        .select-media .media-input-container .media-item.file svg {
-          color: #2D9CDB; }
+      .select-media .media-input-container .media-item.photo svg {
+        color: #4CAF50; }
+      .select-media .media-input-container .media-item.video svg {
+        color: #F2C94C; }
+      .select-media .media-input-container .media-item.music svg {
+        color: #9B51E0; }
+      .select-media .media-input-container .media-item.file svg {
+        color: #2D9CDB; }
     .select-media .media-input-container:hover .media-item {
       opacity: 0.64 !important; }
     .select-media .media-input-container .media-item:hover {

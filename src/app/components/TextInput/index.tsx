@@ -54,6 +54,7 @@ import {measureNodeHeight} from './measureHeight';
 import {getMessageTitle} from '../Dialog/utils';
 import XRegExp from 'xregexp';
 import SelectMedia from '../SelectMedia';
+import MediaPreview from '../Uploader';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
@@ -79,6 +80,7 @@ interface IProps {
 interface IState {
     disableAuthority: number;
     emojiAnchorEl: any;
+    mediaInputMode: 'photo' | 'video' | 'music' | 'file' | 'none';
     peer: InputPeer | null;
     previewMessage: IMessage | null;
     previewMessageHeight: number;
@@ -88,6 +90,7 @@ interface IState {
     selectable: boolean;
     selectableDisable: boolean;
     textareaValue: string;
+    uploadPreviewOpen: boolean;
     userId: string;
     voiceMode: 'lock' | 'down' | 'up' | 'play';
 }
@@ -152,6 +155,7 @@ class TextInput extends React.Component<IProps, IState> {
     private voicePlayerRef: VoicePlayer;
     private voiceCanceled: boolean = false;
     private fileInputRef: any = null;
+    private mediaPreviewRef: MediaPreview;
 
     constructor(props: IProps) {
         super(props);
@@ -159,6 +163,7 @@ class TextInput extends React.Component<IProps, IState> {
         this.state = {
             disableAuthority: 0x0,
             emojiAnchorEl: null,
+            mediaInputMode: 'none',
             peer: props.peer,
             previewMessage: props.previewMessage || null,
             previewMessageHeight: 0,
@@ -168,6 +173,7 @@ class TextInput extends React.Component<IProps, IState> {
             selectable: props.selectable,
             selectableDisable: props.selectableDisable,
             textareaValue: '',
+            uploadPreviewOpen: false,
             userId: props.userId || '',
             voiceMode: 'up',
         };
@@ -257,7 +263,8 @@ class TextInput extends React.Component<IProps, IState> {
             return (
                 <div className="write">
                     <input ref={this.fileInputRefHandler} type="file" style={{display: 'none'}}
-                           onChange={this.fileChangeHandler}/>
+                           onChange={this.fileChangeHandler} multiple={true} accept={this.getFileType()}/>
+                    <MediaPreview ref={this.mediaPreviewRefHandler} accept={this.getFileType()}/>
                     {(!selectable && previewMessage) &&
                     <div className="previews" style={{height: previewMessageHeight + 'px'}}>
                         <div className="preview-container">
@@ -1254,10 +1261,23 @@ class TextInput extends React.Component<IProps, IState> {
         if (this.props.onFileSelected && e.currentTarget.files.length > 0) {
             const {previewMessage, previewMessageMode} = this.state;
             const message = cloneDeep(previewMessage);
-            this.props.onFileSelected(e.currentTarget.files[0], {
-                message,
-                mode: previewMessageMode,
-            });
+            switch (this.state.mediaInputMode) {
+                case 'photo':
+                    if (this.mediaPreviewRef) {
+                        const files: File[] = [];
+                        for (let i = 0; i < e.currentTarget.files.length; i++) {
+                            files.push(e.currentTarget.files[i]);
+                        }
+                        this.mediaPreviewRef.openDialog(files);
+                    }
+                    break;
+                case 'file':
+                    this.props.onFileSelected(e.currentTarget.files[0], {
+                        message,
+                        mode: previewMessageMode,
+                    });
+                    break;
+            }
             this.clearPreviewMessage(true);
             if (this.fileInputRef) {
                 this.fileInputRef.value = '';
@@ -1316,11 +1336,38 @@ class TextInput extends React.Component<IProps, IState> {
         });
     }
 
-    private selectMediaActionHandler = (cmd: string) => {
-        switch (cmd) {
+    private selectMediaActionHandler = (mode: 'photo' | 'video' | 'music' | 'file') => {
+        this.setState({
+            mediaInputMode: mode,
+        }, () => {
+            switch (mode) {
+                case 'photo':
+                case 'video':
+                case 'music':
+                case 'file':
+                    this.openFileDialog();
+                    break;
+            }
+        });
+    }
+
+
+    private mediaPreviewRefHandler = (ref: any) => {
+        this.mediaPreviewRef = ref;
+    }
+
+    private getFileType = () => {
+        const {mediaInputMode} = this.state;
+        switch (mediaInputMode) {
+            case 'photo':
+                return 'image/png,image/jpeg,image/jpg,image/gif';
+            case 'video':
+                return 'video/*';
+            case 'music':
+                return "audio/*";
             case 'file':
-                this.openFileDialog();
-                break;
+            default:
+                return '*';
         }
     }
 

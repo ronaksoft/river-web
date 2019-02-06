@@ -2,6 +2,7 @@
 const {app, BrowserWindow, shell, ipcMain, Menu} = require('electron');
 const isDev = require('electron-is-dev');
 const {download} = require('electron-dl');
+const contextMenu = require('electron-context-menu');
 
 let mainWindow;
 let sizeMode = 'desktop';
@@ -13,6 +14,8 @@ if (isDev) {
 const callReact = (cmd, params) => {
     mainWindow.webContents.send(cmd, params);
 };
+
+contextMenu({});
 
 createWindow = () => {
     mainWindow = new BrowserWindow({

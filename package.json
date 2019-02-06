@@ -1,6 +1,6 @@
 {
   "name": "river",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "River chat",
   "author": "Hamidreza KK <hamidrezakks@gmail.com>",
@@ -32,6 +32,7 @@
     "@types/xregexp": "^3.0.29",
     "axios": "^0.18.0",
     "dexie": "^2.0.4",
+    "electron-context-menu": "^0.11.0",
     "electron-debug": "^2.0.0",
     "electron-dl": "^1.12.0",
     "electron-is-dev": "^1.0.1",
@@ -88,7 +89,7 @@
   },
   "build": {
     "appId": "com.your-domain",
-    "compression": "normal",
+    "compression": "maximum",
     "productName": "River",
     "directories": {
       "buildResources": "build",
