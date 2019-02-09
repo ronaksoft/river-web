@@ -58,11 +58,11 @@ import Switch from '@material-ui/core/Switch/Switch';
 import UserRepo from '../../repository/user';
 import Scrollbars from 'react-custom-scrollbars';
 import RiverTime from '../../services/utilities/river_time';
-import Cropper from '../Cropper';
 import UniqueId from '../../services/uniqueId';
 import FileManager, {IFileProgress} from '../../services/sdk/fileManager';
 import ProgressBroadcaster from '../../services/progress';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
+import AvatarCropper from '../AvatarCropper';
 
 import './style.css';
 
@@ -97,14 +97,14 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
     private sdk: SDK;
     private loading: boolean = false;
-    private userId: string;
+    private readonly userId: string;
     private riverTime: RiverTime;
     private fileManager: FileManager;
     private progressBroadcaster: ProgressBroadcaster;
     private profileTempPhoto: string = '';
     private circleProgressRef: any = null;
     private fileId: string = '';
-    private cropperRef: Cropper;
+    private cropperRef: AvatarCropper;
     private documentViewerService: DocumentViewerService;
 
     constructor(props: IProps) {
@@ -166,7 +166,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         const {addMemberDialogEnable, avatarMenuAnchorEl, group, page, participants, title, titleEdit, moreAnchorEl, dialog, notifySettingDialogOpen, notifyValue, uploadingPhoto} = this.state;
         return (
             <div className="group-info-menu">
-                <Cropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={640}/>
+                <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={640}/>
                 <div className="menu-header">
                     <IconButton
                         aria-label="Close"

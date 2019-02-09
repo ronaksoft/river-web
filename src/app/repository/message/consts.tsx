@@ -14,10 +14,12 @@ export const C_MESSAGE_TYPE = {
     File: -7,
     Gap: -5,
     Hole: -2,
+    Music: -10,
     NewMessage: -3,
     Normal: 2,
     Picture: -9,
     System: 1,
+    Video: -11,
     Voice: -6,
 };
 

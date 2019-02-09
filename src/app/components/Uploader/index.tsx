@@ -76,6 +76,7 @@ class MediaPreview extends React.Component<IProps, IState> {
             items,
         }, () => {
             this.generatePreview();
+            this.setImageActionSize();
         });
     }
 

@@ -868,6 +868,8 @@ class Message extends React.Component<IProps, IState> {
                     return (<MessageFile message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
                 case C_MESSAGE_TYPE.Contact:
                     return (<MessageContact message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
+                case C_MESSAGE_TYPE.Picture:
+                    return 'Picture';
                 default:
                     return '';
             }

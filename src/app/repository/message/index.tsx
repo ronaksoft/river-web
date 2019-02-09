@@ -39,9 +39,8 @@ import {
 } from '../../services/sdk/messages/chat.core.message.actions_pb';
 
 export default class MessageRepo {
-    public static parseAttributes(attrs: DocumentAttribute.AsObject[], flags: { voice: boolean, file: boolean }) {
-        flags.voice = false;
-        flags.file = false;
+    public static parseAttributes(attrs: DocumentAttribute.AsObject[], flags: { type: number }) {
+        flags.type = C_MESSAGE_TYPE.Normal;
         const attrOut: any[] = [];
         attrs.forEach((attr) => {
             switch (attr.type) {
@@ -50,19 +49,22 @@ export default class MessageRepo {
                     const audioAttr = DocumentAttributeAudio.deserializeBinary(attr.data).toObject();
                     attrOut.push(audioAttr);
                     if (audioAttr.voice) {
-                        flags.voice = true;
+                        flags.type = C_MESSAGE_TYPE.Voice;
+                    } else {
+                        flags.type = C_MESSAGE_TYPE.Voice;
                     }
                     delete attr.data;
                     break;
                 case DocumentAttributeType.ATTRIBUTETYPEFILE:
                     // @ts-ignore
                     attrOut.push(DocumentAttributeFile.deserializeBinary(attr.data).toObject());
-                    flags.file = true;
+                    flags.type = C_MESSAGE_TYPE.File;
                     delete attr.data;
                     break;
                 case DocumentAttributeType.ATTRIBUTETYPEPHOTO:
                     // @ts-ignore
                     attrOut.push(DocumentAttributePhoto.deserializeBinary(attr.data).toObject());
+                    flags.type = C_MESSAGE_TYPE.Picture;
                     delete attr.data;
                     break;
                 case DocumentAttributeType.ATTRIBUTETYPEVIDEO:
@@ -94,13 +96,9 @@ export default class MessageRepo {
                 case MediaType.MEDIATYPEDOCUMENT:
                     out.mediadata = MediaDocument.deserializeBinary(mediaData).toObject();
                     if (out.mediadata.doc && out.mediadata.doc.attributesList) {
-                        const flags: { voice: boolean, file: boolean } = {voice: false, file: false};
+                        const flags: { type: number } = {type: C_MESSAGE_TYPE.Normal};
                         out.attributes = this.parseAttributes(out.mediadata.doc.attributesList, flags);
-                        if (flags.voice) {
-                            out.messagetype = C_MESSAGE_TYPE.Voice;
-                        } else if (flags.file) {
-                            out.messagetype = C_MESSAGE_TYPE.File;
-                        }
+                        out.messagetype = flags.type;
                     }
                     break;
                 case MediaType.MEDIATYPECONTACT:

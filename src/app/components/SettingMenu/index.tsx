@@ -41,10 +41,10 @@ import UniqueId from '../../services/uniqueId';
 import ProgressBroadcaster from '../../services/progress';
 import RiverTime from '../../services/utilities/river_time';
 import {InputFile} from '../../services/sdk/messages/chat.core.types_pb';
-import Cropper from '../Cropper';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
 import Menu from '@material-ui/core/Menu/Menu';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';
+import AvatarCropper from '../AvatarCropper';
 
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -91,7 +91,7 @@ class SettingMenu extends React.Component<IProps, IState> {
     private profileTempPhoto: string = '';
     private circleProgressRef: any = null;
     private fileId: string = '';
-    private cropperRef: Cropper;
+    private cropperRef: AvatarCropper;
     private documentViewerService: DocumentViewerService;
 
     constructor(props: IProps) {
@@ -172,7 +172,7 @@ class SettingMenu extends React.Component<IProps, IState> {
         const {avatarMenuAnchorEl, page, pageContent, user, editProfile, editUsername, bio, firstname, lastname, phone, username, usernameAvailable, usernameValid, uploadingPhoto} = this.state;
         return (
             <div className="setting-menu">
-                <Cropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={640}/>
+                <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={640}/>
                 <div className={'page-container page-' + page}>
                     <div className="page page-1">
                         <div className="menu-header">

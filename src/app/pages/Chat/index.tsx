@@ -32,6 +32,7 @@ import SDK from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
 import * as core_types_pb from '../../services/sdk/messages/chat.core.types_pb';
 import {
+    FileLocation,
     Group,
     InputFile,
     InputFileLocation,
@@ -3088,6 +3089,16 @@ class Chat extends React.Component<IProps, IState> {
         mediaData.setAttributesList(attributesList);
         mediaData.setFile(inputFile);
 
+        const tempDocument = new Document();
+        tempDocument.setAccesshash('');
+        tempDocument.setAttributesList(attributesList);
+        tempDocument.setClusterid(0);
+        tempDocument.setDate(now);
+        tempDocument.setId(fileIds[0]);
+        tempDocument.setFilesize(mediaItem.file.size);
+        tempDocument.setMimetype(mediaItem.fileType);
+        tempDocument.setVersion(0);
+
         switch (type) {
             case 'file':
                 fileIds.push(String(UniqueId.getRandomId()));
@@ -3116,19 +3127,16 @@ class Chat extends React.Component<IProps, IState> {
                 inputThumbFile.setMd5checksum('');
                 inputThumbFile.setTotalparts(1);
 
+                const tempThumbInputFile = new FileLocation();
+                tempThumbInputFile.setAccesshash('');
+                tempThumbInputFile.setClusterid(0);
+                tempThumbInputFile.setFileid(fileIds[1]);
+
+                tempDocument.setThumbnail(tempThumbInputFile);
+
                 mediaData.setThumbnail(inputThumbFile);
                 break;
         }
-
-        const tempDocument = new Document();
-        tempDocument.setAccesshash('');
-        tempDocument.setAttributesList(attributesList);
-        tempDocument.setClusterid(0);
-        tempDocument.setDate(now);
-        tempDocument.setId(fileIds[0]);
-        tempDocument.setFilesize(mediaItem.file.size);
-        tempDocument.setMimetype(mediaItem.fileType);
-        tempDocument.setVersion(0);
 
         const mediaDocument = new MediaDocument();
         mediaDocument.setTtlinseconds(0);
