@@ -2396,15 +2396,15 @@ proto.msg.AccountSetPrivacy.prototype.hasKey = function() {
 
 /**
  * repeated AccountPrivacyRule Rules = 2;
- * @return {!Array.<!proto.msg.AccountPrivacyRule>}
+ * @return {!Array<!proto.msg.AccountPrivacyRule>}
  */
 proto.msg.AccountSetPrivacy.prototype.getRulesList = function() {
-  return /** @type{!Array.<!proto.msg.AccountPrivacyRule>} */ (
+  return /** @type{!Array<!proto.msg.AccountPrivacyRule>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.msg.AccountPrivacyRule, 2));
 };
 
 
-/** @param {!Array.<!proto.msg.AccountPrivacyRule>} value */
+/** @param {!Array<!proto.msg.AccountPrivacyRule>} value */
 proto.msg.AccountSetPrivacy.prototype.setRulesList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 2, value);
 };
@@ -2848,15 +2848,15 @@ proto.msg.AccountSessions.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * repeated ActiveSession Sessions = 1;
- * @return {!Array.<!proto.msg.ActiveSession>}
+ * @return {!Array<!proto.msg.ActiveSession>}
  */
 proto.msg.AccountSessions.prototype.getSessionsList = function() {
-  return /** @type{!Array.<!proto.msg.ActiveSession>} */ (
+  return /** @type{!Array<!proto.msg.ActiveSession>} */ (
     jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.ActiveSession, 1));
 };
 
 
-/** @param {!Array.<!proto.msg.ActiveSession>} value */
+/** @param {!Array<!proto.msg.ActiveSession>} value */
 proto.msg.AccountSessions.prototype.setSessionsList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
@@ -3045,15 +3045,15 @@ proto.msg.AccountPrivacyRules.serializeBinaryToWriter = function(message, writer
 
 /**
  * repeated AccountPrivacyRule Rules = 1;
- * @return {!Array.<!proto.msg.AccountPrivacyRule>}
+ * @return {!Array<!proto.msg.AccountPrivacyRule>}
  */
 proto.msg.AccountPrivacyRules.prototype.getRulesList = function() {
-  return /** @type{!Array.<!proto.msg.AccountPrivacyRule>} */ (
+  return /** @type{!Array<!proto.msg.AccountPrivacyRule>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.msg.AccountPrivacyRule, 1));
 };
 
 
-/** @param {!Array.<!proto.msg.AccountPrivacyRule>} value */
+/** @param {!Array<!proto.msg.AccountPrivacyRule>} value */
 proto.msg.AccountPrivacyRules.prototype.setRulesList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };

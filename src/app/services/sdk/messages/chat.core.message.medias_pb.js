@@ -1335,7 +1335,8 @@ proto.msg.Document.toObject = function(includeInstance, msg) {
     version: jspb.Message.getField(msg, 6),
     clusterid: jspb.Message.getField(msg, 7),
     attributesList: jspb.Message.toObjectList(msg.getAttributesList(),
-    proto.msg.DocumentAttribute.toObject, includeInstance)
+    proto.msg.DocumentAttribute.toObject, includeInstance),
+    thumbnail: (f = msg.getThumbnail()) && chat_core_types_pb.FileLocation.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -1404,6 +1405,11 @@ proto.msg.Document.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.msg.DocumentAttribute;
       reader.readMessage(value,proto.msg.DocumentAttribute.deserializeBinaryFromReader);
       msg.addAttributes(value);
+      break;
+    case 9:
+      var value = new chat_core_types_pb.FileLocation;
+      reader.readMessage(value,chat_core_types_pb.FileLocation.deserializeBinaryFromReader);
+      msg.setThumbnail(value);
       break;
     default:
       reader.skipField();
@@ -1489,6 +1495,14 @@ proto.msg.Document.serializeBinaryToWriter = function(message, writer) {
       8,
       f,
       proto.msg.DocumentAttribute.serializeBinaryToWriter
+    );
+  }
+  f = message.getThumbnail();
+  if (f != null) {
+    writer.writeMessage(
+      9,
+      f,
+      chat_core_types_pb.FileLocation.serializeBinaryToWriter
     );
   }
 };
@@ -1699,15 +1713,15 @@ proto.msg.Document.prototype.hasClusterid = function() {
 
 /**
  * repeated DocumentAttribute Attributes = 8;
- * @return {!Array.<!proto.msg.DocumentAttribute>}
+ * @return {!Array<!proto.msg.DocumentAttribute>}
  */
 proto.msg.Document.prototype.getAttributesList = function() {
-  return /** @type{!Array.<!proto.msg.DocumentAttribute>} */ (
+  return /** @type{!Array<!proto.msg.DocumentAttribute>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.msg.DocumentAttribute, 8));
 };
 
 
-/** @param {!Array.<!proto.msg.DocumentAttribute>} value */
+/** @param {!Array<!proto.msg.DocumentAttribute>} value */
 proto.msg.Document.prototype.setAttributesList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 8, value);
 };
@@ -1725,6 +1739,36 @@ proto.msg.Document.prototype.addAttributes = function(opt_value, opt_index) {
 
 proto.msg.Document.prototype.clearAttributesList = function() {
   this.setAttributesList([]);
+};
+
+
+/**
+ * optional FileLocation Thumbnail = 9;
+ * @return {?proto.msg.FileLocation}
+ */
+proto.msg.Document.prototype.getThumbnail = function() {
+  return /** @type{?proto.msg.FileLocation} */ (
+    jspb.Message.getWrapperField(this, chat_core_types_pb.FileLocation, 9));
+};
+
+
+/** @param {?proto.msg.FileLocation|undefined} value */
+proto.msg.Document.prototype.setThumbnail = function(value) {
+  jspb.Message.setWrapperField(this, 9, value);
+};
+
+
+proto.msg.Document.prototype.clearThumbnail = function() {
+  this.setThumbnail(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.Document.prototype.hasThumbnail = function() {
+  return jspb.Message.getField(this, 9) != null;
 };
 
 
@@ -1937,15 +1981,15 @@ proto.msg.InputMediaUploadedPhoto.prototype.hasCaption = function() {
 
 /**
  * repeated InputDocument Stickers = 2;
- * @return {!Array.<!proto.msg.InputDocument>}
+ * @return {!Array<!proto.msg.InputDocument>}
  */
 proto.msg.InputMediaUploadedPhoto.prototype.getStickersList = function() {
-  return /** @type{!Array.<!proto.msg.InputDocument>} */ (
+  return /** @type{!Array<!proto.msg.InputDocument>} */ (
     jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.InputDocument, 2));
 };
 
 
-/** @param {!Array.<!proto.msg.InputDocument>} value */
+/** @param {!Array<!proto.msg.InputDocument>} value */
 proto.msg.InputMediaUploadedPhoto.prototype.setStickersList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 2, value);
 };
@@ -1998,15 +2042,15 @@ proto.msg.InputMediaUploadedPhoto.prototype.hasFile = function() {
 
 /**
  * repeated DocumentAttribute Attributes = 4;
- * @return {!Array.<!proto.msg.DocumentAttribute>}
+ * @return {!Array<!proto.msg.DocumentAttribute>}
  */
 proto.msg.InputMediaUploadedPhoto.prototype.getAttributesList = function() {
-  return /** @type{!Array.<!proto.msg.DocumentAttribute>} */ (
+  return /** @type{!Array<!proto.msg.DocumentAttribute>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.msg.DocumentAttribute, 4));
 };
 
 
-/** @param {!Array.<!proto.msg.DocumentAttribute>} value */
+/** @param {!Array<!proto.msg.DocumentAttribute>} value */
 proto.msg.InputMediaUploadedPhoto.prototype.setAttributesList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 4, value);
 };
@@ -2830,15 +2874,15 @@ proto.msg.InputMediaUploadedDocument.prototype.hasCaption = function() {
 
 /**
  * repeated InputDocument Stickers = 5;
- * @return {!Array.<!proto.msg.InputDocument>}
+ * @return {!Array<!proto.msg.InputDocument>}
  */
 proto.msg.InputMediaUploadedDocument.prototype.getStickersList = function() {
-  return /** @type{!Array.<!proto.msg.InputDocument>} */ (
+  return /** @type{!Array<!proto.msg.InputDocument>} */ (
     jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.InputDocument, 5));
 };
 
 
-/** @param {!Array.<!proto.msg.InputDocument>} value */
+/** @param {!Array<!proto.msg.InputDocument>} value */
 proto.msg.InputMediaUploadedDocument.prototype.setStickersList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 5, value);
 };
@@ -2861,15 +2905,15 @@ proto.msg.InputMediaUploadedDocument.prototype.clearStickersList = function() {
 
 /**
  * repeated DocumentAttribute Attributes = 6;
- * @return {!Array.<!proto.msg.DocumentAttribute>}
+ * @return {!Array<!proto.msg.DocumentAttribute>}
  */
 proto.msg.InputMediaUploadedDocument.prototype.getAttributesList = function() {
-  return /** @type{!Array.<!proto.msg.DocumentAttribute>} */ (
+  return /** @type{!Array<!proto.msg.DocumentAttribute>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.msg.DocumentAttribute, 6));
 };
 
 
-/** @param {!Array.<!proto.msg.DocumentAttribute>} value */
+/** @param {!Array<!proto.msg.DocumentAttribute>} value */
 proto.msg.InputMediaUploadedDocument.prototype.setAttributesList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 6, value);
 };

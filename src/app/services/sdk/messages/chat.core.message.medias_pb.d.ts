@@ -219,6 +219,11 @@ export class Document extends jspb.Message {
   setAttributesList(value: Array<DocumentAttribute>): void;
   addAttributes(value?: DocumentAttribute, index?: number): DocumentAttribute;
 
+  hasThumbnail(): boolean;
+  clearThumbnail(): void;
+  getThumbnail(): chat_core_types_pb.FileLocation | undefined;
+  setThumbnail(value?: chat_core_types_pb.FileLocation): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Document.AsObject;
   static toObject(includeInstance: boolean, msg: Document): Document.AsObject;
@@ -239,6 +244,7 @@ export namespace Document {
     version?: number,
     clusterid?: number,
     attributesList: Array<DocumentAttribute.AsObject>,
+    thumbnail?: chat_core_types_pb.FileLocation.AsObject,
   }
 }
 

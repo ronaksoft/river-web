@@ -155,14 +155,14 @@ proto.msg.MessageActionGroupAddUser.serializeBinaryToWriter = function(message, 
 
 /**
  * repeated int64 UserIDs = 1;
- * @return {!Array.<string>}
+ * @return {!Array<string>}
  */
 proto.msg.MessageActionGroupAddUser.prototype.getUseridsList = function() {
-  return /** @type {!Array.<string>} */ (jspb.Message.getRepeatedField(this, 1));
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 1));
 };
 
 
-/** @param {!Array.<string>} value */
+/** @param {!Array<string>} value */
 proto.msg.MessageActionGroupAddUser.prototype.setUseridsList = function(value) {
   jspb.Message.setField(this, 1, value || []);
 };
@@ -318,14 +318,14 @@ proto.msg.MessageActionGroupDeleteUser.serializeBinaryToWriter = function(messag
 
 /**
  * repeated int64 UserIDs = 1;
- * @return {!Array.<string>}
+ * @return {!Array<string>}
  */
 proto.msg.MessageActionGroupDeleteUser.prototype.getUseridsList = function() {
-  return /** @type {!Array.<string>} */ (jspb.Message.getRepeatedField(this, 1));
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 1));
 };
 
 
-/** @param {!Array.<string>} value */
+/** @param {!Array<string>} value */
 proto.msg.MessageActionGroupDeleteUser.prototype.setUseridsList = function(value) {
   jspb.Message.setField(this, 1, value || []);
 };
@@ -522,14 +522,14 @@ proto.msg.MessageActionGroupCreated.prototype.hasGrouptitle = function() {
 
 /**
  * repeated int64 UserIDs = 2;
- * @return {!Array.<string>}
+ * @return {!Array<string>}
  */
 proto.msg.MessageActionGroupCreated.prototype.getUseridsList = function() {
-  return /** @type {!Array.<string>} */ (jspb.Message.getRepeatedField(this, 2));
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 2));
 };
 
 
-/** @param {!Array.<string>} value */
+/** @param {!Array<string>} value */
 proto.msg.MessageActionGroupCreated.prototype.setUseridsList = function(value) {
   jspb.Message.setField(this, 2, value || []);
 };
