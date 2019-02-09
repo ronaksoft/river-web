@@ -491,15 +491,15 @@ proto.msg.MessageContainer.prototype.hasLength = function() {
 
 /**
  * repeated MessageEnvelope Envelopes = 2;
- * @return {!Array.<!proto.msg.MessageEnvelope>}
+ * @return {!Array<!proto.msg.MessageEnvelope>}
  */
 proto.msg.MessageContainer.prototype.getEnvelopesList = function() {
-  return /** @type{!Array.<!proto.msg.MessageEnvelope>} */ (
+  return /** @type{!Array<!proto.msg.MessageEnvelope>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.msg.MessageEnvelope, 2));
 };
 
 
-/** @param {!Array.<!proto.msg.MessageEnvelope>} value */
+/** @param {!Array<!proto.msg.MessageEnvelope>} value */
 proto.msg.MessageContainer.prototype.setEnvelopesList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 2, value);
 };
@@ -1098,15 +1098,15 @@ proto.msg.UpdateContainer.prototype.hasLength = function() {
 
 /**
  * repeated UpdateEnvelope Updates = 2;
- * @return {!Array.<!proto.msg.UpdateEnvelope>}
+ * @return {!Array<!proto.msg.UpdateEnvelope>}
  */
 proto.msg.UpdateContainer.prototype.getUpdatesList = function() {
-  return /** @type{!Array.<!proto.msg.UpdateEnvelope>} */ (
+  return /** @type{!Array<!proto.msg.UpdateEnvelope>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.msg.UpdateEnvelope, 2));
 };
 
 
-/** @param {!Array.<!proto.msg.UpdateEnvelope>} value */
+/** @param {!Array<!proto.msg.UpdateEnvelope>} value */
 proto.msg.UpdateContainer.prototype.setUpdatesList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 2, value);
 };
@@ -1187,15 +1187,15 @@ proto.msg.UpdateContainer.prototype.hasMaxupdateid = function() {
 
 /**
  * repeated User Users = 5;
- * @return {!Array.<!proto.msg.User>}
+ * @return {!Array<!proto.msg.User>}
  */
 proto.msg.UpdateContainer.prototype.getUsersList = function() {
-  return /** @type{!Array.<!proto.msg.User>} */ (
+  return /** @type{!Array<!proto.msg.User>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.msg.User, 5));
 };
 
 
-/** @param {!Array.<!proto.msg.User>} value */
+/** @param {!Array<!proto.msg.User>} value */
 proto.msg.UpdateContainer.prototype.setUsersList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 5, value);
 };
@@ -1218,15 +1218,15 @@ proto.msg.UpdateContainer.prototype.clearUsersList = function() {
 
 /**
  * repeated Group Groups = 6;
- * @return {!Array.<!proto.msg.Group>}
+ * @return {!Array<!proto.msg.Group>}
  */
 proto.msg.UpdateContainer.prototype.getGroupsList = function() {
-  return /** @type{!Array.<!proto.msg.Group>} */ (
+  return /** @type{!Array<!proto.msg.Group>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.msg.Group, 6));
 };
 
 
-/** @param {!Array.<!proto.msg.Group>} value */
+/** @param {!Array<!proto.msg.Group>} value */
 proto.msg.UpdateContainer.prototype.setGroupsList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 6, value);
 };
@@ -6030,15 +6030,15 @@ proto.msg.UserMessage.prototype.hasMessageactiondata = function() {
 
 /**
  * repeated MessageEntity Entities = 18;
- * @return {!Array.<!proto.msg.MessageEntity>}
+ * @return {!Array<!proto.msg.MessageEntity>}
  */
 proto.msg.UserMessage.prototype.getEntitiesList = function() {
-  return /** @type{!Array.<!proto.msg.MessageEntity>} */ (
+  return /** @type{!Array<!proto.msg.MessageEntity>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.msg.MessageEntity, 18));
 };
 
 
-/** @param {!Array.<!proto.msg.MessageEntity>} value */
+/** @param {!Array<!proto.msg.MessageEntity>} value */
 proto.msg.UserMessage.prototype.setEntitiesList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 18, value);
 };
@@ -8250,14 +8250,14 @@ proto.msg.Group.prototype.hasEditedon = function() {
 
 /**
  * repeated GroupFlags Flags = 6;
- * @return {!Array.<!proto.msg.GroupFlags>}
+ * @return {!Array<!proto.msg.GroupFlags>}
  */
 proto.msg.Group.prototype.getFlagsList = function() {
-  return /** @type {!Array.<!proto.msg.GroupFlags>} */ (jspb.Message.getRepeatedField(this, 6));
+  return /** @type {!Array<!proto.msg.GroupFlags>} */ (jspb.Message.getRepeatedField(this, 6));
 };
 
 
-/** @param {!Array.<!proto.msg.GroupFlags>} value */
+/** @param {!Array<!proto.msg.GroupFlags>} value */
 proto.msg.Group.prototype.setFlagsList = function(value) {
   jspb.Message.setField(this, 6, value || []);
 };
@@ -8519,15 +8519,15 @@ proto.msg.GroupFull.prototype.hasGroup = function() {
 
 /**
  * repeated User Users = 2;
- * @return {!Array.<!proto.msg.User>}
+ * @return {!Array<!proto.msg.User>}
  */
 proto.msg.GroupFull.prototype.getUsersList = function() {
-  return /** @type{!Array.<!proto.msg.User>} */ (
+  return /** @type{!Array<!proto.msg.User>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.msg.User, 2));
 };
 
 
-/** @param {!Array.<!proto.msg.User>} value */
+/** @param {!Array<!proto.msg.User>} value */
 proto.msg.GroupFull.prototype.setUsersList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 2, value);
 };
@@ -8550,15 +8550,15 @@ proto.msg.GroupFull.prototype.clearUsersList = function() {
 
 /**
  * repeated GroupParticipant Participants = 3;
- * @return {!Array.<!proto.msg.GroupParticipant>}
+ * @return {!Array<!proto.msg.GroupParticipant>}
  */
 proto.msg.GroupFull.prototype.getParticipantsList = function() {
-  return /** @type{!Array.<!proto.msg.GroupParticipant>} */ (
+  return /** @type{!Array<!proto.msg.GroupParticipant>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.msg.GroupParticipant, 3));
 };
 
 
-/** @param {!Array.<!proto.msg.GroupParticipant>} value */
+/** @param {!Array<!proto.msg.GroupParticipant>} value */
 proto.msg.GroupFull.prototype.setParticipantsList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 3, value);
 };

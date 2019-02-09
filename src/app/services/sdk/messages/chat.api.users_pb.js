@@ -154,15 +154,15 @@ proto.msg.UsersGet.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * repeated InputUser Users = 1;
- * @return {!Array.<!proto.msg.InputUser>}
+ * @return {!Array<!proto.msg.InputUser>}
  */
 proto.msg.UsersGet.prototype.getUsersList = function() {
-  return /** @type{!Array.<!proto.msg.InputUser>} */ (
+  return /** @type{!Array<!proto.msg.InputUser>} */ (
     jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.InputUser, 1));
 };
 
 
-/** @param {!Array.<!proto.msg.InputUser>} value */
+/** @param {!Array<!proto.msg.InputUser>} value */
 proto.msg.UsersGet.prototype.setUsersList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
@@ -322,15 +322,15 @@ proto.msg.UsersGetFull.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * repeated InputUser Users = 1;
- * @return {!Array.<!proto.msg.InputUser>}
+ * @return {!Array<!proto.msg.InputUser>}
  */
 proto.msg.UsersGetFull.prototype.getUsersList = function() {
-  return /** @type{!Array.<!proto.msg.InputUser>} */ (
+  return /** @type{!Array<!proto.msg.InputUser>} */ (
     jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.InputUser, 1));
 };
 
 
-/** @param {!Array.<!proto.msg.InputUser>} value */
+/** @param {!Array<!proto.msg.InputUser>} value */
 proto.msg.UsersGetFull.prototype.setUsersList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
@@ -490,15 +490,15 @@ proto.msg.UsersMany.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * repeated User Users = 1;
- * @return {!Array.<!proto.msg.User>}
+ * @return {!Array<!proto.msg.User>}
  */
 proto.msg.UsersMany.prototype.getUsersList = function() {
-  return /** @type{!Array.<!proto.msg.User>} */ (
+  return /** @type{!Array<!proto.msg.User>} */ (
     jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.User, 1));
 };
 
 
-/** @param {!Array.<!proto.msg.User>} value */
+/** @param {!Array<!proto.msg.User>} value */
 proto.msg.UsersMany.prototype.setUsersList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
