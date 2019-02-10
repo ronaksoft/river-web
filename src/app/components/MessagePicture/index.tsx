@@ -9,27 +9,87 @@
 
 import * as React from 'react';
 import {IMessage} from '../../repository/message/interface';
-import {InputPeer} from '../../services/sdk/messages/chat.core.types_pb';
-import {MediaDocument} from '../../services/sdk/messages/chat.core.message.medias_pb';
+import {FileLocation, InputPeer} from '../../services/sdk/messages/chat.core.types_pb';
+import {
+    DocumentAttributePhoto,
+    DocumentAttributeType,
+    MediaDocument
+} from '../../services/sdk/messages/chat.core.message.medias_pb';
 import {CloseRounded, CloudDownloadRounded} from '@material-ui/icons';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import ProgressBroadcaster from '../../services/progress';
-import {getFileInfo} from '../MessageFile';
 
 import './style.css';
+import CachedPhoto from '../CachedPhoto';
+
+export interface IPictureInfo {
+    caption: string;
+    file: FileLocation.AsObject;
+    height: number;
+    size: number;
+    thumbFile: FileLocation.AsObject;
+    type: string;
+    width: number;
+}
+
+export const getPictureInfo = (message: IMessage): IPictureInfo => {
+    const info: IPictureInfo = {
+        caption: '',
+        file: {
+            accesshash: '',
+            clusterid: 0,
+            fileid: '',
+        },
+        height: 0,
+        size: 0,
+        thumbFile: {
+            accesshash: '',
+            clusterid: 0,
+            fileid: '',
+        },
+        type: '',
+        width: 0,
+    };
+    const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
+    info.caption = messageMediaDocument.caption || '';
+    info.size = messageMediaDocument.doc.filesize || 0;
+    info.type = messageMediaDocument.doc.mimetype || '';
+    info.file = {
+        accesshash: messageMediaDocument.doc.accesshash,
+        clusterid: messageMediaDocument.doc.clusterid,
+        fileid: messageMediaDocument.doc.id,
+    };
+    if (messageMediaDocument.doc.thumbnail) {
+        info.thumbFile = {
+            accesshash: messageMediaDocument.doc.thumbnail.accesshash,
+            clusterid: messageMediaDocument.doc.thumbnail.clusterid,
+            fileid: messageMediaDocument.doc.thumbnail.fileid,
+        };
+    }
+    if (!message.attributes) {
+        return info;
+    }
+    messageMediaDocument.doc.attributesList.forEach((attr, index) => {
+        if (attr.type === DocumentAttributeType.ATTRIBUTETYPEPHOTO && message.attributes) {
+            const docAttr: DocumentAttributePhoto.AsObject = message.attributes[index];
+            info.height = docAttr.height || 0;
+            info.width = docAttr.width || 0;
+        }
+    });
+    return info;
+};
 
 interface IProps {
+    measureFn: any;
     message: IMessage;
-    peer: InputPeer | null;
     onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', message: IMessage) => void;
+    peer: InputPeer | null;
 }
 
 interface IState {
-    caption: string;
-    fileName: string;
     fileState: 'download' | 'view' | 'progress' | 'open';
+    info: IPictureInfo;
     message: IMessage;
-    type: string;
 }
 
 class MessagePicture extends React.Component<IProps, IState> {
@@ -46,15 +106,13 @@ class MessagePicture extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
 
-        const info = getFileInfo(props.message);
+        const info = getPictureInfo(props.message);
         this.fileSize = info.size;
 
         this.state = {
-            caption: info.caption,
-            fileName: info.name,
             fileState: this.getFileState(props.message),
+            info,
             message: props.message,
-            type: info.type,
         };
 
         if (props.message) {
@@ -80,15 +138,13 @@ class MessagePicture extends React.Component<IProps, IState> {
     public componentWillReceiveProps(newProps: IProps) {
         if (newProps.message && this.lastId !== newProps.message.id) {
             this.lastId = newProps.message.id || 0;
-            const info = getFileInfo(newProps.message);
+            const info = getPictureInfo(newProps.message);
             this.fileSize = info.size;
             this.displayFileSize(0);
             this.setState({
-                caption: info.caption,
-                fileName: info.name,
                 fileState: this.getFileState(newProps.message),
+                info,
                 message: newProps.message,
-                type: info.type,
             }, () => {
                 this.initProgress();
             });
@@ -120,11 +176,13 @@ class MessagePicture extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {caption, fileState} = this.state;
+        const {fileState, info} = this.state;
         return (
             <div className="message-picture">
                 <div className="picture-content">
                     <div className="picture-thumb">
+                        <CachedPhoto className="picture" fileLocation={info.thumbFile}
+                                     onLoad={this.cachedPhotoLoadHandler}/>
                         <div className="picture-action">
                             {Boolean(fileState === 'download') &&
                             <CloudDownloadRounded onClick={this.downloadFileHandler}/>}
@@ -142,7 +200,7 @@ class MessagePicture extends React.Component<IProps, IState> {
                         hey
                     </div>*/}
                 </div>
-                {Boolean(caption.length > 0) && <div className="picture-caption">{caption}</div>}
+                {Boolean(info.caption.length > 0) && <div className="picture-caption">{info.caption}</div>}
             </div>
         );
     }
@@ -258,6 +316,13 @@ class MessagePicture extends React.Component<IProps, IState> {
             this.fileSizeRef.innerText = `${this.getHumanReadableSize(this.fileSize)}`;
         } else {
             this.fileSizeRef.innerText = `${this.getHumanReadableSize(loaded)} / ${this.getHumanReadableSize(this.fileSize)}`;
+        }
+    }
+
+    /* CachedPhoto onLoad handler */
+    private cachedPhotoLoadHandler = () => {
+        if (this.props.measureFn) {
+            this.props.measureFn();
         }
     }
 

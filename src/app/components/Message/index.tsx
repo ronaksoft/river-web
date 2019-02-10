@@ -418,12 +418,14 @@ class Message extends React.Component<IProps, IState> {
                 key={key}
                 rowIndex={index}
                 parent={parent}>
-                {this.messageItem(index, message, this.state.peer, this.state.readId, style)}
+                {({measure}) => {
+                    return this.messageItem(index, message, this.state.peer, this.state.readId, style, measure);
+                }}
             </CellMeasurer>
         );
     }
 
-    private messageItem(index: number, message: IMessage, peer: InputPeer | null, readId: number, style: any) {
+    private messageItem(index: number, message: IMessage, peer: InputPeer | null, readId: number, style: any, measureFn?: any) {
         if (!message) {
             return '';
         }
@@ -464,15 +466,6 @@ class Message extends React.Component<IProps, IState> {
                         </div>
                     );
                 } else {
-                    // let last = false;
-                    // if ((this.state.items.length - 1 === index)) {
-                    //     last = true;
-                    // } else {
-                    //     const nextMessage = this.state.items[index + 1];
-                    //     if (nextMessage.messagetype !== C_MESSAGE_TYPE.Normal || nextMessage.messageaction !== C_MESSAGE_ACTION.MessageActionNope) {
-                    //         last = true;
-                    //     }
-                    // }
                     return (
                         <div style={style}
                              className={'bubble-wrapper _bubble' + (message.me ? ' me' : ' you') + (message.avatar ? ' avatar' : '') + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '') + (message.messagetype === C_MESSAGE_TYPE.Voice ? ' voice' : '') + ((message.me && message.error) ? ' has-error' : '')}
@@ -501,7 +494,7 @@ class Message extends React.Component<IProps, IState> {
                                 <MessageForwarded message={message} peer={peer}
                                                   onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>}
                                 <div className="bubble-body">
-                                    {this.renderMessageBody(message, peer)}
+                                    {this.renderMessageBody(message, peer, measureFn)}
                                     <MessageStatus status={message.me || false} id={message.id} readId={readId}
                                                    time={message.createdon || 0} editedTime={message.editedon || 0}
                                                    onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>
@@ -860,7 +853,7 @@ class Message extends React.Component<IProps, IState> {
     }
 
     /* Message body renderer */
-    private renderMessageBody(message: IMessage, peer: InputPeer | null) {
+    private renderMessageBody(message: IMessage, peer: InputPeer | null, measureFn?: any) {
         if (message.mediatype !== MediaType.MEDIATYPEEMPTY && message.mediatype !== undefined) {
             switch (message.messagetype) {
                 case C_MESSAGE_TYPE.Voice:
@@ -870,7 +863,7 @@ class Message extends React.Component<IProps, IState> {
                 case C_MESSAGE_TYPE.Contact:
                     return (<MessageContact message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
                 case C_MESSAGE_TYPE.Picture:
-                    return (<MessagePicture message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
+                    return (<MessagePicture message={message} peer={peer} onAction={this.props.onAttachmentAction} measureFn={measureFn}/>);
                 default:
                     return '';
             }

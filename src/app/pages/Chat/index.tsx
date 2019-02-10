@@ -3118,16 +3118,18 @@ class Chat extends React.Component<IProps, IState> {
                 fileIds.push(String(UniqueId.getRandomId()), String(UniqueId.getRandomId()));
                 messageType = C_MESSAGE_TYPE.Picture;
 
-                const attrPhotoData = new DocumentAttributePhoto();
-                attrPhotoData.setHeight(0);
-                attrPhotoData.setWidth(0);
+                if (mediaItem.thumb) {
+                    const attrPhotoData = new DocumentAttributePhoto();
+                    attrPhotoData.setHeight(mediaItem.thumb.height);
+                    attrPhotoData.setWidth(mediaItem.thumb.width);
 
-                const attrPhoto = new DocumentAttribute();
-                attrPhoto.setData(attrPhotoData.serializeBinary());
-                attrPhoto.setType(DocumentAttributeType.ATTRIBUTETYPEPHOTO);
+                    const attrPhoto = new DocumentAttribute();
+                    attrPhoto.setData(attrPhotoData.serializeBinary());
+                    attrPhoto.setType(DocumentAttributeType.ATTRIBUTETYPEPHOTO);
 
-                attributesList.push(attrPhoto);
-                attributesDataList.push(attrPhotoData.toObject());
+                    attributesList.push(attrPhoto);
+                    attributesDataList.push(attrPhotoData.toObject());
+                }
 
                 const inputThumbFile = new InputFile();
                 inputThumbFile.setFileid(fileIds[1]);
@@ -3194,7 +3196,7 @@ class Chat extends React.Component<IProps, IState> {
                     this.progressBroadcaster.publish(id, progress);
                 }));
                 if (mediaItem.thumb) {
-                    uploadPromises.push(this.fileManager.sendFile(fileIds[1], mediaItem.thumb));
+                    uploadPromises.push(this.fileManager.sendFile(fileIds[1], mediaItem.thumb.file));
                 }
                 break;
         }

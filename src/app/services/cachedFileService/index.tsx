@@ -10,6 +10,9 @@
 import FileManager from '../sdk/fileManager/index';
 import {InputFileLocation} from '../sdk/messages/chat.core.types_pb';
 import FileRepo from '../../repository/file/index';
+import {createElement} from 'react';
+// @ts-ignore
+import glur from 'glur';
 
 interface IFile {
     location: InputFileLocation.AsObject;
@@ -98,6 +101,46 @@ export default class CachedFileService {
                 }
             }, C_CACHE_TTL * 1000);
         }
+    }
+
+    /* Get blurred image */
+    public getBlurredImage(id: string, blob: Blob, radius: number): Promise<any> {
+        return this.fileRepo.get(`b_${radius}${id}`).then((file) => {
+            if (file) {
+                return file.data;
+            } else {
+                return Promise.reject();
+            }
+        });
+    }
+
+    /* Create blurred image */
+    public createBlurredImage(blob: Blob, radius: number): Promise<Blob> {
+        return new Promise<Blob>((resolve, reject) => {
+            // @ts-ignore
+            const canvas: HTMLCanvasElement = createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                return reject('no ctx');
+            }
+            const img = new Image();
+            img.onload = () => {
+                ctx.drawImage(img, 0, 0, img.width * 2, img.height * 2);
+                const imageData = ctx.getImageData(0, 0, img.width * 2, img.height * 2);
+                glur(imageData.data, img.width * 2, img.height * 2, radius);
+                ctx.putImageData(imageData, img.width * 2, img.height * 2);
+                canvas.toBlob((data) => {
+                    if (data) {
+                        resolve(data);
+                    } else {
+                        reject('cannot create blob');
+                    }
+                    URL.revokeObjectURL(img.src);
+                    img.remove();
+                }, 'image/jpeg', 0.95);
+            };
+            img.src = URL.createObjectURL(blob);
+        });
     }
 
     /* Get remote file */

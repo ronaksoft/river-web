@@ -12,8 +12,10 @@ import CachedFileService from '../../services/cachedFileService';
 import {InputFileLocation} from '../../services/sdk/messages/chat.core.types_pb';
 
 interface IProps {
+    blur?: number;
     className?: string;
     fileLocation: InputFileLocation.AsObject;
+    onLoad?: () => void;
 }
 
 interface IState {
@@ -50,7 +52,7 @@ class CachedPhoto extends React.Component<IProps, IState> {
         const {className, src} = this.state;
         return (
             <div className={className}>
-                {src && <img src={src}/>}
+                {src && <img src={src} onLoad={this.props.onLoad}/>}
             </div>
         );
     }

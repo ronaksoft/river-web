@@ -9,7 +9,6 @@
 
 import * as React from 'react';
 import Dropzone, {FileWithPreview} from 'react-dropzone';
-import {DragEvent} from 'react';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import {AddRounded, CancelRounded, CheckRounded, CropRounded} from '@material-ui/icons';
 import Scrollbars from 'react-custom-scrollbars';
@@ -19,17 +18,25 @@ import readAndCompressImage from 'browser-image-resizer';
 
 import './style.css';
 
+interface IMediaThumb {
+    file: Blob;
+    fileType: string;
+    height: number;
+    width: number;
+}
+
 export interface IMediaItem {
     caption?: string;
     file: Blob;
     fileType: string;
     name: string;
-    thumb?: Blob;
-    thumbType?: string;
+    thumb?: IMediaThumb;
 }
 
 export interface IUploaderFile extends FileWithPreview {
     caption?: string;
+    height?: number;
+    width?: number;
 }
 
 interface IProps {
@@ -64,10 +71,6 @@ class MediaPreview extends React.Component<IProps, IState> {
             show: true,
         };
     }
-
-    // public componentWillReceiveProps(newProps: IProps) {
-    //     //
-    // }
 
     public openDialog(items: File[]) {
         this.reset();
@@ -176,18 +179,20 @@ class MediaPreview extends React.Component<IProps, IState> {
         );
     }
 
+    /* Dropzone ref handler */
     private dropzoneRefHandler = (ref: any) => {
         this.dropzoneRef = ref;
     }
 
-    private onDrop = (accepted: FileWithPreview[], rejected: FileWithPreview[], event: DragEvent<HTMLDivElement>) => {
-        window.console.log(accepted, rejected, event);
+    /* On drop handler */
+    private onDrop = (accepted: FileWithPreview[]) => {
         // @ts-ignore
         this.setState({
             items: [...this.state.items, ...accepted],
         });
     }
 
+    /* Select image */
     private selectImage = (index: number, callback?: () => void) => {
         if (this.state.selected === index) {
             return;
@@ -207,12 +212,14 @@ class MediaPreview extends React.Component<IProps, IState> {
         });
     }
 
+    /* Close dialog handler */
     private dialogCloseHandler = () => {
         this.setState({
             dialogOpen: false,
         });
     }
 
+    /* Generate preview if not exist */
     private generatePreview() {
         const {items} = this.state;
         items.map((item, index) => {
@@ -220,6 +227,7 @@ class MediaPreview extends React.Component<IProps, IState> {
                 item.preview = URL.createObjectURL(item);
                 this.previewRefs[index] = item.preview;
             }
+            this.getImageSize(item.preview, index);
             return items;
         });
         this.setState({
@@ -227,12 +235,32 @@ class MediaPreview extends React.Component<IProps, IState> {
         });
     }
 
+    /* Get image size */
+    private getImageSize(src: string, index: number) {
+        const img = new Image();
+        img.onloadedmetadata = () => {
+            const {items} = this.state;
+            if (items[index]) {
+                items[index].height = img.height;
+                items[index].width = img.width;
+                this.setState({
+                    items,
+                }, () => {
+                    img.remove();
+                });
+            }
+        };
+        img.src = src;
+    }
+
+    /* Add new media items at end of items */
     private addMediaHandler = () => {
         if (this.dropzoneRef) {
             this.dropzoneRef.open();
         }
     }
 
+    /* Reset all data */
     private reset() {
         this.previewRefs.forEach((item) => {
             URL.revokeObjectURL(item);
@@ -240,6 +268,7 @@ class MediaPreview extends React.Component<IProps, IState> {
         this.previewRefs = [];
     }
 
+    /* Remove item handler */
     private removeItemHandler = (index: number, e: any) => {
         e.stopPropagation();
         const {items, selected} = this.state;
@@ -269,6 +298,7 @@ class MediaPreview extends React.Component<IProps, IState> {
         }
     }
 
+    /* Caption change handler */
     private captionChangeHandler = (e: any) => {
         const {items, selected} = this.state;
         if (items[selected]) {
@@ -279,18 +309,22 @@ class MediaPreview extends React.Component<IProps, IState> {
         }
     }
 
+    /* To prevent dropzone click */
     private slideClickHandler = (e: any) => {
         e.stopPropagation();
     }
 
+    /* Image ref handler */
     private imageRefHandler = (ref: any) => {
         this.imageRef = ref;
     }
 
+    /* Image action ref handler */
     private imageActionRefHandler = (ref: any) => {
         this.imageActionRef = ref;
     }
 
+    /* Resize action area to image size */
     private setImageActionSize() {
         setTimeout(() => {
             if (this.imageRef && this.imageActionRef) {
@@ -300,27 +334,28 @@ class MediaPreview extends React.Component<IProps, IState> {
         }, 50);
     }
 
+    /* Check button click handler */
     private doneHandler = () => {
         const {items} = this.state;
         this.setState({
             loading: true,
         });
-        const thumbConfig = {
-            autoRotate: true,
-            maxHeight: 100,
-            maxWidth: 100,
-            quality: 0.8,
-        };
         const config = {
             autoRotate: true,
             maxHeight: 1000,
             maxWidth: 1000,
             quality: 0.8,
         };
+        const thumbConfig = {
+            autoRotate: true,
+            maxHeight: 160,
+            maxWidth: 160,
+            quality: 0.8,
+        };
         const promise: any[] = [];
         items.forEach((item) => {
-            promise.push(readAndCompressImage(item, thumbConfig));
             promise.push(readAndCompressImage(item, config));
+            promise.push(readAndCompressImage(item, thumbConfig));
         });
         Promise.all(promise).then((dist) => {
             const output: IMediaItem[] = [];
@@ -330,8 +365,12 @@ class MediaPreview extends React.Component<IProps, IState> {
                     file: dist[i * 2],
                     fileType: items[i].type,
                     name: items[i].name,
-                    thumb: dist[i * 2 + 1],
-                    thumbType: items[i].type,
+                    thumb: {
+                        file: dist[i * 2 + 1],
+                        fileType: items[i].type,
+                        height: items[i].height || 0,
+                        width: items[i].width || 0,
+                    }
                 });
             }
             this.props.onDone(output);
