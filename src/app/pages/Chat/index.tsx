@@ -97,7 +97,7 @@ import {
     Document,
     DocumentAttribute,
     DocumentAttributeAudio,
-    DocumentAttributeFile,
+    DocumentAttributeFile, DocumentAttributePhoto,
     DocumentAttributeType,
     InputMediaUploadedDocument,
     MediaDocument
@@ -3104,22 +3104,30 @@ class Chat extends React.Component<IProps, IState> {
                 fileIds.push(String(UniqueId.getRandomId()));
                 messageType = C_MESSAGE_TYPE.File;
 
-                const attr1Data = new DocumentAttributeFile();
-                attr1Data.setFilename(mediaItem.name);
+                const attrFileData = new DocumentAttributeFile();
+                attrFileData.setFilename(mediaItem.name);
 
-                const attr1 = new DocumentAttribute();
-                attr1.setData(attr1Data.serializeBinary());
-                attr1.setType(DocumentAttributeType.ATTRIBUTETYPEFILE);
+                const attrFile = new DocumentAttribute();
+                attrFile.setData(attrFileData.serializeBinary());
+                attrFile.setType(DocumentAttributeType.ATTRIBUTETYPEFILE);
 
-                attributesList.push(attr1);
-
-                attributesDataList.push(attr1Data.toObject());
-
-                mediaData.setThumbnail(undefined);
+                attributesList.push(attrFile);
+                attributesDataList.push(attrFileData.toObject());
                 break;
             case 'picture':
                 fileIds.push(String(UniqueId.getRandomId()), String(UniqueId.getRandomId()));
                 messageType = C_MESSAGE_TYPE.Picture;
+
+                const attrPhotoData = new DocumentAttributePhoto();
+                attrPhotoData.setHeight(0);
+                attrPhotoData.setWidth(0);
+
+                const attrPhoto = new DocumentAttribute();
+                attrPhoto.setData(attrPhotoData.serializeBinary());
+                attrPhoto.setType(DocumentAttributeType.ATTRIBUTETYPEPHOTO);
+
+                attributesList.push(attrPhoto);
+                attributesDataList.push(attrPhotoData.toObject());
 
                 const inputThumbFile = new InputFile();
                 inputThumbFile.setFileid(fileIds[1]);
@@ -3133,7 +3141,6 @@ class Chat extends React.Component<IProps, IState> {
                 tempThumbInputFile.setFileid(fileIds[1]);
 
                 tempDocument.setThumbnail(tempThumbInputFile);
-
                 mediaData.setThumbnail(inputThumbFile);
                 break;
         }

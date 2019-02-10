@@ -142,7 +142,7 @@ class MessagePicture extends React.Component<IProps, IState> {
                         hey
                     </div>*/}
                 </div>
-                {Boolean(caption.length > 0) && <div className="file-caption">{caption}</div>}
+                {Boolean(caption.length > 0) && <div className="picture-caption">{caption}</div>}
             </div>
         );
     }
