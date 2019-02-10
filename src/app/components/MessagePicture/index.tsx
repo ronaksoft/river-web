@@ -182,7 +182,7 @@ class MessagePicture extends React.Component<IProps, IState> {
                 <div className="picture-content">
                     <div className="picture-thumb">
                         <CachedPhoto className="picture" fileLocation={info.thumbFile}
-                                     onLoad={this.cachedPhotoLoadHandler}/>
+                                     onLoad={this.cachedPhotoLoadHandler} blur={15}/>
                         <div className="picture-action">
                             {Boolean(fileState === 'download') &&
                             <CloudDownloadRounded onClick={this.downloadFileHandler}/>}

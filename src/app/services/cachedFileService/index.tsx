@@ -10,7 +10,6 @@
 import FileManager from '../sdk/fileManager/index';
 import {InputFileLocation} from '../sdk/messages/chat.core.types_pb';
 import FileRepo from '../../repository/file/index';
-import {createElement} from 'react';
 // @ts-ignore
 import glur from 'glur';
 
@@ -45,7 +44,7 @@ export default class CachedFileService {
     }
 
     /* Get file */
-    public getFile(fileLocation: InputFileLocation.AsObject, size: number): Promise<string> {
+    public getFile(fileLocation: InputFileLocation.AsObject, size: number, blurRadius?: number): Promise<string> {
         const id = fileLocation.fileid || '';
         return new Promise((resolve, reject) => {
             if (this.files.hasOwnProperty(id)) {
@@ -69,10 +68,10 @@ export default class CachedFileService {
                     src: '',
                     timeout: null,
                 };
-                this.getLocalFile(id).then((res) => {
+                this.getLocalFile(id, blurRadius).then((res) => {
                     resolve(res);
                 }).catch(() => {
-                    this.getRemoteFile(fileLocation, size).then((res) => {
+                    this.getRemoteFile(fileLocation, size, blurRadius).then((res) => {
                         resolve(res);
                     }).catch(() => {
                         reject();
@@ -104,31 +103,37 @@ export default class CachedFileService {
     }
 
     /* Get blurred image */
-    public getBlurredImage(id: string, blob: Blob, radius: number): Promise<any> {
-        return this.fileRepo.get(`b_${radius}${id}`).then((file) => {
+    private getBlurredImage(id: string, blob: Blob, radius: number): Promise<Blob> {
+        return this.fileRepo.get(`b_${radius}_${id}`).then((file) => {
             if (file) {
                 return file.data;
             } else {
-                return Promise.reject();
+                return this.createBlurredImage(blob, radius).then((data) => {
+                    this.fileRepo.createWithHash(`b_${radius}_${id}`, data).catch(() => {
+                        //
+                    });
+                    return data;
+                });
             }
         });
     }
 
     /* Create blurred image */
-    public createBlurredImage(blob: Blob, radius: number): Promise<Blob> {
+    private createBlurredImage(blob: Blob, radius: number): Promise<Blob> {
         return new Promise<Blob>((resolve, reject) => {
-            // @ts-ignore
-            const canvas: HTMLCanvasElement = createElement('canvas');
+            const canvas: HTMLCanvasElement = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             if (!ctx) {
                 return reject('no ctx');
             }
             const img = new Image();
             img.onload = () => {
-                ctx.drawImage(img, 0, 0, img.width * 2, img.height * 2);
-                const imageData = ctx.getImageData(0, 0, img.width * 2, img.height * 2);
-                glur(imageData.data, img.width * 2, img.height * 2, radius);
-                ctx.putImageData(imageData, img.width * 2, img.height * 2);
+                ctx.canvas.height = img.height;
+                ctx.canvas.width = img.width;
+                ctx.drawImage(img, 0, 0);
+                const imageData = ctx.getImageData(0, 0, img.width, img.height);
+                glur(imageData.data, img.width, img.height, radius);
+                ctx.putImageData(imageData, 0, 0);
                 canvas.toBlob((data) => {
                     if (data) {
                         resolve(data);
@@ -137,14 +142,14 @@ export default class CachedFileService {
                     }
                     URL.revokeObjectURL(img.src);
                     img.remove();
-                }, 'image/jpeg', 0.95);
+                }, 'image/png');
             };
             img.src = URL.createObjectURL(blob);
         });
     }
 
     /* Get remote file */
-    private getRemoteFile(fileLoc: InputFileLocation.AsObject, size: number): Promise<string> {
+    private getRemoteFile(fileLoc: InputFileLocation.AsObject, size: number, blurRadius?: number): Promise<string> {
         const id = fileLoc.fileid || '';
         return new Promise((resolve, reject) => {
             const fileLocation = new InputFileLocation();
@@ -155,9 +160,16 @@ export default class CachedFileService {
             this.fileManager.receiveFile(fileLocation, size, 'image/jpeg').then(() => {
                 this.fileRepo.get(fileLoc.fileid || '').then((fileRes) => {
                     if (fileRes) {
-                        this.files[id].src = fileRes.data.size === 0 ? '' : URL.createObjectURL(fileRes.data);
                         this.files[id].retries = 0;
-                        resolve(this.files[id].src);
+                        if (blurRadius && fileRes.data.size > 0) {
+                            this.getBlurredImage(id, fileRes.data, blurRadius).then((blurredBlob) => {
+                                this.files[id].src = URL.createObjectURL(blurredBlob);
+                                resolve(this.files[id].src);
+                            });
+                        } else {
+                            this.files[id].src = fileRes.data.size === 0 ? '' : URL.createObjectURL(fileRes.data);
+                            resolve(this.files[id].src);
+                        }
                     } else {
                         this.files[id].retries++;
                         reject();
@@ -171,13 +183,20 @@ export default class CachedFileService {
     }
 
     /* Get local file */
-    private getLocalFile(id: string): Promise<string> {
+    private getLocalFile(id: string, blurRadius?: number): Promise<string> {
         return new Promise((resolve, reject) => {
             if (this.files.hasOwnProperty(id)) {
                 this.fileRepo.get(id).then((fileRes) => {
                     if (fileRes) {
-                        this.files[id].src = fileRes.data.size === 0 ? '' : URL.createObjectURL(fileRes.data);
-                        resolve(this.files[id].src);
+                        if (blurRadius && fileRes.data.size > 0) {
+                            this.getBlurredImage(id, fileRes.data, blurRadius).then((blurredBlob) => {
+                                this.files[id].src = URL.createObjectURL(blurredBlob);
+                                resolve(this.files[id].src);
+                            });
+                        } else {
+                            this.files[id].src = fileRes.data.size === 0 ? '' : URL.createObjectURL(fileRes.data);
+                            resolve(this.files[id].src);
+                        }
                     } else {
                         reject();
                     }

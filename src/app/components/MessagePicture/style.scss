@@ -9,8 +9,63 @@
 @import '../../../style/common';
 
 .message-picture {
-  padding: 3px
-
+  padding: 3px;
+  .picture-content {
+    .picture-thumb {
+      position: relative;
+      .picture {
+        border-radius: 5px;
+        overflow: hidden;
+        line-height: 0;
+      }
+      .picture-action {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        height: 36px;
+        width: 36px;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        z-index: 10;
+        background-color: rgba(0, 0, 0, 0.3);
+        .progress {
+          position: absolute;
+          top: 2px;
+          left: 2px;
+          height: 32px;
+          width: 32px;
+          transform-origin: center center;
+          animation-name: rotateDonut;
+          animation-duration: 3s;
+          animation-iteration-count: infinite;
+          animation-timing-function: linear;
+          svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 32px;
+            width: 32px;
+            circle {
+              fill: transparent;
+              stroke: var(--white);
+              stroke-width: 2px;
+              stroke-dasharray: 3 88;
+              transition: stroke-dasharray 0.1s ease;
+            }
+          }
+        }
+        > svg {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 24px;
+          height: 24px;
+          color: var(--white);
+          transform: translate(-50%, -50%);
+        }
+      }
+    }
+  }
 }
 
 html[theme="dark"],

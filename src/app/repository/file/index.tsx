@@ -81,7 +81,7 @@ export default class FileRepo {
     }
 
     public create(file: IFile) {
-        return this.db.files.add(file);
+        return this.db.files.put(file);
     }
 
     public get(id: string) {
