@@ -114,6 +114,7 @@ class MessagePicture extends React.PureComponent<IProps, IState> {
         height: `${C_MIN_HEIGHT}px`,
         width: `${C_MIN_WIDTH}px`
     };
+    private pictureBigRef: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -190,6 +191,14 @@ class MessagePicture extends React.PureComponent<IProps, IState> {
         this.removeAllListeners();
     }
 
+    /* View downloaded document */
+    public viewDocument() {
+        const {fileState} = this.state;
+        if (this.pictureBigRef && (fileState === 'view' || fileState === 'open')) {
+            this.showPictureHandler(this.pictureBigRef);
+        }
+    }
+
     public render() {
         const {fileState, info, message} = this.state;
         return (
@@ -214,7 +223,7 @@ class MessagePicture extends React.PureComponent<IProps, IState> {
                         </div>
                     </div>}
                     {Boolean(fileState === 'view' || fileState === 'open') &&
-                    <div className="picture-big" onClick={this.showPictureHandler}>
+                    <div ref={this.pictureBigRefHandler} className="picture-big" onClick={this.showPictureHandler}>
                         <CachedPhoto className="picture" fileLocation={info.file}
                                      onLoad={this.cachedPhotoLoadHandler}/>
                     </div>}
@@ -345,6 +354,11 @@ class MessagePicture extends React.PureComponent<IProps, IState> {
         }
     }
 
+    /* Picture big ref handler */
+    private pictureBigRefHandler = (ref: any) => {
+        this.pictureBigRef = ref;
+    }
+
     /* Get content size */
     private getContentSize(info: IPictureInfo): { height: string, width: string } {
         const ratio = info.height / info.width;
@@ -373,6 +387,9 @@ class MessagePicture extends React.PureComponent<IProps, IState> {
 
     /* Show picture handler */
     private showPictureHandler = (e: any) => {
+        if (e.stopPropagation) {
+            e.stopPropagation();
+        }
         const {info, message} = this.state;
         if (!info || !info.file) {
             return;
@@ -386,7 +403,7 @@ class MessagePicture extends React.PureComponent<IProps, IState> {
                 width: info.width,
             }],
             peerId: message.peerid || '',
-            rect: e.currentTarget.getBoundingClientRect(),
+            rect: (e.currentTarget || e).getBoundingClientRect(),
             type: 'picture',
         };
         this.documentViewerService.loadDocument(doc);

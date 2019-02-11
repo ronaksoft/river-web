@@ -63,17 +63,16 @@
   left: 3px;
   right: 3px;
   bottom: 3px;
-  color: var(--white);
+  color: var(--white) !important;
   padding: 0 3px;
   &:before {
     content: '';
     position: absolute;
-    height: 170%;
-    width: 100%;
-    max-width: 200px;
+    height: 200%;
     bottom: 0;
     right: 0;
-    background: linear-gradient(170deg, transparent 0%, transparent 30%, rgba(0, 0, 0, 0.18) 75%, rgba(0, 0, 0, 0.4) 100%);
+    left: 0;
+    background: linear-gradient(175deg, transparent 0%, transparent 30%, rgba(0, 0, 0, 0.28) 75%, rgba(0, 0, 0, 0.6) 100%);
     border-radius: 0 0 8px 8px;
   }
   > span,

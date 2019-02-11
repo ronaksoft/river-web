@@ -39,6 +39,7 @@ import CachedPhoto from '../CachedPhoto';
 import MessagePicture from '../MessagePicture';
 
 import './style.css';
+import {MediaDocument} from '../../services/sdk/messages/chat.core.message.medias_pb';
 
 interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
@@ -103,6 +104,7 @@ class Message extends React.Component<IProps, IState> {
         stopIndex: 0,
     };
     private riverTime: RiverTime;
+    private messageMediaRef: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -468,7 +470,7 @@ class Message extends React.Component<IProps, IState> {
                 } else {
                     return (
                         <div style={style}
-                             className={'bubble-wrapper _bubble' + (message.me ? ' me' : ' you') + (message.avatar ? ' avatar' : '') + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '') + this.getMessageTypeName(message.messagetype || 0) + ((message.me && message.error) ? ' has-error' : '')}
+                             className={'bubble-wrapper _bubble' + (message.me ? ' me' : ' you') + (message.avatar ? ' avatar' : '') + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '') + this.getMessageType(message) + ((message.me && message.error) ? ' has-error' : '')}
                              onClick={this.toggleSelectHandler.bind(this, message.id || 0, index)}
                              onDoubleClick={this.selectMessage.bind(this, index)}
                         >
@@ -482,7 +484,7 @@ class Message extends React.Component<IProps, IState> {
                             {Boolean(message.avatar && message.senderid) && (<div className="arrow"/>)}
                             {Boolean(message.me && message.error) && <span className="error"><ErrorRounded/></span>}
                             <div
-                                className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')}>
+                                className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')} onClick={this.bubbleClickHandler}>
                                 {Boolean(peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me) &&
                                 <UserName className="name" uniqueColor={false} id={message.senderid || ''}/>}
                                 {Boolean(message.replyto && message.replyto !== 0) &&
@@ -499,8 +501,8 @@ class Message extends React.Component<IProps, IState> {
                                                    time={message.createdon || 0} editedTime={message.editedon || 0}
                                                    onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>
                                 </div>
-                                <div className="more" onClick={this.contextMenuHandler.bind(this, index)}>
-                                    <MoreVert/>
+                                <div className="more">
+                                    <MoreVert onClick={this.contextMenuHandler.bind(this, index)}/>
                                 </div>
                             </div>
                         </div>
@@ -529,6 +531,7 @@ class Message extends React.Component<IProps, IState> {
         if (index === -1) {
             return;
         }
+        e.stopPropagation();
         this.setState({
             moreAnchorEl: e.currentTarget,
             moreIndex: index,
@@ -863,7 +866,7 @@ class Message extends React.Component<IProps, IState> {
                 case C_MESSAGE_TYPE.Contact:
                     return (<MessageContact message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
                 case C_MESSAGE_TYPE.Picture:
-                    return (<MessagePicture message={message} peer={peer} onAction={this.props.onAttachmentAction}
+                    return (<MessagePicture ref={this.messageMediaRefHandler} message={message} peer={peer} onAction={this.props.onAttachmentAction}
                                             measureFn={measureFn}/>);
                 default:
                     return '';
@@ -877,20 +880,52 @@ class Message extends React.Component<IProps, IState> {
     }
 
     /* Get message type name */
-    private getMessageTypeName(messageType: number) {
-        switch (messageType) {
+    private getMessageType(message: IMessage) {
+        let type = '';
+        switch (message.messagetype) {
             case C_MESSAGE_TYPE.Picture:
-                return ' picture';
+                type = 'picture';
+                break;
             case C_MESSAGE_TYPE.Video:
-                return ' video';
+                type = 'video';
+                break;
             case C_MESSAGE_TYPE.File:
-                return ' file';
+                type =  'file';
+                break;
             case C_MESSAGE_TYPE.Voice:
-                return ' voice';
+                type =  'voice';
+                break;
             case C_MESSAGE_TYPE.Music:
-                return ' music';
-            default:
-                return '';
+                type =  'music';
+                break;
+        }
+        if (type === 'picture' || type === 'video') {
+            const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
+            if ((messageMediaDocument.caption|| '').length > 0) {
+                if (type === 'picture') {
+                    type = 'picture_caption';
+                }
+                if (type === 'video') {
+                    type = 'video_caption';
+                }
+            }
+        }
+        let related = '';
+        if (message.replyto || (message.fwdsenderid && message.fwdsenderid !== '0')) {
+            related = 'related';
+        }
+        return ` ${type} ${related}`;
+    }
+
+    /* Message media ref handler */
+    private messageMediaRefHandler = (ref: any) => {
+        this.messageMediaRef = ref;
+    }
+
+    /* Bubble click handler */
+    private bubbleClickHandler = () => {
+        if (this.messageMediaRef && this.messageMediaRef.viewDocument) {
+            this.messageMediaRef.viewDocument();
         }
     }
 }

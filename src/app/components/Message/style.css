@@ -276,15 +276,16 @@ input {
       right: 3px;
       height: 20px;
       width: 16px;
-      display: none;
+      display: block;
       cursor: pointer;
       background-color: inherit;
+      visibility: hidden;
       z-index: 10; }
       .bubble-wrapper .bubble .more svg {
         height: 20px;
         font-size: 20px; }
     .bubble-wrapper .bubble:hover .more {
-      display: block; }
+      visibility: visible; }
     .bubble-wrapper .bubble.highlight:before {
       position: absolute;
       content: '';
@@ -383,6 +384,39 @@ input {
     .bubble-wrapper .system-message.divider:after {
       right: 10px;
       left: calc(50% + 60px); }
+
+.user .bubble-wrapper:not(.related).picture .bubble .more, .user .bubble-wrapper:not(.related).picture_caption .bubble .more, .group .bubble-wrapper.me:not(.related).picture .bubble .more, .group .bubble-wrapper.me:not(.related).picture_caption .bubble .more, .group .bubble-wrapper.you:not(.avatar):not(.related).picture .bubble .more, .group .bubble-wrapper.you:not(.avatar):not(.related).picture_caption .bubble .more {
+  background-color: transparent;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  height: 36px;
+  width: auto;
+  left: 0;
+  padding: 6px 2px 0 0; }
+  .user .bubble-wrapper:not(.related).picture .bubble .more:before, .user .bubble-wrapper:not(.related).picture_caption .bubble .more:before, .group .bubble-wrapper.me:not(.related).picture .bubble .more:before, .group .bubble-wrapper.me:not(.related).picture_caption .bubble .more:before, .group .bubble-wrapper.you:not(.avatar):not(.related).picture .bubble .more:before, .group .bubble-wrapper.you:not(.avatar):not(.related).picture_caption .bubble .more:before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 200px;
+    top: 0;
+    right: 0;
+    background: linear-gradient(10deg, transparent 0%, transparent 45%, rgba(0, 0, 0, 0.38) 75%, rgba(0, 0, 0, 0.7) 100%);
+    border-radius: 10px 10px 0 0;
+    z-index: 10;
+    transition: opacity 0.2s;
+    opacity: 0; }
+  .user .bubble-wrapper:not(.related).picture .bubble .more svg, .user .bubble-wrapper:not(.related).picture_caption .bubble .more svg, .group .bubble-wrapper.me:not(.related).picture .bubble .more svg, .group .bubble-wrapper.me:not(.related).picture_caption .bubble .more svg, .group .bubble-wrapper.you:not(.avatar):not(.related).picture .bubble .more svg, .group .bubble-wrapper.you:not(.avatar):not(.related).picture_caption .bubble .more svg {
+    position: relative;
+    color: var(--white);
+    z-index: 12; }
+
+.user .bubble-wrapper:not(.related).picture .bubble:hover .more:before, .user .bubble-wrapper:not(.related).picture_caption .bubble:hover .more:before, .group .bubble-wrapper.me:not(.related).picture .bubble:hover .more:before, .group .bubble-wrapper.me:not(.related).picture_caption .bubble:hover .more:before, .group .bubble-wrapper.you:not(.avatar):not(.related).picture .bubble:hover .more:before, .group .bubble-wrapper.you:not(.avatar):not(.related).picture_caption .bubble:hover .more:before {
+  opacity: 1; }
+
+.group .bubble-wrapper.you.avatar.picture .bubble .bubble-body, .group .bubble-wrapper.you.avatar.picture_caption .bubble .bubble-body {
+  margin-top: 4px; }
 
 .selectable .bubble-wrapper {
   cursor: pointer; }

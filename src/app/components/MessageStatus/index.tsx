@@ -59,7 +59,7 @@ class MessageStatus extends React.Component<IProps, IState> {
         const {id, readId, status, time, editedTime} = this.state;
 
         return (
-            <div className={'message-status'} onDoubleClick={this.onDoubleClickHandler}>
+            <div className={'message-status'} onClick={this.onClickHandler} onDoubleClick={this.onDoubleClickHandler}>
                 {editedTime > 0 && <span className="edited">edited</span>}
                 <span className="time">{TimeUtililty.TimeParse(time)}</span>
                 {this.getStatus(id, readId, status)}
@@ -87,6 +87,11 @@ class MessageStatus extends React.Component<IProps, IState> {
         if (this.props.onDoubleClick) {
             this.props.onDoubleClick(e);
         }
+    }
+
+    /* Prevent propagation on status click */
+    private onClickHandler = (e: any) => {
+        e.stopPropagation();
     }
 }
 

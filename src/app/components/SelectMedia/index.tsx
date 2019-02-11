@@ -74,19 +74,11 @@ class SelectMedia extends React.Component<IProps, IState> {
             open: props.open,
         };
     }
-
-    public componentDidMount() {
-        //
-    }
-
+    
     public componentWillReceiveProps(newProps: IProps) {
         this.setState({
             open: newProps.open,
         });
-    }
-
-    public componentWillUnmount() {
-        //
     }
 
     public render() {

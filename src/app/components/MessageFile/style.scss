@@ -97,6 +97,8 @@
   }
   .file-caption {
     padding: 0 6px;
+    white-space: pre-wrap;
+    word-break: break-word;
   }
 }
 

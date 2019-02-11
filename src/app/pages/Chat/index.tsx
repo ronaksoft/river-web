@@ -3086,7 +3086,7 @@ class Chat extends React.Component<IProps, IState> {
         inputFile.setTotalparts(1);
 
         const mediaData = new InputMediaUploadedDocument();
-        mediaData.setCaption('');
+        mediaData.setCaption(mediaItem.caption || '');
         mediaData.setMimetype(mediaItem.fileType);
         mediaData.setStickersList([]);
         mediaData.setAttributesList(attributesList);

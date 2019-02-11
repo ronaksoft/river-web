@@ -75,7 +75,7 @@ interface IProps {
     userId?: string;
     onVoice: (voice: Blob, waveform: number[], duration: number, {mode, message}?: any) => void;
     onFileSelected: (file: File, {mode, message}?: any) => void;
-    onMediaSelected?: (items: IMediaItem[], {mode, message}?: any) => void;
+    onMediaSelected: (items: IMediaItem[], {mode, message}?: any) => void;
 }
 
 interface IState {
@@ -1278,9 +1278,9 @@ class TextInput extends React.Component<IProps, IState> {
                         message,
                         mode: previewMessageMode,
                     });
+                    this.clearPreviewMessage(true);
                     break;
             }
-            this.clearPreviewMessage(true);
             if (this.fileInputRef) {
                 this.fileInputRef.value = '';
             }
@@ -1373,6 +1373,7 @@ class TextInput extends React.Component<IProps, IState> {
         }
     }
 
+    /* Send media handler */
     private mediaPreviewDoneHandler = (items: IMediaItem[]) => {
         const {previewMessage, previewMessageMode} = this.state;
         const message = cloneDeep(previewMessage);
@@ -1382,6 +1383,7 @@ class TextInput extends React.Component<IProps, IState> {
                 mode: previewMessageMode,
             });
         }
+        this.clearPreviewMessage(true);
     }
 
     // /* Is voice started */
