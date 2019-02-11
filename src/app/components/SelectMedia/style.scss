@@ -38,7 +38,13 @@
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
       opacity: 0;
       border: 1px solid transparent;
-      transition: opacity 0.3s, background-color 0.3s;
+      transform: scale(0.1);
+      cursor: pointer;
+      @for $i from 1 through 4 {
+        &:nth-of-type(#{5-$i}) {
+          transition: opacity 0.3s, background-color 0.3s, transform #{0.05 * $i + 0.15}s cubic-bezier(.57, -0.13, .53, 1.27);
+        }
+      }
       svg {
         font-size: 24px;
         color: var(--grey);
@@ -67,14 +73,14 @@
           color: #2D9CDB;
         }
       }
-    }
-    &:hover {
-      .media-item {
-        opacity: 0.64 !important;
+      &.selected {
+        opacity: 1 !important;
       }
     }
-    .media-item:hover {
-      opacity: 1 !important;
+    &.none {
+      .media-item {
+        opacity: 1 !important;
+      }
     }
   }
   &.open {
@@ -85,15 +91,22 @@
     }
     .media-input-container {
       .media-item {
-        opacity: 1;
+        opacity: 0.48;
+        transform: scale(1.0);
       }
     }
   }
 }
 
 html[theme="dark"] {
+  .select-media .media-input-frame .media-input-container .media-item {
+    background-color: var(--dark-high);
+  }
 }
 
 html[theme="dark-blue"] {
+  .select-media .media-input-frame .media-input-container .media-item {
+    background-color: var(--dark-blue-high);
+  }
 }
 

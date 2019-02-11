@@ -466,11 +466,11 @@ html[theme="dark-blue"] .write {
     html[theme="dark"] .write .inputs .voice-recorder .play-frame,
     html[theme="dark-blue"] .write .inputs .voice-recorder .play-frame {
       background-color: var(--dark-low); }
-  html[theme="dark"] .write .inputs .input-actions svg:hover,
-  html[theme="dark-blue"] .write .inputs .input-actions svg:hover {
-    color: var(--light); }
-  html[theme="dark"] .write .inputs .input-actions .voice .lock-wrapper,
-  html[theme="dark-blue"] .write .inputs .input-actions .voice .lock-wrapper {
+  html[theme="dark"] .write .inputs .input-actions .icon > svg:hover,
+  html[theme="dark-blue"] .write .inputs .input-actions .icon > svg:hover {
+    color: var(--light) !important; }
+  html[theme="dark"] .write .inputs .input-actions .icon .voice .lock-wrapper,
+  html[theme="dark-blue"] .write .inputs .input-actions .icon .voice .lock-wrapper {
     background-color: var(--dark-medium);
     border-color: var(--dark-low); }
   html[theme="dark"] .write .actions svg,

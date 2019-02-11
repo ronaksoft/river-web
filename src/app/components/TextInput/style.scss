@@ -516,13 +516,15 @@ html[theme="dark-blue"] {
         }
       }
       .input-actions {
-        svg:hover {
-          color: var(--light);
-        }
-        .voice {
-          .lock-wrapper {
-            background-color: var(--dark-medium);
-            border-color: var(--dark-low);
+        .icon {
+          > svg:hover {
+            color: var(--light) !important;
+          }
+          .voice {
+            .lock-wrapper {
+              background-color: var(--dark-medium);
+              border-color: var(--dark-low);
+            }
           }
         }
       }

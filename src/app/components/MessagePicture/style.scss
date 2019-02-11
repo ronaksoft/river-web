@@ -13,6 +13,8 @@
   .picture-content {
     min-height: 64px;
     min-width: 64px;
+    border-radius: 6px;
+    overflow: hidden;
     .picture-thumb {
       .picture-action {
         position: absolute;

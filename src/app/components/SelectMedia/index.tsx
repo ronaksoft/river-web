@@ -18,6 +18,7 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener/ClickAwayList
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
 import {makeStyles} from '@material-ui/styles';
+import {debounce} from 'lodash';
 
 import './style.css';
 
@@ -62,19 +63,24 @@ interface IProps {
 }
 
 interface IState {
+    currentCmd: string;
     open: boolean;
 }
 
 class SelectMedia extends React.Component<IProps, IState> {
+    private leaveDebouce: any;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
+            currentCmd: 'none',
             open: props.open,
         };
+
+        this.leaveDebouce = debounce(this.leaveHandler, 256);
     }
-    
+
     public componentWillReceiveProps(newProps: IProps) {
         this.setState({
             open: newProps.open,
@@ -82,19 +88,22 @@ class SelectMedia extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {open} = this.state;
+        const {open, currentCmd} = this.state;
         return (
             <ClickAwayListener onClickAway={this.onClickAwayHandler}>
                 <div className={'select-media ' + (open ? 'open' : '')}>
                     <div className="media-input-frame">
-                        <div className="media-input-container">
+                        <div className={'media-input-container ' + currentCmd}>
                             {items.map((item, index) => {
                                 return (
                                     <Tooltip key={index} title={item.title} placement="left"
                                              classes={tooltipClass}
                                              TransitionComponent={Zoom}>
-                                        <div className={'media-item ' + item.cmd}
-                                             onClick={this.props.onAction.bind(this, item.cmd)}>
+                                        <div
+                                            className={'media-item ' + item.cmd + (currentCmd === item.cmd ? ' selected' : '')}
+                                            onClick={this.props.onAction.bind(this, item.cmd)}
+                                            onMouseEnter={this.mouseEnterHandler.bind(this, item.cmd)}
+                                            onMouseLeave={this.mouseLeaveHandler}>
                                             {item.icon}
                                         </div>
                                     </Tooltip>
@@ -114,6 +123,29 @@ class SelectMedia extends React.Component<IProps, IState> {
             if (this.props.onClose) {
                 this.props.onClose();
             }
+        }
+    }
+
+    /* Mouse enter handler */
+    private mouseEnterHandler = (cmd: string) => {
+        this.leaveDebouce.cancel();
+        if (this.state.currentCmd !== cmd) {
+            this.setState({
+                currentCmd: cmd,
+            });
+        }
+    }
+
+    /* Mouse leave handler */
+    private mouseLeaveHandler = () => {
+        this.leaveDebouce();
+    }
+
+    private leaveHandler = () => {
+        if (this.state.currentCmd !== 'none') {
+            this.setState({
+                currentCmd: 'none',
+            });
         }
     }
 }
