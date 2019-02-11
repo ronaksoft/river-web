@@ -373,7 +373,7 @@ class MessagePicture extends React.PureComponent<IProps, IState> {
 
     /* Show picture handler */
     private showPictureHandler = (e: any) => {
-        const {info} = this.state;
+        const {info, message} = this.state;
         if (!info || !info.file) {
             return;
         }
@@ -381,7 +381,11 @@ class MessagePicture extends React.PureComponent<IProps, IState> {
             items: [{
                 caption: info.caption,
                 fileLocation: info.file,
+                height: info.height,
+                id: message.id || 0,
+                width: info.width,
             }],
+            peerId: message.peerid || '',
             rect: e.currentTarget.getBoundingClientRect(),
             type: 'picture',
         };

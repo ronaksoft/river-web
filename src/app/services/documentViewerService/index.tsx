@@ -12,11 +12,15 @@ import {InputFileLocation} from '../sdk/messages/chat.core.types_pb';
 interface IDocumentItem {
     caption: string;
     fileLocation: InputFileLocation.AsObject;
+    height?: number;
+    id?: number;
     thumbFileLocation?: InputFileLocation.AsObject;
+    width?: number;
 }
 
 export interface IDocument {
     items: IDocumentItem[];
+    peerId?: string;
     rect?: ClientRect;
     type: 'avatar' | 'picture' | 'video' | 'location';
 }

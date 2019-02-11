@@ -28,7 +28,8 @@
     right: 0;
     bottom: 0;
     left: 0;
-    filter: blur(40px); }
+    filter: blur(40px);
+    background-color: var(--dark-low); }
     .document-viewer-dialog .avatar-container .thumbnail img {
       height: 100%;
       width: 100%; }
@@ -48,12 +49,12 @@
       animation-timing-function: ease-out; }
 
 .document-viewer-dialog .picture-container {
-  position: relative;
-  max-width: 760px;
-  max-height: 760px; }
+  position: relative; }
   .document-viewer-dialog .picture-container .picture-wrapper {
     max-width: 100%;
     max-height: 100%; }
+    .document-viewer-dialog .picture-container .picture-wrapper.hide {
+      display: none; }
     .document-viewer-dialog .picture-container .picture-wrapper .picture {
       max-width: 100%;
       max-height: 100%;
@@ -67,7 +68,9 @@
   position: fixed;
   overflow: hidden;
   border-radius: 10px;
-  transition: all 0.6s; }
+  transition: all 0.3s linear; }
+  .document-viewer-dialog .float-picture.hide {
+    display: none; }
   .document-viewer-dialog .float-picture img {
     height: 100%;
     width: 100%;

@@ -151,7 +151,7 @@ export default class Socket {
         // Connection opened
         this.socket.onopen = () => {
             window.console.log('Hello Server!', new Date());
-            if (!this.socket.OPEN) {
+            if (!this.socket.OPEN || this.socket.readyState !== 1) {
                 return;
             }
             this.socket.send(ping);

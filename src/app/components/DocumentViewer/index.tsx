@@ -15,6 +15,15 @@ import CachedPhoto from '../CachedPhoto';
 
 import './style.css';
 
+const C_MAX_WIDTH = 800;
+const C_MAX_HEIGHT = 600;
+const C_CONTAINER_RATIO = C_MAX_HEIGHT / C_MAX_WIDTH;
+
+interface ISize {
+    height: string;
+    width: string;
+}
+
 interface IProps {
     className?: string;
 }
@@ -23,6 +32,7 @@ interface IState {
     className: string;
     dialogOpen: boolean;
     doc: IDocument | null;
+    size?: ISize;
 }
 
 class DocumentViewer extends React.Component<IProps, IState> {
@@ -66,7 +76,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     private getContent() {
-        const {doc} = this.state;
+        const {doc, size} = this.state;
         if (!doc) {
             return '';
         }
@@ -91,7 +101,8 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     {doc.items.map((item, index) => {
                         return (
                             <React.Fragment key={index}>
-                                <div ref={this.pictureWrapperRefHandler} className="picture-wrapper">
+                                <div ref={this.pictureWrapperRefHandler} className="picture-wrapper hide"
+                                     style={size ? size : {}}>
                                     <CachedPhoto className="picture" fileLocation={item.fileLocation}/>
                                 </div>
                             </React.Fragment>
@@ -108,14 +119,14 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     private getFloatObj() {
-        const {doc} = this.state;
-        if (!doc || !doc.rect || doc.items.length === 0) {
+        const {doc, size} = this.state;
+        if (!size || !doc || !doc.rect || doc.items.length === 0) {
             return '';
         }
         if (this.state.dialogOpen && !this.animated) {
             this.animated = true;
             setTimeout(() => {
-                this.animateFloatPicture();
+                this.animateInFloatPicture(size);
             }, 10);
         }
         return (<div ref={this.floatPictureRefHandler} className="float-picture" style={{
@@ -132,33 +143,113 @@ class DocumentViewer extends React.Component<IProps, IState> {
         this.floatPictureRef = ref;
     }
 
-    private animateFloatPicture() {
-        if (!this.floatPictureRef || !this.pictureWrapperRef) {
+    private animateInFloatPicture(size: ISize) {
+        if (!this.floatPictureRef) {
             return;
         }
-        const rect = this.pictureWrapperRef.getBoundingClientRect();
-        this.floatPictureRef.style.height= `${rect.height}px`;
-        this.floatPictureRef.style.left= `${rect.left}px`;
-        this.floatPictureRef.style.top= `${rect.top}px`;
-        this.floatPictureRef.style.width= `${rect.width}px`;
+        this.floatPictureRef.style.height = size.height;
+        this.floatPictureRef.style.width = size.width;
+        this.floatPictureRef.style.top = `50%`;
+        this.floatPictureRef.style.left = `50%`;
+        this.floatPictureRef.style.transform = `translate(-50%, -50%)`;
+        this.floatPictureRef.style.borderRadius = `0`;
+        setTimeout(() => {
+            if (this.pictureWrapperRef) {
+                this.pictureWrapperRef.classList.remove('hide');
+            }
+            if (this.floatPictureRef) {
+                this.floatPictureRef.classList.add('hide');
+            }
+        }, 300);
+    }
+
+    private animateOutFloatPicture(callback: any) {
+        const {doc} = this.state;
+        if (!this.floatPictureRef || !doc || doc.items.length === 0) {
+            callback();
+            return;
+        }
+        const el = document.querySelector(`.bubble-wrapper .bubble.b_${doc.items[0].id}`);
+        if (!el) {
+            callback();
+            return;
+        }
+        if (this.pictureWrapperRef) {
+            this.pictureWrapperRef.classList.add('hide');
+        }
+        if (this.floatPictureRef) {
+            this.floatPictureRef.classList.remove('hide');
+        }
+        const rect = el.getBoundingClientRect();
+        this.floatPictureRef.style.height = `${rect.height}px`;
+        this.floatPictureRef.style.width = `${rect.width}px`;
+        this.floatPictureRef.style.top = `${rect.top}px`;
+        this.floatPictureRef.style.left = `${rect.left}px`;
+        this.floatPictureRef.style.transform = ``;
+        this.floatPictureRef.style.borderRadius = ``;
+        setTimeout(() => {
+            callback();
+        }, 300);
     }
 
     private dialogCloseHandler = () => {
-        this.setState({
-            dialogOpen: false,
-        });
-        this.animated = false;
+        const closeDialog = () => {
+            this.setState({
+                dialogOpen: false,
+                size: undefined,
+            });
+            this.animated = false;
+        };
+        const {doc} = this.state;
+        if (doc && doc.type === 'picture') {
+            this.animateOutFloatPicture(() => {
+                closeDialog();
+            });
+        } else {
+            closeDialog();
+        }
     }
 
     private dialogOpen = (doc: IDocument) => {
         this.setState({
             dialogOpen: true,
             doc,
+        }, () => {
+            if (doc.type === 'picture') {
+                this.calculateImageSize();
+            }
         });
     }
 
     private documentReadyHandler = (doc: IDocument) => {
         this.dialogOpen(doc);
+    }
+
+    private calculateImageSize() {
+        const {doc} = this.state;
+        if (!doc || doc.items.length === 0) {
+            return;
+        }
+        let height = (doc.items[0].height || 1);
+        let width = (doc.items[0].width || 1);
+        const ratio = height / width;
+        if (ratio > C_CONTAINER_RATIO) {
+            if (height > C_MAX_HEIGHT) {
+                height = C_MAX_HEIGHT;
+                width = C_MAX_HEIGHT / ratio;
+            }
+        } else {
+            if (width > C_MAX_WIDTH) {
+                width = C_MAX_WIDTH;
+                height = C_MAX_WIDTH * ratio;
+            }
+        }
+        this.setState({
+            size: {
+                height: `${height}px`,
+                width: `${width}px`,
+            }
+        });
     }
 }
 

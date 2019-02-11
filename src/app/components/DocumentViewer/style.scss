@@ -36,6 +36,7 @@
       bottom: 0;
       left: 0;
       filter: blur(40px);
+      background-color: var(--dark-low);
       img {
         height: 100%;
         width: 100%;
@@ -60,11 +61,12 @@
   }
   .picture-container {
     position: relative;
-    max-width: 760px;
-    max-height: 760px;
     .picture-wrapper {
       max-width: 100%;
       max-height: 100%;
+      &.hide {
+        display: none;
+      }
       .picture {
         max-width: 100%;
         max-height: 100%;
@@ -81,7 +83,10 @@
     position: fixed;
     overflow: hidden;
     border-radius: 10px;
-    transition: all 0.6s;
+    transition: all 0.3s linear;
+    &.hide {
+      display: none;
+    }
     img {
       height: 100%;
       width: 100%;
