@@ -21,6 +21,13 @@ import ProgressBroadcaster from '../../services/progress';
 
 import './style.css';
 import CachedPhoto from '../CachedPhoto';
+import {IDocument} from '../../services/documentViewerService';
+import DocumentViewerService from '../../services/documentViewerService';
+
+const C_MAX_HEIGHT = 256;
+const C_MIN_HEIGHT = 64;
+const C_MAX_WIDTH = 256;
+const C_MIN_WIDTH = 64;
 
 export interface IPictureInfo {
     caption: string;
@@ -92,7 +99,7 @@ interface IState {
     message: IMessage;
 }
 
-class MessagePicture extends React.Component<IProps, IState> {
+class MessagePicture extends React.PureComponent<IProps, IState> {
     private lastId: number = 0;
     private fileId: string = '';
     private downloaded: boolean = false;
@@ -102,12 +109,19 @@ class MessagePicture extends React.Component<IProps, IState> {
     private progressBroadcaster: ProgressBroadcaster;
     private fileSizeRef: any = null;
     private fileSize: number = 0;
+    private documentViewerService: DocumentViewerService;
+    private readonly pictureContentSize: { height: string, width: string } = {
+        height: `${C_MIN_HEIGHT}px`,
+        width: `${C_MIN_WIDTH}px`
+    };
 
     constructor(props: IProps) {
         super(props);
 
         const info = getPictureInfo(props.message);
         this.fileSize = info.size;
+
+        this.pictureContentSize = this.getContentSize(info);
 
         this.state = {
             fileState: this.getFileState(props.message),
@@ -122,6 +136,7 @@ class MessagePicture extends React.Component<IProps, IState> {
         }
 
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
+        this.documentViewerService = DocumentViewerService.getInstance();
     }
 
     public componentDidMount() {
@@ -176,13 +191,15 @@ class MessagePicture extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {fileState, info} = this.state;
+        const {fileState, info, message} = this.state;
         return (
             <div className="message-picture">
-                <div className="picture-content">
+                <div className="picture-content" style={this.pictureContentSize}>
+                    {Boolean(fileState !== 'view' && fileState !== 'open') &&
                     <div className="picture-thumb">
-                        <CachedPhoto className="picture" fileLocation={info.thumbFile}
-                                     onLoad={this.cachedPhotoLoadHandler} blur={15}/>
+                        <CachedPhoto className="picture"
+                                     fileLocation={(message.id || 0) > 0 ? info.thumbFile : info.file}
+                                     onLoad={this.cachedPhotoLoadHandler} blur={10} searchTemp={true}/>
                         <div className="picture-action">
                             {Boolean(fileState === 'download') &&
                             <CloudDownloadRounded onClick={this.downloadFileHandler}/>}
@@ -195,10 +212,12 @@ class MessagePicture extends React.Component<IProps, IState> {
                                 <CloseRounded className="action" onClick={this.cancelFileHandler}/>
                             </React.Fragment>}
                         </div>
-                    </div>
-                    {/*<div className="picture-big">
-                        hey
-                    </div>*/}
+                    </div>}
+                    {Boolean(fileState === 'view' || fileState === 'open') &&
+                    <div className="picture-big" onClick={this.showPictureHandler}>
+                        <CachedPhoto className="picture" fileLocation={info.file}
+                                     onLoad={this.cachedPhotoLoadHandler}/>
+                    </div>}
                 </div>
                 {Boolean(info.caption.length > 0) && <div className="picture-caption">{info.caption}</div>}
             </div>
@@ -324,6 +343,49 @@ class MessagePicture extends React.Component<IProps, IState> {
         if (this.props.measureFn) {
             this.props.measureFn();
         }
+    }
+
+    /* Get content size */
+    private getContentSize(info: IPictureInfo): { height: string, width: string } {
+        const ratio = info.height / info.width;
+        let height = info.height;
+        let width = info.width;
+        if (ratio > 1.0) {
+            height = C_MAX_HEIGHT;
+            width = C_MAX_HEIGHT / ratio;
+        } else {
+            width = C_MAX_WIDTH;
+            height = C_MAX_WIDTH * ratio;
+        }
+        if (isNaN(height)) {
+            height = C_MIN_HEIGHT;
+        }
+        if (isNaN(width)) {
+            width = C_MIN_WIDTH;
+        }
+        height = Math.max(height, C_MIN_HEIGHT);
+        width = Math.max(width, C_MIN_WIDTH);
+        return {
+            height: `${height}px`,
+            width: `${width}px`,
+        };
+    }
+
+    /* Show picture handler */
+    private showPictureHandler = (e: any) => {
+        const {info} = this.state;
+        if (!info || !info.file) {
+            return;
+        }
+        const doc: IDocument = {
+            items: [{
+                caption: info.caption,
+                fileLocation: info.file,
+            }],
+            rect: e.currentTarget.getBoundingClientRect(),
+            type: 'picture',
+        };
+        this.documentViewerService.loadDocument(doc);
     }
 
     /* Get human readable size */

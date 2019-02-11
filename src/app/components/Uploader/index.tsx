@@ -78,7 +78,7 @@ class MediaPreview extends React.Component<IProps, IState> {
             dialogOpen: true,
             items,
         }, () => {
-            this.generatePreview();
+            this.initImages();
             this.setImageActionSize();
         });
     }
@@ -219,8 +219,8 @@ class MediaPreview extends React.Component<IProps, IState> {
         });
     }
 
-    /* Generate preview if not exist */
-    private generatePreview() {
+    /* Get images metadata and preview not exist */
+    private initImages() {
         const {items} = this.state;
         items.map((item, index) => {
             if (!item.preview) {
@@ -238,7 +238,7 @@ class MediaPreview extends React.Component<IProps, IState> {
     /* Get image size */
     private getImageSize(src: string, index: number) {
         const img = new Image();
-        img.onloadedmetadata = () => {
+        img.onload = () => {
             const {items} = this.state;
             if (items[index]) {
                 items[index].height = img.height;

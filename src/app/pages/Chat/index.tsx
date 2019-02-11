@@ -830,8 +830,7 @@ class Chat extends React.Component<IProps, IState> {
             message.me = (this.connInfo.UserID === message.senderid);
         });
         if (data.peerid === this.state.selectedDialogId) {
-            const newMessages = differenceBy(data.messages.reverse(), this.state.messages, 'id');
-            const dataMsg = this.modifyMessages(this.state.messages, newMessages, true);
+            const dataMsg = this.modifyMessages(this.state.messages, data.messages.reverse(), true);
             this.setScrollMode('none');
             this.setState({
                 messages: dataMsg.msgs,
@@ -2878,11 +2877,8 @@ class Chat extends React.Component<IProps, IState> {
                     this.messageRepo.removePending(res.id);
                     if (res.file_ids && res.file_ids.length > 0) {
                         this.messageRepo.get(id).then((msg) => {
-                            if (msg) {
-                                // TODO complete for other type, sth like thumbnails
-                                if (res.file_ids) {
-                                    this.modifyTempFiles(res.file_ids[0], msg);
-                                }
+                            if (msg && res.file_ids && res.file_ids.length > 0) {
+                                this.modifyTempFiles(res.file_ids, msg);
                             }
                         });
                     }
@@ -2892,12 +2888,18 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Modify temp chunks */
-    private modifyTempFiles(id: string, message: IMessage) {
+    private modifyTempFiles(ids: string[], message: IMessage) {
         switch (message.mediatype) {
             case MediaType.MEDIATYPEDOCUMENT:
                 const mediaDocument: MediaDocument.AsObject = message.mediadata;
                 if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
-                    this.fileRepo.persistTempFiles(id, mediaDocument.doc.id, mediaDocument.doc.mimetype || 'application/octet-stream').then(() => {
+                    const persistFilePromises: any[] = [];
+                    persistFilePromises.push(this.fileRepo.persistTempFiles(ids[0], mediaDocument.doc.id, mediaDocument.doc.mimetype || 'application/octet-stream'));
+                    // Check thumbnail
+                    if (ids.length > 1 && mediaDocument.doc.thumbnail) {
+                        persistFilePromises.push(this.fileRepo.persistTempFiles(ids[1], mediaDocument.doc.thumbnail.fileid || '', 'image/jpeg'));
+                    }
+                    Promise.all(persistFilePromises).then(() => {
                         this.messageRepo.get(message.id || 0).then((msg) => {
                             if (msg) {
                                 msg.downloaded = true;
@@ -3074,6 +3076,7 @@ class Chat extends React.Component<IProps, IState> {
         const id = -this.riverTime.milliNow();
 
         const fileIds: string[] = [];
+        fileIds.push(String(UniqueId.getRandomId()));
         let messageType: number = C_MESSAGE_TYPE.File;
 
         const inputFile = new InputFile();
@@ -3101,7 +3104,6 @@ class Chat extends React.Component<IProps, IState> {
 
         switch (type) {
             case 'file':
-                fileIds.push(String(UniqueId.getRandomId()));
                 messageType = C_MESSAGE_TYPE.File;
 
                 const attrFileData = new DocumentAttributeFile();
@@ -3115,7 +3117,7 @@ class Chat extends React.Component<IProps, IState> {
                 attributesDataList.push(attrFileData.toObject());
                 break;
             case 'picture':
-                fileIds.push(String(UniqueId.getRandomId()), String(UniqueId.getRandomId()));
+                fileIds.push(String(UniqueId.getRandomId()));
                 messageType = C_MESSAGE_TYPE.Picture;
 
                 if (mediaItem.thumb) {

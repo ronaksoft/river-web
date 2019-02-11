@@ -137,7 +137,9 @@ export default class FileManager {
 
             this.prepareUploadTransfer(id, chunks, blob.size, internalResolve, internalReject, onProgress);
 
-            this.startUploadQueue();
+            if (this.httpWorkers[0] && this.httpWorkers[0].isReady()) {
+                this.startUploadQueue();
+            }
 
             return promise;
         });
@@ -154,7 +156,9 @@ export default class FileManager {
         });
 
         this.prepareDownloadTransfer(location, size, mimeType, internalResolve, internalReject, () => {
-            this.startDownloadQueue();
+            if (this.httpWorkers[1] && this.httpWorkers[1].isReady()) {
+                this.startDownloadQueue();
+            }
         }, onProgress);
 
         return promise;
@@ -417,11 +421,15 @@ export default class FileManager {
                     this.clearDownloadQueueById(id);
                     this.dispatchProgress(id, 'complete');
                     this.fileRepo.persistTempFiles(id, id, this.fileTransferQueue[id].mimeType || 'application/octet-stream').then(() => {
-                        this.fileTransferQueue[id].resolve();
-                        delete this.fileTransferQueue[id];
+                        if (this.fileTransferQueue.hasOwnProperty(id)) {
+                            this.fileTransferQueue[id].resolve();
+                            delete this.fileTransferQueue[id];
+                        }
                     }).catch((err) => {
-                        this.fileTransferQueue[id].reject(err);
-                        delete this.fileTransferQueue[id];
+                        if (this.fileTransferQueue.hasOwnProperty(id)) {
+                            this.fileTransferQueue[id].reject(err);
+                            delete this.fileTransferQueue[id];
+                        }
                     });
                 }
                 this.startDownloadQueue();
@@ -719,6 +727,12 @@ export default class FileManager {
             for (let i = 0; i < C_FILE_SERVER_HTTP_WORKER_NUM; i++) {
                 this.httpWorkers[i] = new Http(bytes, i + 1);
                 this.httpWorkers[i].ready(() => {
+                    if (i === 1) {
+                        this.startUploadQueue();
+                    }
+                    if (i === 0) {
+                        this.startDownloadQueue();
+                    }
                     window.console.log(`Http WASM worker ${i} is ready`);
                 });
             }

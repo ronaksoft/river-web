@@ -16,6 +16,7 @@ interface IProps {
     className?: string;
     fileLocation: InputFileLocation.AsObject;
     onLoad?: () => void;
+    searchTemp?: boolean;
 }
 
 interface IState {
@@ -37,7 +38,7 @@ class CachedPhoto extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        this.cachedFileService.getFile(this.props.fileLocation, 0, this.props.blur).then((src) => {
+        this.cachedFileService.getFile(this.props.fileLocation, 0, this.props.searchTemp, this.props.blur).then((src) => {
             this.setState({
                 src,
             });

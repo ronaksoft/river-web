@@ -77,13 +77,10 @@ input {
   font-weight: 400; }
 
 .message-picture {
-  padding: 3px; }
-  .message-picture .picture-content .picture-thumb {
-    position: relative; }
-    .message-picture .picture-content .picture-thumb .picture {
-      border-radius: 5px;
-      overflow: hidden;
-      line-height: 0; }
+  padding: 0; }
+  .message-picture .picture-content {
+    min-height: 64px;
+    min-width: 64px; }
     .message-picture .picture-content .picture-thumb .picture-action {
       position: absolute;
       top: 50%;
@@ -125,3 +122,21 @@ input {
         height: 24px;
         color: var(--white);
         transform: translate(-50%, -50%); }
+    .message-picture .picture-content .picture-thumb,
+    .message-picture .picture-content .picture-big {
+      position: relative;
+      height: 100%;
+      width: 100%; }
+      .message-picture .picture-content .picture-thumb .picture,
+      .message-picture .picture-content .picture-big .picture {
+        height: 100%;
+        width: 100%;
+        line-height: 0; }
+        .message-picture .picture-content .picture-thumb .picture img,
+        .message-picture .picture-content .picture-big .picture img {
+          height: 100%;
+          width: 100%;
+          object-fit: cover;
+          object-position: center center; }
+    .message-picture .picture-content .picture-big {
+      cursor: pointer; }

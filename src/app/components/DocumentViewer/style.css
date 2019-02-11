@@ -14,7 +14,7 @@
 
 .document-viewer-dialog div[role="document"] > div {
   line-height: 0;
-  max-width: 640px;
+  max-width: none;
   background: transparent;
   overflow: hidden; }
 
@@ -46,3 +46,30 @@
       animation-duration: 0.3s;
       animation-iteration-count: 1;
       animation-timing-function: ease-out; }
+
+.document-viewer-dialog .picture-container {
+  position: relative;
+  max-width: 760px;
+  max-height: 760px; }
+  .document-viewer-dialog .picture-container .picture-wrapper {
+    max-width: 100%;
+    max-height: 100%; }
+    .document-viewer-dialog .picture-container .picture-wrapper .picture {
+      max-width: 100%;
+      max-height: 100%;
+      position: relative;
+      z-index: 1000; }
+      .document-viewer-dialog .picture-container .picture-wrapper .picture img {
+        max-width: 100%;
+        max-height: 100%; }
+
+.document-viewer-dialog .float-picture {
+  position: fixed;
+  overflow: hidden;
+  border-radius: 10px;
+  transition: all 0.6s; }
+  .document-viewer-dialog .float-picture img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    object-position: center center; }

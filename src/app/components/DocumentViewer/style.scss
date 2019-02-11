@@ -20,7 +20,7 @@
   div[role="document"] {
     > div {
       line-height: 0;
-      max-width: 640px;
+      max-width: none;
       background: transparent;
       overflow: hidden;
     }
@@ -56,6 +56,37 @@
         animation-iteration-count: 1;
         animation-timing-function: ease-out;
       }
+    }
+  }
+  .picture-container {
+    position: relative;
+    max-width: 760px;
+    max-height: 760px;
+    .picture-wrapper {
+      max-width: 100%;
+      max-height: 100%;
+      .picture {
+        max-width: 100%;
+        max-height: 100%;
+        position: relative;
+        z-index: 1000;
+        img {
+          max-width: 100%;
+          max-height: 100%;
+        }
+      }
+    }
+  }
+  .float-picture {
+    position: fixed;
+    overflow: hidden;
+    border-radius: 10px;
+    transition: all 0.6s;
+    img {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+      object-position: center center;
     }
   }
 }

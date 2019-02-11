@@ -9,15 +9,11 @@
 @import '../../../style/common';
 
 .message-picture {
-  padding: 3px;
+  padding: 0;
   .picture-content {
+    min-height: 64px;
+    min-width: 64px;
     .picture-thumb {
-      position: relative;
-      .picture {
-        border-radius: 5px;
-        overflow: hidden;
-        line-height: 0;
-      }
       .picture-action {
         position: absolute;
         top: 50%;
@@ -64,6 +60,26 @@
           transform: translate(-50%, -50%);
         }
       }
+    }
+    .picture-thumb,
+    .picture-big {
+      position: relative;
+      height: 100%;
+      width: 100%;
+      .picture {
+        height: 100%;
+        width: 100%;
+        line-height: 0;
+        img {
+          height: 100%;
+          width: 100%;
+          object-fit: cover;
+          object-position: center center;
+        }
+      }
+    }
+    .picture-big {
+      cursor: pointer;
     }
   }
 }

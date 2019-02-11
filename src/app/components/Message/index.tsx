@@ -468,7 +468,7 @@ class Message extends React.Component<IProps, IState> {
                 } else {
                     return (
                         <div style={style}
-                             className={'bubble-wrapper _bubble' + (message.me ? ' me' : ' you') + (message.avatar ? ' avatar' : '') + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '') + (message.messagetype === C_MESSAGE_TYPE.Voice ? ' voice' : '') + ((message.me && message.error) ? ' has-error' : '')}
+                             className={'bubble-wrapper _bubble' + (message.me ? ' me' : ' you') + (message.avatar ? ' avatar' : '') + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '') + this.getMessageTypeName(message.messagetype || 0) + ((message.me && message.error) ? ' has-error' : '')}
                              onClick={this.toggleSelectHandler.bind(this, message.id || 0, index)}
                              onDoubleClick={this.selectMessage.bind(this, index)}
                         >
@@ -863,7 +863,8 @@ class Message extends React.Component<IProps, IState> {
                 case C_MESSAGE_TYPE.Contact:
                     return (<MessageContact message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
                 case C_MESSAGE_TYPE.Picture:
-                    return (<MessagePicture message={message} peer={peer} onAction={this.props.onAttachmentAction} measureFn={measureFn}/>);
+                    return (<MessagePicture message={message} peer={peer} onAction={this.props.onAttachmentAction}
+                                            measureFn={measureFn}/>);
                 default:
                     return '';
             }
@@ -872,6 +873,24 @@ class Message extends React.Component<IProps, IState> {
                 <div className={'inner ' + (message.rtl ? 'rtl' : 'ltr')}
                      onDoubleClick={this.selectText}>{this.renderBody(message)}</div>
             );
+        }
+    }
+
+    /* Get message type name */
+    private getMessageTypeName(messageType: number) {
+        switch (messageType) {
+            case C_MESSAGE_TYPE.Picture:
+                return ' picture';
+            case C_MESSAGE_TYPE.Video:
+                return ' video';
+            case C_MESSAGE_TYPE.File:
+                return ' file';
+            case C_MESSAGE_TYPE.Voice:
+                return ' voice';
+            case C_MESSAGE_TYPE.Music:
+                return ' music';
+            default:
+                return '';
         }
     }
 }

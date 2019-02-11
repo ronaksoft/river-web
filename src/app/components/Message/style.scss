@@ -109,6 +109,15 @@
       }
     }
   }
+  &.picture {
+    .bubble {
+      padding: 3px !important;
+      .bubble-body {
+        border-radius: 8px;
+        overflow: hidden;
+      }
+    }
+  }
   .arrow {
     position: absolute;
     top: 6px;

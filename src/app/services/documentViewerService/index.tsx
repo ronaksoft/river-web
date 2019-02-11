@@ -16,8 +16,9 @@ interface IDocumentItem {
 }
 
 export interface IDocument {
-    type: 'avatar' | 'picture' | 'video' | 'location';
     items: IDocumentItem[];
+    rect?: ClientRect;
+    type: 'avatar' | 'picture' | 'video' | 'location';
 }
 
 export default class DocumentViewerService {

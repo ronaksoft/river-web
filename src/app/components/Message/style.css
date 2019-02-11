@@ -156,6 +156,11 @@ input {
         .bubble-wrapper.voice .bubble .bubble-body .message-status {
           min-width: auto !important;
           padding: 0 0 0 6px; }
+  .bubble-wrapper.picture .bubble {
+    padding: 3px !important; }
+    .bubble-wrapper.picture .bubble .bubble-body {
+      border-radius: 8px;
+      overflow: hidden; }
   .bubble-wrapper .arrow {
     position: absolute;
     top: 6px;

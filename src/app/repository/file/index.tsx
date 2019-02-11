@@ -56,6 +56,9 @@ export default class FileRepo {
                 return file.hash;
             } else {
                 return this.getTempsById(id).then((temps) => {
+                    if (temps.length === 0) {
+                        return '';
+                    }
                     const blobs: Blob[] = [];
                     temps.forEach((temp) => {
                         blobs.push(temp.data);
@@ -76,12 +79,14 @@ export default class FileRepo {
                 id,
                 size: blob.size,
             };
-            return this.create(file);
+            return this.create(file).catch((err) => {
+                return err;
+            });
         });
     }
 
     public create(file: IFile) {
-        return this.db.files.put(file);
+        return this.db.files.add(file);
     }
 
     public get(id: string) {

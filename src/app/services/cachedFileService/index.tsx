@@ -22,7 +22,7 @@ interface IFile {
 }
 
 const C_MAX_RETRY = 3;
-const C_CACHE_TTL = 180;
+const C_CACHE_TTL = 67;
 
 export default class CachedFileService {
     public static getInstance() {
@@ -44,7 +44,7 @@ export default class CachedFileService {
     }
 
     /* Get file */
-    public getFile(fileLocation: InputFileLocation.AsObject, size: number, blurRadius?: number): Promise<string> {
+    public getFile(fileLocation: InputFileLocation.AsObject, size: number, searchTemp?: boolean, blurRadius?: number): Promise<string> {
         const id = fileLocation.fileid || '';
         return new Promise((resolve, reject) => {
             if (this.files.hasOwnProperty(id)) {
@@ -68,7 +68,7 @@ export default class CachedFileService {
                     src: '',
                     timeout: null,
                 };
-                this.getLocalFile(id, blurRadius).then((res) => {
+                this.getLocalFile(id, searchTemp, blurRadius).then((res) => {
                     resolve(res);
                 }).catch(() => {
                     this.getRemoteFile(fileLocation, size, blurRadius).then((res) => {
@@ -142,7 +142,7 @@ export default class CachedFileService {
                     }
                     URL.revokeObjectURL(img.src);
                     img.remove();
-                }, 'image/png');
+                }, 'image/jpeg', 0.9);
             };
             img.src = URL.createObjectURL(blob);
         });
@@ -183,7 +183,7 @@ export default class CachedFileService {
     }
 
     /* Get local file */
-    private getLocalFile(id: string, blurRadius?: number): Promise<string> {
+    private getLocalFile(id: string, searchTemp?: boolean, blurRadius?: number): Promise<string> {
         return new Promise((resolve, reject) => {
             if (this.files.hasOwnProperty(id)) {
                 this.fileRepo.get(id).then((fileRes) => {
@@ -197,6 +197,20 @@ export default class CachedFileService {
                             this.files[id].src = fileRes.data.size === 0 ? '' : URL.createObjectURL(fileRes.data);
                             resolve(this.files[id].src);
                         }
+                    } else if (searchTemp) {
+                        this.fileRepo.getTempsById(id).then((tempFileRes) => {
+                            if (tempFileRes.length === 0) {
+                                reject();
+                            } else {
+                                const blobs: Blob[] = [];
+                                tempFileRes.forEach((temp) => {
+                                    blobs.push(temp.data);
+                                });
+                                const blob = new Blob(blobs, {type: tempFileRes[0].data.type || 'application/octet-stream'});
+                                this.files[id].src = URL.createObjectURL(blob);
+                                resolve(this.files[id].src);
+                            }
+                        });
                     } else {
                         reject();
                     }

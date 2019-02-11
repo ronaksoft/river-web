@@ -27,6 +27,9 @@ interface IState {
 
 class DocumentViewer extends React.Component<IProps, IState> {
     private documentViewerService: DocumentViewService;
+    private pictureWrapperRef: any = null;
+    private floatPictureRef: any = null;
+    private animated: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -57,6 +60,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 className={'document-viewer-dialog ' + className}
             >
                 {this.getContent()}
+                {this.getFloatObj()}
             </Dialog>
         );
     }
@@ -82,15 +86,68 @@ class DocumentViewer extends React.Component<IProps, IState> {
                         );
                     })}
                 </div>);
+            case 'picture':
+                return (<div className="picture-container">
+                    {doc.items.map((item, index) => {
+                        return (
+                            <React.Fragment key={index}>
+                                <div ref={this.pictureWrapperRefHandler} className="picture-wrapper">
+                                    <CachedPhoto className="picture" fileLocation={item.fileLocation}/>
+                                </div>
+                            </React.Fragment>
+                        );
+                    })}
+                </div>);
             default:
                 return '';
         }
+    }
+
+    private pictureWrapperRefHandler = (ref: any) => {
+        this.pictureWrapperRef = ref;
+    }
+
+    private getFloatObj() {
+        const {doc} = this.state;
+        if (!doc || !doc.rect || doc.items.length === 0) {
+            return '';
+        }
+        if (this.state.dialogOpen && !this.animated) {
+            this.animated = true;
+            setTimeout(() => {
+                this.animateFloatPicture();
+            }, 10);
+        }
+        return (<div ref={this.floatPictureRefHandler} className="float-picture" style={{
+            height: `${doc.rect.height}px`,
+            left: `${doc.rect.left}px`,
+            top: `${doc.rect.top}px`,
+            width: `${doc.rect.width}px`,
+        }}>
+            <CachedPhoto className="picture" fileLocation={doc.items[0].fileLocation}/>
+        </div>);
+    }
+
+    private floatPictureRefHandler = (ref: any) => {
+        this.floatPictureRef = ref;
+    }
+
+    private animateFloatPicture() {
+        if (!this.floatPictureRef || !this.pictureWrapperRef) {
+            return;
+        }
+        const rect = this.pictureWrapperRef.getBoundingClientRect();
+        this.floatPictureRef.style.height= `${rect.height}px`;
+        this.floatPictureRef.style.left= `${rect.left}px`;
+        this.floatPictureRef.style.top= `${rect.top}px`;
+        this.floatPictureRef.style.width= `${rect.width}px`;
     }
 
     private dialogCloseHandler = () => {
         this.setState({
             dialogOpen: false,
         });
+        this.animated = false;
     }
 
     private dialogOpen = (doc: IDocument) => {
