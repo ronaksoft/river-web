@@ -90,7 +90,8 @@ input {
       transform: translate(-50%, -50%);
       border-radius: 50%;
       z-index: 10;
-      background-color: rgba(0, 0, 0, 0.3); }
+      background-color: rgba(0, 0, 0, 0.3);
+      cursor: pointer; }
       .message-picture .picture-content .picture-thumb .picture-action .progress {
         position: absolute;
         top: 2px;
@@ -140,7 +141,24 @@ input {
           object-position: center center; }
     .message-picture .picture-content .picture-big {
       cursor: pointer; }
+    .message-picture .picture-content .picture-size {
+      position: absolute;
+      top: 6px;
+      left: 8px;
+      height: 16px;
+      line-height: 16px;
+      font-size: 12px;
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 1px 4px 0;
+      border-radius: 4px;
+      color: var(--white); }
   .message-picture .picture-caption {
     padding: 4px 6px 0;
     white-space: pre-wrap;
     word-break: break-word; }
+
+html[bubble="2"] .message-picture .picture-size {
+  top: 12px;
+  left: 12px;
+  padding: 1px 8px 0;
+  border-radius: 8px; }

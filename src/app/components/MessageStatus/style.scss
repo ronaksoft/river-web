@@ -55,7 +55,7 @@
   height: 32px;
 }
 
-.picture .bubble .message-status {
+.media .bubble .message-status {
   display: flex;
   height: 16px;
   align-items: center;
@@ -105,6 +105,16 @@ html[bubble="2"] {
     left: 11px;
     right: 11px;
     bottom: 6px;
+  }
+  .media {
+    .bubble {
+      .message-status {
+        padding: 0 6px 0 3px;
+        &:before {
+          border-radius: 0 0 18px 18px !important;
+        }
+      }
+    }
   }
 }
 

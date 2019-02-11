@@ -21,6 +21,19 @@ import ProgressBroadcaster from '../../services/progress';
 
 import './style.css';
 
+/* Get human readable size */
+export const getHumanReadableSize = (size: number) => {
+    if (size < 1024) {
+        return `${size} B`;
+    } else if (size < 1048576) { // 1024 * 1024
+        return `${(size / 1024).toFixed(1)} KB`;
+    } else if (size < 1073741824) { // 1024 * 1024 * 1024
+        return `${(size / 1048576).toFixed(1)} MB`;
+    } else {
+        return `${(size / 1073741824).toFixed(1)} GB`;
+    }
+};
+
 export const getFileInfo = (message: IMessage): IFileInfo => {
     const info: IFileInfo = {
         caption: '',
@@ -389,22 +402,9 @@ class MessageFile extends React.PureComponent<IProps, IState> {
             return;
         }
         if (loaded <= 0) {
-            this.fileSizeRef.innerText = `${this.getHumanReadableSize(this.fileSize)}`;
+            this.fileSizeRef.innerText = `${getHumanReadableSize(this.fileSize)}`;
         } else {
-            this.fileSizeRef.innerText = `${this.getHumanReadableSize(loaded)} / ${this.getHumanReadableSize(this.fileSize)}`;
-        }
-    }
-
-    /* Get human readable size */
-    private getHumanReadableSize(size: number) {
-        if (size < 1024) {
-            return `${size} B`;
-        } else if (size < 1048576) { // 1024 * 1024
-            return `${(size / 1024).toFixed(1)} KB`;
-        } else if (size < 1073741824) { // 1024 * 1024 * 1024
-            return `${(size / 1048576).toFixed(1)} MB`;
-        } else {
-            return `${(size / 1073741824).toFixed(1)} GB`;
+            this.fileSizeRef.innerText = `${getHumanReadableSize(loaded)} / ${getHumanReadableSize(this.fileSize)}`;
         }
     }
 }

@@ -156,11 +156,11 @@ input {
         .bubble-wrapper.voice .bubble .bubble-body .message-status {
           min-width: auto !important;
           padding: 0 0 0 6px; }
-  .bubble-wrapper.picture .bubble {
+  .bubble-wrapper.media .bubble .bubble-body, .bubble-wrapper.media_caption .bubble .bubble-body {
+    border-radius: 8px;
+    overflow: hidden; }
+  .bubble-wrapper.media .bubble {
     padding: 3px !important; }
-    .bubble-wrapper.picture .bubble .bubble-body {
-      border-radius: 8px;
-      overflow: hidden; }
   .bubble-wrapper .arrow {
     position: absolute;
     top: 6px;
@@ -385,7 +385,7 @@ input {
       right: 10px;
       left: calc(50% + 60px); }
 
-.user .bubble-wrapper:not(.related).picture .bubble .more, .user .bubble-wrapper:not(.related).picture_caption .bubble .more, .group .bubble-wrapper.me:not(.related).picture .bubble .more, .group .bubble-wrapper.me:not(.related).picture_caption .bubble .more, .group .bubble-wrapper.you:not(.avatar):not(.related).picture .bubble .more, .group .bubble-wrapper.you:not(.avatar):not(.related).picture_caption .bubble .more {
+.user .bubble-wrapper:not(.related).media .bubble .more, .user .bubble-wrapper:not(.related).media_caption .bubble .more, .group .bubble-wrapper.me:not(.related).media .bubble .more, .group .bubble-wrapper.me:not(.related).media_caption .bubble .more, .group .bubble-wrapper.you:not(.avatar):not(.related).media .bubble .more, .group .bubble-wrapper.you:not(.avatar):not(.related).media_caption .bubble .more {
   background-color: transparent;
   overflow: hidden;
   display: flex;
@@ -395,7 +395,7 @@ input {
   width: auto;
   left: 0;
   padding: 6px 2px 0 0; }
-  .user .bubble-wrapper:not(.related).picture .bubble .more:before, .user .bubble-wrapper:not(.related).picture_caption .bubble .more:before, .group .bubble-wrapper.me:not(.related).picture .bubble .more:before, .group .bubble-wrapper.me:not(.related).picture_caption .bubble .more:before, .group .bubble-wrapper.you:not(.avatar):not(.related).picture .bubble .more:before, .group .bubble-wrapper.you:not(.avatar):not(.related).picture_caption .bubble .more:before {
+  .user .bubble-wrapper:not(.related).media .bubble .more:before, .user .bubble-wrapper:not(.related).media_caption .bubble .more:before, .group .bubble-wrapper.me:not(.related).media .bubble .more:before, .group .bubble-wrapper.me:not(.related).media_caption .bubble .more:before, .group .bubble-wrapper.you:not(.avatar):not(.related).media .bubble .more:before, .group .bubble-wrapper.you:not(.avatar):not(.related).media_caption .bubble .more:before {
     content: '';
     position: absolute;
     height: 100%;
@@ -407,15 +407,15 @@ input {
     z-index: 10;
     transition: opacity 0.2s;
     opacity: 0; }
-  .user .bubble-wrapper:not(.related).picture .bubble .more svg, .user .bubble-wrapper:not(.related).picture_caption .bubble .more svg, .group .bubble-wrapper.me:not(.related).picture .bubble .more svg, .group .bubble-wrapper.me:not(.related).picture_caption .bubble .more svg, .group .bubble-wrapper.you:not(.avatar):not(.related).picture .bubble .more svg, .group .bubble-wrapper.you:not(.avatar):not(.related).picture_caption .bubble .more svg {
+  .user .bubble-wrapper:not(.related).media .bubble .more svg, .user .bubble-wrapper:not(.related).media_caption .bubble .more svg, .group .bubble-wrapper.me:not(.related).media .bubble .more svg, .group .bubble-wrapper.me:not(.related).media_caption .bubble .more svg, .group .bubble-wrapper.you:not(.avatar):not(.related).media .bubble .more svg, .group .bubble-wrapper.you:not(.avatar):not(.related).media_caption .bubble .more svg {
     position: relative;
     color: var(--white);
     z-index: 12; }
 
-.user .bubble-wrapper:not(.related).picture .bubble:hover .more:before, .user .bubble-wrapper:not(.related).picture_caption .bubble:hover .more:before, .group .bubble-wrapper.me:not(.related).picture .bubble:hover .more:before, .group .bubble-wrapper.me:not(.related).picture_caption .bubble:hover .more:before, .group .bubble-wrapper.you:not(.avatar):not(.related).picture .bubble:hover .more:before, .group .bubble-wrapper.you:not(.avatar):not(.related).picture_caption .bubble:hover .more:before {
+.user .bubble-wrapper:not(.related).media .bubble:hover .more:before, .user .bubble-wrapper:not(.related).media_caption .bubble:hover .more:before, .group .bubble-wrapper.me:not(.related).media .bubble:hover .more:before, .group .bubble-wrapper.me:not(.related).media_caption .bubble:hover .more:before, .group .bubble-wrapper.you:not(.avatar):not(.related).media .bubble:hover .more:before, .group .bubble-wrapper.you:not(.avatar):not(.related).media_caption .bubble:hover .more:before {
   opacity: 1; }
 
-.group .bubble-wrapper.you.avatar.picture .bubble .bubble-body, .group .bubble-wrapper.you.avatar.picture_caption .bubble .bubble-body {
+.group .bubble-wrapper.you.avatar.media .bubble .bubble-body, .group .bubble-wrapper.you.avatar.media_caption .bubble .bubble-body {
   margin-top: 4px; }
 
 .selectable .bubble-wrapper {
@@ -599,9 +599,18 @@ html[bubble="2"] .bubble-wrapper {
     min-width: 115px; }
   html[bubble="2"] .bubble-wrapper.you .bubble.edited {
     min-width: 95px; }
+  html[bubble="2"] .bubble-wrapper.media .bubble .bubble-body {
+    border-bottom-left-radius: 18px;
+    border-bottom-right-radius: 18px; }
+
+html[bubble="2"] .user .bubble-wrapper.media:not(.related) .bubble .bubble-body, html[bubble="2"] .user .bubble-wrapper.media_caption:not(.related) .bubble .bubble-body {
+  border-radius: 18px; }
 
 html[bubble="2"] .group .bubble-wrapper.avatar.you .bubble > .inner {
   padding: 2px 12px 0 8px; }
+
+html[bubble="2"] .group .bubble-wrapper.media.me:not(.related) .bubble .bubble-body, html[bubble="2"] .group .bubble-wrapper.media.you:not(.related):not(.avatar) .bubble .bubble-body, html[bubble="2"] .group .bubble-wrapper.media_caption.you:not(.related):not(.avatar) .bubble .bubble-body {
+  border-radius: 18px; }
 
 html[bubble="4"] .bubble-wrapper {
   padding-bottom: 4px; }

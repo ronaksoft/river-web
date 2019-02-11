@@ -24,6 +24,7 @@
         border-radius: 50%;
         z-index: 10;
         background-color: rgba(0, 0, 0, 0.3);
+        cursor: pointer;
         .progress {
           position: absolute;
           top: 2px;
@@ -81,6 +82,18 @@
     .picture-big {
       cursor: pointer;
     }
+    .picture-size {
+      position: absolute;
+      top: 6px;
+      left: 8px;
+      height: 16px;
+      line-height: 16px;
+      font-size: 12px;
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 1px 4px 0;
+      border-radius: 4px;
+      color: var(--white);
+    }
   }
   .picture-caption {
     padding: 4px 6px 0;
@@ -97,5 +110,16 @@ html[theme="dark-blue"] {
 
 html[theme="dark-blue"] {
   .message-picture {
+  }
+}
+
+html[bubble="2"] {
+  .message-picture {
+    .picture-size {
+      top: 12px;
+      left: 12px;
+      padding: 1px 8px 0;
+      border-radius: 8px;
+    }
   }
 }

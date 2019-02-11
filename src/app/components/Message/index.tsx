@@ -484,7 +484,8 @@ class Message extends React.Component<IProps, IState> {
                             {Boolean(message.avatar && message.senderid) && (<div className="arrow"/>)}
                             {Boolean(message.me && message.error) && <span className="error"><ErrorRounded/></span>}
                             <div
-                                className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')} onClick={this.bubbleClickHandler}>
+                                className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')}
+                                onClick={this.bubbleClickHandler}>
                                 {Boolean(peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me) &&
                                 <UserName className="name" uniqueColor={false} id={message.senderid || ''}/>}
                                 {Boolean(message.replyto && message.replyto !== 0) &&
@@ -866,7 +867,8 @@ class Message extends React.Component<IProps, IState> {
                 case C_MESSAGE_TYPE.Contact:
                     return (<MessageContact message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
                 case C_MESSAGE_TYPE.Picture:
-                    return (<MessagePicture ref={this.messageMediaRefHandler} message={message} peer={peer} onAction={this.props.onAttachmentAction}
+                    return (<MessagePicture ref={this.messageMediaRefHandler} message={message} peer={peer}
+                                            onAction={this.props.onAttachmentAction}
                                             measureFn={measureFn}/>);
                 default:
                     return '';
@@ -884,30 +886,25 @@ class Message extends React.Component<IProps, IState> {
         let type = '';
         switch (message.messagetype) {
             case C_MESSAGE_TYPE.Picture:
-                type = 'picture';
+                type = 'media';
                 break;
             case C_MESSAGE_TYPE.Video:
-                type = 'video';
+                type = 'media';
                 break;
             case C_MESSAGE_TYPE.File:
-                type =  'file';
+                type = 'file';
                 break;
             case C_MESSAGE_TYPE.Voice:
-                type =  'voice';
+                type = 'voice';
                 break;
             case C_MESSAGE_TYPE.Music:
-                type =  'music';
+                type = 'music';
                 break;
         }
-        if (type === 'picture' || type === 'video') {
+        if (type === 'media') {
             const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
-            if ((messageMediaDocument.caption|| '').length > 0) {
-                if (type === 'picture') {
-                    type = 'picture_caption';
-                }
-                if (type === 'video') {
-                    type = 'video_caption';
-                }
+            if ((messageMediaDocument.caption || '').length > 0) {
+                type = 'media_caption';
             }
         }
         let related = '';

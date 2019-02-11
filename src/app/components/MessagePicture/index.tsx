@@ -18,11 +18,12 @@ import {
 import {CloseRounded, CloudDownloadRounded} from '@material-ui/icons';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import ProgressBroadcaster from '../../services/progress';
-
-import './style.css';
 import CachedPhoto from '../CachedPhoto';
 import {IDocument} from '../../services/documentViewerService';
 import DocumentViewerService from '../../services/documentViewerService';
+import {getHumanReadableSize} from '../MessageFile';
+
+import './style.css';
 
 const C_MAX_HEIGHT = 256;
 const C_MIN_HEIGHT = 64;
@@ -107,7 +108,7 @@ class MessagePicture extends React.PureComponent<IProps, IState> {
     private circleProgressRef: any = null;
     private eventReferences: any[] = [];
     private progressBroadcaster: ProgressBroadcaster;
-    private fileSizeRef: any = null;
+    private pictureSizeRef: any = null;
     private fileSize: number = 0;
     private documentViewerService: DocumentViewerService;
     private readonly pictureContentSize: { height: string, width: string } = {
@@ -205,23 +206,26 @@ class MessagePicture extends React.PureComponent<IProps, IState> {
             <div className="message-picture">
                 <div className="picture-content" style={this.pictureContentSize}>
                     {Boolean(fileState !== 'view' && fileState !== 'open') &&
-                    <div className="picture-thumb">
-                        <CachedPhoto className="picture"
-                                     fileLocation={(message.id || 0) > 0 ? info.thumbFile : info.file}
-                                     onLoad={this.cachedPhotoLoadHandler} blur={10} searchTemp={true}/>
-                        <div className="picture-action">
-                            {Boolean(fileState === 'download') &&
-                            <CloudDownloadRounded onClick={this.downloadFileHandler}/>}
-                            {Boolean(fileState === 'progress') && <React.Fragment>
-                                <div className="progress">
-                                    <svg viewBox='0 0 32 32'>
-                                        <circle ref={this.progressRefHandler} r='14' cx='16' cy='16'/>
-                                    </svg>
-                                </div>
-                                <CloseRounded className="action" onClick={this.cancelFileHandler}/>
-                            </React.Fragment>}
+                    <React.Fragment>
+                        <div className="picture-size" ref={this.pictureSizeRefHandler}>0 KB</div>
+                        <div className="picture-thumb">
+                            <CachedPhoto className="picture"
+                                         fileLocation={(message.id || 0) > 0 ? info.thumbFile : info.file}
+                                         onLoad={this.cachedPhotoLoadHandler} blur={10} searchTemp={true}/>
+                            <div className="picture-action">
+                                {Boolean(fileState === 'download') &&
+                                <CloudDownloadRounded onClick={this.downloadFileHandler}/>}
+                                {Boolean(fileState === 'progress') && <React.Fragment>
+                                    <div className="progress">
+                                        <svg viewBox='0 0 32 32'>
+                                            <circle ref={this.progressRefHandler} r='14' cx='16' cy='16'/>
+                                        </svg>
+                                    </div>
+                                    <CloseRounded className="action" onClick={this.cancelFileHandler}/>
+                                </React.Fragment>}
+                            </div>
                         </div>
-                    </div>}
+                    </React.Fragment>}
                     {Boolean(fileState === 'view' || fileState === 'open') &&
                     <div ref={this.pictureBigRefHandler} className="picture-big" onClick={this.showPictureHandler}>
                         <CachedPhoto className="picture" fileLocation={info.file}
@@ -335,18 +339,6 @@ class MessagePicture extends React.PureComponent<IProps, IState> {
         }
     }
 
-    /* Display file size */
-    private displayFileSize(loaded: number) {
-        if (!this.fileSizeRef) {
-            return;
-        }
-        if (loaded <= 0) {
-            this.fileSizeRef.innerText = `${this.getHumanReadableSize(this.fileSize)}`;
-        } else {
-            this.fileSizeRef.innerText = `${this.getHumanReadableSize(loaded)} / ${this.getHumanReadableSize(this.fileSize)}`;
-        }
-    }
-
     /* CachedPhoto onLoad handler */
     private cachedPhotoLoadHandler = () => {
         if (this.props.measureFn) {
@@ -409,16 +401,20 @@ class MessagePicture extends React.PureComponent<IProps, IState> {
         this.documentViewerService.loadDocument(doc);
     }
 
-    /* Get human readable size */
-    private getHumanReadableSize(size: number) {
-        if (size < 1024) {
-            return `${size} B`;
-        } else if (size < 1048576) { // 1024 * 1024
-            return `${(size / 1024).toFixed(1)} KB`;
-        } else if (size < 1073741824) { // 1024 * 1024 * 1024
-            return `${(size / 1048576).toFixed(1)} MB`;
+    /* File size ref handler */
+    private pictureSizeRefHandler = (ref: any) => {
+        this.pictureSizeRef = ref;
+    }
+
+    /* Display file size */
+    private displayFileSize(loaded: number) {
+        if (!this.pictureSizeRef) {
+            return;
+        }
+        if (loaded <= 0) {
+            this.pictureSizeRef.innerText = `${getHumanReadableSize(this.fileSize)}`;
         } else {
-            return `${(size / 1073741824).toFixed(1)} GB`;
+            this.pictureSizeRef.innerText = `${getHumanReadableSize(loaded)} / ${getHumanReadableSize(this.fileSize)}`;
         }
     }
 }

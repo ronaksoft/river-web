@@ -117,7 +117,7 @@ input {
   left: auto;
   height: 32px; }
 
-.picture .bubble .message-status {
+.media .bubble .message-status {
   display: flex;
   height: 16px;
   align-items: center;
@@ -127,7 +127,7 @@ input {
   bottom: 3px;
   color: var(--white) !important;
   padding: 0 3px; }
-  .picture .bubble .message-status:before {
+  .media .bubble .message-status:before {
     content: '';
     position: absolute;
     height: 200%;
@@ -136,8 +136,8 @@ input {
     left: 0;
     background: linear-gradient(175deg, transparent 0%, transparent 30%, rgba(0, 0, 0, 0.28) 75%, rgba(0, 0, 0, 0.6) 100%);
     border-radius: 0 0 8px 8px; }
-  .picture .bubble .message-status > span,
-  .picture .bubble .message-status > svg {
+  .media .bubble .message-status > span,
+  .media .bubble .message-status > svg {
     position: relative;
     z-index: 20; }
 
@@ -157,6 +157,11 @@ html[bubble="2"] .message-status {
   left: 11px;
   right: 11px;
   bottom: 6px; }
+
+html[bubble="2"] .media .bubble .message-status {
+  padding: 0 6px 0 3px; }
+  html[bubble="2"] .media .bubble .message-status:before {
+    border-radius: 0 0 18px 18px !important; }
 
 html[bubble="4"] .message-status {
   left: 6px;

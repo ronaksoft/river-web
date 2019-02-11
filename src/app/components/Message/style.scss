@@ -109,13 +109,17 @@
       }
     }
   }
-  &.picture {
+  &.media, &.media_caption {
     .bubble {
-      padding: 3px !important;
       .bubble-body {
         border-radius: 8px;
         overflow: hidden;
       }
+    }
+  }
+  &.media {
+    .bubble {
+      padding: 3px !important;
     }
   }
   .arrow {
@@ -397,8 +401,8 @@
 }
 
 .user .bubble-wrapper:not(.related), .group .bubble-wrapper.me:not(.related), .group .bubble-wrapper.you:not(.avatar):not(.related) {
-  &.picture,
-  &.picture_caption {
+  &.media,
+  &.media_caption {
     .bubble {
       .more {
         background-color: transparent;
@@ -440,8 +444,8 @@
 
 .group {
   .bubble-wrapper.you.avatar {
-    &.picture,
-    &.picture_caption {
+    &.media,
+    &.media_caption {
       .bubble {
         .bubble-body {
           margin-top: 4px;
@@ -717,6 +721,25 @@ html[bubble="2"] {
         min-width: 95px;
       }
     }
+    &.media {
+      .bubble {
+        .bubble-body {
+          border-bottom-left-radius: 18px;
+          border-bottom-right-radius: 18px;
+        }
+      }
+    }
+  }
+  .user {
+    .bubble-wrapper {
+      &.media:not(.related), &.media_caption:not(.related) {
+        .bubble {
+          .bubble-body {
+            border-radius: 18px;
+          }
+        }
+      }
+    }
   }
   .group {
     .bubble-wrapper {
@@ -724,6 +747,13 @@ html[bubble="2"] {
         .bubble {
           > .inner {
             padding: 2px 12px 0 8px;
+          }
+        }
+      }
+      &.media.me:not(.related), &.media.you:not(.related):not(.avatar), &.media_caption.you:not(.related):not(.avatar) {
+        .bubble {
+          .bubble-body {
+            border-radius: 18px;
           }
         }
       }
