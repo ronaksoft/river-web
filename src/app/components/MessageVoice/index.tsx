@@ -31,7 +31,7 @@ interface IState {
     message: IMessage;
 }
 
-class MessageVoice extends React.Component<IProps, IState> {
+class MessageVoice extends React.PureComponent<IProps, IState> {
     private voicePlayerRef: VoicePlayer;
     private lastId: number = 0;
     private voiceId: string = '';

@@ -138,7 +138,7 @@ interface IFileInfo {
     type: string;
 }
 
-class MessageFile extends React.Component<IProps, IState> {
+class MessageFile extends React.PureComponent<IProps, IState> {
     private lastId: number = 0;
     private fileId: string = '';
     private downloaded: boolean = false;

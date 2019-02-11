@@ -26,7 +26,7 @@ interface IState {
     fileName: string;
 }
 
-class MessageContact extends React.Component<IProps, IState> {
+class MessageContact extends React.PureComponent<IProps, IState> {
 
     constructor(props: IProps) {
         super(props);

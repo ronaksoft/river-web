@@ -30,7 +30,7 @@ interface IState {
     previewMessage?: IMessage | null;
 }
 
-class MessagePreview extends React.Component<IProps, IState> {
+class MessagePreview extends React.PureComponent<IProps, IState> {
     private messageRepo: MessageRepo;
     private userId: string;
 

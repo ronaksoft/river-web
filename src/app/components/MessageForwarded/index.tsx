@@ -27,7 +27,7 @@ interface IState {
     peer: InputPeer | null;
 }
 
-class MessageForwarded extends React.Component<IProps, IState> {
+class MessageForwarded extends React.PureComponent<IProps, IState> {
     constructor(props: IProps) {
         super(props);
 
