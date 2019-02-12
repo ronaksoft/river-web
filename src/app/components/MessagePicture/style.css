@@ -79,6 +79,7 @@ input {
 .message-picture {
   padding: 0; }
   .message-picture .picture-content {
+    position: relative;
     min-height: 64px;
     min-width: 64px;
     border-radius: 6px;
@@ -145,8 +146,8 @@ input {
       cursor: pointer; }
     .message-picture .picture-content .picture-size {
       position: absolute;
-      top: 6px;
-      left: 8px;
+      top: 4px;
+      left: 4px;
       height: 16px;
       line-height: 16px;
       font-size: 12px;
@@ -161,7 +162,9 @@ input {
     word-break: break-word; }
 
 html[bubble="2"] .message-picture .picture-size {
-  top: 12px;
-  left: 12px;
-  padding: 1px 8px 0;
-  border-radius: 8px; }
+  top: 8px;
+  left: 8px;
+  height: 22px;
+  padding: 2px 8px 0;
+  border-radius: 8px;
+  line-height: 22px; }
