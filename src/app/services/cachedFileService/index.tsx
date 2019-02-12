@@ -159,7 +159,7 @@ export default class CachedFileService {
             fileLocation.setVersion(fileLoc.version || 0);
             this.fileManager.receiveFile(fileLocation, size, 'image/jpeg').then(() => {
                 this.fileRepo.get(fileLoc.fileid || '').then((fileRes) => {
-                    if (fileRes) {
+                    if (fileRes && this.files[id]) {
                         this.files[id].retries = 0;
                         if (blurRadius && fileRes.data.size > 0) {
                             this.getBlurredImage(id, fileRes.data, blurRadius).then((blurredBlob) => {
@@ -171,12 +171,16 @@ export default class CachedFileService {
                             resolve(this.files[id].src);
                         }
                     } else {
-                        this.files[id].retries++;
+                        if (this.files[id]) {
+                            this.files[id].retries++;
+                        }
                         reject();
                     }
                 });
             }).catch(() => {
-                this.files[id].retries++;
+                if (this.files[id]) {
+                    this.files[id].retries++;
+                }
                 reject();
             });
         });

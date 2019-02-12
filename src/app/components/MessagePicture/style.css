@@ -153,7 +153,8 @@ input {
       background-color: rgba(0, 0, 0, 0.3);
       padding: 1px 4px 0;
       border-radius: 4px;
-      color: var(--white); }
+      color: var(--white);
+      z-index: 20; }
   .message-picture .picture-caption {
     padding: 4px 6px 0;
     white-space: pre-wrap;

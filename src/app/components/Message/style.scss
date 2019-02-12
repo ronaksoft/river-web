@@ -260,11 +260,11 @@
       height: 20px;
       width: 16px;
       display: block;
-      cursor: pointer;
       background-color: inherit;
       visibility: hidden;
       z-index: 10;
       svg {
+        cursor: pointer;
         height: 20px;
         font-size: 20px;
       }

@@ -58,7 +58,9 @@ export default class MessageRepo {
                 case DocumentAttributeType.ATTRIBUTETYPEFILE:
                     // @ts-ignore
                     attrOut.push(DocumentAttributeFile.deserializeBinary(attr.data).toObject());
-                    flags.type = C_MESSAGE_TYPE.File;
+                    if (flags.type === C_MESSAGE_TYPE.Normal) {
+                        flags.type = C_MESSAGE_TYPE.File;
+                    }
                     delete attr.data;
                     break;
                 case DocumentAttributeType.ATTRIBUTETYPEPHOTO:

@@ -104,7 +104,6 @@ class Message extends React.Component<IProps, IState> {
         stopIndex: 0,
     };
     private riverTime: RiverTime;
-    private messageMediaRef: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -431,6 +430,15 @@ class Message extends React.Component<IProps, IState> {
         if (!message) {
             return '';
         }
+        const messageMedia: any = {
+            ref: null,
+        };
+        /* Bubble click handler */
+        const bubbleClickHandler = () => {
+            if (messageMedia.ref && messageMedia.ref.viewDocument) {
+                messageMedia.ref.viewDocument();
+            }
+        };
         switch (message.messagetype) {
             case C_MESSAGE_TYPE.Hole:
                 return '';
@@ -485,7 +493,7 @@ class Message extends React.Component<IProps, IState> {
                             {Boolean(message.me && message.error) && <span className="error"><ErrorRounded/></span>}
                             <div
                                 className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')}
-                                onClick={this.bubbleClickHandler}>
+                                onClick={bubbleClickHandler}>
                                 {Boolean(peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me) &&
                                 <UserName className="name" uniqueColor={false} id={message.senderid || ''}/>}
                                 {Boolean(message.replyto && message.replyto !== 0) &&
@@ -497,7 +505,7 @@ class Message extends React.Component<IProps, IState> {
                                 <MessageForwarded message={message} peer={peer}
                                                   onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>}
                                 <div className="bubble-body">
-                                    {this.renderMessageBody(message, peer, measureFn)}
+                                    {this.renderMessageBody(message, peer, messageMedia, measureFn)}
                                     <MessageStatus status={message.me || false} id={message.id} readId={readId}
                                                    time={message.createdon || 0} editedTime={message.editedon || 0}
                                                    onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>
@@ -857,7 +865,10 @@ class Message extends React.Component<IProps, IState> {
     }
 
     /* Message body renderer */
-    private renderMessageBody(message: IMessage, peer: InputPeer | null, measureFn?: any) {
+    private renderMessageBody(message: IMessage, peer: InputPeer | null, messageMedia: any, measureFn?: any) {
+        const refBindHandler = (ref: any) => {
+            messageMedia.ref = ref;
+        };
         if (message.mediatype !== MediaType.MEDIATYPEEMPTY && message.mediatype !== undefined) {
             switch (message.messagetype) {
                 case C_MESSAGE_TYPE.Voice:
@@ -867,7 +878,7 @@ class Message extends React.Component<IProps, IState> {
                 case C_MESSAGE_TYPE.Contact:
                     return (<MessageContact message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
                 case C_MESSAGE_TYPE.Picture:
-                    return (<MessagePicture ref={this.messageMediaRefHandler} message={message} peer={peer}
+                    return (<MessagePicture ref={refBindHandler} message={message} peer={peer}
                                             onAction={this.props.onAttachmentAction}
                                             measureFn={measureFn}/>);
                 default:
@@ -912,18 +923,6 @@ class Message extends React.Component<IProps, IState> {
             related = 'related';
         }
         return ` ${type} ${related}`;
-    }
-
-    /* Message media ref handler */
-    private messageMediaRefHandler = (ref: any) => {
-        this.messageMediaRef = ref;
-    }
-
-    /* Bubble click handler */
-    private bubbleClickHandler = () => {
-        if (this.messageMediaRef && this.messageMediaRef.viewDocument) {
-            this.messageMediaRef.viewDocument();
-        }
     }
 }
 
