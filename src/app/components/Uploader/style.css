@@ -228,3 +228,41 @@
           flex-direction: column; }
           .uploader-dialog .uploader-container .attachments-slide-container .attachment-items .item.add-file svg {
             font-size: 36px; }
+
+html[theme="dark"] .uploader-container {
+  background-color: var(--dark-medium); }
+  html[theme="dark"] .uploader-container .attachment-details-container .caption-input label, html[theme="dark"] .uploader-container .attachment-details-container .caption-input textarea, html[theme="dark"] .uploader-container .attachment-details-container .caption-input svg {
+    color: var(--white); }
+  html[theme="dark"] .uploader-container .attachments-slide-container {
+    background-color: var(--dark-low); }
+    html[theme="dark"] .uploader-container .attachments-slide-container .attachment-items {
+      padding: 10px 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start; }
+      html[theme="dark"] .uploader-container .attachments-slide-container .attachment-items .item {
+        background-color: var(--dark-high); }
+        html[theme="dark"] .uploader-container .attachments-slide-container .attachment-items .item.add-file {
+          background: var(--dark-high);
+          color: var(--white); }
+          html[theme="dark"] .uploader-container .attachments-slide-container .attachment-items .item.add-file svg {
+            color: var(--white); }
+
+html[theme="dark-blue"] .uploader-container {
+  background-color: var(--dark-blue-medium); }
+  html[theme="dark-blue"] .uploader-container .attachment-details-container .caption-input label, html[theme="dark-blue"] .uploader-container .attachment-details-container .caption-input textarea, html[theme="dark-blue"] .uploader-container .attachment-details-container .caption-input svg {
+    color: var(--white); }
+  html[theme="dark-blue"] .uploader-container .attachments-slide-container {
+    background-color: var(--dark-blue-low); }
+    html[theme="dark-blue"] .uploader-container .attachments-slide-container .attachment-items {
+      padding: 10px 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start; }
+      html[theme="dark-blue"] .uploader-container .attachments-slide-container .attachment-items .item {
+        background-color: var(--dark-blue-medium); }
+        html[theme="dark-blue"] .uploader-container .attachments-slide-container .attachment-items .item.add-file {
+          background: var(--dark-blue-medium);
+          color: var(--white); }
+          html[theme="dark-blue"] .uploader-container .attachments-slide-container .attachment-items .item.add-file svg {
+            color: var(--white); }

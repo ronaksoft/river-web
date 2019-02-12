@@ -287,3 +287,67 @@
     }
   }
 }
+
+html[theme="dark"] {
+  .uploader-container {
+    background-color: var(--dark-medium);
+    .attachment-details-container {
+      .caption-input {
+        label, textarea, svg {
+          color: var(--white);
+        }
+      }
+    }
+    .attachments-slide-container {
+      background-color: var(--dark-low);
+      .attachment-items {
+        padding: 10px 0;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        .item {
+          background-color: var(--dark-high);
+          &.add-file {
+            background: var(--dark-high);
+            color: var(--white);
+            svg {
+              color: var(--white);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .uploader-container {
+    background-color: var(--dark-blue-medium);
+    .attachment-details-container {
+      .caption-input {
+        label, textarea, svg {
+          color: var(--white);
+        }
+      }
+    }
+    .attachments-slide-container {
+      background-color: var(--dark-blue-low);
+      .attachment-items {
+        padding: 10px 0;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        .item {
+          background-color: var(--dark-blue-medium);
+          &.add-file {
+            background: var(--dark-blue-medium);
+            color: var(--white);
+            svg {
+              color: var(--white);
+            }
+          }
+        }
+      }
+    }
+  }
+}

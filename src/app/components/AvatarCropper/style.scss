@@ -80,19 +80,37 @@
   }
 }
 
-html[theme="dark"],
-html[theme="dark-blue"] {
-  .picture-crop-dialog {
-    .picture-crop-footer {
+html[theme="dark"]{
+  .avatar-cropper-dialog {
+    .avatar-cropper-footer {
       background-color: var(--dark-medium);
+    }
+    .avatar-cropper-area {
+      background-color: var(--dark-low);
+    }
+    .avatar-cropper-edit-action {
+      .action-item {
+        background-color: var(--dark-low);
+      }
     }
   }
 }
 
 html[theme="dark-blue"] {
-  .picture-crop-dialog {
-    .picture-crop-footer {
+  .avatar-cropper-dialog {
+    .avatar-cropper-footer {
       background-color: var(--dark-blue-medium);
+    }
+    .avatar-cropper-area {
+      background-color: var(--dark-blue-low);
+    }
+    .avatar-cropper-edit-action {
+      .action-item {
+        background-color: var(--dark-blue-low);
+        svg {
+          color: var(--dark-blue-high-alt);
+        }
+      }
     }
   }
 }

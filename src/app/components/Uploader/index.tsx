@@ -342,8 +342,8 @@ class MediaPreview extends React.Component<IProps, IState> {
         });
         const config = {
             autoRotate: true,
-            maxHeight: 1000,
-            maxWidth: 1000,
+            maxHeight: 1280,
+            maxWidth: 1280,
             quality: 0.8,
         };
         const thumbConfig = {

@@ -67,9 +67,22 @@
         color: var(--grey);
         font-size: 24px; }
 
-html[theme="dark"] .picture-crop-dialog .picture-crop-footer,
-html[theme="dark-blue"] .picture-crop-dialog .picture-crop-footer {
+html[theme="dark"] .avatar-cropper-dialog .avatar-cropper-footer {
   background-color: var(--dark-medium); }
 
-html[theme="dark-blue"] .picture-crop-dialog .picture-crop-footer {
+html[theme="dark"] .avatar-cropper-dialog .avatar-cropper-area {
+  background-color: var(--dark-low); }
+
+html[theme="dark"] .avatar-cropper-dialog .avatar-cropper-edit-action .action-item {
+  background-color: var(--dark-low); }
+
+html[theme="dark-blue"] .avatar-cropper-dialog .avatar-cropper-footer {
   background-color: var(--dark-blue-medium); }
+
+html[theme="dark-blue"] .avatar-cropper-dialog .avatar-cropper-area {
+  background-color: var(--dark-blue-low); }
+
+html[theme="dark-blue"] .avatar-cropper-dialog .avatar-cropper-edit-action .action-item {
+  background-color: var(--dark-blue-low); }
+  html[theme="dark-blue"] .avatar-cropper-dialog .avatar-cropper-edit-action .action-item svg {
+    color: var(--dark-blue-high-alt); }
