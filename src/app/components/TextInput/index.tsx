@@ -81,7 +81,7 @@ interface IProps {
 interface IState {
     disableAuthority: number;
     emojiAnchorEl: any;
-    mediaInputMode: 'photo' | 'video' | 'music' | 'file' | 'none';
+    mediaInputMode: 'media' | 'video' | 'music' | 'file' | 'none';
     peer: InputPeer | null;
     previewMessage: IMessage | null;
     previewMessageHeight: number;
@@ -1264,7 +1264,7 @@ class TextInput extends React.Component<IProps, IState> {
             const {previewMessage, previewMessageMode} = this.state;
             const message = cloneDeep(previewMessage);
             switch (this.state.mediaInputMode) {
-                case 'photo':
+                case 'media':
                     if (this.mediaPreviewRef) {
                         const files: File[] = [];
                         for (let i = 0; i < e.currentTarget.files.length; i++) {
@@ -1338,12 +1338,12 @@ class TextInput extends React.Component<IProps, IState> {
         });
     }
 
-    private selectMediaActionHandler = (mode: 'photo' | 'video' | 'music' | 'file') => {
+    private selectMediaActionHandler = (mode: 'media' | 'video' | 'music' | 'file') => {
         this.setState({
             mediaInputMode: mode,
         }, () => {
             switch (mode) {
-                case 'photo':
+                case 'media':
                 case 'video':
                 case 'music':
                 case 'file':
@@ -1361,8 +1361,8 @@ class TextInput extends React.Component<IProps, IState> {
     private getFileType = () => {
         const {mediaInputMode} = this.state;
         switch (mediaInputMode) {
-            case 'photo':
-                return 'image/png,image/jpeg,image/jpg,image/gif';
+            case 'media':
+                return 'image/png,image/jpeg,image/jpg,image/gif,video/webm,video/mp4';
             case 'video':
                 return 'video/*';
             case 'music':

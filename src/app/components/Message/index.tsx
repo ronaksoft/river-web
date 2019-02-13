@@ -36,10 +36,10 @@ import {ErrorRounded} from '@material-ui/icons';
 import MessageFile from '../MessageFile';
 import MessageContact from '../MessageContact';
 import CachedPhoto from '../CachedPhoto';
-import MessagePicture from '../MessagePicture';
+import MessageMedia from '../MessageMedia';
+import {MediaDocument} from '../../services/sdk/messages/chat.core.message.medias_pb';
 
 import './style.css';
-import {MediaDocument} from '../../services/sdk/messages/chat.core.message.medias_pb';
 
 interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
@@ -878,9 +878,9 @@ class Message extends React.Component<IProps, IState> {
                 case C_MESSAGE_TYPE.Contact:
                     return (<MessageContact message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
                 case C_MESSAGE_TYPE.Picture:
-                    return (<MessagePicture ref={refBindHandler} message={message} peer={peer}
-                                            onAction={this.props.onAttachmentAction}
-                                            measureFn={measureFn}/>);
+                    return (<MessageMedia ref={refBindHandler} message={message} peer={peer}
+                                          onAction={this.props.onAttachmentAction}
+                                          measureFn={measureFn}/>);
                 default:
                     return '';
             }

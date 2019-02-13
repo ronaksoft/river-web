@@ -49,7 +49,7 @@
       .select-media .media-input-container .media-item svg {
         font-size: 24px;
         color: var(--grey); }
-      .select-media .media-input-container .media-item.photo svg {
+      .select-media .media-input-container .media-item.media svg {
         color: #4CAF50; }
       .select-media .media-input-container .media-item.video svg {
         color: #F2C94C; }

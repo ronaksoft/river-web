@@ -100,7 +100,7 @@ interface IState {
     message: IMessage;
 }
 
-class MessagePicture extends React.PureComponent<IProps, IState> {
+class MessageMedia extends React.PureComponent<IProps, IState> {
     private lastId: number = 0;
     private fileId: string = '';
     private downloaded: boolean = false;
@@ -203,12 +203,12 @@ class MessagePicture extends React.PureComponent<IProps, IState> {
     public render() {
         const {fileState, info, message} = this.state;
         return (
-            <div className="message-picture">
-                <div className="picture-content" style={this.pictureContentSize}>
+            <div className="message-media">
+                <div className="media-content" style={this.pictureContentSize}>
                     {Boolean(fileState !== 'view' && fileState !== 'open') &&
                     <React.Fragment>
-                        <div className="picture-size" ref={this.pictureSizeRefHandler}>0 KB</div>
-                        <div className="picture-thumb">
+                        <div className="media-size" ref={this.pictureSizeRefHandler}>0 KB</div>
+                        <div className="media-thumb">
                             <CachedPhoto className="picture"
                                          fileLocation={(message.id || 0) > 0 ? info.thumbFile : info.file}
                                          onLoad={this.cachedPhotoLoadHandler} blur={10} searchTemp={true}/>
@@ -227,12 +227,12 @@ class MessagePicture extends React.PureComponent<IProps, IState> {
                         </div>
                     </React.Fragment>}
                     {Boolean(fileState === 'view' || fileState === 'open') &&
-                    <div ref={this.pictureBigRefHandler} className="picture-big" onClick={this.showPictureHandler}>
+                    <div ref={this.pictureBigRefHandler} className="media-big" onClick={this.showPictureHandler}>
                         <CachedPhoto className="picture" fileLocation={info.file}
                                      onLoad={this.cachedPhotoLoadHandler}/>
                     </div>}
                 </div>
-                {Boolean(info.caption.length > 0) && <div className="picture-caption">{info.caption}</div>}
+                {Boolean(info.caption.length > 0) && <div className="media-caption">{info.caption}</div>}
             </div>
         );
     }
@@ -429,4 +429,4 @@ class MessagePicture extends React.PureComponent<IProps, IState> {
     }
 }
 
-export default MessagePicture;
+export default MessageMedia;

@@ -10,7 +10,7 @@
 import * as React from 'react';
 import Dropzone, {FileWithPreview} from 'react-dropzone';
 import Dialog from '@material-ui/core/Dialog/Dialog';
-import {AddRounded, CancelRounded, CheckRounded, CropRounded} from '@material-ui/icons';
+import {AddRounded, CancelRounded, CheckRounded, CropRounded, PlayCircleFilledRounded} from '@material-ui/icons';
 import Scrollbars from 'react-custom-scrollbars';
 import TextField from '@material-ui/core/TextField/TextField';
 // @ts-ignore
@@ -36,6 +36,10 @@ export interface IMediaItem {
 export interface IUploaderFile extends FileWithPreview {
     caption?: string;
     height?: number;
+    mediaType?: 'image' | 'video' | 'none';
+    ready?: boolean;
+    tempThumb?: File;
+    videoThumb?: string;
     width?: number;
 }
 
@@ -57,7 +61,7 @@ class MediaPreview extends React.Component<IProps, IState> {
     private dropzoneRef: Dropzone;
     private imageRef: any;
     private imageActionRef: any;
-    private previewRefs: string[] = [];
+    private previewRefs: string[][] = [];
 
     constructor(props: IProps) {
         super(props);
@@ -115,12 +119,18 @@ class MediaPreview extends React.Component<IProps, IState> {
                                 {items.length > 0 && this.state.show && (
                                     <div className={'slide' + (selected > lastSelected ? ' left' : ' right')}
                                          onClick={this.slideClickHandler}>
-                                        <img ref={this.imageRefHandler} className="front"
-                                             src={items[selected].preview}/>
-                                        <div ref={this.imageActionRefHandler} className="image-actions">
-                                            <CropRounded/>
-                                        </div>
-                                        {Boolean(lastSelected !== selected && items[lastSelected]) && (
+                                        {Boolean(items[selected].mediaType === 'image') && <React.Fragment>
+                                            <img ref={this.imageRefHandler} className="front"
+                                                 src={items[selected].preview}/>
+                                            <div ref={this.imageActionRefHandler} className="image-actions">
+                                                <CropRounded/>
+                                            </div>
+                                        </React.Fragment>}
+                                        {Boolean(items[selected].mediaType === 'video') &&
+                                        <video ref={this.imageRefHandler} className="front" controls={true}>
+                                            <source src={items[selected].preview}/>
+                                        </video>}
+                                        {Boolean(lastSelected !== selected && items[lastSelected] && items[selected].mediaType === 'image') && (
                                             <img className="back" src={items[lastSelected].preview}/>
                                         )}
                                     </div>
@@ -153,14 +163,22 @@ class MediaPreview extends React.Component<IProps, IState> {
                             autoHide={true}
                         >
                             <div className="attachment-items">
-                                {items.length > 0 && items.map((file, index) => {
+                                {items.length > 0 && items.map((item, index) => {
                                     return (
                                         <div key={index}
                                              className={'item' + (selected === index ? ' selected' : '')}
                                              onClick={this.selectImage.bind(this, index, null)}
                                         >
+                                            {Boolean(item.mediaType === 'image') &&
                                             <div className="preview"
-                                                 style={{backgroundImage: 'url(' + file.preview + ')'}}/>
+                                                 style={{backgroundImage: 'url(' + item.preview + ')'}}/>}
+                                            {Boolean(item.mediaType === 'video') && <React.Fragment>
+                                                <div className="preview"
+                                                     style={{backgroundImage: 'url(' + item.videoThumb + ')'}}/>
+                                                <div className="video-icon">
+                                                    <PlayCircleFilledRounded/>
+                                                </div>
+                                            </React.Fragment>}
                                             <div className="remove" onClick={this.removeItemHandler.bind(this, index)}>
                                                 <CancelRounded/>
                                             </div>
@@ -189,6 +207,9 @@ class MediaPreview extends React.Component<IProps, IState> {
         // @ts-ignore
         this.setState({
             items: [...this.state.items, ...accepted],
+        }, () => {
+            this.initImages();
+            this.setImageActionSize();
         });
     }
 
@@ -223,12 +244,20 @@ class MediaPreview extends React.Component<IProps, IState> {
     private initImages() {
         const {items} = this.state;
         items.map((item, index) => {
+            item.mediaType = this.getTypeByMime(item.type);
             if (!item.preview) {
                 item.preview = URL.createObjectURL(item);
-                this.previewRefs[index] = item.preview;
+                if (!this.previewRefs[index]) {
+                    this.previewRefs[index] = [];
+                }
+                this.previewRefs[index].push(item.preview);
             }
-            this.getImageSize(item.preview, index);
-            return items;
+            if (item.mediaType === 'image') {
+                this.getImageSize(item.preview, index);
+            } else if (item.mediaType === 'video') {
+                this.getVideoSizeAndThumb(item.preview, index);
+            }
+            return item;
         });
         this.setState({
             items,
@@ -243,14 +272,72 @@ class MediaPreview extends React.Component<IProps, IState> {
             if (items[index]) {
                 items[index].height = img.height;
                 items[index].width = img.width;
+                items[index].ready = true;
                 this.setState({
                     items,
                 }, () => {
                     img.remove();
                 });
+            } else {
+                img.remove();
             }
         };
+        img.onerror = () => {
+            img.remove();
+        };
         img.src = src;
+    }
+
+    /* Get video size and thumbnail */
+    private getVideoSizeAndThumb(src: string, index: number) {
+        const video = document.createElement('video');
+        video.onloadedmetadata = () => {
+            const {items} = this.state;
+            if (items[index]) {
+                items[index].height = video.videoHeight;
+                items[index].width = video.videoWidth;
+                let sampleTime: number = 0;
+                if (video.duration > 4) {
+                    sampleTime = 3.5;
+                }
+                video.currentTime = sampleTime;
+                setTimeout(() => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    if (ctx) {
+                        ctx.canvas.height = video.videoHeight;
+                        ctx.canvas.width = video.videoWidth;
+                        ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+                        canvas.toBlob((blob) => {
+                            if (blob) {
+                                items[index].tempThumb = new File([blob], 'thumbnail.jpeg');
+                                items[index].videoThumb = URL.createObjectURL(blob);
+                                if (items[index].videoThumb) {
+                                    this.previewRefs[index].push(items[index].videoThumb || '');
+                                }
+                                items[index].ready = true;
+                            }
+                            this.setState({
+                                items,
+                            }, () => {
+                                video.remove();
+                                canvas.remove();
+                            });
+                        }, 'image/jpeg', '0.8');
+                    } else {
+                        video.remove();
+                        canvas.remove();
+                    }
+                }, 100);
+            } else {
+                video.remove();
+            }
+        };
+        video.onerror = () => {
+            video.remove();
+        };
+        video.src = src;
+        video.load();
     }
 
     /* Add new media items at end of items */
@@ -262,8 +349,10 @@ class MediaPreview extends React.Component<IProps, IState> {
 
     /* Reset all data */
     private reset() {
-        this.previewRefs.forEach((item) => {
-            URL.revokeObjectURL(item);
+        this.previewRefs.forEach((items) => {
+            items.forEach((item) => {
+                URL.revokeObjectURL(item);
+            });
         });
         this.previewRefs = [];
     }
@@ -274,7 +363,9 @@ class MediaPreview extends React.Component<IProps, IState> {
         const {items, selected} = this.state;
         const removeItem = () => {
             items.splice(index, 1);
-            URL.revokeObjectURL(this.previewRefs[index]);
+            this.previewRefs[index].forEach((item) => {
+                URL.revokeObjectURL(item);
+            });
             this.previewRefs.splice(index, 1);
             this.setState({
                 items,
@@ -334,6 +425,21 @@ class MediaPreview extends React.Component<IProps, IState> {
         }, 50);
     }
 
+    /* Get type by mime */
+    private getTypeByMime(mime: string) {
+        switch (mime) {
+            case 'image/png':
+            case 'image/jpeg':
+            case 'image/jpg':
+                return 'image';
+            case 'video/webm':
+            case 'video/mp4':
+                return 'video';
+            default:
+                return 'none';
+        }
+    }
+
     /* Check button click handler */
     private doneHandler = () => {
         const {items} = this.state;
@@ -354,8 +460,15 @@ class MediaPreview extends React.Component<IProps, IState> {
         };
         const promise: any[] = [];
         items.forEach((item) => {
-            promise.push(readAndCompressImage(item, config));
-            promise.push(readAndCompressImage(item, thumbConfig));
+            if (item.mediaType === 'image') {
+                promise.push(readAndCompressImage(item, config));
+                promise.push(readAndCompressImage(item, thumbConfig));
+            } else if (item.mediaType === 'video') {
+                promise.push(() => {
+                    return Promise.resolve(item);
+                });
+                promise.push(readAndCompressImage(item.tempThumb, thumbConfig));
+            }
         });
         Promise.all(promise).then((dist) => {
             const output: IMediaItem[] = [];
@@ -367,10 +480,10 @@ class MediaPreview extends React.Component<IProps, IState> {
                     name: items[i].name,
                     thumb: {
                         file: dist[i * 2 + 1],
-                        fileType: items[i].type,
+                        fileType: 'image/jpeg',
                         height: items[i].height || 0,
                         width: items[i].width || 0,
-                    }
+                    },
                 });
             }
             this.props.onDone(output);

@@ -8,15 +8,15 @@
 */
 @import '../../../style/common';
 
-.message-picture {
+.message-media {
   padding: 0;
-  .picture-content {
+  .media-content {
     position: relative;
     min-height: 64px;
     min-width: 64px;
     border-radius: 6px;
     overflow: hidden;
-    .picture-thumb {
+    .media-thumb {
       .picture-action {
         position: absolute;
         top: 50%;
@@ -65,8 +65,8 @@
         }
       }
     }
-    .picture-thumb,
-    .picture-big {
+    .media-thumb,
+    .media-big {
       position: relative;
       height: 100%;
       width: 100%;
@@ -82,10 +82,10 @@
         }
       }
     }
-    .picture-big {
+    .media-big {
       cursor: pointer;
     }
-    .picture-size {
+    .media-size {
       position: absolute;
       top: 4px;
       left: 4px;
@@ -99,7 +99,7 @@
       z-index: 20;
     }
   }
-  .picture-caption {
+  .media-caption {
     padding: 4px 6px 0;
     white-space: pre-wrap;
     word-break: break-word;
@@ -108,18 +108,18 @@
 
 html[theme="dark"],
 html[theme="dark-blue"] {
-  .message-picture {
+  .message-media {
   }
 }
 
 html[theme="dark-blue"] {
-  .message-picture {
+  .message-media {
   }
 }
 
 html[bubble="2"] {
-  .message-picture {
-    .picture-size {
+  .message-media {
+    .media-size {
       top: 8px;
       left: 8px;
       height: 22px;

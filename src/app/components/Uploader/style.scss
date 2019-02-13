@@ -141,10 +141,10 @@
                 cursor: pointer;
               }
             }
-            img {
+            img, video {
               box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
             }
-            img.front {
+            img.front, video.front {
               position: relative;
               display: flex;
               align-items: center;
@@ -225,6 +225,7 @@
             background-size: cover;
             width: 100px;
             height: 100px;
+            background-position: center center;
             transition: transform .1s ease-out;
             &:before {
               content: '';
@@ -236,6 +237,24 @@
               opacity: 0;
               background: linear-gradient(10deg, transparent 0%, transparent 45%, rgba(0, 0, 0, 0.18) 75%, rgba(0, 0, 0, 0.4) 100%);
               transition: opacity .1s ease-out;
+            }
+          }
+          .video-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            height: 32px;
+            width: 32px;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            svg {
+              font-size: 30px;
+              color: var(--white);
             }
           }
           .remove {

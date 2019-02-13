@@ -35,9 +35,9 @@ const tooltipClass: any = makeStyles({
 
 const items: any[] = [
     {
-        cmd: 'photo',
+        cmd: 'media',
         icon: <ImageTwoTone/>,
-        title: 'Photo',
+        title: 'Photo & Video',
     },
     {
         cmd: 'video',
@@ -57,7 +57,7 @@ const items: any[] = [
 ];
 
 interface IProps {
-    onAction: (cmd: 'photo' | 'video' | 'music' | 'file') => void;
+    onAction: (cmd: 'media' | 'video' | 'music' | 'file') => void;
     onClose?: () => void;
     open: boolean;
 }
@@ -68,7 +68,7 @@ interface IState {
 }
 
 class SelectMedia extends React.Component<IProps, IState> {
-    private leaveDebouce: any;
+    private readonly leaveDebounce: any;
 
     constructor(props: IProps) {
         super(props);
@@ -78,7 +78,7 @@ class SelectMedia extends React.Component<IProps, IState> {
             open: props.open,
         };
 
-        this.leaveDebouce = debounce(this.leaveHandler, 256);
+        this.leaveDebounce = debounce(this.leaveHandler, 256);
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -128,7 +128,7 @@ class SelectMedia extends React.Component<IProps, IState> {
 
     /* Mouse enter handler */
     private mouseEnterHandler = (cmd: string) => {
-        this.leaveDebouce.cancel();
+        this.leaveDebounce.cancel();
         if (this.state.currentCmd !== cmd) {
             this.setState({
                 currentCmd: cmd,
@@ -138,7 +138,7 @@ class SelectMedia extends React.Component<IProps, IState> {
 
     /* Mouse leave handler */
     private mouseLeaveHandler = () => {
-        this.leaveDebouce();
+        this.leaveDebounce();
     }
 
     private leaveHandler = () => {
