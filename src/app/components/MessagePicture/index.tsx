@@ -357,11 +357,21 @@ class MessagePicture extends React.PureComponent<IProps, IState> {
         let height = info.height;
         let width = info.width;
         if (ratio > 1.0) {
-            height = C_MAX_HEIGHT;
-            width = C_MAX_HEIGHT / ratio;
+            if (info.height < C_MAX_HEIGHT) {
+                height = info.height;
+                width = info.height / ratio;
+            } else {
+                height = C_MAX_HEIGHT;
+                width = C_MAX_HEIGHT / ratio;
+            }
         } else {
-            width = C_MAX_WIDTH;
-            height = C_MAX_WIDTH * ratio;
+            if (info.width < C_MAX_WIDTH) {
+                width = info.width;
+                height = info.width * ratio;
+            } else {
+                width = C_MAX_WIDTH;
+                height = C_MAX_WIDTH * ratio;
+            }
         }
         if (isNaN(height)) {
             height = C_MIN_HEIGHT;
