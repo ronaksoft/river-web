@@ -72,6 +72,7 @@ export default class MessageRepo {
                 case DocumentAttributeType.ATTRIBUTETYPEVIDEO:
                     // @ts-ignore
                     attrOut.push(DocumentAttributeVideo.deserializeBinary(attr.data).toObject());
+                    flags.type = C_MESSAGE_TYPE.Video;
                     delete attr.data;
                     break;
             }

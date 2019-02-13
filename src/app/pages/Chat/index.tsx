@@ -98,7 +98,7 @@ import {
     DocumentAttribute,
     DocumentAttributeAudio,
     DocumentAttributeFile, DocumentAttributePhoto,
-    DocumentAttributeType,
+    DocumentAttributeType, DocumentAttributeVideo,
     InputMediaUploadedDocument,
     MediaDocument
 } from '../../services/sdk/messages/chat.core.message.medias_pb';
@@ -3041,28 +3041,34 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* TextInput file select handler */
-    private textInputFileSelectHandler = (file: File, param?: any) => {
-        const fileReader = new FileReader();
-        fileReader.onloadend = (e: any) => {
-            const blob = new Blob([e.target.result], {type: file.type});
-            this.sendMediaMessage('file', {
-                caption: '',
-                file: blob,
-                fileType: file.type,
-                name: file.name,
-            }, param);
-        };
-        fileReader.readAsArrayBuffer(file);
+    private textInputFileSelectHandler = (files: File[], param?: any) => {
+        files.forEach((file) => {
+            const fileReader = new FileReader();
+            fileReader.onloadend = (e: any) => {
+                const blob = new Blob([e.target.result], {type: file.type});
+                this.sendMediaMessage('file', {
+                    caption: '',
+                    file: blob,
+                    fileType: file.type,
+                    mediaType: 'file',
+                    name: file.name,
+                }, param);
+            };
+            fileReader.readAsArrayBuffer(file);
+        });
     }
 
     /* TextInput media select handler */
     private textInputMediaSelectHandler = (items: IMediaItem[], param?: any) => {
         items.forEach((item) => {
-            this.sendMediaMessage('picture', item, param);
+            this.sendMediaMessage(item.mediaType, item, param);
         });
     }
 
-    private sendMediaMessage(type: 'picture' | 'file', mediaItem: IMediaItem, param?: any) {
+    private sendMediaMessage(type: 'image' | 'video' | 'file' | 'none', mediaItem: IMediaItem, param?: any) {
+        if (type === 'none') {
+            return;
+        }
         const {peer} = this.state;
         if (peer === null) {
             return;
@@ -3116,21 +3122,37 @@ class Chat extends React.Component<IProps, IState> {
                 attributesList.push(attrFile);
                 attributesDataList.push(attrFileData.toObject());
                 break;
-            case 'picture':
+            case 'image':
+            case 'video':
                 fileIds.push(String(UniqueId.getRandomId()));
-                messageType = C_MESSAGE_TYPE.Picture;
-
                 if (mediaItem.thumb) {
-                    const attrPhotoData = new DocumentAttributePhoto();
-                    attrPhotoData.setHeight(mediaItem.thumb.height);
-                    attrPhotoData.setWidth(mediaItem.thumb.width);
+                    if (type === 'image') {
+                        messageType = C_MESSAGE_TYPE.Picture;
+                        const attrPhotoData = new DocumentAttributePhoto();
+                        attrPhotoData.setHeight(mediaItem.thumb.height);
+                        attrPhotoData.setWidth(mediaItem.thumb.width);
 
-                    const attrPhoto = new DocumentAttribute();
-                    attrPhoto.setData(attrPhotoData.serializeBinary());
-                    attrPhoto.setType(DocumentAttributeType.ATTRIBUTETYPEPHOTO);
+                        const attrPhoto = new DocumentAttribute();
+                        attrPhoto.setData(attrPhotoData.serializeBinary());
+                        attrPhoto.setType(DocumentAttributeType.ATTRIBUTETYPEPHOTO);
 
-                    attributesList.push(attrPhoto);
-                    attributesDataList.push(attrPhotoData.toObject());
+                        attributesList.push(attrPhoto);
+                        attributesDataList.push(attrPhotoData.toObject());
+                    } else if (type === 'video') {
+                        messageType = C_MESSAGE_TYPE.Video;
+                        const attrVideoData = new DocumentAttributeVideo();
+                        attrVideoData.setHeight(mediaItem.thumb.height);
+                        attrVideoData.setWidth(mediaItem.thumb.width);
+                        attrVideoData.setDuration(Math.floor(mediaItem.duration || 0));
+                        attrVideoData.setRound(false);
+
+                        const attrVideo = new DocumentAttribute();
+                        attrVideo.setData(attrVideoData.serializeBinary());
+                        attrVideo.setType(DocumentAttributeType.ATTRIBUTETYPEVIDEO);
+
+                        attributesList.push(attrVideo);
+                        attributesDataList.push(attrVideoData.toObject());
+                    }
                 }
 
                 const inputThumbFile = new InputFile();
@@ -3193,7 +3215,8 @@ class Chat extends React.Component<IProps, IState> {
                     this.progressBroadcaster.publish(id, progress);
                 }));
                 break;
-            case 'picture':
+            case 'image':
+            case 'video':
                 uploadPromises.push(this.fileManager.sendFile(fileIds[0], mediaItem.file, (progress) => {
                     this.progressBroadcaster.publish(id, progress);
                 }));

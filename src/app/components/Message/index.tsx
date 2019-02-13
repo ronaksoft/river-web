@@ -711,7 +711,7 @@ class Message extends React.Component<IProps, IState> {
                     );
                 }
             default:
-                return '';
+                return (<span className="system-message">Unsupported system message</span>);
         }
     }
 
@@ -878,11 +878,12 @@ class Message extends React.Component<IProps, IState> {
                 case C_MESSAGE_TYPE.Contact:
                     return (<MessageContact message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
                 case C_MESSAGE_TYPE.Picture:
+                case C_MESSAGE_TYPE.Video:
                     return (<MessageMedia ref={refBindHandler} message={message} peer={peer}
                                           onAction={this.props.onAttachmentAction}
                                           measureFn={measureFn}/>);
                 default:
-                    return '';
+                    return 'Unsupported message';
             }
         } else {
             return (
@@ -897,8 +898,6 @@ class Message extends React.Component<IProps, IState> {
         let type = '';
         switch (message.messagetype) {
             case C_MESSAGE_TYPE.Picture:
-                type = 'media';
-                break;
             case C_MESSAGE_TYPE.Video:
                 type = 'media';
                 break;

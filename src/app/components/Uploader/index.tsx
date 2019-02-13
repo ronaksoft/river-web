@@ -27,14 +27,17 @@ interface IMediaThumb {
 
 export interface IMediaItem {
     caption?: string;
+    duration?: number;
     file: Blob;
     fileType: string;
+    mediaType: 'image' | 'video' | 'file' | 'none';
     name: string;
     thumb?: IMediaThumb;
 }
 
 export interface IUploaderFile extends FileWithPreview {
     caption?: string;
+    duration?: number;
     height?: number;
     mediaType?: 'image' | 'video' | 'none';
     ready?: boolean;
@@ -296,6 +299,7 @@ class MediaPreview extends React.Component<IProps, IState> {
             if (items[index]) {
                 items[index].height = video.videoHeight;
                 items[index].width = video.videoWidth;
+                items[index].duration = video.duration;
                 let sampleTime: number = 0;
                 if (video.duration > 4) {
                     sampleTime = 3.5;
@@ -440,6 +444,14 @@ class MediaPreview extends React.Component<IProps, IState> {
         }
     }
 
+    /* Convert file to blob */
+    private convertFileToBlob(file: File) {
+        return new Promise((resolve) => {
+            const blob = new Blob([file], {type: file.type});
+            resolve(blob);
+        });
+    }
+
     /* Check button click handler */
     private doneHandler = () => {
         const {items} = this.state;
@@ -458,16 +470,20 @@ class MediaPreview extends React.Component<IProps, IState> {
             maxWidth: 160,
             quality: 0.8,
         };
+        const videoThumbConfig = {
+            autoRotate: true,
+            maxHeight: 250,
+            maxWidth: 250,
+            quality: 0.8,
+        };
         const promise: any[] = [];
         items.forEach((item) => {
             if (item.mediaType === 'image') {
                 promise.push(readAndCompressImage(item, config));
                 promise.push(readAndCompressImage(item, thumbConfig));
             } else if (item.mediaType === 'video') {
-                promise.push(() => {
-                    return Promise.resolve(item);
-                });
-                promise.push(readAndCompressImage(item.tempThumb, thumbConfig));
+                promise.push(this.convertFileToBlob(item));
+                promise.push(readAndCompressImage(item.tempThumb, videoThumbConfig));
             }
         });
         Promise.all(promise).then((dist) => {
@@ -475,8 +491,10 @@ class MediaPreview extends React.Component<IProps, IState> {
             for (let i = 0; i < items.length; i++) {
                 output.push({
                     caption: items[i].caption,
+                    duration: items[i].duration,
                     file: dist[i * 2],
                     fileType: items[i].type,
+                    mediaType: items[i].mediaType || 'none',
                     name: items[i].name,
                     thumb: {
                         file: dist[i * 2 + 1],

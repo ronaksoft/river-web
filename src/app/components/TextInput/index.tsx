@@ -74,7 +74,7 @@ interface IProps {
     text?: string;
     userId?: string;
     onVoice: (voice: Blob, waveform: number[], duration: number, {mode, message}?: any) => void;
-    onFileSelected: (file: File, {mode, message}?: any) => void;
+    onFileSelected: (files: File[], {mode, message}?: any) => void;
     onMediaSelected: (items: IMediaItem[], {mode, message}?: any) => void;
 }
 
@@ -1263,18 +1263,18 @@ class TextInput extends React.Component<IProps, IState> {
         if (this.props.onFileSelected && e.currentTarget.files.length > 0) {
             const {previewMessage, previewMessageMode} = this.state;
             const message = cloneDeep(previewMessage);
+            const files: File[] = [];
+            for (let i = 0; i < e.currentTarget.files.length; i++) {
+                files.push(e.currentTarget.files[i]);
+            }
             switch (this.state.mediaInputMode) {
                 case 'media':
                     if (this.mediaPreviewRef) {
-                        const files: File[] = [];
-                        for (let i = 0; i < e.currentTarget.files.length; i++) {
-                            files.push(e.currentTarget.files[i]);
-                        }
                         this.mediaPreviewRef.openDialog(files);
                     }
                     break;
                 case 'file':
-                    this.props.onFileSelected(e.currentTarget.files[0], {
+                    this.props.onFileSelected(files, {
                         message,
                         mode: previewMessageMode,
                     });

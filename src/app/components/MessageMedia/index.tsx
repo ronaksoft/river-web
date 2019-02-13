@@ -12,7 +12,7 @@ import {IMessage} from '../../repository/message/interface';
 import {FileLocation, InputPeer} from '../../services/sdk/messages/chat.core.types_pb';
 import {
     DocumentAttributePhoto,
-    DocumentAttributeType,
+    DocumentAttributeType, DocumentAttributeVideo,
     MediaDocument
 } from '../../services/sdk/messages/chat.core.message.medias_pb';
 import {CloseRounded, CloudDownloadRounded} from '@material-ui/icons';
@@ -30,8 +30,9 @@ const C_MIN_HEIGHT = 64;
 const C_MAX_WIDTH = 256;
 const C_MIN_WIDTH = 64;
 
-export interface IPictureInfo {
+export interface IMediaInfo {
     caption: string;
+    duration?: number;
     file: FileLocation.AsObject;
     height: number;
     size: number;
@@ -40,8 +41,8 @@ export interface IPictureInfo {
     width: number;
 }
 
-export const getPictureInfo = (message: IMessage): IPictureInfo => {
-    const info: IPictureInfo = {
+export const getMediaInfo = (message: IMessage): IMediaInfo => {
+    const info: IMediaInfo = {
         caption: '',
         file: {
             accesshash: '',
@@ -82,6 +83,11 @@ export const getPictureInfo = (message: IMessage): IPictureInfo => {
             const docAttr: DocumentAttributePhoto.AsObject = message.attributes[index];
             info.height = docAttr.height || 0;
             info.width = docAttr.width || 0;
+        } else if (attr.type === DocumentAttributeType.ATTRIBUTETYPEVIDEO && message.attributes) {
+            const docAttr: DocumentAttributeVideo.AsObject = message.attributes[index];
+            info.height = docAttr.height || 0;
+            info.width = docAttr.width || 0;
+            info.duration = docAttr.duration;
         }
     });
     return info;
@@ -96,7 +102,7 @@ interface IProps {
 
 interface IState {
     fileState: 'download' | 'view' | 'progress' | 'open';
-    info: IPictureInfo;
+    info: IMediaInfo;
     message: IMessage;
 }
 
@@ -120,7 +126,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     constructor(props: IProps) {
         super(props);
 
-        const info = getPictureInfo(props.message);
+        const info = getMediaInfo(props.message);
         this.fileSize = info.size;
 
         this.pictureContentSize = this.getContentSize(info);
@@ -155,7 +161,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     public componentWillReceiveProps(newProps: IProps) {
         if (newProps.message && this.lastId !== newProps.message.id) {
             this.lastId = newProps.message.id || 0;
-            const info = getPictureInfo(newProps.message);
+            const info = getMediaInfo(newProps.message);
             this.fileSize = info.size;
             this.displayFileSize(0);
             this.setState({
@@ -352,7 +358,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     }
 
     /* Get content size */
-    private getContentSize(info: IPictureInfo): { height: string, width: string } {
+    private getContentSize(info: IMediaInfo): { height: string, width: string } {
         const ratio = info.height / info.width;
         let height = info.height;
         let width = info.width;
