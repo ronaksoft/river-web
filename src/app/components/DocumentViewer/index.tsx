@@ -12,6 +12,7 @@ import * as React from 'react';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import DocumentViewService, {IDocument} from '../../services/documentViewerService';
 import CachedPhoto from '../CachedPhoto';
+import CachedVideo from '../CachedVideo';
 
 import './style.css';
 
@@ -109,6 +110,22 @@ class DocumentViewer extends React.Component<IProps, IState> {
                         );
                     })}
                 </div>);
+            case 'video':
+                return (<div className="video-container">
+                    {doc.items.map((item, index) => {
+                        return (
+                            <React.Fragment key={index}>
+                                <div ref={this.pictureWrapperRefHandler} className="video-wrapper hide"
+                                     style={size ? size : {}}>
+                                    {item.thumbFileLocation && <div className="thumbnail">
+                                        <CachedPhoto fileLocation={item.thumbFileLocation}/>
+                                    </div>}
+                                    <CachedVideo className="video" fileLocation={item.fileLocation} autoPlay={false}/>
+                                </div>
+                            </React.Fragment>
+                        );
+                    })}
+                </div>);
             default:
                 return '';
         }
@@ -120,7 +137,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
     private getFloatObj() {
         const {doc, size} = this.state;
-        if (!size || !doc || !doc.rect || doc.items.length === 0) {
+        if (!size || !doc || !doc.rect || doc.items.length === 0 || (doc.type === 'video' && !doc.items[0].thumbFileLocation)) {
             return '';
         }
         if (this.state.dialogOpen && !this.animated) {
@@ -129,13 +146,14 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 this.animateInFloatPicture(size);
             }, 10);
         }
+        const fileLocation: any = doc.type === 'video' ? doc.items[0].thumbFileLocation : doc.items[0].fileLocation;
         return (<div ref={this.floatPictureRefHandler} className="float-picture" style={{
             height: `${doc.rect.height}px`,
             left: `${doc.rect.left}px`,
             top: `${doc.rect.top}px`,
             width: `${doc.rect.width}px`,
         }}>
-            <CachedPhoto className="picture" fileLocation={doc.items[0].fileLocation}/>
+            <CachedPhoto className="picture" fileLocation={fileLocation}/>
         </div>);
     }
 
@@ -144,7 +162,16 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     private animateInFloatPicture(size: ISize) {
+        const showMedia = () => {
+            if (this.pictureWrapperRef) {
+                this.pictureWrapperRef.classList.remove('hide');
+            }
+            if (this.floatPictureRef) {
+                this.floatPictureRef.classList.add('hide');
+            }
+        };
         if (!this.floatPictureRef) {
+            showMedia();
             return;
         }
         this.floatPictureRef.style.height = size.height;
@@ -154,12 +181,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         this.floatPictureRef.style.transform = `translate(-50%, -50%)`;
         this.floatPictureRef.style.borderRadius = `0`;
         setTimeout(() => {
-            if (this.pictureWrapperRef) {
-                this.pictureWrapperRef.classList.remove('hide');
-            }
-            if (this.floatPictureRef) {
-                this.floatPictureRef.classList.add('hide');
-            }
+            showMedia();
         }, 300);
     }
 
@@ -201,7 +223,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
             this.animated = false;
         };
         const {doc} = this.state;
-        if (doc && doc.type === 'picture') {
+        if (doc && (doc.type === 'picture' || doc.type === 'video')) {
             this.animateOutFloatPicture(() => {
                 closeDialog();
             });
@@ -215,7 +237,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
             dialogOpen: true,
             doc,
         }, () => {
-            if (doc.type === 'picture') {
+            if (doc.type === 'picture' || doc.type === 'video') {
                 this.calculateImageSize();
             }
         });

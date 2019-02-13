@@ -19,21 +19,32 @@ export const getMessageTitle = (message: IMessage): string => {
                 return 'Contact';
             } else {
                 if (messageMediaDocument.doc.attributesList) {
+                    let title = '';
                     for (let i = 0; i < messageMediaDocument.doc.attributesList.length; i++) {
                         if (messageMediaDocument.doc.attributesList[i].type === DocumentAttributeType.ATTRIBUTETYPEAUDIO) {
-                            return 'Audio Message';
+                            title = 'Audio Message';
+                            break;
                         } else if (messageMediaDocument.doc.attributesList[i].type === DocumentAttributeType.ATTRIBUTETYPEVIDEO) {
-                            return 'Video Message';
+                            title = 'Video Message';
+                            break;
                         } else if (messageMediaDocument.doc.attributesList[i].type === DocumentAttributeType.ATTRIBUTETYPEPHOTO) {
-                            return 'Photo Message';
+                            title = 'Photo Message';
+                            break;
                         } else if (messageMediaDocument.doc.attributesList[i].type === DocumentAttributeType.ATTRIBUTETYPEFILE) {
-                            return 'File';
+                            if (title === '') {
+                                title = 'File';
+                            }
+                            break;
                         } else if (messageMediaDocument.doc.attributesList[i].type === DocumentAttributeType.ATTRIBUTEANIMATED) {
-                            return 'GIF';
-                        } else if (messageMediaDocument.doc.attributesList[i].type === DocumentAttributeType.ATTRIBUTETYPENONE) {
-                            return '';
+                            title = 'GIF';
+                            break;
                         }
+                        /* else if (messageMediaDocument.doc.attributesList[i].type === DocumentAttributeType.ATTRIBUTETYPENONE) {
+                            title = '';
+                            break;
+                        }*/
                     }
+                    return title;
                 }
             }
             return '';

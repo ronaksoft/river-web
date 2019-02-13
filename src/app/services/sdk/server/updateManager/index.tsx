@@ -150,6 +150,11 @@ export default class UpdateManager {
         this.active = true;
     }
 
+    /* Set message id from API */
+    public setMessageId(messageId: number) {
+        this.rndMsgMap[messageId] = true;
+    }
+
     private responseUpdateMessageID(update: UpdateEnvelope.AsObject) {
         // @ts-ignore
         const data: Uint8Array = update.update;

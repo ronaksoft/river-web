@@ -15,13 +15,14 @@ import {
     DocumentAttributeType, DocumentAttributeVideo,
     MediaDocument
 } from '../../services/sdk/messages/chat.core.message.medias_pb';
-import {CloseRounded, CloudDownloadRounded} from '@material-ui/icons';
+import {CloseRounded, CloudDownloadRounded, PlayArrowRounded} from '@material-ui/icons';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import ProgressBroadcaster from '../../services/progress';
 import CachedPhoto from '../CachedPhoto';
 import {IDocument} from '../../services/documentViewerService';
 import DocumentViewerService from '../../services/documentViewerService';
 import {getHumanReadableSize} from '../MessageFile';
+import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 
 import './style.css';
 
@@ -199,7 +200,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     }
 
     /* View downloaded document */
-    public viewDocument() {
+    public viewDocument = () => {
         const {fileState} = this.state;
         if (this.pictureBigRef && (fileState === 'view' || fileState === 'open')) {
             this.showPictureHandler(this.pictureBigRef);
@@ -210,15 +211,19 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         const {fileState, info, message} = this.state;
         return (
             <div className="message-media">
-                <div className="media-content" style={this.pictureContentSize}>
+                <div className={'media-content' + (message.messagetype === C_MESSAGE_TYPE.Video ? ' video' : '')}
+                     style={this.pictureContentSize}>
+                    {Boolean(info.duration) &&
+                    <div className="media-duration">
+                        <PlayArrowRounded/><span>{this.getDuration(info.duration || 0)}</span></div>}
                     {Boolean(fileState !== 'view' && fileState !== 'open') &&
                     <React.Fragment>
                         <div className="media-size" ref={this.pictureSizeRefHandler}>0 KB</div>
                         <div className="media-thumb">
                             <CachedPhoto className="picture"
-                                         fileLocation={(message.id || 0) > 0 ? info.thumbFile : info.file}
+                                         fileLocation={(message.id || 0) < 0 && message.messagetype === C_MESSAGE_TYPE.Picture ? info.file : info.thumbFile}
                                          onLoad={this.cachedPhotoLoadHandler} blur={10} searchTemp={true}/>
-                            <div className="picture-action">
+                            <div className="media-action">
                                 {Boolean(fileState === 'download') &&
                                 <CloudDownloadRounded onClick={this.downloadFileHandler}/>}
                                 {Boolean(fileState === 'progress') && <React.Fragment>
@@ -232,11 +237,17 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                             </div>
                         </div>
                     </React.Fragment>}
-                    {Boolean(fileState === 'view' || fileState === 'open') &&
-                    <div ref={this.pictureBigRefHandler} className="media-big" onClick={this.showPictureHandler}>
-                        <CachedPhoto className="picture" fileLocation={info.file}
-                                     onLoad={this.cachedPhotoLoadHandler}/>
-                    </div>}
+                    {Boolean(fileState === 'view' || fileState === 'open') && <React.Fragment>
+                        <div ref={this.pictureBigRefHandler} className="media-big" onClick={this.showPictureHandler}>
+                            <CachedPhoto className="picture"
+                                         fileLocation={message.messagetype === C_MESSAGE_TYPE.Picture ? info.file : info.thumbFile}
+                                         onLoad={this.cachedPhotoLoadHandler}/>
+                            {Boolean(message.messagetype === C_MESSAGE_TYPE.Video) &&
+                            <div className="media-action" onClick={this.viewDocument}>
+                                <PlayArrowRounded/>
+                            </div>}
+                        </div>
+                    </React.Fragment>}
                 </div>
                 {Boolean(info.caption.length > 0) && <div className="media-caption">{info.caption}</div>}
             </div>
@@ -408,11 +419,12 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                 fileLocation: info.file,
                 height: info.height,
                 id: message.id || 0,
+                thumbFileLocation: message.messagetype !== C_MESSAGE_TYPE.Picture ? info.thumbFile : undefined,
                 width: info.width,
             }],
             peerId: message.peerid || '',
             rect: (e.currentTarget || e).getBoundingClientRect(),
-            type: 'picture',
+            type: message.messagetype === C_MESSAGE_TYPE.Picture ? 'picture' : 'video',
         };
         this.documentViewerService.loadDocument(doc);
     }
@@ -432,6 +444,15 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         } else {
             this.pictureSizeRef.innerText = `${getHumanReadableSize(loaded)} / ${getHumanReadableSize(this.fileSize)}`;
         }
+    }
+
+    /* Get duration with time format */
+    private getDuration(duration: number) {
+        let sec = String(duration % 60);
+        if (sec.length === 1) {
+            sec = '0' + sec;
+        }
+        return `${Math.floor(duration / 60)}:${sec}`;
     }
 }
 

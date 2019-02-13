@@ -65,6 +65,29 @@
         width: 100%;
         height: 100%; }
 
+.document-viewer-dialog .video-container .video-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%; }
+  .document-viewer-dialog .video-container .video-wrapper.hide {
+    display: none; }
+  .document-viewer-dialog .video-container .video-wrapper .thumbnail {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 900; }
+  .document-viewer-dialog .video-container .video-wrapper .video {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    line-height: 0;
+    z-index: 1000; }
+    .document-viewer-dialog .video-container .video-wrapper .video video {
+      width: 100%;
+      height: 100%; }
+
 .document-viewer-dialog .float-picture {
   position: fixed;
   overflow: hidden;

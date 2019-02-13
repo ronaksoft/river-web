@@ -84,48 +84,6 @@ input {
     min-width: 64px;
     border-radius: 6px;
     overflow: hidden; }
-    .message-media .media-content .media-thumb .picture-action {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      height: 36px;
-      width: 36px;
-      transform: translate(-50%, -50%);
-      border-radius: 50%;
-      z-index: 10;
-      background-color: rgba(0, 0, 0, 0.3);
-      cursor: pointer; }
-      .message-media .media-content .media-thumb .picture-action .progress {
-        position: absolute;
-        top: 2px;
-        left: 2px;
-        height: 32px;
-        width: 32px;
-        transform-origin: center center;
-        animation-name: rotateDonut;
-        animation-duration: 3s;
-        animation-iteration-count: infinite;
-        animation-timing-function: linear; }
-        .message-media .media-content .media-thumb .picture-action .progress svg {
-          position: absolute;
-          top: 0;
-          left: 0;
-          height: 32px;
-          width: 32px; }
-          .message-media .media-content .media-thumb .picture-action .progress svg circle {
-            fill: transparent;
-            stroke: var(--white);
-            stroke-width: 2px;
-            stroke-dasharray: 3 88;
-            transition: stroke-dasharray 0.1s ease; }
-      .message-media .media-content .media-thumb .picture-action > svg {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 24px;
-        height: 24px;
-        color: var(--white);
-        transform: translate(-50%, -50%); }
     .message-media .media-content .media-thumb,
     .message-media .media-content .media-big {
       position: relative;
@@ -142,29 +100,110 @@ input {
           width: 100%;
           object-fit: cover;
           object-position: center center; }
+      .message-media .media-content .media-thumb .media-action,
+      .message-media .media-content .media-big .media-action {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        height: 36px;
+        width: 36px;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        z-index: 10;
+        background-color: rgba(0, 0, 0, 0.32);
+        cursor: pointer; }
+        .message-media .media-content .media-thumb .media-action .progress,
+        .message-media .media-content .media-big .media-action .progress {
+          position: absolute;
+          top: 2px;
+          left: 2px;
+          height: 32px;
+          width: 32px;
+          transform-origin: center center;
+          animation-name: rotateDonut;
+          animation-duration: 3s;
+          animation-iteration-count: infinite;
+          animation-timing-function: linear; }
+          .message-media .media-content .media-thumb .media-action .progress svg,
+          .message-media .media-content .media-big .media-action .progress svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 32px;
+            width: 32px; }
+            .message-media .media-content .media-thumb .media-action .progress svg circle,
+            .message-media .media-content .media-big .media-action .progress svg circle {
+              fill: transparent;
+              stroke: var(--white);
+              stroke-width: 2px;
+              stroke-dasharray: 3 88;
+              transition: stroke-dasharray 0.1s ease; }
+        .message-media .media-content .media-thumb .media-action > svg,
+        .message-media .media-content .media-big .media-action > svg {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 24px;
+          height: 24px;
+          color: var(--white);
+          transform: translate(-50%, -50%); }
     .message-media .media-content .media-big {
       cursor: pointer; }
-    .message-media .media-content .media-size {
+    .message-media .media-content .media-duration {
       position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       top: 4px;
       left: 4px;
       height: 16px;
+      font-size: 12px;
+      line-height: 12px;
+      background-color: rgba(0, 0, 0, 0.32);
+      padding: 0 4px 0 2px;
+      border-radius: 4px;
+      color: var(--white);
+      white-space: nowrap;
+      z-index: 20; }
+      .message-media .media-content .media-duration svg {
+        font-size: 14px;
+        color: inherit;
+        display: inline-block;
+        margin: 0 2px 0 0; }
+      .message-media .media-content .media-duration span {
+        padding-top: 2px;
+        line-height: 12px; }
+    .message-media .media-content .media-size {
+      position: absolute;
+      top: calc(50% + 30px);
+      left: 50%;
+      height: 16px;
       line-height: 16px;
       font-size: 12px;
-      background-color: rgba(0, 0, 0, 0.3);
+      background-color: rgba(0, 0, 0, 0.32);
       padding: 1px 4px 0;
       border-radius: 4px;
       color: var(--white);
+      transform: translate(-50%, -50%);
       z-index: 20; }
+    .message-media .media-content.video .media-big {
+      cursor: default; }
   .message-media .media-caption {
     padding: 4px 6px 0;
     white-space: pre-wrap;
     word-break: break-word; }
 
-html[bubble="2"] .message-media .media-size {
+html[bubble="2"] .message-media .media-duration {
   top: 8px;
   left: 8px;
-  height: 22px;
-  padding: 2px 8px 0;
+  height: 18px;
   border-radius: 8px;
-  line-height: 22px; }
+  line-height: 18px; }
+  html[bubble="2"] .message-media .media-duration span {
+    padding-top: 2px; }
+
+html[bubble="2"] .message-media .media-size {
+  height: 18px;
+  padding: 1px 6px 0;
+  border-radius: 8px;
+  line-height: 18px; }

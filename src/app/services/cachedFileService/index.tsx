@@ -14,6 +14,7 @@ import FileRepo from '../../repository/file/index';
 import glur from 'glur';
 
 interface IFile {
+    blurSrc: object;
     location: InputFileLocation.AsObject;
     retries: number;
     size: number;
@@ -58,25 +59,43 @@ export default class CachedFileService {
                     }
                     resolve(this.files[id].src);
                     return;
+                } else if (blurRadius && this.files[id].blurSrc.hasOwnProperty(blurRadius)) {
+                    if (this.files[id].timeout !== null) {
+                        clearTimeout(this.files[id].timeout);
+                    }
+                    resolve(this.files[id].blurSrc[blurRadius]);
+                    return;
                 }
             }
             if (id !== '0') {
                 this.files[id] = {
+                    blurSrc: {},
                     location: fileLocation,
                     retries: 0,
                     size,
                     src: '',
                     timeout: null,
                 };
-                this.getLocalFile(id, searchTemp, blurRadius).then((res) => {
-                    resolve(res);
-                }).catch(() => {
-                    this.getRemoteFile(fileLocation, size, blurRadius).then((res) => {
+                const getFn = () => {
+                    this.getLocalFile(id, searchTemp, blurRadius).then((res) => {
                         resolve(res);
                     }).catch(() => {
-                        reject();
+                        this.getRemoteFile(fileLocation, size, blurRadius).then((res) => {
+                            resolve(res);
+                        }).catch(() => {
+                            reject();
+                        });
                     });
-                });
+                };
+                if (blurRadius) {
+                    this.getLocalBlurredFile(id, blurRadius).then((res) => {
+                        resolve(res);
+                    }).catch(() => {
+                        getFn();
+                    });
+                } else {
+                    getFn();
+                }
             }
         });
     }
@@ -96,6 +115,9 @@ export default class CachedFileService {
                     if (this.files[id].src !== '') {
                         URL.revokeObjectURL(this.files[id].src);
                     }
+                    Object.keys(this.files[id].blurSrc).forEach((key) => {
+                        URL.revokeObjectURL(this.files[id].blurSrc[key]);
+                    });
                     delete this.files[id];
                 }
             }, C_CACHE_TTL * 1000);
@@ -104,12 +126,12 @@ export default class CachedFileService {
 
     /* Get blurred image */
     private getBlurredImage(id: string, blob: Blob, radius: number): Promise<Blob> {
-        return this.fileRepo.get(`b_${radius}_${id}`).then((file) => {
+        return this.fileRepo.get(this.getIdFormat(id, radius)).then((file) => {
             if (file) {
                 return file.data;
             } else {
                 return this.createBlurredImage(blob, radius).then((data) => {
-                    this.fileRepo.createWithHash(`b_${radius}_${id}`, data).catch(() => {
+                    this.fileRepo.createWithHash(this.getIdFormat(id, radius), data).catch(() => {
                         //
                     });
                     return data;
@@ -163,8 +185,8 @@ export default class CachedFileService {
                         this.files[id].retries = 0;
                         if (blurRadius && fileRes.data.size > 0) {
                             this.getBlurredImage(id, fileRes.data, blurRadius).then((blurredBlob) => {
-                                this.files[id].src = URL.createObjectURL(blurredBlob);
-                                resolve(this.files[id].src);
+                                this.files[id].blurSrc[blurRadius] = URL.createObjectURL(blurredBlob);
+                                resolve(this.files[id].blurSrc[blurRadius]);
                             });
                         } else {
                             this.files[id].src = fileRes.data.size === 0 ? '' : URL.createObjectURL(fileRes.data);
@@ -194,8 +216,8 @@ export default class CachedFileService {
                     if (fileRes) {
                         if (blurRadius && fileRes.data.size > 0) {
                             this.getBlurredImage(id, fileRes.data, blurRadius).then((blurredBlob) => {
-                                this.files[id].src = URL.createObjectURL(blurredBlob);
-                                resolve(this.files[id].src);
+                                this.files[id].blurSrc[blurRadius] = URL.createObjectURL(blurredBlob);
+                                resolve(this.files[id].blurSrc[blurRadius]);
                             });
                         } else {
                             this.files[id].src = fileRes.data.size === 0 ? '' : URL.createObjectURL(fileRes.data);
@@ -225,5 +247,30 @@ export default class CachedFileService {
                 reject();
             }
         });
+    }
+
+    /* Get local blurred file */
+    private getLocalBlurredFile(id: string, blurRadius: number): Promise<string> {
+        return new Promise((resolve, reject) => {
+            if (this.files.hasOwnProperty(id)) {
+                this.fileRepo.get(this.getIdFormat(id, blurRadius)).then((fileRes) => {
+                    if (fileRes) {
+                        this.files[id].blurSrc[blurRadius] = fileRes.data.size === 0 ? '' : URL.createObjectURL(fileRes.data);
+                        resolve(this.files[id].blurSrc[blurRadius]);
+                    } else {
+                        reject();
+                    }
+                }).catch(() => {
+                    reject();
+                });
+            } else {
+                reject();
+            }
+        });
+    }
+
+    /* Get id with format */
+    private getIdFormat(id: string, radius: number) {
+        return `b_${radius}_${id}`;
     }
 }

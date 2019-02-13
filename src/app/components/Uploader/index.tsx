@@ -10,7 +10,14 @@
 import * as React from 'react';
 import Dropzone, {FileWithPreview} from 'react-dropzone';
 import Dialog from '@material-ui/core/Dialog/Dialog';
-import {AddRounded, CancelRounded, CheckRounded, CropRounded, PlayCircleFilledRounded} from '@material-ui/icons';
+import {
+    AddRounded,
+    CancelRounded,
+    CheckRounded,
+    CropRounded,
+    PlayCircleFilledRounded,
+    ConfirmationNumberRounded,
+} from '@material-ui/icons';
 import Scrollbars from 'react-custom-scrollbars';
 import TextField from '@material-ui/core/TextField/TextField';
 // @ts-ignore
@@ -182,6 +189,8 @@ class MediaPreview extends React.Component<IProps, IState> {
                                                     <PlayCircleFilledRounded/>
                                                 </div>
                                             </React.Fragment>}
+                                            {Boolean(!item.ready) &&
+                                            <div className="item-busy"><ConfirmationNumberRounded/></div>}
                                             <div className="remove" onClick={this.removeItemHandler.bind(this, index)}>
                                                 <CancelRounded/>
                                             </div>
@@ -300,39 +309,43 @@ class MediaPreview extends React.Component<IProps, IState> {
                 items[index].height = video.videoHeight;
                 items[index].width = video.videoWidth;
                 items[index].duration = video.duration;
-                let sampleTime: number = 0;
+                let sampleTime: number = 0.1;
                 if (video.duration > 4) {
                     sampleTime = 3.5;
                 }
-                video.currentTime = sampleTime;
-                setTimeout(() => {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    if (ctx) {
-                        ctx.canvas.height = video.videoHeight;
-                        ctx.canvas.width = video.videoWidth;
-                        ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-                        canvas.toBlob((blob) => {
-                            if (blob) {
-                                items[index].tempThumb = new File([blob], 'thumbnail.jpeg');
-                                items[index].videoThumb = URL.createObjectURL(blob);
-                                if (items[index].videoThumb) {
-                                    this.previewRefs[index].push(items[index].videoThumb || '');
-                                }
-                                items[index].ready = true;
-                            }
-                            this.setState({
-                                items,
-                            }, () => {
+                video.onloadeddata = () => {
+                    video.currentTime = sampleTime;
+                    video.ontimeupdate = () => {
+                        setTimeout(() => {
+                            const canvas = document.createElement('canvas');
+                            const ctx = canvas.getContext('2d');
+                            if (ctx) {
+                                ctx.canvas.height = video.videoHeight;
+                                ctx.canvas.width = video.videoWidth;
+                                ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+                                canvas.toBlob((blob) => {
+                                    if (blob) {
+                                        items[index].tempThumb = new File([blob], 'thumbnail.jpeg');
+                                        items[index].videoThumb = URL.createObjectURL(blob);
+                                        if (items[index].videoThumb) {
+                                            this.previewRefs[index].push(items[index].videoThumb || '');
+                                        }
+                                        items[index].ready = true;
+                                    }
+                                    this.setState({
+                                        items,
+                                    }, () => {
+                                        video.remove();
+                                        canvas.remove();
+                                    });
+                                }, 'image/jpeg', '0.8');
+                            } else {
                                 video.remove();
                                 canvas.remove();
-                            });
-                        }, 'image/jpeg', '0.8');
-                    } else {
-                        video.remove();
-                        canvas.remove();
-                    }
-                }, 100);
+                            }
+                        }, 100);
+                    };
+                };
             } else {
                 video.remove();
             }
@@ -455,6 +468,11 @@ class MediaPreview extends React.Component<IProps, IState> {
     /* Check button click handler */
     private doneHandler = () => {
         const {items} = this.state;
+        if (items.some((item) => {
+            return !item.ready;
+        })) {
+            return;
+        }
         this.setState({
             loading: true,
         });

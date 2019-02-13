@@ -1510,7 +1510,10 @@ class Chat extends React.Component<IProps, IState> {
                 message_id: id,
             });
 
-            this.sdk.sendMessage(randomId, text, peer, replyTo, entities).then((msg) => {
+            this.sdk.sendMessage(randomId, text, peer, replyTo, entities).then((res) => {
+                // For double checking update message id
+                this.updateManager.setMessageId(res.messageid || 0);
+
                 const {messages} = this.state;
                 const index = findIndex(messages, (o) => {
                     return o.id === message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
@@ -1519,13 +1522,13 @@ class Chat extends React.Component<IProps, IState> {
                     this.messageComponent.cache.clear(index, 0);
                 }
                 this.modifyPendingMessage({
-                    messageid: msg.messageid,
+                    messageid: res.messageid,
                     randomid: randomId,
                 });
-                if (msg.messageid) {
-                    this.sendReadHistory(peer, msg.messageid);
+                if (res.messageid) {
+                    this.sendReadHistory(peer, res.messageid);
                 }
-                message.id = msg.messageid;
+                message.id = res.messageid;
                 this.messageRepo.lazyUpsert([message]);
                 this.updateDialogs(message, '0');
                 // Force update messages
@@ -2713,6 +2716,9 @@ class Chat extends React.Component<IProps, IState> {
         }).then(() => {
             this.progressBroadcaster.remove(id);
             this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, replyTo).then((res) => {
+                // For double checking update message id
+                this.updateManager.setMessageId(res.messageid || 0);
+
                 const {messages} = this.state;
                 const index = findIndex(messages, (o) => {
                     return o.id === message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;

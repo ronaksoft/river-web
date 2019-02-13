@@ -104,6 +104,7 @@ class ContactMenu extends React.Component<IProps, IState> {
                             margin="dense"
                             onChange={this.firstnameHandleChange}
                             value={firstname}
+                            onKeyDown={this.confirmKeyDown}
                         />
                         <TextField
                             fullWidth={true}
@@ -111,6 +112,7 @@ class ContactMenu extends React.Component<IProps, IState> {
                             margin="dense"
                             onChange={this.lastnameHandleChange}
                             value={lastname}
+                            onKeyDown={this.confirmKeyDown}
                         />
                         <TextField
                             fullWidth={true}
@@ -118,6 +120,7 @@ class ContactMenu extends React.Component<IProps, IState> {
                             margin="dense"
                             onChange={this.phoneHandleChange}
                             value={phone}
+                            onKeyDown={this.confirmKeyDown}
                         />
                         {Boolean(firstname.length > 0 && lastname.length > 0 && phone.length > 5) &&
                         <div className="actions-bar">
@@ -185,7 +188,7 @@ class ContactMenu extends React.Component<IProps, IState> {
         });
         this.sdk.contactImport(true, contacts).then((data) => {
             data.usersList.forEach((user) => {
-                this.userRepo.importBulk(true,[user]).then(() => {
+                this.userRepo.importBulk(true, [user]).then(() => {
                     this.contactListComponent.reload();
                 });
             });
@@ -217,6 +220,16 @@ class ContactMenu extends React.Component<IProps, IState> {
                 break;
             default:
                 return;
+        }
+    }
+
+    /* Confirm key down */
+    private confirmKeyDown = (e: any) => {
+        if (e.key === 'Enter') {
+            const {firstname, lastname, phone} = this.state;
+            if (firstname.length > 0 && lastname.length > 0 && phone.length > 5) {
+                this.createContactHandler();
+            }
         }
     }
 }

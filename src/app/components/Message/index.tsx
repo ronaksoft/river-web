@@ -492,8 +492,7 @@ class Message extends React.Component<IProps, IState> {
                             {Boolean(message.avatar && message.senderid) && (<div className="arrow"/>)}
                             {Boolean(message.me && message.error) && <span className="error"><ErrorRounded/></span>}
                             <div
-                                className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')}
-                                onClick={bubbleClickHandler}>
+                                className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')}>
                                 {Boolean(peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me) &&
                                 <UserName className="name" uniqueColor={false} id={message.senderid || ''}/>}
                                 {Boolean(message.replyto && message.replyto !== 0) &&
@@ -504,13 +503,13 @@ class Message extends React.Component<IProps, IState> {
                                 {Boolean(message.fwdsenderid && message.fwdsenderid !== '0') &&
                                 <MessageForwarded message={message} peer={peer}
                                                   onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>}
-                                <div className="bubble-body">
+                                <div className="bubble-body" onClick={bubbleClickHandler}>
                                     {this.renderMessageBody(message, peer, messageMedia, measureFn)}
                                     <MessageStatus status={message.me || false} id={message.id} readId={readId}
                                                    time={message.createdon || 0} editedTime={message.editedon || 0}
                                                    onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>
                                 </div>
-                                <div className="more">
+                                <div className="more" onClick={bubbleClickHandler}>
                                     <MoreVert onClick={this.contextMenuHandler.bind(this, index)}/>
                                 </div>
                             </div>
