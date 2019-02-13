@@ -17,6 +17,7 @@ interface IProps {
     fileLocation: InputFileLocation.AsObject;
     onLoad?: () => void;
     searchTemp?: boolean;
+    timeOut?: number;
 }
 
 interface IState {
@@ -39,9 +40,11 @@ class CachedVideo extends React.Component<IProps, IState> {
 
     public componentDidMount() {
         this.cachedFileService.getFile(this.props.fileLocation, 0, this.props.searchTemp).then((src) => {
-            this.setState({
-                src,
-            });
+            setTimeout(() => {
+                this.setState({
+                    src,
+                });
+            }, this.props.timeOut || 0);
         });
     }
 

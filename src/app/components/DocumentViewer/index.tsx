@@ -120,7 +120,8 @@ class DocumentViewer extends React.Component<IProps, IState> {
                                     {item.thumbFileLocation && <div className="thumbnail">
                                         <CachedPhoto fileLocation={item.thumbFileLocation}/>
                                     </div>}
-                                    <CachedVideo className="video" fileLocation={item.fileLocation} autoPlay={false}/>
+                                    <CachedVideo className="video" fileLocation={item.fileLocation} autoPlay={false}
+                                                 timeOut={200}/>
                                 </div>
                             </React.Fragment>
                         );
