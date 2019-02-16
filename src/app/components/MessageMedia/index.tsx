@@ -233,7 +233,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         return (
             <div className={'message-media' + this.messageMediaClass}>
                 <div className={'media-content' + (message.messagetype === C_MESSAGE_TYPE.Video ? ' video' : '')}
-                     style={{maxWidth: this.pictureContentSize.maxWidth}}>
+                     style={{minWidth: this.pictureContentSize.width, maxWidth: this.pictureContentSize.maxWidth}}>
                     {Boolean(info.duration) &&
                     <div className="media-duration">
                         <PlayArrowRounded/><span>{this.getDuration(info.duration || 0)}</span></div>}

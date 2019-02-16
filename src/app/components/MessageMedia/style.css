@@ -209,10 +209,10 @@ input {
     .message-media .media-content.video .media-big {
       cursor: default; }
   .message-media.tiny-message .media-content .media-thumb .media-action {
-    top: 10px;
+    top: 30px;
     transform: translate(-50%, 0); }
   .message-media.tiny-message .media-content .media-size {
-    top: 50px;
+    top: 10px;
     transform: translate(-50%, 0); }
   .message-media .media-caption {
     padding: 4px 6px 0;
