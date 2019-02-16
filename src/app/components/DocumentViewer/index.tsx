@@ -192,7 +192,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
             callback();
             return;
         }
-        const el = document.querySelector(`.bubble-wrapper .bubble.b_${doc.items[0].id}`);
+        const el = document.querySelector(`.bubble-wrapper .bubble.b_${doc.items[0].id} .message-media .media-big .picture`);
         if (!el) {
             callback();
             return;

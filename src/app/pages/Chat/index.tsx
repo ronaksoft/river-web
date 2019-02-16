@@ -2006,7 +2006,7 @@ class Chat extends React.Component<IProps, IState> {
                     }
                 }
             }
-            this.messageRepo.getManyCache({after, limit: 100}, peer).then((msgs) => {
+            this.messageRepo.getManyCache({after, limit: 100, ignoreMax: true}, peer).then((msgs) => {
                 const dataMsg = this.modifyMessages(this.state.messages, msgs.reverse(), true);
                 this.setScrollMode('none');
                 this.setState({

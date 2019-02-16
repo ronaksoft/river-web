@@ -94,7 +94,7 @@ input {
         border-top-left-radius: 7.5px;
         border-bottom-left-radius: 7.5px;
         background-color: var(--grey); }
-      .message-forwarded .forwarded-container .forwarded-message-wrapper .preview-message {
+      .message-forwarded .forwarded-container .forwarded-message-wrapper .forward-message-detail {
         padding: 4px 8px 4px 4px;
         display: flex;
         align-items: center;
@@ -106,17 +106,21 @@ input {
         font-weight: bold;
         font-size: 12px;
         flex-grow: 1; }
+        .message-forwarded .forwarded-container .forwarded-message-wrapper .forward-message-detail > span {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis; }
 
 html[theme="dark"] .message-forwarded .forwarded-container .forwarded-message-wrapper .forwarded-bar {
   background-color: var(--dark-low); }
 
-html[theme="dark"] .message-forwarded .forwarded-container .forwarded-message-wrapper .preview-message {
+html[theme="dark"] .message-forwarded .forwarded-container .forwarded-message-wrapper .forward-message-detail {
   background-color: var(--glass-dark-high); }
 
 html[theme="dark-blue"] .message-forwarded .forwarded-container .forwarded-message-wrapper .forwarded-bar {
   background-color: var(--dark-blue-low); }
 
-html[theme="dark-blue"] .message-forwarded .forwarded-container .forwarded-message-wrapper .preview-message {
+html[theme="dark-blue"] .message-forwarded .forwarded-container .forwarded-message-wrapper .forward-message-detail {
   background-color: var(--glass-dark-high); }
 
 html[bubble="2"] .bubble-wrapper.you:not(.avatar) .message-forwarded .forwarded-container .forwarded-message-wrapper,
@@ -134,8 +138,8 @@ html[bubble="2"] .bubble-wrapper.me .message-forwarded .forwarded-container .for
     bottom: 0;
     left: 0;
     border-radius: 0; }
-  html[bubble="2"] .bubble-wrapper.you:not(.avatar) .message-forwarded .forwarded-container .forwarded-message-wrapper .preview-message,
-  html[bubble="2"] .bubble-wrapper.me .message-forwarded .forwarded-container .forwarded-message-wrapper .preview-message {
+  html[bubble="2"] .bubble-wrapper.you:not(.avatar) .message-forwarded .forwarded-container .forwarded-message-wrapper .forward-message-detail,
+  html[bubble="2"] .bubble-wrapper.me .message-forwarded .forwarded-container .forwarded-message-wrapper .forward-message-detail {
     border-top-right-radius: 18px;
     border-top-left-radius: 18px;
     padding-left: 12px;
@@ -154,8 +158,8 @@ html[bubble="4"] .bubble-wrapper.me .message-forwarded .forwarded-container .for
     bottom: 0;
     left: 0;
     border-radius: 0; }
-  html[bubble="4"] .bubble-wrapper.you:not(.avatar) .message-forwarded .forwarded-container .forwarded-message-wrapper .preview-message,
-  html[bubble="4"] .bubble-wrapper.me .message-forwarded .forwarded-container .forwarded-message-wrapper .preview-message {
+  html[bubble="4"] .bubble-wrapper.you:not(.avatar) .message-forwarded .forwarded-container .forwarded-message-wrapper .forward-message-detail,
+  html[bubble="4"] .bubble-wrapper.me .message-forwarded .forwarded-container .forwarded-message-wrapper .forward-message-detail {
     border-top-right-radius: 8px;
     border-top-left-radius: 8px;
     padding-left: 8px;

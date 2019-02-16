@@ -155,6 +155,11 @@ export default class UpdateManager {
         this.rndMsgMap[messageId] = true;
     }
 
+    /* Check message */
+    // private check() {
+    //
+    // }
+
     private responseUpdateMessageID(update: UpdateEnvelope.AsObject) {
         // @ts-ignore
         const data: Uint8Array = update.update;

@@ -29,12 +29,15 @@ import './style.css';
 const C_MAX_HEIGHT = 256;
 const C_MIN_HEIGHT = 64;
 const C_MAX_WIDTH = 256;
+const C_MAX_CAPTION_WIDTH = 256 + 6;
+const C_MIN_CAPTION_LEN_APPLIER = 10;
 const C_MIN_WIDTH = 64;
 
 export interface IMediaInfo {
     caption: string;
     duration?: number;
     file: FileLocation.AsObject;
+    hasRelation: boolean;
     height: number;
     size: number;
     thumbFile: FileLocation.AsObject;
@@ -50,6 +53,7 @@ export const getMediaInfo = (message: IMessage): IMediaInfo => {
             clusterid: 0,
             fileid: '',
         },
+        hasRelation: false,
         height: 0,
         size: 0,
         thumbFile: {
@@ -76,6 +80,9 @@ export const getMediaInfo = (message: IMessage): IMediaInfo => {
             fileid: messageMediaDocument.doc.thumbnail.fileid,
         };
     }
+    if (message.replyto || (message.fwdsenderid && message.fwdsenderid !== '0')) {
+        info.hasRelation = true;
+    }
     if (!message.attributes) {
         return info;
     }
@@ -98,6 +105,7 @@ interface IProps {
     measureFn: any;
     message: IMessage;
     onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', message: IMessage) => void;
+    parentEl: any;
     peer: InputPeer | null;
 }
 
@@ -118,11 +126,13 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     private pictureSizeRef: any = null;
     private fileSize: number = 0;
     private documentViewerService: DocumentViewerService;
-    private readonly pictureContentSize: { height: string, width: string } = {
+    private readonly pictureContentSize: { height: string, maxWidth: string, width: string } = {
         height: `${C_MIN_HEIGHT}px`,
-        width: `${C_MIN_WIDTH}px`
+        maxWidth: `${C_MIN_WIDTH}px`,
+        width: `${C_MIN_WIDTH}px`,
     };
     private pictureBigRef: any = null;
+    private blurredImageEnable: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -131,6 +141,15 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         this.fileSize = info.size;
 
         this.pictureContentSize = this.getContentSize(info);
+        // Resize parent cell (bubble max-width) for media messages with caption
+        if (this.blurredImageEnable) {
+            setTimeout(() => {
+                if (this.props.parentEl && this.props.parentEl.ref) {
+                    this.props.parentEl.ref.style.maxWidth = this.pictureContentSize.maxWidth;
+                    this.cachedPhotoLoadHandler();
+                }
+            }, 1);
+        }
 
         this.state = {
             fileState: this.getFileState(props.message),
@@ -212,14 +231,14 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         return (
             <div className="message-media">
                 <div className={'media-content' + (message.messagetype === C_MESSAGE_TYPE.Video ? ' video' : '')}
-                     style={this.pictureContentSize}>
+                     style={{maxWidth: this.pictureContentSize.maxWidth}}>
                     {Boolean(info.duration) &&
                     <div className="media-duration">
                         <PlayArrowRounded/><span>{this.getDuration(info.duration || 0)}</span></div>}
                     {Boolean(fileState !== 'view' && fileState !== 'open') &&
                     <React.Fragment>
                         <div className="media-size" ref={this.pictureSizeRefHandler}>0 KB</div>
-                        <div className="media-thumb">
+                        <div className="media-thumb" style={this.pictureContentSize}>
                             <CachedPhoto className="picture"
                                          fileLocation={(message.id || 0) < 0 && message.messagetype === C_MESSAGE_TYPE.Picture ? info.file : info.thumbFile}
                                          onLoad={this.cachedPhotoLoadHandler} blur={10} searchTemp={true}/>
@@ -238,8 +257,13 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                         </div>
                     </React.Fragment>}
                     {Boolean(fileState === 'view' || fileState === 'open') && <React.Fragment>
-                        <div ref={this.pictureBigRefHandler} className="media-big" onClick={this.showPictureHandler}>
-                            <CachedPhoto className="picture"
+                        <div ref={this.pictureBigRefHandler} style={{height: this.pictureContentSize.height}}
+                             className="media-big"
+                             onClick={this.showPictureHandler}>
+                            {this.blurredImageEnable &&
+                            <CachedPhoto className="blurred-picture" blur={10}
+                                         fileLocation={info.thumbFile}/>}
+                            <CachedPhoto className="picture" style={this.pictureContentSize}
                                          fileLocation={message.messagetype === C_MESSAGE_TYPE.Picture ? info.file : info.thumbFile}
                                          onLoad={this.cachedPhotoLoadHandler}/>
                             {Boolean(message.messagetype === C_MESSAGE_TYPE.Video) &&
@@ -369,7 +393,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     }
 
     /* Get content size */
-    private getContentSize(info: IMediaInfo): { height: string, width: string } {
+    private getContentSize(info: IMediaInfo): { height: string, maxWidth: string, width: string } {
         const ratio = info.height / info.width;
         let height = info.height;
         let width = info.width;
@@ -398,8 +422,14 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         }
         height = Math.max(height, C_MIN_HEIGHT);
         width = Math.max(width, C_MIN_WIDTH);
+        let maxWidth = width;
+        if (info.caption.length > C_MIN_CAPTION_LEN_APPLIER || info.hasRelation) {
+            maxWidth = C_MAX_CAPTION_WIDTH;
+            this.blurredImageEnable = true;
+        }
         return {
             height: `${height}px`,
+            maxWidth: `${maxWidth}px`,
             width: `${width}px`,
         };
     }

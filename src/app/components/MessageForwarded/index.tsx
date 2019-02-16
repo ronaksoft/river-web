@@ -57,11 +57,11 @@ class MessageForwarded extends React.PureComponent<IProps, IState> {
                 <div className="forwarded-container">
                     <div className="forwarded-message-wrapper">
                         <span className="forwarded-bar"/>
-                        {Boolean(mode === 'user') && <div className="preview-message">
+                        {Boolean(mode === 'user') && <div className="forward-message-detail">
                             <UserName id={message.fwdsenderid} you={true}
                                       prefix="Forwarded from " defaultString="Forwarded message"/>
                         </div>}
-                        {Boolean(mode === 'group') && <div className="preview-message">
+                        {Boolean(mode === 'group') && <div className="forward-message-detail">
                             <GroupName id={message.fwdsenderid} prefix="Forwarded from "
                                        defaultString="Forwarded message" noIcon={true}/>
                         </div>}

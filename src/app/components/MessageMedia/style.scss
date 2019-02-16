@@ -22,9 +22,11 @@
       height: 100%;
       width: 100%;
       .picture {
+        position: relative;
         height: 100%;
         width: 100%;
         line-height: 0;
+        z-index: 9;
         img {
           height: 100%;
           width: 100%;
@@ -80,8 +82,29 @@
         }
       }
     }
+    .media-thumb {
+      width: 100% !important;
+    }
     .media-big {
       cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      .blurred-picture {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 8;
+        img {
+          height: 100%;
+          width: 100%;
+          object-fit: cover;
+          object-position: center center;
+        }
+      }
+
     }
     .media-duration {
       position: absolute;

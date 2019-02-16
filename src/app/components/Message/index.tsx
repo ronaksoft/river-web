@@ -433,6 +433,12 @@ class Message extends React.Component<IProps, IState> {
         const messageMedia: any = {
             ref: null,
         };
+        const parentEl: any = {
+            ref: null,
+        };
+        const parenElRefHandler = (ref: any) => {
+            parentEl.ref = ref;
+        };
         /* Bubble click handler */
         const bubbleClickHandler = () => {
             if (messageMedia.ref && messageMedia.ref.viewDocument) {
@@ -491,8 +497,8 @@ class Message extends React.Component<IProps, IState> {
                                 onChange={this.selectMessageHandler.bind(this, message.id || 0, index)}/>}
                             {Boolean(message.avatar && message.senderid) && (<div className="arrow"/>)}
                             {Boolean(message.me && message.error) && <span className="error"><ErrorRounded/></span>}
-                            <div
-                                className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')}>
+                            <div ref={parenElRefHandler}
+                                 className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')}>
                                 {Boolean(peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me) &&
                                 <UserName className="name" uniqueColor={false} id={message.senderid || ''}/>}
                                 {Boolean(message.replyto && message.replyto !== 0) &&
@@ -504,7 +510,7 @@ class Message extends React.Component<IProps, IState> {
                                 <MessageForwarded message={message} peer={peer}
                                                   onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>}
                                 <div className="bubble-body" onClick={bubbleClickHandler}>
-                                    {this.renderMessageBody(message, peer, messageMedia, measureFn)}
+                                    {this.renderMessageBody(message, peer, messageMedia, parentEl, measureFn)}
                                     <MessageStatus status={message.me || false} id={message.id} readId={readId}
                                                    time={message.createdon || 0} editedTime={message.editedon || 0}
                                                    onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>
@@ -864,7 +870,7 @@ class Message extends React.Component<IProps, IState> {
     }
 
     /* Message body renderer */
-    private renderMessageBody(message: IMessage, peer: InputPeer | null, messageMedia: any, measureFn?: any) {
+    private renderMessageBody(message: IMessage, peer: InputPeer | null, messageMedia: any, parentEl: any, measureFn?: any) {
         const refBindHandler = (ref: any) => {
             messageMedia.ref = ref;
         };
@@ -880,7 +886,7 @@ class Message extends React.Component<IProps, IState> {
                 case C_MESSAGE_TYPE.Video:
                     return (<MessageMedia ref={refBindHandler} message={message} peer={peer}
                                           onAction={this.props.onAttachmentAction}
-                                          measureFn={measureFn}/>);
+                                          parentEl={parentEl} measureFn={measureFn}/>);
                 default:
                     return 'Unsupported message';
             }

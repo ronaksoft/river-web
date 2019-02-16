@@ -10,6 +10,7 @@
 import * as React from 'react';
 import CachedFileService from '../../services/cachedFileService';
 import {InputFileLocation} from '../../services/sdk/messages/chat.core.types_pb';
+import {CSSProperties} from 'react';
 
 interface IProps {
     blur?: number;
@@ -17,6 +18,7 @@ interface IProps {
     fileLocation: InputFileLocation.AsObject;
     onLoad?: () => void;
     searchTemp?: boolean;
+    style?: CSSProperties;
 }
 
 interface IState {
@@ -52,7 +54,7 @@ class CachedPhoto extends React.Component<IProps, IState> {
     public render() {
         const {className, src} = this.state;
         return (
-            <div className={className}>
+            <div className={className} style={this.props.style}>
                 {src && <img src={src} onLoad={this.props.onLoad}/>}
             </div>
         );
