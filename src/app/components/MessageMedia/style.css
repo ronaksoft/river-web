@@ -202,11 +202,18 @@ input {
       background-color: rgba(0, 0, 0, 0.32);
       padding: 1px 4px 0;
       border-radius: 4px;
+      white-space: nowrap;
       color: var(--white);
       transform: translate(-50%, -50%);
       z-index: 20; }
     .message-media .media-content.video .media-big {
       cursor: default; }
+  .message-media.tiny-message .media-content .media-thumb .media-action {
+    top: 10px;
+    transform: translate(-50%, 0); }
+  .message-media.tiny-message .media-content .media-size {
+    top: 50px;
+    transform: translate(-50%, 0); }
   .message-media .media-caption {
     padding: 4px 6px 0;
     white-space: pre-wrap;

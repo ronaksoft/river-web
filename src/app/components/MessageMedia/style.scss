@@ -143,6 +143,7 @@
       background-color: rgba(0, 0, 0, 0.32);
       padding: 1px 4px 0;
       border-radius: 4px;
+      white-space: nowrap;
       color: var(--white);
       transform: translate(-50%, -50%);
       z-index: 20;
@@ -150,6 +151,20 @@
     &.video {
       .media-big {
         cursor: default;
+      }
+    }
+  }
+  &.tiny-message {
+    .media-content {
+      .media-thumb {
+        .media-action {
+          top: 10px;
+          transform: translate(-50%, 0);
+        }
+      }
+      .media-size {
+        top: 50px;
+        transform: translate(-50%, 0);
       }
     }
   }

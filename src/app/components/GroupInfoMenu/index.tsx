@@ -148,6 +148,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
+        window.addEventListener('Group_DB_Updated', this.getGroup);
         this.getGroup();
     }
 
@@ -160,6 +161,10 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         }, () => {
             this.getGroup();
         });
+    }
+
+    public componentWillUnmount() {
+        window.removeEventListener('Group_DB_Updated', this.getGroup);
     }
 
     public render() {
@@ -374,12 +379,14 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     }
 
     /* Gets the group from repository and FullGroup from server */
-    private getGroup() {
+    private getGroup = (data?: any) => {
         const {peer} = this.state;
         if (!peer) {
             return;
         }
-
+        if (data && data.detail.ids.indexOf(peer.getId()) === -1) {
+            return;
+        }
         this.groupRepo.get(peer.getId() || '').then((res) => {
             this.setState({
                 group: res,

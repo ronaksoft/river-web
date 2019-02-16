@@ -27,11 +27,12 @@ import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 import './style.css';
 
 const C_MAX_HEIGHT = 256;
-const C_MIN_HEIGHT = 64;
+const C_MIN_HEIGHT = 86;
+const C_MIN_HEIGHT_TINY = 100;
 const C_MAX_WIDTH = 256;
 const C_MAX_CAPTION_WIDTH = 256 + 6;
 const C_MIN_CAPTION_LEN_APPLIER = 10;
-const C_MIN_WIDTH = 64;
+const C_MIN_WIDTH = 86;
 
 export interface IMediaInfo {
     caption: string;
@@ -116,6 +117,7 @@ interface IState {
 }
 
 class MessageMedia extends React.PureComponent<IProps, IState> {
+    private messageMediaClass: string = '';
     private lastId: number = 0;
     private fileId: string = '';
     private downloaded: boolean = false;
@@ -229,7 +231,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     public render() {
         const {fileState, info, message} = this.state;
         return (
-            <div className="message-media">
+            <div className={'message-media' + this.messageMediaClass}>
                 <div className={'media-content' + (message.messagetype === C_MESSAGE_TYPE.Video ? ' video' : '')}
                      style={{maxWidth: this.pictureContentSize.maxWidth}}>
                     {Boolean(info.duration) &&
@@ -426,6 +428,9 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         if (info.caption.length > C_MIN_CAPTION_LEN_APPLIER || info.hasRelation) {
             maxWidth = C_MAX_CAPTION_WIDTH;
             this.blurredImageEnable = true;
+        }
+        if (height < C_MIN_HEIGHT_TINY) {
+            this.messageMediaClass = ' tiny-message';
         }
         return {
             height: `${height}px`,

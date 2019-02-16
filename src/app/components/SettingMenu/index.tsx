@@ -213,7 +213,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                             </div>
                         </div>
                         <div className="version">
-                            v0.23.51
+                            v0.23.53
                         </div>
                     </div>
                     <div className="page page-2">

@@ -134,8 +134,9 @@ input {
     bottom: 0;
     right: 0;
     left: 0;
-    background: linear-gradient(175deg, transparent 0%, transparent 30%, rgba(0, 0, 0, 0.28) 75%, rgba(0, 0, 0, 0.6) 100%);
-    border-radius: 0 0 8px 8px; }
+    background: linear-gradient(177deg, transparent 0%, transparent 30%, rgba(0, 0, 0, 0.28) 75%, rgba(0, 0, 0, 0.6) 100%);
+    border-radius: 0 0 8px 8px;
+    z-index: 10; }
   .media .bubble .message-status > span,
   .media .bubble .message-status > svg {
     position: relative;

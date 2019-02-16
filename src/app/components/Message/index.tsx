@@ -849,7 +849,7 @@ class Message extends React.Component<IProps, IState> {
 
     /* Try to find correct position */
     private checkScroll(id: number, tries?: number) {
-        const el = document.querySelector(`.bubble-wrapper .bubble.b_${id}`);
+        const el = document.querySelector(`.bubble-wrapper .bubble.b_${Math.floor(id)}`);
         if (this.scrollTop > 0 && el) {
             if (el.parentElement) {
                 const scroll = parseInt(window.getComputedStyle(el.parentElement).getPropertyValue('top').replace(/^\D+/g, ''), 10);

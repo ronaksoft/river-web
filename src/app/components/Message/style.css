@@ -393,8 +393,9 @@ input {
   justify-content: flex-end;
   height: 36px;
   width: auto;
-  left: 0;
-  padding: 6px 2px 0 0; }
+  left: 3px;
+  padding: 6px 2px 0 0;
+  border-radius: 8px 8px 0 0; }
   .user .bubble-wrapper:not(.related).media .bubble .more:before, .user .bubble-wrapper:not(.related).media_caption .bubble .more:before, .group .bubble-wrapper.me:not(.related).media .bubble .more:before, .group .bubble-wrapper.me:not(.related).media_caption .bubble .more:before, .group .bubble-wrapper.you:not(.avatar):not(.related).media .bubble .more:before, .group .bubble-wrapper.you:not(.avatar):not(.related).media_caption .bubble .more:before {
     content: '';
     position: absolute;
@@ -403,7 +404,7 @@ input {
     top: 0;
     right: 0;
     background: linear-gradient(10deg, transparent 0%, transparent 45%, rgba(0, 0, 0, 0.38) 75%, rgba(0, 0, 0, 0.7) 100%);
-    border-radius: 10px 10px 0 0;
+    border-radius: 8px 8px 0 0;
     z-index: 10;
     transition: opacity 0.2s;
     opacity: 0; }

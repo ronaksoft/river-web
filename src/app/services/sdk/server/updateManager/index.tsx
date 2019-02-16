@@ -53,6 +53,9 @@ export default class UpdateManager {
     private newMessageDropThrottle: any;
     private active: boolean = true;
     private userId: string = '';
+    private outOfSync: boolean = false;
+    private updateList: UpdateContainer.AsObject[] = [];
+    private outOfSyncTimeout: any = null;
 
     public constructor() {
         window.console.log('Update manager started');
@@ -101,31 +104,15 @@ export default class UpdateManager {
             return;
         }
         const data = UpdateContainer.deserializeBinary(base64ToU8a(bytes)).toObject();
-        const updates = data.updatesList;
         const currentUpdateId = this.lastUpdateId;
         const minId = data.minupdateid;
         const maxId = data.maxupdateid;
         window.console.log('on update, current:', currentUpdateId, 'min:', minId, 'max:', maxId);
-        if (currentUpdateId + 1 !== minId && !(minId === 0 && maxId === 0)) {
-            this.callHandlers(C_MSG.OutOfSync, {});
-            this.disable();
+        if ((this.outOfSync || currentUpdateId + 1 !== minId) && !(minId === 0 && maxId === 0)) {
+            this.outOfSyncCheck(data);
             return;
         }
-        if (maxId && maxId !== 0) {
-            this.setLastUpdateId(maxId);
-        }
-        updates.forEach((update) => {
-            this.responseUpdateMessageID(update);
-        });
-        updates.forEach((update) => {
-            this.response(update);
-        });
-        if (data.usersList && data.usersList.length > 0) {
-            this.callHandlers(C_MSG.UpdateUsers, data.usersList);
-        }
-        if (data.groupsList && data.groupsList.length > 0) {
-            this.callHandlers(C_MSG.UpdateGroups, data.groupsList);
-        }
+        this.applyUpdates(data);
     }
 
     public listen(eventConstructor: number, fn: any): (() => void) | null {
@@ -155,10 +142,59 @@ export default class UpdateManager {
         this.rndMsgMap[messageId] = true;
     }
 
-    /* Check message */
-    // private check() {
-    //
-    // }
+    private applyUpdates(data: UpdateContainer.AsObject) {
+        const updates = data.updatesList;
+        const maxId = data.maxupdateid;
+        if (maxId && maxId !== 0) {
+            this.setLastUpdateId(maxId);
+        }
+        updates.forEach((update) => {
+            this.responseUpdateMessageID(update);
+        });
+        updates.forEach((update) => {
+            this.response(update);
+        });
+        if (data.usersList && data.usersList.length > 0) {
+            this.callHandlers(C_MSG.UpdateUsers, data.usersList);
+        }
+        if (data.groupsList && data.groupsList.length > 0) {
+            this.callHandlers(C_MSG.UpdateGroups, data.groupsList);
+        }
+    }
+
+    /* Check out of sync message */
+    private outOfSyncCheck(data?: UpdateContainer.AsObject) {
+        if (data) {
+            window.console.log('%c outOfSyncCheck', 'color: orange;');
+            this.updateList.push(data);
+            this.updateList.sort((i1, i2) => {
+                return (i1.minupdateid || 0) - (i2.minupdateid || 0);
+            });
+            this.outOfSync = true;
+        }
+        if (this.updateList.length === 0) {
+            this.outOfSync = false;
+            return;
+        }
+        if (this.updateList[0].minupdateid === (this.lastUpdateId + 1)) {
+            clearTimeout(this.outOfSyncTimeout);
+            this.outOfSyncTimeout = null;
+            const update = this.updateList.shift();
+            if (update) {
+                this.applyUpdates(update);
+            }
+            this.outOfSyncCheck();
+        } else {
+            if (this.outOfSyncTimeout === null) {
+                this.outOfSyncTimeout = setTimeout(() => {
+                    this.updateList = [];
+                    this.outOfSync = false;
+                    this.callHandlers(C_MSG.OutOfSync, {});
+                    this.disable();
+                }, 500);
+            }
+        }
+    }
 
     private responseUpdateMessageID(update: UpdateEnvelope.AsObject) {
         // @ts-ignore
