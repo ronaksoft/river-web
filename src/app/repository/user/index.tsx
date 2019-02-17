@@ -88,14 +88,13 @@ export default class UserRepo {
         }
     }
 
-    public importBulk(isContact: boolean, users: IUser[]): Promise<any> {
+    public importBulk(isContact: boolean, users: IUser[], force?: boolean): Promise<any> {
         const tempUsers = uniqBy(users, 'id');
-        return this.upsert(isContact, tempUsers);
+        return this.upsert(isContact, tempUsers, force);
     }
 
-    public upsert(isContact: boolean, users: IUser[]): Promise<any> {
+    public upsert(isContact: boolean, users: IUser[], force?: boolean): Promise<any> {
         const ids = users.map((user) => {
-            this.dbService.setUser(user);
             user.is_contact = isContact ? 1 : 0;
             return user.id || '';
         });
@@ -103,7 +102,7 @@ export default class UserRepo {
             const createItems: IUser[] = differenceBy(users, result, 'id');
             const updateItems: IUser[] = result;
             updateItems.map((user: IUser) => {
-                return this.mergeUser(users, user);
+                return this.mergeUser(users, user, force);
             });
             const list = [...createItems, ...updateItems];
             list.forEach((item) => {
@@ -151,14 +150,24 @@ export default class UserRepo {
         });
     }
 
-    private mergeUser(users: IUser[], user: IUser) {
+    private mergeUser(users: IUser[], user: IUser, force?: boolean) {
         const t = find(users, {id: user.id});
+        const modifyUser = (u1: IUser, u2: IUser): IUser => {
+            if (!force && u1.username && u1.username.length > 0 && (!u2.username || (u2.username && u2.username.length === 0))) {
+                u2.username = u1.username;
+            }
+            if (!force && u1.bio && u1.bio.length > 0 && (!u2.bio || (u2.bio && u2.bio.length === 0))) {
+                u2.bio = u1.bio;
+            }
+            const d = merge(u1, u2);
+            return d;
+        };
         if (t && t.is_contact === 1 && user.is_contact !== 1) {
-            const d = merge(user, t);
+            const d = modifyUser(user, t);
             d.is_contact = 1;
             return d;
         } else if (t) {
-            return merge(user, t);
+            return modifyUser(user, t);
         } else {
             return user;
         }

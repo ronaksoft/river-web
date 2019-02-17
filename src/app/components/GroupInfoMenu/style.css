@@ -341,6 +341,9 @@ input {
     text-transform: uppercase; }
     .add-member-dialog .dialog-content .dialog-header svg {
       margin: 0 5px; }
+  .add-member-dialog .dialog-content .contact-list {
+    flex: 1;
+    height: auto; }
   .add-member-dialog .dialog-content .actions-bar {
     height: 86px;
     padding: 18px 0 22px;

@@ -51,7 +51,7 @@
     height: calc(100% - 50px);
     &.padding-side,
     .padding-side {
-      padding: 0 10px;
+      padding: 0 12px;
     }
   }
   .version {
@@ -64,15 +64,22 @@
       opacity: 1;
     }
   }
+  .page-content {
+    padding: 0 0 12px;
+    border-top: 1px solid var(--light);
+    &:first-of-type {
+      border-top: none;
+    }
+  }
   .page-anchor {
-    padding: 10px;
+    padding: 12px 0;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: left;
     border-top: 1px solid var(--light);
-    svg, a > svg {
-      margin-right: 6px;
+    &:first-of-type {
+      border-top: none;
     }
     a {
       display: flex;
@@ -84,37 +91,50 @@
     }
     .icon {
       position: relative;
-      width: 24px;
-      height: 24px;
-      margin-right: 6px;
-      .icon-primary, .icon-secondary {
-        position: absolute;
-        height: 100%;
-        width: 100%;
-        transition: opacity 0.2s;
+      width: 28px;
+      height: 28px;
+      margin-right: 8px;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      &.color-saved-messages {
+        background-color: #009688;
       }
-      .icon-primary {
-        opacity: 1;
+      &.color-account {
+        background-color: #CDDC39;
       }
-      .icon-secondary {
-        opacity: 0;
-        .avatar {
-          height: 100%;
-          width: 100%;
-          font-size: 11px;
-          font-weight: bold;
-        }
+      &.color-theme {
+        background-color: #F44336;
+      }
+      &.color-night-mode {
+        background-color: #795548;
+      }
+      &.color-font-size {
+        background-color: #4CAF50;
+      }
+      &.color-theme-type {
+        background-color: #2196F3;
+      }
+      &.color-bubble {
+        background-color: #FF9800;
+      }
+      &.color-background {
+        background-color: #9C27B0;
+      }
+      > svg {
+        //margin-right: 6px;
+        color: var(--white);
+        font-size: 16px;
       }
     }
-    &:hover {
-      .icon {
-        .icon-primary {
-          opacity: 0;
-        }
-        .icon-secondary {
-          opacity: 1;
-        }
-      }
+    .anchor-label {
+      font-size: 16px;
+      flex: 1;
+    }
+    .setting-switch-label {
+      width: 64px;
+      margin: -10px 0;
     }
   }
   .label {
@@ -134,7 +154,7 @@
     }
   }
   .font-size-container {
-    padding: 8px 0;
+    padding: 0;
     background-color: transparent;
     button {
       min-width: 30px;
@@ -143,7 +163,7 @@
       width: calc(100% - 88px);
       background-color: var(--light);
       > div {
-        background-color: var(--grey);
+        background-color: var(--river);
       }
     }
   }
@@ -440,14 +460,21 @@
       }
     }
     .title-bar {
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.3) 70%, rgba(0, 0, 0, 0) 100%);
+      background: linear-gradient(188deg, transparent 0%, transparent 40%, rgba(0, 0, 0, 0.28) 60%, rgba(0, 0, 0, 0.6) 100%);
       height: 38px;
       border-radius: 0 0 6px 6px;
       &.selected {
-        background: linear-gradient(to top, #2E8F57AA 0%, #2E8F5777 70%, rgba(0, 0, 0, 0) 100%);
+        background: linear-gradient(188deg, transparent 0%, transparent 40%, rgba(46, 143, 87, 0.48) 60%, rgba(46, 143, 87, 0.8) 100%);
+        div {
+          font-weight: bold;
+        }
       }
-      div {
-        font-size: 13px;
+      > div {
+        padding-top: 4px;
+        margin: 0 8px;
+        > div {
+          font-size: 13px;
+        }
       }
     }
   }
@@ -468,12 +495,9 @@ html[theme="dark-blue"] {
         color: var(--white);
       }
     }
-    .page-anchor {
+    .page-anchor, .page-content {
       color: var(--white);
-      border-color: var(--dark);
-      svg {
-        color: var(--white);
-      }
+      border-color: rgba(255, 255, 255, 0.16);
     }
     .font-size-container {
       button {
@@ -570,7 +594,7 @@ html[theme="dark-blue"] {
       }
       .title-bar {
         &.selected {
-          background: linear-gradient(to top, #00478399 0%, #00478344 70%, rgba(0, 0, 0, 0) 100%);
+          background: linear-gradient(188deg, transparent 0%, transparent 40%, rgba(0, 71, 131, 0.48) 60%, rgba(0, 71, 131, 0.8) 100%);
         }
       }
     }

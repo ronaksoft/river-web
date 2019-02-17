@@ -106,6 +106,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     private fileId: string = '';
     private cropperRef: AvatarCropper;
     private documentViewerService: DocumentViewerService;
+    private callerId: number = 0;
 
     constructor(props: IProps) {
         super(props);
@@ -145,6 +146,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
 
         this.documentViewerService = DocumentViewerService.getInstance();
+
+        this.callerId = UniqueId.getRandomId();
     }
 
     public componentDidMount() {
@@ -384,7 +387,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         if (!peer) {
             return;
         }
-        if (data && data.detail.ids.indexOf(peer.getId()) === -1) {
+        if (data && (data.detail.callerId === this.callerId || data.detail.ids.indexOf(peer.getId()) === -1)) {
             return;
         }
         this.groupRepo.get(peer.getId() || '').then((res) => {
@@ -407,7 +410,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         this.sdk.groupGetFull(peer).then((res) => {
             const group: IGroup = res.group;
             group.participantList = res.participantsList;
-            this.groupRepo.importBulk([group]);
+            this.groupRepo.importBulk([group], this.callerId);
             const contacts: IUser[] = [];
             res.participantsList.forEach((list) => {
                 contacts.push({
@@ -610,12 +613,14 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         newMembers.forEach((member) => {
             const user = new InputUser();
             user.setUserid(member.id || '');
+            // @ts-ignore
+            member.userid = member.id;
             user.setAccesshash(member.accesshash || '');
             promises.push(this.sdk.groupAddMember(peer, user, forwardLimit));
         });
         /* waits for all promises to be resolved */
         if (promises.length > 0) {
-            Promise.all(newMembers).then((res) => {
+            Promise.all(promises).then((res) => {
                 participants.push.apply(participants, newMembers);
                 group.participants = participants.length;
                 this.setState({

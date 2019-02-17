@@ -98,7 +98,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
         this.dialogRepo = DialogRepo.getInstance();
         // SDK singleton
         this.sdk = SDK.getInstance();
-
+        // DocumentViewerService singleton */
         this.documentViewerService = DocumentViewerService.getInstance();
     }
 

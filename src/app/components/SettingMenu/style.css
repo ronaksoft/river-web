@@ -110,7 +110,7 @@ input {
     height: calc(100% - 50px); }
     .setting-menu .menu-content.padding-side,
     .setting-menu .menu-content .padding-side {
-      padding: 0 10px; }
+      padding: 0 12px; }
   .setting-menu .version {
     padding: 12px 16px;
     font-size: 12px;
@@ -119,15 +119,20 @@ input {
     opacity: 0.5; }
     .setting-menu .version:hover {
       opacity: 1; }
+  .setting-menu .page-content {
+    padding: 0 0 12px;
+    border-top: 1px solid var(--light); }
+    .setting-menu .page-content:first-of-type {
+      border-top: none; }
   .setting-menu .page-anchor {
-    padding: 10px;
+    padding: 12px 0;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: left;
     border-top: 1px solid var(--light); }
-    .setting-menu .page-anchor svg, .setting-menu .page-anchor a > svg {
-      margin-right: 6px; }
+    .setting-menu .page-anchor:first-of-type {
+      border-top: none; }
     .setting-menu .page-anchor a {
       display: flex;
       align-items: center;
@@ -137,27 +142,38 @@ input {
       color: inherit; }
     .setting-menu .page-anchor .icon {
       position: relative;
-      width: 24px;
-      height: 24px;
-      margin-right: 6px; }
-      .setting-menu .page-anchor .icon .icon-primary, .setting-menu .page-anchor .icon .icon-secondary {
-        position: absolute;
-        height: 100%;
-        width: 100%;
-        transition: opacity 0.2s; }
-      .setting-menu .page-anchor .icon .icon-primary {
-        opacity: 1; }
-      .setting-menu .page-anchor .icon .icon-secondary {
-        opacity: 0; }
-        .setting-menu .page-anchor .icon .icon-secondary .avatar {
-          height: 100%;
-          width: 100%;
-          font-size: 11px;
-          font-weight: bold; }
-    .setting-menu .page-anchor:hover .icon .icon-primary {
-      opacity: 0; }
-    .setting-menu .page-anchor:hover .icon .icon-secondary {
-      opacity: 1; }
+      width: 28px;
+      height: 28px;
+      margin-right: 8px;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center; }
+      .setting-menu .page-anchor .icon.color-saved-messages {
+        background-color: #009688; }
+      .setting-menu .page-anchor .icon.color-account {
+        background-color: #CDDC39; }
+      .setting-menu .page-anchor .icon.color-theme {
+        background-color: #F44336; }
+      .setting-menu .page-anchor .icon.color-night-mode {
+        background-color: #795548; }
+      .setting-menu .page-anchor .icon.color-font-size {
+        background-color: #4CAF50; }
+      .setting-menu .page-anchor .icon.color-theme-type {
+        background-color: #2196F3; }
+      .setting-menu .page-anchor .icon.color-bubble {
+        background-color: #FF9800; }
+      .setting-menu .page-anchor .icon.color-background {
+        background-color: #9C27B0; }
+      .setting-menu .page-anchor .icon > svg {
+        color: var(--white);
+        font-size: 16px; }
+    .setting-menu .page-anchor .anchor-label {
+      font-size: 16px;
+      flex: 1; }
+    .setting-menu .page-anchor .setting-switch-label {
+      width: 64px;
+      margin: -10px 0; }
   .setting-menu .label {
     display: block;
     text-align: center;
@@ -173,7 +189,7 @@ input {
     .setting-menu .label.padding-top {
       margin-top: 12px; }
   .setting-menu .font-size-container {
-    padding: 8px 0;
+    padding: 0;
     background-color: transparent; }
     .setting-menu .font-size-container button {
       min-width: 30px; }
@@ -181,7 +197,7 @@ input {
       width: calc(100% - 88px);
       background-color: var(--light); }
       .setting-menu .font-size-container div[role="progressbar"] > div {
-        background-color: var(--grey); }
+        background-color: var(--river); }
   .setting-menu .info {
     display: flex;
     justify-content: center;
@@ -407,13 +423,18 @@ input {
       .setting-menu .theme-container .item.theme-dark-blue:before {
         background: var(--dark-blue-accent-low) !important; }
   .setting-menu .theme-container .title-bar {
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.3) 70%, rgba(0, 0, 0, 0) 100%);
+    background: linear-gradient(188deg, transparent 0%, transparent 40%, rgba(0, 0, 0, 0.28) 60%, rgba(0, 0, 0, 0.6) 100%);
     height: 38px;
     border-radius: 0 0 6px 6px; }
     .setting-menu .theme-container .title-bar.selected {
-      background: linear-gradient(to top, #2E8F57AA 0%, #2E8F5777 70%, rgba(0, 0, 0, 0) 100%); }
-    .setting-menu .theme-container .title-bar div {
-      font-size: 13px; }
+      background: linear-gradient(188deg, transparent 0%, transparent 40%, rgba(46, 143, 87, 0.48) 60%, rgba(46, 143, 87, 0.8) 100%); }
+      .setting-menu .theme-container .title-bar.selected div {
+        font-weight: bold; }
+    .setting-menu .theme-container .title-bar > div {
+      padding-top: 4px;
+      margin: 0 8px; }
+      .setting-menu .theme-container .title-bar > div > div {
+        font-size: 13px; }
   .setting-menu .kk-card {
     margin-bottom: 10px;
     background-color: var(--white);
@@ -427,13 +448,11 @@ html[theme="dark-blue"] .setting-menu .menu-header {
   html[theme="dark-blue"] .setting-menu .menu-header svg {
     color: var(--white); }
 
-html[theme="dark"] .setting-menu .page-anchor,
-html[theme="dark-blue"] .setting-menu .page-anchor {
+html[theme="dark"] .setting-menu .page-anchor, html[theme="dark"] .setting-menu .page-content,
+html[theme="dark-blue"] .setting-menu .page-anchor,
+html[theme="dark-blue"] .setting-menu .page-content {
   color: var(--white);
-  border-color: var(--dark); }
-  html[theme="dark"] .setting-menu .page-anchor svg,
-  html[theme="dark-blue"] .setting-menu .page-anchor svg {
-    color: var(--white); }
+  border-color: rgba(255, 255, 255, 0.16); }
 
 html[theme="dark"] .setting-menu .font-size-container button,
 html[theme="dark-blue"] .setting-menu .font-size-container button {
@@ -528,7 +547,7 @@ html[theme="dark-blue"] .setting-menu .theme-container .item {
 
 html[theme="dark"] .setting-menu .theme-container .title-bar.selected,
 html[theme="dark-blue"] .setting-menu .theme-container .title-bar.selected {
-  background: linear-gradient(to top, #00478399 0%, #00478344 70%, rgba(0, 0, 0, 0) 100%); }
+  background: linear-gradient(188deg, transparent 0%, transparent 40%, rgba(0, 71, 131, 0.48) 60%, rgba(0, 71, 131, 0.8) 100%); }
 
 html[theme="dark"] .setting-menu .kk-card,
 html[theme="dark-blue"] .setting-menu .kk-card {

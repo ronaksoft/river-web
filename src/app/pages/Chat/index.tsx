@@ -1068,7 +1068,7 @@ class Chat extends React.Component<IProps, IState> {
             id: data.userid,
             lastname: data.lastname,
             username: data.username,
-        }]);
+        }], true);
     }
 
     /* Update notify settings handler */

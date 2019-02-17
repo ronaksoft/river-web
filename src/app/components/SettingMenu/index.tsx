@@ -8,7 +8,6 @@
 */
 
 import * as React from 'react';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import MobileStepper from '@material-ui/core/MobileStepper';
 import Button from '@material-ui/core/Button';
@@ -17,11 +16,16 @@ import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import {
     KeyboardBackspaceRounded,
     PaletteRounded,
-    FaceRounded,
+    PersonRounded,
     EditRounded,
     CheckRounded,
     BookmarkRounded,
-    PhotoCameraRounded, CloseRounded,
+    PhotoCameraRounded,
+    CloseRounded,
+    FormatSizeRounded,
+    ChatBubbleRounded,
+    FormatColorFillRounded,
+    CollectionsRounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import UserAvatar from '../UserAvatar';
@@ -186,34 +190,43 @@ class SettingMenu extends React.Component<IProps, IState> {
                             <label>Settings</label>
                         </div>
                         <div className="menu-content padding-side">
-                            <FormControlLabel className="setting-switch-label" control={
-                                <Switch
-                                    checked={Boolean(this.state.selectedTheme !== 'light')}
-                                    className="setting-switch"
-                                    color="default"
-                                    onChange={this.nightModeHandler}
-                                />
-                            } label="Night mode"/>
                             <div className="page-anchor">
-                                <Link to={`/chat/${this.userId}`}><BookmarkRounded/> Saved Messages</Link>
+                                <Link to={`/chat/${this.userId}`}>
+                                    <div className="icon color-saved-messages">
+                                        <BookmarkRounded/>
+                                    </div>
+                                    <div className="anchor-label">Saved Messages</div>
+                                </Link>
                             </div>
                             <div className="page-anchor" onClick={this.accountPageHandler}>
-                                <div className="icon">
-                                    <div className="icon-primary">
-                                        <FaceRounded/>
-                                    </div>
-                                    <div className="icon-secondary">
-                                        <UserAvatar className="avatar" id={this.userId || ''} noDetail={true}/>
-                                    </div>
+                                <div className="icon color-account">
+                                    <PersonRounded/>
                                 </div>
-                                Account ({phone})
+                                <div className="anchor-label">Account ({phone})</div>
                             </div>
                             <div className="page-anchor" onClick={this.themePageHandler}>
-                                <PaletteRounded/> Theme
+                                <div className="icon color-theme">
+                                    <PaletteRounded/>
+                                </div>
+                                <div className="anchor-label">Theme</div>
+                            </div>
+                            <div className="page-anchor">
+                                <div className="icon color-night-mode">
+                                    <PaletteRounded/>
+                                </div>
+                                <div className="anchor-label">Night Mode</div>
+                                <div className="setting-switch-label">
+                                    <Switch
+                                        checked={Boolean(this.state.selectedTheme !== 'light')}
+                                        className="setting-switch"
+                                        color="default"
+                                        onChange={this.nightModeHandler}
+                                    />
+                                </div>
                             </div>
                         </div>
                         <div className="version">
-                            v0.23.53
+                            v0.23.54
                         </div>
                     </div>
                     <div className="page page-2">
@@ -233,71 +246,107 @@ class SettingMenu extends React.Component<IProps, IState> {
                                     autoHide={true}
                                 >
                                     <div className="padding-side">
-                                        <label className="label font-size-label padding-top">Font Size</label>
-                                        <MobileStepper
-                                            variant="progress"
-                                            steps={6}
-                                            position="static"
-                                            activeStep={this.state.fontSize}
-                                            className="font-size-container"
-                                            nextButton={
-                                                <Button size="small" onClick={this.handleNext}
-                                                        disabled={this.state.fontSize === 5}>
-                                                    <KeyboardArrowRight/>
-                                                </Button>
-                                            }
-                                            backButton={
-                                                <Button size="small" onClick={this.handleBack}
-                                                        disabled={this.state.fontSize === 0}>
-                                                    <KeyboardArrowLeft/>
-                                                </Button>
-                                            }
-                                        />
-                                        <label className="label">Theme</label>
-                                        <GridList className="theme-container" cellHeight={100} spacing={6}>
-                                            {themes.map((theme, index) => (
-                                                <GridListTile key={index} cols={1} rows={1}
-                                                              onClick={this.selectThemeHandler.bind(this, theme.id)}>
-                                                    <div
-                                                        className={'item theme-' + theme.id + ' bubble-' + this.state.selectedBubble + ' bg-' + this.state.selectedBackground}/>
-                                                    <GridListTileBar
-                                                        className={'title-bar ' + (this.state.selectedTheme === theme.id ? 'selected' : '')}
-                                                        title={theme.title}
-                                                        titlePosition="bottom"
-                                                    />
-                                                </GridListTile>
-                                            ))}
-                                        </GridList>
-                                        <label className="label padding-top">Bubble</label>
-                                        <GridList className="theme-container" cellHeight={100} spacing={6}>
-                                            {bubbles.map((bubble, index) => (
-                                                <GridListTile key={index} cols={1} rows={1}
-                                                              onClick={this.selectBubbleHandler.bind(this, bubble.id)}>
-                                                    <div
-                                                        className={'item bubble-' + bubble.id + ' bg-' + this.state.selectedBackground}/>
-                                                    <GridListTileBar
-                                                        className={'title-bar ' + (this.state.selectedBubble === bubble.id ? 'selected' : '')}
-                                                        title={bubble.title}
-                                                        titlePosition="bottom"
-                                                    />
-                                                </GridListTile>
-                                            ))}
-                                        </GridList>
-                                        <label className="label padding-top">Background</label>
-                                        <GridList className="theme-container" cellHeight={100} spacing={6}>
-                                            {backgrounds.map((bg, index) => (
-                                                <GridListTile key={index} cols={1} rows={1}
-                                                              onClick={this.selectBackgroundHandler.bind(this, bg.id)}>
-                                                    <div
-                                                        className={'item bg-' + bg.id + ' bubble-' + this.state.selectedBubble}/>
-                                                    <GridListTileBar
-                                                        className={'title-bar ' + (this.state.selectedBackground === bg.id ? 'selected' : '')}
-                                                        title={bg.title}
-                                                        titlePosition="bottom"
-                                                    />
-                                                </GridListTile>
-                                            ))}
-                                        </GridList>
+                                        <div className="page-content">
+                                            <div className="page-anchor">
+                                                <div className="icon color-font-size">
+                                                    <FormatSizeRounded/>
+                                                </div>
+                                                <div className="anchor-label">Font Size</div>
+                                            </div>
+                                            <div className="page-content-inner">
+                                                <MobileStepper
+                                                    variant="progress"
+                                                    steps={6}
+                                                    position="static"
+                                                    activeStep={this.state.fontSize}
+                                                    className="font-size-container"
+                                                    nextButton={
+                                                        <Button size="small" onClick={this.handleNext}
+                                                                disabled={this.state.fontSize === 5}>
+                                                            <KeyboardArrowRight/>
+                                                        </Button>
+                                                    }
+                                                    backButton={
+                                                        <Button size="small" onClick={this.handleBack}
+                                                                disabled={this.state.fontSize === 0}>
+                                                            <KeyboardArrowLeft/>
+                                                        </Button>
+                                                    }
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="page-content">
+                                            <div className="page-anchor">
+                                                <div className="icon color-theme-type">
+                                                    <FormatColorFillRounded/>
+                                                </div>
+                                                <div className="anchor-label">Theme</div>
+                                            </div>
+                                            <div className="page-content-inner">
+                                                <GridList className="theme-container" cellHeight={100} spacing={6}>
+                                                    {themes.map((theme, index) => (
+                                                        <GridListTile key={index} cols={1} rows={1}
+                                                                      onClick={this.selectThemeHandler.bind(this, theme.id)}>
+                                                            <div
+                                                                className={'item theme-' + theme.id + ' bubble-' + this.state.selectedBubble + ' bg-' + this.state.selectedBackground}/>
+                                                            <GridListTileBar
+                                                                className={'title-bar ' + (this.state.selectedTheme === theme.id ? 'selected' : '')}
+                                                                title={theme.title}
+                                                                titlePosition="bottom"
+                                                            />
+                                                        </GridListTile>
+                                                    ))}
+                                                </GridList>
+                                            </div>
+                                        </div>
+                                        <div className="page-content">
+                                            <div className="page-anchor">
+                                                <div className="icon color-bubble">
+                                                    <ChatBubbleRounded/>
+                                                </div>
+                                                <div className="anchor-label">Bubble</div>
+                                            </div>
+                                            <div className="page-content-inner">
+                                                <GridList className="theme-container" cellHeight={100} spacing={6}>
+                                                    {bubbles.map((bubble, index) => (
+                                                        <GridListTile key={index} cols={1} rows={1}
+                                                                      onClick={this.selectBubbleHandler.bind(this, bubble.id)}>
+                                                            <div
+                                                                className={'item bubble-' + bubble.id + ' bg-' + this.state.selectedBackground}/>
+                                                            <GridListTileBar
+                                                                className={'title-bar ' + (this.state.selectedBubble === bubble.id ? 'selected' : '')}
+                                                                title={bubble.title}
+                                                                titlePosition="bottom"
+                                                            />
+                                                        </GridListTile>
+                                                    ))}
+                                                </GridList>
+                                            </div>
+                                        </div>
+                                        <div className="page-content">
+                                            <div className="page-anchor">
+                                                <div className="icon color-background">
+                                                    <CollectionsRounded/>
+                                                </div>
+                                                <div className="anchor-label">Background</div>
+                                            </div>
+                                            <div className="page-content-inner">
+                                                <GridList className="theme-container" cellHeight={100} spacing={6}>
+                                                    {backgrounds.map((bg, index) => (
+                                                        <GridListTile key={index} cols={1} rows={1}
+                                                                      onClick={this.selectBackgroundHandler.bind(this, bg.id)}>
+                                                            <div
+                                                                className={'item bg-' + bg.id + ' bubble-' + this.state.selectedBubble}/>
+                                                            <GridListTileBar
+                                                                className={'title-bar ' + (this.state.selectedBackground === bg.id ? 'selected' : '')}
+                                                                title={bg.title}
+                                                                titlePosition="bottom"
+                                                            />
+                                                        </GridListTile>
+                                                    ))}
+                                                </GridList>
+                                            </div>
+                                        </div>
                                     </div>
                                 </Scrollbars>
                             </div>
@@ -451,7 +500,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                                         <CheckRounded/>
                                     </div>
                                 </div>}
-                                {Boolean(editUsername && user && user.username !== username && usernameAvailable && usernameValid) &&
+                                {Boolean(editUsername && user && (user.username !== username || username === '') && usernameAvailable && usernameValid) &&
                                 <div className="actions-bar">
                                     <div className="add-action" onClick={this.confirmUsernameChangeHandler}>
                                         <CheckRounded/>
@@ -602,6 +651,14 @@ class SettingMenu extends React.Component<IProps, IState> {
 
     private onUsernameChangeHandler = (e: any) => {
         const username = e.currentTarget.value;
+        if (username.length === 0) {
+            this.setState({
+                username,
+                usernameAvailable: true,
+                usernameValid: true,
+            });
+            return;
+        }
         const reg = /^(?=.{2,32}$)[a-zA-Z0-9._]/;
         this.setState({
             usernameValid: reg.test(username),

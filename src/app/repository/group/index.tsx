@@ -60,12 +60,12 @@ export default class GroupRepo {
             .where('title').startsWithIgnoreCase(keyword).limit(limit || 12).toArray();
     }
 
-    public importBulk(groups: IGroup[]): Promise<any> {
+    public importBulk(groups: IGroup[], callerId?: number): Promise<any> {
         const tempGroup = uniqBy(groups, 'id');
-        return this.upsert(tempGroup);
+        return this.upsert(tempGroup, callerId);
     }
 
-    public upsert(groups: IGroup[]): Promise<any> {
+    public upsert(groups: IGroup[], callerId?: number): Promise<any> {
         const ids = groups.map((group) => {
             return group.id || '';
         });
@@ -86,7 +86,7 @@ export default class GroupRepo {
             });
             return this.createMany(list);
         }).then((res) => {
-            this.broadcastEvent('Group_DB_Updated', {ids});
+            this.broadcastEvent('Group_DB_Updated', {ids, callerId});
             return res;
         });
     }
