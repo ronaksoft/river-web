@@ -477,7 +477,14 @@ class Message extends React.Component<IProps, IState> {
             default:
                 if (message.messageaction !== C_MESSAGE_ACTION.MessageActionNope && message.messageaction !== undefined) {
                     return (
-                        <div style={style} className="bubble-wrapper">
+                        <div style={style}
+                             className={'bubble-wrapper' + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '')}
+                             onClick={this.toggleSelectHandler.bind(this, message.id || 0, index)}
+                             onDoubleClick={this.selectMessage.bind(this, index)}>
+                            {this.state.selectable && <Checkbox
+                                className={'checkbox ' + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? 'checked' : '')}
+                                color="primary" checked={this.state.selectedIds.hasOwnProperty(message.id || 0)}
+                                onChange={this.selectMessageHandler.bind(this, message.id || 0, index)}/>}
                             {this.renderSystemMessage(message)}
                         </div>
                     );

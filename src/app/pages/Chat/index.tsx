@@ -1012,55 +1012,49 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Update message delete handler */
     private updateMessageDeleteHandler = (data: UpdateMessagesDeleted.AsObject) => {
-        if (this.state.isUpdating) {
+        if (this.state.isUpdating || !data.peer) {
             return;
         }
-        let firstMessageId = 0;
-        if (data.messageidsList.length > 0) {
-            firstMessageId = data.messageidsList[0];
-        }
-        this.messageRepo.get(firstMessageId).then((res) => {
-            this.messageRepo.removeMany(data.messageidsList).then(() => {
-                if (firstMessageId && res) {
-                    const peer = this.getPeer(res.peerid || '');
-                    this.messageRepo.getUnreadCount(res.peerid || '', peer ? (peer.readinboxmaxid || 0) : 0, peer ? (peer.topmessageid || 0) : 0).then((count) => {
-                        this.updateDialogsCounter(res.peerid || '', {
-                            mentionCounter: count.mention,
-                            unreadCounter: count.message
+        const peer = data.peer;
+        this.messageRepo.removeMany(data.messageidsList).then(() => {
+            const dialogPeer = this.getPeer(peer.id || '');
+            this.messageRepo.getUnreadCount(peer.id || '', dialogPeer ? (dialogPeer.readinboxmaxid || 0) : 0, dialogPeer ? (dialogPeer.topmessageid || 0) : 0).then((count) => {
+                this.updateDialogsCounter(peer.id || '', {
+                    mentionCounter: count.mention,
+                    unreadCounter: count.message
+                });
+            });
+
+            const {messages, dialogs} = this.state;
+            let updateView = false;
+            data.messageidsList.sort().forEach((id) => {
+                const dialogIndex = findIndex(dialogs, {topmessageid: id});
+                if (dialogIndex > -1) {
+                    const inputPeer = new InputPeer();
+                    inputPeer.setId(peer.id || '');
+                    inputPeer.setAccesshash(peer.accesshash || '0');
+                    inputPeer.setType(peer.type || 0);
+                    if (id > 1) {
+                        this.messageRepo.getMany({peer: inputPeer, before: id, limit: 1}).then((res) => {
+                            if (res.length > 0) {
+                                this.updateDialogs(res[0], peer.accesshash || '0', true);
+                            }
                         });
-                    });
+                    }
+                }
+                const index = findIndex(messages, (o) => {
+                    return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                });
+                if (index > -1) {
+                    updateView = true;
+                    this.messageComponent.cache.clear(index, 0);
+                    messages.splice(index, 1);
                 }
             });
-        });
-        const {messages, dialogs} = this.state;
-        let updateView = false;
-        // TODO: check server
-        data.messageidsList.map((id) => {
-            const dialogIndex = findIndex(dialogs, {topmessageid: id});
-            if (dialogIndex > -1) {
-                const peer = new InputPeer();
-                peer.setId(dialogs[dialogIndex].peerid || '');
-                peer.setAccesshash(dialogs[dialogIndex].accesshash || '0');
-                if (id > 1) {
-                    this.messageRepo.getMany({peer, before: id, limit: 1}).then((res) => {
-                        if (res.length > 0) {
-                            this.updateDialogs(res[0], dialogs[dialogIndex].accesshash || '0', true);
-                        }
-                    });
-                }
-            }
-            const index = findIndex(messages, (o) => {
-                return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
-            });
-            if (index > -1) {
-                updateView = true;
-                this.messageComponent.cache.clear(index, 0);
-                messages.splice(index, 1);
+            if (updateView) {
+                this.messageComponent.list.recomputeGridSize();
             }
         });
-        if (updateView) {
-            this.messageComponent.list.recomputeGridSize();
-        }
     }
 
     /* Update username handler */
@@ -1374,8 +1368,9 @@ class Chat extends React.Component<IProps, IState> {
 
                 defaultMessages.unshift(msg);
                 // date breakpoint
-                if (messages.length - 1 === key || (defaultMessages.length > 1 && !TimeUtililty.isInSameDay(msg.createdon, defaultMessages[1].createdon))) {
-                    defaultMessages.unshift({
+                if (messages.length - 1 === key // End of message list
+                    || (defaultMessages.length > 1 && !TimeUtililty.isInSameDay(msg.createdon, defaultMessages[1].createdon))) {
+                    defaultMessages.splice(1, 0, {
                         createdon: msg.createdon,
                         id: msg.id,
                         messagetype: C_MESSAGE_TYPE.Date,
@@ -2439,13 +2434,23 @@ class Chat extends React.Component<IProps, IState> {
         if (!peer) {
             return;
         }
-        // @ts-ignore
-        const msgIds: number[] = Object.keys(messageSelectedIds);
-        this.sdk.removeMessage(peer, msgIds, revoke).then((res) => {
-            window.console.log(res);
-        }).catch((err) => {
-            window.console.log(err);
+        const remoteMsgIds: number[] = [];
+        Object.keys(messageSelectedIds).forEach((id) => {
+            const nid = parseInt(id, 10);
+            if (nid > 0) {
+                remoteMsgIds.push(nid);
+            } else {
+                // Remove pending messages
+                this.cancelSend(nid);
+            }
         });
+        if (remoteMsgIds.length > 0) {
+            this.sdk.removeMessage(peer, remoteMsgIds, revoke).then((res) => {
+                window.console.log(res);
+            }).catch((err) => {
+                window.console.log(err);
+            });
+        }
         this.confirmDialogCloseHandler();
     }
 
@@ -2986,6 +2991,8 @@ class Chat extends React.Component<IProps, IState> {
                         this.messageComponent.list.recomputeGridSize();
                     }
                 }
+            }).catch((err) => {
+                window.console.log(err);
             });
         };
         this.messageRepo.getPendingByMessageId(id).then((res) => {
