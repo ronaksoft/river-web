@@ -10,9 +10,10 @@
 import * as React from 'react';
 import {
     ImageTwoTone,
-    MovieTwoTone,
+    // MovieTwoTone,
     HeadsetTwoTone,
-    InsertDriveFileTwoTone
+    InsertDriveFileTwoTone,
+    PeopleOutlineRounded,
 } from '@material-ui/icons';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener/ClickAwayListener';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
@@ -39,15 +40,20 @@ const items: any[] = [
         icon: <ImageTwoTone/>,
         title: 'Photo & Video',
     },
-    {
-        cmd: 'video',
-        icon: <MovieTwoTone/>,
-        title: 'Video',
-    },
+    // {
+    //     cmd: 'video',
+    //     icon: <MovieTwoTone/>,
+    //     title: 'Video',
+    // },
     {
         cmd: 'music',
         icon: <HeadsetTwoTone/>,
         title: 'Music',
+    },
+    {
+        cmd: 'contact',
+        icon: <PeopleOutlineRounded/>,
+        title: 'Contact',
     },
     {
         cmd: 'file',

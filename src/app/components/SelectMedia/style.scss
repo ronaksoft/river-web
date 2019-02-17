@@ -73,6 +73,12 @@
           color: #2D9CDB;
         }
       }
+      &.contact {
+        //border-color: #2D9CDB;
+        svg {
+          color: #009688;
+        }
+      }
       &.selected {
         opacity: 1 !important;
       }

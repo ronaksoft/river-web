@@ -71,6 +71,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 className={'document-viewer-dialog ' + className}
             >
                 {this.getContent()}
+                {this.initPagination()}
                 {this.getFloatObj()}
             </Dialog>
         );
@@ -134,6 +135,15 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
     private pictureWrapperRefHandler = (ref: any) => {
         this.pictureWrapperRef = ref;
+    }
+
+    private initPagination() {
+        return (
+            <div className="document-viewer-pagination">
+                <div className="pagination-item prev">Prev</div>
+                <div className="pagination-item prev">Next</div>
+            </div>
+        );
     }
 
     private getFloatObj() {

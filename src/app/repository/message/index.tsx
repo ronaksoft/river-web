@@ -37,6 +37,8 @@ import {
     MessageActionGroupDeleteUser, MessageActionGroupPhotoChanged,
     MessageActionGroupTitleChanged,
 } from '../../services/sdk/messages/chat.core.message.actions_pb';
+import MediaRepo from '../media';
+import {C_MEDIA_TYPE} from '../media/interface';
 
 export default class MessageRepo {
     public static parseAttributes(attrs: DocumentAttribute.AsObject[], flags: { type: number }) {
@@ -140,6 +142,31 @@ export default class MessageRepo {
                     break;
             }
             delete out.messageactiondata;
+        }
+        let msgType: number = 0;
+        switch (out.messagetype) {
+            case C_MESSAGE_TYPE.Picture:
+                msgType = C_MEDIA_TYPE.PHOTO;
+                break;
+            case C_MESSAGE_TYPE.Video:
+                msgType = C_MEDIA_TYPE.VIDEO;
+                break;
+            case C_MESSAGE_TYPE.File:
+                msgType = C_MEDIA_TYPE.FILE;
+                break;
+            case C_MESSAGE_TYPE.Music:
+                msgType = C_MEDIA_TYPE.AUDIO;
+                break;
+            case C_MESSAGE_TYPE.Voice:
+                msgType = C_MEDIA_TYPE.VOICE;
+                break;
+        }
+        if (msgType && out.id && (out.id || 0) > 0) {
+            MediaRepo.getInstance().lazyUpsert([{
+                id: out.id,
+                peerid: out.peerid || '',
+                type: msgType,
+            }]);
         }
         return out;
     }
