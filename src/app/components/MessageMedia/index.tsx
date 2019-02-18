@@ -125,7 +125,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     private circleProgressRef: any = null;
     private eventReferences: any[] = [];
     private progressBroadcaster: ProgressBroadcaster;
-    private pictureSizeRef: any = null;
+    private mediaSizeRef: any = null;
     private fileSize: number = 0;
     private documentViewerService: DocumentViewerService;
     private readonly pictureContentSize: { height: string, maxWidth: string, width: string } = {
@@ -239,7 +239,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                         <PlayArrowRounded/><span>{this.getDuration(info.duration || 0)}</span></div>}
                     {Boolean(fileState !== 'view' && fileState !== 'open') &&
                     <React.Fragment>
-                        <div className="media-size" ref={this.pictureSizeRefHandler}>0 KB</div>
+                        <div className="media-size" ref={this.mediaSizeRefHandler}>0 KB</div>
                         <div className="media-thumb" style={this.pictureContentSize}>
                             <CachedPhoto className="picture"
                                          fileLocation={(message.id || 0) < 0 && message.messagetype === C_MESSAGE_TYPE.Picture ? info.file : info.thumbFile}
@@ -465,19 +465,19 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     }
 
     /* File size ref handler */
-    private pictureSizeRefHandler = (ref: any) => {
-        this.pictureSizeRef = ref;
+    private mediaSizeRefHandler = (ref: any) => {
+        this.mediaSizeRef = ref;
     }
 
     /* Display file size */
     private displayFileSize(loaded: number) {
-        if (!this.pictureSizeRef) {
+        if (!this.mediaSizeRef) {
             return;
         }
         if (loaded <= 0) {
-            this.pictureSizeRef.innerText = `${getHumanReadableSize(this.fileSize)}`;
+            this.mediaSizeRef.innerText = `${getHumanReadableSize(this.fileSize)}`;
         } else {
-            this.pictureSizeRef.innerText = `${getHumanReadableSize(loaded)} / ${getHumanReadableSize(this.fileSize)}`;
+            this.mediaSizeRef.innerText = `${getHumanReadableSize(loaded)} / ${getHumanReadableSize(this.fileSize)}`;
         }
     }
 

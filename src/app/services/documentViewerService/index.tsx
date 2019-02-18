@@ -8,10 +8,14 @@
 */
 
 import {InputFileLocation} from '../sdk/messages/chat.core.types_pb';
+import MediaRepo from '../../repository/media';
+import {C_MEDIA_TYPE} from '../../repository/media/interface';
 
 interface IDocumentItem {
     caption: string;
+    downloaded?: boolean;
     fileLocation: InputFileLocation.AsObject;
+    fileSize?: number;
     height?: number;
     id?: number;
     thumbFileLocation?: InputFileLocation.AsObject;
@@ -35,13 +39,24 @@ export default class DocumentViewerService {
 
     private static instance: DocumentViewerService;
     private onDocumentReady: any = null;
+    private onDocumentPrev: any = null;
+    private onDocumentNext: any = null;
+    private mediaRepo: MediaRepo;
 
     public constructor() {
-        //
+        this.mediaRepo = MediaRepo.getInstance();
     }
 
     public setDocumentReady(fn: any) {
         this.onDocumentReady = fn;
+    }
+
+    public setDocumentPrev(fn: any) {
+        this.onDocumentPrev = fn;
+    }
+
+    public setDocumentNext(fn: any) {
+        this.onDocumentNext = fn;
     }
 
     public loadDocument(doc: IDocument) {
@@ -49,5 +64,34 @@ export default class DocumentViewerService {
             return;
         }
         this.onDocumentReady(doc);
+        this.initPagination(doc);
+    }
+
+    private initPagination(doc: IDocument) {
+        if ((doc.type !== 'video' && doc.type !== 'picture') || !doc.peerId) {
+            return;
+        }
+        this.mediaRepo.getMany({
+            before: (doc.items[0].id || 0) - 1,
+            limit: 1,
+            type: C_MEDIA_TYPE.Media
+        }, doc.peerId).then((res) => {
+            if (this.onDocumentPrev && res.length > 0) {
+                this.onDocumentPrev(res[0]);
+            } else {
+                this.onDocumentPrev(null);
+            }
+        });
+        this.mediaRepo.getMany({
+            after: (doc.items[0].id || 0) + 1,
+            limit: 1,
+            type: C_MEDIA_TYPE.Media
+        }, doc.peerId).then((res) => {
+            if (this.onDocumentNext && res.length > 0) {
+                this.onDocumentNext(res[0]);
+            } else {
+                this.onDocumentNext(null);
+            }
+        });
     }
 }

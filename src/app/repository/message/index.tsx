@@ -334,6 +334,10 @@ export default class MessageRepo {
         });
     }
 
+    public getIn(ids: number[]) {
+        return this.db.messages.where('id').anyOf(ids).toArray();
+    }
+
     public getManyCache({limit, before, after, ignoreMax}: any, peer: InputPeer, fnCallback?: (resMsgs: IMessage[]) => void): Promise<IMessage[]> {
         ignoreMax = ignoreMax || false;
         const pipe = this.db.messages.where('[peerid+id]');

@@ -12,17 +12,47 @@
   to {
     opacity: 1; } }
 
+@keyframes swipe-left {
+  from {
+    transform: translateX(0%); }
+  50% {
+    opacity: 0; }
+  to {
+    opacity: 0;
+    transform: translateX(-200%); } }
+
+@keyframes swipe-right {
+  from {
+    transform: translateX(0%); }
+  50% {
+    opacity: 0; }
+  to {
+    opacity: 0;
+    transform: translateX(200%); } }
+
+.document-viewer-dialog > div:first-child {
+  background-color: rgba(0, 0, 0, 0.7); }
+
 .document-viewer-dialog div[role="document"] > div {
+  position: relative;
   line-height: 0;
   max-width: none;
   background: transparent;
-  overflow: hidden; }
+  overflow: visible; }
 
-.document-viewer-dialog .avatar-container {
+.document-viewer-dialog .document-container.animate.prev {
+  animation: swipe-right 0.3s normal forwards ease-in-out;
+  animation-iteration-count: 1; }
+
+.document-viewer-dialog .document-container.animate.next {
+  animation: swipe-left 0.3s normal forwards ease-in-out;
+  animation-iteration-count: 1; }
+
+.document-viewer-dialog .document-container .avatar-container {
   position: relative;
   width: 640px;
   height: 640px; }
-  .document-viewer-dialog .avatar-container .thumbnail {
+  .document-viewer-dialog .document-container .avatar-container .thumbnail {
     position: absolute;
     top: 0;
     right: 0;
@@ -30,17 +60,17 @@
     left: 0;
     filter: blur(40px);
     background-color: var(--dark-low); }
-    .document-viewer-dialog .avatar-container .thumbnail img {
+    .document-viewer-dialog .document-container .avatar-container .thumbnail img {
       height: 100%;
       width: 100%; }
-  .document-viewer-dialog .avatar-container .photo {
+  .document-viewer-dialog .document-container .avatar-container .photo {
     position: absolute;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
     z-index: 1000; }
-    .document-viewer-dialog .avatar-container .photo img {
+    .document-viewer-dialog .document-container .avatar-container .photo img {
       height: 100%;
       width: 100%;
       animation-name: kkFadeIn;
@@ -48,45 +78,179 @@
       animation-iteration-count: 1;
       animation-timing-function: ease-out; }
 
-.document-viewer-dialog .picture-container {
-  position: relative; }
-  .document-viewer-dialog .picture-container .picture-wrapper {
+.document-viewer-dialog .document-container .picture-container, .document-viewer-dialog .document-container .video-container {
+  position: relative;
+  z-index: 1310; }
+  .document-viewer-dialog .document-container .picture-container .picture-wrapper, .document-viewer-dialog .document-container .video-container .picture-wrapper {
+    position: relative;
     width: 100%;
     height: 100%; }
-    .document-viewer-dialog .picture-container .picture-wrapper.hide {
+    .document-viewer-dialog .document-container .picture-container .picture-wrapper.hide, .document-viewer-dialog .document-container .video-container .picture-wrapper.hide {
       display: none; }
-    .document-viewer-dialog .picture-container .picture-wrapper .picture {
+    .document-viewer-dialog .document-container .picture-container .picture-wrapper .thumbnail, .document-viewer-dialog .document-container .video-container .picture-wrapper .thumbnail {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 900; }
+      .document-viewer-dialog .document-container .picture-container .picture-wrapper .thumbnail img, .document-viewer-dialog .document-container .video-container .picture-wrapper .thumbnail img {
+        width: 100%;
+        height: 100%; }
+    .document-viewer-dialog .document-container .picture-container .picture-wrapper .media-action, .document-viewer-dialog .document-container .video-container .picture-wrapper .media-action {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      height: 36px;
+      width: 36px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      z-index: 910;
+      background-color: rgba(0, 0, 0, 0.32);
+      cursor: pointer; }
+      .document-viewer-dialog .document-container .picture-container .picture-wrapper .media-action .progress, .document-viewer-dialog .document-container .video-container .picture-wrapper .media-action .progress {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        height: 32px;
+        width: 32px;
+        transform-origin: center center;
+        animation-name: rotateDonut;
+        animation-duration: 3s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear; }
+        .document-viewer-dialog .document-container .picture-container .picture-wrapper .media-action .progress svg, .document-viewer-dialog .document-container .video-container .picture-wrapper .media-action .progress svg {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 32px;
+          width: 32px; }
+          .document-viewer-dialog .document-container .picture-container .picture-wrapper .media-action .progress svg circle, .document-viewer-dialog .document-container .video-container .picture-wrapper .media-action .progress svg circle {
+            fill: transparent;
+            stroke: var(--white);
+            stroke-width: 2px;
+            stroke-dasharray: 3 88;
+            transition: stroke-dasharray 0.1s ease; }
+      .document-viewer-dialog .document-container .picture-container .picture-wrapper .media-action > svg, .document-viewer-dialog .document-container .video-container .picture-wrapper .media-action > svg {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 24px;
+        height: 24px;
+        color: var(--white);
+        transform: translate(-50%, -50%); }
+    .document-viewer-dialog .document-container .picture-container .picture-wrapper .media-size, .document-viewer-dialog .document-container .video-container .picture-wrapper .media-size {
+      position: absolute;
+      top: calc(50% + 30px);
+      left: 50%;
+      height: 16px;
+      line-height: 16px;
+      font-size: 12px;
+      background-color: rgba(0, 0, 0, 0.32);
+      padding: 1px 4px 0;
+      border-radius: 4px;
+      white-space: nowrap;
+      color: var(--white);
+      transform: translate(-50%, -50%);
+      z-index: 20; }
+    .document-viewer-dialog .document-container .picture-container .picture-wrapper .picture, .document-viewer-dialog .document-container .video-container .picture-wrapper .picture {
       width: 100%;
       height: 100%;
       position: relative;
       z-index: 1000;
       line-height: 0; }
-      .document-viewer-dialog .picture-container .picture-wrapper .picture img {
+      .document-viewer-dialog .document-container .picture-container .picture-wrapper .picture img, .document-viewer-dialog .document-container .video-container .picture-wrapper .picture img {
+        width: 100%;
+        height: 100%; }
+    .document-viewer-dialog .document-container .picture-container .picture-wrapper .video, .document-viewer-dialog .document-container .video-container .picture-wrapper .video {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      line-height: 0;
+      z-index: 1000; }
+      .document-viewer-dialog .document-container .picture-container .picture-wrapper .video video, .document-viewer-dialog .document-container .video-container .picture-wrapper .video video {
         width: 100%;
         height: 100%; }
 
-.document-viewer-dialog .video-container .video-wrapper {
-  position: relative;
-  width: 100%;
-  height: 100%; }
-  .document-viewer-dialog .video-container .video-wrapper.hide {
-    display: none; }
-  .document-viewer-dialog .video-container .video-wrapper .thumbnail {
+.document-viewer-dialog .document-viewer-caption {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  min-height: 32px;
+  max-height: 96px;
+  max-width: 800px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.64);
+  border-radius: 5px;
+  padding: 16px; }
+  .document-viewer-dialog .document-viewer-caption .caption-wrapper {
+    max-width: 100%;
+    min-width: 640px;
+    min-height: 64px;
+    height: 64px; }
+    .document-viewer-dialog .document-viewer-caption .caption-wrapper .caption {
+      font-size: 14px;
+      line-height: 20px;
+      color: var(--white);
+      white-space: pre-wrap;
+      word-break: break-word; }
+
+.document-viewer-dialog .document-viewer-pagination {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1300; }
+  .document-viewer-dialog .document-viewer-pagination .pagination-item {
     position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 900; }
-  .document-viewer-dialog .video-container .video-wrapper .video {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    line-height: 0;
-    z-index: 1000; }
-    .document-viewer-dialog .video-container .video-wrapper .video video {
-      width: 100%;
-      height: 100%; }
+    top: 50%;
+    width: 96px;
+    height: 75%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.1s; }
+    .document-viewer-dialog .document-viewer-pagination .pagination-item[hidden] {
+      display: none; }
+    .document-viewer-dialog .document-viewer-pagination .pagination-item:hover {
+      opacity: 1; }
+    .document-viewer-dialog .document-viewer-pagination .pagination-item.prev {
+      left: 0;
+      transform: translate(-100%, -50%); }
+    .document-viewer-dialog .document-viewer-pagination .pagination-item.next {
+      right: 0;
+      transform: translate(100%, -50%); }
+    .document-viewer-dialog .document-viewer-pagination .pagination-item svg {
+      color: var(--white);
+      font-size: 32px; }
+
+.document-viewer-dialog .document-viewer-controls {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 288px;
+  height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; }
+  .document-viewer-dialog .document-viewer-controls .controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-direction: row-reverse;
+    width: 288px; }
+    .document-viewer-dialog .document-viewer-controls .controls .item {
+      width: 32px;
+      height: 32px;
+      cursor: pointer; }
+      .document-viewer-dialog .document-viewer-controls .controls .item svg {
+        color: var(--white); }
 
 .document-viewer-dialog .float-picture {
   position: fixed;

@@ -8,10 +8,11 @@
 */
 
 const C_MEDIA_TYPE = {
-    AUDIO: 2,
+    AUDIO: 3,
     FILE: 4,
+    Media: -2,
     PHOTO: 1,
-    VIDEO: 3,
+    VIDEO: 2,
     VOICE: 5,
 };
 

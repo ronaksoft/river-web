@@ -26,6 +26,7 @@ import {
     ChatBubbleRounded,
     FormatColorFillRounded,
     CollectionsRounded,
+    Brightness2Rounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import UserAvatar from '../UserAvatar';
@@ -212,7 +213,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                             </div>
                             <div className="page-anchor">
                                 <div className="icon color-night-mode">
-                                    <PaletteRounded/>
+                                    <Brightness2Rounded/>
                                 </div>
                                 <div className="anchor-label">Night Mode</div>
                                 <div className="setting-switch-label">
@@ -226,7 +227,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                             </div>
                         </div>
                         <div className="version">
-                            v0.23.55
+                            v0.23.57
                         </div>
                     </div>
                     <div className="page page-2">

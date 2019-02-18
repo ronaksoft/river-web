@@ -9,10 +9,11 @@
 
 import DB from '../../services/db/media';
 import Dexie from 'dexie';
-import {IMedia} from './interface';
+import {C_MEDIA_TYPE, IMedia} from './interface';
 import {differenceBy, find, merge, uniqBy, clone, throttle} from 'lodash';
 import {DexieMediaDB} from '../../services/db/dexie/media';
-import {InputPeer} from '../../services/sdk/messages/chat.core.types_pb';
+import MessageRepo from '../message';
+import {IMessage} from '../message/interface';
 
 export default class MediaRepo {
     public static getInstance() {
@@ -29,11 +30,13 @@ export default class MediaRepo {
     private db: DexieMediaDB;
     private mediaList: IMedia[] = [];
     private readonly updateThrottle: any = null;
+    private messageRepo: MessageRepo;
 
     private constructor() {
         this.dbService = DB.getInstance();
         this.db = this.dbService.getDB();
         this.updateThrottle = throttle(this.insertToDb, 300);
+        this.messageRepo = MessageRepo.getInstance();
     }
 
     public create(media: IMedia) {
@@ -50,48 +53,67 @@ export default class MediaRepo {
         });
     }
 
-    public getMany({limit, before, after, type}: any, peer: InputPeer): Promise<IMedia[]> {
-        const pipe = this.db.medias.where('[peerid+id+type]');
-        let pipe2: Dexie.Collection<IMedia, number>;
-        let mode = 0x0;
-        if (before !== null && before !== undefined) {
-            mode = mode | 0x1;
-        }
-        if (after !== null && after !== undefined) {
-            mode = mode | 0x2;
-        }
-        limit = limit || 30;
-        let typeMin: any = Dexie.minKey;
-        let typeMax: any = Dexie.maxKey;
-        if (type) {
-            typeMin = type;
-            typeMax = type;
-        }
-        const peerId = peer.getId() || '';
-        switch (mode) {
-            // none
-            default:
-            case 0x0:
-                pipe2 = pipe.between([peerId, Dexie.minKey, typeMin], [peerId, Dexie.maxKey, typeMax], true, true);
-                break;
-            // before
-            case 0x1:
-                pipe2 = pipe.between([peerId, Dexie.minKey, typeMin], [peerId, before, typeMax], true, true);
-                break;
-            // after
-            case 0x2:
-                pipe2 = pipe.between([peerId, after, typeMin], [peerId, Dexie.maxKey, typeMax], true, true);
-                break;
-            // between
-            case 0x3:
-                pipe2 = pipe.between([peerId, after, typeMin], [peerId, before, typeMax], true, true);
-                break;
-        }
-        if (mode !== 0x2) {
-            pipe2 = pipe2.reverse();
-        }
-        pipe2.limit(limit);
-        return pipe2.toArray();
+    public getMany({limit, before, after, type}: any, peerId: string): Promise<IMessage[]> {
+        return new Promise<IMessage[]>((resolve, reject) => {
+            const pipe = this.db.medias.where('[peerid+id+type]');
+            let pipe2: Dexie.Collection<IMedia, number>;
+            let mode = 0x0;
+            if (before !== null && before !== undefined) {
+                mode = mode | 0x1;
+            }
+            if (after !== null && after !== undefined) {
+                mode = mode | 0x2;
+            }
+            limit = limit || 30;
+            let typeMin: any = Dexie.minKey;
+            let typeMax: any = Dexie.maxKey;
+            if (type === C_MEDIA_TYPE.Media) {
+                typeMin = C_MEDIA_TYPE.PHOTO;
+                typeMax = C_MEDIA_TYPE.VIDEO;
+            } else if (type) {
+                typeMin = type;
+                typeMax = type;
+            }
+            switch (mode) {
+                // none
+                default:
+                case 0x0:
+                    pipe2 = pipe.between([peerId, Dexie.minKey, typeMin], [peerId, Dexie.maxKey, typeMax], true, true);
+                    break;
+                // before
+                case 0x1:
+                    pipe2 = pipe.between([peerId, Dexie.minKey, typeMin], [peerId, before, typeMax], true, true);
+                    break;
+                // after
+                case 0x2:
+                    pipe2 = pipe.between([peerId, after, typeMin], [peerId, Dexie.maxKey, typeMax], true, true);
+                    break;
+                // between
+                case 0x3:
+                    pipe2 = pipe.between([peerId, after, typeMin], [peerId, before, typeMax], true, true);
+                    break;
+            }
+            if (mode !== 0x2) {
+                pipe2 = pipe2.reverse();
+            }
+            pipe2.limit(limit);
+            pipe2.toArray().then((list) => {
+                if (list.length === 0) {
+                    resolve([]);
+                } else {
+                    const ids = list.map((media) => {
+                        return media.id;
+                    });
+                    this.messageRepo.getIn(ids).then((result) => {
+                        resolve(result);
+                    }).then((err) => {
+                        reject(err);
+                    });
+                }
+            }).catch((err) => {
+                reject(err);
+            });
+        });
     }
 
     public lazyUpsert(medias: IMedia[]) {

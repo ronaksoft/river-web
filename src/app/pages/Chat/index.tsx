@@ -600,7 +600,7 @@ class Chat extends React.Component<IProps, IState> {
                     </div>}
                 </OverlayDialog>
                 <UserDialog ref={this.userDialogRefHandler}/>
-                <DocumentViewer/>
+                <DocumentViewer onAction={this.messageAttachmentActionHandler}/>
             </div>
         );
     }
@@ -1370,7 +1370,7 @@ class Chat extends React.Component<IProps, IState> {
                 // date breakpoint
                 if (messages.length - 1 === key // End of message list
                     || (defaultMessages.length > 1 && !TimeUtililty.isInSameDay(msg.createdon, defaultMessages[1].createdon))) {
-                    defaultMessages.splice(1, 0, {
+                    defaultMessages.unshift({
                         createdon: msg.createdon,
                         id: msg.id,
                         messagetype: C_MESSAGE_TYPE.Date,
@@ -2955,23 +2955,34 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Attachment action handler */
-    private messageAttachmentActionHandler = (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', message: IMessage) => {
-        switch (cmd) {
-            case 'cancel':
-                this.cancelSend(message.id || 0);
-                break;
-            case 'download':
-                this.downloadFile(message);
-                break;
-            case 'cancel_download':
-                this.cancelDownloadFile(message);
-                break;
-            case 'view':
-                this.viewFile(message);
-                break;
-            case 'open':
-                this.openFile(message);
-                break;
+    private messageAttachmentActionHandler = (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', message: IMessage | number) => {
+        const execute = (msg: IMessage) => {
+            switch (cmd) {
+                case 'cancel':
+                    this.cancelSend(msg.id || 0);
+                    break;
+                case 'download':
+                    this.downloadFile(msg);
+                    break;
+                case 'cancel_download':
+                    this.cancelDownloadFile(msg);
+                    break;
+                case 'view':
+                    this.viewFile(msg);
+                    break;
+                case 'open':
+                    this.openFile(msg);
+                    break;
+            }
+        };
+        if (typeof message === 'number') {
+            this.messageRepo.get(message).then((msg) => {
+                if (msg) {
+                    execute(msg);
+                }
+            });
+        } else {
+            execute(message);
         }
     }
 
