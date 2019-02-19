@@ -2916,7 +2916,7 @@ class Chat extends React.Component<IProps, IState> {
                                 msg.downloaded = true;
                                 if (this.state.messages) {
                                     const index = findIndex(this.state.messages, (o) => {
-                                        return o.id === msg.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                                        return o.id === msg.id && o.messagetype === msg.messagetype;
                                     });
                                     if (index > -1) {
                                         this.state.messages[index] = msg;

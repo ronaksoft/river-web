@@ -1,0 +1,104 @@
+/*
+    Creation Time: 2019 - Feb - 19
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2019
+*/
+@import '../../../style/common';
+
+.peer-media {
+  padding: 6px 0 12px;
+  .peer-media-title {
+    padding: 6px 12px 0;
+    display: flex;
+    align-items: center;
+    .peer-label {
+      flex: 1;
+      text-align: left;
+    }
+    .more {
+      width: 64px;
+      color: var(--river);
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+  }
+  .peer-media-tab {
+    margin: -8px 0 8px;
+    button {
+      min-width: 75px;
+    }
+  }
+  .peer-media-container {
+    padding: 0 0 0 12px;
+    .media-row {
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 6px 0 0;
+      .media-item {
+        position: relative;
+        width: 25%;
+        height: 68px;
+        padding: 0 12px 0 0;
+        cursor: pointer;
+        .photo {
+          height: 100%;
+          width: 100%;
+          border-radius: 3px;
+          overflow: hidden;
+          img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            object-position: center center;
+          }
+        }
+        .video-icon {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          height: 32px;
+          width: 32px;
+          transform: translate(-50%, -50%);
+          z-index: 10;
+          background-color: rgba(0, 0, 0, 0.32);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          svg {
+            font-size: 30px;
+            color: var(--white);
+          }
+        }
+        .media-duration {
+          position: absolute;
+          top: 4px;
+          left: 4px;
+          height: 13px;
+          font-size: 10px;
+          line-height: 10px;
+          background-color: rgba(0, 0, 0, 0.32);
+          padding: 2px 2px 1px;
+          border-radius: 2px;
+          color: var(--white);
+          white-space: nowrap;
+          z-index: 20;
+        }
+      }
+    }
+  }
+}
+
+html[theme="dark"] {
+}
+
+html[theme="dark-blue"] {
+
+}

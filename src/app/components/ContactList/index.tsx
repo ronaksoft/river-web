@@ -228,7 +228,6 @@ class ContactList extends React.Component<IProps, IState> {
                     <div style={style} key={contact.id || ''} className="contact-item"
                          onClick={this.addMemberHandler.bind(this, contact)}>
                     <span className="avatar">
-                        {contact.id}
                         <UserAvatar id={contact.id || ''}/>
                     </span>
                         <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>
@@ -244,7 +243,6 @@ class ContactList extends React.Component<IProps, IState> {
                     <div style={style} key={contact.id || ''} className="contact-item">
                         <Link to={`/chat/${contact.id}`}>
                             <span className="avatar">
-                                {contact.id}
                                 <UserAvatar id={contact.id || ''}/>
                             </span>
                             <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>

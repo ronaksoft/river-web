@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import {IUser} from '../../repository/user/interface';
-import {CloseRounded, CheckRounded, EditRounded, AddRounded} from '@material-ui/icons';
+import {CloseRounded, CheckRounded, EditRounded, AddRounded, KeyboardBackspaceRounded} from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import {InputPeer, PeerNotifySettings, PhoneContact} from '../../services/sdk/messages/chat.core.types_pb';
 import SDK from '../../services/sdk';
@@ -31,6 +31,7 @@ import DialogActions from '@material-ui/core/DialogActions/DialogActions';
 import Scrollbars from 'react-custom-scrollbars';
 import RiverTime from '../../services/utilities/river_time';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
+import PeerMedia from '../PeerMedia';
 
 import './style.css';
 
@@ -118,21 +119,21 @@ class UserInfoMenu extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {user, page, edit, firstname, lastname, phone, isInContact, dialog, notifySettingDialogOpen, notifyValue} = this.state;
+        const {user, page, peer, edit, firstname, lastname, phone, isInContact, dialog, notifySettingDialogOpen, notifyValue} = this.state;
         return (
             <div className="user-info-menu">
-                <div className="menu-header">
-                    <IconButton
-                        aria-label="Close"
-                        aria-haspopup="true"
-                        onClick={this.props.onClose}
-                    >
-                        <CloseRounded/>
-                    </IconButton>
-                    <label>User Info</label>
-                </div>
                 <div className={'page-container page-' + page}>
                     <div className="page page-1">
+                        <div className="menu-header">
+                            <IconButton
+                                aria-label="Close"
+                                aria-haspopup="true"
+                                onClick={this.props.onClose}
+                            >
+                                <CloseRounded/>
+                            </IconButton>
+                            <label>User Info</label>
+                        </div>
                         <Scrollbars
                             autoHide={true}
                         >
@@ -220,7 +221,28 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                             onChange={this.muteChangeHandler}/>
                                     </div>
                                 </div>}
+                                {(dialog && peer) &&
+                                <PeerMedia className="kk-card" peer={peer} full={false}
+                                           onMore={this.peerMediaMoreHandler}/>}
                             </div>
+                        </Scrollbars>
+                    </div>
+                    <div className="page page-2">
+                        <div className="menu-header">
+                            <IconButton
+                                aria-label="Close"
+                                aria-haspopup="true"
+                                onClick={this.peerMediaCloseHandler}
+                            >
+                                <KeyboardBackspaceRounded/>
+                            </IconButton>
+                            <label>Shared Media</label>
+                        </div>
+                        <Scrollbars
+                            autoHide={true}
+                        >
+                            {(dialog && peer) &&
+                            <PeerMedia className="kk-card" peer={peer} full={true}/>}
                         </Scrollbars>
                     </div>
                 </div>
@@ -433,6 +455,20 @@ class UserInfoMenu extends React.Component<IProps, IState> {
             type: 'avatar'
         };
         this.documentViewerService.loadDocument(doc);
+    }
+
+    /* Show more media handler */
+    private peerMediaMoreHandler = () => {
+        this.setState({
+            page: '2',
+        });
+    }
+
+    /* Close media handler */
+    private peerMediaCloseHandler = () => {
+        this.setState({
+            page: '1',
+        });
     }
 }
 

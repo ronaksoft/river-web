@@ -21,7 +21,7 @@ interface IState {
     timestamp: number | null;
 }
 
-class PopUpDate extends React.Component<IProps, IState> {
+class PopUpDate extends React.PureComponent<IProps, IState> {
     private popUpDateTimeout: any;
     private lastTimestamp: number | null | undefined;
 

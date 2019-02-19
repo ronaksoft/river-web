@@ -13,7 +13,7 @@ import {
     CheckRounded,
     CloseRounded,
     EditRounded,
-    ExitToAppRounded,
+    ExitToAppRounded, KeyboardBackspaceRounded,
     MoreVert,
     PersonAddRounded, PhotoCameraRounded,
     StarRateRounded,
@@ -63,6 +63,7 @@ import FileManager, {IFileProgress} from '../../services/sdk/fileManager';
 import ProgressBroadcaster from '../../services/progress';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
 import AvatarCropper from '../AvatarCropper';
+import PeerMedia from '../PeerMedia';
 
 import './style.css';
 
@@ -171,23 +172,22 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {addMemberDialogEnable, avatarMenuAnchorEl, group, page, participants, title, titleEdit, moreAnchorEl, dialog, notifySettingDialogOpen, notifyValue, uploadingPhoto} = this.state;
+        const {addMemberDialogEnable, avatarMenuAnchorEl, group, page, peer, participants, title, titleEdit, moreAnchorEl, dialog, notifySettingDialogOpen, notifyValue, uploadingPhoto} = this.state;
         return (
             <div className="group-info-menu">
                 <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={640}/>
-                <div className="menu-header">
-                    <IconButton
-                        aria-label="Close"
-                        aria-haspopup="true"
-                        onClick={this.props.onClose}
-                    >
-                        <CloseRounded/>
-                    </IconButton>
-                    <label>Group Info</label>
-                </div>
                 <div className={'page-container page-' + page}>
-
                     <div className="page page-1">
+                        <div className="menu-header">
+                            <IconButton
+                                aria-label="Close"
+                                aria-haspopup="true"
+                                onClick={this.props.onClose}
+                            >
+                                <CloseRounded/>
+                            </IconButton>
+                            <label>Group Info</label>
+                        </div>
                         <Scrollbars
                             autoHide={true}
                         >
@@ -277,6 +277,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                         </div>
                                     </div>}
                                 </React.Fragment>}
+                                {(dialog && peer) &&
+                                <PeerMedia className="kk-card" peer={peer} full={false} onMore={this.peerMediaMoreHandler}/>}
                                 {group && <div className="participant kk-card">
                                     <label>{group.participants} participants</label>
                                     {participants.map((participant, index) => {
@@ -307,6 +309,24 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                     <ExitToAppRounded/> Leave the '{group ? group.title : ''}'
                                 </div>
                             </div>
+                        </Scrollbars>
+                    </div>
+                    <div className="page page-2">
+                        <div className="menu-header">
+                            <IconButton
+                                aria-label="Close"
+                                aria-haspopup="true"
+                                onClick={this.peerMediaCloseHandler}
+                            >
+                                <KeyboardBackspaceRounded/>
+                            </IconButton>
+                            <label>Shared Media</label>
+                        </div>
+                        <Scrollbars
+                            autoHide={true}
+                        >
+                            {(dialog && peer) &&
+                            <PeerMedia className="kk-card" peer={peer} full={true}/>}
                         </Scrollbars>
                     </div>
                 </div>
@@ -948,6 +968,20 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             type: 'avatar'
         };
         this.documentViewerService.loadDocument(doc);
+    }
+
+    /* Show more media handler */
+    private peerMediaMoreHandler = () => {
+        this.setState({
+            page: '2',
+        });
+    }
+
+    /* Close media handler */
+    private peerMediaCloseHandler = () => {
+        this.setState({
+            page: '1',
+        });
     }
 }
 
