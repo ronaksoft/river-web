@@ -124,6 +124,8 @@ input {
     border-top: 1px solid var(--light); }
     .setting-menu .page-content:first-of-type {
       border-top: none; }
+    .setting-menu .page-content .page-anchor {
+      cursor: auto !important; }
   .setting-menu .page-anchor {
     padding: 12px 0;
     cursor: pointer;

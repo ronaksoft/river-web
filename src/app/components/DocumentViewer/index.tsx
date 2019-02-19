@@ -28,13 +28,26 @@ import {getMediaInfo} from '../MessageMedia';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import {getHumanReadableSize} from '../MessageFile';
 import ProgressBroadcaster from '../../services/progress';
-import Scrollbars from 'react-custom-scrollbars';
 
 import './style.css';
 
 const C_MAX_WIDTH = 800;
 const C_MAX_HEIGHT = 600;
 const C_CONTAINER_RATIO = C_MAX_HEIGHT / C_MAX_WIDTH;
+
+interface IXY {
+    x: number;
+    y: number;
+}
+
+interface IMediaTransform {
+    origin: IXY;
+    pan: IXY;
+    panStartPos: IXY;
+    rotate: number;
+    startPan: boolean;
+    zoom: number;
+}
 
 interface ISize {
     height: string;
@@ -66,6 +79,24 @@ class DocumentViewer extends React.Component<IProps, IState> {
     private mediaSizeRef: any = null;
     private progressBroadcaster: ProgressBroadcaster;
     private eventReferences: any[] = [];
+    private mediaTransformTimeout: any = null;
+    private mediaTransform: IMediaTransform = {
+        origin: {
+            x: 50,
+            y: 50,
+        },
+        pan: {
+            x: 0,
+            y: 0,
+        },
+        panStartPos: {
+            x: 0,
+            y: 0,
+        },
+        rotate: 0,
+        startPan: false,
+        zoom: 1,
+    };
 
     constructor(props: IProps) {
         super(props);
@@ -86,10 +117,14 @@ class DocumentViewer extends React.Component<IProps, IState> {
     public componentDidMount() {
         this.documentViewerService.setDocumentReady(this.documentReadyHandler);
         window.addEventListener('keydown', this.windowKeyDownHandler, true);
+        window.addEventListener('mousemove', this.mediaDocumentMouseMoveHandler);
+        window.addEventListener('mouseup', this.mediaDocumentMouseUpHandler);
     }
 
     public componentWillUnmount() {
         window.removeEventListener('keydown', this.windowKeyDownHandler, true);
+        window.removeEventListener('mousemove', this.mediaDocumentMouseMoveHandler);
+        window.removeEventListener('mouseup', this.mediaDocumentMouseUpHandler);
     }
 
     public render() {
@@ -100,7 +135,8 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 onClose={this.dialogCloseHandler}
                 className={'document-viewer-dialog ' + className}
             >
-                <div ref={this.documentContainerRefHandler} className="document-container">
+                <div ref={this.documentContainerRefHandler} className="document-container"
+                     onMouseDown={this.mediaDocumentMouseDownHandler} onWheel={this.mediaDocumentWheelHandler}>
                     {this.getContent()}
                 </div>
                 {this.initCaption()}
@@ -222,19 +258,19 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     <div className="item">
                         <MoreVertRounded/>
                     </div>
-                    <div className="item">
+                    <div className="item" onClick={this.transformHandler.bind(this, 'rotate-cw')}>
                         <RotateRightRounded/>
                     </div>
-                    <div className="item">
+                    <div className="item" onClick={this.transformHandler.bind(this, 'rotate-ccw')}>
                         <RotateLeftRounded/>
                     </div>
-                    <div className="item">
+                    <div className="item" onClick={this.transformHandler.bind(this, 'zoom-out')}>
                         <ZoomOutRounded/>
                     </div>
-                    <div className="item">
+                    <div className="item" onClick={this.transformHandler.bind(this, 'zoom-in')}>
                         <ZoomInRounded/>
                     </div>
-                    <div className="item">
+                    <div className="item" onClick={this.transformHandler.bind(this, 'reset')}>
                         <CropFreeRounded/>
                     </div>
                 </div>
@@ -250,13 +286,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         return (
             <div className="document-viewer-caption">
                 <div className="caption-wrapper">
-                    <Scrollbars
-                        autoHide={true}
-                    >
-                        <div>
-                            <div className="caption">{doc.items[0].caption}</div>
-                        </div>
-                    </Scrollbars>
+                    <div className="caption">{doc.items[0].caption}</div>
                 </div>
             </div>
         );
@@ -275,11 +305,32 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
     private getFloatObj() {
         const {doc, size} = this.state;
-        if (!size || !doc || !doc.rect || doc.items.length === 0 || (doc.type === 'video' && !doc.items[0].thumbFileLocation)) {
+        if (!size || !doc || doc.items.length === 0 || (doc.type === 'video' && !doc.items[0].thumbFileLocation)) {
             if (this.pictureWrapperRef) {
                 this.pictureWrapperRef.classList.remove('hide');
             }
             return '';
+        }
+        const fileLocation: any = doc.type === 'video' ? doc.items[0].thumbFileLocation : doc.items[0].fileLocation;
+        if (!doc.rect) {
+            if (this.pictureWrapperRef) {
+                this.pictureWrapperRef.classList.remove('hide');
+            }
+            if (size) {
+                return (<div ref={this.floatPictureRefHandler} className="float-picture hide" style={{
+                    borderRadius: `0`,
+                    height: `${size.height}px`,
+                    left: `50%`,
+                    top: `50%`,
+                    transform: `translate(-50%, -50%)`,
+                    width: `${size.width}px`,
+                }}>
+                    <CachedPhoto className="picture"
+                                 fileLocation={doc.items[0].downloaded === false ? doc.items[0].thumbFileLocation : fileLocation}/>
+                </div>);
+            } else {
+                return '';
+            }
         }
         if (this.state.dialogOpen && !this.animated) {
             this.animated = true;
@@ -287,7 +338,6 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 this.animateInFloatPicture(size);
             }, 10);
         }
-        const fileLocation: any = doc.type === 'video' ? doc.items[0].thumbFileLocation : doc.items[0].fileLocation;
         return (<div ref={this.floatPictureRefHandler} className="float-picture" style={{
             height: `${doc.rect.height}px`,
             left: `${doc.rect.left}px`,
@@ -362,9 +412,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 size: undefined,
             });
             this.animated = false;
+            this.reset();
         };
         const {doc} = this.state;
-        this.reset();
         if (doc && (doc.type === 'picture' || doc.type === 'video')) {
             this.animateOutFloatPicture(() => {
                 closeDialog();
@@ -619,6 +669,97 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 canceller();
             }
         });
+    }
+
+    /* Document transform handler */
+    private transformHandler = (cmd: string) => {
+        switch (cmd) {
+            case 'zoom-in':
+                this.mediaTransform.zoom += 0.15;
+                break;
+            case 'zoom-out':
+                this.mediaTransform.zoom -= 0.15;
+                break;
+            case 'rotate-cw':
+                this.mediaTransform.rotate += 90;
+                break;
+            case 'rotate-ccw':
+                this.mediaTransform.rotate -= 90;
+                break;
+            case 'reset':
+                this.mediaTransform.zoom = 1.0;
+                this.mediaTransform.pan.x = 0;
+                this.mediaTransform.pan.y = 0;
+                this.mediaTransform.origin.x = 50;
+                this.mediaTransform.origin.y = 50;
+                this.mediaTransform.rotate = 0;
+                break;
+        }
+        this.applyMediaTransform(true);
+    }
+
+    /* Document mouse down handler */
+    private mediaDocumentMouseDownHandler = (e: any) => {
+        if (e.button !== 0) {
+            return;
+        }
+        this.mediaTransform.startPan = true;
+        this.mediaTransform.panStartPos.x = e.pageX - this.mediaTransform.pan.x;
+        this.mediaTransform.panStartPos.y = e.pageY - this.mediaTransform.pan.y;
+        this.applyMediaTransform(false);
+    }
+
+    /* Document mouse move handler */
+    private mediaDocumentMouseMoveHandler = (e: any) => {
+        if (!this.mediaTransform.startPan) {
+            return;
+        }
+        e.preventDefault();
+        this.mediaTransform.pan.x = (e.pageX - this.mediaTransform.panStartPos.x);
+        this.mediaTransform.pan.y = (e.pageY - this.mediaTransform.panStartPos.y);
+        this.applyMediaTransform(false);
+    }
+
+    /* Document mouse up handler */
+    private mediaDocumentMouseUpHandler = (e: any) => {
+        if (this.mediaTransform.startPan) {
+            e.preventDefault();
+            this.mediaTransform.startPan = false;
+        }
+    }
+
+    /* Document wheel handler */
+    private mediaDocumentWheelHandler = (e: any) => {
+        if (!e.ctrlKey && !e.metaKey) {
+            this.mediaTransform.zoom += e.deltaY / 100;
+        } else {
+            this.mediaTransform.pan.x -= e.deltaX;
+            this.mediaTransform.pan.y -= e.deltaY;
+        }
+        window.console.log(e.currentTarget);
+        this.applyMediaTransform(false);
+    }
+
+    /* Apply media transform */
+    private applyMediaTransform(animate: boolean) {
+        if (!this.documentContainerRef) {
+            return;
+        }
+        if (this.mediaTransform.zoom < 0.1) {
+            this.mediaTransform.zoom = 0.1;
+        }
+        if (this.mediaTransform.zoom > 10) {
+            this.mediaTransform.zoom = 10;
+        }
+        this.mediaTransform.rotate = this.mediaTransform.rotate % 360;
+        if (animate) {
+            clearTimeout(this.mediaTransformTimeout);
+            this.documentContainerRef.style.transition = `all 0.2s`;
+            this.mediaTransformTimeout = setTimeout(() => {
+                this.documentContainerRef.style.transition = `none`;
+            }, 200);
+        }
+        this.documentContainerRef.style.transform = `translate(${this.mediaTransform.pan.x}px, ${this.mediaTransform.pan.y}px) scale(${this.mediaTransform.zoom}) rotate(${this.mediaTransform.rotate}deg)`;
     }
 }
 

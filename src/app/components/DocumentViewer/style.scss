@@ -56,6 +56,8 @@
     }
   }
   .document-container {
+    position: relative;
+    z-index: 1310;
     &.animate.prev {
       animation: swipe-right 0.3s normal forwards ease-in-out;
       animation-iteration-count: 1;
@@ -68,6 +70,7 @@
       position: relative;
       width: 640px;
       height: 640px;
+      overflow: hidden;
       .thumbnail {
         position: absolute;
         top: 0;
@@ -213,7 +216,7 @@
     left: 50%;
     transform: translateX(-50%);
     min-height: 32px;
-    max-height: 96px;
+    max-height: 256px;
     max-width: 800px;
     display: flex;
     align-items: flex-end;
@@ -223,9 +226,8 @@
     padding: 16px;
     .caption-wrapper {
       max-width: 100%;
-      min-width: 640px;
-      min-height: 64px;
-      height: 64px;
+      //min-width: 640px;
+      min-height: 20px;
       .caption {
         font-size: 14px;
         line-height: 20px;

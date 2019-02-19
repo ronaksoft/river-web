@@ -147,19 +147,31 @@ export default class FileManager {
 
     /* Receive the whole file */
     public receiveFile(location: core_types_pb.InputFileLocation, size: number, mimeType: string, onProgress?: (e: IFileProgress) => void) {
-        let internalResolve = null;
-        let internalReject = null;
+        let internalResolve: any = null;
+        let internalReject: any = null;
 
         const promise = new Promise((res, rej) => {
             internalResolve = res;
             internalReject = rej;
         });
 
-        this.prepareDownloadTransfer(location, size, mimeType, internalResolve, internalReject, () => {
-            if (this.httpWorkers[1] && this.httpWorkers[1].isReady()) {
-                this.startDownloadQueue();
+        const download = () => {
+            this.prepareDownloadTransfer(location, size, mimeType, internalResolve, internalReject, () => {
+                if (this.httpWorkers[1] && this.httpWorkers[1].isReady()) {
+                    this.startDownloadQueue();
+                }
+            }, onProgress);
+        };
+
+        this.fileRepo.get(location.getFileid() || '').then((res) => {
+            if (res) {
+                internalResolve();
+            } else {
+                download();
             }
-        }, onProgress);
+        }).catch(() => {
+            download();
+        });
 
         return promise;
     }

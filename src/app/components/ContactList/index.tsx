@@ -220,13 +220,15 @@ class ContactList extends React.Component<IProps, IState> {
     private rowRender = ({index, key, parent, style}: any): any => {
         const contact = this.state.contacts[index];
         if (contact.category) {
-            return (<div style={style} key={index} className="category-item">{contact.category}</div>);
+            return (<div style={style} key={`${index}-${contact.category}`}
+                         className="category-item">{contact.category}</div>);
         } else {
             if (this.props.mode === 'chip') {
                 return (
-                    <div style={style} key={index} className="contact-item"
+                    <div style={style} key={contact.id || ''} className="contact-item"
                          onClick={this.addMemberHandler.bind(this, contact)}>
                     <span className="avatar">
+                        {contact.id}
                         <UserAvatar id={contact.id || ''}/>
                     </span>
                         <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>
@@ -239,9 +241,10 @@ class ContactList extends React.Component<IProps, IState> {
                 );
             } else {
                 return (
-                    <div style={style} key={index} className="contact-item">
+                    <div style={style} key={contact.id || ''} className="contact-item">
                         <Link to={`/chat/${contact.id}`}>
                             <span className="avatar">
+                                {contact.id}
                                 <UserAvatar id={contact.id || ''}/>
                             </span>
                             <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>
