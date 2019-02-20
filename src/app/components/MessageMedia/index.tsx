@@ -11,6 +11,7 @@ import * as React from 'react';
 import {IMessage} from '../../repository/message/interface';
 import {FileLocation, InputPeer} from '../../services/sdk/messages/chat.core.types_pb';
 import {
+    DocumentAttributeFile,
     DocumentAttributePhoto,
     DocumentAttributeType, DocumentAttributeVideo,
     MediaDocument
@@ -38,6 +39,7 @@ export interface IMediaInfo {
     caption: string;
     duration?: number;
     file: FileLocation.AsObject;
+    fileName: string;
     hasRelation: boolean;
     height: number;
     size: number;
@@ -54,6 +56,7 @@ export const getMediaInfo = (message: IMessage): IMediaInfo => {
             clusterid: 0,
             fileid: '',
         },
+        fileName: '',
         hasRelation: false,
         height: 0,
         size: 0,
@@ -97,6 +100,9 @@ export const getMediaInfo = (message: IMessage): IMediaInfo => {
             info.height = docAttr.height || 0;
             info.width = docAttr.width || 0;
             info.duration = docAttr.duration;
+        } else if (attr.type === DocumentAttributeType.ATTRIBUTETYPEFILE && message.attributes) {
+            const docAttr: DocumentAttributeFile.AsObject = message.attributes[index];
+            info.fileName = docAttr.filename || '';
         }
     });
     return info;
@@ -116,7 +122,7 @@ interface IState {
     message: IMessage;
 }
 
-class MessageMedia extends React.PureComponent<IProps, IState> {
+class MessageMedia extends React.Component<IProps, IState> {
     private messageMediaClass: string = '';
     private lastId: number = 0;
     private fileId: string = '';
@@ -205,6 +211,9 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
             this.downloaded = (newProps.message.downloaded || false);
             this.setState({
                 fileState: this.getFileState(newProps.message),
+                message: newProps.message,
+            }, () => {
+                this.forceUpdate();
             });
         }
         if ((newProps.message.saved || false) !== this.saved) {
@@ -449,6 +458,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
             return;
         }
         const doc: IDocument = {
+            anchor: 'message',
             items: [{
                 caption: info.caption,
                 downloaded: message.downloaded || false,

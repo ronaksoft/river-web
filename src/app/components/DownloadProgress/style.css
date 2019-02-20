@@ -1,0 +1,135 @@
+/*
+    Creation Time: 2019 - Feb - 20
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2019
+*/
+/*
+    Creation Time: 2018 - Aug - 18
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+*, *:before, *:after {
+  box-sizing: border-box; }
+
+:root {
+  --river: #27AE60;
+  --river-dark: #2E8F57;
+  --river-light: #29C16D;
+  --white: #FFF;
+  --black: #000;
+  --black-text: #323D47;
+  --bg: #F8F8F8;
+  --grey: #999;
+  --grey-low: #555;
+  --dark: #1A1A1A;
+  --light: #E6E6E6;
+  --light-alt: #f1f2f2;
+  --wrapper: 1200px;
+  --blue: #00B0FF;
+  --light-blue: rgba(54, 115, 249, 0.2);
+  --green: #DCf8C6;
+  --message-chat: #EFEFF0;
+  --color-hover: rgba(50, 61, 71, 0.07);
+  --color-hover-dark: rgba(50, 61, 71, 0.12);
+  --color-text-hover: rgba(50, 61, 71, 0.64);
+  --header-color: #eee;
+  --light-mention: #2678b6;
+  --glass-dark-low: rgba(0, 0, 0, 0.05);
+  --glass-dark-high: rgba(0, 0, 0, 0.20);
+  --dark-low: #191919;
+  --dark-medium: #232323;
+  --dark-high: #333333;
+  --dark-hover: rgba(183, 222, 255, 0.07);
+  --dark-hover-light: rgba(183, 222, 255, 0.12);
+  --dark-accent-low: #003367;
+  --dark-accent-medium: #004783;
+  --dark-accent-high: #005EAE;
+  --dark-mention: #2d9fee;
+  --dark-blue-low: #1A212E;
+  --dark-blue-medium: #232F40;
+  --dark-blue-high: #14395f;
+  --dark-blue-high-alt: #2EA2FE;
+  --dark-blue-hover: rgba(46, 162, 254, 0.5);
+  --dark-blue-hover-light: rgba(46, 162, 254, 0.3);
+  --dark-blue-accent-low: #3E6A96;
+  --dark-blue-accent-medium: #344359;
+  --dark-blue-mention: #2eadff;
+  --red: #cc0000; }
+
+body {
+  background-color: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
+  font-weight: 400;
+  background-size: cover;
+  background-repeat: no-repeat; }
+
+input {
+  font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
+  font-weight: 400; }
+
+.download-progress-container .media-action {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 36px;
+  width: 36px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  z-index: 910;
+  background-color: rgba(0, 0, 0, 0.32);
+  cursor: pointer; }
+  .download-progress-container .media-action .progress {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    height: 32px;
+    width: 32px;
+    transform-origin: center center;
+    animation-name: rotateDonut;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear; }
+    .download-progress-container .media-action .progress svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 32px;
+      width: 32px; }
+      .download-progress-container .media-action .progress svg circle {
+        fill: transparent;
+        stroke: var(--white);
+        stroke-width: 2px;
+        stroke-dasharray: 3 88;
+        transition: stroke-dasharray 0.1s ease; }
+  .download-progress-container .media-action > svg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 24px;
+    height: 24px;
+    color: var(--white);
+    transform: translate(-50%, -50%); }
+
+.download-progress-container .media-size {
+  position: absolute;
+  top: calc(50% + 30px);
+  left: 50%;
+  height: 16px;
+  line-height: 16px;
+  font-size: 12px;
+  background-color: rgba(0, 0, 0, 0.32);
+  padding: 1px 4px 0;
+  border-radius: 4px;
+  white-space: nowrap;
+  color: var(--white);
+  transform: translate(-50%, -50%);
+  z-index: 920; }

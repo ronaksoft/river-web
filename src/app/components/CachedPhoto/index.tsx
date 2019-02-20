@@ -40,11 +40,7 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
     }
 
     public componentDidMount() {
-        this.cachedFileService.getFile(this.props.fileLocation, 0, this.props.searchTemp, this.props.blur).then((src) => {
-            this.setState({
-                src,
-            });
-        });
+        this.getFile();
     }
 
     public componentWillUnmount() {
@@ -58,6 +54,14 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
                 {src && <img src={src} onLoad={this.props.onLoad}/>}
             </div>
         );
+    }
+
+    private getFile() {
+        this.cachedFileService.getFile(this.props.fileLocation, 0, this.props.searchTemp, this.props.blur).then((src) => {
+            this.setState({
+                src,
+            });
+        });
     }
 }
 

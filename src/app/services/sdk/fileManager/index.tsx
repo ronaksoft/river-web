@@ -165,6 +165,16 @@ export default class FileManager {
 
         this.fileRepo.get(location.getFileid() || '').then((res) => {
             if (res) {
+                if (onProgress) {
+                    onProgress({
+                        download: 10,
+                        progress: 1,
+                        state: 'complete',
+                        totalDownload: 10,
+                        totalUpload: 10,
+                        upload: 10,
+                    });
+                }
                 internalResolve();
             } else {
                 download();
@@ -370,14 +380,14 @@ export default class FileManager {
                 if (chunk) {
                     const part = chunk.part;
                     const uploadProgress = (e: any) => {
-                        if (this.fileTransferQueue.hasOwnProperty(id)) {
+                        if (this.fileTransferQueue.hasOwnProperty(id) && this.fileTransferQueue[id].updates[part - 1]) {
                             const index = part - 1;
                             this.fileTransferQueue[id].updates[index].upload = e.loaded;
                             this.fileTransferQueue[id].updates[index].uploadSize = e.total;
                         }
                     };
                     const downloadProgress = (e: any) => {
-                        if (this.fileTransferQueue.hasOwnProperty(id)) {
+                        if (this.fileTransferQueue.hasOwnProperty(id) && this.fileTransferQueue[id].updates[part - 1]) {
                             const index = part - 1;
                             this.fileTransferQueue[id].updates[index].download = e.loaded;
                             this.fileTransferQueue[id].updates[index].downloadSize = e.total;

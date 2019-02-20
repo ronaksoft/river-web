@@ -1182,7 +1182,7 @@ class Chat extends React.Component<IProps, IState> {
 
         let before = 100000000;
         if (dialog) {
-            before = (dialog.topmessageid || 0) + 1;
+            before = (dialog.topmessageid || 0) + 100;
         }
         let minId: number = 0;
         this.messageRepo.getMany({peer, limit: 25, before, ignoreMax: true}, (data) => {
@@ -3036,12 +3036,19 @@ class Chat extends React.Component<IProps, IState> {
                     this.fileManager.receiveFile(fileLocation, mediaDocument.doc.filesize || 0, mediaDocument.doc.mimetype || 'application/octet-stream', (progress) => {
                         this.progressBroadcaster.publish(msg.id || 0, progress);
                     }).then(() => {
+                        this.broadcastEvent('File_Downloaded', {id: msg.id});
                         this.progressBroadcaster.remove(msg.id || 0);
                         msg.downloaded = true;
                         this.messageRepo.lazyUpsert([msg]);
-                        // Force update messages
-                        this.messageComponent.list.forceUpdateGrid();
-                        window.console.log('done');
+                        if (this.state.selectedDialogId === msg.peerid) {
+                            const {messages} = this.state;
+                            const index = findIndex(messages, {id: msg.id, messagetype: msg.messagetype});
+                            if (index > -1) {
+                                messages[index].downloaded = true;
+                                // Force update messages
+                                this.messageComponent.list.forceUpdateGrid();
+                            }
+                        }
                     }).catch((err) => {
                         window.console.log(err);
                         this.progressBroadcaster.failed(msg.id || 0);
@@ -3360,6 +3367,14 @@ class Chat extends React.Component<IProps, IState> {
         //         this.messageComponent.fitList(false, true);
         //     }
         // }, 210);
+    }
+
+    private broadcastEvent(name: string, data: any) {
+        const event = new CustomEvent(name, {
+            bubbles: false,
+            detail: data,
+        });
+        window.dispatchEvent(event);
     }
 }
 

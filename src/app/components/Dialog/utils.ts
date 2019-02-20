@@ -15,6 +15,12 @@ export const getMessageTitle = (message: IMessage): string => {
             }
             if (message.messagetype === C_MESSAGE_TYPE.Voice) {
                 return 'Voice Message';
+            } else if (message.messagetype === C_MESSAGE_TYPE.Music) {
+                return 'Audio Message';
+            } else if (message.messagetype === C_MESSAGE_TYPE.Video) {
+                return 'Video Message';
+            } else if (message.messagetype === C_MESSAGE_TYPE.File) {
+                return 'File';
             } else if (message.messagetype === C_MESSAGE_TYPE.Contact) {
                 return 'Contact';
             } else {

@@ -16,7 +16,7 @@ import {
     RotateRightRounded,
     ZoomInRounded,
     ZoomOutRounded,
-    CropFreeRounded, CloudDownloadRounded, CloseRounded,
+    CropFreeRounded,
 } from '@material-ui/icons';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import DocumentViewService, {IDocument} from '../../services/documentViewerService';
@@ -25,9 +25,7 @@ import CachedVideo from '../CachedVideo';
 import {IMessage} from '../../repository/message/interface';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 import {getMediaInfo} from '../MessageMedia';
-import {IFileProgress} from '../../services/sdk/fileManager';
-import {getHumanReadableSize} from '../MessageFile';
-import ProgressBroadcaster from '../../services/progress';
+import DownloadProgress from '../DownloadProgress';
 
 import './style.css';
 
@@ -75,10 +73,6 @@ class DocumentViewer extends React.Component<IProps, IState> {
     private floatPictureRef: any = null;
     private animated: boolean = false;
     private documentContainerRef: any = null;
-    private circleProgressRef: any = null;
-    private mediaSizeRef: any = null;
-    private progressBroadcaster: ProgressBroadcaster;
-    private eventReferences: any[] = [];
     private mediaTransformTimeout: any = null;
     private mediaTransform: IMediaTransform = {
         origin: {
@@ -97,6 +91,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         startPan: false,
         zoom: 1,
     };
+    private lastAnchorType?: 'message' | 'shared_media' | 'shared_media_full';
 
     constructor(props: IProps) {
         super(props);
@@ -111,7 +106,6 @@ class DocumentViewer extends React.Component<IProps, IState> {
         };
 
         this.documentViewerService = DocumentViewService.getInstance();
-        this.progressBroadcaster = ProgressBroadcaster.getInstance();
     }
 
     public componentDidMount() {
@@ -221,22 +215,13 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     private getDownloadAction() {
-        const {fileState} = this.state;
-        return (
-            <div className="media-action">
-                <div className="media-size" ref={this.mediaSizeRefHandler}>0 KB</div>
-                {Boolean(fileState === 'download') &&
-                <CloudDownloadRounded onClick={this.downloadFileHandler}/>}
-                {Boolean(fileState === 'progress') && <React.Fragment>
-                    <div className="progress">
-                        <svg viewBox='0 0 32 32'>
-                            <circle ref={this.progressRefHandler} r='14' cx='16' cy='16'/>
-                        </svg>
-                    </div>
-                    <CloseRounded className="action" onClick={this.cancelFileHandler}/>
-                </React.Fragment>}
-            </div>
-        );
+        const {doc} = this.state;
+        if (!doc || !(doc.items.length > 0 && doc.items[0].downloaded === false)) {
+            return '';
+        }
+
+        return (<DownloadProgress id={doc.items[0].id || 0} fileSize={doc.items[0].fileSize || 0}
+                                  onAction={this.props.onAction} onComplete={this.downloadCompleteHandler}/>);
     }
 
     private initPagination() {
@@ -301,7 +286,6 @@ class DocumentViewer extends React.Component<IProps, IState> {
         this.setState({
             doc: null,
         });
-        this.removeAllListeners();
         if (!this.documentContainerRef) {
             return;
         }
@@ -450,6 +434,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
     private dialogOpen = (doc: IDocument) => {
         const download = (doc.items.length > 0 && doc.items[0].downloaded === false);
+        this.lastAnchorType = doc.anchor;
         this.setState({
             dialogOpen: true,
             doc,
@@ -458,11 +443,6 @@ class DocumentViewer extends React.Component<IProps, IState> {
             if (doc.type === 'picture' || doc.type === 'video') {
                 this.calculateImageSize();
                 this.initPaginationHandlers();
-                if (download) {
-                    setTimeout(() => {
-                        this.displayFileSize(-1);
-                    }, 10);
-                }
             }
         });
     }
@@ -563,6 +543,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     private loadMedia(message: IMessage) {
         const info = getMediaInfo(message);
         const doc: IDocument = {
+            anchor: this.lastAnchorType,
             items: [{
                 caption: info.caption,
                 downloaded: message.downloaded || false,
@@ -577,124 +558,6 @@ class DocumentViewer extends React.Component<IProps, IState> {
             type: message.messagetype === C_MESSAGE_TYPE.Picture ? 'picture' : 'video',
         };
         this.documentViewerService.loadDocument(doc);
-    }
-
-    /* Progress circle ref handler */
-    private progressRefHandler = (ref: any) => {
-        this.circleProgressRef = ref;
-    }
-
-    /* Download progress handler */
-    private downloadProgressHandler = (progress: IFileProgress) => {
-        const {doc} = this.state;
-        if (!doc || doc.items.length === 0) {
-            return;
-        }
-        if ((doc.items[0].id || 0) > 0) {
-            this.displayFileSize(progress.download);
-        } else {
-            this.displayFileSize(progress.upload);
-        }
-        if (!this.circleProgressRef) {
-            return;
-        }
-        let v = 3;
-        if (progress.state === 'failed') {
-            this.setState({
-                fileState: 'download',
-            });
-            return;
-        } else if (progress.state !== 'complete' && progress.download > 0) {
-            v = progress.progress * 85;
-        } else if (progress.state === 'complete') {
-            v = 88;
-            doc.items[0].downloaded = true;
-            this.setState({
-                doc,
-            });
-        }
-        if (v < 3) {
-            v = 3;
-        }
-        this.circleProgressRef.style.strokeDasharray = `${v} 88`;
-    }
-
-    /* Download file handler */
-    private downloadFileHandler = () => {
-        const {doc} = this.state;
-        if (!doc || doc.items.length === 0) {
-            return;
-        }
-        if (this.props.onAction) {
-            this.props.onAction('download', doc.items[0].id || 0);
-            this.setState({
-                fileState: 'progress',
-            }, () => {
-                this.initProgress();
-            });
-        }
-    }
-
-    /* Cancel file download/upload */
-    private cancelFileHandler = () => {
-        const {doc} = this.state;
-        if (!doc || doc.items.length === 0) {
-            return;
-        }
-        if (this.props.onAction) {
-            this.props.onAction('cancel_download', doc.items[0].id || 0);
-        }
-    }
-
-    /* Initialize progress bar */
-    private initProgress() {
-        const {doc} = this.state;
-        if (!doc || doc.items.length === 0) {
-            return;
-        }
-        if (this.state.fileState === 'progress') {
-            this.removeAllListeners();
-            this.eventReferences.push(this.progressBroadcaster.listen(doc.items[0].id || 0, this.downloadProgressHandler));
-        } else {
-            if (this.progressBroadcaster.isActive(doc.items[0].id || 0)) {
-                this.setState({
-                    fileState: 'progress',
-                }, () => {
-                    this.removeAllListeners();
-                    this.eventReferences.push(this.progressBroadcaster.listen(doc.items[0].id || 0, this.downloadProgressHandler));
-                });
-            }
-        }
-    }
-
-    /* File size ref handler */
-    private mediaSizeRefHandler = (ref: any) => {
-        this.mediaSizeRef = ref;
-    }
-
-    /* Display file size */
-    private displayFileSize(loaded: number) {
-        if (!this.mediaSizeRef) {
-            return;
-        }
-        const {doc} = this.state;
-        if (!doc || doc.items.length === 0) {
-            return;
-        }
-        if (loaded <= 0) {
-            this.mediaSizeRef.innerText = `${getHumanReadableSize(doc.items[0].fileSize || 0)}`;
-        } else {
-            this.mediaSizeRef.innerText = `${getHumanReadableSize(loaded)} / ${getHumanReadableSize(doc.items[0].fileSize || 0)}`;
-        }
-    }
-
-    /* Remove all listeners */
-    private removeAllListeners() {
-        this.eventReferences.forEach((canceller) => {
-            if (typeof canceller === 'function') {
-                canceller();
-            }
-        });
     }
 
     /* Document transform handler */
@@ -785,6 +648,19 @@ class DocumentViewer extends React.Component<IProps, IState> {
             }, 200);
         }
         this.documentContainerRef.style.transform = `translate(${this.mediaTransform.pan.x}px, ${this.mediaTransform.pan.y}px) scale(${this.mediaTransform.zoom}) rotate(${this.mediaTransform.rotate}deg)`;
+    }
+
+    /* Download complete handler */
+    private downloadCompleteHandler = () => {
+        const {doc} = this.state;
+        if (!doc || doc.items.length === 0) {
+            return;
+        }
+        doc.items[0].downloaded = true;
+        window.console.log('here');
+        this.setState({
+            doc,
+        });
     }
 }
 

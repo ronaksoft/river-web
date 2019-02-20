@@ -87,6 +87,8 @@ export const getFileExtension = (type: string) => {
             return 'mpg';
         case 'audio/wma':
             return 'wma';
+        case 'audio/mp3':
+            return 'mp3';
         case 'audio/mp4':
             return 'm4a';
         case 'audio/ogg':
