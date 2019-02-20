@@ -25,7 +25,7 @@ interface IState {
     src?: string;
 }
 
-class CachedVideo extends React.Component<IProps, IState> {
+class CachedVideo extends React.PureComponent<IProps, IState> {
     private cachedFileService: CachedFileService;
 
     constructor(props: IProps) {

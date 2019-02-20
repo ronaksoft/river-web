@@ -26,7 +26,7 @@ interface IState {
     src?: string;
 }
 
-class CachedPhoto extends React.Component<IProps, IState> {
+class CachedPhoto extends React.PureComponent<IProps, IState> {
     private cachedFileService: CachedFileService;
 
     constructor(props: IProps) {

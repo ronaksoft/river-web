@@ -224,7 +224,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     public viewDocument = () => {
         const {fileState} = this.state;
         if (this.pictureBigRef && (fileState === 'view' || fileState === 'open')) {
-            this.showPictureHandler(this.pictureBigRef);
+            this.showMediaHandler(this.pictureBigRef);
         }
     }
 
@@ -261,7 +261,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                     {Boolean(fileState === 'view' || fileState === 'open') && <React.Fragment>
                         <div ref={this.pictureBigRefHandler} style={{height: this.pictureContentSize.height}}
                              className="media-big"
-                             onClick={this.showPictureHandler}>
+                             onClick={this.showMediaHandler}>
                             {this.blurredImageEnable &&
                             <CachedPhoto className="blurred-picture" blur={10}
                                          fileLocation={info.thumbFile}/>}
@@ -439,8 +439,8 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         };
     }
 
-    /* Show picture handler */
-    private showPictureHandler = (e: any) => {
+    /* Show media handler */
+    private showMediaHandler = (e: any) => {
         if (e.stopPropagation) {
             e.stopPropagation();
         }
@@ -451,7 +451,9 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         const doc: IDocument = {
             items: [{
                 caption: info.caption,
+                downloaded: message.downloaded || false,
                 fileLocation: info.file,
+                fileSize: info.size,
                 height: info.height,
                 id: message.id || 0,
                 thumbFileLocation: message.messagetype !== C_MESSAGE_TYPE.Picture ? info.thumbFile : undefined,

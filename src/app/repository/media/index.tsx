@@ -47,6 +47,10 @@ export default class MediaRepo {
         return this.db.medias.bulkPut(media);
     }
 
+    public removeMany(ids: number[]) {
+        return this.db.medias.bulkDelete(ids);
+    }
+
     public get(id: number): Promise<IMedia> {
         return this.db.medias.get(id).then((g: IMedia) => {
             return g;
@@ -70,6 +74,9 @@ export default class MediaRepo {
             if (type === C_MEDIA_TYPE.Media) {
                 typeMin = C_MEDIA_TYPE.PHOTO;
                 typeMax = C_MEDIA_TYPE.VIDEO;
+            } else if (type === C_MEDIA_TYPE.Music) {
+                typeMin = C_MEDIA_TYPE.AUDIO;
+                typeMax = C_MEDIA_TYPE.VOICE;
             } else if (type) {
                 typeMin = type;
                 typeMax = type;
@@ -78,7 +85,7 @@ export default class MediaRepo {
                 // none
                 default:
                 case 0x0:
-                    pipe2 = pipe.between([peerId, Dexie.minKey, typeMin], [peerId, Dexie.maxKey, typeMax], true, true);
+                    pipe2 = pipe.between([peerId, Dexie.minKey, 1], [peerId, Dexie.maxKey, 1], true, true);
                     break;
                 // before
                 case 0x1:
@@ -96,15 +103,19 @@ export default class MediaRepo {
             if (mode !== 0x2) {
                 pipe2 = pipe2.reverse();
             }
-            pipe2.limit(limit);
-            pipe2.toArray().then((list) => {
+            if (type) {
+                pipe2 = pipe2.filter((item) => {
+                    return item.type >= typeMin && item.type <= typeMax;
+                });
+            }
+            pipe2.limit(limit).toArray().then((list) => {
                 if (list.length === 0) {
                     resolve([]);
                 } else {
                     const ids = list.map((media) => {
                         return media.id;
                     });
-                    this.messageRepo.getIn(ids).then((result) => {
+                    this.messageRepo.getIn(ids, (mode === 0x2)).then((result) => {
                         resolve(result);
                     }).then((err) => {
                         reject(err);

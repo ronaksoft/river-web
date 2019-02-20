@@ -278,7 +278,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                     </div>}
                                 </React.Fragment>}
                                 {(dialog && peer) &&
-                                <PeerMedia className="kk-card" peer={peer} full={false} onMore={this.peerMediaMoreHandler}/>}
+                                <PeerMedia className="kk-card" peer={peer} full={false}
+                                           onMore={this.peerMediaMoreHandler}/>}
                                 {group && <div className="participant kk-card">
                                     <label>{group.participants} participants</label>
                                     {participants.map((participant, index) => {
@@ -322,12 +323,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                             </IconButton>
                             <label>Shared Media</label>
                         </div>
-                        <Scrollbars
-                            autoHide={true}
-                        >
-                            {(dialog && peer) &&
-                            <PeerMedia className="kk-card" peer={peer} full={true}/>}
-                        </Scrollbars>
+                        {(dialog && peer) &&
+                        <PeerMedia className="kk-card" peer={peer} full={true}/>}
                     </div>
                 </div>
                 <Menu

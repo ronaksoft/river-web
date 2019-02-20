@@ -238,12 +238,8 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                             </IconButton>
                             <label>Shared Media</label>
                         </div>
-                        <Scrollbars
-                            autoHide={true}
-                        >
-                            {(dialog && peer) &&
-                            <PeerMedia className="kk-card" peer={peer} full={true}/>}
-                        </Scrollbars>
+                        {(dialog && peer) &&
+                        <PeerMedia className="kk-card" peer={peer} full={true}/>}
                     </div>
                 </div>
                 <Dialog

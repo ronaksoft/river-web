@@ -9,11 +9,12 @@
 
 const C_MEDIA_TYPE = {
     AUDIO: 3,
-    FILE: 4,
+    FILE: 5,
     Media: -2,
+    Music: -3,
     PHOTO: 1,
     VIDEO: 2,
-    VOICE: 5,
+    VOICE: 4,
 };
 
 interface IMedia {

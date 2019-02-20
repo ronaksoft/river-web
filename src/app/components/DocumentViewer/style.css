@@ -62,9 +62,12 @@
       left: 0;
       filter: blur(40px);
       background-color: var(--dark-low); }
-      .document-viewer-dialog .document-container .avatar-container .thumbnail img {
+      .document-viewer-dialog .document-container .avatar-container .thumbnail .thumb-picture {
         height: 100%;
         width: 100%; }
+        .document-viewer-dialog .document-container .avatar-container .thumbnail .thumb-picture img {
+          height: 100%;
+          width: 100%; }
     .document-viewer-dialog .document-container .avatar-container .photo {
       position: absolute;
       top: 0;
@@ -95,9 +98,12 @@
         bottom: 0;
         left: 0;
         z-index: 900; }
-        .document-viewer-dialog .document-container .picture-container .picture-wrapper .thumbnail img, .document-viewer-dialog .document-container .video-container .picture-wrapper .thumbnail img {
-          width: 100%;
-          height: 100%; }
+        .document-viewer-dialog .document-container .picture-container .picture-wrapper .thumbnail .thumb-picture, .document-viewer-dialog .document-container .video-container .picture-wrapper .thumbnail .thumb-picture {
+          height: 100%;
+          width: 100%; }
+          .document-viewer-dialog .document-container .picture-container .picture-wrapper .thumbnail .thumb-picture img, .document-viewer-dialog .document-container .video-container .picture-wrapper .thumbnail .thumb-picture img {
+            width: 100%;
+            height: 100%; }
       .document-viewer-dialog .document-container .picture-container .picture-wrapper .media-action, .document-viewer-dialog .document-container .video-container .picture-wrapper .media-action {
         position: absolute;
         top: 50%;
@@ -256,10 +262,15 @@
   overflow: hidden;
   border-radius: 10px;
   transition: all 0.2s linear; }
+  .document-viewer-dialog .float-picture.from-media {
+    border-radius: 3px; }
   .document-viewer-dialog .float-picture.hide {
     display: none; }
-  .document-viewer-dialog .float-picture img {
-    height: 100%;
+  .document-viewer-dialog .float-picture .picture {
     width: 100%;
-    object-fit: cover;
-    object-position: center center; }
+    height: 100%; }
+    .document-viewer-dialog .float-picture .picture img {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+      object-position: center center; }

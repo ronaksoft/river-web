@@ -254,6 +254,9 @@ export default class MessageRepo {
         ids.map((id) => {
             delete this.lazyMap[id];
         });
+        MediaRepo.getInstance().removeMany(ids).catch(() => {
+            //
+        });
         return this.db.messages.bulkDelete(ids);
     }
 
@@ -334,8 +337,13 @@ export default class MessageRepo {
         });
     }
 
-    public getIn(ids: number[]) {
-        return this.db.messages.where('id').anyOf(ids).toArray();
+    public getIn(ids: number[], asc: boolean) {
+        const pipe = this.db.messages.where('id').anyOf(ids);
+        if (asc) {
+            return pipe.toArray();
+        } else {
+            return pipe.reverse().toArray();
+        }
     }
 
     public getManyCache({limit, before, after, ignoreMax}: any, peer: InputPeer, fnCallback?: (resMsgs: IMessage[]) => void): Promise<IMessage[]> {
@@ -374,7 +382,7 @@ export default class MessageRepo {
         if (mode !== 0x2) {
             pipe2 = pipe2.reverse();
         }
-        pipe2.filter((item: IMessage) => {
+        pipe2 = pipe2.filter((item: IMessage) => {
             return item.temp !== true && (item.id || 0) > 0;
         });
         return pipe2.limit(limit + (ignoreMax ? 1 : 2)).toArray().then((res) => {

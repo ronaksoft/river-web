@@ -23,6 +23,7 @@ interface IDocumentItem {
 }
 
 export interface IDocument {
+    anchor?: 'message' | 'shared_media' | 'shared_media_full';
     items: IDocumentItem[];
     peerId?: string;
     rect?: ClientRect;

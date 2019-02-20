@@ -163,7 +163,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                         return (
                             <React.Fragment key={index}>
                                 {item.thumbFileLocation && <div className="thumbnail">
-                                    <CachedPhoto fileLocation={item.thumbFileLocation}/>
+                                    <CachedPhoto className="thumb-picture" fileLocation={item.thumbFileLocation}/>
                                 </div>}
                                 <div className="photo">
                                     <CachedPhoto fileLocation={item.fileLocation}/>
@@ -180,7 +180,8 @@ class DocumentViewer extends React.Component<IProps, IState> {
                                 <div ref={this.pictureWrapperRefHandler} className="picture-wrapper hide"
                                      style={size ? size : {}}>
                                     {item.thumbFileLocation && <div className="thumbnail">
-                                        <CachedPhoto fileLocation={item.thumbFileLocation} blur={10}/>
+                                        <CachedPhoto className="thumb-picture" fileLocation={item.thumbFileLocation}
+                                                     blur={10}/>
                                     </div>}
                                     {this.getDownloadAction()}
                                     {Boolean(item.downloaded !== false) &&
@@ -198,9 +199,10 @@ class DocumentViewer extends React.Component<IProps, IState> {
                                 <div ref={this.pictureWrapperRefHandler} className="picture-wrapper hide"
                                      style={size ? size : {}}>
                                     {item.thumbFileLocation && <div className="thumbnail">
-                                        <CachedPhoto fileLocation={item.thumbFileLocation}
+                                        <CachedPhoto className="thumb-picture" fileLocation={item.thumbFileLocation}
                                                      blur={item.downloaded === false ? 10 : 0}/>
                                     </div>}
+                                    {this.getDownloadAction()}
                                     {Boolean(item.downloaded !== false) &&
                                     <CachedVideo className="video" fileLocation={item.fileLocation} autoPlay={false}
                                                  timeOut={200}/>}
@@ -238,7 +240,10 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     private initPagination() {
-        const {prev, next} = this.state;
+        const {doc, prev, next} = this.state;
+        if (!doc || doc.type === 'avatar') {
+            return '';
+        }
         return (
             <div className="document-viewer-pagination">
                 <div className="pagination-item prev" hidden={!Boolean(prev)} onClick={this.prevHandler}>
@@ -311,13 +316,16 @@ class DocumentViewer extends React.Component<IProps, IState> {
             }
             return '';
         }
-        const fileLocation: any = doc.type === 'video' ? doc.items[0].thumbFileLocation : doc.items[0].fileLocation;
+        const downloaded = !(doc.items.length > 0 && doc.items[0].downloaded === false);
+        const fileLocation: any = (doc.type === 'video' ? doc.items[0].thumbFileLocation : (downloaded ? doc.items[0].fileLocation : doc.items[0].thumbFileLocation));
+        const fromMedia = (doc.anchor !== "message");
         if (!doc.rect) {
             if (this.pictureWrapperRef) {
                 this.pictureWrapperRef.classList.remove('hide');
             }
             if (size) {
-                return (<div ref={this.floatPictureRefHandler} className="float-picture hide" style={{
+                return (<div ref={this.floatPictureRefHandler}
+                             className={`float-picture hide ${fromMedia ? 'from-media' : ''}`} style={{
                     borderRadius: `0`,
                     height: `${size.height}px`,
                     left: `50%`,
@@ -326,7 +334,8 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     width: `${size.width}px`,
                 }}>
                     <CachedPhoto className="picture"
-                                 fileLocation={doc.items[0].downloaded === false ? doc.items[0].thumbFileLocation : fileLocation}/>
+                                 fileLocation={downloaded ? fileLocation : doc.items[0].thumbFileLocation}
+                                 blur={downloaded ? 0 : 10}/>
                 </div>);
             } else {
                 return '';
@@ -338,14 +347,15 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 this.animateInFloatPicture(size);
             }, 10);
         }
-        return (<div ref={this.floatPictureRefHandler} className="float-picture" style={{
-            height: `${doc.rect.height}px`,
-            left: `${doc.rect.left}px`,
-            top: `${doc.rect.top}px`,
-            width: `${doc.rect.width}px`,
-        }}>
-            <CachedPhoto className="picture" fileLocation={fileLocation}/>
-        </div>);
+        return (
+            <div ref={this.floatPictureRefHandler} className={`float-picture ${fromMedia ? 'from-media' : ''}`} style={{
+                height: `${doc.rect.height}px`,
+                left: `${doc.rect.left}px`,
+                top: `${doc.rect.top}px`,
+                width: `${doc.rect.width}px`,
+            }}>
+                <CachedPhoto className="picture" fileLocation={fileLocation} blur={downloaded ? 0 : 10}/>
+            </div>);
     }
 
     private floatPictureRefHandler = (ref: any) => {
@@ -382,7 +392,19 @@ class DocumentViewer extends React.Component<IProps, IState> {
             callback();
             return;
         }
-        const el = document.querySelector(`.bubble-wrapper .bubble.b_${doc.items[0].id} .message-media .media-big .picture`);
+        let el: Element | null;
+        switch (doc.anchor) {
+            case 'shared_media':
+                el = document.querySelector(`.peer-media .media-item.item_${doc.items[0].id} .picture`);
+                break;
+            case 'shared_media_full':
+                el = document.querySelector(`.peer-media.full .media-item.item_${doc.items[0].id} .picture`);
+                break;
+            default:
+            case 'message':
+                el = document.querySelector(`.bubble-wrapper .bubble.b_${doc.items[0].id} .message-media .media-big .picture`);
+                break;
+        }
         if (!el) {
             callback();
             return;
@@ -409,6 +431,8 @@ class DocumentViewer extends React.Component<IProps, IState> {
         const closeDialog = () => {
             this.setState({
                 dialogOpen: false,
+                next: null,
+                prev: null,
                 size: undefined,
             });
             this.animated = false;
@@ -435,7 +459,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 this.calculateImageSize();
                 this.initPaginationHandlers();
                 if (download) {
-                    this.displayFileSize(-1);
+                    setTimeout(() => {
+                        this.displayFileSize(-1);
+                    }, 10);
                 }
             }
         });
@@ -736,7 +762,6 @@ class DocumentViewer extends React.Component<IProps, IState> {
             this.mediaTransform.pan.x -= e.deltaX;
             this.mediaTransform.pan.y -= e.deltaY;
         }
-        window.console.log(e.currentTarget);
         this.applyMediaTransform(false);
     }
 
