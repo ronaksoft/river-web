@@ -63,7 +63,7 @@ const items: any[] = [
 ];
 
 interface IProps {
-    onAction: (cmd: 'media' | 'video' | 'music' | 'file') => void;
+    onAction: (cmd: 'media' | 'music' | 'contact' | 'file') => void;
     onClose?: () => void;
     open: boolean;
 }

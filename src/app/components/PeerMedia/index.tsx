@@ -18,6 +18,7 @@ import {
     HeadsetTwoTone,
     KeyboardVoiceTwoTone,
     PlayArrowRounded,
+    PauseRounded,
 } from '@material-ui/icons';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 import Tabs from '@material-ui/core/Tabs';
@@ -28,6 +29,7 @@ import Scrollbars from 'react-custom-scrollbars';
 import {getFileExtension, getHumanReadableSize} from '../MessageFile';
 import DownloadProgress from '../DownloadProgress';
 import {IMessage} from '../../repository/message/interface';
+import AudioPlayer, {IAudioEvent, IAudioInfo} from '../../services/audioPlayer';
 
 import './style.css';
 
@@ -37,8 +39,10 @@ interface IMedia {
     id: number;
     info: IMediaInfo;
     peerId: string;
+    playing?: boolean;
     saved: boolean;
     type: number;
+    userId: string;
 }
 
 interface IProps {
@@ -56,11 +60,13 @@ interface IState {
     tab: number;
 }
 
-class PeerMedia extends React.PureComponent<IProps, IState> {
+class PeerMedia extends React.Component<IProps, IState> {
+    private eventReferences: any[] = [];
     private peerId: string = '';
     private mediaRepo: MediaRepo;
     private documentViewerService: DocumentViewerService;
     private itemMap: { [key: number]: number } = {};
+    private audioPlayer: AudioPlayer;
 
     constructor(props: IProps) {
         super(props);
@@ -75,12 +81,14 @@ class PeerMedia extends React.PureComponent<IProps, IState> {
         this.peerId = props.peer.getId() || '';
         this.mediaRepo = MediaRepo.getInstance();
         this.documentViewerService = DocumentViewerService.getInstance();
+        this.audioPlayer = AudioPlayer.getInstance();
     }
 
     public componentDidMount() {
         this.getMedias();
         window.addEventListener('File_Downloaded', this.fileDownloadedHandler);
-        window.addEventListener('Message_DB_Updated', this.messageDBUpdatedHandler);
+        window.addEventListener('Message_DB_Added', this.messageDBUpdatedHandler);
+        this.eventReferences.push(this.audioPlayer.globalListen(this.audioPlayerHandler));
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -92,7 +100,8 @@ class PeerMedia extends React.PureComponent<IProps, IState> {
 
     public componentWillUnmount() {
         window.removeEventListener('File_Downloaded', this.fileDownloadedHandler);
-        window.removeEventListener('Message_DB_Updated', this.messageDBUpdatedHandler);
+        window.removeEventListener('Message_DB_Added', this.messageDBUpdatedHandler);
+        this.removeAllListeners();
     }
 
     public render() {
@@ -178,13 +187,12 @@ class PeerMedia extends React.PureComponent<IProps, IState> {
                         <div key={item.id} className={`media-item item_${item.id}`}
                              onClick={this.showMediaHandler.bind(this, i)}>
                             {this.getFileIcon(item)}
-                            {Boolean(item.type === C_MESSAGE_TYPE.Video) && <React.Fragment>
-                                <div className="video-icon">
-                                    <PlayCircleFilledRounded/>
-                                </div>
-                                <div className="media-duration">
-                                    {this.getDuration(item.info.duration || 0)}</div>
-                            </React.Fragment>}
+                            {Boolean(item.type === C_MESSAGE_TYPE.Video) &&
+                            <div className="video-icon">
+                                <PlayCircleFilledRounded/>
+                            </div>}
+                            {Boolean(item.type === C_MESSAGE_TYPE.Video || item.type === C_MESSAGE_TYPE.Music || item.type === C_MESSAGE_TYPE.Voice) &&
+                            <div className="media-duration">{this.getDuration(item.info.duration || 0)}</div>}
                         </div>
                     );
                 })}
@@ -205,7 +213,10 @@ class PeerMedia extends React.PureComponent<IProps, IState> {
                             <div className="media-item-info">
                                 <div
                                     className="media-name">{item.type === C_MESSAGE_TYPE.Voice ? 'Voice' : item.info.fileName}</div>
-                                <div className="media-size">{getHumanReadableSize(item.info.size)}</div>
+                                {!(item.type === C_MESSAGE_TYPE.Voice || item.type === C_MESSAGE_TYPE.Music) &&
+                                <div className="media-size">{getHumanReadableSize(item.info.size)}</div>}
+                                {(item.type === C_MESSAGE_TYPE.Voice || item.type === C_MESSAGE_TYPE.Music) &&
+                                <div className="media-size">{this.getDuration(item.info.duration || 0)}</div>}
                             </div>
                             {this.getMediaAction(item)}
                         </div>
@@ -335,12 +346,10 @@ class PeerMedia extends React.PureComponent<IProps, IState> {
             return;
         }
         const {items} = this.state;
-        const pos = this.itemMap[id];
-        items[pos].download = true;
+        const index = this.itemMap[id];
+        items[index].download = true;
         this.setState({
             items,
-        }, () => {
-            this.forceUpdate();
         });
     }
 
@@ -356,7 +365,10 @@ class PeerMedia extends React.PureComponent<IProps, IState> {
             switch (tab) {
                 case 1:
                     return (<div className="media-item-action">
-                        <div className="audio-action"><PlayArrowRounded/></div>
+                        <div className="audio-action" onClick={this.audioActionClickHandler.bind(this, item.id)}>
+                            {!item.playing && <PlayArrowRounded/>}
+                            {item.playing && <PauseRounded/>}
+                        </div>
                     </div>);
                 case 2:
                 default:
@@ -394,8 +406,7 @@ class PeerMedia extends React.PureComponent<IProps, IState> {
         this.setState({
             loading: true,
         });
-        const {items} = this.state;
-        let tempList: IMedia[] = [];
+        let {items} = this.state;
         let breakPoint = 0;
         if (items.length > 0) {
             if (append) {
@@ -424,16 +435,22 @@ class PeerMedia extends React.PureComponent<IProps, IState> {
             limit,
             type: mediaType,
         }, this.peerId).then((result) => {
+            if (result.length === 0) {
+                this.setState({
+                    loading: false,
+                });
+                return;
+            }
             if (append) {
-                tempList.push.apply(tempList, result);
+                items.push.apply(items, result);
             } else {
-                tempList.unshift.apply(tempList, result);
+                items.unshift.apply(items, result);
             }
             if (!this.props.full) {
-                tempList = tempList.slice(0, 4);
+                items = items.slice(0, 4);
             }
             this.setState({
-                items: this.modifyMediaList(tempList),
+                items: this.modifyMediaList(items),
                 loading: false,
             });
         });
@@ -458,12 +475,59 @@ class PeerMedia extends React.PureComponent<IProps, IState> {
                     peerId: item.peerid || '',
                     saved: item.saved || false,
                     type: item.messagetype || C_MESSAGE_TYPE.Normal,
+                    userId: item.senderid || '',
                 });
             }
             this.itemMap[item.id || 0] = index;
         });
         return items;
     }
+
+    /* Audio player handler */
+    private audioPlayerHandler = (info: IAudioInfo, e: IAudioEvent) => {
+        if (info.peerId !== this.peerId || !this.itemMap.hasOwnProperty(info.messageId)) {
+            return;
+        }
+        const index = this.itemMap[info.messageId];
+        const {items} = this.state;
+        if ((e.state === 'play' || e.state === 'seek_play') && !items[index].playing) {
+            items[index].playing = true;
+            this.setState({
+                items,
+            });
+        } else if ((e.state === 'pause' || e.state === 'seek_pause') && items[index].playing) {
+            items[index].playing = false;
+            this.setState({
+                items,
+            });
+        }
+    }
+
+    /* Audio action click handler */
+    private audioActionClickHandler = (id: number) => {
+        if (!this.itemMap.hasOwnProperty(id)) {
+            return;
+        }
+        const index = this.itemMap[id];
+        const {items} = this.state;
+        const item = items[index];
+        if (!items[index].playing) {
+            this.audioPlayer.addToPlaylist(id, this.peerId, item.info.file.fileid || '', item.userId, true);
+            this.audioPlayer.play(id);
+        } else {
+            this.audioPlayer.pause(id);
+        }
+    }
+
+    /* Remove all listeners */
+    private removeAllListeners() {
+        this.eventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
+        });
+    }
+
 }
 
 

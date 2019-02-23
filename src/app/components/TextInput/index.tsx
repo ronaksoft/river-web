@@ -55,6 +55,7 @@ import {getMessageTitle} from '../Dialog/utils';
 import XRegExp from 'xregexp';
 import SelectMedia from '../SelectMedia';
 import MediaPreview, {IMediaItem} from '../Uploader';
+import ContactPicker from '../ContactPicker';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
@@ -76,12 +77,13 @@ interface IProps {
     onVoice: (voice: Blob, waveform: number[], duration: number, {mode, message}?: any) => void;
     onFileSelected: (files: File[], {mode, message}?: any) => void;
     onMediaSelected: (items: IMediaItem[], {mode, message}?: any) => void;
+    onContactSelected: (users: IUser[], caption: string, {mode, message}?: any) => void;
 }
 
 interface IState {
     disableAuthority: number;
     emojiAnchorEl: any;
-    mediaInputMode: 'media' | 'video' | 'music' | 'file' | 'none';
+    mediaInputMode: 'media' | 'music' | 'contact' | 'file' | 'none';
     peer: InputPeer | null;
     previewMessage: IMessage | null;
     previewMessageHeight: number;
@@ -157,6 +159,7 @@ class TextInput extends React.Component<IProps, IState> {
     private voiceCanceled: boolean = false;
     private fileInputRef: any = null;
     private mediaPreviewRef: MediaPreview;
+    private contactPickerRef: ContactPicker;
 
     constructor(props: IProps) {
         super(props);
@@ -267,6 +270,7 @@ class TextInput extends React.Component<IProps, IState> {
                            onChange={this.fileChangeHandler} multiple={true} accept={this.getFileType()}/>
                     <MediaPreview ref={this.mediaPreviewRefHandler} accept={this.getFileType()}
                                   onDone={this.mediaPreviewDoneHandler}/>
+                    <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactImportDoneHandler}/>
                     {(!selectable && previewMessage) &&
                     <div className="previews" style={{height: previewMessageHeight + 'px'}}>
                         <div className="preview-container">
@@ -1338,24 +1342,31 @@ class TextInput extends React.Component<IProps, IState> {
         });
     }
 
-    private selectMediaActionHandler = (mode: 'media' | 'video' | 'music' | 'file') => {
+    private selectMediaActionHandler = (mode: 'media' | 'music' | 'file' | 'contact') => {
         this.setState({
             mediaInputMode: mode,
         }, () => {
             switch (mode) {
                 case 'media':
-                case 'video':
                 case 'music':
                 case 'file':
                     this.openFileDialog();
+                    break;
+                case 'contact':
+                    if (this.contactPickerRef) {
+                        this.contactPickerRef.openDialog();
+                    }
                     break;
             }
         });
     }
 
-
     private mediaPreviewRefHandler = (ref: any) => {
         this.mediaPreviewRef = ref;
+    }
+
+    private contactPickerRefHandler = (ref: any) => {
+        this.contactPickerRef = ref;
     }
 
     private getFileType = () => {
@@ -1363,8 +1374,6 @@ class TextInput extends React.Component<IProps, IState> {
         switch (mediaInputMode) {
             case 'media':
                 return 'image/png,image/jpeg,image/jpg,image/gif,video/webm,video/mp4';
-            case 'video':
-                return 'video/*';
             case 'music':
                 return "audio/*";
             case 'file':
@@ -1379,6 +1388,19 @@ class TextInput extends React.Component<IProps, IState> {
         const message = cloneDeep(previewMessage);
         if (this.props.onMediaSelected) {
             this.props.onMediaSelected(items, {
+                message,
+                mode: previewMessageMode,
+            });
+        }
+        this.clearPreviewMessage(true);
+    }
+
+    /* Send contact handler */
+    private contactImportDoneHandler = (users: IUser[], caption: string) => {
+        const {previewMessage, previewMessageMode} = this.state;
+        const message = cloneDeep(previewMessage);
+        if (this.props.onContactSelected) {
+            this.props.onContactSelected(users, caption, {
                 message,
                 mode: previewMessageMode,
             });

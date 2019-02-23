@@ -11,6 +11,7 @@ import * as React from 'react';
 import {IMessage} from '../../repository/message/interface';
 import {FileLocation, InputPeer} from '../../services/sdk/messages/chat.core.types_pb';
 import {
+    DocumentAttributeAudio,
     DocumentAttributeFile,
     DocumentAttributePhoto,
     DocumentAttributeType, DocumentAttributeVideo,
@@ -99,6 +100,9 @@ export const getMediaInfo = (message: IMessage): IMediaInfo => {
             const docAttr: DocumentAttributeVideo.AsObject = message.attributes[index];
             info.height = docAttr.height || 0;
             info.width = docAttr.width || 0;
+            info.duration = docAttr.duration;
+        } else if (attr.type === DocumentAttributeType.ATTRIBUTETYPEAUDIO && message.attributes) {
+            const docAttr: DocumentAttributeAudio.AsObject = message.attributes[index];
             info.duration = docAttr.duration;
         } else if (attr.type === DocumentAttributeType.ATTRIBUTETYPEFILE && message.attributes) {
             const docAttr: DocumentAttributeFile.AsObject = message.attributes[index];

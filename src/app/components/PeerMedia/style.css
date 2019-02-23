@@ -126,7 +126,7 @@ input {
     .peer-media .peer-media-container .media-grid-view .file-icon,
     .peer-media .peer-media-container .media-list-view .file-icon {
       position: relative;
-      border: 2px solid #2D9CDB;
+      border: 1px solid #2D9CDB;
       border-radius: 3px;
       height: 48px;
       width: 48px;
@@ -145,7 +145,7 @@ input {
       .peer-media .peer-media-container .media-grid-view .file-icon svg,
       .peer-media .peer-media-container .media-list-view .file-icon svg {
         color: #2D9CDB;
-        font-size: 32px; }
+        font-size: 24px; }
       .peer-media .peer-media-container .media-grid-view .file-icon.music,
       .peer-media .peer-media-container .media-list-view .file-icon.music {
         border-color: #9B51E0; }
@@ -166,9 +166,9 @@ input {
       width: 100%; }
       .peer-media .peer-media-container .media-grid-view .media-item {
         position: relative;
-        width: 25%;
-        height: 78px;
-        padding: 12px 12px 0 0;
+        width: calc(25% - 12px);
+        height: 68px;
+        margin: 12px 12px 0 0;
         cursor: pointer;
         float: left; }
         .peer-media .peer-media-container .media-grid-view .media-item .picture {
@@ -191,7 +191,7 @@ input {
         .peer-media .peer-media-container .media-grid-view .media-item .video-icon {
           position: absolute;
           top: 50%;
-          left: calc(50% - 6px);
+          left: 50%;
           height: 32px;
           width: 32px;
           transform: translate(-50%, -50%);

@@ -98,7 +98,7 @@ import {
     DocumentAttribute,
     DocumentAttributeAudio,
     DocumentAttributeFile, DocumentAttributePhoto,
-    DocumentAttributeType, DocumentAttributeVideo,
+    DocumentAttributeType, DocumentAttributeVideo, InputMediaContact,
     InputMediaUploadedDocument,
     MediaDocument
 } from '../../services/sdk/messages/chat.core.message.medias_pb';
@@ -512,6 +512,7 @@ class Chat extends React.Component<IProps, IState> {
                                        onVoice={this.textInputVoiceHandler}
                                        onFileSelected={this.textInputFileSelectHandler}
                                        onMediaSelected={this.textInputMediaSelectHandler}
+                                       onContactSelected={this.textInputContactSelectHandler}
                             />
                         </div>}
                         {selectedDialogId === 'null' && <div className="column-center">
@@ -3280,6 +3281,17 @@ class Chat extends React.Component<IProps, IState> {
 
                 // Force update messages
                 this.messageComponent.list.forceUpdateGrid();
+            }).catch((err) => {
+                window.console.log(err);
+                const {messages} = this.state;
+                const index = findIndex(messages, (o) => {
+                    return o.id === id && o.messagetype === messageType;
+                });
+                if (index > -1) {
+                    messages[index].error = true;
+                    this.messageRepo.importBulk([messages[index]], false);
+                    this.messageComponent.list.forceUpdateGrid();
+                }
             });
         }).catch((err) => {
             this.progressBroadcaster.remove(id);
@@ -3293,6 +3305,92 @@ class Chat extends React.Component<IProps, IState> {
                     this.messageRepo.importBulk([messages[index]], false);
                     this.messageComponent.list.forceUpdateGrid();
                 }
+            }
+        });
+    }
+
+    /* TextInput contact select handler */
+    private textInputContactSelectHandler = (users: IUser[], param?: any) => {
+        users.forEach((user) => {
+            this.sendMediaMessageWithNoFile('contact', user, param);
+        });
+    }
+
+    // Send media message with no file
+    private sendMediaMessageWithNoFile(type: 'contact' | 'map' | 'none', user: IUser, param?: any) {
+        if (type === 'none') {
+            return;
+        }
+        const {peer} = this.state;
+        if (peer === null) {
+            return;
+        }
+
+        const now = this.riverTime.now();
+        const randomId = UniqueId.getRandomId();
+        const id = -this.riverTime.milliNow();
+
+        const messageType = C_MESSAGE_TYPE.Contact;
+        const contact = new InputMediaContact();
+        contact.setFirstname(user.firstname || '');
+        contact.setLastname(user.lastname || '');
+        contact.setPhone(user.phone || '');
+        contact.setVcard('');
+
+        const message: IMessage = {
+            createdon: now,
+            id,
+            me: true,
+            mediadata: contact.toObject(),
+            mediatype: MediaType.MEDIATYPEDOCUMENT,
+            messageaction: C_MESSAGE_ACTION.MessageActionNope,
+            messagetype: messageType,
+            peerid: this.state.selectedDialogId,
+            peertype: peer.getType(),
+            senderid: this.connInfo.UserID,
+        };
+
+        let replyTo: any;
+        if (param && param.mode === C_MSG_MODE.Reply) {
+            message.replyto = param.message.id;
+            replyTo = param.message.id;
+        }
+
+        this.pushMessage(message);
+
+        this.messageRepo.addPending({
+            id: randomId,
+            message_id: id,
+        });
+
+        this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPECONTACT, contact.serializeBinary(), replyTo).then((res) => {
+            const {messages} = this.state;
+            const index = findIndex(messages, {id: message.id, messagetype: messageType});
+            if (index > -1) {
+                this.messageComponent.cache.clear(index, 0);
+            }
+
+            if (res.messageid) {
+                this.sendReadHistory(peer, res.messageid);
+            }
+
+            message.id = res.messageid;
+
+            this.messageRepo.lazyUpsert([message]);
+            this.updateDialogs(message, '0');
+
+            // Force update messages
+            this.messageComponent.list.forceUpdateGrid();
+        }).catch((err) => {
+            window.console.log(err);
+            const {messages} = this.state;
+            const index = findIndex(messages, (o) => {
+                return o.id === id && o.messagetype === messageType;
+            });
+            if (index > -1) {
+                messages[index].error = true;
+                this.messageRepo.importBulk([messages[index]], false);
+                this.messageComponent.list.forceUpdateGrid();
             }
         });
     }
