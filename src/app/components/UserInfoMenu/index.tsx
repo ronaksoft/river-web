@@ -36,6 +36,7 @@ import PeerMedia from '../PeerMedia';
 import './style.css';
 
 interface IProps {
+    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
     onClose: () => void;
     peer: InputPeer | null;
 }
@@ -51,6 +52,7 @@ interface IState {
     page: string;
     peer: InputPeer | null;
     phone: string;
+    shareMediaEnabled: boolean;
     user: IUser | null;
 }
 
@@ -89,6 +91,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
             page: '1',
             peer: props.peer,
             phone: '',
+            shareMediaEnabled: false,
             user: null,
         };
         // RiverTime singleton
@@ -119,7 +122,10 @@ class UserInfoMenu extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {user, page, peer, edit, firstname, lastname, phone, isInContact, dialog, notifySettingDialogOpen, notifyValue} = this.state;
+        const {
+            user, page, peer, edit, firstname, lastname, phone,
+            isInContact, dialog, notifySettingDialogOpen, notifyValue, shareMediaEnabled
+        } = this.state;
         return (
             <div className="user-info-menu">
                 <div className={'page-container page-' + page}>
@@ -221,9 +227,9 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                             onChange={this.muteChangeHandler}/>
                                     </div>
                                 </div>}
-                                {(dialog && peer) &&
+                                {(dialog && peer && !shareMediaEnabled) &&
                                 <PeerMedia className="kk-card" peer={peer} full={false}
-                                           onMore={this.peerMediaMoreHandler}/>}
+                                           onMore={this.peerMediaMoreHandler} onAction={this.props.onAction}/>}
                             </div>
                         </Scrollbars>
                     </div>
@@ -238,8 +244,8 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                             </IconButton>
                             <label>Shared Media</label>
                         </div>
-                        {(dialog && peer) &&
-                        <PeerMedia className="kk-card" peer={peer} full={true}/>}
+                        {(dialog && peer && shareMediaEnabled) &&
+                        <PeerMedia className="kk-card" peer={peer} full={true} onAction={this.props.onAction}/>}
                     </div>
                 </div>
                 <Dialog
@@ -457,6 +463,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
     private peerMediaMoreHandler = () => {
         this.setState({
             page: '2',
+            shareMediaEnabled: true,
         });
     }
 
@@ -464,6 +471,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
     private peerMediaCloseHandler = () => {
         this.setState({
             page: '1',
+            shareMediaEnabled: false,
         });
     }
 }

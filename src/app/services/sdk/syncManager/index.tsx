@@ -267,11 +267,11 @@ export default class SyncManager {
             this.dialogRepo.lazyUpsert(data);
             this.dialogRepo.flush().then(() => {
                 setTimeout(() => {
-                    this.broadcastEvent('Dialog_DB_Updated', {ids: keys});
+                    this.broadcastEvent('Dialog_Sync_Updated', {ids: keys});
                 }, 100);
             }).catch(() => {
                 setTimeout(() => {
-                    this.broadcastEvent('Dialog_DB_Updated', {ids: keys});
+                    this.broadcastEvent('Dialog_Sync_Updated', {ids: keys});
                 }, 100);
             });
         }
@@ -292,7 +292,7 @@ export default class SyncManager {
             this.messageRepo.lazyUpsert(data);
             this.messageRepo.flush();
             setTimeout(() => {
-                this.broadcastEvent('Message_DB_Updated', {
+                this.broadcastEvent('Message_Sync_Updated', {
                     ids: keys,
                     peerids: peerIds,
                 });
@@ -318,7 +318,7 @@ export default class SyncManager {
         });
         if (data.length > 0) {
             this.userRepo.importBulk(false, data).then(() => {
-                this.broadcastEvent('User_DB_Updated', {ids: keys});
+                this.broadcastEvent('User_Sync_Updated', {ids: keys});
             });
         }
     }
@@ -332,7 +332,7 @@ export default class SyncManager {
         });
         if (data.length > 0) {
             this.groupRepo.importBulk(data).then(() => {
-                this.broadcastEvent('Group_DB_Updated', {ids: keys});
+                this.broadcastEvent('Group_Sync_Updated', {ids: keys});
             });
         }
     }

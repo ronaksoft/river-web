@@ -493,14 +493,17 @@ export default class MessageRepo {
         });
     }
 
-    public upsert(msgs: IMessage[]): Promise<any> {
+    public upsert(msgs: IMessage[], callerId?: number): Promise<any> {
+        const peerIdMap: object = {};
         const ids = msgs.map((msg) => {
+            if (msg.peerid && !peerIdMap.hasOwnProperty(msg.peerid)) {
+                peerIdMap[msg.peerid] = true;
+            }
             return msg.id || '';
         });
         return this.db.messages.where('id').anyOf(ids).toArray().then((result) => {
             const createItems: IMessage[] = differenceBy(msgs, result, 'id');
             const updateItems: IMessage[] = result;
-            window.console.log("messages update", result.length);
             updateItems.map((msg: IMessage) => {
                 const t = find(msgs, {id: msg.id});
                 if (t && t.temp === true && msg.temp === false) {
@@ -513,7 +516,10 @@ export default class MessageRepo {
                     return msg;
                 }
             });
-            return this.createMany([...createItems, ...updateItems]);
+            return this.createMany([...createItems, ...updateItems]).then((res) => {
+                this.broadcastEvent('Message_DB_Updated', {ids, peerids: Object.keys(peerIdMap), callerId});
+                return res;
+            });
         });
     }
 
@@ -692,5 +698,13 @@ export default class MessageRepo {
         const d = merge(message, newMessage);
         d.entitiesList = newMessage.entitiesList;
         return d;
+    }
+
+    private broadcastEvent(name: string, data: any) {
+        const event = new CustomEvent(name, {
+            bubbles: false,
+            detail: data,
+        });
+        window.dispatchEvent(event);
     }
 }

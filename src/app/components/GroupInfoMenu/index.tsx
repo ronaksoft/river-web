@@ -69,6 +69,7 @@ import './style.css';
 
 interface IProps {
     peer: InputPeer | null;
+    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
     onClose?: () => void;
     onCreate?: (contacts: IUser[], title: string) => void;
 }
@@ -87,6 +88,7 @@ interface IState {
     page: string;
     participants: IParticipant[];
     peer: InputPeer | null;
+    shareMediaEnabled: boolean;
     title: string;
     titleEdit: boolean;
     uploadingPhoto: boolean;
@@ -107,7 +109,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     private fileId: string = '';
     private cropperRef: AvatarCropper;
     private documentViewerService: DocumentViewerService;
-    private callerId: number = 0;
+    private readonly callerId: number = 0;
 
     constructor(props: IProps) {
         super(props);
@@ -126,6 +128,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             page: '1',
             participants: [],
             peer: props.peer,
+            shareMediaEnabled: false,
             title: '',
             titleEdit: false,
             uploadingPhoto: false,
@@ -172,7 +175,11 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {addMemberDialogEnable, avatarMenuAnchorEl, group, page, peer, participants, title, titleEdit, moreAnchorEl, dialog, notifySettingDialogOpen, notifyValue, uploadingPhoto} = this.state;
+        const {
+            addMemberDialogEnable, avatarMenuAnchorEl, group, page,
+            peer, participants, title, titleEdit, moreAnchorEl,
+            dialog, notifySettingDialogOpen, notifyValue, uploadingPhoto, shareMediaEnabled
+        } = this.state;
         return (
             <div className="group-info-menu">
                 <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={640}/>
@@ -277,9 +284,9 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                         </div>
                                     </div>}
                                 </React.Fragment>}
-                                {(dialog && peer) &&
+                                {(dialog && peer && !shareMediaEnabled) &&
                                 <PeerMedia className="kk-card" peer={peer} full={false}
-                                           onMore={this.peerMediaMoreHandler}/>}
+                                           onMore={this.peerMediaMoreHandler} onAction={this.props.onAction}/>}
                                 {group && <div className="participant kk-card">
                                     <label>{group.participants} participants</label>
                                     {participants.map((participant, index) => {
@@ -323,8 +330,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                             </IconButton>
                             <label>Shared Media</label>
                         </div>
-                        {(dialog && peer) &&
-                        <PeerMedia className="kk-card" peer={peer} full={true}/>}
+                        {(dialog && peer && shareMediaEnabled) &&
+                        <PeerMedia className="kk-card" peer={peer} full={true} onAction={this.props.onAction}/>}
                     </div>
                 </div>
                 <Menu
@@ -971,6 +978,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     private peerMediaMoreHandler = () => {
         this.setState({
             page: '2',
+            shareMediaEnabled: true,
         });
     }
 
@@ -978,6 +986,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     private peerMediaCloseHandler = () => {
         this.setState({
             page: '1',
+            shareMediaEnabled: false,
         });
     }
 }

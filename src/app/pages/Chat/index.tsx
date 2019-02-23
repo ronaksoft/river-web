@@ -245,8 +245,8 @@ class Chat extends React.Component<IProps, IState> {
         window.addEventListener('wsOpen', this.wsOpenHandler);
         window.addEventListener('wsClose', this.wsCloseHandler);
         window.addEventListener('fnStarted', this.fnStartedHandler);
-        window.addEventListener('Dialog_DB_Updated', this.dialogDBUpdatedHandler);
-        window.addEventListener('Message_DB_Updated', this.messageDBUpdatedHandler);
+        window.addEventListener('Dialog_Sync_Updated', this.dialogDBUpdatedHandler);
+        window.addEventListener('Message_Sync_Updated', this.messageDBUpdatedHandler);
 
         // Get latest cached dialogs
         this.initDialogs();
@@ -347,8 +347,8 @@ class Chat extends React.Component<IProps, IState> {
         window.removeEventListener('wasmInit', this.wasmInitHandler);
         window.removeEventListener('wsOpen', this.wsOpenHandler);
         window.removeEventListener('fnStarted', this.fnStartedHandler);
-        window.removeEventListener('Dialog_DB_Updated', this.dialogDBUpdatedHandler);
-        window.removeEventListener('Message_DB_Updated', this.messageDBUpdatedHandler);
+        window.removeEventListener('Dialog_Sync_Updated', this.dialogDBUpdatedHandler);
+        window.removeEventListener('Message_Sync_Updated', this.messageDBUpdatedHandler);
     }
 
     public render() {
@@ -526,9 +526,11 @@ class Chat extends React.Component<IProps, IState> {
                         </div>}
                         <div ref={this.rightMenuRefHandler} className="column-right">
                             {(this.state.rightMenu && peer && peer.getType() === PeerType.PEERGROUP) &&
-                            <GroupInfoMenu peer={peer} onClose={this.setRightMenu.bind(this, false)}/>}
+                            <GroupInfoMenu peer={peer} onClose={this.setRightMenu.bind(this, false)}
+                                           onAction={this.messageAttachmentActionHandler}/>}
                             {(this.state.rightMenu && peer && peer.getType() === PeerType.PEERUSER) &&
-                            <UserInfoMenu peer={peer} onClose={this.setRightMenu.bind(this, false)}/>}
+                            <UserInfoMenu peer={peer} onClose={this.setRightMenu.bind(this, false)}
+                                          onAction={this.messageAttachmentActionHandler}/>}
                         </div>
                     </div>
                     <NewMessage open={this.state.openNewMessage} onClose={this.onNewMessageClose}
@@ -3348,7 +3350,9 @@ class Chat extends React.Component<IProps, IState> {
             this.messageRepo.lazyUpsert([message]);
             // Force update messages
             this.messageComponent.list.forceUpdateGrid();
-            window.console.log(res);
+
+            // Just to make sure subscribers will update their view
+            this.broadcastEvent('File_Downloaded', {id: message.id});
         }).catch((err) => {
             window.console.log(err);
         });

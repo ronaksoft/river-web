@@ -105,75 +105,68 @@
     }
     .media-grid-view {
       min-height: 74px;
-      .media-row {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: flex-start;
-        padding: 6px 0 6px;
-        &:last-of-type {
-          padding-bottom: 0;
+      display: inline-block;
+      width: 100%;
+      .media-item {
+        position: relative;
+        width: 25%;
+        height: 78px;
+        padding: 12px 12px 0 0;
+        cursor: pointer;
+        float: left;
+        .picture {
+          height: 100%;
+          width: 100%;
+          border-radius: 3px;
+          overflow: hidden;
+          img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            object-position: center center;
+          }
         }
-        .media-item {
-          position: relative;
-          width: 25%;
-          height: 68px;
-          padding: 0 12px 0 0;
-          cursor: pointer;
-          .picture {
-            height: 100%;
-            width: 100%;
-            border-radius: 3px;
-            overflow: hidden;
-            img {
-              height: 100%;
-              width: 100%;
-              object-fit: cover;
-              object-position: center center;
-            }
-          }
-          .file-icon {
-            height: 100%;
-            width: 100%;
-            .file-extension {
-              font-size: 10px;
-            }
-            svg {
-              font-size: 48px;
-            }
-          }
-          .video-icon {
-            position: absolute;
-            top: 50%;
-            left: calc(50% - 6px);
-            height: 32px;
-            width: 32px;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-            background-color: rgba(0, 0, 0, 0.32);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            svg {
-              font-size: 30px;
-              color: var(--white);
-            }
-          }
-          .media-duration {
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            height: 13px;
+        .file-icon {
+          height: 100%;
+          width: 100%;
+          .file-extension {
             font-size: 10px;
-            line-height: 10px;
-            background-color: rgba(0, 0, 0, 0.32);
-            padding: 2px 2px 1px;
-            border-radius: 2px;
-            color: var(--white);
-            white-space: nowrap;
-            z-index: 20;
           }
+          svg {
+            font-size: 48px;
+          }
+        }
+        .video-icon {
+          position: absolute;
+          top: 50%;
+          left: calc(50% - 6px);
+          height: 32px;
+          width: 32px;
+          transform: translate(-50%, -50%);
+          z-index: 10;
+          background-color: rgba(0, 0, 0, 0.32);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          svg {
+            font-size: 30px;
+            color: var(--white);
+          }
+        }
+        .media-duration {
+          position: absolute;
+          top: 4px;
+          left: 4px;
+          height: 13px;
+          font-size: 10px;
+          line-height: 10px;
+          background-color: rgba(0, 0, 0, 0.32);
+          padding: 2px 2px 1px;
+          border-radius: 2px;
+          color: var(--white);
+          white-space: nowrap;
+          z-index: 20;
         }
       }
     }
@@ -183,7 +176,6 @@
         height: 48px;
         padding: 0 12px 0 0;
         margin: 0 0 12px;
-        cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: flex-start;
@@ -235,6 +227,34 @@
             top: auto;
             left: auto;
             transform: none;
+          }
+          .audio-action {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            height: 36px;
+            width: 36px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.32);
+            z-index: 910;
+            svg {
+              color: var(--white);
+            }
+          }
+        }
+        .media-file-action {
+          height: 48px;
+          width: 48px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          span {
+            color: var(--river);
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
           }
         }
       }

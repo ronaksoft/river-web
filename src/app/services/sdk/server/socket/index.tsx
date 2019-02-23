@@ -35,7 +35,7 @@ export default class Socket {
     private fnCallback: any = null;
     private fnUpdate: any = null;
     private fnError: any = null;
-    private testUrl: string = '';
+    private readonly testUrl: string = '';
 
     public constructor() {
         this.testUrl = localStorage.getItem('river.test_url') || '';

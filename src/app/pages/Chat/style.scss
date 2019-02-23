@@ -207,7 +207,7 @@
     height: 100%;
     flex: none;
     overflow: hidden;
-    transition: width 0.2s;
+    transition: width 0.1s linear;
     &.active {
       width: 318px;
     }

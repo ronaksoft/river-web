@@ -161,73 +161,67 @@ input {
         .peer-media .peer-media-container .media-list-view .file-icon.voice svg {
           color: #FFCC00; }
     .peer-media .peer-media-container .media-grid-view {
-      min-height: 74px; }
-      .peer-media .peer-media-container .media-grid-view .media-row {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: flex-start;
-        padding: 6px 0 6px; }
-        .peer-media .peer-media-container .media-grid-view .media-row:last-of-type {
-          padding-bottom: 0; }
-        .peer-media .peer-media-container .media-grid-view .media-row .media-item {
-          position: relative;
-          width: 25%;
-          height: 68px;
-          padding: 0 12px 0 0;
-          cursor: pointer; }
-          .peer-media .peer-media-container .media-grid-view .media-row .media-item .picture {
+      min-height: 74px;
+      display: inline-block;
+      width: 100%; }
+      .peer-media .peer-media-container .media-grid-view .media-item {
+        position: relative;
+        width: 25%;
+        height: 78px;
+        padding: 12px 12px 0 0;
+        cursor: pointer;
+        float: left; }
+        .peer-media .peer-media-container .media-grid-view .media-item .picture {
+          height: 100%;
+          width: 100%;
+          border-radius: 3px;
+          overflow: hidden; }
+          .peer-media .peer-media-container .media-grid-view .media-item .picture img {
             height: 100%;
             width: 100%;
-            border-radius: 3px;
-            overflow: hidden; }
-            .peer-media .peer-media-container .media-grid-view .media-row .media-item .picture img {
-              height: 100%;
-              width: 100%;
-              object-fit: cover;
-              object-position: center center; }
-          .peer-media .peer-media-container .media-grid-view .media-row .media-item .file-icon {
-            height: 100%;
-            width: 100%; }
-            .peer-media .peer-media-container .media-grid-view .media-row .media-item .file-icon .file-extension {
-              font-size: 10px; }
-            .peer-media .peer-media-container .media-grid-view .media-row .media-item .file-icon svg {
-              font-size: 48px; }
-          .peer-media .peer-media-container .media-grid-view .media-row .media-item .video-icon {
-            position: absolute;
-            top: 50%;
-            left: calc(50% - 6px);
-            height: 32px;
-            width: 32px;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-            background-color: rgba(0, 0, 0, 0.32);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center; }
-            .peer-media .peer-media-container .media-grid-view .media-row .media-item .video-icon svg {
-              font-size: 30px;
-              color: var(--white); }
-          .peer-media .peer-media-container .media-grid-view .media-row .media-item .media-duration {
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            height: 13px;
-            font-size: 10px;
-            line-height: 10px;
-            background-color: rgba(0, 0, 0, 0.32);
-            padding: 2px 2px 1px;
-            border-radius: 2px;
-            color: var(--white);
-            white-space: nowrap;
-            z-index: 20; }
+            object-fit: cover;
+            object-position: center center; }
+        .peer-media .peer-media-container .media-grid-view .media-item .file-icon {
+          height: 100%;
+          width: 100%; }
+          .peer-media .peer-media-container .media-grid-view .media-item .file-icon .file-extension {
+            font-size: 10px; }
+          .peer-media .peer-media-container .media-grid-view .media-item .file-icon svg {
+            font-size: 48px; }
+        .peer-media .peer-media-container .media-grid-view .media-item .video-icon {
+          position: absolute;
+          top: 50%;
+          left: calc(50% - 6px);
+          height: 32px;
+          width: 32px;
+          transform: translate(-50%, -50%);
+          z-index: 10;
+          background-color: rgba(0, 0, 0, 0.32);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center; }
+          .peer-media .peer-media-container .media-grid-view .media-item .video-icon svg {
+            font-size: 30px;
+            color: var(--white); }
+        .peer-media .peer-media-container .media-grid-view .media-item .media-duration {
+          position: absolute;
+          top: 4px;
+          left: 4px;
+          height: 13px;
+          font-size: 10px;
+          line-height: 10px;
+          background-color: rgba(0, 0, 0, 0.32);
+          padding: 2px 2px 1px;
+          border-radius: 2px;
+          color: var(--white);
+          white-space: nowrap;
+          z-index: 20; }
     .peer-media .peer-media-container .media-list-view .media-item {
       position: relative;
       height: 48px;
       padding: 0 12px 0 0;
       margin: 0 0 12px;
-      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: flex-start; }
@@ -273,6 +267,30 @@ input {
           top: auto;
           left: auto;
           transform: none; }
+        .peer-media .peer-media-container .media-list-view .media-item .media-item-action .audio-action {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          height: 36px;
+          width: 36px;
+          border-radius: 50%;
+          background-color: rgba(0, 0, 0, 0.32);
+          z-index: 910; }
+          .peer-media .peer-media-container .media-list-view .media-item .media-item-action .audio-action svg {
+            color: var(--white); }
+      .peer-media .peer-media-container .media-list-view .media-item .media-file-action {
+        height: 48px;
+        width: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center; }
+        .peer-media .peer-media-container .media-list-view .media-item .media-file-action span {
+          color: var(--river);
+          font-size: 11px;
+          font-weight: bold;
+          cursor: pointer; }
 
 html[theme="dark"] .peer-media .peer-media-title,
 html[theme="dark-blue"] .peer-media .peer-media-title {

@@ -28,6 +28,8 @@ interface IState {
 
 class CachedPhoto extends React.PureComponent<IProps, IState> {
     private cachedFileService: CachedFileService;
+    private lastFileId: string;
+    private lastBlur: number;
 
     constructor(props: IProps) {
         super(props);
@@ -37,10 +39,21 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
         };
 
         this.cachedFileService = CachedFileService.getInstance();
+
+        this.lastFileId = this.props.fileLocation.fileid || '';
+        this.lastBlur = this.props.blur || 0;
     }
 
     public componentDidMount() {
         this.getFile();
+    }
+
+    public componentWillReceiveProps(newProps: IProps) {
+        if (this.lastFileId !== newProps.fileLocation.fileid || (newProps.blur || 0) !== this.lastBlur) {
+            this.lastFileId = newProps.fileLocation.fileid || '';
+            this.lastBlur = newProps.blur || 0;
+            this.getFile();
+        }
     }
 
     public componentWillUnmount() {
@@ -56,6 +69,7 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
         );
     }
 
+    /* Get file from cached storage */
     private getFile() {
         this.cachedFileService.getFile(this.props.fileLocation, 0, this.props.searchTemp, this.props.blur).then((src) => {
             this.setState({

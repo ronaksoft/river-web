@@ -20,7 +20,7 @@ interface IProps {
     id: number;
     fileSize: number;
     onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
-    onComplete?: () => void;
+    onComplete?: (id: number) => void;
     hideSizeIndicator?: boolean;
 }
 
@@ -106,7 +106,7 @@ class DownloadProgress extends React.PureComponent<IProps, IState> {
         } else if (progress.state === 'complete') {
             v = 88;
             if (this.props.onComplete) {
-                this.props.onComplete();
+                this.props.onComplete(this.props.id);
                 return;
             }
         }
