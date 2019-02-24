@@ -180,6 +180,7 @@ class Chat extends React.Component<IProps, IState> {
     private electronService: ElectronService;
     private riverTime: RiverTime;
     private progressBroadcaster: ProgressBroadcaster;
+    private firstTimeLoad: boolean = true;
 
     constructor(props: IProps) {
         super(props);
@@ -1871,7 +1872,10 @@ class Chat extends React.Component<IProps, IState> {
             if (res.timestamp) {
                 this.riverTime.setServerTime(res.timestamp);
             }
-            this.startSyncing();
+            if (this.firstTimeLoad) {
+                this.firstTimeLoad = false;
+                this.startSyncing();
+            }
         });
     }
 

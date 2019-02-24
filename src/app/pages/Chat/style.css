@@ -560,10 +560,14 @@ html[theme="dark-blue"] .kk-context-menu.darker ul {
 html[theme="dark"] .confirm-dialog div[role="document"] > div,
 html[theme="dark-blue"] .confirm-dialog div[role="document"] > div {
   background-color: var(--dark); }
-  html[theme="dark"] .confirm-dialog div[role="document"] > div h2, html[theme="dark"] .confirm-dialog div[role="document"] > div p,
+  html[theme="dark"] .confirm-dialog div[role="document"] > div h2, html[theme="dark"] .confirm-dialog div[role="document"] > div p, html[theme="dark"] .confirm-dialog div[role="document"] > div input,
   html[theme="dark-blue"] .confirm-dialog div[role="document"] > div h2,
-  html[theme="dark-blue"] .confirm-dialog div[role="document"] > div p {
+  html[theme="dark-blue"] .confirm-dialog div[role="document"] > div p,
+  html[theme="dark-blue"] .confirm-dialog div[role="document"] > div input {
     color: var(--white); }
+  html[theme="dark"] .confirm-dialog div[role="document"] > div label,
+  html[theme="dark-blue"] .confirm-dialog div[role="document"] > div label {
+    color: var(--river); }
 
 html[theme="dark"] .forward-recipient-dialog .dialog-content,
 html[theme="dark-blue"] .forward-recipient-dialog .dialog-content {

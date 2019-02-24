@@ -657,7 +657,6 @@ class DocumentViewer extends React.Component<IProps, IState> {
             return;
         }
         doc.items[0].downloaded = true;
-        window.console.log('here');
         this.setState({
             doc,
         });

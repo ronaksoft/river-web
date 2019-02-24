@@ -50,6 +50,11 @@ import DocumentViewerService, {IDocument} from '../../services/documentViewerSer
 import Menu from '@material-ui/core/Menu/Menu';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';
 import AvatarCropper from '../AvatarCropper';
+import DialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions/DialogActions';
+import OverlayDialog from '@material-ui/core/Dialog/Dialog';
 
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -64,6 +69,8 @@ interface IProps {
 interface IState {
     avatarMenuAnchorEl: any;
     bio: string;
+    debugModeOpen: boolean;
+    debugModeUrl: string;
     editProfile: boolean;
     editUsername: boolean;
     firstname: string;
@@ -88,8 +95,8 @@ interface IState {
 class SettingMenu extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
     private sdk: SDK;
-    private userId: string;
-    private usernameCheckDebounce: any;
+    private readonly userId: string;
+    private readonly usernameCheckDebounce: any;
     private fileManager: FileManager;
     private progressBroadcaster: ProgressBroadcaster;
     private riverTime: RiverTime;
@@ -98,6 +105,8 @@ class SettingMenu extends React.Component<IProps, IState> {
     private fileId: string = '';
     private cropperRef: AvatarCropper;
     private documentViewerService: DocumentViewerService;
+    private versionClickTimeout: any = null;
+    private versionClickCounter: number = 0;
 
     constructor(props: IProps) {
         super(props);
@@ -108,6 +117,8 @@ class SettingMenu extends React.Component<IProps, IState> {
         this.state = {
             avatarMenuAnchorEl: null,
             bio: '',
+            debugModeOpen: false,
+            debugModeUrl: localStorage.getItem('river.test_url') || 'new.river.im',
             editProfile: false,
             editUsername: false,
             firstname: '',
@@ -174,7 +185,7 @@ class SettingMenu extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {avatarMenuAnchorEl, page, pageContent, user, editProfile, editUsername, bio, firstname, lastname, phone, username, usernameAvailable, usernameValid, uploadingPhoto} = this.state;
+        const {avatarMenuAnchorEl, page, pageContent, user, editProfile, editUsername, bio, firstname, lastname, phone, username, usernameAvailable, usernameValid, uploadingPhoto, debugModeOpen} = this.state;
         return (
             <div className="setting-menu">
                 <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={640}/>
@@ -226,8 +237,8 @@ class SettingMenu extends React.Component<IProps, IState> {
                                 </div>
                             </div>
                         </div>
-                        <div className="version">
-                            v0.23.69
+                        <div className="version" onClick={this.versionClickHandler}>
+                            v0.23.70
                         </div>
                     </div>
                     <div className="page page-2">
@@ -524,6 +535,40 @@ class SettingMenu extends React.Component<IProps, IState> {
                 >
                     {this.avatarContextMenuItem()}
                 </Menu>
+                <OverlayDialog
+                    open={debugModeOpen}
+                    onClose={this.debugModeCloseHandler}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                    className="confirm-dialog"
+                    disableBackdropClick={true}
+                >
+                    <div>
+                        <DialogTitle>Debug Mode</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>
+                                Set test url
+                            </DialogContentText>
+                            <TextField
+                                autoFocus={true}
+                                margin="dense"
+                                label="Test Url"
+                                type="text"
+                                fullWidth={true}
+                                value={this.state.debugModeUrl}
+                                onChange={this.debugModeUrlChange}
+                            />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={this.debugModeCloseHandler} color="secondary">
+                                Cancel
+                            </Button>
+                            <Button onClick={this.debugModeApplyHandler} color="primary" autoFocus={true}>
+                                Apply
+                            </Button>
+                        </DialogActions>
+                    </div>
+                </OverlayDialog>
             </div>
         );
     }
@@ -958,6 +1003,47 @@ class SettingMenu extends React.Component<IProps, IState> {
             detail: data,
         });
         window.dispatchEvent(event);
+    }
+
+    /* Version click handler */
+    private versionClickHandler = () => {
+        if (!this.versionClickTimeout) {
+            this.versionClickTimeout = setTimeout(() => {
+                clearTimeout(this.versionClickTimeout);
+                this.versionClickTimeout = null;
+                this.versionClickCounter = 0;
+            }, 6000);
+        }
+        this.versionClickCounter++;
+        if (this.versionClickCounter >= 10) {
+            clearTimeout(this.versionClickTimeout);
+            this.versionClickTimeout = null;
+            this.versionClickCounter = 0;
+            this.setState({
+                debugModeOpen: true,
+            });
+            window.console.log('debug mode');
+        }
+    }
+
+    /* Debug mode close handler */
+    private debugModeCloseHandler = () => {
+        this.setState({
+            debugModeOpen: false,
+        });
+    }
+
+    /* Debug mode apply handler */
+    private debugModeApplyHandler = () => {
+        localStorage.setItem('river.test_url', this.state.debugModeUrl);
+        window.location.reload();
+    }
+
+    /* Debug mode url change handler */
+    private debugModeUrlChange = (e: any) => {
+        this.setState({
+            debugModeUrl: e.currentTarget.value,
+        });
     }
 }
 

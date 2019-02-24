@@ -643,8 +643,11 @@ html[theme="dark-blue"] {
     div[role="document"] {
       > div {
         background-color: var(--dark);
-        h2, p {
+        h2, p, input {
           color: var(--white);
+        }
+        label {
+          color: var(--river);
         }
       }
     }

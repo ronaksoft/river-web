@@ -105,14 +105,18 @@ export default class UpdateManager {
         }
         const data = UpdateContainer.deserializeBinary(base64ToU8a(bytes)).toObject();
         const currentUpdateId = this.lastUpdateId;
-        const minId = data.minupdateid;
-        const maxId = data.maxupdateid;
+        const minId = data.minupdateid || 0;
+        const maxId = data.maxupdateid || 0;
         window.console.log('on update, current:', currentUpdateId, 'min:', minId, 'max:', maxId);
         if ((this.outOfSync || currentUpdateId + 1 !== minId) && !(minId === 0 && maxId === 0)) {
             this.outOfSyncCheck(data);
             return;
         }
         this.applyUpdates(data);
+    }
+
+    public idleHandler() {
+        this.callHandlers(C_MSG.OutOfSync, {});
     }
 
     public listen(eventConstructor: number, fn: any): (() => void) | null {

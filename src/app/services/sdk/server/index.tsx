@@ -15,6 +15,8 @@ import {throttle} from 'lodash';
 import Socket from './socket';
 import {base64ToU8a} from '../fileManager/http/utils';
 
+const C_IDLE_TIME = 300;
+
 export interface IServerRequest {
     constructor: number;
     data: Uint8Array;
@@ -41,11 +43,14 @@ export default class Server {
     private updateManager: UpdateManager;
     private isConnected: boolean = false;
     private requestQueue: MessageEnvelope[] = [];
-    private executeSendThrottledRequestThrottle: any;
+    private readonly executeSendThrottledRequestThrottle: any;
+    private lastActivityTime: number = 0;
 
     public constructor() {
         this.socket = Socket.getInstance();
         this.reqId = 0;
+        this.lastActivityTime = this.getTime();
+        this.startIdleCheck();
         const version = this.shouldMigrate(localStorage.getItem('river.version'));
         if (version !== false) {
             this.migrate(version);
@@ -305,5 +310,19 @@ export default class Server {
         setTimeout(() => {
             window.location.reload();
         }, 1000);
+    }
+
+    private getTime() {
+        return Math.floor(Date.now() / 1000);
+    }
+
+    private startIdleCheck() {
+        setInterval(() => {
+            const now = this.getTime();
+            if (now - this.lastActivityTime > C_IDLE_TIME) {
+                this.lastActivityTime = now;
+                this.updateManager.idleHandler();
+            }
+        }, 10000);
     }
 }
