@@ -118,6 +118,14 @@ input {
         font-size: 15px;
         margin-right: 6px;
         vertical-align: sub; }
+    .dialog-wrapper .dialog-top-bar .status {
+      height: 18px;
+      width: 20px; }
+      .dialog-wrapper .dialog-top-bar .status svg {
+        height: 18px;
+        width: 18px;
+        padding: 0 2px 0 0;
+        color: var(--grey); }
     .dialog-wrapper .dialog-top-bar .time {
       font-size: 11px;
       color: var(--grey);
@@ -133,14 +141,11 @@ input {
     white-space: nowrap;
     text-overflow: ellipsis;
     color: var(--grey); }
-    .dialog-wrapper .preview .status {
-      height: 17px;
-      width: 17px;
-      padding: 0 3px 0 0; }
-      .dialog-wrapper .preview .status svg {
-        height: 17px;
-        width: 17px;
-        vertical-align: bottom; }
+    .dialog-wrapper .preview .preview-icon {
+      display: inline-block;
+      font-size: 14px;
+      margin: 0 4px 3px 0;
+      vertical-align: bottom; }
     .dialog-wrapper .preview .sender {
       font-weight: bold; }
   .dialog-wrapper.has-mention .preview {

@@ -1702,13 +1702,15 @@ class Chat extends React.Component<IProps, IState> {
         const {dialogs} = this.state;
         const previewMe = (this.connInfo.UserID === msg.senderid);
         let toUpdateDialog: IDialog | null = null;
+        const messageTitle = getMessageTitle(msg);
         if (this.dialogMap.hasOwnProperty(id)) {
             const index = this.dialogMap[id];
             if ((dialogs[index].topmessageid || 0) <= (msg.id || 0) || force === true) {
                 dialogs[index].action_code = msg.messageaction;
                 dialogs[index].action_data = msg.actiondata;
                 dialogs[index].topmessageid = msg.id;
-                dialogs[index].preview = getMessageTitle(msg);
+                dialogs[index].preview = messageTitle.text;
+                dialogs[index].preview_icon = messageTitle.icon;
                 dialogs[index].preview_me = previewMe;
                 dialogs[index].sender_id = msg.senderid;
                 dialogs[index].target_id = msg.peerid;
@@ -1727,7 +1729,8 @@ class Chat extends React.Component<IProps, IState> {
                 last_update: msg.createdon,
                 peerid: id,
                 peertype: msg.peertype,
-                preview: getMessageTitle(msg),
+                preview: messageTitle.text,
+                preview_icon: messageTitle.icon,
                 preview_me: previewMe,
                 saved_messages: (this.connInfo.UserID === id),
                 sender_id: msg.senderid,

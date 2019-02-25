@@ -137,6 +137,7 @@ export default class SyncManager {
                             remove: message.actiondata.pb_delete || false,
                         });
                     }
+                    const messageTitle = getMessageTitle(updateNewMessage.message);
                     dialogs = this.updateDialog(dialogs, {
                         accesshash: updateNewMessage.accesshash,
                         action_code: updateNewMessage.message.messageaction,
@@ -144,7 +145,8 @@ export default class SyncManager {
                         last_update: updateNewMessage.message.createdon,
                         peerid: updateNewMessage.message.peerid,
                         peertype: updateNewMessage.message.peertype,
-                        preview: getMessageTitle(updateNewMessage.message),
+                        preview: messageTitle.text,
+                        preview_icon: messageTitle.icon,
                         preview_me: (this.updateManager.getUserId() === updateNewMessage.message.senderid),
                         saved_messages: (this.updateManager.getUserId() === updateNewMessage.message.peerid),
                         sender_id: updateNewMessage.message.senderid,

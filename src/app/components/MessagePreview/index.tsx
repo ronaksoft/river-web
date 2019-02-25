@@ -145,7 +145,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
         if ((msg.body || '').length > 0) {
             return (<div className={'inner ' + (msg.rtl ? 'rtl' : 'ltr')}>{msg.body}</div>);
         } else {
-            return (<div className={'inner'}>{getMessageTitle(msg)}</div>);
+            return (<div className={'inner'}>{getMessageTitle(msg).text}</div>);
         }
     }
 }

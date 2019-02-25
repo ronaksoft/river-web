@@ -3,58 +3,82 @@ import {MediaType} from '../../services/sdk/messages/chat.core.types_pb';
 import {DocumentAttributeType, MediaDocument} from '../../services/sdk/messages/chat.core.message.medias_pb';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 
-export const getMessageTitle = (message: IMessage): string => {
+export const C_MESSAGE_ICON = {
+    Audio: 2,
+    Contact: 6,
+    File: 5,
+    GIF: 7,
+    Location: 9,
+    None: 0,
+    Photo: 4,
+    Sticker: 8,
+    Video: 1,
+    Voice: 3,
+};
+
+export const getMessageTitle = (message: IMessage): {text: string, icon: number} => {
+    const messageIcon: {text: string, icon: number} = {text: '', icon: C_MESSAGE_ICON.None};
+
     switch (message.mediatype) {
         default:
         case MediaType.MEDIATYPEEMPTY:
-            return (message.body || '').substr(0, 64);
+            messageIcon.text = (message.body || '').substr(0, 64);
+            break;
         case MediaType.MEDIATYPEDOCUMENT:
             const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
-            if (messageMediaDocument.caption && messageMediaDocument.caption.length > 0) {
-                return (messageMediaDocument.caption || '').substr(0, 64);
-            }
             if (message.messagetype === C_MESSAGE_TYPE.Voice) {
-                return 'Voice Message';
+                messageIcon.icon = C_MESSAGE_ICON.Voice;
+                messageIcon.text = 'Voice Message';
             } else if (message.messagetype === C_MESSAGE_TYPE.Music) {
-                return 'Audio Message';
+                messageIcon.icon = C_MESSAGE_ICON.Audio;
+                messageIcon.text = 'Audio Message';
             } else if (message.messagetype === C_MESSAGE_TYPE.Video) {
-                return 'Video Message';
+                messageIcon.icon = C_MESSAGE_ICON.Video;
+                messageIcon.text = 'Video Message';
             } else if (message.messagetype === C_MESSAGE_TYPE.File) {
-                return 'File';
-            } else if (message.messagetype === C_MESSAGE_TYPE.Contact) {
-                return 'Contact';
+                messageIcon.icon = C_MESSAGE_ICON.File;
+                messageIcon.text = 'File';
             } else {
                 if (messageMediaDocument.doc.attributesList) {
-                    let title = '';
                     for (let i = 0; i < messageMediaDocument.doc.attributesList.length; i++) {
                         if (messageMediaDocument.doc.attributesList[i].type === DocumentAttributeType.ATTRIBUTETYPEAUDIO) {
-                            title = 'Audio Message';
-                            break;
+                            messageIcon.icon = C_MESSAGE_ICON.Audio;
+                            messageIcon.text = 'Audio Message';
                         } else if (messageMediaDocument.doc.attributesList[i].type === DocumentAttributeType.ATTRIBUTETYPEVIDEO) {
-                            title = 'Video Message';
-                            break;
+                            messageIcon.icon = C_MESSAGE_ICON.Video;
+                            messageIcon.text = 'Video Message';
                         } else if (messageMediaDocument.doc.attributesList[i].type === DocumentAttributeType.ATTRIBUTETYPEPHOTO) {
-                            title = 'Photo Message';
-                            break;
+                            messageIcon.icon = C_MESSAGE_ICON.Photo;
+                            messageIcon.text = 'Photo Message';
                         } else if (messageMediaDocument.doc.attributesList[i].type === DocumentAttributeType.ATTRIBUTETYPEFILE) {
-                            if (title === '') {
-                                title = 'File';
+                            if (messageIcon.text === '') {
+                                messageIcon.icon = C_MESSAGE_ICON.File;
+                                messageIcon.text = 'File';
                             }
-                            break;
                         } else if (messageMediaDocument.doc.attributesList[i].type === DocumentAttributeType.ATTRIBUTEANIMATED) {
-                            title = 'GIF';
-                            break;
+                            messageIcon.icon = C_MESSAGE_ICON.GIF;
+                            messageIcon.text = 'GIF';
                         }
                         /* else if (messageMediaDocument.doc.attributesList[i].type === DocumentAttributeType.ATTRIBUTETYPENONE) {
                             title = '';
                             break;
                         }*/
                     }
-                    return title;
                 }
             }
-            return '';
+            if (messageMediaDocument.caption && messageMediaDocument.caption.length > 0) {
+                messageIcon.text = (messageMediaDocument.caption || '').substr(0, 64);
+            }
+            break;
         case MediaType.MEDIATYPECONTACT:
-            return 'Contact';
+            messageIcon.icon = C_MESSAGE_ICON.Contact;
+            messageIcon.text = 'Contact';
+            break;
+        case MediaType.MEDIATYPEGEOLOCATION:
+            messageIcon.icon = C_MESSAGE_ICON.Location;
+            messageIcon.text = 'Location';
+            break;
     }
+
+    return messageIcon;
 };

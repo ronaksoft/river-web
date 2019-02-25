@@ -18,7 +18,13 @@ import {
     DoneRounded,
     MoreVert,
     NotificationsOffRounded,
-    ScheduleRounded
+    ScheduleRounded,
+    LocationOnOutlined,
+    PeopleOutlined,
+    InsertDriveFileOutlined,
+    VideocamOutlined,
+    PhotoOutlined,
+    RecordVoiceOverOutlined,
 } from '@material-ui/icons';
 import {PeerNotifySettings, PeerType, TypingAction} from '../../services/sdk/messages/chat.core.types_pb';
 import GroupAvatar from '../GroupAvatar';
@@ -28,6 +34,7 @@ import {isMuted} from '../UserInfoMenu';
 import {isEqual} from 'lodash';
 
 import './style.css';
+import {C_MESSAGE_ICON} from '../Dialog/utils';
 
 interface IProps {
     cancelIsTyping?: (id: string) => void;
@@ -95,12 +102,12 @@ class DialogMessage extends React.Component<IProps, IState> {
                               youPlaceholder="Saved Messages"/>}
                     {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
                     <GroupName className="name" id={dialog.target_id || ''}/>}
-                    <LiveDate className="time" time={dialog.last_update || 0}/>
-                </div>
-                {Boolean(ids.length === 0) && <span className="preview">
                     {dialog.preview_me && <span className="status">
                         {this.getStatus(dialog.topmessageid || 0, dialog.readoutboxmaxid || 0)}
                     </span>}
+                    <LiveDate className="time" time={dialog.last_update || 0}/>
+                </div>
+                {Boolean(ids.length === 0) && <span className="preview">
                     {this.renderPreviewMessage(dialog)}
                 </span>}
                 {isTypingRender(isTyping, dialog)}
@@ -127,13 +134,32 @@ class DialogMessage extends React.Component<IProps, IState> {
         }
     }
 
+    private getIcon(icon?: number) {
+        switch (icon) {
+            case C_MESSAGE_ICON.Location:
+                return (<LocationOnOutlined className="preview-icon"/>);
+            case C_MESSAGE_ICON.File:
+                return (<InsertDriveFileOutlined className="preview-icon"/>);
+            case C_MESSAGE_ICON.Video:
+                return (<VideocamOutlined className="preview-icon"/>);
+            case C_MESSAGE_ICON.Contact:
+                return (<PeopleOutlined className="preview-icon"/>);
+            case C_MESSAGE_ICON.Voice:
+                return (<RecordVoiceOverOutlined className="preview-icon"/>);
+            case C_MESSAGE_ICON.Photo:
+                return (<PhotoOutlined className="preview-icon"/>);
+            default:
+                return '';
+        }
+    }
+
     private renderPreviewMessage(dialog: IDialog) {
         if (dialog.action_code === C_MESSAGE_ACTION.MessageActionNope) {
             return (
                 <span className="preview-message">
                     {Boolean(dialog.peertype === PeerType.PEERGROUP && dialog.sender_id) && <span className="sender">
                     <UserName id={dialog.sender_id || ''} onlyFirstName={true} you={true} noDetail={true}/>: </span>}
-                    {dialog.preview}
+                    {this.getIcon(dialog.preview_icon)}{dialog.preview}
                 </span>
             );
         }
@@ -201,7 +227,7 @@ class DialogMessage extends React.Component<IProps, IState> {
                                                                     you={true} onlyFirstName={true}
                                                                     noDetail={true}/> changed the Group Photo</span>);
             default:
-                return (<span className="preview-message">{dialog.preview}</span>);
+                return (<span className="preview-message">{this.getIcon(dialog.preview_icon)}{dialog.preview}</span>);
         }
     }
 }

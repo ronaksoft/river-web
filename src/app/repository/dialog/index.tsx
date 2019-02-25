@@ -269,9 +269,11 @@ export default class DialogRepo {
     }
 
     private applyMessage(dialog: IDialog, msg: IMessage): IDialog {
+        const messageTitle = getMessageTitle(msg);
         dialog.action_code = msg.messageaction;
         dialog.action_data = msg.actiondata;
-        dialog.preview = getMessageTitle(msg);
+        dialog.preview = messageTitle.text;
+        dialog.preview_icon = messageTitle.icon;
         dialog.preview_me = (msg.senderid === this.userId);
         dialog.last_update = msg.createdon;
         dialog.target_id = msg.peerid;
