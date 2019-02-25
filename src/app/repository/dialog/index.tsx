@@ -258,6 +258,7 @@ export default class DialogRepo {
             dialogs.push(cloneDeep(this.lazyMap[key]));
         });
         if (dialogs.length === 0) {
+            this.updateManager.flushLastUpdateId();
             return Promise.resolve();
         }
         this.lazyMap = {};

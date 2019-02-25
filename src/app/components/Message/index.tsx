@@ -44,7 +44,7 @@ import './style.css';
 interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
     items: IMessage[];
-    onAttachmentAction?: (cmd: 'cancel' | 'cancel_download' | 'download' | 'view' | 'open', message: IMessage) => void;
+    onAttachmentAction?: (cmd: 'cancel' | 'cancel_download' | 'download' | 'view' | 'open' | 'read', message: IMessage) => void;
     onJumpToMessage: (id: number, e: any) => void;
     onLoadMoreAfter?: (id: number) => any;
     onLoadMoreBefore?: () => any;

@@ -115,7 +115,7 @@ export const getMediaInfo = (message: IMessage): IMediaInfo => {
 interface IProps {
     measureFn: any;
     message: IMessage;
-    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', message: IMessage) => void;
+    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'read', message: IMessage) => void;
     parentEl: any;
     peer: InputPeer | null;
 }
@@ -126,7 +126,7 @@ interface IState {
     message: IMessage;
 }
 
-class MessageMedia extends React.Component<IProps, IState> {
+class MessageMedia extends React.PureComponent<IProps, IState> {
     private messageMediaClass: string = '';
     private lastId: number = 0;
     private fileId: string = '';
@@ -143,8 +143,9 @@ class MessageMedia extends React.Component<IProps, IState> {
         maxWidth: `${C_MIN_WIDTH}px`,
         width: `${C_MIN_WIDTH}px`,
     };
-    private pictureBigRef: any = null;
+    private mediaBigRef: any = null;
     private blurredImageEnable: boolean = false;
+    private contentRead: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -173,6 +174,7 @@ class MessageMedia extends React.Component<IProps, IState> {
             this.lastId = props.message.id || 0;
             this.downloaded = props.message.downloaded || false;
             this.saved = props.message.saved || false;
+            this.contentRead = props.message.contentread || false;
         }
 
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
@@ -227,6 +229,14 @@ class MessageMedia extends React.Component<IProps, IState> {
                 message: newProps.message,
             });
         }
+        if ((newProps.message.contentread || false) !== this.contentRead) {
+            this.contentRead = (newProps.message.contentread || false);
+            this.setState({
+                message: newProps.message,
+            }, () => {
+                this.forceUpdate();
+            });
+        }
     }
 
     public componentWillUnmount() {
@@ -235,9 +245,13 @@ class MessageMedia extends React.Component<IProps, IState> {
 
     /* View downloaded document */
     public viewDocument = () => {
-        const {fileState} = this.state;
-        if (this.pictureBigRef && (fileState === 'view' || fileState === 'open')) {
-            this.showMediaHandler(this.pictureBigRef);
+        const {fileState, message} = this.state;
+        if (this.mediaBigRef && (fileState === 'view' || fileState === 'open')) {
+            this.showMediaHandler(this.mediaBigRef);
+            if (!this.contentRead && this.props.onAction) {
+                this.contentRead = true;
+                this.props.onAction('read', message);
+            }
         }
     }
 
@@ -249,7 +263,9 @@ class MessageMedia extends React.Component<IProps, IState> {
                      style={{minWidth: this.pictureContentSize.width, maxWidth: this.pictureContentSize.maxWidth}}>
                     {Boolean(info.duration) &&
                     <div className="media-duration">
-                        <PlayArrowRounded/><span>{this.getDuration(info.duration || 0)}</span></div>}
+                        <PlayArrowRounded/><span>{this.getDuration(info.duration || 0)}</span>
+                        {!message.contentread && <span className="unread-bullet"/>}
+                    </div>}
                     {Boolean(fileState !== 'view' && fileState !== 'open') &&
                     <React.Fragment>
                         <div className="media-size" ref={this.mediaSizeRefHandler}>0 KB</div>
@@ -404,7 +420,7 @@ class MessageMedia extends React.Component<IProps, IState> {
 
     /* Picture big ref handler */
     private pictureBigRefHandler = (ref: any) => {
-        this.pictureBigRef = ref;
+        this.mediaBigRef = ref;
     }
 
     /* Get content size */

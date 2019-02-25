@@ -100,6 +100,22 @@ export namespace UpdateDifference {
   }
 }
 
+export class UpdateTooLong extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateTooLong.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateTooLong): UpdateTooLong.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateTooLong, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateTooLong;
+  static deserializeBinaryFromReader(message: UpdateTooLong, reader: jspb.BinaryReader): UpdateTooLong;
+}
+
+export namespace UpdateTooLong {
+  export type AsObject = {
+  }
+}
+
 export class UpdateState extends jspb.Message {
   hasUpdateid(): boolean;
   clearUpdateid(): void;

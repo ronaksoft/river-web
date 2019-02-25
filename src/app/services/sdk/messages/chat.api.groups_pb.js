@@ -171,15 +171,15 @@ proto.msg.GroupsCreate.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * repeated InputUser Users = 1;
- * @return {!Array<!proto.msg.InputUser>}
+ * @return {!Array.<!proto.msg.InputUser>}
  */
 proto.msg.GroupsCreate.prototype.getUsersList = function() {
-  return /** @type{!Array<!proto.msg.InputUser>} */ (
+  return /** @type{!Array.<!proto.msg.InputUser>} */ (
     jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.InputUser, 1));
 };
 
 
-/** @param {!Array<!proto.msg.InputUser>} value */
+/** @param {!Array.<!proto.msg.InputUser>} value */
 proto.msg.GroupsCreate.prototype.setUsersList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };

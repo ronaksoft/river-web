@@ -168,15 +168,15 @@ proto.msg.ContactsImport.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * repeated PhoneContact Contacts = 1;
- * @return {!Array<!proto.msg.PhoneContact>}
+ * @return {!Array.<!proto.msg.PhoneContact>}
  */
 proto.msg.ContactsImport.prototype.getContactsList = function() {
-  return /** @type{!Array<!proto.msg.PhoneContact>} */ (
+  return /** @type{!Array.<!proto.msg.PhoneContact>} */ (
     jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.PhoneContact, 1));
 };
 
 
-/** @param {!Array<!proto.msg.PhoneContact>} value */
+/** @param {!Array.<!proto.msg.PhoneContact>} value */
 proto.msg.ContactsImport.prototype.setContactsList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
@@ -520,14 +520,14 @@ proto.msg.ContactsDelete.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * repeated int64 UserIDs = 1;
- * @return {!Array<string>}
+ * @return {!Array.<string>}
  */
 proto.msg.ContactsDelete.prototype.getUseridsList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 1));
+  return /** @type {!Array.<string>} */ (jspb.Message.getRepeatedField(this, 1));
 };
 
 
-/** @param {!Array<string>} value */
+/** @param {!Array.<string>} value */
 proto.msg.ContactsDelete.prototype.setUseridsList = function(value) {
   jspb.Message.setField(this, 1, value || []);
 };
@@ -686,15 +686,15 @@ proto.msg.ContactsImported.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * repeated ContactUser Users = 1;
- * @return {!Array<!proto.msg.ContactUser>}
+ * @return {!Array.<!proto.msg.ContactUser>}
  */
 proto.msg.ContactsImported.prototype.getUsersList = function() {
-  return /** @type{!Array<!proto.msg.ContactUser>} */ (
+  return /** @type{!Array.<!proto.msg.ContactUser>} */ (
     jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.ContactUser, 1));
 };
 
 
-/** @param {!Array<!proto.msg.ContactUser>} value */
+/** @param {!Array.<!proto.msg.ContactUser>} value */
 proto.msg.ContactsImported.prototype.setUsersList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
@@ -869,15 +869,15 @@ proto.msg.ContactsMany.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * repeated PhoneContact Contacts = 1;
- * @return {!Array<!proto.msg.PhoneContact>}
+ * @return {!Array.<!proto.msg.PhoneContact>}
  */
 proto.msg.ContactsMany.prototype.getContactsList = function() {
-  return /** @type{!Array<!proto.msg.PhoneContact>} */ (
+  return /** @type{!Array.<!proto.msg.PhoneContact>} */ (
     jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.PhoneContact, 1));
 };
 
 
-/** @param {!Array<!proto.msg.PhoneContact>} value */
+/** @param {!Array.<!proto.msg.PhoneContact>} value */
 proto.msg.ContactsMany.prototype.setContactsList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
@@ -900,15 +900,15 @@ proto.msg.ContactsMany.prototype.clearContactsList = function() {
 
 /**
  * repeated ContactUser Users = 2;
- * @return {!Array<!proto.msg.ContactUser>}
+ * @return {!Array.<!proto.msg.ContactUser>}
  */
 proto.msg.ContactsMany.prototype.getUsersList = function() {
-  return /** @type{!Array<!proto.msg.ContactUser>} */ (
+  return /** @type{!Array.<!proto.msg.ContactUser>} */ (
     jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.ContactUser, 2));
 };
 
 
-/** @param {!Array<!proto.msg.ContactUser>} value */
+/** @param {!Array.<!proto.msg.ContactUser>} value */
 proto.msg.ContactsMany.prototype.setUsersList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 2, value);
 };

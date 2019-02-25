@@ -9,12 +9,23 @@
 @import '../../../style/common';
 
 .message-voice {
+  position: relative;
   background-color: var(--glass-dark-low);
   border-radius: 5px;
   .voice-player .play-timer {
     width: 46px;
     padding-top: 2px;
     color: var(--grey-low);
+  }
+  .unread-bullet {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    height: 5px;
+    width: 5px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    transform: translateY(-50%);
   }
 }
 
@@ -25,6 +36,9 @@ html[theme="dark-blue"] {
     .voice-player .play-timer {
       color: var(--light);
     }
+    .unread-bullet {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
   }
 }
 
@@ -34,6 +48,9 @@ html[bubble="2"] {
     .voice-player .play-timer {
       padding-right: 6px;
       width: 46px;
+    }
+    .unread-bullet {
+      right: 8px;
     }
   }
 }

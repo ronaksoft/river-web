@@ -14,7 +14,7 @@ import {
     UpdateMessageEdited, UpdateMessageID, UpdateMessagesDeleted,
     UpdateNewMessage, UpdateNotifySettings,
     UpdateReadHistoryInbox,
-    UpdateReadHistoryOutbox, UpdateUsername, UpdateUserPhoto,
+    UpdateReadHistoryOutbox, UpdateReadMessagesContents, UpdateUsername, UpdateUserPhoto,
 } from '../messages/chat.api.updates_pb';
 import {IUser} from '../../../repository/user/interface';
 import {IMessage} from '../../../repository/message/interface';
@@ -174,6 +174,19 @@ export default class SyncManager {
                     const updateMessageEdited = UpdateMessageEdited.deserializeBinary(data).toObject();
                     messages[updateMessageEdited.message.id || 0] = MessageRepo.parseMessage(updateMessageEdited.message, this.updateManager.getUserId());
                     break;
+                case C_MSG.UpdateReadMessagesContents:
+                    const updateReadMessagesContents = UpdateReadMessagesContents.deserializeBinary(data).toObject();
+                    updateReadMessagesContents.messageidsList.forEach((id) => {
+                        if (messages.hasOwnProperty(id || 0)) {
+                            messages[id || 0].contentread = true;
+                        } else {
+                            messages[id || 0] = {
+                                contentread: true,
+                                id,
+                            };
+                        }
+                    });
+                    break;
                 case C_MSG.UpdateMessagesDeleted:
                     const updateMessagesDeleted = UpdateMessagesDeleted.deserializeBinary(data).toObject();
                     updateMessagesDeleted.messageidsList.forEach((id) => {
@@ -274,6 +287,10 @@ export default class SyncManager {
                     this.broadcastEvent('Dialog_Sync_Updated', {ids: keys});
                 }, 100);
             });
+        } else {
+            setTimeout(() => {
+                this.updateManager.flushLastUpdateId();
+            }, 100);
         }
     }
 

@@ -719,14 +719,14 @@ proto.msg.AuthLogout.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * repeated int64 AuthIDs = 1;
- * @return {!Array<string>}
+ * @return {!Array.<string>}
  */
 proto.msg.AuthLogout.prototype.getAuthidsList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 1));
+  return /** @type {!Array.<string>} */ (jspb.Message.getRepeatedField(this, 1));
 };
 
 
-/** @param {!Array<string>} value */
+/** @param {!Array.<string>} value */
 proto.msg.AuthLogout.prototype.setAuthidsList = function(value) {
   jspb.Message.setField(this, 1, value || []);
 };

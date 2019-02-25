@@ -192,6 +192,15 @@ input {
       .message-media .media-content .media-duration span {
         padding-top: 2px;
         line-height: 12px; }
+      .message-media .media-content .media-duration .unread-bullet {
+        position: absolute;
+        top: 50%;
+        left: 2px;
+        height: 3px;
+        width: 3px;
+        background-color: var(--white);
+        border-radius: 50%;
+        transform: translateY(-50%); }
     .message-media .media-content .media-size {
       position: absolute;
       top: calc(50% + 30px);

@@ -37,9 +37,10 @@ export interface IMediaItem {
     duration?: number;
     file: Blob;
     fileType: string;
-    mediaType: 'image' | 'video' | 'file' | 'none';
+    mediaType: 'image' | 'video' | 'file' | 'voice' | 'none';
     name: string;
     thumb?: IMediaThumb;
+    waveform?: number[];
 }
 
 export interface IUploaderFile extends FileWithPreview {

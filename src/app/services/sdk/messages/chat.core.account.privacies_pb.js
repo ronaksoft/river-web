@@ -385,14 +385,14 @@ proto.msg.AccountPrivacyAllowUsers.serializeBinaryToWriter = function(message, w
 
 /**
  * repeated int64 UserIDs = 1;
- * @return {!Array<string>}
+ * @return {!Array.<string>}
  */
 proto.msg.AccountPrivacyAllowUsers.prototype.getUseridsList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 1));
+  return /** @type {!Array.<string>} */ (jspb.Message.getRepeatedField(this, 1));
 };
 
 
-/** @param {!Array<string>} value */
+/** @param {!Array.<string>} value */
 proto.msg.AccountPrivacyAllowUsers.prototype.setUseridsList = function(value) {
   jspb.Message.setField(this, 1, value || []);
 };
@@ -780,14 +780,14 @@ proto.msg.AccountPrivacyDisallowUsers.serializeBinaryToWriter = function(message
 
 /**
  * repeated int64 UserIDs = 1;
- * @return {!Array<string>}
+ * @return {!Array.<string>}
  */
 proto.msg.AccountPrivacyDisallowUsers.prototype.getUseridsList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 1));
+  return /** @type {!Array.<string>} */ (jspb.Message.getRepeatedField(this, 1));
 };
 
 
-/** @param {!Array<string>} value */
+/** @param {!Array.<string>} value */
 proto.msg.AccountPrivacyDisallowUsers.prototype.setUseridsList = function(value) {
   jspb.Message.setField(this, 1, value || []);
 };

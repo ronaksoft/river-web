@@ -471,8 +471,12 @@ export default class MessageRepo {
     public transform(msgs: IMessage[]) {
         return msgs.map((msg) => {
             // msg = MessageRepo.parseMessage(msg);
-            msg.me = (msg.senderid === this.userId);
-            msg.rtl = this.rtlDetector.direction(msg.body || '');
+            if (msg.senderid) {
+                msg.me = (msg.senderid === this.userId);
+            }
+            if (msg.body) {
+                msg.rtl = this.rtlDetector.direction(msg.body || '');
+            }
             msg.temp = false;
             return msg;
         });
@@ -578,8 +582,12 @@ export default class MessageRepo {
         }
         // Start
         messages.forEach((message) => {
-            message.me = (message.senderid === this.userId);
-            message.rtl = this.rtlDetector.direction(message.body || '');
+            if (message.senderid) {
+                message.me = (message.senderid === this.userId);
+            }
+            if (message.body) {
+                message.rtl = this.rtlDetector.direction(message.body || '');
+            }
             message.temp = (temp === true);
         });
         this.upsert(messages);
@@ -613,8 +621,12 @@ export default class MessageRepo {
     }
 
     private updateMap = (message: IMessage, temp?: boolean) => {
-        message.me = (message.senderid === this.userId);
-        message.rtl = this.rtlDetector.direction(message.body || '');
+        if (message.senderid) {
+            message.me = (message.senderid === this.userId);
+        }
+        if (message.body) {
+            message.rtl = this.rtlDetector.direction(message.body || '');
+        }
         message.temp = (temp === true);
         if (this.lazyMap.hasOwnProperty(message.id || 0)) {
             const t = this.lazyMap[message.id || 0];
@@ -699,6 +711,9 @@ export default class MessageRepo {
     }
 
     private mergeCheck(message: IMessage, newMessage: IMessage): IMessage {
+        if (message.contentread) {
+            newMessage.contentread = true;
+        }
         const d = merge(message, newMessage);
         d.entitiesList = newMessage.entitiesList;
         return d;

@@ -24,7 +24,7 @@ import './style.css';
 interface IProps {
     message: IMessage;
     peer: InputPeer | null;
-    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'open', message: IMessage) => void;
+    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'open' | 'read', message: IMessage) => void;
 }
 
 interface IState {
@@ -36,6 +36,7 @@ class MessageVoice extends React.PureComponent<IProps, IState> {
     private lastId: number = 0;
     private voiceId: string = '';
     private downloaded: boolean = false;
+    private contentRead: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -47,6 +48,7 @@ class MessageVoice extends React.PureComponent<IProps, IState> {
         if (props.message) {
             this.lastId = props.message.id || 0;
             this.downloaded = props.message.downloaded || false;
+            this.contentRead = props.message.contentread || false;
         }
     }
 
@@ -104,13 +106,23 @@ class MessageVoice extends React.PureComponent<IProps, IState> {
             this.downloaded = (newProps.message.downloaded || false);
             this.voicePlayerRef.setVoiceState(this.getVoiceState(newProps.message));
         }
+        if ((newProps.message.contentread || false) !== this.contentRead) {
+            this.contentRead = (newProps.message.contentread || false);
+            this.setState({
+                message: newProps.message,
+            }, () => {
+                this.forceUpdate();
+            });
+        }
     }
 
     public render() {
+        const {message} = this.state;
         return (
             <div className="message-voice">
                 <VoicePlayer ref={this.voicePlayerRefHandler} className="play-frame"
                              maxValue={16.0} message={this.state.message} onAction={this.actionHandler}/>
+                {!message.contentread && <span className="unread-bullet"/>}
             </div>
         );
     }
@@ -143,13 +155,19 @@ class MessageVoice extends React.PureComponent<IProps, IState> {
     }
 
     /* Voice action handler */
-    private actionHandler = (cmd: 'cancel' | 'download' | 'cancel_download') => {
+    private actionHandler = (cmd: 'cancel' | 'download' | 'cancel_download' | 'play') => {
         if (this.props.onAction) {
-            this.props.onAction(cmd, this.state.message);
-            if (cmd === 'download') {
-                this.voicePlayerRef.setVoiceState('progress');
-            } else if (cmd === 'cancel_download') {
-                this.voicePlayerRef.setVoiceState('download');
+            if (cmd === 'play') {
+                if (!this.state.message.contentread) {
+                    this.props.onAction('read', this.state.message);
+                }
+            } else {
+                this.props.onAction(cmd, this.state.message);
+                if (cmd === 'download') {
+                    this.voicePlayerRef.setVoiceState('progress');
+                } else if (cmd === 'cancel_download') {
+                    this.voicePlayerRef.setVoiceState('download');
+                }
             }
         }
     }

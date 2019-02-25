@@ -14,7 +14,7 @@ import {
     UpdateMessageEdited, UpdateMessageID, UpdateMessagesDeleted,
     UpdateNewMessage, UpdateNotifySettings,
     UpdateReadHistoryInbox,
-    UpdateReadHistoryOutbox, UpdateUsername, UpdateUserPhoto,
+    UpdateReadHistoryOutbox, UpdateReadMessagesContents, UpdateUsername, UpdateUserPhoto,
     UpdateUserTyping
 } from '../../messages/chat.api.updates_pb';
 import {throttle} from 'lodash';
@@ -49,8 +49,9 @@ export default class UpdateManager {
     private rndMsgMap: { [key: number]: boolean } = {};
     private messageList: { [key: string]: UpdateNewMessage.AsObject[] } = {};
     private messageDropList: { [key: string]: UpdateNewMessage.AsObject[] } = {};
-    private newMessageThrottle: any;
-    private newMessageDropThrottle: any;
+    private readonly newMessageThrottle: any;
+    private readonly newMessageDropThrottle: any;
+    private readonly flushUpdateIdThrottle: any;
     private active: boolean = true;
     private userId: string = '';
     private outOfSync: boolean = false;
@@ -62,6 +63,7 @@ export default class UpdateManager {
         this.lastUpdateId = this.loadLastUpdateId();
         this.newMessageThrottle = throttle(this.executeNewMessageThrottle, 300);
         this.newMessageDropThrottle = throttle(this.executeNewMessageDropThrottle, 300);
+        this.flushUpdateIdThrottle = throttle(this.flushLastUpdateId, 300);
     }
 
     /* Loads last update id form localStorage */
@@ -85,7 +87,7 @@ export default class UpdateManager {
         this.lastUpdateId = id;
     }
 
-    public flushLastUpdateId() {
+    public flushLastUpdateId = () => {
         localStorage.setItem('river.last_update_id', JSON.stringify({
             lastId: this.lastUpdateId,
         }));
@@ -214,6 +216,7 @@ export default class UpdateManager {
     }
 
     private response(update: UpdateEnvelope.AsObject) {
+        let flushUpdateId = false;
         // @ts-ignore
         const data: Uint8Array = update.update;
         switch (update.constructor) {
@@ -238,24 +241,40 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateMessageEdited:
                 this.callHandlers(C_MSG.UpdateMessageEdited, UpdateMessageEdited.deserializeBinary(data).toObject());
+                flushUpdateId = true;
                 break;
             case C_MSG.UpdateMessagesDeleted:
                 this.callHandlers(C_MSG.UpdateMessagesDeleted, UpdateMessagesDeleted.deserializeBinary(data).toObject());
+                flushUpdateId = true;
                 break;
             case C_MSG.UpdateUsername:
                 this.callHandlers(C_MSG.UpdateUsername, UpdateUsername.deserializeBinary(data).toObject());
+                flushUpdateId = true;
                 break;
             case C_MSG.UpdateNotifySettings:
                 this.callHandlers(C_MSG.UpdateNotifySettings, UpdateNotifySettings.deserializeBinary(data).toObject());
+                flushUpdateId = true;
                 break;
             case C_MSG.UpdateUserPhoto:
                 this.callHandlers(C_MSG.UpdateUserPhoto, UpdateUserPhoto.deserializeBinary(data).toObject());
+                flushUpdateId = true;
                 break;
             case C_MSG.UpdateGroupPhoto:
                 this.callHandlers(C_MSG.UpdateGroupPhoto, UpdateGroupPhoto.deserializeBinary(data).toObject());
+                flushUpdateId = true;
+                break;
+            case C_MSG.UpdateReadMessagesContents:
+                this.callHandlers(C_MSG.UpdateReadMessagesContents, UpdateReadMessagesContents.deserializeBinary(data).toObject());
+                flushUpdateId = true;
+                break;
+            case C_MSG.UpdateTooLong:
+                this.callHandlers(C_MSG.OutOfSync, {});
                 break;
             default:
                 break;
+        }
+        if (flushUpdateId) {
+            this.flushUpdateIdThrottle();
         }
     }
 

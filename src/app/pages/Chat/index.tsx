@@ -26,7 +26,7 @@ import {
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
-import TextInput from '../../components/TextInput/index';
+import ChatInput from '../../components/TextInput/index';
 import {clone, differenceBy, find, findIndex, intersectionBy, throttle, trimStart} from 'lodash';
 import SDK from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
@@ -57,7 +57,7 @@ import {
     UpdateMessagesDeleted,
     UpdateNotifySettings,
     UpdateReadHistoryInbox,
-    UpdateReadHistoryOutbox,
+    UpdateReadHistoryOutbox, UpdateReadMessagesContents,
     UpdateUsername,
     UpdateUserPhoto,
     UpdateUserTyping
@@ -115,6 +115,8 @@ import {IUser} from '../../repository/user/interface';
 import {IMediaItem} from '../../components/Uploader';
 
 import './style.css';
+
+const C_MAX_UPDATE_DIFF = 1000;
 
 interface IProps {
     history?: any;
@@ -285,6 +287,9 @@ class Chat extends React.Component<IProps, IState> {
         // Update: Notify Settings
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNotifySettings, this.updateNotifySettingsHandler));
 
+        // Update: Content Read
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateReadMessagesContents, this.updateContentReadHandler));
+
         // Update: Users
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUsers, this.updateUserHandler));
 
@@ -367,7 +372,7 @@ class Chat extends React.Component<IProps, IState> {
                                     cancelIsTyping={this.cancelIsTypingHandler}
                                     onContextMenu={this.dialogContextMenuHandler}/>);
                 case 'settings':
-                    return (<SettingMenu updateMessages={this.settingUpdateMessage} subMenu={leftMenuSub}
+                    return (<SettingMenu updateMessages={this.settingUpdateMessageHandler} subMenu={leftMenuSub}
                                          onClose={this.bottomBarSelectHandler.bind(this, 'chat')}
                                          onSubPlaceChange={this.leftMenuSubPageChangeHandler}/>);
                 case 'contact':
@@ -502,18 +507,18 @@ class Chat extends React.Component<IProps, IState> {
                                          onAttachmentAction={this.messageAttachmentActionHandler}
                                 />
                             </div>
-                            <TextInput onMessage={this.onMessageHandler} onTyping={this.onTyping}
+                            <ChatInput onMessage={this.onMessageHandler} onTyping={this.onTyping}
                                        userId={this.connInfo.UserID} previewMessage={textInputMessage}
                                        previewMessageMode={textInputMessageMode}
-                                       onPreviewMessageChange={this.textInputPreviewMessageChangeHandler}
+                                       onPreviewMessageChange={this.chatInputPreviewMessageChangeHandler}
                                        selectable={messageSelectable}
                                        selectableDisable={Boolean(messageSelectable && Object.keys(messageSelectedIds).length === 0)}
-                                       onBulkAction={this.textInputBulkActionHandler}
-                                       onAction={this.textInputActionHandler} peer={peer}
-                                       onVoice={this.textInputVoiceHandler}
-                                       onFileSelected={this.textInputFileSelectHandler}
-                                       onMediaSelected={this.textInputMediaSelectHandler}
-                                       onContactSelected={this.textInputContactSelectHandler}
+                                       onBulkAction={this.chatInputBulkActionHandler}
+                                       onAction={this.chatInputActionHandler} peer={peer}
+                                       onVoiceSend={this.chatInputVoiceHandler}
+                                       onFileSelected={this.chatInputFileSelectHandler}
+                                       onMediaSelected={this.chatInputMediaSelectHandler}
+                                       onContactSelected={this.chatInputContactSelectHandler}
                             />
                         </div>}
                         {selectedDialogId === 'null' && <div className="column-center">
@@ -1083,6 +1088,35 @@ class Chat extends React.Component<IProps, IState> {
         this.updateDialogsNotifySettings(data.notifypeer.id || '', data.settings);
     }
 
+    /* Update content read handler */
+    private updateContentReadHandler = (data: UpdateReadMessagesContents.AsObject) => {
+        if (this.state.isUpdating) {
+            return;
+        }
+        let updateView = false;
+        const {messages} = this.state;
+        window.console.log(data);
+        const msgs: IMessage[] = data.messageidsList.map((id) => {
+            if (this.state.selectedDialogId === data.peer.id) {
+                const index = findIndex(messages, (o) => {
+                    return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                });
+                if (index > -1) {
+                    messages[index].contentread = true;
+                    updateView = true;
+                }
+            }
+            return {
+                contentread: true,
+                id,
+            };
+        });
+        this.messageRepo.lazyUpsert(msgs);
+        if (updateView) {
+            this.messageComponent.list.forceUpdateGrid();
+        }
+    }
+
     /* Update user handler */
     private updateUserHandler = (data: User[]) => {
         if (this.state.isUpdating) {
@@ -1512,6 +1546,10 @@ class Chat extends React.Component<IProps, IState> {
             this.sdk.sendMessage(randomId, text, peer, replyTo, entities).then((res) => {
                 // For double checking update message id
                 this.updateManager.setMessageId(res.messageid || 0);
+                this.modifyPendingMessage({
+                    messageid: res.messageid,
+                    randomid: randomId,
+                });
 
                 const {messages} = this.state;
                 const index = findIndex(messages, (o) => {
@@ -1520,10 +1558,7 @@ class Chat extends React.Component<IProps, IState> {
                 if (index > -1) {
                     this.messageComponent.cache.clear(index, 0);
                 }
-                this.modifyPendingMessage({
-                    messageid: res.messageid,
-                    randomid: randomId,
-                });
+
                 if (res.messageid) {
                     this.sendReadHistory(peer, res.messageid);
                 }
@@ -1598,8 +1633,13 @@ class Chat extends React.Component<IProps, IState> {
             peer.setType(PeerType.PEERUSER);
             peer.setAccesshash(contact.accesshash || '');
             peer.setId(contact.id || '');
-            this.sdk.sendMessage(randomId, text, peer).then((msg) => {
-                window.console.log(msg);
+            this.sdk.sendMessage(randomId, text, peer).then((res) => {
+                // For double checking update message id
+                this.updateManager.setMessageId(res.messageid || 0);
+                this.modifyPendingMessage({
+                    messageid: res.messageid,
+                    randomid: randomId,
+                });
             });
         });
     }
@@ -1806,7 +1846,7 @@ class Chat extends React.Component<IProps, IState> {
         return new Promise((resolve, reject) => {
             this.sdk.getUpdateState().then((res) => {
                 // TODO: check
-                if ((res.updateid || 0) - lastId > 1000) {
+                if ((res.updateid || 0) - lastId > C_MAX_UPDATE_DIFF) {
                     reject({
                         err: 'too_late',
                     });
@@ -2241,17 +2281,20 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private textInputPreviewMessageChangeHandler = (previewMessage: IMessage, previewMessageMode: number) => {
+    /* ChatInput preview message change handler */
+    private chatInputPreviewMessageChangeHandler = (previewMessage: IMessage, previewMessageMode: number) => {
         this.setState({
             textInputMessage: previewMessage,
             textInputMessageMode: previewMessageMode,
         });
     }
 
+    /* PopUpDate show date handler */
     private messageShowDateHandler = (timestamp: number) => {
         this.popUpDateComponent.updateDate(timestamp);
     }
 
+    /* Cancel us typing handler */
     private cancelIsTypingHandler = (id: string) => {
         const {isTypingList} = this.state;
         if (isTypingList.hasOwnProperty(id)) {
@@ -2263,6 +2306,7 @@ class Chat extends React.Component<IProps, IState> {
 
     }
 
+    /* Back to chat handler, for mobile view */
     private backToChatsHandler = () => {
         clearTimeout(this.mobileBackTimeout);
         this.setState({
@@ -2274,7 +2318,8 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private settingUpdateMessage = () => {
+    /* SettingMenu on update handler */
+    private settingUpdateMessageHandler = () => {
         const {selectedDialogId} = this.state;
         if (selectedDialogId !== 'null') {
             this.messageComponent.cache.clearAll();
@@ -2341,8 +2386,8 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    /* TextInput bulk action handler */
-    private textInputBulkActionHandler = (cmd: string) => {
+    /* ChatInput bulk action handler */
+    private chatInputBulkActionHandler = (cmd: string) => {
         switch (cmd) {
             case 'forward':
                 this.setState({
@@ -2379,8 +2424,8 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    /* TextInput action handler */
-    private textInputActionHandler = (cmd: string) => {
+    /* ChatInput action handler */
+    private chatInputActionHandler = (cmd: string) => {
         const {peer, dialogs} = this.state;
         if (!peer || !dialogs) {
             return;
@@ -2634,140 +2679,6 @@ class Chat extends React.Component<IProps, IState> {
         this.dialogComponent.toggleSearch();
     }
 
-    /* TextInput send voice handler */
-    private textInputVoiceHandler = (blob: Blob, waveForm: number[], duration: number, param?: any) => {
-        const {peer} = this.state;
-        if (peer === null) {
-            return;
-        }
-
-        const now = this.riverTime.now();
-        const randomId = UniqueId.getRandomId();
-        const id = -this.riverTime.milliNow();
-        const fileId = String(UniqueId.getRandomId());
-
-        const u8aWaveForm = new Uint8Array(waveForm);
-
-        const attr1Data = new DocumentAttributeAudio();
-        attr1Data.setAlbum('');
-        attr1Data.setDuration(Math.floor(duration));
-        attr1Data.setTitle('');
-        attr1Data.setPerformer('');
-        attr1Data.setVoice(true);
-        attr1Data.setWaveform(u8aWaveForm);
-
-        const attr1 = new DocumentAttribute();
-        attr1.setData(attr1Data.serializeBinary());
-        attr1.setType(DocumentAttributeType.ATTRIBUTETYPEAUDIO);
-
-        const attributesList: DocumentAttribute[] = [];
-        attributesList.push(attr1);
-
-        const inputFile = new InputFile();
-        inputFile.setFileid(fileId);
-        inputFile.setFilename(`voice_${now}.ogg`);
-        inputFile.setMd5checksum('');
-        inputFile.setTotalparts(1);
-
-        const mediaData = new InputMediaUploadedDocument();
-        mediaData.setCaption('');
-        mediaData.setMimetype('audio/ogg');
-        mediaData.setStickersList([]);
-        mediaData.setThumbnail(undefined);
-        mediaData.setAttributesList(attributesList);
-        mediaData.setFile(inputFile);
-
-        const tempDocument = new Document();
-        tempDocument.setAccesshash('');
-        tempDocument.setAttributesList(attributesList);
-        tempDocument.setClusterid(0);
-        tempDocument.setDate(now);
-        tempDocument.setId(fileId);
-        tempDocument.setFilesize(blob.size);
-        tempDocument.setMimetype('audio/ogg');
-        tempDocument.setVersion(0);
-
-        const mediaDocument = new MediaDocument();
-        mediaDocument.setTtlinseconds(0);
-        mediaDocument.setCaption('');
-        mediaDocument.setDoc(tempDocument);
-
-        const message: IMessage = {
-            attributes: [attr1Data.toObject()],
-            createdon: now,
-            id,
-            me: true,
-            mediadata: mediaDocument.toObject(),
-            mediatype: MediaType.MEDIATYPEDOCUMENT,
-            messageaction: C_MESSAGE_ACTION.MessageActionNope,
-            messagetype: C_MESSAGE_TYPE.Voice,
-            peerid: this.state.selectedDialogId,
-            peertype: peer.getType(),
-            senderid: this.connInfo.UserID,
-        };
-
-        let replyTo: any;
-        if (param && param.mode === C_MSG_MODE.Reply) {
-            message.replyto = param.message.id;
-            replyTo = param.message.id;
-        }
-
-        this.pushMessage(message);
-
-        const data = mediaData.serializeBinary();
-
-        this.messageRepo.addPending({
-            data,
-            file_ids: [fileId],
-            id: randomId,
-            message_id: id,
-        });
-
-        this.fileManager.sendFile(fileId, blob, (progress) => {
-            this.progressBroadcaster.publish(id, progress);
-        }).then(() => {
-            this.progressBroadcaster.remove(id);
-            this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, replyTo).then((res) => {
-                // For double checking update message id
-                this.updateManager.setMessageId(res.messageid || 0);
-
-                const {messages} = this.state;
-                const index = findIndex(messages, (o) => {
-                    return o.id === message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
-                });
-                if (index > -1) {
-                    this.messageComponent.cache.clear(index, 0);
-                }
-
-                if (res.messageid) {
-                    this.sendReadHistory(peer, res.messageid);
-                }
-
-                message.id = res.messageid;
-                message.downloaded = true;
-
-                this.messageRepo.lazyUpsert([message]);
-                this.updateDialogs(message, '0');
-
-                // Force update messages
-                this.messageComponent.list.forceUpdateGrid();
-            });
-        }).catch((err) => {
-            this.progressBroadcaster.remove(id);
-            if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
-                const {messages} = this.state;
-                const index = findIndex(messages, (o) => {
-                    return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
-                });
-                if (index > -1) {
-                    messages[index].error = true;
-                    this.messageRepo.importBulk([messages[index]], false);
-                    this.messageComponent.list.forceUpdateGrid();
-                }
-            }
-        });
-    }
-
     /* Resend text message */
     private resendTextMessage(randomId: number, message: IMessage) {
         const {peer} = this.state;
@@ -2788,6 +2699,13 @@ class Chat extends React.Component<IProps, IState> {
         }
 
         this.sdk.sendMessage(randomId, message.body || '', peer, message.replyto, messageEntities).then((res) => {
+            // For double checking update message id
+            this.updateManager.setMessageId(res.messageid || 0);
+            this.modifyPendingMessage({
+                messageid: res.messageid,
+                randomid: randomId,
+            });
+
             const {messages} = this.state;
             const index = findIndex(messages, (o) => {
                 return o.id === message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
@@ -2822,6 +2740,13 @@ class Chat extends React.Component<IProps, IState> {
         }).then(() => {
             this.progressBroadcaster.remove(message.id || 0);
             this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, message.replyto).then((res) => {
+                // For double checking update message id
+                this.updateManager.setMessageId(res.messageid || 0);
+                this.modifyPendingMessage({
+                    messageid: res.messageid,
+                    randomid: randomId,
+                });
+
                 const {messages} = this.state;
                 const index = findIndex(messages, (o) => {
                     return o.id === message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
@@ -2962,7 +2887,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Attachment action handler */
-    private messageAttachmentActionHandler = (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', message: IMessage | number) => {
+    private messageAttachmentActionHandler = (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'read', message: IMessage | number) => {
         const execute = (msg: IMessage) => {
             switch (cmd) {
                 case 'cancel':
@@ -2979,6 +2904,9 @@ class Chat extends React.Component<IProps, IState> {
                     break;
                 case 'open':
                     this.openFile(msg);
+                    break;
+                case 'read':
+                    this.readMessageContent(msg);
                     break;
             }
         };
@@ -3078,32 +3006,26 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    /* TextInput file select handler */
-    private textInputFileSelectHandler = (files: File[], param?: any) => {
-        files.forEach((file) => {
-            const fileReader = new FileReader();
-            fileReader.onloadend = (e: any) => {
-                const blob = new Blob([e.target.result], {type: file.type});
-                this.sendMediaMessage('file', {
-                    caption: '',
-                    file: blob,
-                    fileType: file.type,
-                    mediaType: 'file',
-                    name: file.name,
-                }, param);
-            };
-            fileReader.readAsArrayBuffer(file);
-        });
+    /* ChatInput send voice handler */
+    private chatInputVoiceHandler = (item: IMediaItem, param?: any) => {
+        this.sendMediaMessage('voice', item, param);
     }
 
-    /* TextInput media select handler */
-    private textInputMediaSelectHandler = (items: IMediaItem[], param?: any) => {
+    /* ChatInput file select handler */
+    private chatInputFileSelectHandler = (items: IMediaItem[], param?: any) => {
         items.forEach((item) => {
             this.sendMediaMessage(item.mediaType, item, param);
         });
     }
 
-    private sendMediaMessage(type: 'image' | 'video' | 'file' | 'none', mediaItem: IMediaItem, param?: any) {
+    /* ChatInput media select handler */
+    private chatInputMediaSelectHandler = (items: IMediaItem[], param?: any) => {
+        items.forEach((item) => {
+            this.sendMediaMessage(item.mediaType, item, param);
+        });
+    }
+
+    private sendMediaMessage(type: 'image' | 'video' | 'file' | 'voice' | 'none', mediaItem: IMediaItem, param?: any) {
         if (type === 'none') {
             return;
         }
@@ -3207,6 +3129,25 @@ class Chat extends React.Component<IProps, IState> {
                 tempDocument.setThumbnail(tempThumbInputFile);
                 mediaData.setThumbnail(inputThumbFile);
                 break;
+            case 'voice':
+                messageType = C_MESSAGE_TYPE.Voice;
+                const u8aWaveForm = new Uint8Array(mediaItem.waveform || []);
+
+                const attrVoiceData = new DocumentAttributeAudio();
+                attrVoiceData.setAlbum('');
+                attrVoiceData.setDuration(Math.floor(mediaItem.duration || 0));
+                attrVoiceData.setTitle('');
+                attrVoiceData.setPerformer('');
+                attrVoiceData.setVoice(true);
+                attrVoiceData.setWaveform(u8aWaveForm);
+
+                const attrVoice = new DocumentAttribute();
+                attrVoice.setData(attrVoiceData.serializeBinary());
+                attrVoice.setType(DocumentAttributeType.ATTRIBUTETYPEAUDIO);
+
+                attributesList.push(attrVoice);
+                attributesDataList.push(attrVoiceData.toObject());
+                break;
         }
 
         const mediaDocument = new MediaDocument();
@@ -3249,6 +3190,7 @@ class Chat extends React.Component<IProps, IState> {
 
         switch (type) {
             case 'file':
+            case 'voice':
                 uploadPromises.push(this.fileManager.sendFile(fileIds[0], mediaItem.file, (progress) => {
                     this.progressBroadcaster.publish(id, progress);
                 }));
@@ -3267,6 +3209,13 @@ class Chat extends React.Component<IProps, IState> {
         Promise.all(uploadPromises).then(() => {
             this.progressBroadcaster.remove(id);
             this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, replyTo).then((res) => {
+                // For double checking update message id
+                this.updateManager.setMessageId(res.messageid || 0);
+                this.modifyPendingMessage({
+                    messageid: res.messageid,
+                    randomid: randomId,
+                });
+
                 const {messages} = this.state;
                 const index = findIndex(messages, {id: message.id, messagetype: messageType});
                 if (index > -1) {
@@ -3313,8 +3262,8 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    /* TextInput contact select handler */
-    private textInputContactSelectHandler = (users: IUser[], param?: any) => {
+    /* ChatInput contact select handler */
+    private chatInputContactSelectHandler = (users: IUser[], param?: any) => {
         users.forEach((user) => {
             this.sendMediaMessageWithNoFile('contact', user, param);
         });
@@ -3368,6 +3317,13 @@ class Chat extends React.Component<IProps, IState> {
         });
 
         this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPECONTACT, contact.serializeBinary(), replyTo).then((res) => {
+            // For double checking update message id
+            this.updateManager.setMessageId(res.messageid || 0);
+            this.modifyPendingMessage({
+                messageid: res.messageid,
+                randomid: randomId,
+            });
+
             const {messages} = this.state;
             const index = findIndex(messages, {id: message.id, messagetype: messageType});
             if (index > -1) {
@@ -3464,6 +3420,16 @@ class Chat extends React.Component<IProps, IState> {
     private openFile(message: IMessage) {
         if (message && message.savedPath) {
             this.electronService.revealFile(message.savedPath);
+        }
+    }
+
+    /* Read message content */
+    private readMessageContent(message: IMessage) {
+        const {peer} = this.state;
+        if (message && !message.contentread && message.senderid !== this.connInfo.UserID && peer) {
+            this.sdk.readMessageContent([message.id || 0], peer).then(() => {
+                //
+            });
         }
     }
 

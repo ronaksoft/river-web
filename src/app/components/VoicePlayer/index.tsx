@@ -21,7 +21,7 @@ interface IProps {
     maxValue: number;
     sampleCount?: number;
     message?: IMessage;
-    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download') => void;
+    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'play') => void;
 }
 
 interface IState {
@@ -37,7 +37,7 @@ export interface IVoicePlayerData {
     voiceId?: string;
 }
 
-class VoicePlayer extends React.Component<IProps, IState> {
+class VoicePlayer extends React.PureComponent<IProps, IState> {
     private bars: number[] = [];
     private voice: Blob;
     private duration: number;
@@ -64,6 +64,7 @@ class VoicePlayer extends React.Component<IProps, IState> {
     private progressBroadcaster: ProgressBroadcaster;
     private voiceId: string | undefined;
     private audioPlayer: AudioPlayer;
+    private readSent: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -75,6 +76,9 @@ class VoicePlayer extends React.Component<IProps, IState> {
 
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
         this.audioPlayer = AudioPlayer.getInstance();
+        if (this.props.message) {
+            this.readSent = this.props.message.contentread || false;
+        }
     }
 
     public componentDidMount() {
@@ -462,10 +466,15 @@ class VoicePlayer extends React.Component<IProps, IState> {
         }
     }
 
+    /* Audio player event handler */
     private audioPlayerHandler = (event: IAudioEvent) => {
         this.playVoiceBarRef.style.width = `${event.progress * 100}%`;
         this.displayTimer(event.currentTime);
         if (this.state.playState !== event.state) {
+            if (!this.readSent && this.props.onAction && (event.state === 'play' || event.state === 'seek_play')) {
+                this.readSent = true;
+                this.props.onAction('play');
+            }
             this.setState({
                 playState: event.state,
             });

@@ -132,6 +132,16 @@
         padding-top: 2px;
         line-height: 12px;
       }
+      .unread-bullet {
+        position: absolute;
+        top: 50%;
+        left: 2px;
+        height: 3px;
+        width: 3px;
+        background-color: var(--white);
+        border-radius: 50%;
+        transform: translateY(-50%);
+      }
     }
     .media-size {
       position: absolute;

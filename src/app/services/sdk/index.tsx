@@ -45,7 +45,7 @@ import {
     MessagesDialogs, MessagesEdit, MessagesForward,
     MessagesGetDialogs,
     MessagesGetHistory,
-    MessagesMany, MessagesReadHistory,
+    MessagesMany, MessagesReadContents, MessagesReadHistory,
     MessagesSend, MessagesSendMedia,
     MessagesSent,
     MessagesSetTyping
@@ -262,6 +262,13 @@ export default class SDK {
             data.setReplyto(replyTo);
         }
         return this.server.send(C_MSG.MessagesSendMedia, data.serializeBinary());
+    }
+
+    public readMessageContent(ids: number[], peer: InputPeer): Promise<MessagesSent.AsObject> {
+        const data = new MessagesReadContents();
+        data.setPeer(peer);
+        data.setMessageidsList(ids);
+        return this.server.send(C_MSG.MessagesReadContents, data.serializeBinary());
     }
 
     public getMessageHistory(peer: InputPeer, {limit, minId, maxId}: any): Promise<MessagesMany.AsObject> {

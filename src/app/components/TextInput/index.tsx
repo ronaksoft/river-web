@@ -49,7 +49,7 @@ import {IDraft} from '../../repository/dialog/interface';
 // @ts-ignore
 import Recorder from 'opus-recorder/dist/recorder.min';
 import VoicePlayer from '../VoicePlayer';
-import {to4bitResolution} from './utils';
+import {convertFileToBlob, to4bitResolution} from './utils';
 import {measureNodeHeight} from './measureHeight';
 import {getMessageTitle} from '../Dialog/utils';
 import XRegExp from 'xregexp';
@@ -74,8 +74,8 @@ interface IProps {
     selectableDisable: boolean;
     text?: string;
     userId?: string;
-    onVoice: (voice: Blob, waveform: number[], duration: number, {mode, message}?: any) => void;
-    onFileSelected: (files: File[], {mode, message}?: any) => void;
+    onVoiceSend: (item: IMediaItem, {mode, message}?: any) => void;
+    onFileSelected: (items: IMediaItem[], {mode, message}?: any) => void;
     onMediaSelected: (items: IMediaItem[], {mode, message}?: any) => void;
     onContactSelected: (users: IUser[], caption: string, {mode, message}?: any) => void;
 }
@@ -118,13 +118,13 @@ const defaultMentionInputStyle = {
     },
 };
 
-class TextInput extends React.Component<IProps, IState> {
+class ChatInput extends React.Component<IProps, IState> {
     private mentionContainer: any = null;
     private textarea: any = null;
     private typingThrottle: any = null;
     private typingTimeout: any = null;
     private rtlDetector: RTLDetector;
-    private rtlDetectorThrottle: any = null;
+    private readonly rtlDetectorThrottle: any = null;
     private groupRepo: GroupRepo;
     private userRepo: UserRepo;
     private dialogRepo: DialogRepo;
@@ -187,7 +187,7 @@ class TextInput extends React.Component<IProps, IState> {
         }
 
         this.rtlDetector = RTLDetector.getInstance();
-        this.rtlDetectorThrottle = throttle(this.detectRTL, 1000);
+        this.rtlDetectorThrottle = throttle(this.detectRTL, 500);
 
         this.groupRepo = GroupRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
@@ -1021,7 +1021,15 @@ class TextInput extends React.Component<IProps, IState> {
     private sendVoice() {
         const {previewMessage, previewMessageMode} = this.state;
         const message = cloneDeep(previewMessage);
-        this.props.onVoice(this.voice, to4bitResolution(this.bars), this.timerDuration, {
+        const item: IMediaItem = {
+            duration: this.timerDuration,
+            file: this.voice,
+            fileType: 'audio/ogg',
+            mediaType: 'voice',
+            name: `voice_${Math.floor(Date.now() / 1000)}.ogg`,
+            waveform: to4bitResolution(this.bars),
+        };
+        this.props.onVoiceSend(item, {
             message,
             mode: previewMessageMode,
         });
@@ -1264,9 +1272,7 @@ class TextInput extends React.Component<IProps, IState> {
 
     /* File change handler */
     private fileChangeHandler = (e: any) => {
-        if (this.props.onFileSelected && e.currentTarget.files.length > 0) {
-            const {previewMessage, previewMessageMode} = this.state;
-            const message = cloneDeep(previewMessage);
+        if (e.currentTarget.files.length > 0) {
             const files: File[] = [];
             for (let i = 0; i < e.currentTarget.files.length; i++) {
                 files.push(e.currentTarget.files[i]);
@@ -1278,16 +1284,42 @@ class TextInput extends React.Component<IProps, IState> {
                     }
                     break;
                 case 'file':
-                    this.props.onFileSelected(files, {
-                        message,
-                        mode: previewMessageMode,
-                    });
-                    this.clearPreviewMessage(true);
+                    this.sendFiles(files);
                     break;
             }
             if (this.fileInputRef) {
                 this.fileInputRef.value = '';
             }
+        }
+    }
+
+    /* Send file */
+    private sendFiles(files: File[]) {
+        if (this.props.onFileSelected) {
+            const {previewMessage, previewMessageMode} = this.state;
+            const message = cloneDeep(previewMessage);
+            const promises: any[] = [];
+            files.forEach((file) => {
+                promises.push(convertFileToBlob(file));
+            });
+
+            const mediaItems: IMediaItem[] = [];
+            Promise.all(promises).then((blobInfoList) => {
+                blobInfoList.forEach((blobInfo) => {
+                    mediaItems.push({
+                        caption: '',
+                        file: blobInfo.blob,
+                        fileType: blobInfo.type,
+                        mediaType: 'file',
+                        name: blobInfo.name,
+                    });
+                });
+                this.props.onFileSelected(mediaItems, {
+                    message,
+                    mode: previewMessageMode,
+                });
+            });
+            this.clearPreviewMessage(true);
         }
     }
 
@@ -1440,4 +1472,4 @@ class TextInput extends React.Component<IProps, IState> {
     // }
 }
 
-export default TextInput;
+export default ChatInput;

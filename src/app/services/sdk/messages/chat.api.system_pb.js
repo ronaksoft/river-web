@@ -661,15 +661,15 @@ proto.msg.SystemPublicKeys.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * repeated RSAPublicKey RSAPublicKeys = 1;
- * @return {!Array<!proto.msg.RSAPublicKey>}
+ * @return {!Array.<!proto.msg.RSAPublicKey>}
  */
 proto.msg.SystemPublicKeys.prototype.getRsapublickeysList = function() {
-  return /** @type{!Array<!proto.msg.RSAPublicKey>} */ (
+  return /** @type{!Array.<!proto.msg.RSAPublicKey>} */ (
     jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.RSAPublicKey, 1));
 };
 
 
-/** @param {!Array<!proto.msg.RSAPublicKey>} value */
+/** @param {!Array.<!proto.msg.RSAPublicKey>} value */
 proto.msg.SystemPublicKeys.prototype.setRsapublickeysList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
@@ -829,15 +829,15 @@ proto.msg.SystemDHGroups.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * repeated DHGroup DHGroups = 1;
- * @return {!Array<!proto.msg.DHGroup>}
+ * @return {!Array.<!proto.msg.DHGroup>}
  */
 proto.msg.SystemDHGroups.prototype.getDhgroupsList = function() {
-  return /** @type{!Array<!proto.msg.DHGroup>} */ (
+  return /** @type{!Array.<!proto.msg.DHGroup>} */ (
     jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.DHGroup, 1));
 };
 
 
-/** @param {!Array<!proto.msg.DHGroup>} value */
+/** @param {!Array.<!proto.msg.DHGroup>} value */
 proto.msg.SystemDHGroups.prototype.setDhgroupsList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };

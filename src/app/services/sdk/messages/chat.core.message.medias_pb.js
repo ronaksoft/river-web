@@ -1713,15 +1713,15 @@ proto.msg.Document.prototype.hasClusterid = function() {
 
 /**
  * repeated DocumentAttribute Attributes = 8;
- * @return {!Array<!proto.msg.DocumentAttribute>}
+ * @return {!Array.<!proto.msg.DocumentAttribute>}
  */
 proto.msg.Document.prototype.getAttributesList = function() {
-  return /** @type{!Array<!proto.msg.DocumentAttribute>} */ (
+  return /** @type{!Array.<!proto.msg.DocumentAttribute>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.msg.DocumentAttribute, 8));
 };
 
 
-/** @param {!Array<!proto.msg.DocumentAttribute>} value */
+/** @param {!Array.<!proto.msg.DocumentAttribute>} value */
 proto.msg.Document.prototype.setAttributesList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 8, value);
 };
@@ -1981,15 +1981,15 @@ proto.msg.InputMediaUploadedPhoto.prototype.hasCaption = function() {
 
 /**
  * repeated InputDocument Stickers = 2;
- * @return {!Array<!proto.msg.InputDocument>}
+ * @return {!Array.<!proto.msg.InputDocument>}
  */
 proto.msg.InputMediaUploadedPhoto.prototype.getStickersList = function() {
-  return /** @type{!Array<!proto.msg.InputDocument>} */ (
+  return /** @type{!Array.<!proto.msg.InputDocument>} */ (
     jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.InputDocument, 2));
 };
 
 
-/** @param {!Array<!proto.msg.InputDocument>} value */
+/** @param {!Array.<!proto.msg.InputDocument>} value */
 proto.msg.InputMediaUploadedPhoto.prototype.setStickersList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 2, value);
 };
@@ -2042,15 +2042,15 @@ proto.msg.InputMediaUploadedPhoto.prototype.hasFile = function() {
 
 /**
  * repeated DocumentAttribute Attributes = 4;
- * @return {!Array<!proto.msg.DocumentAttribute>}
+ * @return {!Array.<!proto.msg.DocumentAttribute>}
  */
 proto.msg.InputMediaUploadedPhoto.prototype.getAttributesList = function() {
-  return /** @type{!Array<!proto.msg.DocumentAttribute>} */ (
+  return /** @type{!Array.<!proto.msg.DocumentAttribute>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.msg.DocumentAttribute, 4));
 };
 
 
-/** @param {!Array<!proto.msg.DocumentAttribute>} value */
+/** @param {!Array.<!proto.msg.DocumentAttribute>} value */
 proto.msg.InputMediaUploadedPhoto.prototype.setAttributesList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 4, value);
 };
@@ -2874,15 +2874,15 @@ proto.msg.InputMediaUploadedDocument.prototype.hasCaption = function() {
 
 /**
  * repeated InputDocument Stickers = 5;
- * @return {!Array<!proto.msg.InputDocument>}
+ * @return {!Array.<!proto.msg.InputDocument>}
  */
 proto.msg.InputMediaUploadedDocument.prototype.getStickersList = function() {
-  return /** @type{!Array<!proto.msg.InputDocument>} */ (
+  return /** @type{!Array.<!proto.msg.InputDocument>} */ (
     jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.InputDocument, 5));
 };
 
 
-/** @param {!Array<!proto.msg.InputDocument>} value */
+/** @param {!Array.<!proto.msg.InputDocument>} value */
 proto.msg.InputMediaUploadedDocument.prototype.setStickersList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 5, value);
 };
@@ -2905,15 +2905,15 @@ proto.msg.InputMediaUploadedDocument.prototype.clearStickersList = function() {
 
 /**
  * repeated DocumentAttribute Attributes = 6;
- * @return {!Array<!proto.msg.DocumentAttribute>}
+ * @return {!Array.<!proto.msg.DocumentAttribute>}
  */
 proto.msg.InputMediaUploadedDocument.prototype.getAttributesList = function() {
-  return /** @type{!Array<!proto.msg.DocumentAttribute>} */ (
+  return /** @type{!Array.<!proto.msg.DocumentAttribute>} */ (
     jspb.Message.getRepeatedWrapperField(this, proto.msg.DocumentAttribute, 6));
 };
 
 
-/** @param {!Array<!proto.msg.DocumentAttribute>} value */
+/** @param {!Array.<!proto.msg.DocumentAttribute>} value */
 proto.msg.InputMediaUploadedDocument.prototype.setAttributesList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 6, value);
 };

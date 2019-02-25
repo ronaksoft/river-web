@@ -23,3 +23,29 @@ export const from4bitResolution = (input: number[]): number[] => {
     });
     return output;
 };
+
+
+interface IBlobInfo {
+    blob: Blob;
+    name: string;
+    type: string;
+}
+
+/* Convert file to blob */
+export const convertFileToBlob = (file: File): Promise<IBlobInfo> => {
+    return new Promise((resolve, reject) => {
+        const fileReader = new FileReader();
+        fileReader.onloadend = (e: any) => {
+            const blob = new Blob([e.target.result], {type: file.type});
+            resolve({
+                blob,
+                name: file.name,
+                type: file.type,
+            });
+        };
+        fileReader.onerror = (err) => {
+            reject(err);
+        };
+        fileReader.readAsArrayBuffer(file);
+    });
+};
