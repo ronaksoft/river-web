@@ -1218,10 +1218,10 @@ class Chat extends React.Component<IProps, IState> {
             });
         };
 
-        let before = 100000000;
-        if (dialog) {
-            before = (dialog.topmessageid || 0) + 100;
-        }
+        const before = 10000000000;
+        // if (dialog) {
+        //     before = (dialog.topmessageid || 0) + 100;
+        // }
         let minId: number = 0;
         this.messageRepo.getMany({peer, limit: 25, before, ignoreMax: true}, (data) => {
             // Checks peerid on transition
@@ -1914,6 +1914,7 @@ class Chat extends React.Component<IProps, IState> {
         this.sdk.recall('0').then((res) => {
             if (res.timestamp) {
                 this.riverTime.setServerTime(res.timestamp);
+                this.userRepo.getAllContacts();
             }
             if (this.firstTimeLoad) {
                 this.firstTimeLoad = false;

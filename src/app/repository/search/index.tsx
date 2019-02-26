@@ -36,7 +36,7 @@ export default class SearchRepo {
     public searchIds({skip, limit, keyword}: any): Promise<string[]> {
         const promises: any[] = [];
         limit = limit || 12;
-        promises.push(this.userRepo.getManyCache(false, {limit, keyword}));
+        promises.push(this.userRepo.getManyCache(true, {limit, keyword}));
         promises.push(this.groupRepo.getManyCache({limit, keyword}));
         return new Promise<string[]>((resolve, reject) => {
             const ids: { [key: string]: boolean } = {};
@@ -57,7 +57,7 @@ export default class SearchRepo {
         const promises: any[] = [];
         limit = limit || 12;
         skip = skip || 0;
-        promises.push(this.userRepo.getManyCache(false, {limit, keyword}));
+        promises.push(this.userRepo.getManyCache(true, {limit, keyword}));
         promises.push(this.groupRepo.getManyCache({limit, keyword}));
         return new Promise<IDialogWithContact>((resolve, reject) => {
             const ids: { [key: string]: boolean } = {};
@@ -71,7 +71,7 @@ export default class SearchRepo {
                 });
                 this.dialogRepo.findInArray(Object.keys(ids), skip, limit).then((res) => {
                     resolve({
-                        contacts: arrRes[1] || [],
+                        contacts: arrRes[0] || [],
                         dialogs: res,
                     });
                 });
