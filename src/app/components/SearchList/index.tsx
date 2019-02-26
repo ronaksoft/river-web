@@ -15,7 +15,13 @@ import UserAvatar from '../UserAvatar';
 import ChipInput from 'material-ui-chip-input';
 import Chip from '@material-ui/core/Chip';
 import UserName from '../UserName';
-import {NotInterestedRounded} from '@material-ui/icons';
+import {
+    InsertDriveFileOutlined,
+    LocationOnOutlined,
+    NotInterestedRounded,
+    PeopleOutlined, PhotoOutlined, RecordVoiceOverOutlined,
+    VideocamOutlined
+} from '@material-ui/icons';
 import {IDialog} from '../../repository/dialog/interface';
 import SearchRepo from '../../repository/search';
 import {IDialogWithContact} from '../../repository/search/interface';
@@ -24,10 +30,11 @@ import GroupAvatar from '../GroupAvatar';
 import GroupName from '../GroupName';
 import {categorizeContact} from '../ContactList';
 import Scrollbars from 'react-custom-scrollbars';
+import {C_MESSAGE_ICON} from '../Dialog/utils';
 
 import './style.css';
 
-interface ISeachItem {
+interface ISearchItem {
     contact?: IUser;
     dialog?: IDialog;
     id?: string;
@@ -46,10 +53,10 @@ interface IProps {
 }
 
 interface IState {
-    inputPeers: ISeachItem[];
+    inputPeers: ISearchItem[];
     page: string;
     scrollIndex: number;
-    selectedInputPeers: ISeachItem[];
+    selectedInputPeers: ISearchItem[];
     title: string;
 }
 
@@ -200,7 +207,8 @@ class SearchList extends React.Component<IProps, IState> {
                     <GroupAvatar className="avatar" id={inputPeer.dialog.target_id || ''}/>}
                     {Boolean(inputPeer.dialog.peertype === PeerType.PEERGROUP) &&
                     <GroupName className="name" id={inputPeer.dialog.target_id || ''}/>}
-                    <span className="phone">{inputPeer.dialog.preview}</span>
+                    <span
+                        className="phone">{this.getIcon(inputPeer.dialog.preview_icon)}{inputPeer.dialog.preview}</span>
                 </div>
             );
         } else if (inputPeer.mode === 'label' && inputPeer.label) {
@@ -260,7 +268,7 @@ class SearchList extends React.Component<IProps, IState> {
     }
 
     /* Add item to selectedInputPeers */
-    private addItemHandler = (inputPeer: ISeachItem) => {
+    private addItemHandler = (inputPeer: ISearchItem) => {
         const {selectedInputPeers} = this.state;
         if (!selectedInputPeers || !inputPeer) {
             return;
@@ -284,7 +292,7 @@ class SearchList extends React.Component<IProps, IState> {
     }
 
     /* Remove item from selectedInputPeers */
-    private removeItemHandler = (inputPeer: ISeachItem) => {
+    private removeItemHandler = (inputPeer: ISearchItem) => {
         const {selectedInputPeers} = this.state;
         if (!selectedInputPeers || !inputPeer) {
             return;
@@ -309,8 +317,8 @@ class SearchList extends React.Component<IProps, IState> {
     }
 
     /* Removes the selected items from the list */
-    private getTrimmedList(selectedInputPeers: ISeachItem[]) {
-        const items: ISeachItem[] = [];
+    private getTrimmedList(selectedInputPeers: ISearchItem[]) {
+        const items: ISearchItem[] = [];
         if (this.inputPeerRes.dialogs.length > 0) {
             items.push({
                 label: 'Chats',
@@ -385,6 +393,26 @@ class SearchList extends React.Component<IProps, IState> {
             }
         } else {
             return 40;
+        }
+    }
+
+    /* Get dialog icon */
+    private getIcon(icon?: number) {
+        switch (icon) {
+            case C_MESSAGE_ICON.Location:
+                return (<LocationOnOutlined className="preview-icon"/>);
+            case C_MESSAGE_ICON.File:
+                return (<InsertDriveFileOutlined className="preview-icon"/>);
+            case C_MESSAGE_ICON.Video:
+                return (<VideocamOutlined className="preview-icon"/>);
+            case C_MESSAGE_ICON.Contact:
+                return (<PeopleOutlined className="preview-icon"/>);
+            case C_MESSAGE_ICON.Voice:
+                return (<RecordVoiceOverOutlined className="preview-icon"/>);
+            case C_MESSAGE_ICON.Photo:
+                return (<PhotoOutlined className="preview-icon"/>);
+            default:
+                return '';
         }
     }
 }

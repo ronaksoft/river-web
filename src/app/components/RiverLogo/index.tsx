@@ -12,29 +12,27 @@ import * as React from 'react';
 import './style.css';
 
 interface IProps {
-    height: number;
-    width: number;
+    height: number | string;
+    width: number | string;
 }
 
 interface IState {
-    height: number;
-    width: number;
+    height?: number;
+    width?: number;
 }
 
 class RiverLogo extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
 
-        this.state = {
-            height: props.height,
-            width: props.width,
-        };
+        this.state = {};
     }
 
     public render() {
         return (
             <span className="river-logo">
-                <svg width={this.state.width} height={this.state.height} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg width={this.props.width} height={this.props.height} viewBox="0 0 48 48" fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
                     <path
                         d="M0 24C0 10.7452 10.7452 0 24 0C37.2548 0 48 10.7452 48 24C48 37.2548 37.2548 48 24 48H5.07489C2.27211 48 0 45.7279 0 42.9251V24Z"
                         fill="url(#paint0_linear)"/>

@@ -111,6 +111,12 @@
           white-space: nowrap;
           text-overflow: ellipsis;
           color: var(--grey);
+          .preview-icon {
+            display: inline-block;
+            font-size: 14px;
+            margin: 0 4px 3px 0;
+            vertical-align: bottom;
+          }
         }
       }
       .category-item {

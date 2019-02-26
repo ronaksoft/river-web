@@ -15,6 +15,7 @@ import AvatarService from '../../services/avatarService';
 import {find} from 'lodash';
 
 import './style.css';
+import RiverLogo from '../RiverLogo';
 
 const DefaultColors = [
     '#30496B',
@@ -174,6 +175,12 @@ class UserAvatar extends React.Component<IProps, IState> {
             return (
                 <span className={'saved-messages-avatar ' + className}>
                     <BookmarkRounded/>
+                </span>
+            );
+        } else if (this.state.id === '2374') {
+            return (
+                <span className={'avatar-official ' + className}>
+                    <RiverLogo height="100%" width="100%"/>
                 </span>
             );
         } else {

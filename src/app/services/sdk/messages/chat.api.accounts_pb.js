@@ -440,12 +440,13 @@ proto.msg.AccountRegisterDevice.prototype.toObject = function(opt_includeInstanc
  */
 proto.msg.AccountRegisterDevice.toObject = function(includeInstance, msg) {
   var f, obj = {
-    tokentype: jspb.Message.getField(msg, 1),
     token: jspb.Message.getField(msg, 2),
     devicemodel: jspb.Message.getField(msg, 3),
     systemversion: jspb.Message.getField(msg, 4),
     appversion: jspb.Message.getField(msg, 5),
-    langcode: jspb.Message.getField(msg, 6)
+    langcode: jspb.Message.getField(msg, 6),
+    tokentype: jspb.Message.getField(msg, 7),
+    clientid: jspb.Message.getField(msg, 8)
   };
 
   if (includeInstance) {
@@ -482,10 +483,6 @@ proto.msg.AccountRegisterDevice.deserializeBinaryFromReader = function(msg, read
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setTokentype(value);
-      break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
       msg.setToken(value);
@@ -505,6 +502,14 @@ proto.msg.AccountRegisterDevice.deserializeBinaryFromReader = function(msg, read
     case 6:
       var value = /** @type {string} */ (reader.readString());
       msg.setLangcode(value);
+      break;
+    case 7:
+      var value = /** @type {!proto.msg.PushTokenProvider} */ (reader.readEnum());
+      msg.setTokentype(value);
+      break;
+    case 8:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setClientid(value);
       break;
     default:
       reader.skipField();
@@ -535,13 +540,6 @@ proto.msg.AccountRegisterDevice.prototype.serializeBinary = function() {
  */
 proto.msg.AccountRegisterDevice.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
-    writer.writeInt32(
-      1,
-      f
-    );
-  }
   f = /** @type {string} */ (jspb.Message.getField(message, 2));
   if (f != null) {
     writer.writeString(
@@ -577,35 +575,20 @@ proto.msg.AccountRegisterDevice.serializeBinaryToWriter = function(message, writ
       f
     );
   }
-};
-
-
-/**
- * required int32 TokenType = 1;
- * @return {number}
- */
-proto.msg.AccountRegisterDevice.prototype.getTokentype = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
-};
-
-
-/** @param {number} value */
-proto.msg.AccountRegisterDevice.prototype.setTokentype = function(value) {
-  jspb.Message.setField(this, 1, value);
-};
-
-
-proto.msg.AccountRegisterDevice.prototype.clearTokentype = function() {
-  jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.msg.AccountRegisterDevice.prototype.hasTokentype = function() {
-  return jspb.Message.getField(this, 1) != null;
+  f = /** @type {!proto.msg.PushTokenProvider} */ (jspb.Message.getField(message, 7));
+  if (f != null) {
+    writer.writeEnum(
+      7,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 8));
+  if (f != null) {
+    writer.writeString(
+      8,
+      f
+    );
+  }
 };
 
 
@@ -751,6 +734,64 @@ proto.msg.AccountRegisterDevice.prototype.clearLangcode = function() {
  */
 proto.msg.AccountRegisterDevice.prototype.hasLangcode = function() {
   return jspb.Message.getField(this, 6) != null;
+};
+
+
+/**
+ * required PushTokenProvider TokenType = 7;
+ * @return {!proto.msg.PushTokenProvider}
+ */
+proto.msg.AccountRegisterDevice.prototype.getTokentype = function() {
+  return /** @type {!proto.msg.PushTokenProvider} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+};
+
+
+/** @param {!proto.msg.PushTokenProvider} value */
+proto.msg.AccountRegisterDevice.prototype.setTokentype = function(value) {
+  jspb.Message.setField(this, 7, value);
+};
+
+
+proto.msg.AccountRegisterDevice.prototype.clearTokentype = function() {
+  jspb.Message.setField(this, 7, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AccountRegisterDevice.prototype.hasTokentype = function() {
+  return jspb.Message.getField(this, 7) != null;
+};
+
+
+/**
+ * required string ClientID = 8;
+ * @return {string}
+ */
+proto.msg.AccountRegisterDevice.prototype.getClientid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.AccountRegisterDevice.prototype.setClientid = function(value) {
+  jspb.Message.setField(this, 8, value);
+};
+
+
+proto.msg.AccountRegisterDevice.prototype.clearClientid = function() {
+  jspb.Message.setField(this, 8, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AccountRegisterDevice.prototype.hasClientid = function() {
+  return jspb.Message.getField(this, 8) != null;
 };
 
 

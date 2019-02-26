@@ -17,7 +17,7 @@ import {
     MediaDocument
 } from '../../services/sdk/messages/chat.core.message.medias_pb';
 import {base64ToU8a} from '../../services/sdk/fileManager/http/utils';
-import {from4bitResolution} from '../TextInput/utils';
+import {from4bitResolution} from '../ChatInput/utils';
 
 import './style.css';
 

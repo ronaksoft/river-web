@@ -41,6 +41,7 @@ goog.exportSymbol('proto.msg.PeerType', null, global);
 goog.exportSymbol('proto.msg.PhoneContact', null, global);
 goog.exportSymbol('proto.msg.ProtoEncryptedPayload', null, global);
 goog.exportSymbol('proto.msg.ProtoMessage', null, global);
+goog.exportSymbol('proto.msg.PushTokenProvider', null, global);
 goog.exportSymbol('proto.msg.RSAPublicKey', null, global);
 goog.exportSymbol('proto.msg.TypingAction', null, global);
 goog.exportSymbol('proto.msg.UpdateContainer', null, global);
@@ -9770,6 +9771,14 @@ proto.msg.ParticipantType = {
   PARTICIPANTTYPEMEMBER: 0,
   PARTICIPANTTYPEADMIN: 1,
   PARTICIPANTTYPECREATOR: 2
+};
+
+/**
+ * @enum {number}
+ */
+proto.msg.PushTokenProvider = {
+  PUSHTOKENFIREBASE: 0,
+  PUSHTOKENAPN: 1
 };
 
 goog.object.extend(exports, proto.msg);

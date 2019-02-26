@@ -59,13 +59,20 @@ import ContactPicker from '../ContactPicker';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
+import {C_MESSAGE_TYPE} from '../../repository/message/consts';
+import RiverTime from '../../services/utilities/river_time';
 
 interface IProps {
-    onAction: (cmd: string) => void;
+    lastMessage?: IMessage;
+    onAction: (cmd: string, message?: IMessage) => void;
     onBulkAction: (cmd: string) => void;
+    onContactSelected: (users: IUser[], caption: string, {mode, message}?: any) => void;
+    onFileSelected: (items: IMediaItem[], {mode, message}?: any) => void;
+    onMediaSelected: (items: IMediaItem[], {mode, message}?: any) => void;
     onMessage: (text: string, {mode, message, entities}?: any) => void;
     onPreviewMessageChange?: (previewMessage: IMessage | undefined, previewMessageMode: number) => void;
     onTyping?: (typing: TypingAction) => void;
+    onVoiceSend: (item: IMediaItem, {mode, message}?: any) => void;
     peer: InputPeer | null;
     previewMessage?: IMessage;
     previewMessageMode?: number;
@@ -74,10 +81,6 @@ interface IProps {
     selectableDisable: boolean;
     text?: string;
     userId?: string;
-    onVoiceSend: (item: IMediaItem, {mode, message}?: any) => void;
-    onFileSelected: (items: IMediaItem[], {mode, message}?: any) => void;
-    onMediaSelected: (items: IMediaItem[], {mode, message}?: any) => void;
-    onContactSelected: (users: IUser[], caption: string, {mode, message}?: any) => void;
 }
 
 interface IState {
@@ -160,6 +163,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private fileInputRef: any = null;
     private mediaPreviewRef: MediaPreview;
     private contactPickerRef: ContactPicker;
+    private riverTime: RiverTime;
 
     constructor(props: IProps) {
         super(props);
@@ -193,6 +197,7 @@ class ChatInput extends React.Component<IProps, IState> {
         this.userRepo = UserRepo.getInstance();
         this.dialogRepo = DialogRepo.getInstance();
         this.sdk = SDK.getInstance();
+        this.riverTime = RiverTime.getInstance();
 
         this.checkAuthority();
 
@@ -541,6 +546,17 @@ class ChatInput extends React.Component<IProps, IState> {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.stopPropagation();
             e.preventDefault();
+        } else if (e.keyCode === 38 && this.props.lastMessage && this.props.lastMessage.senderid === this.state.userId && this.state.previewMessageMode !== C_MSG_MODE.Edit) {
+            const message = this.props.lastMessage;
+            if ((this.riverTime.now() - (message.createdon || 0)) < 86400 &&
+                (message.fwdsenderid === '0' || !message.fwdsenderid) &&
+                (message.messagetype === C_MESSAGE_TYPE.Normal || (message.messagetype || 0) === 0)) {
+                if (this.props.onAction) {
+                    this.props.onAction('edit', message);
+                }
+            }
+        } else if (e.keyCode === 27) {
+            this.clearPreviewMessage(false);
         }
     }
 

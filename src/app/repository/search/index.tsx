@@ -11,6 +11,7 @@ import {IDialogWithContact} from './interface';
 import DialogRepo from '../dialog';
 import UserRepo from '../user';
 import GroupRepo from '../group';
+import {IUser} from '../user/interface';
 
 export default class SearchRepo {
     public static getInstance() {
@@ -36,7 +37,7 @@ export default class SearchRepo {
     public searchIds({skip, limit, keyword}: any): Promise<string[]> {
         const promises: any[] = [];
         limit = limit || 12;
-        promises.push(this.userRepo.getManyCache(true, {limit, keyword}));
+        promises.push(this.userRepo.getManyCache(false, {limit, keyword}));
         promises.push(this.groupRepo.getManyCache({limit, keyword}));
         return new Promise<string[]>((resolve, reject) => {
             const ids: { [key: string]: boolean } = {};
@@ -55,9 +56,9 @@ export default class SearchRepo {
 
     public search({skip, limit, keyword}: any): Promise<IDialogWithContact> {
         const promises: any[] = [];
-        limit = limit || 12;
+        limit = limit || 16;
         skip = skip || 0;
-        promises.push(this.userRepo.getManyCache(true, {limit, keyword}));
+        promises.push(this.userRepo.getManyCache(false, {limit, keyword}));
         promises.push(this.groupRepo.getManyCache({limit, keyword}));
         return new Promise<IDialogWithContact>((resolve, reject) => {
             const ids: { [key: string]: boolean } = {};
@@ -71,8 +72,15 @@ export default class SearchRepo {
                 });
                 this.dialogRepo.findInArray(Object.keys(ids), skip, limit).then((res) => {
                     resolve({
-                        contacts: arrRes[0] || [],
-                        dialogs: res,
+                        contacts: (arrRes[0] || []).filter((user: IUser) => {
+                            return user.is_contact === 1;
+                        }),
+                        dialogs: res.sort((i1, i2) => {
+                            if (!i1.last_update || !i2.last_update) {
+                                return 0;
+                            }
+                            return i2.last_update - i1.last_update;
+                        }),
                     });
                 });
             }).catch(reject);

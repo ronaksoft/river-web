@@ -1419,3 +1419,8 @@ export enum ParticipantType {
   PARTICIPANTTYPECREATOR = 2,
 }
 
+export enum PushTokenProvider {
+  PUSHTOKENFIREBASE = 0,
+  PUSHTOKENAPN = 1,
+}
+

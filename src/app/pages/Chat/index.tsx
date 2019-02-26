@@ -26,7 +26,7 @@ import {
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
-import ChatInput from '../../components/TextInput/index';
+import ChatInput from '../../components/ChatInput/index';
 import {clone, differenceBy, find, findIndex, intersectionBy, throttle, trimStart} from 'lodash';
 import SDK from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
@@ -68,7 +68,7 @@ import UserRepo from '../../repository/user';
 import RiverLogo from '../../components/RiverLogo';
 import MainRepo from '../../repository';
 import SettingMenu from '../../components/SettingMenu';
-import {C_MSG_MODE} from '../../components/TextInput/consts';
+import {C_MSG_MODE} from '../../components/ChatInput/consts';
 import TimeUtililty from '../../services/utilities/time';
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from '../../repository/message/consts';
 import PopUpDate from '../../components/PopUpDate';
@@ -519,6 +519,7 @@ class Chat extends React.Component<IProps, IState> {
                                        onFileSelected={this.chatInputFileSelectHandler}
                                        onMediaSelected={this.chatInputMediaSelectHandler}
                                        onContactSelected={this.chatInputContactSelectHandler}
+                                       lastMessage={this.state.messages && this.state.messages.length > 0 ? this.state.messages[(this.state.messages.length - 1)] : undefined}
                             />
                         </div>}
                         {selectedDialogId === 'null' && <div className="column-center">
@@ -1095,7 +1096,6 @@ class Chat extends React.Component<IProps, IState> {
         }
         let updateView = false;
         const {messages} = this.state;
-        window.console.log(data);
         const msgs: IMessage[] = data.messageidsList.map((id) => {
             if (this.state.selectedDialogId === data.peer.id) {
                 const index = findIndex(messages, (o) => {
@@ -2429,7 +2429,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* ChatInput action handler */
-    private chatInputActionHandler = (cmd: string) => {
+    private chatInputActionHandler = (cmd: string, message?: IMessage) => {
         const {peer, dialogs} = this.state;
         if (!peer || !dialogs) {
             return;
@@ -2442,6 +2442,12 @@ class Chat extends React.Component<IProps, IState> {
                         this.dialogRemove(peer.getId() || '');
                     });
                 }
+                break;
+            case 'edit':
+                this.setState({
+                    textInputMessage: message,
+                    textInputMessageMode: C_MSG_MODE.Edit,
+                });
                 break;
             default:
                 break;

@@ -32,9 +32,9 @@ import GroupName from '../GroupName';
 import {C_MESSAGE_ACTION} from '../../repository/message/consts';
 import {isMuted} from '../UserInfoMenu';
 import {isEqual} from 'lodash';
+import {C_MESSAGE_ICON} from '../Dialog/utils';
 
 import './style.css';
-import {C_MESSAGE_ICON} from '../Dialog/utils';
 
 interface IProps {
     cancelIsTyping?: (id: string) => void;

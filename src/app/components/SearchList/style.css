@@ -168,6 +168,11 @@ input {
           white-space: nowrap;
           text-overflow: ellipsis;
           color: var(--grey); }
+          .search-list .search-list-container .search-container .search-item .phone .preview-icon {
+            display: inline-block;
+            font-size: 14px;
+            margin: 0 4px 3px 0;
+            vertical-align: bottom; }
       .search-list .search-list-container .search-container .category-item {
         color: var(--river);
         font-size: 24px;

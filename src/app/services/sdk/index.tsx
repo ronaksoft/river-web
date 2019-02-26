@@ -11,7 +11,8 @@ import {
     AuthAuthorization,
     AuthCheckedPhone,
     AuthCheckPhone,
-    AuthLogin, AuthLogout,
+    AuthLogin,
+    AuthLogout,
     AuthRecall,
     AuthRecalled,
     AuthRegister,
@@ -29,12 +30,16 @@ import {
     ContactsMany
 } from './messages/chat.api.contacts_pb';
 import {
+    Bool,
     Group,
-    GroupFull, InputFile,
+    GroupFull,
+    InputFile,
     InputPeer,
-    InputUser, MessageEntity,
+    InputUser,
+    MessageEntity,
     PeerNotifySettings,
     PhoneContact,
+    PushTokenProvider,
     TypingAction,
     User
 } from './messages/chat.core.types_pb';
@@ -42,29 +47,39 @@ import {
     InputMediaType,
     MessagesClearHistory,
     MessagesDelete,
-    MessagesDialogs, MessagesEdit, MessagesForward,
+    MessagesDialogs,
+    MessagesEdit,
+    MessagesForward,
     MessagesGetDialogs,
     MessagesGetHistory,
-    MessagesMany, MessagesReadContents, MessagesReadHistory,
-    MessagesSend, MessagesSendMedia,
+    MessagesMany,
+    MessagesReadContents,
+    MessagesReadHistory,
+    MessagesSend,
+    MessagesSendMedia,
     MessagesSent,
     MessagesSetTyping
 } from './messages/chat.api.messages_pb';
 import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from './messages/chat.api.updates_pb';
-import {Bool} from './messages/chat.core.types_pb';
 import {
-    AccountCheckUsername, AccountGetNotifySettings,
-    AccountRegisterDevice, AccountRemovePhoto, AccountSetNotifySettings,
+    AccountCheckUsername,
+    AccountGetNotifySettings,
+    AccountRegisterDevice,
+    AccountRemovePhoto,
+    AccountSetNotifySettings,
     AccountUpdateProfile,
-    AccountUpdateUsername, AccountUploadPhoto
+    AccountUpdateUsername,
+    AccountUploadPhoto
 } from './messages/chat.api.accounts_pb';
 import {
     GroupsAddUser,
     GroupsCreate,
     GroupsDeleteUser,
     GroupsEditTitle,
-    GroupsGetFull, GroupsToggleAdmins,
-    GroupsUpdateAdmin, GroupsUploadPhoto
+    GroupsGetFull,
+    GroupsToggleAdmins,
+    GroupsUpdateAdmin,
+    GroupsUploadPhoto
 } from './messages/chat.api.groups_pb';
 import {UsersGetFull} from './messages/chat.api.users_pb';
 
@@ -319,7 +334,8 @@ export default class SDK {
         data.setLangcode(langCode);
         data.setSystemversion(systemVersion);
         data.setToken(token);
-        data.setTokentype(tokenType);
+        data.setTokentype(PushTokenProvider.PUSHTOKENFIREBASE);
+        data.setClientid('river');
         return this.server.send(C_MSG.AccountRegisterDevice, data.serializeBinary(), true);
     }
 

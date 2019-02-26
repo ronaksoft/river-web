@@ -55,11 +55,6 @@ export namespace AccountGetNotifySettings {
 }
 
 export class AccountRegisterDevice extends jspb.Message {
-  hasTokentype(): boolean;
-  clearTokentype(): void;
-  getTokentype(): number | undefined;
-  setTokentype(value: number): void;
-
   hasToken(): boolean;
   clearToken(): void;
   getToken(): string | undefined;
@@ -85,6 +80,16 @@ export class AccountRegisterDevice extends jspb.Message {
   getLangcode(): string | undefined;
   setLangcode(value: string): void;
 
+  hasTokentype(): boolean;
+  clearTokentype(): void;
+  getTokentype(): chat_core_types_pb.PushTokenProvider | undefined;
+  setTokentype(value: chat_core_types_pb.PushTokenProvider): void;
+
+  hasClientid(): boolean;
+  clearClientid(): void;
+  getClientid(): string | undefined;
+  setClientid(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountRegisterDevice.AsObject;
   static toObject(includeInstance: boolean, msg: AccountRegisterDevice): AccountRegisterDevice.AsObject;
@@ -97,12 +102,13 @@ export class AccountRegisterDevice extends jspb.Message {
 
 export namespace AccountRegisterDevice {
   export type AsObject = {
-    tokentype?: number,
     token?: string,
     devicemodel?: string,
     systemversion?: string,
     appversion?: string,
     langcode?: string,
+    tokentype?: chat_core_types_pb.PushTokenProvider,
+    clientid?: string,
   }
 }
 
