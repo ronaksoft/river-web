@@ -519,17 +519,19 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                 cmd: 'remove',
                 title: 'Remove',
             });
-            if (currentUser.type === ParticipantType.PARTICIPANTTYPEMEMBER) {
-                menuItems.push({
-                    cmd: 'promote',
-                    title: 'Promote',
-                });
-            }
-            if (currentUser.type === ParticipantType.PARTICIPANTTYPEADMIN) {
-                menuItems.push({
-                    cmd: 'demote',
-                    title: 'Demote',
-                });
+            if (this.hasAuthority(group)) {
+                if (currentUser.type === ParticipantType.PARTICIPANTTYPEMEMBER) {
+                    menuItems.push({
+                        cmd: 'promote',
+                        title: 'Promote',
+                    });
+                }
+                if (currentUser.type === ParticipantType.PARTICIPANTTYPEADMIN) {
+                    menuItems.push({
+                        cmd: 'demote',
+                        title: 'Demote',
+                    });
+                }
             }
         } else {
             return (<span>You have no authority!</span>);

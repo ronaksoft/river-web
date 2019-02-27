@@ -109,10 +109,10 @@
     .top {
       position: relative;
       width: 100%;
+      background-color: var(--header-color);
       .info-bar {
         height: 48px;
         padding: 5px 29px;
-        background-color: var(--header-color);
         text-align: left;
         .back-to-chats {
           position: absolute;
@@ -138,9 +138,9 @@
             margin-bottom: 5px;
             @include font-bold;
             svg {
-              font-size: 15px;
+              font-size: 16px;
               margin-right: 6px;
-              vertical-align: sub;
+              vertical-align: bottom;
             }
             white-space: nowrap;
             overflow: hidden;
@@ -214,7 +214,7 @@
   }
   &.mobile-view {
     width: 200vw;
-    transition: margin-left 0.3s;
+    //transition: margin-left 0.1s linear;
     &.chat-view {
       margin-left: -100vw;
     }
@@ -582,8 +582,8 @@ html[theme="dark-blue"] {
     }
     .column-center {
       .top {
+        background-color: var(--dark-medium);
         .info-bar {
-          background-color: var(--dark-medium);
           .back-to-chats {
             svg {
               color: var(--light);
@@ -679,9 +679,9 @@ html[theme="dark-blue"] {
     }
     .column-center {
       .top {
-        .info-bar {
-          background-color: var(--dark-blue-medium);
-        }
+        background-color: var(--dark-blue-medium);
+        //.info-bar {
+        //}
       }
       .conversation {
         background-color: var(--dark-blue-low);

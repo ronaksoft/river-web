@@ -11,6 +11,7 @@ import * as React from 'react';
 import {IUser} from '../../repository/user/interface';
 import UserRepo from '../../repository/user';
 import {GetUniqueColor, SecondaryColors} from '../UserAvatar';
+import {VerifiedUserRounded} from '@material-ui/icons';
 
 interface IProps {
     className?: string;
@@ -82,7 +83,13 @@ class UserName extends React.Component<IProps, IState> {
         if (this.props.uniqueColor === true) {
             style.color = GetUniqueColor(`${user.firstname}${user.lastname}`, SecondaryColors);
         }
-        if (this.props.username === true) {
+        if (this.props.id === '2374') {
+            return (
+                <span className={className}
+                      style={style}
+                      onClick={this.clickHandler}><VerifiedUserRounded style={{color: '#27AE60'}}/>{(user && user.id) ? (onlyFirstName ? prefix + user.firstname : `${prefix}${user.firstname} ${user.lastname}`) : (defaultString || '')}</span>
+            );
+        } else if (this.props.username === true) {
             return (
                 <span className={className}
                       style={style}

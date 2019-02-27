@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import {ExitToAppRounded, SettingsRounded, ChatRounded, AccountCircleRounded} from "@material-ui/icons";
+import {SettingsRounded, ChatRounded, AccountCircleRounded} from "@material-ui/icons";
 import Badge from '@material-ui/core/Badge';
 
 import './style.css';
@@ -59,11 +59,11 @@ class BottomBar extends React.Component<IProps, IState> {
             icon: <SettingsRounded/>,
             page: 'settings',
             title: 'Settings',
-        }, {
+        }/*, {
             icon: <ExitToAppRounded/>,
             page: 'logout',
             title: 'Logout',
-        }];
+        }*/];
         return (
             <div className="bottom-bar">
                 {items.map((item, index) => {

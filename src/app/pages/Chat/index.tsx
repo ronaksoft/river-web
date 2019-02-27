@@ -14,6 +14,7 @@ import Message, {highlighMessage} from '../../components/Message/index';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import Divider from '@material-ui/core/Divider';
 import {
     InfoOutlined,
     KeyboardArrowLeftRounded,
@@ -155,6 +156,7 @@ interface IState {
 }
 
 class Chat extends React.Component<IProps, IState> {
+    private containerRef: any = null;
     private isInChat: boolean = true;
     private rightMenu: any = null;
     private dialogComponent: Dialog;
@@ -379,6 +381,20 @@ class Chat extends React.Component<IProps, IState> {
                     return (<ContactMenu/>);
             }
         };
+        const chatTopIcons = [{
+            cmd: 'search',
+            icon: <SearchRounded/>,
+            tooltip: 'Search',
+        }, {
+            cmd: 'new_message',
+            icon: <MessageRounded/>,
+            title: 'New Message',
+        }, {
+            cmd: 'more',
+            icon: <MoreVertRounded/>,
+            title: 'More',
+        }];
+
         const chatMoreMenuItem = [{
             cmd: 'new_group',
             title: 'New Group',
@@ -391,13 +407,19 @@ class Chat extends React.Component<IProps, IState> {
         }, {
             cmd: 'settings',
             title: 'Settings',
+        }, {
+            role: 'divider',
+        }, {
+            cmd: 'logout',
+            title: 'Log Out',
         }];
 
         return (
             <div className="bg">
                 <div className="wrapper">
                     <div
-                        className={'container' + (this.isMobileView ? ' mobile-view' : '') + (this.state.isChatView ? ' chat-view' : '')}>
+                        ref={this.containerRefHandler}
+                        className={'container' + (this.isMobileView ? ' mobile-view' : '')}>
                         <div
                             className={'column-left ' + (leftMenu === 'chat' ? 'with-top-bar' : '') + (leftOverlay ? ' left-overlay-enable' : '')}>
                             <div className="top-bar">
@@ -405,38 +427,23 @@ class Chat extends React.Component<IProps, IState> {
                                     <RiverLogo height={24} width={24}/>
                                 </span>
                                 <div className="actions">
-                                    <Tooltip
-                                        title="Search"
-                                        placement="bottom"
-                                    >
-                                        <IconButton
-                                            aria-label="Search"
-                                            aria-haspopup="true"
-                                            onClick={this.onSearchHandler}
-                                        >
-                                            <SearchRounded/>
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip
-                                        title="New Message"
-                                        placement="bottom"
-                                    >
-                                        <IconButton
-                                            aria-label="New Message"
-                                            aria-haspopup="true"
-                                            onClick={this.onNewMessageOpen}
-                                        >
-                                            <MessageRounded/>
-                                        </IconButton>
-                                    </Tooltip>
-                                    <IconButton
-                                        aria-label="More"
-                                        aria-owns={moreInfoAnchorEl ? 'long-menu' : undefined}
-                                        aria-haspopup="true"
-                                        onClick={this.chatMoreOpenHandler}
-                                    >
-                                        <MoreVertRounded/>
-                                    </IconButton>
+                                    {chatTopIcons.map((item, key) => {
+                                        return (
+                                            <Tooltip
+                                                key={key}
+                                                title={item.tooltip}
+                                                placement="bottom"
+                                            >
+                                                <IconButton
+                                                    aria-label={item.tooltip}
+                                                    aria-haspopup="true"
+                                                    onClick={this.chatTopIconActionHandler.bind(this, item.cmd)}
+                                                >
+                                                    {item.icon}
+                                                </IconButton>
+                                            </Tooltip>
+                                        );
+                                    })}
                                     <Menu
                                         anchorEl={chatMoreAnchorEl}
                                         open={Boolean(chatMoreAnchorEl)}
@@ -444,14 +451,18 @@ class Chat extends React.Component<IProps, IState> {
                                         className="kk-context-menu darker"
                                     >
                                         {chatMoreMenuItem.map((item, key) => {
-                                            return (
-                                                <MenuItem key={key}
-                                                          onClick={this.chatMoreActionHandler.bind(this, item.cmd)}
-                                                          className="context-item"
-                                                >
-                                                    {item.title}
-                                                </MenuItem>
-                                            );
+                                            if (item.role === 'divider') {
+                                                return (<Divider/>);
+                                            } else {
+                                                return (
+                                                    <MenuItem key={key}
+                                                              onClick={this.chatMoreActionHandler.bind(this, item.cmd)}
+                                                              className="context-item"
+                                                    >
+                                                        {item.title}
+                                                    </MenuItem>
+                                                );
+                                            }
                                         })}
                                     </Menu>
                                 </div>
@@ -615,6 +626,23 @@ class Chat extends React.Component<IProps, IState> {
         );
     }
 
+    private containerRefHandler = (ref: any) => {
+        this.containerRef = ref;
+    }
+
+    /* Set chat view
+    *  For responsive view */
+    private setChatView(enable: boolean) {
+        if (!this.containerRef) {
+            return;
+        }
+        if (enable) {
+            this.containerRef.classList.add('chat-view');
+        } else {
+            this.containerRef.classList.remove('chat-view');
+        }
+    }
+
     private getChatTitle(placeholder?: boolean) {
         const {peer, selectedDialogId} = this.state;
         if (!peer) {
@@ -733,6 +761,21 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
+    private chatTopIconActionHandler = (cmd: string, e: any) => {
+        this.chatMoreCloseHandler();
+        switch (cmd) {
+            case 'search':
+                this.dialogComponent.toggleSearch();
+                break;
+            case 'new_message':
+                this.onNewMessageOpen();
+                break;
+            case 'more':
+                this.chatMoreOpenHandler(e);
+                break;
+        }
+    }
+
     private chatMoreActionHandler = (cmd: string) => {
         this.chatMoreCloseHandler();
         switch (cmd) {
@@ -753,6 +796,14 @@ class Chat extends React.Component<IProps, IState> {
             case 'settings':
                 this.setState({
                     leftMenu: 'settings',
+                });
+                break;
+            case 'logout':
+                this.setState({
+                    confirmDialogMode: 'logout',
+                    confirmDialogOpen: true,
+                    leftMenu: 'chat',
+                    leftMenuSub: 'none',
                 });
                 break;
         }
@@ -1223,6 +1274,7 @@ class Chat extends React.Component<IProps, IState> {
         //     before = (dialog.topmessageid || 0) + 100;
         // }
         let minId: number = 0;
+        this.setChatView(true);
         this.messageRepo.getMany({peer, limit: 25, before, ignoreMax: true}, (data) => {
             // Checks peerid on transition
             if (this.state.selectedDialogId !== dialogId) {
@@ -1289,6 +1341,7 @@ class Chat extends React.Component<IProps, IState> {
             });
         }).catch((err: any) => {
             window.console.warn(err);
+            this.setChatView(true);
             this.setState({
                 group: null,
                 isChatView: true,
@@ -2127,12 +2180,6 @@ class Chat extends React.Component<IProps, IState> {
     private bottomBarSelectHandler = (item: string) => {
         switch (item) {
             case 'logout':
-                this.setState({
-                    confirmDialogMode: 'logout',
-                    confirmDialogOpen: true,
-                    leftMenu: 'chat',
-                    leftMenuSub: 'none',
-                });
                 break;
             default:
                 this.setState({
@@ -2313,6 +2360,7 @@ class Chat extends React.Component<IProps, IState> {
     /* Back to chat handler, for mobile view */
     private backToChatsHandler = () => {
         clearTimeout(this.mobileBackTimeout);
+        this.setChatView(false);
         this.setState({
             isChatView: false,
         }, () => {
@@ -2682,11 +2730,6 @@ class Chat extends React.Component<IProps, IState> {
         if (this.messageComponent) {
             this.messageComponent.setScrollMode(mode);
         }
-    }
-
-    /* On search click handler */
-    private onSearchHandler = () => {
-        this.dialogComponent.toggleSearch();
     }
 
     /* Resend text message */
