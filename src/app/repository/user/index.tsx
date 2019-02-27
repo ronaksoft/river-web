@@ -159,13 +159,11 @@ export default class UserRepo {
             if (!force && u1.bio && u1.bio.length > 0 && (!u2.bio || (u2.bio && u2.bio.length === 0))) {
                 u2.bio = u1.bio;
             }
-            const d = merge(u1, u2);
-            return d;
+            return merge(u1, u2);
         };
-        if (t && t.is_contact === 1 && user.is_contact !== 1) {
-            const d = modifyUser(user, t);
-            d.is_contact = 1;
-            return d;
+        if (t && t.is_contact !== 1 && user.is_contact === 1) {
+            t.is_contact = 1;
+            return modifyUser(user, t);
         } else if (t) {
             return modifyUser(user, t);
         } else {
