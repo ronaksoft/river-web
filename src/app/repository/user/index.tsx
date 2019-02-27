@@ -161,7 +161,7 @@ export default class UserRepo {
             }
             return merge(u1, u2);
         };
-        if (t && t.is_contact !== 1 && user.is_contact === 1) {
+        if (t && user.is_contact === 1) {
             t.is_contact = 1;
             return modifyUser(user, t);
         } else if (t) {

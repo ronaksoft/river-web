@@ -388,11 +388,11 @@ class Chat extends React.Component<IProps, IState> {
         }, {
             cmd: 'new_message',
             icon: <MessageRounded/>,
-            title: 'New Message',
+            tooltip: 'New Message',
         }, {
             cmd: 'more',
             icon: <MoreVertRounded/>,
-            title: 'More',
+            tooltip: 'More',
         }];
 
         const chatMoreMenuItem = [{
