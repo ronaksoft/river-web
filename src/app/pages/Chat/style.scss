@@ -214,7 +214,7 @@
   }
   &.mobile-view {
     width: 200vw;
-    //transition: margin-left 0.1s linear;
+    transition: margin-left 0.3s linear;
     &.chat-view {
       margin-left: -100vw;
     }

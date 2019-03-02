@@ -168,6 +168,7 @@ class Chat extends React.Component<IProps, IState> {
     private groupRepo: GroupRepo;
     private fileRepo: FileRepo;
     private mainRepo: MainRepo;
+    private chatInputComponent: ChatInput;
     private isLoading: boolean = false;
     private sdk: SDK;
     private updateManager: UpdateManager;
@@ -518,7 +519,8 @@ class Chat extends React.Component<IProps, IState> {
                                          onAttachmentAction={this.messageAttachmentActionHandler}
                                 />
                             </div>
-                            <ChatInput onMessage={this.onMessageHandler} onTyping={this.onTyping}
+                            <ChatInput ref={this.chatInputRefHandler} onMessage={this.onMessageHandler}
+                                       onTyping={this.onTyping}
                                        userId={this.connInfo.UserID} previewMessage={textInputMessage}
                                        previewMessageMode={textInputMessageMode}
                                        onPreviewMessageChange={this.chatInputPreviewMessageChangeHandler}
@@ -628,6 +630,10 @@ class Chat extends React.Component<IProps, IState> {
 
     private containerRefHandler = (ref: any) => {
         this.containerRef = ref;
+    }
+
+    private chatInputRefHandler = (ref: any) => {
+        this.chatInputComponent = ref;
     }
 
     /* Set chat view
@@ -1315,6 +1321,11 @@ class Chat extends React.Component<IProps, IState> {
                     this.sendReadHistory(peer, dataMsg.maxId);
                 }
                 this.setLoading(false);
+                //
+                if (this.chatInputComponent) {
+                    this.chatInputComponent.focus();
+                }
+                clearTimeout(this.mobileBackTimeout);
             });
         }).then((resMsgs) => {
             // Checks peerid on transition
@@ -1347,6 +1358,7 @@ class Chat extends React.Component<IProps, IState> {
                 isChatView: true,
                 isTyping: false,
             });
+            clearTimeout(this.mobileBackTimeout);
             this.setLoading(false);
         });
     }

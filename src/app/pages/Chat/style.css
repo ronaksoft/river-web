@@ -246,7 +246,8 @@ input {
     .container .column-right.active {
       width: 318px; }
   .container.mobile-view {
-    width: 200vw; }
+    width: 200vw;
+    transition: margin-left 0.3s linear; }
     .container.mobile-view.chat-view {
       margin-left: -100vw; }
     .container.mobile-view .column-left,

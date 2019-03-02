@@ -56,11 +56,11 @@ import XRegExp from 'xregexp';
 import SelectMedia from '../SelectMedia';
 import MediaPreview, {IMediaItem} from '../Uploader';
 import ContactPicker from '../ContactPicker';
+import {C_MESSAGE_TYPE} from '../../repository/message/consts';
+import RiverTime from '../../services/utilities/river_time';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
-import {C_MESSAGE_TYPE} from '../../repository/message/consts';
-import RiverTime from '../../services/utilities/river_time';
 
 interface IProps {
     lastMessage?: IMessage;
@@ -235,7 +235,7 @@ class ChatInput extends React.Component<IProps, IState> {
             userId: newProps.userId || '',
         }, () => {
             this.animatePreviewMessage();
-            this.focus('.mention textarea');
+            // this.focus('.mention textarea');
         });
         if (this.state.peer !== newProps.peer) {
             this.setState({
@@ -251,6 +251,13 @@ class ChatInput extends React.Component<IProps, IState> {
         window.removeEventListener('mouseup', this.windowMouseUp);
         window.removeEventListener('resize', this.windowResizeHandler);
         window.removeEventListener('Theme_Changed', this.windowResizeHandler);
+    }
+
+    public focus() {
+        if (!this.textarea) {
+            return;
+        }
+        this.textarea.focus();
     }
 
     public render() {
@@ -629,14 +636,6 @@ class ChatInput extends React.Component<IProps, IState> {
                 });
             }
         }, 50);
-    }
-
-    /* Focus on elem by query */
-    private focus(query: string) {
-        const elem: any = document.querySelector(query);
-        if (elem) {
-            elem.focus();
-        }
     }
 
     /* Check authority for composing message and etc. */
