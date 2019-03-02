@@ -27,6 +27,21 @@
   &.no-transition {
     transition: none;
   }
+  .chat-placeholder {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .placeholder {
+      height: 400px;
+      width: 400px;
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      background-image: url(../../../asset/image/chat-placeholder.svg);
+    }
+  }
 }
 
 .conversation-start {

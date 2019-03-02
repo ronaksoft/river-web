@@ -19,36 +19,36 @@ var (
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
-	initLog()
 	river = new(River)
 
-	loadCB := js.NewCallback(func(args []js.Value) {
+	loadCB := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		connInfo = args[0].String()
+		return nil
 	})
 	defer loadCB.Release()
 	js.Global().Get("setLoadConnInfo").Invoke(loadCB)
 
-	initCB := js.NewCallback(initSDK)
+	initCB := js.FuncOf(initSDK)
 	defer initCB.Release()
 	js.Global().Get("setInitSDK").Invoke(initCB)
 
-	fnCB := js.NewCallback(fnCall)
+	fnCB := js.FuncOf(fnCall)
 	defer fnCB.Release()
 	js.Global().Get("setFnCall").Invoke(fnCB)
 
-	receiveCB := js.NewCallback(wsReceive)
+	receiveCB := js.FuncOf(wsReceive)
 	defer receiveCB.Release()
 	js.Global().Get("setReceive").Invoke(receiveCB)
 
-	wsOpenCB := js.NewCallback(wsOpen)
+	wsOpenCB := js.FuncOf(wsOpen)
 	defer wsOpenCB.Release()
 	js.Global().Get("setWsOpen").Invoke(wsOpenCB)
 
-	fnEncryptCB := js.NewCallback(fnEncrypt)
+	fnEncryptCB := js.FuncOf(fnEncrypt)
 	defer fnEncryptCB.Release()
 	js.Global().Get("setFnEncrypt").Invoke(fnEncryptCB)
 
-	fnDecryptCB := js.NewCallback(fnDecrypt)
+	fnDecryptCB := js.FuncOf(fnDecrypt)
 	defer fnDecryptCB.Release()
 	js.Global().Get("setFnDecrypt").Invoke(fnDecryptCB)
 
@@ -56,7 +56,7 @@ func main() {
 	fmt.Println("Bye Wasm !")
 }
 
-func initSDK(args []js.Value) {
+func initSDK(this js.Value, args []js.Value) interface{} {
 	isHttp := uint64(args[0].Int())
 	duration = 0
 	var startCb Callback = func(time int64) {
@@ -72,42 +72,48 @@ func initSDK(args []js.Value) {
 		}
 	}
 	river.Start(connInfo, &cb)
+	return nil
 }
 
-func fnCall(args []js.Value) {
+func fnCall(this js.Value, args []js.Value) interface{} {
 	reqId := uint64(args[0].Int())
 	constructor := int64(args[1].Int())
 	enc, err := base64.StdEncoding.DecodeString(args[2].String())
 	if err == nil {
 		river.ExecuteRemoteCommand(reqId, constructor, &enc, nil)
 	}
+	return nil
 }
 
-func wsReceive(args []js.Value) {
+func wsReceive(this js.Value, args []js.Value) interface{} {
 	enc, err := base64.StdEncoding.DecodeString(args[0].String())
 	if err == nil {
 		river.receive(&enc, true)
 	}
+	return nil
 }
 
-func wsOpen(args []js.Value) {
+func wsOpen(this js.Value, args []js.Value) interface{} {
 	river.RetryLast()
+	return nil
 }
 
-func fnEncrypt(args []js.Value) {
+func fnEncrypt(this js.Value, args []js.Value) interface{} {
 	reqId := uint64(args[0].Int())
 	constructor := int64(args[1].Int())
 	enc, err := base64.StdEncoding.DecodeString(args[2].String())
 	if err == nil {
 		river.ExecuteEncrypt(reqId, constructor, &enc)
 	}
+	return nil
 }
 
-func fnDecrypt(args []js.Value) {
+func fnDecrypt(this js.Value, args []js.Value) interface{} {
 	enc, err := base64.StdEncoding.DecodeString(args[0].String())
 	if err == nil {
 		river.receive(&enc, false)
 	}
+	return nil
 }
 
 func beforeUnload(event js.Value) {

@@ -45,7 +45,7 @@ export default class Http {
         this.testUrl = localStorage.getItem('river.test_url') || '';
 
         this.reqId = 0;
-        this.worker = new Worker('/bin/worker.js?v12');
+        this.worker = new Worker('/bin/worker.js?v14');
         this.workerId = id;
 
         if (this.testUrl.length > 0) {
@@ -54,7 +54,7 @@ export default class Http {
             this.dataCenterUrl = 'https://' + window.location.host + '/file';
         }
 
-        this.workerMessage('init', bytes);
+        this.workerMessage('init', {});
         this.initWorkerEvent();
     }
 

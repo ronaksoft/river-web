@@ -1,11 +1,11 @@
 package main
 
 import (
-	"go.uber.org/zap"
 	"syscall/js"
 	"encoding/json"
 	"strconv"
 	"time"
+	"fmt"
 )
 
 // easyjson:json
@@ -88,7 +88,6 @@ func NewRiverConnection(connInfo string) *RiverConnection {
 
 // Save
 func (v *RiverConnection) Save() {
-	_LOG.Debug("RiverConnection Save")
 	var vv = RiverConnectionJS{
 		AuthKey:   v.AuthKey,
 		AuthID:    strconv.FormatInt(v.AuthID, 10),
@@ -99,9 +98,7 @@ func (v *RiverConnection) Save() {
 		UserID:    strconv.FormatInt(v.UserID, 10),
 	}
 	if bytes, err := json.Marshal(vv); err != nil {
-		_LOG.Info(err.Error(),
-			zap.String(_LK_FUNC_NAME, "RiverConnection::Save"),
-		)
+		fmt.Println(err.Error(), _LK_FUNC_NAME, "RiverConnection::Save")
 	} else {
 		js.Global().Call("saveConnInfo", string(bytes))
 	}
@@ -111,9 +108,7 @@ func (v *RiverConnection) Save() {
 func (v *RiverConnection) Load(connInfo string) error {
 	var vv = RiverConnectionJS{}
 	if err := json.Unmarshal([]byte(connInfo), &vv); err != nil {
-		_LOG.Error(err.Error(),
-			zap.String(_LK_FUNC_NAME, "RiverConnection::Load"),
-		)
+		fmt.Println(err.Error(), _LK_FUNC_NAME, "RiverConnection::Load")
 		return err
 	}
 	v.AuthKey = vv.AuthKey

@@ -501,7 +501,7 @@ class Chat extends React.Component<IProps, IState> {
                                 </div>
                                 <AudioPlayerShell onVisible={this.audioPlayerVisibleHandler}/>
                             </div>
-                            <div className="conversation">
+                            <div className={'conversation ' + (this.state.messages.length === 0 && !this.isLoading? ' no-result' : '')}>
                                 <PopUpDate ref={this.popUpDateRefHandler}/>
                                 <Message ref={this.messageRefHandler}
                                          items={this.state.messages}
@@ -536,7 +536,7 @@ class Chat extends React.Component<IProps, IState> {
                             />
                         </div>}
                         {selectedDialogId === 'null' && <div className="column-center">
-                            <div className="start-messaging">
+                            <div className="start-messaging no-result">
                                 <div className="start-messaging-header">
                                     {this.getConnectionStatus()}
                                 </div>

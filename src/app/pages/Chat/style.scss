@@ -163,6 +163,9 @@
       background-color: rgba(168, 144, 106, 0.3);
       background-repeat: repeat;
       background-size: 100px;
+      &.no-result {
+        background-image: none !important;
+      }
     }
     .attachments {
       width: 100%;
@@ -174,6 +177,10 @@
       height: 100%;
       background-color: rgba(168, 144, 106, 0.3);
       background-size: 100px;
+      &.no-result {
+        background-image: none !important;
+        background-color: var(--light);
+      }
       .start-messaging-header {
         height: 48px;
         background-color: rgba(255, 255, 255, 0.2);

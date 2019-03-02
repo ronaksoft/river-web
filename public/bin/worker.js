@@ -1,4 +1,4 @@
-importScripts('wasm_exec.js');
+importScripts('wasm_exec.js?v1');
 
 let run;
 let initSDK = null;
@@ -22,14 +22,31 @@ const base64ToBuffer = (base64) => {
     return Uint8Array.from(atob(base64), c => c.charCodeAt(0)).buffer;
 };
 
+if (!WebAssembly.instantiateStreaming) { // polyfill
+    WebAssembly.instantiateStreaming = async (resp, importObject) => {
+        const source = await (await resp).arrayBuffer();
+        return await WebAssembly.instantiate(source, importObject);
+    };
+}
+
+
 self.onmessage = function (e) {
     const d = e.data;
     switch (d.cmd) {
         case 'init':
             console.time('init');
-            WebAssembly.instantiate(d.data, go.importObject).then((res) => {
-                console.timeEnd('init');
-                run = go.run(res.instance);
+            fetch('river.wasm?v14').then((response) => {
+                WebAssembly.instantiateStreaming(response, go.importObject).then((res) => {
+                    console.timeEnd('init');
+                    run = go.run(res.instance);
+                }).catch(() => {
+                    response.arrayBuffer().then((data) => {
+                        WebAssembly.instantiate(data, go.importObject).then((res) => {
+                            console.timeEnd('init');
+                            run = go.run(res.instance);
+                        });
+                    });
+                });
             });
             break;
         case 'initSDK':

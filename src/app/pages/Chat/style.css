@@ -206,6 +206,8 @@ input {
       background-color: rgba(168, 144, 106, 0.3);
       background-repeat: repeat;
       background-size: 100px; }
+      .container .column-center .conversation.no-result {
+        background-image: none !important; }
     .container .column-center .attachments {
       width: 100%;
       flex: 1; }
@@ -214,6 +216,9 @@ input {
       height: 100%;
       background-color: rgba(168, 144, 106, 0.3);
       background-size: 100px; }
+      .container .column-center .start-messaging.no-result {
+        background-image: none !important;
+        background-color: var(--light); }
       .container .column-center .start-messaging .start-messaging-header {
         height: 48px;
         background-color: rgba(255, 255, 255, 0.2);

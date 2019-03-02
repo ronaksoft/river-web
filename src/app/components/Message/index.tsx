@@ -243,7 +243,7 @@ class Message extends React.Component<IProps, IState> {
             if (this.state.items.length === 0) {
                 this.setState({
                     listStyle: {
-                        paddingTop: '460px',
+                        paddingTop: '10px',
                     },
                 });
                 return;
@@ -289,6 +289,7 @@ class Message extends React.Component<IProps, IState> {
                             height={height}
                             estimatedRowSize={41}
                             onRowsRendered={this.onRowsRenderedHandler}
+                            noRowsRenderer={this.noRowsRenderer}
                             onScroll={this.onScroll}
                             style={listStyle}
                             className="chat active-chat"
@@ -424,6 +425,16 @@ class Message extends React.Component<IProps, IState> {
                 }}
             </CellMeasurer>
         );
+    }
+
+    private noRowsRenderer = () => {
+        if (this.state.loading) {
+            return (<div className="chat-placeholder"/>);
+        } else {
+            return (<div className="chat-placeholder">
+                <div className="placeholder"/>
+            </div>);
+        }
     }
 
     private messageItem(index: number, message: IMessage, peer: InputPeer | null, readId: number, style: any, measureFn?: any) {

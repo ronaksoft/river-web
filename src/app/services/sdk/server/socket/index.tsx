@@ -40,13 +40,11 @@ export default class Socket {
     public constructor() {
         this.testUrl = localStorage.getItem('river.test_url') || '';
 
-        this.worker = new Worker('/bin/worker.js?v12');
+        this.worker = new Worker('/bin/worker.js?v14');
 
-        fetch('/bin/river.wasm?v12').then((response) => {
-            return response.arrayBuffer();
-        }).then((bytes) => {
-            this.workerMessage('init', bytes);
-        });
+        setTimeout(() => {
+            this.workerMessage('init', {});
+        }, 100);
 
         window.addEventListener('online', () => {
             this.initWebSocket();

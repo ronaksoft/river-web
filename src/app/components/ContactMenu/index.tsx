@@ -190,6 +190,9 @@ class ContactMenu extends React.Component<IProps, IState> {
             data.usersList.forEach((user) => {
                 this.userRepo.importBulk(true, [user]).then(() => {
                     this.contactListComponent.reload();
+                    this.broadcastEvent('User_Dialog_Open', {
+                        id: user.id,
+                    });
                 });
             });
             this.setState({
@@ -231,6 +234,15 @@ class ContactMenu extends React.Component<IProps, IState> {
                 this.createContactHandler();
             }
         }
+    }
+
+    /* Broadcast global event */
+    private broadcastEvent(name: string, data: any) {
+        const event = new CustomEvent(name, {
+            bubbles: false,
+            detail: data,
+        });
+        window.dispatchEvent(event);
     }
 }
 

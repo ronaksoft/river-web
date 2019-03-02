@@ -196,7 +196,7 @@ export default class UpdateManager {
                     this.updateList = [];
                     this.outOfSync = false;
                     this.callHandlers(C_MSG.OutOfSync, {});
-                    this.disable();
+                    // this.disable();
                 }, 500);
             }
         }

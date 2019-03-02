@@ -743,11 +743,9 @@ export default class FileManager {
     /* Init file manager WASM worker */
     private initFileServer() {
         this.fileSeverInitialized = true;
-        fetch('/bin/river.wasm?v12').then((response) => {
-            return response.arrayBuffer();
-        }).then((bytes) => {
+        setTimeout(() => {
             for (let i = 0; i < C_FILE_SERVER_HTTP_WORKER_NUM; i++) {
-                this.httpWorkers[i] = new Http(bytes, i + 1);
+                this.httpWorkers[i] = new Http('', i + 1);
                 this.httpWorkers[i].ready(() => {
                     if (i === 1) {
                         this.startUploadQueue();
@@ -758,6 +756,6 @@ export default class FileManager {
                     window.console.log(`Http WASM worker ${i} is ready`);
                 });
             }
-        });
+        }, 110);
     }
 }
