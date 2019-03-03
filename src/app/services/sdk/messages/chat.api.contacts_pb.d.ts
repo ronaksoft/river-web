@@ -33,10 +33,10 @@ export namespace ContactsImport {
 }
 
 export class ContactsGet extends jspb.Message {
-  hasMd5hash(): boolean;
-  clearMd5hash(): void;
-  getMd5hash(): string | undefined;
-  setMd5hash(value: string): void;
+  hasCrc32hash(): boolean;
+  clearCrc32hash(): void;
+  getCrc32hash(): number | undefined;
+  setCrc32hash(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ContactsGet.AsObject;
@@ -50,7 +50,7 @@ export class ContactsGet extends jspb.Message {
 
 export namespace ContactsGet {
   export type AsObject = {
-    md5hash?: string,
+    crc32hash?: number,
   }
 }
 
@@ -109,6 +109,11 @@ export class ContactsMany extends jspb.Message {
   setUsersList(value: Array<chat_core_types_pb.ContactUser>): void;
   addUsers(value?: chat_core_types_pb.ContactUser, index?: number): chat_core_types_pb.ContactUser;
 
+  hasModified(): boolean;
+  clearModified(): void;
+  getModified(): boolean | undefined;
+  setModified(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ContactsMany.AsObject;
   static toObject(includeInstance: boolean, msg: ContactsMany): ContactsMany.AsObject;
@@ -123,6 +128,7 @@ export namespace ContactsMany {
   export type AsObject = {
     contactsList: Array<chat_core_types_pb.PhoneContact.AsObject>,
     usersList: Array<chat_core_types_pb.ContactUser.AsObject>,
+    modified?: boolean,
   }
 }
 

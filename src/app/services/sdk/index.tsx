@@ -76,7 +76,7 @@ import {
     GroupsCreate,
     GroupsDeleteUser,
     GroupsEditTitle,
-    GroupsGetFull,
+    GroupsGetFull, GroupsRemovePhoto,
     GroupsToggleAdmins,
     GroupsUpdateAdmin,
     GroupsUploadPhoto
@@ -223,9 +223,9 @@ export default class SDK {
         return this.server.send(C_MSG.ContactsImport, data.serializeBinary());
     }
 
-    public getContacts(): Promise<ContactsMany.AsObject> {
+    public getContacts(crc?: number): Promise<ContactsMany.AsObject> {
         const data = new ContactsGet();
-        data.setMd5hash('');
+        data.setCrc32hash(crc || 0);
         return this.server.send(C_MSG.ContactsGet, data.serializeBinary());
     }
 
@@ -470,5 +470,11 @@ export default class SDK {
         data.setGroupid(groupId);
         data.setFile(file);
         return this.server.send(C_MSG.GroupsUploadPhoto, data.serializeBinary(), true);
+    }
+
+    public groupRemovePicture(groupId: string): Promise<Bool.AsObject> {
+        const data = new GroupsRemovePhoto();
+        data.setGroupid(groupId);
+        return this.server.send(C_MSG.GroupsRemovePhoto, data.serializeBinary(), true);
     }
 }

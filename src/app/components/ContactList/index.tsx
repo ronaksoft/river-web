@@ -23,6 +23,7 @@ import {Link} from 'react-router-dom';
 import Scrollbars from 'react-custom-scrollbars';
 import {IUser} from '../../repository/user/interface';
 import UserRepo from '../../repository/user';
+import {Int64BE} from 'int64-buffer';
 
 import './style.css';
 
@@ -86,6 +87,22 @@ export const categorizeContact = (contacts: IUser[]): IUser[] => {
         outList.push(item);
     });
     return outList;
+};
+
+export const getContactCrc = (users: IUser[]) => {
+    const ids = users.map((user) => {
+        const space = '                    ';
+        const id = user.id || '';
+        const wLen = 20 - id.length;
+        return {
+            id: new Int64BE(id),
+            wid: space.slice(0, wLen) + id
+        };
+    });
+    ids.sort((i1, i2) => {
+        return i1.wid < i2.wid;
+    });
+    window.console.log(ids);
 };
 
 class ContactList extends React.Component<IProps, IState> {
@@ -279,6 +296,7 @@ class ContactList extends React.Component<IProps, IState> {
                 this.list.recomputeRowHeights();
                 this.list.forceUpdateGrid();
             });
+            getContactCrc(res);
         });
     }
 

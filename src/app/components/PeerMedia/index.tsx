@@ -152,7 +152,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                             </Scrollbars>
                         );
                     } else {
-                        return (<div className="media-placeholder"><span>No Photo/Video Here!</span></div>);
+                        return (<div className="media-placeholder"><span className="img media"/></div>);
                     }
                 case 1:
                 case 2:
@@ -166,11 +166,11 @@ class PeerMedia extends React.Component<IProps, IState> {
                         );
                     } else {
                         if (tab === 1) {
-                            return (<div className="media-placeholder"><span>No Audio Here!</span></div>);
+                            return (<div className="media-placeholder"><span className="img audio"/></div>);
                         } else if (tab === 2) {
-                            return (<div className="media-placeholder"><span>No File Here!</span></div>);
+                            return (<div className="media-placeholder"><span className="img file"/></div>);
                         } else {
-                            return (<div className="media-placeholder"><span>No Shared Media Here!</span></div>);
+                            return (<div className="media-placeholder"><span className="img media"/></div>);
                         }
                     }
             }

@@ -563,10 +563,10 @@ html[font="5"] .write .inputs .input .textarea-container,
 html[font="5"] .write .inputs .input .textarea-container textarea {
   font-size: 20px !important; }
 
-.mobile-view .write .inputs .input .textarea-container {
+html .mobile-view .column-center .write .inputs .input .textarea-container {
   font-size: 16px !important;
   line-height: 20px; }
-  .mobile-view .write .inputs .input .textarea-container textarea {
+  html .mobile-view .column-center .write .inputs .input .textarea-container textarea {
     padding: 5px 10px;
     font-size: 16px !important; }
 

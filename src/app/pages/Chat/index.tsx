@@ -18,7 +18,7 @@ import Divider from '@material-ui/core/Divider';
 import {
     InfoOutlined,
     KeyboardArrowLeftRounded,
-    MessageRounded,
+    EditRounded,
     MoreVertRounded,
     PersonAddRounded,
     SearchRounded,
@@ -388,7 +388,7 @@ class Chat extends React.Component<IProps, IState> {
             tooltip: 'Search',
         }, {
             cmd: 'new_message',
-            icon: <MessageRounded/>,
+            icon: <EditRounded/>,
             tooltip: 'New Message',
         }, {
             cmd: 'more',

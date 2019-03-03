@@ -951,6 +951,9 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                 this.showAvatarHandler();
                 break;
             case 'remove':
+                if (this.state.group) {
+                    this.sdk.groupRemovePicture(this.state.group.id || '');
+                }
                 break;
             case 'change':
                 this.openFileDialog();

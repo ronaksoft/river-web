@@ -234,3 +234,25 @@ export namespace GroupsUploadPhoto {
   }
 }
 
+export class GroupsRemovePhoto extends jspb.Message {
+  hasGroupid(): boolean;
+  clearGroupid(): void;
+  getGroupid(): string | undefined;
+  setGroupid(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GroupsRemovePhoto.AsObject;
+  static toObject(includeInstance: boolean, msg: GroupsRemovePhoto): GroupsRemovePhoto.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: GroupsRemovePhoto, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GroupsRemovePhoto;
+  static deserializeBinaryFromReader(message: GroupsRemovePhoto, reader: jspb.BinaryReader): GroupsRemovePhoto;
+}
+
+export namespace GroupsRemovePhoto {
+  export type AsObject = {
+    groupid?: string,
+  }
+}
+

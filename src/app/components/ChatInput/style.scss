@@ -666,16 +666,20 @@ html[font="5"] {
   }
 }
 
-.mobile-view {
-  .write {
-    .inputs {
-      .input {
-        .textarea-container {
-          font-size: 16px !important;
-          line-height: 20px;
-          textarea {
-            padding: 5px 10px;
-            font-size: 16px !important;
+html {
+  .mobile-view {
+    .column-center {
+      .write {
+        .inputs {
+          .input {
+            .textarea-container {
+              font-size: 16px !important;
+              line-height: 20px;
+              textarea {
+                padding: 5px 10px;
+                font-size: 16px !important;
+              }
+            }
           }
         }
       }

@@ -275,7 +275,7 @@ proto.msg.ContactsGet.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.ContactsGet.toObject = function(includeInstance, msg) {
   var f, obj = {
-    md5hash: jspb.Message.getField(msg, 1)
+    crc32hash: jspb.Message.getField(msg, 2)
   };
 
   if (includeInstance) {
@@ -312,9 +312,9 @@ proto.msg.ContactsGet.deserializeBinaryFromReader = function(msg, reader) {
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setMd5hash(value);
+    case 2:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setCrc32hash(value);
       break;
     default:
       reader.skipField();
@@ -345,10 +345,10 @@ proto.msg.ContactsGet.prototype.serializeBinary = function() {
  */
 proto.msg.ContactsGet.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {string} */ (jspb.Message.getField(message, 1));
+  f = /** @type {number} */ (jspb.Message.getField(message, 2));
   if (f != null) {
-    writer.writeString(
-      1,
+    writer.writeUint32(
+      2,
       f
     );
   }
@@ -356,22 +356,22 @@ proto.msg.ContactsGet.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required string MD5Hash = 1;
- * @return {string}
+ * required uint32 Crc32Hash = 2;
+ * @return {number}
  */
-proto.msg.ContactsGet.prototype.getMd5hash = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+proto.msg.ContactsGet.prototype.getCrc32hash = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
-/** @param {string} value */
-proto.msg.ContactsGet.prototype.setMd5hash = function(value) {
-  jspb.Message.setField(this, 1, value);
+/** @param {number} value */
+proto.msg.ContactsGet.prototype.setCrc32hash = function(value) {
+  jspb.Message.setField(this, 2, value);
 };
 
 
-proto.msg.ContactsGet.prototype.clearMd5hash = function() {
-  jspb.Message.setField(this, 1, undefined);
+proto.msg.ContactsGet.prototype.clearCrc32hash = function() {
+  jspb.Message.setField(this, 2, undefined);
 };
 
 
@@ -379,8 +379,8 @@ proto.msg.ContactsGet.prototype.clearMd5hash = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.msg.ContactsGet.prototype.hasMd5hash = function() {
-  return jspb.Message.getField(this, 1) != null;
+proto.msg.ContactsGet.prototype.hasCrc32hash = function() {
+  return jspb.Message.getField(this, 2) != null;
 };
 
 
@@ -772,7 +772,8 @@ proto.msg.ContactsMany.toObject = function(includeInstance, msg) {
     contactsList: jspb.Message.toObjectList(msg.getContactsList(),
     chat_core_types_pb.PhoneContact.toObject, includeInstance),
     usersList: jspb.Message.toObjectList(msg.getUsersList(),
-    chat_core_types_pb.ContactUser.toObject, includeInstance)
+    chat_core_types_pb.ContactUser.toObject, includeInstance),
+    modified: jspb.Message.getField(msg, 3)
   };
 
   if (includeInstance) {
@@ -819,6 +820,10 @@ proto.msg.ContactsMany.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,chat_core_types_pb.ContactUser.deserializeBinaryFromReader);
       msg.addUsers(value);
       break;
+    case 3:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setModified(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -862,6 +867,13 @@ proto.msg.ContactsMany.serializeBinaryToWriter = function(message, writer) {
       2,
       f,
       chat_core_types_pb.ContactUser.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeBool(
+      3,
+      f
     );
   }
 };
@@ -926,6 +938,37 @@ proto.msg.ContactsMany.prototype.addUsers = function(opt_value, opt_index) {
 
 proto.msg.ContactsMany.prototype.clearUsersList = function() {
   this.setUsersList([]);
+};
+
+
+/**
+ * required bool Modified = 3;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.msg.ContactsMany.prototype.getModified = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 3, false));
+};
+
+
+/** @param {boolean} value */
+proto.msg.ContactsMany.prototype.setModified = function(value) {
+  jspb.Message.setField(this, 3, value);
+};
+
+
+proto.msg.ContactsMany.prototype.clearModified = function() {
+  jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.ContactsMany.prototype.hasModified = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 
