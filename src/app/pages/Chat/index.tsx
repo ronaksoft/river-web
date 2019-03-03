@@ -501,7 +501,8 @@ class Chat extends React.Component<IProps, IState> {
                                 </div>
                                 <AudioPlayerShell onVisible={this.audioPlayerVisibleHandler}/>
                             </div>
-                            <div className={'conversation ' + (this.state.messages.length === 0 && !this.isLoading? ' no-result' : '')}>
+                            <div
+                                className={'conversation ' + (this.state.messages.length === 0 && !this.isLoading ? ' no-result' : '')}>
                                 <PopUpDate ref={this.popUpDateRefHandler}/>
                                 <Message ref={this.messageRefHandler}
                                          items={this.state.messages}
@@ -540,7 +541,9 @@ class Chat extends React.Component<IProps, IState> {
                                 <div className="start-messaging-header">
                                     {this.getConnectionStatus()}
                                 </div>
-                                <div className="start-messaging-img"/>
+                                <div className="start-messaging-img">
+                                    <div className="image"/>
+                                </div>
                                 <div className="start-messaging-title">Choose a chat to start messaging!</div>
                                 <div className="start-messaging-footer"/>
                             </div>

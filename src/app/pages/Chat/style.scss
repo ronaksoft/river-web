@@ -163,6 +163,7 @@
       background-color: rgba(168, 144, 106, 0.3);
       background-repeat: repeat;
       background-size: 100px;
+      transition: background 0.2s;
       &.no-result {
         background-image: none !important;
       }
@@ -192,10 +193,19 @@
       .start-messaging-img {
         width: 100%;
         height: calc(100% - 150px);
-        background-image: url(../../../asset/image/start-messaging.svg);
-        background-position: center center;
-        background-size: contain;
-        background-repeat: no-repeat;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .image {
+          width: 100%;
+          height: 100%;
+          max-width: 400px;
+          max-height: 400px;
+          background-image: url(../../../asset/image/chat-placeholder.svg);
+          background-position: center center;
+          background-size: contain;
+          background-repeat: no-repeat;
+        }
       }
       .start-messaging-title {
         @include font-bold;

@@ -581,7 +581,8 @@ export default class MessageRepo {
             this.loadConnInfo();
         }
         // Start
-        messages.forEach((message) => {
+        const msgs = cloneDeep(messages);
+        msgs.forEach((message) => {
             if (message.senderid) {
                 message.me = (message.senderid === this.userId);
             }
@@ -590,7 +591,7 @@ export default class MessageRepo {
             }
             message.temp = (temp === true);
         });
-        this.upsert(messages);
+        this.upsert(msgs);
         // End
         return;
         // Disabling debouncer
