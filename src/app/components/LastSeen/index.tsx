@@ -13,6 +13,7 @@ import RiverTime from '../../services/utilities/river_time';
 import UserRepo from '../../repository/user';
 import {IUser} from '../../repository/user/interface';
 import {UserStatus} from '../../services/sdk/messages/chat.core.types_pb';
+import Broadcaster from '../../services/broadcaster';
 
 interface IProps {
     className?: string;
@@ -33,6 +34,8 @@ class LastSeen extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
     private tryTimeout: any = null;
     private tryCount: number = 0;
+    private broadcaster: Broadcaster;
+    private eventReferences: any[] = [];
 
     constructor(props: IProps) {
         super(props);
@@ -46,12 +49,13 @@ class LastSeen extends React.Component<IProps, IState> {
 
         this.riverTime = RiverTime.getInstance();
         this.userRepo = UserRepo.getInstance();
+        this.broadcaster = Broadcaster.getInstance();
     }
 
     public componentDidMount() {
         this.runInterval();
         this.getUser();
-        window.addEventListener('User_DB_Updated', this.getUser);
+        this.eventReferences.push(this.broadcaster.listen('User_DB_Updated', this.getUser));
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -69,7 +73,11 @@ class LastSeen extends React.Component<IProps, IState> {
 
     public componentWillUnmount() {
         clearInterval(this.interval);
-        window.removeEventListener('User_DB_Updated', this.getUser);
+        this.eventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
+        });
     }
 
     public render() {
@@ -117,7 +125,7 @@ class LastSeen extends React.Component<IProps, IState> {
             return;
         }
 
-        if (data && data.detail.ids.indexOf(this.state.id) === -1) {
+        if (data && data.ids.indexOf(this.state.id) === -1) {
             return;
         }
 

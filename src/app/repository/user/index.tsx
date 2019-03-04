@@ -18,6 +18,7 @@ import {Int64BE} from 'int64-buffer';
 import CRC from 'js-crc/build/crc.min';
 import {UserStatus} from '../../services/sdk/messages/chat.core.types_pb';
 import RiverTime from '../../services/utilities/river_time';
+import Broadcaster from '../../services/broadcaster';
 
 export const getContactsCrc = (users: IUser[]) => {
     const ids = users.map((user) => {
@@ -54,11 +55,13 @@ export default class UserRepo {
     private db: DexieUserDB;
     private sdk: SDK;
     private lastContactTimestamp: number = 0;
+    private broadcaster: Broadcaster;
 
     private constructor() {
         this.dbService = DB.getInstance();
         this.db = this.dbService.getDB();
         this.sdk = SDK.getInstance();
+        this.broadcaster = Broadcaster.getInstance();
     }
 
     public getCurrentUserId(): string {
@@ -123,6 +126,9 @@ export default class UserRepo {
             user.is_contact = isContact ? 1 : 0;
             return user.id || '';
         });
+        if (users.length === 0) {
+            return Promise.resolve();
+        }
         return this.db.users.where('id').anyOf(ids).toArray().then((result) => {
             const createItems: IUser[] = differenceBy(users, result, 'id');
             const updateItems: IUser[] = result;
@@ -224,10 +230,6 @@ export default class UserRepo {
     }
 
     private broadcastEvent(name: string, data: any) {
-        const event = new CustomEvent(name, {
-            bubbles: false,
-            detail: data,
-        });
-        window.dispatchEvent(event);
+        this.broadcaster.publish(name, data);
     }
 }

@@ -153,6 +153,8 @@ input {
           white-space: nowrap;
           text-overflow: ellipsis;
           color: var(--grey); }
+        .contacts .contact-box .contact-container .contact-item:hover .name {
+          max-width: calc(100% - 72px); }
       .contacts .contact-box .contact-container .category-item {
         color: var(--river);
         font-size: 24px;

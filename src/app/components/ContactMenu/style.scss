@@ -93,6 +93,11 @@
           text-overflow: ellipsis;
           color: var(--grey);
         }
+        &:hover {
+          .name {
+            max-width: calc(100% - 72px);
+          }
+        }
       }
       .category-item {
         color: var(--river);

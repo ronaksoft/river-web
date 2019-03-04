@@ -12,6 +12,7 @@ import {IUser} from '../../repository/user/interface';
 import UserRepo from '../../repository/user';
 import {GetUniqueColor, SecondaryColors} from '../UserAvatar';
 import {VerifiedUserRounded} from '@material-ui/icons';
+import Broadcaster from '../../services/broadcaster';
 
 interface IProps {
     className?: string;
@@ -38,6 +39,8 @@ class UserName extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
     private tryTimeout: any = null;
     private tryCount: number = 0;
+    private broadcaster: Broadcaster;
+    private eventReferences: any[] = [];
 
     constructor(props: IProps) {
         super(props);
@@ -50,11 +53,12 @@ class UserName extends React.Component<IProps, IState> {
         };
 
         this.userRepo = UserRepo.getInstance();
+        this.broadcaster = Broadcaster.getInstance();
     }
 
     public componentDidMount() {
         this.getUser();
-        window.addEventListener('User_DB_Updated', this.getUser);
+        this.eventReferences.push(this.broadcaster.listen('User_DB_Updated', this.getUser));
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -70,7 +74,11 @@ class UserName extends React.Component<IProps, IState> {
     }
 
     public componentWillUnmount() {
-        window.removeEventListener('User_DB_Updated', this.getUser);
+        this.eventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
+        });
     }
 
     public render() {
@@ -109,7 +117,7 @@ class UserName extends React.Component<IProps, IState> {
             return;
         }
 
-        if (data && data.detail.ids.indexOf(this.state.id) === -1) {
+        if (data && data.ids.indexOf(this.state.id) === -1) {
             return;
         }
         if (this.props.you && this.userRepo.getCurrentUserId() === this.state.id) {
@@ -156,11 +164,7 @@ class UserName extends React.Component<IProps, IState> {
 
     /* Broadcast global event */
     private broadcastEvent(name: string, data: any) {
-        const event = new CustomEvent(name, {
-            bubbles: false,
-            detail: data,
-        });
-        window.dispatchEvent(event);
+        this.broadcaster.publish(name, data);
     }
 }
 

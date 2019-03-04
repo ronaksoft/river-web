@@ -21,6 +21,7 @@ import {PhoneContact} from '../../services/sdk/messages/chat.core.types_pb';
 import UniqueId from '../../services/uniqueId';
 import ContactList from '../ContactList';
 import {IUser} from '../../repository/user/interface';
+import Broadcaster from '../../services/broadcaster';
 
 import './style.css';
 
@@ -42,6 +43,7 @@ class ContactMenu extends React.Component<IProps, IState> {
     private contactListComponent: ContactList;
     private userRepo: UserRepo;
     private sdk: SDK;
+    private broadcaster: Broadcaster;
 
     constructor(props: IProps) {
         super(props);
@@ -57,6 +59,8 @@ class ContactMenu extends React.Component<IProps, IState> {
 
         this.userRepo = UserRepo.getInstance();
         this.sdk = SDK.getInstance();
+
+        this.broadcaster = Broadcaster.getInstance();
     }
 
     public componentDidMount() {
@@ -239,11 +243,7 @@ class ContactMenu extends React.Component<IProps, IState> {
 
     /* Broadcast global event */
     private broadcastEvent(name: string, data: any) {
-        const event = new CustomEvent(name, {
-            bubbles: false,
-            detail: data,
-        });
-        window.dispatchEvent(event);
+        this.broadcaster.publish(name, data);
     }
 }
 

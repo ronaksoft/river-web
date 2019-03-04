@@ -11,6 +11,7 @@ import DB from '../../services/db/user';
 import {IGroup} from './interface';
 import {differenceBy, find, merge, uniqBy} from 'lodash';
 import {DexieUserDB} from '../../services/db/dexie/user';
+import Broadcaster from '../../services/broadcaster';
 
 export default class GroupRepo {
     public static getInstance() {
@@ -25,10 +26,12 @@ export default class GroupRepo {
 
     private dbService: DB;
     private db: DexieUserDB;
+    private broadcaster: Broadcaster;
 
     private constructor() {
         this.dbService = DB.getInstance();
         this.db = this.dbService.getDB();
+        this.broadcaster = Broadcaster.getInstance();
     }
 
     public create(group: IGroup) {
@@ -92,11 +95,7 @@ export default class GroupRepo {
     }
 
     private broadcastEvent(name: string, data: any) {
-        const event = new CustomEvent(name, {
-            bubbles: false,
-            detail: data,
-        });
-        window.dispatchEvent(event);
+        this.broadcaster.publish(name, data);
     }
 
     private mergeCheck(group: IGroup, newGroup: IGroup): IGroup {

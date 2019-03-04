@@ -11,6 +11,7 @@ import * as React from 'react';
 import {IGroup} from '../../repository/group/interface';
 import GroupRepo from '../../repository/group';
 import {GroupRounded} from '@material-ui/icons';
+import Broadcaster from '../../services/broadcaster';
 
 interface IProps {
     className?: string;
@@ -31,6 +32,8 @@ class GroupName extends React.Component<IProps, IState> {
     private groupRepo: GroupRepo;
     private tryTimeout: any = null;
     private tryCount: number = 0;
+    private broadcaster: Broadcaster;
+    private eventReferences: any[] = [];
 
     constructor(props: IProps) {
         super(props);
@@ -43,11 +46,12 @@ class GroupName extends React.Component<IProps, IState> {
         };
 
         this.groupRepo = GroupRepo.getInstance();
+        this.broadcaster = Broadcaster.getInstance();
     }
 
     public componentDidMount() {
         this.getGroup();
-        window.addEventListener('Group_DB_Updated', this.getGroup);
+        this.eventReferences.push(this.broadcaster.listen('Group_DB_Updated', this.getGroup));
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -63,7 +67,11 @@ class GroupName extends React.Component<IProps, IState> {
     }
 
     public componentWillUnmount() {
-        window.removeEventListener('Group_DB_Updated', this.getGroup);
+        this.eventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
+        });
     }
 
     public render() {
@@ -79,7 +87,7 @@ class GroupName extends React.Component<IProps, IState> {
         if (!this.state || this.state.id === '') {
             return;
         }
-        if (data && data.detail.ids.indexOf(this.state.id) === -1) {
+        if (data && data.ids.indexOf(this.state.id) === -1) {
             return;
         }
 

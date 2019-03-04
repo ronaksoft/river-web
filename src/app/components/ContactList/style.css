@@ -156,7 +156,8 @@ input {
             overflow: hidden;
             text-overflow: ellipsis; }
           .contact-list .contact-list-container .contact-container .contact-item .name .last-seen {
-            font-weight: normal; }
+            font-weight: normal;
+            font-size: 11px; }
         .contact-list .contact-list-container .contact-container .contact-item .phone {
           font-size: 14px;
           line-height: 17px;

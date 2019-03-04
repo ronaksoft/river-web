@@ -12,6 +12,7 @@ import UserRepo from '../../repository/user/index';
 import {InputFileLocation} from '../sdk/messages/chat.core.types_pb';
 import FileRepo from '../../repository/file/index';
 import GroupRepo from '../../repository/group';
+import Broadcaster from '../broadcaster';
 
 interface IAvatar {
     fileId: string;
@@ -36,12 +37,14 @@ export default class AvatarService {
     private userRepo: UserRepo;
     private groupRepo: GroupRepo;
     private avatars: { [key: number]: IAvatar } = {};
+    private broadcaster: Broadcaster;
 
     public constructor() {
         this.fileManager = FileManager.getInstance();
         this.fileRepo = FileRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
+        this.broadcaster = Broadcaster.getInstance();
     }
 
     /* Get avatar picture */
@@ -180,10 +183,6 @@ export default class AvatarService {
 
     /* Broadcast global event */
     private broadcastEvent(name: string, data: any) {
-        const event = new CustomEvent(name, {
-            bubbles: false,
-            detail: data,
-        });
-        window.dispatchEvent(event);
+        this.broadcaster.publish(name, data);
     }
 }

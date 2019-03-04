@@ -13,9 +13,10 @@ import UserRepo from '../../repository/user';
 import {BookmarkRounded} from '@material-ui/icons';
 import AvatarService from '../../services/avatarService';
 import {find} from 'lodash';
+import RiverLogo from '../RiverLogo';
+import Broadcaster from '../../services/broadcaster';
 
 import './style.css';
-import RiverLogo from '../RiverLogo';
 
 const DefaultColors = [
     '#30496B',
@@ -128,6 +129,8 @@ class UserAvatar extends React.Component<IProps, IState> {
     private tryTimeout: any = null;
     private tryCount: number = 0;
     private avatarService: AvatarService;
+    private broadcaster: Broadcaster;
+    private eventReferences: any[] = [];
 
     constructor(props: IProps) {
         super(props);
@@ -140,13 +143,14 @@ class UserAvatar extends React.Component<IProps, IState> {
 
         this.userRepo = UserRepo.getInstance();
         this.avatarService = AvatarService.getInstance();
+        this.broadcaster = Broadcaster.getInstance();
     }
 
     public componentDidMount() {
         if (!this.props.savedMessages) {
             this.getUser();
-            window.addEventListener('User_DB_Updated', this.getUser);
-            window.addEventListener('Avatar_SRC_Updated', this.getUserPhoto);
+            this.eventReferences.push(this.broadcaster.listen('User_DB_Updated', this.getUser));
+            this.eventReferences.push(this.broadcaster.listen('Avatar_SRC_Updated', this.getUserPhoto));
         }
     }
 
@@ -163,10 +167,11 @@ class UserAvatar extends React.Component<IProps, IState> {
     }
 
     public componentWillUnmount() {
-        if (!this.props.savedMessages) {
-            window.removeEventListener('User_DB_Updated', this.getUser);
-            window.removeEventListener('Avatar_SRC_Updated', this.getUserPhoto);
-        }
+        this.eventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
+        });
     }
 
     public render() {
@@ -195,7 +200,7 @@ class UserAvatar extends React.Component<IProps, IState> {
         if (!this.state || this.state.id === '') {
             return;
         }
-        if (data && data.detail.ids.indexOf(this.state.id) === -1) {
+        if (data && data.ids.indexOf(this.state.id) === -1) {
             return;
         }
 
@@ -242,8 +247,8 @@ class UserAvatar extends React.Component<IProps, IState> {
             return;
         }
         let item: any = null;
-        if (data && data.detail.items.length > 0) {
-            item = find(data.detail.items, {id: this.state.id});
+        if (data && data.items.length > 0) {
+            item = find(data.items, {id: this.state.id});
         }
         if (item) {
             this.avatarService.getAvatar(item.id, item.fileId).then((photo) => {
@@ -273,11 +278,7 @@ class UserAvatar extends React.Component<IProps, IState> {
 
     /* Broadcast global event */
     private broadcastEvent(name: string, data: any) {
-        const event = new CustomEvent(name, {
-            bubbles: false,
-            detail: data,
-        });
-        window.dispatchEvent(event);
+        this.broadcaster.publish(name, data);
     }
 }
 

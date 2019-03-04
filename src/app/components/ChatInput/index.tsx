@@ -61,6 +61,7 @@ import RiverTime from '../../services/utilities/river_time';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
+import Broadcaster from '../../services/broadcaster';
 
 interface IProps {
     lastMessage?: IMessage;
@@ -164,6 +165,8 @@ class ChatInput extends React.Component<IProps, IState> {
     private mediaPreviewRef: MediaPreview;
     private contactPickerRef: ContactPicker;
     private riverTime: RiverTime;
+    private broadcaster: Broadcaster;
+    private eventReferences: any[] = [];
 
     constructor(props: IProps) {
         super(props);
@@ -203,10 +206,12 @@ class ChatInput extends React.Component<IProps, IState> {
 
         // @ts-ignore
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        this.broadcaster = Broadcaster.getInstance();
     }
 
     public componentDidMount() {
-        window.addEventListener('Group_DB_Updated', this.checkAuthority);
+        this.eventReferences.push(this.broadcaster.listen('Group_DB_Updated', this.checkAuthority));
         window.addEventListener('mouseup', this.windowMouseUp);
         window.addEventListener('resize', this.windowResizeHandler);
         window.addEventListener('Theme_Changed', this.windowResizeHandler);
@@ -247,10 +252,14 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     public componentWillUnmount() {
-        window.removeEventListener('Group_DB_Updated', this.checkAuthority);
         window.removeEventListener('mouseup', this.windowMouseUp);
         window.removeEventListener('resize', this.windowResizeHandler);
         window.removeEventListener('Theme_Changed', this.windowResizeHandler);
+        this.eventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
+        });
     }
 
     public focus() {
@@ -644,7 +653,7 @@ class ChatInput extends React.Component<IProps, IState> {
         if (!peer) {
             return;
         }
-        if (data && data.detail.ids.indexOf(peer.getId()) === -1) {
+        if (data && data.ids.indexOf(peer.getId()) === -1) {
             return;
         }
         if (peer.getType() === PeerType.PEERGROUP) {

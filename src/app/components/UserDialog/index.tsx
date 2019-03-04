@@ -32,6 +32,7 @@ import DocumentViewerService, {IDocument} from '../../services/documentViewerSer
 import {isMuted} from '../UserInfoMenu';
 
 import './style.css';
+import Broadcaster from '../../services/broadcaster';
 
 interface IProps {
     onClose?: () => void;
@@ -57,6 +58,8 @@ class UserDialog extends React.Component<IProps, IState> {
     private sdk: SDK;
     private riverTime: RiverTime;
     private documentViewerService: DocumentViewerService;
+    private broadcaster: Broadcaster;
+    private eventReferences: any[] = [];
 
     constructor(props: IProps) {
         super(props);
@@ -83,14 +86,20 @@ class UserDialog extends React.Component<IProps, IState> {
         this.sdk = SDK.getInstance();
 
         this.documentViewerService = DocumentViewerService.getInstance();
+
+        this.broadcaster = Broadcaster.getInstance();
     }
 
     public componentDidMount() {
-        window.addEventListener('User_Dialog_Open', this.openUserDialog, true);
+        this.eventReferences.push(this.broadcaster.listen('User_Dialog_Open', this.openUserDialog));
     }
 
     public componentWillUnmount() {
-        window.removeEventListener('User_Dialog_Open', this.openUserDialog, true);
+        this.eventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
+        });
     }
 
     public openDialog(peer: InputPeer) {
@@ -443,11 +452,14 @@ class UserDialog extends React.Component<IProps, IState> {
 
     /* Open user handler from global event */
     private openUserDialog = (data: any) => {
-        const peerId = data.detail.id;
+        if (!data) {
+            return;
+        }
+        const peerId = data.id;
         const peer = new InputPeer();
         peer.setId(peerId);
         peer.setType(PeerType.PEERUSER);
-        peer.setAccesshash('0');
+        peer.setAccesshash(data.accesshash || '0');
         this.openDialog(peer);
     }
 

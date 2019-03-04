@@ -66,6 +66,7 @@ import AvatarCropper from '../AvatarCropper';
 import PeerMedia from '../PeerMedia';
 
 import './style.css';
+import Broadcaster from '../../services/broadcaster';
 
 interface IProps {
     peer: InputPeer | null;
@@ -110,6 +111,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     private cropperRef: AvatarCropper;
     private documentViewerService: DocumentViewerService;
     private readonly callerId: number = 0;
+    private broadcaster: Broadcaster;
+    private eventReferences: any[] = [];
 
     constructor(props: IProps) {
         super(props);
@@ -152,10 +155,12 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         this.documentViewerService = DocumentViewerService.getInstance();
 
         this.callerId = UniqueId.getRandomId();
+
+        this.broadcaster = Broadcaster.getInstance();
     }
 
     public componentDidMount() {
-        window.addEventListener('Group_DB_Updated', this.getGroup);
+        this.eventReferences.push(this.broadcaster.listen('Group_DB_Updated', this.getGroup));
         this.getGroup();
     }
 
@@ -171,7 +176,11 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     }
 
     public componentWillUnmount() {
-        window.removeEventListener('Group_DB_Updated', this.getGroup);
+        this.eventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
+        });
     }
 
     public render() {
@@ -411,7 +420,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         if (!peer) {
             return;
         }
-        if (data && (data.detail.callerId === this.callerId || data.detail.ids.indexOf(peer.getId()) === -1)) {
+        if (data && (data.callerId === this.callerId || data.ids.indexOf(peer.getId()) === -1)) {
             return;
         }
         this.groupRepo.get(peer.getId() || '').then((res) => {
@@ -898,11 +907,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
 
     /* Broadcast global event */
     private broadcastEvent(name: string, data: any) {
-        const event = new CustomEvent(name, {
-            bubbles: false,
-            detail: data,
-        });
-        window.dispatchEvent(event);
+        this.broadcaster.publish(name, data);
     }
 
     /* Avatar menu anchor close handler */

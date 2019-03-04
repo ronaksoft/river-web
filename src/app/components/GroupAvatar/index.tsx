@@ -15,6 +15,7 @@ import AvatarService from '../../services/avatarService';
 import {find} from 'lodash';
 
 import './style.css';
+import Broadcaster from '../../services/broadcaster';
 
 interface IProps {
     className?: string;
@@ -33,6 +34,8 @@ class GroupAvatar extends React.Component<IProps, IState> {
     private tryTimeout: any = null;
     private tryCount: number = 0;
     private avatarService: AvatarService;
+    private broadcaster: Broadcaster;
+    private eventReferences: any[] = [];
 
     constructor(props: IProps) {
         super(props);
@@ -45,12 +48,13 @@ class GroupAvatar extends React.Component<IProps, IState> {
 
         this.groupRepo = GroupRepo.getInstance();
         this.avatarService = AvatarService.getInstance();
+        this.broadcaster = Broadcaster.getInstance();
     }
 
     public componentDidMount() {
         this.getGroup();
-        window.addEventListener('Group_DB_Updated', this.getGroup);
-        window.addEventListener('Avatar_SRC_Updated', this.getGroupPhoto);
+        this.eventReferences.push(this.broadcaster.listen('Group_DB_Updated', this.getGroup));
+        this.eventReferences.push(this.broadcaster.listen('Avatar_SRC_Updated', this.getGroupPhoto));
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -66,8 +70,11 @@ class GroupAvatar extends React.Component<IProps, IState> {
     }
 
     public componentWillUnmount() {
-        window.removeEventListener('Group_DB_Updated', this.getGroup);
-        window.removeEventListener('Avatar_SRC_Updated', this.getGroupPhoto);
+        this.eventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
+        });
     }
 
     public render() {
@@ -83,7 +90,7 @@ class GroupAvatar extends React.Component<IProps, IState> {
             return;
         }
 
-        if (data && data.detail.ids.indexOf(this.state.id) === -1) {
+        if (data && data.ids.indexOf(this.state.id) === -1) {
             return;
         }
 
@@ -126,8 +133,8 @@ class GroupAvatar extends React.Component<IProps, IState> {
             return;
         }
         let item: any = null;
-        if (data && data.detail.items.length > 0) {
-            item = find(data.detail.items, {id: this.state.id});
+        if (data && data.items.length > 0) {
+            item = find(data.items, {id: this.state.id});
         }
         if (item) {
             this.avatarService.getAvatar(item.id, item.fileId).then((photo) => {
