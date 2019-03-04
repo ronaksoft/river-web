@@ -13,6 +13,31 @@ import {differenceBy, find, merge, uniqBy} from 'lodash';
 import SDK from "../../services/sdk";
 import {DexieUserDB} from '../../services/db/dexie/user';
 import Dexie from 'dexie';
+import {Int64BE} from 'int64-buffer';
+// @ts-ignore
+import CRC from 'js-crc/build/crc.min';
+import {UserStatus} from '../../services/sdk/messages/chat.core.types_pb';
+import RiverTime from '../../services/utilities/river_time';
+
+export const getContactsCrc = (users: IUser[]) => {
+    const ids = users.map((user) => {
+        const space = '                    ';
+        const id = user.id || '';
+        const wLen = 20 - id.length;
+        return {
+            id: new Int64BE(id),
+            wid: space.slice(0, wLen) + id
+        };
+    });
+    ids.sort((i1, i2) => {
+        return i1.wid < i2.wid ? -1 : 1;
+    });
+    const data: number[] = [];
+    ids.forEach((id) => {
+        data.push(...id.id.toArray());
+    });
+    return parseInt(CRC.crc32(data), 16);
+};
 
 export default class UserRepo {
     public static getInstance() {
@@ -28,7 +53,7 @@ export default class UserRepo {
     private dbService: DB;
     private db: DexieUserDB;
     private sdk: SDK;
-    private contactImported: boolean = false;
+    private lastContactTimestamp: number = 0;
 
     private constructor() {
         this.dbService = DB.getInstance();
@@ -104,6 +129,11 @@ export default class UserRepo {
             updateItems.map((user: IUser) => {
                 return this.mergeUser(users, user, force);
             });
+            createItems.map((user: IUser) => {
+                if (user.status === UserStatus.USERSTATUSONLINE) {
+                    user.status_last_modified = RiverTime.getInstance().now();
+                }
+            });
             const list = [...createItems, ...updateItems];
             list.forEach((item) => {
                 this.dbService.setUser(item);
@@ -117,24 +147,27 @@ export default class UserRepo {
 
     public getAllContacts(): Promise<IUser[]> {
         return new Promise((resolve, reject) => {
-            if (this.contactImported) {
+            const now = Math.floor(Date.now() / 1000);
+            if (now - this.lastContactTimestamp < 1800) {
                 this.getManyCache(true, {}).then((res) => {
                     resolve(res);
                 }).catch((err) => {
-                    this.sdk.getContacts().then((remoteRes) => {
-                        this.importBulk(true, remoteRes.usersList);
-                        resolve(remoteRes.usersList);
-                    }).catch((err2) => {
-                        reject(err2);
-                    });
+                    reject(err);
                 });
             } else {
-                this.contactImported = true;
-                this.sdk.getContacts().then((remoteRes) => {
-                    this.importBulk(true, remoteRes.usersList);
-                    resolve(remoteRes.usersList);
-                }).catch((err2) => {
-                    reject(err2);
+                const crc32 = this.getContactsCrc();
+                this.sdk.getContacts(crc32).then((remoteRes) => {
+                    if (remoteRes.modified) {
+                        this.importBulk(true, remoteRes.usersList);
+                        this.storeContactsCrc(remoteRes.usersList);
+                        this.lastContactTimestamp = now;
+                        resolve(remoteRes.usersList);
+                    } else {
+                        this.lastContactTimestamp = now;
+                        this.getManyCache(true, {}).then((res) => {
+                            resolve(res);
+                        });
+                    }
                 });
             }
         });
@@ -153,6 +186,15 @@ export default class UserRepo {
     private mergeUser(users: IUser[], user: IUser, force?: boolean) {
         const t = find(users, {id: user.id});
         const modifyUser = (u1: IUser, u2: IUser): IUser => {
+            if (u2.status === UserStatus.USERSTATUSONLINE) {
+                u2.status_last_modified = RiverTime.getInstance().now();
+            }
+            if (u1.status !== undefined && u2.status === undefined) {
+                u2.status = u1.status;
+            }
+            if (u1.status_last_modified !== undefined && u2.status_last_modified === undefined) {
+                u2.status_last_modified = u1.status_last_modified;
+            }
             if (!force && u1.username && u1.username.length > 0 && (!u2.username || (u2.username && u2.username.length === 0))) {
                 u2.username = u1.username;
             }
@@ -169,6 +211,16 @@ export default class UserRepo {
         } else {
             return user;
         }
+    }
+
+    private getContactsCrc() {
+        const crc = localStorage.getItem('river.contacts.hash') || '0';
+        return parseInt(crc, 10);
+    }
+
+    private storeContactsCrc(users: IUser[]) {
+        const crc32 = getContactsCrc(users);
+        localStorage.setItem('river.contacts.hash', String(crc32));
     }
 
     private broadcastEvent(name: string, data: any) {

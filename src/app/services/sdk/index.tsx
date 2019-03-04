@@ -144,6 +144,7 @@ export default class SDK {
         info.Phone = '';
         info.Username = '';
         this.setConnInfo(info);
+        localStorage.removeItem('river.contacts.hash');
     }
 
     public loadConnInfo(): IConnInfo {

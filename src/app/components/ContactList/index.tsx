@@ -23,7 +23,7 @@ import {Link} from 'react-router-dom';
 import Scrollbars from 'react-custom-scrollbars';
 import {IUser} from '../../repository/user/interface';
 import UserRepo from '../../repository/user';
-import {Int64BE} from 'int64-buffer';
+import LastSeen from '../LastSeen';
 
 import './style.css';
 
@@ -89,28 +89,13 @@ export const categorizeContact = (contacts: IUser[]): IUser[] => {
     return outList;
 };
 
-export const getContactCrc = (users: IUser[]) => {
-    const ids = users.map((user) => {
-        const space = '                    ';
-        const id = user.id || '';
-        const wLen = 20 - id.length;
-        return {
-            id: new Int64BE(id),
-            wid: space.slice(0, wLen) + id
-        };
-    });
-    ids.sort((i1, i2) => {
-        return i1.wid < i2.wid;
-    });
-    window.console.log(ids);
-};
-
 class ContactList extends React.Component<IProps, IState> {
     private contactsRes: IUser[] = [];
     private list: List;
     private userRepo: UserRepo;
     private readonly searchDebounce: any;
     private defaultContact: IUser[];
+    private lastSelectedContact: number;
 
     constructor(props: IProps) {
         super(props);
@@ -125,6 +110,8 @@ class ContactList extends React.Component<IProps, IState> {
             title: '',
         };
 
+        this.lastSelectedContact = this.state.contacts.length;
+
         this.userRepo = UserRepo.getInstance();
         this.searchDebounce = debounce(this.search, 512);
     }
@@ -138,7 +125,8 @@ class ContactList extends React.Component<IProps, IState> {
         this.setState({
             hiddenContacts: newProps.hiddenContacts || [],
         }, () => {
-            if (this.state.selectedContacts.length === 0) {
+            if (this.state.selectedContacts.length === 0 && this.lastSelectedContact !== this.state.selectedContacts.length) {
+                this.lastSelectedContact = this.state.contacts.length;
                 this.getDefault();
             }
         });
@@ -262,7 +250,10 @@ class ContactList extends React.Component<IProps, IState> {
                             <span className="avatar">
                                 <UserAvatar id={contact.id || ''}/>
                             </span>
-                            <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>
+                            <span className="name">
+                                <span className="inner">{`${contact.firstname} ${contact.lastname}`}</span>
+                                <LastSeen className="last-seen" id={contact.id || ''}/>
+                            </span>
                             <span className="phone">{contact.phone ? contact.phone : 'no phone'}</span>
                             {Boolean(this.props.onContextMenuAction) &&
                             <div className="more" onClick={this.contextMenuOpenHandler.bind(this, index)}>
@@ -286,17 +277,18 @@ class ContactList extends React.Component<IProps, IState> {
     }
 
     /* Get all contacts */
-    private getDefault() {
+    private getDefault(fill?: boolean) {
         this.userRepo.getAllContacts().then((res) => {
             this.defaultContact = res;
             this.contactsRes = clone(res);
-            this.setState({
-                contacts: categorizeContact(this.getTrimmedList([])),
-            }, () => {
-                this.list.recomputeRowHeights();
-                this.list.forceUpdateGrid();
-            });
-            getContactCrc(res);
+            if (fill !== false) {
+                this.setState({
+                    contacts: categorizeContact(this.getTrimmedList([])),
+                }, () => {
+                    this.list.recomputeRowHeights();
+                    this.list.forceUpdateGrid();
+                });
+            }
         });
     }
 

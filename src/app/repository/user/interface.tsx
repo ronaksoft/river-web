@@ -15,6 +15,7 @@ interface IUser extends User.AsObject {
     clientid?: string;
     is_contact?: number;
     phone?: string;
+    status_last_modified?: number;
 }
 
 interface IParticipant extends IUser {

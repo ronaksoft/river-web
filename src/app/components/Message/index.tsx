@@ -716,7 +716,7 @@ class Message extends React.Component<IProps, IState> {
             case C_MESSAGE_ACTION.MessageActionGroupPhotoChanged:
                 if (!message.actiondata) {
                     return (<span className="system-message"><UserName className="user" id={message.senderid || ''}
-                                                                       you={true}/> Changed the Group Photo</span>);
+                                                                       you={true}/> Removed the Group Photo</span>);
                 } else {
                     const photo: GroupPhoto.AsObject = message.actiondata.photo;
                     const fileLocation = new InputFileLocation();
@@ -724,14 +724,24 @@ class Message extends React.Component<IProps, IState> {
                     fileLocation.setAccesshash(photo.photosmall.accesshash || '');
                     fileLocation.setFileid(photo.photosmall.fileid || '');
                     fileLocation.setClusterid(photo.photosmall.clusterid || 1);
-                    return (
-                        <div className="system-message-with-picture">
-                            <span className="system-message">
-                                <UserName className="user" id={message.senderid || ''} you={true}/> Changed Group Photo
-                            </span>
-                            <CachedPhoto className="picture" fileLocation={fileLocation.toObject()}/>
-                        </div>
-                    );
+                    if (!photo || !photo.photosmall.fileid || photo.photosmall.fileid === '') {
+                        return (
+                            <div className="system-message-with-picture">
+                                <span className="system-message">
+                                    <UserName className="user" id={message.senderid || ''} you={true}/> Removed Group Photo
+                                </span>
+                            </div>
+                        );
+                    } else {
+                        return (
+                            <div className="system-message-with-picture">
+                                <span className="system-message">
+                                    <UserName className="user" id={message.senderid || ''} you={true}/> Changed Group Photo
+                                </span>
+                                <CachedPhoto className="picture" fileLocation={fileLocation.toObject()}/>
+                            </div>
+                        );
+                    }
                 }
             default:
                 return (<span className="system-message">Unsupported system message</span>);

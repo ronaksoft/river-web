@@ -233,6 +233,7 @@ class ContactMenu extends React.Component<IProps, IState> {
             if (firstname.length > 0 && lastname.length > 0 && phone.length > 5) {
                 this.createContactHandler();
             }
+            this.newContactCloseHandler();
         }
     }
 

@@ -116,6 +116,7 @@ import {IUser} from '../../repository/user/interface';
 import {IMediaItem} from '../../components/Uploader';
 
 import './style.css';
+import LastSeen from '../../components/LastSeen';
 
 const C_MAX_UPDATE_DIFF = 1000;
 
@@ -689,6 +690,8 @@ class Chat extends React.Component<IProps, IState> {
             return (isTypingRender(typingList, dialog));
         } else if (dialog && dialog.peertype === PeerType.PEERGROUP && this.state.group) {
             return (<span>{this.state.group.participants} members</span>);
+        } else if (dialog) {
+            return (<LastSeen id={dialog.peerid || ''} withLastSeen={true}/>);
         } else {
             return (<span>last seen recently</span>);
         }
@@ -808,12 +811,7 @@ class Chat extends React.Component<IProps, IState> {
                 });
                 break;
             case 'logout':
-                this.setState({
-                    confirmDialogMode: 'logout',
-                    confirmDialogOpen: true,
-                    leftMenu: 'chat',
-                    leftMenuSub: 'none',
-                });
+                this.bottomBarSelectHandler('logout');
                 break;
         }
     }
@@ -2195,6 +2193,12 @@ class Chat extends React.Component<IProps, IState> {
     private bottomBarSelectHandler = (item: string) => {
         switch (item) {
             case 'logout':
+                this.setState({
+                    confirmDialogMode: 'logout',
+                    confirmDialogOpen: true,
+                    leftMenu: 'chat',
+                    leftMenuSub: 'none',
+                });
                 break;
             default:
                 this.setState({

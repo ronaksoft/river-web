@@ -134,18 +134,16 @@ input {
             object-fit: cover;
             border-radius: 50%; }
         .contacts .contact-box .contact-container .contact-item .name {
-          display: inline-block;
-          min-width: 200px;
-          max-width: 230px;
+          min-width: auto;
+          max-width: calc(100% - 62px);
+          width: 100%;
           font-size: 12px;
           line-height: 23px;
           margin: 0 0 4px;
           color: var(--dark);
+          text-decoration: none;
           font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
-          font-weight: 600;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis; }
+          font-weight: 600; }
         .contacts .contact-box .contact-container .contact-item .phone {
           font-size: 14px;
           line-height: 17px;

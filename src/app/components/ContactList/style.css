@@ -124,6 +124,8 @@ input {
         .contact-list .contact-list-container .contact-container .contact-item:hover {
           border: 0;
           background-color: var(--color-hover); }
+        .contact-list .contact-list-container .contact-container .contact-item a {
+          text-decoration: none; }
         .contact-list .contact-list-container .contact-container .contact-item .avatar {
           width: 48px;
           height: 48px;
@@ -137,7 +139,7 @@ input {
             object-fit: cover;
             border-radius: 50%; }
         .contact-list .contact-list-container .contact-container .contact-item .name {
-          display: inline-block;
+          display: inline-flex;
           min-width: 200px;
           font-size: 12px;
           line-height: 23px;
@@ -147,8 +149,14 @@ input {
           font-weight: 600;
           white-space: nowrap;
           overflow: hidden;
-          text-overflow: ellipsis;
-          max-width: 210px; }
+          text-overflow: ellipsis; }
+          .contact-list .contact-list-container .contact-container .contact-item .name .inner {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis; }
+          .contact-list .contact-list-container .contact-container .contact-item .name .last-seen {
+            font-weight: normal; }
         .contact-list .contact-list-container .contact-container .contact-item .phone {
           font-size: 14px;
           line-height: 17px;

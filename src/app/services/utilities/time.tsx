@@ -20,6 +20,7 @@ class TimeUntiles {
     constructor() {
         this.riverTime = RiverTime.getInstance();
     }
+
     /**
      * @func full
      * @desc Formats the given timestamp in full mode
@@ -124,6 +125,36 @@ class TimeUntiles {
         const yesterday = moment(current).startOf('day').subtract(1, 'days');
         if (date.isSameOrAfter(yesterday)) {
             return date.format('[Yesterday]');
+        }
+
+        const thisYear = moment(current).startOf('year');
+        if (date.isSameOrAfter(thisYear)) {
+            return date.format('MMM DD');
+        }
+
+        return date.format('DD[/]MM[/]YYYY');
+    }
+
+    public timeAgo(timestamp: number | undefined) {
+        if (!timestamp) {
+            return '';
+        }
+
+        const current = this.riverTime.milliNow();
+        const today = moment(current).startOf('day');
+        const date = moment(timestamp * 1000);
+
+        if (date.isSameOrAfter(today)) {
+            return `${date.from(current, true)} ago`;
+        }
+
+        if (date.isSameOrAfter(today)) {
+            return date.format('HH:mm');
+        }
+
+        const yesterday = moment(current).startOf('day').subtract(1, 'days');
+        if (date.isSameOrAfter(yesterday)) {
+            return date.format('[Yesterday] HH:mm');
         }
 
         const thisYear = moment(current).startOf('year');
