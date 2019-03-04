@@ -29,11 +29,12 @@ import './style.css';
 
 interface IProps {
     contacts?: IUser[];
+    disableCheckSelected?: boolean;
     hiddenContacts?: IUser[];
+    mode: 'chip' | 'link';
+    noRowsRenderer?: () => JSX.Element;
     onChange?: (contacts: IUser[]) => void;
     onContextMenuAction?: (cmd: string, contact: IUser) => void;
-    noRowsRenderer?: () => JSX.Element;
-    mode: 'chip' | 'link';
 }
 
 interface IState {
@@ -95,7 +96,6 @@ class ContactList extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
     private readonly searchDebounce: any;
     private defaultContact: IUser[];
-    private lastSelectedContact: number;
 
     constructor(props: IProps) {
         super(props);
@@ -110,8 +110,6 @@ class ContactList extends React.Component<IProps, IState> {
             title: '',
         };
 
-        this.lastSelectedContact = this.state.contacts.length;
-
         this.userRepo = UserRepo.getInstance();
         this.searchDebounce = debounce(this.search, 512);
     }
@@ -125,8 +123,7 @@ class ContactList extends React.Component<IProps, IState> {
         this.setState({
             hiddenContacts: newProps.hiddenContacts || [],
         }, () => {
-            if (this.state.selectedContacts.length === 0 && this.lastSelectedContact !== this.state.selectedContacts.length) {
-                this.lastSelectedContact = this.state.contacts.length;
+            if (this.state.selectedContacts.length === 0 && this.props.disableCheckSelected) {
                 this.getDefault();
             }
         });

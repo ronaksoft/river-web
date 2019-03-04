@@ -906,7 +906,9 @@ class Chat extends React.Component<IProps, IState> {
                 }, 100);
             });
             const {peer} = this.state;
-            this.sendReadHistory(peer, dataMsg.maxId);
+            if (dataMsg.maxReadId !== -1) {
+                this.sendReadHistory(peer, dataMsg.maxReadId);
+            }
             if (!this.isInChat) {
                 this.readHistoryMaxId = dataMsg.maxId;
             }
@@ -1316,8 +1318,8 @@ class Chat extends React.Component<IProps, IState> {
                 if (force === true) {
                     updateState();
                 }
-                if (messages.length > 0) {
-                    this.sendReadHistory(peer, dataMsg.maxId);
+                if (dataMsg.maxReadId > -1) {
+                    this.sendReadHistory(peer, dataMsg.maxReadId);
                 }
                 this.setLoading(false);
                 //
@@ -1412,11 +1414,15 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private modifyMessages(defaultMessages: IMessage[], messages: IMessage[], push: boolean, messageReadId?: number): { maxId: number, minId: number, msgs: IMessage[] } {
+    private modifyMessages(defaultMessages: IMessage[], messages: IMessage[], push: boolean, messageReadId?: number): { maxId: number, maxReadId: number, minId: number, msgs: IMessage[] } {
         let maxId = 0;
         let minId = Infinity;
+        let maxReadId = -1;
         let newMessageFlag = false;
         messages.forEach((msg, key) => {
+            if (msg.id && msg.id > maxReadId && msg.id > 0 && !msg.me) {
+                maxReadId = msg.id;
+            }
             if (msg.id && msg.id > maxId && msg.id > 0) {
                 maxId = msg.id;
             }
@@ -1442,7 +1448,7 @@ class Chat extends React.Component<IProps, IState> {
                     msg.avatar = true;
                 }
 
-                if (messageReadId !== undefined && !newMessageFlag && (msg.id || 0) > messageReadId) {
+                if (messageReadId !== undefined && !newMessageFlag && (msg.id || 0) > messageReadId && !msg.me) {
                     defaultMessages.push({
                         id: (msg.id || 0) + 0.5,
                         messagetype: C_MESSAGE_TYPE.NewMessage,
@@ -1486,6 +1492,7 @@ class Chat extends React.Component<IProps, IState> {
         });
         return {
             maxId,
+            maxReadId,
             minId,
             msgs: defaultMessages,
         };
@@ -1623,9 +1630,9 @@ class Chat extends React.Component<IProps, IState> {
                     this.messageComponent.cache.clear(index, 0);
                 }
 
-                if (res.messageid) {
-                    this.sendReadHistory(peer, res.messageid);
-                }
+                // if (res.messageid) {
+                //     this.sendReadHistory(peer, res.messageid);
+                // }
                 message.id = res.messageid;
                 this.messageRepo.lazyUpsert([message]);
                 this.updateDialogs(message, '0');
@@ -2127,7 +2134,9 @@ class Chat extends React.Component<IProps, IState> {
                     }, 100);
                 });
 
-                this.sendReadHistory(peer, dataMsg.maxId);
+                if (dataMsg.maxReadId !== -1) {
+                    this.sendReadHistory(peer, dataMsg.maxReadId);
+                }
                 if (!this.isInChat) {
                     this.readHistoryMaxId = dataMsg.maxId;
                 }
@@ -2784,10 +2793,6 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageComponent.cache.clear(index, 0);
             }
 
-            if (res.messageid) {
-                this.sendReadHistory(peer, res.messageid);
-            }
-
             message.id = res.messageid;
 
             this.messageRepo.lazyUpsert([message]);
@@ -2823,10 +2828,6 @@ class Chat extends React.Component<IProps, IState> {
                 });
                 if (index > -1) {
                     this.messageComponent.cache.clear(index, 0);
-                }
-
-                if (res.messageid) {
-                    this.sendReadHistory(peer, res.messageid);
                 }
 
                 message.id = res.messageid;
@@ -3292,10 +3293,6 @@ class Chat extends React.Component<IProps, IState> {
                     this.messageComponent.cache.clear(index, 0);
                 }
 
-                if (res.messageid) {
-                    this.sendReadHistory(peer, res.messageid);
-                }
-
                 message.id = res.messageid;
                 message.downloaded = true;
 
@@ -3398,10 +3395,6 @@ class Chat extends React.Component<IProps, IState> {
             const index = findIndex(messages, {id: message.id, messagetype: messageType});
             if (index > -1) {
                 this.messageComponent.cache.clear(index, 0);
-            }
-
-            if (res.messageid) {
-                this.sendReadHistory(peer, res.messageid);
             }
 
             message.id = res.messageid;

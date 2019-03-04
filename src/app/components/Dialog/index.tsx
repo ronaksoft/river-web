@@ -24,6 +24,7 @@ import Input from '@material-ui/core/Input/Input';
 import InputAdornment from '@material-ui/core/InputAdornment/InputAdornment';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import FormControl from '@material-ui/core/FormControl/FormControl';
+import IsMobile from '../../services/isMobile';
 
 import './style.css';
 
@@ -56,6 +57,7 @@ class Dialog extends React.Component<IProps, IState> {
     private searchRepo: SearchRepo;
     private readonly searchDebounce: any;
     private keyword: string = '';
+    private readonly isMobile: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -73,6 +75,7 @@ class Dialog extends React.Component<IProps, IState> {
 
         this.searchRepo = SearchRepo.getInstance();
         this.searchDebounce = debounce(this.search, 512);
+        this.isMobile = IsMobile.isAny();
     }
 
     public componentDidMount() {
@@ -122,7 +125,7 @@ class Dialog extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {searchItems, searchEnable, moreAnchorEl} = this.state;
+        const {searchEnable, moreAnchorEl} = this.state;
         return (
             <div className="dialogs">
                 <div className={'dialog-search' + (searchEnable ? ' open' : '')}>
@@ -149,44 +152,71 @@ class Dialog extends React.Component<IProps, IState> {
                     </FormControl>
                 </div>
                 <div className="dialog-list">
-                    <AutoSizer>
-                        {({width, height}: any) => (
-                            <React.Fragment>
-                                <Scrollbars
-                                    autoHide={true}
-                                    style={{
-                                        height: height + 'px',
-                                        width: width + 'px',
-                                    }}
-                                    onScroll={this.handleScroll}
-                                >
-                                    <List
-                                        ref={this.refHandler}
-                                        rowHeight={64}
-                                        rowRenderer={this.rowRender}
-                                        rowCount={searchItems.length}
-                                        overscanRowCount={30}
-                                        width={width}
-                                        height={height}
-                                        className="dialog-container"
-                                        noRowsRenderer={this.noRowsRenderer}
-                                        style={listStyle}
-                                    />
-                                </Scrollbars>
-                                <Menu
-                                    anchorEl={moreAnchorEl}
-                                    open={Boolean(moreAnchorEl)}
-                                    onClose={this.moreCloseHandler}
-                                    className="kk-context-menu"
-                                >
-                                    {this.contextMenuItem()}
-                                </Menu>
-                            </React.Fragment>
-                        )}
-                    </AutoSizer>
+                    {this.getWrapper()}
                 </div>
+                <Menu
+                    anchorEl={moreAnchorEl}
+                    open={Boolean(moreAnchorEl)}
+                    onClose={this.moreCloseHandler}
+                    className="kk-context-menu"
+                >
+                    {this.contextMenuItem()}
+                </Menu>
             </div>
         );
+    }
+
+    private getWrapper() {
+        const {searchItems} = this.state;
+        if (this.isMobile) {
+            return (
+                <AutoSizer>
+                    {({width, height}: any) => (
+                        <List
+                            ref={this.refHandler}
+                            rowHeight={64}
+                            rowRenderer={this.rowRender}
+                            rowCount={searchItems.length}
+                            overscanRowCount={30}
+                            width={width}
+                            height={height}
+                            className="dialog-container"
+                            noRowsRenderer={this.noRowsRenderer}
+                        />
+                    )}
+                </AutoSizer>
+            );
+        } else {
+            return (
+                <AutoSizer>
+                    {({width, height}: any) => (
+                        <React.Fragment>
+                            <Scrollbars
+                                autoHide={true}
+                                style={{
+                                    height: height + 'px',
+                                    width: width + 'px',
+                                }}
+                                onScroll={this.handleScroll}
+                            >
+                                <List
+                                    ref={this.refHandler}
+                                    rowHeight={64}
+                                    rowRenderer={this.rowRender}
+                                    rowCount={searchItems.length}
+                                    overscanRowCount={30}
+                                    width={width}
+                                    height={height}
+                                    className="dialog-container"
+                                    noRowsRenderer={this.noRowsRenderer}
+                                    style={listStyle}
+                                />
+                            </Scrollbars>
+                        </React.Fragment>
+                    )}
+                </AutoSizer>
+            );
+        }
     }
 
     /* Custom Scrollbars handler */

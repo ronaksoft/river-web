@@ -270,6 +270,9 @@ input {
       .container.mobile-view .column-left .top,
       .container.mobile-view .column-center .top {
         padding-left: 40px; }
+        .container.mobile-view .column-left .top .info-bar,
+        .container.mobile-view .column-center .top .info-bar {
+          padding-left: 8px; }
     .container.mobile-view .column-right {
       position: absolute;
       top: 0;
