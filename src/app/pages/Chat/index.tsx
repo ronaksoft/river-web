@@ -691,7 +691,7 @@ class Chat extends React.Component<IProps, IState> {
         } else if (dialog && dialog.peertype === PeerType.PEERGROUP && this.state.group) {
             return (<span>{this.state.group.participants} members</span>);
         } else {
-            return (<LastSeen id={this.state.selectedDialogId || ''} withLastSeen={true}/>);
+            return (<LastSeen id={dialogId || ''} withLastSeen={true}/>);
         }
     }
 

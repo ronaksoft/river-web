@@ -120,6 +120,26 @@
                 }
             });
         });
+        errorReload = false;
+        const loadErrorFN = () => {
+            if (!errorReload) {
+                errorReload = true;
+                setTimeout(() => {
+                    window.location.reload(true);
+                }, 1000);
+                window.removeEventListener('load', loadFN);
+                window.removeEventListener('error', loadErrorFN);
+            }
+        };
+        window.addEventListener('error', loadErrorFN);
+        const loadFN = () => {
+            if (!errorReload) {
+                errorReload = true;
+                window.removeEventListener('load', loadFN);
+                window.removeEventListener('error', loadErrorFN);
+            }
+        };
+        window.addEventListener('load', loadFN);
     </script>
 </head>
 <body>

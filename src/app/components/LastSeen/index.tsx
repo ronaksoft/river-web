@@ -140,6 +140,7 @@ class LastSeen extends React.Component<IProps, IState> {
             if (user) {
                 this.setState({
                     user,
+                    you: false,
                 });
             } else {
                 throw Error('not found');
