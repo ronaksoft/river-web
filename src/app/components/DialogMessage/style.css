@@ -166,6 +166,8 @@ input {
     background-color: var(--river);
     color: #fff;
     border-radius: 8px; }
+  .dialog-wrapper.muted .unread {
+    background-color: #C6C6C6; }
   .dialog-wrapper .mention {
     position: absolute;
     top: 30px;
@@ -205,6 +207,9 @@ html[theme="dark"] .dialog-wrapper .name {
 html[theme="dark"] .dialog-wrapper .muted-wrapper svg {
   color: var(--white); }
 
+html[theme="dark"] .dialog-wrapper.muted .unread {
+  color: var(--dark); }
+
 html[theme="dark-blue"] .dialog-wrapper .name {
   color: var(--white); }
 
@@ -216,3 +221,6 @@ html[theme="dark-blue"] .dialog-wrapper .preview, html[theme="dark-blue"] .dialo
 
 html[theme="dark-blue"] .dialog-wrapper .more svg {
   color: var(--white); }
+
+html[theme="dark-blue"] .dialog-wrapper.muted .unread {
+  color: var(--dark); }

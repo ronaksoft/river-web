@@ -19,7 +19,7 @@
     transition: height 0.3s cubic-bezier(0.57, -0.13, 0.53, 1.27);
     padding: 0; }
   .select-media .media-input-container {
-    height: 200px;
+    height: 250px;
     width: 50px;
     display: flex;
     align-items: center;
@@ -38,14 +38,16 @@
       border: 1px solid transparent;
       transform: scale(0.1);
       cursor: pointer; }
-      .select-media .media-input-container .media-item:nth-of-type(4) {
+      .select-media .media-input-container .media-item:nth-of-type(5) {
         transition: opacity 0.3s, background-color 0.3s, transform 0.2s cubic-bezier(0.57, -0.13, 0.53, 1.27); }
-      .select-media .media-input-container .media-item:nth-of-type(3) {
+      .select-media .media-input-container .media-item:nth-of-type(4) {
         transition: opacity 0.3s, background-color 0.3s, transform 0.25s cubic-bezier(0.57, -0.13, 0.53, 1.27); }
-      .select-media .media-input-container .media-item:nth-of-type(2) {
+      .select-media .media-input-container .media-item:nth-of-type(3) {
         transition: opacity 0.3s, background-color 0.3s, transform 0.3s cubic-bezier(0.57, -0.13, 0.53, 1.27); }
-      .select-media .media-input-container .media-item:nth-of-type(1) {
+      .select-media .media-input-container .media-item:nth-of-type(2) {
         transition: opacity 0.3s, background-color 0.3s, transform 0.35s cubic-bezier(0.57, -0.13, 0.53, 1.27); }
+      .select-media .media-input-container .media-item:nth-of-type(1) {
+        transition: opacity 0.3s, background-color 0.3s, transform 0.4s cubic-bezier(0.57, -0.13, 0.53, 1.27); }
       .select-media .media-input-container .media-item svg {
         font-size: 24px;
         color: var(--grey); }
@@ -59,6 +61,8 @@
         color: #2D9CDB; }
       .select-media .media-input-container .media-item.contact svg {
         color: #009688; }
+      .select-media .media-input-container .media-item.location svg {
+        color: #EB5757; }
       .select-media .media-input-container .media-item.selected {
         opacity: 1 !important; }
     .select-media .media-input-container.none .media-item {
@@ -67,7 +71,7 @@
     bottom: 50px; }
     .select-media.open .media-input-frame {
       padding: 12px;
-      height: 224px; }
+      height: 274px; }
     .select-media.open .media-input-container .media-item {
       opacity: 0.48;
       transform: scale(1); }

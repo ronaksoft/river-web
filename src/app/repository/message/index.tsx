@@ -26,7 +26,7 @@ import {
     DocumentAttributeType,
     DocumentAttributeVideo,
     MediaContact,
-    MediaDocument,
+    MediaDocument, MediaGeoLocation,
     MediaPhoto
 } from '../../services/sdk/messages/chat.core.message.medias_pb';
 import {
@@ -110,6 +110,10 @@ export default class MessageRepo {
                     out.mediadata = MediaContact.deserializeBinary(mediaData).toObject();
                     out.messagetype = C_MESSAGE_TYPE.Contact;
                     break;
+                case MediaType.MEDIATYPEGEOLOCATION:
+                    out.mediadata = MediaGeoLocation.deserializeBinary(mediaData).toObject();
+                    out.messagetype = C_MESSAGE_TYPE.Location;
+                    break;
             }
             delete out.media;
         }
@@ -159,6 +163,9 @@ export default class MessageRepo {
                 break;
             case C_MESSAGE_TYPE.Voice:
                 msgType = C_MEDIA_TYPE.VOICE;
+                break;
+            case C_MESSAGE_TYPE.Location:
+                msgType = C_MEDIA_TYPE.LOCATION;
                 break;
         }
         if (msgType && out.id && (out.id || 0) > 0) {

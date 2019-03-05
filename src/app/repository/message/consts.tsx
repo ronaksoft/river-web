@@ -14,6 +14,7 @@ export const C_MESSAGE_TYPE = {
     File: -7,
     Gap: -5,
     Hole: -2,
+    Location: -12,
     Music: -10,
     NewMessage: -3,
     Normal: 2,

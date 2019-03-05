@@ -421,7 +421,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         if (!peer) {
             return;
         }
-        window.console.log(data);
+
         if (data && (data.callerId === this.callerId || data.ids.indexOf(peer.getId()) === -1)) {
             return;
         }

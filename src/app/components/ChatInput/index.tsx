@@ -59,6 +59,7 @@ import ContactPicker from '../ContactPicker';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 import RiverTime from '../../services/utilities/river_time';
 import Broadcaster from '../../services/broadcaster';
+import MapPicker, {IGeoItem} from '../MapPicker';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
@@ -69,6 +70,7 @@ interface IProps {
     onBulkAction: (cmd: string) => void;
     onContactSelected: (users: IUser[], caption: string, {mode, message}?: any) => void;
     onFileSelected: (items: IMediaItem[], {mode, message}?: any) => void;
+    onMapSelected: (item: IGeoItem, {mode, message}?: any) => void;
     onMediaSelected: (items: IMediaItem[], {mode, message}?: any) => void;
     onMessage: (text: string, {mode, message, entities}?: any) => void;
     onPreviewMessageChange?: (previewMessage: IMessage | undefined, previewMessageMode: number) => void;
@@ -87,7 +89,7 @@ interface IProps {
 interface IState {
     disableAuthority: number;
     emojiAnchorEl: any;
-    mediaInputMode: 'media' | 'music' | 'contact' | 'file' | 'none';
+    mediaInputMode: 'media' | 'music' | 'contact' | 'location' | 'file' | 'none';
     peer: InputPeer | null;
     previewMessage: IMessage | null;
     previewMessageHeight: number;
@@ -164,6 +166,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private fileInputRef: any = null;
     private mediaPreviewRef: MediaPreview;
     private contactPickerRef: ContactPicker;
+    private mapPickerRef: MapPicker;
     private riverTime: RiverTime;
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
@@ -294,6 +297,7 @@ class ChatInput extends React.Component<IProps, IState> {
                     <MediaPreview ref={this.mediaPreviewRefHandler} accept={this.getFileType()}
                                   onDone={this.mediaPreviewDoneHandler}/>
                     <ContactPicker ref={this.contactPickerRefHandler} onDone={this.contactImportDoneHandler}/>
+                    <MapPicker ref={this.mapPickerRefHandler} onDone={this.mapDoneDoneHandler}/>
                     {(!selectable && previewMessage) &&
                     <div className="previews" style={{height: previewMessageHeight + 'px'}}>
                         <div className="preview-container">
@@ -1400,7 +1404,7 @@ class ChatInput extends React.Component<IProps, IState> {
         });
     }
 
-    private selectMediaActionHandler = (mode: 'media' | 'music' | 'file' | 'contact') => {
+    private selectMediaActionHandler = (mode: 'media' | 'music' | 'file' | 'contact' | 'location') => {
         this.setState({
             mediaInputMode: mode,
         }, () => {
@@ -1415,6 +1419,11 @@ class ChatInput extends React.Component<IProps, IState> {
                         this.contactPickerRef.openDialog();
                     }
                     break;
+                case 'location':
+                    if (this.mapPickerRef) {
+                        this.mapPickerRef.openDialog();
+                    }
+                    break;
             }
         });
     }
@@ -1425,6 +1434,10 @@ class ChatInput extends React.Component<IProps, IState> {
 
     private contactPickerRefHandler = (ref: any) => {
         this.contactPickerRef = ref;
+    }
+
+    private mapPickerRefHandler = (ref: any) => {
+        this.mapPickerRef = ref;
     }
 
     private getFileType = () => {
@@ -1459,6 +1472,18 @@ class ChatInput extends React.Component<IProps, IState> {
         const message = cloneDeep(previewMessage);
         if (this.props.onContactSelected) {
             this.props.onContactSelected(users, caption, {
+                message,
+                mode: previewMessageMode,
+            });
+        }
+        this.clearPreviewMessage(true);
+    }
+
+    private mapDoneDoneHandler = (data: IGeoItem) => {
+        const {previewMessage, previewMessageMode} = this.state;
+        const message = cloneDeep(previewMessage);
+        if (this.props.onMapSelected) {
+            this.props.onMapSelected(data, {
                 message,
                 mode: previewMessageMode,
             });

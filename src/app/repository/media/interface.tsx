@@ -10,6 +10,7 @@
 const C_MEDIA_TYPE = {
     AUDIO: 3,
     FILE: 5,
+    LOCATION: 6,
     Media: -2,
     Music: -3,
     PHOTO: 1,
@@ -20,6 +21,7 @@ const C_MEDIA_TYPE = {
 interface IMedia {
     id: number;
     peerid: string;
+    timestamp?: number;
     type: number;
 }
 

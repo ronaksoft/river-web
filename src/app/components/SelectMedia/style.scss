@@ -21,7 +21,7 @@
     padding: 0;
   }
   .media-input-container {
-    height: 200px;
+    height: 250px;
     width: 50px;
     display: flex;
     align-items: center;
@@ -40,8 +40,8 @@
       border: 1px solid transparent;
       transform: scale(0.1);
       cursor: pointer;
-      @for $i from 1 through 4 {
-        &:nth-of-type(#{5-$i}) {
+      @for $i from 1 through 5 {
+        &:nth-of-type(#{6-$i}) {
           transition: opacity 0.3s, background-color 0.3s, transform #{0.05 * $i + 0.15}s cubic-bezier(.57, -0.13, .53, 1.27);
         }
       }
@@ -79,6 +79,12 @@
           color: #009688;
         }
       }
+      &.location {
+        //border-color: #2D9CDB;
+        svg {
+          color: #EB5757;
+        }
+      }
       &.selected {
         opacity: 1 !important;
       }
@@ -93,7 +99,7 @@
     bottom: 50px;
     .media-input-frame {
       padding: 12px;
-      height: 224px;
+      height: 274px;
     }
     .media-input-container {
       .media-item {

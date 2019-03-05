@@ -1,0 +1,39 @@
+/*
+    Creation Time: 2019 - March - 05
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2019
+*/
+@import '../../../style/common';
+
+.message-location {
+  padding: 0;
+  .location-content {
+    position: relative;
+    min-height: 120px;
+    min-width: 250px;
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.2);
+    svg {
+      font-size: 48px;
+      color: #EB5757;
+    }
+  }
+}
+
+html[theme="dark"],
+html[theme="dark-blue"] {
+  .message-location {
+  }
+}
+
+html[theme="dark-blue"] {
+  .message-location {
+  }
+}

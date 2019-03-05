@@ -40,6 +40,7 @@ import MessageMedia from '../MessageMedia';
 import {MediaDocument} from '../../services/sdk/messages/chat.core.message.medias_pb';
 
 import './style.css';
+import MessageLocation from '../MessageLocation';
 
 interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
@@ -915,6 +916,8 @@ class Message extends React.Component<IProps, IState> {
                     return (<MessageMedia ref={refBindHandler} message={message} peer={peer}
                                           onAction={this.props.onAttachmentAction}
                                           parentEl={parentEl} measureFn={measureFn}/>);
+                case C_MESSAGE_TYPE.Location:
+                    return (<MessageLocation ref={refBindHandler} message={message} peer={peer}/>);
                 default:
                     return 'Unsupported message';
             }

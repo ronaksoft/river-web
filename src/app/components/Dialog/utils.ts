@@ -16,8 +16,8 @@ export const C_MESSAGE_ICON = {
     Voice: 3,
 };
 
-export const getMessageTitle = (message: IMessage): {text: string, icon: number} => {
-    const messageIcon: {text: string, icon: number} = {text: '', icon: C_MESSAGE_ICON.None};
+export const getMessageTitle = (message: IMessage): { text: string, icon: number } => {
+    const messageIcon: { text: string, icon: number } = {text: '', icon: C_MESSAGE_ICON.None};
 
     switch (message.mediatype) {
         default:
@@ -39,7 +39,7 @@ export const getMessageTitle = (message: IMessage): {text: string, icon: number}
                 messageIcon.icon = C_MESSAGE_ICON.File;
                 messageIcon.text = 'File';
             } else {
-                if (messageMediaDocument.doc.attributesList) {
+                if (messageMediaDocument.doc && messageMediaDocument.doc.attributesList) {
                     for (let i = 0; i < messageMediaDocument.doc.attributesList.length; i++) {
                         if (messageMediaDocument.doc.attributesList[i].type === DocumentAttributeType.ATTRIBUTETYPEAUDIO) {
                             messageIcon.icon = C_MESSAGE_ICON.Audio;

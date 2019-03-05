@@ -16,9 +16,9 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
 import {
+    EditRounded,
     InfoOutlined,
     KeyboardArrowLeftRounded,
-    EditRounded,
     MoreVertRounded,
     PersonAddRounded,
     SearchRounded,
@@ -58,7 +58,8 @@ import {
     UpdateMessagesDeleted,
     UpdateNotifySettings,
     UpdateReadHistoryInbox,
-    UpdateReadHistoryOutbox, UpdateReadMessagesContents,
+    UpdateReadHistoryOutbox,
+    UpdateReadMessagesContents,
     UpdateUsername,
     UpdateUserPhoto,
     UpdateUserTyping
@@ -98,8 +99,12 @@ import {
     Document,
     DocumentAttribute,
     DocumentAttributeAudio,
-    DocumentAttributeFile, DocumentAttributePhoto,
-    DocumentAttributeType, DocumentAttributeVideo, InputMediaContact,
+    DocumentAttributeFile,
+    DocumentAttributePhoto,
+    DocumentAttributeType,
+    DocumentAttributeVideo,
+    InputMediaContact,
+    InputMediaGeoLocation,
     InputMediaUploadedDocument,
     MediaDocument
 } from '../../services/sdk/messages/chat.core.message.medias_pb';
@@ -117,6 +122,7 @@ import {IMediaItem} from '../../components/Uploader';
 import LastSeen from '../../components/LastSeen';
 
 import './style.css';
+import {IGeoItem} from '../../components/MapPicker';
 
 const C_MAX_UPDATE_DIFF = 1000;
 
@@ -534,6 +540,7 @@ class Chat extends React.Component<IProps, IState> {
                                        onFileSelected={this.chatInputFileSelectHandler}
                                        onMediaSelected={this.chatInputMediaSelectHandler}
                                        onContactSelected={this.chatInputContactSelectHandler}
+                                       onMapSelected={this.chatInputMapSelectHandler}
                                        lastMessage={this.state.messages && this.state.messages.length > 0 ? this.state.messages[(this.state.messages.length - 1)] : undefined}
                             />
                         </div>}
@@ -3336,8 +3343,13 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
+    /* ChatInput map select handler */
+    private chatInputMapSelectHandler = (item: IGeoItem, param?: any) => {
+        this.sendMediaMessageWithNoFile('location', item, param);
+    }
+
     // Send media message with no file
-    private sendMediaMessageWithNoFile(type: 'contact' | 'map' | 'none', user: IUser, param?: any) {
+    private sendMediaMessageWithNoFile(type: 'contact' | 'location' | 'none', item: IUser | IGeoItem, param?: any) {
         if (type === 'none') {
             return;
         }
@@ -3350,19 +3362,41 @@ class Chat extends React.Component<IProps, IState> {
         const randomId = UniqueId.getRandomId();
         const id = -this.riverTime.milliNow();
 
-        const messageType = C_MESSAGE_TYPE.Contact;
-        const contact = new InputMediaContact();
-        contact.setFirstname(user.firstname || '');
-        contact.setLastname(user.lastname || '');
-        contact.setPhone(user.phone || '');
-        contact.setVcard('');
+        let messageType = C_MESSAGE_TYPE.Contact;
+        let mediaData: any;
+        let media: any;
+        let mediaType: InputMediaType = InputMediaType.INPUTMEDIATYPECONTACT;
+        let mediaType2: MediaType = MediaType.MEDIATYPECONTACT;
+        if (type === 'contact') {
+            const user = item as IUser;
+            const contact = new InputMediaContact();
+            contact.setFirstname(user.firstname || '');
+            contact.setLastname(user.lastname || '');
+            contact.setPhone(user.phone || '');
+            contact.setVcard('');
+            mediaData = contact.toObject();
+            media = contact.serializeBinary();
+            mediaType = InputMediaType.INPUTMEDIATYPECONTACT;
+            messageType = C_MESSAGE_TYPE.Contact;
+            mediaType2 = MediaType.MEDIATYPECONTACT;
+        } else if (type === 'location') {
+            const location = item as IGeoItem;
+            const geoData = new InputMediaGeoLocation();
+            geoData.setLat(location.lat);
+            geoData.setLong(location.long);
+            mediaData = geoData.toObject();
+            media = geoData.serializeBinary();
+            mediaType = InputMediaType.INPUTMEDIATYPEGEOLOCATION;
+            messageType = C_MESSAGE_TYPE.Location;
+            mediaType2 = MediaType.MEDIATYPEGEOLOCATION;
+        }
 
         const message: IMessage = {
             createdon: now,
             id,
             me: true,
-            mediadata: contact.toObject(),
-            mediatype: MediaType.MEDIATYPEDOCUMENT,
+            mediadata: mediaData,
+            mediatype: mediaType2,
             messageaction: C_MESSAGE_ACTION.MessageActionNope,
             messagetype: messageType,
             peerid: this.state.selectedDialogId,
@@ -3383,7 +3417,7 @@ class Chat extends React.Component<IProps, IState> {
             message_id: id,
         });
 
-        this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPECONTACT, contact.serializeBinary(), replyTo).then((res) => {
+        this.sdk.sendMediaMessage(randomId, peer, mediaType, media, replyTo).then((res) => {
             // For double checking update message id
             this.updateManager.setMessageId(res.messageid || 0);
             this.modifyPendingMessage({

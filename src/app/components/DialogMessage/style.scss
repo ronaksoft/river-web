@@ -119,6 +119,11 @@
     color: #fff;
     border-radius: 8px;
   }
+  &.muted {
+    .unread {
+      background-color: #C6C6C6;
+    }
+  }
   .mention {
     position: absolute;
     top: 30px;
@@ -171,6 +176,11 @@ html[theme="dark"] {
         color: var(--white);
       }
     }
+    &.muted {
+      .unread {
+        color: var(--dark);
+      }
+    }
   }
 }
 
@@ -190,6 +200,11 @@ html[theme="dark-blue"] {
     .more {
       svg {
         color: var(--white);
+      }
+    }
+    &.muted {
+      .unread {
+        color: var(--dark);
       }
     }
   }

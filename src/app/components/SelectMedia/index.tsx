@@ -14,6 +14,7 @@ import {
     HeadsetTwoTone,
     InsertDriveFileTwoTone,
     PeopleOutlineRounded,
+    PlaceTwoTone,
 } from '@material-ui/icons';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener/ClickAwayListener';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
@@ -56,6 +57,11 @@ const items: any[] = [
         title: 'Contact',
     },
     {
+        cmd: 'location',
+        icon: <PlaceTwoTone/>,
+        title: 'Location',
+    },
+    {
         cmd: 'file',
         icon: <InsertDriveFileTwoTone/>,
         title: 'File',
@@ -63,7 +69,7 @@ const items: any[] = [
 ];
 
 interface IProps {
-    onAction: (cmd: 'media' | 'music' | 'contact' | 'file') => void;
+    onAction: (cmd: 'media' | 'music' | 'contact' | 'location' | 'file') => void;
     onClose?: () => void;
     open: boolean;
 }

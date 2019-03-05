@@ -176,6 +176,11 @@
   resolved "https://registry.yarnpkg.com/@firebase/webchannel-wrapper/-/webchannel-wrapper-0.2.12.tgz#cfca32cf1e976eedbe00ddb2f21e28ab01f7e223"
   integrity sha512-1QWhGGu03NjPYk45w5muLq6a43Fhvd5+LGZrPydXLs7/FgQHqW6aSKmJClTwBHP1rynLSLLA7+9E/35cur6g/g==
 
+"@mapbox/point-geometry@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@mapbox/point-geometry/-/point-geometry-0.1.0.tgz#8a83f9335c7860effa2eeeca254332aa0aeed8f2"
+  integrity sha1-ioP5M1x4YO/6Lu7KJUMyqgru2PI=
+
 "@material-ui/core@^3.9.2":
   version "3.9.2"
   resolved "https://registry.yarnpkg.com/@material-ui/core/-/core-3.9.2.tgz#41ed1a470e981d199829eb5d9317a671c66a6f7d"
@@ -327,6 +332,13 @@
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@types/file-saver/-/file-saver-2.0.0.tgz#cbb49815a5e1129d5f23836a98d65d93822409af"
   integrity sha512-dxdRrUov2HVTbSRFX+7xwUPlbGYVEZK6PrSqClg2QPos3PNe0bCajkDDkDeeC1znjSH03KOEqVbXpnJuWa2wgQ==
+
+"@types/google-map-react@^0.23.11":
+  version "0.23.11"
+  resolved "https://registry.yarnpkg.com/@types/google-map-react/-/google-map-react-0.23.11.tgz#28421923ac04b02bc1ff47bbcc780b74b46aba01"
+  integrity sha512-w5YcTN5+9RI+tcYT40w9Uo0UUTnsEKHwQSo2/ergLf/ZPUquUuwIH4oucdrRHs9IKkQugBm3cfT2gjny0YCWXQ==
+  dependencies:
+    "@types/react" "*"
 
 "@types/google-protobuf@^3.2.7":
   version "3.2.7"
@@ -3631,6 +3643,11 @@ event-emitter@~0.3.5:
     d "1"
     es5-ext "~0.10.14"
 
+eventemitter3@^1.1.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-1.2.0.tgz#1c86991d816ad1e504750e73874224ecf3bec508"
+  integrity sha1-HIaZHYFq0eUEdQ5zh0Ik7PO+xQg=
+
 eventemitter3@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-3.1.0.tgz#090b4d6cdbd645ed10bf750d4b5407942d7ba163"
@@ -4419,6 +4436,15 @@ glur@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/glur/-/glur-1.1.2.tgz#f20ea36db103bfc292343921f1f91e83c3467689"
   integrity sha1-8g6jbbEDv8KSNDkh8fkeg8NGdok=
+
+google-map-react@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/google-map-react/-/google-map-react-1.1.2.tgz#9ec9cbee88bf043dd24ce6c5953663e636461a71"
+  integrity sha512-uHyhLW0db1nXMWYfazTnm6GiMzITUZ+OldFt+u0lLsC/ndSNVZWY0Hn2v8s2+vnpg88ZU0cAk7nRK5UXq0ahaA==
+  dependencies:
+    "@mapbox/point-geometry" "^0.1.0"
+    eventemitter3 "^1.1.0"
+    scriptjs "^2.5.7"
 
 google-protobuf@^3.7.0-rc.2:
   version "3.7.0-rc.2"
@@ -9007,6 +9033,11 @@ schema-utils@^0.4.5:
   dependencies:
     ajv "^6.1.0"
     ajv-keywords "^3.1.0"
+
+scriptjs@^2.5.7:
+  version "2.5.9"
+  resolved "https://registry.yarnpkg.com/scriptjs/-/scriptjs-2.5.9.tgz#343915cd2ec2ed9bfdde2b9875cd28f59394b35f"
+  integrity sha512-qGVDoreyYiP1pkQnbnFAUIS5AjenNwwQBdl7zeos9etl+hYKWahjRTfzAZZYBv5xNHx7vNKCmaLDQZ6Fr2AEXg==
 
 scss-tokenizer@^0.2.3:
   version "0.2.3"
