@@ -1927,7 +1927,7 @@ class Chat extends React.Component<IProps, IState> {
                 } else {
                     if ((res.updateid || 0) - lastId > 0) {
                         resolve(lastId);
-                        this.syncThemAll(lastId + 1, 50);
+                        this.syncThemAll(lastId + 1, 100);
                     } else {
                         reject({
                             err: 'too_soon',

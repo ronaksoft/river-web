@@ -15,7 +15,7 @@ import {
     AuthLogout,
     AuthRecall,
     AuthRecalled,
-    AuthRegister,
+    AuthRegister, AuthResendCode,
     AuthSendCode,
     AuthSentCode
 } from './messages/chat.api.auth_pb';
@@ -168,6 +168,13 @@ export default class SDK {
         const data = new AuthSendCode;
         data.setPhone(phone);
         return this.server.send(C_MSG.AuthSendCode, data.serializeBinary(), true);
+    }
+
+    public resendCode(phone: string, hash: string): Promise<Bool.AsObject> {
+        const data = new AuthResendCode();
+        data.setPhone(phone);
+        data.setPhonecodehash(hash);
+        return this.server.send(C_MSG.AuthResendCode, data.serializeBinary(), true);
     }
 
     public checkPhone(phone: string): Promise<AuthCheckedPhone.AsObject> {

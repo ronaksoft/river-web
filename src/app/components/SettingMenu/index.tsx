@@ -238,7 +238,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                             </div>
                         </div>
                         <div className="version" onClick={this.versionClickHandler}>
-                            v0.23.79
+                            v0.23.80
                         </div>
                     </div>
                     <div className="page page-2">

@@ -6,7 +6,6 @@
     Auditor: HamidrezaKK
     Copyright Ronak Software Group 2018
 */
-
 @import '../../../style/common';
 
 .m-b-16 {
@@ -36,7 +35,7 @@ input {
   }
 }
 
-.container-login100 {
+.login-page {
   width: 100%;
   min-height: 100vh;
   display: flex;
@@ -47,129 +46,262 @@ input {
   background-color: #21352e;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cpolygon fill='%23000' fill-opacity='.1' points='120 0 120 60 90 30 60 0 0 0 0 0 60 60 0 120 60 120 90 90 120 60 120 0'/%3E%3C/svg%3E");
   flex-direction: column;
-}
-/*animation-name: bg-move;
-animation-duration: 50s;
-animation-iteration-count: infinite;
-animation-timing-function: linear;
-animation-play-state: paused;*/
 
-.wrap-login100 {
-  width: 400px;
-  border-radius: 10px;
-  position: relative;
-}
+  .login-wrapper {
+    width: 400px;
+    border-radius: 10px;
+    position: relative;
+    .login-form {
+      width: 100%;
+      background: #8d8d8d26;
+      padding: 10px;
+      border-radius: 5px;
+    }
 
-/*==================================================================
-[ Form ]*/
+    .login-form-title {
+      @include font-bold;
+      font-size: 30px;
+      color: #14c261;
+      line-height: 1.2;
+      text-transform: uppercase;
+      text-align: center;
+      width: 100%;
+      display: block;
+    }
 
-.login100-form {
-  width: 100%;
-  background: #8d8d8d26;
-  padding: 10px;
-  border-radius: 5px;
-}
+    .input-wrapper {
+      width: 100%;
+      position: relative;
+      background-color: #fff;
+      border: 1px solid transparent;
+      border-radius: 3px;
+    }
 
-.login100-form-title {
-  @include font-bold;
-  font-size: 30px;
-  color: #14c261;
-  line-height: 1.2;
-  text-transform: uppercase;
-  text-align: center;
-  width: 100%;
-  display: block;
-}
+    .input {
+      @include font;
+      color: #0f954b;
+      line-height: 1.2;
+      font-size: 18px;
 
-/*------------------------------------------------------------------
-[ Input ]*/
+      display: block;
+      width: 100%;
+      background: transparent;
+      height: 62px;
+      padding: 0 20px 0 38px;
+      &.code {
+        text-align: center;
+        letter-spacing: 30px;
+      }
+    }
 
-.wrap-input100 {
-  width: 100%;
-  position: relative;
-  background-color: #fff;
-  border: 1px solid transparent;
-  border-radius: 3px;
-}
+    .focus-input {
+      position: absolute;
+      display: block;
+      width: calc(100% + 2px);
+      height: calc(100% + 2px);
+      top: -1px;
+      left: -1px;
+      pointer-events: none;
+      border: 1px solid #14d769;
+      border-radius: 3px;
+      visibility: hidden;
+      opacity: 0;
+      transition: all 0.4s;
+      transform: scaleX(1.1) scaleY(1.3);
+    }
 
-/*---------------------------------------------*/
-.input100 {
-  @include font;
-  color: #0f954b;
-  line-height: 1.2;
-  font-size: 18px;
+    .input:focus + .focus-input {
+      visibility: visible;
+      opacity: 1;
+      transform: scale(1);
+    }
 
-  display: block;
-  width: 100%;
-  background: transparent;
-  height: 62px;
-  padding: 0 20px 0 38px;
-  &.code {
-    text-align: center;
-    letter-spacing: 30px;
+    .eff-focus-selection {
+      visibility: visible;
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .container-login-form-btn {
+      position: relative;
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .login-form-btn {
+      @include font;
+      font-size: 20px;
+      color: #fff;
+      line-height: 1.2;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0 20px;
+      width: 100%;
+      height: 62px;
+      background-color: #14d769;
+      border: 0;
+      border-radius: 3px;
+      transition: all 0.4s;
+      -webkit-appearance: none;
+      &[disabled] {
+        animation-name: button-disabled;
+        animation-iteration-count: infinite;
+        animation-duration: 0.5s;
+      }
+    }
+
+    .login-form-btn:hover {
+      background-color: #0f954b;
+    }
+
+    .try-another-phone {
+      color: #c7ccca;
+      text-align: left;
+      line-height: 24px;
+      display: block;
+      margin-top: -8px;
+      cursor: pointer;
+      label {
+        vertical-align: top;
+      }
+    }
   }
-}
 
-/*------------------------------------------------------------------
-[ Focus Input ]*/
+  .top-logo {
+    position: relative;
+    height: 156px;
+    width: 156px;
+    border-radius: 25px;
+    background-color: rgba(255, 255, 255, 0.12);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .countdown {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      top: 50%;
+      left: 50%;
+      color: #fff;
+      height: 128px;
+      width: 128px;
+      font-size: 32px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      border: 1px solid #fff;
+      z-index: 10;
+      opacity: 0;
+      transition: transform 0.3s;
+    }
+    .river-logo {
+      transition: opacity 0.3s;
+    }
+    &.a-enable {
+      .river-logo {
+        transform: scale(0.25) translateY(150%);
+      }
+    }
+    &.c-enable {
+      .countdown {
+        opacity: 1;
+      }
+    }
+  }
 
-.focus-input100 {
-  position: absolute;
-  display: block;
-  width: calc(100% + 2px);
-  height: calc(100% + 2px);
-  top: -1px;
-  left: -1px;
-  pointer-events: none;
-  border: 1px solid #14d769;
-  border-radius: 3px;
-  visibility: hidden;
-  opacity: 0;
-  transition: all 0.4s;
-  transform: scaleX(1.1) scaleY(1.3);
-}
+  .top-title {
+    margin: 10px 0;
+    color: #fff;
+    font-size: 32px;
+    font-weight: 100;
+    padding: 10px;
+  }
 
-.input100:focus + .focus-input100 {
-  visibility: visible;
-  opacity: 1;
-  transform: scale(1);
-}
+  .top-desc {
+    width: 435px;
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+    font-size: 18px;
+    color: #fff;
+    border-top: 1px solid rgba(255, 255, 255, 0.32);
+  }
 
-.eff-focus-selection {
-  visibility: visible;
-  opacity: 1;
-  transform: scale(1);
-}
-
-/*------------------------------------------------------------------
-[ Button ]*/
-.container-login100-form-btn {
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.login100-form-btn {
-  @include font;
-  font-size: 20px;
-  color: #fff;
-  line-height: 1.2;
-  text-transform: uppercase;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0 20px;
-  width: 100%;
-  height: 62px;
-  background-color: #14d769;
-  border: 0;
-  border-radius: 3px;
-  transition: all 0.4s;
-  -webkit-appearance: none;
-}
-
-.login100-form-btn:hover {
-  background-color: #0f954b;
+  .river-form {
+    .react-tel-input {
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: row-reverse;
+      input[type=tel] {
+        @include font;
+        position: relative;
+        font-size: 16px;
+        letter-spacing: .01rem;
+        z-index: 0;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        padding-left: 15px;
+        margin-left: 0;
+        background-color: #fff;
+        border: 1px solid #cacaca;
+        line-height: 25px;
+        height: 62px;
+        width: 320px;
+        outline: none;
+        border-left: none;
+        border-radius: 0 5px 5px 0;
+      }
+      .flag-dropdown {
+        position: static;
+        background-color: #fff;
+        border: 1px solid #cacaca;
+        flex: 1;
+        border-right: 1px solid #ddd;
+        border-radius: 5px 0 0 5px;
+        &:hover {
+          background-color: #fff;
+          .selected-flag {
+            background-color: transparent;
+          }
+        }
+        .selected-flag {
+          z-index: 13;
+          position: relative;
+          width: auto;
+          height: 100%;
+          padding: 0;
+          border-radius: 0;
+          text-align: center;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          .arrow {
+            border-top: 4px solid #ababab;
+            &.up {
+              border-top: none;
+              border-bottom: 4px solid #ababab;
+            }
+          }
+        }
+      }
+      .flag {
+        transform: scale(1.5);
+      }
+      .country-list {
+        .country {
+          padding: 7px 10px;
+          text-align: left;
+        }
+        .country-name {
+          margin-right: 6px;
+          margin-left: 6px;
+        }
+      }
+    }
+  }
 }
 
 @keyframes button-disabled {
@@ -181,24 +313,6 @@ animation-play-state: paused;*/
   }
 }
 
-.login100-form-btn[disabled] {
-  animation-name: button-disabled;
-  animation-iteration-count: infinite;
-  animation-duration: 0.5s;
-}
-
-.try-another-phone {
-  color: #c7ccca;
-  text-align: left;
-  line-height: 24px;
-  display: block;
-  margin-top: -8px;
-  cursor: pointer;
-  label {
-    vertical-align: top;
-  }
-}
-
 @media (max-width: 992px) {
   .alert-validate::before {
     visibility: visible;
@@ -206,123 +320,24 @@ animation-play-state: paused;*/
   }
 }
 
-.river-form {
-  .react-tel-input {
-    margin-bottom: 16px;
-    display: flex;
-    flex-direction: row-reverse;
-    input[type=tel] {
-      @include font;
-      position: relative;
-      font-size: 16px;
-      letter-spacing: .01rem;
-      z-index: 0;
-      margin-top: 0 !important;
-      margin-bottom: 0 !important;
-      padding-left: 15px;
-      margin-left: 0;
-      background-color: #fff;
-      border: 1px solid #cacaca;
-      line-height: 25px;
-      height: 62px;
-      width: 320px;
-      outline: none;
-      border-left: none;
-      border-radius: 0 5px 5px 0;
-    }
-    .flag-dropdown {
-      position: static;
-      background-color: #fff;
-      border: 1px solid #cacaca;
-      flex: 1;
-      border-right: 1px solid #ddd;
-      border-radius: 5px 0 0 5px;
-      &:hover {
-        background-color: #fff;
-        .selected-flag {
-          background-color: transparent;
-        }
-      }
-      .selected-flag {
-        z-index: 13;
-        position: relative;
-        width: auto;
-        height: 100%;
-        padding: 0;
-        border-radius: 0;
-        text-align: center;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        .arrow {
-          border-top: 4px solid #ababab;
-          &.up {
-            border-top: none;
-            border-bottom: 4px solid #ababab;
-          }
-        }
-      }
-    }
-    .flag {
-      transform: scale(1.5);
-    }
-    .country-list {
-      .country {
-        padding: 7px 10px;
-        text-align: left;
-      }
-      .country-name {
-        margin-right: 6px;
-        margin-left: 6px;
-      }
-    }
-  }
-}
-
-.top-logo {
-  height: 156px;
-  width: 156px;
-  border-radius: 25px;
-  background-color: rgba(255, 255, 255, 0.12);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.top-title {
-  margin: 10px 0;
-  color: #fff;
-  font-size: 32px;
-  font-weight: 100;
-  padding: 10px;
-}
-
-.top-desc {
-  width: 435px;
-  height: 60px;
-  line-height: 60px;
-  text-align: center;
-  font-size: 18px;
-  color: #fff;
-  border-top: 1px solid rgba(255, 255, 255, 0.32);
-}
-
 @media screen and (max-width: 600px) {
-  .wrap-login100 {
-    width: 300px;
-  }
-  .river-form {
-    .react-tel-input {
-      input[type=tel] {
-        width: 250px;
+  .login-page {
+    .login-wrapper {
+      width: 300px;
+    }
+    .river-form {
+      .react-tel-input {
+        input[type=tel] {
+          width: 200px;
+        }
       }
     }
-  }
-  .top-logo {
-    transform: scale(0.7);
-  }
-  .top-desc {
-    width: 300px;
-    font-size: 15px;
+    .top-logo {
+      transform: scale(0.7);
+    }
+    .top-desc {
+      width: 300px;
+      font-size: 15px;
+    }
   }
 }

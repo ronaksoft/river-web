@@ -77,12 +77,13 @@ export default class ElectronService {
             return null;
         }
         this.fnIndex++;
+        const fnIndex = this.fnIndex;
         if (!this.fnQueue.hasOwnProperty(subject)) {
             this.fnQueue[subject] = {};
         }
-        this.fnQueue[subject][this.fnIndex] = fn;
+        this.fnQueue[subject][fnIndex] = fn;
         return () => {
-            delete this.fnQueue[subject][this.fnIndex];
+            delete this.fnQueue[subject][fnIndex];
         };
     }
 

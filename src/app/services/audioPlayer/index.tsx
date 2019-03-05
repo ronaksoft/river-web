@@ -258,6 +258,7 @@ export default class AudioPlayer {
             return null;
         }
         this.fnIndex++;
+        const fnIndex = this.fnIndex;
         if (!this.tracks.hasOwnProperty(messageId)) {
             this.tracks[messageId] = {
                 downloaded: false,
@@ -277,11 +278,11 @@ export default class AudioPlayer {
                 this.playlist.sort();
             }
         }
-        this.tracks[messageId].fnQueue[this.fnIndex] = fn;
+        this.tracks[messageId].fnQueue[fnIndex] = fn;
         fn(this.tracks[messageId].event);
         return () => {
             if (this.tracks.hasOwnProperty(messageId)) {
-                delete this.tracks[messageId].fnQueue[this.fnIndex];
+                delete this.tracks[messageId].fnQueue[fnIndex];
             }
         };
     }
@@ -289,11 +290,11 @@ export default class AudioPlayer {
     /* AudioPlayer global event listener */
     public globalListen(fn: (info: IAudioInfo, e: IAudioEvent) => void): (() => void) | null {
         this.fnIndex++;
-        const index = this.fnIndex;
-        this.listeners[index] = fn;
+        const fnIndex = this.fnIndex;
+        this.listeners[fnIndex] = fn;
         return () => {
-            if (this.listeners.hasOwnProperty(index)) {
-                delete this.listeners[index];
+            if (this.listeners.hasOwnProperty(fnIndex)) {
+                delete this.listeners[fnIndex];
             }
         };
     }

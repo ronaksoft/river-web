@@ -53,6 +53,7 @@ export default class ProgressBroadcaster {
             return null;
         }
         this.fnIndex++;
+        const fnIndex = this.fnIndex;
         if (!this.listeners.hasOwnProperty(id)) {
             this.listeners[id] = {
                 fnQueue: [],
@@ -67,11 +68,11 @@ export default class ProgressBroadcaster {
                 },
             };
         }
-        this.listeners[id].fnQueue[this.fnIndex] = fn;
+        this.listeners[id].fnQueue[fnIndex] = fn;
         fn(this.listeners[id].progress);
         return () => {
             if (this.listeners.hasOwnProperty(id)) {
-                delete this.listeners[id].fnQueue[this.fnIndex];
+                delete this.listeners[id].fnQueue[fnIndex];
             }
         };
     }

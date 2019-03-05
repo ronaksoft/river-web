@@ -39,7 +39,7 @@ export default class Http {
     private workerId: number = 0;
     private isWorkerReady: boolean = false;
     private readyHandler: any = null;
-    private testUrl: string = '';
+    private readonly testUrl: string = '';
 
     public constructor(bytes: any, id: number) {
         this.testUrl = localStorage.getItem('river.test_url') || '';

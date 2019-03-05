@@ -58,10 +58,10 @@ import MediaPreview, {IMediaItem} from '../Uploader';
 import ContactPicker from '../ContactPicker';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 import RiverTime from '../../services/utilities/river_time';
+import Broadcaster from '../../services/broadcaster';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
-import Broadcaster from '../../services/broadcaster';
 
 interface IProps {
     lastMessage?: IMessage;
@@ -240,7 +240,9 @@ class ChatInput extends React.Component<IProps, IState> {
             userId: newProps.userId || '',
         }, () => {
             this.animatePreviewMessage();
-            // this.focus('.mention textarea');
+            if (newProps.previewMessageMode === C_MSG_MODE.Edit || newProps.previewMessageMode === C_MSG_MODE.Reply) {
+                this.focus();
+            }
         });
         if (this.state.peer !== newProps.peer) {
             this.setState({

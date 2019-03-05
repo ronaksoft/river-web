@@ -126,12 +126,13 @@ export default class UpdateManager {
             return null;
         }
         this.fnIndex++;
+        const fnIndex = this.fnIndex;
         if (!this.fnQueue.hasOwnProperty(eventConstructor)) {
             this.fnQueue[eventConstructor] = {};
         }
-        this.fnQueue[eventConstructor][this.fnIndex] = fn;
+        this.fnQueue[eventConstructor][fnIndex] = fn;
         return () => {
-            delete this.fnQueue[eventConstructor][this.fnIndex];
+            delete this.fnQueue[eventConstructor][fnIndex];
         };
     }
 

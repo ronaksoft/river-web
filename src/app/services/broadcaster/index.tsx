@@ -38,17 +38,17 @@ export default class Broadcaster {
             return null;
         }
         this.fnIndex++;
+        const fnIndex = this.fnIndex;
         if (!this.listeners.hasOwnProperty(name)) {
             this.listeners[name] = {
                 data: null,
                 fnQueue: [],
             };
         }
-        this.listeners[name].fnQueue[this.fnIndex] = fn;
-        fn(this.listeners[name].data);
+        this.listeners[name].fnQueue[fnIndex] = fn;
         return () => {
             if (this.listeners.hasOwnProperty(name)) {
-                delete this.listeners[name].fnQueue[this.fnIndex];
+                delete this.listeners[name].fnQueue[fnIndex];
             }
         };
     }

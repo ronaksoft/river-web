@@ -18,6 +18,7 @@ import RiverLogo from '../../components/RiverLogo';
 import NotificationService from '../../services/notification';
 
 import './style.css';
+import IsMobile from '../../services/isMobile';
 
 interface IProps {
     match?: any;
@@ -28,6 +29,7 @@ interface IProps {
 interface IState {
     anchorEl: any;
     code: string;
+    countdown: number;
     fName: string;
     lName: string;
     loading: boolean;
@@ -42,12 +44,16 @@ interface IState {
 class SignUp extends React.Component<IProps, IState> {
     private sdk: SDK;
     private notification: NotificationService;
+    private readonly isMobile: boolean = false;
+    private logoRef: any = null;
+    private countdownInterval: any = null;
 
     constructor(props: IProps) {
         super(props);
         this.state = {
             anchorEl: null,
             code: '',
+            countdown: 60,
             fName: '',
             lName: '',
             loading: false,
@@ -60,6 +66,7 @@ class SignUp extends React.Component<IProps, IState> {
         };
         this.sdk = SDK.getInstance();
         this.notification = NotificationService.getInstance();
+        this.isMobile = IsMobile.isAny();
     }
 
     public componentDidMount() {
@@ -74,17 +81,21 @@ class SignUp extends React.Component<IProps, IState> {
     public componentWillUnmount() {
         window.removeEventListener('wasmInit', this.wasmInitHandler);
         window.removeEventListener('wsOpen', this.wsOpenHandler);
+        clearInterval(this.countdownInterval);
     }
 
     public render() {
         // const {moreInfoAnchorEl} = this.state;
         // const open = Boolean(moreInfoAnchorEl);
-        const {step} = this.state;
+        const {step, countdown} = this.state;
         return (
             <div className="limiter">
-                <div className="container-login100">
-                    <div className="top-logo">
+                <div className="login-page">
+                    <div className="top-logo" ref={this.logoRefHandler}>
                         <RiverLogo height={110} width={100}/>
+                        <div className="countdown">
+                            <span>{countdown}</span>
+                        </div>
                     </div>
                     <div className="top-title">Sign in to River</div>
                     <div className="top-desc">
@@ -92,8 +103,8 @@ class SignUp extends React.Component<IProps, IState> {
                         {step === 'code' && <span>Please enter the code sent to your phone</span>}
                         {step === 'register' && <span>Please fill in your contact info</span>}
                     </div>
-                    <div className="wrap-login100 p-t-50 p-b-90">
-                        <div className="login100-form river-form flex-sb flex-w">
+                    <div className="login-wrapper p-t-50 p-b-90">
+                        <div className="login-form river-form flex-sb flex-w">
                             <ReactPhoneInput defaultCountry={'ir'} value={this.state.phone} inputClass="f-phone"
                                              disabled={this.state.loading || step === 'code'}
                                              onChange={this.handleOnChange} onKeyDown={this.sendCodeKeyDown}/>
@@ -104,38 +115,38 @@ class SignUp extends React.Component<IProps, IState> {
                                     Try another phone
                                 </label>
                             </div>}
-                            {step === 'code' && <div className="wrap-input100 validate-input m-b-16">
-                                <input className="input100 code f-code" type="text" placeholder="____"
-                                       value={this.state.code} onChange={this.codeOnChange}
+                            {step === 'code' && countdown !== 0 && <div className="input-wrapper validate-input m-b-16">
+                                <input className="input code f-code" type={this.isMobile ? 'number' : 'text'}
+                                       value={this.state.code} placeholder="____" onChange={this.codeOnChange}
                                        onKeyDown={this.confirmKeyDown}/>
                             </div>}
                             {step === 'register' &&
-                            <div className="wrap-input100 validate-input m-b-16">
-                                <input className="input100 f-fname" type="text" placeholder="First Name"
+                            <div className="input-wrapper validate-input m-b-16">
+                                <input className="input f-fname" type="text" placeholder="First Name"
                                        autoComplete="off" onKeyDown={this.registerKeyDown}
                                        value={this.state.fName} onChange={this.fNameOnChange}/>
-                                <span className="focus-input100"/>
+                                <span className="focus-input"/>
                             </div>}
                             {step === 'register' &&
-                            <div className="wrap-input100 validate-input m-b-16">
-                                <input className="input100 f-lname" type="text" placeholder="Last Name"
+                            <div className="login-wrapper validate-input m-b-16">
+                                <input className="input f-lname" type="text" placeholder="Last Name"
                                        autoComplete="off" onKeyDown={this.registerKeyDown}
                                        value={this.state.lName} onChange={this.lNameOnChange}/>
-                                <span className="focus-input100"/>
+                                <span className="focus-input"/>
                             </div>}
-                            <div className="container-login100-form-btn m-t-17">
+                            <div className="container-login-form-btn m-t-17">
                                 {step === 'phone' &&
-                                <button className="login100-form-btn" onClick={this.sendCode}
+                                <button className="login-form-btn" onClick={this.sendCode}
                                         disabled={this.state.loading}>
                                     Send Code
                                 </button>}
                                 {step === 'code' &&
-                                <button className="login100-form-btn" onClick={this.confirmCode}
+                                <button className="login-form-btn" onClick={this.confirmCode}
                                         disabled={this.state.loading}>
-                                    Confirm Code
+                                    {countdown === 0 ? 'Resend Code' : 'Confirm Code'}
                                 </button>}
                                 {step === 'register' &&
-                                <button className="login100-form-btn" onClick={this.register}
+                                <button className="login-form-btn" onClick={this.register}
                                         disabled={this.state.loading}>
                                     Register
                                 </button>}
@@ -178,6 +189,7 @@ class SignUp extends React.Component<IProps, IState> {
                 step: 'code',
             }, () => {
                 this.focus('f-code');
+                this.startCountdown();
             });
         }).catch(() => {
             this.setState({
@@ -215,53 +227,67 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     private confirmCode = () => {
-        const {phone, phoneHash, code} = this.state;
-        if (!phone || !phoneHash || code.length < 4) {
+        const {phone, phoneHash, code, countdown} = this.state;
+        if ((!phone || !phoneHash || (code.length < 4 && countdown !== 0))) {
             return;
         }
         this.setState({
             loading: true,
         });
-        this.sdk.login(phone.slice(1), code, phoneHash).then((res) => {
-            const info = this.sdk.loadConnInfo();
-            info.UserID = res.user.id;
-            info.FirstName = res.user.firstname;
-            info.LastName = res.user.lastname;
-            info.Phone = this.state.phone;
-            this.sdk.setConnInfo(info);
-            this.setState({
-                loading: false,
-                tries: this.state.tries + 1,
-            });
-            this.props.history.push('/chat/null');
-            this.dispatchWSOpenEvent();
-            this.notification.initToken().then((token) => {
-                this.sdk.registerDevice(token, 0, '0.23.2', 'web', 'en', '1');
-            });
-        }).catch((err) => {
-            window.console.log(err);
-            this.setState({
-                loading: false,
-                tries: this.state.tries + 1,
-            });
-            if (err.code === C_ERR.ERR_CODE_INVALID && err.items === C_ERR_ITEM.ERR_ITEM_PHONE_CODE) {
+        if (countdown === 0) {
+            this.sdk.resendCode(phone.slice(1), phoneHash).then(() => {
+                this.focus('f-code');
+                this.startCountdown();
                 this.setState({
-                    snackOpen: true,
-                    snackText: 'Code is incorrect!',
+                    loading: false,
                 });
-                return;
-            }
-            if (err.code === C_ERR.ERR_CODE_UNAVAILABLE && err.items === C_ERR_ITEM.ERR_ITEM_PHONE) {
+            }).catch(() => {
                 this.setState({
-                    fName: '',
-                    lName: '',
-                    step: 'register',
-                }, () => {
-                    this.focus('f-fname');
+                    loading: false,
                 });
-                return;
-            }
-        });
+            });
+        } else {
+            this.sdk.login(phone.slice(1), code, phoneHash).then((res) => {
+                const info = this.sdk.loadConnInfo();
+                info.UserID = res.user.id;
+                info.FirstName = res.user.firstname;
+                info.LastName = res.user.lastname;
+                info.Phone = this.state.phone;
+                this.sdk.setConnInfo(info);
+                this.setState({
+                    loading: false,
+                    tries: this.state.tries + 1,
+                });
+                this.props.history.push('/chat/null');
+                this.dispatchWSOpenEvent();
+                this.notification.initToken().then((token) => {
+                    this.sdk.registerDevice(token, 0, '0.23.2', 'web', 'en', '1');
+                });
+            }).catch((err) => {
+                window.console.log(err);
+                this.setState({
+                    loading: false,
+                    tries: this.state.tries + 1,
+                });
+                if (err.code === C_ERR.ERR_CODE_INVALID && err.items === C_ERR_ITEM.ERR_ITEM_PHONE_CODE) {
+                    this.setState({
+                        snackOpen: true,
+                        snackText: 'Code is incorrect!',
+                    });
+                    return;
+                }
+                if (err.code === C_ERR.ERR_CODE_UNAVAILABLE && err.items === C_ERR_ITEM.ERR_ITEM_PHONE) {
+                    this.setState({
+                        fName: '',
+                        lName: '',
+                        step: 'register',
+                    }, () => {
+                        this.focus('f-fname');
+                    });
+                    return;
+                }
+            });
+        }
     }
 
     private confirmKeyDown = (e: any) => {
@@ -385,6 +411,37 @@ class SignUp extends React.Component<IProps, IState> {
             });
         }
         this.focus('f-phone');
+    }
+
+    private logoRefHandler = (ref: any) => {
+        this.logoRef = ref;
+    }
+
+    private startCountdown() {
+        if (!this.logoRef) {
+            return;
+        }
+        this.logoRef.classList.add('a-enable');
+        setTimeout(() => {
+            this.logoRef.classList.add('c-enable');
+        }, 300);
+        this.setState({
+            countdown: 60,
+        });
+        clearInterval(this.countdownInterval);
+        this.countdownInterval = setInterval(() => {
+            const {countdown} = this.state;
+            if (countdown > 1) {
+                this.setState({
+                    countdown: countdown - 1,
+                });
+            } else {
+                this.setState({
+                    countdown: 0,
+                });
+                clearInterval(this.countdownInterval);
+            }
+        }, 1000);
     }
 }
 
