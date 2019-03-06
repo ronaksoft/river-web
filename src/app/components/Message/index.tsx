@@ -216,33 +216,35 @@ class Message extends React.Component<IProps, IState> {
             }
         }
         if (this.list && jump) {
-            this.list.scrollToRow(items.length - 1);
+            this.list.scrollToRow(items.length);
         } else {
             setTimeout(() => {
                 if (instant) {
                     if (this.list) {
-                        this.list.scrollToRow(items.length - 1);
+                        this.list.scrollToRow(items.length);
                         this.list.scrollToPosition(100000);
                     }
-                } else {
-                    const el = document.querySelector('.chat.active-chat');
-                    if (el) {
-                        const eldiv = el.querySelector('.chat.active-chat > div');
-                        if (eldiv) {
-                            el.scroll({
-                                behavior: 'smooth',
-                                top: eldiv.clientHeight + 1000,
-                            });
+                    setTimeout(() => {
+                        if (this.list) {
+                            this.list.scrollToPosition(this.scrollTop - 1);
                         }
-                    }
+                    }, 201);
+                } else {
+                    setTimeout(() => {
+                        const el = document.querySelector('.chat.active-chat');
+                        if (el) {
+                            const eldiv = el.querySelector('.chat.active-chat > div');
+                            if (eldiv) {
+                                el.scroll({
+                                    behavior: 'smooth',
+                                    top: eldiv.clientHeight + 1000,
+                                });
+                            }
+                        }
+                    }, 200);
                 }
             }, 200);
         }
-        setTimeout(() => {
-            if (this.list) {
-                this.list.scrollToPosition(this.scrollTop - 1);
-            }
-        }, 201);
     }
 
     public setScrollMode(mode: 'none' | 'end' | 'stay') {
