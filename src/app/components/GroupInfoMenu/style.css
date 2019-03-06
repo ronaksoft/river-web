@@ -101,7 +101,7 @@ input {
     .group-info-menu .page-container.page-2 .page-2 {
       left: 0; }
   .group-info-menu .menu-header {
-    background-color: var(--dark-medium);
+    background-color: var(--header-color);
     text-align: left;
     height: 48px;
     color: var(--dark-medium); }

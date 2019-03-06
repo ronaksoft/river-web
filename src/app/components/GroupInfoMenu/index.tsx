@@ -64,15 +64,15 @@ import ProgressBroadcaster from '../../services/progress';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
 import AvatarCropper from '../AvatarCropper';
 import PeerMedia from '../PeerMedia';
+import Broadcaster from '../../services/broadcaster';
 
 import './style.css';
-import Broadcaster from '../../services/broadcaster';
 
 interface IProps {
     peer: InputPeer | null;
     onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
     onClose?: () => void;
-    onCreate?: (contacts: IUser[], title: string) => void;
+    onDeleteAndExitGroup?: () => void;
 }
 
 interface IState {
@@ -679,25 +679,9 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
 
     /* Exits the group */
     private leaveGroupHandler = () => {
-        const {peer, participants, group} = this.state;
-        if (!peer || !group) {
-            return;
+        if (this.props.onDeleteAndExitGroup) {
+            this.props.onDeleteAndExitGroup();
         }
-        const id = this.sdk.getConnInfo().UserID || '';
-        const user = new InputUser();
-        user.setUserid(id);
-        user.setAccesshash('');
-        this.sdk.groupRemoveMember(peer, user).then(() => {
-            const index = findIndex(participants, {id});
-            if (index > -1) {
-                participants.splice(index, 1);
-                group.participants = participants.length;
-                this.setState({
-                    group,
-                    participants,
-                });
-            }
-        });
     }
 
     /* On mute value changed */

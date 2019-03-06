@@ -664,14 +664,20 @@ class ChatInput extends React.Component<IProps, IState> {
         }
         if (peer.getType() === PeerType.PEERGROUP) {
             this.groupRepo.get(peer.getId() || '').then((res) => {
-                if ((res.flagsList || []).indexOf(GroupFlags.GROUPFLAGSNONPARTICIPANT) > -1) {
-                    this.setState({
-                        disableAuthority: 0x1,
-                    });
-                } else if ((res.flagsList || []).indexOf(GroupFlags.GROUPFLAGSDEACTIVATED) > -1) {
-                    this.setState({
-                        disableAuthority: 0x2,
-                    });
+                if (res) {
+                    if ((res.flagsList || []).indexOf(GroupFlags.GROUPFLAGSNONPARTICIPANT) > -1) {
+                        this.setState({
+                            disableAuthority: 0x1,
+                        });
+                    } else if ((res.flagsList || []).indexOf(GroupFlags.GROUPFLAGSDEACTIVATED) > -1) {
+                        this.setState({
+                            disableAuthority: 0x2,
+                        });
+                    } else {
+                        this.setState({
+                            disableAuthority: 0x0,
+                        });
+                    }
                 } else {
                     this.setState({
                         disableAuthority: 0x0,

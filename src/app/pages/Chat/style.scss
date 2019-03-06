@@ -185,7 +185,7 @@
       }
       .start-messaging-header {
         height: 48px;
-        background-color: rgba(255, 255, 255, 0.2);
+        //background-color: rgba(255, 255, 255, 0.2);
         line-height: 48px;
         text-align: left;
         padding: 0 20px;
@@ -216,7 +216,7 @@
       }
       .start-messaging-footer {
         height: 50px;
-        background-color: rgba(255, 255, 255, 0.2);
+        //background-color: rgba(255, 255, 255, 0.2);
       }
     }
   }
@@ -569,6 +569,15 @@ html[theme="dark-blue"][bg="14"] {
           }
         }
       }
+    }
+  }
+}
+
+.confirm-dialog {
+  .group-name {
+    font-weight: bold;
+    svg {
+      display: none;
     }
   }
 }

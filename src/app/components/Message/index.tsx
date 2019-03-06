@@ -38,9 +38,9 @@ import MessageContact from '../MessageContact';
 import CachedPhoto from '../CachedPhoto';
 import MessageMedia from '../MessageMedia';
 import {MediaDocument} from '../../services/sdk/messages/chat.core.message.medias_pb';
+import MessageLocation from '../MessageLocation';
 
 import './style.css';
-import MessageLocation from '../MessageLocation';
 
 interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
@@ -220,8 +220,10 @@ class Message extends React.Component<IProps, IState> {
         } else {
             setTimeout(() => {
                 if (instant) {
-                    this.list.scrollToRow(items.length - 1);
-                    this.list.scrollToPosition(100000);
+                    if (this.list) {
+                        this.list.scrollToRow(items.length - 1);
+                        this.list.scrollToPosition(100000);
+                    }
                 } else {
                     const el = document.querySelector('.chat.active-chat');
                     if (el) {
@@ -237,7 +239,9 @@ class Message extends React.Component<IProps, IState> {
             }, 200);
         }
         setTimeout(() => {
-            this.list.scrollToPosition(this.scrollTop-1);
+            if (this.list) {
+                this.list.scrollToPosition(this.scrollTop - 1);
+            }
         }, 201);
     }
 

@@ -120,9 +120,9 @@ import DocumentViewer from '../../components/DocumentViewer';
 import {IUser} from '../../repository/user/interface';
 import {IMediaItem} from '../../components/Uploader';
 import LastSeen from '../../components/LastSeen';
+import {IGeoItem} from '../../components/MapPicker';
 
 import './style.css';
-import {IGeoItem} from '../../components/MapPicker';
 
 const C_MAX_UPDATE_DIFF = 1000;
 
@@ -134,7 +134,7 @@ interface IProps {
 
 interface IState {
     chatMoreAnchorEl: any;
-    confirmDialogMode: 'none' | 'logout' | 'remove_message' | 'remove_message_revoke';
+    confirmDialogMode: 'none' | 'logout' | 'remove_message' | 'remove_message_revoke' | 'delete_exit_group';
     confirmDialogOpen: boolean;
     dialogs: IDialog[];
     forwardRecipientDialogOpen: boolean;
@@ -146,6 +146,7 @@ interface IState {
     isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } };
     isUpdating: boolean;
     leftMenu: string;
+    leftMenuSelectedDialogId: string;
     leftMenuSub: string;
     leftOverlay: boolean;
     maxReadId: number;
@@ -210,6 +211,7 @@ class Chat extends React.Component<IProps, IState> {
             isTypingList: {},
             isUpdating: false,
             leftMenu: 'chat',
+            leftMenuSelectedDialogId: '',
             leftMenuSub: 'none',
             leftOverlay: false,
             maxReadId: 0,
@@ -559,7 +561,8 @@ class Chat extends React.Component<IProps, IState> {
                         <div ref={this.rightMenuRefHandler} className="column-right">
                             {(this.state.rightMenu && peer && peer.getType() === PeerType.PEERGROUP) &&
                             <GroupInfoMenu peer={peer} onClose={this.setRightMenu.bind(this, false)}
-                                           onAction={this.messageAttachmentActionHandler}/>}
+                                           onAction={this.messageAttachmentActionHandler}
+                                           onDeleteAndExitGroup={this.groupInfoDeleteAndExitHandler}/>}
                             {(this.state.rightMenu && peer && peer.getType() === PeerType.PEERUSER) &&
                             <UserInfoMenu peer={peer} onClose={this.setRightMenu.bind(this, false)}
                                           onAction={this.messageAttachmentActionHandler}/>}
@@ -613,6 +616,25 @@ class Chat extends React.Component<IProps, IState> {
                             <Button onClick={this.removeMessageHandler.bind(this, true)} color="primary">
                                 Remove (for all)
                             </Button>}
+                        </DialogActions>
+                    </div>}
+                    {Boolean(confirmDialogMode === 'delete_exit_group') &&
+                    <div>
+                        <DialogTitle>Delete and exit group?</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>
+                                Delete and exit <GroupName className="group-name"
+                                                           id={this.state.leftMenuSelectedDialogId}/> ?<br/>
+                                All group data will be remove!
+                            </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={this.confirmDialogCloseHandler} color="secondary">
+                                Disagree
+                            </Button>
+                            <Button onClick={this.deleteAndExitGroupHandler} color="primary" autoFocus={true}>
+                                Agree
+                            </Button>
                         </DialogActions>
                     </div>}
                 </OverlayDialog>
@@ -1011,7 +1033,7 @@ class Chat extends React.Component<IProps, IState> {
                         });
                     }
                 }
-            }, 5000);
+            }, 6000);
             if (!isTypingList.hasOwnProperty(data.peerid || '')) {
                 isTypingList[data.peerid || ''] = {};
                 isTypingList[data.peerid || ''][data.userid || 0] = {
@@ -2743,9 +2765,13 @@ class Chat extends React.Component<IProps, IState> {
             case 'block':
                 break;
             case 'remove':
-                if (dialog.topmessageid) {
-                    this.sdk.clearMessage(peer, dialog.topmessageid, true);
-                }
+                this.setState({
+                    confirmDialogMode: 'delete_exit_group',
+                    confirmDialogOpen: true,
+                    leftMenu: 'chat',
+                    leftMenuSelectedDialogId: dialog.peerid || '',
+                    leftMenuSub: 'none',
+                });
                 break;
             case 'clear':
                 if (dialog.topmessageid) {
@@ -3541,6 +3567,44 @@ class Chat extends React.Component<IProps, IState> {
         //         this.messageComponent.fitList(false, true);
         //     }
         // }, 210);
+    }
+
+    /* Delete and exit group */
+    private deleteAndExitGroupHandler = () => {
+        const {leftMenuSelectedDialogId} = this.state;
+        if (leftMenuSelectedDialogId === '') {
+            return;
+        }
+        const peer = this.getPeerByDialogId(leftMenuSelectedDialogId);
+        if (!peer) {
+            return;
+        }
+        const id = this.sdk.getConnInfo().UserID || '';
+        const user = new InputUser();
+        user.setUserid(id);
+        user.setAccesshash('');
+        const dialogId = peer.getId() || '';
+        this.sdk.groupRemoveMember(peer, user).then(() => {
+            let dialog: IDialog | null = null;
+            if (this.dialogMap.hasOwnProperty(dialogId)) {
+                dialog = this.state.dialogs[this.dialogMap[dialogId]];
+            }
+            if (dialog && dialog.topmessageid) {
+                this.sdk.clearMessage(peer, dialog.topmessageid, true);
+            }
+        });
+        this.confirmDialogCloseHandler();
+    }
+
+    /* GroupInfo delete and exit handler */
+    private groupInfoDeleteAndExitHandler = () => {
+        this.setState({
+            confirmDialogMode: 'delete_exit_group',
+            confirmDialogOpen: true,
+            leftMenu: 'chat',
+            leftMenuSelectedDialogId: this.state.selectedDialogId,
+            leftMenuSub: 'none',
+        });
     }
 
     private broadcastEvent(name: string, data: any) {

@@ -289,7 +289,7 @@ class Dialog extends React.Component<IProps, IState> {
             2: {
                 cmd: 'remove',
                 color: '#cc0000',
-                title: 'Remove and Exit',
+                title: 'Delete and Exit',
             },
             3: {
                 cmd: 'block',
