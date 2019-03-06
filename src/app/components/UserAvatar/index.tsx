@@ -46,6 +46,20 @@ const SecondaryColors = [
     '#FDDC98',
 ];
 
+const TextColors = [
+    '#30B8D2',
+    '#EC68B1',
+    '#35cd96',
+    '#808bc8',
+    '#EF69AD',
+    '#7062F0',
+    '#B236D0',
+    '#4C15D0',
+    '#56A2D5',
+    '#44D5F3',
+    '#FDDC98',
+];
+
 const defaultGradients: string[] = [];
 
 DefaultColors.forEach((color, index) => {
@@ -283,4 +297,4 @@ class UserAvatar extends React.Component<IProps, IState> {
 }
 
 export default UserAvatar;
-export {TextAvatar, DefaultColors, SecondaryColors, GetUniqueColor};
+export {TextAvatar, DefaultColors, SecondaryColors, TextColors, GetUniqueColor};

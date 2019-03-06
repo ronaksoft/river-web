@@ -247,6 +247,7 @@
       ._mention {
         color: var(--light-mention);
         display: inline-block;
+        direction: ltr;
         &:hover {
           text-decoration: underline;
         }

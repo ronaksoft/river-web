@@ -10,7 +10,7 @@
 import * as React from 'react';
 import {IUser} from '../../repository/user/interface';
 import UserRepo from '../../repository/user';
-import {GetUniqueColor, SecondaryColors} from '../UserAvatar';
+import {GetUniqueColor, TextColors} from '../UserAvatar';
 import {VerifiedUserRounded} from '@material-ui/icons';
 import Broadcaster from '../../services/broadcaster';
 
@@ -93,7 +93,7 @@ class UserName extends React.Component<IProps, IState> {
             cursor: 'pointer',
         };
         if (this.props.uniqueColor === true && this.state.forceColor) {
-            style.color = GetUniqueColor(`${user.firstname}${user.lastname}`, SecondaryColors);
+            style.color = GetUniqueColor(`${user.firstname}${user.lastname}`, TextColors);
         }
         if (this.props.id === '2374') {
             return (
