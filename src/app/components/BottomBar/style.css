@@ -101,7 +101,7 @@ input {
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    transform: translateY(3px); }
+    transform: translateY(2px); }
     .bottom-bar a .title {
       font-size: 12px;
       color: var(--grey); }

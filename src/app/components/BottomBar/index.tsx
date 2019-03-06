@@ -81,7 +81,7 @@ class BottomBar extends React.Component<IProps, IState> {
                                 {Boolean(item.badge) && <Badge color="primary" badgeContent={unreadCounter}
                                                                invisible={Boolean(unreadCounter === 0)}>{item.icon}</Badge>}
                                 {!Boolean(item.badge) && <span>{item.icon}</span>}
-                                {/*<span className="title">{item.title}</span>*/}
+                                <span className="title">{item.title}</span>
                             </a>
                         </Tooltip>);
                 })}
