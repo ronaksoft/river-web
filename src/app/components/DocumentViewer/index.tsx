@@ -16,7 +16,7 @@ import {
     RotateRightRounded,
     ZoomInRounded,
     ZoomOutRounded,
-    CropFreeRounded,
+    CropFreeRounded, PlaceRounded,
 } from '@material-ui/icons';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import DocumentViewService, {IDocument} from '../../services/documentViewerService';
@@ -26,6 +26,8 @@ import {IMessage} from '../../repository/message/interface';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 import {getMediaInfo} from '../MessageMedia';
 import DownloadProgress from '../DownloadProgress';
+import GoogleMapReact from 'google-map-react';
+import {C_GOOGLE_MAP_KEY} from '../MapPicker';
 
 import './style.css';
 
@@ -205,6 +207,30 @@ class DocumentViewer extends React.Component<IProps, IState> {
                         );
                     })}
                 </div>);
+            case 'location':
+                return (<div className="location-container">
+                    {doc.items.map((item, index) => {
+                        if (!item.geo) {
+                            return '';
+                        } else {
+                            return (
+                                <GoogleMapReact
+                                    key={index}
+                                    bootstrapURLKeys={{key: C_GOOGLE_MAP_KEY}}
+                                    defaultCenter={{
+                                        lat: item.geo.lat,
+                                        lng: item.geo.lng
+                                    }}
+                                    defaultZoom={16}
+                                >
+                                <span className="map-marker">
+                                    <PlaceRounded/>
+                                </span>
+                                </GoogleMapReact>
+                            );
+                        }
+                    })}
+                </div>);
             default:
                 return '';
         }
@@ -226,7 +252,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
     private initPagination() {
         const {doc, prev, next} = this.state;
-        if (!doc || doc.type === 'avatar') {
+        if (!doc || doc.type === 'avatar' || doc.type === 'location') {
             return '';
         }
         return (
@@ -242,6 +268,10 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     private initControls() {
+        const {doc} = this.state;
+        if (!doc || doc.type === 'location') {
+            return '';
+        }
         return (
             <div className="document-viewer-controls">
                 <div className="controls">
@@ -294,6 +324,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
     private getFloatObj() {
         const {doc, size} = this.state;
+        if (!doc || doc.type === 'location') {
+            return '';
+        }
         if (!size || !doc || doc.items.length === 0 || (doc.type === 'video' && !doc.items[0].thumbFileLocation)) {
             if (this.pictureWrapperRef) {
                 this.pictureWrapperRef.classList.remove('hide');

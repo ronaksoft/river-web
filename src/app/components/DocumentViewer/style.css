@@ -122,6 +122,15 @@
         .document-viewer-dialog .document-container .picture-container .picture-wrapper .video video, .document-viewer-dialog .document-container .video-container .picture-wrapper .video video {
           width: 100%;
           height: 100%; }
+  .document-viewer-dialog .document-container .location-container {
+    position: relative;
+    height: 640px;
+    width: 640px;
+    z-index: 1310; }
+    .document-viewer-dialog .document-container .location-container .map-marker svg {
+      font-size: 48px;
+      color: #EB5757;
+      transform: translate(-24px, -42px); }
 
 .document-viewer-dialog .document-viewer-caption {
   position: fixed;

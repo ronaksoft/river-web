@@ -91,7 +91,7 @@ input {
     .message-location .location-content img {
       height: 120px;
       width: 250px;
-      object-position: center;
+      object-position: center 40%;
       object-fit: cover; }
     .message-location .location-content svg {
       position: absolute;

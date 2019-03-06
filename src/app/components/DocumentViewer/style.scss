@@ -155,6 +155,19 @@
         }
       }
     }
+    .location-container {
+      position: relative;
+      height: 640px;
+      width: 640px;
+      z-index: 1310;
+      .map-marker {
+        svg {
+          font-size: 48px;
+          color: #EB5757;
+          transform: translate(-24px, -42px);
+        }
+      }
+    }
   }
   .document-viewer-caption {
     position: fixed;

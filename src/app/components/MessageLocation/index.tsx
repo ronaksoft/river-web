@@ -10,7 +10,7 @@
 import * as React from 'react';
 import {IMessage} from '../../repository/message/interface';
 import {InputPeer, MediaType} from '../../services/sdk/messages/chat.core.types_pb';
-import DocumentViewerService from '../../services/documentViewerService';
+import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
 import {PlaceRounded} from '@material-ui/icons';
 import {MediaGeoLocation} from '../../services/sdk/messages/chat.core.message.medias_pb';
 import {Coords} from 'google-map-react';
@@ -88,13 +88,35 @@ class MessageLocation extends React.PureComponent<IProps, IState> {
         const {lat, long} = this.state;
         return (
             <div className="message-location">
-                <div className="location-content">
+                <div className="location-content" onClick={this.showLocationHandler}>
                     <img
                         src={`https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${long}&zoom=14&size=300x300&maptype=mapnik`}/>
                     <PlaceRounded/>
                 </div>
             </div>
         );
+    }
+
+    /* Show location handler */
+    private showLocationHandler = (e: any) => {
+        if (e.stopPropagation) {
+            e.stopPropagation();
+        }
+        const {lat, long, message} = this.state;
+        const doc: IDocument = {
+            anchor: 'message',
+            items: [{
+                caption: '',
+                fileLocation: {},
+                geo: {
+                    lat,
+                    lng: long,
+                },
+            }],
+            peerId: message.peerid || '',
+            type: 'location',
+        };
+        this.documentViewerService.loadDocument(doc);
     }
 }
 
