@@ -14,12 +14,13 @@
   height: 100%;
   .menu-header {
     position: relative;
-    background-color: var(--bg);
+    background-color: var(--header-color);
     text-align: left;
     height: 47px;
     line-height: 27px;
     color: var(--dark-medium);
     padding: 10px 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     .actions {
       position: absolute;
       top: 0;
@@ -158,8 +159,9 @@ html[theme="dark"],
 html[theme="dark-blue"] {
   .contacts {
     .menu-header {
-      background-color: var(--dark-high);
+      background-color: var(--dark-medium);
       color: var(--white);
+      border-color: rgba(255, 255, 255, 0.16);
     }
     .search-container {
       label, input {
@@ -195,7 +197,7 @@ html[theme="dark-blue"] {
 html[theme="dark-blue"] {
   .contacts {
     .menu-header {
-      background-color: var(--dark-blue-high);
+      background-color: var(--dark-blue-medium);
     }
     .contact-box {
       .contact-container {

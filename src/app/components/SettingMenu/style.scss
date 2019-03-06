@@ -41,10 +41,11 @@
     }
   }
   .menu-header {
-    background-color: var(--bg);
+    background-color: var(--header-color);
     text-align: left;
-    height: 47px;
+    height: 48px;
     color: var(--dark-medium);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   }
   .menu-content {
     text-align: left;
@@ -492,8 +493,9 @@ html[theme="dark"],
 html[theme="dark-blue"] {
   .setting-menu {
     .menu-header {
-      background-color: var(--dark-high);
+      background-color: var(--dark-medium);
       color: var(--white);
+      border-color: rgba(255, 255, 255, 0.16);
       svg {
         color: var(--white);
       }
@@ -610,7 +612,7 @@ html[theme="dark-blue"] {
 html[theme="dark-blue"] {
   .setting-menu {
     .menu-header {
-      background-color: var(--dark-blue-high);
+      background-color: var(--dark-blue-medium);
     }
     .font-size-container {
       div[role="progressbar"] {

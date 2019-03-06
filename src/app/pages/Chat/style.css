@@ -134,7 +134,7 @@ input {
         width: 150px; }
     .container .column-left .left-content {
       width: 100%;
-      height: calc(100% - 52px); }
+      height: calc(100% - 51px); }
     .container .column-left.with-top-bar .top-bar {
       display: flex; }
     .container .column-left.with-top-bar .left-content {

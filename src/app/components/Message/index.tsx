@@ -216,22 +216,25 @@ class Message extends React.Component<IProps, IState> {
             }
         }
         if (this.list && jump) {
-            this.list.scrollToRow(items.length);
+            this.list.scrollToRow(items.length - 1);
         } else {
-            if (instant) {
-                this.list.scrollToPosition(100000);
-            } else {
-                const el = document.querySelector('.chat.active-chat');
-                if (el) {
-                    const eldiv = el.querySelector('.chat.active-chat > div');
-                    if (eldiv) {
-                        el.scroll({
-                            behavior: 'smooth',
-                            top: eldiv.clientHeight + 1000,
-                        });
+            this.list.scrollToRow(items.length - 1);
+            setTimeout(() => {
+                if (instant) {
+                    this.list.scrollToPosition(100000);
+                } else {
+                    const el = document.querySelector('.chat.active-chat');
+                    if (el) {
+                        const eldiv = el.querySelector('.chat.active-chat > div');
+                        if (eldiv) {
+                            el.scroll({
+                                behavior: 'smooth',
+                                top: eldiv.clientHeight + 1000,
+                            });
+                        }
                     }
                 }
-            }
+            }, 200);
         }
     }
 
@@ -244,7 +247,7 @@ class Message extends React.Component<IProps, IState> {
             if (this.state.items.length === 0) {
                 this.setState({
                     listStyle: {
-                        paddingTop: '10px',
+                        paddingTop: '0px',
                     },
                 });
                 return;
@@ -263,11 +266,11 @@ class Message extends React.Component<IProps, IState> {
             }
             this.setState({
                 listStyle: {
-                    paddingTop: '10px',
+                    paddingTop: '0px',
                 },
             });
             if (forceScroll === true) {
-                this.list.scrollToPosition(1000000);
+                this.animateToEnd(true);
             }
         }, instant ? 0 : 200);
     }
@@ -935,6 +938,7 @@ class Message extends React.Component<IProps, IState> {
         switch (message.messagetype) {
             case C_MESSAGE_TYPE.Picture:
             case C_MESSAGE_TYPE.Video:
+            case C_MESSAGE_TYPE.Location:
                 type = 'media';
                 break;
             case C_MESSAGE_TYPE.File:

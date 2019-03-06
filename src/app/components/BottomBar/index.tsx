@@ -10,6 +10,7 @@
 import * as React from 'react';
 import {SettingsRounded, ChatRounded, AccountCircleRounded} from "@material-ui/icons";
 import Badge from '@material-ui/core/Badge';
+import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 
 import './style.css';
 
@@ -68,13 +69,21 @@ class BottomBar extends React.Component<IProps, IState> {
             <div className="bottom-bar">
                 {items.map((item, index) => {
                     return (
-                        <a onClick={this.onClickHandler.bind(this, item.page)} key={index}
-                           className={item.page === selected ? 'active' : ''}>
-                            {Boolean(item.badge) && <Badge color="primary" badgeContent={unreadCounter}
-                                                           invisible={Boolean(unreadCounter === 0)}>{item.icon}</Badge>}
-                            {!Boolean(item.badge) && <span>{item.icon}</span>}
-                            <span className="title">{item.title}</span>
-                        </a>);
+                        <Tooltip
+                            key={index}
+                            title={item.title}
+                            placement="top"
+                            enterDelay={1000}
+                        >
+                            <a onClick={this.onClickHandler.bind(this, item.page)}
+                               className={item.page === selected ? 'active' : ''}>
+
+                                {Boolean(item.badge) && <Badge color="primary" badgeContent={unreadCounter}
+                                                               invisible={Boolean(unreadCounter === 0)}>{item.icon}</Badge>}
+                                {!Boolean(item.badge) && <span>{item.icon}</span>}
+                                {/*<span className="title">{item.title}</span>*/}
+                            </a>
+                        </Tooltip>);
                 })}
             </div>
         );

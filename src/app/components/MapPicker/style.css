@@ -46,7 +46,8 @@
       flex: 1; }
       .map-picker-dialog .map-picker-container .map-picker-preview-container .map-picker-canvas .map-marker svg {
         font-size: 48px;
-        color: #EB5757; }
+        color: #EB5757;
+        transform: translate(-24px, -42px); }
     .map-picker-dialog .map-picker-container .map-picker-preview-container .map-picker-details-container {
       position: relative;
       padding: 4px 96px 4px 32px;

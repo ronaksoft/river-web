@@ -9,11 +9,27 @@
 
 import * as React from 'react';
 import {IMessage} from '../../repository/message/interface';
-import {InputPeer} from '../../services/sdk/messages/chat.core.types_pb';
+import {InputPeer, MediaType} from '../../services/sdk/messages/chat.core.types_pb';
 import DocumentViewerService from '../../services/documentViewerService';
 import {PlaceRounded} from '@material-ui/icons';
+import {MediaGeoLocation} from '../../services/sdk/messages/chat.core.message.medias_pb';
+import {Coords} from 'google-map-react';
+// import {C_GOOGLE_MAP_KEY} from '../MapPicker';
 
 import './style.css';
+
+const getMapLocation = (message: IMessage) => {
+    const location: Coords = {
+        lat: 0,
+        lng: 0,
+    };
+    if (message.mediatype === MediaType.MEDIATYPEGEOLOCATION) {
+        const media: MediaGeoLocation.AsObject = message.mediadata;
+        location.lat = media.lat || 0;
+        location.lng = media.pb_long || 0;
+    }
+    return location;
+};
 
 interface IProps {
     message: IMessage;
@@ -21,6 +37,8 @@ interface IProps {
 }
 
 interface IState {
+    lat: number;
+    long: number;
     message: IMessage;
 }
 
@@ -31,8 +49,10 @@ class MessageLocation extends React.PureComponent<IProps, IState> {
     constructor(props: IProps) {
         super(props);
 
-
+        const location = getMapLocation(props.message);
         this.state = {
+            lat: location.lat,
+            long: location.lng,
             message: props.message,
         };
 
@@ -64,10 +84,12 @@ class MessageLocation extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        // const {message} = this.state;
+        const {lat, long} = this.state;
         return (
             <div className="message-location">
                 <div className="location-content">
+                    <img
+                        src={`https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${long}&zoom=14&size=300x300&maptype=mapnik`}/>
                     <PlaceRounded/>
                 </div>
             </div>

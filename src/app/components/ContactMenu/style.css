@@ -82,12 +82,13 @@ input {
   height: 100%; }
   .contacts .menu-header {
     position: relative;
-    background-color: var(--bg);
+    background-color: var(--header-color);
     text-align: left;
     height: 47px;
     line-height: 27px;
     color: var(--dark-medium);
-    padding: 10px 16px; }
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06); }
     .contacts .menu-header .actions {
       position: absolute;
       top: 0;
@@ -200,8 +201,9 @@ input {
 
 html[theme="dark"] .contacts .menu-header,
 html[theme="dark-blue"] .contacts .menu-header {
-  background-color: var(--dark-high);
-  color: var(--white); }
+  background-color: var(--dark-medium);
+  color: var(--white);
+  border-color: rgba(255, 255, 255, 0.16); }
 
 html[theme="dark"] .contacts .search-container label, html[theme="dark"] .contacts .search-container input,
 html[theme="dark-blue"] .contacts .search-container label,
@@ -227,7 +229,7 @@ html[theme="dark-blue"] .add-contact-dialog div[role="document"] > div {
     color: var(--white); }
 
 html[theme="dark-blue"] .contacts .menu-header {
-  background-color: var(--dark-blue-high); }
+  background-color: var(--dark-blue-medium); }
 
 html[theme="dark-blue"] .contacts .contact-box .contact-container .contact-item:after {
   background-color: var(--dark-blue-low); }

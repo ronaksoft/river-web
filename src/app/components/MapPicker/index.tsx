@@ -11,7 +11,7 @@ import * as React from 'react';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import {CheckRounded, PlaceRounded} from '@material-ui/icons';
 import TextField from '@material-ui/core/TextField/TextField';
-import GoogleMapReact, {ChangeEventValue, Coords} from 'google-map-react';
+import GoogleMapReact, {ChangeEventValue, ClickEventValue, Coords} from 'google-map-react';
 
 import './style.css';
 
@@ -93,6 +93,7 @@ class MapPicker extends React.Component<IProps, IState> {
                                 defaultZoom={zoom}
                                 center={pos}
                                 onChange={this.mapChangeHandler}
+                                onClick={this.mapClickHandler}
                             >
                                 <span className="map-marker">
                                     <PlaceRounded/>
@@ -163,6 +164,15 @@ class MapPicker extends React.Component<IProps, IState> {
         });
     }
 
+    private mapClickHandler = (e: ClickEventValue) => {
+        this.setState({
+            pos: {
+                lat: e.lat,
+                lng: e.lng,
+            },
+        });
+    }
+
     /* Check button click handler */
     private doneHandler = () => {
         if (this.props.onDone) {
@@ -172,6 +182,7 @@ class MapPicker extends React.Component<IProps, IState> {
                 long: this.state.pos.lng,
             });
         }
+        this.dialogCloseHandler();
     }
 }
 

@@ -71,6 +71,9 @@ export const getMediaInfo = (message: IMessage): IMediaInfo => {
     };
     const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
     info.caption = messageMediaDocument.caption || '';
+    if (!messageMediaDocument.doc) {
+        return info;
+    }
     info.size = messageMediaDocument.doc.filesize || 0;
     info.type = messageMediaDocument.doc.mimetype || '';
     info.file = {

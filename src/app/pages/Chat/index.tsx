@@ -527,7 +527,7 @@ class Chat extends React.Component<IProps, IState> {
                                          onAttachmentAction={this.messageAttachmentActionHandler}
                                 />
                             </div>
-                            <ChatInput ref={this.chatInputRefHandler} onMessage={this.onMessageHandler}
+                            <ChatInput ref={this.chatInputRefHandler} onMessage={this.chatInputTextMessageHandler}
                                        onTyping={this.onTyping}
                                        userId={this.connInfo.UserID} previewMessage={textInputMessage}
                                        previewMessageMode={textInputMessageMode}
@@ -1558,7 +1558,7 @@ class Chat extends React.Component<IProps, IState> {
         };
     }
 
-    private onMessageHandler = (text: string, param?: any) => {
+    private chatInputTextMessageHandler = (text: string, param?: any) => {
         if (trimStart(text).length === 0) {
             return;
         }
@@ -2387,7 +2387,6 @@ class Chat extends React.Component<IProps, IState> {
                 isTypingList,
             });
         }
-
     }
 
     /* Back to chat handler, for mobile view */
@@ -3367,6 +3366,7 @@ class Chat extends React.Component<IProps, IState> {
         let media: any;
         let mediaType: InputMediaType = InputMediaType.INPUTMEDIATYPECONTACT;
         let mediaType2: MediaType = MediaType.MEDIATYPECONTACT;
+        let caption = '';
         if (type === 'contact') {
             const user = item as IUser;
             const contact = new InputMediaContact();
@@ -3384,6 +3384,7 @@ class Chat extends React.Component<IProps, IState> {
             const geoData = new InputMediaGeoLocation();
             geoData.setLat(location.lat);
             geoData.setLong(location.long);
+            caption = location.caption;
             mediaData = geoData.toObject();
             media = geoData.serializeBinary();
             mediaType = InputMediaType.INPUTMEDIATYPEGEOLOCATION;
@@ -3438,6 +3439,10 @@ class Chat extends React.Component<IProps, IState> {
 
             // Force update messages
             this.messageComponent.list.forceUpdateGrid();
+
+            if (caption.length > 0) {
+                this.chatInputTextMessageHandler(caption, {mode: C_MSG_MODE.Reply, message: {id: res.messageid}});
+            }
         }).catch((err) => {
             window.console.log(err);
             const {messages} = this.state;

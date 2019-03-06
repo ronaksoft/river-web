@@ -88,6 +88,15 @@ input {
     align-items: center;
     justify-content: center;
     background-color: rgba(255, 255, 255, 0.2); }
+    .message-location .location-content img {
+      height: 120px;
+      width: 250px;
+      object-position: center;
+      object-fit: cover; }
     .message-location .location-content svg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
       font-size: 48px;
-      color: #EB5757; }
+      color: #EB5757;
+      transform: translate(-50%, -50%); }
