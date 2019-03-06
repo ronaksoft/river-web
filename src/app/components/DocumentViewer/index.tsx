@@ -316,6 +316,23 @@ class DocumentViewer extends React.Component<IProps, IState> {
         this.setState({
             doc: null,
         });
+        this.mediaTransform = {
+            origin: {
+                x: 50,
+                y: 50,
+            },
+            pan: {
+                x: 0,
+                y: 0,
+            },
+            panStartPos: {
+                x: 0,
+                y: 0,
+            },
+            rotate: 0,
+            startPan: false,
+            zoom: 1,
+        };
         if (!this.documentContainerRef) {
             return;
         }
