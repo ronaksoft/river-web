@@ -36,7 +36,8 @@
   --green: #DCf8C6;
   --message-chat: #EFEFF0;
   --color-hover: rgba(50, 61, 71, 0.07);
-  --color-hover-dark: rgba(50, 61, 71, 0.64);
+  --color-hover-dark: rgba(50, 61, 71, 0.12);
+  --dark-color-hover: rgba(50, 61, 71, 0.64);
   --color-text-hover: rgba(50, 61, 71, 0.64);
   --header-color: #eee;
   --light-mention: #2678b6;
@@ -393,7 +394,7 @@ html[theme="dark-blue"] .group-info-menu {
     border-color: var(--dark-low); }
     html[theme="dark"] .group-info-menu .participant .contact-item:hover,
     html[theme="dark-blue"] .group-info-menu .participant .contact-item:hover {
-      background-color: var(--color-hover-dark); }
+      background-color: var(--dark-color-hover); }
     html[theme="dark"] .group-info-menu .participant .contact-item .admin-wrapper svg,
     html[theme="dark-blue"] .group-info-menu .participant .contact-item .admin-wrapper svg {
       color: var(--white); }
