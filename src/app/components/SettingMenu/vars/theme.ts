@@ -48,21 +48,24 @@ export const backgrounds = [{
 export const bubbles = [{
     id: '4',
     title: 'Pad'
-},{
+}, {
     id: '1',
     title: 'KK'
-},{
+}, {
     id: '2',
     title: 'Curve'
+}, {
+    id: '5',
+    title: 'Simplified'
 }];
 
 export const themes = [{
     id: 'light',
     title: 'Light'
-},{
+}, {
     id: 'dark',
     title: 'Dark'
-},{
+}, {
     id: 'dark-blue',
     title: 'Dark Blue'
 }];

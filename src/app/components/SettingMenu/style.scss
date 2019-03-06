@@ -435,6 +435,18 @@
           border-radius: 5px;
         }
       }
+      &.bubble-5 {
+        &:after, &:before {
+          top: 20%;
+          left: 10%;
+          height: 15%;
+          width: 80%;
+          border-radius: 3px;
+        }
+        &:before {
+          top: 50%;
+        }
+      }
       &.theme-light {
         background-color: rgba(168, 144, 106, 0.3) !important;
         &:after {

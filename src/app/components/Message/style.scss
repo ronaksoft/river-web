@@ -324,6 +324,9 @@
     &.avatar {
       padding-top: 6px;
     }
+    > .avatar {
+      visibility: hidden;
+    }
     .bubble {
       float: right;
       color: var(--black-text);
@@ -777,7 +780,8 @@ html[bubble="2"] {
   }
 }
 
-html[bubble="4"] {
+html[bubble="4"],
+html[bubble="5"] {
   .bubble-wrapper {
     padding-bottom: 4px;
     .arrow {
@@ -821,6 +825,34 @@ html[bubble="4"] {
             padding: 2px 12px 4px 8px;
           }
         }
+      }
+    }
+  }
+}
+
+html[bubble="5"] {
+  .bubble-wrapper {
+    .arrow {
+      display: none;
+    }
+    .bubble {
+      background-color: transparent !important;
+      box-shadow: none;
+      margin-left: 44px !important;
+      float: left;
+      .name {
+        font-weight: bold;
+      }
+    }
+    &:not(.media):not(.media_caption) {
+      .bubble {
+        max-width: calc(100% - 50px);
+        width: calc(100% - 50px);
+      }
+    }
+    &.me {
+      > .avatar {
+        visibility: visible;
       }
     }
   }

@@ -31,6 +31,7 @@ interface IProps {
 interface IState {
     className: string;
     id: string;
+    forceColor: boolean;
     prefix: string;
     user: IUser;
 }
@@ -45,20 +46,23 @@ class UserName extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
 
+        this.userRepo = UserRepo.getInstance();
+
         this.state = {
             className: props.className || '',
+            forceColor: this.userRepo.getBubbleMode() === '5',
             id: props.id,
             prefix: props.prefix || '',
             user: {},
         };
 
-        this.userRepo = UserRepo.getInstance();
         this.broadcaster = Broadcaster.getInstance();
     }
 
     public componentDidMount() {
         this.getUser();
         this.eventReferences.push(this.broadcaster.listen('User_DB_Updated', this.getUser));
+        this.eventReferences.push(this.broadcaster.listen('Theme_Changed', this.themeChangeHandler));
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -88,14 +92,15 @@ class UserName extends React.Component<IProps, IState> {
             color: 'auto',
             cursor: 'pointer',
         };
-        if (this.props.uniqueColor === true) {
+        if (this.props.uniqueColor === true && this.state.forceColor) {
             style.color = GetUniqueColor(`${user.firstname}${user.lastname}`, SecondaryColors);
         }
         if (this.props.id === '2374') {
             return (
                 <span className={className}
                       style={style}
-                      onClick={this.clickHandler}><VerifiedUserRounded style={{color: '#27AE60'}}/>{(user && user.id) ? (onlyFirstName ? prefix + user.firstname : `${prefix}${user.firstname} ${user.lastname}`) : (defaultString || '')}</span>
+                      onClick={this.clickHandler}><VerifiedUserRounded
+                    style={{color: '#27AE60'}}/>{(user && user.id) ? (onlyFirstName ? prefix + user.firstname : `${prefix}${user.firstname} ${user.lastname}`) : (defaultString || '')}</span>
             );
         } else if (this.props.username === true) {
             return (
@@ -159,6 +164,13 @@ class UserName extends React.Component<IProps, IState> {
         e.preventDefault();
         this.broadcastEvent('User_Dialog_Open', {
             id: user.id,
+        });
+    }
+
+    /* Theme change handler */
+    private themeChangeHandler = () => {
+        this.setState({
+            forceColor: (this.userRepo.getBubbleMode() === '5'),
         });
     }
 

@@ -215,9 +215,9 @@ class ChatInput extends React.Component<IProps, IState> {
 
     public componentDidMount() {
         this.eventReferences.push(this.broadcaster.listen('Group_DB_Updated', this.checkAuthority));
+        this.eventReferences.push(this.broadcaster.listen('Theme_Changed', this.windowResizeHandler));
         window.addEventListener('mouseup', this.windowMouseUp);
         window.addEventListener('resize', this.windowResizeHandler);
-        window.addEventListener('Theme_Changed', this.windowResizeHandler);
         this.initDraft(null, this.state.peer, 0, null);
     }
 
@@ -259,7 +259,6 @@ class ChatInput extends React.Component<IProps, IState> {
     public componentWillUnmount() {
         window.removeEventListener('mouseup', this.windowMouseUp);
         window.removeEventListener('resize', this.windowResizeHandler);
-        window.removeEventListener('Theme_Changed', this.windowResizeHandler);
         this.eventReferences.forEach((canceller) => {
             if (typeof canceller === 'function') {
                 canceller();

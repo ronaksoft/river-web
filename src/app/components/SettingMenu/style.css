@@ -408,6 +408,14 @@ input {
       border-radius: 5px; }
     .setting-menu .theme-container .item.bubble-4:before {
       border-radius: 5px; }
+    .setting-menu .theme-container .item.bubble-5:after, .setting-menu .theme-container .item.bubble-5:before {
+      top: 20%;
+      left: 10%;
+      height: 15%;
+      width: 80%;
+      border-radius: 3px; }
+    .setting-menu .theme-container .item.bubble-5:before {
+      top: 50%; }
     .setting-menu .theme-container .item.theme-light {
       background-color: rgba(168, 144, 106, 0.3) !important; }
       .setting-menu .theme-container .item.theme-light:after {

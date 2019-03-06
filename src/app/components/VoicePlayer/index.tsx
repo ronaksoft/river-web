@@ -13,6 +13,7 @@ import ProgressBroadcaster from '../../services/progress';
 import {IMessage} from '../../repository/message/interface';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import AudioPlayer, {C_INSTANT_AUDIO, IAudioEvent} from '../../services/audioPlayer';
+import Broadcaster from '../../services/broadcaster';
 
 import './style.css';
 
@@ -65,6 +66,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
     private voiceId: string | undefined;
     private audioPlayer: AudioPlayer;
     private readSent: boolean = false;
+    private broadcaster: Broadcaster;
 
     constructor(props: IProps) {
         super(props);
@@ -79,11 +81,13 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
         if (this.props.message) {
             this.readSent = this.props.message.contentread || false;
         }
+
+        this.broadcaster = Broadcaster.getInstance();
     }
 
     public componentDidMount() {
         window.addEventListener('mouseup', this.windowMouseUpHandler);
-        window.addEventListener('Theme_Changed', this.themeChangedHandler);
+        this.eventReferences.push(this.broadcaster.listen('Theme_Changed', this.themeChangedHandler));
         if (this.props.message && (this.props.message.id || 0) > 0) {
             this.eventReferences.push(this.audioPlayer.listen(this.props.message.id || 0, this.audioPlayerHandler));
         }
@@ -92,7 +96,6 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
     public componentWillUnmount() {
         this.removeAllListeners();
         window.removeEventListener('mouseup', this.windowMouseUpHandler);
-        window.removeEventListener('Theme_Changed', this.themeChangedHandler);
     }
 
     /* Set voice metadata and file */

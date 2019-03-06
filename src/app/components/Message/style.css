@@ -326,6 +326,8 @@ input {
       min-width: 80px; }
   .bubble-wrapper.me.avatar {
     padding-top: 6px; }
+  .bubble-wrapper.me > .avatar {
+    visibility: hidden; }
   .bubble-wrapper.me .bubble {
     float: right;
     color: var(--black-text);
@@ -627,26 +629,54 @@ html[bubble="2"] .group .bubble-wrapper.avatar.you .bubble > .inner {
 html[bubble="2"] .group .bubble-wrapper.media.me:not(.related) .bubble .bubble-body, html[bubble="2"] .group .bubble-wrapper.media.you:not(.related):not(.avatar) .bubble .bubble-body, html[bubble="2"] .group .bubble-wrapper.media_caption.you:not(.related):not(.avatar) .bubble .bubble-body {
   border-radius: 18px; }
 
-html[bubble="4"] .bubble-wrapper {
+html[bubble="4"] .bubble-wrapper,
+html[bubble="5"] .bubble-wrapper {
   padding-bottom: 4px; }
-  html[bubble="4"] .bubble-wrapper .arrow {
+  html[bubble="4"] .bubble-wrapper .arrow,
+  html[bubble="5"] .bubble-wrapper .arrow {
     width: 20px; }
-  html[bubble="4"] .bubble-wrapper .bubble {
+  html[bubble="4"] .bubble-wrapper .bubble,
+  html[bubble="5"] .bubble-wrapper .bubble {
     border-radius: 10px;
     min-width: 91px;
     padding-bottom: 16px; }
-    html[bubble="4"] .bubble-wrapper .bubble .inner {
+    html[bubble="4"] .bubble-wrapper .bubble .inner,
+    html[bubble="5"] .bubble-wrapper .bubble .inner {
       padding: 8px 12px 4px 8px; }
-    html[bubble="4"] .bubble-wrapper .bubble .name {
+    html[bubble="4"] .bubble-wrapper .bubble .name,
+    html[bubble="5"] .bubble-wrapper .bubble .name {
       padding: 4px 12px 0 8px; }
-    html[bubble="4"] .bubble-wrapper .bubble.highlight:before {
+    html[bubble="4"] .bubble-wrapper .bubble.highlight:before,
+    html[bubble="5"] .bubble-wrapper .bubble.highlight:before {
       border-radius: 10px; }
-  html[bubble="4"] .bubble-wrapper.me .bubble.edited {
+  html[bubble="4"] .bubble-wrapper.me .bubble.edited,
+  html[bubble="5"] .bubble-wrapper.me .bubble.edited {
     min-width: 115px; }
-  html[bubble="4"] .bubble-wrapper.me.has-error .arrow {
+  html[bubble="4"] .bubble-wrapper.me.has-error .arrow,
+  html[bubble="5"] .bubble-wrapper.me.has-error .arrow {
     right: 10px; }
-  html[bubble="4"] .bubble-wrapper.you .bubble.edited {
+  html[bubble="4"] .bubble-wrapper.you .bubble.edited,
+  html[bubble="5"] .bubble-wrapper.you .bubble.edited {
     min-width: 95px; }
 
-html[bubble="4"] .group .bubble-wrapper.avatar.you .bubble > .inner {
+html[bubble="4"] .group .bubble-wrapper.avatar.you .bubble > .inner,
+html[bubble="5"] .group .bubble-wrapper.avatar.you .bubble > .inner {
   padding: 2px 12px 4px 8px; }
+
+html[bubble="5"] .bubble-wrapper .arrow {
+  display: none; }
+
+html[bubble="5"] .bubble-wrapper .bubble {
+  background-color: transparent !important;
+  box-shadow: none;
+  margin-left: 44px !important;
+  float: left; }
+  html[bubble="5"] .bubble-wrapper .bubble .name {
+    font-weight: bold; }
+
+html[bubble="5"] .bubble-wrapper:not(.media):not(.media_caption) .bubble {
+  max-width: calc(100% - 50px);
+  width: calc(100% - 50px); }
+
+html[bubble="5"] .bubble-wrapper.me > .avatar {
+  visibility: visible; }

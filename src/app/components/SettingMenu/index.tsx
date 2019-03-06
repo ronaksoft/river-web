@@ -58,6 +58,7 @@ import OverlayDialog from '@material-ui/core/Dialog/Dialog';
 
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
+import Broadcaster from '../../services/broadcaster';
 
 interface IProps {
     onClose?: () => void;
@@ -107,6 +108,7 @@ class SettingMenu extends React.Component<IProps, IState> {
     private documentViewerService: DocumentViewerService;
     private versionClickTimeout: any = null;
     private versionClickCounter: number = 0;
+    private broadcaster: Broadcaster;
 
     constructor(props: IProps) {
         super(props);
@@ -153,6 +155,7 @@ class SettingMenu extends React.Component<IProps, IState> {
         this.riverTime = RiverTime.getInstance();
 
         this.documentViewerService = DocumentViewerService.getInstance();
+        this.broadcaster = Broadcaster.getInstance();
     }
 
     public componentDidMount() {
@@ -238,7 +241,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                             </div>
                         </div>
                         <div className="version" onClick={this.versionClickHandler}>
-                            v0.23.83
+                            v0.23.85
                         </div>
                     </div>
                     <div className="page page-2">
@@ -760,6 +763,8 @@ class SettingMenu extends React.Component<IProps, IState> {
             if (this.props.updateMessages) {
                 this.props.updateMessages();
             }
+            this.userRepo.setBubbleMode(id);
+            this.broadcastEvent('Theme_Changed', null);
         });
     }
 
@@ -996,15 +1001,6 @@ class SettingMenu extends React.Component<IProps, IState> {
         this.documentViewerService.loadDocument(doc);
     }
 
-    /* Broadcast Global Event */
-    private broadcastEvent(name: string, data: any) {
-        const event = new CustomEvent(name, {
-            bubbles: false,
-            detail: data,
-        });
-        window.dispatchEvent(event);
-    }
-
     /* Version click handler */
     private versionClickHandler = () => {
         if (!this.versionClickTimeout) {
@@ -1044,6 +1040,11 @@ class SettingMenu extends React.Component<IProps, IState> {
         this.setState({
             debugModeUrl: e.currentTarget.value,
         });
+    }
+
+    /* Broadcast Global Event */
+    private broadcastEvent(name: string, data: any) {
+        this.broadcaster.publish(name, data);
     }
 }
 

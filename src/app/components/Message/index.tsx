@@ -517,7 +517,7 @@ class Message extends React.Component<IProps, IState> {
                              onClick={this.toggleSelectHandler.bind(this, message.id || 0, index)}
                              onDoubleClick={this.selectMessage.bind(this, index)}
                         >
-                            {(!this.state.selectable && message.avatar && message.senderid && !message.me) && (
+                            {(!this.state.selectable && message.avatar && message.senderid) && (
                                 <UserAvatar id={message.senderid} className="avatar"/>
                             )}
                             {this.state.selectable && <Checkbox
@@ -529,7 +529,7 @@ class Message extends React.Component<IProps, IState> {
                             <div ref={parenElRefHandler}
                                  className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')}>
                                 {Boolean(peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me) &&
-                                <UserName className="name" uniqueColor={false} id={message.senderid || ''}/>}
+                                <UserName className="name" uniqueColor={true} id={message.senderid || ''}/>}
                                 {Boolean(message.replyto && message.replyto !== 0) &&
                                 <MessagePreview message={message} peer={peer}
                                                 onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}

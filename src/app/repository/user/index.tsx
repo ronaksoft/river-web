@@ -56,12 +56,21 @@ export default class UserRepo {
     private sdk: SDK;
     private lastContactTimestamp: number = 0;
     private broadcaster: Broadcaster;
+    private bubbleMode: string = localStorage.getItem('river.theme.bubble') || '4';
 
     private constructor() {
         this.dbService = DB.getInstance();
         this.db = this.dbService.getDB();
         this.sdk = SDK.getInstance();
         this.broadcaster = Broadcaster.getInstance();
+    }
+
+    public getBubbleMode() {
+        return this.bubbleMode;
+    }
+
+    public setBubbleMode(mode: string) {
+        this.bubbleMode = mode;
     }
 
     public getCurrentUserId(): string {
