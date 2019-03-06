@@ -218,9 +218,9 @@ class Message extends React.Component<IProps, IState> {
         if (this.list && jump) {
             this.list.scrollToRow(items.length - 1);
         } else {
-            this.list.scrollToRow(items.length - 1);
             setTimeout(() => {
                 if (instant) {
+                    this.list.scrollToRow(items.length - 1);
                     this.list.scrollToPosition(100000);
                 } else {
                     const el = document.querySelector('.chat.active-chat');
@@ -236,6 +236,9 @@ class Message extends React.Component<IProps, IState> {
                 }
             }, 200);
         }
+        setTimeout(() => {
+            this.list.scrollToPosition(this.scrollTop-1);
+        }, 201);
     }
 
     public setScrollMode(mode: 'none' | 'end' | 'stay') {

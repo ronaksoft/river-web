@@ -36,7 +36,7 @@
   --green: #DCf8C6;
   --message-chat: #EFEFF0;
   --color-hover: rgba(50, 61, 71, 0.07);
-  --color-hover-dark: rgba(50, 61, 71, 0.12);
+  --color-hover-dark: rgba(50, 61, 71, 0.64);
   --color-text-hover: rgba(50, 61, 71, 0.64);
   --header-color: #eee;
   --light-mention: #2678b6;
@@ -100,7 +100,7 @@ input {
     .user-info-menu .page-container.page-2 .page-2 {
       left: 0; }
   .user-info-menu .menu-header {
-    background-color: var(--bg);
+    background-color: var(--header-color);
     text-align: left;
     height: 48px;
     color: var(--dark-medium); }
@@ -194,7 +194,7 @@ html[theme="dark-blue"] .user-info-menu {
   background-color: var(--dark-high); }
   html[theme="dark"] .user-info-menu .menu-header,
   html[theme="dark-blue"] .user-info-menu .menu-header {
-    background-color: var(--dark-high);
+    background-color: var(--dark-medium);
     color: var(--white); }
     html[theme="dark"] .user-info-menu .menu-header svg,
     html[theme="dark-blue"] .user-info-menu .menu-header svg {
@@ -231,7 +231,7 @@ html[theme="dark-blue"] .notify-setting-dialog div[role="document"] > div {
 html[theme="dark-blue"] .user-info-menu {
   background-color: var(--dark-blue-low); }
   html[theme="dark-blue"] .user-info-menu .menu-header {
-    background-color: var(--dark-blue-high); }
+    background-color: var(--dark-blue-medium); }
   html[theme="dark-blue"] .user-info-menu .kk-card {
     background-color: var(--dark-blue-medium); }
 

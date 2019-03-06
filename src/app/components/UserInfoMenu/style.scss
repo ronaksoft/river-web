@@ -40,7 +40,7 @@
     }
   }
   .menu-header {
-    background-color: var(--bg);
+    background-color: var(--header-color);
     text-align: left;
     height: 48px;
     color: var(--dark-medium);
@@ -156,7 +156,7 @@ html[theme="dark-blue"] {
   .user-info-menu {
     background-color: var(--dark-high);
     .menu-header {
-      background-color: var(--dark-high);
+      background-color: var(--dark-medium);
       color: var(--white);
       svg {
         color: var(--white);
@@ -204,7 +204,7 @@ html[theme="dark-blue"] {
   .user-info-menu {
     background-color: var(--dark-blue-low);
     .menu-header {
-      background-color: var(--dark-blue-high);
+      background-color: var(--dark-blue-medium);
     }
     .kk-card {
       background-color: var(--dark-blue-medium);

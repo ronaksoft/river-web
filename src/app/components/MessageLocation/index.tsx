@@ -82,7 +82,8 @@ class MessageLocation extends React.PureComponent<IProps, IState> {
         // @ts-ignore
         this.documentViewerService.loadDocument({});
     }
-
+    // https://maps.googleapis.com/maps/api/staticmap?center=35.76344299316406,51.37594985961914&zoom=15&size=300x300&maptype=roadmap&key=AIzaSyAxXaCNUveWAy2fxxv824mFe1n53sLUSL4
+    // https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${long}&zoom=14&size=300x300&maptype=mapnik
     public render() {
         const {lat, long} = this.state;
         return (

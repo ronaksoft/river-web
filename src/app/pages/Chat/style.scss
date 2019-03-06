@@ -80,7 +80,7 @@
         display: flex;
       }
       .left-content {
-        height: calc(100% - 100px);
+        height: calc(100% - 99px);
       }
     }
     .left-overlay {
@@ -110,6 +110,7 @@
       position: relative;
       width: 100%;
       background-color: var(--header-color);
+      border-right: 1px solid rgba(0, 0, 0, 0.06);
       .info-bar {
         height: 48px;
         padding: 5px 29px;
@@ -582,6 +583,9 @@ html[theme="dark-blue"] {
     .column-left {
       border: 1px solid transparent;
       background-color: var(--dark-medium);
+      .top-bar {
+        border-bottom: 1px solid var(--dark-low);
+      }
       .actions {
         svg {
           color: var(--light);
@@ -689,6 +693,7 @@ html[theme="dark-blue"] {
       background-color: var(--dark-blue-medium);
       .top-bar {
         background-color: var(--dark-blue-medium);
+        border-color: var(--dark-blue-medium);
         &:after {
           background-color: var(--dark-blue-medium);
         }

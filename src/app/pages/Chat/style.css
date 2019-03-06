@@ -36,7 +36,7 @@
   --green: #DCf8C6;
   --message-chat: #EFEFF0;
   --color-hover: rgba(50, 61, 71, 0.07);
-  --color-hover-dark: rgba(50, 61, 71, 0.12);
+  --color-hover-dark: rgba(50, 61, 71, 0.64);
   --color-text-hover: rgba(50, 61, 71, 0.64);
   --header-color: #eee;
   --light-mention: #2678b6;
@@ -138,7 +138,7 @@ input {
     .container .column-left.with-top-bar .top-bar {
       display: flex; }
     .container .column-left.with-top-bar .left-content {
-      height: calc(100% - 100px); }
+      height: calc(100% - 99px); }
     .container .column-left .left-overlay {
       position: absolute;
       top: 0;
@@ -160,7 +160,8 @@ input {
     .container .column-center .top {
       position: relative;
       width: 100%;
-      background-color: var(--header-color); }
+      background-color: var(--header-color);
+      border-right: 1px solid rgba(0, 0, 0, 0.06); }
       .container .column-center .top .info-bar {
         height: 48px;
         padding: 5px 29px;
@@ -510,6 +511,9 @@ html[theme="dark-blue"] .container {
   html[theme="dark-blue"] .container .column-left {
     border: 1px solid transparent;
     background-color: var(--dark-medium); }
+    html[theme="dark"] .container .column-left .top-bar,
+    html[theme="dark-blue"] .container .column-left .top-bar {
+      border-bottom: 1px solid var(--dark-low); }
     html[theme="dark"] .container .column-left .actions svg,
     html[theme="dark-blue"] .container .column-left .actions svg {
       color: var(--light); }
@@ -598,7 +602,8 @@ html[theme="dark-blue"] .container {
   html[theme="dark-blue"] .container .column-left {
     background-color: var(--dark-blue-medium); }
     html[theme="dark-blue"] .container .column-left .top-bar {
-      background-color: var(--dark-blue-medium); }
+      background-color: var(--dark-blue-medium);
+      border-color: var(--dark-blue-medium); }
       html[theme="dark-blue"] .container .column-left .top-bar:after {
         background-color: var(--dark-blue-medium); }
     html[theme="dark-blue"] .container .column-left .left-overlay {

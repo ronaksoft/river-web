@@ -36,7 +36,7 @@
   --green: #DCf8C6;
   --message-chat: #EFEFF0;
   --color-hover: rgba(50, 61, 71, 0.07);
-  --color-hover-dark: rgba(50, 61, 71, 0.12);
+  --color-hover-dark: rgba(50, 61, 71, 0.64);
   --color-text-hover: rgba(50, 61, 71, 0.64);
   --header-color: #eee;
   --light-mention: #2678b6;
@@ -83,7 +83,7 @@ input {
   padding-left: 12px;
   display: flex;
   align-items: center;
-  justify-content: right; }
+  justify-content: center; }
   .bottom-bar:after {
     position: absolute;
     top: 0;
@@ -107,7 +107,7 @@ input {
     .bottom-bar a svg {
       cursor: pointer;
       fill: var(--grey);
-      font-size: 30px; }
+      font-size: 24px; }
     .bottom-bar a.active .title, .bottom-bar a:hover .title {
       color: var(--dark); }
     .bottom-bar a.active svg, .bottom-bar a:hover svg {

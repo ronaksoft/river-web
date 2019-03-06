@@ -495,14 +495,14 @@ html[theme="dark-blue"] {
     .menu-header {
       background-color: var(--dark-medium);
       color: var(--white);
-      border-color: rgba(255, 255, 255, 0.16);
+      border-color: var(--dark-low);
       svg {
         color: var(--white);
       }
     }
     .page-anchor, .page-content {
       color: var(--white);
-      border-color: rgba(255, 255, 255, 0.16);
+      border-color: var(--dark-low);
     }
     .font-size-container {
       button {
@@ -613,6 +613,7 @@ html[theme="dark-blue"] {
   .setting-menu {
     .menu-header {
       background-color: var(--dark-blue-medium);
+      border-color: var(--dark-low);
     }
     .font-size-container {
       div[role="progressbar"] {
