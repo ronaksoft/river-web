@@ -18,6 +18,7 @@ interface IDialog extends Dialog.AsObject {
     preview?: string;
     preview_icon?: number;
     preview_me?: boolean;
+    preview_rtl?: boolean;
     saved_messages?: boolean;
     sender_id?: string;
     target_id?: string;

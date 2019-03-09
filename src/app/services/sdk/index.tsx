@@ -265,12 +265,15 @@ export default class SDK {
         return this.server.send(C_MSG.MessagesSend, data.serializeBinary());
     }
 
-    public editMessage(randomId: number, id: number, body: string, peer: InputPeer): Promise<MessagesSent.AsObject> {
+    public editMessage(randomId: number, id: number, body: string, peer: InputPeer, entities?: MessageEntity[]): Promise<MessagesSent.AsObject> {
         const data = new MessagesEdit();
         data.setRandomid(randomId);
         data.setBody(body);
         data.setPeer(peer);
         data.setMessageid(id);
+        if (entities) {
+            data.setEntitiesList(entities);
+        }
         return this.server.send(C_MSG.MessagesEdit, data.serializeBinary());
     }
 

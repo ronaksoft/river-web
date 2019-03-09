@@ -131,6 +131,11 @@ export class MessagesEdit extends jspb.Message {
   getMessageid(): number | undefined;
   setMessageid(value: number): void;
 
+  clearEntitiesList(): void;
+  getEntitiesList(): Array<chat_core_types_pb.MessageEntity>;
+  setEntitiesList(value: Array<chat_core_types_pb.MessageEntity>): void;
+  addEntities(value?: chat_core_types_pb.MessageEntity, index?: number): chat_core_types_pb.MessageEntity;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesEdit.AsObject;
   static toObject(includeInstance: boolean, msg: MessagesEdit): MessagesEdit.AsObject;
@@ -147,6 +152,7 @@ export namespace MessagesEdit {
     peer: chat_core_types_pb.InputPeer.AsObject,
     body?: string,
     messageid?: number,
+    entitiesList: Array<chat_core_types_pb.MessageEntity.AsObject>,
   }
 }
 

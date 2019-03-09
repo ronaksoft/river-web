@@ -142,6 +142,8 @@ input {
     white-space: nowrap;
     text-overflow: ellipsis;
     color: var(--grey); }
+    .dialog-wrapper .preview.rtl {
+      direction: rtl; }
     .dialog-wrapper .preview .preview-icon {
       display: inline-block;
       font-size: 14px;

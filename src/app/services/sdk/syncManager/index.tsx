@@ -148,6 +148,7 @@ export default class SyncManager {
                         preview: messageTitle.text,
                         preview_icon: messageTitle.icon,
                         preview_me: (this.updateManager.getUserId() === updateNewMessage.message.senderid),
+                        preview_rtl: messages[updateNewMessage.message.id || 0].rtl,
                         saved_messages: (this.updateManager.getUserId() === updateNewMessage.message.peerid),
                         sender_id: updateNewMessage.message.senderid,
                         target_id: updateNewMessage.message.peerid,

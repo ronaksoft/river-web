@@ -87,6 +87,9 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     color: var(--grey);
+    &.rtl {
+      direction: rtl;
+    }
     .preview-icon {
       display: inline-block;
       font-size: 14px;

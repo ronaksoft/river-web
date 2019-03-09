@@ -925,6 +925,9 @@ class Chat extends React.Component<IProps, IState> {
         }
         data.messages.forEach((message) => {
             message.me = (this.connInfo.UserID === message.senderid);
+            if (message.body) {
+                message.rtl = this.rtlDetector.direction(message.body);
+            }
         });
         if (data.peerid === this.state.selectedDialogId) {
             const dataMsg = this.modifyMessages(this.state.messages, data.messages.reverse(), true);
@@ -1011,6 +1014,9 @@ class Chat extends React.Component<IProps, IState> {
             if (index > -1) {
                 messages[index] = data.message;
                 messages[index].me = (this.connInfo.UserID === data.message.senderid);
+                if (messages[index].body) {
+                    messages[index].rtl = this.rtlDetector.direction(messages[index].body || '');
+                }
                 this.messageComponent.cache.clear(index, 0);
                 this.messageComponent.list.recomputeRowHeights(index);
                 this.messageComponent.list.recomputeGridSize();
@@ -1600,7 +1606,16 @@ class Chat extends React.Component<IProps, IState> {
             message.body = text;
             message.editedon = this.riverTime.now();
             message.rtl = this.rtlDetector.direction(text || '');
-            this.sdk.editMessage(randomId, message.id || 0, text, peer).then(() => {
+
+            let entities;
+            if (param && param.entities) {
+                message.entitiesList = param.entities.map((entity: core_types_pb.MessageEntity) => {
+                    return entity.toObject();
+                });
+                entities = param.entities;
+            }
+
+            this.sdk.editMessage(randomId, message.id || 0, text, peer, entities).then(() => {
                 const index = findIndex(messages, (o) => {
                     return o.id === message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
                 });
@@ -1816,6 +1831,7 @@ class Chat extends React.Component<IProps, IState> {
                 dialogs[index].preview = messageTitle.text;
                 dialogs[index].preview_icon = messageTitle.icon;
                 dialogs[index].preview_me = previewMe;
+                dialogs[index].preview_rtl = msg.rtl;
                 dialogs[index].sender_id = msg.senderid;
                 dialogs[index].target_id = msg.peerid;
                 dialogs[index].last_update = msg.createdon;
@@ -1836,6 +1852,7 @@ class Chat extends React.Component<IProps, IState> {
                 preview: messageTitle.text,
                 preview_icon: messageTitle.icon,
                 preview_me: previewMe,
+                preview_rtl: msg.rtl,
                 saved_messages: (this.connInfo.UserID === id),
                 sender_id: msg.senderid,
                 target_id: msg.peerid,
@@ -1919,6 +1936,9 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private dialogsSort(dialogs: IDialog[], callback?: (ds: IDialog[]) => void) {
+        if (!dialogs) {
+            return;
+        }
         dialogs.sort((i1, i2) => {
             if (!i1.last_update || !i2.last_update) {
                 return 0;
@@ -2462,6 +2482,8 @@ class Chat extends React.Component<IProps, IState> {
             delete this.dialogMap[id];
             this.setState({
                 dialogs,
+            }, () => {
+                this.dialogsSortThrottle(this.state.dialogs);
             });
             this.dialogRepo.remove(id).then(() => {
                 this.props.history.push('/chat/null');

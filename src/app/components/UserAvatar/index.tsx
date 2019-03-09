@@ -47,17 +47,13 @@ const SecondaryColors = [
 ];
 
 const TextColors = [
-    '#30B8D2',
-    '#EC68B1',
-    '#35cd96',
-    '#808bc8',
-    '#EF69AD',
-    '#7062F0',
+    '#ca5650',
+    '#d87b29',
+    '#4e92cc',
+    '#50b232',
+    '#42b1a8',
+    '#4e92cc',
     '#B236D0',
-    '#4C15D0',
-    '#56A2D5',
-    '#44D5F3',
-    '#FDDC98',
 ];
 
 const defaultGradients: string[] = [];

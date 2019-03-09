@@ -275,6 +275,7 @@ export default class DialogRepo {
         dialog.preview = messageTitle.text;
         dialog.preview_icon = messageTitle.icon;
         dialog.preview_me = (msg.senderid === this.userId);
+        dialog.preview_rtl = msg.rtl;
         dialog.last_update = msg.createdon;
         dialog.target_id = msg.peerid;
         dialog.sender_id = msg.senderid;
