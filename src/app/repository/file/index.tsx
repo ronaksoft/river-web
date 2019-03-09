@@ -12,6 +12,7 @@ import {IFile, ITempFile} from './interface';
 import {DexieFileDB} from '../../services/db/dexie/file';
 import Dexie from 'dexie';
 import {arrayBufferToBase64} from '../../services/sdk/fileManager/http/utils';
+import {sha256} from 'js-sha256';
 
 export default class FileRepo {
     public static getInstance() {
@@ -99,9 +100,13 @@ export default class FileRepo {
             fileReader.onload = (event) => {
                 // @ts-ignore
                 const data: ArrayBuffer = event.target.result;
-                window.crypto.subtle.digest('SHA-256', data).then((res) => {
-                    resolve(arrayBufferToBase64(res));
-                });
+                try {
+                    window.crypto.subtle.digest('SHA-256', data).then((res) => {
+                        resolve(arrayBufferToBase64(res));
+                    });
+                } catch (e) {
+                    resolve(arrayBufferToBase64(sha256.arrayBuffer(data)));
+                }
             };
             fileReader.readAsArrayBuffer(blob);
         });

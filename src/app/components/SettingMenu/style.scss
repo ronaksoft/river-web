@@ -135,10 +135,17 @@
     .anchor-label {
       font-size: 16px;
       flex: 1;
+      &.color-red {
+        color: var(--red);
+      }
     }
     .setting-switch-label {
       width: 64px;
       margin: -10px 0;
+    }
+    &.log-out {
+      margin-top: 12px;
+      border: none;
     }
   }
   .label {

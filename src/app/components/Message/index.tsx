@@ -226,7 +226,7 @@ class Message extends React.Component<IProps, IState> {
                     }
                     setTimeout(() => {
                         if (this.list) {
-                            this.list.scrollToPosition(this.scrollTop - 1);
+                            this.list.scrollToPosition(this.scrollTop - 5);
                         }
                     }, 201);
                 } else {

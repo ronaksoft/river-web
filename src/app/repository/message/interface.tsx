@@ -10,18 +10,18 @@
 import {UserMessage} from '../../services/sdk/messages/chat.core.types_pb';
 
 interface IMessage extends UserMessage.AsObject {
-    me?: boolean;
-    avatar?: boolean;
-    rtl?: boolean;
-    temp?: boolean;
     actiondata?: any;
-    mention_me?: boolean;
-    mediadata?: any;
     attributes?: any[];
-    error?: boolean;
+    avatar?: boolean;
     downloaded?: boolean;
+    error?: boolean;
+    me?: boolean;
+    mediadata?: any;
+    mention_me?: boolean;
+    rtl?: boolean;
     saved?: boolean;
     savedPath?: string;
+    temp?: boolean;
 }
 
 interface IPendingMessage {

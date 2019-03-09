@@ -441,7 +441,7 @@
           width: 200px;
           top: 0;
           right: 0;
-          background: linear-gradient(10deg, transparent 0%, transparent 45%, rgba(0, 0, 0, 0.38) 75%, rgba(0, 0, 0, 0.7) 100%);
+          background: linear-gradient(10deg, transparent 0%, transparent 45%, rgba(0, 0, 0, 0.38) 75%, rgba(0, 0, 0, 0.5) 100%);
           border-radius: 8px 8px 0 0;
           z-index: 10;
           transition: opacity 0.2s;
@@ -722,8 +722,9 @@ html[bubble="2"] {
         padding: 4px 12px 0 8px;
       }
       .more {
-        top: 4px;
-        right: 8px;
+        top: 3px;
+        right: 3px;
+        border-radius: 18px 18px 0 0 !important;
       }
       &.highlight {
         &:before {

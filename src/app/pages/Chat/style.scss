@@ -147,6 +147,9 @@
             overflow: hidden;
             text-overflow: ellipsis;
           }
+          .online {
+            color: var(--river);
+          }
         }
         .buttons {
           position: absolute;
@@ -628,6 +631,11 @@ html[theme="dark-blue"] {
               color: var(--light);
             }
           }
+          .chat-title {
+            .online {
+              color: var(--dark-mention);
+            }
+          }
         }
       }
       .conversation {
@@ -670,6 +678,9 @@ html[theme="dark-blue"] {
       > div[role="document"], ul {
         background-color: var(--dark-low);
       }
+    }
+    hr {
+      margin: 4px 0;
     }
   }
   .confirm-dialog {

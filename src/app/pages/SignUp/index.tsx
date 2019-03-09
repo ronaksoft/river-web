@@ -443,6 +443,14 @@ class SignUp extends React.Component<IProps, IState> {
             }
         }, 1000);
     }
+
+    // @ts-ignore
+    private stopCoundown() {
+        if (!this.logoRef) {
+            return;
+        }
+        this.logoRef.classList.add('a-enable');
+    }
 }
 
 export default SignUp;

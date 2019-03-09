@@ -196,6 +196,8 @@ input {
               font-size: 16px;
               margin-right: 6px;
               vertical-align: bottom; }
+          .container .column-center .top .info-bar .chat-title .online {
+            color: var(--river); }
         .container .column-center .top .info-bar .buttons {
           position: absolute;
           top: 0;
@@ -542,6 +544,9 @@ html[theme="dark-blue"] .container {
       html[theme="dark"] .container .column-center .top .info-bar span .name,
       html[theme="dark-blue"] .container .column-center .top .info-bar span .name {
         color: var(--light); }
+    html[theme="dark"] .container .column-center .top .info-bar .chat-title .online,
+    html[theme="dark-blue"] .container .column-center .top .info-bar .chat-title .online {
+      color: var(--dark-mention); }
   html[theme="dark"] .container .column-center .conversation,
   html[theme="dark-blue"] .container .column-center .conversation {
     background-color: var(--dark-low); }
@@ -581,6 +586,10 @@ html[theme="dark"] .kk-context-menu.darker > div[role="document"], html[theme="d
 html[theme="dark-blue"] .kk-context-menu.darker > div[role="document"],
 html[theme="dark-blue"] .kk-context-menu.darker ul {
   background-color: var(--dark-low); }
+
+html[theme="dark"] .kk-context-menu hr,
+html[theme="dark-blue"] .kk-context-menu hr {
+  margin: 4px 0; }
 
 html[theme="dark"] .confirm-dialog div[role="document"] > div,
 html[theme="dark-blue"] .confirm-dialog div[role="document"] > div {

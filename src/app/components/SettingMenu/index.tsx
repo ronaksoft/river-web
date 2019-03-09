@@ -55,13 +55,14 @@ import DialogContent from '@material-ui/core/DialogContent/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions/DialogActions';
 import OverlayDialog from '@material-ui/core/Dialog/Dialog';
+import Broadcaster from '../../services/broadcaster';
 
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
-import Broadcaster from '../../services/broadcaster';
 
 interface IProps {
     onClose?: () => void;
+    onAction?: (cmd: 'logout') => void;
     subMenu?: string;
     updateMessages?: () => void;
     onSubPlaceChange?: (sub: string) => void;
@@ -241,7 +242,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                             </div>
                         </div>
                         <div className="version" onClick={this.versionClickHandler}>
-                            v0.23.85
+                            v0.23.86
                         </div>
                     </div>
                     <div className="page page-2">
@@ -527,6 +528,9 @@ class SettingMenu extends React.Component<IProps, IState> {
                                     Cancel
                                 </div>}
                             </div>}
+                            <div className="page-anchor log-out" onClick={this.logOutHandler}>
+                                <div className="anchor-label color-red">Log Out</div>
+                            </div>
                         </div>}
                     </div>
                 </div>
@@ -1040,6 +1044,13 @@ class SettingMenu extends React.Component<IProps, IState> {
         this.setState({
             debugModeUrl: e.currentTarget.value,
         });
+    }
+
+    /* Logout handler */
+    private logOutHandler = () => {
+        if (this.props.onAction) {
+            this.props.onAction('logout');
+        }
     }
 
     /* Broadcast Global Event */

@@ -67,6 +67,7 @@ class GroupName extends React.Component<IProps, IState> {
     }
 
     public componentWillUnmount() {
+        clearTimeout(this.tryTimeout);
         this.eventReferences.forEach((canceller) => {
             if (typeof canceller === 'function') {
                 canceller();

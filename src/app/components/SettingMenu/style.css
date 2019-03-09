@@ -175,9 +175,14 @@ input {
     .setting-menu .page-anchor .anchor-label {
       font-size: 16px;
       flex: 1; }
+      .setting-menu .page-anchor .anchor-label.color-red {
+        color: var(--red); }
     .setting-menu .page-anchor .setting-switch-label {
       width: 64px;
       margin: -10px 0; }
+    .setting-menu .page-anchor.log-out {
+      margin-top: 12px;
+      border: none; }
   .setting-menu .label {
     display: block;
     text-align: center;

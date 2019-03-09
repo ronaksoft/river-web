@@ -71,7 +71,7 @@ import RiverLogo from '../../components/RiverLogo';
 import MainRepo from '../../repository';
 import SettingMenu from '../../components/SettingMenu';
 import {C_MSG_MODE} from '../../components/ChatInput/consts';
-import TimeUtililty from '../../services/utilities/time';
+import TimeUtility from '../../services/utilities/time';
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from '../../repository/message/consts';
 import PopUpDate from '../../components/PopUpDate';
 import BottomBar from '../../components/BottomBar';
@@ -121,6 +121,7 @@ import {IUser} from '../../repository/user/interface';
 import {IMediaItem} from '../../components/Uploader';
 import LastSeen from '../../components/LastSeen';
 import {IGeoItem} from '../../components/MapPicker';
+import RTLDetector from '../../services/utilities/rtl_detector';
 
 import './style.css';
 
@@ -194,6 +195,7 @@ class Chat extends React.Component<IProps, IState> {
     private riverTime: RiverTime;
     private progressBroadcaster: ProgressBroadcaster;
     private firstTimeLoad: boolean = true;
+    private rtlDetector: RTLDetector;
 
     constructor(props: IProps) {
         super(props);
@@ -245,6 +247,7 @@ class Chat extends React.Component<IProps, IState> {
         this.updateManager.setUserId(this.connInfo.UserID || '');
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
         this.electronService = ElectronService.getInstance();
+        this.rtlDetector = RTLDetector.getInstance();
     }
 
     public componentDidMount() {
@@ -386,7 +389,8 @@ class Chat extends React.Component<IProps, IState> {
                 case 'settings':
                     return (<SettingMenu updateMessages={this.settingUpdateMessageHandler} subMenu={leftMenuSub}
                                          onClose={this.bottomBarSelectHandler.bind(this, 'chat')}
-                                         onSubPlaceChange={this.leftMenuSubPageChangeHandler}/>);
+                                         onSubPlaceChange={this.leftMenuSubPageChangeHandler}
+                                         onAction={this.settingActionHandler}/>);
                 case 'contact':
                     return (<ContactMenu/>);
             }
@@ -490,9 +494,9 @@ class Chat extends React.Component<IProps, IState> {
                         {selectedDialogId !== 'null' && <div className="column-center">
                             <div className="top">
                                 <div className="info-bar">
-                                    {this.isMobileView ? (
-                                        <div className="back-to-chats" onClick={this.backToChatsHandler}>
-                                            <KeyboardArrowLeftRounded/></div>) : ''}
+                                    {this.isMobileView &&
+                                    <div className="back-to-chats" onClick={this.backToChatsHandler}>
+                                        <KeyboardArrowLeftRounded/></div>}
                                     {this.getChatTitle()}
                                     <div className="buttons">
                                         <Tooltip
@@ -717,8 +721,6 @@ class Chat extends React.Component<IProps, IState> {
             return (<span>Updating...</span>);
         } else if (dialog && ids > 0) {
             return (isTypingRender(typingList, dialog));
-        } else if (dialog && dialog.peertype === PeerType.PEERGROUP && this.state.group) {
-            return (<span>{this.state.group.participants} members</span>);
         } else {
             return (<LastSeen id={dialogId || ''} withLastSeen={true}/>);
         }
@@ -1466,8 +1468,8 @@ class Chat extends React.Component<IProps, IState> {
                     (key > 0 && messages[key - 1].messageaction !== C_MESSAGE_ACTION.MessageActionNope);
 
                 // date breakpoint
-                if ((key === 0 && (defaultMessages.length === 0 || (defaultMessages.length > 0 && !TimeUtililty.isInSameDay(msg.createdon, defaultMessages[defaultMessages.length - 1].createdon))))
-                    || (key > 0 && !TimeUtililty.isInSameDay(msg.createdon, messages[key - 1].createdon))) {
+                if ((key === 0 && (defaultMessages.length === 0 || (defaultMessages.length > 0 && !TimeUtility.isInSameDay(msg.createdon, defaultMessages[defaultMessages.length - 1].createdon))))
+                    || (key > 0 && !TimeUtility.isInSameDay(msg.createdon, messages[key - 1].createdon))) {
                     defaultMessages.push({
                         createdon: msg.createdon,
                         id: msg.id,
@@ -1489,7 +1491,7 @@ class Chat extends React.Component<IProps, IState> {
 
             if (!push) {
                 if (key === 0 && defaultMessages[0].messagetype === C_MESSAGE_TYPE.Date) {
-                    if (TimeUtililty.isInSameDay(msg.createdon, defaultMessages[0].createdon)) {
+                    if (TimeUtility.isInSameDay(msg.createdon, defaultMessages[0].createdon)) {
                         defaultMessages.splice(0, 1);
                     }
                 }
@@ -1506,7 +1508,7 @@ class Chat extends React.Component<IProps, IState> {
                 defaultMessages.unshift(msg);
                 // date breakpoint
                 if (messages.length - 1 === key // End of message list
-                    || (defaultMessages.length > 1 && !TimeUtililty.isInSameDay(msg.createdon, defaultMessages[1].createdon))) {
+                    || (defaultMessages.length > 1 && !TimeUtility.isInSameDay(msg.createdon, defaultMessages[1].createdon))) {
                     defaultMessages.unshift({
                         createdon: msg.createdon,
                         id: msg.id,
@@ -1552,7 +1554,7 @@ class Chat extends React.Component<IProps, IState> {
             // avatar breakpoint
             msg.avatar = (iter === -1) || (iter > -1 && msg.senderid !== defaultMessages[iter].senderid);
             // date breakpoint
-            if ((iter === -1) || (iter > -1 && !TimeUtililty.isInSameDay(msg.createdon, defaultMessages[iter].createdon))) {
+            if ((iter === -1) || (iter > -1 && !TimeUtility.isInSameDay(msg.createdon, defaultMessages[iter].createdon))) {
                 defaultMessages.splice(index + cnt, 0, {
                     createdon: msg.createdon,
                     id: msg.id,
@@ -1597,6 +1599,7 @@ class Chat extends React.Component<IProps, IState> {
             const message: IMessage = param.message;
             message.body = text;
             message.editedon = this.riverTime.now();
+            message.rtl = this.rtlDetector.direction(text || '');
             this.sdk.editMessage(randomId, message.id || 0, text, peer).then(() => {
                 const index = findIndex(messages, (o) => {
                     return o.id === message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
@@ -1619,6 +1622,7 @@ class Chat extends React.Component<IProps, IState> {
                 messageaction: C_MESSAGE_ACTION.MessageActionNope,
                 peerid: this.state.selectedDialogId,
                 peertype: peer.getType(),
+                rtl: this.rtlDetector.direction(text || ''),
                 senderid: this.connInfo.UserID,
             };
 
@@ -1685,7 +1689,7 @@ class Chat extends React.Component<IProps, IState> {
     private pushMessage = (message: IMessage) => {
         const {messages} = this.state;
         if (messages.length > 0 &&
-            !TimeUtililty.isInSameDay(message.createdon, messages[messages.length - 1].createdon)) {
+            !TimeUtility.isInSameDay(message.createdon, messages[messages.length - 1].createdon)) {
             messages.push({
                 createdon: message.createdon,
                 id: message.id,
@@ -2431,6 +2435,15 @@ class Chat extends React.Component<IProps, IState> {
             this.messageComponent.cache.clearAll();
             this.messageComponent.list.recomputeRowHeights();
             this.messageComponent.forceUpdate();
+        }
+    }
+
+    /* SettingMenu on update handler */
+    private settingActionHandler = (cmd: 'logout') => {
+        switch (cmd) {
+            case 'logout':
+                this.bottomBarSelectHandler('logout');
+                break;
         }
     }
 

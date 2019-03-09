@@ -11,9 +11,11 @@ import * as React from 'react';
 import TimeUtility from '../../services/utilities/time';
 import RiverTime from '../../services/utilities/river_time';
 import UserRepo from '../../repository/user';
+import GroupRepo from '../../repository/group';
 import {IUser} from '../../repository/user/interface';
 import {UserStatus} from '../../services/sdk/messages/chat.core.types_pb';
 import Broadcaster from '../../services/broadcaster';
+import {IGroup} from '../../repository/group/interface';
 
 interface IProps {
     className?: string;
@@ -23,6 +25,7 @@ interface IProps {
 
 interface IState {
     className: string;
+    group: IGroup;
     id: string;
     user: IUser;
     you: boolean;
@@ -32,6 +35,7 @@ class LastSeen extends React.Component<IProps, IState> {
     private interval: any = null;
     private riverTime: RiverTime;
     private userRepo: UserRepo;
+    private groupRepo: GroupRepo;
     private tryTimeout: any = null;
     private tryCount: number = 0;
     private broadcaster: Broadcaster;
@@ -42,6 +46,7 @@ class LastSeen extends React.Component<IProps, IState> {
 
         this.state = {
             className: props.className || '',
+            group: {},
             id: props.id,
             user: {},
             you: false,
@@ -49,13 +54,15 @@ class LastSeen extends React.Component<IProps, IState> {
 
         this.riverTime = RiverTime.getInstance();
         this.userRepo = UserRepo.getInstance();
+        this.groupRepo = GroupRepo.getInstance();
         this.broadcaster = Broadcaster.getInstance();
     }
 
     public componentDidMount() {
         this.runInterval();
-        this.getUser();
+        this.getData();
         this.eventReferences.push(this.broadcaster.listen('User_DB_Updated', this.getUser));
+        this.eventReferences.push(this.broadcaster.listen('Group_DB_Updated', this.getGroup));
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -65,7 +72,7 @@ class LastSeen extends React.Component<IProps, IState> {
             this.setState({
                 id: newProps.id,
             }, () => {
-                this.getUser();
+                this.getData();
                 this.runInterval();
             });
         }
@@ -73,6 +80,7 @@ class LastSeen extends React.Component<IProps, IState> {
 
     public componentWillUnmount() {
         clearInterval(this.interval);
+        clearTimeout(this.tryTimeout);
         this.eventReferences.forEach((canceller) => {
             if (typeof canceller === 'function') {
                 canceller();
@@ -87,15 +95,18 @@ class LastSeen extends React.Component<IProps, IState> {
     }
 
     private getStatus() {
-        const {user} = this.state;
-        if (this.state.you) {
-            return 'online';
-        } else if (this.riverTime.now() - (user.status_last_modified || 0) < 60 && user.status === UserStatus.USERSTATUSONLINE) {
-            return 'online';
-        } else if (!user.status_last_modified) {
-            return `${this.props.withLastSeen ? 'last seen' : ''} recently`;
+        if (this.state.id.indexOf('-') === 0) {
+            const {group} = this.state;
+            return `${group.participants || 0} members`;
         } else {
-            return `${this.props.withLastSeen ? 'last seen' : ''} ${TimeUtility.timeAgo(user.status_last_modified || 0)}`;
+            const {user} = this.state;
+            if (this.state.you || this.riverTime.now() - (user.status_last_modified || 0) < 60 && user.status === UserStatus.USERSTATUSONLINE) {
+                return (<span className="online">online</span>);
+            } else if (!user.status_last_modified) {
+                return `${this.props.withLastSeen ? 'last seen' : ''} recently`;
+            } else {
+                return `${this.props.withLastSeen ? 'last seen' : ''} ${TimeUtility.timeAgo(user.status_last_modified || 0)}`;
+            }
         }
     }
 
@@ -117,6 +128,14 @@ class LastSeen extends React.Component<IProps, IState> {
             this.interval = setInterval(() => {
                 this.forceUpdate();
             }, intervalTime);
+        }
+    }
+
+    private getData() {
+        if (this.state.id.indexOf('-') === 0) {
+            this.getGroup();
+        } else {
+            this.getUser();
         }
     }
 
@@ -150,6 +169,34 @@ class LastSeen extends React.Component<IProps, IState> {
                 this.tryCount++;
                 this.tryTimeout = setTimeout(() => {
                     this.getUser();
+                }, 1000);
+            }
+        });
+    }
+
+    private getGroup = (data?: any) => {
+        if (!this.state || this.state.id === '') {
+            return;
+        }
+
+        if (data && data.ids.indexOf(this.state.id) === -1) {
+            return;
+        }
+
+        this.groupRepo.get(this.state.id).then((group) => {
+            if (group) {
+                this.setState({
+                    group,
+                    you: false,
+                });
+            } else {
+                throw Error('not found');
+            }
+        }).catch(() => {
+            if (this.tryCount < 10) {
+                this.tryCount++;
+                this.tryTimeout = setTimeout(() => {
+                    this.getGroup();
                 }, 1000);
             }
         });
