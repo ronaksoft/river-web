@@ -39,6 +39,8 @@ import CachedPhoto from '../CachedPhoto';
 import MessageMedia from '../MessageMedia';
 import {MediaDocument} from '../../services/sdk/messages/chat.core.message.medias_pb';
 import MessageLocation from '../MessageLocation';
+import Broadcaster from '../../services/broadcaster';
+import UserRepo from '../../repository/user';
 
 import './style.css';
 
@@ -73,7 +75,7 @@ interface IState {
     selectedIds: { [key: number]: number };
 }
 
-export const highlighMessage = (id: number) => {
+export const highlightMessage = (id: number) => {
     const el = document.querySelector(`.bubble-wrapper .bubble.b_${id}`);
     if (el) {
         el.classList.add('highlight');
@@ -105,6 +107,9 @@ class Message extends React.Component<IProps, IState> {
         stopIndex: 0,
     };
     private riverTime: RiverTime;
+    private isSimplified: boolean = false;
+    private broadcaster: Broadcaster;
+    private eventReferences: any[] = [];
 
     constructor(props: IProps) {
         super(props);
@@ -127,12 +132,17 @@ class Message extends React.Component<IProps, IState> {
             keyMapper: this.keyMapperHandler,
             minHeight: 35,
         });
+
+        this.broadcaster = Broadcaster.getInstance();
+
+        this.isSimplified = UserRepo.getInstance().getBubbleMode() === '5';
     }
 
     public componentDidMount() {
         this.fitList(true);
         this.listCount = this.props.items.length;
         this.topOfList = false;
+        this.eventReferences.push(this.broadcaster.listen('Theme_Changed', this.themeChangeHandler));
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -175,6 +185,14 @@ class Message extends React.Component<IProps, IState> {
                 this.list.forceUpdateGrid();
             });
         }
+    }
+
+    public componentWillUnmount() {
+        this.eventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
+        });
     }
 
     public setLoading(loading: boolean) {
@@ -290,7 +308,7 @@ class Message extends React.Component<IProps, IState> {
             <AutoSizer>
                 {({width, height}: any) => (
                     <div
-                        className={((peer && peer.getType() === PeerType.PEERGROUP) ? 'group' : 'user') + (selectable ? ' selectable' : '')}>
+                        className={((peer && peer.getType() === PeerType.PEERGROUP || this.isSimplified) ? 'group' : 'user') + (selectable ? ' selectable' : '')}>
                         <List
                             ref={this.refHandler}
                             deferredMeasurementCache={this.cache}
@@ -515,7 +533,7 @@ class Message extends React.Component<IProps, IState> {
                 } else {
                     return (
                         <div style={style}
-                             className={'bubble-wrapper _bubble' + (message.me ? ' me' : ' you') + (message.avatar ? ' avatar' : '') + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '') + this.getMessageType(message) + ((message.me && message.error) ? ' has-error' : '')}
+                             className={'bubble-wrapper _bubble' + (message.me && !this.isSimplified ? ' me' : ' you') + (message.avatar ? ' avatar' : '') + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '') + this.getMessageType(message) + ((message.me && message.error) ? ' has-error' : '')}
                              onClick={this.toggleSelectHandler.bind(this, message.id || 0, index)}
                              onDoubleClick={this.selectMessage.bind(this, index)}
                         >
@@ -530,7 +548,7 @@ class Message extends React.Component<IProps, IState> {
                             {Boolean(message.me && message.error) && <span className="error"><ErrorRounded/></span>}
                             <div ref={parenElRefHandler}
                                  className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')}>
-                                {Boolean(peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me) &&
+                                {Boolean((peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me) || (this.isSimplified && message.avatar)) &&
                                 <UserName className="name" uniqueColor={true} id={message.senderid || ''}/>}
                                 {Boolean(message.replyto && message.replyto !== 0) &&
                                 <MessagePreview message={message} peer={peer}
@@ -971,6 +989,11 @@ class Message extends React.Component<IProps, IState> {
             related = 'related';
         }
         return ` ${type} ${related}`;
+    }
+
+    /* Theme change handler */
+    private themeChangeHandler = () => {
+        this.isSimplified = UserRepo.getInstance().getBubbleMode() === '5';
     }
 }
 

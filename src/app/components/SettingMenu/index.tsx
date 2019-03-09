@@ -60,6 +60,8 @@ import Broadcaster from '../../services/broadcaster';
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
+export const C_VERSION = '0.23.87';
+
 interface IProps {
     onClose?: () => void;
     onAction?: (cmd: 'logout') => void;
@@ -242,7 +244,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                             </div>
                         </div>
                         <div className="version" onClick={this.versionClickHandler}>
-                            v0.23.86
+                            v{C_VERSION}
                         </div>
                     </div>
                     <div className="page page-2">

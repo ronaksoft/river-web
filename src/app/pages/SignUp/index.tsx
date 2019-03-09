@@ -13,12 +13,13 @@ import SDK from '../../services/sdk';
 import ReactPhoneInput from 'react-phone-input-2';
 import Snackbar from '@material-ui/core/Snackbar';
 import {Refresh} from '@material-ui/icons';
-import {C_ERR, C_ERR_ITEM} from "../../services/sdk/const";
+import {C_ERR, C_ERR_ITEM} from '../../services/sdk/const';
 import RiverLogo from '../../components/RiverLogo';
 import NotificationService from '../../services/notification';
+import IsMobile from '../../services/isMobile';
+import {C_VERSION} from '../../components/SettingMenu';
 
 import './style.css';
-import IsMobile from '../../services/isMobile';
 
 interface IProps {
     match?: any;
@@ -128,7 +129,7 @@ class SignUp extends React.Component<IProps, IState> {
                                 <span className="focus-input"/>
                             </div>}
                             {step === 'register' &&
-                            <div className="login-wrapper validate-input m-b-16">
+                            <div className="input-wrapper validate-input m-b-16">
                                 <input className="input f-lname" type="text" placeholder="Last Name"
                                        autoComplete="off" onKeyDown={this.registerKeyDown}
                                        value={this.state.lName} onChange={this.lNameOnChange}/>
@@ -261,7 +262,7 @@ class SignUp extends React.Component<IProps, IState> {
                 this.props.history.push('/chat/null');
                 this.dispatchWSOpenEvent();
                 this.notification.initToken().then((token) => {
-                    this.sdk.registerDevice(token, 0, '0.23.2', 'web', 'en', '1');
+                    this.sdk.registerDevice(token, 0, C_VERSION, 'web', 'en', '1');
                 });
             }).catch((err) => {
                 window.console.log(err);
@@ -311,6 +312,7 @@ class SignUp extends React.Component<IProps, IState> {
             tries: 0,
         }, () => {
             this.focus('f-phone');
+            this.stopCoundown();
         });
     }
 
@@ -354,7 +356,7 @@ class SignUp extends React.Component<IProps, IState> {
             this.props.history.push('/chat/null');
             this.dispatchWSOpenEvent();
             this.notification.initToken().then((token) => {
-                this.sdk.registerDevice(token, 0, '0.23.5', 'web', 'en', '1');
+                this.sdk.registerDevice(token, 0, C_VERSION, 'web', 'en', '1');
             });
         }).catch((err) => {
             this.setState({
@@ -444,12 +446,11 @@ class SignUp extends React.Component<IProps, IState> {
         }, 1000);
     }
 
-    // @ts-ignore
     private stopCoundown() {
         if (!this.logoRef) {
             return;
         }
-        this.logoRef.classList.add('a-enable');
+        this.logoRef.classList.remove('a-enable', 'c-enable');
     }
 }
 

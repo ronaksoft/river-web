@@ -722,8 +722,8 @@ export default class MessageRepo {
         if (message.contentread) {
             newMessage.contentread = true;
         }
+        message.entitiesList = newMessage.entitiesList;
         const d = merge(message, newMessage);
-        d.entitiesList = newMessage.entitiesList;
         return d;
     }
 

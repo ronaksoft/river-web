@@ -10,7 +10,7 @@
 import * as React from 'react';
 import Dialog from '../../components/Dialog/index';
 import {IMessage} from '../../repository/message/interface';
-import Message, {highlighMessage} from '../../components/Message/index';
+import Message, {highlightMessage} from '../../components/Message/index';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -2661,7 +2661,7 @@ class Chat extends React.Component<IProps, IState> {
         if (index > 0) {
             this.messageComponent.list.scrollToRow(index);
             setTimeout(() => {
-                highlighMessage(id);
+                highlightMessage(id);
             }, 100);
         } else {
             // if ((messages[0].id || 0) < id) {
@@ -2697,7 +2697,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageComponent.list.scrollToRow(0);
                 setTimeout(() => {
                     this.setLoading(false);
-                    highlighMessage(id);
+                    highlightMessage(id);
                 }, 100);
             }).catch((err) => {
                 window.console.log(err);

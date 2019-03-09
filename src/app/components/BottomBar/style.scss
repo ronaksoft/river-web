@@ -16,7 +16,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  &:after {
+  &:before {
     position: absolute;
     top: 0;
     left: 0;
@@ -56,7 +56,7 @@
 
 html[theme="dark"] {
   .bottom-bar {
-    &:after {
+    &:before {
       background-color: var(--dark-low);
     }
     a {
@@ -74,7 +74,7 @@ html[theme="dark"] {
 
 html[theme="dark-blue"] {
   .bottom-bar {
-    &:after {
+    &:before {
       background-color: var(--dark-blue-low);
     }
     a {
