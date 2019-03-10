@@ -107,7 +107,7 @@ class DialogMessage extends React.Component<IProps, IState> {
                     </span>}
                     <LiveDate className="time" time={dialog.last_update || 0}/>
                 </div>
-                {Boolean(ids.length === 0) && <span className={'preview' + (dialog.preview_rtl ? ' rtl' : '')}>
+                {Boolean(ids.length === 0) && <span className="preview">
                     {this.renderPreviewMessage(dialog)}
                 </span>}
                 {isTypingRender(isTyping, dialog)}
@@ -159,7 +159,8 @@ class DialogMessage extends React.Component<IProps, IState> {
                 <span className="preview-message">
                     {Boolean(dialog.peertype === PeerType.PEERGROUP && dialog.sender_id) && <span className="sender">
                     <UserName id={dialog.sender_id || ''} onlyFirstName={true} you={true} noDetail={true}/>: </span>}
-                    {this.getIcon(dialog.preview_icon)}{dialog.preview}
+                    {this.getIcon(dialog.preview_icon)}<span
+                    className={dialog.preview_rtl ? ' rtl' : ''}>{dialog.preview}</span>
                 </span>
             );
         }
@@ -227,7 +228,8 @@ class DialogMessage extends React.Component<IProps, IState> {
                                                                     you={true} onlyFirstName={true}
                                                                     noDetail={true}/> changed the Group Photo</span>);
             default:
-                return (<span className="preview-message">{this.getIcon(dialog.preview_icon)}{dialog.preview}</span>);
+                return (<span className="preview-message">{this.getIcon(dialog.preview_icon)}<span
+                    className={dialog.preview_rtl ? ' rtl' : ''}>{dialog.preview}</span></span>);
         }
     }
 }

@@ -87,7 +87,7 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     color: var(--grey);
-    &.rtl {
+    .rtl {
       direction: rtl;
     }
     .preview-icon {
