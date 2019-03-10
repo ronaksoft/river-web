@@ -143,12 +143,18 @@ input {
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden; }
-      .message-file .file-content .file-info .file-download {
-        font-size: 12px;
-        color: var(--light-mention);
-        cursor: pointer; }
-      .message-file .file-content .file-info .file-size {
-        font-size: 12px; }
+      .message-file .file-content .file-info .file-row {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: center; }
+        .message-file .file-content .file-info .file-row .file-download {
+          padding: 0 0 0 6px;
+          font-size: 12px;
+          color: var(--light-mention);
+          cursor: pointer; }
+        .message-file .file-content .file-info .file-row .file-size {
+          font-size: 12px; }
   .message-file .file-caption {
     padding: 0 6px;
     white-space: pre-wrap;

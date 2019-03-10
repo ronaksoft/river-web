@@ -264,12 +264,13 @@ class MessageFile extends React.PureComponent<IProps, IState> {
                     </div>
                     <div className="file-info">
                         <div className="file-name">{fileName}</div>
-                        {Boolean(fileState === 'view') &&
-                        <div className="file-download" onClick={this.viewFileHandler}>Save</div>}
-                        {Boolean(fileState === 'open') &&
-                        <div className="file-download" onClick={this.openFileHandler}>Open</div>}
-                        {Boolean(fileState !== 'view' && fileState !== 'open') &&
-                        <div className="file-size" ref={this.fileSizeRefHandler}>0 KB</div>}
+                        <div className="file-row">
+                            <div className="file-size" ref={this.fileSizeRefHandler}>0 KB</div>
+                            {Boolean(fileState === 'view') &&
+                            <div className="file-download" onClick={this.viewFileHandler}>Save</div>}
+                            {Boolean(fileState === 'open') &&
+                            <div className="file-download" onClick={this.openFileHandler}>Open</div>}
+                        </div>
                     </div>
                 </div>
                 {Boolean(caption.length > 0) && <div className="file-caption">{caption}</div>}
@@ -308,7 +309,9 @@ class MessageFile extends React.PureComponent<IProps, IState> {
     /* Upload progress handler */
     private uploadProgressHandler = (progress: IFileProgress) => {
         const {message} = this.state;
-        if ((message.id || 0) > 0) {
+        if (progress.state === 'complete') {
+            this.displayFileSize(0);
+        } else if ((message.id || 0) > 0) {
             this.displayFileSize(progress.download);
         } else {
             this.displayFileSize(progress.upload);

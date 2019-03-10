@@ -85,13 +85,20 @@
         text-overflow: ellipsis;
         overflow: hidden;
       }
-      .file-download {
-        font-size: 12px;
-        color: var(--light-mention);
-        cursor: pointer;
-      }
-      .file-size {
-        font-size: 12px;
+      .file-row {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: center;
+        .file-download {
+          padding: 0 0 0 6px;
+          font-size: 12px;
+          color: var(--light-mention);
+          cursor: pointer;
+        }
+        .file-size {
+          font-size: 12px;
+        }
       }
     }
   }

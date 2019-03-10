@@ -135,7 +135,7 @@ interface IProps {
 
 interface IState {
     chatMoreAnchorEl: any;
-    confirmDialogMode: 'none' | 'logout' | 'remove_message' | 'remove_message_revoke' | 'delete_exit_group';
+    confirmDialogMode: 'none' | 'logout' | 'remove_message' | 'remove_message_revoke' | 'delete_exit_group' | 'delete_user';
     confirmDialogOpen: boolean;
     dialogs: IDialog[];
     forwardRecipientDialogOpen: boolean;
@@ -629,7 +629,7 @@ class Chat extends React.Component<IProps, IState> {
                             <DialogContentText>
                                 Delete and exit <GroupName className="group-name"
                                                            id={this.state.leftMenuSelectedDialogId}/> ?<br/>
-                                All group data will be remove!
+                                All group messages will be removed!
                             </DialogContentText>
                         </DialogContent>
                         <DialogActions>
@@ -637,6 +637,25 @@ class Chat extends React.Component<IProps, IState> {
                                 Disagree
                             </Button>
                             <Button onClick={this.deleteAndExitGroupHandler} color="primary" autoFocus={true}>
+                                Agree
+                            </Button>
+                        </DialogActions>
+                    </div>}
+                    {Boolean(confirmDialogMode === 'delete_user') &&
+                    <div>
+                        <DialogTitle>Delete dialog?</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>
+                                Delete conversation with <UserName className="group-name"
+                                                                   id={this.state.leftMenuSelectedDialogId}/> ?<br/>
+                                All messages will be removed!
+                            </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={this.confirmDialogCloseHandler} color="secondary">
+                                Disagree
+                            </Button>
+                            <Button onClick={this.deleteUserHandler} color="primary" autoFocus={true}>
                                 Agree
                             </Button>
                         </DialogActions>
@@ -2792,7 +2811,7 @@ class Chat extends React.Component<IProps, IState> {
                 break;
             case 'remove':
                 this.setState({
-                    confirmDialogMode: 'delete_exit_group',
+                    confirmDialogMode: (dialog.peertype === PeerType.PEERGROUP) ? 'delete_exit_group' : 'delete_user',
                     confirmDialogOpen: true,
                     leftMenu: 'chat',
                     leftMenuSelectedDialogId: dialog.peerid || '',
@@ -3595,7 +3614,7 @@ class Chat extends React.Component<IProps, IState> {
         // }, 210);
     }
 
-    /* Delete and exit group */
+    /* Delete and exit group handler */
     private deleteAndExitGroupHandler = () => {
         const {leftMenuSelectedDialogId} = this.state;
         if (leftMenuSelectedDialogId === '') {
@@ -3619,6 +3638,31 @@ class Chat extends React.Component<IProps, IState> {
                 this.sdk.clearMessage(peer, dialog.topmessageid, true);
             }
         });
+        this.confirmDialogCloseHandler();
+    }
+
+    /* Delete user handler */
+    private deleteUserHandler = () => {
+        const {leftMenuSelectedDialogId} = this.state;
+        if (leftMenuSelectedDialogId === '') {
+            return;
+        }
+        const peer = this.getPeerByDialogId(leftMenuSelectedDialogId);
+        if (!peer) {
+            return;
+        }
+        const id = this.sdk.getConnInfo().UserID || '';
+        const user = new InputUser();
+        user.setUserid(id);
+        user.setAccesshash('');
+        let dialog: IDialog | null = null;
+        const dialogId = peer.getId() || '';
+        if (this.dialogMap.hasOwnProperty(dialogId)) {
+            dialog = this.state.dialogs[this.dialogMap[dialogId]];
+        }
+        if (dialog && dialog.topmessageid) {
+            this.sdk.clearMessage(peer, dialog.topmessageid, true);
+        }
         this.confirmDialogCloseHandler();
     }
 
