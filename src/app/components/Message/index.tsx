@@ -240,13 +240,12 @@ class Message extends React.Component<IProps, IState> {
                 if (instant) {
                     if (this.list) {
                         this.list.scrollToRow(items.length);
-                        this.list.scrollToPosition(100000);
+                        setTimeout(() => {
+                            if (this.list) {
+                                this.list.scrollToPosition(this.scrollTop + 10);
+                            }
+                        }, 10);
                     }
-                    setTimeout(() => {
-                        if (this.list) {
-                            this.list.scrollToPosition(this.scrollTop - 5);
-                        }
-                    }, 201);
                 } else {
                     setTimeout(() => {
                         const el = document.querySelector('.chat.active-chat');
@@ -259,7 +258,7 @@ class Message extends React.Component<IProps, IState> {
                                 });
                             }
                         }
-                    }, 200);
+                    }, 1);
                 }
             }, 200);
         }
@@ -549,7 +548,8 @@ class Message extends React.Component<IProps, IState> {
                             <div ref={parenElRefHandler}
                                  className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')}>
                                 {Boolean((peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me) || (this.isSimplified && message.avatar)) &&
-                                <UserName className="name" uniqueColor={true} id={message.senderid || ''}/>}
+                                <UserName className="name" uniqueColor={true} id={message.senderid || ''}
+                                          hideBadge={true}/>}
                                 {Boolean(message.replyto && message.replyto !== 0) &&
                                 <MessagePreview message={message} peer={peer}
                                                 onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}

@@ -17,6 +17,7 @@ import Broadcaster from '../../services/broadcaster';
 interface IProps {
     className?: string;
     defaultString?: string;
+    hideBadge?: boolean;
     id: string;
     noDetail?: boolean;
     onlyFirstName?: boolean;
@@ -100,8 +101,8 @@ class UserName extends React.Component<IProps, IState> {
             return (
                 <span className={className}
                       style={style}
-                      onClick={this.clickHandler}><VerifiedUserRounded
-                    style={{color: '#27AE60'}}/>{(user && user.id) ? (onlyFirstName ? prefix + user.firstname : `${prefix}${user.firstname} ${user.lastname}`) : (defaultString || '')}</span>
+                      onClick={this.clickHandler}>{Boolean(this.props.hideBadge !== true) && <VerifiedUserRounded
+                    style={{color: '#27AE60'}}/>}{(user && user.id) ? (onlyFirstName ? prefix + user.firstname : `${prefix}${user.firstname} ${user.lastname}`) : (defaultString || '')}</span>
             );
         } else if (this.props.username === true) {
             return (

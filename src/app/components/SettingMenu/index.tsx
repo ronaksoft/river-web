@@ -60,7 +60,7 @@ import Broadcaster from '../../services/broadcaster';
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.23.88';
+export const C_VERSION = '0.23.89';
 
 interface IProps {
     onClose?: () => void;
