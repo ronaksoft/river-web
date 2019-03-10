@@ -782,11 +782,7 @@ class Chat extends React.Component<IProps, IState> {
             this.messageComponent.cache.clearAll();
             this.messageComponent.list.recomputeRowHeights();
             this.messageComponent.list.recomputeGridSize();
-            this.messageComponent.forceUpdate(() => {
-                setTimeout(() => {
-                    this.messageComponent.list.scrollToRow(this.state.messages.length - 1);
-                }, 100);
-            });
+            this.messageComponent.list.scrollToRow(this.state.messages.length - 1);
         }, 100);
     }
 
@@ -1306,11 +1302,7 @@ class Chat extends React.Component<IProps, IState> {
             this.messageComponent.cache.clearAll();
             this.messageComponent.list.recomputeRowHeights();
             this.messageComponent.list.recomputeGridSize();
-            this.messageComponent.forceUpdate(() => {
-                setTimeout(() => {
-                    this.messageComponent.list.scrollToRow(messages.length - 1);
-                }, 100);
-            });
+            this.messageComponent.list.scrollToRow(messages.length - 1);
         };
 
         const before = 10000000000;
@@ -2454,7 +2446,6 @@ class Chat extends React.Component<IProps, IState> {
         if (selectedDialogId !== 'null') {
             this.messageComponent.cache.clearAll();
             this.messageComponent.list.recomputeRowHeights();
-            this.messageComponent.forceUpdate();
         }
     }
 
