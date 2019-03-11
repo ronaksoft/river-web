@@ -64,7 +64,7 @@ import {findIndex} from 'lodash';
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.23.90';
+export const C_VERSION = '0.23.91';
 
 interface IProps {
     onClose?: () => void;

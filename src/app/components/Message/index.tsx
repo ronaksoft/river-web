@@ -544,7 +544,8 @@ class Message extends React.Component<IProps, IState> {
                                 color="primary" checked={this.state.selectedIds.hasOwnProperty(message.id || 0)}
                                 onChange={this.selectMessageHandler.bind(this, message.id || 0, index)}/>}
                             {Boolean(message.avatar && message.senderid) && (<div className="arrow"/>)}
-                            {Boolean(message.me && message.error) && <span className="error"><ErrorRounded/></span>}
+                            {Boolean(message.me && message.error) &&
+                            <span className="error" onClick={this.contextMenuHandler.bind(this, index)}><ErrorRounded/></span>}
                             <div ref={parenElRefHandler}
                                  className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')}>
                                 {Boolean((peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me) || (this.isSimplified && message.avatar)) &&
