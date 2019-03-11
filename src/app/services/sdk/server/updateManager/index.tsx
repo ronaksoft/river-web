@@ -136,6 +136,10 @@ export default class UpdateManager {
         };
     }
 
+    public forceLogOut() {
+        this.callHandlers(C_MSG.UpdateAuthorizationReset, {});
+    }
+
     public disable() {
         this.active = false;
     }
@@ -270,6 +274,9 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateTooLong:
                 this.callHandlers(C_MSG.OutOfSync, {});
+                break;
+            case C_MSG.UpdateAuthorizationReset:
+                this.callHandlers(C_MSG.UpdateAuthorizationReset, {});
                 break;
             default:
                 break;

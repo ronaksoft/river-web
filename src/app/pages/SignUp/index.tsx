@@ -263,6 +263,8 @@ class SignUp extends React.Component<IProps, IState> {
                 this.dispatchWSOpenEvent();
                 this.notification.initToken().then((token) => {
                     this.sdk.registerDevice(token, 0, C_VERSION, 'web', 'en', '1');
+                }).catch(() => {
+                    this.sdk.registerDevice('-', 0, C_VERSION, 'web', 'en', '1');
                 });
             }).catch((err) => {
                 window.console.log(err);
@@ -357,6 +359,8 @@ class SignUp extends React.Component<IProps, IState> {
             this.dispatchWSOpenEvent();
             this.notification.initToken().then((token) => {
                 this.sdk.registerDevice(token, 0, C_VERSION, 'web', 'en', '1');
+            }).catch(() => {
+                this.sdk.registerDevice('-', 0, C_VERSION, 'web', 'en', '1');
             });
         }).catch((err) => {
             this.setState({

@@ -21,6 +21,7 @@ import {
     UpdateUserTyping
 } from '../messages/chat.api.updates_pb';
 import {File} from '../messages/chat.api.files_pb';
+import {AccountAuthorizations} from '../messages/chat.api.accounts_pb';
 
 export default class UniqueId {
     public static getMessage(constructor: number, data: Uint8Array): any {
@@ -63,6 +64,8 @@ export default class UniqueId {
                 return PeerNotifySettings.deserializeBinary(data);
             case C_MSG.File:
                 return File.deserializeBinary(data);
+            case C_MSG.AccountAuthorizations:
+                return AccountAuthorizations.deserializeBinary(data);
             default:
                 return null;
         }

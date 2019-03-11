@@ -157,6 +157,8 @@ input {
         background-color: #009688; }
       .setting-menu .page-anchor .icon.color-account {
         background-color: #CDDC39; }
+      .setting-menu .page-anchor .icon.color-session {
+        background-color: #2b92de; }
       .setting-menu .page-anchor .icon.color-theme {
         background-color: #F44336; }
       .setting-menu .page-anchor .icon.color-night-mode {
@@ -456,6 +458,35 @@ input {
     margin-bottom: 10px;
     background-color: var(--white);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); }
+  .setting-menu .session-item {
+    display: flex;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    padding: 12px 12px 8px;
+    text-align: left;
+    font-size: 13px; }
+    .setting-menu .session-item .session-info {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column; }
+      .setting-menu .session-item .session-info .session-row {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        width: 100%;
+        margin: 0 0 3px; }
+        .setting-menu .session-item .session-info .session-row .session-col {
+          flex: 1; }
+    .setting-menu .session-item .session-action {
+      display: flex;
+      align-items: center;
+      justify-content: center; }
+      .setting-menu .session-item .session-action .action-terminate {
+        color: var(--red);
+        font-size: 12px;
+        cursor: pointer;
+        text-transform: uppercase; }
 
 html[theme="dark"] .setting-menu .menu-header,
 html[theme="dark-blue"] .setting-menu .menu-header {
@@ -570,6 +601,11 @@ html[theme="dark-blue"] .setting-menu .theme-container .title-bar.selected {
 html[theme="dark"] .setting-menu .kk-card,
 html[theme="dark-blue"] .setting-menu .kk-card {
   background-color: var(--dark-medium); }
+
+html[theme="dark"] .setting-menu .session-item,
+html[theme="dark-blue"] .setting-menu .session-item {
+  color: var(--white);
+  border-color: var(--dark-low); }
 
 html[theme="dark-blue"] .setting-menu .menu-header {
   background-color: var(--dark-blue-medium);

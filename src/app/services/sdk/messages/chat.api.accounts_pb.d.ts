@@ -368,47 +368,127 @@ export namespace AccountGetPrivacy {
   }
 }
 
-export class AccountGetActiveSessions extends jspb.Message {
+export class AccountGetAuthorizations extends jspb.Message {
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): AccountGetActiveSessions.AsObject;
-  static toObject(includeInstance: boolean, msg: AccountGetActiveSessions): AccountGetActiveSessions.AsObject;
+  toObject(includeInstance?: boolean): AccountGetAuthorizations.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountGetAuthorizations): AccountGetAuthorizations.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: AccountGetActiveSessions, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): AccountGetActiveSessions;
-  static deserializeBinaryFromReader(message: AccountGetActiveSessions, reader: jspb.BinaryReader): AccountGetActiveSessions;
+  static serializeBinaryToWriter(message: AccountGetAuthorizations, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountGetAuthorizations;
+  static deserializeBinaryFromReader(message: AccountGetAuthorizations, reader: jspb.BinaryReader): AccountGetAuthorizations;
 }
 
-export namespace AccountGetActiveSessions {
+export namespace AccountGetAuthorizations {
   export type AsObject = {
   }
 }
 
-export class AccountSessions extends jspb.Message {
-  clearSessionsList(): void;
-  getSessionsList(): Array<chat_core_types_pb.ActiveSession>;
-  setSessionsList(value: Array<chat_core_types_pb.ActiveSession>): void;
-  addSessions(value?: chat_core_types_pb.ActiveSession, index?: number): chat_core_types_pb.ActiveSession;
-
-  hasActiveauthid(): boolean;
-  clearActiveauthid(): void;
-  getActiveauthid(): number | undefined;
-  setActiveauthid(value: number): void;
+export class AccountResetAuthorization extends jspb.Message {
+  hasAuthid(): boolean;
+  clearAuthid(): void;
+  getAuthid(): string | undefined;
+  setAuthid(value: string): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): AccountSessions.AsObject;
-  static toObject(includeInstance: boolean, msg: AccountSessions): AccountSessions.AsObject;
+  toObject(includeInstance?: boolean): AccountResetAuthorization.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountResetAuthorization): AccountResetAuthorization.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: AccountSessions, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): AccountSessions;
-  static deserializeBinaryFromReader(message: AccountSessions, reader: jspb.BinaryReader): AccountSessions;
+  static serializeBinaryToWriter(message: AccountResetAuthorization, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountResetAuthorization;
+  static deserializeBinaryFromReader(message: AccountResetAuthorization, reader: jspb.BinaryReader): AccountResetAuthorization;
 }
 
-export namespace AccountSessions {
+export namespace AccountResetAuthorization {
   export type AsObject = {
-    sessionsList: Array<chat_core_types_pb.ActiveSession.AsObject>,
-    activeauthid?: number,
+    authid?: string,
+  }
+}
+
+export class AccountAuthorizations extends jspb.Message {
+  clearAuthorizationsList(): void;
+  getAuthorizationsList(): Array<AccountAuthorization>;
+  setAuthorizationsList(value: Array<AccountAuthorization>): void;
+  addAuthorizations(value?: AccountAuthorization, index?: number): AccountAuthorization;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountAuthorizations.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountAuthorizations): AccountAuthorizations.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountAuthorizations, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountAuthorizations;
+  static deserializeBinaryFromReader(message: AccountAuthorizations, reader: jspb.BinaryReader): AccountAuthorizations;
+}
+
+export namespace AccountAuthorizations {
+  export type AsObject = {
+    authorizationsList: Array<AccountAuthorization.AsObject>,
+  }
+}
+
+export class AccountAuthorization extends jspb.Message {
+  hasAuthid(): boolean;
+  clearAuthid(): void;
+  getAuthid(): string | undefined;
+  setAuthid(value: string): void;
+
+  hasModel(): boolean;
+  clearModel(): void;
+  getModel(): string | undefined;
+  setModel(value: string): void;
+
+  hasAppversion(): boolean;
+  clearAppversion(): void;
+  getAppversion(): string | undefined;
+  setAppversion(value: string): void;
+
+  hasSystemversion(): boolean;
+  clearSystemversion(): void;
+  getSystemversion(): string | undefined;
+  setSystemversion(value: string): void;
+
+  hasLangcode(): boolean;
+  clearLangcode(): void;
+  getLangcode(): string | undefined;
+  setLangcode(value: string): void;
+
+  hasCreatedat(): boolean;
+  clearCreatedat(): void;
+  getCreatedat(): number | undefined;
+  setCreatedat(value: number): void;
+
+  hasActiveat(): boolean;
+  clearActiveat(): void;
+  getActiveat(): number | undefined;
+  setActiveat(value: number): void;
+
+  hasClientip(): boolean;
+  clearClientip(): void;
+  getClientip(): string | undefined;
+  setClientip(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountAuthorization.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountAuthorization): AccountAuthorization.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountAuthorization, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountAuthorization;
+  static deserializeBinaryFromReader(message: AccountAuthorization, reader: jspb.BinaryReader): AccountAuthorization;
+}
+
+export namespace AccountAuthorization {
+  export type AsObject = {
+    authid?: string,
+    model?: string,
+    appversion?: string,
+    systemversion?: string,
+    langcode?: string,
+    createdat?: number,
+    activeat?: number,
+    clientip?: string,
   }
 }
 

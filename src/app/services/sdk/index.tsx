@@ -62,10 +62,11 @@ import {
 } from './messages/chat.api.messages_pb';
 import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from './messages/chat.api.updates_pb';
 import {
-    AccountCheckUsername,
+    AccountAuthorizations,
+    AccountCheckUsername, AccountGetAuthorizations,
     AccountGetNotifySettings,
     AccountRegisterDevice,
-    AccountRemovePhoto,
+    AccountRemovePhoto, AccountResetAuthorization,
     AccountSetNotifySettings,
     AccountUpdateProfile,
     AccountUpdateUsername,
@@ -205,6 +206,17 @@ export default class SDK {
         const data = new AuthRecall();
         data.setClientid(clientId);
         return this.server.send(C_MSG.AuthRecall, data.serializeBinary(), true);
+    }
+
+    public sessionGetAll(): Promise<AccountAuthorizations.AsObject> {
+        const data = new AccountGetAuthorizations();
+        return this.server.send(C_MSG.AccountGetAuthorizations, data.serializeBinary(), true);
+    }
+
+    public sessionTerminate(id: string): Promise<AuthRecalled.AsObject> {
+        const data = new AccountResetAuthorization();
+        data.setAuthid(id);
+        return this.server.send(C_MSG.AccountResetAuthorization, data.serializeBinary(), true);
     }
 
     public contactImport(replace: boolean, contacts: PhoneContact.AsObject[]): Promise<ContactsImported.AsObject> {

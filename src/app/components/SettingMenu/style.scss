@@ -108,6 +108,9 @@
       &.color-account {
         background-color: #CDDC39;
       }
+      &.color-session {
+        background-color: #2b92de;
+      }
       &.color-theme {
         background-color: #F44336;
       }
@@ -506,6 +509,41 @@
     background-color: var(--white);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   }
+  .session-item {
+    display: flex;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    padding: 12px 12px 8px;
+    text-align: left;
+    font-size: 13px;
+    .session-info {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      .session-row {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        width: 100%;
+        margin: 0 0 3px;
+        .session-col {
+          flex: 1;
+        }
+      }
+    }
+    .session-action {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .action-terminate {
+        color: var(--red);
+        font-size: 12px;
+        cursor: pointer;
+        text-transform: uppercase;
+      }
+    }
+  }
 }
 
 html[theme="dark"],
@@ -624,6 +662,10 @@ html[theme="dark-blue"] {
     }
     .kk-card {
       background-color: var(--dark-medium);
+    }
+    .session-item {
+      color: var(--white);
+      border-color: var(--dark-low);
     }
   }
 }

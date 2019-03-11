@@ -12,9 +12,11 @@ var goog = jspb;
 var global = Function('return this')();
 
 var chat_core_types_pb = require('./chat.core.types_pb.js');
+goog.exportSymbol('proto.msg.AccountAuthorization', null, global);
+goog.exportSymbol('proto.msg.AccountAuthorizations', null, global);
 goog.exportSymbol('proto.msg.AccountChangePhone', null, global);
 goog.exportSymbol('proto.msg.AccountCheckUsername', null, global);
-goog.exportSymbol('proto.msg.AccountGetActiveSessions', null, global);
+goog.exportSymbol('proto.msg.AccountGetAuthorizations', null, global);
 goog.exportSymbol('proto.msg.AccountGetNotifySettings', null, global);
 goog.exportSymbol('proto.msg.AccountGetPrivacy', null, global);
 goog.exportSymbol('proto.msg.AccountPrivacyKey', null, global);
@@ -23,7 +25,7 @@ goog.exportSymbol('proto.msg.AccountPrivacyRules', null, global);
 goog.exportSymbol('proto.msg.AccountPrivacyType', null, global);
 goog.exportSymbol('proto.msg.AccountRegisterDevice', null, global);
 goog.exportSymbol('proto.msg.AccountRemovePhoto', null, global);
-goog.exportSymbol('proto.msg.AccountSessions', null, global);
+goog.exportSymbol('proto.msg.AccountResetAuthorization', null, global);
 goog.exportSymbol('proto.msg.AccountSetNotifySettings', null, global);
 goog.exportSymbol('proto.msg.AccountSetPrivacy', null, global);
 goog.exportSymbol('proto.msg.AccountUnregisterDevice', null, global);
@@ -2633,12 +2635,12 @@ proto.msg.AccountGetPrivacy.prototype.hasKey = function() {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.msg.AccountGetActiveSessions = function(opt_data) {
+proto.msg.AccountGetAuthorizations = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.msg.AccountGetActiveSessions, jspb.Message);
+goog.inherits(proto.msg.AccountGetAuthorizations, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.msg.AccountGetActiveSessions.displayName = 'proto.msg.AccountGetActiveSessions';
+  proto.msg.AccountGetAuthorizations.displayName = 'proto.msg.AccountGetAuthorizations';
 }
 
 
@@ -2653,8 +2655,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.msg.AccountGetActiveSessions.prototype.toObject = function(opt_includeInstance) {
-  return proto.msg.AccountGetActiveSessions.toObject(opt_includeInstance, this);
+proto.msg.AccountGetAuthorizations.prototype.toObject = function(opt_includeInstance) {
+  return proto.msg.AccountGetAuthorizations.toObject(opt_includeInstance, this);
 };
 
 
@@ -2663,11 +2665,11 @@ proto.msg.AccountGetActiveSessions.prototype.toObject = function(opt_includeInst
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.msg.AccountGetActiveSessions} msg The msg instance to transform.
+ * @param {!proto.msg.AccountGetAuthorizations} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.msg.AccountGetActiveSessions.toObject = function(includeInstance, msg) {
+proto.msg.AccountGetAuthorizations.toObject = function(includeInstance, msg) {
   var f, obj = {
 
   };
@@ -2683,23 +2685,23 @@ proto.msg.AccountGetActiveSessions.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.msg.AccountGetActiveSessions}
+ * @return {!proto.msg.AccountGetAuthorizations}
  */
-proto.msg.AccountGetActiveSessions.deserializeBinary = function(bytes) {
+proto.msg.AccountGetAuthorizations.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.msg.AccountGetActiveSessions;
-  return proto.msg.AccountGetActiveSessions.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.msg.AccountGetAuthorizations;
+  return proto.msg.AccountGetAuthorizations.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.msg.AccountGetActiveSessions} msg The message object to deserialize into.
+ * @param {!proto.msg.AccountGetAuthorizations} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.msg.AccountGetActiveSessions}
+ * @return {!proto.msg.AccountGetAuthorizations}
  */
-proto.msg.AccountGetActiveSessions.deserializeBinaryFromReader = function(msg, reader) {
+proto.msg.AccountGetAuthorizations.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -2719,9 +2721,9 @@ proto.msg.AccountGetActiveSessions.deserializeBinaryFromReader = function(msg, r
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.msg.AccountGetActiveSessions.prototype.serializeBinary = function() {
+proto.msg.AccountGetAuthorizations.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.msg.AccountGetActiveSessions.serializeBinaryToWriter(this, writer);
+  proto.msg.AccountGetAuthorizations.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -2729,11 +2731,11 @@ proto.msg.AccountGetActiveSessions.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.msg.AccountGetActiveSessions} message
+ * @param {!proto.msg.AccountGetAuthorizations} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.msg.AccountGetActiveSessions.serializeBinaryToWriter = function(message, writer) {
+proto.msg.AccountGetAuthorizations.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
 };
 
@@ -2749,20 +2751,13 @@ proto.msg.AccountGetActiveSessions.serializeBinaryToWriter = function(message, w
  * @extends {jspb.Message}
  * @constructor
  */
-proto.msg.AccountSessions = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.msg.AccountSessions.repeatedFields_, null);
+proto.msg.AccountResetAuthorization = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.msg.AccountSessions, jspb.Message);
+goog.inherits(proto.msg.AccountResetAuthorization, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.msg.AccountSessions.displayName = 'proto.msg.AccountSessions';
+  proto.msg.AccountResetAuthorization.displayName = 'proto.msg.AccountResetAuthorization';
 }
-/**
- * List of repeated fields within this message type.
- * @private {!Array<number>}
- * @const
- */
-proto.msg.AccountSessions.repeatedFields_ = [1];
-
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -2776,8 +2771,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.msg.AccountSessions.prototype.toObject = function(opt_includeInstance) {
-  return proto.msg.AccountSessions.toObject(opt_includeInstance, this);
+proto.msg.AccountResetAuthorization.prototype.toObject = function(opt_includeInstance) {
+  return proto.msg.AccountResetAuthorization.toObject(opt_includeInstance, this);
 };
 
 
@@ -2786,15 +2781,13 @@ proto.msg.AccountSessions.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.msg.AccountSessions} msg The msg instance to transform.
+ * @param {!proto.msg.AccountResetAuthorization} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.msg.AccountSessions.toObject = function(includeInstance, msg) {
+proto.msg.AccountResetAuthorization.toObject = function(includeInstance, msg) {
   var f, obj = {
-    sessionsList: jspb.Message.toObjectList(msg.getSessionsList(),
-    chat_core_types_pb.ActiveSession.toObject, includeInstance),
-    activeauthid: jspb.Message.getField(msg, 2)
+    authid: jspb.Message.getField(msg, 1)
   };
 
   if (includeInstance) {
@@ -2808,23 +2801,23 @@ proto.msg.AccountSessions.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.msg.AccountSessions}
+ * @return {!proto.msg.AccountResetAuthorization}
  */
-proto.msg.AccountSessions.deserializeBinary = function(bytes) {
+proto.msg.AccountResetAuthorization.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.msg.AccountSessions;
-  return proto.msg.AccountSessions.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.msg.AccountResetAuthorization;
+  return proto.msg.AccountResetAuthorization.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.msg.AccountSessions} msg The message object to deserialize into.
+ * @param {!proto.msg.AccountResetAuthorization} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.msg.AccountSessions}
+ * @return {!proto.msg.AccountResetAuthorization}
  */
-proto.msg.AccountSessions.deserializeBinaryFromReader = function(msg, reader) {
+proto.msg.AccountResetAuthorization.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -2832,13 +2825,8 @@ proto.msg.AccountSessions.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new chat_core_types_pb.ActiveSession;
-      reader.readMessage(value,chat_core_types_pb.ActiveSession.deserializeBinaryFromReader);
-      msg.addSessions(value);
-      break;
-    case 2:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setActiveauthid(value);
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setAuthid(value);
       break;
     default:
       reader.skipField();
@@ -2853,9 +2841,9 @@ proto.msg.AccountSessions.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.msg.AccountSessions.prototype.serializeBinary = function() {
+proto.msg.AccountResetAuthorization.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.msg.AccountSessions.serializeBinaryToWriter(this, writer);
+  proto.msg.AccountResetAuthorization.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -2863,24 +2851,16 @@ proto.msg.AccountSessions.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.msg.AccountSessions} message
+ * @param {!proto.msg.AccountResetAuthorization} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.msg.AccountSessions.serializeBinaryToWriter = function(message, writer) {
+proto.msg.AccountResetAuthorization.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getSessionsList();
-  if (f.length > 0) {
-    writer.writeRepeatedMessage(
-      1,
-      f,
-      chat_core_types_pb.ActiveSession.serializeBinaryToWriter
-    );
-  }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeInt64(
-      2,
+    writer.writeInt64String(
+      1,
       f
     );
   }
@@ -2888,52 +2868,487 @@ proto.msg.AccountSessions.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * repeated ActiveSession Sessions = 1;
- * @return {!Array.<!proto.msg.ActiveSession>}
+ * required int64 AuthID = 1;
+ * @return {string}
  */
-proto.msg.AccountSessions.prototype.getSessionsList = function() {
-  return /** @type{!Array.<!proto.msg.ActiveSession>} */ (
-    jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.ActiveSession, 1));
+proto.msg.AccountResetAuthorization.prototype.getAuthid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
-/** @param {!Array.<!proto.msg.ActiveSession>} value */
-proto.msg.AccountSessions.prototype.setSessionsList = function(value) {
+/** @param {string} value */
+proto.msg.AccountResetAuthorization.prototype.setAuthid = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+proto.msg.AccountResetAuthorization.prototype.clearAuthid = function() {
+  jspb.Message.setField(this, 1, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AccountResetAuthorization.prototype.hasAuthid = function() {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.msg.AccountAuthorizations = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.msg.AccountAuthorizations.repeatedFields_, null);
+};
+goog.inherits(proto.msg.AccountAuthorizations, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.msg.AccountAuthorizations.displayName = 'proto.msg.AccountAuthorizations';
+}
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.msg.AccountAuthorizations.repeatedFields_ = [1];
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.msg.AccountAuthorizations.prototype.toObject = function(opt_includeInstance) {
+  return proto.msg.AccountAuthorizations.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.msg.AccountAuthorizations} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.AccountAuthorizations.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    authorizationsList: jspb.Message.toObjectList(msg.getAuthorizationsList(),
+    proto.msg.AccountAuthorization.toObject, includeInstance)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.msg.AccountAuthorizations}
+ */
+proto.msg.AccountAuthorizations.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.msg.AccountAuthorizations;
+  return proto.msg.AccountAuthorizations.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.msg.AccountAuthorizations} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.msg.AccountAuthorizations}
+ */
+proto.msg.AccountAuthorizations.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = new proto.msg.AccountAuthorization;
+      reader.readMessage(value,proto.msg.AccountAuthorization.deserializeBinaryFromReader);
+      msg.addAuthorizations(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.msg.AccountAuthorizations.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.msg.AccountAuthorizations.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.msg.AccountAuthorizations} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.AccountAuthorizations.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getAuthorizationsList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      1,
+      f,
+      proto.msg.AccountAuthorization.serializeBinaryToWriter
+    );
+  }
+};
+
+
+/**
+ * repeated AccountAuthorization Authorizations = 1;
+ * @return {!Array.<!proto.msg.AccountAuthorization>}
+ */
+proto.msg.AccountAuthorizations.prototype.getAuthorizationsList = function() {
+  return /** @type{!Array.<!proto.msg.AccountAuthorization>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.msg.AccountAuthorization, 1));
+};
+
+
+/** @param {!Array.<!proto.msg.AccountAuthorization>} value */
+proto.msg.AccountAuthorizations.prototype.setAuthorizationsList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
 
 
 /**
- * @param {!proto.msg.ActiveSession=} opt_value
+ * @param {!proto.msg.AccountAuthorization=} opt_value
  * @param {number=} opt_index
- * @return {!proto.msg.ActiveSession}
+ * @return {!proto.msg.AccountAuthorization}
  */
-proto.msg.AccountSessions.prototype.addSessions = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.msg.ActiveSession, opt_index);
+proto.msg.AccountAuthorizations.prototype.addAuthorizations = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.msg.AccountAuthorization, opt_index);
 };
 
 
-proto.msg.AccountSessions.prototype.clearSessionsList = function() {
-  this.setSessionsList([]);
+proto.msg.AccountAuthorizations.prototype.clearAuthorizationsList = function() {
+  this.setAuthorizationsList([]);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.msg.AccountAuthorization = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.msg.AccountAuthorization, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.msg.AccountAuthorization.displayName = 'proto.msg.AccountAuthorization';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.msg.AccountAuthorization.prototype.toObject = function(opt_includeInstance) {
+  return proto.msg.AccountAuthorization.toObject(opt_includeInstance, this);
 };
 
 
 /**
- * required int64 ActiveAuthID = 2;
- * @return {number}
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.msg.AccountAuthorization} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.msg.AccountSessions.prototype.getActiveauthid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+proto.msg.AccountAuthorization.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    authid: jspb.Message.getField(msg, 100),
+    model: jspb.Message.getField(msg, 1),
+    appversion: jspb.Message.getField(msg, 2),
+    systemversion: jspb.Message.getField(msg, 3),
+    langcode: jspb.Message.getField(msg, 4),
+    createdat: jspb.Message.getField(msg, 5),
+    activeat: jspb.Message.getField(msg, 6),
+    clientip: jspb.Message.getField(msg, 7)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.msg.AccountAuthorization}
+ */
+proto.msg.AccountAuthorization.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.msg.AccountAuthorization;
+  return proto.msg.AccountAuthorization.deserializeBinaryFromReader(msg, reader);
 };
 
 
-/** @param {number} value */
-proto.msg.AccountSessions.prototype.setActiveauthid = function(value) {
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.msg.AccountAuthorization} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.msg.AccountAuthorization}
+ */
+proto.msg.AccountAuthorization.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 100:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setAuthid(value);
+      break;
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setModel(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setAppversion(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSystemversion(value);
+      break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setLangcode(value);
+      break;
+    case 5:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setCreatedat(value);
+      break;
+    case 6:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setActiveat(value);
+      break;
+    case 7:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setClientip(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.msg.AccountAuthorization.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.msg.AccountAuthorization.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.msg.AccountAuthorization} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.AccountAuthorization.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = /** @type {string} */ (jspb.Message.getField(message, 100));
+  if (f != null) {
+    writer.writeInt64String(
+      100,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
+  if (f != null) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 4));
+  if (f != null) {
+    writer.writeString(
+      4,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 5));
+  if (f != null) {
+    writer.writeInt64(
+      5,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 6));
+  if (f != null) {
+    writer.writeInt64(
+      6,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 7));
+  if (f != null) {
+    writer.writeString(
+      7,
+      f
+    );
+  }
+};
+
+
+/**
+ * required int64 AuthID = 100;
+ * @return {string}
+ */
+proto.msg.AccountAuthorization.prototype.getAuthid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 100, "0"));
+};
+
+
+/** @param {string} value */
+proto.msg.AccountAuthorization.prototype.setAuthid = function(value) {
+  jspb.Message.setField(this, 100, value);
+};
+
+
+proto.msg.AccountAuthorization.prototype.clearAuthid = function() {
+  jspb.Message.setField(this, 100, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AccountAuthorization.prototype.hasAuthid = function() {
+  return jspb.Message.getField(this, 100) != null;
+};
+
+
+/**
+ * required string Model = 1;
+ * @return {string}
+ */
+proto.msg.AccountAuthorization.prototype.getModel = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.AccountAuthorization.prototype.setModel = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+proto.msg.AccountAuthorization.prototype.clearModel = function() {
+  jspb.Message.setField(this, 1, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AccountAuthorization.prototype.hasModel = function() {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * required string AppVersion = 2;
+ * @return {string}
+ */
+proto.msg.AccountAuthorization.prototype.getAppversion = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.AccountAuthorization.prototype.setAppversion = function(value) {
   jspb.Message.setField(this, 2, value);
 };
 
 
-proto.msg.AccountSessions.prototype.clearActiveauthid = function() {
+proto.msg.AccountAuthorization.prototype.clearAppversion = function() {
   jspb.Message.setField(this, 2, undefined);
 };
 
@@ -2942,8 +3357,153 @@ proto.msg.AccountSessions.prototype.clearActiveauthid = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.msg.AccountSessions.prototype.hasActiveauthid = function() {
+proto.msg.AccountAuthorization.prototype.hasAppversion = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * required string SystemVersion = 3;
+ * @return {string}
+ */
+proto.msg.AccountAuthorization.prototype.getSystemversion = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.AccountAuthorization.prototype.setSystemversion = function(value) {
+  jspb.Message.setField(this, 3, value);
+};
+
+
+proto.msg.AccountAuthorization.prototype.clearSystemversion = function() {
+  jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AccountAuthorization.prototype.hasSystemversion = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * required string LangCode = 4;
+ * @return {string}
+ */
+proto.msg.AccountAuthorization.prototype.getLangcode = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.AccountAuthorization.prototype.setLangcode = function(value) {
+  jspb.Message.setField(this, 4, value);
+};
+
+
+proto.msg.AccountAuthorization.prototype.clearLangcode = function() {
+  jspb.Message.setField(this, 4, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AccountAuthorization.prototype.hasLangcode = function() {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * required int64 CreatedAt = 5;
+ * @return {number}
+ */
+proto.msg.AccountAuthorization.prototype.getCreatedat = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.AccountAuthorization.prototype.setCreatedat = function(value) {
+  jspb.Message.setField(this, 5, value);
+};
+
+
+proto.msg.AccountAuthorization.prototype.clearCreatedat = function() {
+  jspb.Message.setField(this, 5, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AccountAuthorization.prototype.hasCreatedat = function() {
+  return jspb.Message.getField(this, 5) != null;
+};
+
+
+/**
+ * required int64 ActiveAt = 6;
+ * @return {number}
+ */
+proto.msg.AccountAuthorization.prototype.getActiveat = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.AccountAuthorization.prototype.setActiveat = function(value) {
+  jspb.Message.setField(this, 6, value);
+};
+
+
+proto.msg.AccountAuthorization.prototype.clearActiveat = function() {
+  jspb.Message.setField(this, 6, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AccountAuthorization.prototype.hasActiveat = function() {
+  return jspb.Message.getField(this, 6) != null;
+};
+
+
+/**
+ * required string ClientIP = 7;
+ * @return {string}
+ */
+proto.msg.AccountAuthorization.prototype.getClientip = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.AccountAuthorization.prototype.setClientip = function(value) {
+  jspb.Message.setField(this, 7, value);
+};
+
+
+proto.msg.AccountAuthorization.prototype.clearClientip = function() {
+  jspb.Message.setField(this, 7, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AccountAuthorization.prototype.hasClientip = function() {
+  return jspb.Message.getField(this, 7) != null;
 };
 
 

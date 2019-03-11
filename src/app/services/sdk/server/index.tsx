@@ -193,7 +193,12 @@ export default class Server {
         if (res) {
             if (constructor === C_MSG.Error) {
                 if (this.messageListeners[reqId].reject) {
-                    this.messageListeners[reqId].reject(res.toObject());
+                    const resData = res.toObject();
+                    if (resData.code === 'E00' && resData.items === 'USER_ID') {
+                        this.updateManager.forceLogOut();
+                    } else {
+                        this.messageListeners[reqId].reject(data);
+                    }
                 }
             } else if (constructor === C_MSG.UpdateDifference) {
                 if (this.messageListeners[reqId].resolve) {

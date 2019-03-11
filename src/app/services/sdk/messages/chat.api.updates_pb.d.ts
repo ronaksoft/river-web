@@ -848,3 +848,31 @@ export namespace UpdateReadMessagesContents {
   }
 }
 
+export class UpdateAuthorizationReset extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateAuthorizationReset.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateAuthorizationReset): UpdateAuthorizationReset.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateAuthorizationReset, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateAuthorizationReset;
+  static deserializeBinaryFromReader(message: UpdateAuthorizationReset, reader: jspb.BinaryReader): UpdateAuthorizationReset;
+}
+
+export namespace UpdateAuthorizationReset {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+  }
+}
+

@@ -27,6 +27,7 @@ import {
     FormatColorFillRounded,
     CollectionsRounded,
     Brightness2Rounded,
+    ClearAllRounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import UserAvatar from '../UserAvatar';
@@ -56,6 +57,9 @@ import DialogContentText from '@material-ui/core/DialogContentText/DialogContent
 import DialogActions from '@material-ui/core/DialogActions/DialogActions';
 import OverlayDialog from '@material-ui/core/Dialog/Dialog';
 import Broadcaster from '../../services/broadcaster';
+import {AccountAuthorization} from '../../services/sdk/messages/chat.api.accounts_pb';
+import TimeUtility from '../../services/utilities/time';
+import {findIndex} from 'lodash';
 
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -73,6 +77,8 @@ interface IProps {
 interface IState {
     avatarMenuAnchorEl: any;
     bio: string;
+    confirmDialogOpen: boolean;
+    confirmDialogSelectedId: string;
     debugModeOpen: boolean;
     debugModeUrl: string;
     editProfile: boolean;
@@ -89,6 +95,7 @@ interface IState {
     selectedBackground: string;
     selectedBubble: string;
     selectedTheme: string;
+    sessions?: AccountAuthorization.AsObject[];
     uploadingPhoto: boolean;
     user: IUser | null;
     username: string;
@@ -122,6 +129,8 @@ class SettingMenu extends React.Component<IProps, IState> {
         this.state = {
             avatarMenuAnchorEl: null,
             bio: '',
+            confirmDialogOpen: false,
+            confirmDialogSelectedId: '',
             debugModeOpen: false,
             debugModeUrl: localStorage.getItem('river.test_url') || 'new.river.im',
             editProfile: false,
@@ -191,7 +200,7 @@ class SettingMenu extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {avatarMenuAnchorEl, page, pageContent, user, editProfile, editUsername, bio, firstname, lastname, phone, username, usernameAvailable, usernameValid, uploadingPhoto, debugModeOpen} = this.state;
+        const {avatarMenuAnchorEl, page, pageContent, user, editProfile, editUsername, bio, firstname, lastname, phone, username, usernameAvailable, usernameValid, uploadingPhoto, debugModeOpen, sessions, confirmDialogOpen} = this.state;
         return (
             <div className="setting-menu">
                 <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={640}/>
@@ -221,6 +230,12 @@ class SettingMenu extends React.Component<IProps, IState> {
                                     <PersonRounded/>
                                 </div>
                                 <div className="anchor-label">Account ({phone})</div>
+                            </div>
+                            <div className="page-anchor" onClick={this.sessionPageHandler}>
+                                <div className="icon color-session">
+                                    <ClearAllRounded/>
+                                </div>
+                                <div className="anchor-label">Active Sessions</div>
                             </div>
                             <div className="page-anchor" onClick={this.themePageHandler}>
                                 <div className="icon color-theme">
@@ -534,6 +549,45 @@ class SettingMenu extends React.Component<IProps, IState> {
                                 <div className="anchor-label color-red">Log Out</div>
                             </div>
                         </div>}
+                        {Boolean(pageContent === 'session') && <React.Fragment>
+                            <div className="menu-header">
+                                <IconButton
+                                    aria-label="Prev"
+                                    aria-haspopup="true"
+                                    onClick={this.onPrevHandler}
+                                >
+                                    <KeyboardBackspaceRounded/>
+                                </IconButton>
+                                <label>Active Sessions</label>
+                            </div>
+                            {sessions && <div className="menu-content">
+                                <Scrollbars
+                                    autoHide={true}
+                                >
+                                    <div>
+                                        {sessions.map((item, key) => {
+                                            return (
+                                                <div key={key} className="session-item">
+                                                    <div className="session-info">
+                                                        <div className="session-row">Client: {item.model}</div>
+                                                        <div
+                                                            className="session-row">IP: {item.clientip} at {TimeUtility.dynamic(item.createdat)}</div>
+                                                        <div className="session-row">
+                                                            <div className="session-col">Last
+                                                                active {TimeUtility.timeAgo(item.createdat)}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="session-action">
+                                                    <span className="action-terminate"
+                                                          onClick={this.terminateSessionConfirmHandler.bind(this, item.authid)}>Terminate</span>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </Scrollbars>
+                            </div>}
+                        </React.Fragment>}
                     </div>
                 </div>
                 <Menu
@@ -547,8 +601,6 @@ class SettingMenu extends React.Component<IProps, IState> {
                 <OverlayDialog
                     open={debugModeOpen}
                     onClose={this.debugModeCloseHandler}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
                     className="confirm-dialog"
                     disableBackdropClick={true}
                 >
@@ -577,6 +629,21 @@ class SettingMenu extends React.Component<IProps, IState> {
                             </Button>
                         </DialogActions>
                     </div>
+                </OverlayDialog>
+                <OverlayDialog
+                    open={confirmDialogOpen}
+                    onClose={this.confirmDialogCloseHandler}
+                    className="confirm-dialog"
+                >
+                    <DialogTitle>Terminate session?</DialogTitle>
+                    <DialogActions>
+                        <Button onClick={this.confirmDialogCloseHandler} color="secondary">
+                            Disagree
+                        </Button>
+                        <Button onClick={this.terminateSessionHandler} color="primary" autoFocus={true}>
+                            Agree
+                        </Button>
+                    </DialogActions>
                 </OverlayDialog>
             </div>
         );
@@ -667,6 +734,16 @@ class SettingMenu extends React.Component<IProps, IState> {
         this.setState({
             page: '2',
             pageContent: 'account',
+        }, () => {
+            this.dispatchSubPlaceChange();
+        });
+    }
+
+    private sessionPageHandler = () => {
+        this.getSessions();
+        this.setState({
+            page: '2',
+            pageContent: 'session',
         }, () => {
             this.dispatchSubPlaceChange();
         });
@@ -1053,6 +1130,49 @@ class SettingMenu extends React.Component<IProps, IState> {
         if (this.props.onAction) {
             this.props.onAction('logout');
         }
+    }
+
+    /* Get All Sessions */
+    private getSessions() {
+        this.sdk.sessionGetAll().then((res) => {
+            window.console.log(res);
+            this.setState({
+                sessions: res.authorizationsList,
+            });
+        });
+    }
+
+    /* Open confirm dialog for terminate session by Id */
+    private terminateSessionConfirmHandler(id: string) {
+        this.setState({
+            confirmDialogOpen: true,
+            confirmDialogSelectedId: id
+        });
+    }
+
+    /* Terminate session selected session */
+    private terminateSessionHandler = () => {
+        const {confirmDialogSelectedId} = this.state;
+        if (confirmDialogSelectedId !== '') {
+            this.sdk.sessionTerminate(confirmDialogSelectedId).then(() => {
+                const {sessions} = this.state;
+                const index = findIndex(sessions, {authid: confirmDialogSelectedId});
+                if (sessions && index > -1) {
+                    sessions.splice(index, 1);
+                    this.setState({
+                        sessions,
+                    });
+                }
+            });
+        }
+        this.confirmDialogCloseHandler();
+    }
+
+    /* Confirm dialog close handler */
+    private confirmDialogCloseHandler = () => {
+        this.setState({
+            confirmDialogOpen: false,
+        });
     }
 
     /* Broadcast Global Event */

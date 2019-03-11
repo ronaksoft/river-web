@@ -317,6 +317,9 @@ class Chat extends React.Component<IProps, IState> {
         // Update: Group Photo
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateGroupPhoto, this.updateGroupPhotoHandler));
 
+        // Update: Force Log Out
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateAuthorizationReset, this.updateAuthorizationResetHandler));
+
         // Sync: MessageId
         this.eventReferences.push(this.syncManager.listen(C_SYNC_UPDATE.MessageId, this.updateMessageIDHandler));
 
@@ -3675,6 +3678,18 @@ class Chat extends React.Component<IProps, IState> {
             leftMenuSelectedDialogId: this.state.selectedDialogId,
             leftMenuSub: 'none',
         });
+    }
+
+    /* Update force log out */
+    private updateAuthorizationResetHandler = () => {
+        this.logOutHandler();
+        // this.sdk.resetConnInfo();
+        // this.mainRepo.destroyDB().then(() => {
+        //     this.updateManager.setLastUpdateId(0);
+        //     this.updateManager.flushLastUpdateId();
+        //     window.location.href = '/';
+        //     // window.location.reload();
+        // });
     }
 
     private broadcastEvent(name: string, data: any) {
