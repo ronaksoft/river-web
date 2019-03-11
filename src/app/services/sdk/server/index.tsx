@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import {C_MSG, C_MSG_NAME} from '../const';
+import {C_ERR, C_ERR_ITEM, C_MSG, C_MSG_NAME} from '../const';
 import Presenter from '../presenters';
 import UpdateManager from './updateManager';
 import {MessageContainer, MessageEnvelope} from '../messages/chat.core.types_pb';
@@ -194,10 +194,10 @@ export default class Server {
             if (constructor === C_MSG.Error) {
                 if (this.messageListeners[reqId].reject) {
                     const resData = res.toObject();
-                    if (resData.code === 'E00' && resData.items === 'USER_ID') {
+                    if (resData.code === C_ERR.ERR_CODE_INTERNAL && resData.items === C_ERR_ITEM.ERR_ITEM_USER_ID) {
                         this.updateManager.forceLogOut();
                     } else {
-                        this.messageListeners[reqId].reject(data);
+                        this.messageListeners[reqId].reject(resData);
                     }
                 }
             } else if (constructor === C_MSG.UpdateDifference) {

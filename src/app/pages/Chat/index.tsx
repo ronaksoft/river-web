@@ -2277,6 +2277,7 @@ class Chat extends React.Component<IProps, IState> {
             default:
                 this.setState({
                     leftMenu: item,
+                    leftMenuSub: 'none',
                 });
                 break;
         }

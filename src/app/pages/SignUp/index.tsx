@@ -21,6 +21,8 @@ import {C_VERSION} from '../../components/SettingMenu';
 
 import './style.css';
 
+const C_CLIENT = `Web:- ${window.navigator.userAgent}`;
+
 interface IProps {
     match?: any;
     location?: any;
@@ -262,9 +264,9 @@ class SignUp extends React.Component<IProps, IState> {
                 this.props.history.push('/chat/null');
                 this.dispatchWSOpenEvent();
                 this.notification.initToken().then((token) => {
-                    this.sdk.registerDevice(token, 0, C_VERSION, 'web', 'en', '1');
+                    this.sdk.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
                 }).catch(() => {
-                    this.sdk.registerDevice('-', 0, C_VERSION, 'web', 'en', '1');
+                    this.sdk.registerDevice('-', 0, C_VERSION, C_CLIENT, 'en', '1');
                 });
             }).catch((err) => {
                 window.console.log(err);
@@ -358,9 +360,9 @@ class SignUp extends React.Component<IProps, IState> {
             this.props.history.push('/chat/null');
             this.dispatchWSOpenEvent();
             this.notification.initToken().then((token) => {
-                this.sdk.registerDevice(token, 0, C_VERSION, 'web', 'en', '1');
+                this.sdk.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
             }).catch(() => {
-                this.sdk.registerDevice('-', 0, C_VERSION, 'web', 'en', '1');
+                this.sdk.registerDevice('-', 0, C_VERSION, C_CLIENT, 'en', '1');
             });
         }).catch((err) => {
             this.setState({

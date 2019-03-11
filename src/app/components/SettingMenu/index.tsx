@@ -64,7 +64,7 @@ import {findIndex} from 'lodash';
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.23.91';
+export const C_VERSION = '0.23.92';
 
 interface IProps {
     onClose?: () => void;
@@ -119,6 +119,7 @@ class SettingMenu extends React.Component<IProps, IState> {
     private versionClickTimeout: any = null;
     private versionClickCounter: number = 0;
     private broadcaster: Broadcaster;
+    private currentAuthID: string;
 
     constructor(props: IProps) {
         super(props);
@@ -168,6 +169,8 @@ class SettingMenu extends React.Component<IProps, IState> {
 
         this.documentViewerService = DocumentViewerService.getInstance();
         this.broadcaster = Broadcaster.getInstance();
+
+        this.currentAuthID = this.sdk.getConnInfo().AuthID;
     }
 
     public componentDidMount() {
@@ -561,15 +564,19 @@ class SettingMenu extends React.Component<IProps, IState> {
                                 <label>Active Sessions</label>
                             </div>
                             {sessions && <div className="menu-content">
-                                <Scrollbars
+                                {Boolean(sessions.length > 0) && <Scrollbars
                                     autoHide={true}
                                 >
                                     <div>
                                         {sessions.map((item, key) => {
                                             return (
                                                 <div key={key} className="session-item">
+                                                    {Boolean(this.currentAuthID === item.authid) &&
+                                                    <div className="session-current">current</div>}
                                                     <div className="session-info">
-                                                        <div className="session-row">Client: {item.model}</div>
+                                                        <div className="session-row">
+                                                            <div className="session-col">{`Client: ${(item.model || '').split(':-').join(' ')}`}</div>
+                                                        </div>
                                                         <div
                                                             className="session-row">IP: {item.clientip} at {TimeUtility.dynamic(item.createdat)}</div>
                                                         <div className="session-row">
@@ -585,7 +592,9 @@ class SettingMenu extends React.Component<IProps, IState> {
                                             );
                                         })}
                                     </div>
-                                </Scrollbars>
+                                </Scrollbars>}
+                                {Boolean(sessions.length === 0) &&
+                                <div className="session-placeholder">you have no active sessions</div>}
                             </div>}
                         </React.Fragment>}
                     </div>
@@ -1135,7 +1144,6 @@ class SettingMenu extends React.Component<IProps, IState> {
     /* Get All Sessions */
     private getSessions() {
         this.sdk.sessionGetAll().then((res) => {
-            window.console.log(res);
             this.setState({
                 sessions: res.authorizationsList,
             });

@@ -510,11 +510,18 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   }
   .session-item {
+    position: relative;
     display: flex;
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     padding: 12px 12px 8px;
     text-align: left;
     font-size: 13px;
+    .session-current {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      color: var(--light-mention);
+    }
     .session-info {
       flex: 1;
       display: flex;
@@ -529,12 +536,16 @@
         margin: 0 0 3px;
         .session-col {
           flex: 1;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          max-width: 225px;
         }
       }
     }
     .session-action {
       display: flex;
-      align-items: center;
+      align-items: flex-end;
       justify-content: center;
       .action-terminate {
         color: var(--red);
@@ -543,6 +554,11 @@
         text-transform: uppercase;
       }
     }
+  }
+  .session-placeholder {
+    text-align: center;
+    padding: 24px;
+    color: var(--grey);
   }
 }
 
