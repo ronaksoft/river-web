@@ -70,6 +70,9 @@ export const getMediaInfo = (message: IMessage): IMediaInfo => {
         width: 0,
     };
     const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
+    if (!messageMediaDocument) {
+        return info;
+    }
     info.caption = messageMediaDocument.caption || '';
     if (!messageMediaDocument.doc) {
         return info;
