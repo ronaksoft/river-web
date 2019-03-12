@@ -2223,14 +2223,15 @@ class Chat extends React.Component<IProps, IState> {
                     groupTitle = group.title || 'Group';
                 }
                 if (data.messages.length === 1) {
+                    const messageTitle = getMessageTitle(data.messages[0]);
                     if (data.messages[0].mention_me === true) {
                         this.notify(
                             `${data.senders[0].firstname} ${data.senders[0].lastname} mentioned you in ${groupTitle}`,
-                            (data.messages[0].body || '').substr(0, 64), data.messages[0].peerid || 'null');
+                            messageTitle.text, data.messages[0].peerid || 'null');
                     } else {
                         this.notify(
                             `New message from ${data.senders[0].firstname} ${data.senders[0].lastname} in ${groupTitle}`,
-                            (data.messages[0].body || '').substr(0, 64), data.messages[0].peerid || 'null');
+                            messageTitle.text, data.messages[0].peerid || 'null');
                     }
                 } else {
                     this.notify(
@@ -2239,9 +2240,10 @@ class Chat extends React.Component<IProps, IState> {
             });
         } else {
             if (data.messages.length === 1) {
+                const messageTitle = getMessageTitle(data.messages[0]);
                 this.notify(
                     `New message from ${data.senders[0].firstname} ${data.senders[0].lastname}`,
-                    (data.messages[0].body || '').substr(0, 64), data.messages[0].peerid || 'null');
+                    messageTitle.text, data.messages[0].peerid || 'null');
             } else {
                 this.notify(
                     `${data.messages.length} new messages from ${data.senders[0].firstname} ${data.senders[0].lastname}`, '', data.messages[0].peerid || 'null');
