@@ -99,6 +99,9 @@
           .last-seen {
             font-weight: normal;
             font-size: 11px;
+            .online {
+              color: var(--river);
+            }
           }
         }
         .phone {
@@ -169,6 +172,11 @@ html[theme="dark"] {
           .name {
             color: var(--light);
           }
+          .last-seen {
+            .online {
+              color: var(--river);
+            }
+          }
         }
       }
     }
@@ -195,6 +203,11 @@ html[theme="dark-blue"] {
           }
           .name {
             color: var(--white);
+          }
+          .last-seen {
+            .online {
+              color: var(--river);
+            }
           }
         }
       }

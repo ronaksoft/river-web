@@ -202,6 +202,7 @@ class ContactMenu extends React.Component<IProps, IState> {
             this.setState({
                 firstname: '',
                 lastname: '',
+                newContactDialogOpen: false,
                 phone: '',
             });
         }).catch(() => {

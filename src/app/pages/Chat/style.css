@@ -457,6 +457,9 @@ html[theme="dark-blue"][bg="14"] .container .column-center .start-messaging {
     padding: 3px 12px;
     font-size: 13px; }
 
+.kk-context-menu hr {
+  margin: 6px 0 2px; }
+
 .forward-recipient-dialog .dialog-content {
   width: 300px;
   height: 500px;
@@ -589,7 +592,7 @@ html[theme="dark-blue"] .kk-context-menu.darker ul {
 
 html[theme="dark"] .kk-context-menu hr,
 html[theme="dark-blue"] .kk-context-menu hr {
-  margin: 4px 0; }
+  background-color: var(--dark-medium); }
 
 html[theme="dark"] .confirm-dialog div[role="document"] > div,
 html[theme="dark-blue"] .confirm-dialog div[role="document"] > div {
@@ -636,6 +639,9 @@ html[theme="dark-blue"] .kk-context-menu ul {
 
 html[theme="dark-blue"] .kk-context-menu.darker > div[role="document"], html[theme="dark-blue"] .kk-context-menu.darker ul {
   background-color: var(--dark-blue-low); }
+
+html[theme="dark-blue"] .kk-context-menu hr {
+  background-color: var(--dark-blue-medium); }
 
 html[theme="dark-blue"] .confirm-dialog div[role="document"] > div {
   background-color: var(--dark-blue-low); }

@@ -2635,9 +2635,7 @@ class Chat extends React.Component<IProps, IState> {
             promises.push(this.sdk.forwardMessage(peer, msgIds, UniqueId.getRandomId(), targetPeer, false));
         });
         this.forwardRecipientDialogCloseHandler();
-        Promise.all(promises).then((res) => {
-            window.console.log(res);
-        }).catch((err) => {
+        Promise.all(promises).catch((err) => {
             window.console.log(err);
         });
     }

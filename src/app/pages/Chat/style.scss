@@ -515,6 +515,9 @@ html[theme="dark-blue"][bg="14"] {
       font-size: 13px;
     }
   }
+  hr {
+    margin: 6px 0 2px;
+  }
 }
 
 .forward-recipient-dialog {
@@ -680,7 +683,7 @@ html[theme="dark-blue"] {
       }
     }
     hr {
-      margin: 4px 0;
+      background-color: var(--dark-medium);
     }
   }
   .confirm-dialog {
@@ -748,6 +751,9 @@ html[theme="dark-blue"] {
       > div[role="document"], ul {
         background-color: var(--dark-blue-low);
       }
+    }
+    hr {
+      background-color: var(--dark-blue-medium);
     }
   }
   .confirm-dialog {
