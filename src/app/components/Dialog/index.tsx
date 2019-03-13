@@ -112,12 +112,12 @@ class Dialog extends React.Component<IProps, IState> {
         }, () => {
             if (!this.state.searchEnable) {
                 this.searchDebounce.cancel();
-                this.keyword = '';
+                // this.keyword = '';
                 this.filterItem();
             } else {
                 const el: any = document.querySelector('#dialog-search');
                 if (el) {
-                    el.value = '';
+                    // el.value = '';
                     el.focus();
                 }
             }

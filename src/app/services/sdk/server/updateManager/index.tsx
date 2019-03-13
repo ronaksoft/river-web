@@ -17,7 +17,7 @@ import {
     UpdateReadHistoryOutbox, UpdateReadMessagesContents, UpdateUsername, UpdateUserPhoto,
     UpdateUserTyping
 } from '../../messages/chat.api.updates_pb';
-import {throttle} from 'lodash';
+import {throttle, findIndex} from 'lodash';
 import {User} from '../../messages/chat.core.types_pb';
 import {IMessage} from '../../../../repository/message/interface';
 import MessageRepo from '../../../../repository/message';
@@ -245,11 +245,36 @@ export default class UpdateManager {
                 this.callHandlers(C_MSG.UpdateUserTyping, UpdateUserTyping.deserializeBinary(data).toObject());
                 break;
             case C_MSG.UpdateMessageEdited:
-                this.callHandlers(C_MSG.UpdateMessageEdited, UpdateMessageEdited.deserializeBinary(data).toObject());
+                const updateMessageEdited = UpdateMessageEdited.deserializeBinary(data).toObject();
+                if (updateMessageEdited.message && this.messageList.hasOwnProperty(updateMessageEdited.message.peerid || '')) {
+                    const index = findIndex(this.messageList[updateMessageEdited.message.peerid || ''], (item) => {
+                        return item.message.id === updateMessageEdited.message.id;
+                    });
+                    if (index > -1) {
+                        this.messageList[updateMessageEdited.message.peerid || ''][index].message = updateMessageEdited.message;
+                    } else {
+                        this.callHandlers(C_MSG.UpdateMessageEdited, updateMessageEdited);
+                    }
+                } else {
+                    this.callHandlers(C_MSG.UpdateMessageEdited, updateMessageEdited);
+                }
                 flushUpdateId = true;
                 break;
             case C_MSG.UpdateMessagesDeleted:
-                this.callHandlers(C_MSG.UpdateMessagesDeleted, UpdateMessagesDeleted.deserializeBinary(data).toObject());
+                const updateMessagesDeleted = UpdateMessagesDeleted.deserializeBinary(data).toObject();
+                if (updateMessagesDeleted.peer) {
+                    updateMessagesDeleted.messageidsList.forEach((id) => {
+                        if (updateMessagesDeleted.peer && this.messageList.hasOwnProperty(updateMessagesDeleted.peer.id || '')) {
+                            const index = findIndex(this.messageList[updateMessagesDeleted.peer.id || ''], (item) => {
+                                return item.message.id === id;
+                            });
+                            if (index > -1) {
+                                this.messageList[updateMessagesDeleted.peer.id || ''].splice(index, 1);
+                            }
+                        }
+                    });
+                }
+                this.callHandlers(C_MSG.UpdateMessagesDeleted, updateMessagesDeleted);
                 flushUpdateId = true;
                 break;
             case C_MSG.UpdateUsername:
@@ -348,7 +373,7 @@ export default class UpdateManager {
                 senders: [],
             };
             while (list[key].length > 0) {
-                const data = list[key].shift();
+                const data = list[key].pop();
                 if (data) {
                     batchUpdate.accessHashes.push(data.accesshash || '');
                     batchUpdate.messages.push(MessageRepo.parseMessage(data.message, this.userId));

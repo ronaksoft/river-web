@@ -443,6 +443,13 @@ export default class MessageRepo {
         });
     }
 
+    public getLastMessage(peerId: string) {
+        return this.db.messages.where('[peerid+id]').between([peerId, Dexie.minKey], [peerId, Dexie.maxKey], true, true)
+            .filter((item: IMessage) => {
+                return item.temp !== true && (item.id || 0) > 0 && item.messagetype !== C_MESSAGE_TYPE.Hole;
+            }).last();
+    }
+
     public get(id: number, peer?: InputPeer | null): Promise<IMessage | null> {
         return new Promise((resolve, reject) => {
             if (this.lazyMap.hasOwnProperty(id)) {

@@ -101,6 +101,7 @@ export default class DialogRepo {
         limit = limit || 50;
         skip = skip || 0;
         dialogs = dialogs || [];
+        let retries = 0;
         return new Promise((resolve, reject) => {
             // @ts-ignore
             this.getManyForSnapshot({skip, limit}).then((remoteRes) => {
@@ -114,7 +115,14 @@ export default class DialogRepo {
                         updateid: remoteRes.updateid,
                     });
                 }
-            }).catch(reject);
+            }).catch(() => {
+                retries++;
+                if (retries < 3) {
+                    return this.getSnapshot({limit, skip, dialogs});
+                } else {
+                    return reject();
+                }
+            });
         });
     }
 

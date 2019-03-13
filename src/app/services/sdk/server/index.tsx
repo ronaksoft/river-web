@@ -266,7 +266,7 @@ export default class Server {
         this.dispatchUpdate();
         setInterval(() => {
             this.dispatchUpdate();
-        }, 50);
+        }, 5);
     }
 
     private dispatchUpdate() {

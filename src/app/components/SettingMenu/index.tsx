@@ -64,7 +64,7 @@ import {findIndex} from 'lodash';
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.23.94';
+export const C_VERSION = '0.23.95';
 
 interface IProps {
     onClose?: () => void;
@@ -581,7 +581,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                                                             className="session-row">IP: {item.clientip} at {TimeUtility.dynamic(item.createdat)}</div>
                                                         <div className="session-row">
                                                             <div className="session-col">Last
-                                                                active {TimeUtility.timeAgo(item.createdat)}</div>
+                                                                active {TimeUtility.timeAgo(item.activeat)}</div>
                                                         </div>
                                                     </div>
                                                     <div className="session-action">
