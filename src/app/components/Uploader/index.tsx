@@ -16,12 +16,13 @@ import {
     CheckRounded,
     CropRounded,
     PlayCircleFilledRounded,
-    ConfirmationNumberRounded,
+    ConfirmationNumberRounded, InsertDriveFileRounded,
 } from '@material-ui/icons';
 import Scrollbars from 'react-custom-scrollbars';
 import TextField from '@material-ui/core/TextField/TextField';
 // @ts-ignore
 import readAndCompressImage from 'browser-image-resizer';
+import {getFileExtension, getHumanReadableSize} from '../MessageFile';
 
 import './style.css';
 
@@ -61,6 +62,7 @@ interface IProps {
 
 interface IState {
     dialogOpen: boolean;
+    isFile: boolean;
     items: IUploaderFile[];
     lastSelected: number;
     loading: boolean;
@@ -79,6 +81,7 @@ class MediaPreview extends React.Component<IProps, IState> {
 
         this.state = {
             dialogOpen: false,
+            isFile: false,
             items: [],
             lastSelected: 0,
             loading: false,
@@ -87,14 +90,23 @@ class MediaPreview extends React.Component<IProps, IState> {
         };
     }
 
-    public openDialog(items: File[]) {
+    public openDialog(items: File[], isFile?: boolean) {
         this.reset();
+        const inputItems: IUploaderFile[] = items;
+        if (isFile) {
+            inputItems.forEach((item) => {
+                item.ready = true;
+            });
+        }
         this.setState({
             dialogOpen: true,
-            items,
+            isFile: isFile || false,
+            items: inputItems,
         }, () => {
-            this.initImages();
-            this.setImageActionSize();
+            if (!isFile) {
+                this.initImages();
+                this.setImageActionSize();
+            }
         });
     }
 
@@ -103,7 +115,7 @@ class MediaPreview extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {items, selected, lastSelected, dialogOpen, loading} = this.state;
+        const {items, selected, lastSelected, dialogOpen, loading, isFile} = this.state;
         return (
             <Dialog
                 open={dialogOpen}
@@ -124,30 +136,41 @@ class MediaPreview extends React.Component<IProps, IState> {
                             onDrop={this.onDrop}
                             className="uploader-dropzone"
                             // disableClick={true}
-                            accept={this.props.accept}
+                            accept={isFile ? undefined : this.props.accept}
                         >
                             <div className="slider-attachment">
                                 {items.length > 0 && this.state.show && (
                                     <div className={'slide' + (selected > lastSelected ? ' left' : ' right')}
                                          onClick={this.slideClickHandler}>
-                                        {Boolean(items[selected].mediaType === 'image') && <React.Fragment>
-                                            <img ref={this.imageRefHandler} className="front"
-                                                 src={items[selected].preview}/>
-                                            <div ref={this.imageActionRefHandler} className="image-actions">
-                                                <CropRounded/>
-                                            </div>
+                                        {Boolean(!isFile) && <React.Fragment>
+                                            {Boolean(items[selected].mediaType === 'image') && <React.Fragment>
+                                                <img ref={this.imageRefHandler} className="front"
+                                                     src={items[selected].preview}/>
+                                                <div ref={this.imageActionRefHandler} className="image-actions">
+                                                    <CropRounded/>
+                                                </div>
+                                            </React.Fragment>}
+                                            {Boolean(items[selected].mediaType === 'video') &&
+                                            <video ref={this.imageRefHandler} className="front" controls={true}>
+                                                <source src={items[selected].preview}/>
+                                            </video>}
+                                            {Boolean(lastSelected !== selected && items[lastSelected] && items[selected].mediaType === 'image') && (
+                                                <img className="back" src={items[lastSelected].preview}/>
+                                            )}
                                         </React.Fragment>}
-                                        {Boolean(items[selected].mediaType === 'video') &&
-                                        <video ref={this.imageRefHandler} className="front" controls={true}>
-                                            <source src={items[selected].preview}/>
-                                        </video>}
-                                        {Boolean(lastSelected !== selected && items[lastSelected] && items[selected].mediaType === 'image') && (
-                                            <img className="back" src={items[lastSelected].preview}/>
-                                        )}
+                                        {Boolean(isFile && items[selected]) && <div className="file-slide">
+                                            <div className="icon">
+                                                <div className="extension">
+                                                    {items[selected].name}<br/>
+                                                    <span className="size">
+                                                        {getHumanReadableSize(items[selected].size)}</span>
+                                                </div>
+                                            </div>
+                                        </div>}
                                     </div>
                                 )}
                                 {Boolean(items.length === 0) && <div className="slide">
-                                    Drop your media files here
+                                    Drop your {isFile ? '' : 'media '} files here
                                 </div>}
                             </div>
                         </Dropzone>
@@ -178,18 +201,22 @@ class MediaPreview extends React.Component<IProps, IState> {
                                     return (
                                         <div key={index}
                                              className={'item' + (selected === index ? ' selected' : '')}
-                                             onClick={this.selectImage.bind(this, index, null)}
+                                             onClick={this.selectMedia.bind(this, index, null)}
                                         >
-                                            {Boolean(item.mediaType === 'image') &&
+                                            {Boolean(!isFile && item.mediaType === 'image') &&
                                             <div className="preview"
                                                  style={{backgroundImage: 'url(' + item.preview + ')'}}/>}
-                                            {Boolean(item.mediaType === 'video') && <React.Fragment>
+                                            {Boolean(!isFile && item.mediaType === 'video') && <React.Fragment>
                                                 <div className="preview"
                                                      style={{backgroundImage: 'url(' + item.videoThumb + ')'}}/>
                                                 <div className="video-icon">
                                                     <PlayCircleFilledRounded/>
                                                 </div>
                                             </React.Fragment>}
+                                            {Boolean(isFile) && <div className="file-preview">
+                                                <InsertDriveFileRounded/>
+                                                <span className="extension">{getFileExtension(item.type)}</span>
+                                            </div>}
                                             {Boolean(!item.ready) &&
                                             <div className="item-busy"><ConfirmationNumberRounded/></div>}
                                             <div className="remove" onClick={this.removeItemHandler.bind(this, index)}>
@@ -221,13 +248,15 @@ class MediaPreview extends React.Component<IProps, IState> {
         this.setState({
             items: [...this.state.items, ...accepted],
         }, () => {
-            this.initImages();
-            this.setImageActionSize();
+            if (!this.state.isFile) {
+                this.initImages();
+                this.setImageActionSize();
+            }
         });
     }
 
-    /* Select image */
-    private selectImage = (index: number, callback?: () => void) => {
+    /* Select media */
+    private selectMedia = (index: number, callback?: () => void) => {
         if (this.state.selected === index) {
             return;
         }
@@ -242,7 +271,9 @@ class MediaPreview extends React.Component<IProps, IState> {
             if (callback) {
                 callback();
             }
-            this.setImageActionSize();
+            if (!this.state.isFile) {
+                this.setImageActionSize();
+            }
         });
     }
 
@@ -391,7 +422,7 @@ class MediaPreview extends React.Component<IProps, IState> {
         };
         if (selected >= index && selected > 0) {
             if (selected === index) {
-                this.selectImage(selected - 1, () => {
+                this.selectMedia(selected - 1, () => {
                     removeItem();
                 });
             } else {
@@ -468,7 +499,7 @@ class MediaPreview extends React.Component<IProps, IState> {
 
     /* Check button click handler */
     private doneHandler = () => {
-        const {items} = this.state;
+        const {items, isFile} = this.state;
         if (items.some((item) => {
             return !item.ready;
         })) {
@@ -503,32 +534,54 @@ class MediaPreview extends React.Component<IProps, IState> {
             } else if (item.mediaType === 'video') {
                 promise.push(this.convertFileToBlob(item));
                 promise.push(readAndCompressImage(item.tempThumb, videoThumbConfig));
+            } else if (isFile) {
+                promise.push(this.convertFileToBlob(item));
             }
         });
-        Promise.all(promise).then((dist) => {
-            const output: IMediaItem[] = [];
-            for (let i = 0; i < items.length; i++) {
-                output.push({
-                    caption: items[i].caption,
-                    duration: items[i].duration,
-                    file: dist[i * 2],
-                    fileType: items[i].type,
-                    mediaType: items[i].mediaType || 'none',
-                    name: items[i].name,
-                    thumb: {
-                        file: dist[i * 2 + 1],
-                        fileType: 'image/jpeg',
-                        height: items[i].height || 0,
-                        width: items[i].width || 0,
-                    },
+        if (isFile) {
+            Promise.all(promise).then((dist) => {
+                const output: IMediaItem[] = [];
+                for (let i = 0; i < items.length; i++) {
+                    output.push({
+                        caption: items[i].caption,
+                        file: dist[i],
+                        fileType: items[i].type,
+                        mediaType: 'file',
+                        name: items[i].name,
+                    });
+                }
+                this.props.onDone(output);
+                this.dialogCloseHandler();
+                this.setState({
+                    loading: false,
                 });
-            }
-            this.props.onDone(output);
-            this.dialogCloseHandler();
-            this.setState({
-                loading: false,
             });
-        });
+        } else {
+            Promise.all(promise).then((dist) => {
+                const output: IMediaItem[] = [];
+                for (let i = 0; i < items.length; i++) {
+                    output.push({
+                        caption: items[i].caption,
+                        duration: items[i].duration,
+                        file: dist[i * 2],
+                        fileType: items[i].type,
+                        mediaType: items[i].mediaType || 'none',
+                        name: items[i].name,
+                        thumb: {
+                            file: dist[i * 2 + 1],
+                            fileType: 'image/jpeg',
+                            height: items[i].height || 0,
+                            width: items[i].width || 0,
+                        },
+                    });
+                }
+                this.props.onDone(output);
+                this.dialogCloseHandler();
+                this.setState({
+                    loading: false,
+                });
+            });
+        }
     }
 }
 

@@ -1319,6 +1319,10 @@ class ChatInput extends React.Component<IProps, IState> {
                     }
                     break;
                 case 'file':
+                    if (this.mediaPreviewRef) {
+                        this.mediaPreviewRef.openDialog(files, true);
+                    }
+                    break;
                     this.sendFiles(files);
                     break;
             }
@@ -1460,13 +1464,25 @@ class ChatInput extends React.Component<IProps, IState> {
 
     /* Send media handler */
     private mediaPreviewDoneHandler = (items: IMediaItem[]) => {
-        const {previewMessage, previewMessageMode} = this.state;
+        const {mediaInputMode, previewMessage, previewMessageMode} = this.state;
         const message = cloneDeep(previewMessage);
-        if (this.props.onMediaSelected) {
-            this.props.onMediaSelected(items, {
-                message,
-                mode: previewMessageMode,
-            });
+        switch (mediaInputMode) {
+            case 'media':
+                if (this.props.onMediaSelected) {
+                    this.props.onMediaSelected(items, {
+                        message,
+                        mode: previewMessageMode,
+                    });
+                }
+                break;
+            case 'file':
+                if (this.props.onMediaSelected) {
+                    this.props.onMediaSelected(items, {
+                        message,
+                        mode: previewMessageMode,
+                    });
+                }
+                break;
         }
         this.clearPreviewMessage(true);
     }

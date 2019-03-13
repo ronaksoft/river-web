@@ -169,6 +169,32 @@
             &.right img.back {
               animation: swipe-right 0.3s normal forwards ease-in-out;
             }
+            .file-slide {
+              position: relative;
+              height: 256px;
+              width: 256px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              .icon {
+                height: 100%;
+                width: 100%;
+                background-color: var(--white);
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                .extension {
+                  font-size: 14px;
+                  line-height: 1.2em;
+                  padding: 12px;
+                  .size {
+                    font-size: 12px;
+                    line-height: 2.2em;
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -257,6 +283,27 @@
               color: var(--white);
             }
           }
+          .file-preview {
+            position: relative;
+            display: flex;
+            width: 100px;
+            height: 100px;
+            align-items: center;
+            justify-content: center;
+            svg {
+              color: var(--grey-low);
+              font-size: 80px;
+            }
+            .extension {
+              position: absolute;
+              top: 55%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              text-transform: uppercase;
+              font-weight: bold;
+              color: var(--white);
+            }
+          }
           .remove {
             position: absolute;
             background-color: var(--white);
@@ -310,6 +357,9 @@
               transform: scale(0.93);
               filter: blur(1px);
             }
+            .file-preview {
+              border: 2px solid var(--grey-low);
+            }
           }
           &.add-file {
             background: #fff;
@@ -346,6 +396,16 @@ html[theme="dark"] {
         justify-content: flex-start;
         .item {
           background-color: var(--dark-high);
+          .file-preview {
+            svg {
+              color: var(--white);
+            }
+          }
+          &.selected {
+            .file-preview {
+              border: 2px solid var(--white);
+            }
+          }
           &.add-file {
             background: var(--dark-high);
             color: var(--white);
@@ -378,6 +438,16 @@ html[theme="dark-blue"] {
         justify-content: flex-start;
         .item {
           background-color: var(--dark-blue-medium);
+          .file-preview {
+            svg {
+              color: var(--white);
+            }
+          }
+          &.selected {
+            .file-preview {
+              border: 2px solid var(--white);
+            }
+          }
           &.add-file {
             background: var(--dark-blue-medium);
             color: var(--white);

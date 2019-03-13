@@ -138,6 +138,28 @@
             animation-iteration-count: 1; }
           .uploader-dialog .uploader-container .attachment-preview-container .uploader-dropzone .slider-attachment .slide.right img.back {
             animation: swipe-right 0.3s normal forwards ease-in-out; }
+          .uploader-dialog .uploader-container .attachment-preview-container .uploader-dropzone .slider-attachment .slide .file-slide {
+            position: relative;
+            height: 256px;
+            width: 256px;
+            display: flex;
+            align-items: center;
+            justify-content: center; }
+            .uploader-dialog .uploader-container .attachment-preview-container .uploader-dropzone .slider-attachment .slide .file-slide .icon {
+              height: 100%;
+              width: 100%;
+              background-color: var(--white);
+              border-radius: 12px;
+              display: flex;
+              align-items: center;
+              justify-content: center; }
+              .uploader-dialog .uploader-container .attachment-preview-container .uploader-dropzone .slider-attachment .slide .file-slide .icon .extension {
+                font-size: 14px;
+                line-height: 1.2em;
+                padding: 12px; }
+                .uploader-dialog .uploader-container .attachment-preview-container .uploader-dropzone .slider-attachment .slide .file-slide .icon .extension .size {
+                  font-size: 12px;
+                  line-height: 2.2em; }
     .uploader-dialog .uploader-container .attachment-preview-container .attachment-details-container {
       position: relative;
       padding: 4px 96px 4px 32px;
@@ -212,6 +234,24 @@
           .uploader-dialog .uploader-container .attachments-slide-container .attachment-items .item .video-icon svg {
             font-size: 30px;
             color: var(--white); }
+        .uploader-dialog .uploader-container .attachments-slide-container .attachment-items .item .file-preview {
+          position: relative;
+          display: flex;
+          width: 100px;
+          height: 100px;
+          align-items: center;
+          justify-content: center; }
+          .uploader-dialog .uploader-container .attachments-slide-container .attachment-items .item .file-preview svg {
+            color: var(--grey-low);
+            font-size: 80px; }
+          .uploader-dialog .uploader-container .attachments-slide-container .attachment-items .item .file-preview .extension {
+            position: absolute;
+            top: 55%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-transform: uppercase;
+            font-weight: bold;
+            color: var(--white); }
         .uploader-dialog .uploader-container .attachments-slide-container .attachment-items .item .remove {
           position: absolute;
           background-color: var(--white);
@@ -255,6 +295,8 @@
         .uploader-dialog .uploader-container .attachments-slide-container .attachment-items .item.selected .preview {
           transform: scale(0.93);
           filter: blur(1px); }
+        .uploader-dialog .uploader-container .attachments-slide-container .attachment-items .item.selected .file-preview {
+          border: 2px solid var(--grey-low); }
         .uploader-dialog .uploader-container .attachments-slide-container .attachment-items .item.add-file {
           background: #fff;
           display: flex;
@@ -277,6 +319,10 @@ html[theme="dark"] .uploader-container {
       justify-content: flex-start; }
       html[theme="dark"] .uploader-container .attachments-slide-container .attachment-items .item {
         background-color: var(--dark-high); }
+        html[theme="dark"] .uploader-container .attachments-slide-container .attachment-items .item .file-preview svg {
+          color: var(--white); }
+        html[theme="dark"] .uploader-container .attachments-slide-container .attachment-items .item.selected .file-preview {
+          border: 2px solid var(--white); }
         html[theme="dark"] .uploader-container .attachments-slide-container .attachment-items .item.add-file {
           background: var(--dark-high);
           color: var(--white); }
@@ -296,6 +342,10 @@ html[theme="dark-blue"] .uploader-container {
       justify-content: flex-start; }
       html[theme="dark-blue"] .uploader-container .attachments-slide-container .attachment-items .item {
         background-color: var(--dark-blue-medium); }
+        html[theme="dark-blue"] .uploader-container .attachments-slide-container .attachment-items .item .file-preview svg {
+          color: var(--white); }
+        html[theme="dark-blue"] .uploader-container .attachments-slide-container .attachment-items .item.selected .file-preview {
+          border: 2px solid var(--white); }
         html[theme="dark-blue"] .uploader-container .attachments-slide-container .attachment-items .item.add-file {
           background: var(--dark-blue-medium);
           color: var(--white); }
