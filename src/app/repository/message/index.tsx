@@ -53,7 +53,7 @@ export default class MessageRepo {
                     if (audioAttr.voice) {
                         flags.type = C_MESSAGE_TYPE.Voice;
                     } else {
-                        flags.type = C_MESSAGE_TYPE.Voice;
+                        flags.type = C_MESSAGE_TYPE.Audio;
                     }
                     delete attr.data;
                     break;
@@ -158,7 +158,7 @@ export default class MessageRepo {
             case C_MESSAGE_TYPE.File:
                 msgType = C_MEDIA_TYPE.FILE;
                 break;
-            case C_MESSAGE_TYPE.Music:
+            case C_MESSAGE_TYPE.Audio:
                 msgType = C_MEDIA_TYPE.AUDIO;
                 break;
             case C_MESSAGE_TYPE.Voice:

@@ -8,6 +8,7 @@
 */
 
 export const C_MESSAGE_TYPE = {
+    Audio: -10,
     Contact: -8,
     Date: -1,
     End: -4,
@@ -15,7 +16,6 @@ export const C_MESSAGE_TYPE = {
     Gap: -5,
     Hole: -2,
     Location: -12,
-    Music: -10,
     NewMessage: -3,
     Normal: 2,
     Picture: -9,

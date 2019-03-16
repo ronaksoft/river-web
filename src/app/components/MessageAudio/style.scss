@@ -1,0 +1,76 @@
+/*
+    Creation Time: 2019 - March - 16
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2019
+*/
+@import '../../../style/common';
+
+.message-audio {
+  min-width: 208px;
+  .audio-main {
+    width: 100%;
+    margin-bottom: -12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .audio-action-wrapper {
+      width: 48px;
+      .audio-item-action {
+        height: 48px;
+        width: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .audio-action {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          height: 36px;
+          width: 36px;
+          border-radius: 50%;
+          background-color: var(--river);
+          z-index: 910;
+          svg {
+            color: var(--white);
+          }
+        }
+      }
+    }
+    .audio-info {
+      flex: 1;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      .audio-title,
+      .audio-album {
+        width: 100%;
+        text-align: left;
+        max-width: 256px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .audio-album {
+        color: var(--grey);
+      }
+    }
+  }
+}
+
+html[theme="dark"],
+html[theme="dark-blue"] {
+  .message-audio {
+    //
+  }
+}
+
+html[bubble="2"] {
+  .message-audio {
+    //
+  }
+}

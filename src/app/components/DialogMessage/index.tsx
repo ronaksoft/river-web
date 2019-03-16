@@ -25,6 +25,7 @@ import {
     VideocamOutlined,
     PhotoOutlined,
     RecordVoiceOverOutlined,
+    MusicNoteOutlined,
 } from '@material-ui/icons';
 import {PeerNotifySettings, PeerType, TypingAction} from '../../services/sdk/messages/chat.core.types_pb';
 import GroupAvatar from '../GroupAvatar';
@@ -148,6 +149,8 @@ class DialogMessage extends React.Component<IProps, IState> {
                 return (<RecordVoiceOverOutlined className="preview-icon"/>);
             case C_MESSAGE_ICON.Photo:
                 return (<PhotoOutlined className="preview-icon"/>);
+            case C_MESSAGE_ICON.Audio:
+                return (<MusicNoteOutlined className="preview-icon"/>);
             default:
                 return '';
         }

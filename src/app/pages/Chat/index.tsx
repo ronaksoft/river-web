@@ -546,7 +546,6 @@ class Chat extends React.Component<IProps, IState> {
                                        onBulkAction={this.chatInputBulkActionHandler}
                                        onAction={this.chatInputActionHandler} peer={peer}
                                        onVoiceSend={this.chatInputVoiceHandler}
-                                       onFileSelected={this.chatInputFileSelectHandler}
                                        onMediaSelected={this.chatInputMediaSelectHandler}
                                        onContactSelected={this.chatInputContactSelectHandler}
                                        onMapSelected={this.chatInputMapSelectHandler}
@@ -3163,13 +3162,6 @@ class Chat extends React.Component<IProps, IState> {
         this.sendMediaMessage('voice', item, param);
     }
 
-    /* ChatInput file select handler */
-    private chatInputFileSelectHandler = (items: IMediaItem[], param?: any) => {
-        items.forEach((item) => {
-            this.sendMediaMessage(item.mediaType, item, param);
-        });
-    }
-
     /* ChatInput media select handler */
     private chatInputMediaSelectHandler = (items: IMediaItem[], param?: any) => {
         items.forEach((item) => {
@@ -3177,7 +3169,7 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private sendMediaMessage(type: 'image' | 'video' | 'file' | 'voice' | 'none', mediaItem: IMediaItem, param?: any) {
+    private sendMediaMessage(type: 'image' | 'video' | 'file' | 'voice' | 'audio' | 'none', mediaItem: IMediaItem, param?: any) {
         if (type === 'none') {
             return;
         }
@@ -3235,51 +3227,42 @@ class Chat extends React.Component<IProps, IState> {
                 attributesDataList.push(attrFileData.toObject());
                 break;
             case 'image':
-            case 'video':
-                fileIds.push(String(UniqueId.getRandomId()));
+                messageType = C_MESSAGE_TYPE.Picture;
+                const attrPhotoData = new DocumentAttributePhoto();
                 if (mediaItem.thumb) {
-                    if (type === 'image') {
-                        messageType = C_MESSAGE_TYPE.Picture;
-                        const attrPhotoData = new DocumentAttributePhoto();
-                        attrPhotoData.setHeight(mediaItem.thumb.height);
-                        attrPhotoData.setWidth(mediaItem.thumb.width);
-
-                        const attrPhoto = new DocumentAttribute();
-                        attrPhoto.setData(attrPhotoData.serializeBinary());
-                        attrPhoto.setType(DocumentAttributeType.ATTRIBUTETYPEPHOTO);
-
-                        attributesList.push(attrPhoto);
-                        attributesDataList.push(attrPhotoData.toObject());
-                    } else if (type === 'video') {
-                        messageType = C_MESSAGE_TYPE.Video;
-                        const attrVideoData = new DocumentAttributeVideo();
-                        attrVideoData.setHeight(mediaItem.thumb.height);
-                        attrVideoData.setWidth(mediaItem.thumb.width);
-                        attrVideoData.setDuration(Math.floor(mediaItem.duration || 0));
-                        attrVideoData.setRound(false);
-
-                        const attrVideo = new DocumentAttribute();
-                        attrVideo.setData(attrVideoData.serializeBinary());
-                        attrVideo.setType(DocumentAttributeType.ATTRIBUTETYPEVIDEO);
-
-                        attributesList.push(attrVideo);
-                        attributesDataList.push(attrVideoData.toObject());
-                    }
+                    attrPhotoData.setHeight(mediaItem.thumb.height);
+                    attrPhotoData.setWidth(mediaItem.thumb.width);
+                } else {
+                    attrPhotoData.setHeight(0);
+                    attrPhotoData.setWidth(0);
                 }
 
-                const inputThumbFile = new InputFile();
-                inputThumbFile.setFileid(fileIds[1]);
-                inputThumbFile.setFilename(`thumb_${mediaItem.name}`);
-                inputThumbFile.setMd5checksum('');
-                inputThumbFile.setTotalparts(1);
+                const attrPhoto = new DocumentAttribute();
+                attrPhoto.setData(attrPhotoData.serializeBinary());
+                attrPhoto.setType(DocumentAttributeType.ATTRIBUTETYPEPHOTO);
 
-                const tempThumbInputFile = new FileLocation();
-                tempThumbInputFile.setAccesshash('');
-                tempThumbInputFile.setClusterid(0);
-                tempThumbInputFile.setFileid(fileIds[1]);
+                attributesList.push(attrPhoto);
+                attributesDataList.push(attrPhotoData.toObject());
+                break;
+            case 'video':
+                messageType = C_MESSAGE_TYPE.Video;
+                const attrVideoData = new DocumentAttributeVideo();
+                if (mediaItem.thumb) {
+                    attrVideoData.setHeight(mediaItem.thumb.height);
+                    attrVideoData.setWidth(mediaItem.thumb.width);
+                } else {
+                    attrVideoData.setHeight(0);
+                    attrVideoData.setWidth(0);
+                }
+                attrVideoData.setDuration(Math.floor(mediaItem.duration || 0));
+                attrVideoData.setRound(false);
 
-                tempDocument.setThumbnail(tempThumbInputFile);
-                mediaData.setThumbnail(inputThumbFile);
+                const attrVideo = new DocumentAttribute();
+                attrVideo.setData(attrVideoData.serializeBinary());
+                attrVideo.setType(DocumentAttributeType.ATTRIBUTETYPEVIDEO);
+
+                attributesList.push(attrVideo);
+                attributesDataList.push(attrVideoData.toObject());
                 break;
             case 'voice':
                 messageType = C_MESSAGE_TYPE.Voice;
@@ -3299,6 +3282,47 @@ class Chat extends React.Component<IProps, IState> {
 
                 attributesList.push(attrVoice);
                 attributesDataList.push(attrVoiceData.toObject());
+                break;
+            case 'audio':
+                messageType = C_MESSAGE_TYPE.Audio;
+
+                const attrAudioData = new DocumentAttributeAudio();
+                attrAudioData.setAlbum(mediaItem.album || '');
+                attrAudioData.setDuration(Math.floor(mediaItem.duration || 0));
+                attrAudioData.setTitle(mediaItem.title || '');
+                attrAudioData.setPerformer(mediaItem.performer || '');
+                attrAudioData.setVoice(false);
+
+                const attrAudio = new DocumentAttribute();
+                attrAudio.setData(attrAudioData.serializeBinary());
+                attrAudio.setType(DocumentAttributeType.ATTRIBUTETYPEAUDIO);
+
+                attributesList.push(attrAudio);
+                attributesDataList.push(attrAudioData.toObject());
+                break;
+        }
+
+        switch (type) {
+            case 'image':
+            case 'video':
+            case 'audio':
+                if (mediaItem.thumb) {
+                    fileIds.push(String(UniqueId.getRandomId()));
+
+                    const inputThumbFile = new InputFile();
+                    inputThumbFile.setFileid(fileIds[1]);
+                    inputThumbFile.setFilename(`thumb_${mediaItem.name}`);
+                    inputThumbFile.setMd5checksum('');
+                    inputThumbFile.setTotalparts(1);
+
+                    const tempThumbInputFile = new FileLocation();
+                    tempThumbInputFile.setAccesshash('');
+                    tempThumbInputFile.setClusterid(0);
+                    tempThumbInputFile.setFileid(fileIds[1]);
+
+                    tempDocument.setThumbnail(tempThumbInputFile);
+                    mediaData.setThumbnail(inputThumbFile);
+                }
                 break;
         }
 
@@ -3349,6 +3373,7 @@ class Chat extends React.Component<IProps, IState> {
                 break;
             case 'image':
             case 'video':
+            case 'audio':
                 uploadPromises.push(this.fileManager.sendFile(fileIds[0], mediaItem.file, (progress) => {
                     this.progressBroadcaster.publish(id, progress);
                 }));

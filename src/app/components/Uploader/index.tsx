@@ -17,12 +17,14 @@ import {
     CropRounded,
     PlayCircleFilledRounded,
     ConfirmationNumberRounded, InsertDriveFileRounded,
+    MusicNoteRounded,
 } from '@material-ui/icons';
 import Scrollbars from 'react-custom-scrollbars';
 import TextField from '@material-ui/core/TextField/TextField';
 // @ts-ignore
 import readAndCompressImage from 'browser-image-resizer';
 import {getFileExtension, getHumanReadableSize} from '../MessageFile';
+import * as MusicMetadata from 'music-metadata-browser';
 
 import './style.css';
 
@@ -34,23 +36,29 @@ interface IMediaThumb {
 }
 
 export interface IMediaItem {
+    album?: string;
     caption?: string;
     duration?: number;
     file: Blob;
     fileType: string;
-    mediaType: 'image' | 'video' | 'file' | 'voice' | 'none';
+    mediaType: 'image' | 'video' | 'file' | 'voice' | 'audio' | 'none';
     name: string;
+    performer?: string;
     thumb?: IMediaThumb;
+    title?: string;
     waveform?: number[];
 }
 
 export interface IUploaderFile extends FileWithPreview {
+    album?: string;
     caption?: string;
     duration?: number;
     height?: number;
-    mediaType?: 'image' | 'video' | 'none';
+    mediaType?: 'image' | 'video' | 'audio' | 'none';
+    performer?: string;
     ready?: boolean;
     tempThumb?: File;
+    title?: string;
     videoThumb?: string;
     width?: number;
 }
@@ -104,7 +112,7 @@ class MediaPreview extends React.Component<IProps, IState> {
             items: inputItems,
         }, () => {
             if (!isFile) {
-                this.initImages();
+                this.initMedias();
                 this.setImageActionSize();
             }
         });
@@ -154,8 +162,23 @@ class MediaPreview extends React.Component<IProps, IState> {
                                             <video ref={this.imageRefHandler} className="front" controls={true}>
                                                 <source src={items[selected].preview}/>
                                             </video>}
+                                            {Boolean(items[selected].mediaType === 'audio' && items[selected].preview) &&
+                                            <img ref={this.imageRefHandler} className="front"
+                                                 src={items[selected].preview}/>}
+                                            {Boolean(items[selected].mediaType === 'audio' && !items[selected].preview) &&
+                                            <div className="front audio-preview">
+                                                <MusicNoteRounded/>
+                                            </div>}
                                             {Boolean(lastSelected !== selected && items[lastSelected] && items[selected].mediaType === 'image') && (
                                                 <img className="back" src={items[lastSelected].preview}/>
+                                            )}
+                                            {Boolean(lastSelected !== selected && items[lastSelected] && items[selected].mediaType === 'audio' && items[lastSelected].preview) && (
+                                                <img className="back" src={items[lastSelected].preview}/>
+                                            )}
+                                            {Boolean(lastSelected !== selected && items[lastSelected] && items[selected].mediaType === 'audio' && !items[lastSelected].preview) && (
+                                                <div className="back audio-preview">
+                                                    <MusicNoteRounded/>
+                                                </div>
                                             )}
                                         </React.Fragment>}
                                         {Boolean(isFile && items[selected]) && <div className="file-slide">
@@ -209,8 +232,15 @@ class MediaPreview extends React.Component<IProps, IState> {
                                             {Boolean(!isFile && item.mediaType === 'video') && <React.Fragment>
                                                 <div className="preview"
                                                      style={{backgroundImage: 'url(' + item.videoThumb + ')'}}/>
-                                                <div className="video-icon">
+                                                <div className="preview-icon">
                                                     <PlayCircleFilledRounded/>
+                                                </div>
+                                            </React.Fragment>}
+                                            {Boolean(!isFile && item.mediaType === 'audio') && <React.Fragment>
+                                                {item.preview && <div className="preview"
+                                                                      style={{backgroundImage: 'url(' + item.preview + ')'}}/>}
+                                                <div className="preview-icon">
+                                                    <MusicNoteRounded/>
                                                 </div>
                                             </React.Fragment>}
                                             {Boolean(isFile) && <div className="file-preview">
@@ -249,7 +279,7 @@ class MediaPreview extends React.Component<IProps, IState> {
             items: [...this.state.items, ...accepted],
         }, () => {
             if (!this.state.isFile) {
-                this.initImages();
+                this.initMedias();
                 this.setImageActionSize();
             }
         });
@@ -284,22 +314,24 @@ class MediaPreview extends React.Component<IProps, IState> {
         });
     }
 
-    /* Get images metadata and preview not exist */
-    private initImages() {
+    /* Get media metadata and preview not exist */
+    private initMedias() {
         const {items} = this.state;
         items.map((item, index) => {
             item.mediaType = this.getTypeByMime(item.type);
-            if (!item.preview) {
+            if (!item.preview && item.mediaType !== 'audio') {
                 item.preview = URL.createObjectURL(item);
                 if (!this.previewRefs[index]) {
                     this.previewRefs[index] = [];
                 }
                 this.previewRefs[index].push(item.preview);
             }
-            if (item.mediaType === 'image') {
+            if (item.mediaType === 'image' && item.preview) {
                 this.getImageSize(item.preview, index);
-            } else if (item.mediaType === 'video') {
+            } else if (item.mediaType === 'video' && item.preview) {
                 this.getVideoSizeAndThumb(item.preview, index);
+            } else if (item.mediaType === 'audio') {
+                this.getAudioMetadata(item, index);
             }
             return item;
         });
@@ -387,6 +419,29 @@ class MediaPreview extends React.Component<IProps, IState> {
         };
         video.src = src;
         video.load();
+    }
+
+    /* Get audio metadata */
+    private getAudioMetadata(file: IUploaderFile, index: number) {
+        MusicMetadata.parseBlob(file).then((res) => {
+            const {items} = this.state;
+            items[index].duration = res.format.duration;
+            items[index].title = res.common.title;
+            items[index].performer = res.common.artist;
+            items[index].album = res.common.album;
+            if (res.common.picture && res.common.picture.length > 0) {
+                items[index].tempThumb = new File([new Uint8Array(res.common.picture[0].data)], 'thumbnail.jpeg');
+                items[index].preview = URL.createObjectURL(items[index].tempThumb);
+                if (!this.previewRefs[index]) {
+                    this.previewRefs[index] = [];
+                }
+                this.previewRefs[index].push(items[index].preview || '');
+            }
+            items[index].ready = true;
+            this.setState({
+                items,
+            });
+        });
     }
 
     /* Add new media items at end of items */
@@ -484,6 +539,10 @@ class MediaPreview extends React.Component<IProps, IState> {
             case 'video/webm':
             case 'video/mp4':
                 return 'video';
+            case 'audio/mp4':
+            case 'audio/mp3':
+            case 'audio/ogg':
+                return 'audio';
             default:
                 return 'none';
         }
@@ -534,6 +593,15 @@ class MediaPreview extends React.Component<IProps, IState> {
             } else if (item.mediaType === 'video') {
                 promise.push(this.convertFileToBlob(item));
                 promise.push(readAndCompressImage(item.tempThumb, videoThumbConfig));
+            } else if (item.mediaType === 'audio') {
+                promise.push(this.convertFileToBlob(item));
+                if (item.tempThumb) {
+                    promise.push(readAndCompressImage(new Blob([item.tempThumb], {type: item.tempThumb.type}), videoThumbConfig));
+                } else {
+                    promise.push(new Promise((resolve) => {
+                        resolve(item.tempThumb);
+                    }));
+                }
             } else if (isFile) {
                 promise.push(this.convertFileToBlob(item));
             }
@@ -561,18 +629,21 @@ class MediaPreview extends React.Component<IProps, IState> {
                 const output: IMediaItem[] = [];
                 for (let i = 0; i < items.length; i++) {
                     output.push({
+                        album: items[i].album,
                         caption: items[i].caption,
                         duration: items[i].duration,
                         file: dist[i * 2],
                         fileType: items[i].type,
                         mediaType: items[i].mediaType || 'none',
                         name: items[i].name,
-                        thumb: {
+                        performer: items[i].performer,
+                        thumb: dist[i * 2 + 1] ? {
                             file: dist[i * 2 + 1],
                             fileType: 'image/jpeg',
                             height: items[i].height || 0,
                             width: items[i].width || 0,
-                        },
+                        } : undefined,
+                        title: items[i].title,
                     });
                 }
                 this.props.onDone(output);

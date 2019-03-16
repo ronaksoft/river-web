@@ -191,7 +191,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                             <div className="video-icon">
                                 <PlayCircleFilledRounded/>
                             </div>}
-                            {Boolean(item.type === C_MESSAGE_TYPE.Video || item.type === C_MESSAGE_TYPE.Music || item.type === C_MESSAGE_TYPE.Voice) &&
+                            {Boolean(item.type === C_MESSAGE_TYPE.Video || item.type === C_MESSAGE_TYPE.Audio || item.type === C_MESSAGE_TYPE.Voice) &&
                             <div className="media-duration">{this.getDuration(item.info.duration || 0)}</div>}
                         </div>
                     );
@@ -213,9 +213,9 @@ class PeerMedia extends React.Component<IProps, IState> {
                             <div className="media-item-info">
                                 <div
                                     className="media-name">{item.type === C_MESSAGE_TYPE.Voice ? 'Voice' : item.info.fileName}</div>
-                                {!(item.type === C_MESSAGE_TYPE.Voice || item.type === C_MESSAGE_TYPE.Music) &&
+                                {!(item.type === C_MESSAGE_TYPE.Voice || item.type === C_MESSAGE_TYPE.Audio) &&
                                 <div className="media-size">{getHumanReadableSize(item.info.size)}</div>}
-                                {(item.type === C_MESSAGE_TYPE.Voice || item.type === C_MESSAGE_TYPE.Music) &&
+                                {(item.type === C_MESSAGE_TYPE.Voice || item.type === C_MESSAGE_TYPE.Audio) &&
                                 <div className="media-size">{this.getDuration(item.info.duration || 0)}</div>}
                             </div>
                             {this.getMediaAction(item)}
@@ -240,7 +240,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                             <InsertDriveFileTwoTone/>
                             <span className="file-extension">{getFileExtension(item.info.type)}</span>
                         </div>);
-                case C_MESSAGE_TYPE.Music:
+                case C_MESSAGE_TYPE.Audio:
                     return (
                         <div className="file-icon music">
                             <HeadsetTwoTone/>

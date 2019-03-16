@@ -6,7 +6,7 @@
     Auditor: HamidrezaKK
     Copyright Ronak Software Group 2018
 */
-@keyframes splash {
+@keyframes uploader-splash {
   from {
     opacity: 0.7;
     transform: scale(0.7, 0.7); }
@@ -16,7 +16,7 @@
   to {
     transform: scale(1, 1); } }
 
-@keyframes swipe-left {
+@keyframes uploader-swipe-left {
   from {
     transform: translate(-50%, -50%); }
   50% {
@@ -25,7 +25,7 @@
     opacity: 0;
     transform: translate(-200%, -50%); } }
 
-@keyframes swipe-right {
+@keyframes uploader-swipe-right {
   from {
     transform: translate(-50%, -50%); }
   50% {
@@ -74,6 +74,7 @@
       width: 100%;
       height: 400px; }
       .uploader-dialog .uploader-container .attachment-preview-container .uploader-dropzone .slider-attachment {
+        position: relative;
         width: 100%;
         height: 100%;
         padding: 16px;
@@ -116,7 +117,8 @@
               cursor: pointer; }
           .uploader-dialog .uploader-container .attachment-preview-container .uploader-dropzone .slider-attachment .slide img, .uploader-dialog .uploader-container .attachment-preview-container .uploader-dropzone .slider-attachment .slide video {
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25); }
-          .uploader-dialog .uploader-container .attachment-preview-container .uploader-dropzone .slider-attachment .slide img.front, .uploader-dialog .uploader-container .attachment-preview-container .uploader-dropzone .slider-attachment .slide video.front {
+          .uploader-dialog .uploader-container .attachment-preview-container .uploader-dropzone .slider-attachment .slide img.front, .uploader-dialog .uploader-container .attachment-preview-container .uploader-dropzone .slider-attachment .slide video.front,
+          .uploader-dialog .uploader-container .attachment-preview-container .uploader-dropzone .slider-attachment .slide .audio-preview.front {
             position: relative;
             display: flex;
             align-items: center;
@@ -124,20 +126,31 @@
             max-width: 100%;
             max-height: 100%;
             z-index: 2;
-            animation: splash 0.7s normal forwards ease-in-out;
+            animation: uploader-splash 0.7s normal forwards ease-in-out;
             animation-iteration-count: 1; }
-          .uploader-dialog .uploader-container .attachment-preview-container .uploader-dropzone .slider-attachment .slide img.back {
+          .uploader-dialog .uploader-container .attachment-preview-container .uploader-dropzone .slider-attachment .slide img.back,
+          .uploader-dialog .uploader-container .attachment-preview-container .uploader-dropzone .slider-attachment .slide .audio-preview.back {
             position: absolute;
             top: 50%;
             left: 50%;
-            max-width: 100%;
-            max-height: 100%;
+            max-width: 256px;
+            max-height: 256px;
             transform: translate(-50%, -50%);
             z-index: 1;
-            animation: swipe-left 0.3s normal forwards ease-in-out;
+            animation: uploader-swipe-left 0.3s normal forwards ease-in-out;
             animation-iteration-count: 1; }
-          .uploader-dialog .uploader-container .attachment-preview-container .uploader-dropzone .slider-attachment .slide.right img.back {
-            animation: swipe-right 0.3s normal forwards ease-in-out; }
+          .uploader-dialog .uploader-container .attachment-preview-container .uploader-dropzone .slider-attachment .slide .audio-preview {
+            background-color: var(--grey);
+            height: 256px;
+            width: 256px;
+            border-radius: 3px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25); }
+            .uploader-dialog .uploader-container .attachment-preview-container .uploader-dropzone .slider-attachment .slide .audio-preview svg {
+              font-size: 64px;
+              color: var(--grey-low); }
+          .uploader-dialog .uploader-container .attachment-preview-container .uploader-dropzone .slider-attachment .slide.right img.back,
+          .uploader-dialog .uploader-container .attachment-preview-container .uploader-dropzone .slider-attachment .slide.right .audio-preview.back {
+            animation: uploader-swipe-right 0.3s normal forwards ease-in-out; }
           .uploader-dialog .uploader-container .attachment-preview-container .uploader-dropzone .slider-attachment .slide .file-slide {
             position: relative;
             height: 256px;
@@ -218,7 +231,7 @@
             opacity: 0;
             background: linear-gradient(10deg, transparent 0%, transparent 45%, rgba(0, 0, 0, 0.18) 75%, rgba(0, 0, 0, 0.4) 100%);
             transition: opacity .1s ease-out; }
-        .uploader-dialog .uploader-container .attachments-slide-container .attachment-items .item .video-icon {
+        .uploader-dialog .uploader-container .attachments-slide-container .attachment-items .item .preview-icon {
           position: absolute;
           top: 50%;
           left: 50%;
@@ -231,7 +244,7 @@
           display: flex;
           align-items: center;
           justify-content: center; }
-          .uploader-dialog .uploader-container .attachments-slide-container .attachment-items .item .video-icon svg {
+          .uploader-dialog .uploader-container .attachments-slide-container .attachment-items .item .preview-icon svg {
             font-size: 30px;
             color: var(--white); }
         .uploader-dialog .uploader-container .attachments-slide-container .attachment-items .item .file-preview {

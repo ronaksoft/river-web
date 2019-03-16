@@ -29,7 +29,7 @@ export const getMessageTitle = (message: IMessage): { text: string, icon: number
             if (message.messagetype === C_MESSAGE_TYPE.Voice) {
                 messageIcon.icon = C_MESSAGE_ICON.Voice;
                 messageIcon.text = 'Voice Message';
-            } else if (message.messagetype === C_MESSAGE_TYPE.Music) {
+            } else if (message.messagetype === C_MESSAGE_TYPE.Audio) {
                 messageIcon.icon = C_MESSAGE_ICON.Audio;
                 messageIcon.text = 'Audio Message';
             } else if (message.messagetype === C_MESSAGE_TYPE.Video) {

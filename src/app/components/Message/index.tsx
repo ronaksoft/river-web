@@ -43,6 +43,7 @@ import Broadcaster from '../../services/broadcaster';
 import UserRepo from '../../repository/user';
 
 import './style.css';
+import MessageAudio from '../MessageAudio';
 
 interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
@@ -938,6 +939,8 @@ class Message extends React.Component<IProps, IState> {
             switch (message.messagetype) {
                 case C_MESSAGE_TYPE.Voice:
                     return (<MessageVoice message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
+                case C_MESSAGE_TYPE.Audio:
+                    return (<MessageAudio message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
                 case C_MESSAGE_TYPE.File:
                     return (<MessageFile message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
                 case C_MESSAGE_TYPE.Contact:
@@ -975,7 +978,7 @@ class Message extends React.Component<IProps, IState> {
             case C_MESSAGE_TYPE.Voice:
                 type = 'voice';
                 break;
-            case C_MESSAGE_TYPE.Music:
+            case C_MESSAGE_TYPE.Audio:
                 type = 'music';
                 break;
         }
@@ -983,6 +986,12 @@ class Message extends React.Component<IProps, IState> {
             const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
             if ((messageMediaDocument.caption || '').length > 0) {
                 type = 'media_caption';
+            }
+        }
+        if (type === 'music') {
+            const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
+            if ((messageMediaDocument.caption || '').length > 0) {
+                type = 'music_caption';
             }
         }
         let related = '';

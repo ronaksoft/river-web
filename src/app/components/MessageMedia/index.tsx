@@ -37,14 +37,17 @@ const C_MIN_CAPTION_LEN_APPLIER = 10;
 const C_MIN_WIDTH = 86;
 
 export interface IMediaInfo {
+    album?: string;
     caption: string;
     duration?: number;
     file: FileLocation.AsObject;
     fileName: string;
     hasRelation: boolean;
     height: number;
+    performer?: string;
     size: number;
     thumbFile: FileLocation.AsObject;
+    title?: string;
     type: string;
     width: number;
 }
@@ -110,6 +113,9 @@ export const getMediaInfo = (message: IMessage): IMediaInfo => {
         } else if (attr.type === DocumentAttributeType.ATTRIBUTETYPEAUDIO && message.attributes) {
             const docAttr: DocumentAttributeAudio.AsObject = message.attributes[index];
             info.duration = docAttr.duration;
+            info.album = docAttr.album;
+            info.title = docAttr.title;
+            info.performer = docAttr.performer;
         } else if (attr.type === DocumentAttributeType.ATTRIBUTETYPEFILE && message.attributes) {
             const docAttr: DocumentAttributeFile.AsObject = message.attributes[index];
             info.fileName = docAttr.filename || '';

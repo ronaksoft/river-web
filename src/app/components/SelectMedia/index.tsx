@@ -49,7 +49,7 @@ const items: any[] = [
     {
         cmd: 'music',
         icon: <HeadsetTwoTone/>,
-        title: 'Music',
+        title: 'Audio',
     },
     {
         cmd: 'contact',

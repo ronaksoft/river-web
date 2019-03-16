@@ -49,7 +49,7 @@ import {IDraft} from '../../repository/dialog/interface';
 // @ts-ignore
 import Recorder from 'opus-recorder/dist/recorder.min';
 import VoicePlayer from '../VoicePlayer';
-import {convertFileToBlob, to4bitResolution} from './utils';
+import {to4bitResolution} from './utils';
 import {measureNodeHeight} from './measureHeight';
 import {getMessageTitle} from '../Dialog/utils';
 import XRegExp from 'xregexp';
@@ -69,7 +69,6 @@ interface IProps {
     onAction: (cmd: string, message?: IMessage) => void;
     onBulkAction: (cmd: string) => void;
     onContactSelected: (users: IUser[], caption: string, {mode, message}?: any) => void;
-    onFileSelected: (items: IMediaItem[], {mode, message}?: any) => void;
     onMapSelected: (item: IGeoItem, {mode, message}?: any) => void;
     onMediaSelected: (items: IMediaItem[], {mode, message}?: any) => void;
     onMessage: (text: string, {mode, message, entities}?: any) => void;
@@ -1314,6 +1313,7 @@ class ChatInput extends React.Component<IProps, IState> {
             }
             switch (this.state.mediaInputMode) {
                 case 'media':
+                case 'music':
                     if (this.mediaPreviewRef) {
                         this.mediaPreviewRef.openDialog(files);
                     }
@@ -1323,42 +1323,10 @@ class ChatInput extends React.Component<IProps, IState> {
                         this.mediaPreviewRef.openDialog(files, true);
                     }
                     break;
-                    this.sendFiles(files);
-                    break;
             }
             if (this.fileInputRef) {
                 this.fileInputRef.value = '';
             }
-        }
-    }
-
-    /* Send file */
-    private sendFiles(files: File[]) {
-        if (this.props.onFileSelected) {
-            const {previewMessage, previewMessageMode} = this.state;
-            const message = cloneDeep(previewMessage);
-            const promises: any[] = [];
-            files.forEach((file) => {
-                promises.push(convertFileToBlob(file));
-            });
-
-            const mediaItems: IMediaItem[] = [];
-            Promise.all(promises).then((blobInfoList) => {
-                blobInfoList.forEach((blobInfo) => {
-                    mediaItems.push({
-                        caption: '',
-                        file: blobInfo.blob,
-                        fileType: blobInfo.type,
-                        mediaType: 'file',
-                        name: blobInfo.name,
-                    });
-                });
-                this.props.onFileSelected(mediaItems, {
-                    message,
-                    mode: previewMessageMode,
-                });
-            });
-            this.clearPreviewMessage(true);
         }
     }
 
@@ -1455,7 +1423,7 @@ class ChatInput extends React.Component<IProps, IState> {
             case 'media':
                 return 'image/png,image/jpeg,image/jpg,image/gif,video/webm,video/mp4';
             case 'music':
-                return "audio/*";
+                return "audio/mp4,audio/ogg,audio/mp3";
             case 'file':
             default:
                 return '*';
@@ -1468,13 +1436,7 @@ class ChatInput extends React.Component<IProps, IState> {
         const message = cloneDeep(previewMessage);
         switch (mediaInputMode) {
             case 'media':
-                if (this.props.onMediaSelected) {
-                    this.props.onMediaSelected(items, {
-                        message,
-                        mode: previewMessageMode,
-                    });
-                }
-                break;
+            case 'music':
             case 'file':
                 if (this.props.onMediaSelected) {
                     this.props.onMediaSelected(items, {
