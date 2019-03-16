@@ -107,6 +107,7 @@ class SettingMenu extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
     private sdk: SDK;
     private readonly userId: string;
+    private readonly currentAuthID: string;
     private readonly usernameCheckDebounce: any;
     private fileManager: FileManager;
     private progressBroadcaster: ProgressBroadcaster;
@@ -119,7 +120,6 @@ class SettingMenu extends React.Component<IProps, IState> {
     private versionClickTimeout: any = null;
     private versionClickCounter: number = 0;
     private broadcaster: Broadcaster;
-    private currentAuthID: string;
 
     constructor(props: IProps) {
         super(props);

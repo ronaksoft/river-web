@@ -18,6 +18,7 @@ import DownloadProgress from '../DownloadProgress';
 import {getMediaInfo, IMediaInfo} from '../MessageMedia';
 
 import './style.css';
+import AudioPlayer, {IAudioEvent} from '../../services/audioPlayer';
 
 interface IProps {
     message: IMessage;
@@ -32,7 +33,9 @@ interface IState {
 }
 
 class MessageAudio extends React.PureComponent<IProps, IState> {
+    private eventReferences: any[] = [];
     private downloaded: boolean = false;
+    private audioPlayer: AudioPlayer;
 
     constructor(props: IProps) {
         super(props);
@@ -44,14 +47,23 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
         };
 
         this.downloaded = props.message.downloaded || false;
+        this.audioPlayer = AudioPlayer.getInstance();
     }
 
     public componentDidMount() {
-        //
+        const {message, mediaInfo} = this.state;
+        if (this.props.peer) {
+            this.audioPlayer.addToPlaylist(message.id || 0, this.props.peer.getId() || '', mediaInfo.file.fileid || '', message.senderid || '', true, mediaInfo);
+        }
+        this.eventReferences.push(this.audioPlayer.listen(message.id || 0, this.audioPlayerHandler));
     }
 
     public componentWillReceiveProps(newProps: IProps) {
         //
+    }
+
+    public componentWillUnmount() {
+        this.removeAllListeners();
     }
 
     public render() {
@@ -64,7 +76,7 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
                     </div>
                     <div className="audio-info">
                         <div className="audio-title">{mediaInfo.title}</div>
-                        <div className="audio-album">{mediaInfo.album}</div>
+                        <div className="audio-performer">{mediaInfo.performer}</div>
                     </div>
                 </div>
             </div>
@@ -99,7 +111,35 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
 
     /* Audio action handler */
     private audioActionClickHandler = (id: number) => {
-        window.console.log(id);
+        const {playing} = this.state;
+        if (!playing) {
+            this.audioPlayer.play(id);
+        } else {
+            this.audioPlayer.pause(id);
+        }
+    }
+
+    /* Audio player handler */
+    private audioPlayerHandler = (e: IAudioEvent) => {
+        const {playing} = this.state;
+        if ((e.state === 'play' || e.state === 'seek_play') && !playing) {
+            this.setState({
+                playing: true,
+            });
+        } else if ((e.state === 'pause' || e.state === 'seek_pause') && playing) {
+            this.setState({
+                playing: false,
+            });
+        }
+    }
+
+    /* Remove all listeners */
+    private removeAllListeners() {
+        this.eventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
+        });
     }
 }
 

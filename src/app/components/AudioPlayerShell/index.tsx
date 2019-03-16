@@ -9,11 +9,20 @@
 
 import * as React from 'react';
 import AudioPlayer, {IAudioEvent, IAudioInfo} from '../../services/audioPlayer';
-import {CloseRounded, PauseRounded, PlayArrowRounded, SlowMotionVideoRounded} from '@material-ui/icons';
+import {
+    CloseRounded,
+    PauseRounded,
+    PlayArrowRounded,
+    SlowMotionVideoRounded,
+    SkipNextRounded,
+    SkipPreviousRounded
+} from '@material-ui/icons';
 import UserName from '../UserName';
 import {Link} from 'react-router-dom';
+import {IMediaInfo} from '../MessageMedia';
 
 import './style.css';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener/ClickAwayListener';
 
 interface IProps {
     className?: string;
@@ -23,7 +32,10 @@ interface IProps {
 interface IState {
     className: string;
     fast: boolean;
+    isVoice: boolean;
+    mediaInfo?: IMediaInfo;
     messageId: number;
+    openPlaylist: boolean;
     peerId: string;
     playState: 'play' | 'pause' | 'seek_play' | 'seek_pause';
     userId: string;
@@ -44,7 +56,9 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
         this.state = {
             className: props.className || '',
             fast: false,
+            isVoice: true,
             messageId: 0,
+            openPlaylist: false,
             peerId: '',
             playState: 'pause',
             userId: '',
@@ -66,9 +80,28 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {className, fast, messageId, peerId, playState, userId} = this.state;
+        const {className, isVoice} = this.state;
         return (
-            <div ref={this.shellRefHandler} className={'audio-player-shell ' + className}>
+            <div ref={this.shellRefHandler}
+                 className={'audio-player-shell ' + (!isVoice ? 'is-music ' : '') + className}>
+                {this.getView()}
+                <div ref={this.progressRefHandler} className="shell-progress"/>
+            </div>
+        );
+    }
+
+    private shellRefHandler = (ref: any) => {
+        this.shellRef = ref;
+    }
+
+    private progressRefHandler = (ref: any) => {
+        this.progressRef = ref;
+    }
+
+    private getView() {
+        const {fast, isVoice, messageId, mediaInfo, peerId, playState, userId} = this.state;
+        if (isVoice) {
+            return (
                 <div className="shell">
                     <div className="audio-player-play-action">
                         {Boolean(playState === 'pause' || playState === 'seek_pause') &&
@@ -88,17 +121,45 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
                         <CloseRounded className="action" onClick={this.cancelHandler}/>
                     </div>
                 </div>
-                <div ref={this.progressRefHandler} className="shell-progress"/>
-            </div>
+            );
+        } else {
+            return (
+                <div className="shell">
+                    <div className="audio-player-play-action">
+                        <SkipPreviousRounded onClick={this.prevHandler}/>
+                        <div className="play-action">
+                            {Boolean(playState === 'pause' || playState === 'seek_pause') &&
+                            <PlayArrowRounded onClick={this.playHandler}/>}
+                            {Boolean(playState === 'play' || playState === 'seek_play') &&
+                            <PauseRounded onClick={this.pauseHandler}/>}
+                        </div>
+                        <SkipNextRounded onClick={this.nextHandler}/>
+                    </div>
+                    <div className="audio-player-content">
+                        {mediaInfo && <div className="audio-player-info" onClick={this.openPlaylistHandler}>
+                            <div className="audio-title">{mediaInfo.title}</div>
+                            <div className="audio-performer">{mediaInfo.performer}</div>
+                        </div>}
+                        {/*{this.getPlaylistRenderer()}*/}
+                    </div>
+                    <div className="audio-player-action">
+                        <CloseRounded className="action" onClick={this.cancelHandler}/>
+                    </div>
+                </div>
+            );
+        }
+    }
+
+    // @ts-ignore
+    private getPlaylistRenderer() {
+        const {openPlaylist} = this.state;
+        return (
+            <ClickAwayListener onClickAway={this.clickAwayHandler}>
+                {openPlaylist && <div className="playlist-menu">
+                    hey
+                </div>}
+            </ClickAwayListener>
         );
-    }
-
-    private shellRefHandler = (ref: any) => {
-        this.shellRef = ref;
-    }
-
-    private progressRefHandler = (ref: any) => {
-        this.progressRef = ref;
     }
 
     private playHandler = () => {
@@ -120,6 +181,9 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
         if (this.state.playState === 'play') {
             this.audioPlayer.pause(this.messageId);
         }
+        this.setState({
+            openPlaylist: false,
+        });
     }
 
     private fastToggleHandler = () => {
@@ -160,26 +224,35 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
         }
     }
 
-    private audioProgressHandler = (info: IAudioInfo, e: IAudioEvent) => {
+    private audioProgressHandler = (info: IAudioInfo, e: IAudioEvent, mediaInfo?: IMediaInfo) => {
         this.messageId = info.messageId;
         if (info.userId !== '' && this.state.userId !== info.userId) {
             this.setState({
+                isVoice: !e.music,
                 userId: info.userId,
             });
         }
         if (info.peerId !== '' && this.state.peerId !== info.peerId) {
             this.setState({
+                isVoice: !e.music,
                 peerId: info.peerId,
             });
         }
         if (info.messageId !== 0 && this.state.messageId !== info.messageId) {
             this.setState({
+                isVoice: !e.music,
                 messageId: info.messageId,
             });
         }
         if (this.state.fast !== info.fast) {
             this.setState({
                 fast: info.fast,
+                isVoice: !e.music,
+            });
+        }
+        if (mediaInfo) {
+            this.setState({
+                mediaInfo,
             });
         }
         this.setPlayState(e);
@@ -191,6 +264,26 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
                 this.progressRef.classList.add('with-transition');
             }
         }
+    }
+
+    private prevHandler = () => {
+        this.audioPlayer.prev();
+    }
+
+    private nextHandler = () => {
+        this.audioPlayer.next();
+    }
+
+    private openPlaylistHandler = () => {
+        this.setState({
+            openPlaylist: true,
+        });
+    }
+
+    private clickAwayHandler = () => {
+        this.setState({
+            openPlaylist: false,
+        });
     }
 }
 

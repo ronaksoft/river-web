@@ -9,10 +9,12 @@
 
 import FileRepo from '../../repository/file';
 import {clone} from 'lodash';
+import {IMediaInfo} from '../../components/MessageMedia';
 
 export interface IAudioEvent {
     currentTime: number;
     currentTrack: number;
+    music: boolean;
     progress: number;
     state: 'play' | 'pause' | 'seek_play' | 'seek_pause';
 }
@@ -30,6 +32,7 @@ interface IAudioItem {
     event: IAudioEvent;
     fileId: string;
     fnQueue: { [key: number]: any };
+    music?: IMediaInfo;
     peerId?: string;
     userId: string;
 }
@@ -53,7 +56,8 @@ export default class AudioPlayer {
     private tracksPeerId: string = '';
     private listeners: { [key: number]: any } = {};
     private backUpTracks: { [key: number]: IAudioItem } = {};
-    private playlist: number[] = [];
+    private voicePlaylist: number[] = [];
+    private musicPlaylist: number[] = [];
     private currentTrack: number = 0;
     private playerInterval: any = null;
     private fileRepo: FileRepo;
@@ -75,7 +79,7 @@ export default class AudioPlayer {
     }
 
     /* Add audio to playlist */
-    public addToPlaylist(messageId: number, peerId: string, fileId: string, userId: string, downloaded: boolean) {
+    public addToPlaylist(messageId: number, peerId: string, fileId: string, userId: string, downloaded: boolean, mediaInfo?: IMediaInfo) {
         if (this.playingFromPeerId && this.playingFromPeerId !== peerId) {
             if (this.backUpPeerId !== peerId) {
                 this.backUpTracks = {};
@@ -88,11 +92,13 @@ export default class AudioPlayer {
                     event: {
                         currentTime: 0,
                         currentTrack: 0,
+                        music: Boolean(mediaInfo) || false,
                         progress: 0,
                         state: 'pause',
                     },
                     fileId,
                     fnQueue: [],
+                    music: mediaInfo,
                     peerId,
                     userId,
                 };
@@ -101,12 +107,15 @@ export default class AudioPlayer {
                 this.backUpTracks[messageId].peerId = peerId;
                 this.backUpTracks[messageId].fileId = fileId;
                 this.backUpTracks[messageId].userId = userId;
+                this.backUpTracks[messageId].music = mediaInfo;
+                this.backUpTracks[messageId].event.music = Boolean(mediaInfo);
             }
         } else {
             if (this.tracksPeerId !== peerId) {
                 this.tracks = {};
                 this.tracksPeerId = peerId;
-                this.playlist = [];
+                this.voicePlaylist = [];
+                this.musicPlaylist = [];
             }
             if (!this.tracks.hasOwnProperty(messageId)) {
                 this.tracks[messageId] = {
@@ -115,23 +124,34 @@ export default class AudioPlayer {
                     event: {
                         currentTime: 0,
                         currentTrack: 0,
+                        music: Boolean(mediaInfo),
                         progress: 0,
                         state: 'pause',
                     },
                     fileId,
                     fnQueue: [],
+                    music: mediaInfo,
                     peerId,
                     userId,
                 };
-                this.playlist.push(messageId);
-                if (this.playlist.length > 1) {
-                    this.playlist.sort();
+                if (Boolean(mediaInfo)) {
+                    this.musicPlaylist.push(messageId);
+                    if (this.musicPlaylist.length > 1) {
+                        this.musicPlaylist.sort();
+                    }
+                } else {
+                    this.voicePlaylist.push(messageId);
+                    if (this.voicePlaylist.length > 1) {
+                        this.voicePlaylist.sort();
+                    }
                 }
             } else {
                 this.tracks[messageId].downloaded = downloaded;
                 this.tracks[messageId].peerId = peerId;
                 this.tracks[messageId].fileId = fileId;
                 this.tracks[messageId].userId = userId;
+                this.tracks[messageId].music = mediaInfo;
+                this.tracks[messageId].event.music = Boolean(mediaInfo);
             }
         }
     }
@@ -139,7 +159,7 @@ export default class AudioPlayer {
     public clearPlaylist() {
         URL.revokeObjectURL(this.lastObjectUrl);
         this.tracks = {};
-        this.playlist = [];
+        this.voicePlaylist = [];
         // @ts-ignore
         this.audio = null;
     }
@@ -225,28 +245,53 @@ export default class AudioPlayer {
     /* Next audio */
     public next() {
         if (this.currentTrack > 0) {
-            const index = this.playlist.indexOf(this.currentTrack);
-            const nextIndex = index + 1;
-            if (index > -1 && this.playlist.length > nextIndex) {
-                if (this.tracks.hasOwnProperty(this.playlist[nextIndex]) && this.tracks[this.playlist[nextIndex]].downloaded) {
-                    this.play(this.playlist[nextIndex]);
+            let index = this.voicePlaylist.indexOf(this.currentTrack);
+            if (index > -1) {
+                const nextIndex = index + 1;
+                if (index > -1 && this.voicePlaylist.length > nextIndex) {
+                    if (this.tracks.hasOwnProperty(this.voicePlaylist[nextIndex]) && this.tracks[this.voicePlaylist[nextIndex]].downloaded) {
+                        this.play(this.voicePlaylist[nextIndex]);
+                    } else {
+                        this.playingFromPeerId = undefined;
+                    }
                 } else {
                     this.playingFromPeerId = undefined;
                 }
             } else {
-                this.playingFromPeerId = undefined;
+                index = this.musicPlaylist.indexOf(this.currentTrack);
+                const nextIndex = index + 1;
+                if (index > -1 && this.musicPlaylist.length > nextIndex) {
+                    if (this.tracks.hasOwnProperty(this.musicPlaylist[nextIndex]) && this.tracks[this.musicPlaylist[nextIndex]].downloaded) {
+                        this.play(this.musicPlaylist[nextIndex]);
+                    } else {
+                        this.playingFromPeerId = undefined;
+                    }
+                } else {
+                    this.playingFromPeerId = undefined;
+                }
             }
+
         }
     }
 
     /* Prev audio */
     public prev() {
         if (this.currentTrack > 0) {
-            const index = this.playlist.indexOf(this.currentTrack);
-            const prevIndex = index - 1;
-            if (index > -1 && prevIndex >= 0) {
-                if (this.tracks.hasOwnProperty(this.playlist[prevIndex]) && this.tracks[this.playlist[prevIndex]].downloaded) {
-                    this.play(this.playlist[prevIndex]);
+            let index = this.voicePlaylist.indexOf(this.currentTrack);
+            if (index > -1) {
+                const prevIndex = index - 1;
+                if (index > -1 && prevIndex >= 0) {
+                    if (this.tracks.hasOwnProperty(this.voicePlaylist[prevIndex]) && this.tracks[this.voicePlaylist[prevIndex]].downloaded) {
+                        this.play(this.voicePlaylist[prevIndex]);
+                    }
+                }
+            } else {
+                index = this.musicPlaylist.indexOf(this.currentTrack);
+                const prevIndex = index - 1;
+                if (index > -1 && prevIndex >= 0) {
+                    if (this.tracks.hasOwnProperty(this.musicPlaylist[prevIndex]) && this.tracks[this.musicPlaylist[prevIndex]].downloaded) {
+                        this.play(this.musicPlaylist[prevIndex]);
+                    }
                 }
             }
         }
@@ -266,6 +311,7 @@ export default class AudioPlayer {
                 event: {
                     currentTime: 0,
                     currentTrack: 0,
+                    music: false,
                     progress: 0,
                     state: 'pause',
                 },
@@ -273,9 +319,9 @@ export default class AudioPlayer {
                 fnQueue: [],
                 userId: '',
             };
-            this.playlist.push(messageId);
-            if (this.playlist.length > 1) {
-                this.playlist.sort();
+            this.voicePlaylist.push(messageId);
+            if (this.voicePlaylist.length > 1) {
+                this.voicePlaylist.sort();
             }
         }
         this.tracks[messageId].fnQueue[fnIndex] = fn;
@@ -373,12 +419,12 @@ export default class AudioPlayer {
             if (state === 'play') {
                 this.playingFromPeerId = this.tracks[messageId].peerId;
             }
-            this.callHandlers(messageId, this.tracks[messageId].event);
+            this.callHandlers(messageId, this.tracks[messageId].event, Boolean(state === 'play' || state === 'seek_play'));
         }
     }
 
     /* Call registered handlers */
-    private callHandlers(messageId: number, event: IAudioEvent) {
+    private callHandlers(messageId: number, event: IAudioEvent, opt?: boolean) {
         if (!this.tracks.hasOwnProperty(messageId)) {
             return;
         }
@@ -391,7 +437,7 @@ export default class AudioPlayer {
                     messageId,
                     peerId: this.tracks[messageId].peerId,
                     userId: this.tracks[messageId].userId,
-                }, event);
+                }, event, opt ? this.tracks[messageId].music : undefined);
             }
         });
         const keys = Object.keys(this.tracks[messageId].fnQueue);
@@ -428,11 +474,11 @@ export default class AudioPlayer {
             return;
         } else {
             this.tracks = clone(this.backUpTracks);
-            this.playlist = [];
+            this.voicePlaylist = [];
             keys.forEach((i) => {
-                this.playlist.push(i);
+                this.voicePlaylist.push(i);
             });
-            this.playlist.sort();
+            this.voicePlaylist.sort();
             this.backUpTracks = {};
         }
     }

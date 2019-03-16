@@ -81,7 +81,7 @@ input {
   min-width: 208px; }
   .message-audio .audio-main {
     width: 100%;
-    margin-bottom: -12px;
+    margin-bottom: -10px;
     display: flex;
     align-items: center;
     justify-content: center; }
@@ -112,12 +112,21 @@ input {
       display: flex;
       flex-direction: column; }
       .message-audio .audio-main .audio-info .audio-title,
-      .message-audio .audio-main .audio-info .audio-album {
+      .message-audio .audio-main .audio-info .audio-performer {
         width: 100%;
         text-align: left;
         max-width: 256px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap; }
-      .message-audio .audio-main .audio-info .audio-album {
+      .message-audio .audio-main .audio-info .audio-performer {
         color: var(--grey); }
+
+html[theme="dark"] .message-audio .audio-main .audio-action-wrapper .audio-item-action .audio-action {
+  background-color: var(--dark-mention); }
+
+html[theme="dark-blue"] .message-audio .audio-main .audio-action-wrapper .audio-item-action .audio-action {
+  background-color: var(--dark-mention); }
+
+html[theme="dark-blue"] .message-audio .audio-main .audio-info .audio-performer {
+  color: var(--light); }
