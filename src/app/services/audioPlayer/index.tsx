@@ -37,6 +37,17 @@ interface IAudioItem {
     userId: string;
 }
 
+export interface IPlaylistItem {
+    downloaded: boolean;
+    duration: number;
+    event: IAudioEvent;
+    fileId: string;
+    id: number;
+    music: IMediaInfo;
+    peerId?: string;
+    userId: string;
+}
+
 export const C_INSTANT_AUDIO = -1;
 
 export default class AudioPlayer {
@@ -76,6 +87,39 @@ export default class AudioPlayer {
     * */
     public setInstantVoice(blob: Blob, callback?: any) {
         this.prepareInstantAudio(blob, callback);
+    }
+
+    public getMusicPlayList() {
+        const data: IPlaylistItem[] = [];
+        this.musicPlaylist.forEach((id) => {
+            if (this.tracks.hasOwnProperty(id)) {
+                const t = this.tracks[id];
+                if (t.music) {
+                    data.push({
+                        downloaded: t.downloaded,
+                        duration: t.duration,
+                        event: t.event,
+                        fileId: t.fileId,
+                        id,
+                        music: t.music,
+                        peerId: t.peerId,
+                        userId: t.userId,
+                    });
+                }
+            }
+        });
+        return data;
+    }
+
+    public isPlaying(id: number) {
+        if (this.tracks.hasOwnProperty(id)) {
+            if (this.tracks[id].event.state === 'play' || this.tracks[id].event.state === 'seek_play') {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
     }
 
     /* Add audio to playlist */

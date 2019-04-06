@@ -60,14 +60,148 @@
       .playlist-menu {
         position: absolute;
         left: 50%;
-        top: 64px;
-        width: 256px;
+        top: 48px;
+        width: 280px;
         min-height: 96px;
         transform: translateX(-50%);
         background-color: var(--white);
         border-radius: 3px;
         z-index: 110;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        padding: 6px 0 0;
+        .playlist-item {
+          display: flex;
+          flex-direction: row;
+          margin: 0 6px 6px;
+          &:last-of-type {
+            margin-bottom: 0;
+          }
+          .playlist-avatar {
+            position: relative;
+            width: 48px;
+            cursor: pointer;
+            .picture {
+              background-color: var(--grey);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              height: 48px;
+              width: 48px;
+              box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.3);
+              border-radius: 3px;
+              img {
+                height: 48px;
+                width: 48px;
+                object-fit: cover;
+                object-position: center center;
+              }
+              svg {
+                font-size: 20px;
+                color: var(--grey-low);
+              }
+            }
+            .playlist-action {
+              position: absolute;
+              top: 0;
+              right: 0;
+              bottom: 0;
+              left: 0;
+              background-color: rgba(0, 0, 0, 0.4);
+              transition: opacity 0.3s;
+              opacity: 0;
+              svg {
+                position: absolute;
+                color: var(--white);
+                font-size: 26px;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+              }
+              &.playing {
+                opacity: 1;
+                transition: none;
+                svg {
+                  opacity: 1;
+                  transition: opacity 0.3s;
+                  &.play {
+                    opacity: 0;
+                  }
+                  &.bars {
+                    opacity: 1;
+                  }
+                }
+              }
+            }
+          }
+          .playlist-info {
+            padding: 0 0 0 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: space-evenly;
+            flex: 1;
+            .title {
+              text-align: left;
+              font-weight: 500;
+              font-size: 12px;
+              line-height: 20px;
+              color: var(--dark-high);
+              opacity: 0.8;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+            .details {
+              text-align: left;
+              font-size: 18px;
+              line-height: 20px;
+              color: var(--dark-high);
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              > .block {
+                font-size: 12px;
+                opacity: 0.64;
+              }
+              > .bull {
+                position: relative;
+                font-size: 20px;
+                opacity: 0.8;
+                width: 12px;
+                height: 20px;
+                display: inline-block;
+                vertical-align: bottom;
+                &:after {
+                  position: absolute;
+                  content: '';
+                  top: 50%;
+                  left: 50%;
+                  height: 4px;
+                  width: 4px;
+                  border-radius: 50%;
+                  background-color: var(--dark-high);
+                  transform: translate(-50%, -50%);
+                }
+              }
+            }
+          }
+          &:hover {
+            background-color: var(--color-hover);
+            .playlist-avatar {
+              .playlist-action {
+                opacity: 1;
+                &.playing {
+                  .play {
+                    opacity: 1;
+                  }
+                  .bars {
+                    opacity: 0;
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
     .audio-player-action {
@@ -156,6 +290,28 @@ html[theme="dark"] {
         svg {
           &.enable {
             color: var(--dark-accent-high);
+          }
+        }
+      }
+      .audio-player-content {
+        .playlist-menu {
+          background-color: var(--dark-medium);
+          .playlist-item {
+            .playlist-info {
+              .title, .details {
+                color: var(--light);
+              }
+              .details {
+                > .bull {
+                  &:after {
+                    background-color: var(--light);
+                  }
+                }
+              }
+            }
+            &:hover {
+              background-color: var(--dark-hover);
+            }
           }
         }
       }

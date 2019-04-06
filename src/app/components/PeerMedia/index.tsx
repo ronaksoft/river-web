@@ -60,6 +60,15 @@ interface IState {
     tab: number;
 }
 
+/* Get duration with time format */
+export const getDuration = (duration: number) => {
+    let sec = String(duration % 60);
+    if (sec.length === 1) {
+        sec = '0' + sec;
+    }
+    return `${Math.floor(duration / 60)}:${sec}`;
+};
+
 class PeerMedia extends React.Component<IProps, IState> {
     private eventReferences: any[] = [];
     private peerId: string = '';
@@ -192,7 +201,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                                 <PlayCircleFilledRounded/>
                             </div>}
                             {Boolean(item.type === C_MESSAGE_TYPE.Video || item.type === C_MESSAGE_TYPE.Audio || item.type === C_MESSAGE_TYPE.Voice) &&
-                            <div className="media-duration">{this.getDuration(item.info.duration || 0)}</div>}
+                            <div className="media-duration">{getDuration(item.info.duration || 0)}</div>}
                         </div>
                     );
                 })}
@@ -216,7 +225,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                                 {!(item.type === C_MESSAGE_TYPE.Voice || item.type === C_MESSAGE_TYPE.Audio) &&
                                 <div className="media-size">{getHumanReadableSize(item.info.size)}</div>}
                                 {(item.type === C_MESSAGE_TYPE.Voice || item.type === C_MESSAGE_TYPE.Audio) &&
-                                <div className="media-size">{this.getDuration(item.info.duration || 0)}</div>}
+                                <div className="media-size">{getDuration(item.info.duration || 0)}</div>}
                             </div>
                             {this.getMediaAction(item)}
                         </div>
@@ -283,15 +292,6 @@ class PeerMedia extends React.Component<IProps, IState> {
                 loading: false,
             });
         });
-    }
-
-    /* Get duration with time format */
-    private getDuration(duration: number) {
-        let sec = String(duration % 60);
-        if (sec.length === 1) {
-            sec = '0' + sec;
-        }
-        return `${Math.floor(duration / 60)}:${sec}`;
     }
 
     /* Tab change handler */
