@@ -19,11 +19,19 @@
     .audio-action-wrapper {
       width: 48px;
       .audio-item-action {
+        position: relative;
         height: 48px;
         width: 48px;
         display: flex;
         align-items: center;
         justify-content: center;
+        .media-size {
+          top: 32px;
+          left: 52px;
+          transform: translateY(-50%);
+          background: transparent;
+          color: var(--dark);
+        }
         .audio-action {
           position: relative;
           display: flex;
@@ -65,8 +73,13 @@
 html[theme="dark"] {
   .message-audio {
     .audio-main {
-      .audio-action-wrapper .audio-item-action .audio-action {
-        background-color: var(--dark-mention);
+      .audio-action-wrapper .audio-item-action {
+        .audio-action {
+          background-color: var(--dark-mention);
+        }
+        .media-size {
+          color: var(--light);
+        }
       }
     }
   }
@@ -75,11 +88,16 @@ html[theme="dark"] {
 html[theme="dark-blue"] {
   .message-audio {
     .audio-main {
-      .audio-action-wrapper .audio-item-action .audio-action {
-        background-color: var(--dark-mention);
-      }
-      .audio-info .audio-performer {
-        color: var(--light);
+      .audio-action-wrapper .audio-item-action {
+        .audio-action {
+          background-color: var(--dark-mention);
+          .audio-info .audio-performer {
+            color: var(--light);
+          }
+        }
+        .media-size {
+          color: var(--light);
+        }
       }
     }
   }

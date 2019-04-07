@@ -25,12 +25,15 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener/ClickAwayList
 import Scrollbars from 'react-custom-scrollbars';
 import CachedPhoto from '../CachedPhoto';
 import {getDuration} from '../PeerMedia';
+import Slider from '@material-ui/lab/Slider';
+import DownloadProgress from '../DownloadProgress';
 
 import './style.css';
 
 interface IProps {
     className?: string;
     onVisible: (visible: boolean) => void;
+    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
 }
 
 interface IState {
@@ -43,6 +46,7 @@ interface IState {
     peerId: string;
     playState: 'play' | 'pause' | 'seek_play' | 'seek_pause';
     playlist: IPlaylistItem[];
+    seekProgress: number;
     userId: string;
 }
 
@@ -67,6 +71,7 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
             peerId: '',
             playState: 'pause',
             playlist: [],
+            seekProgress: 0,
             userId: '',
         };
 
@@ -158,45 +163,90 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
 
     // @ts-ignore
     private getPlaylistRenderer() {
-        const {openPlaylist, playlist} = this.state;
+        const {openPlaylist, mediaInfo, playlist, seekProgress, playState} = this.state;
         return (
             <ClickAwayListener onClickAway={this.clickAwayHandler}>
                 <div>
                     {openPlaylist && <div className="playlist-menu">
-                        <Scrollbars
-                            autoHide={true}
-                            autoHeight={true}
-                            autoHeightMin={this.getPlaylistHeight()}
-                        >
-                            {playlist.map((item) => {
-                                return (<div key={item.id} className="playlist-item">
-                                    <div className="playlist-avatar" onClick={this.playHandlerById.bind(this, item.id)}>
-                                        {item.music.thumbFile.fileid !== '' &&
-                                        <CachedPhoto className="picture" fileLocation={item.music.thumbFile}/>}
-                                        {item.music.thumbFile.fileid === '' && <div className="picture">
-                                            <MusicNoteRounded/>
-                                        </div>}
-                                        {!Boolean(item.event.state === 'play' || item.event.state === 'seek_play') &&
-                                        <div className="playlist-action">
-                                            <PlayArrowRounded/>
-                                        </div>}
-                                        {Boolean(item.event.state === 'play' || item.event.state === 'seek_play') &&
-                                        <div className="playlist-action playing">
-                                            <PauseRounded className="play"/>
-                                            <BarChartRounded className="bars"/>
-                                        </div>}
-                                    </div>
-                                    <div className="playlist-info">
-                                        <div className="title">{item.music.title}</div>
-                                        <div className="details">
-                                            <span className="block">{item.music.performer}</span>
-                                            <span className="bull"/>
-                                            <span className="block">{getDuration(item.music.duration || 0)}</span>
+                        {mediaInfo && <div className="song-details">
+                            <div className="song-cover">
+                                {mediaInfo.thumbFile.fileid !== '' &&
+                                <CachedPhoto className="picture" fileLocation={mediaInfo.thumbFile}/>}
+                                {mediaInfo.thumbFile.fileid === '' && <div className="picture">
+                                    <MusicNoteRounded/>
+                                </div>}
+                            </div>
+                            <div className="song-info">
+                                <div className="info title">{mediaInfo.title}</div>
+                                <div className="info performer">{mediaInfo.performer}</div>
+                                <div className="info album">{mediaInfo.album}</div>
+                            </div>
+                        </div>}
+                        {mediaInfo && <div className="playlist-controls-container">
+                            <div className="playlist-seek">
+                                <div
+                                    className="time left">{getDuration(Math.floor((mediaInfo.duration || 0) * (seekProgress / 100)))}</div>
+                                <div className="seek">
+                                    <Slider
+                                        value={seekProgress}
+                                        aria-labelledby="label"
+                                        onChange={this.seekChangeHandler}
+                                    />
+                                </div>
+                                <div className="time right">{getDuration(mediaInfo.duration || 0)}</div>
+                            </div>
+                            <div className="playlist-controls">
+                                <SkipPreviousRounded onClick={this.prevHandler}/>
+                                <div className="play-action">
+                                    {Boolean(playState === 'pause' || playState === 'seek_pause') &&
+                                    <PlayArrowRounded onClick={this.playHandler}/>}
+                                    {Boolean(playState === 'play' || playState === 'seek_play') &&
+                                    <PauseRounded onClick={this.pauseHandler}/>}
+                                </div>
+                                <SkipNextRounded onClick={this.nextHandler}/>
+                            </div>
+                        </div>}
+                        <div className="playlist">
+                            <Scrollbars
+                                autoHide={true}
+                                autoHeight={true}
+                                autoHeightMin={this.getPlaylistHeight()}
+                            >
+                                {playlist.map((item) => {
+                                    return (<div key={item.id} className="playlist-item">
+                                        <div className="playlist-avatar"
+                                             onClick={this.playHandlerById.bind(this, item.id)}>
+                                            {item.music.thumbFile.fileid !== '' &&
+                                            <CachedPhoto className="picture" fileLocation={item.music.thumbFile}/>}
+                                            {item.music.thumbFile.fileid === '' && <div className="picture">
+                                                <MusicNoteRounded/>
+                                            </div>}
+                                            {!Boolean(item.event.state === 'play' || item.event.state === 'seek_play') &&
+                                            <div className="playlist-action">
+                                                <PlayArrowRounded/>
+                                            </div>}
+                                            {Boolean(item.event.state === 'play' || item.event.state === 'seek_play') &&
+                                            <div className="playlist-action playing">
+                                                <PauseRounded className="play"/>
+                                                <BarChartRounded className="bars"/>
+                                            </div>}
                                         </div>
-                                    </div>
-                                </div>);
-                            })}
-                        </Scrollbars>
+                                        <div className="playlist-info">
+                                            <div className="title">{item.music.title}</div>
+                                            <div className="details">
+                                                <span className="block">{item.music.performer}</span>
+                                                <span className="bull"/>
+                                                <span className="block">{getDuration(item.music.duration || 0)}</span>
+                                            </div>
+                                        </div>
+                                        {!item.downloaded &&
+                                        <DownloadProgress className="media-item-action" id={item.id}
+                                                          fileSize={item.music.size}
+                                                          hideSizeIndicator={true} onAction={this.props.onAction}/>}
+                                    </div>);
+                                })}
+                            </Scrollbars>
+                        </div>
                     </div>}
                 </div>
             </ClickAwayListener>
@@ -304,7 +354,11 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
         }
         this.setPlayState(e);
         if (this.progressRef) {
-            this.progressRef.style.width = `${e.progress * 100}%`;
+            const progress = e.progress * 100;
+            this.progressRef.style.width = `${progress}%`;
+            this.setState({
+                seekProgress: progress,
+            });
             if (e.state === 'seek_play' || e.state === 'seek_pause' || e.state === 'pause') {
                 this.progressRef.classList.remove('with-transition');
             } else {
@@ -345,6 +399,13 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
         } else {
             this.audioPlayer.play(id);
         }
+    }
+
+    private seekChangeHandler = (e: any, value: number) => {
+        this.setState({
+            seekProgress: value,
+        });
+        this.audioPlayer.seekTo(this.messageId, value / 100);
     }
 }
 

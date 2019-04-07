@@ -16,9 +16,9 @@ import {
 } from '@material-ui/icons';
 import DownloadProgress from '../DownloadProgress';
 import {getMediaInfo, IMediaInfo} from '../MessageMedia';
+import AudioPlayer, {IAudioEvent} from '../../services/audioPlayer';
 
 import './style.css';
-import AudioPlayer, {IAudioEvent} from '../../services/audioPlayer';
 
 interface IProps {
     message: IMessage;
@@ -33,6 +33,7 @@ interface IState {
 }
 
 class MessageAudio extends React.PureComponent<IProps, IState> {
+    private lastId: number = 0;
     private eventReferences: any[] = [];
     private downloaded: boolean = false;
     private audioPlayer: AudioPlayer;
@@ -47,6 +48,7 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
         };
 
         this.downloaded = props.message.downloaded || false;
+        this.lastId = props.message.id || 0;
         this.audioPlayer = AudioPlayer.getInstance();
     }
 
@@ -59,7 +61,18 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
     }
 
     public componentWillReceiveProps(newProps: IProps) {
-        //
+        if (newProps.message && this.lastId !== newProps.message.id) {
+            this.lastId = newProps.message.id || 0;
+            this.setState({
+                mediaInfo: getMediaInfo(newProps.message),
+                message: newProps.message,
+            }, () => {
+                const {message, mediaInfo} = this.state;
+                if (this.props.peer) {
+                    this.audioPlayer.addToPlaylist(message.id || 0, this.props.peer.getId() || '', mediaInfo.file.fileid || '', message.senderid || '', true, mediaInfo);
+                }
+            });
+        }
     }
 
     public componentWillUnmount() {
@@ -76,7 +89,8 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
                     </div>
                     <div className="audio-info">
                         <div className="audio-title">{mediaInfo.title}</div>
-                        <div className="audio-performer">{mediaInfo.performer}</div>
+                        {this.downloaded && <div className="audio-performer">{mediaInfo.performer}</div>}
+                        {!this.downloaded && <div className="audio-performer">&nbsp;</div>}
                     </div>
                 </div>
             </div>
@@ -86,11 +100,11 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
     /* Get media action */
     private getMediaAction(info: IMediaInfo) {
         const {message, playing} = this.state;
-        if (!this.downloaded) {
+        if (!this.downloaded || (message.id || 0) < 0) {
             return (
                 <DownloadProgress className="audio-item-action" id={message.id || 0}
-                                  fileSize={info.size}
-                                  hideSizeIndicator={true} onAction={this.downloadProgressActionHandler}/>);
+                                  fileSize={info.size} onComplete={this.downloadCompleteHandler}
+                                  onAction={this.downloadProgressActionHandler}/>);
         } else {
             return (<div className="audio-item-action">
                 <div className="audio-action" onClick={this.audioActionClickHandler.bind(this, message.id || 0)}>
@@ -140,6 +154,12 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
                 canceller();
             }
         });
+    }
+
+    /* Download complete handler */
+    private downloadCompleteHandler = (id: number) => {
+        this.downloaded = true;
+        this.forceUpdate();
     }
 }
 

@@ -88,11 +88,18 @@ input {
     .message-audio .audio-main .audio-action-wrapper {
       width: 48px; }
       .message-audio .audio-main .audio-action-wrapper .audio-item-action {
+        position: relative;
         height: 48px;
         width: 48px;
         display: flex;
         align-items: center;
         justify-content: center; }
+        .message-audio .audio-main .audio-action-wrapper .audio-item-action .media-size {
+          top: 32px;
+          left: 52px;
+          transform: translateY(-50%);
+          background: transparent;
+          color: var(--dark); }
         .message-audio .audio-main .audio-action-wrapper .audio-item-action .audio-action {
           position: relative;
           display: flex;
@@ -125,8 +132,13 @@ input {
 html[theme="dark"] .message-audio .audio-main .audio-action-wrapper .audio-item-action .audio-action {
   background-color: var(--dark-mention); }
 
+html[theme="dark"] .message-audio .audio-main .audio-action-wrapper .audio-item-action .media-size {
+  color: var(--light); }
+
 html[theme="dark-blue"] .message-audio .audio-main .audio-action-wrapper .audio-item-action .audio-action {
   background-color: var(--dark-mention); }
+  html[theme="dark-blue"] .message-audio .audio-main .audio-action-wrapper .audio-item-action .audio-action .audio-info .audio-performer {
+    color: var(--light); }
 
-html[theme="dark-blue"] .message-audio .audio-main .audio-info .audio-performer {
+html[theme="dark-blue"] .message-audio .audio-main .audio-action-wrapper .audio-item-action .media-size {
   color: var(--light); }

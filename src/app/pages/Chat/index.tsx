@@ -515,7 +515,8 @@ class Chat extends React.Component<IProps, IState> {
                                         </Tooltip>
                                     </div>
                                 </div>
-                                <AudioPlayerShell onVisible={this.audioPlayerVisibleHandler}/>
+                                <AudioPlayerShell onVisible={this.audioPlayerVisibleHandler}
+                                                  onAction={this.messageAttachmentActionHandler}/>
                             </div>
                             <div
                                 className={'conversation ' + (this.state.messages.length === 0 && !this.isLoading ? ' no-result' : '')}>

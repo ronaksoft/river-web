@@ -30,6 +30,7 @@ interface IState {
 }
 
 class DownloadProgress extends React.PureComponent<IProps, IState> {
+    private messageId: number = 0;
     private circleProgressRef: any = null;
     private mediaSizeRef: any = null;
     private progressBroadcaster: ProgressBroadcaster;
@@ -40,15 +41,27 @@ class DownloadProgress extends React.PureComponent<IProps, IState> {
 
         this.state = {
             className: props.className || '',
-            fileState: 'download',
+            fileState: props.id < 0 ? 'progress' : 'download',
         };
 
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
+        this.messageId = props.id;
+
+        if (props.id < 0) {
+            this.initProgress();
+        }
     }
 
     public componentDidMount() {
         if (this.props.hideSizeIndicator !== true) {
             this.displayFileSize(-1);
+        }
+    }
+
+    public componentWillReceiveProps(newProps: IProps) {
+        if (this.messageId !== newProps.id) {
+            this.messageId = newProps.id;
+            this.initProgress();
         }
     }
 
@@ -131,13 +144,17 @@ class DownloadProgress extends React.PureComponent<IProps, IState> {
     /* Cancel file download/upload */
     private cancelFileHandler = () => {
         if (this.props.onAction) {
-            this.props.onAction('cancel_download', this.props.id);
+            if (this.props.id < 0) {
+                this.props.onAction('cancel', this.props.id);
+            } else {
+                this.props.onAction('cancel_download', this.props.id);
+            }
         }
     }
 
     /* Initialize progress bar */
     private initProgress() {
-        if (this.state.fileState === 'progress') {
+        if (this.state.fileState === 'progress' || this.props.id < 0) {
             this.removeAllListeners();
             this.eventReferences.push(this.progressBroadcaster.listen(this.props.id, this.downloadProgressHandler));
         } else {
