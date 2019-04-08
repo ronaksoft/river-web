@@ -671,13 +671,18 @@ class Message extends React.Component<IProps, IState> {
         if (document.selection) { // IE
             // @ts-ignore
             const range = document.body.createTextRange();
-            range.moveToElementText(elem);
-            range.select();
+            if (range) {
+                range.moveToElementText(elem);
+                range.select();
+            }
         } else if (window.getSelection) {
             const range = document.createRange();
             range.selectNode(elem);
-            window.getSelection().removeAllRanges();
-            window.getSelection().addRange(range);
+            const selection = window.getSelection();
+            if (selection) {
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
         }
     }
 
