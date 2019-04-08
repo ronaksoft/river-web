@@ -10,7 +10,7 @@
 import * as React from 'react';
 import SDK from '../../services/sdk';
 // @ts-ignore
-import ReactPhoneInput from 'react-phone-input-2';
+import IntlTelInput from 'react-intl-tel-input';
 import Snackbar from '@material-ui/core/Snackbar';
 import {Refresh} from '@material-ui/icons';
 import {C_ERR, C_ERR_ITEM} from '../../services/sdk/const';
@@ -19,6 +19,7 @@ import NotificationService from '../../services/notification';
 import IsMobile from '../../services/isMobile';
 import {C_VERSION} from '../../components/SettingMenu';
 
+import './tel-input.css';
 import './style.css';
 
 const C_CLIENT = `Web:- ${window.navigator.userAgent}`;
@@ -108,9 +109,10 @@ class SignUp extends React.Component<IProps, IState> {
                     </div>
                     <div className="login-wrapper p-t-50 p-b-90">
                         <div className="login-form river-form flex-sb flex-w">
-                            <ReactPhoneInput defaultCountry={'ir'} value={this.state.phone} inputClass="f-phone"
-                                             disabled={this.state.loading || step === 'code'}
-                                             onChange={this.handleOnChange} onKeyDown={this.sendCodeKeyDown}/>
+                            <IntlTelInput preferredCountries={[]} defaultCountry={'ir'} value={this.state.phone}
+                                          inputClassName="f-phone" disabled={this.state.loading || step === 'code'}
+                                          autoHideDialCode={false} onPhoneNumberChange={this.handleOnChange}
+                                          onKeyDown={this.sendCodeKeyDown} nationalMode={false}/>
                             {(this.state.tries > 0 && (step === 'code' || step === 'register')) &&
                             <div className="try-another-phone" onClick={this.tryAnotherPhone}>
                                 <Refresh/>
@@ -171,7 +173,7 @@ class SignUp extends React.Component<IProps, IState> {
         );
     }
 
-    private handleOnChange = (value: any) => {
+    private handleOnChange = (e: any, value: any) => {
         this.setState({
             phone: value,
         });
@@ -202,9 +204,10 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     private sendCodeKeyDown = (e: any) => {
-        if (e.key === 'Enter') {
-            this.sendCode();
-        }
+        window.console.log(e);
+        // if (e.key === 'Enter') {
+        //     this.sendCode();
+        // }
     }
 
     private modifyCode(str: string, remove?: boolean): string {

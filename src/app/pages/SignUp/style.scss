@@ -232,7 +232,7 @@ input {
   }
 
   .river-form {
-    .react-tel-input {
+    .intl-tel-input {
       margin-bottom: 16px;
       display: flex;
       flex-direction: row-reverse;
@@ -247,7 +247,6 @@ input {
         padding-left: 15px;
         margin-left: 0;
         background-color: #fff;
-        border: 1px solid #cacaca;
         line-height: 25px;
         height: 62px;
         width: 320px;
@@ -305,6 +304,7 @@ input {
   }
 }
 
+
 @keyframes button-disabled {
   from {
     background-color: #0fee8e;
@@ -327,9 +327,9 @@ input {
       width: 300px;
     }
     .river-form {
-      .react-tel-input {
+      .intl-tel-input {
         input[type=tel] {
-          width: 200px;
+          width: 230px;
         }
       }
     }
