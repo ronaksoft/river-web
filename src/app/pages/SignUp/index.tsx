@@ -80,6 +80,7 @@ class SignUp extends React.Component<IProps, IState> {
         if (this.sdk.getConnInfo().AuthID === '0') {
             this.props.history.push('/loading');
         }
+        this.initPhoneInput();
     }
 
     public componentWillUnmount() {
@@ -112,7 +113,7 @@ class SignUp extends React.Component<IProps, IState> {
                             <IntlTelInput preferredCountries={[]} defaultCountry={'ir'} value={this.state.phone}
                                           inputClassName="f-phone" disabled={this.state.loading || step === 'code'}
                                           autoHideDialCode={false} onPhoneNumberChange={this.handleOnChange}
-                                          onKeyDown={this.sendCodeKeyDown} nationalMode={false}/>
+                                          onKeyDown={this.sendCodeKeyDown} nationalMode={false} fieldId="input-phone"/>
                             {(this.state.tries > 0 && (step === 'code' || step === 'register')) &&
                             <div className="try-another-phone" onClick={this.tryAnotherPhone}>
                                 <Refresh/>
@@ -204,10 +205,10 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     private sendCodeKeyDown = (e: any) => {
-        window.console.log(e);
-        // if (e.key === 'Enter') {
-        //     this.sendCode();
-        // }
+        // window.console.log(e);
+        if (e.key === 'Enter') {
+            this.sendCode();
+        }
     }
 
     private modifyCode(str: string, remove?: boolean): string {
@@ -319,7 +320,8 @@ class SignUp extends React.Component<IProps, IState> {
             tries: 0,
         }, () => {
             this.focus('f-phone');
-            this.stopCoundown();
+            this.stopCountdown();
+            this.initPhoneInput();
         });
     }
 
@@ -455,11 +457,18 @@ class SignUp extends React.Component<IProps, IState> {
         }, 1000);
     }
 
-    private stopCoundown() {
+    private stopCountdown() {
         if (!this.logoRef) {
             return;
         }
         this.logoRef.classList.remove('a-enable', 'c-enable');
+    }
+
+    private initPhoneInput() {
+        const el = document.getElementById('input-phone');
+        if (el) {
+            el.onkeydown = this.sendCodeKeyDown;
+        }
     }
 }
 
