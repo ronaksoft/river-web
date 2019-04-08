@@ -34,6 +34,7 @@ interface IState {
 
 class MessageAudio extends React.PureComponent<IProps, IState> {
     private lastId: number = 0;
+    private fileId: string = '';
     private eventReferences: any[] = [];
     private downloaded: boolean = false;
     private audioPlayer: AudioPlayer;
@@ -49,29 +50,39 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
 
         this.downloaded = props.message.downloaded || false;
         this.lastId = props.message.id || 0;
+        this.fileId = this.state.mediaInfo.file.fileid || '';
         this.audioPlayer = AudioPlayer.getInstance();
     }
 
     public componentDidMount() {
         const {message, mediaInfo} = this.state;
         if (this.props.peer) {
-            this.audioPlayer.addToPlaylist(message.id || 0, this.props.peer.getId() || '', mediaInfo.file.fileid || '', message.senderid || '', true, mediaInfo);
+            this.audioPlayer.addToPlaylist(message.id || 0, this.props.peer.getId() || '', mediaInfo.file.fileid || '', message.senderid || '', message.downloaded || false, mediaInfo);
         }
         this.eventReferences.push(this.audioPlayer.listen(message.id || 0, this.audioPlayerHandler));
     }
 
     public componentWillReceiveProps(newProps: IProps) {
-        if (newProps.message && this.lastId !== newProps.message.id) {
-            this.lastId = newProps.message.id || 0;
-            this.setState({
-                mediaInfo: getMediaInfo(newProps.message),
-                message: newProps.message,
-            }, () => {
-                const {message, mediaInfo} = this.state;
-                if (this.props.peer) {
-                    this.audioPlayer.addToPlaylist(message.id || 0, this.props.peer.getId() || '', mediaInfo.file.fileid || '', message.senderid || '', true, mediaInfo);
+        if (newProps.message) {
+            const mInfo = getMediaInfo(newProps.message);
+            if (this.lastId !== newProps.message.id || this.fileId !== mInfo.file.fileid) {
+                if (this.lastId !== newProps.message.id) {
+                    this.audioPlayer.removeFromPlaylist(this.lastId);
+                    this.removeAllListeners();
+                    this.eventReferences.push(this.audioPlayer.listen(newProps.message.id || 0, this.audioPlayerHandler));
                 }
-            });
+                this.lastId = newProps.message.id || 0;
+                this.fileId = mInfo.file.fileid || '';
+                this.setState({
+                    mediaInfo: mInfo,
+                    message: newProps.message,
+                }, () => {
+                    const {message, mediaInfo} = this.state;
+                    if (this.props.peer) {
+                        this.audioPlayer.addToPlaylist(message.id || 0, this.props.peer.getId() || '', mediaInfo.file.fileid || '', message.senderid || '', message.downloaded || false, mediaInfo);
+                    }
+                });
+            }
         }
     }
 

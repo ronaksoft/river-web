@@ -27,8 +27,12 @@ import CachedPhoto from '../CachedPhoto';
 import {getDuration} from '../PeerMedia';
 import Slider from '@material-ui/lab/Slider';
 import DownloadProgress from '../DownloadProgress';
+import {findIndex} from 'lodash';
 
 import './style.css';
+
+const C_CELL_HEIGHT = 54;
+const C_MAX_LIST_HEIGHT = 288;
 
 interface IProps {
     className?: string;
@@ -51,6 +55,7 @@ interface IState {
 }
 
 class AudioPlayerShell extends React.Component<IProps, IState> {
+    private scrollbarRef: Scrollbars;
     private audioPlayer: AudioPlayer;
     private eventReferences: any[] = [];
     private shellRef: any = null;
@@ -185,7 +190,7 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
                         {mediaInfo && <div className="playlist-controls-container">
                             <div className="playlist-seek">
                                 <div
-                                    className="time left">{getDuration(Math.floor((mediaInfo.duration || 0) * (seekProgress / 100)))}</div>
+                                    className="time left">{getDuration(Math.floor((mediaInfo.duration || 0) * ((seekProgress || 0) / 100)))}</div>
                                 <div className="seek">
                                     <Slider
                                         value={seekProgress}
@@ -208,42 +213,50 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
                         </div>}
                         <div className="playlist">
                             <Scrollbars
+                                ref={this.scrollbarRefHandler}
                                 autoHide={true}
                                 autoHeight={true}
                                 autoHeightMin={this.getPlaylistHeight()}
                             >
                                 {playlist.map((item) => {
-                                    return (<div key={item.id} className="playlist-item">
-                                        <div className="playlist-avatar"
-                                             onClick={this.playHandlerById.bind(this, item.id)}>
-                                            {item.music.thumbFile.fileid !== '' &&
-                                            <CachedPhoto className="picture" fileLocation={item.music.thumbFile}/>}
-                                            {item.music.thumbFile.fileid === '' && <div className="picture">
-                                                <MusicNoteRounded/>
-                                            </div>}
-                                            {!Boolean(item.event.state === 'play' || item.event.state === 'seek_play') &&
-                                            <div className="playlist-action">
-                                                <PlayArrowRounded/>
-                                            </div>}
-                                            {Boolean(item.event.state === 'play' || item.event.state === 'seek_play') &&
-                                            <div className="playlist-action playing">
-                                                <PauseRounded className="play"/>
-                                                <BarChartRounded className="bars"/>
-                                            </div>}
-                                        </div>
-                                        <div className="playlist-info">
-                                            <div className="title">{item.music.title}</div>
-                                            <div className="details">
-                                                <span className="block">{item.music.performer}</span>
-                                                <span className="bull"/>
-                                                <span className="block">{getDuration(item.music.duration || 0)}</span>
+                                    if (item) {
+                                        return (<div key={item.id}
+                                                     className={'playlist-item' + (!item.downloaded ? ' download' : '')}>
+                                            <div className="playlist-avatar"
+                                                 onClick={this.playHandlerById.bind(this, item.id)}>
+                                                {item.music.thumbFile.fileid !== '' &&
+                                                <CachedPhoto className="picture" fileLocation={item.music.thumbFile}/>}
+                                                {item.music.thumbFile.fileid === '' && <div className="picture">
+                                                    <MusicNoteRounded/>
+                                                </div>}
+                                                {!Boolean(item.event.state === 'play' || item.event.state === 'seek_play') &&
+                                                <div className="playlist-action">
+                                                    <PlayArrowRounded/>
+                                                </div>}
+                                                {Boolean(item.event.state === 'play' || item.event.state === 'seek_play') &&
+                                                <div className="playlist-action playing">
+                                                    <PauseRounded className="play"/>
+                                                    <BarChartRounded className="bars"/>
+                                                </div>}
                                             </div>
-                                        </div>
-                                        {!item.downloaded &&
-                                        <DownloadProgress className="media-item-action" id={item.id}
-                                                          fileSize={item.music.size}
-                                                          hideSizeIndicator={true} onAction={this.props.onAction}/>}
-                                    </div>);
+                                            <div className="playlist-info">
+                                                <div className="title">{item.music.title}</div>
+                                                <div className="details">
+                                                    <span className="block">{item.music.performer}</span>
+                                                    <span className="bull"/>
+                                                    <span
+                                                        className="block">{getDuration(item.music.duration || 0)}</span>
+                                                </div>
+                                            </div>
+                                            {!item.downloaded &&
+                                            <DownloadProgress className="playlist-download-action" id={item.id}
+                                                              fileSize={item.music.size}
+                                                              onComplete={this.downloadCompleteHandler}
+                                                              hideSizeIndicator={true} onAction={this.props.onAction}/>}
+                                        </div>);
+                                    } else {
+                                        return ('');
+                                    }
                                 })}
                             </Scrollbars>
                         </div>
@@ -253,10 +266,14 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
         );
     }
 
+    private scrollbarRefHandler = (ref: any) => {
+        this.scrollbarRef = ref;
+    }
+
     private getPlaylistHeight = () => {
         const {playlist} = this.state;
-        const height = 54 * playlist.length;
-        return Math.min(Math.max(height, 48), 288);
+        const height = C_CELL_HEIGHT * playlist.length;
+        return Math.min(Math.max(height, 48), C_MAX_LIST_HEIGHT);
     }
 
     private playHandler = () => {
@@ -382,6 +399,17 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
             if (this.state.openPlaylist) {
                 this.setState({
                     playlist: this.audioPlayer.getMusicPlayList(),
+                }, () => {
+                    const {playlist} = this.state;
+                    const currentTrack = this.audioPlayer.getCurrentTrack();
+                    const index = findIndex(playlist, {id: currentTrack});
+                    if (index > -1) {
+                        let pos = C_CELL_HEIGHT * index;
+                        if (pos > (C_MAX_LIST_HEIGHT - C_CELL_HEIGHT)) {
+                            pos -= (C_MAX_LIST_HEIGHT - C_CELL_HEIGHT);
+                            this.scrollbarRef.scrollTop(pos);
+                        }
+                    }
                 });
             }
         });
@@ -406,6 +434,17 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
             seekProgress: value,
         });
         this.audioPlayer.seekTo(this.messageId, value / 100);
+    }
+
+    private downloadCompleteHandler = (id: number) => {
+        const {playlist} = this.state;
+        const index = findIndex(playlist, {id});
+        if (index > -1) {
+            playlist[index].downloaded = true;
+            this.setState({
+                playlist,
+            });
+        }
     }
 }
 

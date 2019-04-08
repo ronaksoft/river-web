@@ -113,13 +113,13 @@ export default class AudioPlayer {
 
     public isPlaying(id: number) {
         if (this.tracks.hasOwnProperty(id)) {
-            if (this.tracks[id].event.state === 'play' || this.tracks[id].event.state === 'seek_play') {
-                return true;
-            } else {
-                return false;
-            }
+            return (this.tracks[id].event.state === 'play' || this.tracks[id].event.state === 'seek_play');
         }
         return false;
+    }
+
+    public getCurrentTrack() {
+        return this.currentTrack;
     }
 
     /* Add audio to playlist */
@@ -197,6 +197,26 @@ export default class AudioPlayer {
                 this.tracks[messageId].music = mediaInfo;
                 this.tracks[messageId].event.music = Boolean(mediaInfo);
             }
+        }
+    }
+
+    public removeFromPlaylist(messageId: number) {
+        if (this.backUpTracks.hasOwnProperty(messageId)) {
+            delete this.backUpTracks[messageId];
+        }
+        if (this.tracks.hasOwnProperty(messageId)) {
+            if (this.tracks[messageId].event.music) {
+                const index = this.musicPlaylist.indexOf(messageId);
+                if (index > -1) {
+                    this.musicPlaylist.splice(index, 1);
+                }
+            } else {
+                const index = this.voicePlaylist.indexOf(messageId);
+                if (index > -1) {
+                    this.voicePlaylist.splice(index, 1);
+                }
+            }
+            delete this.tracks[messageId];
         }
     }
 

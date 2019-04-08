@@ -114,8 +114,16 @@ export const getMediaInfo = (message: IMessage): IMediaInfo => {
             const docAttr: DocumentAttributeAudio.AsObject = message.attributes[index];
             info.duration = docAttr.duration;
             info.album = docAttr.album;
-            info.title = docAttr.title;
-            info.performer = docAttr.performer;
+            if (docAttr.title && docAttr.title.length > 0) {
+                info.title = docAttr.title;
+            } else {
+                info.title = 'Unknown';
+            }
+            if (docAttr.performer && docAttr.performer.length > 0) {
+                info.performer = docAttr.performer;
+            } else {
+                info.performer = 'Unknown';
+            }
         } else if (attr.type === DocumentAttributeType.ATTRIBUTETYPEFILE && message.attributes) {
             const docAttr: DocumentAttributeFile.AsObject = message.attributes[index];
             info.fileName = docAttr.filename || '';
