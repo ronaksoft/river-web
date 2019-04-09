@@ -118,7 +118,10 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
         if (data.voiceId) {
             this.voiceId = data.voiceId;
             if (message) {
+                this.audioPlayer.removeFromPlaylist(message.id || 0);
                 this.audioPlayer.addToPlaylist(message.id || 0, message.peerid || '', this.voiceId, message.senderid || '', message.downloaded || false);
+                this.removeAllListeners();
+                this.eventReferences.push(this.audioPlayer.listen(message.id || 0, this.audioPlayerHandler));
             }
         }
     }

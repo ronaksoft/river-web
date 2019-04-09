@@ -161,6 +161,7 @@
       }
     }
     .conversation {
+      position: relative;
       width: 100%;
       //height: calc(100% - 100px);
       flex: 1;
@@ -170,6 +171,25 @@
       transition: background 0.2s;
       &.no-result {
         background-image: none !important;
+      }
+      .move-down {
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+        height: 32px;
+        width: 32px;
+        border-radius: 50%;
+        background-color: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: opacity 0.1s;
+        visibility: hidden;
+        &.visible {
+          opacity: 1;
+          visibility: visible;
+        }
       }
     }
     .attachments {

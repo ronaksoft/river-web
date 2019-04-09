@@ -111,6 +111,7 @@ class Message extends React.Component<IProps, IState> {
     private isSimplified: boolean = false;
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
+    private endFn: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -236,6 +237,7 @@ class Message extends React.Component<IProps, IState> {
         }
         if (this.list && jump) {
             this.list.scrollToRow(items.length);
+            this.callEnd();
         } else {
             setTimeout(() => {
                 if (instant) {
@@ -245,6 +247,7 @@ class Message extends React.Component<IProps, IState> {
                             if (this.list) {
                                 this.list.scrollToPosition(this.scrollTop + 10);
                             }
+                            this.callEnd();
                         }, 10);
                     }
                 } else {
@@ -259,6 +262,7 @@ class Message extends React.Component<IProps, IState> {
                                 });
                             }
                         }
+                        this.callEnd();
                     }, 1);
                 }
             }, 200);
@@ -267,6 +271,10 @@ class Message extends React.Component<IProps, IState> {
 
     public setScrollMode(mode: 'none' | 'end' | 'stay') {
         this.scrollMode = mode;
+    }
+
+    public setEndFn(fn: any) {
+        this.endFn = fn;
     }
 
     public fitList(forceScroll?: boolean, instant?: boolean) {
@@ -1009,6 +1017,13 @@ class Message extends React.Component<IProps, IState> {
     /* Theme change handler */
     private themeChangeHandler = () => {
         this.isSimplified = UserRepo.getInstance().getBubbleMode() === '5';
+    }
+
+    private callEnd() {
+        if (this.endFn && this.props.peer) {
+            this.endFn(this.props.peer.getId() || '');
+            this.endFn = null;
+        }
     }
 }
 

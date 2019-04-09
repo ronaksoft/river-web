@@ -316,10 +316,10 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
             this.shellRef.classList.toggle('open');
             this.open = !this.open;
         } else {
-            if (open && !this.open) {
+            if (open) {
                 this.shellRef.classList.add('open');
                 this.open = true;
-            } else if (!open && this.open) {
+            } else if (!open) {
                 this.shellRef.classList.remove('open');
                 this.open = false;
             }
@@ -328,10 +328,10 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
     }
 
     private setPlayState(e: IAudioEvent) {
-        if (e.state === 'play' || e.state === 'seek_play') {
-            this.openPlayer(true);
-        }
         if (this.state.playState !== e.state) {
+            if (e.state === 'play' || e.state === 'seek_play') {
+                this.openPlayer(true);
+            }
             this.setState({
                 playState: e.state,
             });

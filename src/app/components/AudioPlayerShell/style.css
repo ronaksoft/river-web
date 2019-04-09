@@ -285,7 +285,8 @@
       position: relative;
       display: flex;
       flex-direction: column;
-      width: 100%; }
+      width: 100%;
+      cursor: pointer; }
       .audio-player-shell.is-music .shell .audio-player-info .audio-title, .audio-player-shell.is-music .shell .audio-player-info .audio-performer {
         width: 100%;
         text-align: center;

@@ -425,6 +425,9 @@ export default class AudioPlayer {
                 return;
             }
         }
+        if (!this.tracks.hasOwnProperty(messageId)) {
+            return;
+        }
         const fileId = this.tracks[messageId].fileId;
         this.fileRepo.get(fileId).then((res) => {
             if (res) {

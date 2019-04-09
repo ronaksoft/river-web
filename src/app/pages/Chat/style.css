@@ -205,6 +205,7 @@ input {
           float: right;
           line-height: 0; }
     .container .column-center .conversation {
+      position: relative;
       width: 100%;
       flex: 1;
       background-color: rgba(168, 144, 106, 0.3);
@@ -213,6 +214,23 @@ input {
       transition: background 0.2s; }
       .container .column-center .conversation.no-result {
         background-image: none !important; }
+      .container .column-center .conversation .move-down {
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+        height: 32px;
+        width: 32px;
+        border-radius: 50%;
+        background-color: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: opacity 0.1s;
+        visibility: hidden; }
+        .container .column-center .conversation .move-down.visible {
+          opacity: 1;
+          visibility: visible; }
     .container .column-center .attachments {
       width: 100%;
       flex: 1; }

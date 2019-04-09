@@ -23,6 +23,7 @@ import {
     PersonAddRounded,
     SearchRounded,
     SendRounded,
+    ExpandMoreRounded,
 } from '@material-ui/icons';
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
@@ -122,6 +123,7 @@ import {IMediaItem} from '../../components/Uploader';
 import LastSeen from '../../components/LastSeen';
 import {IGeoItem} from '../../components/MapPicker';
 import RTLDetector from '../../services/utilities/rtl_detector';
+import Badge from '@material-ui/core/Badge/Badge';
 
 import './style.css';
 
@@ -137,6 +139,7 @@ interface IState {
     chatMoreAnchorEl: any;
     confirmDialogMode: 'none' | 'logout' | 'remove_message' | 'remove_message_revoke' | 'delete_exit_group' | 'delete_user';
     confirmDialogOpen: boolean;
+    dialogMap: { [key: string]: number };
     dialogs: IDialog[];
     forwardRecipientDialogOpen: boolean;
     forwardRecipients: IInputPeer[];
@@ -184,7 +187,6 @@ class Chat extends React.Component<IProps, IState> {
     private syncManager: SyncManager;
     private connInfo: IConnInfo;
     private eventReferences: any[] = [];
-    private dialogMap: { [key: string]: number } = {};
     private readonly dialogsSortThrottle: any = null;
     private readHistoryMaxId: number | null = null;
     private isMobileView: boolean = false;
@@ -196,6 +198,8 @@ class Chat extends React.Component<IProps, IState> {
     private progressBroadcaster: ProgressBroadcaster;
     private firstTimeLoad: boolean = true;
     private rtlDetector: RTLDetector;
+    private moveDownRef: any = null;
+    private moveDownVisible: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -203,6 +207,7 @@ class Chat extends React.Component<IProps, IState> {
             chatMoreAnchorEl: null,
             confirmDialogMode: 'none',
             confirmDialogOpen: false,
+            dialogMap: {},
             dialogs: [],
             forwardRecipientDialogOpen: false,
             forwardRecipients: [],
@@ -535,7 +540,9 @@ class Chat extends React.Component<IProps, IState> {
                                          onJumpToMessage={this.messageJumpToMessageHandler}
                                          onLoadMoreAfter={this.messageLoadMoreAfterHandler}
                                          onAttachmentAction={this.messageAttachmentActionHandler}
+                                         rendered={this.messageRenderedHandler}
                                 />
+                                {this.getMoveDown()}
                             </div>
                             <ChatInput ref={this.chatInputRefHandler} onMessage={this.chatInputTextMessageHandler}
                                        onTyping={this.onTyping}
@@ -727,10 +734,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private getChatStatus(dialogId: string) {
-        let dialog: IDialog | null = null;
-        if (this.dialogMap.hasOwnProperty(dialogId)) {
-            dialog = this.state.dialogs[this.dialogMap[dialogId]];
-        }
+        const dialog = this.getDialogById(dialogId);
         let typingList: { [key: string]: { fn: any, action: TypingAction } } = {};
         let ids: number = 0;
         if (dialog && this.state.isTypingList.hasOwnProperty(dialog.peerid || '')) {
@@ -883,9 +887,10 @@ class Chat extends React.Component<IProps, IState> {
     private initDialogs = () => {
         this.dialogRepo.getManyCache({}).then((res) => {
             let unreadCounter = 0;
+            const tDialogMap: any = {};
             // Map indexes in order to to find them with O(1)
             res.forEach((dialog, index) => {
-                this.dialogMap[dialog.peerid || ''] = index;
+                tDialogMap[dialog.peerid || ''] = index;
                 if (dialog && dialog.unreadcount) {
                     unreadCounter += dialog.unreadcount;
                 }
@@ -894,6 +899,7 @@ class Chat extends React.Component<IProps, IState> {
             const selectedId = this.props.match.params.id;
             const selectedMessageId = this.props.match.params.mid;
             this.setState({
+                dialogMap: tDialogMap,
                 dialogs: res,
                 selectedDialogId: selectedId,
                 unreadCounter,
@@ -947,23 +953,23 @@ class Chat extends React.Component<IProps, IState> {
                 message.rtl = this.rtlDetector.direction(message.body);
             }
         });
+        const tMoveDownVisible = this.moveDownVisible;
         if (data.peerid === this.state.selectedDialogId) {
             const dataMsg = this.modifyMessages(this.state.messages, data.messages.reverse(), true);
             this.setScrollMode('none');
             this.setState({
                 messages: dataMsg.msgs,
             }, () => {
-                setTimeout(() => {
-                    this.messageComponent.animateToEnd();
-                }, 100);
+                if (!tMoveDownVisible) {
+                    window.console.log('here');
+                    setTimeout(() => {
+                        this.messageComponent.animateToEnd();
+                    }, 100);
+                }
             });
-            const {peer} = this.state;
-            if (dataMsg.maxReadId !== -1) {
-                this.sendReadHistory(peer, dataMsg.maxReadId);
-            }
-            if (!this.isInChat) {
-                this.readHistoryMaxId = dataMsg.maxId;
-            }
+            // if (!this.isInChat) {
+            //     this.readHistoryMaxId = dataMsg.maxId;
+            // }
         }
         this.messageRepo.lazyUpsert(data.messages);
         this.userRepo.importBulk(false, data.senders);
@@ -1017,11 +1023,10 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         this.messageRepo.lazyUpsert([data.message]);
-        if (this.dialogMap.hasOwnProperty(data.message.peerid || '')) {
-            const {dialogs} = this.state;
-            const index = this.dialogMap[data.message.peerid || ''];
-            if (dialogs[index].topmessageid === data.message.id) {
-                this.updateDialogs(data.message, dialogs[index].accesshash || '0');
+        const dialog = this.getDialogById(data.message.peerid || '');
+        if (dialog) {
+            if (dialog.topmessageid === data.message.id) {
+                this.updateDialogs(data.message, dialog.accesshash || '0');
             }
         }
         if (this.state.selectedDialogId === data.message.peerid) {
@@ -1100,13 +1105,15 @@ class Chat extends React.Component<IProps, IState> {
         const peerId = data.peer.id || '';
         this.updateDialogsCounter(peerId, {maxInbox: data.maxid});
         if (peerId !== this.state.selectedDialogId) {
-            const peer = this.getPeer(peerId);
-            this.messageRepo.getUnreadCount(peerId, data.maxid || 0, peer ? (peer.topmessageid || 0) : 0).then((count) => {
-                this.updateDialogsCounter(peerId, {
-                    mentionCounter: count.mention,
-                    unreadCounter: count.message,
+            const dialog = this.getDialogById(peerId);
+            if (dialog) {
+                this.messageRepo.getUnreadCount(peerId, data.maxid || 0, dialog ? (dialog.topmessageid || 0) : 0).then((count) => {
+                    this.updateDialogsCounter(peerId, {
+                        mentionCounter: count.mention,
+                        unreadCounter: count.message,
+                    });
                 });
-            });
+            }
         } else {
             this.updateDialogsCounter(peerId, {
                 mentionCounter: 0,
@@ -1140,13 +1147,15 @@ class Chat extends React.Component<IProps, IState> {
         }
         const peer = data.peer;
         this.messageRepo.removeMany(data.messageidsList).then(() => {
-            const dialogPeer = this.getPeer(peer.id || '');
-            this.messageRepo.getUnreadCount(peer.id || '', dialogPeer ? (dialogPeer.readinboxmaxid || 0) : 0, dialogPeer ? (dialogPeer.topmessageid || 0) : 0).then((count) => {
-                this.updateDialogsCounter(peer.id || '', {
-                    mentionCounter: count.mention,
-                    unreadCounter: count.message
+            const dialogPeer = this.getDialogById(peer.id || '');
+            if (dialogPeer) {
+                this.messageRepo.getUnreadCount(peer.id || '', dialogPeer ? (dialogPeer.readinboxmaxid || 0) : 0, dialogPeer ? (dialogPeer.topmessageid || 0) : 0).then((count) => {
+                    this.updateDialogsCounter(peer.id || '', {
+                        mentionCounter: count.mention,
+                        unreadCounter: count.message
+                    });
                 });
-            });
+            }
 
             const {messages, dialogs} = this.state;
             let updateView = false;
@@ -1296,9 +1305,8 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
-        let dialog: IDialog | null = null;
-        if (this.dialogMap.hasOwnProperty(dialogId) && this.state.dialogs[this.dialogMap[dialogId]]) {
-            dialog = this.state.dialogs[this.dialogMap[dialogId]];
+        const dialog = this.getDialogById(dialogId);
+        if (dialog) {
             if (dialog.peertype === PeerType.PEERGROUP && dialog.peerid) {
                 this.groupRepo.get(dialog.peerid || '').then((group) => {
                     this.setState({
@@ -1327,12 +1335,19 @@ class Chat extends React.Component<IProps, IState> {
             this.messageComponent.list.scrollToRow(messages.length - 1);
         };
 
-        const before = 10000000000;
-        // if (dialog) {
-        //     before = (dialog.topmessageid || 0) + 100;
-        // }
+        let before = 10000000000;
+        if (dialog) {
+            if ((dialog.unreadcount || 0) > 0) {
+                before = Math.max((dialog.readinboxmaxid || 0), (dialog.readoutboxmaxid || 0)) + 1;
+            }
+        }
+
         let minId: number = 0;
         this.setChatView(true);
+
+        this.messageComponent.setEndFn((peerId: string) => {
+            this.loadMoreAfter(peerId);
+        });
         this.messageRepo.getMany({peer, limit: 25, before, ignoreMax: true}, (data) => {
             // Checks peerid on transition
             if (this.state.selectedDialogId !== dialogId) {
@@ -1412,6 +1427,32 @@ class Chat extends React.Component<IProps, IState> {
             });
             clearTimeout(this.mobileBackTimeout);
             this.setLoading(false);
+        });
+    }
+
+    private loadMoreAfter = (peerId: string) => {
+        const {peer, messages} = this.state;
+        if (this.state.selectedDialogId !== peerId) {
+            this.setLoading(false);
+            return;
+        }
+        const dialog = this.getDialogById(peerId);
+        if (!dialog) {
+            return;
+        }
+        if ((dialog.unreadcount || 0) === 0) {
+            return;
+        }
+        let after = 0;
+        if (messages.length > 0) {
+            after = messages[messages.length - 1].id || 0;
+        }
+        this.messageRepo.getMany({peer, limit: 25, after, ignoreMax: true}).then((res) => {
+            const dataMsg = this.modifyMessages(this.state.messages, res.reverse(), true, dialog.readinboxmaxid || 0);
+            this.setScrollMode('none');
+            this.setState({
+                messages: dataMsg.msgs,
+            });
         });
     }
 
@@ -1791,7 +1832,8 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private getPeerByDialogId(id: string): InputPeer | null {
-        if (!this.dialogMap.hasOwnProperty(id)) {
+        const dialog = this.getDialogById(id);
+        if (!dialog) {
             // Saved messages
             if (this.connInfo.UserID === id) {
                 const contactPeer = new InputPeer();
@@ -1812,19 +1854,24 @@ class Chat extends React.Component<IProps, IState> {
                 }
             }
         }
-        const index = this.dialogMap[id];
-        const {dialogs} = this.state;
         const peer = new InputPeer();
-        peer.setType(dialogs[index].peertype || 0);
-        if (dialogs[index].peertype === PeerType.PEERUSER && (!dialogs[index].accesshash || dialogs[index].accesshash === '0')) {
+        peer.setType(dialog.peertype || 0);
+        if (dialog.peertype === PeerType.PEERUSER && (!dialog.accesshash || dialog.accesshash === '0')) {
             const contact = this.userRepo.getInstantContact(id);
             if (contact) {
-                dialogs[index].accesshash = contact.accesshash;
+                dialog.accesshash = contact.accesshash;
             }
         }
-        peer.setAccesshash(dialogs[index].accesshash || '0');
-        peer.setId(dialogs[index].peerid || '');
+        peer.setAccesshash(dialog.accesshash || '0');
+        peer.setId(dialog.peerid || '');
         return peer;
+    }
+
+    private getDialogById(id: string): IDialog | null {
+        if (this.state.dialogMap.hasOwnProperty(id)) {
+            return this.state.dialogs[this.state.dialogMap[id]] || null;
+        }
+        return null;
     }
 
     private updateDialogs(msg: IMessage, accessHash: string, force?: boolean) {
@@ -1836,8 +1883,8 @@ class Chat extends React.Component<IProps, IState> {
         const previewMe = (this.connInfo.UserID === msg.senderid);
         let toUpdateDialog: IDialog | null = null;
         const messageTitle = getMessageTitle(msg);
-        if (this.dialogMap.hasOwnProperty(id)) {
-            const index = this.dialogMap[id];
+        if (this.state.dialogMap.hasOwnProperty(id)) {
+            const index = this.state.dialogMap[id];
             if ((dialogs[index].topmessageid || 0) <= (msg.id || 0) || force === true) {
                 dialogs[index].action_code = msg.messageaction;
                 dialogs[index].action_data = msg.actiondata;
@@ -1878,7 +1925,11 @@ class Chat extends React.Component<IProps, IState> {
             }
             toUpdateDialog = dialog;
             dialogs.push(dialog);
-            this.dialogMap[id] = dialogs.length - 1;
+            const {dialogMap} = this.state;
+            dialogMap[id] = dialogs.length - 1;
+            this.setState({
+                dialogMap,
+            });
         }
 
         this.dialogsSortThrottle(dialogs);
@@ -1892,8 +1943,8 @@ class Chat extends React.Component<IProps, IState> {
         if (!peerId || !dialogs) {
             return;
         }
-        if (this.dialogMap.hasOwnProperty(peerId)) {
-            const index = this.dialogMap[peerId];
+        if (this.state.dialogMap.hasOwnProperty(peerId)) {
+            const index = this.state.dialogMap[peerId];
             dialogs[index].notifysettings = settings;
             this.dialogsSortThrottle(dialogs);
             this.dialogRepo.lazyUpsert([dialogs[index]]);
@@ -1901,9 +1952,9 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private updateDialogsCounter(peerId: string, {maxInbox, maxOutbox, unreadCounter, unreadCounterIncrease, mentionCounter, mentionCounterIncrease}: any) {
-        if (this.dialogMap.hasOwnProperty(peerId)) {
+        if (this.state.dialogMap.hasOwnProperty(peerId)) {
             const {dialogs} = this.state;
-            const index = this.dialogMap[peerId];
+            const index = this.state.dialogMap[peerId];
             if (!dialogs[index]) {
                 return;
             }
@@ -1940,42 +1991,34 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private getPeer(peerId: string) {
-        if (this.dialogMap.hasOwnProperty(peerId)) {
-            const {dialogs} = this.state;
-            const index = this.dialogMap[peerId];
-            return dialogs[index];
-        }
-        return null;
-    }
-
     private dialogsSort(dialogs: IDialog[], callback?: (ds: IDialog[]) => void) {
         if (!dialogs) {
             return;
         }
-        dialogs.sort((i1, i2) => {
+        const td = clone(dialogs);
+        td.sort((i1, i2) => {
             if (!i1.last_update || !i2.last_update) {
                 return 0;
             }
             return i2.last_update - i1.last_update;
         });
-        const td = clone(dialogs);
         let unreadCounter = 0;
         td.forEach((d) => {
             if (d && d.unreadcount) {
                 unreadCounter += d.unreadcount;
             }
         });
-        this.dialogMap = {};
+        const tDialogMap: any = {};
+        td.forEach((d, i) => {
+            if (d) {
+                tDialogMap[d.peerid || ''] = i;
+            }
+        });
         this.setState({
+            dialogMap: tDialogMap,
             dialogs: td,
             unreadCounter,
         }, () => {
-            td.forEach((d, i) => {
-                if (d) {
-                    this.dialogMap[d.peerid || ''] = i;
-                }
-            });
             if (callback) {
                 callback(td);
             }
@@ -2143,18 +2186,20 @@ class Chat extends React.Component<IProps, IState> {
             this.dialogsSort(res, (dialogs) => {
                 data.ids.forEach((id: string) => {
                     window.console.log('dialogDBUpdated data.id:', id);
-                    if (this.dialogMap.hasOwnProperty(id) && dialogs[this.dialogMap[id]]) {
-                        window.console.log('dialogDBUpdated peerId:', dialogs[this.dialogMap[id]].peerid);
-                        const maxReadInbox = dialogs[this.dialogMap[id]].readinboxmaxid || 0;
+                    if (this.state.dialogMap.hasOwnProperty(id) && dialogs[this.state.dialogMap[id]]) {
+                        window.console.log('dialogDBUpdated peerId:', dialogs[this.state.dialogMap[id]].peerid);
+                        const maxReadInbox = dialogs[this.state.dialogMap[id]].readinboxmaxid || 0;
                         window.console.log('dialogDBUpdated maxReadInbox:', maxReadInbox);
-                        const peer = this.getPeer(id);
-                        this.messageRepo.getUnreadCount(id, maxReadInbox, peer ? (peer.topmessageid || 0) : 0).then((count) => {
-                            window.console.log('dialogDBUpdated getUnreadCount:', count);
-                            this.updateDialogsCounter(id, {
-                                mentionCounter: count.mention,
-                                unreadCounter: count.message,
+                        const dialog = this.getDialogById(id);
+                        if (dialog) {
+                            this.messageRepo.getUnreadCount(id, maxReadInbox, dialog ? (dialog.topmessageid || 0) : 0).then((count) => {
+                                window.console.log('dialogDBUpdated getUnreadCount:', count);
+                                this.updateDialogsCounter(id, {
+                                    mentionCounter: count.mention,
+                                    unreadCounter: count.message,
+                                });
                             });
-                        });
+                        }
                     }
                 });
             });
@@ -2355,15 +2400,15 @@ class Chat extends React.Component<IProps, IState> {
         if (!inputPeer || !this.isInChat) {
             return;
         }
-        const {selectedDialogId, dialogs} = this.state;
-        if (this.dialogMap.hasOwnProperty(selectedDialogId)) {
-            const dialog = dialogs[this.dialogMap[selectedDialogId]];
+        const {selectedDialogId} = this.state;
+        const dialog = this.getDialogById(selectedDialogId);
+        if (dialog) {
             const peerId = inputPeer.getId() || '';
             if (dialog && ((dialog.readinboxmaxid || 0) < msgId || (dialog.unreadcount || 0) > 0)) {
                 this.sdk.setMessagesReadHistory(inputPeer, msgId);
                 this.updateDialogsCounter(peerId, {maxInbox: msgId});
-                const peer = this.getPeer(peerId);
-                this.messageRepo.getUnreadCount(peerId, msgId, peer ? (peer.topmessageid || 0) : 0).then((count) => {
+                const peerDialog = this.getDialogById(peerId);
+                this.messageRepo.getUnreadCount(peerId, msgId, peerDialog ? (peerDialog.topmessageid || 0) : 0).then((count) => {
                     this.updateDialogsCounter(peerId, {
                         mentionCounter: count.mention,
                         unreadCounter: count.message,
@@ -2441,6 +2486,18 @@ class Chat extends React.Component<IProps, IState> {
         this.popUpDateComponent.updateDate(timestamp);
     }
 
+    /* Message Rendered Handler */
+    private messageRenderedHandler = (info: any) => {
+        const {messages, peer} = this.state;
+        if (messages) {
+            const diff = messages.length - info.stopIndex;
+            this.setMoveDownVisible(diff > 1);
+            if (messages[info.stopIndex].id !== -1) {
+                this.sendReadHistory(peer, Math.floor(messages[info.stopIndex].id || 0));
+            }
+        }
+    }
+
     /* Cancel us typing handler */
     private cancelIsTypingHandler = (id: string) => {
         const {isTypingList} = this.state;
@@ -2493,10 +2550,12 @@ class Chat extends React.Component<IProps, IState> {
             isUpdating: true,
         });
         if (id) {
-            const index = this.dialogMap[id];
+            const {dialogMap} = this.state;
+            const index = this.state.dialogMap[id];
             dialogs.splice(index, 1);
-            delete this.dialogMap[id];
+            delete dialogMap[id];
             this.setState({
+                dialogMap,
                 dialogs,
             }, () => {
                 this.dialogsSortThrottle(this.state.dialogs);
@@ -2589,9 +2648,9 @@ class Chat extends React.Component<IProps, IState> {
         }
         switch (cmd) {
             case 'remove_dialog':
-                const index = this.dialogMap[peer.getId() || ''];
-                if (dialogs[index].topmessageid) {
-                    this.sdk.clearMessage(peer, dialogs[index].topmessageid || 0, true).then(() => {
+                const dialog = this.getDialogById(peer.getId() || '');
+                if (dialog) {
+                    this.sdk.clearMessage(peer, dialog.topmessageid || 0, true).then(() => {
                         this.dialogRemove(peer.getId() || '');
                     });
                 }
@@ -2673,9 +2732,9 @@ class Chat extends React.Component<IProps, IState> {
         if (!peerId || !dialogs) {
             return;
         }
-        if (this.dialogMap.hasOwnProperty(peerId)) {
-            const index = this.dialogMap[peerId];
-            return !isMuted(dialogs[index].notifysettings);
+        const dialog = this.getDialogById(peerId);
+        if (dialog) {
+            return !isMuted(dialog.notifysettings);
         }
         return true;
     }
@@ -3660,10 +3719,7 @@ class Chat extends React.Component<IProps, IState> {
         user.setAccesshash('');
         const dialogId = peer.getId() || '';
         this.sdk.groupRemoveMember(peer, user).then(() => {
-            let dialog: IDialog | null = null;
-            if (this.dialogMap.hasOwnProperty(dialogId)) {
-                dialog = this.state.dialogs[this.dialogMap[dialogId]];
-            }
+            const dialog = this.getDialogById(dialogId);
             if (dialog && dialog.topmessageid) {
                 this.sdk.clearMessage(peer, dialog.topmessageid, true);
             }
@@ -3685,11 +3741,7 @@ class Chat extends React.Component<IProps, IState> {
         const user = new InputUser();
         user.setUserid(id);
         user.setAccesshash('');
-        let dialog: IDialog | null = null;
-        const dialogId = peer.getId() || '';
-        if (this.dialogMap.hasOwnProperty(dialogId)) {
-            dialog = this.state.dialogs[this.dialogMap[dialogId]];
-        }
+        const dialog = this.getDialogById(peer.getId() || '');
         if (dialog && dialog.topmessageid) {
             this.sdk.clearMessage(peer, dialog.topmessageid, true);
         }
@@ -3717,6 +3769,42 @@ class Chat extends React.Component<IProps, IState> {
         //     window.location.href = '/';
         //     // window.location.reload();
         // });
+    }
+
+    private getMoveDown() {
+        const {selectedDialogId} = this.state;
+        const dialog = this.getDialogById(selectedDialogId);
+        if (dialog) {
+            return (<div ref={this.moveDownRefHandler} className="move-down" onClick={this.moveDownClickHandler}>
+                <Badge color="primary" badgeContent={dialog.unreadcount}
+                       invisible={Boolean(dialog.unreadcount === 0)}>
+                    <ExpandMoreRounded/>
+                </Badge>
+            </div>);
+        } else {
+            return '';
+        }
+    }
+
+    private moveDownRefHandler = (ref: any) => {
+        this.moveDownRef = ref;
+    }
+
+    private moveDownClickHandler = () => {
+        this.messageComponent.animateToEnd();
+    }
+
+    private setMoveDownVisible(visible: boolean) {
+        if (!this.moveDownRef) {
+            return;
+        }
+        if (visible && !this.moveDownVisible) {
+            this.moveDownRef.classList.add('visible');
+            this.moveDownVisible = true;
+        } else if (!visible && this.moveDownVisible) {
+            this.moveDownRef.classList.remove('visible');
+            this.moveDownVisible = false;
+        }
     }
 
     private broadcastEvent(name: string, data: any) {
