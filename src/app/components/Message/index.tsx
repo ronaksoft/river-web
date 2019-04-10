@@ -1020,10 +1020,12 @@ class Message extends React.Component<IProps, IState> {
     }
 
     private callEnd() {
-        if (this.endFn && this.props.peer) {
-            this.endFn(this.props.peer.getId() || '');
-            this.endFn = null;
-        }
+        setTimeout(() => {
+            if (this.endFn && this.props.peer) {
+                this.endFn(this.props.peer.getId() || '');
+                this.endFn = null;
+            }
+        }, 100);
     }
 }
 

@@ -200,6 +200,7 @@ class Chat extends React.Component<IProps, IState> {
     private rtlDetector: RTLDetector;
     private moveDownRef: any = null;
     private moveDownVisible: boolean = false;
+    private dialogUnread: number = 0;
 
     constructor(props: IProps) {
         super(props);
@@ -960,8 +961,7 @@ class Chat extends React.Component<IProps, IState> {
             this.setState({
                 messages: dataMsg.msgs,
             }, () => {
-                if (!tMoveDownVisible) {
-                    window.console.log('here');
+                if (!tMoveDownVisible && this.isInChat) {
                     setTimeout(() => {
                         this.messageComponent.animateToEnd();
                     }, 100);
@@ -1322,6 +1322,7 @@ class Chat extends React.Component<IProps, IState> {
                     group: null,
                 });
             }
+            this.dialogUnread = dialog.unreadcount || 0;
         }
 
         this.setLoading(true);
@@ -1339,15 +1340,16 @@ class Chat extends React.Component<IProps, IState> {
         if (dialog) {
             if ((dialog.unreadcount || 0) > 0) {
                 before = Math.max((dialog.readinboxmaxid || 0), (dialog.readoutboxmaxid || 0)) + 1;
+
+                this.messageComponent.setEndFn((peerId: string) => {
+                    this.loadMoreAfter(peerId);
+                });
             }
         }
 
         let minId: number = 0;
         this.setChatView(true);
 
-        this.messageComponent.setEndFn((peerId: string) => {
-            this.loadMoreAfter(peerId);
-        });
         this.messageRepo.getMany({peer, limit: 25, before, ignoreMax: true}, (data) => {
             // Checks peerid on transition
             if (this.state.selectedDialogId !== dialogId) {
@@ -1431,11 +1433,15 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private loadMoreAfter = (peerId: string) => {
+        if (this.isLoading) {
+            return;
+        }
         const {peer, messages} = this.state;
         if (this.state.selectedDialogId !== peerId) {
             this.setLoading(false);
             return;
         }
+        this.setLoading(true);
         const dialog = this.getDialogById(peerId);
         if (!dialog) {
             return;
@@ -1448,11 +1454,15 @@ class Chat extends React.Component<IProps, IState> {
             after = messages[messages.length - 1].id || 0;
         }
         this.messageRepo.getMany({peer, limit: 25, after, ignoreMax: true}).then((res) => {
-            const dataMsg = this.modifyMessages(this.state.messages, res.reverse(), true, dialog.readinboxmaxid || 0);
+            this.setMoveDownVisible(res.length > 0);
+            const dataMsg = this.modifyMessages(this.state.messages, res, true, dialog.readinboxmaxid || 0);
             this.setScrollMode('none');
             this.setState({
                 messages: dataMsg.msgs,
             });
+            this.setLoading(false);
+        }).catch(() => {
+            this.setLoading(false);
         });
     }
 
@@ -1986,6 +1996,9 @@ class Chat extends React.Component<IProps, IState> {
             if (mentionCounter !== null && mentionCounter !== undefined) {
                 dialogs[index].mentionedcount = mentionCounter;
             }
+            if (peerId === this.state.selectedDialogId) {
+                this.dialogUnread = dialogs[index].unreadcount || 0;
+            }
             this.dialogsSortThrottle(dialogs);
             this.dialogRepo.lazyUpsert([dialogs[index]]);
         }
@@ -2397,18 +2410,23 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private sendReadHistory(inputPeer: InputPeer | null, msgId: number) {
+        window.console.log('case #1');
         if (!inputPeer || !this.isInChat) {
             return;
         }
+        window.console.log('case #2');
         const {selectedDialogId} = this.state;
         const dialog = this.getDialogById(selectedDialogId);
         if (dialog) {
+            window.console.log('case #3');
             const peerId = inputPeer.getId() || '';
-            if (dialog && ((dialog.readinboxmaxid || 0) < msgId || (dialog.unreadcount || 0) > 0)) {
-                this.sdk.setMessagesReadHistory(inputPeer, msgId);
+            if (dialog && (dialog.readinboxmaxid || 0) < msgId) {
+                window.console.log(dialog.readinboxmaxid, msgId);
+                // this.sdk.setMessagesReadHistory(inputPeer, msgId);
                 this.updateDialogsCounter(peerId, {maxInbox: msgId});
                 const peerDialog = this.getDialogById(peerId);
                 this.messageRepo.getUnreadCount(peerId, msgId, peerDialog ? (peerDialog.topmessageid || 0) : 0).then((count) => {
+                    window.console.log(count);
                     this.updateDialogsCounter(peerId, {
                         mentionCounter: count.mention,
                         unreadCounter: count.message,
@@ -2488,11 +2506,14 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Message Rendered Handler */
     private messageRenderedHandler = (info: any) => {
+        if (this.isLoading) {
+            return;
+        }
         const {messages, peer} = this.state;
         if (messages) {
             const diff = messages.length - info.stopIndex;
             this.setMoveDownVisible(diff > 1);
-            if (messages[info.stopIndex].id !== -1) {
+            if (this.dialogUnread > 0 && messages[info.stopIndex].id !== -1) {
                 this.sendReadHistory(peer, Math.floor(messages[info.stopIndex].id || 0));
             }
         }
