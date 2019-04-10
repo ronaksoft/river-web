@@ -200,6 +200,7 @@ export default class UpdateManager {
                 this.outOfSyncTimeout = setTimeout(() => {
                     this.updateList = [];
                     this.outOfSync = false;
+                    this.outOfSyncTimeout = null;
                     this.callHandlers(C_MSG.OutOfSync, {});
                     // this.disable();
                 }, 500);

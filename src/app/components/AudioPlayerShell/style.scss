@@ -287,7 +287,8 @@
             }
             &.download {
               .playlist-info {
-                width: 218px;
+                width: 178px;
+                overflow: hidden;
               }
             }
             .playlist-download-action {

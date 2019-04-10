@@ -244,7 +244,8 @@
                     background-color: var(--dark-high);
                     transform: translate(-50%, -50%); }
             .audio-player-shell .shell .audio-player-content .playlist-menu .playlist .playlist-item.download .playlist-info {
-              width: 218px; }
+              width: 178px;
+              overflow: hidden; }
             .audio-player-shell .shell .audio-player-content .playlist-menu .playlist .playlist-item .playlist-download-action {
               position: relative;
               width: 42px; }

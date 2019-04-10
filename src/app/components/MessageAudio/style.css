@@ -133,12 +133,18 @@ html[theme="dark"] .message-audio .audio-main .audio-action-wrapper .audio-item-
   background-color: var(--dark-mention); }
 
 html[theme="dark"] .message-audio .audio-main .audio-action-wrapper .audio-item-action .media-size {
+  color: var(--white); }
+
+html[theme="dark"] .message-audio .audio-main .audio-info .audio-performer,
+html[theme="dark"] .message-audio .audio-main .audio-info .audio-title {
   color: var(--light); }
 
 html[theme="dark-blue"] .message-audio .audio-main .audio-action-wrapper .audio-item-action .audio-action {
   background-color: var(--dark-mention); }
-  html[theme="dark-blue"] .message-audio .audio-main .audio-action-wrapper .audio-item-action .audio-action .audio-info .audio-performer {
-    color: var(--light); }
 
 html[theme="dark-blue"] .message-audio .audio-main .audio-action-wrapper .audio-item-action .media-size {
+  color: var(--light); }
+
+html[theme="dark-blue"] .message-audio .audio-main .audio-info .audio-performer,
+html[theme="dark-blue"] .message-audio .audio-main .audio-info .audio-title {
   color: var(--light); }

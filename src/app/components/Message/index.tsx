@@ -94,7 +94,7 @@ class Message extends React.Component<IProps, IState> {
     private listCount: number;
     private topOfList: boolean = false;
     private loadingTimeout: any = null;
-    private scrollMode: 'none' | 'end' | 'stay';
+    private scrollMode: 'none' | 'end' | 'end_no_call' | 'stay';
     private scrollTop: number;
     private messageScroll: {
         overscanStartIndex: number;
@@ -219,7 +219,7 @@ class Message extends React.Component<IProps, IState> {
         });
     }
 
-    public animateToEnd(instant?: boolean) {
+    public animateToEnd(instant?: boolean, callFn?: boolean) {
         const {items} = this.state;
         if (!items) {
             return;
@@ -237,7 +237,9 @@ class Message extends React.Component<IProps, IState> {
         }
         if (this.list && jump) {
             this.list.scrollToRow(items.length);
-            this.callEnd();
+            if (callFn) {
+                this.callEnd();
+            }
         } else {
             setTimeout(() => {
                 if (instant) {
@@ -247,7 +249,9 @@ class Message extends React.Component<IProps, IState> {
                             if (this.list) {
                                 this.list.scrollToPosition(this.scrollTop + 10);
                             }
-                            this.callEnd();
+                            if (callFn) {
+                                this.callEnd();
+                            }
                         }, 10);
                     }
                 } else {
@@ -262,14 +266,16 @@ class Message extends React.Component<IProps, IState> {
                                 });
                             }
                         }
-                        this.callEnd();
+                        if (callFn) {
+                            this.callEnd();
+                        }
                     }, 1);
                 }
             }, 200);
         }
     }
 
-    public setScrollMode(mode: 'none' | 'end' | 'stay') {
+    public setScrollMode(mode: 'none' | 'end' | 'end_no_call' | 'stay') {
         this.scrollMode = mode;
     }
 
@@ -914,6 +920,9 @@ class Message extends React.Component<IProps, IState> {
                 }, 10);
                 return;
             case 'end':
+                this.animateToEnd(true, true);
+                return;
+            case 'end_no_call':
                 this.animateToEnd(true);
                 return;
             default:
@@ -1020,12 +1029,13 @@ class Message extends React.Component<IProps, IState> {
     }
 
     private callEnd() {
+        // TODO: find an alternative for timeout
         setTimeout(() => {
             if (this.endFn && this.props.peer) {
                 this.endFn(this.props.peer.getId() || '');
                 this.endFn = null;
             }
-        }, 100);
+        }, 210);
     }
 }
 

@@ -663,6 +663,12 @@ html[theme="dark-blue"] {
       }
       .conversation {
         background-color: var(--dark-low);
+        .move-down {
+          background-color: var(--dark-medium);
+          svg {
+            color: var(--light);
+          }
+        }
       }
       .start-messaging {
         background-color: var(--dark-low);
@@ -753,6 +759,12 @@ html[theme="dark-blue"] {
       }
       .conversation {
         background-color: var(--dark-blue-low);
+        .move-down {
+          background-color: var(--dark-blue-medium);
+          svg {
+            color: var(--light);
+          }
+        }
       }
       .start-messaging {
         background-color: var(--dark-blue-low);

@@ -78,8 +78,12 @@ html[theme="dark"] {
           background-color: var(--dark-mention);
         }
         .media-size {
-          color: var(--light);
+          color: var(--white);
         }
+      }
+      .audio-info .audio-performer,
+      .audio-info .audio-title {
+        color: var(--light);
       }
     }
   }
@@ -91,13 +95,14 @@ html[theme="dark-blue"] {
       .audio-action-wrapper .audio-item-action {
         .audio-action {
           background-color: var(--dark-mention);
-          .audio-info .audio-performer {
-            color: var(--light);
-          }
         }
         .media-size {
           color: var(--light);
         }
+      }
+      .audio-info .audio-performer,
+      .audio-info .audio-title {
+        color: var(--light);
       }
     }
   }

@@ -272,7 +272,7 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
 
     private getPlaylistHeight = () => {
         const {playlist} = this.state;
-        const height = C_CELL_HEIGHT * playlist.length;
+        const height = C_CELL_HEIGHT * playlist.length - 6;
         return Math.min(Math.max(height, 48), C_MAX_LIST_HEIGHT);
     }
 

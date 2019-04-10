@@ -571,6 +571,12 @@ html[theme="dark-blue"] .container {
   html[theme="dark"] .container .column-center .conversation,
   html[theme="dark-blue"] .container .column-center .conversation {
     background-color: var(--dark-low); }
+    html[theme="dark"] .container .column-center .conversation .move-down,
+    html[theme="dark-blue"] .container .column-center .conversation .move-down {
+      background-color: var(--dark-medium); }
+      html[theme="dark"] .container .column-center .conversation .move-down svg,
+      html[theme="dark-blue"] .container .column-center .conversation .move-down svg {
+        color: var(--light); }
   html[theme="dark"] .container .column-center .start-messaging,
   html[theme="dark-blue"] .container .column-center .start-messaging {
     background-color: var(--dark-low); }
@@ -646,6 +652,10 @@ html[theme="dark-blue"] .container {
     background-color: var(--dark-blue-medium); }
   html[theme="dark-blue"] .container .column-center .conversation {
     background-color: var(--dark-blue-low); }
+    html[theme="dark-blue"] .container .column-center .conversation .move-down {
+      background-color: var(--dark-blue-medium); }
+      html[theme="dark-blue"] .container .column-center .conversation .move-down svg {
+        color: var(--light); }
   html[theme="dark-blue"] .container .column-center .start-messaging {
     background-color: var(--dark-blue-low); }
 
