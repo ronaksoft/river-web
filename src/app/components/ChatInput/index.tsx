@@ -548,7 +548,7 @@ class ChatInput extends React.Component<IProps, IState> {
         if (this.state.previewMessageMode !== C_MSG_MODE.Edit) {
             if (cancelTyping) {
                 this.setTyping(TypingAction.TYPINGACTIONCANCEL);
-            } else {
+            } else if (text.length > 0) {
                 this.setTyping(TypingAction.TYPINGACTIONTYPING);
             }
         }

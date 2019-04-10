@@ -1855,9 +1855,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
-        this.sdk.typing(peer, typing).then((data) => {
-            window.console.debug(data);
-        }).catch((err) => {
+        this.sdk.typing(peer, typing).catch((err) => {
             window.console.debug(err);
         });
     }
