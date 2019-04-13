@@ -1337,20 +1337,12 @@ class Chat extends React.Component<IProps, IState> {
         };
 
         let before = 10000000000;
+        // Scroll pos check
         if (dialog) {
-            /*if ((dialog.scroll_pos || -1) !== -1) {
+            if ((dialog.scroll_pos || -1) !== -1) {
                 before = dialog.scroll_pos || 0;
-
-                this.messageComponent.setEndFn((peerId: string) => {
-                    this.loadMoreAfter(peerId, before);
-                });
-            } else */
-            if ((dialog.unreadcount || 0) > 0) {
+            } else if ((dialog.unreadcount || 0) > 0) {
                 before = Math.max((dialog.readinboxmaxid || 0), (dialog.readoutboxmaxid || 0)) + 1;
-
-                // this.messageComponent.setEndFn((peerId: string) => {
-                //     this.loadMoreAfter(peerId);
-                // });
             }
         }
 
@@ -1454,11 +1446,8 @@ class Chat extends React.Component<IProps, IState> {
         if (!dialog) {
             return;
         }
-        if ((dialog.unreadcount || 0) === 0) {
-            return;
-        }
         const after = this.getValidAfter();
-        if ((dialog.topmessageid || 0) <= after) {
+        if ((dialog.topmessageid || 0) <= after && (dialog.unreadcount || 0) === 0) {
             return;
         }
         this.setLoading(true);
