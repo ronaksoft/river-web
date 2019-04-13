@@ -13,13 +13,12 @@ import {InputPeer, MediaType} from '../../services/sdk/messages/chat.core.types_
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
 import {PlaceRounded} from '@material-ui/icons';
 import {MediaGeoLocation} from '../../services/sdk/messages/chat.core.message.medias_pb';
-import {Coords} from 'google-map-react';
 // import {C_GOOGLE_MAP_KEY} from '../MapPicker';
 
 import './style.css';
 
 const getMapLocation = (message: IMessage) => {
-    const location: Coords = {
+    const location: google.maps.LatLngLiteral = {
         lat: 0,
         lng: 0,
     };

@@ -96,7 +96,7 @@ html[theme="dark"] {
   .map-picker-container {
     background-color: var(--dark-medium);
     .map-picker-details-container {
-      .map-picker-input {
+      .caption-input {
         label, textarea, svg {
           color: var(--white);
         }
@@ -109,7 +109,7 @@ html[theme="dark-blue"] {
   .map-picker-container {
     background-color: var(--dark-blue-medium);
     .map-picker-details-container {
-      .map-picker-input {
+      .caption-input {
         label, textarea, svg {
           color: var(--white);
         }

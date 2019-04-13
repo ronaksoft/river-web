@@ -16,7 +16,7 @@ import {
     RotateRightRounded,
     ZoomInRounded,
     ZoomOutRounded,
-    CropFreeRounded, PlaceRounded,
+    CropFreeRounded,
 } from '@material-ui/icons';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import DocumentViewService, {IDocument} from '../../services/documentViewerService';
@@ -26,8 +26,8 @@ import {IMessage} from '../../repository/message/interface';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 import {getMediaInfo} from '../MessageMedia';
 import DownloadProgress from '../DownloadProgress';
-import GoogleMapReact from 'google-map-react';
 import {C_GOOGLE_MAP_KEY} from '../MapPicker';
+import {MapComponent} from '../MapPicker/map';
 
 import './style.css';
 
@@ -214,19 +214,21 @@ class DocumentViewer extends React.Component<IProps, IState> {
                             return '';
                         } else {
                             return (
-                                <GoogleMapReact
-                                    key={index}
-                                    bootstrapURLKeys={{key: C_GOOGLE_MAP_KEY}}
-                                    defaultCenter={{
+                                <MapComponent
+                                    googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${C_GOOGLE_MAP_KEY}&v=3.exp&libraries=geometry,drawing,places`}
+                                    loadingElement={<div style={{height: `100%`}}/>}
+                                    containerElement={<div style={{height: `100%`}}/>}
+                                    mapElement={<div style={{height: `100%`}}/>}
+                                    defPos={{
                                         lat: item.geo.lat,
                                         lng: item.geo.lng
                                     }}
-                                    defaultZoom={16}
-                                >
-                                <span className="map-marker">
-                                    <PlaceRounded/>
-                                </span>
-                                </GoogleMapReact>
+                                    defZoom={16}
+                                    pos={{
+                                        lat: item.geo.lat,
+                                        lng: item.geo.lng
+                                    }}
+                                />
                             );
                         }
                     })}
@@ -234,6 +236,14 @@ class DocumentViewer extends React.Component<IProps, IState> {
             default:
                 return '';
         }
+    }
+
+    private hasControl() {
+        const {doc} = this.state;
+        if (!doc || doc.type === 'location') {
+            return false;
+        }
+        return true;
     }
 
     private pictureWrapperRefHandler = (ref: any) => {
@@ -576,7 +586,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     private windowKeyDownHandler = (e: any) => {
-        if (!this.state.dialogOpen) {
+        if (!this.state.dialogOpen || !this.hasControl()) {
             return;
         }
         if (e.keyCode === 39) {
@@ -639,7 +649,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
     /* Document mouse down handler */
     private mediaDocumentMouseDownHandler = (e: any) => {
-        if (e.button !== 0) {
+        if (e.button !== 0 || !this.hasControl()) {
             return;
         }
         this.mediaTransform.startPan = true;
@@ -650,7 +660,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
     /* Document mouse move handler */
     private mediaDocumentMouseMoveHandler = (e: any) => {
-        if (!this.mediaTransform.startPan) {
+        if (!this.mediaTransform.startPan || !this.hasControl()) {
             return;
         }
         e.preventDefault();
@@ -661,6 +671,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
     /* Document mouse up handler */
     private mediaDocumentMouseUpHandler = (e: any) => {
+        if (!this.hasControl()) {
+            return;
+        }
         if (this.mediaTransform.startPan) {
             e.preventDefault();
             this.mediaTransform.startPan = false;
@@ -669,6 +682,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
     /* Document wheel handler */
     private mediaDocumentWheelHandler = (e: any) => {
+        if (!this.hasControl()) {
+            return;
+        }
         if (!e.ctrlKey && !e.metaKey) {
             this.mediaTransform.zoom += e.deltaY / 100;
         } else {

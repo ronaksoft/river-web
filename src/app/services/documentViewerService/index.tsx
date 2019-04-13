@@ -10,7 +10,6 @@
 import {InputFileLocation} from '../sdk/messages/chat.core.types_pb';
 import MediaRepo from '../../repository/media';
 import {C_MEDIA_TYPE} from '../../repository/media/interface';
-import {Coords} from 'google-map-react';
 
 interface IDocumentItem {
     caption: string;
@@ -21,7 +20,7 @@ interface IDocumentItem {
     id?: number;
     thumbFileLocation?: InputFileLocation.AsObject;
     width?: number;
-    geo?: Coords;
+    geo?: google.maps.LatLngLiteral;
 }
 
 export interface IDocument {

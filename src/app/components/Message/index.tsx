@@ -29,7 +29,7 @@ import {MoreVert} from '@material-ui/icons';
 import UserName from '../UserName';
 import Checkbox from '@material-ui/core/Checkbox';
 import MessageForwarded from '../MessageForwarded';
-import {clone} from 'lodash';
+import {clone, throttle} from 'lodash';
 import MessageVoice from '../MessageVoice';
 import RiverTime from '../../services/utilities/river_time';
 import {ErrorRounded} from '@material-ui/icons';
@@ -41,16 +41,18 @@ import {MediaDocument} from '../../services/sdk/messages/chat.core.message.media
 import MessageLocation from '../MessageLocation';
 import Broadcaster from '../../services/broadcaster';
 import UserRepo from '../../repository/user';
+import MessageAudio from '../MessageAudio';
+import animateScrollTo from 'animated-scroll-to';
 
 import './style.css';
-import MessageAudio from '../MessageAudio';
 
 interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
     items: IMessage[];
     onAttachmentAction?: (cmd: 'cancel' | 'cancel_download' | 'download' | 'view' | 'open' | 'read', message: IMessage) => void;
     onJumpToMessage: (id: number, e: any) => void;
-    onLoadMoreAfter?: (id: number) => any;
+    onLoadMoreAfter?: () => any;
+    onLoadMoreAfterGap?: (id: number) => any;
     onLoadMoreBefore?: () => any;
     onSelectableChange: (selectable: boolean) => void;
     onSelectedIdsChange: (selectedIds: { [key: number]: number }) => void;
@@ -93,6 +95,7 @@ class Message extends React.Component<IProps, IState> {
     public cache: CellMeasurerCache;
     private listCount: number;
     private topOfList: boolean = false;
+    private bottomOfList: boolean = true;
     private loadingTimeout: any = null;
     private scrollMode: 'none' | 'end' | 'end_no_call' | 'stay';
     private scrollTop: number;
@@ -111,7 +114,7 @@ class Message extends React.Component<IProps, IState> {
     private isSimplified: boolean = false;
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
-    private endFn: any = null;
+    private readonly loadMoreAfterThrottle: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -138,6 +141,8 @@ class Message extends React.Component<IProps, IState> {
         this.broadcaster = Broadcaster.getInstance();
 
         this.isSimplified = UserRepo.getInstance().getBubbleMode() === '5';
+
+        this.loadMoreAfterThrottle = throttle(this.loadMoreAfter, 250);
     }
 
     public componentDidMount() {
@@ -150,6 +155,7 @@ class Message extends React.Component<IProps, IState> {
     public componentWillReceiveProps(newProps: IProps) {
         if (this.state.items !== newProps.items) {
             this.cache.clearAll();
+            this.bottomOfList = true;
             this.setState({
                 items: newProps.items,
                 moreAnchorEl: null,
@@ -219,7 +225,7 @@ class Message extends React.Component<IProps, IState> {
         });
     }
 
-    public animateToEnd(instant?: boolean, callFn?: boolean) {
+    public animateToEnd(instant?: boolean) {
         const {items} = this.state;
         if (!items) {
             return;
@@ -237,9 +243,6 @@ class Message extends React.Component<IProps, IState> {
         }
         if (this.list && jump) {
             this.list.scrollToRow(items.length);
-            if (callFn) {
-                this.callEnd();
-            }
         } else {
             setTimeout(() => {
                 if (instant) {
@@ -249,9 +252,6 @@ class Message extends React.Component<IProps, IState> {
                             if (this.list) {
                                 this.list.scrollToPosition(this.scrollTop + 10);
                             }
-                            if (callFn) {
-                                this.callEnd();
-                            }
                         }, 10);
                     }
                 } else {
@@ -260,14 +260,44 @@ class Message extends React.Component<IProps, IState> {
                         if (el) {
                             const eldiv = el.querySelector('.chat.active-chat > div');
                             if (eldiv) {
-                                el.scroll({
-                                    behavior: 'smooth',
-                                    top: eldiv.clientHeight + 1000,
-                                });
+                                const options: any = {
+                                    // duration of the scroll per 1000px, default 500
+                                    speed: 1000,
+
+                                    // minimum duration of the scroll
+                                    minDuration: 250,
+
+                                    // maximum duration of the scroll
+                                    maxDuration: 500,
+
+                                    // @ts-ignore
+                                    element: el,
+
+                                    // Additional offset value that gets added to the desiredOffset.  This is
+                                    // useful when passing a DOM object as the desiredOffset and wanting to adjust
+                                    // for an fixed nav or to add some padding.
+                                    offset: 0,
+
+                                    // should animated scroll be canceled on user scroll/keypress
+                                    // if set to "false" user input will be disabled until animated scroll is complete
+                                    // (when set to false, "passive" will be also set to "false" to prevent Chrome errors)
+                                    cancelOnUserAction: true,
+
+                                    // Set passive event Listeners to be true by default. Stops Chrome from complaining.
+                                    passive: true,
+
+                                    // Scroll horizontally rather than vertically (which is the default)
+                                    horizontal: false,
+
+                                    onComplete: () => {
+                                        if ((this.state.items.length - 1) > this.messageScroll.stopIndex) {
+                                            this.animateToEnd();
+                                        }
+                                    }
+                                };
+
+                                animateScrollTo(eldiv.clientHeight + 1000, options);
                             }
-                        }
-                        if (callFn) {
-                            this.callEnd();
                         }
                     }, 1);
                 }
@@ -277,10 +307,6 @@ class Message extends React.Component<IProps, IState> {
 
     public setScrollMode(mode: 'none' | 'end' | 'end_no_call' | 'stay') {
         this.scrollMode = mode;
-    }
-
-    public setEndFn(fn: any) {
-        this.endFn = fn;
     }
 
     public fitList(forceScroll?: boolean, instant?: boolean) {
@@ -650,7 +676,7 @@ class Message extends React.Component<IProps, IState> {
 
     private onRowsRenderedHandler = (data: any) => {
         const {items} = this.state;
-        if (data.startIndex > -1 && items[data.startIndex]) {
+        if (items.length > 0 && data.startIndex > -1 && items[data.startIndex]) {
             // Show/Hide date
             if (items[data.startIndex].messagetype === C_MESSAGE_TYPE.Date ||
                 (items[data.startIndex + 1] && items[data.startIndex + 1].messagetype === C_MESSAGE_TYPE.Date)) {
@@ -665,8 +691,15 @@ class Message extends React.Component<IProps, IState> {
 
             // On load more after
             if (data.stopIndex > -1 && items[data.stopIndex]) {
-                if (items[data.stopIndex].messagetype === C_MESSAGE_TYPE.Gap && items[data.stopIndex].id && this.props.onLoadMoreAfter) {
-                    this.props.onLoadMoreAfter(items[data.stopIndex].id || 0);
+                let check = false;
+                if (Math.abs(items.length - data.stopIndex) < 4 && items[data.stopIndex].id && this.props.onLoadMoreAfter) {
+                    this.loadMoreAfterThrottle();
+                    check = true;
+                } else {
+                    this.bottomOfList = false;
+                }
+                if (!check && items[data.stopIndex].messagetype === C_MESSAGE_TYPE.Gap && items[data.stopIndex].id && this.props.onLoadMoreAfterGap) {
+                    this.props.onLoadMoreAfterGap(items[data.stopIndex].id || 0);
                 }
             }
         }
@@ -675,6 +708,17 @@ class Message extends React.Component<IProps, IState> {
 
         if (this.props.rendered) {
             this.props.rendered(data);
+        }
+    }
+
+    private loadMoreAfter = () => {
+        if (!this.bottomOfList && this.props.onLoadMoreAfter) {
+            setTimeout(() => {
+                if (this.props.onLoadMoreAfter) {
+                    this.props.onLoadMoreAfter();
+                }
+            }, 250);
+            this.bottomOfList = true;
         }
     }
 
@@ -920,7 +964,7 @@ class Message extends React.Component<IProps, IState> {
                 }, 10);
                 return;
             case 'end':
-                this.animateToEnd(true, true);
+                this.animateToEnd(true);
                 return;
             case 'end_no_call':
                 this.animateToEnd(true);
@@ -1026,16 +1070,6 @@ class Message extends React.Component<IProps, IState> {
     /* Theme change handler */
     private themeChangeHandler = () => {
         this.isSimplified = UserRepo.getInstance().getBubbleMode() === '5';
-    }
-
-    private callEnd() {
-        // TODO: find an alternative for timeout
-        setTimeout(() => {
-            if (this.endFn && this.props.peer) {
-                this.endFn(this.props.peer.getId() || '');
-                this.endFn = null;
-            }
-        }, 210);
     }
 }
 

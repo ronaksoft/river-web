@@ -9,13 +9,18 @@
 
 import * as React from 'react';
 import Dialog from '@material-ui/core/Dialog/Dialog';
-import {CheckRounded, PlaceRounded} from '@material-ui/icons';
+import {CheckRounded} from '@material-ui/icons';
 import TextField from '@material-ui/core/TextField/TextField';
-import GoogleMapReact, {ChangeEventValue, ClickEventValue, Coords} from 'google-map-react';
+import {MapComponent} from './map';
 
 import './style.css';
 
 export const C_GOOGLE_MAP_KEY = 'AIzaSyC5e9DrKC2gHS9UD1sbHGI-H0wfzCgK58U';
+
+export interface IPos {
+    lat: number;
+    lng: number;
+}
 
 export interface IGeoItem {
     caption: string;
@@ -29,10 +34,10 @@ interface IProps {
 
 interface IState {
     caption: string;
-    defPos: Coords;
+    defPos: google.maps.LatLngLiteral;
     dialogOpen: boolean;
     loading: boolean;
-    pos: Coords;
+    pos: google.maps.LatLngLiteral;
     zoom: number;
 }
 
@@ -87,18 +92,16 @@ class MapPicker extends React.Component<IProps, IState> {
                     </div>
                     <div className="map-picker-preview-container">
                         <div className="map-picker-canvas">
-                            <GoogleMapReact
-                                bootstrapURLKeys={{key: C_GOOGLE_MAP_KEY}}
-                                defaultCenter={defPos}
-                                defaultZoom={zoom}
-                                center={pos}
-                                onChange={this.mapChangeHandler}
-                                onClick={this.mapClickHandler}
-                            >
-                                <span className="map-marker">
-                                    <PlaceRounded/>
-                                </span>
-                            </GoogleMapReact>
+                            <MapComponent
+                                googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${C_GOOGLE_MAP_KEY}&v=3.exp&libraries=geometry,drawing,places`}
+                                loadingElement={<div style={{height: `100%`}}/>}
+                                containerElement={<div style={{height: `100%`}}/>}
+                                mapElement={<div style={{height: `100%`}}/>}
+                                defPos={defPos}
+                                defZoom={zoom}
+                                pos={pos}
+                                onMapClick={this.mapClickHandler}
+                            />
                         </div>
                         <div className="map-picker-details-container">
                             <TextField
@@ -158,18 +161,9 @@ class MapPicker extends React.Component<IProps, IState> {
         });
     }
 
-    private mapChangeHandler = (e: ChangeEventValue) => {
+    private mapClickHandler = (e: google.maps.MouseEvent) => {
         this.setState({
-            pos: e.center,
-        });
-    }
-
-    private mapClickHandler = (e: ClickEventValue) => {
-        this.setState({
-            pos: {
-                lat: e.lat,
-                lng: e.lng,
-            },
+            pos: e.latLng.toJSON(),
         });
     }
 

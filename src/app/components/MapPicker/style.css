@@ -75,10 +75,10 @@
 
 html[theme="dark"] .map-picker-container {
   background-color: var(--dark-medium); }
-  html[theme="dark"] .map-picker-container .map-picker-details-container .map-picker-input label, html[theme="dark"] .map-picker-container .map-picker-details-container .map-picker-input textarea, html[theme="dark"] .map-picker-container .map-picker-details-container .map-picker-input svg {
+  html[theme="dark"] .map-picker-container .map-picker-details-container .caption-input label, html[theme="dark"] .map-picker-container .map-picker-details-container .caption-input textarea, html[theme="dark"] .map-picker-container .map-picker-details-container .caption-input svg {
     color: var(--white); }
 
 html[theme="dark-blue"] .map-picker-container {
   background-color: var(--dark-blue-medium); }
-  html[theme="dark-blue"] .map-picker-container .map-picker-details-container .map-picker-input label, html[theme="dark-blue"] .map-picker-container .map-picker-details-container .map-picker-input textarea, html[theme="dark-blue"] .map-picker-container .map-picker-details-container .map-picker-input svg {
+  html[theme="dark-blue"] .map-picker-container .map-picker-details-container .caption-input label, html[theme="dark-blue"] .map-picker-container .map-picker-details-container .caption-input textarea, html[theme="dark-blue"] .map-picker-container .map-picker-details-container .caption-input svg {
     color: var(--white); }
