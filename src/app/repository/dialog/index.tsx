@@ -229,16 +229,17 @@ export default class DialogRepo {
     }
 
     private mergeCheck(dialog: IDialog, newDialog: IDialog): IDialog {
+        if (newDialog.readinboxmaxid !== undefined && newDialog.readinboxmaxid < (dialog.readinboxmaxid || 0)) {
+            newDialog.readinboxmaxid = dialog.readinboxmaxid;
+        }
+        if (newDialog.readoutboxmaxid !== undefined && newDialog.readoutboxmaxid < (dialog.readoutboxmaxid || 0)) {
+            newDialog.readoutboxmaxid = dialog.readoutboxmaxid;
+        }
+        if (newDialog.force !== true && newDialog.topmessageid !== undefined && newDialog.topmessageid < (dialog.topmessageid || 0)) {
+            newDialog.topmessageid = dialog.topmessageid;
+        }
         const d = merge(dialog, newDialog);
-        if (d.readinboxmaxid !== undefined && dialog.readinboxmaxid !== undefined && d.readinboxmaxid < dialog.readinboxmaxid) {
-            d.readinboxmaxid = dialog.readinboxmaxid;
-        }
-        if (d.readoutboxmaxid !== undefined && dialog.readoutboxmaxid !== undefined && d.readoutboxmaxid < dialog.readoutboxmaxid) {
-            d.readoutboxmaxid = dialog.readoutboxmaxid;
-        }
-        if (newDialog.force !== true && d.topmessageid !== undefined && dialog.topmessageid !== undefined && d.topmessageid < dialog.topmessageid) {
-            d.topmessageid = dialog.topmessageid;
-        } else if (newDialog.force === true) {
+        if (newDialog.force === true) {
             delete d.force;
         }
         return d;
