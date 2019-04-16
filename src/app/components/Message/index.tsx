@@ -115,6 +115,7 @@ class Message extends React.Component<IProps, IState> {
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
     private readonly loadMoreAfterThrottle: any = null;
+    private readonly fitListCompleteThrottle: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -143,6 +144,7 @@ class Message extends React.Component<IProps, IState> {
         this.isSimplified = UserRepo.getInstance().getBubbleMode() === '5';
 
         this.loadMoreAfterThrottle = throttle(this.loadMoreAfter, 250);
+        this.fitListCompleteThrottle = throttle(this.fitListComplete, 250);
     }
 
     public componentDidMount() {
@@ -154,6 +156,8 @@ class Message extends React.Component<IProps, IState> {
 
     public componentWillReceiveProps(newProps: IProps) {
         if (this.state.items !== newProps.items) {
+            this.loadMoreAfterThrottle.cancel();
+            this.fitListCompleteThrottle.cancel();
             this.cache.clearAll();
             this.bottomOfList = true;
             this.setState({
@@ -327,6 +331,11 @@ class Message extends React.Component<IProps, IState> {
                         listStyle: {
                             paddingTop: diff + 'px',
                         },
+                    }, () => {
+                        if (this.props.onLoadMoreAfter) {
+                            this.props.onLoadMoreAfter();
+                        }
+                        this.fitListCompleteThrottle();
                     });
                     return;
                 }
@@ -1070,6 +1079,19 @@ class Message extends React.Component<IProps, IState> {
     /* Theme change handler */
     private themeChangeHandler = () => {
         this.isSimplified = UserRepo.getInstance().getBubbleMode() === '5';
+    }
+
+    private fitListComplete = () => {
+        setTimeout(() => {
+            if (this.state.items && this.state.items.length > 0 && this.props.rendered) {
+                this.props.rendered({
+                    overscanStartIndex: 0,
+                    overscanStopIndex: 0,
+                    startIndex: 0,
+                    stopIndex: this.state.items.length - 1,
+                });
+            }
+        }, 200);
     }
 }
 

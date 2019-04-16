@@ -344,6 +344,9 @@ class Chat extends React.Component<IProps, IState> {
 
     public componentWillReceiveProps(newProps: IProps) {
         const selectedId = newProps.match.params.id;
+        if (selectedId === this.state.selectedDialogId) {
+            return;
+        }
         const selectedMessageId = newProps.match.params.mid;
         this.updateDialogsCounter(this.state.selectedDialogId, {scrollPos: this.lastMessageId});
         if (selectedId === 'null') {
@@ -955,7 +958,6 @@ class Chat extends React.Component<IProps, IState> {
         if (this.state.isUpdating) {
             return;
         }
-        window.console.log(data.messages);
         data.messages.forEach((message) => {
             message.me = (this.connInfo.UserID === message.senderid);
             if (message.body) {
@@ -1341,8 +1343,11 @@ class Chat extends React.Component<IProps, IState> {
         if (dialog) {
             if ((dialog.scroll_pos || -1) !== -1) {
                 before = dialog.scroll_pos || 0;
-            } else if ((dialog.unreadcount || 0) > 0) {
-                before = Math.max((dialog.readinboxmaxid || 0), (dialog.readoutboxmaxid || 0)) + 1;
+            } else if ((dialog.unreadcount || 0) > 1) {
+                const tBefore = Math.max((dialog.readinboxmaxid || 0), (dialog.readoutboxmaxid || 0));
+                if (tBefore > 0) {
+                    before = tBefore + 1;
+                }
             }
         }
 
@@ -1562,7 +1567,7 @@ class Chat extends React.Component<IProps, IState> {
             }
 
             if (!push) {
-                if (key === 0 && defaultMessages[0].messagetype === C_MESSAGE_TYPE.Date) {
+                if (key === 0 && defaultMessages[0] && defaultMessages[0].messagetype === C_MESSAGE_TYPE.Date) {
                     if (TimeUtility.isInSameDay(msg.createdon, defaultMessages[0].createdon)) {
                         defaultMessages.splice(0, 1);
                     }
