@@ -13,8 +13,8 @@ import UserRepo from '../../repository/user';
 import {BookmarkRounded} from '@material-ui/icons';
 import AvatarService from '../../services/avatarService';
 import {find} from 'lodash';
-import RiverLogo from '../RiverLogo';
 import Broadcaster from '../../services/broadcaster';
+import icon from '../../../asset/image/icon.png';
 
 import './style.css';
 
@@ -196,7 +196,7 @@ class UserAvatar extends React.Component<IProps, IState> {
         } else if (this.state.id === '2374') {
             return (
                 <span className={'avatar-official ' + className}>
-                    <RiverLogo height="100%" width="100%"/>
+                    <img src={icon}/>
                 </span>
             );
         } else {

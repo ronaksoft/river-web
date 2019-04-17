@@ -39,7 +39,7 @@ import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
 import Scrollbars from 'react-custom-scrollbars';
-import {backgrounds, bubbles, themes} from './vars/theme';
+import {backgrounds, bubbles, C_CUSTOM_BG, themes} from './vars/theme';
 import {IUser} from '../../repository/user/interface';
 import {Link} from 'react-router-dom';
 import FileManager, {IFileProgress} from '../../services/sdk/fileManager';
@@ -60,6 +60,7 @@ import Broadcaster from '../../services/broadcaster';
 import {AccountAuthorization} from '../../services/sdk/messages/chat.api.accounts_pb';
 import TimeUtility from '../../services/utilities/time';
 import {findIndex} from 'lodash';
+import SettingsBackgroundModal from '../SettingsBackgroundModal';
 
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -79,6 +80,7 @@ interface IState {
     bio: string;
     confirmDialogOpen: boolean;
     confirmDialogSelectedId: string;
+    customBackgroundSrc?: string;
     debugModeOpen: boolean;
     debugModeUrl: string;
     editProfile: boolean;
@@ -120,6 +122,7 @@ class SettingMenu extends React.Component<IProps, IState> {
     private versionClickTimeout: any = null;
     private versionClickCounter: number = 0;
     private broadcaster: Broadcaster;
+    private settingsBackgroundModalRef: SettingsBackgroundModal;
 
     constructor(props: IProps) {
         super(props);
@@ -203,10 +206,11 @@ class SettingMenu extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {avatarMenuAnchorEl, page, pageContent, user, editProfile, editUsername, bio, firstname, lastname, phone, username, usernameAvailable, usernameValid, uploadingPhoto, debugModeOpen, sessions, confirmDialogOpen} = this.state;
+        const {avatarMenuAnchorEl, page, pageContent, user, editProfile, editUsername, bio, firstname, lastname, phone, username, usernameAvailable, usernameValid, uploadingPhoto, debugModeOpen, sessions, confirmDialogOpen, customBackgroundSrc} = this.state;
         return (
             <div className="setting-menu">
                 <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={640}/>
+                <SettingsBackgroundModal ref={this.settingsBackgroundModalRefHandler} onDone={this.settingsBackgroundModalDoneHandler}/>
                 <div className={'page-container page-' + page}>
                     <div className="page page-1">
                         <div className="menu-header">
@@ -368,18 +372,25 @@ class SettingMenu extends React.Component<IProps, IState> {
                                             </div>
                                             <div className="page-content-inner">
                                                 <GridList className="theme-container" cellHeight={100} spacing={6}>
-                                                    {backgrounds.map((bg, index) => (
-                                                        <GridListTile key={index} cols={1} rows={1}
-                                                                      onClick={this.selectBackgroundHandler.bind(this, bg.id)}>
-                                                            <div
-                                                                className={'item bg-' + bg.id + ' bubble-' + this.state.selectedBubble}/>
-                                                            <GridListTileBar
-                                                                className={'title-bar ' + (this.state.selectedBackground === bg.id ? 'selected' : '')}
-                                                                title={bg.title}
-                                                                titlePosition="bottom"
-                                                            />
-                                                        </GridListTile>
-                                                    ))}
+                                                    {backgrounds.map((bg, index) => {
+                                                        return (
+                                                            <GridListTile key={index} cols={1} rows={1}
+                                                                          onClick={this.selectBackgroundHandler.bind(this, bg.id)}>
+                                                                {Boolean(bg.id === C_CUSTOM_BG) &&
+                                                                <div
+                                                                    className={'item bg-' + bg.id + ' bubble-' + this.state.selectedBubble}>
+                                                                    {customBackgroundSrc && <img src={customBackgroundSrc}/>}
+                                                                </div>}
+                                                                {Boolean(bg.id !== C_CUSTOM_BG) && <div
+                                                                    className={'item bg-' + bg.id + ' bubble-' + this.state.selectedBubble}/>}
+                                                                <GridListTileBar
+                                                                    className={'title-bar ' + (this.state.selectedBackground === bg.id ? 'selected' : '')}
+                                                                    title={bg.title}
+                                                                    titlePosition="bottom"
+                                                                />
+                                                            </GridListTile>
+                                                        );
+                                                    })}
                                                 </GridList>
                                             </div>
                                         </div>
@@ -575,7 +586,8 @@ class SettingMenu extends React.Component<IProps, IState> {
                                                     <div className="session-current">current</div>}
                                                     <div className="session-info">
                                                         <div className="session-row">
-                                                            <div className="session-col">{`Client: ${(item.model || '').split(':-').join(' ')}`}</div>
+                                                            <div
+                                                                className="session-col">{`Client: ${(item.model || '').split(':-').join(' ')}`}</div>
                                                         </div>
                                                         <div
                                                             className="session-row">IP: {item.clientip} at {TimeUtility.dynamic(item.createdat)}</div>
@@ -830,16 +842,20 @@ class SettingMenu extends React.Component<IProps, IState> {
     }
 
     private selectBackgroundHandler = (id: string) => {
-        this.setState({
-            selectedBackground: id,
-        }, () => {
-            const el = document.querySelector('html');
-            if (!el) {
-                return;
-            }
-            localStorage.setItem('river.theme.bg', id);
-            el.setAttribute('bg', id);
-        });
+        if (id === C_CUSTOM_BG) {
+            this.settingsBackgroundModalRef.openDialog();
+        } else {
+            this.setState({
+                selectedBackground: id,
+            }, () => {
+                const el = document.querySelector('html');
+                if (!el) {
+                    return;
+                }
+                localStorage.setItem('river.theme.bg', id);
+                el.setAttribute('bg', id);
+            });
+        }
     }
 
     private selectBubbleHandler = (id: string) => {
@@ -1110,7 +1126,6 @@ class SettingMenu extends React.Component<IProps, IState> {
             this.setState({
                 debugModeOpen: true,
             });
-            window.console.log('debug mode');
         }
     }
 
@@ -1186,6 +1201,21 @@ class SettingMenu extends React.Component<IProps, IState> {
     /* Broadcast Global Event */
     private broadcastEvent(name: string, data: any) {
         this.broadcaster.publish(name, data);
+    }
+
+    private settingsBackgroundModalRefHandler = (ref: any) => {
+        this.settingsBackgroundModalRef = ref;
+    }
+
+    private settingsBackgroundModalDoneHandler = (blob: Blob) => {
+        const {customBackgroundSrc} = this.state;
+        if (customBackgroundSrc) {
+            URL.revokeObjectURL(customBackgroundSrc);
+        }
+        this.setState({
+            customBackgroundSrc: URL.createObjectURL(blob),
+            selectedTheme: C_CUSTOM_BG,
+        });
     }
 }
 
