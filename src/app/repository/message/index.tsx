@@ -568,8 +568,9 @@ export default class MessageRepo {
                 if (item.temp !== true && item.me !== true && ((item.id || 0) >= minId) && item.mention_me === true) {
                     mention += 1;
                 }
-                return item.temp !== true && item.me !== true && ((item.id || 0) >= minId) &&
-                    (item.messagetype === C_MESSAGE_TYPE.Normal || item.messagetype !== C_MESSAGE_TYPE.System);
+                return Boolean(
+                    item.temp !== true && item.me !== true && ((item.id || 0) >= minId) && item.peerid === peerId &&
+                    (item.messagetype !== C_MESSAGE_TYPE.Gap && item.messagetype !== C_MESSAGE_TYPE.Hole && item.messagetype !== C_MESSAGE_TYPE.End && item.messagetype !== C_MESSAGE_TYPE.Date && item.messagetype !== C_MESSAGE_TYPE.NewMessage));
             }).count().then((count) => {
                 resolve({
                     mention,
