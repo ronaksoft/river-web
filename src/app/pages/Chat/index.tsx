@@ -975,6 +975,9 @@ class Chat extends React.Component<IProps, IState> {
                     setTimeout(() => {
                         this.messageComponent.animateToEnd();
                     }, 100);
+                    if (dataMsg.maxReadId !== -1) {
+                        this.sendReadHistory(this.state.peer, dataMsg.maxReadId);
+                    }
                 }
             });
         }
