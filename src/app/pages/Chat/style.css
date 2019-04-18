@@ -302,6 +302,13 @@ input {
       .container.mobile-view .column-right.active {
         width: 100vw; }
 
+html[bg="21"] .container .column-center .conversation,
+html[bg="21"] .container .column-center .start-messaging {
+  background-image: none;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat; }
+
 html[bg="1"] .container .column-center .conversation,
 html[bg="1"] .container .column-center .start-messaging {
   background-image: url(../../../asset/image/bgd/4-point-stars.svg);
@@ -360,6 +367,15 @@ html[bg="14"] .container .column-center .conversation,
 html[bg="14"] .container .column-center .start-messaging {
   background-image: url(../../../asset/image/bgd/topography.svg);
   background-size: 300px; }
+
+html[theme="dark"][bg="21"] .container .column-center .conversation,
+html[theme="dark"][bg="21"] .container .column-center .start-messaging,
+html[theme="dark-blue"][bg="21"] .container .column-center .conversation,
+html[theme="dark-blue"][bg="21"] .container .column-center .start-messaging {
+  background-image: none;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat; }
 
 html[theme="dark"][bg="1"] .container .column-center .conversation,
 html[theme="dark"][bg="1"] .container .column-center .start-messaging,

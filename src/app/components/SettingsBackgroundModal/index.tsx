@@ -13,55 +13,80 @@ import {bgPics} from '../SettingMenu/vars/theme';
 import GridListTile from '@material-ui/core/GridListTile/GridListTile';
 import SettingsModal from '../SettingsModal';
 import {
-    BlurOnRounded, CheckRounded,
+    AddRounded, BlurOnRounded, CheckRounded,
 } from '@material-ui/icons';
 
 import Slider from '@material-ui/lab/Slider/Slider';
 import {throttle} from 'lodash';
+import BackgroundService from '../../services/backgroundService';
 // @ts-ignore
 import glur from 'glur';
 
 import './style.css';
+import {C_CUSTOM_BG_ID} from '../SettingMenu';
 
 interface IBlur {
     blob: Blob;
     preview: string;
 }
 
+export interface ICustomBackground {
+    blob: Blob;
+    blur: number;
+    id: string;
+}
+
 interface IProps {
-    onDone: (blob: Blob) => void;
+    defBlur?: number;
+    defId?: string;
+    onDone: (data: ICustomBackground) => void;
 }
 
 interface IState {
     blurAmount: number;
+    blurSrc?: string;
     openBackgroundModal: boolean;
     openCustomizeModal: boolean;
     selectedBackgroundPic: string;
     src: string;
-    blurSrc?: string;
+    uploadedSrc: string;
 }
 
 class SettingsBackgroundModal extends React.Component<IProps, IState> {
     private readonly blurThrottle: any;
     private lastPreview: string = '';
     private imageBlob: any;
+    private inputRef: any = null;
+    private backgroundService: BackgroundService;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
-            blurAmount: 0,
+            blurAmount: props.defBlur || 0,
             openBackgroundModal: false,
             openCustomizeModal: false,
-            selectedBackgroundPic: '-1',
+            selectedBackgroundPic: props.defId || '-1',
             src: '',
+            uploadedSrc: '',
         };
 
         this.blurThrottle = throttle(this.blurImage, 256);
+        this.backgroundService = BackgroundService.getInstance();
     }
 
     public componentDidMount() {
-        //
+        if (this.state.selectedBackgroundPic === '-21') {
+            this.backgroundService.getBackground(C_CUSTOM_BG_ID).then((res) => {
+                const src = URL.createObjectURL(res);
+                this.setState({
+                    src,
+                    uploadedSrc: src,
+                }, () => {
+                    this.selectBackgroundPicHandler('-21');
+                });
+            });
+        }
     }
 
     public openDialog() {
@@ -71,9 +96,11 @@ class SettingsBackgroundModal extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {blurAmount, openBackgroundModal, openCustomizeModal, selectedBackgroundPic, src, blurSrc} = this.state;
+        const {blurAmount, openBackgroundModal, openCustomizeModal, selectedBackgroundPic, src, blurSrc, uploadedSrc} = this.state;
         return (
             <React.Fragment>
+                <input ref={this.inputRefHandler} type="file" onChange={this.inputChangeHandler}
+                       accept="image/jpeg,image/png,image/svg" style={{display: 'none'}}/>
                 <SettingsModal open={openBackgroundModal} title="Chat Background"
                                onClose={this.backgroundModalCloseHandler}>
                     <div className="bg-pic-container">
@@ -90,6 +117,24 @@ class SettingsBackgroundModal extends React.Component<IProps, IState> {
                                     </div>
                                 </GridListTile>
                             ))}
+                            <GridListTile key={8} cols={1} rows={1}>
+                                {Boolean(uploadedSrc !== '') &&
+                                <div className="item uploaded-file selected"
+                                     onClick={this.selectBackgroundPicHandler.bind(this, '-21')}>
+                                    <div className="customize" onClick={this.customizeBackgroundHandler}>
+                                        <BlurOnRounded/>
+                                    </div>
+                                    <div className="add-icon" onClick={this.uploadBackgroundHandler}>
+                                        <AddRounded/>
+                                    </div>
+                                    <img src={uploadedSrc}/>
+                                </div>}
+                                {Boolean(uploadedSrc === '') && <div className="item upload-file">
+                                    <div className="add-icon" onClick={this.uploadBackgroundHandler}>
+                                        <AddRounded/>
+                                    </div>
+                                </div>}
+                            </GridListTile>
                         </GridList>
                     </div>
                 </SettingsModal>
@@ -121,16 +166,20 @@ class SettingsBackgroundModal extends React.Component<IProps, IState> {
     }
 
     private selectBackgroundPicHandler = (id: string) => {
-        const {selectedBackgroundPic} = this.state;
-        const bg = bgPics.find((o) => o.id === selectedBackgroundPic);
+        const bg = bgPics.find((o) => o.id === id);
+        const tSrc = (id === '-21') ? this.state.uploadedSrc : (bg? bg.src: '');
         this.setState({
             selectedBackgroundPic: id,
-            src: bg ? bg.src : '',
+            src: tSrc,
         }, () => {
             const {src} = this.state;
             if (src !== '') {
                 this.imageToBlob(src).then((res) => {
-                    this.props.onDone(res);
+                    this.props.onDone({
+                        blob: res,
+                        blur: this.state.blurAmount,
+                        id: this.state.selectedBackgroundPic,
+                    });
                 });
             }
         });
@@ -237,13 +286,40 @@ class SettingsBackgroundModal extends React.Component<IProps, IState> {
     }
 
     private doneHandler = () => {
-        this.props.onDone(this.imageBlob);
+        this.props.onDone({
+            blob: this.imageBlob,
+            blur: this.state.blurAmount,
+            id: this.state.selectedBackgroundPic,
+        });
         this.setState({
             blurAmount: 0,
             blurSrc: undefined,
             openBackgroundModal: false,
             openCustomizeModal: false,
         });
+    }
+
+    private inputRefHandler = (ref: any) => {
+        this.inputRef = ref;
+    }
+
+    private uploadBackgroundHandler = () => {
+        if (this.inputRef) {
+            this.inputRef.click();
+        }
+    }
+
+    private inputChangeHandler = (e: any) => {
+        if (e.currentTarget.files.length > 0) {
+            URL.revokeObjectURL(this.state.uploadedSrc);
+            const src = URL.createObjectURL(e.currentTarget.files[0]);
+            this.setState({
+                src,
+                uploadedSrc: src,
+            }, () => {
+                this.selectBackgroundPicHandler('-21');
+            });
+        }
     }
 }
 

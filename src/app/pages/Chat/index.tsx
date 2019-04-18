@@ -70,7 +70,7 @@ import SyncManager, {C_SYNC_UPDATE} from '../../services/sdk/syncManager';
 import UserRepo from '../../repository/user';
 import RiverLogo from '../../components/RiverLogo';
 import MainRepo from '../../repository';
-import SettingMenu from '../../components/SettingMenu';
+import SettingMenu, {C_CUSTOM_BG_ID} from '../../components/SettingMenu';
 import {C_MSG_MODE} from '../../components/ChatInput/consts';
 import TimeUtility from '../../services/utilities/time';
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from '../../repository/message/consts';
@@ -124,6 +124,8 @@ import LastSeen from '../../components/LastSeen';
 import {IGeoItem} from '../../components/MapPicker';
 import RTLDetector from '../../services/utilities/rtl_detector';
 import Badge from '@material-ui/core/Badge/Badge';
+import BackgroundService from '../../services/backgroundService';
+import {C_CUSTOM_BG} from '../../components/SettingMenu/vars/theme';
 
 import './style.css';
 
@@ -205,6 +207,7 @@ class Chat extends React.Component<IProps, IState> {
     private dialogReadMap: { [key: string]: { peer: InputPeer, id: number } } = {};
     private readonly messageReadThrottle: any = null;
     private newMessageFlag: boolean = false;
+    private backgroundService: BackgroundService;
 
     constructor(props: IProps) {
         super(props);
@@ -259,6 +262,7 @@ class Chat extends React.Component<IProps, IState> {
         this.electronService = ElectronService.getInstance();
         this.rtlDetector = RTLDetector.getInstance();
         this.messageReadThrottle = throttle(this.readMessage, 512);
+        this.backgroundService = BackgroundService.getInstance();
     }
 
     public componentDidMount() {
@@ -340,6 +344,10 @@ class Chat extends React.Component<IProps, IState> {
         this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.Setting, this.electronSettingsHandler));
         this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.Logout, this.electronLogoutHandler));
         this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.SizeMode, this.electronSizeModeHandler));
+
+        if (localStorage.getItem('river.theme.bg') === C_CUSTOM_BG) {
+            this.backgroundService.getBackground(C_CUSTOM_BG_ID, true);
+        }
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -533,8 +541,8 @@ class Chat extends React.Component<IProps, IState> {
                                 <AudioPlayerShell onVisible={this.audioPlayerVisibleHandler}
                                                   onAction={this.messageAttachmentActionHandler}/>
                             </div>
-                            <div
-                                className={'conversation ' + (this.state.messages.length === 0 && !this.isLoading ? ' no-result' : '')}>
+                            <div ref={this.conversationRefHandler}
+                                 className={'conversation ' + (this.state.messages.length === 0 && !this.isLoading ? ' no-result' : '')}>
                                 <PopUpDate ref={this.popUpDateRefHandler}/>
                                 <Message ref={this.messageRefHandler}
                                          items={this.state.messages}
@@ -3870,6 +3878,10 @@ class Chat extends React.Component<IProps, IState> {
             this.moveDownRef.classList.remove('visible');
             this.moveDownVisible = false;
         }
+    }
+
+    private conversationRefHandler = (ref: any) => {
+        this.backgroundService.setRef(ref);
     }
 
     private broadcastEvent(name: string, data: any) {

@@ -361,6 +361,11 @@ input {
     background-repeat: repeat;
     background-size: 50px;
     background-position: center center; }
+    .setting-menu .theme-container .item img {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+      object-position: center center; }
     .setting-menu .theme-container .item:after, .setting-menu .theme-container .item:before {
       position: absolute;
       content: '';

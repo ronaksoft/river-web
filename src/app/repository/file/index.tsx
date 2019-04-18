@@ -90,6 +90,18 @@ export default class FileRepo {
         return this.db.files.add(file);
     }
 
+    public upsertFile(id: string, blob: Blob) {
+        return this.createHash(blob).then((res) => {
+            const file: IFile = {
+                data: blob,
+                hash: res,
+                id,
+                size: blob.size,
+            };
+            return this.db.files.put(file);
+        });
+    }
+
     public get(id: string) {
         return this.db.files.get(id);
     }

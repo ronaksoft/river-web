@@ -155,7 +155,6 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         this.documentViewerService = DocumentViewerService.getInstance();
 
         this.callerId = UniqueId.getRandomId();
-        window.console.log(this.callerId);
 
         this.broadcaster = Broadcaster.getInstance();
     }

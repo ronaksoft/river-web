@@ -7,7 +7,6 @@
     Copyright Ronak Software Group 2019
 */
 
-
 .bg-pic-container {
   padding: 6px;
   .item {
@@ -15,10 +14,51 @@
     height: 100%;
     width: 100%;
     cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.1);
     &.selected {
       border: 2px solid var(--grey-low);
       .customize {
         visibility: visible;
+      }
+    }
+    &.upload-file {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: default;
+      .add-icon {
+        height: 48px;
+        width: 48px;
+        border-radius: 50%;
+        background-color: rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        svg {
+          font-size: 32px;
+          color: var(--white);
+        }
+      }
+    }
+    &.uploaded-file {
+      .add-icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        height: 48px;
+        width: 48px;
+        border-radius: 50%;
+        background-color: rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        svg {
+          font-size: 32px;
+          color: var(--white);
+        }
       }
     }
     img {
@@ -39,6 +79,7 @@
       align-items: center;
       justify-content: center;
       visibility: hidden;
+      cursor: pointer;
       svg {
         font-size: 14px;
         color: var(--grey);
@@ -88,6 +129,11 @@
 }
 
 html[theme="dark"] {
+  .bg-pic-container {
+    .item {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
   .customize-background-container {
     .blur-action {
       .action {
@@ -99,6 +145,11 @@ html[theme="dark"] {
 }
 
 html[theme="dark-blue"] {
+  .bg-pic-container {
+    .item {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
   .customize-background-container {
     .blur-action {
       .action {

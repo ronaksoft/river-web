@@ -60,12 +60,15 @@ import Broadcaster from '../../services/broadcaster';
 import {AccountAuthorization} from '../../services/sdk/messages/chat.api.accounts_pb';
 import TimeUtility from '../../services/utilities/time';
 import {findIndex} from 'lodash';
-import SettingsBackgroundModal from '../SettingsBackgroundModal';
+import SettingsBackgroundModal, {ICustomBackground} from '../SettingsBackgroundModal';
+import FileRepo from '../../repository/file';
+import BackgroundService from '../../services/backgroundService';
 
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.23.106';
+export const C_VERSION = '0.23.112';
+export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 interface IProps {
     onClose?: () => void;
@@ -96,6 +99,8 @@ interface IState {
     profilePictureFile?: string;
     selectedBackground: string;
     selectedBubble: string;
+    selectedCustomBackground: string;
+    selectedCustomBackgroundBlur: number;
     selectedTheme: string;
     sessions?: AccountAuthorization.AsObject[];
     uploadingPhoto: boolean;
@@ -112,6 +117,7 @@ class SettingMenu extends React.Component<IProps, IState> {
     private readonly currentAuthID: string;
     private readonly usernameCheckDebounce: any;
     private fileManager: FileManager;
+    private fileRepo: FileRepo;
     private progressBroadcaster: ProgressBroadcaster;
     private riverTime: RiverTime;
     private profileTempPhoto: string = '';
@@ -123,6 +129,7 @@ class SettingMenu extends React.Component<IProps, IState> {
     private versionClickCounter: number = 0;
     private broadcaster: Broadcaster;
     private settingsBackgroundModalRef: SettingsBackgroundModal;
+    private backgroundService: BackgroundService;
 
     constructor(props: IProps) {
         super(props);
@@ -154,6 +161,8 @@ class SettingMenu extends React.Component<IProps, IState> {
             },
             selectedBackground: '-1',
             selectedBubble: '1',
+            selectedCustomBackground: localStorage.getItem('river.theme.bg.pic') || '-1',
+            selectedCustomBackgroundBlur: parseInt(localStorage.getItem('river.theme.bg.blur') || '0', 10),
             selectedTheme: 'light',
             uploadingPhoto: false,
             user: null,
@@ -167,11 +176,13 @@ class SettingMenu extends React.Component<IProps, IState> {
             this.getUser();
         }
         this.fileManager = FileManager.getInstance();
+        this.fileRepo = FileRepo.getInstance();
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
         this.riverTime = RiverTime.getInstance();
 
         this.documentViewerService = DocumentViewerService.getInstance();
         this.broadcaster = Broadcaster.getInstance();
+        this.backgroundService = BackgroundService.getInstance();
 
         this.currentAuthID = this.sdk.getConnInfo().AuthID;
     }
@@ -186,6 +197,13 @@ class SettingMenu extends React.Component<IProps, IState> {
             selectedBackground: el.getAttribute('bg') || '-1',
             selectedBubble: el.getAttribute('bubble') || '1',
             selectedTheme: el.getAttribute('theme') || 'light',
+        });
+        this.backgroundService.getBackground(C_CUSTOM_BG_ID).then((res) => {
+            if (res) {
+                this.setState({
+                    customBackgroundSrc: URL.createObjectURL(res),
+                });
+            }
         });
     }
 
@@ -210,7 +228,10 @@ class SettingMenu extends React.Component<IProps, IState> {
         return (
             <div className="setting-menu">
                 <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={640}/>
-                <SettingsBackgroundModal ref={this.settingsBackgroundModalRefHandler} onDone={this.settingsBackgroundModalDoneHandler}/>
+                <SettingsBackgroundModal ref={this.settingsBackgroundModalRefHandler}
+                                         defId={this.state.selectedCustomBackground}
+                                         defBlur={this.state.selectedCustomBackgroundBlur}
+                                         onDone={this.settingsBackgroundModalDoneHandler}/>
                 <div className={'page-container page-' + page}>
                     <div className="page page-1">
                         <div className="menu-header">
@@ -379,7 +400,8 @@ class SettingMenu extends React.Component<IProps, IState> {
                                                                 {Boolean(bg.id === C_CUSTOM_BG) &&
                                                                 <div
                                                                     className={'item bg-' + bg.id + ' bubble-' + this.state.selectedBubble}>
-                                                                    {customBackgroundSrc && <img src={customBackgroundSrc}/>}
+                                                                    {customBackgroundSrc &&
+                                                                    <img src={customBackgroundSrc}/>}
                                                                 </div>}
                                                                 {Boolean(bg.id !== C_CUSTOM_BG) && <div
                                                                     className={'item bg-' + bg.id + ' bubble-' + this.state.selectedBubble}/>}
@@ -845,6 +867,7 @@ class SettingMenu extends React.Component<IProps, IState> {
         if (id === C_CUSTOM_BG) {
             this.settingsBackgroundModalRef.openDialog();
         } else {
+            this.backgroundService.disable();
             this.setState({
                 selectedBackground: id,
             }, () => {
@@ -1207,14 +1230,26 @@ class SettingMenu extends React.Component<IProps, IState> {
         this.settingsBackgroundModalRef = ref;
     }
 
-    private settingsBackgroundModalDoneHandler = (blob: Blob) => {
+    private settingsBackgroundModalDoneHandler = (data: ICustomBackground) => {
         const {customBackgroundSrc} = this.state;
         if (customBackgroundSrc) {
             URL.revokeObjectURL(customBackgroundSrc);
         }
         this.setState({
-            customBackgroundSrc: URL.createObjectURL(blob),
+            customBackgroundSrc: URL.createObjectURL(data.blob),
+            selectedCustomBackground: data.id,
+            selectedCustomBackgroundBlur: data.blur,
             selectedTheme: C_CUSTOM_BG,
+        });
+        this.fileRepo.upsertFile(C_CUSTOM_BG_ID, data.blob).then(() => {
+            localStorage.setItem('river.theme.bg.pic', data.id);
+            localStorage.setItem('river.theme.bg.blur', String(data.blur));
+            localStorage.setItem('river.theme.bg', C_CUSTOM_BG);
+            const el = document.querySelector('html');
+            if (el) {
+                el.setAttribute('bg', C_CUSTOM_BG);
+            }
+            this.backgroundService.setBackground(data.blob);
         });
     }
 }

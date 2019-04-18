@@ -282,6 +282,16 @@
   }
 }
 
+html[bg="21"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: none;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+  }
+}
+
 html[bg="1"] {
   .container .column-center .conversation,
   .container .column-center .start-messaging {
@@ -380,6 +390,17 @@ html[bg="14"] {
   .container .column-center .start-messaging {
     background-image: url(../../../asset/image/bgd/topography.svg);
     background-size: 300px;
+  }
+}
+
+html[theme="dark"][bg="21"],
+html[theme="dark-blue"][bg="21"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: none;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
   }
 }
 
