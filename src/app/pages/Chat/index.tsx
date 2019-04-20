@@ -16,14 +16,8 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
 import {
-    EditRounded,
-    InfoOutlined,
-    KeyboardArrowLeftRounded,
-    MoreVertRounded,
-    PersonAddRounded,
-    SearchRounded,
-    SendRounded,
-    ExpandMoreRounded,
+    EditRounded, InfoOutlined, KeyboardArrowLeftRounded, MoreVertRounded, PersonAddRounded, SearchRounded,
+    SendRounded, ExpandMoreRounded,
 } from '@material-ui/icons';
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
@@ -34,36 +28,17 @@ import SDK from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
 import * as core_types_pb from '../../services/sdk/messages/chat.core.types_pb';
 import {
-    FileLocation,
-    Group,
-    InputFile,
-    InputFileLocation,
-    InputPeer,
-    InputUser,
-    MediaType,
-    MessageEntity,
-    MessageEntityType,
-    PeerNotifySettings,
-    PeerType,
-    TypingAction,
-    User
+    FileLocation, Group, InputFile, InputFileLocation, InputPeer, InputUser, MediaType, MessageEntity,
+    MessageEntityType, PeerNotifySettings, PeerType, TypingAction, User,
 } from '../../services/sdk/messages/chat.core.types_pb';
 import {IConnInfo} from '../../services/sdk/interface';
 import {IDialog} from '../../repository/dialog/interface';
 import UpdateManager, {INewMessageBulkUpdate} from '../../services/sdk/server/updateManager';
 import {C_MSG} from '../../services/sdk/const';
 import {
-    UpdateGroupPhoto,
-    UpdateMessageEdited,
-    UpdateMessageID,
-    UpdateMessagesDeleted,
-    UpdateNotifySettings,
-    UpdateReadHistoryInbox,
-    UpdateReadHistoryOutbox,
-    UpdateReadMessagesContents,
-    UpdateUsername,
-    UpdateUserPhoto,
-    UpdateUserTyping
+    UpdateGroupPhoto, UpdateMessageEdited, UpdateMessageID, UpdateMessagesDeleted, UpdateNotifySettings,
+    UpdateReadHistoryInbox, UpdateReadHistoryOutbox, UpdateReadMessagesContents, UpdateUsername, UpdateUserPhoto,
+    UpdateUserTyping,
 } from '../../services/sdk/messages/chat.api.updates_pb';
 import UserName from '../../components/UserName';
 import SyncManager, {C_SYNC_UPDATE} from '../../services/sdk/syncManager';
@@ -97,17 +72,9 @@ import ElectronService, {C_ELECTRON_SUBJECT} from '../../services/electron';
 import FileManager from '../../services/sdk/fileManager';
 import {InputMediaType} from '../../services/sdk/messages/chat.api.messages_pb';
 import {
-    Document,
-    DocumentAttribute,
-    DocumentAttributeAudio,
-    DocumentAttributeFile,
-    DocumentAttributePhoto,
-    DocumentAttributeType,
-    DocumentAttributeVideo,
-    InputMediaContact,
-    InputMediaGeoLocation,
-    InputMediaUploadedDocument,
-    MediaDocument
+    Document, DocumentAttribute, DocumentAttributeAudio, DocumentAttributeFile, DocumentAttributePhoto,
+    DocumentAttributeType, DocumentAttributeVideo, InputMediaContact, InputMediaGeoLocation, InputMediaUploadedDocument,
+    MediaDocument,
 } from '../../services/sdk/messages/chat.core.message.medias_pb';
 import RiverTime from '../../services/utilities/river_time';
 import FileRepo from '../../repository/file';
@@ -400,8 +367,8 @@ class Chat extends React.Component<IProps, IState> {
 
     public render() {
         const {
-            confirmDialogMode, confirmDialogOpen, moreInfoAnchorEl, chatMoreAnchorEl, isTypingList, leftMenu, leftMenuSub, leftOverlay,
-            textInputMessage, textInputMessageMode, peer, selectedDialogId, messageSelectable,
+            confirmDialogMode, confirmDialogOpen, moreInfoAnchorEl, chatMoreAnchorEl, isTypingList, leftMenu,
+            leftMenuSub, leftOverlay, textInputMessage, textInputMessageMode, peer, selectedDialogId, messageSelectable,
             messageSelectedIds, forwardRecipientDialogOpen, forwardRecipients, unreadCounter,
         } = this.state;
         const leftMenuRender = () => {
@@ -478,9 +445,7 @@ class Chat extends React.Component<IProps, IState> {
                                                     aria-label={item.tooltip}
                                                     aria-haspopup="true"
                                                     onClick={this.chatTopIconActionHandler.bind(this, item.cmd)}
-                                                >
-                                                    {item.icon}
-                                                </IconButton>
+                                                >{item.icon}</IconButton>
                                             </Tooltip>
                                         );
                                     })}
@@ -498,23 +463,20 @@ class Chat extends React.Component<IProps, IState> {
                                                     <MenuItem key={key}
                                                               onClick={this.chatMoreActionHandler.bind(this, item.cmd)}
                                                               className="context-item"
-                                                    >
-                                                        {item.title}
-                                                    </MenuItem>
+                                                    >{item.title}</MenuItem>
                                                 );
                                             }
                                         })}
                                     </Menu>
                                 </div>
                             </div>
-                            <div className="left-content">
-                                {leftMenuRender()}
-                            </div>
+                            <div className="left-content">{leftMenuRender()}</div>
                             <BottomBar onSelect={this.bottomBarSelectHandler} selected={leftMenu}
                                        unreadCounter={unreadCounter}/>
                             <div className="left-overlay">
-                                {leftOverlay && <NewGroupMenu onClose={this.leftOverlayCloseHandler}
-                                                              onCreate={this.onGroupCreateHandler}/>}
+                                {leftOverlay &&
+                                <NewGroupMenu onClose={this.leftOverlayCloseHandler}
+                                              onCreate={this.onGroupCreateHandler}/>}
                             </div>
                         </div>
                         {selectedDialogId !== 'null' && <div className="column-center">
@@ -532,9 +494,7 @@ class Chat extends React.Component<IProps, IState> {
                                                 aria-owns={moreInfoAnchorEl ? 'long-menu' : undefined}
                                                 aria-haspopup="true"
                                                 onClick={this.toggleRightMenu}
-                                            >
-                                                <InfoOutlined/>
-                                            </IconButton>
+                                            ><InfoOutlined/></IconButton>
                                         </Tooltip>
                                     </div>
                                 </div>
@@ -546,7 +506,6 @@ class Chat extends React.Component<IProps, IState> {
                                 <PopUpDate ref={this.popUpDateRefHandler}/>
                                 <Message ref={this.messageRefHandler}
                                          items={this.state.messages}
-                                         onLoadMoreBefore={this.messageLoadMoreBeforeHandler}
                                          readId={this.state.maxReadId}
                                          contextMenu={this.messageContextMenuHandler}
                                          peer={peer}
@@ -556,6 +515,7 @@ class Chat extends React.Component<IProps, IState> {
                                          onSelectedIdsChange={this.messageSelectedIdsChangeHandler}
                                          onSelectableChange={this.messageSelectableChangeHandler}
                                          onJumpToMessage={this.messageJumpToMessageHandler}
+                                         onLoadMoreBefore={this.messageLoadMoreBeforeHandler}
                                          onLoadMoreAfter={this.messageLoadMoreAfterHandler}
                                          onLoadMoreAfterGap={this.messageLoadMoreAfterGapHandler}
                                          onAttachmentAction={this.messageAttachmentActionHandler}
