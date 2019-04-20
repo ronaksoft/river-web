@@ -561,6 +561,12 @@ export default class MessageRepo {
         if (minId === undefined) {
             return Promise.reject('bad input');
         }
+        if (minId === topMessageId && topMessageId > 0) {
+            return Promise.resolve({
+                mention: 0,
+                message: 0,
+            });
+        }
         return new Promise((resolve, reject) => {
             let mention = 0;
             this.db.messages.where('[peerid+id]')

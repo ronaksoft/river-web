@@ -2443,7 +2443,7 @@ class Chat extends React.Component<IProps, IState> {
         const dialog = this.getDialogById(selectedDialogId);
         if (dialog) {
             const peerId = inputPeer.getId() || '';
-            if (dialog && (dialog.readinboxmaxid || 0) < msgId) {
+            if (dialog && ((dialog.readinboxmaxid || 0) < msgId || (dialog.unreadcount || 0) > 0)) {
                 this.readMessageThrottle(inputPeer, msgId);
                 this.updateDialogsCounter(peerId, {maxInbox: msgId});
                 const peerDialog = this.getDialogById(peerId);
