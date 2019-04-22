@@ -307,7 +307,7 @@ html[bg="21"] .container .column-center .conversation,
 html[bg="21"] .container .column-center .start-messaging {
   background-image: none;
   background-size: cover;
-  background-position: center center;
+  background-position: center top;
   background-repeat: no-repeat; }
 
 html[bg="1"] .container .column-center .conversation,
