@@ -72,6 +72,8 @@
       .bg-pic-container .item .customize svg {
         font-size: 14px;
         color: var(--grey); }
+  .bg-pic-container.bg-pattern .item {
+    background-color: rgba(168, 144, 106, 0.3); }
 
 .customize-background-container {
   position: relative;
@@ -110,12 +112,18 @@
 html[theme="dark"] .bg-pic-container .item {
   background-color: rgba(255, 255, 255, 0.1); }
 
+html[theme="dark"] .bg-pic-container.bg-pattern .item {
+  background-color: var(--dark-low); }
+
 html[theme="dark"] .customize-background-container .blur-action .action {
   background-color: var(--dark-high);
   color: var(--light); }
 
 html[theme="dark-blue"] .bg-pic-container .item {
   background-color: rgba(255, 255, 255, 0.1); }
+
+html[theme="dark-blue"] .bg-pic-container.bg-pattern .item {
+  background-color: var(--dark-blue-low); }
 
 html[theme="dark-blue"] .customize-background-container .blur-action .action {
   background-color: var(--dark-blue-high);

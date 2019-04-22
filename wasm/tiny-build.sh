@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-GOOS=js GOARCH=wasm tinygo build --no-debug -target wasm -o ../public/bin/river.wasm src/main.go
+GOOS=js GOARCH=wasm tinygo build -ldflags="-s -w" -o river.wasm -target wasm src/flat/main.go

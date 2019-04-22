@@ -86,6 +86,11 @@
       }
     }
   }
+  &.bg-pattern {
+    .item {
+      background-color: rgba(168, 144, 106, 0.3);
+    }
+  }
 }
 
 .customize-background-container {
@@ -133,6 +138,11 @@ html[theme="dark"] {
     .item {
       background-color: rgba(255, 255, 255, 0.1);
     }
+    &.bg-pattern {
+      .item {
+        background-color: var(--dark-low);
+      }
+    }
   }
   .customize-background-container {
     .blur-action {
@@ -148,6 +158,11 @@ html[theme="dark-blue"] {
   .bg-pic-container {
     .item {
       background-color: rgba(255, 255, 255, 0.1);
+    }
+    &.bg-pattern {
+      .item {
+        background-color: var(--dark-blue-low);
+      }
     }
   }
   .customize-background-container {

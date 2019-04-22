@@ -349,18 +349,29 @@ input {
     .setting-menu .form-control .action {
       height: 48px;
       width: 48px; }
-  .setting-menu .theme-container li {
+  .setting-menu .theme-container .radio-item {
+    display: flex;
+    margin-bottom: 10px;
     cursor: pointer; }
+    .setting-menu .theme-container .radio-item:last-of-type {
+      margin: 0; }
+    .setting-menu .theme-container .radio-item .radio-label {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start; }
+      .setting-menu .theme-container .radio-item .radio-label .radio-title {
+        font-size: 13px; }
   .setting-menu .theme-container .item {
     position: relative;
-    width: 100%;
-    height: 100%;
+    width: 114px;
+    height: 64px;
     border-radius: 6px;
     overflow: hidden;
     background-color: rgba(168, 144, 106, 0.3);
     background-repeat: repeat;
-    background-size: 50px;
-    background-position: center center; }
+    background-position: center center;
+    background-size: 50px; }
     .setting-menu .theme-container .item img {
       height: 100%;
       width: 100%;
@@ -369,14 +380,14 @@ input {
     .setting-menu .theme-container .item:after, .setting-menu .theme-container .item:before {
       position: absolute;
       content: '';
-      top: 10%;
+      top: 20%;
       left: 10%;
       height: 25%;
       width: 50%;
       border-radius: 3px;
       background: var(--white); }
     .setting-menu .theme-container .item:before {
-      top: 45%;
+      top: 55%;
       left: auto;
       right: 10%;
       background: var(--green); }
@@ -421,13 +432,13 @@ input {
     .setting-menu .theme-container .item.bubble-4:before {
       border-radius: 5px; }
     .setting-menu .theme-container .item.bubble-5:after, .setting-menu .theme-container .item.bubble-5:before {
-      top: 20%;
+      top: 27.5%;
       left: 10%;
       height: 15%;
       width: 80%;
       border-radius: 3px; }
     .setting-menu .theme-container .item.bubble-5:before {
-      top: 50%; }
+      top: 57.5%; }
     .setting-menu .theme-container .item.theme-light {
       background-color: rgba(168, 144, 106, 0.3) !important; }
       .setting-menu .theme-container .item.theme-light:after {
@@ -559,6 +570,10 @@ html[theme="dark-blue"] .setting-menu .info .input-edit svg {
 
 html[theme="dark"] .setting-menu .form-control .action svg,
 html[theme="dark-blue"] .setting-menu .form-control .action svg {
+  color: var(--white); }
+
+html[theme="dark"] .setting-menu .theme-container .radio-item .radio-label .radio:not(.checked),
+html[theme="dark-blue"] .setting-menu .theme-container .radio-item .radio-label .radio:not(.checked) {
   color: var(--white); }
 
 html[theme="dark"] .setting-menu .theme-container .item,

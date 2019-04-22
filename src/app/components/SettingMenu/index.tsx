@@ -35,11 +35,8 @@ import TextField from '@material-ui/core/TextField/TextField';
 import UserRepo from '../../repository/user';
 import SDK from '../../services/sdk';
 import {debounce} from 'lodash';
-import GridList from '@material-ui/core/GridList';
-import GridListTile from '@material-ui/core/GridListTile';
-import GridListTileBar from '@material-ui/core/GridListTileBar';
 import Scrollbars from 'react-custom-scrollbars';
-import {backgrounds, bubbles, C_CUSTOM_BG, themes} from './vars/theme';
+import {bgTypes, bubbles, C_CUSTOM_BG, themes} from './vars/theme';
 import {IUser} from '../../repository/user/interface';
 import {Link} from 'react-router-dom';
 import FileManager, {IFileProgress} from '../../services/sdk/fileManager';
@@ -63,11 +60,12 @@ import {findIndex} from 'lodash';
 import SettingsBackgroundModal, {ICustomBackground} from '../SettingsBackgroundModal';
 import FileRepo from '../../repository/file';
 import BackgroundService from '../../services/backgroundService';
+import Radio from '@material-ui/core/Radio';
 
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.23.114';
+export const C_VERSION = '0.23.115';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 interface IProps {
@@ -98,6 +96,7 @@ interface IState {
     profilePictureCrop: any;
     profilePictureFile?: string;
     selectedBackground: string;
+    selectedBgType: string;
     selectedBubble: string;
     selectedCustomBackground: string;
     selectedCustomBackgroundBlur: number;
@@ -160,6 +159,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                 y: 0,
             },
             selectedBackground: '-1',
+            selectedBgType: '0',
             selectedBubble: '1',
             selectedCustomBackground: localStorage.getItem('river.theme.bg.pic') || '-1',
             selectedCustomBackgroundBlur: parseInt(localStorage.getItem('river.theme.bg.blur') || '0', 10),
@@ -188,15 +188,21 @@ class SettingMenu extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        const el = document.querySelector('html');
-        if (!el) {
-            return;
+        const bg = localStorage.getItem('river.theme.bg') || '-1';
+        let bgType: string = '0';
+        if (bg === C_CUSTOM_BG) {
+            bgType = '1';
+        } else if (bg === '0') {
+            bgType = '0';
+        } else {
+            bgType = '2';
         }
         this.setState({
-            fontSize: parseInt(el.getAttribute('font') || '2', 10),
-            selectedBackground: el.getAttribute('bg') || '-1',
-            selectedBubble: el.getAttribute('bubble') || '1',
-            selectedTheme: el.getAttribute('theme') || 'light',
+            fontSize: parseInt(localStorage.getItem('river.theme.font') || '2', 10),
+            selectedBackground: bg,
+            selectedBgType: bgType,
+            selectedBubble: localStorage.getItem('river.theme.bubble') || '1',
+            selectedTheme: localStorage.getItem('river.theme.color') || 'light'
         });
         this.backgroundService.getBackground(C_CUSTOM_BG_ID).then((res) => {
             if (res) {
@@ -229,9 +235,11 @@ class SettingMenu extends React.Component<IProps, IState> {
             <div className="setting-menu">
                 <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={640}/>
                 <SettingsBackgroundModal ref={this.settingsBackgroundModalRefHandler}
+                                         dark={Boolean(this.state.selectedTheme !== 'light')}
                                          defId={this.state.selectedCustomBackground}
                                          defBlur={this.state.selectedCustomBackgroundBlur}
-                                         onDone={this.settingsBackgroundModalDoneHandler}/>
+                                         onDone={this.settingsBackgroundModalDoneHandler}
+                                         onPatternSelected={this.selectBackgroundHandler}/>
                 <div className={'page-container page-' + page}>
                     <div className="page page-1">
                         <div className="menu-header">
@@ -344,20 +352,25 @@ class SettingMenu extends React.Component<IProps, IState> {
                                                 <div className="anchor-label">Theme</div>
                                             </div>
                                             <div className="page-content-inner">
-                                                <GridList className="theme-container" cellHeight={100} spacing={6}>
+                                                <div
+                                                    className="theme-container"
+                                                >
                                                     {themes.map((theme, index) => (
-                                                        <GridListTile key={index} cols={1} rows={1}
-                                                                      onClick={this.selectThemeHandler.bind(this, theme.id)}>
+                                                        <div key={index}
+                                                             className={'radio-item ' + (this.state.selectedTheme === theme.id ? 'selected' : '')}
+                                                             onClick={this.selectThemeHandler.bind(this, theme.id)}
+                                                        >
+                                                            <div className="radio-label">
+                                                                <Radio color="primary"
+                                                                       className={'radio ' + (this.state.selectedTheme === theme.id ? 'checked' : '')}
+                                                                       checked={(this.state.selectedTheme === theme.id)}/>
+                                                                <div className="radio-title">{theme.title}</div>
+                                                            </div>
                                                             <div
                                                                 className={'item theme-' + theme.id + ' bubble-' + this.state.selectedBubble + ' bg-' + this.state.selectedBackground}/>
-                                                            <GridListTileBar
-                                                                className={'title-bar ' + (this.state.selectedTheme === theme.id ? 'selected' : '')}
-                                                                title={theme.title}
-                                                                titlePosition="bottom"
-                                                            />
-                                                        </GridListTile>
+                                                        </div>
                                                     ))}
-                                                </GridList>
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="page-content">
@@ -368,20 +381,25 @@ class SettingMenu extends React.Component<IProps, IState> {
                                                 <div className="anchor-label">Bubble</div>
                                             </div>
                                             <div className="page-content-inner">
-                                                <GridList className="theme-container" cellHeight={100} spacing={6}>
+                                                <div
+                                                    className="theme-container"
+                                                >
                                                     {bubbles.map((bubble, index) => (
-                                                        <GridListTile key={index} cols={1} rows={1}
-                                                                      onClick={this.selectBubbleHandler.bind(this, bubble.id)}>
+                                                        <div key={index}
+                                                             className={'radio-item ' + (this.state.selectedBubble === bubble.id ? 'selected' : '')}
+                                                             onClick={this.selectBubbleHandler.bind(this, bubble.id)}
+                                                        >
+                                                            <div className="radio-label">
+                                                                <Radio color="primary"
+                                                                       className={'radio ' + (this.state.selectedBubble === bubble.id ? 'checked' : '')}
+                                                                       checked={(this.state.selectedBubble === bubble.id)}/>
+                                                                <div className="radio-title">{bubble.title}</div>
+                                                            </div>
                                                             <div
-                                                                className={'item bubble-' + bubble.id + ' bg-' + this.state.selectedBackground}/>
-                                                            <GridListTileBar
-                                                                className={'title-bar ' + (this.state.selectedBubble === bubble.id ? 'selected' : '')}
-                                                                title={bubble.title}
-                                                                titlePosition="bottom"
-                                                            />
-                                                        </GridListTile>
+                                                                className={'item bubble-' + bubble.id + ' theme-' + this.state.selectedTheme + ' bg-' + this.state.selectedBackground}/>
+                                                        </div>
                                                     ))}
-                                                </GridList>
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="page-content">
@@ -392,28 +410,30 @@ class SettingMenu extends React.Component<IProps, IState> {
                                                 <div className="anchor-label">Background</div>
                                             </div>
                                             <div className="page-content-inner">
-                                                <GridList className="theme-container" cellHeight={100} spacing={6}>
-                                                    {backgrounds.map((bg, index) => {
-                                                        return (
-                                                            <GridListTile key={index} cols={1} rows={1}
-                                                                          onClick={this.selectBackgroundHandler.bind(this, bg.id)}>
-                                                                {Boolean(bg.id === C_CUSTOM_BG) &&
-                                                                <div
-                                                                    className={'item bg-' + bg.id + ' bubble-' + this.state.selectedBubble}>
-                                                                    {customBackgroundSrc &&
-                                                                    <img src={customBackgroundSrc}/>}
-                                                                </div>}
-                                                                {Boolean(bg.id !== C_CUSTOM_BG) && <div
-                                                                    className={'item bg-' + bg.id + ' bubble-' + this.state.selectedBubble}/>}
-                                                                <GridListTileBar
-                                                                    className={'title-bar ' + (this.state.selectedBackground === bg.id ? 'selected' : '')}
-                                                                    title={bg.title}
-                                                                    titlePosition="bottom"
-                                                                />
-                                                            </GridListTile>
-                                                        );
-                                                    })}
-                                                </GridList>
+                                                <div
+                                                    className="theme-container"
+                                                >
+                                                    {bgTypes.map((types, index) => (
+                                                        <div key={index}
+                                                             className={'radio-item ' + (this.state.selectedBgType === types.id ? 'selected' : '')}
+                                                             onClick={this.selectBgTypeHandler.bind(this, types.id)}
+                                                        >
+                                                            <div className="radio-label">
+                                                                <Radio color="primary"
+                                                                       className={'radio ' + (this.state.selectedBgType === types.id ? 'checked' : '')}
+                                                                       checked={(this.state.selectedBgType === types.id)}/>
+                                                                <div className="radio-title">{types.title}</div>
+                                                            </div>
+                                                            {Boolean(types.id !== '1') && <div
+                                                                className={'item bubble-' + this.state.selectedBubble + ' theme-' + this.state.selectedTheme + ' bg-' + this.state.selectedBackground}/>}
+                                                            {Boolean(types.id === '1') && <div
+                                                                className={'item bubble-' + this.state.selectedBubble + ' theme-' + this.state.selectedTheme + ' bg-' + this.state.selectedBackground}>
+                                                                {customBackgroundSrc &&
+                                                                <img src={customBackgroundSrc}/>}
+                                                            </div>}
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -879,6 +899,23 @@ class SettingMenu extends React.Component<IProps, IState> {
                 el.setAttribute('bg', id);
             });
         }
+    }
+
+    private selectBgTypeHandler = (id: string) => {
+        if (id === '1') {
+            this.settingsBackgroundModalRef.openDialog();
+        } else {
+            this.backgroundService.disable();
+        }
+        if (id === '2') {
+            this.settingsBackgroundModalRef.openDialog(true);
+        }
+        if (id === '0') {
+            this.selectBackgroundHandler('0');
+        }
+        this.setState({
+            selectedBgType: id,
+        });
     }
 
     private selectBubbleHandler = (id: string) => {
