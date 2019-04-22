@@ -226,11 +226,12 @@ input {
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        transition: opacity 0.1s;
-        visibility: hidden; }
+        transition: opacity 0.1s, transform 0.2s;
+        transform: scale(0);
+        transform-origin: center 100%; }
         .container .column-center .conversation .move-down.visible {
           opacity: 1;
-          visibility: visible; }
+          transform: scale(1); }
     .container .column-center .attachments {
       width: 100%;
       flex: 1; }
