@@ -274,7 +274,11 @@ class MediaPreview extends React.Component<IProps, IState> {
 
     /* On drop handler */
     private onDrop = (accepted: FileWithPreview[]) => {
-        // @ts-ignore
+        if (this.state.isFile) {
+            accepted.forEach((item: any) => {
+                item.ready = true;
+            });
+        }
         this.setState({
             items: [...this.state.items, ...accepted],
         }, () => {
@@ -319,11 +323,11 @@ class MediaPreview extends React.Component<IProps, IState> {
         const {items} = this.state;
         items.map((item, index) => {
             item.mediaType = this.getTypeByMime(item.type);
+            if (!this.previewRefs[index]) {
+                this.previewRefs[index] = [];
+            }
             if (!item.preview && item.mediaType !== 'audio') {
                 item.preview = URL.createObjectURL(item);
-                if (!this.previewRefs[index]) {
-                    this.previewRefs[index] = [];
-                }
                 this.previewRefs[index].push(item.preview);
             }
             if (item.mediaType === 'image' && item.preview) {

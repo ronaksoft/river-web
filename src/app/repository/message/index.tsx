@@ -548,7 +548,7 @@ export default class MessageRepo {
     public remove(id: number): Promise<any> {
         if (this.lazyMap.hasOwnProperty(id)) {
             delete this.lazyMap[id];
-            return Promise.resolve();
+            // return Promise.resolve();
         }
         return this.db.messages.delete(id);
     }

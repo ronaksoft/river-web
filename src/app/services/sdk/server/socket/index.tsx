@@ -36,6 +36,8 @@ export default class Socket {
     private fnUpdate: any = null;
     private fnError: any = null;
     private readonly testUrl: string = '';
+    private lastSendTime: number = 0;
+    private lastReceiveTime: number = 0;
 
     public constructor() {
         this.testUrl = localStorage.getItem('river.test_url') || '';
@@ -85,6 +87,9 @@ export default class Socket {
                 case 'wsSend':
                     if (this.connected) {
                         this.socket.send(base64ToU8a(d.data));
+                        if (this.lastReceiveTime >= this.lastSendTime) {
+                            this.lastSendTime = Date.now();
+                        }
                     }
                     break;
                 case 'wsError':
@@ -111,6 +116,8 @@ export default class Socket {
                     break;
             }
         };
+
+        this.checkNetwork();
     }
 
     public send(data: IServerRequest) {
@@ -148,7 +155,7 @@ export default class Socket {
 
         // Connection opened
         this.socket.onopen = () => {
-            window.console.log('Hello Server!', new Date());
+            window.console.log('WebSocket opened', new Date());
             if (!this.socket.OPEN || this.socket.readyState !== 1) {
                 return;
             }
@@ -156,6 +163,8 @@ export default class Socket {
             this.pingCounter = 0;
             this.tryCounter = 0;
             this.connected = true;
+            this.lastSendTime = Date.now();
+            this.lastReceiveTime = Date.now();
             if (this.started) {
                 const event = new CustomEvent('wsOpen');
                 window.dispatchEvent(event);
@@ -165,6 +174,7 @@ export default class Socket {
 
         // Listen for messages
         this.socket.onmessage = (event) => {
+            this.lastReceiveTime = Date.now();
             if (this.checkPong(event.data)) {
                 this.pingCounter = 0;
             } else {
@@ -215,5 +225,17 @@ export default class Socket {
             detail: data,
         });
         window.dispatchEvent(fnStarted);
+    }
+
+    private checkNetwork() {
+        setInterval(() => {
+            if (this.lastSendTime > this.lastReceiveTime) {
+                const now = Date.now();
+                if (now - this.lastSendTime > 5000) {
+                    window.console.log('bad network');
+                    this.closeWire();
+                }
+            }
+        }, 5000);
     }
 }

@@ -1082,15 +1082,17 @@ class Chat extends React.Component<IProps, IState> {
         window.console.log('UpdateMaxInbox:', data.maxid);
         const peerId = data.peer.id || '';
         this.updateDialogsCounter(peerId, {maxInbox: data.maxid});
-        const dialog = this.getDialogById(peerId);
-        if (dialog) {
-            this.messageRepo.getUnreadCount(peerId, data.maxid || 0, dialog ? (dialog.topmessageid || 0) : 0).then((count) => {
-                this.updateDialogsCounter(peerId, {
-                    mentionCounter: count.mention,
-                    unreadCounter: count.message,
+        setTimeout(() => {
+            const dialog = this.getDialogById(peerId);
+            if (dialog) {
+                this.messageRepo.getUnreadCount(peerId, data.maxid || 0, dialog ? (dialog.topmessageid || 0) : 0).then((count) => {
+                    this.updateDialogsCounter(peerId, {
+                        mentionCounter: count.mention,
+                        unreadCounter: count.message,
+                    });
                 });
-            });
-        }
+            }
+        }, 100);
     }
 
     /* Update read history outbox handler */
@@ -1704,13 +1706,14 @@ class Chat extends React.Component<IProps, IState> {
                 message_id: id,
             });
 
+            window.console.log('text msg', id, text);
             this.sdk.sendMessage(randomId, text, peer, replyTo, entities).then((res) => {
                 // For double checking update message id
                 this.updateManager.setMessageId(res.messageid || 0);
                 this.modifyPendingMessage({
                     messageid: res.messageid,
                     randomid: randomId,
-                });
+                }, true);
 
                 const {messages} = this.state;
                 const index = findIndex(messages, (o) => {
@@ -1957,7 +1960,7 @@ class Chat extends React.Component<IProps, IState> {
                     dialogs[index].unreadcount = 1;
                 }
             }
-            if (unreadCounter !== null && unreadCounter !== undefined) {
+            if (unreadCounter !== undefined) {
                 dialogs[index].unreadcount = unreadCounter;
             }
             if (mentionCounterIncrease === 1) {
@@ -1968,10 +1971,10 @@ class Chat extends React.Component<IProps, IState> {
                     dialogs[index].mentionedcount = 1;
                 }
             }
-            if (mentionCounter !== null && mentionCounter !== undefined) {
+            if (mentionCounter !== undefined) {
                 dialogs[index].mentionedcount = mentionCounter;
             }
-            if (scrollPos !== null && scrollPos !== undefined) {
+            if (scrollPos !== undefined) {
                 dialogs[index].scroll_pos = scrollPos;
             }
             if (peerId === this.state.selectedDialogId) {
@@ -3037,7 +3040,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Modify pending message */
-    private modifyPendingMessage(data: UpdateMessageID.AsObject) {
+    private modifyPendingMessage(data: UpdateMessageID.AsObject, remove?: boolean) {
         if (!data.randomid) {
             return;
         }
@@ -3045,11 +3048,15 @@ class Chat extends React.Component<IProps, IState> {
         this.messageRepo.getPending(randomId).then((res) => {
             if (res) {
                 this.messageRepo.removePending(randomId).then(() => {
-                    this.messageRepo.addPending({
-                        file_ids: res.file_ids,
-                        id: data.messageid || 0,
-                        message_id: res.message_id,
-                    });
+                    if (!remove && res.file_ids && res.file_ids.length > 0) {
+                        this.messageRepo.addPending({
+                            file_ids: res.file_ids,
+                            id: data.messageid || 0,
+                            message_id: res.message_id,
+                        });
+                    } else {
+                        this.messageRepo.remove(res.message_id);
+                    }
                 });
             }
         });
