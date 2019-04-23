@@ -502,6 +502,54 @@
   }
 }
 
+.messages-inner {
+  position: relative;
+  z-index: 2;
+  &.hidden {
+    .bubble-wrapper {
+      opacity: 0;
+    }
+  }
+}
+
+.messages-snapshot {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  &.hidden {
+    display: none;
+  }
+  .ReactVirtualized__List.chat {
+    overflow: hidden !important;
+    .ReactVirtualized__Grid__innerScrollContainer {
+      margin-top: -34px;
+    }
+  }
+}
+
+.messages-dropzone {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  left: 12px;
+  height: 128px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  border: 2px solid var(--river);
+  color: var(--white);
+  background-color: #27AE6084;
+  border-radius: 3px;
+  z-index: 30;
+  &.hidden {
+    visibility: hidden;
+  }
+}
+
 html[theme="dark"],
 html[theme="dark-blue"] {
   .chat {

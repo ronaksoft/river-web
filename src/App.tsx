@@ -60,6 +60,8 @@ class App extends React.Component<{}, IState> {
     }
 
     public componentDidMount() {
+        document.addEventListener('drop', (e) => e.preventDefault(), false);
+        document.addEventListener('dragover', (e) => e.preventDefault(), false);
         window.addEventListener('authErrorEvent', (event: any) => {
             this.setState({
                 alertOpen: true,

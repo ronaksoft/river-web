@@ -520,6 +520,7 @@ class Chat extends React.Component<IProps, IState> {
                                          onLoadMoreAfterGap={this.messageLoadMoreAfterGapHandler}
                                          onAttachmentAction={this.messageAttachmentActionHandler}
                                          rendered={this.messageRenderedHandler}
+                                         onDrop={this.messageDropHandler}
                                 />
                                 {this.getMoveDown()}
                             </div>
@@ -1473,6 +1474,9 @@ class Chat extends React.Component<IProps, IState> {
             if (this.state.selectedDialogId !== dialogId || data.length === 0) {
                 this.setLoading(false);
                 return;
+            }
+            if (this.messageComponent) {
+                this.messageComponent.takeSnapshot();
             }
             const messages = this.state.messages;
             const messageSize = messages.length;
@@ -2533,6 +2537,13 @@ class Chat extends React.Component<IProps, IState> {
                     this.sendReadHistory(peer, Math.floor(messages[info.stopIndex].id || 0));
                 }
             }
+        }
+    }
+
+    /* Message on drop files handler */
+    private messageDropHandler = (files: File[]) => {
+        if (this.chatInputComponent) {
+            this.chatInputComponent.openUploader(files);
         }
     }
 

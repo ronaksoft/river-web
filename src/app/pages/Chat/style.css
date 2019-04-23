@@ -228,7 +228,8 @@ input {
         cursor: pointer;
         transition: opacity 0.1s, transform 0.2s;
         transform: scale(0);
-        transform-origin: center 100%; }
+        transform-origin: center 100%;
+        z-index: 20; }
         .container .column-center .conversation .move-down.visible {
           opacity: 1;
           transform: scale(1); }

@@ -29,7 +29,7 @@ import {MoreVert} from '@material-ui/icons';
 import UserName from '../UserName';
 import Checkbox from '@material-ui/core/Checkbox';
 import MessageForwarded from '../MessageForwarded';
-import {clone, throttle} from 'lodash';
+import {clone, throttle, debounce} from 'lodash';
 import MessageVoice from '../MessageVoice';
 import RiverTime from '../../services/utilities/river_time';
 import {ErrorRounded} from '@material-ui/icons';
@@ -56,6 +56,7 @@ interface IProps {
     onLoadMoreBefore?: () => any;
     onSelectableChange: (selectable: boolean) => void;
     onSelectedIdsChange: (selectedIds: { [key: number]: number }) => void;
+    onDrop: (files: File[]) => void;
     peer: InputPeer | null;
     readId: number;
     rendered?: (info: any) => void;
@@ -116,6 +117,12 @@ class Message extends React.Component<IProps, IState> {
     private eventReferences: any[] = [];
     private readonly loadMoreAfterThrottle: any = null;
     private readonly fitListCompleteThrottle: any = null;
+    private messageInnerRef: any = null;
+    private messageSnapshotRef: any = null;
+    private removeSnapshotTimeout: any = null;
+    private dropZoneRef: any = null;
+    // @ts-ignore
+    private dropZoneHideDebounce: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -145,6 +152,8 @@ class Message extends React.Component<IProps, IState> {
 
         this.loadMoreAfterThrottle = throttle(this.loadMoreAfter, 250);
         this.fitListCompleteThrottle = throttle(this.fitListComplete, 250);
+
+        this.dropZoneHideDebounce = debounce(this.dragLeaveHandler, 200);
     }
 
     public componentDidMount() {
@@ -152,6 +161,7 @@ class Message extends React.Component<IProps, IState> {
         this.listCount = this.props.items.length;
         this.topOfList = false;
         this.eventReferences.push(this.broadcaster.listen('Theme_Changed', this.themeChangeHandler));
+        window.addEventListener('mouseup', this.dragLeaveHandler, true);
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -160,6 +170,7 @@ class Message extends React.Component<IProps, IState> {
             this.fitListCompleteThrottle.cancel();
             this.cache.clearAll();
             this.bottomOfList = true;
+            this.removeSnapshot();
             this.setState({
                 items: newProps.items,
                 moreAnchorEl: null,
@@ -205,6 +216,7 @@ class Message extends React.Component<IProps, IState> {
                 canceller();
             }
         });
+        window.removeEventListener('mouseup', this.dragLeaveHandler, true);
     }
 
     public setLoading(loading: boolean) {
@@ -351,38 +363,67 @@ class Message extends React.Component<IProps, IState> {
         }, instant ? 0 : 200);
     }
 
+    public takeSnapshot() {
+        clearTimeout(this.removeSnapshotTimeout);
+        if (!this.messageInnerRef || !this.messageSnapshotRef) {
+            return;
+        }
+        let className: string = '';
+        if (this.messageInnerRef.classList.contains('group')) {
+            className = 'group';
+        } else if (this.messageInnerRef.classList.contains('user')) {
+            className = 'user';
+        }
+        this.messageSnapshotRef.classList.remove('group', 'user', 'hidden');
+        this.messageSnapshotRef.classList.add(className);
+        this.messageInnerRef.classList.add('hidden');
+        this.messageSnapshotRef.innerHTML = this.messageInnerRef.innerHTML;
+        this.removeSnapshotTimeout = setTimeout(() => {
+            this.removeSnapshot();
+        }, 300);
+    }
+
     public render() {
         const {items, moreAnchorEl, peer, selectable, listStyle} = this.state;
         return (
             <AutoSizer>
                 {({width, height}: any) => (
-                    <div
-                        className={((peer && peer.getType() === PeerType.PEERGROUP || this.isSimplified) ? 'group' : 'user') + (selectable ? ' selectable' : '')}>
-                        <List
-                            ref={this.refHandler}
-                            deferredMeasurementCache={this.cache}
-                            rowHeight={this.cache.rowHeight}
-                            rowRenderer={this.rowRender}
-                            rowCount={items.length}
-                            overscanRowCount={10}
-                            width={width}
-                            height={height}
-                            estimatedRowSize={41}
-                            onRowsRendered={this.onRowsRenderedHandler}
-                            noRowsRenderer={this.noRowsRenderer}
-                            onScroll={this.onScroll}
-                            style={listStyle}
-                            className="chat active-chat"
-                        />
-                        <Menu
-                            anchorEl={moreAnchorEl}
-                            open={Boolean(moreAnchorEl)}
-                            onClose={this.moreCloseHandler}
-                            className="kk-context-menu"
+                    <React.Fragment>
+                        <div ref={this.messageInnerRefHandler}
+                             className={'messages-inner ' + ((peer && peer.getType() === PeerType.PEERGROUP || this.isSimplified) ? 'group' : 'user') + (selectable ? ' selectable' : '')}
+                             onDragEnter={this.dragEnterHandler} onDragEnd={this.dragLeaveHandler}
                         >
-                            {this.contextMenuItem()}
-                        </Menu>
-                    </div>
+                            <List
+                                ref={this.refHandler}
+                                deferredMeasurementCache={this.cache}
+                                rowHeight={this.cache.rowHeight}
+                                rowRenderer={this.rowRender}
+                                rowCount={items.length}
+                                overscanRowCount={10}
+                                width={width}
+                                height={height}
+                                estimatedRowSize={41}
+                                onRowsRendered={this.onRowsRenderedHandler}
+                                noRowsRenderer={this.noRowsRenderer}
+                                onScroll={this.onScroll}
+                                style={listStyle}
+                                className="chat active-chat"
+                            />
+                            <Menu
+                                anchorEl={moreAnchorEl}
+                                open={Boolean(moreAnchorEl)}
+                                onClose={this.moreCloseHandler}
+                                className="kk-context-menu"
+                            >
+                                {this.contextMenuItem()}
+                            </Menu>
+                        </div>
+                        <div ref={this.messageSnapshotRefHandler} className="messages-snapshot hidden"/>
+                        <div ref={this.dropZoneRefHandler} className="messages-dropzone hidden"
+                             onDrop={this.dropHandler}>
+                            Drop your files here
+                        </div>
+                    </React.Fragment>
                 )}
             </AutoSizer>
         );
@@ -635,10 +676,22 @@ class Message extends React.Component<IProps, IState> {
         }
         if (params.clientHeight < params.scrollHeight && params.scrollTop < 2) {
             this.topOfList = true;
+            this.takeSnapshot();
             if (typeof this.props.onLoadMoreBefore === 'function') {
                 this.props.onLoadMoreBefore();
             }
         }
+    }
+
+    private removeSnapshot() {
+        clearTimeout(this.removeSnapshotTimeout);
+        if (!this.messageInnerRef || !this.messageSnapshotRef) {
+            return;
+        }
+        this.messageInnerRef.classList.remove('hidden');
+        this.messageSnapshotRef.classList.remove('group', 'user');
+        this.messageSnapshotRef.classList.add('hidden');
+        this.messageSnapshotRef.innerHTML = '';
     }
 
     private contextMenuHandler = (index: number, e: any) => {
@@ -990,6 +1043,7 @@ class Message extends React.Component<IProps, IState> {
             if (el.parentElement) {
                 const scroll = parseInt(window.getComputedStyle(el.parentElement).getPropertyValue('top').replace(/^\D+/g, ''), 10);
                 this.list.scrollToPosition(scroll);
+                this.removeSnapshot();
             }
         } else {
             if (!tries) {
@@ -1092,6 +1146,57 @@ class Message extends React.Component<IProps, IState> {
                 });
             }
         }, 200);
+    }
+
+    private messageInnerRefHandler = (ref: any) => {
+        this.messageInnerRef = ref;
+    }
+
+    private messageSnapshotRefHandler = (ref: any) => {
+        this.messageSnapshotRef = ref;
+    }
+
+    private dropZoneRefHandler = (ref: any) => {
+        this.dropZoneRef = ref;
+    }
+
+    private dragEnterHandler = (e: any) => {
+        if (!this.dropZoneRef) {
+            return;
+        }
+        this.dropZoneRef.classList.remove('hidden');
+    }
+
+    private dragLeaveHandler = () => {
+        if (!this.dropZoneRef) {
+            return;
+        }
+        if (this.dropZoneRef.classList.contains('hidden')) {
+            return;
+        }
+        this.dropZoneRef.classList.add('hidden');
+    }
+
+    private dropHandler = (e: any) => {
+        e.preventDefault();
+        this.dragLeaveHandler();
+        const files: File[] = [];
+        if (e.dataTransfer.items) {
+            // Use DataTransferItemList interface to access the file(s)
+            for (let i = 0; i < e.dataTransfer.items.length; i++) {
+                // If dropped items aren't files, reject them
+                if (e.dataTransfer.items[i].kind === 'file') {
+                    const file = e.dataTransfer.items[i].getAsFile();
+                    files.push(file);
+                }
+            }
+        } else {
+            // Use DataTransfer interface to access the file(s)
+            for (let i = 0; i < e.dataTransfer.files.length; i++) {
+                files.push(e.dataTransfer.files[i]);
+            }
+        }
+        this.props.onDrop(files);
     }
 }
 

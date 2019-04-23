@@ -272,6 +272,25 @@ class ChatInput extends React.Component<IProps, IState> {
         this.textarea.focus();
     }
 
+    public openUploader(files: File[]) {
+        if (this.mediaPreviewRef) {
+            let media: any = '';
+            files.forEach((file) => {
+                const t = this.getUploaderInput(file.type);
+                if (media !== t && media !== '') {
+                    media = 'file';
+                } else if (media !== 'file' || media === '') {
+                    media = t;
+                }
+            });
+            this.setState({
+                mediaInputMode: media,
+            }, () => {
+                this.mediaPreviewRef.openDialog(files, Boolean(media === 'file'));
+            });
+        }
+    }
+
     public render() {
         const {previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable, disableAuthority, textareaValue, voiceMode, selectMediaOpen} = this.state;
 
@@ -1427,6 +1446,24 @@ class ChatInput extends React.Component<IProps, IState> {
             case 'file':
             default:
                 return '*';
+        }
+    }
+
+    private getUploaderInput(mimeType: string) {
+        switch (mimeType) {
+            case 'image/png':
+            case 'image/jpeg':
+            case 'image/jpg':
+            case 'image/gif':
+            case 'video/webm':
+            case 'video/mp4':
+                return 'media';
+            case 'audio/mp4':
+            case 'audio/ogg':
+            case 'audio/mp3':
+                return 'music';
+            default:
+                return 'file';
         }
     }
 
