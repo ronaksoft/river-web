@@ -199,3 +199,42 @@ export const bgPics = [{
     id: '8',
     src: bg8
 },];
+
+export const storageItems = [{
+    className: 'bold',
+    id: 'download_all',
+    title: 'Auto Download Media',
+    type: 'item',
+}, {
+    id: 'h1',
+    title: 'Private Chats',
+    type: 'header',
+}, {
+    id: 'chat_photos',
+    title: 'Photos',
+    type: 'item',
+}, {
+    id: 'chat_videos',
+    title: 'Videos',
+    type: 'item',
+}, {
+    id: 'chat_voices',
+    title: 'Voices',
+    type: 'item',
+}, {
+    id: 'h2',
+    title: 'Group Chats',
+    type: 'header',
+}, {
+    id: 'group_photos',
+    title: 'Photos',
+    type: 'item',
+}, {
+    id: 'group_videos',
+    title: 'Videos',
+    type: 'item',
+}, {
+    id: 'group_voices',
+    title: 'Voices',
+    type: 'item',
+}];

@@ -156,7 +156,9 @@ input {
       .setting-menu .page-anchor .icon.color-saved-messages {
         background-color: #009688; }
       .setting-menu .page-anchor .icon.color-account {
-        background-color: #CDDC39; }
+        background-color: #AB47BC; }
+      .setting-menu .page-anchor .icon.color-data {
+        background-color: #00C853; }
       .setting-menu .page-anchor .icon.color-session {
         background-color: #2b92de; }
       .setting-menu .page-anchor .icon.color-theme {
@@ -185,6 +187,29 @@ input {
     .setting-menu .page-anchor.log-out {
       margin-top: 12px;
       border: none; }
+  .setting-menu .sub-page-header {
+    border-top: 1px solid #E0E0E0;
+    height: 24px;
+    font-size: 10px;
+    color: #7D7D7D;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 16px;
+    margin-top: 6px; }
+  .setting-menu .switch-item {
+    display: flex;
+    align-items: center;
+    justify-content: center; }
+    .setting-menu .switch-item .switch-label {
+      flex: 1;
+      text-align: left;
+      padding: 16px 0 16px 16px;
+      font-weight: 300; }
+    .setting-menu .switch-item.bold .switch-label {
+      font-weight: 500; }
+    .setting-menu .switch-item .switch-item {
+      width: 40px; }
   .setting-menu .label {
     display: block;
     text-align: center;
@@ -517,6 +542,8 @@ input {
     text-align: center;
     padding: 24px;
     color: var(--grey); }
+  .setting-menu .setting-switch.checked span {
+    color: var(--river) !important; }
 
 html[theme="dark"] .setting-menu .menu-header,
 html[theme="dark-blue"] .setting-menu .menu-header {
@@ -555,6 +582,15 @@ html[theme="dark-blue"] .setting-menu .setting-switch-label > span {
 html[theme="dark"] .setting-menu .setting-switch.blue span,
 html[theme="dark-blue"] .setting-menu .setting-switch.blue span {
   color: var(--dark-accent-medium) !important; }
+
+html[theme="dark"] .setting-menu .sub-page-header,
+html[theme="dark-blue"] .setting-menu .sub-page-header {
+  border-color: var(--dark-low);
+  color: var(--grey); }
+
+html[theme="dark"] .setting-menu .switch-item .switch-label,
+html[theme="dark-blue"] .setting-menu .switch-item .switch-label {
+  color: var(--light); }
 
 html[theme="dark"] .setting-menu .label,
 html[theme="dark-blue"] .setting-menu .label {
@@ -647,6 +683,9 @@ html[theme="dark-blue"] .setting-menu .menu-header {
 
 html[theme="dark-blue"] .setting-menu .font-size-container div[role="progressbar"] {
   background-color: var(--dark-blue-low); }
+
+html[theme="dark-blue"] .setting-menu .sub-page-header {
+  border-color: var(--dark-blue-low); }
 
 html[theme="dark-blue"] .setting-menu .theme-container .item {
   background-color: var(--dark-blue-low); }

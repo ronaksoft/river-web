@@ -106,7 +106,10 @@
         background-color: #009688;
       }
       &.color-account {
-        background-color: #CDDC39;
+        background-color: #AB47BC;
+      }
+      &.color-data {
+        background-color: #00C853;
       }
       &.color-session {
         background-color: #2b92de;
@@ -149,6 +152,36 @@
     &.log-out {
       margin-top: 12px;
       border: none;
+    }
+  }
+  .sub-page-header {
+    border-top: 1px solid #E0E0E0;
+    height: 24px;
+    font-size: 10px;
+    color: #7D7D7D;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 16px;
+    margin-top: 6px;
+  }
+  .switch-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .switch-label {
+      flex: 1;
+      text-align: left;
+      padding: 16px 0 16px 16px;
+      font-weight: 300;
+    }
+    &.bold {
+      .switch-label {
+        font-weight: 500;
+      }
+    }
+    .switch-item {
+      width: 40px;
     }
   }
   .label {
@@ -580,6 +613,11 @@
     padding: 24px;
     color: var(--grey);
   }
+  .setting-switch.checked {
+    span {
+      color: var(--river) !important;
+    }
+  }
 }
 
 html[theme="dark"],
@@ -621,6 +659,15 @@ html[theme="dark-blue"] {
     .setting-switch.blue {
       span {
         color: var(--dark-accent-medium) !important;
+      }
+    }
+    .sub-page-header {
+      border-color: var(--dark-low);
+      color: var(--grey);
+    }
+    .switch-item {
+      .switch-label {
+        color: var(--light);
       }
     }
     .label {
@@ -723,6 +770,9 @@ html[theme="dark-blue"] {
       div[role="progressbar"] {
         background-color: var(--dark-blue-low);
       }
+    }
+    .sub-page-header {
+      border-color: var(--dark-blue-low);
     }
     .theme-container {
       .item {

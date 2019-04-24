@@ -28,6 +28,7 @@ import {
     CollectionsRounded,
     Brightness2Rounded,
     ClearAllRounded,
+    StorageRounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import UserAvatar from '../UserAvatar';
@@ -36,7 +37,7 @@ import UserRepo from '../../repository/user';
 import SDK from '../../services/sdk';
 import {debounce} from 'lodash';
 import Scrollbars from 'react-custom-scrollbars';
-import {bgTypes, bubbles, C_CUSTOM_BG, themes} from './vars/theme';
+import {bgTypes, bubbles, C_CUSTOM_BG, storageItems, themes} from './vars/theme';
 import {IUser} from '../../repository/user/interface';
 import {Link} from 'react-router-dom';
 import FileManager, {IFileProgress} from '../../services/sdk/fileManager';
@@ -64,8 +65,9 @@ import Radio from '@material-ui/core/Radio';
 
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
+import DownloadManger, {IDownloadSettings} from '../../services/downloadManager';
 
-export const C_VERSION = '0.23.118';
+export const C_VERSION = '0.23.119';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 interface IProps {
@@ -102,6 +104,7 @@ interface IState {
     selectedCustomBackgroundBlur: number;
     selectedTheme: string;
     sessions?: AccountAuthorization.AsObject[];
+    storageValues: IDownloadSettings;
     uploadingPhoto: boolean;
     user: IUser | null;
     username: string;
@@ -129,6 +132,7 @@ class SettingMenu extends React.Component<IProps, IState> {
     private broadcaster: Broadcaster;
     private settingsBackgroundModalRef: SettingsBackgroundModal;
     private backgroundService: BackgroundService;
+    private downloadManger: DownloadManger;
 
     constructor(props: IProps) {
         super(props);
@@ -164,6 +168,15 @@ class SettingMenu extends React.Component<IProps, IState> {
             selectedCustomBackground: localStorage.getItem('river.theme.bg.pic') || '-1',
             selectedCustomBackgroundBlur: parseInt(localStorage.getItem('river.theme.bg.blur') || '0', 10),
             selectedTheme: 'light',
+            storageValues: {
+                chat_photos: false,
+                chat_videos: false,
+                chat_voices: false,
+                download_all: false,
+                group_photos: false,
+                group_videos: false,
+                group_voices: false,
+            },
             uploadingPhoto: false,
             user: null,
             username: '',
@@ -183,6 +196,7 @@ class SettingMenu extends React.Component<IProps, IState> {
         this.documentViewerService = DocumentViewerService.getInstance();
         this.broadcaster = Broadcaster.getInstance();
         this.backgroundService = BackgroundService.getInstance();
+        this.downloadManger = DownloadManger.getInstance();
 
         this.currentAuthID = this.sdk.getConnInfo().AuthID;
     }
@@ -202,7 +216,8 @@ class SettingMenu extends React.Component<IProps, IState> {
             selectedBackground: bg,
             selectedBgType: bgType,
             selectedBubble: localStorage.getItem('river.theme.bubble') || '1',
-            selectedTheme: localStorage.getItem('river.theme.color') || 'light'
+            selectedTheme: localStorage.getItem('river.theme.color') || 'light',
+            storageValues: this.downloadManger.getDownloadSettings(),
         });
         this.backgroundService.getBackground(C_CUSTOM_BG_ID).then((res) => {
             if (res) {
@@ -261,19 +276,25 @@ class SettingMenu extends React.Component<IProps, IState> {
                                     <div className="anchor-label">Saved Messages</div>
                                 </Link>
                             </div>
-                            <div className="page-anchor" onClick={this.accountPageHandler}>
+                            <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'account')}>
                                 <div className="icon color-account">
                                     <PersonRounded/>
                                 </div>
                                 <div className="anchor-label">Account ({phone})</div>
                             </div>
-                            <div className="page-anchor" onClick={this.sessionPageHandler}>
+                            <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'storage')}>
+                                <div className="icon color-data">
+                                    <StorageRounded/>
+                                </div>
+                                <div className="anchor-label">Data and Storage</div>
+                            </div>
+                            <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'session')}>
                                 <div className="icon color-session">
                                     <ClearAllRounded/>
                                 </div>
                                 <div className="anchor-label">Active Sessions</div>
                             </div>
-                            <div className="page-anchor" onClick={this.themePageHandler}>
+                            <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'theme')}>
                                 <div className="icon color-theme">
                                     <PaletteRounded/>
                                 </div>
@@ -651,6 +672,47 @@ class SettingMenu extends React.Component<IProps, IState> {
                                 <div className="session-placeholder">you have no active sessions</div>}
                             </div>}
                         </React.Fragment>}
+                        {Boolean(pageContent === 'storage') && <React.Fragment>
+                            <div className="menu-header">
+                                <IconButton
+                                    aria-label="Prev"
+                                    aria-haspopup="true"
+                                    onClick={this.onPrevHandler}
+                                >
+                                    <KeyboardBackspaceRounded/>
+                                </IconButton>
+                                <label>Data and Storage</label>
+                            </div>
+                            <div className="menu-content">
+                                <Scrollbars autoHide={true}>
+                                    {storageItems.map((item) => {
+                                        if (item.type === 'item') {
+                                            return (
+                                                <div key={item.id} className={'switch-item ' + (item.className || '')}>
+                                                    <div className="switch-label">{item.title}</div>
+                                                    <div className="switch">
+                                                        <Switch
+                                                            checked={Boolean(this.state.storageValues[item.id] || false)}
+                                                            className={'setting-switch' + (this.state.storageValues[item.id] ? ' checked' : '')}
+                                                            color="default"
+                                                            onChange={this.storageToggleHandler.bind(this, item.id)}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            );
+                                        } else if (item.type === 'header') {
+                                            return (
+                                                <div key={item.id}
+                                                     className={'sub-page-header ' + (item.className || '')}
+                                                >{item.title}</div>
+                                            );
+                                        } else {
+                                            return '';
+                                        }
+                                    })}
+                                </Scrollbars>
+                            </div>
+                        </React.Fragment>}
                     </div>
                 </div>
                 <Menu
@@ -771,13 +833,16 @@ class SettingMenu extends React.Component<IProps, IState> {
         });
     }
 
-    private themePageHandler = () => {
+    private selectPageHandler = (target: string) => {
         this.setState({
             page: '2',
-            pageContent: 'theme',
+            pageContent: target,
         }, () => {
             this.dispatchSubPlaceChange();
         });
+        if (target === 'session') {
+            this.getSessions();
+        }
     }
 
     private getUser() {
@@ -789,26 +854,6 @@ class SettingMenu extends React.Component<IProps, IState> {
                 user: res,
                 username: res.username || '',
             });
-        });
-    }
-
-    private accountPageHandler = () => {
-        this.getUser();
-        this.setState({
-            page: '2',
-            pageContent: 'account',
-        }, () => {
-            this.dispatchSubPlaceChange();
-        });
-    }
-
-    private sessionPageHandler = () => {
-        this.getSessions();
-        this.setState({
-            page: '2',
-            pageContent: 'session',
-        }, () => {
-            this.dispatchSubPlaceChange();
         });
     }
 
@@ -1287,6 +1332,22 @@ class SettingMenu extends React.Component<IProps, IState> {
                 el.setAttribute('bg', C_CUSTOM_BG);
             }
             this.backgroundService.setBackground(data.blob);
+        });
+    }
+
+    private storageToggleHandler = (id: string, e: any) => {
+        const {storageValues} = this.state;
+        storageValues[id] = e.target.checked;
+        if (id === 'download_all') {
+            for (const i in storageValues) {
+                if (i !== 'download_all') {
+                    storageValues[i] = storageValues[id];
+                }
+            }
+        }
+        this.downloadManger.setDownloadSettings(Object.assign({}, storageValues));
+        this.setState({
+            storageValues,
         });
     }
 }
