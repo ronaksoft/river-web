@@ -84,7 +84,8 @@ input {
     min-height: 64px;
     min-width: 64px;
     border-radius: 6px;
-    overflow: hidden; }
+    overflow: hidden;
+    margin: 0 auto; }
     .message-media .media-content .media-thumb,
     .message-media .media-content .media-big {
       position: relative;

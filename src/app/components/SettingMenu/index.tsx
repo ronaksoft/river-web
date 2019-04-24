@@ -65,7 +65,7 @@ import Radio from '@material-ui/core/Radio';
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.23.117';
+export const C_VERSION = '0.23.118';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 interface IProps {

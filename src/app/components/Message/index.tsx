@@ -420,8 +420,10 @@ class Message extends React.Component<IProps, IState> {
                         </div>
                         <div ref={this.messageSnapshotRefHandler} className="messages-snapshot hidden"/>
                         <div ref={this.dropZoneRefHandler} className="messages-dropzone hidden"
-                             onDrop={this.dropHandler}>
-                            Drop your files here
+                             onDrop={this.dragLeaveHandler}>
+                            <div className="dropzone" onDrop={this.dropHandler}>
+                                Drop your files here
+                            </div>
                         </div>
                     </React.Fragment>
                 )}

@@ -477,21 +477,27 @@ input {
 
 .messages-dropzone {
   position: absolute;
-  bottom: 12px;
-  right: 12px;
-  left: 12px;
-  height: 128px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 15px;
-  border: 2px solid var(--river);
-  color: var(--white);
-  background-color: #27AE6084;
-  border-radius: 3px;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  top: 0;
   z-index: 30; }
   .messages-dropzone.hidden {
     visibility: hidden; }
+  .messages-dropzone .dropzone {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    left: 12px;
+    height: 128px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    color: var(--grey);
+    background-color: var(--white);
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25); }
 
 html[theme="dark"] .chat,
 html[theme="dark-blue"] .chat {
@@ -563,6 +569,11 @@ html[theme="dark"] .selectable .bubble-wrapper.selected,
 html[theme="dark-blue"] .selectable .bubble-wrapper.selected {
   background-color: #27AE6020; }
 
+html[theme="dark"] .messages-dropzone .dropzone,
+html[theme="dark-blue"] .messages-dropzone .dropzone {
+  background-color: var(--dark-medium);
+  color: var(--white); }
+
 html[theme="dark-blue"] .chat {
   border-color: var(--dark-blue-low); }
 
@@ -583,6 +594,10 @@ html[theme="dark-blue"] .bubble-wrapper.you .arrow:after {
 
 html[theme="dark-blue"] .bubble-wrapper > .date {
   background-color: var(--dark-blue-hover);
+  color: var(--white); }
+
+html[theme="dark-blue"] .messages-dropzone .dropzone {
+  background-color: var(--dark-blue-low);
   color: var(--white); }
 
 html[font="0"] .bubble-wrapper .bubble {
