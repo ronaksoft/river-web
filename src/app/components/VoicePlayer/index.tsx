@@ -16,6 +16,9 @@ import AudioPlayer, {C_INSTANT_AUDIO, IAudioEvent} from '../../services/audioPla
 import Broadcaster from '../../services/broadcaster';
 
 import './style.css';
+import {PeerType} from '../../services/sdk/messages/chat.core.types_pb';
+import {C_MESSAGE_TYPE} from '../../repository/message/consts';
+import DownloadManger from '../../services/downloadManager';
 
 interface IProps {
     className?: string;
@@ -67,6 +70,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
     private audioPlayer: AudioPlayer;
     private readSent: boolean = false;
     private broadcaster: Broadcaster;
+    private downloadManager: DownloadManger;
 
     constructor(props: IProps) {
         super(props);
@@ -83,6 +87,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
         }
 
         this.broadcaster = Broadcaster.getInstance();
+        this.downloadManager = DownloadManger.getInstance();
     }
 
     public componentDidMount() {
@@ -148,6 +153,23 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
                     this.removeAllListeners();
                     this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
                 });
+            } else {
+                if (message && !message.downloaded) {
+                    const ds = this.downloadManager.getDownloadSettings();
+                    switch (message.peertype) {
+                        case PeerType.PEERUSER:
+                            if (message.messagetype === C_MESSAGE_TYPE.Voice && ds.chat_voices) {
+                                this.downloadVoiceHandler();
+                            }
+                            break;
+                        case PeerType.PEERGROUP:
+                            if (message.messagetype === C_MESSAGE_TYPE.Voice && ds.group_voices) {
+                                this.downloadVoiceHandler();
+                            }
+                            break;
+                    }
+
+                }
             }
         }
         if (state === 'pause') {

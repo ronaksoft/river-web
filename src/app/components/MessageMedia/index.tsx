@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import {IMessage} from '../../repository/message/interface';
-import {FileLocation, InputPeer} from '../../services/sdk/messages/chat.core.types_pb';
+import {FileLocation, InputPeer, PeerType} from '../../services/sdk/messages/chat.core.types_pb';
 import {
     DocumentAttributeAudio,
     DocumentAttributeFile,
@@ -27,6 +27,7 @@ import {getHumanReadableSize} from '../MessageFile';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 
 import './style.css';
+import DownloadManger from '../../services/downloadManager';
 
 const C_MAX_HEIGHT = 256;
 const C_MIN_HEIGHT = 86;
@@ -166,6 +167,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     private mediaBigRef: any = null;
     private blurredImageEnable: boolean = false;
     private contentRead: boolean = false;
+    private downloadManager: DownloadManger;
 
     constructor(props: IProps) {
         super(props);
@@ -199,6 +201,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
 
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
         this.documentViewerService = DocumentViewerService.getInstance();
+        this.downloadManager = DownloadManger.getInstance();
     }
 
     public componentDidMount() {
@@ -416,6 +419,24 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                     this.removeAllListeners();
                     this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
                 });
+            } else {
+                const {peer} = this.props;
+                if (peer && message && !message.downloaded) {
+                    const ds = this.downloadManager.getDownloadSettings();
+                    switch (peer.getType()) {
+                        case PeerType.PEERUSER:
+                            if ((message.messagetype === C_MESSAGE_TYPE.Picture && ds.chat_photos) || (message.messagetype === C_MESSAGE_TYPE.Video && ds.chat_videos)) {
+                                this.downloadFileHandler();
+                            }
+                            break;
+                        case PeerType.PEERGROUP:
+                            if ((message.messagetype === C_MESSAGE_TYPE.Picture && ds.group_photos) || (message.messagetype === C_MESSAGE_TYPE.Video && ds.group_videos)) {
+                                this.downloadFileHandler();
+                            }
+                            break;
+                    }
+
+                }
             }
         }
     }

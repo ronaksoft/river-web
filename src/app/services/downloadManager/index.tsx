@@ -64,7 +64,7 @@ export default class DownloadManger {
     private getLocalStorageDownloadSettings() {
         const serializedData = localStorage.getItem(downloadSettingsKey);
         if (serializedData) {
-            this.downloadSettings = merge(defaultValues, this.downloadSettings);
+            this.downloadSettings = merge(defaultValues, JSON.parse(serializedData));
         } else {
             this.downloadSettings = Object.assign({}, defaultValues);
         }
