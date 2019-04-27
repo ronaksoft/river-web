@@ -16,8 +16,9 @@ import {Refresh} from '@material-ui/icons';
 import {C_ERR, C_ERR_ITEM} from '../../services/sdk/const';
 import RiverLogo from '../../components/RiverLogo';
 import NotificationService from '../../services/notification';
-import IsMobile from '../../services/isMobile';
 import {C_VERSION} from '../../components/SettingMenu';
+import TextField from '@material-ui/core/TextField';
+import {TimerRounded, ArrowForwardRounded} from '@material-ui/icons';
 
 import './tel-input.css';
 import './style.css';
@@ -48,8 +49,6 @@ interface IState {
 class SignUp extends React.Component<IProps, IState> {
     private sdk: SDK;
     private notification: NotificationService;
-    private readonly isMobile: boolean = false;
-    private logoRef: any = null;
     private countdownInterval: any = null;
 
     constructor(props: IProps) {
@@ -70,7 +69,6 @@ class SignUp extends React.Component<IProps, IState> {
         };
         this.sdk = SDK.getInstance();
         this.notification = NotificationService.getInstance();
-        this.isMobile = IsMobile.isAny();
     }
 
     public componentDidMount() {
@@ -96,11 +94,8 @@ class SignUp extends React.Component<IProps, IState> {
         return (
             <div className="limiter">
                 <div className="login-page">
-                    <div className="top-logo" ref={this.logoRefHandler}>
-                        <RiverLogo height={110} width={100}/>
-                        <div className="countdown">
-                            <span>{countdown}</span>
-                        </div>
+                    <div className="top-logo">
+                        <RiverLogo height={184} width={165}/>
                     </div>
                     <div className="top-title">Sign in to River</div>
                     <div className="top-desc">
@@ -108,54 +103,75 @@ class SignUp extends React.Component<IProps, IState> {
                         {step === 'code' && <span>Please enter the code sent to your phone</span>}
                         {step === 'register' && <span>Please fill in your contact info</span>}
                     </div>
-                    <div className="login-wrapper p-t-50 p-b-90">
+                    <div className="login-wrapper">
                         <div className="login-form river-form flex-sb flex-w">
                             <IntlTelInput preferredCountries={[]} defaultCountry={'ir'} value={this.state.phone}
                                           inputClassName="f-phone" disabled={this.state.loading || step === 'code'}
                                           autoHideDialCode={false} onPhoneNumberChange={this.handleOnChange}
                                           onKeyDown={this.sendCodeKeyDown} nationalMode={false} fieldId="input-phone"/>
-                            {(this.state.tries > 0 && (step === 'code' || step === 'register')) &&
+                            {Boolean((this.state.tries > 0 && (step === 'code' || step === 'register')) || (countdown < 45)) &&
                             <div className="try-another-phone" onClick={this.tryAnotherPhone}>
                                 <Refresh/>
                                 <label>
                                     Try another phone
                                 </label>
                             </div>}
-                            {step === 'code' && countdown !== 0 && <div className="input-wrapper validate-input m-b-16">
-                                <input className="input code f-code" type={this.isMobile ? 'number' : 'text'}
-                                       value={this.state.code} placeholder="____" onChange={this.codeOnChange}
-                                       onKeyDown={this.confirmKeyDown}/>
+                            {step === 'code' && countdown !== 0 && <div className="input-wrapper validate-input">
+                                <TextField
+                                    label="code"
+                                    placeholder="____"
+                                    margin="none"
+                                    variant="outlined"
+                                    className="code f-code"
+                                    type="text"
+                                    fullWidth={true}
+                                    value={this.state.code} onChange={this.codeOnChange}
+                                    onKeyDown={this.confirmKeyDown}
+                                />
+                                <div className="countdown">
+                                    <TimerRounded/><span className="inner">{countdown}&nbsp;s</span>
+                                </div>
                             </div>}
                             {step === 'register' &&
                             <div className="input-wrapper validate-input m-b-16">
-                                <input className="input f-fname" type="text" placeholder="First Name"
-                                       autoComplete="off" onKeyDown={this.registerKeyDown}
-                                       value={this.state.fName} onChange={this.fNameOnChange}/>
+                                <TextField className="f-fname" type="text" label="First Name"
+                                           margin="none" variant="outlined" autoComplete="off"
+                                           fullWidth={true}
+                                           value={this.state.fName}
+                                           onKeyDown={this.registerKeyDown}
+                                           onChange={this.fNameOnChange}/>
                                 <span className="focus-input"/>
                             </div>}
                             {step === 'register' &&
                             <div className="input-wrapper validate-input m-b-16">
-                                <input className="input f-lname" type="text" placeholder="Last Name"
-                                       autoComplete="off" onKeyDown={this.registerKeyDown}
-                                       value={this.state.lName} onChange={this.lNameOnChange}/>
+                                <TextField className="f-lname" type="text" label="Last Name"
+                                           margin="none" variant="outlined" autoComplete="off"
+                                           fullWidth={true}
+                                           value={this.state.lName}
+                                           onKeyDown={this.registerKeyDown}
+                                           onChange={this.lNameOnChange}/>
                                 <span className="focus-input"/>
                             </div>}
                             <div className="container-login-form-btn m-t-17">
                                 {step === 'phone' &&
-                                <button className="login-form-btn" onClick={this.sendCode}
-                                        disabled={this.state.loading}>
-                                    Send Code
-                                </button>}
-                                {step === 'code' &&
-                                <button className="login-form-btn" onClick={this.confirmCode}
-                                        disabled={this.state.loading}>
-                                    {countdown === 0 ? 'Resend Code' : 'Confirm Code'}
-                                </button>}
+                                <div className={'login-form-btn' + (this.state.loading ? ' disabled' : '')}
+                                     onClick={this.sendCode}>
+                                    <ArrowForwardRounded/>
+                                </div>}
+                                {step === 'code' && <React.Fragment>
+                                    <div className={'login-form-btn' + (this.state.loading ? ' disabled' : '')}
+                                         onClick={this.confirmCode}>
+                                        <ArrowForwardRounded/>
+                                    </div>
+                                    <div className={'grey-link ' + (countdown >= 45 ? 'disabled' : '')}
+                                         onClick={this.resendCode}>Resend Code
+                                    </div>
+                                </React.Fragment>}
                                 {step === 'register' &&
-                                <button className="login-form-btn" onClick={this.register}
-                                        disabled={this.state.loading}>
-                                    Register
-                                </button>}
+                                <div className={'login-form-btn' + (this.state.loading ? ' disabled' : '')}
+                                     onClick={this.register}>
+                                    <ArrowForwardRounded/>
+                                </div>}
                             </div>
                         </div>
                     </div>
@@ -234,6 +250,9 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     private confirmCode = () => {
+        if (this.state.loading) {
+            return;
+        }
         const {phone, phoneHash, code, countdown} = this.state;
         if ((!phone || !phoneHash || (code.length < 4 && countdown !== 0))) {
             return;
@@ -295,6 +314,32 @@ class SignUp extends React.Component<IProps, IState> {
                     });
                     return;
                 }
+            });
+        }
+    }
+
+    private resendCode = () => {
+        if (this.state.loading) {
+            return;
+        }
+        const {phone, phoneHash, code, countdown} = this.state;
+        if ((!phone || !phoneHash || (code.length < 4 && countdown !== 0))) {
+            return;
+        }
+        this.setState({
+            loading: true,
+        });
+        if (countdown < 45) {
+            this.sdk.resendCode(phone.slice(1), phoneHash).then(() => {
+                this.focus('f-code');
+                this.startCountdown();
+                this.setState({
+                    loading: false,
+                });
+            }).catch(() => {
+                this.setState({
+                    loading: false,
+                });
             });
         }
     }
@@ -395,7 +440,7 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     private focus(className: string) {
-        const elem: any = document.querySelector('.' + className);
+        const elem: any = document.querySelector(`.${className} input`);
         if (elem) {
             elem.focus();
         }
@@ -426,18 +471,7 @@ class SignUp extends React.Component<IProps, IState> {
         this.focus('f-phone');
     }
 
-    private logoRefHandler = (ref: any) => {
-        this.logoRef = ref;
-    }
-
     private startCountdown() {
-        if (!this.logoRef) {
-            return;
-        }
-        this.logoRef.classList.add('a-enable');
-        setTimeout(() => {
-            this.logoRef.classList.add('c-enable');
-        }, 300);
         this.setState({
             countdown: 60,
         });
@@ -458,10 +492,7 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     private stopCountdown() {
-        if (!this.logoRef) {
-            return;
-        }
-        this.logoRef.classList.remove('a-enable', 'c-enable');
+        clearInterval(this.countdownInterval);
     }
 
     private initPhoneInput() {

@@ -571,10 +571,6 @@ html[theme="dark-blue"] .setting-menu .font-size-container div[role="progressbar
   html[theme="dark-blue"] .setting-menu .font-size-container div[role="progressbar"] > div {
     background-color: var(--river); }
 
-html[theme="dark"] .setting-menu .setting-switch span,
-html[theme="dark-blue"] .setting-menu .setting-switch span {
-  color: var(--river) !important; }
-
 html[theme="dark"] .setting-menu .setting-switch-label > span,
 html[theme="dark-blue"] .setting-menu .setting-switch-label > span {
   color: var(--light); }

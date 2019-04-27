@@ -62,12 +62,12 @@ import SettingsBackgroundModal, {ICustomBackground} from '../SettingsBackgroundM
 import FileRepo from '../../repository/file';
 import BackgroundService from '../../services/backgroundService';
 import Radio from '@material-ui/core/Radio';
+import DownloadManger, {IDownloadSettings} from '../../services/downloadManager';
 
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
-import DownloadManger, {IDownloadSettings} from '../../services/downloadManager';
 
-export const C_VERSION = '0.23.120';
+export const C_VERSION = '0.23.121';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 interface IProps {
@@ -308,7 +308,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                                 <div className="setting-switch-label">
                                     <Switch
                                         checked={Boolean(this.state.selectedTheme !== 'light')}
-                                        className="setting-switch"
+                                        className={'setting-switch' + (Boolean(this.state.selectedTheme !== 'light') ? ' checked' : '')}
                                         color="default"
                                         onChange={this.nightModeHandler}
                                     />

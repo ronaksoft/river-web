@@ -1006,11 +1006,21 @@ class Message extends React.Component<IProps, IState> {
                     case MessageEntityType.MESSAGEENTITYTYPEHASHTAG:
                         return (<span key={i} className="_hashtag">{elem.str}</span>);
                     case MessageEntityType.MESSAGEENTITYTYPEURL:
-                        return (<a key={i} href={elem.str} target="_blank" className="_url">{elem.str}</a>);
+                        return (
+                            <a key={i} href={this.modifyURL(elem.str)} target="_blank" className="_url">{elem.str}</a>);
                     default:
                         return (<span key={i}>{elem.str}</span>);
                 }
             });
+        }
+    }
+
+    /* Modify URL */
+    private modifyURL(url: string) {
+        if (url.indexOf('http://') > -1 || url.indexOf('https://') > -1) {
+            return url;
+        } else {
+            return `//${url}`;
         }
     }
 

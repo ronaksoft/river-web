@@ -8,14 +8,6 @@
 */
 @import '../../../style/common';
 
-.m-b-16 {
-  margin-bottom: 16px;
-}
-
-.p-b-51 {
-  padding-bottom: 51px;
-}
-
 input {
   outline: none;
   border: none;
@@ -24,15 +16,6 @@ input {
 .limiter {
   width: 100%;
   margin: 0 auto;
-}
-
-@keyframes bg-move {
-  from {
-    background-position: 0% 0%;
-  }
-  to {
-    background-position: 100% 200%;
-  }
 }
 
 .login-page {
@@ -44,8 +27,7 @@ input {
   justify-content: center;
   align-items: center;
   padding: 15px;
-  background-color: #21352e;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cpolygon fill='%23000' fill-opacity='.1' points='120 0 120 60 90 30 60 0 0 0 0 0 60 60 0 120 60 120 90 90 120 60 120 0'/%3E%3C/svg%3E");
+  background-color: var(--white);
   flex-direction: column;
   z-index: 1;
   .login-wrapper {
@@ -54,9 +36,7 @@ input {
     position: relative;
     .login-form {
       width: 100%;
-      background: #8d8d8d26;
       padding: 10px;
-      border-radius: 5px;
     }
 
     .login-form-title {
@@ -73,7 +53,7 @@ input {
     .input-wrapper {
       width: 100%;
       position: relative;
-      background-color: #fff;
+      background-color: var(--white);
       border: 1px solid transparent;
       border-radius: 3px;
     }
@@ -83,13 +63,14 @@ input {
       color: #0f954b;
       line-height: 1.2;
       font-size: 18px;
-
-      display: block;
       width: 100%;
-      background: transparent;
       height: 62px;
-      padding: 0 20px 0 38px;
-      &.code {
+      display: block;
+      background: transparent;
+    }
+
+    .code {
+      input {
         text-align: center;
         letter-spacing: 30px;
       }
@@ -128,38 +109,50 @@ input {
       width: 100%;
       display: flex;
       flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      margin: 60px 0 0;
     }
 
     .login-form-btn {
-      @include font;
-      font-size: 20px;
-      color: #fff;
-      line-height: 1.2;
-      text-transform: uppercase;
+      height: 56px;
+      width: 56px;
       display: flex;
-      justify-content: center;
       align-items: center;
-      padding: 0 20px;
-      width: 100%;
-      height: 62px;
-      background-color: #14d769;
+      justify-content: center;
+      border-radius: 50%;
+      background-color: var(--river);
       border: 0;
-      border-radius: 3px;
       transition: all 0.4s;
-      -webkit-appearance: none;
-      &[disabled] {
+      &.disabled {
         animation-name: button-disabled;
         animation-iteration-count: infinite;
         animation-duration: 0.5s;
       }
+      &:hover {
+        background-color: var(--river-dark);
+      }
+      svg {
+        font-size: 40px;
+        color: var(--white);
+      }
     }
 
-    .login-form-btn:hover {
-      background-color: #0f954b;
+    .grey-link {
+      color: var(--river);
+      font-size: 18px;
+      font-weight: 100;
+      cursor: pointer;
+      padding: 24px 0 0;
+      &.disabled {
+        color: #8C8C8C;
+        cursor: default;
+      }
     }
 
     .try-another-phone {
-      color: #c7ccca;
+      color: #999;
       text-align: left;
       line-height: 24px;
       display: block;
@@ -180,55 +173,25 @@ input {
     display: flex;
     justify-content: center;
     align-items: center;
-    .countdown {
-      position: absolute;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      top: 50%;
-      left: 50%;
-      color: #fff;
-      height: 128px;
-      width: 128px;
-      font-size: 32px;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      border: 1px solid #fff;
-      z-index: 10;
-      opacity: 0;
-      transition: transform 0.3s;
-    }
     .river-logo {
       transition: opacity 0.3s;
-    }
-    &.a-enable {
-      .river-logo {
-        transform: scale(0.25) translateY(150%);
-      }
-    }
-    &.c-enable {
-      .countdown {
-        opacity: 1;
-      }
     }
   }
 
   .top-title {
-    margin: 10px 0;
-    color: #fff;
+    color: var(--dark);
     font-size: 32px;
-    font-weight: 100;
-    padding: 10px;
+    font-weight: bold;
+    padding: 32px 10px 0;
   }
 
   .top-desc {
+    color: var(--grey);
     width: 435px;
-    height: 60px;
-    line-height: 60px;
+    height: 32px;
+    line-height: 32px;
     text-align: center;
-    font-size: 18px;
-    color: #fff;
-    border-top: 1px solid rgba(255, 255, 255, 0.32);
+    font-size: 20px;
   }
 
   .river-form {
@@ -236,6 +199,11 @@ input {
       margin-bottom: 16px;
       display: flex;
       flex-direction: row-reverse;
+      border-radius: 7px;
+      border: 1px solid #c4c4c4;
+      &:hover {
+        border-color: #212121;
+      }
       input[type=tel] {
         @include font;
         position: relative;
@@ -301,9 +269,23 @@ input {
         }
       }
     }
+    .countdown {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin: 5px;
+      .inner {
+        color: var(--river);
+        font-weight: bold;
+        font-size: 20px;
+      }
+      svg {
+        color: var(--river);
+        font-size: 20px;
+      }
+    }
   }
 }
-
 
 @keyframes button-disabled {
   from {
