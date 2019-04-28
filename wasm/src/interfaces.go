@@ -275,7 +275,7 @@ func (r *River) send(msgEnvelope *msg.MessageEnvelope, webSocket bool) {
 	protoMessage := new(msg.ProtoMessage)
 	protoMessage.AuthID = r.authID
 	protoMessage.MessageKey = make([]byte, 32)
-	if r.authID == 0 || msgEnvelope.Constructor == msg.C_SystemGetServerTime {
+	if r.authID == 0 || msgEnvelope.Constructor == msg.C_SystemGetServerTime || msgEnvelope.Constructor == msg.C_SystemGetInfo {
 		protoMessage.AuthID = 0
 		protoMessage.Payload, _ = msgEnvelope.Marshal()
 	} else {
@@ -315,6 +315,7 @@ func (r *River) receive(message *[]byte, webSocket bool) {
 	// If it is a BINARY message
 
 	res.Unmarshal(*message)
+
 	if res.AuthID == 0 {
 		receivedEnvelope := new(msg.MessageEnvelope)
 		err := receivedEnvelope.Unmarshal(res.Payload)

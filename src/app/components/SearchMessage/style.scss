@@ -1,0 +1,115 @@
+/*
+    Creation Time: 2019 - April - 28
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2019
+*/
+@import '../../../style/common';
+
+.search-message {
+  position: absolute;
+  background-color: var(--white);
+  top: 0;
+  left: 0;
+  right: 0;
+  display: none;
+  z-index: 100;
+  &.visible {
+    display: block;
+  }
+  .search-box {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .search-action {
+      width: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      button {
+        padding: 3px;
+      }
+    }
+    .search-input {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 6px;
+      .input {
+        label {
+          font-size: 14px;
+          line-height: 14px;
+          transform: translate(0, 12px) scale(1);
+        }
+        &.focus {
+          label {
+            transform: translate(0, 0) scale(0.8);
+          }
+        }
+        > div {
+          margin-top: 10px;
+          input {
+            padding: 1px 0;
+          }
+        }
+      }
+    }
+  }
+}
+
+html[theme="dark"] {
+  .search-message {
+    background-color: var(--dark-high);
+    .search-box {
+      .search-action {
+        button svg {
+          color: var(--light);
+        }
+        button[disabled] svg {
+          color: var(--grey);
+        }
+      }
+      .search-input {
+        label {
+          color: var(--white);
+        }
+        .input {
+          input {
+            color: var(--white);
+          }
+        }
+      }
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .search-message {
+    background-color: var(--dark-blue-low);
+    .search-box {
+      border-bottom: 1px solid var(--dark-blue-mention);
+      .search-action {
+        button svg {
+          color: var(--dark-blue-mention);
+        }
+        button[disabled] svg {
+          color: var(--dark);
+        }
+      }
+      .search-input {
+        label {
+          color: var(--white);
+        }
+        .input {
+          input {
+            color: var(--white);
+          }
+        }
+      }
+    }
+  }
+}

@@ -130,7 +130,7 @@ class Dialog extends React.Component<IProps, IState> {
             <div className="dialogs">
                 <div className={'dialog-search' + (searchEnable ? ' open' : '')}>
                     <FormControl fullWidth={true} className="title-edit">
-                        <InputLabel htmlFor="adornment-title">Search...</InputLabel>
+                        <InputLabel htmlFor="dialog-search">Search...</InputLabel>
                         <Input
                             id="dialog-search"
                             type="text"

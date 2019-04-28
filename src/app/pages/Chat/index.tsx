@@ -95,6 +95,7 @@ import BackgroundService from '../../services/backgroundService';
 import {C_CUSTOM_BG} from '../../components/SettingMenu/vars/theme';
 
 import './style.css';
+import SearchMessage from '../../components/SearchMessage';
 
 const C_MAX_UPDATE_DIFF = 1000;
 
@@ -504,6 +505,7 @@ class Chat extends React.Component<IProps, IState> {
                             <div ref={this.conversationRefHandler}
                                  className={'conversation ' + (this.state.messages.length === 0 && !this.isLoading ? ' no-result' : '')}>
                                 <PopUpDate ref={this.popUpDateRefHandler}/>
+                                <SearchMessage peer={peer} onFind={this.searchMessageFindHandler}/>
                                 <Message ref={this.messageRefHandler}
                                          items={this.state.messages}
                                          readId={this.state.maxReadId}
@@ -3860,6 +3862,10 @@ class Chat extends React.Component<IProps, IState> {
 
     private conversationRefHandler = (ref: any) => {
         this.backgroundService.setRef(ref);
+    }
+
+    private searchMessageFindHandler = (id: number) => {
+        this.messageJumpToMessageHandler(id);
     }
 
     private broadcastEvent(name: string, data: any) {

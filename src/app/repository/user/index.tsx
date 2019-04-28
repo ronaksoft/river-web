@@ -108,8 +108,8 @@ export default class UserRepo {
     }
 
     public getManyCache(isContact: boolean, {keyword, limit}: any): Promise<IUser[]> {
+        const reg = new RegExp(keyword || '', 'i');
         const searchFilter = (u: IUser) => {
-            const reg = new RegExp(keyword || '', 'i');
             return (reg.test(u.phone || '') || reg.test(u.username || '') || reg.test(u.firstname || '') || reg.test(u.lastname || ''));
         };
         if (isContact) {

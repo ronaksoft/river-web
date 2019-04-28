@@ -83,6 +83,7 @@ import {
     GroupsUploadPhoto
 } from './messages/chat.api.groups_pb';
 import {UsersGetFull} from './messages/chat.api.users_pb';
+import {SystemGetInfo, SystemInfo} from './messages/chat.api.system_pb';
 
 export default class SDK {
     public static getInstance() {
@@ -499,5 +500,10 @@ export default class SDK {
         const data = new GroupsRemovePhoto();
         data.setGroupid(groupId);
         return this.server.send(C_MSG.GroupsRemovePhoto, data.serializeBinary(), true);
+    }
+
+    public systemGetInfo(): Promise<SystemInfo.AsObject> {
+        const data = new SystemGetInfo();
+        return this.server.send(C_MSG.SystemGetInfo, data.serializeBinary(), true);
     }
 }

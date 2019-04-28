@@ -482,6 +482,46 @@ export default class MessageRepo {
         });
     }
 
+    // Search message bodies
+    public search(peerId: string, {keyword, before, after, limit}: { keyword: string, before?: number, after?: number, limit?: number }) {
+        let mode = 0x0;
+        if (before !== null && before !== undefined) {
+            mode = mode | 0x1;
+        }
+        if (after !== null && after !== undefined) {
+            mode = mode | 0x2;
+        }
+        const pipe = this.db.messages.where('[peerid+id]');
+        let pipe2: Dexie.Collection<IMessage, number>;
+        switch (mode) {
+            // none
+            default:
+            case 0x0:
+                pipe2 = pipe.between([peerId, Dexie.minKey], [peerId, Dexie.maxKey], true, true);
+                break;
+            // before
+            case 0x1:
+                pipe2 = pipe.between([peerId, Dexie.minKey], [peerId, before || 0], true, true);
+                break;
+            // after
+            case 0x2:
+                pipe2 = pipe.between([peerId, after || 0], [peerId, Dexie.maxKey], true, true);
+                break;
+            // between
+            case 0x3:
+                pipe2 = pipe.between([peerId, (after || 0) + 1], [peerId, (before || 0) - 1], true, true);
+                break;
+        }
+        if (mode !== 0x2) {
+            pipe2 = pipe2.reverse();
+        }
+        const reg = new RegExp(keyword || '', 'i');
+        pipe2 = pipe2.filter((item: IMessage) => {
+            return item.temp !== true && (item.id || 0) > 0 && reg.test(item.body || '');
+        });
+        return pipe2.limit(limit || 30).toArray();
+    }
+
     public transform(msgs: IMessage[]) {
         return msgs.map((msg) => {
             // msg = MessageRepo.parseMessage(msg);
