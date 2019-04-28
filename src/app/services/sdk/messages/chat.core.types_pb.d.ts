@@ -357,6 +357,16 @@ export class Dialog extends jspb.Message {
   getMentionedcount(): number | undefined;
   setMentionedcount(value: number): void;
 
+  hasPinned(): boolean;
+  clearPinned(): void;
+  getPinned(): boolean | undefined;
+  setPinned(value: boolean): void;
+
+  hasDraft(): boolean;
+  clearDraft(): void;
+  getDraft(): DraftMessage | undefined;
+  setDraft(value?: DraftMessage): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Dialog.AsObject;
   static toObject(includeInstance: boolean, msg: Dialog): Dialog.AsObject;
@@ -378,6 +388,8 @@ export namespace Dialog {
     accesshash?: string,
     notifysettings?: PeerNotifySettings.AsObject,
     mentionedcount?: number,
+    pinned?: boolean,
+    draft?: DraftMessage.AsObject,
   }
 }
 
@@ -856,6 +868,58 @@ export namespace UserMessage {
     entitiesList?: Array<MessageEntity.AsObject>,
     mediatype?: MediaType,
     media?: Uint8Array | string,
+  }
+}
+
+export class DraftMessage extends jspb.Message {
+  hasPeerid(): boolean;
+  clearPeerid(): void;
+  getPeerid(): string | undefined;
+  setPeerid(value: string): void;
+
+  hasPeertype(): boolean;
+  clearPeertype(): void;
+  getPeertype(): number | undefined;
+  setPeertype(value: number): void;
+
+  hasDate(): boolean;
+  clearDate(): void;
+  getDate(): number | undefined;
+  setDate(value: number): void;
+
+  hasBody(): boolean;
+  clearBody(): void;
+  getBody(): string | undefined;
+  setBody(value: string): void;
+
+  clearEntitiesList(): void;
+  getEntitiesList(): Array<MessageEntity>;
+  setEntitiesList(value: Array<MessageEntity>): void;
+  addEntities(value?: MessageEntity, index?: number): MessageEntity;
+
+  hasReplyto(): boolean;
+  clearReplyto(): void;
+  getReplyto(): number | undefined;
+  setReplyto(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): DraftMessage.AsObject;
+  static toObject(includeInstance: boolean, msg: DraftMessage): DraftMessage.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: DraftMessage, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): DraftMessage;
+  static deserializeBinaryFromReader(message: DraftMessage, reader: jspb.BinaryReader): DraftMessage;
+}
+
+export namespace DraftMessage {
+  export type AsObject = {
+    peerid?: string,
+    peertype?: number,
+    date?: number,
+    body?: string,
+    entitiesList: Array<MessageEntity.AsObject>,
+    replyto?: number,
   }
 }
 

@@ -263,6 +263,11 @@ export class MessagesGetDialogs extends jspb.Message {
   getOffset(): number | undefined;
   setOffset(value: number): void;
 
+  hasExcludepinned(): boolean;
+  clearExcludepinned(): void;
+  getExcludepinned(): boolean | undefined;
+  setExcludepinned(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesGetDialogs.AsObject;
   static toObject(includeInstance: boolean, msg: MessagesGetDialogs): MessagesGetDialogs.AsObject;
@@ -277,6 +282,23 @@ export namespace MessagesGetDialogs {
   export type AsObject = {
     limit?: number,
     offset?: number,
+    excludepinned?: boolean,
+  }
+}
+
+export class MessagesGetPinnedDialogs extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessagesGetPinnedDialogs.AsObject;
+  static toObject(includeInstance: boolean, msg: MessagesGetPinnedDialogs): MessagesGetPinnedDialogs.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessagesGetPinnedDialogs, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessagesGetPinnedDialogs;
+  static deserializeBinaryFromReader(message: MessagesGetPinnedDialogs, reader: jspb.BinaryReader): MessagesGetPinnedDialogs;
+}
+
+export namespace MessagesGetPinnedDialogs {
+  export type AsObject = {
   }
 }
 
@@ -472,6 +494,118 @@ export namespace MessagesReadContents {
   }
 }
 
+export class MessagesSaveDraft extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): chat_core_types_pb.InputPeer;
+  setPeer(value?: chat_core_types_pb.InputPeer): void;
+
+  hasReplyto(): boolean;
+  clearReplyto(): void;
+  getReplyto(): number | undefined;
+  setReplyto(value: number): void;
+
+  hasBody(): boolean;
+  clearBody(): void;
+  getBody(): string | undefined;
+  setBody(value: string): void;
+
+  clearEntitiesList(): void;
+  getEntitiesList(): Array<chat_core_types_pb.MessageEntity>;
+  setEntitiesList(value: Array<chat_core_types_pb.MessageEntity>): void;
+  addEntities(value?: chat_core_types_pb.MessageEntity, index?: number): chat_core_types_pb.MessageEntity;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessagesSaveDraft.AsObject;
+  static toObject(includeInstance: boolean, msg: MessagesSaveDraft): MessagesSaveDraft.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessagesSaveDraft, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessagesSaveDraft;
+  static deserializeBinaryFromReader(message: MessagesSaveDraft, reader: jspb.BinaryReader): MessagesSaveDraft;
+}
+
+export namespace MessagesSaveDraft {
+  export type AsObject = {
+    peer: chat_core_types_pb.InputPeer.AsObject,
+    replyto?: number,
+    body?: string,
+    entitiesList: Array<chat_core_types_pb.MessageEntity.AsObject>,
+  }
+}
+
+export class MessagesClearDraft extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): chat_core_types_pb.InputPeer;
+  setPeer(value?: chat_core_types_pb.InputPeer): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessagesClearDraft.AsObject;
+  static toObject(includeInstance: boolean, msg: MessagesClearDraft): MessagesClearDraft.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessagesClearDraft, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessagesClearDraft;
+  static deserializeBinaryFromReader(message: MessagesClearDraft, reader: jspb.BinaryReader): MessagesClearDraft;
+}
+
+export namespace MessagesClearDraft {
+  export type AsObject = {
+    peer: chat_core_types_pb.InputPeer.AsObject,
+  }
+}
+
+export class MessagesToggleDialogPin extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): chat_core_types_pb.InputPeer;
+  setPeer(value?: chat_core_types_pb.InputPeer): void;
+
+  hasPin(): boolean;
+  clearPin(): void;
+  getPin(): boolean | undefined;
+  setPin(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessagesToggleDialogPin.AsObject;
+  static toObject(includeInstance: boolean, msg: MessagesToggleDialogPin): MessagesToggleDialogPin.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessagesToggleDialogPin, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessagesToggleDialogPin;
+  static deserializeBinaryFromReader(message: MessagesToggleDialogPin, reader: jspb.BinaryReader): MessagesToggleDialogPin;
+}
+
+export namespace MessagesToggleDialogPin {
+  export type AsObject = {
+    peer: chat_core_types_pb.InputPeer.AsObject,
+    pin?: boolean,
+  }
+}
+
+export class MessagesReorderPinnedDialogs extends jspb.Message {
+  clearPeersList(): void;
+  getPeersList(): Array<chat_core_types_pb.InputPeer>;
+  setPeersList(value: Array<chat_core_types_pb.InputPeer>): void;
+  addPeers(value?: chat_core_types_pb.InputPeer, index?: number): chat_core_types_pb.InputPeer;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessagesReorderPinnedDialogs.AsObject;
+  static toObject(includeInstance: boolean, msg: MessagesReorderPinnedDialogs): MessagesReorderPinnedDialogs.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessagesReorderPinnedDialogs, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessagesReorderPinnedDialogs;
+  static deserializeBinaryFromReader(message: MessagesReorderPinnedDialogs, reader: jspb.BinaryReader): MessagesReorderPinnedDialogs;
+}
+
+export namespace MessagesReorderPinnedDialogs {
+  export type AsObject = {
+    peersList: Array<chat_core_types_pb.InputPeer.AsObject>,
+  }
+}
+
 export class MessagesDialogs extends jspb.Message {
   clearDialogsList(): void;
   getDialogsList(): Array<chat_core_types_pb.Dialog>;
@@ -574,6 +708,11 @@ export class MessagesMany extends jspb.Message {
   setGroupsList(value: Array<chat_core_types_pb.Group>): void;
   addGroups(value?: chat_core_types_pb.Group, index?: number): chat_core_types_pb.Group;
 
+  hasContinuous(): boolean;
+  clearContinuous(): void;
+  getContinuous(): boolean | undefined;
+  setContinuous(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesMany.AsObject;
   static toObject(includeInstance: boolean, msg: MessagesMany): MessagesMany.AsObject;
@@ -589,6 +728,7 @@ export namespace MessagesMany {
     messagesList: Array<chat_core_types_pb.UserMessage.AsObject>,
     usersList: Array<chat_core_types_pb.User.AsObject>,
     groupsList: Array<chat_core_types_pb.Group.AsObject>,
+    continuous?: boolean,
   }
 }
 

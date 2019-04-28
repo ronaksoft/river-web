@@ -44,8 +44,6 @@ message AuthCheckPhone {
     required string Phone = 1;
 }
 
-
-
 // AuthSendCode
 // @Function
 // @Return: AuthSentCode
@@ -96,4 +94,5 @@ message AuthCheckedPhone {
 message AuthSentCode {
     required string Phone = 1;
     required string PhoneCodeHash = 2;
+    optional bool SendToPhone = 3;
 }

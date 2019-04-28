@@ -83,6 +83,13 @@ message MessagesGetHistory {
 message MessagesGetDialogs {
     required int32 Limit = 2;
     required int32 Offset = 3;
+    optional bool ExcludePinned = 4;
+}
+
+// MessagesGetPinnedDialogs
+// @Function
+// @Returns: MessagesDialogs
+message MessagesGetPinnedDialogs {
 }
 
 // MessagesGetDialog
@@ -137,6 +144,38 @@ message MessagesReadContents {
     repeated int64 MessageIDs = 2;
 }
 
+// MessagesSaveDraft
+// @Function
+// Returns: Bool
+message MessagesSaveDraft {
+    required InputPeer Peer = 1;
+    required int64 ReplyTo = 2;
+    required string Body = 3;
+    repeated MessageEntity Entities = 4;
+}
+
+// MessagesClearDraft
+// @Function
+// @Returns: Bool
+message MessagesClearDraft {
+    required InputPeer Peer = 1;
+}
+
+// MessagesToggleDialogPin
+// @Function
+// @Returns: Bool
+message MessagesToggleDialogPin {
+    required InputPeer Peer = 1;
+    required bool Pin = 2;
+}
+
+// MessagesReorderPinnedDialogs
+// @Function
+// @Returns: Bool
+message MessagesReorderPinnedDialogs {
+    repeated InputPeer Peers = 1;
+}
+
 // MessagesDialogs
 message MessagesDialogs {
     repeated Dialog Dialogs = 1;
@@ -159,5 +198,6 @@ message MessagesMany {
     repeated UserMessage Messages = 1;
     repeated User Users = 2;
     repeated Group Groups = 3;
+    optional bool Continuous = 4;
 }
 

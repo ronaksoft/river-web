@@ -134,8 +134,8 @@ message AccountAuthorization {
     required int64 CreatedAt = 5;
     required int64 ActiveAt = 6;
     required string ClientIP = 7;
+    required int64 LastAccess = 8;
 }
-
 
 // AccountPrivacyKey
 enum AccountPrivacyKey {

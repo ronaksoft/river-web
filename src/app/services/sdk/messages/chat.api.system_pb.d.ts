@@ -52,6 +52,142 @@ export namespace SystemGetServerTime {
   }
 }
 
+export class SystemGetAppUpdate extends jspb.Message {
+  hasClienttype(): boolean;
+  clearClienttype(): void;
+  getClienttype(): string | undefined;
+  setClienttype(value: string): void;
+
+  hasVersion(): boolean;
+  clearVersion(): void;
+  getVersion(): number | undefined;
+  setVersion(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SystemGetAppUpdate.AsObject;
+  static toObject(includeInstance: boolean, msg: SystemGetAppUpdate): SystemGetAppUpdate.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: SystemGetAppUpdate, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SystemGetAppUpdate;
+  static deserializeBinaryFromReader(message: SystemGetAppUpdate, reader: jspb.BinaryReader): SystemGetAppUpdate;
+}
+
+export namespace SystemGetAppUpdate {
+  export type AsObject = {
+    clienttype?: string,
+    version?: number,
+  }
+}
+
+export class SystemGetInfo extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SystemGetInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: SystemGetInfo): SystemGetInfo.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: SystemGetInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SystemGetInfo;
+  static deserializeBinaryFromReader(message: SystemGetInfo, reader: jspb.BinaryReader): SystemGetInfo;
+}
+
+export namespace SystemGetInfo {
+  export type AsObject = {
+  }
+}
+
+export class AppUpdate extends jspb.Message {
+  hasAvailable(): boolean;
+  clearAvailable(): void;
+  getAvailable(): boolean | undefined;
+  setAvailable(value: boolean): void;
+
+  hasMandatory(): boolean;
+  clearMandatory(): void;
+  getMandatory(): boolean | undefined;
+  setMandatory(value: boolean): void;
+
+  hasIdentifier(): boolean;
+  clearIdentifier(): void;
+  getIdentifier(): string | undefined;
+  setIdentifier(value: string): void;
+
+  hasVersionname(): boolean;
+  clearVersionname(): void;
+  getVersionname(): string | undefined;
+  setVersionname(value: string): void;
+
+  hasDownloadurl(): boolean;
+  clearDownloadurl(): void;
+  getDownloadurl(): string | undefined;
+  setDownloadurl(value: string): void;
+
+  hasDescription(): boolean;
+  clearDescription(): void;
+  getDescription(): string | undefined;
+  setDescription(value: string): void;
+
+  hasDisplayinterval(): boolean;
+  clearDisplayinterval(): void;
+  getDisplayinterval(): number | undefined;
+  setDisplayinterval(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AppUpdate.AsObject;
+  static toObject(includeInstance: boolean, msg: AppUpdate): AppUpdate.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AppUpdate, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AppUpdate;
+  static deserializeBinaryFromReader(message: AppUpdate, reader: jspb.BinaryReader): AppUpdate;
+}
+
+export namespace AppUpdate {
+  export type AsObject = {
+    available?: boolean,
+    mandatory?: boolean,
+    identifier?: string,
+    versionname?: string,
+    downloadurl?: string,
+    description?: string,
+    displayinterval?: number,
+  }
+}
+
+export class SystemInfo extends jspb.Message {
+  hasWorkgroupname(): boolean;
+  clearWorkgroupname(): void;
+  getWorkgroupname(): string | undefined;
+  setWorkgroupname(value: string): void;
+
+  hasBigphotourl(): boolean;
+  clearBigphotourl(): void;
+  getBigphotourl(): string | undefined;
+  setBigphotourl(value: string): void;
+
+  hasSmallphotourl(): boolean;
+  clearSmallphotourl(): void;
+  getSmallphotourl(): string | undefined;
+  setSmallphotourl(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SystemInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: SystemInfo): SystemInfo.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: SystemInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SystemInfo;
+  static deserializeBinaryFromReader(message: SystemInfo, reader: jspb.BinaryReader): SystemInfo;
+}
+
+export namespace SystemInfo {
+  export type AsObject = {
+    workgroupname?: string,
+    bigphotourl?: string,
+    smallphotourl?: string,
+  }
+}
+
 export class SystemServerTime extends jspb.Message {
   hasTimestamp(): boolean;
   clearTimestamp(): void;

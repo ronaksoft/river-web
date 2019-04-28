@@ -2370,7 +2370,8 @@ proto.msg.AuthSentCode.prototype.toObject = function(opt_includeInstance) {
 proto.msg.AuthSentCode.toObject = function(includeInstance, msg) {
   var f, obj = {
     phone: jspb.Message.getField(msg, 1),
-    phonecodehash: jspb.Message.getField(msg, 2)
+    phonecodehash: jspb.Message.getField(msg, 2),
+    sendtophone: jspb.Message.getField(msg, 3)
   };
 
   if (includeInstance) {
@@ -2415,6 +2416,10 @@ proto.msg.AuthSentCode.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setPhonecodehash(value);
       break;
+    case 3:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setSendtophone(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -2455,6 +2460,13 @@ proto.msg.AuthSentCode.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeString(
       2,
+      f
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeBool(
+      3,
       f
     );
   }
@@ -2516,6 +2528,37 @@ proto.msg.AuthSentCode.prototype.clearPhonecodehash = function() {
  */
 proto.msg.AuthSentCode.prototype.hasPhonecodehash = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional bool SendToPhone = 3;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.msg.AuthSentCode.prototype.getSendtophone = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 3, false));
+};
+
+
+/** @param {boolean} value */
+proto.msg.AuthSentCode.prototype.setSendtophone = function(value) {
+  jspb.Message.setField(this, 3, value);
+};
+
+
+proto.msg.AuthSentCode.prototype.clearSendtophone = function() {
+  jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AuthSentCode.prototype.hasSendtophone = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 

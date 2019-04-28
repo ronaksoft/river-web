@@ -469,6 +469,11 @@ export class AccountAuthorization extends jspb.Message {
   getClientip(): string | undefined;
   setClientip(value: string): void;
 
+  hasLastaccess(): boolean;
+  clearLastaccess(): void;
+  getLastaccess(): number | undefined;
+  setLastaccess(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountAuthorization.AsObject;
   static toObject(includeInstance: boolean, msg: AccountAuthorization): AccountAuthorization.AsObject;
@@ -489,6 +494,7 @@ export namespace AccountAuthorization {
     createdat?: number,
     activeat?: number,
     clientip?: string,
+    lastaccess?: number,
   }
 }
 

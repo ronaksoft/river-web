@@ -86,6 +86,8 @@ message Dialog {
     required fixed64 AccessHash = 7 [jstype = JS_STRING];
     optional PeerNotifySettings NotifySettings = 8;
     optional int32 MentionedCount = 9;
+    required bool Pinned = 10;
+    optional DraftMessage Draft = 11;
 }
 
 // Peer
@@ -204,6 +206,16 @@ message UserMessage {
     repeated MessageEntity Entities = 18;
     optional MediaType MediaType = 19;
     optional bytes Media = 20;
+}
+
+// DraftMessage
+message DraftMessage {
+    required int64 PeerID = 2 [jstype = JS_STRING];
+    required int32 PeerType = 3;
+    required int64 Date = 4;
+    required string Body = 5;
+    repeated MessageEntity Entities = 6;
+    required int64 ReplyTo = 7;
 }
 
 // MessageEntityType

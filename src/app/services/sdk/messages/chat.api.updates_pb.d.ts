@@ -876,3 +876,127 @@ export namespace UpdateAuthorizationReset {
   }
 }
 
+export class UpdateDraftMessage extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasMessage(): boolean;
+  clearMessage(): void;
+  getMessage(): chat_core_types_pb.DraftMessage;
+  setMessage(value?: chat_core_types_pb.DraftMessage): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateDraftMessage.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateDraftMessage): UpdateDraftMessage.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateDraftMessage, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateDraftMessage;
+  static deserializeBinaryFromReader(message: UpdateDraftMessage, reader: jspb.BinaryReader): UpdateDraftMessage;
+}
+
+export namespace UpdateDraftMessage {
+  export type AsObject = {
+    ucount?: number,
+    message: chat_core_types_pb.DraftMessage.AsObject,
+  }
+}
+
+export class UpdateDraftMessageCleared extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): chat_core_types_pb.Peer;
+  setPeer(value?: chat_core_types_pb.Peer): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateDraftMessageCleared.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateDraftMessageCleared): UpdateDraftMessageCleared.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateDraftMessageCleared, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateDraftMessageCleared;
+  static deserializeBinaryFromReader(message: UpdateDraftMessageCleared, reader: jspb.BinaryReader): UpdateDraftMessageCleared;
+}
+
+export namespace UpdateDraftMessageCleared {
+  export type AsObject = {
+    ucount?: number,
+    peer: chat_core_types_pb.Peer.AsObject,
+  }
+}
+
+export class UpdateDialogPinned extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): chat_core_types_pb.Peer;
+  setPeer(value?: chat_core_types_pb.Peer): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateDialogPinned.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateDialogPinned): UpdateDialogPinned.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateDialogPinned, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateDialogPinned;
+  static deserializeBinaryFromReader(message: UpdateDialogPinned, reader: jspb.BinaryReader): UpdateDialogPinned;
+}
+
+export namespace UpdateDialogPinned {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+    peer: chat_core_types_pb.Peer.AsObject,
+  }
+}
+
+export class UpdateDialogPinnedReorder extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  clearPeerList(): void;
+  getPeerList(): Array<chat_core_types_pb.Peer>;
+  setPeerList(value: Array<chat_core_types_pb.Peer>): void;
+  addPeer(value?: chat_core_types_pb.Peer, index?: number): chat_core_types_pb.Peer;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateDialogPinnedReorder.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateDialogPinnedReorder): UpdateDialogPinnedReorder.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateDialogPinnedReorder, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateDialogPinnedReorder;
+  static deserializeBinaryFromReader(message: UpdateDialogPinnedReorder, reader: jspb.BinaryReader): UpdateDialogPinnedReorder;
+}
+
+export namespace UpdateDialogPinnedReorder {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+    peerList: Array<chat_core_types_pb.Peer.AsObject>,
+  }
+}
+

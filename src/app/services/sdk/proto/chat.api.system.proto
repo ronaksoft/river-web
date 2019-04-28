@@ -20,6 +20,39 @@ message SystemGetDHGroups {
 message SystemGetServerTime {
 }
 
+// SystemGetAppUpdate
+// @Function
+// @Returns: AppUpdate
+message SystemGetAppUpdate {
+    required string ClientType = 1;
+    required int32 Version = 2;
+}
+
+// SystemGetInfo
+// @Function
+// @Returns: SystemInfo
+message SystemGetInfo {
+}
+
+
+// AppUpdate
+message AppUpdate {
+    required bool Available = 1;
+    required bool Mandatory = 2;
+    required string Identifier = 3;
+    required string VersionName = 4;
+    required string DownloadUrl = 5;
+    required string Description = 6;
+    required int32 DisplayInterval = 7;
+}
+
+// SystemInfo
+message SystemInfo {
+    required string WorkGroupName = 1;
+    required string BigPhotoUrl = 2;
+    required string SmallPhotoUrl = 3;
+}
+
 // SystemServerTime
 message SystemServerTime {
     required int64 Timestamp = 1; // In Seconds

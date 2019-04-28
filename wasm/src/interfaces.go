@@ -1,7 +1,7 @@
 package main
 
 import (
-	"git.ronaksoftware.com/customers/river/messages/ext"
+	"git.ronaksoftware.com/river/msg/ext"
 	"syscall/js"
 	"fmt"
 	"math/big"

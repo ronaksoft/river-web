@@ -3118,7 +3118,8 @@ proto.msg.AccountAuthorization.toObject = function(includeInstance, msg) {
     langcode: jspb.Message.getField(msg, 4),
     createdat: jspb.Message.getField(msg, 5),
     activeat: jspb.Message.getField(msg, 6),
-    clientip: jspb.Message.getField(msg, 7)
+    clientip: jspb.Message.getField(msg, 7),
+    lastaccess: jspb.Message.getField(msg, 8)
   };
 
   if (includeInstance) {
@@ -3186,6 +3187,10 @@ proto.msg.AccountAuthorization.deserializeBinaryFromReader = function(msg, reade
     case 7:
       var value = /** @type {string} */ (reader.readString());
       msg.setClientip(value);
+      break;
+    case 8:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setLastaccess(value);
       break;
     default:
       reader.skipField();
@@ -3269,6 +3274,13 @@ proto.msg.AccountAuthorization.serializeBinaryToWriter = function(message, write
   if (f != null) {
     writer.writeString(
       7,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 8));
+  if (f != null) {
+    writer.writeInt64(
+      8,
       f
     );
   }
@@ -3504,6 +3516,35 @@ proto.msg.AccountAuthorization.prototype.clearClientip = function() {
  */
 proto.msg.AccountAuthorization.prototype.hasClientip = function() {
   return jspb.Message.getField(this, 7) != null;
+};
+
+
+/**
+ * required int64 LastAccess = 8;
+ * @return {number}
+ */
+proto.msg.AccountAuthorization.prototype.getLastaccess = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.AccountAuthorization.prototype.setLastaccess = function(value) {
+  jspb.Message.setField(this, 8, value);
+};
+
+
+proto.msg.AccountAuthorization.prototype.clearLastaccess = function() {
+  jspb.Message.setField(this, 8, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AccountAuthorization.prototype.hasLastaccess = function() {
+  return jspb.Message.getField(this, 8) != null;
 };
 
 

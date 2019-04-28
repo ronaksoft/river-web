@@ -182,3 +182,29 @@ message UpdateAuthorizationReset {
     required int32 UCount = 100;
     required int64 UpdateID = 101;
 }
+
+// UpdateDraftMessage
+message UpdateDraftMessage {
+    required int32 UCount = 100;
+    required DraftMessage Message = 1;
+}
+
+// UpdateDraftMessageCleared
+message UpdateDraftMessageCleared {
+    required int32 UCount = 100;
+    required Peer Peer = 1;
+}
+
+// UpdateDialogPinned
+message UpdateDialogPinned {
+    required int32 UCount = 100;
+    required int64 UpdateID = 101;
+    required Peer Peer = 1;
+}
+
+// UpdateDialogPinnedOrder
+message UpdateDialogPinnedReorder {
+    required int32 UCount = 100;
+    required int64 UpdateID = 101;
+    repeated Peer Peer = 1;
+}

@@ -339,6 +339,11 @@ export class AuthSentCode extends jspb.Message {
   getPhonecodehash(): string | undefined;
   setPhonecodehash(value: string): void;
 
+  hasSendtophone(): boolean;
+  clearSendtophone(): void;
+  getSendtophone(): boolean | undefined;
+  setSendtophone(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AuthSentCode.AsObject;
   static toObject(includeInstance: boolean, msg: AuthSentCode): AuthSentCode.AsObject;
@@ -353,6 +358,7 @@ export namespace AuthSentCode {
   export type AsObject = {
     phone?: string,
     phonecodehash?: string,
+    sendtophone?: boolean,
   }
 }
 

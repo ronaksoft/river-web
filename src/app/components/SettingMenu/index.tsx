@@ -14,21 +14,9 @@ import Button from '@material-ui/core/Button';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import {
-    KeyboardBackspaceRounded,
-    PaletteRounded,
-    PersonRounded,
-    EditRounded,
-    CheckRounded,
-    BookmarkRounded,
-    PhotoCameraRounded,
-    CloseRounded,
-    FormatSizeRounded,
-    ChatBubbleRounded,
-    FormatColorFillRounded,
-    CollectionsRounded,
-    Brightness2Rounded,
-    ClearAllRounded,
-    StorageRounded,
+    KeyboardBackspaceRounded, PaletteRounded, PersonRounded, EditRounded, CheckRounded, BookmarkRounded,
+    PhotoCameraRounded, CloseRounded, FormatSizeRounded, ChatBubbleRounded, FormatColorFillRounded, CollectionsRounded,
+    Brightness2Rounded, ClearAllRounded, StorageRounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import UserAvatar from '../UserAvatar';
@@ -67,7 +55,7 @@ import DownloadManger, {IDownloadSettings} from '../../services/downloadManager'
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.23.121';
+export const C_VERSION = '0.23.122';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 interface IProps {
