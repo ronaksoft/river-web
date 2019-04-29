@@ -44,7 +44,9 @@
   --glass-dark-low: rgba(0, 0, 0, 0.05);
   --glass-dark-high: rgba(0, 0, 0, 0.20);
   --dark-low: #191919;
+  --dark-low-op50: #19191999;
   --dark-medium: #232323;
+  --dark-medium-op50: #23232399;
   --dark-high: #333333;
   --dark-hover: rgba(183, 222, 255, 0.07);
   --dark-hover-light: rgba(183, 222, 255, 0.12);
@@ -53,7 +55,9 @@
   --dark-accent-high: #005EAE;
   --dark-mention: #2d9fee;
   --dark-blue-low: #1A212E;
+  --dark-blue-low-op50: #1A212E99;
   --dark-blue-medium: #232F40;
+  --dark-blue-medium-op50: #232F4099;
   --dark-blue-high: #14395f;
   --dark-blue-high-alt: #2EA2FE;
   --dark-blue-hover: rgba(46, 162, 254, 0.5);
@@ -557,7 +561,7 @@ html[theme="dark-blue"] .container {
     background-color: var(--dark-medium); }
     html[theme="dark"] .container .column-left .top-bar,
     html[theme="dark-blue"] .container .column-left .top-bar {
-      border-bottom: 1px solid var(--dark-low); }
+      border: 1px solid var(--dark-low-op50); }
     html[theme="dark"] .container .column-left .actions svg,
     html[theme="dark-blue"] .container .column-left .actions svg {
       color: var(--light); }
@@ -660,7 +664,7 @@ html[theme="dark-blue"] .container {
     background-color: var(--dark-blue-medium); }
     html[theme="dark-blue"] .container .column-left .top-bar {
       background-color: var(--dark-blue-medium);
-      border-color: var(--dark-blue-medium); }
+      border-color: var(--dark-blue-low-op50); }
       html[theme="dark-blue"] .container .column-left .top-bar:after {
         background-color: var(--dark-blue-medium); }
     html[theme="dark-blue"] .container .column-left .left-overlay {

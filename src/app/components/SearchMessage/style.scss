@@ -10,7 +10,7 @@
 
 .search-message {
   position: absolute;
-  background-color: var(--white);
+  background-color: var(--header-color);
   top: 0;
   left: 0;
   right: 0;
@@ -24,6 +24,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
     .search-action {
       width: 36px;
       display: flex;
@@ -63,8 +65,9 @@
 
 html[theme="dark"] {
   .search-message {
-    background-color: var(--dark-high);
+    background-color: var(--dark-medium);
     .search-box {
+      border-color: var(--dark-low-op50);
       .search-action {
         button svg {
           color: var(--light);
@@ -89,9 +92,9 @@ html[theme="dark"] {
 
 html[theme="dark-blue"] {
   .search-message {
-    background-color: var(--dark-blue-low);
+    background-color: var(--dark-blue-medium);
     .search-box {
-      border-bottom: 1px solid var(--dark-blue-mention);
+      border-color: var(--dark-blue-low-op50);
       .search-action {
         button svg {
           color: var(--dark-blue-mention);

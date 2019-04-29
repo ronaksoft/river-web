@@ -44,7 +44,9 @@
   --glass-dark-low: rgba(0, 0, 0, 0.05);
   --glass-dark-high: rgba(0, 0, 0, 0.20);
   --dark-low: #191919;
+  --dark-low-op50: #19191999;
   --dark-medium: #232323;
+  --dark-medium-op50: #23232399;
   --dark-high: #333333;
   --dark-hover: rgba(183, 222, 255, 0.07);
   --dark-hover-light: rgba(183, 222, 255, 0.12);
@@ -53,7 +55,9 @@
   --dark-accent-high: #005EAE;
   --dark-mention: #2d9fee;
   --dark-blue-low: #1A212E;
+  --dark-blue-low-op50: #1A212E99;
   --dark-blue-medium: #232F40;
+  --dark-blue-medium-op50: #232F4099;
   --dark-blue-high: #14395f;
   --dark-blue-high-alt: #2EA2FE;
   --dark-blue-hover: rgba(46, 162, 254, 0.5);
@@ -79,7 +83,7 @@ input {
 
 .search-message {
   position: absolute;
-  background-color: var(--white);
+  background-color: var(--header-color);
   top: 0;
   left: 0;
   right: 0;
@@ -91,7 +95,9 @@ input {
     height: 40px;
     display: flex;
     align-items: center;
-    justify-content: center; }
+    justify-content: center;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    border-top: 1px solid rgba(0, 0, 0, 0.06); }
     .search-message .search-box .search-action {
       width: 36px;
       display: flex;
@@ -117,20 +123,22 @@ input {
           padding: 1px 0; }
 
 html[theme="dark"] .search-message {
-  background-color: var(--dark-high); }
-  html[theme="dark"] .search-message .search-box .search-action button svg {
-    color: var(--light); }
-  html[theme="dark"] .search-message .search-box .search-action button[disabled] svg {
-    color: var(--grey); }
-  html[theme="dark"] .search-message .search-box .search-input label {
-    color: var(--white); }
-  html[theme="dark"] .search-message .search-box .search-input .input input {
-    color: var(--white); }
+  background-color: var(--dark-medium); }
+  html[theme="dark"] .search-message .search-box {
+    border-color: var(--dark-low-op50); }
+    html[theme="dark"] .search-message .search-box .search-action button svg {
+      color: var(--light); }
+    html[theme="dark"] .search-message .search-box .search-action button[disabled] svg {
+      color: var(--grey); }
+    html[theme="dark"] .search-message .search-box .search-input label {
+      color: var(--white); }
+    html[theme="dark"] .search-message .search-box .search-input .input input {
+      color: var(--white); }
 
 html[theme="dark-blue"] .search-message {
-  background-color: var(--dark-blue-low); }
+  background-color: var(--dark-blue-medium); }
   html[theme="dark-blue"] .search-message .search-box {
-    border-bottom: 1px solid var(--dark-blue-mention); }
+    border-color: var(--dark-blue-low-op50); }
     html[theme="dark-blue"] .search-message .search-box .search-action button svg {
       color: var(--dark-blue-mention); }
     html[theme="dark-blue"] .search-message .search-box .search-action button[disabled] svg {

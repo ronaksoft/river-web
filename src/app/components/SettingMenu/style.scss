@@ -626,14 +626,14 @@ html[theme="dark-blue"] {
     .menu-header {
       background-color: var(--dark-medium);
       color: var(--white);
-      border-color: var(--dark-low);
+      border-color: var(--dark-low-op50);
       svg {
         color: var(--white);
       }
     }
     .page-anchor, .page-content {
       color: var(--white);
-      border-color: var(--dark-low);
+      border-color: var(--dark-low-op50);
     }
     .font-size-container {
       button {
@@ -657,7 +657,7 @@ html[theme="dark-blue"] {
       }
     }
     .sub-page-header {
-      border-color: var(--dark-low);
+      border-color: var(--dark-low-op50);
       color: var(--grey);
     }
     .switch-item {
@@ -759,7 +759,7 @@ html[theme="dark-blue"] {
   .setting-menu {
     .menu-header {
       background-color: var(--dark-blue-medium);
-      border-color: var(--dark-low);
+      border-color: var(--dark-blue-low-op50);
     }
     .font-size-container {
       div[role="progressbar"] {
@@ -767,7 +767,7 @@ html[theme="dark-blue"] {
       }
     }
     .sub-page-header {
-      border-color: var(--dark-blue-low);
+      border-color: var(--dark-blue-low-op50);
     }
     .theme-container {
       .item {

@@ -100,7 +100,7 @@ html[theme="dark"] {
       .dialog-container {
         .dialog {
           &:after {
-            background-color: var(--dark-low);
+            background-color: var(--dark-low-op50);
           }
           &:hover {
             background-color: var(--dark-hover);
@@ -131,7 +131,7 @@ html[theme="dark-blue"] {
       .dialog-container {
         .dialog {
           &:after {
-            background-color: var(--dark-blue-low);
+            background-color: var(--dark-blue-low-op50);
           }
           &:hover {
             background-color: var(--dark-blue-hover-light);

@@ -44,7 +44,9 @@
   --glass-dark-low: rgba(0, 0, 0, 0.05);
   --glass-dark-high: rgba(0, 0, 0, 0.20);
   --dark-low: #191919;
+  --dark-low-op50: #19191999;
   --dark-medium: #232323;
+  --dark-medium-op50: #23232399;
   --dark-high: #333333;
   --dark-hover: rgba(183, 222, 255, 0.07);
   --dark-hover-light: rgba(183, 222, 255, 0.12);
@@ -53,7 +55,9 @@
   --dark-accent-high: #005EAE;
   --dark-mention: #2d9fee;
   --dark-blue-low: #1A212E;
+  --dark-blue-low-op50: #1A212E99;
   --dark-blue-medium: #232F40;
+  --dark-blue-medium-op50: #232F4099;
   --dark-blue-high: #14395f;
   --dark-blue-high-alt: #2EA2FE;
   --dark-blue-hover: rgba(46, 162, 254, 0.5);
@@ -549,7 +553,7 @@ html[theme="dark"] .setting-menu .menu-header,
 html[theme="dark-blue"] .setting-menu .menu-header {
   background-color: var(--dark-medium);
   color: var(--white);
-  border-color: var(--dark-low); }
+  border-color: var(--dark-low-op50); }
   html[theme="dark"] .setting-menu .menu-header svg,
   html[theme="dark-blue"] .setting-menu .menu-header svg {
     color: var(--white); }
@@ -558,7 +562,7 @@ html[theme="dark"] .setting-menu .page-anchor, html[theme="dark"] .setting-menu 
 html[theme="dark-blue"] .setting-menu .page-anchor,
 html[theme="dark-blue"] .setting-menu .page-content {
   color: var(--white);
-  border-color: var(--dark-low); }
+  border-color: var(--dark-low-op50); }
 
 html[theme="dark"] .setting-menu .font-size-container button,
 html[theme="dark-blue"] .setting-menu .font-size-container button {
@@ -581,7 +585,7 @@ html[theme="dark-blue"] .setting-menu .setting-switch.blue span {
 
 html[theme="dark"] .setting-menu .sub-page-header,
 html[theme="dark-blue"] .setting-menu .sub-page-header {
-  border-color: var(--dark-low);
+  border-color: var(--dark-low-op50);
   color: var(--grey); }
 
 html[theme="dark"] .setting-menu .switch-item .switch-label,
@@ -675,13 +679,13 @@ html[theme="dark-blue"] .setting-menu .session-item {
 
 html[theme="dark-blue"] .setting-menu .menu-header {
   background-color: var(--dark-blue-medium);
-  border-color: var(--dark-low); }
+  border-color: var(--dark-blue-low-op50); }
 
 html[theme="dark-blue"] .setting-menu .font-size-container div[role="progressbar"] {
   background-color: var(--dark-blue-low); }
 
 html[theme="dark-blue"] .setting-menu .sub-page-header {
-  border-color: var(--dark-blue-low); }
+  border-color: var(--dark-blue-low-op50); }
 
 html[theme="dark-blue"] .setting-menu .theme-container .item {
   background-color: var(--dark-blue-low); }

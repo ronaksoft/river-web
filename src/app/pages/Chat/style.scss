@@ -641,7 +641,7 @@ html[theme="dark-blue"] {
       border: 1px solid transparent;
       background-color: var(--dark-medium);
       .top-bar {
-        border-bottom: 1px solid var(--dark-low);
+        border: 1px solid var(--dark-low-op50);
       }
       .actions {
         svg {
@@ -764,7 +764,7 @@ html[theme="dark-blue"] {
       background-color: var(--dark-blue-medium);
       .top-bar {
         background-color: var(--dark-blue-medium);
-        border-color: var(--dark-blue-medium);
+        border-color: var(--dark-blue-low-op50);
         &:after {
           background-color: var(--dark-blue-medium);
         }

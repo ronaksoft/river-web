@@ -161,7 +161,7 @@ html[theme="dark-blue"] {
     .menu-header {
       background-color: var(--dark-medium);
       color: var(--white);
-      border-color: rgba(255, 255, 255, 0.16);
+      border-color: var(--dark-low-op50);
     }
     .search-container {
       label, input {
@@ -172,7 +172,7 @@ html[theme="dark-blue"] {
       .contact-container {
         .contact-item {
           &:after {
-            background-color: var(--dark-low);
+            background-color: var(--dark-low-op50);
           }
           .name {
             color: var(--light);
@@ -198,12 +198,13 @@ html[theme="dark-blue"] {
   .contacts {
     .menu-header {
       background-color: var(--dark-blue-medium);
+      border-color: var(--dark-blue-low-op50);
     }
     .contact-box {
       .contact-container {
         .contact-item {
           &:after {
-            background-color: var(--dark-blue-low);
+            background-color: var(--dark-blue-low-op50);
           }
         }
       }
