@@ -85,6 +85,7 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
 
     public componentDidMount() {
         this.eventReferences.push(this.audioPlayer.globalListen(this.audioProgressHandler));
+        this.eventReferences.push(this.audioPlayer.playlistUpdateListen(this.audioProgressPlaylistUpdateHandler));
     }
 
     public componentWillUnmount() {
@@ -384,6 +385,12 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
         }
     }
 
+    private audioProgressPlaylistUpdateHandler = () => {
+        if (this.state.openPlaylist) {
+            this.initPlaylist();
+        }
+    }
+
     private prevHandler = () => {
         this.audioPlayer.prev();
     }
@@ -397,20 +404,24 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
             openPlaylist: true,
         }, () => {
             if (this.state.openPlaylist) {
-                this.setState({
-                    playlist: this.audioPlayer.getMusicPlayList(),
-                }, () => {
-                    const {playlist} = this.state;
-                    const currentTrack = this.audioPlayer.getCurrentTrack();
-                    const index = findIndex(playlist, {id: currentTrack});
-                    if (index > -1) {
-                        let pos = C_CELL_HEIGHT * index;
-                        if (pos > (C_MAX_LIST_HEIGHT - C_CELL_HEIGHT)) {
-                            pos -= (C_MAX_LIST_HEIGHT - C_CELL_HEIGHT);
-                            this.scrollbarRef.scrollTop(pos);
-                        }
-                    }
-                });
+                this.initPlaylist();
+            }
+        });
+    }
+
+    private initPlaylist() {
+        this.setState({
+            playlist: this.audioPlayer.getMusicPlayList(),
+        }, () => {
+            const {playlist} = this.state;
+            const currentTrack = this.audioPlayer.getCurrentTrack();
+            const index = findIndex(playlist, {id: currentTrack});
+            if (index > -1) {
+                let pos = C_CELL_HEIGHT * index;
+                if (pos > (C_MAX_LIST_HEIGHT - C_CELL_HEIGHT)) {
+                    pos -= (C_MAX_LIST_HEIGHT - C_CELL_HEIGHT);
+                    this.scrollbarRef.scrollTop(pos);
+                }
             }
         });
     }

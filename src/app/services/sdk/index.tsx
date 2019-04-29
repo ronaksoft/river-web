@@ -505,7 +505,7 @@ export default class SDK {
 
     public systemGetInfo(useCache?: boolean): Promise<SystemInfo.AsObject> {
         if (useCache && this.systemInfoCache) {
-            return Promise.reject(this.systemInfoCache);
+            return Promise.resolve(this.systemInfoCache);
         }
         const data = new SystemGetInfo();
         return this.server.send(C_MSG.SystemGetInfo, data.serializeBinary(), true).then((res) => {

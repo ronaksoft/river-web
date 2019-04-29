@@ -66,6 +66,7 @@ export default class AudioPlayer {
     private tracks: { [key: number]: IAudioItem } = {};
     private tracksPeerId: string = '';
     private listeners: { [key: number]: any } = {};
+    private playlistUpdateListeners: { [key: number]: any } = {};
     private backUpTracks: { [key: number]: IAudioItem } = {};
     private voicePlaylist: number[] = [];
     private musicPlaylist: number[] = [];
@@ -180,6 +181,7 @@ export default class AudioPlayer {
                 };
                 if (Boolean(mediaInfo)) {
                     this.musicPlaylist.push(messageId);
+                    this.callUpdatePlaylistHandler();
                     if (this.musicPlaylist.length > 1) {
                         this.musicPlaylist.sort();
                     }
@@ -207,6 +209,7 @@ export default class AudioPlayer {
         if (this.tracks.hasOwnProperty(messageId)) {
             if (this.tracks[messageId].event.music) {
                 const index = this.musicPlaylist.indexOf(messageId);
+                this.callUpdatePlaylistHandler();
                 if (index > -1) {
                     this.musicPlaylist.splice(index, 1);
                 }
@@ -409,6 +412,18 @@ export default class AudioPlayer {
         };
     }
 
+    /* Playlist update listener */
+    public playlistUpdateListen(fn: () => void) {
+        this.fnIndex++;
+        const fnIndex = this.fnIndex;
+        this.playlistUpdateListeners[fnIndex] = fn;
+        return () => {
+            if (this.playlistUpdateListeners.hasOwnProperty(fnIndex)) {
+                delete this.playlistUpdateListeners[fnIndex];
+            }
+        };
+    }
+
     /* AudioPlayer remove track */
     public remove(id: number) {
         if (this.tracks.hasOwnProperty(id)) {
@@ -512,6 +527,17 @@ export default class AudioPlayer {
             const fn = this.tracks[messageId].fnQueue[key];
             if (fn) {
                 fn(event);
+            }
+        });
+    }
+
+    /* Call update playlist handlers */
+    private callUpdatePlaylistHandler() {
+        const globalKeys = Object.keys(this.playlistUpdateListeners);
+        globalKeys.forEach((key) => {
+            const fn = this.playlistUpdateListeners[key];
+            if (fn) {
+                fn();
             }
         });
     }
