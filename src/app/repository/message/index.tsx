@@ -404,7 +404,7 @@ export default class MessageRepo {
                 }
                 return (msg.messagetype === C_MESSAGE_TYPE.Hole);
             });
-            window.console.log('has hole:', hasHole);
+            window.console.debug('has hole:', hasHole);
             if (!hasHole) {
                 // Trims start of result
                 if (res.length > 0) {
@@ -556,10 +556,8 @@ export default class MessageRepo {
         if (noTransform !== true) {
             tempMsgs = this.transform(tempMsgs);
         }
-        return this.upsert(tempMsgs).then((data) => {
-            // window.console.log(data);
-        }).catch((err) => {
-            window.console.log(err);
+        return this.upsert(tempMsgs).catch((err) => {
+            window.console.debug(err);
         });
     }
 

@@ -125,8 +125,6 @@ export default class FileManager {
         });
 
         return Promise.all(saveFileToDBPromises).then(() => {
-            window.console.log('saveFileToDBPromises');
-
             let internalResolve = null;
             let internalReject = null;
 
@@ -314,9 +312,6 @@ export default class FileManager {
                                 this.fileTransferQueue[id].pipelines--;
                             }
                             this.startUploading(id);
-                            if (chunk) {
-                                window.console.log(`${chunk.part}/${chunkInfo.totalParts} uploaded`);
-                            }
                         }).catch((err) => {
                             if (this.fileTransferQueue.hasOwnProperty(id)) {
                                 this.fileTransferQueue[id].pipelines--;
@@ -409,11 +404,7 @@ export default class FileManager {
                                 this.fileTransferQueue[id].pipelines--;
                             }
                             this.startDownloading(id);
-                            if (chunk) {
-                                window.console.log(`${chunk.part}/${chunkInfo.totalParts} downloaded, size: ${res}`);
-                            }
                         }).catch((err) => {
-                            window.console.log(err);
                             if (this.fileTransferQueue.hasOwnProperty(id)) {
                                 this.fileTransferQueue[id].pipelines--;
                                 if (err.code === C_FILE_ERR_CODE.NO_WORKER) {

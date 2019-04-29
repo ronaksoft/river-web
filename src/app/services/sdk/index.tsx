@@ -100,6 +100,7 @@ export default class SDK {
     private connInfo: IConnInfo;
 
     private clientId: number;
+    private systemInfoCache: any = null;
 
     public constructor() {
         this.server = Server.getInstance();
@@ -502,8 +503,14 @@ export default class SDK {
         return this.server.send(C_MSG.GroupsRemovePhoto, data.serializeBinary(), true);
     }
 
-    public systemGetInfo(): Promise<SystemInfo.AsObject> {
+    public systemGetInfo(useCache?: boolean): Promise<SystemInfo.AsObject> {
+        if (useCache && this.systemInfoCache) {
+            return Promise.reject(this.systemInfoCache);
+        }
         const data = new SystemGetInfo();
-        return this.server.send(C_MSG.SystemGetInfo, data.serializeBinary(), true);
+        return this.server.send(C_MSG.SystemGetInfo, data.serializeBinary(), true).then((res) => {
+            this.systemInfoCache = res;
+            return res;
+        });
     }
 }

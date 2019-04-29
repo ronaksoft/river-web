@@ -33,7 +33,7 @@ export default class NotificationService {
                 storageBucket: "river-chat.appspot.com",
             });
         } catch (e) {
-            window.console.log(e);
+            window.console.debug(e);
         }
 
         if (firebase.messaging.isSupported()) {
@@ -42,7 +42,7 @@ export default class NotificationService {
 
 
             this.messaging.requestPermission().then(() => {
-                window.console.log('Notification permission granted.');
+                window.console.warn('Notification permission granted.');
                 // TODO(developer): Retrieve an Instance ID token for use with FCM.
                 // ...
             }).catch((err) => {
@@ -50,7 +50,7 @@ export default class NotificationService {
             });
 
             this.messaging.onMessage((data) => {
-                window.console.log(data);
+                window.console.debug(data);
             });
         } else {
             // @ts-ignore
@@ -80,7 +80,7 @@ export default class NotificationService {
                     reject(currentToken);
                 }
             }).catch((err) => {
-                window.console.log('An error occurred while retrieving token. ', err);
+                window.console.debug('An error occurred while retrieving token. ', err);
                 // showToken('Error retrieving Instance ID token. ', err);
                 // setTokenSentToServer(false);
                 reject(err);

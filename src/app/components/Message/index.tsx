@@ -104,6 +104,8 @@ export const highlightMessageText = (id: number, text: string) => {
     if (el && wrapperEl && el.innerHTML && wrapperEl.parentElement) {
         if (el.classList.contains('rtl')) {
             className += ' rtl';
+        } else {
+            className += ' ltr';
         }
 
         text = text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -400,7 +402,7 @@ class Message extends React.Component<IProps, IState> {
         }, instant ? 0 : 200);
     }
 
-    public takeSnapshot() {
+    public takeSnapshot(noRemove?: boolean) {
         clearTimeout(this.removeSnapshotTimeout);
         if (!this.messageInnerRef || !this.messageSnapshotRef) {
             return;
@@ -415,9 +417,22 @@ class Message extends React.Component<IProps, IState> {
         this.messageSnapshotRef.classList.add(className);
         this.messageInnerRef.classList.add('hidden');
         this.messageSnapshotRef.innerHTML = this.messageInnerRef.innerHTML;
-        this.removeSnapshotTimeout = setTimeout(() => {
-            this.removeSnapshot();
-        }, 300);
+        if (!noRemove) {
+            this.removeSnapshotTimeout = setTimeout(() => {
+                this.removeSnapshot();
+            }, 300);
+        }
+    }
+
+    public removeSnapshot() {
+        clearTimeout(this.removeSnapshotTimeout);
+        if (!this.messageInnerRef || !this.messageSnapshotRef) {
+            return;
+        }
+        this.messageInnerRef.classList.remove('hidden');
+        this.messageSnapshotRef.classList.remove('group', 'user');
+        this.messageSnapshotRef.classList.add('hidden');
+        this.messageSnapshotRef.innerHTML = '';
     }
 
     public render() {
@@ -425,7 +440,7 @@ class Message extends React.Component<IProps, IState> {
         return (
             <AutoSizer>
                 {({width, height}: any) => (
-                    <React.Fragment>
+                    <div className="main-messages">
                         <div ref={this.messageInnerRefHandler}
                              className={'messages-inner ' + ((peer && peer.getType() === PeerType.PEERGROUP || this.isSimplified) ? 'group' : 'user') + (selectable ? ' selectable' : '')}
                              onDragEnter={this.dragEnterHandler} onDragEnd={this.dragLeaveHandler}
@@ -462,7 +477,7 @@ class Message extends React.Component<IProps, IState> {
                                 Drop your files here
                             </div>
                         </div>
-                    </React.Fragment>
+                    </div>
                 )}
             </AutoSizer>
         );
@@ -720,17 +735,6 @@ class Message extends React.Component<IProps, IState> {
                 this.props.onLoadMoreBefore();
             }
         }
-    }
-
-    private removeSnapshot() {
-        clearTimeout(this.removeSnapshotTimeout);
-        if (!this.messageInnerRef || !this.messageSnapshotRef) {
-            return;
-        }
-        this.messageInnerRef.classList.remove('hidden');
-        this.messageSnapshotRef.classList.remove('group', 'user');
-        this.messageSnapshotRef.classList.add('hidden');
-        this.messageSnapshotRef.innerHTML = '';
     }
 
     private contextMenuHandler = (index: number, e: any) => {

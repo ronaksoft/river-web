@@ -1,9 +1,9 @@
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('../firebase-messaging-sw.js')
         .then(function (registration) {
-            window.console.log('Registration successful, scope is:', registration.scope);
+            window.console.debug('Registration successful, scope is:', registration.scope);
         }).catch(function (err) {
-        window.console.log('Service worker registration failed, error:', err);
+        window.console.debug('Service worker registration failed, error:', err);
     });
     importScripts('https://www.gstatic.com/firebasejs/4.8.1/firebase-app.js');
     importScripts('https://www.gstatic.com/firebasejs/4.8.1/firebase-messaging.js');

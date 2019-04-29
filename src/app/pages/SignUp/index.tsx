@@ -292,7 +292,7 @@ class SignUp extends React.Component<IProps, IState> {
                     this.sdk.registerDevice('-', 0, C_VERSION, C_CLIENT, 'en', '1');
                 });
             }).catch((err) => {
-                window.console.log(err);
+                window.console.debug(err);
                 this.setState({
                     loading: false,
                     tries: this.state.tries + 1,
@@ -465,7 +465,7 @@ class SignUp extends React.Component<IProps, IState> {
                 this.props.history.push('/chat/null');
                 return;
             }).catch((err) => {
-                window.console.log(err);
+                window.console.warn(err);
             });
         }
         this.focus('f-phone');

@@ -142,7 +142,7 @@ class MapPicker extends React.Component<IProps, IState> {
                     },
                 });
             }, (err) => {
-                window.console.log(err);
+                window.console.debug(err);
             }, options);
         }
     }

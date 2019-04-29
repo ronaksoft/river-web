@@ -177,7 +177,7 @@ class Dialog extends React.Component<IProps, IState> {
                             rowHeight={64}
                             rowRenderer={this.rowRender}
                             rowCount={searchItems.length}
-                            overscanRowCount={30}
+                            overscanRowCount={64}
                             width={width}
                             height={height}
                             className="dialog-container"

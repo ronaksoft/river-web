@@ -1,6 +1,6 @@
 {
   "name": "river",
-  "version": "0.3.0",
+  "version": "0.5.0",
   "private": true,
   "description": "River chat",
   "author": "Hamidreza KK <hamidrezakks@gmail.com>",
@@ -12,7 +12,7 @@
     "watch-css": "npm run build-css && node-sass-chokidar src/ -o src/ --watch --recursive",
     "start-js": "react-scripts-ts start",
     "start": "npm-run-all start-js watch-css",
-    "build-js": "react-scripts-ts build",
+    "build-js": "GENERATE_SOURCEMAP=false react-scripts-ts build",
     "build": "npm-run-all build-css build-js",
     "postinstall": "mkdir -p node_modules/@material-ui/core/node_modules/@types/jss && cp -r node_modules/@types/jss node_modules/@material-ui/core/node_modules/@types",
     "test": "react-scripts-ts test --env=jsdom",

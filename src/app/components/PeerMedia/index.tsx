@@ -332,7 +332,7 @@ class PeerMedia extends React.Component<IProps, IState> {
             };
             this.documentViewerService.loadDocument(doc);
         } catch (e) {
-            window.console.log(e);
+            window.console.debug(e);
         }
     }
 

@@ -215,7 +215,7 @@ html[theme="dark"] .contact-list .contact-list-container .contact-container .con
   color: var(--light); }
 
 html[theme="dark"] .contact-list .contact-list-container .contact-container .contact-item .last-seen .online {
-  color: var(--river); }
+  color: var(--dark-mention); }
 
 html[theme="dark-blue"] .contact-list .contact-input-container {
   color: var(--white); }
@@ -232,4 +232,4 @@ html[theme="dark-blue"] .contact-list .contact-list-container .contact-container
   color: var(--white); }
 
 html[theme="dark-blue"] .contact-list .contact-list-container .contact-container .contact-item .last-seen .online {
-  color: var(--river); }
+  color: var(--dark-mention); }

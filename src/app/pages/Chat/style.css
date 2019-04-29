@@ -157,11 +157,15 @@ input {
       left: 0; }
   .container .column-center {
     position: relative;
-    flex: 1;
+    width: calc(100% - 318px);
     height: 100%;
     overflow: hidden;
     flex-direction: column;
     display: flex; }
+    .container .column-center.shrink {
+      margin-right: 318px; }
+    .container .column-center.blur .main-messages {
+      filter: blur(32px); }
     .container .column-center .top {
       position: relative;
       width: 100%;
@@ -215,7 +219,8 @@ input {
       background-color: rgba(168, 144, 106, 0.3);
       background-repeat: repeat;
       background-size: 100px;
-      transition: background 0.2s; }
+      transition: background 0.2s;
+      overflow: hidden; }
       .container .column-center .conversation.no-result {
         background-image: none !important; }
       .container .column-center .conversation .move-down {
@@ -278,11 +283,15 @@ input {
       .container .column-center .start-messaging .start-messaging-footer {
         height: 50px; }
   .container .column-right {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 120;
     width: 0;
-    height: 100%;
-    flex: none;
     overflow: hidden;
-    transition: width 0.1s linear; }
+    transition: width 0.3s linear;
+    display: block; }
     .container .column-right.active {
       width: 318px; }
   .container.mobile-view {
@@ -293,6 +302,12 @@ input {
     .container.mobile-view .column-left,
     .container.mobile-view .column-center {
       width: 100vw; }
+      .container.mobile-view .column-left.shrink,
+      .container.mobile-view .column-center.shrink {
+        margin: 0; }
+      .container.mobile-view .column-left.blur .main-messages,
+      .container.mobile-view .column-center.blur .main-messages {
+        filter: none; }
       .container.mobile-view .column-left .top,
       .container.mobile-view .column-center .top {
         padding-left: 40px; }

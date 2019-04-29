@@ -55,7 +55,7 @@ import DownloadManger, {IDownloadSettings} from '../../services/downloadManager'
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.23.124';
+export const C_VERSION = '0.23.125';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 interface IProps {
@@ -85,6 +85,7 @@ interface IState {
     profileCropperOpen: boolean;
     profilePictureCrop: any;
     profilePictureFile?: string;
+    riverGroupName: string;
     selectedBackground: string;
     selectedBgType: string;
     selectedBubble: string;
@@ -150,6 +151,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                 x: 0,
                 y: 0,
             },
+            riverGroupName: '',
             selectedBackground: '-1',
             selectedBgType: '0',
             selectedBubble: '1',
@@ -214,9 +216,11 @@ class SettingMenu extends React.Component<IProps, IState> {
                 });
             }
         });
-        // this.sdk.systemGetInfo().then((res) => {
-        //     window.console.log(res);
-        // });
+        this.sdk.systemGetInfo(true).then((res) => {
+            this.setState({
+                riverGroupName: res.workgroupname || '',
+            });
+        });
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -308,6 +312,7 @@ class SettingMenu extends React.Component<IProps, IState> {
                         </div>
                         <div className="version" onClick={this.versionClickHandler}>
                             v{C_VERSION}
+                            <span className="group-name">{this.state.riverGroupName}</span>
                         </div>
                     </div>
                     <div className="page page-2">

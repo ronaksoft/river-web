@@ -30,6 +30,8 @@ import {C_GOOGLE_MAP_KEY} from '../MapPicker';
 import {MapComponent} from '../MapPicker/map';
 
 import './style.css';
+import MenuItem from '@material-ui/core/MenuItem/MenuItem';
+import Menu from '@material-ui/core/Menu/Menu';
 
 const C_MAX_WIDTH = 800;
 const C_MAX_HEIGHT = 600;
@@ -56,11 +58,12 @@ interface ISize {
 
 interface IProps {
     className?: string;
-    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
+    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'save_as', messageId: number, fileId?: string) => void;
 }
 
 interface IState {
     className: string;
+    contextMenuAnchorEl: any;
     dialogOpen: boolean;
     doc: IDocument | null;
     fileState: 'download' | 'view' | 'progress' | 'open';
@@ -100,6 +103,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
         this.state = {
             className: props.className || '',
+            contextMenuAnchorEl: null,
             dialogOpen: false,
             doc: null,
             fileState: 'view',
@@ -278,14 +282,18 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     private initControls() {
-        const {doc} = this.state;
+        const {doc, contextMenuAnchorEl} = this.state;
         if (!doc || doc.type === 'location') {
             return '';
         }
+        const contextMenuItems = [{
+            cmd: 'download',
+            title: 'Download',
+        }];
         return (
             <div className="document-viewer-controls">
                 <div className="controls">
-                    <div className="item">
+                    <div className="item" onClick={this.openContextMenuHandler}>
                         <MoreVertRounded/>
                     </div>
                     <div className="item" onClick={this.transformHandler.bind(this, 'rotate-cw')}>
@@ -304,6 +312,21 @@ class DocumentViewer extends React.Component<IProps, IState> {
                         <CropFreeRounded/>
                     </div>
                 </div>
+                <Menu
+                    anchorEl={contextMenuAnchorEl}
+                    open={Boolean(contextMenuAnchorEl)}
+                    onClose={this.contextMenuCloseHandler}
+                    className="kk-context-menu darker"
+                >
+                    {contextMenuItems.map((item, key) => {
+                        return (
+                            <MenuItem key={key}
+                                      onClick={this.contextMenuActionHandler.bind(this, item.cmd)}
+                                      className="context-item"
+                            >{item.title}</MenuItem>
+                        );
+                    })}
+                </Menu>
             </div>
         );
     }
@@ -726,6 +749,35 @@ class DocumentViewer extends React.Component<IProps, IState> {
         this.setState({
             doc,
         });
+    }
+
+    /* Open context menu handler */
+    private openContextMenuHandler = (e: any) => {
+        this.setState({
+            contextMenuAnchorEl: e.currentTarget,
+        });
+    }
+
+    /* Close context menu handler */
+    private contextMenuCloseHandler = () => {
+        this.setState({
+            contextMenuAnchorEl: null,
+        });
+    }
+
+    /* Context menu action handler */
+    private contextMenuActionHandler = (cmd: string) => {
+        this.contextMenuCloseHandler();
+        const {doc} = this.state;
+        switch (cmd) {
+            case 'download':
+                if (this.props.onAction && doc && doc.items && doc.items.length > 0 && doc.items[0].downloaded) {
+                    this.props.onAction('save_as', doc.items[0].id || 0, doc.items[0].fileLocation.fileid);
+                }
+                break;
+            default:
+                break;
+        }
     }
 }
 

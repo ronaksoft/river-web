@@ -125,6 +125,9 @@ input {
     opacity: 0.5; }
     .setting-menu .version:hover {
       opacity: 1; }
+    .setting-menu .version .group-name {
+      float: left;
+      font-weight: bold; }
   .setting-menu .page-content {
     padding: 0 0 12px;
     border-top: 1px solid var(--light); }

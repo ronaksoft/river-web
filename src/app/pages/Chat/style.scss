@@ -101,11 +101,19 @@
   }
   .column-center {
     position: relative;
-    flex: 1;
+    width: calc(100% - 318px);
     height: 100%;
     overflow: hidden;
     flex-direction: column;
     display: flex;
+    &.shrink {
+      margin-right: 318px;
+    }
+    &.blur {
+      .main-messages {
+        filter: blur(32px);
+      }
+    }
     .top {
       position: relative;
       width: 100%;
@@ -169,6 +177,7 @@
       background-repeat: repeat;
       background-size: 100px;
       transition: background 0.2s;
+      overflow: hidden;
       &.no-result {
         background-image: none !important;
       }
@@ -246,11 +255,15 @@
     }
   }
   .column-right {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 120;
     width: 0;
-    height: 100%;
-    flex: none;
     overflow: hidden;
-    transition: width 0.1s linear;
+    transition: width 0.3s linear;
+    display: block;
     &.active {
       width: 318px;
     }
@@ -264,6 +277,14 @@
     .column-left,
     .column-center {
       width: 100vw;
+      &.shrink {
+        margin: 0;
+      }
+      &.blur {
+        .main-messages {
+          filter: none;
+        }
+      }
       .top {
         padding-left: 40px;
         .info-bar {

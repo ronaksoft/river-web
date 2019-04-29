@@ -124,7 +124,7 @@ export default class Server {
 
     /* Generate string from request and send to the api */
     private sendRequest(request: IServerRequest) {
-        window.console.log(`%c${C_MSG_NAME[request.constructor]} ${request.reqId}`, 'color: #f9d71c');
+        window.console.debug(`%c${C_MSG_NAME[request.constructor]} ${request.reqId}`, 'color: #f9d71c');
         request.timeout = setTimeout(() => {
             this.dispatchTimeout(request.reqId);
         }, 10000);
@@ -132,7 +132,7 @@ export default class Server {
     }
 
     private sendThrottledRequest(request: IServerRequest) {
-        window.console.log(`%c${C_MSG_NAME[request.constructor]} ${request.reqId}`, 'color: #f9d71c');
+        window.console.debug(`%c${C_MSG_NAME[request.constructor]} ${request.reqId}`, 'color: #f9d71c');
         request.timeout = setTimeout(() => {
             this.dispatchTimeout(request.reqId);
         }, 10000);
@@ -163,7 +163,6 @@ export default class Server {
                 reqId,
                 timeout: null,
             });
-            window.console.log('Compact:', envs.length);
         };
         let envelopes: MessageEnvelope[] = [];
         while (this.requestQueue.length > 0) {
@@ -181,7 +180,7 @@ export default class Server {
 
     private response({reqId, constructor, data}: any) {
         if (constructor !== C_MSG.Error) {
-            window.console.log(`%c${C_MSG_NAME[constructor]} ${reqId}`, 'color: #f9d71c');
+            window.console.debug(`%c${C_MSG_NAME[constructor]} ${reqId}`, 'color: #f9d71c');
         }
         if (!this.messageListeners[reqId]) {
             return;
@@ -215,7 +214,7 @@ export default class Server {
     }
 
     private error({reqId, constructor, data}: any) {
-        window.console.log(`%c${C_MSG_NAME[constructor]} ${reqId}`, 'color: #f9d71c');
+        window.console.debug(`%c${C_MSG_NAME[constructor]} ${reqId}`, 'color: #f9d71c');
         const res = Presenter.getMessage(constructor, base64ToU8a(data));
         if (res) {
             if (constructor === C_MSG.Error) {

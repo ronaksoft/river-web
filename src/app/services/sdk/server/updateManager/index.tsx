@@ -59,7 +59,7 @@ export default class UpdateManager {
     private outOfSyncTimeout: any = null;
 
     public constructor() {
-        window.console.log('Update manager started');
+        window.console.debug('Update manager started');
         this.lastUpdateId = this.loadLastUpdateId();
         this.newMessageThrottle = throttle(this.executeNewMessageThrottle, 300);
         this.newMessageDropThrottle = throttle(this.executeNewMessageDropThrottle, 300);
@@ -109,7 +109,7 @@ export default class UpdateManager {
         const currentUpdateId = this.lastUpdateId;
         const minId = data.minupdateid || 0;
         const maxId = data.maxupdateid || 0;
-        window.console.log('on update, current:', currentUpdateId, 'min:', minId, 'max:', maxId);
+        window.console.debug('on update, current:', currentUpdateId, 'min:', minId, 'max:', maxId);
         if ((this.outOfSync || currentUpdateId + 1 !== minId) && !(minId === 0 && maxId === 0)) {
             this.outOfSyncCheck(data);
             return;
@@ -176,7 +176,7 @@ export default class UpdateManager {
     /* Check out of sync message */
     private outOfSyncCheck(data?: UpdateContainer.AsObject) {
         if (data) {
-            window.console.log('%c outOfSyncCheck', 'color: orange;');
+            window.console.debug('%c outOfSyncCheck', 'color: orange;');
             this.updateList.push(data);
             this.updateList.sort((i1, i2) => {
                 return (i1.minupdateid || 0) - (i2.minupdateid || 0);
@@ -215,7 +215,6 @@ export default class UpdateManager {
             case C_MSG.UpdateMessageID:
                 const updateMessageId = UpdateMessageID.deserializeBinary(data).toObject();
                 this.rndMsgMap[updateMessageId.messageid || 0] = true;
-                window.console.log(`%cUpdateMessageID`, 'color: #3E6A96;');
                 this.callHandlers(C_MSG.UpdateMessageID, updateMessageId);
                 break;
         }
@@ -231,7 +230,6 @@ export default class UpdateManager {
                 if (!this.rndMsgMap[updateNewMessage.message.id || 0]) {
                     this.throttledNewMessage(updateNewMessage);
                 } else {
-                    window.console.log(`%cUpdateNewMessage drop on msg id: ${updateNewMessage.message.id}`, 'color: #cc0000;');
                     this.throttledNewMessageDrop(updateNewMessage);
                     delete this.rndMsgMap[updateNewMessage.message.id || 0];
                 }
