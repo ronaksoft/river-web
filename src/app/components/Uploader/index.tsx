@@ -430,7 +430,11 @@ class MediaPreview extends React.Component<IProps, IState> {
         MusicMetadata.parseBlob(file).then((res) => {
             const {items} = this.state;
             items[index].duration = res.format.duration;
-            items[index].title = res.common.title;
+            if (!res.common.title || res.common.title.length === 0) {
+                items[index].title = file.name;
+            } else {
+                items[index].title = res.common.title;
+            }
             items[index].performer = res.common.artist;
             items[index].album = res.common.album;
             if (res.common.picture && res.common.picture.length > 0) {
