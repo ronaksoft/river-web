@@ -91,6 +91,43 @@ export const highlightMessage = (id: number) => {
     }
 };
 
+export const highlightMessageText = (id: number, text: string) => {
+    document.querySelectorAll(`.bubble-wrapper .bubble .bubble-body .inner.text-highlight`).forEach((elem) => {
+        elem.remove();
+    });
+    if (id < 0) {
+        return;
+    }
+    const wrapperEl = document.querySelector(`.bubble-wrapper .bubble.b_${id} .bubble-body`);
+    const el = document.querySelector(`.bubble-wrapper .bubble.b_${id} .bubble-body .inner`);
+    let className: string = 'inner text-highlight';
+    if (el && wrapperEl && el.innerHTML && wrapperEl.parentElement) {
+        if (el.classList.contains('rtl')) {
+            className += ' rtl';
+        }
+
+        text = text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const re = new RegExp(text, 'ig');
+
+        if (text.length > 0) {
+            const fragment = document.createElement('div');
+            const childPos = el.getBoundingClientRect();
+            const parentPos = wrapperEl.parentElement.getBoundingClientRect();
+            const childOffset = {
+                left: childPos.left - parentPos.left,
+                top: childPos.top - parentPos.top,
+            };
+            fragment.classList.value = className;
+            fragment.style.height = `${childPos.height}px`;
+            fragment.style.left = `${childOffset.left}px`;
+            fragment.style.top = `${childOffset.top}px`;
+            fragment.style.width = `${childPos.width}px`;
+            fragment.innerHTML = el.innerHTML.replace(re, `<mark>$&</mark>`);
+            wrapperEl.appendChild(fragment);
+        }
+    }
+};
+
 class Message extends React.Component<IProps, IState> {
     public list: List;
     public cache: CellMeasurerCache;

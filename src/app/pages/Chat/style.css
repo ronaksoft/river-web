@@ -561,7 +561,7 @@ html[theme="dark-blue"] .container {
     background-color: var(--dark-medium); }
     html[theme="dark"] .container .column-left .top-bar,
     html[theme="dark-blue"] .container .column-left .top-bar {
-      border: 1px solid var(--dark-low-op50); }
+      border-bottom: 1px solid var(--dark-low-op50); }
     html[theme="dark"] .container .column-left .actions svg,
     html[theme="dark-blue"] .container .column-left .actions svg {
       color: var(--light); }

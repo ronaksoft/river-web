@@ -10,7 +10,7 @@
 import * as React from 'react';
 import Dialog from '../../components/Dialog/index';
 import {IMessage} from '../../repository/message/interface';
-import Message, {highlightMessage} from '../../components/Message/index';
+import Message, {highlightMessage, highlightMessageText} from '../../components/Message/index';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -93,9 +93,9 @@ import RTLDetector from '../../services/utilities/rtl_detector';
 import Badge from '@material-ui/core/Badge/Badge';
 import BackgroundService from '../../services/backgroundService';
 import {C_CUSTOM_BG} from '../../components/SettingMenu/vars/theme';
+import SearchMessage from '../../components/SearchMessage';
 
 import './style.css';
-import SearchMessage from '../../components/SearchMessage';
 
 const C_MAX_UPDATE_DIFF = 1000;
 
@@ -176,6 +176,7 @@ class Chat extends React.Component<IProps, IState> {
     private readonly messageReadThrottle: any = null;
     private newMessageFlag: boolean = false;
     private backgroundService: BackgroundService;
+    private searchMessageRef: SearchMessage;
 
     constructor(props: IProps) {
         super(props);
@@ -422,6 +423,14 @@ class Chat extends React.Component<IProps, IState> {
             title: 'Log Out',
         }];
 
+        const messageMoreMenuItem = [{
+            cmd: 'info',
+            title: (peer && peer.getType() === PeerType.PEERGROUP) ? 'Group Info' : 'Contact Info',
+        }, {
+            cmd: 'search',
+            title: 'Search Messages',
+        }];
+
         return (
             <div className="bg">
                 <div className="wrapper">
@@ -443,8 +452,6 @@ class Chat extends React.Component<IProps, IState> {
                                                 placement="bottom"
                                             >
                                                 <IconButton
-                                                    aria-label={item.tooltip}
-                                                    aria-haspopup="true"
                                                     onClick={this.chatTopIconActionHandler.bind(this, item.cmd)}
                                                 >{item.icon}</IconButton>
                                             </Tooltip>
@@ -488,15 +495,24 @@ class Chat extends React.Component<IProps, IState> {
                                         <KeyboardArrowLeftRounded/></div>}
                                     {this.getChatTitle()}
                                     <div className="buttons">
-                                        <Tooltip
-                                            title={(peer && peer.getType() === PeerType.PEERGROUP) ? 'Group Info' : 'Contact Info'}>
-                                            <IconButton
-                                                aria-label="More"
-                                                aria-owns={moreInfoAnchorEl ? 'long-menu' : undefined}
-                                                aria-haspopup="true"
-                                                onClick={this.toggleRightMenu}
-                                            ><InfoOutlined/></IconButton>
-                                        </Tooltip>
+                                        <IconButton
+                                            onClick={this.messageMoreOpenHandler}
+                                        ><InfoOutlined/></IconButton>
+                                        <Menu
+                                            anchorEl={moreInfoAnchorEl}
+                                            open={Boolean(moreInfoAnchorEl)}
+                                            onClose={this.messageMoreCloseHandler}
+                                            className="kk-context-menu darker"
+                                        >
+                                            {messageMoreMenuItem.map((item, key) => {
+                                                return (
+                                                    <MenuItem key={key}
+                                                              onClick={this.messageMoreActionHandler.bind(this, item.cmd)}
+                                                              className="context-item"
+                                                    >{item.title}</MenuItem>
+                                                );
+                                            })}
+                                        </Menu>
                                     </div>
                                 </div>
                                 <AudioPlayerShell onVisible={this.audioPlayerVisibleHandler}
@@ -505,7 +521,9 @@ class Chat extends React.Component<IProps, IState> {
                             <div ref={this.conversationRefHandler}
                                  className={'conversation ' + (this.state.messages.length === 0 && !this.isLoading ? ' no-result' : '')}>
                                 <PopUpDate ref={this.popUpDateRefHandler}/>
-                                <SearchMessage peer={peer} onFind={this.searchMessageFindHandler}/>
+                                <SearchMessage ref={this.searchMessageHandler} peer={peer}
+                                               onFind={this.searchMessageFindHandler}
+                                               onClose={this.searchMessageCloseHandler}/>
                                 <Message ref={this.messageRefHandler}
                                          items={this.state.messages}
                                          readId={this.state.maxReadId}
@@ -806,6 +824,18 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
+    private messageMoreOpenHandler = (event: any) => {
+        this.setState({
+            moreInfoAnchorEl: event.currentTarget,
+        });
+    }
+
+    private messageMoreCloseHandler = () => {
+        this.setState({
+            moreInfoAnchorEl: null,
+        });
+    }
+
     private chatTopIconActionHandler = (cmd: string, e: any) => {
         this.chatMoreCloseHandler();
         switch (cmd) {
@@ -849,6 +879,20 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
+    private messageMoreActionHandler = (cmd: string) => {
+        this.messageMoreCloseHandler();
+        switch (cmd) {
+            case 'info':
+                this.toggleRightMenu();
+                break;
+            case 'search':
+                if (this.searchMessageRef) {
+                    this.searchMessageRef.toggleVisible();
+                }
+                break;
+        }
+    }
+
     private dialogRefHandler = (ref: any) => {
         this.dialogComponent = ref;
     }
@@ -859,6 +903,10 @@ class Chat extends React.Component<IProps, IState> {
 
     private popUpDateRefHandler = (ref: any) => {
         this.popUpDateComponent = ref;
+    }
+
+    private searchMessageHandler = (ref: any) => {
+        this.searchMessageRef = ref;
     }
 
     private messageRefHandler = (ref: any) => {
@@ -2791,7 +2839,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Jump to message handler */
-    private messageJumpToMessageHandler = (id: number) => {
+    private messageJumpToMessageHandler = (id: number, text?: string) => {
         if (this.isLoading) {
             return;
         }
@@ -2808,6 +2856,9 @@ class Chat extends React.Component<IProps, IState> {
             this.messageComponent.list.scrollToRow(index);
             setTimeout(() => {
                 highlightMessage(id);
+                if (text) {
+                    highlightMessageText(id, text);
+                }
             }, 100);
         } else {
             // if ((messages[0].id || 0) < id) {
@@ -3864,8 +3915,12 @@ class Chat extends React.Component<IProps, IState> {
         this.backgroundService.setRef(ref);
     }
 
-    private searchMessageFindHandler = (id: number) => {
-        this.messageJumpToMessageHandler(id);
+    private searchMessageFindHandler = (id: number, text: string) => {
+        this.messageJumpToMessageHandler(id, text);
+    }
+
+    private searchMessageCloseHandler = () => {
+        highlightMessageText(-1, '');
     }
 
     private broadcastEvent(name: string, data: any) {

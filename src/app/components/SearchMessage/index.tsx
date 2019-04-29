@@ -21,8 +21,11 @@ import {debounce} from 'lodash';
 
 import './style.css';
 
+const searchLimit: number = 10;
+
 interface IProps {
-    onFind: (id: number) => void;
+    onFind: (id: number, text: string) => void;
+    onClose: () => void;
     peer: InputPeer | null;
 }
 
@@ -36,10 +39,13 @@ interface IState {
 
 class SearchMessage extends React.PureComponent<IProps, IState> {
     private ref: any = null;
+    private searchRef: any = null;
     private visible: boolean = false;
     private messageRepo: MessageRepo;
     private readonly searchDebouncer: any;
     private lastPeerId: string = '';
+    private hasMore: boolean = false;
+    private text: string = '';
 
     constructor(props: IProps) {
         super(props);
@@ -74,6 +80,24 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
         window.removeEventListener('keydown', this.keyDownHandler, true);
     }
 
+    public toggleVisible() {
+        if (!this.ref) {
+            return;
+        }
+        if (this.visible) {
+            this.ref.classList.remove('visible');
+            this.visible = false;
+            this.reset();
+            this.props.onClose();
+        } else {
+            this.ref.classList.add('visible');
+            this.visible = true;
+            if (this.searchRef) {
+                this.searchRef.focus();
+            }
+        }
+    }
+
     public render() {
         const {focus, next, prev} = this.state;
         return (
@@ -97,6 +121,7 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
                     </div>
                     <div className="search-input">
                         <TextField
+                            inputRef={this.searchRefHandler}
                             label="Search Messages"
                             margin="none"
                             className={'input' + (focus ? ' focus' : '')}
@@ -108,6 +133,7 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
                             onFocus={this.searchFocusHandler}
                             onBlur={this.searchBlurHandler}
                             onChange={this.searchChangeHandler}
+                            onKeyUp={this.searchKeyUpHandler}
                         />
                     </div>
                     <div className="search-action">
@@ -126,6 +152,10 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
         this.ref = ref;
     }
 
+    private searchRefHandler = (ref: any) => {
+        this.searchRef = ref;
+    }
+
     private keyDownHandler = (e: any) => {
         if (e.ctrlKey || e.metaKey) {
             switch (e.keyCode) {
@@ -133,33 +163,19 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
                     e.preventDefault();
                     this.toggleVisible();
                     break;
-                case 27:
-                    this.toggleVisible();
-                    break;
             }
         }
     }
 
     private reset() {
+        this.text = '';
+        this.hasMore = false;
         this.setState({
+            currentId: -1,
             items: [],
             next: false,
             prev: false,
         });
-    }
-
-    private toggleVisible() {
-        if (!this.ref) {
-            return;
-        }
-        if (this.visible) {
-            this.ref.classList.remove('visible');
-            this.visible = false;
-            this.reset();
-        } else {
-            this.ref.classList.add('visible');
-            this.visible = true;
-        }
     }
 
     private prevResultHandler = () => {
@@ -172,7 +188,10 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
                 next: currentId > 0,
                 prev: (items.length - 1) > currentId,
             });
-            this.props.onFind(items[currentId].id || 0);
+            this.props.onFind(items[currentId].id || 0, this.text);
+            if (this.hasMore && items.length - currentId <= 2) {
+                this.searchMore((items[items.length - 1].id || 0) - 1);
+            }
         }
     }
 
@@ -186,7 +205,7 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
                 next: currentId > 0,
                 prev: (items.length - 1) > currentId,
             });
-            this.props.onFind(items[currentId].id || 0);
+            this.props.onFind(items[currentId].id || 0, this.text);
         }
     }
 
@@ -195,7 +214,9 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
         if (!peer) {
             return;
         }
-        const text = e.target.value;
+        let text = e.target.value;
+        text = text.toLowerCase();
+        this.text = text;
         this.searchDebouncer(text);
     }
 
@@ -204,16 +225,20 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
         if (!peer) {
             return;
         }
-        text = text.toLowerCase();
-        this.messageRepo.search(peer.getId() || '', {keyword: text, limit: 10}).then((res) => {
+        if (text.length === 0) {
+            this.reset();
+            return;
+        }
+        this.messageRepo.search(peer.getId() || '', {keyword: text, limit: searchLimit}).then((res) => {
             if (res.length > 0) {
-                this.props.onFind(res[0].id || 0);
+                this.props.onFind(res[0].id || 0, this.text);
                 this.setState({
                     currentId: 0,
                     items: res,
                     next: false,
                     prev: res.length > 1,
                 });
+                this.hasMore = res.length === searchLimit;
             } else {
                 this.setState({
                     currentId: -1,
@@ -221,9 +246,28 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
                     next: false,
                     prev: false,
                 });
+                this.hasMore = false;
             }
-        }).catch((err) => {
-            window.console.log(err);
+        });
+    }
+
+    private searchMore = (before: number) => {
+        const {peer} = this.props;
+        const {items} = this.state;
+        if (!peer) {
+            return;
+        }
+        this.messageRepo.search(peer.getId() || '', {keyword: this.text, limit: searchLimit, before}).then((res) => {
+            if (res.length > 0) {
+                items.push.apply(items, res);
+                this.setState({
+                    items,
+                    prev: res.length > 1,
+                });
+                this.hasMore = res.length === searchLimit;
+            } else {
+                this.hasMore = false;
+            }
         });
     }
 
@@ -238,6 +282,28 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
             this.setState({
                 focus: false,
             });
+        }
+    }
+
+    private searchKeyUpHandler = (e: any) => {
+        switch (e.which) {
+            case 38:
+                e.preventDefault();
+                this.prevResultHandler();
+                break;
+            case 40:
+                e.preventDefault();
+                this.nextResultHandler();
+                break;
+            case 13:
+                this.searchDebouncer.cancel();
+                this.search(this.text);
+                break;
+            case 27:
+                if (this.visible) {
+                    this.toggleVisible();
+                }
+                break;
         }
     }
 

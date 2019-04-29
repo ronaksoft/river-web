@@ -517,7 +517,19 @@ export default class MessageRepo {
         }
         const reg = new RegExp(keyword || '', 'i');
         pipe2 = pipe2.filter((item: IMessage) => {
-            return item.temp !== true && (item.id || 0) > 0 && reg.test(item.body || '');
+            if (item.messagetype !== C_MESSAGE_TYPE.Hole && item.messagetype !== C_MESSAGE_TYPE.End && item.temp !== true && (item.id || 0) > 0) {
+                if (item.messagetype === 0 || item.messagetype === C_MESSAGE_TYPE.Normal) {
+                    return reg.test(item.body || '');
+                } else {
+                    if (item.mediadata && item.mediadata.caption) {
+                        return reg.test(item.mediadata.caption || '');
+                    } else {
+                        return false;
+                    }
+                }
+            } else {
+                return false;
+            }
         });
         return pipe2.limit(limit || 30).toArray();
     }
