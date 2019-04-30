@@ -22,7 +22,7 @@ import {
 } from '../messages/chat.api.updates_pb';
 import {File} from '../messages/chat.api.files_pb';
 import {AccountAuthorizations} from '../messages/chat.api.accounts_pb';
-import {SystemInfo} from '../messages/chat.api.system_pb';
+import {SystemInfo, SystemServerTime} from '../messages/chat.api.system_pb';
 
 export default class UniqueId {
     public static getMessage(constructor: number, data: Uint8Array): any {
@@ -69,6 +69,8 @@ export default class UniqueId {
                 return AccountAuthorizations.deserializeBinary(data);
             case C_MSG.SystemInfo:
                 return SystemInfo.deserializeBinary(data);
+            case C_MSG.SystemServerTime:
+                return SystemServerTime.deserializeBinary(data);
             default:
                 return null;
         }

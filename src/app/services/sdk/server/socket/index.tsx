@@ -11,7 +11,16 @@ import {base64ToU8a, uint8ToBase64} from '../../fileManager/http/utils';
 import {IServerRequest} from '../index';
 import ElectronService from '../../../electron';
 
-const ping = new Uint8Array([0x50, 0x49, 0x4e, 0x47]);
+export const ping = new Uint8Array([0x50, 0x49, 0x4e, 0x47]);
+
+export const checkPong = (data: any) => {
+    if (data.byteLength === 4) {
+        if (String.fromCharCode.apply(null, new Uint8Array(data)) === 'PONG') {
+            return true;
+        }
+    }
+    return false;
+};
 
 export default class Socket {
     public static getInstance() {
@@ -40,7 +49,7 @@ export default class Socket {
     private lastReceiveTime: number = 0;
 
     public constructor() {
-        this.testUrl = localStorage.getItem('river.test_url') || '';
+        this.testUrl = localStorage.getItem('river.workspace_url') || '';
 
         this.worker = new Worker('/bin/worker.js?v14');
 
@@ -175,7 +184,7 @@ export default class Socket {
         // Listen for messages
         this.socket.onmessage = (event) => {
             this.lastReceiveTime = Date.now();
-            if (this.checkPong(event.data)) {
+            if (checkPong(event.data)) {
                 this.pingCounter = 0;
             } else {
                 this.workerMessage('receive', uint8ToBase64(new Uint8Array(event.data)));
@@ -201,15 +210,6 @@ export default class Socket {
                 this.initWebSocket();
             }, 5000 + Math.floor(Math.random() * 3000));
         }
-    }
-
-    private checkPong(data: any) {
-        if (data.byteLength === 4) {
-            if (String.fromCharCode.apply(null, new Uint8Array(data)) === 'PONG') {
-                return true;
-            }
-        }
-        return false;
     }
 
     private workerMessage(cmd: string, data: any) {

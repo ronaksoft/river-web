@@ -55,7 +55,7 @@ import DownloadManger, {IDownloadSettings} from '../../services/downloadManager'
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.23.126';
+export const C_VERSION = '0.23.127';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 interface IProps {
@@ -135,7 +135,7 @@ class SettingMenu extends React.Component<IProps, IState> {
             confirmDialogOpen: false,
             confirmDialogSelectedId: '',
             debugModeOpen: false,
-            debugModeUrl: localStorage.getItem('river.test_url') || 'new.river.im',
+            debugModeUrl: localStorage.getItem('river.workspace_url') || 'new.river.im',
             editProfile: false,
             editUsername: false,
             firstname: '',
@@ -1239,7 +1239,7 @@ class SettingMenu extends React.Component<IProps, IState> {
 
     /* Debug mode apply handler */
     private debugModeApplyHandler = () => {
-        localStorage.setItem('river.test_url', this.state.debugModeUrl);
+        localStorage.setItem('river.workspace_url', this.state.debugModeUrl);
         window.location.reload();
     }
 

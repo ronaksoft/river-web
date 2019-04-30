@@ -82,9 +82,11 @@ input {
   font-weight: 400; }
 
 .write {
+  position: relative;
   border: 1px solid var(--light);
   border-width: 1px 1px 1px 0;
-  background-color: #F4F4F5; }
+  background-color: #F4F4F5;
+  z-index: 200; }
   .write .suggestion-list-container {
     transition: height 0.1s; }
     .write .suggestion-list-container .mention__suggestions {

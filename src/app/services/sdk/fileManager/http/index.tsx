@@ -42,7 +42,7 @@ export default class Http {
     private readonly testUrl: string = '';
 
     public constructor(bytes: any, id: number) {
-        this.testUrl = localStorage.getItem('river.test_url') || '';
+        this.testUrl = localStorage.getItem('river.workspace_url') || '';
 
         this.reqId = 0;
         this.worker = new Worker('/bin/worker.js?v14');

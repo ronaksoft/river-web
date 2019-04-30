@@ -23,6 +23,7 @@ import {SystemInfo} from '../../services/sdk/messages/chat.api.system_pb';
 
 import './tel-input.css';
 import './style.css';
+import WorkspaceManger from '../../services/workspaceManager';
 
 const C_CLIENT = `Web:- ${window.navigator.userAgent}`;
 
@@ -46,6 +47,7 @@ interface IState {
     step: string;
     tries: number;
     workspace: string;
+    workspaceError: string;
     workspaceInfo: SystemInfo.AsObject;
 }
 
@@ -53,9 +55,16 @@ class SignUp extends React.Component<IProps, IState> {
     private sdk: SDK;
     private notification: NotificationService;
     private countdownInterval: any = null;
+    private workspaceManager: WorkspaceManger;
 
     constructor(props: IProps) {
         super(props);
+        let step = 'phone';
+        if (window.location.host !== 'web.river.im') {
+            if (!localStorage.getItem('river.workspace_url')) {
+                step = 'workspace';
+            }
+        }
         this.state = {
             anchorEl: null,
             code: '',
@@ -67,13 +76,15 @@ class SignUp extends React.Component<IProps, IState> {
             phoneHash: '',
             snackOpen: false,
             snackText: '',
-            step: 'phone',
+            step,
             tries: 0,
             workspace: '',
+            workspaceError: '',
             workspaceInfo: {},
         };
         this.sdk = SDK.getInstance();
         this.notification = NotificationService.getInstance();
+        this.workspaceManager = WorkspaceManger.getInstance();
     }
 
     public componentDidMount() {
@@ -115,6 +126,9 @@ class SignUp extends React.Component<IProps, IState> {
                                 {step === 'workspace' &&
                                 <TextField type="text" label="Workspace"
                                            margin="none" variant="outlined"
+                                           error={Boolean(this.state.workspaceError !== '')}
+                                           helperText={Boolean(this.state.workspaceError !== '') ?
+                                               <span>{this.state.workspaceError}</span> : undefined}
                                            disabled={Boolean(step !== 'workspace')}
                                            fullWidth={true}
                                            value={this.state.workspace}
@@ -250,11 +264,25 @@ class SignUp extends React.Component<IProps, IState> {
         this.setState({
             loading: true,
         });
-        this.sdk.systemGetInfo().then((res) => {
+        this.workspaceManager.startWebsocket(this.state.workspace).then(() => {
+            this.workspaceManager.systemGetInfo().then((res) => {
+                this.setState({
+                    loading: false,
+                    step: 'phone',
+                    workspaceError: '',
+                    workspaceInfo: res,
+                });
+                this.workspaceManager.closeWire();
+                localStorage.setItem('river.workspace_url', this.state.workspace);
+                localStorage.removeItem('river.contacts.hash');
+                localStorage.removeItem('river.conn.info');
+                window.location.reload();
+            });
+        }).catch((err) => {
+            window.console.warn(err);
             this.setState({
                 loading: false,
-                step: 'phone',
-                workspaceInfo: res,
+                workspaceError: 'Cannot reach to server',
             });
         });
     }
