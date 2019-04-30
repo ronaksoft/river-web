@@ -301,7 +301,8 @@ class SignUp extends React.Component<IProps, IState> {
         this.setState({
             loading: true,
         });
-        this.workspaceManager.startWebsocket(this.trimWorkspace(this.state.workspace)).then(() => {
+        const workspace = this.trimWorkspace(this.state.workspace);
+        this.workspaceManager.startWebsocket(workspace).then(() => {
             this.workspaceManager.systemGetInfo().then((res) => {
                 this.setState({
                     loading: false,
@@ -310,7 +311,7 @@ class SignUp extends React.Component<IProps, IState> {
                     workspaceInfo: res,
                 });
                 this.workspaceManager.closeWire();
-                localStorage.setItem('river.workspace_url', this.state.workspace);
+                localStorage.setItem('river.workspace_url', workspace);
                 localStorage.removeItem('river.contacts.hash');
                 localStorage.removeItem('river.conn.info');
                 window.location.reload();
