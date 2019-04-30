@@ -31,9 +31,10 @@ input {
   flex-direction: column;
   z-index: 1;
   .login-wrapper {
-    width: 400px;
-    border-radius: 10px;
     position: relative;
+    width: 440px;
+    min-height: 380px;
+    border-radius: 10px;
     .login-form {
       width: 100%;
       padding: 10px;
@@ -56,6 +57,18 @@ input {
       background-color: var(--white);
       border: 1px solid transparent;
       border-radius: 3px;
+      margin-bottom: 16px;
+      .text-wrapper {
+        border-bottom: 1px solid #c4c4c4;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        color: #8C8C8C;
+        font-size: 24px;
+        font-weight: bold;
+        padding: 4px;
+      }
     }
 
     .input {
@@ -64,7 +77,7 @@ input {
       line-height: 1.2;
       font-size: 18px;
       width: 100%;
-      height: 62px;
+      height: 54px;
       display: block;
       background: transparent;
     }
@@ -105,14 +118,17 @@ input {
     }
 
     .container-login-form-btn {
-      position: relative;
+      position: absolute;
       width: 100%;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
       flex-direction: column;
-      margin: 60px 0 0;
+      margin: 24px 0 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
     }
 
     .login-form-btn {
@@ -123,7 +139,9 @@ input {
       justify-content: center;
       border-radius: 50%;
       background-color: var(--river);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
       border: 0;
+      cursor: pointer;
       transition: all 0.4s;
       &.disabled {
         animation-name: button-disabled;
@@ -143,8 +161,10 @@ input {
       color: var(--river);
       font-size: 18px;
       font-weight: 100;
+      line-height: 18px;
       cursor: pointer;
-      padding: 24px 0 0;
+      margin-top: -18px;
+      transform: translateY(32px);
       &.disabled {
         color: #8C8C8C;
         cursor: default;
@@ -192,6 +212,7 @@ input {
     line-height: 32px;
     text-align: center;
     font-size: 20px;
+    margin-bottom: 44px;
   }
 
   .river-form {
@@ -216,8 +237,8 @@ input {
         margin-left: 0;
         background-color: #fff;
         line-height: 25px;
-        height: 62px;
-        width: 320px;
+        height: 54px;
+        width: 360px;
         outline: none;
         border-left: none;
         border-radius: 0 5px 5px 0;
@@ -307,6 +328,10 @@ input {
   .login-page {
     .login-wrapper {
       width: 300px;
+      min-height: 300px;
+      .login-form {
+        padding: 0;
+      }
     }
     .river-form {
       .intl-tel-input {
@@ -318,9 +343,13 @@ input {
     .top-logo {
       transform: scale(0.7);
     }
+    .top-title {
+      padding-top: 6px;
+    }
     .top-desc {
       width: 300px;
       font-size: 15px;
+      margin-bottom: 0;
     }
   }
 }

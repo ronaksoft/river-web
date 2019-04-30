@@ -19,6 +19,7 @@ import NotificationService from '../../services/notification';
 import {C_VERSION} from '../../components/SettingMenu';
 import TextField from '@material-ui/core/TextField';
 import {TimerRounded, ArrowForwardRounded} from '@material-ui/icons';
+import {SystemInfo} from '../../services/sdk/messages/chat.api.system_pb';
 
 import './tel-input.css';
 import './style.css';
@@ -44,6 +45,8 @@ interface IState {
     snackText: string;
     step: string;
     tries: number;
+    workspace: string;
+    workspaceInfo: SystemInfo.AsObject;
 }
 
 class SignUp extends React.Component<IProps, IState> {
@@ -66,6 +69,8 @@ class SignUp extends React.Component<IProps, IState> {
             snackText: '',
             step: 'phone',
             tries: 0,
+            workspace: '',
+            workspaceInfo: {},
         };
         this.sdk = SDK.getInstance();
         this.notification = NotificationService.getInstance();
@@ -90,7 +95,7 @@ class SignUp extends React.Component<IProps, IState> {
     public render() {
         // const {moreInfoAnchorEl} = this.state;
         // const open = Boolean(moreInfoAnchorEl);
-        const {step, countdown} = this.state;
+        const {step, countdown, workspaceInfo} = this.state;
         return (
             <div className="limiter">
                 <div className="login-page">
@@ -99,65 +104,91 @@ class SignUp extends React.Component<IProps, IState> {
                     </div>
                     <div className="top-title">Sign in to River</div>
                     <div className="top-desc">
+                        {step === 'workspace' && <span>Please enter you workspace URL</span>}
                         {step === 'phone' && <span>Please enter your phone number</span>}
                         {step === 'code' && <span>Please enter the code sent to your phone</span>}
                         {step === 'register' && <span>Please fill in your contact info</span>}
                     </div>
                     <div className="login-wrapper">
                         <div className="login-form river-form flex-sb flex-w">
-                            <IntlTelInput preferredCountries={[]} defaultCountry={'ir'} value={this.state.phone}
-                                          inputClassName="f-phone" disabled={this.state.loading || step === 'code'}
-                                          autoHideDialCode={false} onPhoneNumberChange={this.handleOnChange}
-                                          onKeyDown={this.sendCodeKeyDown} nationalMode={false} fieldId="input-phone"/>
-                            {Boolean((this.state.tries > 0 && (step === 'code' || step === 'register')) || (countdown < 45)) &&
-                            <div className="try-another-phone" onClick={this.tryAnotherPhone}>
-                                <Refresh/>
-                                <label>
-                                    Try another phone
-                                </label>
-                            </div>}
-                            {step === 'code' && countdown !== 0 && <div className="input-wrapper validate-input">
-                                <TextField
-                                    label="code"
-                                    placeholder="____"
-                                    margin="none"
-                                    variant="outlined"
-                                    className="code f-code"
-                                    type="text"
-                                    fullWidth={true}
-                                    value={this.state.code} onChange={this.codeOnChange}
-                                    onKeyDown={this.confirmKeyDown}
-                                />
-                                <div className="countdown">
-                                    <TimerRounded/><span className="inner">{countdown}&nbsp;s</span>
-                                </div>
-                            </div>}
-                            {step === 'register' &&
-                            <div className="input-wrapper validate-input m-b-16">
-                                <TextField className="f-fname" type="text" label="First Name"
-                                           margin="none" variant="outlined" autoComplete="off"
+                            <div className="input-wrapper">
+                                {step === 'workspace' &&
+                                <TextField type="text" label="Workspace"
+                                           margin="none" variant="outlined"
+                                           disabled={Boolean(step !== 'workspace')}
                                            fullWidth={true}
-                                           value={this.state.fName}
-                                           onKeyDown={this.registerKeyDown}
-                                           onChange={this.fNameOnChange}/>
-                                <span className="focus-input"/>
-                            </div>}
-                            {step === 'register' &&
-                            <div className="input-wrapper validate-input m-b-16">
-                                <TextField className="f-lname" type="text" label="Last Name"
-                                           margin="none" variant="outlined" autoComplete="off"
-                                           fullWidth={true}
-                                           value={this.state.lName}
-                                           onKeyDown={this.registerKeyDown}
-                                           onChange={this.lNameOnChange}/>
-                                <span className="focus-input"/>
-                            </div>}
-                            <div className="container-login-form-btn m-t-17">
-                                {step === 'phone' &&
+                                           value={this.state.workspace}
+                                           onKeyDown={this.workspaceKeyDownHandler}
+                                           onChange={this.workspaceChangeHandler}/>}
+                                {step !== 'workspace' && workspaceInfo.workgroupname && <div className="text-wrapper">
+                                    {workspaceInfo.workgroupname}
+                                </div>}
+                            </div>
+                            {step !== 'workspace' && <React.Fragment>
+                                <IntlTelInput preferredCountries={[]} defaultCountry={'ir'} value={this.state.phone}
+                                              inputClassName="f-phone" disabled={this.state.loading || step === 'code'}
+                                              autoHideDialCode={false} onPhoneNumberChange={this.handleOnChange}
+                                              onKeyDown={this.sendCodeKeyDown} nationalMode={false}
+                                              fieldId="input-phone"/>
+                                {Boolean((this.state.tries > 0 && (step === 'code' || step === 'register')) || (countdown < 45)) &&
+                                <div className="try-another-phone" onClick={this.tryAnotherPhone}>
+                                    <Refresh/>
+                                    <label>
+                                        Try another phone
+                                    </label>
+                                </div>}
+                                {step === 'code' && countdown !== 0 && <div className="input-wrapper validate-input">
+                                    <TextField
+                                        label="code"
+                                        placeholder="____"
+                                        margin="none"
+                                        variant="outlined"
+                                        className="code f-code"
+                                        type="text"
+                                        fullWidth={true}
+                                        value={this.state.code} onChange={this.codeOnChange}
+                                        onKeyDown={this.confirmKeyDown}
+                                    />
+                                    <div className="countdown">
+                                        <TimerRounded/><span className="inner">{countdown}&nbsp;s</span>
+                                    </div>
+                                </div>}
+                                {step === 'register' &&
+                                <div className="input-wrapper validate-input">
+                                    <TextField className="f-fname" type="text" label="First Name"
+                                               margin="none" variant="outlined" autoComplete="off"
+                                               fullWidth={true}
+                                               value={this.state.fName}
+                                               onKeyDown={this.registerKeyDown}
+                                               onChange={this.fNameOnChange}/>
+                                    <span className="focus-input"/>
+                                </div>}
+                                {step === 'register' &&
+                                <div className="input-wrapper validate-input">
+                                    <TextField className="f-lname" type="text" label="Last Name"
+                                               margin="none" variant="outlined" autoComplete="off"
+                                               fullWidth={true}
+                                               value={this.state.lName}
+                                               onKeyDown={this.registerKeyDown}
+                                               onChange={this.lNameOnChange}/>
+                                    <span className="focus-input"/>
+                                </div>}
+                            </React.Fragment>}
+                            <div className="container-login-form-btn">
+                                {step === 'workspace' &&
                                 <div className={'login-form-btn' + (this.state.loading ? ' disabled' : '')}
-                                     onClick={this.sendCode}>
+                                     onClick={this.submitWorkspaceHandler}>
                                     <ArrowForwardRounded/>
                                 </div>}
+                                {step === 'phone' && <React.Fragment>
+                                    <div className={'login-form-btn' + (this.state.loading ? ' disabled' : '')}
+                                         onClick={this.sendCode}>
+                                        <ArrowForwardRounded/>
+                                    </div>
+                                    <div className="grey-link"
+                                         onClick={this.changeWorkspaceHandler}>Change Workspace
+                                    </div>
+                                </React.Fragment>}
                                 {step === 'code' && <React.Fragment>
                                     <div className={'login-form-btn' + (this.state.loading ? ' disabled' : '')}
                                          onClick={this.confirmCode}>
@@ -190,9 +221,41 @@ class SignUp extends React.Component<IProps, IState> {
         );
     }
 
+    private workspaceKeyDownHandler = (e: any) => {
+        //
+    }
+
+    private workspaceChangeHandler = (e: any) => {
+        this.setState({
+            workspace: e.currentTarget.value,
+        });
+    }
+
+    private changeWorkspaceHandler = () => {
+        this.setState({
+            step: 'workspace',
+        });
+    }
+
     private handleOnChange = (e: any, value: any) => {
         this.setState({
             phone: value,
+        });
+    }
+
+    private submitWorkspaceHandler = () => {
+        if (this.state.loading) {
+            return;
+        }
+        this.setState({
+            loading: true,
+        });
+        this.sdk.systemGetInfo().then((res) => {
+            this.setState({
+                loading: false,
+                step: 'phone',
+                workspaceInfo: res,
+            });
         });
     }
 
@@ -467,6 +530,13 @@ class SignUp extends React.Component<IProps, IState> {
             }).catch((err) => {
                 window.console.warn(err);
             });
+            if (this.state.step === 'phone') {
+                this.sdk.systemGetInfo().then((res) => {
+                    this.setState({
+                        workspaceInfo: res,
+                    });
+                });
+            }
         }
         this.focus('f-phone');
     }
