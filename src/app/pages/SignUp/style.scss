@@ -69,6 +69,23 @@ input {
         font-weight: bold;
         padding: 4px;
       }
+      .qr-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px 0 0;
+        img {
+          height: 48px;
+          width: 48px;
+          object-fit: contain;
+          object-position: center;
+          opacity: 0.4;
+          cursor: pointer;
+          &:hover {
+            opacity: 0.9;
+          }
+        }
+      }
     }
 
     .input {
@@ -351,5 +368,25 @@ input {
       font-size: 15px;
       margin-bottom: 0;
     }
+  }
+}
+
+.qr-code-dialog {
+  > div:first-child {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+  div[role="document"] {
+    > div {
+      position: relative;
+      line-height: 0;
+      max-width: none;
+      background: transparent;
+      overflow: visible;
+    }
+  }
+  .qr-code-container {
+    min-height: 320px;
+    min-width: 320px;
+    background-color: var(--white);
   }
 }

@@ -20,10 +20,14 @@ import {C_VERSION} from '../../components/SettingMenu';
 import TextField from '@material-ui/core/TextField';
 import {TimerRounded, ArrowForwardRounded} from '@material-ui/icons';
 import {SystemInfo} from '../../services/sdk/messages/chat.api.system_pb';
+import WorkspaceManger from '../../services/workspaceManager';
+import qrCode from '../../../asset/image/qr-code.svg';
+import Tooltip from '@material-ui/core/Tooltip/Tooltip';
+import OverlayDialog from '@material-ui/core/Dialog/Dialog';
+import jsQR from 'jsqr';
 
 import './tel-input.css';
 import './style.css';
-import WorkspaceManger from '../../services/workspaceManager';
 
 const C_CLIENT = `Web:- ${window.navigator.userAgent}`;
 
@@ -42,6 +46,7 @@ interface IState {
     loading: boolean;
     phone?: string;
     phoneHash?: string;
+    qrCodeOpen: boolean;
     snackOpen: boolean;
     snackText: string;
     step: string;
@@ -56,6 +61,8 @@ class SignUp extends React.Component<IProps, IState> {
     private notification: NotificationService;
     private countdownInterval: any = null;
     private workspaceManager: WorkspaceManger;
+    private qrCanvasRef: any = null;
+    private qrStart: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -74,6 +81,7 @@ class SignUp extends React.Component<IProps, IState> {
             loading: false,
             phone: '',
             phoneHash: '',
+            qrCodeOpen: false,
             snackOpen: false,
             snackText: '',
             step,
@@ -138,6 +146,16 @@ class SignUp extends React.Component<IProps, IState> {
                                     {workspaceInfo.workgroupname}
                                 </div>}
                             </div>
+                            {step === 'workspace' && <div className="input-wrapper">
+                                <Tooltip
+                                    title="Scan QR code"
+                                    placement="bottom"
+                                >
+                                    <div className="qr-icon">
+                                        <img src={qrCode} onClick={this.qrCodeDialogOpenHandler}/>
+                                    </div>
+                                </Tooltip>
+                            </div>}
                             {step !== 'workspace' && <React.Fragment>
                                 <IntlTelInput preferredCountries={[]} defaultCountry={'ir'} value={this.state.phone}
                                               inputClassName="f-phone" disabled={this.state.loading || step === 'code'}
@@ -231,12 +249,23 @@ class SignUp extends React.Component<IProps, IState> {
                     autoHideDuration={6000}
                     message={<span id="message-id">{this.state.snackText}</span>}
                 />
+                <OverlayDialog
+                    open={this.state.qrCodeOpen}
+                    onClose={this.qrCodeDialogCloseHandler}
+                    className="qr-code-dialog"
+                >
+                    <div className="qr-code-container">
+                        <canvas ref={this.qrCanvasRefHandler} height="320" width="320"/>
+                    </div>
+                </OverlayDialog>
             </div>
         );
     }
 
     private workspaceKeyDownHandler = (e: any) => {
-        //
+        if (e.key === 'Enter') {
+            this.submitWorkspaceHandler();
+        }
     }
 
     private workspaceChangeHandler = (e: any) => {
@@ -257,14 +286,22 @@ class SignUp extends React.Component<IProps, IState> {
         });
     }
 
+    private trimWorkspace(text: string) {
+        const texts = text.split('://');
+        if (texts.length > 1) {
+            return texts[1].toLowerCase();
+        }
+        return text.toLowerCase();
+    }
+
     private submitWorkspaceHandler = () => {
-        if (this.state.loading) {
+        if (this.state.loading || this.state.workspace.length === 0) {
             return;
         }
         this.setState({
             loading: true,
         });
-        this.workspaceManager.startWebsocket(this.state.workspace).then(() => {
+        this.workspaceManager.startWebsocket(this.trimWorkspace(this.state.workspace)).then(() => {
             this.workspaceManager.systemGetInfo().then((res) => {
                 this.setState({
                     loading: false,
@@ -598,6 +635,84 @@ class SignUp extends React.Component<IProps, IState> {
         if (el) {
             el.onkeydown = this.sendCodeKeyDown;
         }
+    }
+
+    private qrCodeDialogOpenHandler = () => {
+        this.setState({
+            qrCodeOpen: true,
+        }, () => {
+            setTimeout(() => {
+                this.initQRCode();
+            }, 300);
+        });
+    }
+
+    private qrCodeDialogCloseHandler = () => {
+        this.setState({
+            qrCodeOpen: false,
+        });
+        this.stopQR();
+    }
+
+    private qrCanvasRefHandler = (ref: any) => {
+        this.qrCanvasRef = ref;
+    }
+
+    private initQRCode() {
+        if (!this.qrCanvasRef) {
+            return;
+        }
+        this.qrStart = true;
+        const video = document.createElement('video');
+        // @ts-ignore
+        const canvas = this.qrCanvasRef.getContext('2d');
+        let tracks: any[] = [];
+
+        // Use facingMode: environment to attempt to get the front camera on phones
+        navigator.mediaDevices.getUserMedia({video: {facingMode: 'environment'}}).then((stream) => {
+            video.srcObject = stream;
+            video.setAttribute('playsinline', 'true'); // required to tell iOS safari we don't want fullscreen
+            video.play();
+            tracks = stream.getTracks();
+            requestAnimationFrame(tick);
+        });
+
+        const tick = () => {
+            if (!this.qrStart) {
+                video.remove();
+                tracks.forEach((track) => {
+                    track.stop();
+                });
+                return;
+            }
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                this.qrCanvasRef.hidden = false;
+
+                this.qrCanvasRef.height = video.videoHeight;
+                this.qrCanvasRef.width = video.videoWidth;
+                canvas.drawImage(video, 0, 0, this.qrCanvasRef.width, this.qrCanvasRef.height);
+                const imageData = canvas.getImageData(0, 0, this.qrCanvasRef.width, this.qrCanvasRef.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                    inversionAttempts: 'dontInvert',
+                });
+                if (code) {
+                    if (code.data.length > 0) {
+                        this.setState({
+                            workspace: code.data,
+                        });
+                        this.qrCodeDialogCloseHandler();
+                        setTimeout(() => {
+                            this.submitWorkspaceHandler();
+                        }, 1000);
+                    }
+                }
+            }
+            requestAnimationFrame(tick);
+        };
+    }
+
+    private stopQR() {
+        this.qrStart = false;
     }
 }
 

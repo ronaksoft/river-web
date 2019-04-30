@@ -52,6 +52,7 @@
     "int64-buffer": "^0.99.1007",
     "js-crc": "^0.2.0",
     "js-sha256": "^0.9.0",
+    "jsqr": "^1.2.0",
     "lodash": "^4.17.11",
     "material-ui-chip-input": "1.0.0-beta.9",
     "moment": "^2.24.0",
