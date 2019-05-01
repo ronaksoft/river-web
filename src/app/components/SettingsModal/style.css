@@ -8,7 +8,7 @@
 */
 .settings-modal div[role="document"] > div {
   line-height: 0;
-  max-width: 640px;
+  max-width: 720px;
   overflow: hidden; }
 
 .settings-modal .settings-modal-header {
@@ -38,6 +38,14 @@
 
 .settings-modal .setting-content {
   height: 325px; }
+
+.settings-modal.fit .settings-modal-header {
+  min-width: 300px;
+  width: auto; }
+
+.settings-modal.fit .setting-content {
+  min-height: 325px;
+  height: auto; }
 
 html[theme="dark"] .settings-modal div[role="document"] > div {
   background-color: var(--dark-medium); }

@@ -16,14 +16,12 @@ import {Refresh} from '@material-ui/icons';
 import {C_ERR, C_ERR_ITEM} from '../../services/sdk/const';
 import RiverLogo from '../../components/RiverLogo';
 import NotificationService from '../../services/notification';
-import {C_VERSION} from '../../components/SettingMenu';
+import {C_VERSION} from '../../components/SettingsMenu';
 import TextField from '@material-ui/core/TextField';
-import {TimerRounded, ArrowForwardRounded} from '@material-ui/icons';
+import {TimerRounded, ArrowForwardRounded, CropFreeRounded} from '@material-ui/icons';
 import {SystemInfo} from '../../services/sdk/messages/chat.api.system_pb';
 import WorkspaceManger from '../../services/workspaceManager';
-import qrCode from '../../../asset/image/qr-code.svg';
-import Tooltip from '@material-ui/core/Tooltip/Tooltip';
-import OverlayDialog from '@material-ui/core/Dialog/Dialog';
+import SettingsModal from '../../components/SettingsModal';
 import jsQR from 'jsqr';
 
 import './tel-input.css';
@@ -134,6 +132,7 @@ class SignUp extends React.Component<IProps, IState> {
                                 {step === 'workspace' &&
                                 <TextField type="text" label="Workspace"
                                            margin="none" variant="outlined"
+                                           className="text-input"
                                            error={Boolean(this.state.workspaceError !== '')}
                                            helperText={Boolean(this.state.workspaceError !== '') ?
                                                <span>{this.state.workspaceError}</span> : undefined}
@@ -146,15 +145,8 @@ class SignUp extends React.Component<IProps, IState> {
                                     {workspaceInfo.workgroupname}
                                 </div>}
                             </div>
-                            {step === 'workspace' && <div className="input-wrapper">
-                                <Tooltip
-                                    title="Scan QR code"
-                                    placement="bottom"
-                                >
-                                    <div className="qr-icon">
-                                        <img src={qrCode} onClick={this.qrCodeDialogOpenHandler}/>
-                                    </div>
-                                </Tooltip>
+                            {step === 'workspace' && <div className="input-wrapper qr-wrapper">
+                                <div className="qr-link" onClick={this.qrCodeDialogOpenHandler}>Scan QR Code</div>
                             </div>}
                             {step !== 'workspace' && <React.Fragment>
                                 <IntlTelInput preferredCountries={[]} defaultCountry={'ir'} value={this.state.phone}
@@ -175,7 +167,7 @@ class SignUp extends React.Component<IProps, IState> {
                                         placeholder="____"
                                         margin="none"
                                         variant="outlined"
-                                        className="code f-code"
+                                        className="code f-code text-input"
                                         type="text"
                                         fullWidth={true}
                                         value={this.state.code} onChange={this.codeOnChange}
@@ -187,7 +179,7 @@ class SignUp extends React.Component<IProps, IState> {
                                 </div>}
                                 {step === 'register' &&
                                 <div className="input-wrapper validate-input">
-                                    <TextField className="f-fname" type="text" label="First Name"
+                                    <TextField className="f-fname text-input" type="text" label="First Name"
                                                margin="none" variant="outlined" autoComplete="off"
                                                fullWidth={true}
                                                value={this.state.fName}
@@ -197,7 +189,7 @@ class SignUp extends React.Component<IProps, IState> {
                                 </div>}
                                 {step === 'register' &&
                                 <div className="input-wrapper validate-input">
-                                    <TextField className="f-lname" type="text" label="Last Name"
+                                    <TextField className="f-lname text-input" type="text" label="Last Name"
                                                margin="none" variant="outlined" autoComplete="off"
                                                fullWidth={true}
                                                value={this.state.lName}
@@ -249,15 +241,18 @@ class SignUp extends React.Component<IProps, IState> {
                     autoHideDuration={6000}
                     message={<span id="message-id">{this.state.snackText}</span>}
                 />
-                <OverlayDialog
+                <SettingsModal
                     open={this.state.qrCodeOpen}
                     onClose={this.qrCodeDialogCloseHandler}
-                    className="qr-code-dialog"
+                    title="Scan QR Code"
+                    fit={true}
+                    icon={<CropFreeRounded/>}
+                    noScrollbar={true}
                 >
                     <div className="qr-code-container">
                         <canvas ref={this.qrCanvasRefHandler} height="320" width="320"/>
                     </div>
-                </OverlayDialog>
+                </SettingsModal>
             </div>
         );
     }

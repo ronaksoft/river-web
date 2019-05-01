@@ -11,7 +11,7 @@
   div[role="document"] {
     > div {
       line-height: 0;
-      max-width: 640px;
+      max-width: 720px;
       overflow: hidden;
     }
   }
@@ -45,6 +45,16 @@
   }
   .setting-content {
     height: 325px;
+  }
+  &.fit {
+    .settings-modal-header {
+      min-width: 300px;
+      width: auto;
+    }
+    .setting-content {
+      min-height: 325px;
+      height: auto;
+    }
   }
 }
 

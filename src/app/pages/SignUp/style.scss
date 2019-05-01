@@ -54,7 +54,6 @@ input {
     .input-wrapper {
       width: 100%;
       position: relative;
-      background-color: var(--white);
       border: 1px solid transparent;
       border-radius: 3px;
       margin-bottom: 16px;
@@ -69,22 +68,15 @@ input {
         font-weight: bold;
         padding: 4px;
       }
-      .qr-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 24px 0 0;
-        img {
-          height: 48px;
-          width: 48px;
-          object-fit: contain;
-          object-position: center;
-          opacity: 0.4;
-          cursor: pointer;
-          &:hover {
-            opacity: 0.9;
-          }
-        }
+      &.qr-wrapper {
+        text-align: right;
+      }
+      .qr-link {
+        font-weight: bold;
+        font-size: 20px;
+        line-height: 24px;
+        color: #479FF6;
+        cursor: pointer;
       }
     }
 
@@ -371,22 +363,96 @@ input {
   }
 }
 
-.qr-code-dialog {
-  > div:first-child {
-    background-color: rgba(0, 0, 0, 0.7);
-  }
-  div[role="document"] {
-    > div {
-      position: relative;
-      line-height: 0;
-      max-width: none;
-      background: transparent;
-      overflow: visible;
+.qr-code-container {
+  min-height: 320px;
+  min-width: 320px;
+  background-color: var(--white);
+}
+
+html[theme="dark"] {
+  .login-page {
+    background-color: var(--dark-low);
+    .top-logo {
+      background-color: transparent;
+    }
+    .top-title {
+      color: var(--white);
+    }
+    .text-input {
+      label {
+        color: var(--white);
+      }
+      input {
+        color: var(--white);
+        background-color: var(--dark-medium);
+      }
+      fieldset {
+        border: 1px solid var(--white) !important;
+      }
+    }
+    .river-form {
+      .intl-tel-input {
+        border-color: var(--white);
+        background-color: var(--dark-medium);
+        &:hover {
+          border-color: var(--light);
+        }
+        .flag-container {
+          background-color: var(--dark-medium);
+        }
+        input[type=tel] {
+          @include font;
+          background-color: var(--dark-medium);
+          color: var(--white);
+        }
+        .flag-dropdown {
+          background-color: var(--dark-medium);
+        }
+      }
     }
   }
-  .qr-code-container {
-    min-height: 320px;
-    min-width: 320px;
-    background-color: var(--white);
+}
+
+html[theme="dark-blue"] {
+  .login-page {
+    background-color: var(--dark-blue-low);
+    .top-logo {
+      background-color: transparent;
+    }
+    .top-title {
+      color: var(--white);
+    }
+    .text-input {
+      label {
+        color: var(--white);
+      }
+      input {
+        color: var(--white);
+        background-color: var(--dark-blue-medium);
+      }
+      fieldset {
+        border: 1px solid var(--white) !important;
+      }
+    }
+    .river-form {
+      .intl-tel-input {
+        border-color: var(--white);
+        background-color: var(--dark-blue-medium);
+        &:hover {
+          border-color: var(--light);
+        }
+        .flag-container {
+          background-color: var(--dark-blue-medium);
+        }
+        input[type=tel] {
+          @include font;
+          background-color: var(--dark-blue-medium);
+          color: var(--white);
+        }
+        .flag-dropdown {
+          background-color: var(--dark-blue-medium);
+        }
+      }
+    }
   }
 }

@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import GridList from '@material-ui/core/GridList/GridList';
-import {backgrounds, bgPics, C_CUSTOM_BG} from '../SettingMenu/vars/theme';
+import {backgrounds, bgPics, C_CUSTOM_BG} from '../SettingsMenu/vars/theme';
 import GridListTile from '@material-ui/core/GridListTile/GridListTile';
 import SettingsModal from '../SettingsModal';
 import {
@@ -21,7 +21,7 @@ import {throttle} from 'lodash';
 import BackgroundService from '../../services/backgroundService';
 // @ts-ignore
 import glur from 'glur';
-import {C_CUSTOM_BG_ID} from '../SettingMenu';
+import {C_CUSTOM_BG_ID} from '../SettingsMenu';
 
 import './style.css';
 

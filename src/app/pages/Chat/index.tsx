@@ -45,7 +45,7 @@ import SyncManager, {C_SYNC_UPDATE} from '../../services/sdk/syncManager';
 import UserRepo from '../../repository/user';
 import RiverLogo from '../../components/RiverLogo';
 import MainRepo from '../../repository';
-import SettingMenu, {C_CUSTOM_BG_ID} from '../../components/SettingMenu';
+import SettingsMenu, {C_CUSTOM_BG_ID} from '../../components/SettingsMenu';
 import {C_MSG_MODE} from '../../components/ChatInput/consts';
 import TimeUtility from '../../services/utilities/time';
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from '../../repository/message/consts';
@@ -92,7 +92,7 @@ import {IGeoItem} from '../../components/MapPicker';
 import RTLDetector from '../../services/utilities/rtl_detector';
 import Badge from '@material-ui/core/Badge/Badge';
 import BackgroundService from '../../services/backgroundService';
-import {C_CUSTOM_BG} from '../../components/SettingMenu/vars/theme';
+import {C_CUSTOM_BG} from '../../components/SettingsMenu/vars/theme';
 import SearchMessage from '../../components/SearchMessage';
 
 import './style.css';
@@ -386,10 +386,10 @@ class Chat extends React.Component<IProps, IState> {
                                     cancelIsTyping={this.cancelIsTypingHandler}
                                     onContextMenu={this.dialogContextMenuHandler}/>);
                 case 'settings':
-                    return (<SettingMenu updateMessages={this.settingUpdateMessageHandler} subMenu={leftMenuSub}
-                                         onClose={this.bottomBarSelectHandler.bind(this, 'chat')}
-                                         onSubPlaceChange={this.leftMenuSubPageChangeHandler}
-                                         onAction={this.settingActionHandler}/>);
+                    return (<SettingsMenu updateMessages={this.settingUpdateMessageHandler} subMenu={leftMenuSub}
+                                          onClose={this.bottomBarSelectHandler.bind(this, 'chat')}
+                                          onSubPlaceChange={this.leftMenuSubPageChangeHandler}
+                                          onAction={this.settingActionHandler}/>);
                 case 'contact':
                     return (<ContactMenu/>);
             }
@@ -2399,8 +2399,6 @@ class Chat extends React.Component<IProps, IState> {
                 this.setState({
                     confirmDialogMode: 'logout',
                     confirmDialogOpen: true,
-                    leftMenu: 'chat',
-                    leftMenuSub: 'none',
                 });
                 break;
             default:
@@ -2647,7 +2645,7 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    /* SettingMenu on update handler */
+    /* SettingsMenu on update handler */
     private settingUpdateMessageHandler = () => {
         const {selectedDialogId} = this.state;
         if (selectedDialogId !== 'null') {
@@ -2656,7 +2654,7 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    /* SettingMenu on update handler */
+    /* SettingsMenu on update handler */
     private settingActionHandler = (cmd: 'logout') => {
         switch (cmd) {
             case 'logout':

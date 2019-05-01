@@ -18,7 +18,9 @@ import Scrollbars from 'react-custom-scrollbars';
 import './style.css';
 
 interface IProps {
+    fit?: boolean;
     icon?: any;
+    noScrollbar?: boolean;
     onClose?: () => void;
     open: boolean;
     title: string;
@@ -51,13 +53,13 @@ class SettingsModal extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {icon, title} = this.props;
+        const {icon, title, noScrollbar, fit} = this.props;
         const {open} = this.state;
         return (
             <Dialog
                 open={open}
                 onClose={this.props.onClose}
-                className="settings-modal"
+                className={'settings-modal' + (fit ? ' fit' : '')}
             >
                 <React.Fragment>
                     <div className="settings-modal-header">
@@ -69,7 +71,7 @@ class SettingsModal extends React.Component<IProps, IState> {
                             <CloseRounded onClick={this.props.onClose}/>
                         </div>
                     </div>
-                    <div className="setting-content">
+                    {Boolean(!noScrollbar) && <div className="setting-content">
                         <Scrollbars
                             style={{
                                 height: '100%',
@@ -78,7 +80,10 @@ class SettingsModal extends React.Component<IProps, IState> {
                         >
                             {this.props.children}
                         </Scrollbars>
-                    </div>
+                    </div>}
+                    {Boolean(noScrollbar) && <div className="setting-content">
+                        {this.props.children}
+                    </div>}
                 </React.Fragment>
             </Dialog>
         );
