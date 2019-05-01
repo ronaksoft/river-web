@@ -1592,6 +1592,9 @@ class Chat extends React.Component<IProps, IState> {
         let minId = Infinity;
         let maxReadId = -1;
         messages.forEach((msg, key) => {
+            if (!msg) {
+                return;
+            }
             if (msg.id && msg.id > maxReadId && msg.id > 0 && !msg.me) {
                 maxReadId = msg.id;
             }
@@ -2490,18 +2493,23 @@ class Chat extends React.Component<IProps, IState> {
         }
         const {selectedDialogId} = this.state;
         const dialog = this.getDialogById(selectedDialogId);
-        if (dialog) {
-            const peerId = inputPeer.getId() || '';
-            if (dialog && ((dialog.readinboxmaxid || 0) < msgId || (dialog.unreadcount || 0) > 0)) {
-                this.readMessageThrottle(inputPeer, msgId);
-                this.updateDialogsCounter(peerId, {maxInbox: msgId});
-                const peerDialog = this.getDialogById(peerId);
-                this.messageRepo.getUnreadCount(peerId, msgId, peerDialog ? (peerDialog.topmessageid || 0) : 0).then((count) => {
-                    this.updateDialogsCounter(peerId, {
-                        mentionCounter: count.mention,
-                        unreadCounter: count.message,
-                    });
+        const peerId = inputPeer.getId() || '';
+        const compute = () => {
+            this.readMessageThrottle(inputPeer, msgId);
+            this.updateDialogsCounter(peerId, {maxInbox: msgId});
+            const peerDialog = this.getDialogById(peerId);
+            this.messageRepo.getUnreadCount(peerId, msgId, peerDialog ? (peerDialog.topmessageid || 0) : 0).then((count) => {
+                this.updateDialogsCounter(peerId, {
+                    mentionCounter: count.mention,
+                    unreadCounter: count.message,
                 });
+            });
+        };
+        if (dialog) {
+            if (dialog && ((dialog.readinboxmaxid || 0) < msgId || (dialog.unreadcount || 0) > 0)) {
+                compute();
+            } else if (dialog && (dialog.unreadcount || 0) > 0 && (dialog.readinboxmaxid || 0) <= msgId) {
+                compute();
             }
         }
         this.readHistoryMaxId = null;
@@ -2602,15 +2610,16 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Message Rendered Handler */
     private messageRenderedHandler = (info: any) => {
+        const {messages} = this.state;
+        const diff = messages.length - info.stopIndex;
+        this.setMoveDownVisible(diff > 2);
         if (this.isLoading) {
             return;
         }
-        const {messages, peer} = this.state;
+        const {peer} = this.state;
         if (messages) {
-            const diff = messages.length - info.stopIndex;
-            this.setMoveDownVisible(diff > 1);
             if (messages[info.stopIndex]) {
-                if (diff <= 1) {
+                if (diff <= 2) {
                     this.lastMessageId = -1;
                 } else {
                     this.lastMessageId = messages[info.stopIndex].id || -1;
