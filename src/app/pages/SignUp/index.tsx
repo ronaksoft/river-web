@@ -12,7 +12,7 @@ import SDK from '../../services/sdk';
 // @ts-ignore
 import IntlTelInput from 'react-intl-tel-input';
 import Snackbar from '@material-ui/core/Snackbar';
-import {Refresh} from '@material-ui/icons';
+import {RefreshRounded} from '@material-ui/icons';
 import {C_ERR, C_ERR_ITEM} from '../../services/sdk/const';
 import RiverLogo from '../../components/RiverLogo';
 import NotificationService from '../../services/notification';
@@ -155,9 +155,13 @@ class SignUp extends React.Component<IProps, IState> {
                                               autoHideDialCode={false} onPhoneNumberChange={this.handleOnChange}
                                               onKeyDown={this.sendCodeKeyDown} nationalMode={false}
                                               fieldId="input-phone"/>
+                                {step === 'phone' &&
+                                <div className="grey-link">
+                                    <span onClick={this.changeWorkspaceHandler}>Change Workspace</span>
+                                </div>}
                                 {Boolean((this.state.tries > 0 && (step === 'code' || step === 'register')) || (countdown < 45)) &&
                                 <div className="try-another-phone" onClick={this.tryAnotherPhone}>
-                                    <Refresh/>
+                                    <RefreshRounded/>
                                     <label>
                                         Try another phone
                                     </label>
@@ -176,6 +180,9 @@ class SignUp extends React.Component<IProps, IState> {
                                     />
                                     <div className="countdown">
                                         <TimerRounded/><span className="inner">{countdown}&nbsp;s</span>
+                                    </div>
+                                    <div className={'grey-link ' + (countdown >= 45 ? 'disabled' : '')}>
+                                        <span onClick={this.resendCode}>Resend Code</span>
                                     </div>
                                 </div>}
                                 {step === 'register' &&
@@ -210,17 +217,11 @@ class SignUp extends React.Component<IProps, IState> {
                                          onClick={this.sendCode}>
                                         <ArrowForwardRounded/>
                                     </div>
-                                    <div className="grey-link"
-                                         onClick={this.changeWorkspaceHandler}>Change Workspace
-                                    </div>
                                 </React.Fragment>}
                                 {step === 'code' && <React.Fragment>
                                     <div className={'login-form-btn' + (this.state.loading ? ' disabled' : '')}
                                          onClick={this.confirmCode}>
                                         <ArrowForwardRounded/>
-                                    </div>
-                                    <div className={'grey-link ' + (countdown >= 45 ? 'disabled' : '')}
-                                         onClick={this.resendCode}>Resend Code
                                     </div>
                                 </React.Fragment>}
                                 {step === 'register' &&
@@ -592,15 +593,15 @@ class SignUp extends React.Component<IProps, IState> {
             }).catch((err) => {
                 window.console.warn(err);
             });
-            if (this.state.step === 'phone') {
-                this.sdk.systemGetInfo().then((res) => {
-                    this.setState({
-                        workspaceInfo: res,
-                    });
-                });
-            }
         }
         this.focus('f-phone');
+        if (this.state.step === 'phone') {
+            this.sdk.systemGetInfo().then((res) => {
+                this.setState({
+                    workspaceInfo: res,
+                });
+            });
+        }
     }
 
     private startCountdown() {

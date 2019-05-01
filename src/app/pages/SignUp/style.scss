@@ -58,15 +58,16 @@ input {
       border-radius: 3px;
       margin-bottom: 16px;
       .text-wrapper {
-        border-bottom: 1px solid #c4c4c4;
+        border: 1px solid #c4c4c4;
+        border-radius: 7px;
         height: 56px;
         display: flex;
         align-items: center;
         justify-content: flex-start;
         color: #8C8C8C;
-        font-size: 24px;
+        font-size: 22px;
         font-weight: bold;
-        padding: 4px;
+        padding: 4px 12px;
       }
       &.qr-wrapper {
         text-align: right;
@@ -167,15 +168,14 @@ input {
     }
 
     .grey-link {
-      color: var(--river);
-      font-size: 18px;
-      font-weight: 100;
+      color: #8C8C8C;
+      font-size: 16px;
+      font-weight: bold;
       line-height: 18px;
+      text-align: right;
       cursor: pointer;
-      margin-top: -18px;
-      transform: translateY(32px);
       &.disabled {
-        color: #8C8C8C;
+        opacity: 0.3;
         cursor: default;
       }
     }

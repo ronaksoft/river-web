@@ -126,15 +126,16 @@ input {
       border-radius: 3px;
       margin-bottom: 16px; }
       .login-page .login-wrapper .input-wrapper .text-wrapper {
-        border-bottom: 1px solid #c4c4c4;
+        border: 1px solid #c4c4c4;
+        border-radius: 7px;
         height: 56px;
         display: flex;
         align-items: center;
         justify-content: flex-start;
         color: #8C8C8C;
-        font-size: 24px;
+        font-size: 22px;
         font-weight: bold;
-        padding: 4px; }
+        padding: 4px 12px; }
       .login-page .login-wrapper .input-wrapper.qr-wrapper {
         text-align: right; }
       .login-page .login-wrapper .input-wrapper .qr-link {
@@ -212,15 +213,14 @@ input {
         font-size: 40px;
         color: var(--white); }
     .login-page .login-wrapper .grey-link {
-      color: var(--river);
-      font-size: 18px;
-      font-weight: 100;
+      color: #8C8C8C;
+      font-size: 16px;
+      font-weight: bold;
       line-height: 18px;
-      cursor: pointer;
-      margin-top: -18px;
-      transform: translateY(32px); }
+      text-align: right;
+      cursor: pointer; }
       .login-page .login-wrapper .grey-link.disabled {
-        color: #8C8C8C;
+        opacity: 0.3;
         cursor: default; }
     .login-page .login-wrapper .try-another-phone {
       color: #999;
