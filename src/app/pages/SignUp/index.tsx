@@ -131,6 +131,7 @@ class SignUp extends React.Component<IProps, IState> {
                             <div className="input-wrapper">
                                 {step === 'workspace' &&
                                 <TextField type="text" label="Workspace"
+                                           placeholder="Enter your workspace URL"
                                            margin="none" variant="outlined"
                                            className="text-input"
                                            error={Boolean(this.state.workspaceError !== '')}

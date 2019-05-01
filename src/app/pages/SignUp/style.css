@@ -139,8 +139,8 @@ input {
         text-align: right; }
       .login-page .login-wrapper .input-wrapper .qr-link {
         font-weight: bold;
-        font-size: 20px;
-        line-height: 24px;
+        font-size: 17px;
+        line-height: 22px;
         color: #479FF6;
         cursor: pointer; }
     .login-page .login-wrapper .input {
@@ -324,10 +324,10 @@ input {
     .login-page .river-form .countdown .inner {
       color: var(--river);
       font-weight: bold;
-      font-size: 20px; }
+      font-size: 17px; }
     .login-page .river-form .countdown svg {
       color: var(--river);
-      font-size: 20px; }
+      font-size: 17px; }
 
 @keyframes button-disabled {
   from {
