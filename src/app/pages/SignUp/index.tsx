@@ -315,7 +315,7 @@ class SignUp extends React.Component<IProps, IState> {
                     localStorage.removeItem('river.contacts.hash');
                     localStorage.removeItem('river.conn.info');
                     window.location.reload();
-                } else if (localWorkspace === '' && workspace === defaultGateway) {
+                } else if ((!localWorkspace || localWorkspace === '') && workspace === defaultGateway) {
                     localStorage.setItem('river.workspace_url', workspace);
                 }
 
