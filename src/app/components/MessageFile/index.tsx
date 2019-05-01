@@ -20,6 +20,7 @@ import {IFileProgress} from '../../services/sdk/fileManager';
 import ProgressBroadcaster from '../../services/progress';
 
 import './style.css';
+import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 
 /* Get human readable size */
 export const getHumanReadableSize = (size: number) => {
@@ -135,7 +136,7 @@ export const getFileExtension = (type: string) => {
 interface IProps {
     message: IMessage;
     peer: InputPeer | null;
-    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', message: IMessage) => void;
+    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'preview', message: IMessage) => void;
 }
 
 interface IState {
@@ -247,10 +248,15 @@ class MessageFile extends React.PureComponent<IProps, IState> {
                 <div className="file-content">
                     <div className="file-action">
                         {Boolean(fileState === 'view' || fileState === 'open') &&
-                        <React.Fragment>
-                            <InsertDriveFileRounded/>
-                            <span className="extension">{getFileExtension(type)}</span>
-                        </React.Fragment>}
+                        <Tooltip
+                            title={fileState === 'open' ? 'Preview' : ''}
+                            placement="top"
+                        >
+                            <div onClick={this.previewFileHandler}>
+                                <InsertDriveFileRounded/>
+                                <span className="extension">{getFileExtension(type)}</span>
+                            </div>
+                        </Tooltip>}
                         {Boolean(fileState === 'download') &&
                         <CloudDownloadRounded onClick={this.downloadFileHandler}/>}
                         {Boolean(fileState === 'progress') && <React.Fragment>
@@ -382,6 +388,13 @@ class MessageFile extends React.PureComponent<IProps, IState> {
     private openFileHandler = () => {
         if (this.props.onAction) {
             this.props.onAction('open', this.state.message);
+        }
+    }
+
+    /* Preview file */
+    private previewFileHandler = () => {
+        if (this.props.onAction && this.state.fileState === 'open') {
+            this.props.onAction('preview', this.state.message);
         }
     }
 

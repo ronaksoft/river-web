@@ -3231,7 +3231,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Attachment action handler */
-    private messageAttachmentActionHandler = (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'read' | 'save_as', message: IMessage | number, fileId?: string) => {
+    private messageAttachmentActionHandler = (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'read' | 'save_as' | 'preview', message: IMessage | number, fileId?: string) => {
         const execute = (msg: IMessage) => {
             switch (cmd) {
                 case 'cancel':
@@ -3248,6 +3248,9 @@ class Chat extends React.Component<IProps, IState> {
                     break;
                 case 'open':
                     this.openFile(msg);
+                    break;
+                case 'preview':
+                    this.previewFile(msg);
                     break;
                 case 'read':
                     this.readMessageContent(msg);
@@ -3822,6 +3825,13 @@ class Chat extends React.Component<IProps, IState> {
     private openFile(message: IMessage) {
         if (message && message.savedPath) {
             this.electronService.revealFile(message.savedPath);
+        }
+    }
+
+    /* Preview file */
+    private previewFile(message: IMessage) {
+        if (message && message.savedPath) {
+            this.electronService.previewFile(message.savedPath);
         }
     }
 

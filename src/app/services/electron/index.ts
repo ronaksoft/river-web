@@ -20,6 +20,7 @@ export const C_ELECTRON_SUBJECT = {
 export const C_ELECTRON_CMD = {
     Download: 'download',
     Error: 'error',
+    PreviewFile: 'previewFile',
     RevealFile: 'revealFile',
 };
 
@@ -98,6 +99,13 @@ export default class ElectronService {
     /* Reveal file in folder */
     public revealFile(path: string) {
         return this.send(C_ELECTRON_CMD.RevealFile, {
+            path,
+        });
+    }
+
+    /* Preview file */
+    public previewFile(path: string) {
+        return this.send(C_ELECTRON_CMD.PreviewFile, {
             path,
         });
     }

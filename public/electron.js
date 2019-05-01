@@ -186,6 +186,7 @@ ipcMain.on('fnCall', (e, arg) => {
             try {
                 download(BrowserWindow.getFocusedWindow(), arg.data.url, {
                     filename: arg.data.fileName,
+                    openFolderWhenDone: true,
                 })
                     .then((dl) => {
                         callReact('fnCallback', {
@@ -205,6 +206,9 @@ ipcMain.on('fnCall', (e, arg) => {
             break;
         case 'revealFile':
             shell.showItemInFolder(arg.data.path);
+            break;
+        case 'previewFile':
+            mainWindow.previewFile(arg.data.path);
             break;
     }
 });

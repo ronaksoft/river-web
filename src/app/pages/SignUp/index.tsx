@@ -307,11 +307,13 @@ class SignUp extends React.Component<IProps, IState> {
                     workspaceError: '',
                     workspaceInfo: res,
                 });
-                this.workspaceManager.closeWire();
-                localStorage.setItem('river.workspace_url', workspace);
-                localStorage.removeItem('river.contacts.hash');
-                localStorage.removeItem('river.conn.info');
-                window.location.reload();
+                if (localStorage.getItem('river.workspace_url') !== workspace) {
+                    this.workspaceManager.closeWire();
+                    localStorage.setItem('river.workspace_url', workspace);
+                    localStorage.removeItem('river.contacts.hash');
+                    localStorage.removeItem('river.conn.info');
+                    window.location.reload();
+                }
             });
         }).catch((err) => {
             window.console.warn(err);
@@ -347,7 +349,6 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     private sendCodeKeyDown = (e: any) => {
-        // window.console.log(e);
         if (e.key === 'Enter') {
             this.sendCode();
         }
