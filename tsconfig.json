@@ -3,7 +3,7 @@
     "baseUrl": ".",
     "outDir": "build/dist",
     "module": "esnext",
-    "target": "es6",
+    "target": "ES6",
     "lib": ["es6", "dom"],
     "sourceMap": true,
     "allowJs": true,
@@ -27,6 +27,7 @@
     "webpack",
     "jest",
     "src/setupTests.ts",
-    "public/bin"
+    "public/bin",
+    "dist"
   ]
 }

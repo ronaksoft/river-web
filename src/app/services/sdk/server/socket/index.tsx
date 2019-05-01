@@ -11,6 +11,8 @@ import {base64ToU8a, uint8ToBase64} from '../../fileManager/http/utils';
 import {IServerRequest} from '../index';
 import ElectronService from '../../../electron';
 
+export const defaultGateway = 'new.river.im';
+
 export const ping = new Uint8Array([0x50, 0x49, 0x4e, 0x47]);
 
 export const checkPong = (data: any) => {
@@ -158,7 +160,7 @@ export default class Socket {
         } else if (window.location.protocol === 'https:' && !ElectronService.isElectron()) {
             this.socket = new WebSocket('wss://' + window.location.host + '/ws');
         } else {
-            this.socket = new WebSocket('ws://new.river.im');
+            this.socket = new WebSocket(`ws://${defaultGateway}`);
         }
         this.socket.binaryType = 'arraybuffer';
 

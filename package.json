@@ -47,7 +47,7 @@
     "file-saver": "^2.0.0",
     "fine-uploader": "^5.16.2",
     "fine-uploader-wrappers": "^1.0.1",
-    "firebase": "^4.12.1",
+    "firebase": "^5.11.0",
     "glur": "^1.1.2",
     "google-protobuf": "^3.7.0-rc.2",
     "int64-buffer": "^0.99.1007",
@@ -105,10 +105,7 @@
     "react-async-script-loader": "^0.3.0",
     "react-scripts-ts": "^3.1.0",
     "ts-protoc-gen": "^0.9.0",
-    "typescript": "^3.3.3"
-  },
-  "resolutions": {
-    "grpc": "^1.12.0"
+    "typescript": "^3.4.5"
   },
   "build": {
     "appId": "com.your-domain",

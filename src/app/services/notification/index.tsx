@@ -19,8 +19,8 @@ export default class NotificationService {
     }
 
     private static instance: NotificationService;
-    private app: firebase.app.App;
-    private messaging: firebase.messaging.Messaging;
+    private readonly app: firebase.app.App;
+    private readonly messaging: firebase.messaging.Messaging;
 
     private constructor() {
         try {
@@ -39,7 +39,6 @@ export default class NotificationService {
         if (firebase.messaging.isSupported()) {
             this.messaging = firebase.messaging(this.app);
             this.messaging.usePublicVapidKey('BFxf-8XLrMr4ebwFjejZh1j9vQGTlEnJ_S9_1-cZbvZKXedCQomb7oAEd_eYHKwJlc1iJ7yAvQ_eOSzN9UbFPKM');
-
 
             this.messaging.requestPermission().then(() => {
                 window.console.warn('Notification permission granted.');

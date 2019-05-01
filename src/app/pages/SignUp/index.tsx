@@ -23,6 +23,7 @@ import {SystemInfo} from '../../services/sdk/messages/chat.api.system_pb';
 import WorkspaceManger from '../../services/workspaceManager';
 import SettingsModal from '../../components/SettingsModal';
 import jsQR from 'jsqr';
+import {defaultGateway} from '../../services/sdk/server/socket';
 
 import './tel-input.css';
 import './style.css';
@@ -307,13 +308,17 @@ class SignUp extends React.Component<IProps, IState> {
                     workspaceError: '',
                     workspaceInfo: res,
                 });
+                const localWorkspace = localStorage.getItem('river.workspace_url');
                 if (localStorage.getItem('river.workspace_url') !== workspace) {
                     this.workspaceManager.closeWire();
                     localStorage.setItem('river.workspace_url', workspace);
                     localStorage.removeItem('river.contacts.hash');
                     localStorage.removeItem('river.conn.info');
                     window.location.reload();
+                } else if (localWorkspace === '' && workspace === defaultGateway) {
+                    localStorage.setItem('river.workspace_url', workspace);
                 }
+
             });
         }).catch((err) => {
             window.console.warn(err);
