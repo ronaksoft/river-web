@@ -30,6 +30,7 @@
     "@material-ui/icons": "^3.0.1",
     "@material-ui/lab": "^3.0.0-alpha.30",
     "@material-ui/styles": "^3.0.0-alpha.10",
+    "@sentry/browser": "^5.1.1",
     "@types/react-avatar-editor": "^10.3.2",
     "@types/react-custom-scrollbars": "^4.0.5",
     "@types/xregexp": "^3.0.29",

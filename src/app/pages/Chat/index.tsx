@@ -94,6 +94,7 @@ import Badge from '@material-ui/core/Badge/Badge';
 import BackgroundService from '../../services/backgroundService';
 import {C_CUSTOM_BG} from '../../components/SettingsMenu/vars/theme';
 import SearchMessage from '../../components/SearchMessage';
+import * as Sentry from '@sentry/browser';
 
 import './style.css';
 
@@ -236,6 +237,13 @@ class Chat extends React.Component<IProps, IState> {
         this.rtlDetector = RTLDetector.getInstance();
         this.messageReadThrottle = throttle(this.readMessage, 512);
         this.backgroundService = BackgroundService.getInstance();
+
+        Sentry.configureScope((scope) => {
+            scope.setUser({
+                'auth_id': this.connInfo.AuthID,
+                'user_id': this.connInfo.UserID,
+            });
+        });
     }
 
     public componentDidMount() {

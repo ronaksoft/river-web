@@ -18,8 +18,14 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import MainRepo from './app/repository';
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
+import {ErrorInfo} from 'react';
+import * as Sentry from '@sentry/browser';
 
 import './App.css';
+
+Sentry.init({
+    dsn: "https://7f5b41c4b12d473bbe8db09fe0420c8a@sentry.ronaksoftware.com/8"
+});
 
 const theme = createMuiTheme({
     palette: {
@@ -40,7 +46,7 @@ interface IState {
 
 class App extends React.Component<{}, IState> {
     private mainRepo: MainRepo;
-    private isElectron: boolean = false;
+    private readonly isElectron: boolean = false;
 
     constructor(props: {}) {
         super(props);
@@ -57,6 +63,14 @@ class App extends React.Component<{}, IState> {
         if (window.isElectron) {
             this.isElectron = true;
         }
+    }
+
+    public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+        Sentry.withScope((scope) => {
+            scope.setExtras(errorInfo);
+            const eventId = Sentry.captureException(error);
+            Sentry.showReportDialog({eventId});
+        });
     }
 
     public componentDidMount() {
