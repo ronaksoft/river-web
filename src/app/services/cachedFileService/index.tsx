@@ -53,7 +53,7 @@ export default class CachedFileService {
                     reject();
                     return;
                 }
-                if (this.files[id].src !== '') {
+                if (!blurRadius && this.files[id].src !== '') {
                     if (this.files[id].timeout !== null) {
                         clearTimeout(this.files[id].timeout);
                     }

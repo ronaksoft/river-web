@@ -487,7 +487,7 @@ class PeerMedia extends React.Component<IProps, IState> {
             this.itemMap[item.id || 0] = index;
             // @ts-ignore
             if (!item.download) {
-                this.eventReferences.push(this.progressBroadcaster.listen(item.id || 0, this.downloadProgressHandler));
+                this.downloadEventReferences.push(this.progressBroadcaster.listen(item.id || 0, this.downloadProgressHandler));
             }
         });
         return items;
@@ -551,10 +551,8 @@ class PeerMedia extends React.Component<IProps, IState> {
     private downloadProgressHandler = (progress: IFileProgress) => {
         if (this.itemMap.hasOwnProperty(progress.msgId || 0) && progress.state === 'complete') {
             const index = this.itemMap[progress.msgId || 0];
-            window.console.log(index);
-            if (index > -1) {
-                const {items} = this.state;
-                window.console.log(items[index]);
+            const {items} = this.state;
+            if (index > -1 && items[index]) {
                 items[index].download = true;
                 this.setState({
                     items,
