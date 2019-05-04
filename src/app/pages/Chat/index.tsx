@@ -1654,20 +1654,22 @@ class Chat extends React.Component<IProps, IState> {
             }
 
             if (!push) {
-                if (key === 0 && defaultMessages[0] && defaultMessages[0].messagetype === C_MESSAGE_TYPE.Date) {
-                    if (TimeUtility.isInSameDay(msg.createdon, defaultMessages[0].createdon)) {
-                        defaultMessages.splice(0, 1);
+                if (defaultMessages.length > 0 && defaultMessages[0]) {
+                    if (key === 0 && defaultMessages[0] && defaultMessages[0].messagetype === C_MESSAGE_TYPE.Date) {
+                        if (TimeUtility.isInSameDay(msg.createdon, defaultMessages[0].createdon)) {
+                            defaultMessages.splice(0, 1);
+                        }
                     }
-                }
 
-                if (key === 0 && defaultMessages.length > 1 && defaultMessages[0].messagetype === C_MESSAGE_TYPE.Normal && defaultMessages[1].senderid === msg.senderid) {
-                    defaultMessages[0].avatar = false;
-                }
+                    if (key === 0 && defaultMessages.length > 1 && defaultMessages[0].messagetype === C_MESSAGE_TYPE.Normal && defaultMessages[1].senderid === msg.senderid) {
+                        defaultMessages[0].avatar = false;
+                    }
 
-                // avatar breakpoint
-                defaultMessages[0].avatar = (msg.senderid !== defaultMessages[0].senderid || (defaultMessages[0].messageaction || 0) !== C_MESSAGE_ACTION.MessageActionNope);
-                msg.avatar = (messages.length - 1 === key);
-                // end of avatar breakpoint
+                    // avatar breakpoint
+                    defaultMessages[0].avatar = (msg.senderid !== defaultMessages[0].senderid || (defaultMessages[0].messageaction || 0) !== C_MESSAGE_ACTION.MessageActionNope);
+                    msg.avatar = (messages.length - 1 === key);
+                    // end of avatar breakpoint
+                }
 
                 defaultMessages.unshift(msg);
                 // date breakpoint
