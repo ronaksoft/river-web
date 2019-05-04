@@ -20,11 +20,12 @@ import * as core_types_pb from '../messages/chat.core.types_pb';
 export interface IFileProgress {
     active?: boolean;
     download: number;
+    msgId?: number;
+    progress: number;
     state: 'loading' | 'complete' | 'failed';
     totalDownload: number;
     totalUpload: number;
     upload: number;
-    progress: number;
 }
 
 interface IChunkUpdate {
@@ -67,7 +68,7 @@ interface IChunksInfo {
     upload: boolean;
 }
 
-const C_FILE_SERVER_HTTP_WORKER_NUM = 2;
+const C_FILE_SERVER_HTTP_WORKER_NUM = 1;
 const C_MAX_UPLOAD_QUEUE_SIZE = 2;
 const C_MAX_UPLOAD_PIPELINE_SIZE = 4;
 const C_UPLOAD_CHUNK_SIZE = 256 * 1024;
@@ -155,7 +156,7 @@ export default class FileManager {
 
         const download = () => {
             this.prepareDownloadTransfer(location, size, mimeType, internalResolve, internalReject, () => {
-                if (this.httpWorkers[1] && this.httpWorkers[1].isReady()) {
+                if (this.httpWorkers[0] && this.httpWorkers[0].isReady()) {
                     this.startDownloadQueue();
                 }
             }, onProgress);
@@ -350,7 +351,7 @@ export default class FileManager {
                 this.startUploadQueue();
             }
         }
-        if (this.httpWorkers.length > 1 && this.httpWorkers[1].isReady() && this.fileTransferQueue.hasOwnProperty(id)) {
+        if (this.httpWorkers.length > 0 && this.httpWorkers[0].isReady() && this.fileTransferQueue.hasOwnProperty(id)) {
             if (this.fileTransferQueue[id].sendChunks.length > 1 && this.fileTransferQueue[id].pipelines < C_MAX_UPLOAD_PIPELINE_SIZE) {
                 this.startUploading(id);
             }
@@ -692,7 +693,7 @@ export default class FileManager {
 
     /* Send chunk over http */
     private sendFileChunk(id: string, partNum: number, totalParts: number, bytes: Uint8Array, cancel: any, onUploadProgress?: (e: any) => void, onDownloadProgress?: (e: any) => void): Promise<Bool> {
-        if (this.httpWorkers.length === 0 || (this.httpWorkers.length >= 1 && !this.httpWorkers[1].isReady())) {
+        if (this.httpWorkers.length === 0 || !this.httpWorkers[0].isReady()) {
             return Promise.reject({
                 code: C_FILE_ERR_CODE.NO_WORKER,
                 message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.NO_WORKER],
@@ -703,7 +704,7 @@ export default class FileManager {
         data.setPartid(partNum);
         data.setTotalparts(totalParts);
         data.setBytes(bytes);
-        return this.httpWorkers[1].send(C_MSG.FileSavePart, data.serializeBinary(), cancel, onUploadProgress, onDownloadProgress);
+        return this.httpWorkers[0].send(C_MSG.FileSavePart, data.serializeBinary(), cancel, onUploadProgress, onDownloadProgress);
     }
 
     /* Receive chunk over http */

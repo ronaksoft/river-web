@@ -17,7 +17,7 @@ import {
     CropRounded,
     PlayCircleFilledRounded,
     ConfirmationNumberRounded, InsertDriveFileRounded,
-    MusicNoteRounded,
+    MusicNoteRounded, CloseRounded,
 } from '@material-ui/icons';
 import Scrollbars from 'react-custom-scrollbars';
 import TextField from '@material-ui/core/TextField/TextField';
@@ -25,6 +25,7 @@ import TextField from '@material-ui/core/TextField/TextField';
 import readAndCompressImage from 'browser-image-resizer';
 import {getFileExtension, getHumanReadableSize} from '../MessageFile';
 import * as MusicMetadata from 'music-metadata-browser';
+import IconButton from '@material-ui/core/IconButton/IconButton';
 
 import './style.css';
 
@@ -136,7 +137,13 @@ class MediaPreview extends React.Component<IProps, IState> {
                         <span>Converting...</span>
                     </div>}
                     <div className="uploader-header">
-                        <span>Upload Media</span>
+                        <span className="header-title">Upload Media</span>
+                        <IconButton
+                            className="header-icon"
+                            onClick={this.dialogCloseHandler}
+                        >
+                            <CloseRounded/>
+                        </IconButton>
                     </div>
                     <div className="attachment-preview-container">
                         <Dropzone

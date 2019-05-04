@@ -381,6 +381,13 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
             v = progress.progress * 85;
         } else if (progress.state === 'complete') {
             v = 88;
+            message.downloaded = true;
+            this.setState({
+                fileState: 'view',
+                message,
+            }, () => {
+                this.forceUpdate();
+            });
         }
         if (v < 3) {
             v = 3;
@@ -419,6 +426,11 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                     this.removeAllListeners();
                     this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
                 });
+            }
+            // If media downloaded by different caller
+            else if (!message.downloaded) {
+                this.removeAllListeners();
+                this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
             } else {
                 const {peer} = this.props;
                 if (peer && message && !message.downloaded) {

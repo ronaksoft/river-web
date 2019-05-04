@@ -23,7 +23,7 @@ import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
 import ChatInput from '../../components/ChatInput/index';
-import {clone, differenceBy, find, findIndex, intersectionBy, throttle, trimStart} from 'lodash';
+import {clone, differenceBy, find, findIndex, findLastIndex, intersectionBy, throttle, trimStart} from 'lodash';
 import SDK from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
 import * as core_types_pb from '../../services/sdk/messages/chat.core.types_pb';
@@ -174,7 +174,6 @@ class Chat extends React.Component<IProps, IState> {
     private moveDownRef: any = null;
     private moveDownVisible: boolean = false;
     private lastMessageId: number = -1;
-    private dialogUnread: number = 0;
     private dialogReadMap: { [key: string]: { peer: InputPeer, id: number } } = {};
     private readonly messageReadThrottle: any = null;
     private newMessageFlag: boolean = false;
@@ -1218,34 +1217,56 @@ class Chat extends React.Component<IProps, IState> {
                 });
             }
 
-            const {messages, dialogs} = this.state;
-            let updateView = false;
-            data.messageidsList.sort().forEach((id) => {
-                const dialogIndex = findIndex(dialogs, {topmessageid: id});
-                if (dialogIndex > -1) {
-                    const inputPeer = new InputPeer();
-                    inputPeer.setId(peer.id || '');
-                    inputPeer.setAccesshash(peer.accesshash || '0');
-                    inputPeer.setType(peer.type || 0);
-                    if (id > 1) {
-                        this.messageRepo.getMany({peer: inputPeer, before: id, limit: 1}).then((res) => {
-                            if (res.length > 0) {
-                                this.updateDialogs(res[0], peer.accesshash || '0', true);
-                            }
-                        });
+            // Check if current dialog is visible
+            if (this.state.selectedDialogId === (peer.id || '')) {
+                const {messages, dialogs} = this.state;
+
+                let updateView = false;
+                data.messageidsList.sort().forEach((id) => {
+                    // Update dialog list Top Message
+                    const dialogIndex = findIndex(dialogs, {topmessageid: id});
+                    if (dialogIndex > -1) {
+                        const inputPeer = new InputPeer();
+                        inputPeer.setId(peer.id || '');
+                        inputPeer.setAccesshash(peer.accesshash || '0');
+                        inputPeer.setType(peer.type || 0);
+                        if (id > 1) {
+                            this.messageRepo.getManyCache({before: id, limit: 1}, inputPeer).then((res) => {
+                                if (res.length > 0) {
+                                    this.updateDialogs(res[0], peer.accesshash || '0', true);
+                                }
+                            });
+                        }
                     }
-                }
-                const index = findIndex(messages, (o) => {
-                    return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                    const index = findLastIndex(messages, (o) => {
+                        return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                    });
+                    if (index > -1) {
+                        updateView = true;
+                        // Delete visible message if possible
+                        this.messageComponent.cache.clear(index, 0);
+                        messages.splice(index, 1);
+                        // Clear date indicator if possible
+                        const indexAlpha = index - 1;
+                        if (indexAlpha > -1 && messages.length > index) {
+                            // If date indicator were in current range boundaries
+                            if (messages[indexAlpha].messagetype === C_MESSAGE_TYPE.Date && messages[index].messagetype === C_MESSAGE_TYPE.Date) {
+                                this.messageComponent.cache.clear(indexAlpha, 0);
+                                messages.splice(indexAlpha, 1);
+                            }
+                        } else if (indexAlpha > -1 && messages.length === index) {
+                            // If it was last message
+                            if (messages[indexAlpha].messagetype === C_MESSAGE_TYPE.Date) {
+                                this.messageComponent.cache.clear(indexAlpha, 0);
+                                messages.splice(indexAlpha, 1);
+                            }
+                        }
+                    }
                 });
-                if (index > -1) {
-                    updateView = true;
-                    this.messageComponent.cache.clear(index, 0);
-                    messages.splice(index, 1);
+                // Update current message list if visible
+                if (updateView) {
+                    this.messageComponent.list.recomputeGridSize();
                 }
-            });
-            if (updateView) {
-                this.messageComponent.list.recomputeGridSize();
             }
         });
     }
@@ -1385,7 +1406,6 @@ class Chat extends React.Component<IProps, IState> {
                     group: null,
                 });
             }
-            this.dialogUnread = dialog.unreadcount || 0;
         }
 
         this.setLoading(true);
@@ -1864,7 +1884,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageComponent.animateToEnd();
                 setTimeout(() => {
                     this.isLoading = false;
-                }, 1000);
+                }, 250);
             }, 100);
         });
         this.messageRepo.lazyUpsert([message]);
@@ -2068,9 +2088,6 @@ class Chat extends React.Component<IProps, IState> {
             }
             if (scrollPos !== undefined) {
                 dialogs[index].scroll_pos = scrollPos;
-            }
-            if (peerId === this.state.selectedDialogId) {
-                this.dialogUnread = dialogs[index].unreadcount || 0;
             }
             this.dialogsSortThrottle(dialogs);
             this.dialogRepo.lazyUpsert([dialogs[index]]);
@@ -2494,22 +2511,26 @@ class Chat extends React.Component<IProps, IState> {
         const {selectedDialogId} = this.state;
         const dialog = this.getDialogById(selectedDialogId);
         const peerId = inputPeer.getId() || '';
-        const compute = () => {
-            this.readMessageThrottle(inputPeer, msgId);
-            this.updateDialogsCounter(peerId, {maxInbox: msgId});
-            const peerDialog = this.getDialogById(peerId);
-            this.messageRepo.getUnreadCount(peerId, msgId, peerDialog ? (peerDialog.topmessageid || 0) : 0).then((count) => {
-                this.updateDialogsCounter(peerId, {
-                    mentionCounter: count.mention,
-                    unreadCounter: count.message,
-                });
-            });
-        };
         if (dialog) {
-            if (dialog && ((dialog.readinboxmaxid || 0) < msgId || (dialog.unreadcount || 0) > 0)) {
-                compute();
-            } else if (dialog && (dialog.unreadcount || 0) > 0 && (dialog.readinboxmaxid || 0) <= msgId) {
-                compute();
+            // Last message pointer must be greater than msgId
+            if (dialog && (dialog.readinboxmaxid || 0) < msgId) {
+                this.readMessageThrottle(inputPeer, msgId);
+                this.updateDialogsCounter(peerId, {maxInbox: msgId});
+                const peerDialog = this.getDialogById(peerId);
+                // Recompute dialog counter
+                this.messageRepo.getUnreadCount(peerId, msgId, peerDialog ? (peerDialog.topmessageid || 0) : 0).then((count) => {
+                    this.updateDialogsCounter(peerId, {
+                        mentionCounter: count.mention,
+                        unreadCounter: count.message,
+                    });
+                });
+            }
+            // If unread counter was no correct we force it to be zero
+            else if (dialog && (dialog.unreadcount || 0) > 0 && (dialog.readinboxmaxid || 0) === msgId) {
+                this.updateDialogsCounter(peerId, {
+                    mentionCounter: 0,
+                    unreadCounter: 0,
+                });
             }
         }
         this.readHistoryMaxId = null;
@@ -2608,7 +2629,8 @@ class Chat extends React.Component<IProps, IState> {
         this.popUpDateComponent.updateDate(timestamp);
     }
 
-    /* Message Rendered Handler */
+    /* Message Rendered Handler
+     * We use it for scroll event in message list */
     private messageRenderedHandler = (info: any) => {
         const {messages} = this.state;
         const diff = messages.length - info.stopIndex;
@@ -2616,7 +2638,6 @@ class Chat extends React.Component<IProps, IState> {
         if (this.isLoading) {
             return;
         }
-        const {peer} = this.state;
         if (messages) {
             if (messages[info.stopIndex]) {
                 if (diff <= 2) {
@@ -2624,8 +2645,9 @@ class Chat extends React.Component<IProps, IState> {
                 } else {
                     this.lastMessageId = messages[info.stopIndex].id || -1;
                 }
-                if (this.dialogUnread > 0 && messages[info.stopIndex].id !== -1) {
-                    this.sendReadHistory(peer, Math.floor(messages[info.stopIndex].id || 0));
+                if (messages[info.stopIndex].id !== -1) {
+                    // Update unread counter in dialog
+                    this.sendReadHistory(this.state.peer, Math.floor(messages[info.stopIndex].id || 0));
                 }
             }
         }

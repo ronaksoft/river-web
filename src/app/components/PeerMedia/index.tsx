@@ -30,6 +30,8 @@ import {getFileExtension, getHumanReadableSize} from '../MessageFile';
 import DownloadProgress from '../DownloadProgress';
 import {IMessage} from '../../repository/message/interface';
 import AudioPlayer, {IAudioEvent, IAudioInfo} from '../../services/audioPlayer';
+import ProgressBroadcaster from '../../services/progress';
+import {IFileProgress} from '../../services/sdk/fileManager';
 
 import './style.css';
 
@@ -71,11 +73,13 @@ export const getDuration = (duration: number) => {
 
 class PeerMedia extends React.Component<IProps, IState> {
     private eventReferences: any[] = [];
+    private downloadEventReferences: any[] = [];
     private peerId: string = '';
     private mediaRepo: MediaRepo;
     private documentViewerService: DocumentViewerService;
     private itemMap: { [key: number]: number } = {};
     private audioPlayer: AudioPlayer;
+    private progressBroadcaster: ProgressBroadcaster;
 
     constructor(props: IProps) {
         super(props);
@@ -91,6 +95,7 @@ class PeerMedia extends React.Component<IProps, IState> {
         this.mediaRepo = MediaRepo.getInstance();
         this.documentViewerService = DocumentViewerService.getInstance();
         this.audioPlayer = AudioPlayer.getInstance();
+        this.progressBroadcaster = ProgressBroadcaster.getInstance();
     }
 
     public componentDidMount() {
@@ -460,6 +465,7 @@ class PeerMedia extends React.Component<IProps, IState> {
     private modifyMediaList(list: Array<IMessage | IMedia>): IMedia[] {
         const items: IMedia[] = [];
         this.itemMap = {};
+        this.removeAllDownloadListeners();
         list.forEach((item, index) => {
             // @ts-ignore
             if (item._modified) {
@@ -479,6 +485,10 @@ class PeerMedia extends React.Component<IProps, IState> {
                 });
             }
             this.itemMap[item.id || 0] = index;
+            // @ts-ignore
+            if (!item.download) {
+                this.eventReferences.push(this.progressBroadcaster.listen(item.id || 0, this.downloadProgressHandler));
+            }
         });
         return items;
     }
@@ -528,6 +538,32 @@ class PeerMedia extends React.Component<IProps, IState> {
         });
     }
 
+    /* Remove all download listeners */
+    private removeAllDownloadListeners() {
+        this.downloadEventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
+        });
+    }
+
+    /* Download progress handler */
+    private downloadProgressHandler = (progress: IFileProgress) => {
+        if (this.itemMap.hasOwnProperty(progress.msgId || 0) && progress.state === 'complete') {
+            const index = this.itemMap[progress.msgId || 0];
+            window.console.log(index);
+            if (index > -1) {
+                const {items} = this.state;
+                window.console.log(items[index]);
+                items[index].download = true;
+                this.setState({
+                    items,
+                }, () => {
+                    this.forceUpdate();
+                });
+            }
+        }
+    }
 }
 
 

@@ -55,7 +55,7 @@ import DownloadManger, {IDownloadSettings} from '../../services/downloadManager'
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.23.130';
+export const C_VERSION = '0.23.131';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 interface IProps {
@@ -457,7 +457,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                 </Scrollbars>
                             </div>
                         </React.Fragment>}
-                        {Boolean(pageContent === 'account') && <div>
+                        {Boolean(pageContent === 'account') && <React.Fragment>
                             <div className="menu-header">
                                 <IconButton
                                     aria-label="Prev"
@@ -468,160 +468,170 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                 </IconButton>
                                 <label>Account</label>
                             </div>
-                            {user && <div className="info kk-card">
-                                <div className="avatar" onClick={this.avatarMenuAnchorOpenHandler}>
-                                    {!uploadingPhoto && <UserAvatar id={user.id || ''} noDetail={true}/>}
-                                    {uploadingPhoto && <img src={this.profileTempPhoto} className="avatar-image"/>}
-                                    <div className={'overlay ' + (uploadingPhoto ? 'show' : '')}>
-                                        {!uploadingPhoto && <React.Fragment>
-                                            <PhotoCameraRounded/>
-                                            <div className="text">
-                                                CHANGE<br/>PROFILE<br/>PHOTO
+                            <div className="menu-content">
+                                {user &&
+                                <Scrollbars
+                                    autoHide={true}
+                                >
+                                    <div className="info">
+                                        <div className="avatar" onClick={this.avatarMenuAnchorOpenHandler}>
+                                            {!uploadingPhoto && <UserAvatar id={user.id || ''} noDetail={true}/>}
+                                            {uploadingPhoto &&
+                                            <img src={this.profileTempPhoto} className="avatar-image"/>}
+                                            <div className={'overlay ' + (uploadingPhoto ? 'show' : '')}>
+                                                {!uploadingPhoto && <React.Fragment>
+                                                    <PhotoCameraRounded/>
+                                                    <div className="text">
+                                                        CHANGE<br/>PROFILE<br/>PHOTO
+                                                    </div>
+                                                </React.Fragment>}
+                                                {uploadingPhoto &&
+                                                <div className="progress-action">
+                                                    <div className="progress">
+                                                        <svg viewBox="0 0 32 32">
+                                                            <circle ref={this.progressRefHandler} r="14" cx="16"
+                                                                    cy="16"/>
+                                                        </svg>
+                                                    </div>
+                                                    <CloseRounded className="action"
+                                                                  onClick={this.cancelFileHandler}/>
+                                                </div>}
                                             </div>
-                                        </React.Fragment>}
-                                        {uploadingPhoto &&
-                                        <div className="progress-action">
-                                            <div className="progress">
-                                                <svg viewBox="0 0 32 32">
-                                                    <circle ref={this.progressRefHandler} r="14" cx="16" cy="16"/>
-                                                </svg>
+                                        </div>
+                                        <div className="line">
+                                            {!editProfile && <div className="form-control">
+                                                <label>First Name</label>
+                                                <div className="inner">{user.firstname}</div>
+                                                <div className="action">
+                                                    {!editUsername && <IconButton
+                                                        aria-label="Edit firstname"
+                                                        onClick={this.onEditProfileHandler}
+                                                    >
+                                                        <EditRounded/>
+                                                    </IconButton>}
+                                                </div>
+                                            </div>}
+                                            {editProfile &&
+                                            <TextField
+                                                label="First Name"
+                                                fullWidth={true}
+                                                inputProps={{
+                                                    maxLength: 32,
+                                                }}
+                                                value={firstname}
+                                                className="input-edit"
+                                                onChange={this.onFirstnameChangeHandler}
+                                            />}
+                                        </div>
+                                        <div className="line">
+                                            {!editProfile && <div className="form-control">
+                                                <label>Last Name</label>
+                                                <div className="inner">{user.lastname}</div>
+                                                <div className="action">
+                                                    {!editUsername && <IconButton
+                                                        aria-label="Edit lastname"
+                                                        onClick={this.onEditProfileHandler}
+                                                    >
+                                                        <EditRounded/>
+                                                    </IconButton>}
+                                                </div>
+                                            </div>}
+                                            {editProfile &&
+                                            <TextField
+                                                label="Last Name"
+                                                fullWidth={true}
+                                                inputProps={{
+                                                    maxLength: 32,
+                                                }}
+                                                value={lastname}
+                                                className="input-edit"
+                                                onChange={this.onLastnameChangeHandler}
+                                            />}
+                                        </div>
+                                        <div className="line">
+                                            {!editProfile && <div className="form-control">
+                                                <label>Bio</label>
+                                                <div className="inner">{user.bio}</div>
+                                                <div className="action">
+                                                    {!editUsername && <IconButton
+                                                        aria-label="Edit bio"
+                                                        onClick={this.onEditProfileHandler}
+                                                    >
+                                                        <EditRounded/>
+                                                    </IconButton>}
+                                                </div>
+                                            </div>}
+                                            {editProfile &&
+                                            <TextField
+                                                label="Bio"
+                                                fullWidth={true}
+                                                inputProps={{
+                                                    maxLength: 32,
+                                                }}
+                                                value={bio}
+                                                multiline={true}
+                                                rowsMax={3}
+                                                className="input-edit"
+                                                onChange={this.onBioChangeHandler}
+                                            />}
+                                        </div>
+                                        <div className="line">
+                                            {!editUsername && <div className="form-control">
+                                                <label>Username</label>
+                                                <div className="inner">{user.username}</div>
+                                                <div className="action">
+                                                    {!editProfile && <IconButton
+                                                        aria-label="Edit title"
+                                                        onClick={this.onEditUsernameHandler}
+                                                    >
+                                                        <EditRounded/>
+                                                    </IconButton>}
+                                                </div>
+                                            </div>}
+                                            {editUsername &&
+                                            <TextField
+                                                label="Username"
+                                                fullWidth={true}
+                                                inputProps={{
+                                                    maxLength: 32,
+                                                }}
+                                                value={username}
+                                                className="input-edit"
+                                                onChange={this.onUsernameChangeHandler}
+                                                error={!usernameAvailable || !usernameValid}
+                                                helperText={!usernameAvailable ? 'Username is not available' : (!usernameValid ? 'Username is not valid' : '')}
+                                            />}
+                                        </div>
+                                        <div className="line">
+                                            <div className="form-control pad">
+                                                <label>Phone</label>
+                                                <div className="inner">{phone}</div>
                                             </div>
-                                            <CloseRounded className="action" onClick={this.cancelFileHandler}/>
+                                        </div>
+                                        {Boolean(editProfile && user && (user.firstname !== firstname || user.lastname !== lastname || user.bio !== bio)) &&
+                                        <div className="actions-bar">
+                                            <div className="add-action" onClick={this.confirmProfileChangesHandler}>
+                                                <CheckRounded/>
+                                            </div>
                                         </div>}
-                                    </div>
-                                </div>
-                                <div className="line">
-                                    {!editProfile && <div className="form-control">
-                                        <label>First Name</label>
-                                        <div className="inner">{user.firstname}</div>
-                                        <div className="action">
-                                            {!editUsername && <IconButton
-                                                aria-label="Edit firstname"
-                                                onClick={this.onEditProfileHandler}
-                                            >
-                                                <EditRounded/>
-                                            </IconButton>}
+                                        {Boolean(editUsername && user && (user.username !== username || username === '') && usernameAvailable && usernameValid) &&
+                                        <div className="actions-bar">
+                                            <div className="add-action" onClick={this.confirmUsernameChangeHandler}>
+                                                <CheckRounded/>
+                                            </div>
+                                        </div>}
+                                        {Boolean(editProfile || editUsername) && <div
+                                            className={'actions-bar cancel' + ((user && ((user.username !== username && usernameAvailable && usernameValid) || (user.firstname !== firstname || user.lastname !== lastname || user.bio !== bio))) ? ' no-padding' : '')}
+                                            onClick={this.cancelHandler}>
+                                            Cancel
+                                        </div>}
+                                        <div className="page-anchor log-out" onClick={this.logOutHandler}>
+                                            <div className="anchor-label color-red">Log Out</div>
                                         </div>
-                                    </div>}
-                                    {editProfile &&
-                                    <TextField
-                                        label="First Name"
-                                        fullWidth={true}
-                                        inputProps={{
-                                            maxLength: 32,
-                                        }}
-                                        value={firstname}
-                                        className="input-edit"
-                                        onChange={this.onFirstnameChangeHandler}
-                                    />}
-                                </div>
-                                <div className="line">
-                                    {!editProfile && <div className="form-control">
-                                        <label>Last Name</label>
-                                        <div className="inner">{user.lastname}</div>
-                                        <div className="action">
-                                            {!editUsername && <IconButton
-                                                aria-label="Edit lastname"
-                                                onClick={this.onEditProfileHandler}
-                                            >
-                                                <EditRounded/>
-                                            </IconButton>}
-                                        </div>
-                                    </div>}
-                                    {editProfile &&
-                                    <TextField
-                                        label="Last Name"
-                                        fullWidth={true}
-                                        inputProps={{
-                                            maxLength: 32,
-                                        }}
-                                        value={lastname}
-                                        className="input-edit"
-                                        onChange={this.onLastnameChangeHandler}
-                                    />}
-                                </div>
-                                <div className="line">
-                                    {!editProfile && <div className="form-control">
-                                        <label>Bio</label>
-                                        <div className="inner">{user.bio}</div>
-                                        <div className="action">
-                                            {!editUsername && <IconButton
-                                                aria-label="Edit bio"
-                                                onClick={this.onEditProfileHandler}
-                                            >
-                                                <EditRounded/>
-                                            </IconButton>}
-                                        </div>
-                                    </div>}
-                                    {editProfile &&
-                                    <TextField
-                                        label="Bio"
-                                        fullWidth={true}
-                                        inputProps={{
-                                            maxLength: 32,
-                                        }}
-                                        value={bio}
-                                        multiline={true}
-                                        rowsMax={3}
-                                        className="input-edit"
-                                        onChange={this.onBioChangeHandler}
-                                    />}
-                                </div>
-                                <div className="line">
-                                    {!editUsername && <div className="form-control">
-                                        <label>Username</label>
-                                        <div className="inner">{user.username}</div>
-                                        <div className="action">
-                                            {!editProfile && <IconButton
-                                                aria-label="Edit title"
-                                                onClick={this.onEditUsernameHandler}
-                                            >
-                                                <EditRounded/>
-                                            </IconButton>}
-                                        </div>
-                                    </div>}
-                                    {editUsername &&
-                                    <TextField
-                                        label="Username"
-                                        fullWidth={true}
-                                        inputProps={{
-                                            maxLength: 32,
-                                        }}
-                                        value={username}
-                                        className="input-edit"
-                                        onChange={this.onUsernameChangeHandler}
-                                        error={!usernameAvailable || !usernameValid}
-                                        helperText={!usernameAvailable ? 'Username is not available' : (!usernameValid ? 'Username is not valid' : '')}
-                                    />}
-                                </div>
-                                <div className="line">
-                                    <div className="form-control pad">
-                                        <label>Phone</label>
-                                        <div className="inner">{phone}</div>
                                     </div>
-                                </div>
-                                {Boolean(editProfile && user && (user.firstname !== firstname || user.lastname !== lastname || user.bio !== bio)) &&
-                                <div className="actions-bar">
-                                    <div className="add-action" onClick={this.confirmProfileChangesHandler}>
-                                        <CheckRounded/>
-                                    </div>
-                                </div>}
-                                {Boolean(editUsername && user && (user.username !== username || username === '') && usernameAvailable && usernameValid) &&
-                                <div className="actions-bar">
-                                    <div className="add-action" onClick={this.confirmUsernameChangeHandler}>
-                                        <CheckRounded/>
-                                    </div>
-                                </div>}
-                                {Boolean(editProfile || editUsername) && <div
-                                    className={'actions-bar cancel' + ((user && ((user.username !== username && usernameAvailable && usernameValid) || (user.firstname !== firstname || user.lastname !== lastname || user.bio !== bio))) ? ' no-padding' : '')}
-                                    onClick={this.cancelHandler}>
-                                    Cancel
-                                </div>}
-                            </div>}
-                            <div className="page-anchor log-out" onClick={this.logOutHandler}>
-                                <div className="anchor-label color-red">Log Out</div>
+                                </Scrollbars>}
                             </div>
-                        </div>}
+                        </React.Fragment>}
                         {Boolean(pageContent === 'session') && <React.Fragment>
                             <div className="menu-header">
                                 <IconButton

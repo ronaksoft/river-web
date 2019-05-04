@@ -45,6 +45,7 @@ export default class ProgressBroadcaster {
 
     public publish(id: number, progress: IFileProgress) {
         progress.active = true;
+        progress.msgId = id;
         this.callHandlers(id, progress);
     }
 

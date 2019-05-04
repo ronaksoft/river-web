@@ -97,6 +97,11 @@ class App extends React.Component<{}, IState> {
             el.setAttribute('bg', localStorage.getItem('river.theme.bg') || '2');
             el.setAttribute('bubble', localStorage.getItem('river.theme.bubble') || '4');
         }
+
+        const refreshEl = document.querySelector('#refresh');
+        if (refreshEl) {
+            refreshEl.remove();
+        }
     }
 
     public render() {
