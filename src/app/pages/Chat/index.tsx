@@ -531,7 +531,7 @@ class Chat extends React.Component<IProps, IState> {
                                                   onAction={this.messageAttachmentActionHandler}/>
                             </div>
                             <div ref={this.conversationRefHandler}
-                                 className={'conversation ' /*+ (this.state.messages.length === 0 && !this.isLoading ? ' no-result' : '')*/}>
+                                 className={'conversation ' + (this.messages.length === 0 && !this.isLoading ? ' no-result' : '')}>
                                 <PopUpDate ref={this.popUpDateRefHandler}/>
                                 <SearchMessage ref={this.searchMessageHandler} peer={peer}
                                                onFind={this.searchMessageFindHandler}
@@ -546,6 +546,7 @@ class Chat extends React.Component<IProps, IState> {
                                          onSelectedIdsChange={this.messageSelectedIdsChangeHandler}
                                          onSelectableChange={this.messageSelectableChangeHandler}
                                          onJumpToMessage={this.messageJumpToMessageHandler}
+                                         onLastMessage={this.messageLastMessageHandler}
                                          onLoadMoreBefore={this.messageLoadMoreBeforeHandler}
                                          onLoadMoreAfter={this.messageLoadMoreAfterHandler}
                                          onLoadMoreAfterGap={this.messageLoadMoreAfterGapHandler}
@@ -1406,6 +1407,10 @@ class Chat extends React.Component<IProps, IState> {
         this.setLoading(true);
 
         this.messages = [];
+
+        if (this.chatInputComponent) {
+            this.chatInputComponent.setLastMessage(null);
+        }
 
         const updateState = () => {
             this.messageComponent.cache.clearAll();
@@ -2641,6 +2646,13 @@ class Chat extends React.Component<IProps, IState> {
     private messageDropHandler = (files: File[]) => {
         if (this.chatInputComponent) {
             this.chatInputComponent.openUploader(files);
+        }
+    }
+
+    /* Message on last message handler */
+    private messageLastMessageHandler = (message: IMessage) => {
+        if (this.chatInputComponent) {
+            this.chatInputComponent.setLastMessage(message);
         }
     }
 

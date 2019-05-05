@@ -13,12 +13,7 @@ import {IMessage} from '../../repository/message/interface';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import {
-    GroupPhoto,
-    InputFileLocation,
-    InputPeer,
-    MediaType,
-    MessageEntityType,
-    PeerType
+    GroupPhoto, InputFileLocation, InputPeer, MediaType, MessageEntityType, PeerType,
 } from '../../services/sdk/messages/chat.core.types_pb';
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from '../../repository/message/consts';
 import TimeUtility from '../../services/utilities/time';
@@ -50,6 +45,7 @@ interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
     onAttachmentAction?: (cmd: 'cancel' | 'cancel_download' | 'download' | 'view' | 'open' | 'read' | 'preview', message: IMessage) => void;
     onJumpToMessage: (id: number, e: any) => void;
+    onLastMessage: (message: IMessage) => void;
     onLoadMoreAfter?: () => any;
     onLoadMoreAfterGap?: (id: number) => any;
     onLoadMoreBefore?: () => any;
@@ -227,6 +223,9 @@ class Message extends React.PureComponent<IProps, IState> {
                 if (callback) {
                     callback();
                 }
+                if (this.state.items.length > 0) {
+                    this.props.onLastMessage(this.state.items[this.state.items.length - 1]);
+                }
                 this.fitList(true);
                 this.modifyScroll(items);
             });
@@ -243,6 +242,9 @@ class Message extends React.PureComponent<IProps, IState> {
             this.topOfList = false;
             if (callback) {
                 callback();
+            }
+            if (this.state.items.length > 0) {
+                this.props.onLastMessage(this.state.items[this.state.items.length - 1]);
             }
         }
     }

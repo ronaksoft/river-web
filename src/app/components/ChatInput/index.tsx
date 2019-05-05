@@ -65,7 +65,6 @@ import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
 
 interface IProps {
-    lastMessage?: IMessage;
     onAction: (cmd: string, message?: IMessage) => void;
     onBulkAction: (cmd: string) => void;
     onContactSelected: (users: IUser[], caption: string, {mode, message}?: any) => void;
@@ -169,6 +168,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private riverTime: RiverTime;
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
+    private lastMessage: IMessage | null = null;
 
     constructor(props: IProps) {
         super(props);
@@ -289,6 +289,10 @@ class ChatInput extends React.Component<IProps, IState> {
                 this.mediaPreviewRef.openDialog(files, Boolean(media === 'file'));
             });
         }
+    }
+
+    public setLastMessage(message: IMessage | null) {
+        this.lastMessage = message;
     }
 
     public render() {
@@ -585,8 +589,8 @@ class ChatInput extends React.Component<IProps, IState> {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.stopPropagation();
             e.preventDefault();
-        } else if (e.keyCode === 38 && this.props.lastMessage && this.props.lastMessage.senderid === this.state.userId && this.state.previewMessageMode !== C_MSG_MODE.Edit) {
-            const message = this.props.lastMessage;
+        } else if (e.keyCode === 38 && this.lastMessage && this.lastMessage.senderid === this.state.userId && this.state.previewMessageMode !== C_MSG_MODE.Edit) {
+            const message = this.lastMessage;
             if ((this.riverTime.now() - (message.createdon || 0)) < 86400 &&
                 (message.fwdsenderid === '0' || !message.fwdsenderid) &&
                 (message.messagetype === C_MESSAGE_TYPE.Normal || (message.messagetype || 0) === 0)) {
