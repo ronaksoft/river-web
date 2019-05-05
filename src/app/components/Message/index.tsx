@@ -48,7 +48,6 @@ import './style.css';
 
 interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
-    items: IMessage[];
     onAttachmentAction?: (cmd: 'cancel' | 'cancel_download' | 'download' | 'view' | 'open' | 'read' | 'preview', message: IMessage) => void;
     onJumpToMessage: (id: number, e: any) => void;
     onLoadMoreAfter?: () => any;
@@ -72,8 +71,6 @@ interface IState {
     loadingPersist: boolean;
     moreAnchorEl: any;
     moreIndex: number;
-    peer: InputPeer | null;
-    readId: number;
     readIdInit: number;
     selectable: boolean;
     selectedIds: { [key: number]: number };
@@ -130,7 +127,7 @@ export const highlightMessageText = (id: number, text: string) => {
     }
 };
 
-class Message extends React.Component<IProps, IState> {
+class Message extends React.PureComponent<IProps, IState> {
     public list: List;
     public cache: CellMeasurerCache;
     private listCount: number;
@@ -162,82 +159,47 @@ class Message extends React.Component<IProps, IState> {
     private dropZoneRef: any = null;
     // @ts-ignore
     private dropZoneHideDebounce: any = null;
+    private readId: number = 0;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
-            items: props.items,
+            items: [],
             loading: false,
             loadingPersist: false,
             moreAnchorEl: null,
             moreIndex: -1,
-            peer: props.peer,
-            readId: props.readId,
             readIdInit: -1,
             selectable: props.selectable,
             selectedIds: props.selectedIds,
         };
+
+        this.readId = props.readId;
         this.riverTime = RiverTime.getInstance();
         this.cache = new CellMeasurerCache({
             fixedWidth: true,
             keyMapper: this.keyMapperHandler,
             minHeight: 35,
         });
-
         this.broadcaster = Broadcaster.getInstance();
-
         this.isSimplified = UserRepo.getInstance().getBubbleMode() === '5';
-
         this.loadMoreAfterThrottle = throttle(this.loadMoreAfter, 250);
         this.fitListCompleteThrottle = throttle(this.fitListComplete, 250);
-
         this.dropZoneHideDebounce = debounce(this.dragLeaveHandler, 200);
     }
 
     public componentDidMount() {
         this.fitList(true);
-        this.listCount = this.props.items.length;
         this.topOfList = false;
         this.eventReferences.push(this.broadcaster.listen('Theme_Changed', this.themeChangeHandler));
         window.addEventListener('mouseup', this.dragLeaveHandler, true);
     }
 
     public componentWillReceiveProps(newProps: IProps) {
-        if (this.state.items !== newProps.items) {
-            this.loadMoreAfterThrottle.cancel();
-            this.fitListCompleteThrottle.cancel();
-            this.cache.clearAll();
-            this.bottomOfList = true;
-            this.removeSnapshot();
-            this.setState({
-                items: newProps.items,
-                moreAnchorEl: null,
-                moreIndex: -1,
-                peer: newProps.peer,
-                readIdInit: newProps.readId,
-            }, () => {
-                this.fitList(true);
-                this.modifyScroll(newProps.items);
-            });
-            this.listCount = newProps.items.length;
-            this.topOfList = false;
-        } else if (this.state.items === newProps.items && this.listCount !== newProps.items.length) {
-            if (!this.topOfList) {
-                setTimeout(() => {
-                    this.fitList();
-                }, 100);
-            }
-            this.modifyScroll(newProps.items);
-            this.listCount = newProps.items.length;
-            this.topOfList = false;
-        }
-        if (this.state.readId !== newProps.readId) {
-            this.setState({
-                readId: newProps.readId,
-            }, () => {
-                this.list.forceUpdateGrid();
-            });
+        if (this.readId !== newProps.readId) {
+            this.readId = newProps.readId;
+            // this.list.forceUpdateGrid();
         }
         if (this.state.selectable !== newProps.selectable || Object.keys(this.state.selectedIds).length !== Object.keys(newProps.selectedIds).length) {
             this.setState({
@@ -246,6 +208,42 @@ class Message extends React.Component<IProps, IState> {
             }, () => {
                 this.list.forceUpdateGrid();
             });
+        }
+    }
+
+    public setMessages(items: IMessage[], callback?: () => void) {
+        if (this.state.items !== items) {
+            this.loadMoreAfterThrottle.cancel();
+            this.fitListCompleteThrottle.cancel();
+            this.cache.clearAll();
+            this.bottomOfList = true;
+            this.removeSnapshot();
+            this.setState({
+                items,
+                moreAnchorEl: null,
+                moreIndex: -1,
+                readIdInit: this.props.readId,
+            }, () => {
+                if (callback) {
+                    callback();
+                }
+                this.fitList(true);
+                this.modifyScroll(items);
+            });
+            this.listCount = items.length;
+            this.topOfList = false;
+        } else if (this.state.items === items && this.listCount !== items.length) {
+            if (!this.topOfList) {
+                setTimeout(() => {
+                    this.fitList();
+                }, 100);
+            }
+            this.modifyScroll(items);
+            this.listCount = items.length;
+            this.topOfList = false;
+            if (callback) {
+                callback();
+            }
         }
     }
 
@@ -436,7 +434,8 @@ class Message extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {items, moreAnchorEl, peer, selectable, listStyle} = this.state;
+        const {peer} = this.props;
+        const {items, moreAnchorEl, selectable, listStyle} = this.state;
         return (
             <AutoSizer>
                 {({width, height}: any) => (
@@ -596,7 +595,7 @@ class Message extends React.Component<IProps, IState> {
                 rowIndex={index}
                 parent={parent}>
                 {({measure}) => {
-                    return this.messageItem(index, message, this.state.peer, this.state.readId, style, measure);
+                    return this.messageItem(index, message, this.props.peer, this.readId, style, measure);
                 }}
             </CellMeasurer>
         );
