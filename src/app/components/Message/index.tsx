@@ -88,7 +88,7 @@ export const highlightMessageText = (id: number, text: string) => {
     document.querySelectorAll(`.bubble-wrapper .bubble .bubble-body .inner.text-highlight`).forEach((elem) => {
         elem.remove();
     });
-    if (id < 0) {
+    if (id < 0 || !text) {
         return;
     }
     const wrapperEl = document.querySelector(`.bubble-wrapper .bubble.b_${id} .bubble-body`);

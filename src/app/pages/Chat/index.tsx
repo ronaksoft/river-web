@@ -2913,7 +2913,7 @@ class Chat extends React.Component<IProps, IState> {
             this.messageComponent.list.scrollToRow(index);
             setTimeout(() => {
                 highlightMessage(id);
-                if (text) {
+                if (typeof text === 'string') {
                     highlightMessageText(id, text);
                 }
             }, 100);
@@ -2950,7 +2950,7 @@ class Chat extends React.Component<IProps, IState> {
                 setTimeout(() => {
                     this.setLoading(false);
                     highlightMessage(id);
-                    if (text) {
+                    if (typeof text === 'string') {
                         highlightMessageText(id, text);
                     }
                 }, 100);
