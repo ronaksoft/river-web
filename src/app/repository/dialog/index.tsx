@@ -97,25 +97,25 @@ export default class DialogRepo {
         });
     }
 
-    public getSnapshot({limit, skip, dialogs}: any): Promise<IDialogWithUpdateId> {
+    public getSnapshot({limit, skip}: any): Promise<IDialogWithUpdateId> {
         limit = limit || 50;
         skip = skip || 0;
-        dialogs = dialogs || [];
         let retries = 0;
-        return new Promise((resolve, reject) => {
+        const getDialogs = ({resolve, reject, dialogs}: any) => {
+            dialogs = dialogs || [];
             // @ts-ignore
             this.getManyForSnapshot({skip, limit}).then((remoteRes) => {
                 dialogs.push.apply(dialogs, remoteRes.dialogs);
                 if (remoteRes.dialogs.length === limit) {
                     skip += limit;
-                    return this.getSnapshot({limit, skip, dialogs});
+                    return getDialogs({limit, skip, resolve, reject, dialogs});
                 } else {
-                    resolve({
+                    return resolve({
                         dialogs,
                         updateid: remoteRes.updateid,
                     });
                 }
-            }).catch(() => {
+            }).catch((err: any) => {
                 retries++;
                 if (retries < 3) {
                     return this.getSnapshot({limit, skip, dialogs});
@@ -123,6 +123,9 @@ export default class DialogRepo {
                     return reject();
                 }
             });
+        };
+        return new Promise((resolve, reject) => {
+            getDialogs({resolve, reject});
         });
     }
 
