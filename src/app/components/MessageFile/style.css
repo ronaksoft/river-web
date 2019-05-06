@@ -98,6 +98,10 @@ input {
       align-items: center;
       border-radius: 50%;
       background-color: var(--glass-dark-low); }
+      .message-file .file-content .file-action .tooltip {
+        display: flex;
+        justify-content: center;
+        align-items: center; }
       .message-file .file-content .file-action .extension {
         position: absolute;
         top: 50%;

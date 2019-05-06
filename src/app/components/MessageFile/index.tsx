@@ -164,6 +164,7 @@ class MessageFile extends React.PureComponent<IProps, IState> {
     private fileSizeRef: any = null;
     private fileSize: number = 0;
     private downloadManager: DownloadManager;
+    private isMac: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -187,6 +188,8 @@ class MessageFile extends React.PureComponent<IProps, IState> {
 
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
         this.downloadManager = DownloadManager.getInstance();
+
+        this.isMac = navigator.platform.indexOf('Mac') > -1;
     }
 
     public componentDidMount() {
@@ -252,6 +255,7 @@ class MessageFile extends React.PureComponent<IProps, IState> {
                         <Tooltip
                             title={fileState === 'open' ? 'Preview' : ''}
                             placement="top"
+                            className="tooltip"
                         >
                             <div onClick={this.previewFileHandler}>
                                 <InsertDriveFileRounded/>
@@ -276,7 +280,7 @@ class MessageFile extends React.PureComponent<IProps, IState> {
                             {Boolean(fileState === 'view') &&
                             <div className="file-download" onClick={this.viewFileHandler}>Save</div>}
                             {Boolean(fileState === 'open') &&
-                            <div className="file-download" onClick={this.openFileHandler}>Open</div>}
+                            <div className="file-download" onClick={this.openFileHandler}>{this.isMac ? 'Show in Finder' : 'Show in Folder'}</div>}
                         </div>
                     </div>
                 </div>

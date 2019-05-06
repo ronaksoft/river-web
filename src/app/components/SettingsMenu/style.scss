@@ -573,6 +573,18 @@
     padding: 12px 12px 8px;
     text-align: left;
     font-size: 13px;
+    &.terminate-all {
+      background-color: var(--header-color);
+      text-align: center;
+      justify-content: center;
+      margin-bottom: 8px;
+      span {
+        color: var(--red);
+        font-weight: bold;
+        font-size: 15px;
+        cursor: pointer;
+      }
+    }
     .session-current {
       position: absolute;
       top: 12px;
@@ -754,7 +766,10 @@ html[theme="dark-blue"] {
     }
     .session-item {
       color: var(--white);
-      border-color: var(--dark-low);
+      border-color: var(--dark-low-op50);
+      &.terminate-all {
+        background-color: var(--dark-low);
+      }
     }
   }
 }
@@ -786,6 +801,12 @@ html[theme="dark-blue"] {
     }
     .kk-card {
       background-color: var(--dark-blue-medium);
+    }
+    .session-item {
+      border-color: var(--dark-blue-low-op50);
+      &.terminate-all {
+        background-color: var(--dark-blue-low);
+      }
     }
   }
 }

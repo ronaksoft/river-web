@@ -25,6 +25,11 @@
       align-items: center;
       border-radius: 50%;
       background-color: var(--glass-dark-low);
+      .tooltip {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
       .extension {
         position: absolute;
         top: 50%;

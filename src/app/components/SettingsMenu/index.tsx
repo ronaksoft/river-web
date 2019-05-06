@@ -55,7 +55,7 @@ import DownloadManager, {IDownloadSettings} from '../../services/downloadManager
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.23.135';
+export const C_VERSION = '0.23.136';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 interface IProps {
@@ -652,28 +652,42 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                 >
                                     <div>
                                         {sessions.map((item, key) => {
-                                            return (
-                                                <div key={key} className="session-item">
-                                                    {Boolean(this.currentAuthID === item.authid) &&
-                                                    <div className="session-current">current</div>}
-                                                    <div className="session-info">
-                                                        <div className="session-row">
+                                            // @ts-ignore
+                                            if (item.type === 'terminate_all') {
+                                                if (sessions.length > 2) {
+                                                    return (
+                                                        <div key={key} className="session-item terminate-all">
+                                                            <span
+                                                                onClick={this.terminateSessionConfirmHandler.bind(this, '0')}>Terminate All Other Sessions</span>
+                                                        </div>
+                                                    );
+                                                } else {
+                                                    return '';
+                                                }
+                                            } else {
+                                                return (
+                                                    <div key={key} className="session-item">
+                                                        {Boolean(this.currentAuthID === item.authid) &&
+                                                        <div className="session-current">current</div>}
+                                                        <div className="session-info">
+                                                            <div className="session-row">
+                                                                <div
+                                                                    className="session-col">{`Client: ${(item.model || '').split(':-').join(' ')}`}</div>
+                                                            </div>
                                                             <div
-                                                                className="session-col">{`Client: ${(item.model || '').split(':-').join(' ')}`}</div>
+                                                                className="session-row">IP: {item.clientip} at {TimeUtility.dynamic(item.createdat)}</div>
+                                                            <div className="session-row">
+                                                                <div className="session-col">Last
+                                                                    active {TimeUtility.timeAgo(item.activeat)}</div>
+                                                            </div>
                                                         </div>
-                                                        <div
-                                                            className="session-row">IP: {item.clientip} at {TimeUtility.dynamic(item.createdat)}</div>
-                                                        <div className="session-row">
-                                                            <div className="session-col">Last
-                                                                active {TimeUtility.timeAgo(item.activeat)}</div>
+                                                        <div className="session-action">
+                                                            <span className="action-terminate"
+                                                                  onClick={this.terminateSessionConfirmHandler.bind(this, item.authid)}>Terminate</span>
                                                         </div>
                                                     </div>
-                                                    <div className="session-action">
-                                                    <span className="action-terminate"
-                                                          onClick={this.terminateSessionConfirmHandler.bind(this, item.authid)}>Terminate</span>
-                                                    </div>
-                                                </div>
-                                            );
+                                                );
+                                            }
                                         })}
                                     </div>
                                 </Scrollbars>}
@@ -769,7 +783,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                     onClose={this.confirmDialogCloseHandler}
                     className="confirm-dialog"
                 >
-                    <DialogTitle>Terminate session?</DialogTitle>
+                    <DialogTitle>{this.state.confirmDialogSelectedId === '0' ? 'Terminate all other sessions' : 'Terminate session?'}</DialogTitle>
                     <DialogActions>
                         <Button onClick={this.confirmDialogCloseHandler} color="secondary">
                             Disagree
@@ -1270,11 +1284,27 @@ class SettingsMenu extends React.Component<IProps, IState> {
         }
     }
 
+    /* Modify Sessions */
+    private modifySessions(sessions: AccountAuthorization.AsObject[]) {
+        const index = findIndex(sessions, {authid: this.currentAuthID});
+        if (index > 0) {
+            const currentSession = sessions[index];
+            sessions.splice(index, 1);
+            sessions.unshift(currentSession);
+            // @ts-ignore
+            sessions.unshift({type: 'terminate_all'});
+        } else {
+            // @ts-ignore
+            sessions.splice(1, 0, {type: 'terminate_all'});
+        }
+        return sessions;
+    }
+
     /* Get All Sessions */
     private getSessions() {
         this.sdk.sessionGetAll().then((res) => {
             this.setState({
-                sessions: res.authorizationsList,
+                sessions: this.modifySessions(res.authorizationsList),
             });
         });
     }
@@ -1293,12 +1323,21 @@ class SettingsMenu extends React.Component<IProps, IState> {
         if (confirmDialogSelectedId !== '') {
             this.sdk.sessionTerminate(confirmDialogSelectedId).then(() => {
                 const {sessions} = this.state;
-                const index = findIndex(sessions, {authid: confirmDialogSelectedId});
-                if (sessions && index > -1) {
-                    sessions.splice(index, 1);
-                    this.setState({
-                        sessions,
-                    });
+                if (confirmDialogSelectedId !== '0') {
+                    const index = findIndex(sessions, {authid: confirmDialogSelectedId});
+                    if (sessions && index > -1) {
+                        sessions.splice(index, 1);
+                        this.setState({
+                            sessions,
+                        });
+                    }
+                } else {
+                    const index = findIndex(sessions, {authid: this.currentAuthID});
+                    if (sessions && index > -1) {
+                        this.setState({
+                            sessions: [sessions[index]],
+                        });
+                    }
                 }
             });
         }
