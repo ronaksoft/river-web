@@ -132,6 +132,8 @@ input {
           .dialogs .dialog-list .dialog-container .dialog.active > span {
             color: var(--color-text-hover);
             background: transparent; }
+        .dialogs .dialog-list .dialog-container .dialog.pinned {
+          background-color: var(--header-color); }
       .dialogs .dialog-list .dialog-container .no-result {
         height: 100%;
         display: flex;
@@ -162,6 +164,9 @@ html[theme="dark"] .dialogs .dialog-list .dialog-container .dialog.active {
   html[theme="dark"] .dialogs .dialog-list .dialog-container .dialog.active > span {
     color: var(--color-text-hover); }
 
+html[theme="dark"] .dialogs .dialog-list .dialog-container .dialog.pinned {
+  background-color: var(--dark-low); }
+
 html[theme="dark-blue"] .dialogs .dialog-search label, html[theme="dark-blue"] .dialogs .dialog-search input, html[theme="dark-blue"] .dialogs .dialog-search svg {
   color: var(--white); }
 
@@ -177,3 +182,6 @@ html[theme="dark-blue"] .dialogs .dialog-list .dialog-container .dialog.active {
   background-color: var(--dark-blue-hover); }
   html[theme="dark-blue"] .dialogs .dialog-list .dialog-container .dialog.active > span {
     color: var(--color-text-hover); }
+
+html[theme="dark-blue"] .dialogs .dialog-list .dialog-container .dialog.pinned {
+  background-color: var(--dark-blue-low); }

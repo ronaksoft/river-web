@@ -36,6 +36,7 @@ import {IDialog} from '../../repository/dialog/interface';
 import UpdateManager, {INewMessageBulkUpdate} from '../../services/sdk/server/updateManager';
 import {C_MSG} from '../../services/sdk/const';
 import {
+    UpdateDialogPinned,
     UpdateGroupPhoto, UpdateMessageEdited, UpdateMessageID, UpdateMessagesDeleted, UpdateNotifySettings,
     UpdateReadHistoryInbox, UpdateReadHistoryOutbox, UpdateReadMessagesContents, UpdateUsername, UpdateUserPhoto,
     UpdateUserTyping,
@@ -317,6 +318,9 @@ class Chat extends React.Component<IProps, IState> {
         // Update: Force Log Out
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateAuthorizationReset, this.updateAuthorizationResetHandler));
 
+        // Update: dialog pinned
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateDialogPinned, this.updateDialogPinnedHandler));
+
         // Sync: MessageId
         this.eventReferences.push(this.syncManager.listen(C_SYNC_UPDATE.MessageId, this.updateMessageIDHandler));
 
@@ -390,8 +394,8 @@ class Chat extends React.Component<IProps, IState> {
             switch (leftMenu) {
                 default:
                 case 'chat':
-                    return (<Dialog ref={this.dialogRefHandler} items={this.state.dialogs} selectedId={selectedDialogId}
-                                    isTypingList={isTypingList}
+                    return (<Dialog ref={this.dialogRefHandler} items={this.state.dialogs}
+                                    selectedId={selectedDialogId} isTypingList={isTypingList}
                                     cancelIsTyping={this.cancelIsTypingHandler}
                                     onContextMenu={this.dialogContextMenuHandler}/>);
                 case 'settings':
@@ -478,7 +482,7 @@ class Chat extends React.Component<IProps, IState> {
                                     >
                                         {chatMoreMenuItem.map((item, key) => {
                                             if (item.role === 'divider') {
-                                                return (<Divider/>);
+                                                return (<Divider key={key}/>);
                                             } else {
                                                 return (
                                                     <MenuItem key={key}
@@ -2091,6 +2095,14 @@ class Chat extends React.Component<IProps, IState> {
         }
         const td = clone(dialogs);
         td.sort((i1, i2) => {
+            const p1 = i1.pinned ? 1 : 0;
+            const p2 = i2.pinned ? 1 : 0;
+            if (p1 < p2) {
+                return 1;
+            }
+            if (p1 > p2) {
+                return -1;
+            }
             if (!i1.last_update || !i2.last_update) {
                 return 0;
             }
@@ -2251,6 +2263,18 @@ class Chat extends React.Component<IProps, IState> {
                     if (res.dialogs.length > 0) {
                         this.startSyncing();
                     }
+                });
+                this.sdk.dialogGetPinned().then((pinnedDialogs) => {
+                    const toUpdateDialogs: IDialog[] = [];
+                    pinnedDialogs.dialogsList.forEach((item) => {
+                        const index = findIndex(res.dialogs, {peerid: item.peerid});
+                        if (index > -1) {
+                            res.dialogs[index].pinned = true;
+                            toUpdateDialogs.push(res.dialogs[index]);
+                        }
+                    });
+                    this.dialogRepo.lazyUpsert(toUpdateDialogs);
+                    this.dialogsSort(this.state.dialogs);
                 });
             }).catch(() => {
                 this.updateManager.enable();
@@ -3043,6 +3067,16 @@ class Chat extends React.Component<IProps, IState> {
                 if (dialog.topmessageid) {
                     this.sdk.clearMessage(peer, dialog.topmessageid, false);
                 }
+                break;
+            case 'pin':
+                this.sdk.dialogTogglePin(peer, true).then(() => {
+                    this.pinDialog(peer.getId() || '', true);
+                });
+                break;
+            case 'unpin':
+                this.sdk.dialogTogglePin(peer, false).then(() => {
+                    this.pinDialog(peer.getId() || '', false);
+                });
                 break;
             default:
                 break;
@@ -3944,13 +3978,25 @@ class Chat extends React.Component<IProps, IState> {
     /* Update force log out */
     private updateAuthorizationResetHandler = () => {
         this.logOutHandler();
-        // this.sdk.resetConnInfo();
-        // this.mainRepo.destroyDB().then(() => {
-        //     this.updateManager.setLastUpdateId(0);
-        //     this.updateManager.flushLastUpdateId();
-        //     window.location.href = '/';
-        //     // window.location.reload();
-        // });
+    }
+
+    /* Update dialog pinned handler */
+    private updateDialogPinnedHandler = (data: UpdateDialogPinned.AsObject) => {
+        //
+    }
+
+    private pinDialog(peerId: string, pinned?: boolean) {
+        const {dialogs} = this.state;
+        const index = findIndex(dialogs, {peerid: peerId});
+        if (index > -1) {
+            if (pinned === undefined) {
+                dialogs[index].pinned = !(dialogs[index].pinned || false);
+            } else {
+                dialogs[index].pinned = pinned;
+            }
+            this.dialogRepo.lazyUpsert([dialogs[index]]);
+            this.dialogsSort(dialogs);
+        }
     }
 
     private getMoveDown() {

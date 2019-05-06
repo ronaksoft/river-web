@@ -705,7 +705,7 @@ html[theme="dark-blue"] .kk-context-menu.darker > div[role="document"], html[the
   background-color: var(--dark-blue-low); }
 
 html[theme="dark-blue"] .kk-context-menu hr {
-  background-color: var(--dark-blue-medium); }
+  background-color: var(--dark-blue-accent-low); }
 
 html[theme="dark-blue"] .confirm-dialog div[role="document"] > div {
   background-color: var(--dark-blue-low); }

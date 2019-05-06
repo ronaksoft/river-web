@@ -25,6 +25,7 @@ import InputAdornment from '@material-ui/core/InputAdornment/InputAdornment';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import FormControl from '@material-ui/core/FormControl/FormControl';
 import IsMobile from '../../services/isMobile';
+import Divider from '@material-ui/core/Divider/Divider';
 
 import './style.css';
 
@@ -232,13 +233,14 @@ class Dialog extends React.Component<IProps, IState> {
     }
 
     private rowRender = ({index, key, parent, style}: any): any => {
-        const data = this.state.searchItems[index];
-        const isTyping = this.state.isTypingList.hasOwnProperty(data.peerid || '') ? this.state.isTypingList[data.peerid || ''] : {};
+        const dialog = this.state.searchItems[index];
+        const isTyping = this.state.isTypingList.hasOwnProperty(dialog.peerid || '') ? this.state.isTypingList[dialog.peerid || ''] : {};
         return (
-            <div style={style} key={data.peerid || key}>
-                <Link to={`/chat/${data.peerid}`}>
-                    <div className={'dialog' + (data.peerid === this.state.selectedId ? ' active' : '')}>
-                        <DialogMessage dialog={data} isTyping={isTyping}
+            <div style={style} key={dialog.peerid || key}>
+                <Link to={`/chat/${dialog.peerid}`}>
+                    <div
+                        className={'dialog' + (dialog.peerid === this.state.selectedId ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}>
+                        <DialogMessage dialog={dialog} isTyping={isTyping}
                                        onContextMenuOpen={this.contextMenuOpenHandler.bind(this, index)}/>
                     </div>
                 </Link>
@@ -282,6 +284,10 @@ class Dialog extends React.Component<IProps, IState> {
             return '';
         }
         const menuItem = {
+            0: {
+                cmd: 'divider',
+                title: '',
+            },
             1: {
                 cmd: 'clear',
                 title: 'Clear history',
@@ -305,39 +311,67 @@ class Dialog extends React.Component<IProps, IState> {
                 color: '#cc0000',
                 title: 'Remove',
             },
+            6: {
+                cmd: 'pin',
+                title: 'Pin',
+            },
+            7: {
+                cmd: 'unpin',
+                title: 'Unpin',
+            },
         };
         const menuTypes = {
-            1: [4, 1, 3, 5],
-            2: [1, 2],
+            1: [4, 0, 6, 7, 0, 1, 3, 5],
+            2: [1, 0, 6, 7, 0, 2],
         };
         const menuItems: any[] = [];
         const peerType = searchItems[moreIndex].peertype;
-
+        const dialog = this.state.items[moreIndex];
         if (peerType === PeerType.PEERUSER) {
             menuTypes[1].forEach((key) => {
-                menuItems.push(menuItem[key]);
+                if (key === 6 || key === 7) {
+                    if (key === 6 && !dialog.pinned) {
+                        menuItems.push(menuItem[key]);
+                    } else if (key === 7 && dialog.pinned) {
+                        menuItems.push(menuItem[key]);
+                    }
+                } else {
+                    menuItems.push(menuItem[key]);
+                }
             });
         } else if (peerType === PeerType.PEERGROUP) {
             menuTypes[2].forEach((key) => {
-                menuItems.push(menuItem[key]);
+                if (key === 6 || key === 7) {
+                    if (key === 6 && !dialog.pinned) {
+                        menuItems.push(menuItem[key]);
+                    } else if (key === 7 && dialog.pinned) {
+                        menuItems.push(menuItem[key]);
+                    }
+                } else {
+                    menuItems.push(menuItem[key]);
+                }
             });
         }
-        return menuItems.map((item, index) => {
+        return menuItems.map((item, key) => {
             let style = {};
             if (item.color) {
                 style = {
                     color: item.color,
                 };
             }
-            return (<MenuItem key={index} onClick={this.moreCmdHandler.bind(this, item.cmd, moreIndex)}
-                              className="context-item" style={style}>{item.title}</MenuItem>);
+            if (item.cmd === 'divider') {
+                return (<Divider key={key}/>);
+            } else {
+                return (<MenuItem key={key} onClick={this.moreCmdHandler.bind(this, item.cmd, dialog)}
+                                  className="context-item" style={style}>{item.title}</MenuItem>);
+            }
         });
     }
 
-    private moreCmdHandler = (cmd: string, index: number, e: any) => {
+    private moreCmdHandler = (cmd: string, dialog: IDialog, e: any) => {
         e.stopPropagation();
-        if (this.props.onContextMenu && index > -1) {
-            this.props.onContextMenu(cmd, this.state.items[index]);
+        if (this.props.onContextMenu && dialog) {
+            this.props.onContextMenu(cmd, dialog);
         }
         this.setState({
             moreAnchorEl: null,

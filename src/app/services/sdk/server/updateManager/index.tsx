@@ -10,12 +10,9 @@
 import {C_MSG} from '../../const';
 import {UpdateContainer, UpdateEnvelope} from '../../messages/chat.core.types_pb';
 import {
-    UpdateGroupPhoto,
-    UpdateMessageEdited, UpdateMessageID, UpdateMessagesDeleted,
-    UpdateNewMessage, UpdateNotifySettings,
-    UpdateReadHistoryInbox,
-    UpdateReadHistoryOutbox, UpdateReadMessagesContents, UpdateUsername, UpdateUserPhoto,
-    UpdateUserTyping
+    UpdateDialogPinned, UpdateGroupPhoto, UpdateMessageEdited, UpdateMessageID, UpdateMessagesDeleted,
+    UpdateNewMessage, UpdateNotifySettings, UpdateReadHistoryInbox, UpdateReadHistoryOutbox, UpdateReadMessagesContents,
+    UpdateUsername, UpdateUserPhoto, UpdateUserTyping,
 } from '../../messages/chat.api.updates_pb';
 import {throttle, findIndex} from 'lodash';
 import {User} from '../../messages/chat.core.types_pb';
@@ -301,6 +298,9 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateAuthorizationReset:
                 this.callHandlers(C_MSG.UpdateAuthorizationReset, {});
+                break;
+            case C_MSG.UpdateDialogPinned:
+                this.callHandlers(C_MSG.UpdateDialogPinned, UpdateDialogPinned.deserializeBinary(data).toObject());
                 break;
             default:
                 break;

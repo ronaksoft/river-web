@@ -30,7 +30,7 @@ import {
     ContactsMany
 } from './messages/chat.api.contacts_pb';
 import {
-    Bool,
+    Bool, Dialog,
     Group,
     GroupFull,
     InputFile,
@@ -51,14 +51,14 @@ import {
     MessagesEdit,
     MessagesForward,
     MessagesGetDialogs,
-    MessagesGetHistory,
+    MessagesGetHistory, MessagesGetPinnedDialogs,
     MessagesMany,
     MessagesReadContents,
     MessagesReadHistory,
     MessagesSend,
     MessagesSendMedia,
     MessagesSent,
-    MessagesSetTyping
+    MessagesSetTyping, MessagesToggleDialogPin
 } from './messages/chat.api.messages_pb';
 import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from './messages/chat.api.updates_pb';
 import {
@@ -512,5 +512,17 @@ export default class SDK {
             this.systemInfoCache = res;
             return res;
         });
+    }
+
+    public dialogGetPinned(): Promise<MessagesDialogs.AsObject> {
+        const data = new MessagesGetPinnedDialogs();
+        return this.server.send(C_MSG.MessagesGetPinnedDialogs, data.serializeBinary(), true);
+    }
+
+    public dialogTogglePin(peer: InputPeer, pin: boolean): Promise<Dialog.AsObject> {
+        const data = new MessagesToggleDialogPin();
+        data.setPeer(peer);
+        data.setPin(pin);
+        return this.server.send(C_MSG.MessagesToggleDialogPin, data.serializeBinary(), true);
     }
 }

@@ -15,6 +15,7 @@ interface IDialog extends Dialog.AsObject {
     action_data?: any;
     force?: boolean;
     last_update?: number;
+    pinned?: boolean;
     preview?: string;
     preview_icon?: number;
     preview_me?: boolean;
