@@ -1290,9 +1290,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
         if (index > 0) {
             const currentSession = sessions[index];
             sessions.splice(index, 1);
-            sessions.unshift(currentSession);
             // @ts-ignore
             sessions.unshift({type: 'terminate_all'});
+            sessions.unshift(currentSession);
         } else {
             // @ts-ignore
             sessions.splice(1, 0, {type: 'terminate_all'});
