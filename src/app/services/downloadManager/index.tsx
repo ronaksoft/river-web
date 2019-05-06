@@ -10,10 +10,13 @@
 import {merge} from 'lodash';
 
 export interface IDownloadSettings {
+    auto_save_files: boolean;
+    chat_files: boolean;
     chat_photos: boolean;
     chat_videos: boolean;
     chat_voices: boolean;
     download_all: boolean;
+    group_files: boolean;
     group_photos: boolean;
     group_videos: boolean;
     group_voices: boolean;
@@ -22,25 +25,28 @@ export interface IDownloadSettings {
 const downloadSettingsKey = 'river.settings.download';
 
 const defaultValues: IDownloadSettings = {
-    chat_photos: false,
+    auto_save_files: false,
+    chat_files: false,
+    chat_photos: true,
     chat_videos: false,
-    chat_voices: false,
+    chat_voices: true,
     download_all: false,
-    group_photos: false,
+    group_files: false,
+    group_photos: true,
     group_videos: false,
     group_voices: false,
 };
 
-export default class DownloadManger {
+export default class DownloadManager {
     public static getInstance() {
         if (!this.instance) {
-            this.instance = new DownloadManger();
+            this.instance = new DownloadManager();
         }
 
         return this.instance;
     }
 
-    private static instance: DownloadManger;
+    private static instance: DownloadManager;
     private downloadSettings: IDownloadSettings;
 
     private constructor() {

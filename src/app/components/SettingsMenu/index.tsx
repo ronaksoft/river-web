@@ -50,12 +50,12 @@ import SettingsBackgroundModal, {ICustomBackground} from '../SettingsBackgroundM
 import FileRepo from '../../repository/file';
 import BackgroundService from '../../services/backgroundService';
 import Radio from '@material-ui/core/Radio';
-import DownloadManger, {IDownloadSettings} from '../../services/downloadManager';
+import DownloadManager, {IDownloadSettings} from '../../services/downloadManager';
 
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.23.134';
+export const C_VERSION = '0.23.135';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 interface IProps {
@@ -121,7 +121,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private broadcaster: Broadcaster;
     private settingsBackgroundModalRef: SettingsBackgroundModal;
     private backgroundService: BackgroundService;
-    private downloadManger: DownloadManger;
+    private downloadManger: DownloadManager;
 
     constructor(props: IProps) {
         super(props);
@@ -159,10 +159,13 @@ class SettingsMenu extends React.Component<IProps, IState> {
             selectedCustomBackgroundBlur: parseInt(localStorage.getItem('river.theme.bg.blur') || '0', 10),
             selectedTheme: 'light',
             storageValues: {
+                auto_save_files: false,
+                chat_files: false,
                 chat_photos: false,
                 chat_videos: false,
                 chat_voices: false,
                 download_all: false,
+                group_files: false,
                 group_photos: false,
                 group_videos: false,
                 group_voices: false,
@@ -186,7 +189,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.documentViewerService = DocumentViewerService.getInstance();
         this.broadcaster = Broadcaster.getInstance();
         this.backgroundService = BackgroundService.getInstance();
-        this.downloadManger = DownloadManger.getInstance();
+        this.downloadManger = DownloadManager.getInstance();
 
         this.currentAuthID = this.sdk.getConnInfo().AuthID;
     }

@@ -18,7 +18,7 @@ import Broadcaster from '../../services/broadcaster';
 import './style.css';
 import {PeerType} from '../../services/sdk/messages/chat.core.types_pb';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
-import DownloadManger from '../../services/downloadManager';
+import DownloadManager from '../../services/downloadManager';
 
 interface IProps {
     className?: string;
@@ -70,7 +70,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
     private audioPlayer: AudioPlayer;
     private readSent: boolean = false;
     private broadcaster: Broadcaster;
-    private downloadManager: DownloadManger;
+    private downloadManager: DownloadManager;
 
     constructor(props: IProps) {
         super(props);
@@ -87,7 +87,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
         }
 
         this.broadcaster = Broadcaster.getInstance();
-        this.downloadManager = DownloadManger.getInstance();
+        this.downloadManager = DownloadManager.getInstance();
     }
 
     public componentDidMount() {

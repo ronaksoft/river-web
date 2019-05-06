@@ -27,7 +27,7 @@ import {getHumanReadableSize} from '../MessageFile';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 
 import './style.css';
-import DownloadManger from '../../services/downloadManager';
+import DownloadManager from '../../services/downloadManager';
 
 const C_MAX_HEIGHT = 256;
 const C_MIN_HEIGHT = 86;
@@ -167,7 +167,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     private mediaBigRef: any = null;
     private blurredImageEnable: boolean = false;
     private contentRead: boolean = false;
-    private downloadManager: DownloadManger;
+    private downloadManager: DownloadManager;
 
     constructor(props: IProps) {
         super(props);
@@ -201,7 +201,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
 
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
         this.documentViewerService = DocumentViewerService.getInstance();
-        this.downloadManager = DownloadManger.getInstance();
+        this.downloadManager = DownloadManager.getInstance();
     }
 
     public componentDidMount() {
@@ -392,7 +392,9 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         if (v < 3) {
             v = 3;
         }
-        this.circleProgressRef.style.strokeDasharray = `${v} 88`;
+        if (this.circleProgressRef) {
+            this.circleProgressRef.style.strokeDasharray = `${v} 88`;
+        }
     }
 
     /* Download file handler */
@@ -426,11 +428,6 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                     this.removeAllListeners();
                     this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
                 });
-            }
-            // If media downloaded by different caller
-            else if (!message.downloaded) {
-                this.removeAllListeners();
-                this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
             } else {
                 const {peer} = this.props;
                 if (peer && message && !message.downloaded) {
@@ -447,7 +444,6 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                             }
                             break;
                     }
-
                 }
             }
         }

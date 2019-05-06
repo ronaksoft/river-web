@@ -222,6 +222,10 @@ export const storageItems = [{
     title: 'Voices',
     type: 'item',
 }, {
+    id: 'chat_files',
+    title: 'Files',
+    type: 'item',
+}, {
     id: 'h2',
     title: 'Group Chats',
     type: 'header',
@@ -236,5 +240,17 @@ export const storageItems = [{
 }, {
     id: 'group_voices',
     title: 'Voices',
+    type: 'item',
+}, {
+    id: 'group_files',
+    title: 'Files',
+    type: 'item',
+}, {
+    id: 'h3',
+    title: 'Auto save',
+    type: 'header',
+}, {
+    id: 'auto_save_files',
+    title: 'Files',
     type: 'item',
 }];

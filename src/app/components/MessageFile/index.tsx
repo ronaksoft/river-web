@@ -9,18 +9,17 @@
 
 import * as React from 'react';
 import {IMessage} from '../../repository/message/interface';
-import {InputPeer} from '../../services/sdk/messages/chat.core.types_pb';
+import {InputPeer, PeerType} from '../../services/sdk/messages/chat.core.types_pb';
 import {
-    DocumentAttributeFile,
-    DocumentAttributeType,
-    MediaDocument
+    DocumentAttributeFile, DocumentAttributeType, MediaDocument,
 } from '../../services/sdk/messages/chat.core.message.medias_pb';
 import {CloseRounded, CloudDownloadRounded, InsertDriveFileRounded} from '@material-ui/icons';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import ProgressBroadcaster from '../../services/progress';
+import Tooltip from '@material-ui/core/Tooltip/Tooltip';
+import DownloadManager from '../../services/downloadManager';
 
 import './style.css';
-import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 
 /* Get human readable size */
 export const getHumanReadableSize = (size: number) => {
@@ -164,6 +163,7 @@ class MessageFile extends React.PureComponent<IProps, IState> {
     private progressBroadcaster: ProgressBroadcaster;
     private fileSizeRef: any = null;
     private fileSize: number = 0;
+    private downloadManager: DownloadManager;
 
     constructor(props: IProps) {
         super(props);
@@ -186,6 +186,7 @@ class MessageFile extends React.PureComponent<IProps, IState> {
         }
 
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
+        this.downloadManager = DownloadManager.getInstance();
     }
 
     public componentDidMount() {
@@ -339,7 +340,9 @@ class MessageFile extends React.PureComponent<IProps, IState> {
         if (v < 3) {
             v = 3;
         }
-        this.circleProgressRef.style.strokeDasharray = `${v} 88`;
+        if (this.circleProgressRef) {
+            this.circleProgressRef.style.strokeDasharray = `${v} 88`;
+        }
     }
 
     /* Download file handler */
@@ -373,6 +376,23 @@ class MessageFile extends React.PureComponent<IProps, IState> {
                     this.removeAllListeners();
                     this.eventReferences.push(this.progressBroadcaster.listen(message.id || 0, this.uploadProgressHandler));
                 });
+            } else {
+                const {peer} = this.props;
+                if (peer && message && !message.downloaded) {
+                    const ds = this.downloadManager.getDownloadSettings();
+                    switch (peer.getType()) {
+                        case PeerType.PEERUSER:
+                            if (ds.chat_files) {
+                                this.downloadFileHandler();
+                            }
+                            break;
+                        case PeerType.PEERGROUP:
+                            if (ds.group_files) {
+                                this.downloadFileHandler();
+                            }
+                            break;
+                    }
+                }
             }
         }
     }

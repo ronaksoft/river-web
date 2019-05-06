@@ -94,6 +94,7 @@ import Badge from '@material-ui/core/Badge/Badge';
 import BackgroundService from '../../services/backgroundService';
 import {C_CUSTOM_BG} from '../../components/SettingsMenu/vars/theme';
 import SearchMessage from '../../components/SearchMessage';
+import DownloadManager from '../../services/downloadManager';
 import * as Sentry from '@sentry/browser';
 
 import './style.css';
@@ -179,6 +180,7 @@ class Chat extends React.Component<IProps, IState> {
     private newMessageFlag: boolean = false;
     private backgroundService: BackgroundService;
     private searchMessageRef: SearchMessage;
+    private downloadManager: DownloadManager;
 
     constructor(props: IProps) {
         super(props);
@@ -235,6 +237,7 @@ class Chat extends React.Component<IProps, IState> {
         this.rtlDetector = RTLDetector.getInstance();
         this.messageReadThrottle = throttle(this.readMessage, 512);
         this.backgroundService = BackgroundService.getInstance();
+        this.downloadManager = DownloadManager.getInstance();
 
         Sentry.configureScope((scope) => {
             scope.setUser({
@@ -2597,7 +2600,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.downloadFile(message);
                 break;
             case 'save':
-                this.viewFile(message);
+                this.saveFile(message);
                 break;
             default:
                 window.console.debug(cmd, message);
@@ -3270,7 +3273,7 @@ class Chat extends React.Component<IProps, IState> {
                     this.cancelDownloadFile(msg);
                     break;
                 case 'view':
-                    this.viewFile(msg);
+                    this.saveFile(msg);
                     break;
                 case 'open':
                     this.openFile(msg);
@@ -3365,6 +3368,9 @@ class Chat extends React.Component<IProps, IState> {
                                 // Force update messages
                                 this.messageComponent.list.forceUpdateGrid();
                             }
+                        }
+                        if (msg.messagetype === C_MESSAGE_TYPE.File && this.downloadManager.getDownloadSettings().auto_save_files) {
+                            this.saveFile(msg);
                         }
                     }).catch((err) => {
                         window.console.debug(err);
@@ -3786,8 +3792,8 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    /* View file by type */
-    private viewFile(msg: IMessage) {
+    /* Save file by type */
+    private saveFile(msg: IMessage) {
         switch (msg.mediatype) {
             case MediaType.MEDIATYPEDOCUMENT:
                 const mediaDocument: MediaDocument.AsObject = msg.mediadata;
