@@ -1015,7 +1015,7 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Update new message handler */
     private updateNewMessageHandler = (data: INewMessageBulkUpdate) => {
-        if (this.state.isUpdating || !this.messageComponent) {
+        if (this.state.isUpdating) {
             return;
         }
         data.messages.forEach((message) => {
@@ -1025,7 +1025,7 @@ class Chat extends React.Component<IProps, IState> {
             }
         });
         const tMoveDownVisible = this.moveDownVisible;
-        if (data.peerid === this.state.selectedDialogId) {
+        if (data.peerid === this.state.selectedDialogId && this.messageComponent) {
             const dataMsg = this.modifyMessages(this.messages, data.messages.reverse(), true);
             this.setScrollMode('none');
             this.messageComponent.setMessages(dataMsg.msgs, () => {
@@ -1998,6 +1998,10 @@ class Chat extends React.Component<IProps, IState> {
                     toUpdateDialog.force = force;
                 }
             }
+            if ((!dialogs[index].accesshash || dialogs[index].accesshash === '0') && accessHash !== '0') {
+                dialogs[index].accesshash = accessHash;
+                toUpdateDialog = dialogs[index];
+            }
         } else {
             const dialog: IDialog = {
                 action_code: msg.messageaction,
@@ -2094,20 +2098,22 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         const td = clone(dialogs);
-        td.sort((i1, i2) => {
-            const p1 = i1.pinned ? 1 : 0;
-            const p2 = i2.pinned ? 1 : 0;
-            if (p1 < p2) {
-                return 1;
-            }
-            if (p1 > p2) {
-                return -1;
-            }
-            if (!i1.last_update || !i2.last_update) {
-                return 0;
-            }
-            return i2.last_update - i1.last_update;
-        });
+        if (td.length > 1) {
+            td.sort((i1, i2) => {
+                const p1 = i1.pinned ? 1 : 0;
+                const p2 = i2.pinned ? 1 : 0;
+                if (p1 < p2) {
+                    return 1;
+                }
+                if (p1 > p2) {
+                    return -1;
+                }
+                if (!i1.last_update || !i2.last_update) {
+                    return 0;
+                }
+                return i2.last_update - i1.last_update;
+            });
+        }
         let unreadCounter = 0;
         td.forEach((d) => {
             if (d && d.unreadcount) {
@@ -2677,8 +2683,8 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Message on last message handler */
-    private messageLastMessageHandler = (message: IMessage) => {
-        if (this.chatInputComponent) {
+    private messageLastMessageHandler = (message: IMessage | null) => {
+        if (this.chatInputComponent && message) {
             this.chatInputComponent.setLastMessage(message);
         }
     }

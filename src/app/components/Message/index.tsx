@@ -45,7 +45,7 @@ interface IProps {
     contextMenu?: (cmd: string, id: IMessage) => void;
     onAttachmentAction?: (cmd: 'cancel' | 'cancel_download' | 'download' | 'view' | 'open' | 'read' | 'preview', message: IMessage) => void;
     onJumpToMessage: (id: number, e: any) => void;
-    onLastMessage: (message: IMessage) => void;
+    onLastMessage: (message: IMessage | null) => void;
     onLoadMoreAfter?: () => any;
     onLoadMoreAfterGap?: (id: number) => any;
     onLoadMoreBefore?: () => any;
@@ -225,6 +225,8 @@ class Message extends React.PureComponent<IProps, IState> {
                 }
                 if (this.state.items.length > 0) {
                     this.props.onLastMessage(this.state.items[this.state.items.length - 1]);
+                } else {
+                    this.props.onLastMessage(null);
                 }
                 this.fitList(true);
                 this.modifyScroll(items);
@@ -245,6 +247,8 @@ class Message extends React.PureComponent<IProps, IState> {
             }
             if (this.state.items.length > 0) {
                 this.props.onLastMessage(this.state.items[this.state.items.length - 1]);
+            } else {
+                this.props.onLastMessage(null);
             }
         }
     }

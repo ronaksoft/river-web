@@ -327,6 +327,9 @@ class Dialog extends React.Component<IProps, IState> {
         const menuItems: any[] = [];
         const peerType = searchItems[moreIndex].peertype;
         const dialog = this.state.items[moreIndex];
+        if (!dialog) {
+            return;
+        }
         if (peerType === PeerType.PEERUSER) {
             menuTypes[1].forEach((key) => {
                 if (key === 6 || key === 7) {

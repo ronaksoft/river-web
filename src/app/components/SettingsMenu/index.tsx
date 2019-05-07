@@ -55,7 +55,7 @@ import DownloadManager, {IDownloadSettings} from '../../services/downloadManager
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.23.138';
+export const C_VERSION = '0.23.139';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 interface IProps {
@@ -870,13 +870,15 @@ class SettingsMenu extends React.Component<IProps, IState> {
 
     private getUser() {
         this.userRepo.get(this.userId).then((res) => {
-            this.setState({
-                bio: res.bio || '',
-                firstname: res.firstname || '',
-                lastname: res.lastname || '',
-                user: res,
-                username: res.username || '',
-            });
+            if (res) {
+                this.setState({
+                    bio: res.bio || '',
+                    firstname: res.firstname || '',
+                    lastname: res.lastname || '',
+                    user: res,
+                    username: res.username || '',
+                });
+            }
         });
     }
 
