@@ -34,6 +34,16 @@ message SystemGetAppUpdate {
 message SystemGetInfo {
 }
 
+// SystemGetSalts
+// @Function
+// @Returns: SystemSalts
+message SystemGetSalts {
+}
+
+// SystemSalts
+message SystemSalts {
+    repeated Salt Salts = 1;
+}
 
 // AppUpdate
 message AppUpdate {

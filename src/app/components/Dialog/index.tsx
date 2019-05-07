@@ -321,7 +321,7 @@ class Dialog extends React.Component<IProps, IState> {
             },
         };
         const menuTypes = {
-            1: [4, 0, 6, 7, 0, 1, 3, 5],
+            1: [4, 0, 6, 7, 0, 1, 5],
             2: [1, 0, 6, 7, 0, 2],
         };
         const menuItems: any[] = [];

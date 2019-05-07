@@ -26,6 +26,7 @@ import {
     PhotoOutlined,
     RecordVoiceOverOutlined,
     MusicNoteOutlined,
+    AdjustRounded,
 } from '@material-ui/icons';
 import {PeerNotifySettings, PeerType, TypingAction} from '../../services/sdk/messages/chat.core.types_pb';
 import GroupAvatar from '../GroupAvatar';
@@ -112,8 +113,10 @@ class DialogMessage extends React.Component<IProps, IState> {
                     {this.renderPreviewMessage(dialog)}
                 </span>}
                 {isTypingRender(isTyping, dialog)}
-                {(dialog.unreadcount && dialog.unreadcount > 0) ? (
-                    <span className="unread">{dialog.unreadcount > 99 ? '+99' : dialog.unreadcount}</span>) : ''}
+                {Boolean(dialog.unreadcount && dialog.unreadcount > 0) &&
+                <span className="unread">{(dialog.unreadcount || 0) > 99 ? '+99' : dialog.unreadcount}</span>}
+                {Boolean(!dialog.unreadcount && dialog.pinned) &&
+                <AdjustRounded className="pin"/>}
                 {Boolean(dialog.mentionedcount && dialog.mentionedcount > 0) &&
                 <span className="mention"><AlternateEmailRounded/></span>}
                 <div className="more" onClick={this.props.onContextMenuOpen}>

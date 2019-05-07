@@ -948,6 +948,11 @@ export class UpdateDialogPinned extends jspb.Message {
   getPeer(): chat_core_types_pb.Peer;
   setPeer(value?: chat_core_types_pb.Peer): void;
 
+  hasPinned(): boolean;
+  clearPinned(): void;
+  getPinned(): boolean | undefined;
+  setPinned(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateDialogPinned.AsObject;
   static toObject(includeInstance: boolean, msg: UpdateDialogPinned): UpdateDialogPinned.AsObject;
@@ -963,6 +968,7 @@ export namespace UpdateDialogPinned {
     ucount?: number,
     updateid?: number,
     peer: chat_core_types_pb.Peer.AsObject,
+    pinned?: boolean,
   }
 }
 

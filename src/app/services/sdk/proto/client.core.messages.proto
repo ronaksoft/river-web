@@ -34,3 +34,12 @@ message ClientSendMessageMedia {
     optional bool ClearDraft = 10;
     repeated DocumentAttribute Attributes = 11;
 }
+
+// ClientSearchResult
+message ClientSearchResult {
+    repeated UserMessage Messages = 1;
+    repeated User Users = 2;
+    repeated Group Groups = 3;
+    repeated ContactUser MatchedUsers = 5;
+    repeated Group MatchedGroups = 6;
+}

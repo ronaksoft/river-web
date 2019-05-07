@@ -96,6 +96,44 @@ export namespace SystemGetInfo {
   }
 }
 
+export class SystemGetSalts extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SystemGetSalts.AsObject;
+  static toObject(includeInstance: boolean, msg: SystemGetSalts): SystemGetSalts.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: SystemGetSalts, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SystemGetSalts;
+  static deserializeBinaryFromReader(message: SystemGetSalts, reader: jspb.BinaryReader): SystemGetSalts;
+}
+
+export namespace SystemGetSalts {
+  export type AsObject = {
+  }
+}
+
+export class SystemSalts extends jspb.Message {
+  clearSaltsList(): void;
+  getSaltsList(): Array<chat_core_types_pb.Salt>;
+  setSaltsList(value: Array<chat_core_types_pb.Salt>): void;
+  addSalts(value?: chat_core_types_pb.Salt, index?: number): chat_core_types_pb.Salt;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SystemSalts.AsObject;
+  static toObject(includeInstance: boolean, msg: SystemSalts): SystemSalts.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: SystemSalts, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SystemSalts;
+  static deserializeBinaryFromReader(message: SystemSalts, reader: jspb.BinaryReader): SystemSalts;
+}
+
+export namespace SystemSalts {
+  export type AsObject = {
+    saltsList: Array<chat_core_types_pb.Salt.AsObject>,
+  }
+}
+
 export class AppUpdate extends jspb.Message {
   hasAvailable(): boolean;
   clearAvailable(): void;

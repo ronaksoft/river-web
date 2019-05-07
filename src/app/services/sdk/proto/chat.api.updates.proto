@@ -200,6 +200,7 @@ message UpdateDialogPinned {
     required int32 UCount = 100;
     required int64 UpdateID = 101;
     required Peer Peer = 1;
+    required bool Pinned = 2;
 }
 
 // UpdateDialogPinnedOrder

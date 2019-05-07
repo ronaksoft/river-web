@@ -250,6 +250,12 @@ message DHGroup {
     required int32 Gen = 3;
 }
 
+// Salt
+message Salt {
+    required int64 Timestamp = 1;
+    required int64 Value = 2;
+}
+
 // PhoneContact
 message PhoneContact {
     required int64 ClientID = 1 [jstype = JS_STRING];

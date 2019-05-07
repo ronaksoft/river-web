@@ -173,6 +173,12 @@ input {
     background-color: var(--river);
     color: #fff;
     border-radius: 8px; }
+  .dialog-wrapper .pin {
+    font-size: 20px;
+    position: absolute;
+    top: 30px;
+    right: 8px;
+    color: #C6C6C6; }
   .dialog-wrapper.muted .unread {
     background-color: #C6C6C6; }
   .dialog-wrapper .mention {

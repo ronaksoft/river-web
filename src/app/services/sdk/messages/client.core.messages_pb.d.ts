@@ -178,3 +178,49 @@ export namespace ClientSendMessageMedia {
   }
 }
 
+export class ClientSearchResult extends jspb.Message {
+  clearMessagesList(): void;
+  getMessagesList(): Array<chat_core_types_pb.UserMessage>;
+  setMessagesList(value: Array<chat_core_types_pb.UserMessage>): void;
+  addMessages(value?: chat_core_types_pb.UserMessage, index?: number): chat_core_types_pb.UserMessage;
+
+  clearUsersList(): void;
+  getUsersList(): Array<chat_core_types_pb.User>;
+  setUsersList(value: Array<chat_core_types_pb.User>): void;
+  addUsers(value?: chat_core_types_pb.User, index?: number): chat_core_types_pb.User;
+
+  clearGroupsList(): void;
+  getGroupsList(): Array<chat_core_types_pb.Group>;
+  setGroupsList(value: Array<chat_core_types_pb.Group>): void;
+  addGroups(value?: chat_core_types_pb.Group, index?: number): chat_core_types_pb.Group;
+
+  clearMatchedusersList(): void;
+  getMatchedusersList(): Array<chat_core_types_pb.ContactUser>;
+  setMatchedusersList(value: Array<chat_core_types_pb.ContactUser>): void;
+  addMatchedusers(value?: chat_core_types_pb.ContactUser, index?: number): chat_core_types_pb.ContactUser;
+
+  clearMatchedgroupsList(): void;
+  getMatchedgroupsList(): Array<chat_core_types_pb.Group>;
+  setMatchedgroupsList(value: Array<chat_core_types_pb.Group>): void;
+  addMatchedgroups(value?: chat_core_types_pb.Group, index?: number): chat_core_types_pb.Group;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ClientSearchResult.AsObject;
+  static toObject(includeInstance: boolean, msg: ClientSearchResult): ClientSearchResult.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ClientSearchResult, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ClientSearchResult;
+  static deserializeBinaryFromReader(message: ClientSearchResult, reader: jspb.BinaryReader): ClientSearchResult;
+}
+
+export namespace ClientSearchResult {
+  export type AsObject = {
+    messagesList: Array<chat_core_types_pb.UserMessage.AsObject>,
+    usersList: Array<chat_core_types_pb.User.AsObject>,
+    groupsList: Array<chat_core_types_pb.Group.AsObject>,
+    matchedusersList: Array<chat_core_types_pb.ContactUser.AsObject>,
+    matchedgroupsList: Array<chat_core_types_pb.Group.AsObject>,
+  }
+}
+

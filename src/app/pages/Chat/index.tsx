@@ -957,35 +957,20 @@ class Chat extends React.Component<IProps, IState> {
     /* Init dialogs */
     private initDialogs = () => {
         this.dialogRepo.getManyCache({}).then((res) => {
-            let unreadCounter = 0;
-            const tDialogMap: any = {};
-            // Map indexes in order to to find them with O(1)
-            res.forEach((dialog, index) => {
-                tDialogMap[dialog.peerid || ''] = index;
-                if (dialog && dialog.unreadcount) {
-                    unreadCounter += dialog.unreadcount;
-                }
-            });
-
             const selectedId = this.props.match.params.id;
             const selectedMessageId = this.props.match.params.mid;
-            this.setState({
-                dialogMap: tDialogMap,
-                dialogs: res,
-                selectedDialogId: selectedId,
-                unreadCounter,
-            }, () => {
+            this.dialogsSort(res, () => {
                 if (selectedId !== 'null') {
                     const peer = this.getPeerByDialogId(selectedId);
                     this.setState({
                         leftMenu: 'chat',
                         peer,
+                        selectedDialogId: selectedId,
                     }, () => {
                         this.getMessagesByDialogId(selectedId, true, selectedMessageId);
                     });
                 }
             });
-
             this.setLoading(false);
         }).catch(() => {
             this.setLoading(false);
@@ -3999,20 +3984,30 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Update dialog pinned handler */
     private updateDialogPinnedHandler = (data: UpdateDialogPinned.AsObject) => {
-        //
+        this.pinDialog(data.peer.id || '', data.pinned);
     }
 
     private pinDialog(peerId: string, pinned?: boolean) {
         const {dialogs} = this.state;
         const index = findIndex(dialogs, {peerid: peerId});
         if (index > -1) {
+            let update = false;
             if (pinned === undefined) {
                 dialogs[index].pinned = !(dialogs[index].pinned || false);
+                update = true;
             } else {
-                dialogs[index].pinned = pinned;
+                if (!dialogs[index].pinned && pinned) {
+                    dialogs[index].pinned = pinned;
+                    update = true;
+                } else if (dialogs[index].pinned && !pinned) {
+                    dialogs[index].pinned = pinned;
+                    update = true;
+                }
             }
-            this.dialogRepo.lazyUpsert([dialogs[index]]);
-            this.dialogsSort(dialogs);
+            if (update) {
+                this.dialogRepo.lazyUpsert([dialogs[index]]);
+                this.dialogsSort(dialogs);
+            }
         }
     }
 

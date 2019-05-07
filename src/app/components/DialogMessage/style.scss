@@ -6,7 +6,6 @@
     Auditor: HamidrezaKK
     Copyright Ronak Software Group 2018
 */
-@import '../../../style/common';
 
 .dialog-wrapper {
   height: 48px;
@@ -121,6 +120,13 @@
     background-color: var(--river);
     color: #fff;
     border-radius: 8px;
+  }
+  .pin {
+    font-size: 20px;
+    position: absolute;
+    top: 30px;
+    right: 8px;
+    color: #C6C6C6;
   }
   &.muted {
     .unread {
