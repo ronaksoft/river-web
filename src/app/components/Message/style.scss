@@ -494,6 +494,11 @@
   &.selected {
     background-color: #27AE6030;
   }
+  .bubble {
+    .more {
+      visibility: hidden !important;
+    }
+  }
 }
 
 .mobile-view {

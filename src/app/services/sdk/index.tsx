@@ -315,8 +315,8 @@ export default class SDK {
         const data = new MessagesGetHistory();
         data.setPeer(peer);
         data.setLimit(limit || 0);
-        data.setMinid(minId || 0);
-        data.setMaxid(maxId || 0);
+        data.setMinid(Math.floor(minId || 0));
+        data.setMaxid(Math.floor(maxId || 0));
         return this.server.send(C_MSG.MessagesGetHistory, data.serializeBinary(), false);
     }
 

@@ -454,6 +454,8 @@ input {
     background-color: var(--color-hover-dark); }
   .selectable .bubble-wrapper.selected {
     background-color: #27AE6030; }
+  .selectable .bubble-wrapper .bubble .more {
+    visibility: hidden !important; }
 
 .mobile-view .chat {
   padding-left: 7px; }
