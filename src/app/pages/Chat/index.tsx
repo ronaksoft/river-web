@@ -1749,7 +1749,7 @@ class Chat extends React.Component<IProps, IState> {
         }
 
         const {peer} = this.state;
-        if (peer === null) {
+        if (!peer) {
             return;
         }
 
@@ -1816,6 +1816,8 @@ class Chat extends React.Component<IProps, IState> {
                 id: randomId,
                 message_id: id,
             });
+
+            window.console.log(peer.toObject());
 
             this.sdk.sendMessage(randomId, text, peer, replyTo, entities).then((res) => {
                 // For double checking update message id
@@ -3458,7 +3460,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         const {peer} = this.state;
-        if (peer === null) {
+        if (!peer) {
             return;
         }
 
@@ -3666,6 +3668,8 @@ class Chat extends React.Component<IProps, IState> {
                 }
                 break;
         }
+
+        window.console.log(peer.toObject());
 
         Promise.all(uploadPromises).then(() => {
             this.progressBroadcaster.remove(id);
