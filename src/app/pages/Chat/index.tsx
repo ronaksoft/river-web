@@ -142,6 +142,7 @@ interface IState {
 }
 
 class Chat extends React.Component<IProps, IState> {
+    private conversationRef: any = null;
     private containerRef: any = null;
     private isInChat: boolean = true;
     private rightMenuRef: any = null;
@@ -537,8 +538,7 @@ class Chat extends React.Component<IProps, IState> {
                                 <AudioPlayerShell onVisible={this.audioPlayerVisibleHandler}
                                                   onAction={this.messageAttachmentActionHandler}/>
                             </div>
-                            <div ref={this.conversationRefHandler}
-                                 className={'conversation ' + (this.messages.length === 0 && !this.isLoading ? ' no-result' : '')}>
+                            <div ref={this.conversationRefHandler} className="conversation">
                                 <PopUpDate ref={this.popUpDateRefHandler}/>
                                 <SearchMessage ref={this.searchMessageHandler} peer={peer}
                                                onFind={this.searchMessageFindHandler}
@@ -2687,6 +2687,13 @@ class Chat extends React.Component<IProps, IState> {
         if (this.chatInputComponent && message) {
             this.chatInputComponent.setLastMessage(message);
         }
+        if (this.conversationRef) {
+            if (!message && !this.conversationRef.classList.contains('no-result')) {
+                this.conversationRef.classList.add('no-result');
+            } else if (message && this.conversationRef.classList.contains('no-result')) {
+                this.conversationRef.classList.remove('no-result');
+            }
+        }
     }
 
     /* Cancel us typing handler */
@@ -4042,6 +4049,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private conversationRefHandler = (ref: any) => {
+        this.conversationRef = ref;
         this.backgroundService.setRef(ref);
     }
 

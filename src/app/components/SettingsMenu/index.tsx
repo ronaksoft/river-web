@@ -32,7 +32,7 @@ import FileManager, {IFileProgress} from '../../services/sdk/fileManager';
 import UniqueId from '../../services/uniqueId';
 import ProgressBroadcaster from '../../services/progress';
 import RiverTime from '../../services/utilities/river_time';
-import {InputFile} from '../../services/sdk/messages/chat.core.types_pb';
+import {InputFile, InputUser} from '../../services/sdk/messages/chat.core.types_pb';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
 import Menu from '@material-ui/core/Menu/Menu';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';
@@ -55,7 +55,7 @@ import DownloadManager, {IDownloadSettings} from '../../services/downloadManager
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.23.139';
+export const C_VERSION = '0.23.140';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 interface IProps {
@@ -871,14 +871,28 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private getUser() {
         this.userRepo.get(this.userId).then((res) => {
             if (res) {
-                this.setState({
-                    bio: res.bio || '',
-                    firstname: res.firstname || '',
-                    lastname: res.lastname || '',
-                    user: res,
-                    username: res.username || '',
+                return res;
+            } else {
+                const inputUser = new InputUser();
+                inputUser.setAccesshash('0');
+                inputUser.setUserid(this.userId);
+                return this.sdk.getUserFull([inputUser]).then((data) => {
+                    const index = findIndex(data.usersList, {id: this.userId});
+                    if (index > -1) {
+                        return data.usersList[index];
+                    } else {
+                        throw new Error('user not found');
+                    }
                 });
             }
+        }).then((res) => {
+            this.setState({
+                bio: res.bio || '',
+                firstname: res.firstname || '',
+                lastname: res.lastname || '',
+                user: res,
+                username: res.username || '',
+            });
         });
     }
 

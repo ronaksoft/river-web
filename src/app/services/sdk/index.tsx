@@ -82,7 +82,7 @@ import {
     GroupsUpdateAdmin,
     GroupsUploadPhoto
 } from './messages/chat.api.groups_pb';
-import {UsersGetFull} from './messages/chat.api.users_pb';
+import {UsersGetFull, UsersMany} from './messages/chat.api.users_pb';
 import {SystemGetInfo, SystemInfo} from './messages/chat.api.system_pb';
 
 export default class SDK {
@@ -148,6 +148,7 @@ export default class SDK {
         info.Username = '';
         this.setConnInfo(info);
         localStorage.removeItem('river.contacts.hash');
+        localStorage.removeItem('river.settings.download');
     }
 
     public loadConnInfo(): IConnInfo {
@@ -421,7 +422,7 @@ export default class SDK {
         return this.server.send(C_MSG.AccountRemovePhoto, data.serializeBinary(), true);
     }
 
-    public getUserFull(usersInput: InputUser[]): Promise<Bool.AsObject> {
+    public getUserFull(usersInput: InputUser[]): Promise<UsersMany.AsObject> {
         const data = new UsersGetFull();
         data.setUsersList(usersInput);
         return this.server.send(C_MSG.UsersGetFull, data.serializeBinary(), true);
