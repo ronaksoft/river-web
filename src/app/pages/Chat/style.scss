@@ -110,11 +110,11 @@
     &.shrink {
       margin-right: 318px;
     }
-    &.blur {
-      .main-messages {
-        filter: blur(32px);
-      }
-    }
+    //&.blur {
+    //  .main-messages {
+    //    filter: blur(32px);
+    //  }
+    //}
     .top {
       position: relative;
       width: 100%;

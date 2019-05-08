@@ -726,7 +726,7 @@ class Message extends React.Component<IProps, IState> {
         }
         if (params.clientHeight < params.scrollHeight && params.scrollTop < 2) {
             this.topOfList = true;
-            this.takeSnapshot();
+            // this.takeSnapshot();
             if (typeof this.props.onLoadMoreBefore === 'function') {
                 this.props.onLoadMoreBefore();
             }

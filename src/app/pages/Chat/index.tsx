@@ -740,10 +740,10 @@ class Chat extends React.Component<IProps, IState> {
         }
         const isGroup = peer.getType() === PeerType.PEERGROUP;
         return (
-            <span className="chat-title">
+            <span className="chat-title" onClick={this.messageMoreActionHandler.bind(this, 'info')}>
                 {Boolean(placeholder !== true && !isGroup) &&
                 <UserName id={this.state.selectedDialogId} className="name" you={true}
-                          youPlaceholder="Saved Messages"/>}
+                          youPlaceholder="Saved Messages" noDetail={true}/>}
                 {Boolean(placeholder !== true && isGroup) &&
                 <GroupName id={this.state.selectedDialogId} className="name"/>}
                 {this.getChatStatus(selectedDialogId)}

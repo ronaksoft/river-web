@@ -164,8 +164,6 @@ input {
     display: flex; }
     .container .column-center.shrink {
       margin-right: 318px; }
-    .container .column-center.blur .main-messages {
-      filter: blur(32px); }
     .container .column-center .top {
       position: relative;
       width: 100%;

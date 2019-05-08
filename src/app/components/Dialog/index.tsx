@@ -199,6 +199,8 @@ class Dialog extends React.Component<IProps, IState> {
                                     width: width + 'px',
                                 }}
                                 onScroll={this.handleScroll}
+                                hideTracksWhenNotNeeded={true}
+                                universal={true}
                             >
                                 <List
                                     ref={this.refHandler}
