@@ -619,6 +619,7 @@ class ChatInput extends React.Component<IProps, IState> {
             textareaValue: this.state.textareaValue + data.native,
         }, () => {
             this.computeLines();
+            this.focus();
         });
     }
 

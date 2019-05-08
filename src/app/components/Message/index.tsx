@@ -155,6 +155,7 @@ class Message extends React.Component<IProps, IState> {
     // @ts-ignore
     private dropZoneHideDebounce: any = null;
     private readId: number = 0;
+    private firstTimeLoadAfter: boolean = true;
 
     constructor(props: IProps) {
         super(props);
@@ -212,6 +213,7 @@ class Message extends React.Component<IProps, IState> {
             this.fitListCompleteThrottle.cancel();
             this.cache.clearAll();
             this.bottomOfList = true;
+            this.firstTimeLoadAfter = true;
             this.removeSnapshot();
             this.setState({
                 items,
@@ -414,7 +416,7 @@ class Message extends React.Component<IProps, IState> {
         if (!noRemove) {
             this.removeSnapshotTimeout = setTimeout(() => {
                 this.removeSnapshot();
-            }, 300);
+            }, 500);
         }
     }
 
@@ -724,7 +726,7 @@ class Message extends React.Component<IProps, IState> {
         }
         if (params.clientHeight < params.scrollHeight && params.scrollTop < 2) {
             this.topOfList = true;
-            this.takeSnapshot(true);
+            this.takeSnapshot();
             if (typeof this.props.onLoadMoreBefore === 'function') {
                 this.props.onLoadMoreBefore();
             }
@@ -791,7 +793,7 @@ class Message extends React.Component<IProps, IState> {
             // On load more after
             if (data.stopIndex > -1 && items[data.stopIndex]) {
                 let check = false;
-                if (Math.abs(items.length - data.stopIndex) < 4 && items[data.stopIndex].id && this.props.onLoadMoreAfter) {
+                if (Math.abs(items.length - data.stopIndex) < 8 && items[data.stopIndex].id && this.props.onLoadMoreAfter) {
                     this.loadMoreAfterThrottle();
                     check = true;
                 } else {
@@ -815,8 +817,9 @@ class Message extends React.Component<IProps, IState> {
             setTimeout(() => {
                 if (this.props.onLoadMoreAfter) {
                     this.props.onLoadMoreAfter();
+                    this.firstTimeLoadAfter = false;
                 }
-            }, 250);
+            }, this.firstTimeLoadAfter ? 250 : 0);
             this.bottomOfList = true;
         }
     }
