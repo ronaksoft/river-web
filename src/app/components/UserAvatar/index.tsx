@@ -242,6 +242,10 @@ class UserAvatar extends React.Component<IProps, IState> {
                 this.avatarService.resetRetries(user.id || '');
             }
             this.getAvatar(user.id || '', user.photo.photosmall.fileid);
+        } else {
+            this.setState({
+                photo: undefined,
+            });
         }
     }
 

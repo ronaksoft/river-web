@@ -22,7 +22,8 @@
       margin: -8px -8px 8px 0; }
   .dialogs .dialog-list {
     flex: 1;
-    overflow: hidden; }
+    overflow: hidden;
+    direction: rtl; }
     .dialogs .dialog-list .dialog-container {
       height: 100%; }
       .dialogs .dialog-list .dialog-container a {

@@ -24,6 +24,7 @@ import WorkspaceManger from '../../services/workspaceManager';
 import SettingsModal from '../../components/SettingsModal';
 import jsQR from 'jsqr';
 import {defaultGateway} from '../../services/sdk/server/socket';
+import UserRepo from '../../repository/user';
 
 import './tel-input.css';
 import './style.css';
@@ -412,6 +413,7 @@ class SignUp extends React.Component<IProps, IState> {
                 info.LastName = res.user.lastname;
                 info.Phone = this.state.phone;
                 this.sdk.setConnInfo(info);
+                UserRepo.getInstance().importBulk(false, [res.user]);
                 this.setState({
                     loading: false,
                     tries: this.state.tries + 1,

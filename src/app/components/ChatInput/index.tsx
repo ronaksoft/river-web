@@ -589,7 +589,10 @@ class ChatInput extends React.Component<IProps, IState> {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.stopPropagation();
             e.preventDefault();
-        } else if (e.keyCode === 38 && this.lastMessage && this.lastMessage.senderid === this.state.userId && this.state.previewMessageMode !== C_MSG_MODE.Edit) {
+        } else if (e.keyCode === 38 && this.lastMessage &&
+            this.lastMessage.senderid === this.state.userId &&
+            this.state.previewMessageMode !== C_MSG_MODE.Edit &&
+            this.textarea.value === '') {
             const message = this.lastMessage;
             if ((this.riverTime.now() - (message.createdon || 0)) < 86400 &&
                 (message.fwdsenderid === '0' || !message.fwdsenderid) &&

@@ -191,7 +191,7 @@ class Dialog extends React.Component<IProps, IState> {
             return (
                 <AutoSizer>
                     {({width, height}: any) => (
-                        <React.Fragment>
+                        <div>
                             <Scrollbars
                                 autoHide={true}
                                 style={{
@@ -213,7 +213,7 @@ class Dialog extends React.Component<IProps, IState> {
                                     style={listStyle}
                                 />
                             </Scrollbars>
-                        </React.Fragment>
+                        </div>
                     )}
                 </AutoSizer>
             );

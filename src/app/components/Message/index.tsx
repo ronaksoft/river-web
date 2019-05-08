@@ -62,7 +62,6 @@ interface IProps {
 
 interface IState {
     items: IMessage[];
-    listStyle?: React.CSSProperties;
     loading: boolean;
     loadingPersist: boolean;
     moreAnchorEl: any;
@@ -123,7 +122,7 @@ export const highlightMessageText = (id: number, text: string) => {
     }
 };
 
-class Message extends React.PureComponent<IProps, IState> {
+class Message extends React.Component<IProps, IState> {
     public list: List;
     public cache: CellMeasurerCache;
     private listCount: number;
@@ -239,9 +238,9 @@ class Message extends React.PureComponent<IProps, IState> {
                     this.fitList();
                 }, 100);
             }
+            this.topOfList = false;
             this.modifyScroll(items);
             this.listCount = items.length;
-            this.topOfList = false;
             if (callback) {
                 callback();
             }
@@ -370,40 +369,31 @@ class Message extends React.PureComponent<IProps, IState> {
 
     public fitList(forceScroll?: boolean, instant?: boolean) {
         setTimeout(() => {
+            const el: any = document.querySelector('.chat.active-chat');
+            if (!el || !el.style) {
+                return;
+            }
             if (this.state.items.length === 0) {
-                this.setState({
-                    listStyle: {
-                        paddingTop: '0px',
-                    },
-                });
+                el.style.paddingTop = '0px';
                 return;
             }
             const list = document.querySelector('.chat.active-chat > div');
             if (list) {
                 const diff = (this.list.props.height - 8) - list.scrollHeight;
                 if (diff > 0) {
-                    this.setState({
-                        listStyle: {
-                            paddingTop: diff + 'px',
-                        },
-                    }, () => {
-                        if (this.props.onLoadMoreAfter) {
-                            this.props.onLoadMoreAfter();
-                        }
-                        this.fitListCompleteThrottle();
-                    });
+                    el.style.paddingTop = diff + 'px';
+                    if (this.props.onLoadMoreAfter) {
+                        this.props.onLoadMoreAfter();
+                    }
+                    this.fitListCompleteThrottle();
                     return;
                 }
             }
-            this.setState({
-                listStyle: {
-                    paddingTop: '0px',
-                },
-            });
+            el.style.paddingTop = '0px';
             if (forceScroll === true) {
                 this.animateToEnd(true);
             }
-        }, instant ? 0 : 200);
+        }, instant ? 0 : 3);
     }
 
     public takeSnapshot(noRemove?: boolean) {
@@ -441,7 +431,7 @@ class Message extends React.PureComponent<IProps, IState> {
 
     public render() {
         const {peer} = this.props;
-        const {items, moreAnchorEl, selectable, listStyle} = this.state;
+        const {items, moreAnchorEl, selectable} = this.state;
         return (
             <AutoSizer>
                 {({width, height}: any) => (
@@ -463,7 +453,6 @@ class Message extends React.PureComponent<IProps, IState> {
                                 onRowsRendered={this.onRowsRenderedHandler}
                                 noRowsRenderer={this.noRowsRenderer}
                                 onScroll={this.onScroll}
-                                style={listStyle}
                                 className="chat active-chat"
                             />
                             <Menu
@@ -735,7 +724,7 @@ class Message extends React.PureComponent<IProps, IState> {
         }
         if (params.clientHeight < params.scrollHeight && params.scrollTop < 2) {
             this.topOfList = true;
-            this.takeSnapshot();
+            this.takeSnapshot(true);
             if (typeof this.props.onLoadMoreBefore === 'function') {
                 this.props.onLoadMoreBefore();
             }
@@ -1113,6 +1102,8 @@ class Message extends React.PureComponent<IProps, IState> {
                 window.requestAnimationFrame(() => {
                     this.checkScroll(id, tries);
                 });
+            } else {
+                this.removeSnapshot();
             }
         }
     }

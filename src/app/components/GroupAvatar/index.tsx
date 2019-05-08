@@ -118,6 +118,10 @@ class GroupAvatar extends React.Component<IProps, IState> {
                 this.avatarService.resetRetries(group.id || '');
             }
             this.getAvatar(group.id || '', group.photo.photosmall.fileid);
+        } else {
+            this.setState({
+                photo: undefined,
+            });
         }
     }
 

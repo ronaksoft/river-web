@@ -1405,7 +1405,6 @@ class Chat extends React.Component<IProps, IState> {
         }
 
         const updateState = () => {
-            this.messageComponent.cache.clearAll();
             this.messageComponent.list.recomputeRowHeights();
             this.messageComponent.list.recomputeGridSize();
             // this.messageComponent.list.scrollToRow(messages.length - 1);
@@ -1454,6 +1453,7 @@ class Chat extends React.Component<IProps, IState> {
                     this.setLoading(false);
                     return;
                 }
+                this.messageComponent.cache.clearAll();
                 this.messageComponent.setMessages(dataMsg.msgs, () => {
                     if (force === true) {
                         updateState();
@@ -1481,8 +1481,9 @@ class Chat extends React.Component<IProps, IState> {
             this.setScrollMode('end');
             const dataMsg = this.modifyMessages(this.messages, resMsgs, false);
             this.messageComponent.setMessages(dataMsg.msgs, () => {
-                this.messageComponent.list.recomputeRowHeights();
-                this.messageComponent.list.forceUpdateGrid();
+                // this.messageComponent.list.recomputeRowHeights();
+                // this.messageComponent.list.recomputeGridSize();
+                // this.messageComponent.list.forceUpdateGrid();
                 if (messageId && messageId !== '0') {
                     this.messageJumpToMessageHandler(parseInt(messageId, 10));
                 }
@@ -2488,7 +2489,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private logOutHandler() {
-        this.sdk.logout(this.connInfo.AuthID).then((res) => {
+        const wipe = () => {
             this.sdk.resetConnInfo();
             this.mainRepo.destroyDB().then(() => {
                 this.updateManager.setLastUpdateId(0);
@@ -2496,8 +2497,11 @@ class Chat extends React.Component<IProps, IState> {
                 window.location.href = '/';
                 // window.location.reload();
             });
-        }).catch((err) => {
-            window.console.warn(err);
+        };
+        this.sdk.logout(this.connInfo.AuthID).then((res) => {
+            wipe();
+        }).catch(() => {
+            wipe();
         });
     }
 
