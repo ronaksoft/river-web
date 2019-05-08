@@ -45,6 +45,8 @@
           content: '';
           background-color: var(--light);
           transform: translate(-50%, 0); }
+        .dialogs .dialog-list .dialog-container .dialog.pinned {
+          background-color: var(--header-color); }
         .dialogs .dialog-list .dialog-container .dialog:hover {
           border: 0;
           background-color: var(--color-hover); }
@@ -57,8 +59,6 @@
           .dialogs .dialog-list .dialog-container .dialog.active > span {
             color: var(--color-text-hover);
             background: transparent; }
-        .dialogs .dialog-list .dialog-container .dialog.pinned {
-          background-color: var(--header-color); }
       .dialogs .dialog-list .dialog-container .no-result {
         height: 100%;
         display: flex;
@@ -79,6 +79,9 @@ html[theme="dark"] .dialogs .dialog-search label, html[theme="dark"] .dialogs .d
 html[theme="dark"] .dialogs .dialog-list .dialog-container .dialog:after {
   background-color: var(--dark-low-op50); }
 
+html[theme="dark"] .dialogs .dialog-list .dialog-container .dialog.pinned {
+  background-color: var(--dark-low); }
+
 html[theme="dark"] .dialogs .dialog-list .dialog-container .dialog:hover {
   background-color: var(--dark-hover); }
   html[theme="dark"] .dialogs .dialog-list .dialog-container .dialog:hover > span {
@@ -89,14 +92,14 @@ html[theme="dark"] .dialogs .dialog-list .dialog-container .dialog.active {
   html[theme="dark"] .dialogs .dialog-list .dialog-container .dialog.active > span {
     color: var(--color-text-hover); }
 
-html[theme="dark"] .dialogs .dialog-list .dialog-container .dialog.pinned {
-  background-color: var(--dark-low); }
-
 html[theme="dark-blue"] .dialogs .dialog-search label, html[theme="dark-blue"] .dialogs .dialog-search input, html[theme="dark-blue"] .dialogs .dialog-search svg {
   color: var(--white); }
 
 html[theme="dark-blue"] .dialogs .dialog-list .dialog-container .dialog:after {
   background-color: var(--dark-blue-low-op50); }
+
+html[theme="dark-blue"] .dialogs .dialog-list .dialog-container .dialog.pinned {
+  background-color: var(--dark-blue-low); }
 
 html[theme="dark-blue"] .dialogs .dialog-list .dialog-container .dialog:hover {
   background-color: var(--dark-blue-hover-light); }
@@ -107,6 +110,3 @@ html[theme="dark-blue"] .dialogs .dialog-list .dialog-container .dialog.active {
   background-color: var(--dark-blue-hover); }
   html[theme="dark-blue"] .dialogs .dialog-list .dialog-container .dialog.active > span {
     color: var(--color-text-hover); }
-
-html[theme="dark-blue"] .dialogs .dialog-list .dialog-container .dialog.pinned {
-  background-color: var(--dark-blue-low); }

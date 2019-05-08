@@ -86,6 +86,14 @@ export default class AvatarService {
         }
     }
 
+    /* Remove image */
+    public remove(id: string, fileId: string) {
+        if (this.avatars.hasOwnProperty(id)) {
+            delete this.avatars[id];
+        }
+        return this.fileRepo.remove(fileId);
+    }
+
     /* Get photo location */
     private getPhotoLocation(id: string) {
         if (id.indexOf('-') === 0) {

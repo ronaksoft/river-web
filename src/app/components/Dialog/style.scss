@@ -6,7 +6,7 @@
     Auditor: HamidrezaKK
     Copyright Ronak Software Group 2018
 */
-
+@import '../../../style/mixin';
 
 .dialogs {
   display: flex;
@@ -52,6 +52,9 @@
           background-color: var(--light);
           transform: translate(-50%, 0);
         }
+        &.pinned {
+          background-color: var(--header-color);
+        }
         &:hover {
           border: 0;
           background-color: var(--color-hover);
@@ -67,9 +70,6 @@
             color: var(--color-text-hover);
             background: transparent;
           }
-        }
-        &.pinned {
-          background-color: var(--header-color);
         }
       }
       .no-result {
@@ -104,6 +104,9 @@ html[theme="dark"] {
           &:after {
             background-color: var(--dark-low-op50);
           }
+          &.pinned {
+            background-color: var(--dark-low);
+          }
           &:hover {
             background-color: var(--dark-hover);
             > span {
@@ -115,9 +118,6 @@ html[theme="dark"] {
             > span {
               color: var(--color-text-hover);
             }
-          }
-          &.pinned {
-            background-color: var(--dark-low);
           }
         }
       }
@@ -138,6 +138,9 @@ html[theme="dark-blue"] {
           &:after {
             background-color: var(--dark-blue-low-op50);
           }
+          &.pinned {
+            background-color: var(--dark-blue-low);
+          }
           &:hover {
             background-color: var(--dark-blue-hover-light);
             > span {
@@ -149,9 +152,6 @@ html[theme="dark-blue"] {
             > span {
               color: var(--color-text-hover);
             }
-          }
-          &.pinned {
-            background-color: var(--dark-blue-low);
           }
         }
       }

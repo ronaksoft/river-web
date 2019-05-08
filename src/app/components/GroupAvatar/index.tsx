@@ -82,7 +82,8 @@ class GroupAvatar extends React.Component<IProps, IState> {
         const {group, photo, className} = this.state;
         return (
             <span className={className}>{(group && photo) ?
-                <img className="avatar-image" src={photo}/> : TextAvatar(group ? group.title : undefined)}</span>
+                <img className="avatar-image" src={photo}
+                     onError={this.imgErrorHandler}/> : TextAvatar(group ? group.title : undefined)}</span>
         );
     }
 
@@ -116,15 +117,7 @@ class GroupAvatar extends React.Component<IProps, IState> {
             if (this.state.group && group.id !== this.state.group.id) {
                 this.avatarService.resetRetries(group.id || '');
             }
-            this.avatarService.getAvatar(group.id || '', group.photo.photosmall.fileid).then((photo) => {
-                if (photo !== '') {
-                    this.setState({
-                        photo,
-                    });
-                }
-            }).catch(() => {
-                //
-            });
+            this.getAvatar(group.id || '', group.photo.photosmall.fileid);
         }
     }
 
@@ -138,14 +131,30 @@ class GroupAvatar extends React.Component<IProps, IState> {
             item = find(data.items, {id: this.state.id});
         }
         if (item) {
-            this.avatarService.getAvatar(item.id, item.fileId).then((photo) => {
-                if (photo !== '') {
-                    this.setState({
-                        photo,
-                    });
-                }
-            }).catch(() => {
-                //
+            this.getAvatar(item.id, item.fileId);
+        }
+    }
+
+    /* Get avatar */
+    private getAvatar(id: string, fileId: string) {
+        this.avatarService.getAvatar(id, fileId).then((photo) => {
+            if (photo !== '') {
+                this.setState({
+                    photo,
+                });
+            }
+        }).catch(() => {
+            //
+        });
+    }
+
+    /* Img error handler */
+    private imgErrorHandler = () => {
+        const {group} = this.state;
+        if (group && group.photo && group.photo.photosmall.fileid && group.photo.photosmall.fileid !== '0') {
+            const fileId = group.photo.photosmall.fileid;
+            this.avatarService.remove(group.id || '', fileId).then(() => {
+                this.getAvatar(group.id || '', fileId);
             });
         }
     }

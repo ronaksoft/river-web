@@ -202,7 +202,8 @@ class UserAvatar extends React.Component<IProps, IState> {
         } else {
             return (
                 <span className={className} onClick={this.clickHandler}>{(user && photo) ?
-                    <img className="avatar-image" src={photo}/> : TextAvatar(user.firstname, user.lastname)}</span>
+                    <img className="avatar-image" src={photo}
+                         onError={this.imgErrorHandler}/> : TextAvatar(user.firstname, user.lastname)}</span>
             );
         }
     }
@@ -240,15 +241,7 @@ class UserAvatar extends React.Component<IProps, IState> {
             if (user.id !== this.state.user.id) {
                 this.avatarService.resetRetries(user.id || '');
             }
-            this.avatarService.getAvatar(user.id || '', user.photo.photosmall.fileid).then((photo) => {
-                if (photo !== '') {
-                    this.setState({
-                        photo,
-                    });
-                }
-            }).catch(() => {
-                //
-            });
+            this.getAvatar(user.id || '', user.photo.photosmall.fileid);
         }
     }
 
@@ -262,16 +255,21 @@ class UserAvatar extends React.Component<IProps, IState> {
             item = find(data.items, {id: this.state.id});
         }
         if (item) {
-            this.avatarService.getAvatar(item.id, item.fileId).then((photo) => {
-                if (photo !== '') {
-                    this.setState({
-                        photo,
-                    });
-                }
-            }).catch(() => {
-                //
-            });
+            this.getAvatar(item.id, item.fileId);
         }
+    }
+
+    /* Get avatar from service */
+    private getAvatar(id: string, fileId: string) {
+        this.avatarService.getAvatar(id, fileId).then((photo) => {
+            if (photo !== '') {
+                this.setState({
+                    photo,
+                });
+            }
+        }).catch(() => {
+            //
+        });
     }
 
     /* Click on user handler */
@@ -290,6 +288,17 @@ class UserAvatar extends React.Component<IProps, IState> {
     /* Broadcast global event */
     private broadcastEvent(name: string, data: any) {
         this.broadcaster.publish(name, data);
+    }
+
+    /* Img error handler */
+    private imgErrorHandler = () => {
+        const {user} = this.state;
+        if (user && user.photo && user.photo.photosmall.fileid && user.photo.photosmall.fileid !== '0') {
+            const fileId = user.photo.photosmall.fileid;
+            this.avatarService.remove(user.id || '', fileId).then(() => {
+                this.getAvatar(user.id || '', fileId);
+            });
+        }
     }
 }
 

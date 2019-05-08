@@ -1,0 +1,24 @@
+@mixin font-bold {
+  font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
+  font-weight: 600;
+}
+
+@mixin font {
+  font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
+  font-weight: 400;
+}
+
+@mixin placeholder {
+  &::-webkit-input-placeholder {
+    @content;
+  }
+  &:-moz-placeholder {
+    @content;
+  }
+  &::-moz-placeholder {
+    @content;
+  }
+  &:-ms-input-placeholder {
+    @content;
+  }
+}
