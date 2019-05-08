@@ -13,20 +13,9 @@ import UserName from '../UserName';
 import {IDialog} from '../../repository/dialog/interface';
 import LiveDate from '../LiveDate';
 import {
-    AlternateEmailRounded,
-    DoneAllRounded,
-    DoneRounded,
-    MoreVert,
-    NotificationsOffRounded,
-    ScheduleRounded,
-    LocationOnOutlined,
-    PeopleOutlined,
-    InsertDriveFileOutlined,
-    VideocamOutlined,
-    PhotoOutlined,
-    RecordVoiceOverOutlined,
-    MusicNoteOutlined,
-    AdjustRounded,
+    AlternateEmailRounded, DoneAllRounded, DoneRounded, MoreVert, NotificationsOffRounded,
+    ScheduleRounded, LocationOnOutlined, PeopleOutlined, InsertDriveFileOutlined, VideocamOutlined,
+    PhotoOutlined, RecordVoiceOverOutlined, MusicNoteOutlined,
 } from '@material-ui/icons';
 import {PeerNotifySettings, PeerType, TypingAction} from '../../services/sdk/messages/chat.core.types_pb';
 import GroupAvatar from '../GroupAvatar';
@@ -116,7 +105,7 @@ class DialogMessage extends React.Component<IProps, IState> {
                 {Boolean(dialog.unreadcount && dialog.unreadcount > 0) &&
                 <span className="unread">{(dialog.unreadcount || 0) > 99 ? '+99' : dialog.unreadcount}</span>}
                 {Boolean(!dialog.unreadcount && dialog.pinned) &&
-                <AdjustRounded className="pin"/>}
+                this.getPinIcon()}
                 {Boolean(dialog.mentionedcount && dialog.mentionedcount > 0) &&
                 <span className="mention"><AlternateEmailRounded/></span>}
                 <div className="more" onClick={this.props.onContextMenuOpen}>
@@ -136,6 +125,16 @@ class DialogMessage extends React.Component<IProps, IState> {
         } else {
             return '';
         }
+    }
+
+    private getPinIcon() {
+        return (
+            <svg width="20" height="20" viewBox="0 0 24 24"
+                 fill="none" xmlns="http://www.w3.org/2000/svg" className="pin">
+                <path fillRule="evenodd" clipRule="evenodd"
+                      d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22ZM14.4619 6.25483L17.7444 9.50793C17.863 9.62542 17.863 9.81598 17.7444 9.9336L17.7305 9.94738C17.5293 10.1469 17.2617 10.2568 16.977 10.2568C16.7936 10.2568 16.6177 10.2106 16.4617 10.1248L13.5141 13.5286C13.7489 13.7891 13.8776 14.1216 13.8776 14.4738C13.8776 14.8533 13.7285 15.2101 13.4577 15.4784L13.4371 15.4988C13.3779 15.5576 13.3001 15.5869 13.2224 15.5869C13.1447 15.5869 13.067 15.5576 13.0077 15.4988L11.1466 13.6543L9.2345 15.5493C9.19205 15.5902 8.2579 16.4887 7.51463 17.0794C6.80228 17.6454 6.67559 17.7545 6.67055 17.7589C6.6131 17.8087 6.54167 17.8333 6.47043 17.8333C6.39227 17.8333 6.31435 17.8036 6.25525 17.7448C6.14247 17.6325 6.13664 17.4531 6.24201 17.3342C6.24784 17.3275 6.36008 17.199 6.92764 16.4976C7.52362 15.7609 8.43014 14.8351 8.46846 14.796L10.3836 12.898L8.4172 10.9491C8.29859 10.8317 8.29859 10.6411 8.4172 10.5236L8.43779 10.5032C8.70848 10.2349 9.06845 10.0871 9.45138 10.0871C9.80674 10.0871 10.1422 10.2145 10.4051 10.4473L13.8396 7.52607C13.7531 7.37144 13.7065 7.19706 13.7065 7.01535C13.7065 6.73329 13.8174 6.46803 14.0186 6.26862L14.0326 6.25483C14.151 6.13728 14.3434 6.13728 14.4619 6.25483Z"
+                      fill="#C6C6C6"/>
+            </svg>);
     }
 
     private getIcon(icon?: number) {
