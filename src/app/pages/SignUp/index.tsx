@@ -379,6 +379,12 @@ class SignUp extends React.Component<IProps, IState> {
     private codeOnChange = (e: any) => {
         this.setState({
             code: this.modifyCode(e.target.value),
+        }, () => {
+            if (this.state.code.length === 4) {
+                setTimeout(() => {
+                    this.confirmCode();
+                }, 250);
+            }
         });
     }
 

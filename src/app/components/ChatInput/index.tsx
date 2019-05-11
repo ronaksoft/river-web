@@ -216,6 +216,7 @@ class ChatInput extends React.Component<IProps, IState> {
         this.eventReferences.push(this.broadcaster.listen('Group_DB_Updated', this.checkAuthority));
         this.eventReferences.push(this.broadcaster.listen('Theme_Changed', this.windowResizeHandler));
         window.addEventListener('mouseup', this.windowMouseUp);
+        window.addEventListener('keyup', this.windowKeyUp);
         window.addEventListener('resize', this.windowResizeHandler);
         this.initDraft(null, this.state.peer, 0, null);
     }
@@ -257,6 +258,7 @@ class ChatInput extends React.Component<IProps, IState> {
 
     public componentWillUnmount() {
         window.removeEventListener('mouseup', this.windowMouseUp);
+        window.removeEventListener('keyup', this.windowKeyUp);
         window.removeEventListener('resize', this.windowResizeHandler);
         this.eventReferences.forEach((canceller) => {
             if (typeof canceller === 'function') {
@@ -1103,6 +1105,13 @@ class ChatInput extends React.Component<IProps, IState> {
             return;
         }
         this.voiceMouseIn = false;
+    }
+
+    /* Window key up handler */
+    private windowKeyUp = (e: any) => {
+        if (this.state.selectable && e.keyCode === 27) {
+            this.props.onBulkAction('close');
+        }
     }
 
     /* Window resize handler */

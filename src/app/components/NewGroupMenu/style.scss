@@ -41,10 +41,10 @@
     }
   }
   .menu-header {
-    background-color: var(--bg);
     text-align: left;
     height: 47px;
-    color: var(--dark-medium);
+    background-color: var(--header-color);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     label {
       padding: 10px 10px 10px 0;
     }
@@ -157,8 +157,9 @@ html[theme="dark"],
 html[theme="dark-blue"] {
   .new-group-menu {
     .menu-header {
-      background-color: var(--dark-high);
+      background-color: var(--dark-medium);
       color: var(--white);
+      border-color: var(--dark-low-op50);
       svg {
         color: var(--white);
       }
@@ -177,7 +178,7 @@ html[theme="dark-blue"] {
       .contact-container {
         .contact-item {
           &:after {
-            background-color: var(--dark-low);
+            background-color: var(--dark-low-op50);
           }
           .name {
             color: var(--light);
@@ -186,7 +187,8 @@ html[theme="dark-blue"] {
       }
     }
     .actions-bar {
-      background-color: var(--dark-high);
+      background-color: var(--dark-medium);
+      border-top: 1px solid var(--dark-low-op50);
       &.no-bg {
         background-color: transparent;
       }
@@ -197,7 +199,8 @@ html[theme="dark-blue"] {
 html[theme="dark-blue"] {
   .new-group-menu {
     .menu-header {
-      background-color: var(--dark-blue-high);
+      background-color: var(--dark-blue-medium);
+      border-color: var(--dark-blue-low-op50);
     }
     .input-container {
       .chip {
@@ -208,13 +211,14 @@ html[theme="dark-blue"] {
       .contact-container {
         .contact-item {
           &:after {
-            background-color: var(--dark-blue-low);
+            background-color: var(--dark-blue-low-op50);
           }
         }
       }
     }
     .actions-bar {
-      background-color: var(--dark-blue-high);
+      border-top: 1px solid var(--dark-blue-low-op50);
+      background-color: var(--dark-blue-medium);
     }
   }
 }
