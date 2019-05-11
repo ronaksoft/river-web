@@ -275,7 +275,7 @@ func (r *River) send(msgEnvelope *msg.MessageEnvelope, webSocket bool) {
 	protoMessage := new(msg.ProtoMessage)
 	protoMessage.AuthID = r.authID
 	protoMessage.MessageKey = make([]byte, 32)
-	if r.authID == 0 || msgEnvelope.Constructor == msg.C_SystemGetServerTime || msgEnvelope.Constructor == msg.C_SystemGetInfo {
+	if r.authID == 0 || msgEnvelope.Constructor == msg.C_SystemGetServerTime || msgEnvelope.Constructor == msg.C_SystemGetInfo || msgEnvelope.Constructor == msg.C_SystemGetSalts {
 		protoMessage.AuthID = 0
 		protoMessage.Payload, _ = msgEnvelope.Marshal()
 	} else {

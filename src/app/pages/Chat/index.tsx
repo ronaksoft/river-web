@@ -3412,8 +3412,10 @@ class Chat extends React.Component<IProps, IState> {
                         }
                     }).catch((err) => {
                         window.console.debug(err);
-                        this.progressBroadcaster.failed(msg.id || 0);
-                        this.progressBroadcaster.remove(msg.id || 0);
+                        if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
+                            this.progressBroadcaster.failed(msg.id || 0);
+                            this.progressBroadcaster.remove(msg.id || 0);
+                        }
                     });
                 }
                 break;

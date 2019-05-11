@@ -146,6 +146,12 @@ export default class FileManager {
 
     /* Receive the whole file */
     public receiveFile(location: core_types_pb.InputFileLocation, size: number, mimeType: string, onProgress?: (e: IFileProgress) => void) {
+        if (this.fileTransferQueue.hasOwnProperty(location.getFileid() || '')) {
+            return Promise.reject({
+                code: C_FILE_ERR_CODE.REQUEST_CANCELLED,
+                message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.REQUEST_CANCELLED],
+            });
+        }
         let internalResolve: any = null;
         let internalReject: any = null;
 
@@ -405,6 +411,9 @@ export default class FileManager {
                                 this.fileTransferQueue[id].pipelines--;
                             }
                             this.startDownloading(id);
+                            if (chunk) {
+                                window.console.debug(`${chunk.part}/${chunkInfo.totalParts} downloaded, size: ${res}`);
+                            }
                         }).catch((err) => {
                             if (this.fileTransferQueue.hasOwnProperty(id)) {
                                 this.fileTransferQueue[id].pipelines--;

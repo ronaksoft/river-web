@@ -365,6 +365,7 @@ export default class MessageRepo {
             mode = mode | 0x2;
         }
         limit = limit || 30;
+        window.console.log('test', mode);
         const peerId = peer.getId() || '';
         switch (mode) {
             // none
@@ -425,8 +426,10 @@ export default class MessageRepo {
 
                 if (fnCallback) {
                     fnCallback(res);
+                    window.console.log('case 1', res);
                     return [];
                 } else {
+                    window.console.log('case 2', res);
                     return res;
                 }
             } else {
