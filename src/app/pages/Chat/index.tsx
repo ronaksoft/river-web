@@ -1220,8 +1220,8 @@ class Chat extends React.Component<IProps, IState> {
                         inputPeer.setType(peer.type || 0);
                         if (id > 1) {
                             this.messageRepo.getManyCache({before: id, limit: 1}, inputPeer).then((res) => {
-                                if (res.length > 0) {
-                                    this.updateDialogs(res[0], peer.accesshash || '0', true);
+                                if (res.messages.length > 0) {
+                                    this.updateDialogs(res.messages[0], peer.accesshash || '0', true);
                                 }
                             });
                         }
@@ -1530,8 +1530,8 @@ class Chat extends React.Component<IProps, IState> {
                 return;
             }
             this.setScrollMode('none');
-            this.setMoveDownVisible(res.length > 0);
-            const dataMsg = this.modifyMessages(this.messages, res, true, dialog.readinboxmaxid || 0);
+            this.setMoveDownVisible(res.messages.length > 0);
+            const dataMsg = this.modifyMessages(this.messages, res.messages, true, dialog.readinboxmaxid || 0);
             this.messageComponent.setMessages(dataMsg.msgs);
             this.setLoading(false);
         }).catch(() => {
@@ -2359,13 +2359,13 @@ class Chat extends React.Component<IProps, IState> {
             // this.getMessagesByDialogId(this.state.selectedDialogId);
             const after = this.getValidAfter();
             const tMoveDownVisible = this.moveDownVisible;
-            this.messageRepo.getManyCache({after, limit: 100, ignoreMax: true}, peer).then((msgs) => {
+            this.messageRepo.getManyCache({after, limit: 100, ignoreMax: true}, peer).then((res) => {
                 if (!this.messageComponent) {
                     return;
                 }
                 this.setScrollMode('none');
-                const dataMsg = this.modifyMessages(this.messages, msgs, true);
-                this.messageComponent.setMessages(dataMsg.msgs, () => {
+                const modifiedMsgs = this.modifyMessages(this.messages, res.messages, true);
+                this.messageComponent.setMessages(modifiedMsgs.msgs, () => {
                     if (!tMoveDownVisible && this.isInChat) {
                         setTimeout(() => {
                             this.messageComponent.animateToEnd();

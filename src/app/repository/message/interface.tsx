@@ -31,4 +31,9 @@ interface IPendingMessage {
     data?: any;
 }
 
-export {IMessage, IPendingMessage};
+interface IMessageWithCount {
+    count: number;
+    messages: IMessage[];
+}
+
+export {IMessage, IPendingMessage, IMessageWithCount};

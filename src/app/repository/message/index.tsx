@@ -8,7 +8,7 @@
 */
 
 import MessageDB from '../../services/db/message';
-import {IMessage, IPendingMessage} from './interface';
+import {IMessage, IMessageWithCount, IPendingMessage} from './interface';
 import {cloneDeep, differenceBy, find, merge, throttle} from 'lodash';
 import SDK from '../../services/sdk';
 import UserRepo from '../user';
@@ -275,7 +275,7 @@ export default class MessageRepo {
         }
         return new Promise((resolve, reject) => {
             this.getManyCache({limit, before, after, ignoreMax}, peer, fnCallback).then((res) => {
-                const len = res.length;
+                const len = res.count;
                 if (len < limit) {
                     let maxId = null;
                     let minId = null;
@@ -292,7 +292,7 @@ export default class MessageRepo {
                         minId = (res[len - 1].id || 0) + 1;
                     }
                     if (maxId === 0 || minId === 0) {
-                        resolve(res);
+                        resolve(res.messages);
                         return;
                     }
                     // if (typeof fnCallback === 'function') {
@@ -306,14 +306,14 @@ export default class MessageRepo {
                         return this.transform(remoteRes.messagesList);
                     }).then((remoteRes) => {
                         this.importBulk(remoteRes, true);
-                        resolve([...res, ...remoteRes]);
+                        resolve([...res.messages, ...remoteRes]);
                     }).catch((err2) => {
                         if (fnCallback === undefined) {
                             reject(err2);
                         }
                     });
                 } else {
-                    resolve(res);
+                    resolve(res.messages);
                 }
             }).catch((err) => {
                 let maxId = null;
@@ -353,7 +353,7 @@ export default class MessageRepo {
         }
     }
 
-    public getManyCache({limit, before, after, ignoreMax}: any, peer: InputPeer, fnCallback?: (resMsgs: IMessage[]) => void): Promise<IMessage[]> {
+    public getManyCache({limit, before, after, ignoreMax}: any, peer: InputPeer, fnCallback?: (resMsgs: IMessage[]) => void): Promise<IMessageWithCount> {
         ignoreMax = ignoreMax || false;
         const pipe = this.db.messages.where('[peerid+id]');
         let pipe2: Dexie.Collection<IMessage, number>;
@@ -365,7 +365,6 @@ export default class MessageRepo {
             mode = mode | 0x2;
         }
         limit = limit || 30;
-        window.console.log('test', mode);
         const peerId = peer.getId() || '';
         switch (mode) {
             // none
@@ -426,11 +425,15 @@ export default class MessageRepo {
 
                 if (fnCallback) {
                     fnCallback(res);
-                    window.console.log('case 1', res);
-                    return [];
+                    return {
+                        count: res.length,
+                        messages: [],
+                    };
                 } else {
-                    window.console.log('case 2', res);
-                    return res;
+                    return {
+                        count: res.length,
+                        messages: res,
+                    };
                 }
             } else {
                 return this.checkHoles(peer, (mode === 0x2 ? after + 1 : before - (ignoreMax ? 0 : 1)), (mode === 0x2), limit, ignoreMax).then((remoteRes) => {
@@ -440,7 +443,10 @@ export default class MessageRepo {
                     return this.transform(remoteRes.messagesList);
                 }).then((remoteRes) => {
                     this.importBulk(remoteRes, true);
-                    return remoteRes;
+                    return {
+                        count: remoteRes.length,
+                        messages: remoteRes,
+                    };
                 });
             }
         });
