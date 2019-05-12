@@ -253,7 +253,7 @@ message DHGroup {
 // Salt
 message Salt {
     required int64 Timestamp = 1;
-    required int64 Value = 2;
+    required int64 Value = 2 [jstype = JS_STRING];
 }
 
 // PhoneContact

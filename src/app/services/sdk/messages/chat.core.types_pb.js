@@ -7448,7 +7448,7 @@ proto.msg.Salt.deserializeBinaryFromReader = function(msg, reader) {
       msg.setTimestamp(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setValue(value);
       break;
     default:
@@ -7487,9 +7487,9 @@ proto.msg.Salt.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
+  f = /** @type {string} */ (jspb.Message.getField(message, 2));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       2,
       f
     );
@@ -7528,14 +7528,14 @@ proto.msg.Salt.prototype.hasTimestamp = function() {
 
 /**
  * required int64 Value = 2;
- * @return {number}
+ * @return {string}
  */
 proto.msg.Salt.prototype.getValue = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.Salt.prototype.setValue = function(value) {
   jspb.Message.setField(this, 2, value);
 };

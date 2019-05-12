@@ -68,6 +68,7 @@ export default class Http {
         return this.isWorkerReady;
     }
 
+    /* Send WS Message */
     public send(constructor: number, data: Uint8Array, cancel: (fnCancel: any) => void, onUploadProgress?: (e: any) => void, onDownloadProgress?: (e: any) => void) {
         let internalResolve = null;
         let internalReject = null;

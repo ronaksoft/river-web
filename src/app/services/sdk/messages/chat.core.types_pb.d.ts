@@ -1039,8 +1039,8 @@ export class Salt extends jspb.Message {
 
   hasValue(): boolean;
   clearValue(): void;
-  getValue(): number | undefined;
-  setValue(value: number): void;
+  getValue(): string | undefined;
+  setValue(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Salt.AsObject;
@@ -1055,7 +1055,7 @@ export class Salt extends jspb.Message {
 export namespace Salt {
   export type AsObject = {
     timestamp?: number,
-    value?: number,
+    value?: string,
   }
 }
 
