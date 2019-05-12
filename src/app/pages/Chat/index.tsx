@@ -3412,7 +3412,7 @@ class Chat extends React.Component<IProps, IState> {
                         }
                     }).catch((err) => {
                         window.console.debug(err);
-                        if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
+                        if (err.code !== C_FILE_ERR_CODE.ALREADY_IN_QUEUE) {
                             this.progressBroadcaster.failed(msg.id || 0);
                             this.progressBroadcaster.remove(msg.id || 0);
                         }
