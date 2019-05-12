@@ -2525,6 +2525,12 @@ class Chat extends React.Component<IProps, IState> {
         const dialog = this.getDialogById(selectedDialogId);
         const peerId = inputPeer.getId() || '';
         if (dialog) {
+            const index = findLastIndex(this.messages, {id: msgId});
+            if (index > -1) {
+                if (this.messages[index].me) {
+                    return;
+                }
+            }
             // Last message pointer must be greater than msgId
             if (dialog && (dialog.readinboxmaxid || 0) < msgId) {
                 this.readMessageThrottle(inputPeer, msgId);

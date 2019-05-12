@@ -360,9 +360,10 @@ class SignUp extends React.Component<IProps, IState> {
         }
     }
 
-    private modifyCode(str: string, remove?: boolean): string {
+    private modifyCode(str: string, remove?: boolean): { code: string, len: number } {
         const s = '____'.split('');
         let nums = str.match(/\d+/g);
+        const len = nums ? nums.join('').length : 0;
         if (nums) {
             nums = nums.join('').split('').slice(0, 4);
             nums.forEach((val, key) => {
@@ -373,17 +374,16 @@ class SignUp extends React.Component<IProps, IState> {
                 }
             });
         }
-        return s.join('');
+        return {code: s.join(''), len};
     }
 
     private codeOnChange = (e: any) => {
+        const data = this.modifyCode(e.target.value);
         this.setState({
-            code: this.modifyCode(e.target.value),
+            code: data.code,
         }, () => {
-            if (this.state.code.length === 4) {
-                setTimeout(() => {
-                    this.confirmCode();
-                }, 250);
+            if (data.len === 4) {
+                this.confirmCode();
             }
         });
     }
@@ -488,8 +488,9 @@ class SignUp extends React.Component<IProps, IState> {
         if (e.key === 'Backspace') {
             e.stopPropagation();
             e.preventDefault();
+            const data = this.modifyCode(this.state.code, true);
             this.setState({
-                code: this.modifyCode(this.state.code, true),
+                code: data.code,
             });
         } else if (e.key === 'Enter') {
             this.confirmCode();

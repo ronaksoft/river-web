@@ -10,6 +10,7 @@
 import {C_MSG} from '../const';
 import {UpdateEnvelope} from '../messages/chat.core.types_pb';
 import {
+    UpdateDialogPinned,
     UpdateDifference,
     UpdateMessageEdited, UpdateMessageID, UpdateMessagesDeleted,
     UpdateNewMessage, UpdateNotifySettings,
@@ -235,6 +236,13 @@ export default class SyncManager {
                             photo: updateUserPhoto.photo,
                         });
                     }
+                    break;
+                case C_MSG.UpdateDialogPinned:
+                    const updateDialogPinned = UpdateDialogPinned.deserializeBinary(data).toObject();
+                    dialogs = this.updateDialog(dialogs, {
+                        peerid: updateDialogPinned.peer.id,
+                        pinned: updateDialogPinned.pinned,
+                    });
                     break;
                 default:
                     break;

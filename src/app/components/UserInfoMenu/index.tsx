@@ -108,6 +108,12 @@ class UserInfoMenu extends React.Component<IProps, IState> {
 
     public componentDidMount() {
         this.getUser();
+        //
+        // this.sdk.getServerSalts().then((res) => {
+        //     window.console.log(res);
+        // }).catch((err) => {
+        //     window.console.log(err);
+        // });
     }
 
     public componentWillReceiveProps(newProps: IProps) {

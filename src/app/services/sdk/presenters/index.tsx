@@ -14,15 +14,11 @@ import {Bool, Error} from '../messages/chat.core.types_pb';
 import {MessagesDialogs, MessagesMany, MessagesSent} from '../messages/chat.api.messages_pb';
 import {Dialog, Group, GroupFull, PeerNotifySettings, User} from '../messages/chat.core.types_pb';
 import {
-    UpdateDifference,
-    UpdateNewMessage,
-    UpdateReadHistoryInbox,
-    UpdateReadHistoryOutbox, UpdateState,
-    UpdateUserTyping
+    UpdateDifference, UpdateNewMessage, UpdateReadHistoryInbox, UpdateReadHistoryOutbox, UpdateState, UpdateUserTyping,
 } from '../messages/chat.api.updates_pb';
 import {File} from '../messages/chat.api.files_pb';
 import {AccountAuthorizations} from '../messages/chat.api.accounts_pb';
-import {SystemInfo, SystemServerTime} from '../messages/chat.api.system_pb';
+import {SystemInfo, SystemSalts, SystemServerTime} from '../messages/chat.api.system_pb';
 import {UsersMany} from '../messages/chat.api.users_pb';
 
 export default class UniqueId {
@@ -74,6 +70,8 @@ export default class UniqueId {
                 return SystemServerTime.deserializeBinary(data);
             case C_MSG.UsersMany:
                 return UsersMany.deserializeBinary(data);
+            case C_MSG.SystemSalts:
+                return SystemSalts.deserializeBinary(data);
             default:
                 return null;
         }

@@ -55,7 +55,7 @@ import DownloadManager, {IDownloadSettings} from '../../services/downloadManager
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.23.148';
+export const C_VERSION = '0.23.149';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 interface IProps {
@@ -135,7 +135,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             confirmDialogOpen: false,
             confirmDialogSelectedId: '',
             debugModeOpen: false,
-            debugModeUrl: localStorage.getItem('river.workspace_url') || 'new.river.im',
+            debugModeUrl: localStorage.getItem('river.workspace_url') || 'cyrus.river.im',
             editProfile: false,
             editUsername: false,
             firstname: '',

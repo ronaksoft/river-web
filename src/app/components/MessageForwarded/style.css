@@ -40,6 +40,10 @@
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis; }
+        .message-forwarded .forwarded-container .forwarded-message-wrapper .forward-message-detail svg {
+          font-size: 14px;
+          margin-right: 3px;
+          vertical-align: middle; }
 
 html[theme="dark"] .message-forwarded .forwarded-container .forwarded-message-wrapper .forwarded-bar {
   background-color: var(--dark-low); }

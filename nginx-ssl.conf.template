@@ -57,7 +57,7 @@ http {
         }
 
         location /ws {
-            # redirect all HTTP traffic to http://new.river.im
+            # redirect all HTTP traffic to http://cyrus.river.im
             proxy_pass http://${NST_API_URL};
             proxy_set_header X-Real-IP ${DOLLAR}remote_addr;
             proxy_set_header Host ${NST_API_URL};

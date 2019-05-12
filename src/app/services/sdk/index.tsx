@@ -83,7 +83,7 @@ import {
     GroupsUploadPhoto
 } from './messages/chat.api.groups_pb';
 import {UsersGetFull, UsersMany} from './messages/chat.api.users_pb';
-import {SystemGetInfo, SystemInfo} from './messages/chat.api.system_pb';
+import {SystemGetInfo, SystemInfo, SystemGetSalts, SystemSalts} from './messages/chat.api.system_pb';
 
 export default class SDK {
     public static getInstance() {
@@ -525,5 +525,10 @@ export default class SDK {
         data.setPeer(peer);
         data.setPin(pin);
         return this.server.send(C_MSG.MessagesToggleDialogPin, data.serializeBinary(), true);
+    }
+
+    public getServerSalts(): Promise<SystemSalts.AsObject> {
+        const data = new SystemGetSalts();
+        return this.server.send(C_MSG.SystemGetSalts, data.serializeBinary(), true);
     }
 }
