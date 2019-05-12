@@ -137,7 +137,9 @@ export default class MediaRepo {
         return this.upsert(tempGroup);
     }
 
-    public upsert(medias: IMedia[]): Promise<any> {
+    public upsert(medias: IMedia[], callerId?: number): Promise<any> {
+        const peerIdMap: object = {};
+        const newIds: number[] = [];
         const ids = medias.map((media) => {
             return media.id;
         });
@@ -153,8 +155,15 @@ export default class MediaRepo {
                 }
             });
             const list = [...createItems, ...updateItems];
+            createItems.forEach((msg) => {
+                if (msg.peerid && !peerIdMap.hasOwnProperty(msg.peerid)) {
+                    peerIdMap[msg.peerid] = true;
+                }
+                newIds.push(msg.id || 0);
+            });
             return this.createMany(list);
         }).then((res) => {
+            this.broadcastEvent('Media_DB_Updated', {ids: newIds, peerids: Object.keys(peerIdMap), callerId});
             return res;
         });
     }
@@ -182,5 +191,13 @@ export default class MediaRepo {
             }
         }
         execute(tempMedias);
+    }
+
+    private broadcastEvent(name: string, data: any) {
+        const event = new CustomEvent(name, {
+            bubbles: false,
+            detail: data,
+        });
+        window.dispatchEvent(event);
     }
 }

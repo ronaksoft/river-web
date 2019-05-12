@@ -101,7 +101,7 @@ class PeerMedia extends React.Component<IProps, IState> {
     public componentDidMount() {
         this.getMedias();
         window.addEventListener('File_Downloaded', this.fileDownloadedHandler);
-        window.addEventListener('Message_DB_Added', this.messageDBUpdatedHandler);
+        window.addEventListener('Media_DB_Updated', this.mediaDBUpdatedHandler);
         this.eventReferences.push(this.audioPlayer.globalListen(this.audioPlayerHandler));
     }
 
@@ -114,7 +114,7 @@ class PeerMedia extends React.Component<IProps, IState> {
 
     public componentWillUnmount() {
         window.removeEventListener('File_Downloaded', this.fileDownloadedHandler);
-        window.removeEventListener('Message_DB_Added', this.messageDBUpdatedHandler);
+        window.removeEventListener('Media_DB_Updated', this.mediaDBUpdatedHandler);
         this.removeAllListeners();
     }
 
@@ -396,8 +396,8 @@ class PeerMedia extends React.Component<IProps, IState> {
         }
     }
 
-    /* Message repo updated handler */
-    private messageDBUpdatedHandler = (event: any) => {
+    /* Media repo updated handler */
+    private mediaDBUpdatedHandler = (event: any) => {
         const data = event.detail;
         if (data.peerids && data.peerids.indexOf(this.props.peer.getId() || '') > -1) {
             setTimeout(() => {

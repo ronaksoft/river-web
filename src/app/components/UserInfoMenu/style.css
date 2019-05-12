@@ -119,6 +119,12 @@
     .user-info-menu .kk-card:last-of-type {
       margin-bottom: 0; }
 
+.container.mobile-view .user-info-menu {
+  width: 100vw; }
+
+.container:not(.mobile-view) .user-info-menu {
+  width: 318px; }
+
 html[theme="dark"] .user-info-menu,
 html[theme="dark-blue"] .user-info-menu {
   background-color: var(--dark-high); }

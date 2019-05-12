@@ -296,6 +296,12 @@
         background: var(--river-dark);
         box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4); }
 
+.container.mobile-view .group-info-menu {
+  width: 100vw; }
+
+.container:not(.mobile-view) .group-info-menu {
+  width: 318px; }
+
 html[theme="dark"] .group-info-menu,
 html[theme="dark-blue"] .group-info-menu {
   background-color: var(--dark-high); }
