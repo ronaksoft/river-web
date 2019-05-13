@@ -23,9 +23,11 @@ import * as Sentry from '@sentry/browser';
 
 import './App.css';
 
-Sentry.init({
-    dsn: "https://7f5b41c4b12d473bbe8db09fe0420c8a@sentry.ronaksoftware.com/8"
-});
+if (!process || !process.env || process.env.NODE_ENV !== 'development') {
+    Sentry.init({
+        dsn: "https://7f5b41c4b12d473bbe8db09fe0420c8a@sentry.ronaksoftware.com/8"
+    });
+}
 
 const theme = createMuiTheme({
     palette: {
@@ -66,11 +68,13 @@ class App extends React.Component<{}, IState> {
     }
 
     public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-        Sentry.withScope((scope) => {
-            scope.setExtras(errorInfo);
-            const eventId = Sentry.captureException(error);
-            Sentry.showReportDialog({eventId});
-        });
+        if (!process || !process.env || process.env.NODE_ENV !== 'development') {
+            Sentry.withScope((scope) => {
+                scope.setExtras(errorInfo);
+                const eventId = Sentry.captureException(error);
+                Sentry.showReportDialog({eventId});
+            });
+        }
     }
 
     public componentDidMount() {

@@ -238,12 +238,14 @@ class Chat extends React.Component<IProps, IState> {
         this.backgroundService = BackgroundService.getInstance();
         this.downloadManager = DownloadManager.getInstance();
 
-        Sentry.configureScope((scope) => {
-            scope.setUser({
-                'auth_id': this.connInfo.AuthID,
-                'user_id': this.connInfo.UserID,
+        if (!process || !process.env || process.env.NODE_ENV !== 'development') {
+            Sentry.configureScope((scope) => {
+                scope.setUser({
+                    'auth_id': this.connInfo.AuthID,
+                    'user_id': this.connInfo.UserID,
+                });
             });
-        });
+        }
     }
 
     public componentDidMount() {
@@ -1550,9 +1552,8 @@ class Chat extends React.Component<IProps, IState> {
             this.messageComponent.takeSnapshot();
             const messages = this.messages;
             const messageSize = messages.length;
-            const dataMsg = this.modifyMessages(messages, data, false);
-
             this.setScrollMode('stay');
+            const dataMsg = this.modifyMessages(messages, data, false);
             this.messageComponent.setMessages(dataMsg.msgs, () => {
                 // clears the gap between each message load
                 for (let i = 0; i <= (dataMsg.msgs.length - messageSize) + 1; i++) {
@@ -3908,7 +3909,7 @@ class Chat extends React.Component<IProps, IState> {
     private audioPlayerVisibleHandler = (visible: boolean) => {
         // setTimeout(() => {
         //     if (this.messageComponent) {
-        //         this.messageComponent.fitList(false, true);
+        //         this.messageComponent.fitList(true);
         //     }
         // }, 210);
     }

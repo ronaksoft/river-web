@@ -411,8 +411,6 @@
     display: none; }
   .messages-snapshot .ReactVirtualized__List.chat {
     overflow: hidden !important; }
-    .messages-snapshot .ReactVirtualized__List.chat .ReactVirtualized__Grid__innerScrollContainer {
-      margin-top: -34px; }
 
 .messages-dropzone {
   position: absolute;

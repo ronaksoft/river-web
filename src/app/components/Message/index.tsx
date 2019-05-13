@@ -24,7 +24,7 @@ import {MoreVert} from '@material-ui/icons';
 import UserName from '../UserName';
 import Checkbox from '@material-ui/core/Checkbox';
 import MessageForwarded from '../MessageForwarded';
-import {clone, throttle, debounce} from 'lodash';
+import {clone, throttle, debounce, findIndex} from 'lodash';
 import MessageVoice from '../MessageVoice';
 import RiverTime from '../../services/utilities/river_time';
 import {ErrorRounded} from '@material-ui/icons';
@@ -122,6 +122,11 @@ export const highlightMessageText = (id: number, text: string) => {
     }
 };
 
+interface IStayInfo {
+    id: number;
+    offset: number;
+}
+
 class Message extends React.Component<IProps, IState> {
     public list: List;
     public cache: CellMeasurerCache;
@@ -156,6 +161,10 @@ class Message extends React.Component<IProps, IState> {
     private dropZoneHideDebounce: any = null;
     private readId: number = 0;
     private firstTimeLoadAfter: boolean = true;
+    private stayInfo: IStayInfo = {
+        id: -1,
+        offset: 0,
+    };
 
     constructor(props: IProps) {
         super(props);
@@ -186,7 +195,6 @@ class Message extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        this.fitList(true);
         this.topOfList = false;
         this.eventReferences.push(this.broadcaster.listen('Theme_Changed', this.themeChangeHandler));
         window.addEventListener('mouseup', this.dragLeaveHandler, true);
@@ -229,7 +237,7 @@ class Message extends React.Component<IProps, IState> {
                 } else {
                     this.props.onLastMessage(null);
                 }
-                this.fitList(true);
+                this.fitList();
                 this.modifyScroll(items);
             });
             this.listCount = items.length;
@@ -308,11 +316,15 @@ class Message extends React.Component<IProps, IState> {
                 if (instant) {
                     if (this.list) {
                         this.list.scrollToRow(items.length);
-                        setTimeout(() => {
-                            if (this.list) {
-                                this.list.scrollToPosition(this.scrollTop + 10);
+                        if (this.list) {
+                            const el = document.querySelector('.chat.active-chat');
+                            if (el) {
+                                const eldiv = el.querySelector('.chat.active-chat > div');
+                                if (eldiv) {
+                                    this.list.scrollToPosition((eldiv.scrollHeight - el.clientHeight) + 10);
+                                }
                             }
-                        }, 10);
+                        }
                     }
                 } else {
                     setTimeout(() => {
@@ -322,13 +334,13 @@ class Message extends React.Component<IProps, IState> {
                             if (eldiv) {
                                 const options: any = {
                                     // duration of the scroll per 1000px, default 500
-                                    speed: 1000,
+                                    speed: 500,
 
                                     // minimum duration of the scroll
                                     minDuration: 250,
 
                                     // maximum duration of the scroll
-                                    maxDuration: 500,
+                                    maxDuration: 300,
 
                                     // @ts-ignore
                                     element: el,
@@ -356,7 +368,7 @@ class Message extends React.Component<IProps, IState> {
                                     }
                                 };
 
-                                animateScrollTo(eldiv.clientHeight + 1000, options);
+                                animateScrollTo(eldiv.scrollHeight + 1000, options);
                             }
                         }
                     }, 1);
@@ -366,10 +378,13 @@ class Message extends React.Component<IProps, IState> {
     }
 
     public setScrollMode(mode: 'none' | 'end' | 'end_no_call' | 'stay') {
+        if (mode === 'stay') {
+            this.getTopMessageOffset();
+        }
         this.scrollMode = mode;
     }
 
-    public fitList(forceScroll?: boolean, instant?: boolean) {
+    public fitList(instant?: boolean) {
         setTimeout(() => {
             const el: any = document.querySelector('.chat.active-chat');
             if (!el || !el.style) {
@@ -392,9 +407,6 @@ class Message extends React.Component<IProps, IState> {
                 }
             }
             el.style.paddingTop = '0px';
-            if (forceScroll === true) {
-                this.animateToEnd(true);
-            }
         }, instant ? 0 : 3);
     }
 
@@ -413,10 +425,14 @@ class Message extends React.Component<IProps, IState> {
         this.messageSnapshotRef.classList.add(className);
         this.messageInnerRef.classList.add('hidden');
         this.messageSnapshotRef.innerHTML = this.messageInnerRef.innerHTML;
+        const scrollEl = this.messageSnapshotRef.querySelector(' div > div');
+        if (scrollEl) {
+            scrollEl.scrollTop = this.scrollTop;
+        }
         if (!noRemove) {
             this.removeSnapshotTimeout = setTimeout(() => {
                 this.removeSnapshot();
-            }, 500);
+            }, 10000);
         }
     }
 
@@ -718,13 +734,13 @@ class Message extends React.Component<IProps, IState> {
 
     private onScroll = (params: ScrollParams) => {
         this.scrollTop = params.scrollTop;
-        if (params.clientHeight < params.scrollHeight && params.scrollTop > 200) {
+        if (params.clientHeight < params.scrollHeight && params.scrollTop > 300) {
             this.topOfList = false;
         }
         if (this.topOfList) {
             return;
         }
-        if (params.clientHeight < params.scrollHeight && params.scrollTop < 2) {
+        if (params.clientHeight < params.scrollHeight && params.scrollTop < 200) {
             this.topOfList = true;
             // this.takeSnapshot();
             if (typeof this.props.onLoadMoreBefore === 'function') {
@@ -1066,14 +1082,14 @@ class Message extends React.Component<IProps, IState> {
     private modifyScroll(items: IMessage[]) {
         switch (this.scrollMode) {
             case 'stay':
-                const index = (items.length - this.listCount) + 1;
-                const msg = items[index];
-                setTimeout(() => {
+                const index = findIndex(items, {id: this.stayInfo.id});
+                if (index > -1) {
                     this.list.scrollToRow(index);
-                    if (msg) {
-                        this.checkScroll(msg.id || 0);
-                    }
-                }, 10);
+                    setTimeout(() => {
+                        this.list.scrollToRow(index);
+                        this.checkScroll(this.stayInfo.id);
+                    }, 100);
+                }
                 return;
             case 'end':
                 this.animateToEnd(true);
@@ -1086,28 +1102,48 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
+    private getTopMessageOffset() {
+        const {items} = this.state;
+        let index;
+        for (index = this.messageScroll.startIndex; index < this.messageScroll.startIndex + 3; index++) {
+            if (items[index].messagetype !== C_MESSAGE_TYPE.Date && items[index].messagetype !== C_MESSAGE_TYPE.NewMessage) {
+                break;
+            }
+        }
+        const el = document.querySelector(`.bubble-wrapper .bubble.b_${Math.floor(items[index].id || 0)}`);
+        if (el) {
+            if (el.parentElement) {
+                const scroll = parseInt(window.getComputedStyle(el.parentElement).getPropertyValue('top').replace(/^\D+/g, ''), 10);
+                this.stayInfo = {
+                    id: items[index].id || 0,
+                    offset: scroll - this.scrollTop,
+                };
+            }
+        }
+    }
+
     /* Try to find correct position */
     private checkScroll(id: number, tries?: number) {
         const el = document.querySelector(`.bubble-wrapper .bubble.b_${Math.floor(id)}`);
-        if (this.scrollTop > 0 && el) {
+        if (el) {
             if (el.parentElement) {
                 const scroll = parseInt(window.getComputedStyle(el.parentElement).getPropertyValue('top').replace(/^\D+/g, ''), 10);
-                this.list.scrollToPosition(scroll);
+                this.list.scrollToPosition(scroll - this.stayInfo.offset);
                 this.removeSnapshot();
+                return;
             }
+        }
+        if (!tries) {
+            tries = 1;
         } else {
-            if (!tries) {
-                tries = 1;
-            } else {
-                tries++;
-            }
-            if (tries <= 60) {
-                window.requestAnimationFrame(() => {
-                    this.checkScroll(id, tries);
-                });
-            } else {
-                this.removeSnapshot();
-            }
+            tries++;
+        }
+        if (tries <= 60) {
+            window.requestAnimationFrame(() => {
+                this.checkScroll(id, tries);
+            });
+        } else {
+            this.removeSnapshot();
         }
     }
 
