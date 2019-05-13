@@ -734,13 +734,13 @@ class Message extends React.Component<IProps, IState> {
 
     private onScroll = (params: ScrollParams) => {
         this.scrollTop = params.scrollTop;
-        if (params.clientHeight < params.scrollHeight && params.scrollTop > 300) {
+        if (params.clientHeight < params.scrollHeight && params.scrollTop > 800) {
             this.topOfList = false;
         }
         if (this.topOfList) {
             return;
         }
-        if (params.clientHeight < params.scrollHeight && params.scrollTop < 200) {
+        if (params.clientHeight < params.scrollHeight && params.scrollTop < 300) {
             this.topOfList = true;
             // this.takeSnapshot();
             if (typeof this.props.onLoadMoreBefore === 'function') {

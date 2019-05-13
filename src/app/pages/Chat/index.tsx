@@ -1541,7 +1541,7 @@ class Chat extends React.Component<IProps, IState> {
 
         this.messageRepo.getMany({
             before: this.messages[0].id,
-            limit: 20,
+            limit: 25,
             peer,
         }).then((data) => {
             // Checks peerid on transition
