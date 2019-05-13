@@ -67,7 +67,6 @@ import DialogContentText from '@material-ui/core/DialogContentText/DialogContent
 import DialogActions from '@material-ui/core/DialogActions/DialogActions';
 import Button from '@material-ui/core/Button/Button';
 import UserDialog from '../../components/UserDialog';
-import {IGroup} from '../../repository/group/interface';
 import SearchList, {IInputPeer} from '../../components/SearchList';
 import ElectronService, {C_ELECTRON_SUBJECT} from '../../services/electron';
 import FileManager from '../../services/sdk/fileManager';
@@ -117,7 +116,6 @@ interface IState {
     dialogs: IDialog[];
     forwardRecipientDialogOpen: boolean;
     forwardRecipients: IInputPeer[];
-    group: IGroup | null;
     isChatView: boolean;
     isConnecting: boolean;
     isTyping: boolean;
@@ -195,7 +193,6 @@ class Chat extends React.Component<IProps, IState> {
             dialogs: [],
             forwardRecipientDialogOpen: false,
             forwardRecipients: [],
-            group: null,
             isChatView: false,
             isConnecting: true,
             isTyping: false,
@@ -340,13 +337,15 @@ class Chat extends React.Component<IProps, IState> {
     public componentWillReceiveProps(newProps: IProps) {
         const selectedId = newProps.match.params.id;
         if (selectedId === this.state.selectedDialogId) {
+            if (this.isMobileView) {
+                this.setChatView(true);
+            }
             return;
         }
         const selectedMessageId = newProps.match.params.mid;
         this.updateDialogsCounter(this.state.selectedDialogId, {scrollPos: this.lastMessageId});
         if (selectedId === 'null') {
             this.setState({
-                group: null,
                 peer: null,
                 selectedDialogId: 'null',
             });
@@ -357,7 +356,6 @@ class Chat extends React.Component<IProps, IState> {
                 this.readHistoryMaxId = null;
             }
             this.setState({
-                group: null,
                 leftMenu: 'chat',
                 messageSelectable: false,
                 messageSelectedIds: {},
@@ -1377,25 +1375,6 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
-        const dialog = this.getDialogById(dialogId);
-        if (dialog) {
-            if (dialog.peertype === PeerType.PEERGROUP && dialog.peerid) {
-                this.groupRepo.get(dialog.peerid || '').then((group) => {
-                    this.setState({
-                        group,
-                    });
-                }).catch(() => {
-                    this.setState({
-                        group: null,
-                    });
-                });
-            } else {
-                this.setState({
-                    group: null,
-                });
-            }
-        }
-
         this.setLoading(true);
 
         this.messages = [];
@@ -1409,6 +1388,8 @@ class Chat extends React.Component<IProps, IState> {
             this.messageComponent.list.recomputeGridSize();
             // this.messageComponent.list.scrollToRow(messages.length - 1);
         };
+
+        const dialog = this.getDialogById(dialogId);
 
         let before = 10000000000;
         // Scroll pos check
@@ -1493,7 +1474,6 @@ class Chat extends React.Component<IProps, IState> {
             window.console.warn(err);
             this.setChatView(true);
             this.setState({
-                group: null,
                 isChatView: true,
                 isTyping: false,
             });

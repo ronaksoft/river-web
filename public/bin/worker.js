@@ -35,7 +35,7 @@ self.onmessage = function (e) {
     switch (d.cmd) {
         case 'init':
             console.time('init');
-            fetch('river.wasm?v16').then((response) => {
+            fetch('river.wasm?v17').then((response) => {
                 WebAssembly.instantiateStreaming(response, go.importObject).then((res) => {
                     console.timeEnd('init');
                     run = go.run(res.instance);
