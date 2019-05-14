@@ -1388,7 +1388,6 @@ class Chat extends React.Component<IProps, IState> {
         const updateState = () => {
             this.messageComponent.list.recomputeRowHeights();
             this.messageComponent.list.recomputeGridSize();
-            // this.messageComponent.list.scrollToRow(messages.length - 1);
         };
 
         const dialog = this.getDialogById(dialogId);
@@ -1409,7 +1408,7 @@ class Chat extends React.Component<IProps, IState> {
         let minId: number = 0;
         this.setChatView(true);
 
-        this.messageRepo.getMany({peer, limit: 25, before, ignoreMax: true}, (data) => {
+        this.messageRepo.getMany({peer, limit: 40, before, ignoreMax: true}, (data) => {
             // Checks peerid on transition
             if (this.state.selectedDialogId !== dialogId) {
                 this.setLoading(false);
@@ -1462,6 +1461,7 @@ class Chat extends React.Component<IProps, IState> {
             }
 
             this.setScrollMode('end');
+            this.messageComponent.takeSnapshot();
             const dataMsg = this.modifyMessages(this.messages, resMsgs, false);
             this.messageComponent.setMessages(dataMsg.msgs, () => {
                 // this.messageComponent.list.recomputeRowHeights();
@@ -1470,6 +1470,7 @@ class Chat extends React.Component<IProps, IState> {
                 if (messageId && messageId !== '0') {
                     this.messageJumpToMessageHandler(parseInt(messageId, 10));
                 }
+                this.messageComponent.removeSnapshot(true);
             });
             this.setLoading(false);
         }).catch((err: any) => {
@@ -1539,6 +1540,8 @@ class Chat extends React.Component<IProps, IState> {
 
         this.setLoading(true);
 
+        window.console.log('messageLoadMoreBeforeHandler');
+
         this.messageRepo.getMany({
             before: this.messages[0].id,
             limit: 25,
@@ -1550,9 +1553,9 @@ class Chat extends React.Component<IProps, IState> {
                 return;
             }
             this.messageComponent.takeSnapshot();
+            this.setScrollMode('stay');
             const messages = this.messages;
             const messageSize = messages.length;
-            this.setScrollMode('stay');
             const dataMsg = this.modifyMessages(messages, data, false);
             this.messageComponent.setMessages(dataMsg.msgs, () => {
                 // clears the gap between each message load
@@ -3075,7 +3078,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Set Message component scroll mode */
-    private setScrollMode(mode: 'none' | 'end' | 'end_no_call' | 'stay') {
+    private setScrollMode(mode: 'none' | 'end' | 'stay') {
         if (this.messageComponent) {
             this.messageComponent.setScrollMode(mode);
         }
