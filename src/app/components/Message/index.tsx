@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import {AutoSizer, CellMeasurer, CellMeasurerCache, List, ScrollParams} from 'react-virtualized';
+import {AutoSizer, CellMeasurer, CellMeasurerCache, List} from 'react-virtualized';
 import {IMessage} from '../../repository/message/interface';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -135,7 +135,6 @@ class Message extends React.Component<IProps, IState> {
     private bottomOfList: boolean = true;
     private loadingTimeout: any = null;
     private scrollMode: 'none' | 'end' | 'stay';
-    private scrollTop: number;
     private messageScroll: {
         overscanStartIndex: number;
         overscanStopIndex: number;
@@ -321,9 +320,9 @@ class Message extends React.Component<IProps, IState> {
                     if (this.list) {
                         this.list.scrollToRow(items.length);
                         if (this.list) {
-                            const el = document.querySelector('.chat.active-chat');
+                            const el = document.querySelector('.messages-inner .chat.active-chat');
                             if (el) {
-                                const eldiv = el.querySelector('.chat.active-chat > div');
+                                const eldiv = el.firstElementChild;
                                 if (eldiv) {
                                     this.list.scrollToPosition((eldiv.scrollHeight - el.clientHeight) + 10);
                                     this.enableLoadBefore = true;
@@ -333,9 +332,9 @@ class Message extends React.Component<IProps, IState> {
                     }
                 } else {
                     setTimeout(() => {
-                        const el = document.querySelector('.chat.active-chat');
+                        const el = document.querySelector('.messages-inner .chat.active-chat');
                         if (el) {
-                            const eldiv = el.querySelector('.chat.active-chat > div');
+                            const eldiv = el.firstElementChild;
                             if (eldiv) {
                                 const options: any = {
                                     // duration of the scroll per 1000px, default 500
@@ -431,8 +430,9 @@ class Message extends React.Component<IProps, IState> {
         this.messageInnerRef.classList.add('hidden');
         this.messageSnapshotRef.innerHTML = this.messageInnerRef.innerHTML;
         const scrollEl = this.messageSnapshotRef.querySelector(' div > div');
-        if (scrollEl) {
-            scrollEl.scrollTop = this.scrollTop - 8;
+        const scrollTop = this.getScrollTop();
+        if (scrollEl && scrollTop) {
+            scrollEl.scrollTop = scrollTop;
         }
         if (!noRemove) {
             this.removeSnapshotTimeout = setTimeout(() => {
@@ -477,7 +477,6 @@ class Message extends React.Component<IProps, IState> {
                                 estimatedRowSize={41}
                                 onRowsRendered={this.onRowsRenderedHandler}
                                 noRowsRenderer={this.noRowsRenderer}
-                                onScroll={this.onScroll}
                                 scrollToAlignment="center"
                                 className="chat active-chat"
                             />
@@ -738,10 +737,6 @@ class Message extends React.Component<IProps, IState> {
                     );
                 }
         }
-    }
-
-    private onScroll = (params: ScrollParams) => {
-        this.scrollTop = params.scrollTop;
     }
 
     private contextMenuHandler = (index: number, e: any) => {
@@ -1125,6 +1120,14 @@ class Message extends React.Component<IProps, IState> {
         return null;
     }
 
+    private getScrollTop() {
+        const el = document.querySelector('.messages-inner .chat.active-chat');
+        if (el) {
+            return el.scrollTop;
+        }
+        return null;
+    }
+
     private getTopMessageOffset() {
         const {items} = this.state;
         let index;
@@ -1133,11 +1136,12 @@ class Message extends React.Component<IProps, IState> {
                 break;
             }
         }
-        const scroll = this.getCellTop(Math.floor(items[index].id || 0));
-        if (scroll) {
+        const cellTop = this.getCellTop(Math.floor(items[index].id || 0));
+        const scrollTop = this.getScrollTop();
+        if (cellTop && scrollTop) {
             this.stayInfo = {
                 id: items[index].id || 0,
-                offset: scroll - this.scrollTop,
+                offset: cellTop - scrollTop,
             };
         }
     }
@@ -1160,12 +1164,12 @@ class Message extends React.Component<IProps, IState> {
                 this.enableLoadBefore = true;
             }
         };
-        const scroll = this.getCellTop(Math.floor(id));
-        if (scroll) {
-            this.list.scrollToPosition(scroll - this.stayInfo.offset);
+        const cellTop = this.getCellTop(Math.floor(id));
+        if (cellTop) {
+            this.list.scrollToPosition(cellTop - this.stayInfo.offset);
             setTimeout(() => {
-                const scrollCheck = this.getCellTop(Math.floor(id));
-                if (scrollCheck === scroll) {
+                const cellTopCheck = this.getCellTop(Math.floor(id));
+                if (cellTopCheck === cellTop) {
                     this.enableLoadBefore = true;
                     this.removeSnapshot();
                 } else {

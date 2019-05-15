@@ -429,7 +429,7 @@ class SignUp extends React.Component<IProps, IState> {
                 this.notification.initToken().then((token) => {
                     this.sdk.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
                 }).catch(() => {
-                    this.sdk.registerDevice('-', 0, C_VERSION, C_CLIENT, 'en', '1');
+                    this.sdk.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1');
                 });
             }).catch((err) => {
                 window.console.debug(err);
@@ -553,7 +553,7 @@ class SignUp extends React.Component<IProps, IState> {
             this.notification.initToken().then((token) => {
                 this.sdk.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
             }).catch(() => {
-                this.sdk.registerDevice('-', 0, C_VERSION, C_CLIENT, 'en', '1');
+                this.sdk.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1');
             });
         }).catch((err) => {
             this.setState({

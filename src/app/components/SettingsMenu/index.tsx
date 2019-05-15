@@ -55,7 +55,7 @@ import DownloadManager, {IDownloadSettings} from '../../services/downloadManager
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.23.151';
+export const C_VERSION = '0.23.152';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 interface IProps {

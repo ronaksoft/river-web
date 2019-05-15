@@ -1540,8 +1540,6 @@ class Chat extends React.Component<IProps, IState> {
 
         this.setLoading(true);
 
-        window.console.log('messageLoadMoreBeforeHandler');
-
         this.messageRepo.getMany({
             before: this.messages[0].id,
             limit: 25,
