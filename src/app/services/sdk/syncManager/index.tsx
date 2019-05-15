@@ -10,17 +10,13 @@
 import {C_MSG} from '../const';
 import {UpdateEnvelope} from '../messages/chat.core.types_pb';
 import {
-    UpdateDialogPinned,
-    UpdateDifference,
-    UpdateMessageEdited, UpdateMessageID, UpdateMessagesDeleted,
-    UpdateNewMessage, UpdateNotifySettings,
-    UpdateReadHistoryInbox,
-    UpdateReadHistoryOutbox, UpdateReadMessagesContents, UpdateUsername, UpdateUserPhoto,
+    UpdateDialogPinned, UpdateDifference, UpdateMessageEdited, UpdateMessageID, UpdateMessagesDeleted, UpdateNewMessage,
+    UpdateNotifySettings, UpdateReadHistoryInbox, UpdateReadHistoryOutbox, UpdateReadMessagesContents, UpdateUsername,
+    UpdateUserPhoto,
 } from '../messages/chat.api.updates_pb';
 import {IUser} from '../../../repository/user/interface';
 import {IMessage} from '../../../repository/message/interface';
 import {IDialog} from '../../../repository/dialog/interface';
-import {merge} from 'lodash';
 import DialogRepo from '../../../repository/dialog';
 import MessageRepo from '../../../repository/message';
 import UserRepo from '../../../repository/user';
@@ -30,6 +26,7 @@ import {IGroup} from '../../../repository/group/interface';
 import {Group} from '../messages/chat.core.types_pb';
 import {C_MESSAGE_ACTION} from '../../../repository/message/consts';
 import {getMessageTitle} from '../../../components/Dialog/utils';
+import {kMerge} from "../../utilities/kDash";
 
 export interface IRemoveDialog {
     maxId: number;
@@ -211,7 +208,7 @@ export default class SyncManager {
                 case C_MSG.UpdateUsername:
                     const updateUsername = UpdateUsername.deserializeBinary(data).toObject();
                     if (users.hasOwnProperty(updateUsername.userid || 0)) {
-                        users[updateUsername.userid || 0] = merge(users[updateUsername.userid || 0], {
+                        users[updateUsername.userid || 0] = kMerge(users[updateUsername.userid || 0], {
                             bio: updateUsername.bio,
                             firstname: updateUsername.firstname,
                             id: updateUsername.userid,
@@ -231,7 +228,7 @@ export default class SyncManager {
                 case C_MSG.UpdateUserPhoto:
                     const updateUserPhoto = UpdateUserPhoto.deserializeBinary(data).toObject();
                     if (users.hasOwnProperty(updateUserPhoto.userid || 0)) {
-                        users[updateUserPhoto.userid || 0] = merge(users[updateUserPhoto.userid || 0], {
+                        users[updateUserPhoto.userid || 0] = kMerge(users[updateUserPhoto.userid || 0], {
                             id: updateUserPhoto.userid,
                             photo: updateUserPhoto.photo,
                         });
@@ -265,10 +262,10 @@ export default class SyncManager {
             }
             if (dialog.topmessageid) {
                 if (dialog.topmessageid >= (d.topmessageid || 0)) {
-                    dialogs[dialog.peerid || 0] = merge(d, dialog);
+                    dialogs[dialog.peerid || 0] = kMerge(d, dialog);
                 }
             } else {
-                dialogs[dialog.peerid || 0] = merge(d, dialog);
+                dialogs[dialog.peerid || 0] = kMerge(d, dialog);
             }
         } else {
             // dialog.readinboxmaxid = 0;
@@ -385,7 +382,7 @@ export default class SyncManager {
     private updateUser(users: { [key: number]: IUser }, user: IUser) {
         const d: IUser = users[user.id || 0];
         if (d) {
-            users[user.id || 0] = merge(d, user);
+            users[user.id || 0] = kMerge(d, user);
         } else {
             users[user.id || 0] = user;
         }

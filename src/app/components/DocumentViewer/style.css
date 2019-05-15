@@ -38,7 +38,8 @@
   line-height: 0;
   max-width: none;
   background: transparent;
-  overflow: visible; }
+  overflow: visible;
+  box-shadow: none; }
 
 .document-viewer-dialog .document-container {
   position: relative;

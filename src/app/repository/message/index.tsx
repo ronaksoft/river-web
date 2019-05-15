@@ -9,7 +9,7 @@
 
 import MessageDB from '../../services/db/message';
 import {IMessage, IMessageWithCount, IPendingMessage} from './interface';
-import {cloneDeep, differenceBy, find, merge, throttle} from 'lodash';
+import {cloneDeep, differenceBy, find, throttle} from 'lodash';
 import SDK from '../../services/sdk';
 import UserRepo from '../user';
 import RTLDetector from '../../services/utilities/rtl_detector';
@@ -39,6 +39,7 @@ import {
 } from '../../services/sdk/messages/chat.core.message.actions_pb';
 import MediaRepo from '../media';
 import {C_MEDIA_TYPE} from '../media/interface';
+import {kMerge} from "../../services/utilities/kDash";
 
 export default class MessageRepo {
     public static parseAttributes(attrs: DocumentAttribute.AsObject[], flags: { type: number }) {
@@ -796,7 +797,7 @@ export default class MessageRepo {
             newMessage.contentread = true;
         }
         message.entitiesList = newMessage.entitiesList;
-        const d = merge(message, newMessage);
+        const d = kMerge(message, newMessage);
         return d;
     }
 

@@ -9,7 +9,7 @@
 
 import DB from '../../services/db/dialog';
 import {IDialog, IDialogWithUpdateId, IDraft} from './interface';
-import {throttle, differenceBy, find, merge, uniqBy, cloneDeep} from 'lodash';
+import {throttle, differenceBy, find, uniqBy, cloneDeep, pickBy, identity} from 'lodash';
 import SDK from '../../services/sdk';
 import UserRepo from '../user';
 import MessageRepo from '../message';
@@ -18,6 +18,7 @@ import UpdateManager from '../../services/sdk/server/updateManager';
 import {DexieDialogDB} from '../../services/db/dexie/dialog';
 import GroupRepo from '../group';
 import {getMessageTitle} from '../../components/Dialog/utils';
+import {kMerge} from "../../services/utilities/kDash";
 
 export default class DialogRepo {
     public static getInstance() {
@@ -241,7 +242,7 @@ export default class DialogRepo {
         if (newDialog.force !== true && newDialog.topmessageid !== undefined && newDialog.topmessageid < (dialog.topmessageid || 0)) {
             newDialog.topmessageid = dialog.topmessageid;
         }
-        const d = merge(dialog, newDialog);
+        const d = kMerge(dialog, pickBy(newDialog, identity));
         if (newDialog.force === true) {
             delete d.force;
         }

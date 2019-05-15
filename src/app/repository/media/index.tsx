@@ -10,10 +10,11 @@
 import DB from '../../services/db/media';
 import Dexie from 'dexie';
 import {C_MEDIA_TYPE, IMedia} from './interface';
-import {differenceBy, find, merge, uniqBy, clone, throttle} from 'lodash';
+import {differenceBy, find, uniqBy, clone, throttle} from 'lodash';
 import {DexieMediaDB} from '../../services/db/dexie/media';
 import MessageRepo from '../message';
 import {IMessage} from '../message/interface';
+import {kMerge} from "../../services/utilities/kDash";
 
 export default class MediaRepo {
     public static getInstance() {
@@ -169,7 +170,7 @@ export default class MediaRepo {
     }
 
     private mergeCheck(media: IMedia, newMedia: IMedia): IMedia {
-        return merge(media, newMedia);
+        return kMerge(media, newMedia);
     }
 
     private insertToDb = () => {

@@ -9,7 +9,7 @@
 
 import DB from '../../services/db/user';
 import {IUser} from './interface';
-import {differenceBy, find, merge, uniqBy} from 'lodash';
+import {differenceBy, find, uniqBy} from 'lodash';
 import SDK from "../../services/sdk";
 import {DexieUserDB} from '../../services/db/dexie/user';
 import Dexie from 'dexie';
@@ -19,6 +19,7 @@ import CRC from 'js-crc/build/crc.min';
 import {UserStatus} from '../../services/sdk/messages/chat.core.types_pb';
 import RiverTime from '../../services/utilities/river_time';
 import Broadcaster from '../../services/broadcaster';
+import {kMerge} from "../../services/utilities/kDash";
 
 export const getContactsCrc = (users: IUser[]) => {
     const ids = users.map((user) => {
@@ -216,7 +217,7 @@ export default class UserRepo {
             if (!force && u1.bio && u1.bio.length > 0 && (!u2.bio || (u2.bio && u2.bio.length === 0))) {
                 u2.bio = u1.bio;
             }
-            return merge(u1, u2);
+            return kMerge(u1, u2);
         };
         if (t && user.is_contact === 1) {
             t.is_contact = 1;

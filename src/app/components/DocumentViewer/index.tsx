@@ -9,14 +9,8 @@
 
 import * as React from 'react';
 import {
-    KeyboardArrowLeftRounded,
-    KeyboardArrowRightRounded,
-    MoreVertRounded,
-    RotateLeftRounded,
-    RotateRightRounded,
-    ZoomInRounded,
-    ZoomOutRounded,
-    CropFreeRounded,
+    KeyboardArrowLeftRounded, KeyboardArrowRightRounded, MoreVertRounded, RotateLeftRounded, RotateRightRounded,
+    ZoomInRounded, ZoomOutRounded, CropFreeRounded,
 } from '@material-ui/icons';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import DocumentViewService, {IDocument} from '../../services/documentViewerService';
@@ -28,10 +22,11 @@ import {getMediaInfo} from '../MessageMedia';
 import DownloadProgress from '../DownloadProgress';
 import {C_GOOGLE_MAP_KEY} from '../MapPicker';
 import {MapComponent} from '../MapPicker/map';
-
-import './style.css';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';
 import Menu from '@material-ui/core/Menu/Menu';
+import {ClickAwayListener} from "@material-ui/core";
+
+import './style.css';
 
 const C_MAX_WIDTH = 800;
 const C_MAX_HEIGHT = 600;
@@ -134,13 +129,16 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 open={dialogOpen}
                 onClose={this.dialogCloseHandler}
                 className={'document-viewer-dialog ' + className}
+                disableBackdropClick={true}
             >
-                <div ref={this.documentContainerRefHandler} className="document-container"
-                     onMouseDown={this.mediaDocumentMouseDownHandler} onWheel={this.mediaDocumentWheelHandler}>
-                    {this.getContent()}
-                </div>
+                <ClickAwayListener onClickAway={this.dialogCloseHandler}>
+                    <div ref={this.documentContainerRefHandler} className="document-container"
+                         onMouseDown={this.mediaDocumentMouseDownHandler} onWheel={this.mediaDocumentWheelHandler}>
+                        {this.getContent()}
+                        {this.initPagination()}
+                    </div>
+                </ClickAwayListener>
                 {this.initCaption()}
-                {this.initPagination()}
                 {this.initControls()}
                 {this.getFloatObj()}
             </Dialog>

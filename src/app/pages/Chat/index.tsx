@@ -4068,8 +4068,8 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     // private testHandler = () => {
-    //     this.messageComponent.takeSnapshot();
-    //     this.messageComponent.setScrollMode('stay');
+    // this.messageComponent.takeSnapshot();
+    // this.messageComponent.setScrollMode('stay');
     // }
     //
     // private test2Handler = () => {

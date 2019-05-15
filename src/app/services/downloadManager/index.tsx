@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import {merge} from 'lodash';
+import {kMerge} from "../utilities/kDash";
 
 export interface IDownloadSettings {
     auto_save_files: boolean;
@@ -62,7 +62,7 @@ export default class DownloadManager {
     }
 
     private storeDownloadSettings(data: IDownloadSettings) {
-        this.downloadSettings = merge(defaultValues, data);
+        this.downloadSettings = kMerge(defaultValues, data);
         const serializedData = JSON.stringify(data);
         localStorage.setItem(downloadSettingsKey, serializedData);
     }
@@ -70,7 +70,7 @@ export default class DownloadManager {
     private getLocalStorageDownloadSettings() {
         const serializedData = localStorage.getItem(downloadSettingsKey);
         if (serializedData) {
-            this.downloadSettings = merge(defaultValues, JSON.parse(serializedData));
+            this.downloadSettings = kMerge(defaultValues, JSON.parse(serializedData));
         } else {
             this.downloadSettings = Object.assign({}, defaultValues);
         }
