@@ -668,7 +668,7 @@ class Message extends React.Component<IProps, IState> {
             case C_MESSAGE_TYPE.NewMessage:
                 return (
                     <div style={style} className="bubble-wrapper">
-                        <span className="system-message divider">New Message</span>
+                        <span className="system-message divider">Unread Messages</span>
                     </div>
                 );
             case C_MESSAGE_TYPE.Date:
