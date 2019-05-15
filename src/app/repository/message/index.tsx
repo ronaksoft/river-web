@@ -286,19 +286,16 @@ export default class MessageRepo {
                     if (after !== undefined) {
                         minId = after + 1;
                     }
-                    if (len > 0 && before !== undefined) {
-                        maxId = (res[len - 1].id || 0) - 1;
+                    if (len > 0 && res.lastId !== -1 && before !== undefined) {
+                        maxId = res.lastId - 1;
                     }
-                    if (len > 0 && after !== undefined) {
-                        minId = (res[len - 1].id || 0) + 1;
+                    if (len > 0 && res.lastId !== -1 && after !== undefined) {
+                        minId = res.lastId + 1;
                     }
                     if (maxId === 0 || minId === 0) {
                         resolve(res.messages);
                         return;
                     }
-                    // if (typeof fnCallback === 'function') {
-                    //     fnCallback(res);
-                    // }
                     const lim = limit - len;
                     this.sdk.getMessageHistory(peer, {maxId, minId, limit: lim}).then((remoteRes) => {
                         this.userRepo.importBulk(false, remoteRes.usersList);
@@ -316,7 +313,8 @@ export default class MessageRepo {
                 } else {
                     resolve(res.messages);
                 }
-            }).catch((err) => {
+            });/*.catch((err) => {
+                window.console.log(err);
                 let maxId = null;
                 let minId = null;
                 if (before !== undefined) {
@@ -341,7 +339,7 @@ export default class MessageRepo {
                 }).catch((err2) => {
                     reject(err2);
                 });
-            });
+            });*/
         });
     }
 
@@ -428,11 +426,13 @@ export default class MessageRepo {
                     fnCallback(res);
                     return {
                         count: res.length,
+                        lastId: res.length > 0 ? res[res.length - 1].id : -1,
                         messages: [],
                     };
                 } else {
                     return {
                         count: res.length,
+                        lastId: res.length > 0 ? res[res.length - 1].id : -1,
                         messages: res,
                     };
                 }
@@ -446,6 +446,7 @@ export default class MessageRepo {
                     this.importBulk(remoteRes, true);
                     return {
                         count: remoteRes.length,
+                        lastId: remoteRes.length > 0 ? remoteRes[remoteRes.length - 1].id : -1,
                         messages: remoteRes,
                     };
                 });

@@ -33,6 +33,7 @@ interface IPendingMessage {
 
 interface IMessageWithCount {
     count: number;
+    lastId: number;
     messages: IMessage[];
 }
 

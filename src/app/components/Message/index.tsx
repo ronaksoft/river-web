@@ -325,7 +325,9 @@ class Message extends React.Component<IProps, IState> {
                                 const eldiv = el.firstElementChild;
                                 if (eldiv) {
                                     this.list.scrollToPosition((eldiv.scrollHeight - el.clientHeight) + 10);
-                                    this.enableLoadBefore = true;
+                                    if (items.length > 40) {
+                                        this.enableLoadBefore = true;
+                                    }
                                 }
                             }
                         }
