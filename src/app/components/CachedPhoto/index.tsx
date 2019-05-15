@@ -30,6 +30,7 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
     private cachedFileService: CachedFileService;
     private lastFileId: string;
     private lastBlur: number;
+    private retries: number = 0;
 
     constructor(props: IProps) {
         super(props);
@@ -52,6 +53,7 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
         if (this.lastFileId !== newProps.fileLocation.fileid || (newProps.blur || 0) !== this.lastBlur) {
             this.lastFileId = newProps.fileLocation.fileid || '';
             this.lastBlur = newProps.blur || 0;
+            this.retries = 0;
             this.getFile();
         }
     }
@@ -75,6 +77,13 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
             this.setState({
                 src,
             });
+        }).catch(() => {
+            if (this.retries < 10) {
+                this.retries++;
+                requestAnimationFrame(() => {
+                    this.getFile();
+                });
+            }
         });
     }
 }

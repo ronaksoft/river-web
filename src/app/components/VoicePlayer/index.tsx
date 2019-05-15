@@ -59,6 +59,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
     private canvasCtx: CanvasRenderingContext2D | null = null;
     private playVoiceBarRef: any = null;
     private playVoiceBarImgRef: any = null;
+    private playVoiceBarBaseImgRef: any = null;
     private timerRef: any = null;
     private audio: HTMLAudioElement;
     private playerInterval: any = null;
@@ -71,6 +72,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
     private readSent: boolean = false;
     private broadcaster: Broadcaster;
     private downloadManager: DownloadManager;
+    private objectUrlImages: string[] = [];
 
     constructor(props: IProps) {
         super(props);
@@ -100,6 +102,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
 
     public componentWillUnmount() {
         this.removeAllListeners();
+        this.revokeUrlImages();
         window.removeEventListener('mouseup', this.windowMouseUpHandler);
     }
 
@@ -212,10 +215,11 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
                 </div>
                 <div className="play-preview" onMouseDown={this.barMouseDownHandler}
                      onMouseMove={this.barMouseMoveHandler}>
-                    <canvas ref={this.canvasRefHandler}/>
+                    <canvas className="canvas-img" ref={this.canvasRefHandler}/>
+                    <img className="base-img" ref={this.playVoiceBarBaseImgRefHandler} draggable={false}/>
                     <div ref={this.playVoiceBarRefHandler}
                          className={'play-preview-overlay ' + ((playState === 'seek_pause' || playState === 'seek_play') ? 'no-transition' : '')}>
-                        <img ref={this.playVoiceBarImgRefHandler} draggable={false}/>
+                        <img className="top-img" ref={this.playVoiceBarImgRefHandler} draggable={false}/>
                     </div>
                 </div>
                 <div className="play-timer" ref={this.timerRefHandler}>00:00</div>
@@ -260,17 +264,16 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
 
     /* Voice bar ref handler */
     private playVoiceBarRefHandler = (ref: any) => {
-        if (!ref) {
-            return;
-        }
         this.playVoiceBarRef = ref;
+    }
+
+    /* Voice bar base img ref handler */
+    private playVoiceBarBaseImgRefHandler = (ref: any) => {
+        this.playVoiceBarBaseImgRef = ref;
     }
 
     /* Voice bar img ref handler */
     private playVoiceBarImgRefHandler = (ref: any) => {
-        if (!ref) {
-            return;
-        }
         this.playVoiceBarImgRef = ref;
     }
 
@@ -318,7 +321,15 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
             x += this.canvasConfig.totalWith;
         }
         if (overlay) {
-            this.playVoiceBarImgRef.src = this.canvasRef.toDataURL('image/png');
+            if (this.playVoiceBarImgRef) {
+                this.playVoiceBarImgRef.src = this.canvasRef.toDataURL('image/png');
+                this.objectUrlImages.push(this.playVoiceBarImgRef.src);
+            }
+        } else {
+            if (this.playVoiceBarBaseImgRef) {
+                this.playVoiceBarBaseImgRef.src = this.canvasRef.toDataURL('image/png');
+                this.objectUrlImages.push(this.playVoiceBarBaseImgRef.src);
+            }
         }
     }
 
@@ -473,6 +484,13 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
             if (typeof canceller === 'function') {
                 canceller();
             }
+        });
+    }
+
+    /* Revoke url images */
+    private revokeUrlImages() {
+        this.objectUrlImages.forEach((item) => {
+            URL.revokeObjectURL(item);
         });
     }
 

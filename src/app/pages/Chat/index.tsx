@@ -518,6 +518,12 @@ class Chat extends React.Component<IProps, IState> {
                                         <IconButton
                                             onClick={this.messageMoreOpenHandler}
                                         ><InfoOutlined/></IconButton>
+                                        {/*<IconButton
+                                            onClick={this.testHandler}
+                                        ><InfoOutlined/></IconButton>
+                                        <IconButton
+                                            onClick={this.test2Handler}
+                                        ><InfoOutlined/></IconButton>*/}
                                         <Menu
                                             anchorEl={moreInfoAnchorEl}
                                             open={Boolean(moreInfoAnchorEl)}
@@ -2503,9 +2509,8 @@ class Chat extends React.Component<IProps, IState> {
         if (!inputPeer || !this.isInChat) {
             return;
         }
-        const {selectedDialogId} = this.state;
-        const dialog = this.getDialogById(selectedDialogId);
         const peerId = inputPeer.getId() || '';
+        const dialog = this.getDialogById(peerId);
         if (dialog) {
             const index = findLastIndex(this.messages, {id: msgId});
             if (index > -1) {
@@ -2517,9 +2522,8 @@ class Chat extends React.Component<IProps, IState> {
             if (dialog && (dialog.readinboxmaxid || 0) < msgId) {
                 this.readMessageThrottle(inputPeer, msgId);
                 this.updateDialogsCounter(peerId, {maxInbox: msgId});
-                const peerDialog = this.getDialogById(peerId);
                 // Recompute dialog counter
-                this.messageRepo.getUnreadCount(peerId, msgId, peerDialog ? (peerDialog.topmessageid || 0) : 0).then((count) => {
+                this.messageRepo.getUnreadCount(peerId, msgId, dialog.topmessageid || 0).then((count) => {
                     this.updateDialogsCounter(peerId, {
                         mentionCounter: count.mention,
                         unreadCounter: count.message,
@@ -2528,6 +2532,7 @@ class Chat extends React.Component<IProps, IState> {
             }
             // If unread counter was no correct we force it to be zero
             else if (dialog && (dialog.unreadcount || 0) > 0 && (dialog.readinboxmaxid || 0) === msgId) {
+                this.readMessageThrottle(inputPeer, msgId);
                 this.updateDialogsCounter(peerId, {
                     mentionCounter: 0,
                     unreadCounter: 0,
@@ -4061,6 +4066,15 @@ class Chat extends React.Component<IProps, IState> {
         });
         window.dispatchEvent(event);
     }
+
+    // private testHandler = () => {
+    //     this.messageComponent.takeSnapshot();
+    //     this.messageComponent.setScrollMode('stay');
+    // }
+    //
+    // private test2Handler = () => {
+    //     this.messageComponent.revertPos();
+    // }
 }
 
 export default Chat;

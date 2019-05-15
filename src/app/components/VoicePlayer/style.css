@@ -55,7 +55,14 @@
     user-select: none; }
     .voice-player .play-preview canvas {
       width: 100%;
-      height: 20px; }
+      height: 20px;
+      visibility: hidden; }
+    .voice-player .play-preview .base-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 20px;
+      width: auto; }
     .voice-player .play-preview .play-preview-overlay {
       position: absolute;
       top: 0;
@@ -66,7 +73,7 @@
       transition: width 0.1s linear; }
       .voice-player .play-preview .play-preview-overlay.no-transition {
         transition: none; }
-      .voice-player .play-preview .play-preview-overlay img {
+      .voice-player .play-preview .play-preview-overlay .top-img {
         position: absolute;
         top: 0;
         left: 0;

@@ -352,7 +352,7 @@ class Message extends React.Component<IProps, IState> {
                                     // Additional offset value that gets added to the desiredOffset.  This is
                                     // useful when passing a DOM object as the desiredOffset and wanting to adjust
                                     // for an fixed nav or to add some padding.
-                                    offset: 0,
+                                    offset: 10,
 
                                     // should animated scroll be canceled on user scroll/keypress
                                     // if set to "false" user input will be disabled until animated scroll is complete
@@ -379,6 +379,10 @@ class Message extends React.Component<IProps, IState> {
                 }
             }, 200);
         }
+    }
+
+    public revertPos() {
+        this.modifyScroll(this.state.items);
     }
 
     public setScrollMode(mode: 'none' | 'end' | 'stay') {
