@@ -72,6 +72,7 @@ export default class Server {
                 this.isConnected = true;
                 this.flushSentQueue();
                 this.executeSendThrottledRequestThrottle();
+                this.updateManager.idleHandler();
             });
 
             window.addEventListener('wsClose', () => {
