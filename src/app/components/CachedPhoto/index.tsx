@@ -66,7 +66,7 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
         const {className, src} = this.state;
         return (
             <div className={className} style={this.props.style}>
-                {src && <img src={src} onLoad={this.props.onLoad}/>}
+                {src && <img src={src} onLoad={this.props.onLoad} onError={this.imgErrorHandler}/>}
             </div>
         );
     }
@@ -84,6 +84,14 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
                     this.getFile();
                 });
             }
+        });
+    }
+
+    /* Img error handler */
+    private imgErrorHandler = () => {
+        this.cachedFileService.remove(this.props.fileLocation.fileid || '').then(() => {
+            this.retries = 0;
+            this.getFile();
         });
     }
 }

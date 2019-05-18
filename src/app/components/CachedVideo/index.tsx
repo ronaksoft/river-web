@@ -27,6 +27,7 @@ interface IState {
 
 class CachedVideo extends React.PureComponent<IProps, IState> {
     private cachedFileService: CachedFileService;
+    private retries: number = 0;
 
     constructor(props: IProps) {
         super(props);
@@ -39,13 +40,7 @@ class CachedVideo extends React.PureComponent<IProps, IState> {
     }
 
     public componentDidMount() {
-        this.cachedFileService.getFile(this.props.fileLocation, 0, this.props.searchTemp).then((src) => {
-            setTimeout(() => {
-                this.setState({
-                    src,
-                });
-            }, this.props.timeOut || 0);
-        });
+        this.getFile();
     }
 
     public componentWillUnmount() {
@@ -56,11 +51,38 @@ class CachedVideo extends React.PureComponent<IProps, IState> {
         const {className, src} = this.state;
         return (
             <div className={className}>
-                {src && <video onLoad={this.props.onLoad} autoPlay={this.props.autoPlay} controls={true}>
+                {src && <video onLoad={this.props.onLoad} autoPlay={this.props.autoPlay} controls={true}
+                               onError={this.videoErrorHandler}>
                     <source src={src}/>
                 </video>}
             </div>
         );
+    }
+
+    /* Get file from cached storage */
+    private getFile() {
+        this.cachedFileService.getFile(this.props.fileLocation, 0, this.props.searchTemp).then((src) => {
+            setTimeout(() => {
+                this.setState({
+                    src,
+                });
+            }, this.props.timeOut || 0);
+        }).catch(() => {
+            if (this.retries < 10) {
+                this.retries++;
+                requestAnimationFrame(() => {
+                    this.getFile();
+                });
+            }
+        });
+    }
+
+    /* Video error handler */
+    private videoErrorHandler = () => {
+        this.cachedFileService.remove(this.props.fileLocation.fileid || '').then(() => {
+            this.retries = 0;
+            this.getFile();
+        });
     }
 }
 

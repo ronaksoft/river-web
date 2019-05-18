@@ -108,7 +108,7 @@ export default class CachedFileService {
     }
 
     /* Start cache clear timeout */
-    public unmountCache(id: string) {
+    public unmountCache(id: string, ttl?: number) {
         if (this.files.hasOwnProperty(id)) {
             this.files[id].timeout = setTimeout(() => {
                 if (this.files.hasOwnProperty(id)) {
@@ -120,8 +120,13 @@ export default class CachedFileService {
                     });
                     delete this.files[id];
                 }
-            }, C_CACHE_TTL * 1000);
+            }, ttl !== undefined ? ttl : (C_CACHE_TTL * 1000));
         }
+    }
+
+    public remove(id: string) {
+        this.unmountCache(id, 0);
+        return this.fileRepo.remove(id);
     }
 
     /* Get blurred image */
