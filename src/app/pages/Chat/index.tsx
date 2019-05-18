@@ -1241,27 +1241,29 @@ class Chat extends React.Component<IProps, IState> {
                             });
                         }
                     }
-                    const index = findLastIndex(messages, (o) => {
-                        return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
-                    });
-                    if (index > -1) {
-                        updateView = true;
-                        // Delete visible message if possible
-                        this.messageComponent.cache.clear(index, 0);
-                        messages.splice(index, 1);
-                        // Clear date indicator if possible
-                        const indexAlpha = index - 1;
-                        if (indexAlpha > -1 && messages.length > index) {
-                            // If date indicator were in current range boundaries
-                            if (messages[indexAlpha].messagetype === C_MESSAGE_TYPE.Date && messages[index].messagetype === C_MESSAGE_TYPE.Date) {
-                                this.messageComponent.cache.clear(indexAlpha, 0);
-                                messages.splice(indexAlpha, 1);
-                            }
-                        } else if (indexAlpha > -1 && messages.length === index) {
-                            // If it was last message
-                            if (messages[indexAlpha].messagetype === C_MESSAGE_TYPE.Date) {
-                                this.messageComponent.cache.clear(indexAlpha, 0);
-                                messages.splice(indexAlpha, 1);
+                    if (peer.id === this.state.selectedDialogId) {
+                        const index = findLastIndex(messages, (o) => {
+                            return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                        });
+                        if (index > -1) {
+                            updateView = true;
+                            // Delete visible message if possible
+                            this.messageComponent.cache.clear(index, 0);
+                            messages.splice(index, 1);
+                            // Clear date indicator if possible
+                            const indexAlpha = index - 1;
+                            if (indexAlpha > -1 && messages.length > index) {
+                                // If date indicator were in current range boundaries
+                                if (messages[indexAlpha].messagetype === C_MESSAGE_TYPE.Date && messages[index].messagetype === C_MESSAGE_TYPE.Date) {
+                                    this.messageComponent.cache.clear(indexAlpha, 0);
+                                    messages.splice(indexAlpha, 1);
+                                }
+                            } else if (indexAlpha > -1 && messages.length === index) {
+                                // If it was last message
+                                if (messages[indexAlpha].messagetype === C_MESSAGE_TYPE.Date) {
+                                    this.messageComponent.cache.clear(indexAlpha, 0);
+                                    messages.splice(indexAlpha, 1);
+                                }
                             }
                         }
                     }
@@ -1269,6 +1271,7 @@ class Chat extends React.Component<IProps, IState> {
                 // Update current message list if visible
                 if (updateView) {
                     this.messageComponent.list.recomputeGridSize();
+                    this.messageComponent.fitList();
                 }
             }
         });

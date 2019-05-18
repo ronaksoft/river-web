@@ -367,6 +367,12 @@ class Message extends React.Component<IProps, IState> {
                                     onComplete: () => {
                                         if (!this.isAtEnd()) {
                                             this.animateToEnd();
+                                        } else {
+                                            setTimeout(() => {
+                                                if (!this.isAtEnd()) {
+                                                    this.animateToEnd();
+                                                }
+                                            }, 200);
                                         }
                                     }
                                 };
@@ -389,7 +395,7 @@ class Message extends React.Component<IProps, IState> {
 
     public fitList(instant?: boolean) {
         setTimeout(() => {
-            const el: any = document.querySelector('.chat.active-chat');
+            const el: any = document.querySelector('.messages-inner .chat.active-chat');
             if (!el || !el.style) {
                 return;
             }
@@ -397,15 +403,20 @@ class Message extends React.Component<IProps, IState> {
                 el.style.paddingTop = '0px';
                 return;
             }
-            const list = document.querySelector('.chat.active-chat > div');
+            const list = document.querySelector('.messages-inner .chat.active-chat > div');
             if (list) {
-                const diff = (this.list.props.height - 8) - list.scrollHeight;
+                const diff = (this.list.props.height - 8) - list.clientHeight;
                 if (diff > 0) {
                     el.style.paddingTop = diff + 'px';
                     if (this.props.onLoadMoreAfter) {
                         this.props.onLoadMoreAfter();
                     }
                     this.fitListCompleteThrottle();
+                    if (diff > 8 && !instant) {
+                        setTimeout(() => {
+                            this.fitList(true);
+                        }, 300);
+                    }
                     return;
                 }
             }
