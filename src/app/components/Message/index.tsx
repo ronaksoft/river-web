@@ -221,7 +221,7 @@ class Message extends React.Component<IProps, IState> {
         if (this.state.items !== items) {
             this.loadMoreAfterThrottle.cancel();
             this.fitListCompleteThrottle.cancel();
-            this.cache.clearAll();
+            // this.cache.clearAll();
             this.bottomOfList = true;
             this.topOfList = true;
             this.firstTimeLoadAfter = true;

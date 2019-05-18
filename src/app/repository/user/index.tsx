@@ -101,7 +101,7 @@ export default class UserRepo {
 
     public getInstantContact(id: string): IUser | null {
         const contact = this.dbService.getUser(id);
-        if (contact && contact.is_contact) {
+        if (contact && (contact.is_contact || contact.accesshash !== '')) {
             return contact;
         } else {
             return null;

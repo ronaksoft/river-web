@@ -81,7 +81,9 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
             if (this.retries < 10) {
                 this.retries++;
                 requestAnimationFrame(() => {
-                    this.getFile();
+                    setTimeout(() => {
+                        this.getFile();
+                    }, 100);
                 });
             }
         });
