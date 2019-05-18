@@ -9,7 +9,7 @@
 
 import DB from '../../services/db/dialog';
 import {IDialog, IDialogWithUpdateId, IDraft} from './interface';
-import {throttle, differenceBy, find, uniqBy, cloneDeep, pickBy, identity} from 'lodash';
+import {throttle, differenceBy, find, uniqBy, cloneDeep} from 'lodash';
 import SDK from '../../services/sdk';
 import UserRepo from '../user';
 import MessageRepo from '../message';
@@ -242,7 +242,7 @@ export default class DialogRepo {
         if (newDialog.force !== true && newDialog.topmessageid !== undefined && newDialog.topmessageid < (dialog.topmessageid || 0)) {
             newDialog.topmessageid = dialog.topmessageid;
         }
-        const d = kMerge(dialog, pickBy(newDialog, identity));
+        const d = kMerge(dialog, newDialog);
         if (newDialog.force === true) {
             delete d.force;
         }

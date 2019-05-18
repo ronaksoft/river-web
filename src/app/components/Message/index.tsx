@@ -246,12 +246,9 @@ class Message extends React.Component<IProps, IState> {
             });
             this.listCount = items.length;
         } else if (this.state.items === items && this.listCount !== items.length) {
-            if (!this.topOfList && this.enableLoadBefore) {
-                setTimeout(() => {
-                    this.fitList();
-                }, 100);
-            }
-            this.topOfList = false;
+            setTimeout(() => {
+                this.fitList();
+            }, 100);
             this.modifyScroll(items);
             this.listCount = items.length;
             if (callback) {
