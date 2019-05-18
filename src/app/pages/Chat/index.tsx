@@ -36,10 +36,9 @@ import {IDialog} from '../../repository/dialog/interface';
 import UpdateManager, {INewMessageBulkUpdate} from '../../services/sdk/server/updateManager';
 import {C_MSG} from '../../services/sdk/const';
 import {
-    UpdateDialogPinned,
-    UpdateGroupPhoto, UpdateMessageEdited, UpdateMessageID, UpdateMessagesDeleted, UpdateNotifySettings,
-    UpdateReadHistoryInbox, UpdateReadHistoryOutbox, UpdateReadMessagesContents, UpdateUsername, UpdateUserPhoto,
-    UpdateUserTyping,
+    UpdateDialogPinned, UpdateGroupPhoto, UpdateMessageEdited, UpdateMessageID, UpdateMessagesDeleted,
+    UpdateNotifySettings, UpdateReadHistoryInbox, UpdateReadHistoryOutbox, UpdateReadMessagesContents, UpdateUsername,
+    UpdateUserPhoto, UpdateUserTyping,
 } from '../../services/sdk/messages/chat.api.updates_pb';
 import UserName from '../../components/UserName';
 import SyncManager, {C_SYNC_UPDATE} from '../../services/sdk/syncManager';
@@ -1044,6 +1043,12 @@ class Chat extends React.Component<IProps, IState> {
             // Clear the message history
             if (message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
                 this.messageRepo.clearHistory(message.peerid || '', message.actiondata.maxid).then(() => {
+                    if (message.peerid === this.state.selectedDialogId && this.messages.length > 1 && this.messageComponent) {
+                        this.messageComponent.cache.clearAll();
+                        this.messages.splice(0, this.messages.length - 1);
+                        this.messageComponent.list.recomputeGridSize();
+                        this.messageComponent.fitList();
+                    }
                     this.updateDialogsCounter(message.peerid || '', {
                         mentionCounter: 0,
                         unreadCounter: 0,

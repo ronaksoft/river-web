@@ -365,7 +365,7 @@ class Message extends React.Component<IProps, IState> {
                                     horizontal: false,
 
                                     onComplete: () => {
-                                        if ((this.state.items.length - 1) > this.messageScroll.stopIndex) {
+                                        if (!this.isAtEnd()) {
                                             this.animateToEnd();
                                         }
                                     }
@@ -378,10 +378,6 @@ class Message extends React.Component<IProps, IState> {
                 }
             }, 200);
         }
-    }
-
-    public revertPos() {
-        this.modifyScroll(this.state.items);
     }
 
     public setScrollMode(mode: 'none' | 'end' | 'stay') {
@@ -606,6 +602,15 @@ class Message extends React.Component<IProps, IState> {
 
     private refHandler = (value: any) => {
         this.list = value;
+    }
+
+    private isAtEnd() {
+        const el = document.querySelector('.messages-inner .chat.active-chat');
+        if (el) {
+            return (el.clientHeight + el.scrollTop + 4 >= el.scrollHeight);
+        } else {
+            return true;
+        }
     }
 
     private rowRender = ({index, key, parent, style}: any): any => {
