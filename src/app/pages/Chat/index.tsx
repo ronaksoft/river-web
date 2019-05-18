@@ -1074,6 +1074,10 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         data.messages.forEach((message, index) => {
+            message.me = (this.connInfo.UserID === message.senderid);
+            if (message.body) {
+                message.rtl = this.rtlDetector.direction(message.body);
+            }
             this.checkPendingMessage(message.id || 0);
             this.updateDialogs(message, data.accessHashes[index] || '0');
         });

@@ -87,8 +87,11 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     color: var(--grey);
-    .rtl {
+    &.rtl {
       direction: rtl;
+      .preview-inner {
+        direction: rtl;
+      }
     }
     .preview-icon {
       display: inline-block;
@@ -98,6 +101,11 @@
     }
     .sender {
       font-weight: bold;
+    }
+    .preview-message {
+      display: block;
+      width: 100%;
+      overflow: hidden;
     }
   }
   &.has-mention {

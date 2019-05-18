@@ -71,8 +71,10 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     color: var(--grey); }
-    .dialog-wrapper .preview .rtl {
+    .dialog-wrapper .preview.rtl {
       direction: rtl; }
+      .dialog-wrapper .preview.rtl .preview-inner {
+        direction: rtl; }
     .dialog-wrapper .preview .preview-icon {
       display: inline-block;
       font-size: 14px;
@@ -80,6 +82,10 @@
       vertical-align: bottom; }
     .dialog-wrapper .preview .sender {
       font-weight: bold; }
+    .dialog-wrapper .preview .preview-message {
+      display: block;
+      width: 100%;
+      overflow: hidden; }
   .dialog-wrapper.has-mention .preview {
     width: 68%; }
   .dialog-wrapper .unread {

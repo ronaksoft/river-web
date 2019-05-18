@@ -196,7 +196,7 @@ class ChatInput extends React.Component<IProps, IState> {
         }
 
         this.rtlDetector = RTLDetector.getInstance();
-        this.rtlDetectorThrottle = throttle(this.detectRTL, 500);
+        this.rtlDetectorThrottle = throttle(this.detectRTL, 250);
 
         this.groupRepo = GroupRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
@@ -359,8 +359,8 @@ class ChatInput extends React.Component<IProps, IState> {
                                 <MentionsInput value={textareaValue}
                                                onChange={this.handleChange}
                                                inputRef={this.textareaRefHandler}
-                                               onKeyUp={this.sendMessage}
-                                               onKeyDown={this.inputKeyDown}
+                                               onKeyUp={this.inputKeyUpHandler}
+                                               onKeyDown={this.inputKeyDownHandler}
                                                allowSpaceInQuery={true}
                                                className="mention"
                                                placeholder="Type your message here..."
@@ -525,7 +525,7 @@ class ChatInput extends React.Component<IProps, IState> {
         }
     }
 
-    private sendMessage = (e: any) => {
+    private inputKeyUpHandler = (e: any) => {
         const {previewMessage, previewMessageMode} = this.state;
         const text = e.target.value;
         this.rtlDetectorThrottle(text);
@@ -579,15 +579,15 @@ class ChatInput extends React.Component<IProps, IState> {
         }
     }
 
-    private mentionContainerRefHandler = (value: any) => {
-        this.mentionContainer = value;
+    private mentionContainerRefHandler = (ref: any) => {
+        this.mentionContainer = ref;
     }
 
-    private textareaRefHandler = (value: any) => {
-        this.textarea = value;
+    private textareaRefHandler = (ref: any) => {
+        this.textarea = ref;
     }
 
-    private inputKeyDown = (e: any) => {
+    private inputKeyDownHandler = (e: any) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.stopPropagation();
             e.preventDefault();
