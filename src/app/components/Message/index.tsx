@@ -24,7 +24,7 @@ import {MoreVert} from '@material-ui/icons';
 import UserName from '../UserName';
 import Checkbox from '@material-ui/core/Checkbox';
 import MessageForwarded from '../MessageForwarded';
-import {clone, throttle, debounce, findIndex} from 'lodash';
+import {clone, throttle, findIndex} from 'lodash';
 import MessageVoice from '../MessageVoice';
 import RiverTime from '../../services/utilities/river_time';
 import {ErrorRounded} from '@material-ui/icons';
@@ -72,6 +72,7 @@ interface IState {
 }
 
 export const highlightMessage = (id: number) => {
+    window.console.log(id);
     const el = document.querySelector(`.bubble-wrapper .bubble.b_${id}`);
     if (el) {
         el.classList.add('highlight');
@@ -158,14 +159,14 @@ class Message extends React.Component<IProps, IState> {
     private messageSnapshotRef: any = null;
     private removeSnapshotTimeout: any = null;
     private dropZoneRef: any = null;
-    // @ts-ignore
-    private dropZoneHideDebounce: any = null;
     private readId: number = 0;
     private firstTimeLoadAfter: boolean = true;
     private stayInfo: IStayInfo = {
         id: -1,
         offset: 0,
     };
+    // @ts-ignore
+    private topMessageId: number = 0;
 
     constructor(props: IProps) {
         super(props);
@@ -193,7 +194,6 @@ class Message extends React.Component<IProps, IState> {
         this.loadMoreAfterThrottle = throttle(this.loadMoreAfter, 250);
         this.loadMoreBeforeThrottle = throttle(this.loadMoreBefore, 50);
         this.fitListCompleteThrottle = throttle(this.fitListComplete, 250);
-        this.dropZoneHideDebounce = debounce(this.dragLeaveHandler, 200);
     }
 
     public componentDidMount() {
@@ -215,6 +215,10 @@ class Message extends React.Component<IProps, IState> {
                 this.list.forceUpdateGrid();
             });
         }
+    }
+
+    public setTopMessage(topMessageId: number) {
+        this.topMessageId = topMessageId;
     }
 
     public setMessages(items: IMessage[], callback?: () => void) {
@@ -312,6 +316,10 @@ class Message extends React.Component<IProps, IState> {
         if (this.list && jump) {
             this.list.scrollToRow(items.length);
         } else {
+            // if (this.props.onJumpToMessage && items.length > 0 && (items[items.length - 1].id || 0) < this.topMessageId) {
+            //     this.props.onJumpToMessage(this.topMessageId, '');
+            //     return;
+            // }
             setTimeout(() => {
                 if (instant) {
                     if (this.list) {
@@ -322,6 +330,9 @@ class Message extends React.Component<IProps, IState> {
                                 const eldiv = el.firstElementChild;
                                 if (eldiv) {
                                     this.list.scrollToPosition((eldiv.scrollHeight - el.clientHeight) + 10);
+                                    if (!this.isAtEnd()) {
+                                        this.animateToEnd(true);
+                                    }
                                     if (items.length > 40) {
                                         this.enableLoadBefore = true;
                                     }
@@ -437,7 +448,7 @@ class Message extends React.Component<IProps, IState> {
         this.messageSnapshotRef.innerHTML = this.messageInnerRef.innerHTML;
         const scrollEl = this.messageSnapshotRef.querySelector(' div > div');
         const scrollTop = this.getScrollTop();
-        if (scrollEl && scrollTop) {
+        if (scrollEl && scrollTop !== null) {
             scrollEl.scrollTop = scrollTop;
         }
         if (!noRemove) {
@@ -458,6 +469,10 @@ class Message extends React.Component<IProps, IState> {
             this.messageSnapshotRef.classList.add('hidden');
             this.messageSnapshotRef.innerHTML = '';
         }, instant ? 0 : 50);
+    }
+
+    public tryLoadBefore() {
+        this.loadMoreBeforeThrottle(true);
     }
 
     public render() {
@@ -852,12 +867,10 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
-    private loadMoreBefore = () => {
-        if (!this.topOfList && this.props.onLoadMoreBefore) {
-            if (this.props.onLoadMoreBefore) {
-                this.props.onLoadMoreBefore();
-                this.enableLoadBefore = false;
-            }
+    private loadMoreBefore = (force?: boolean) => {
+        if ((!this.topOfList || force) && this.props.onLoadMoreBefore) {
+            this.props.onLoadMoreBefore();
+            this.enableLoadBefore = false;
             this.topOfList = true;
         }
     }
@@ -1153,7 +1166,7 @@ class Message extends React.Component<IProps, IState> {
         }
         const cellTop = this.getCellTop(Math.floor(items[index].id || 0));
         const scrollTop = this.getScrollTop();
-        if (cellTop && scrollTop) {
+        if (cellTop !== null && scrollTop !== null) {
             this.stayInfo = {
                 id: items[index].id || 0,
                 offset: cellTop - scrollTop,

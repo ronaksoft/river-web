@@ -1010,34 +1010,47 @@ class Chat extends React.Component<IProps, IState> {
         }
         data.messages.forEach((message) => {
             message.me = (this.connInfo.UserID === message.senderid);
+            // Check message body direction
             if (message.body) {
                 message.rtl = this.rtlDetector.direction(message.body);
             }
         });
         const tMoveDownVisible = this.moveDownVisible;
         if (data.peerid === this.state.selectedDialogId && this.messageComponent) {
-            const dataMsg = this.modifyMessages(this.messages, data.messages.reverse(), true);
-            this.setScrollMode('none');
-            this.messageComponent.setMessages(dataMsg.msgs, () => {
-                if (!tMoveDownVisible && this.isInChat) {
-                    setTimeout(() => {
-                        this.messageComponent.animateToEnd();
-                    }, 100);
-                    if (dataMsg.maxReadId !== -1) {
-                        this.sendReadHistory(this.state.peer, dataMsg.maxReadId);
+            // Check if Top Message exits
+            const dialog = this.getDialogById(this.state.selectedDialogId);
+            // @ts-ignore
+            if (dialog && this.messages.length > 0 && (dialog.topmessageid || 0) <= (this.messages[this.messages.length - 1].id || 0)) {
+                const dataMsg = this.modifyMessages(this.messages, data.messages.reverse(), true);
+                this.setScrollMode('none');
+                this.messageComponent.setMessages(dataMsg.msgs, () => {
+                    // Scroll down if possible
+                    if (!tMoveDownVisible && this.isInChat) {
+                        setTimeout(() => {
+                            this.messageComponent.animateToEnd();
+                        }, 100);
+                        if (dataMsg.maxReadId !== -1) {
+                            this.sendReadHistory(this.state.peer, dataMsg.maxReadId);
+                        }
                     }
-                }
-            });
+                });
+            }
         }
         this.messageRepo.lazyUpsert(data.messages);
         this.userRepo.importBulk(false, data.senders);
 
+        // Update dialogs
         data.messages.forEach((message, index) => {
             this.updateDialogs(message, data.accessHashes[index] || '0');
         });
 
+        // Notify user if possible
         this.notifyMessage(data);
 
+        /* Check message flags
+         * In this section we check clear history and pending messages
+         * Also counters will be increased here
+         */
         data.messages.forEach((message) => {
             this.checkPendingMessage(message.id || 0);
             // Clear the message history
@@ -1054,9 +1067,8 @@ class Chat extends React.Component<IProps, IState> {
                         unreadCounter: 0,
                     });
                     if (message.actiondata.pb_delete) {
+                        // Remove dialog
                         this.dialogRemove(message.peerid || '');
-                    } else if (data.peerid === this.state.selectedDialogId) {
-                        this.props.history.push(`/chat/${data.peerid}`);
                     }
                 });
             } else if (message.senderid !== this.connInfo.UserID && (message.peerid !== this.state.selectedDialogId || tMoveDownVisible || !this.isInChat)) {
@@ -1453,6 +1465,9 @@ class Chat extends React.Component<IProps, IState> {
                     this.setLoading(false);
                     return;
                 }
+                if (dialog) {
+                    this.messageComponent.setTopMessage(dialog.topmessageid || 0);
+                }
                 this.messageComponent.cache.clearAll();
                 this.messageComponent.setMessages(dataMsg.msgs, () => {
                     if (force === true) {
@@ -1574,6 +1589,7 @@ class Chat extends React.Component<IProps, IState> {
             const messages = this.messages;
             const messageSize = messages.length;
             const dataMsg = this.modifyMessages(messages, data, false);
+            this.messageComponent.removeSnapshot(true);
             this.messageComponent.setMessages(dataMsg.msgs, () => {
                 // clears the gap between each message load
                 for (let i = 0; i <= (dataMsg.msgs.length - messageSize) + 1; i++) {
@@ -2950,7 +2966,7 @@ class Chat extends React.Component<IProps, IState> {
             this.messageComponent.list.scrollToRow(index);
             setTimeout(() => {
                 highlightMessage(id);
-                if (typeof text === 'string') {
+                if (typeof text === 'string' && text !== '') {
                     highlightMessageText(id, text);
                 }
             }, 100);
@@ -2987,8 +3003,11 @@ class Chat extends React.Component<IProps, IState> {
                 setTimeout(() => {
                     this.setLoading(false);
                     highlightMessage(id);
-                    if (typeof text === 'string') {
+                    if (typeof text === 'string' && text !== '') {
                         highlightMessageText(id, text);
+                    }
+                    if (this.messageComponent) {
+                        this.messageComponent.tryLoadBefore();
                     }
                 }, 100);
             }).catch((err) => {

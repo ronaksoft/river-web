@@ -22,7 +22,9 @@ import {base64ToU8a} from '../../fileManager/http/utils';
 
 export interface INewMessageBulkUpdate {
     accessHashes: string[];
+    maxMessageId: number;
     messages: IMessage[];
+    minMessageId: number;
     peerid: string;
     peertype?: number;
     senderIds: string[];
@@ -365,7 +367,9 @@ export default class UpdateManager {
         keys.forEach((key) => {
             const batchUpdate: INewMessageBulkUpdate = {
                 accessHashes: [],
+                maxMessageId: 1000000000,
                 messages: [],
+                minMessageId: 0,
                 peerid: '',
                 peertype: undefined,
                 senderIds: [],
@@ -380,6 +384,12 @@ export default class UpdateManager {
                     batchUpdate.senders.push(data.sender);
                     batchUpdate.peerid = data.message.peerid || '';
                     batchUpdate.peertype = data.message.peertype;
+                    if (batchUpdate.maxMessageId < (data.message.id || 0)) {
+                        batchUpdate.maxMessageId = (data.message.id || 0);
+                    }
+                    if (batchUpdate.minMessageId > (data.message.id || 0)) {
+                        batchUpdate.minMessageId = (data.message.id || 0);
+                    }
                 }
                 if (batchUpdate.messages.length >= 50) {
                     break;
