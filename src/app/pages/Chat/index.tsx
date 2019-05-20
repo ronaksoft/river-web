@@ -1008,13 +1008,6 @@ class Chat extends React.Component<IProps, IState> {
         if (this.state.isUpdating) {
             return;
         }
-        data.messages.forEach((message) => {
-            message.me = (this.connInfo.UserID === message.senderid);
-            // Check message body direction
-            if (message.body) {
-                message.rtl = this.rtlDetector.direction(message.body);
-            }
-        });
         const tMoveDownVisible = this.moveDownVisible;
         if (data.peerid === this.state.selectedDialogId && this.messageComponent) {
             // Check if Top Message exits
@@ -1086,10 +1079,6 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         data.messages.forEach((message, index) => {
-            message.me = (this.connInfo.UserID === message.senderid);
-            if (message.body) {
-                message.rtl = this.rtlDetector.direction(message.body);
-            }
             this.checkPendingMessage(message.id || 0);
             this.updateDialogs(message, data.accessHashes[index] || '0');
         });
@@ -1589,8 +1578,8 @@ class Chat extends React.Component<IProps, IState> {
             const messages = this.messages;
             const messageSize = messages.length;
             const dataMsg = this.modifyMessages(messages, data, false);
-            this.messageComponent.removeSnapshot(true);
             this.messageComponent.setMessages(dataMsg.msgs, () => {
+                this.messageComponent.removeSnapshot();
                 // clears the gap between each message load
                 for (let i = 0; i <= (dataMsg.msgs.length - messageSize) + 1; i++) {
                     this.messageComponent.cache.clear(i, 0);
@@ -1980,18 +1969,24 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         const {dialogs} = this.state;
-        const previewMe = (this.connInfo.UserID === msg.senderid);
         let toUpdateDialog: IDialog | null = null;
         const messageTitle = getMessageTitle(msg);
         if (this.state.dialogMap.hasOwnProperty(id)) {
-            const index = this.state.dialogMap[id];
-            if ((dialogs[index].topmessageid || 0) <= (msg.id || 0) || force === true) {
+            let index = this.state.dialogMap[id];
+            // Double check
+            if (dialogs[index].peerid !== msg.peerid) {
+                index = findIndex(dialogs, {peerid: id});
+                if (index === -1) {
+                    return;
+                }
+            }
+            if ((dialogs[index].topmessageid || 0) < (msg.id || 0) || force === true) {
                 dialogs[index].action_code = msg.messageaction;
                 dialogs[index].action_data = msg.actiondata;
                 dialogs[index].topmessageid = msg.id;
                 dialogs[index].preview = messageTitle.text;
                 dialogs[index].preview_icon = messageTitle.icon;
-                dialogs[index].preview_me = previewMe;
+                dialogs[index].preview_me = msg.me;
                 dialogs[index].preview_rtl = msg.rtl;
                 dialogs[index].sender_id = msg.senderid;
                 dialogs[index].target_id = msg.peerid;
@@ -2016,7 +2011,7 @@ class Chat extends React.Component<IProps, IState> {
                 peertype: msg.peertype,
                 preview: messageTitle.text,
                 preview_icon: messageTitle.icon,
-                preview_me: previewMe,
+                preview_me: msg.me,
                 preview_rtl: msg.rtl,
                 saved_messages: (this.connInfo.UserID === id),
                 sender_id: msg.senderid,

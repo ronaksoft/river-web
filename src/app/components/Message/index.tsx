@@ -72,7 +72,6 @@ interface IState {
 }
 
 export const highlightMessage = (id: number) => {
-    window.console.log(id);
     const el = document.querySelector(`.bubble-wrapper .bubble.b_${id}`);
     if (el) {
         el.classList.add('highlight');
@@ -468,7 +467,7 @@ class Message extends React.Component<IProps, IState> {
             this.messageSnapshotRef.classList.remove('group', 'user');
             this.messageSnapshotRef.classList.add('hidden');
             this.messageSnapshotRef.innerHTML = '';
-        }, instant ? 0 : 50);
+        }, instant ? 0 : 200);
     }
 
     public tryLoadBefore() {

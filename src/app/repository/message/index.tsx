@@ -176,6 +176,10 @@ export default class MessageRepo {
                 type: msgType,
             }]);
         }
+        if (out.body) {
+            out.rtl = RTLDetector.getInstance().direction(out.body);
+        }
+        out.me = (userId === out.senderid);
         return out;
     }
 
@@ -201,7 +205,6 @@ export default class MessageRepo {
     private userRepo: UserRepo;
     private groupRepo: GroupRepo;
     private userId: string;
-    private rtlDetector: RTLDetector;
     private lazyMap: { [key: number]: IMessage } = {};
     private readonly updateThrottle: any = null;
 
@@ -213,7 +216,6 @@ export default class MessageRepo {
         this.sdk = SDK.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
-        this.rtlDetector = RTLDetector.getInstance();
         this.updateThrottle = throttle(this.insertToDb, 300);
     }
 
@@ -547,13 +549,6 @@ export default class MessageRepo {
 
     public transform(msgs: IMessage[]) {
         return msgs.map((msg) => {
-            // msg = MessageRepo.parseMessage(msg);
-            if (msg.senderid) {
-                msg.me = (msg.senderid === this.userId);
-            }
-            if (msg.body) {
-                msg.rtl = this.rtlDetector.direction(msg.body || '');
-            }
             msg.temp = false;
             return msg;
         });
@@ -665,12 +660,6 @@ export default class MessageRepo {
         // Start
         const msgs = cloneDeep(messages);
         msgs.forEach((message) => {
-            if (message.senderid) {
-                message.me = (message.senderid === this.userId);
-            }
-            if (message.body) {
-                message.rtl = this.rtlDetector.direction(message.body || '');
-            }
             message.temp = (temp === true);
         });
         this.upsert(msgs);
@@ -704,12 +693,6 @@ export default class MessageRepo {
     }
 
     private updateMap = (message: IMessage, temp?: boolean) => {
-        if (message.senderid) {
-            message.me = (message.senderid === this.userId);
-        }
-        if (message.body) {
-            message.rtl = this.rtlDetector.direction(message.body || '');
-        }
         message.temp = (temp === true);
         if (this.lazyMap.hasOwnProperty(message.id || 0)) {
             const t = this.lazyMap[message.id || 0];

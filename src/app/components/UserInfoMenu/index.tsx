@@ -144,7 +144,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                             >
                                 <CloseRounded/>
                             </IconButton>
-                            <label>User Info</label>
+                            <label>Contact Info</label>
                         </div>
                         <Scrollbars
                             autoHide={true}

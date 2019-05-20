@@ -261,7 +261,7 @@ export default class SyncManager {
                 dialog.readoutboxmaxid = (d.readoutboxmaxid || 0);
             }
             if (dialog.topmessageid) {
-                if (dialog.topmessageid >= (d.topmessageid || 0)) {
+                if (dialog.topmessageid > (d.topmessageid || 0)) {
                     dialogs[dialog.peerid || 0] = kMerge(d, dialog);
                 }
             } else {
