@@ -166,6 +166,7 @@ class Message extends React.Component<IProps, IState> {
     };
     // @ts-ignore
     private topMessageId: number = 0;
+    private disableScrolling: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -199,6 +200,11 @@ class Message extends React.Component<IProps, IState> {
         this.topOfList = false;
         this.eventReferences.push(this.broadcaster.listen('Theme_Changed', this.themeChangeHandler));
         window.addEventListener('mouseup', this.dragLeaveHandler, true);
+
+        const el = document.querySelector('.messages-inner .chat.active-chat');
+        if (el) {
+            el.addEventListener('mousewheel', this.scrollHandler);
+        }
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -272,6 +278,10 @@ class Message extends React.Component<IProps, IState> {
             }
         });
         window.removeEventListener('mouseup', this.dragLeaveHandler, true);
+        const el = document.querySelector('.messages-inner .chat.active-chat');
+        if (el) {
+            el.addEventListener('mousewheel', this.scrollHandler);
+        }
     }
 
     public setLoading(loading: boolean) {
@@ -458,6 +468,7 @@ class Message extends React.Component<IProps, IState> {
     }
 
     public removeSnapshot(instant?: boolean) {
+        this.enableScroll();
         setTimeout(() => {
             clearTimeout(this.removeSnapshotTimeout);
             if (!this.messageInnerRef || !this.messageSnapshotRef) {
@@ -468,6 +479,14 @@ class Message extends React.Component<IProps, IState> {
             this.messageSnapshotRef.classList.add('hidden');
             this.messageSnapshotRef.innerHTML = '';
         }, instant ? 0 : 200);
+    }
+
+    public disableScroll() {
+        this.disableScrolling = true;
+    }
+
+    public enableScroll() {
+        this.disableScrolling = false;
     }
 
     public tryLoadBefore() {
@@ -1346,6 +1365,12 @@ class Message extends React.Component<IProps, IState> {
             }
         }
         this.props.onDrop(files);
+    }
+
+    private scrollHandler = (e: any) => {
+        if (this.disableScrolling) {
+            e.preventDefault();
+        }
     }
 }
 

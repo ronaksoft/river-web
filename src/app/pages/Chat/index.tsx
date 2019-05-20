@@ -1575,11 +1575,13 @@ class Chat extends React.Component<IProps, IState> {
             }
             this.messageComponent.takeSnapshot();
             this.setScrollMode('stay');
+            this.messageComponent.disableScroll();
             const messages = this.messages;
             const messageSize = messages.length;
             const dataMsg = this.modifyMessages(messages, data, false);
             this.messageComponent.setMessages(dataMsg.msgs, () => {
                 this.messageComponent.removeSnapshot();
+                this.messageComponent.enableScroll();
                 // clears the gap between each message load
                 for (let i = 0; i <= (dataMsg.msgs.length - messageSize) + 1; i++) {
                     this.messageComponent.cache.clear(i, 0);

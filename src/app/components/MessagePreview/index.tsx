@@ -88,7 +88,19 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
             );
         }
         if (!previewMessage) {
-            return (<div className="message-preview"/>);
+            return (<div className="message-preview">
+                <div className="preview-container">
+                    <div className="preview-message-wrapper">
+                        <span className="preview-bar"/>
+                        <div className="preview-message">
+                            <span className="preview-message-user">&nbsp;</span>
+                            <div className="preview-message-body">
+                                <div className="inner ltr">&nbsp;</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>);
         }
         return (
             <div className="message-preview" onDoubleClick={this.props.onDoubleClick} onClick={this.props.onClick}>
