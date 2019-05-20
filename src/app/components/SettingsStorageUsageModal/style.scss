@@ -1,0 +1,84 @@
+/*
+    Creation Time: 2019 - May - 20
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2019
+*/
+
+.storage-usage {
+  .storage-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 58px;
+    border-bottom: 1px solid #E0E0E0;
+    padding: 0 4px 0 8px;
+    &:last-of-type {
+      border-bottom: none;
+    }
+    .icon-container {
+      .avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        float: left;
+        margin-right: 12px;
+        img {
+          float: left;
+          width: 42px;
+          height: 42px;
+          object-fit: cover;
+          border-radius: 50%;
+        }
+        .inner {
+          line-height: 1em;
+        }
+      }
+    }
+    .info-container {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      flex-direction: column;
+      .name-row {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        font-size: 14px;
+        line-height: 1.2em;
+        margin: 0 0 6px;
+        svg {
+          font-size: 16px;
+          vertical-align: sub;
+          margin: 0 4px 0 0;
+        }
+      }
+      .size-row {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        font-size: 12px;
+        color: var(--river);
+        line-height: 1.2em;
+      }
+    }
+    .action-container {
+      width: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      visibility: hidden;
+      svg {
+        color: var(--red);
+      }
+    }
+    &:hover {
+      .action-container {
+        visibility: visible;
+      }
+    }
+  }
+}

@@ -16,6 +16,12 @@ import MessageRepo from '../message';
 import {IMessage} from '../message/interface';
 import {kMerge} from "../../services/utilities/kDash";
 
+interface IMessageWithCount {
+    count: number;
+    messages: IMessage[];
+    minId: number;
+}
+
 export default class MediaRepo {
     public static getInstance() {
         if (!this.instance) {
@@ -58,8 +64,8 @@ export default class MediaRepo {
         });
     }
 
-    public getMany({limit, before, after, type}: any, peerId: string): Promise<IMessage[]> {
-        return new Promise<IMessage[]>((resolve, reject) => {
+    public getMany({limit, before, after, type}: any, peerId: string): Promise<IMessageWithCount> {
+        return new Promise<IMessageWithCount>((resolve, reject) => {
             const pipe = this.db.medias.where('[peerid+id+type]');
             let pipe2: Dexie.Collection<IMedia, number>;
             let mode = 0x0;
@@ -111,13 +117,21 @@ export default class MediaRepo {
             }
             pipe2.limit(limit).toArray().then((list) => {
                 if (list.length === 0) {
-                    resolve([]);
+                    resolve({
+                        count: 0,
+                        messages: [],
+                        minId: 0,
+                    });
                 } else {
                     const ids = list.map((media) => {
                         return media.id;
                     });
                     this.messageRepo.getIn(ids, (mode === 0x2)).then((result) => {
-                        resolve(result);
+                        resolve({
+                            count: ids.length,
+                            messages: result,
+                            minId: result.length > 0 ? (result[0].id || 0) : 0,
+                        });
                     }).then((err) => {
                         reject(err);
                     });

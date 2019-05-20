@@ -51,6 +51,11 @@ export default class FileRepo {
         return this.db.temps.put(tempFile);
     }
 
+    public getIn(ids: string[]) {
+        const pipe = this.db.files.where('id').anyOf(ids);
+        return pipe.toArray();
+    }
+
     public persistTempFiles(id: string, docId: string, mimeType: string) {
         return this.get(docId).then((file) => {
             if (file) {

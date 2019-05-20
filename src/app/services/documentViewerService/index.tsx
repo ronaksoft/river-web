@@ -78,8 +78,8 @@ export default class DocumentViewerService {
             limit: 1,
             type: C_MEDIA_TYPE.Media
         }, doc.peerId).then((res) => {
-            if (this.onDocumentPrev && res.length > 0) {
-                this.onDocumentPrev(res[0]);
+            if (this.onDocumentPrev && res.messages.length > 0) {
+                this.onDocumentPrev(res.messages[0]);
             } else {
                 this.onDocumentPrev(null);
             }
@@ -89,8 +89,8 @@ export default class DocumentViewerService {
             limit: 1,
             type: C_MEDIA_TYPE.Media
         }, doc.peerId).then((res) => {
-            if (this.onDocumentNext && res.length > 0) {
-                this.onDocumentNext(res[0]);
+            if (this.onDocumentNext && res.messages.length > 0) {
+                this.onDocumentNext(res.messages[0]);
             } else {
                 this.onDocumentNext(null);
             }

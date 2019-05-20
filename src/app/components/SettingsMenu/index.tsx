@@ -51,6 +51,7 @@ import FileRepo from '../../repository/file';
 import BackgroundService from '../../services/backgroundService';
 import Radio from '@material-ui/core/Radio';
 import DownloadManager, {IDownloadSettings} from '../../services/downloadManager';
+import SettingsStorageUsageModal from '../SettingsStorageUsageModal';
 
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -122,6 +123,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private settingsBackgroundModalRef: SettingsBackgroundModal;
     private backgroundService: BackgroundService;
     private downloadManger: DownloadManager;
+    private settingsStorageUsageModalRef: SettingsStorageUsageModal;
 
     constructor(props: IProps) {
         super(props);
@@ -253,6 +255,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                          defBlur={this.state.selectedCustomBackgroundBlur}
                                          onDone={this.settingsBackgroundModalDoneHandler}
                                          onPatternSelected={this.selectBackgroundHandler}/>
+                <SettingsStorageUsageModal ref={this.settingsStorageUsageModalRefHandler}/>
                 <div className={'page-container page-' + page}>
                     <div className="page page-1">
                         <div className="menu-header">
@@ -708,31 +711,35 @@ class SettingsMenu extends React.Component<IProps, IState> {
                             </div>
                             <div className="menu-content">
                                 <Scrollbars autoHide={true}>
-                                    {storageItems.map((item) => {
-                                        if (item.type === 'item') {
-                                            return (
-                                                <div key={item.id} className={'switch-item ' + (item.className || '')}>
-                                                    <div className="switch-label">{item.title}</div>
-                                                    <div className="switch">
-                                                        <Switch
-                                                            checked={Boolean(this.state.storageValues[item.id] || false)}
-                                                            className={'setting-switch' + (this.state.storageValues[item.id] ? ' checked' : '')}
-                                                            color="default"
-                                                            onChange={this.storageToggleHandler.bind(this, item.id)}
-                                                        />
+                                    <div>
+                                        {storageItems.map((item) => {
+                                            if (item.type === 'item') {
+                                                return (
+                                                    <div key={item.id}
+                                                         className={'switch-item ' + (item.className || '')}>
+                                                        <div className="switch-label">{item.title}</div>
+                                                        <div className="switch">
+                                                            <Switch
+                                                                checked={Boolean(this.state.storageValues[item.id] || false)}
+                                                                className={'setting-switch' + (this.state.storageValues[item.id] ? ' checked' : '')}
+                                                                color="default"
+                                                                onChange={this.storageToggleHandler.bind(this, item.id)}
+                                                            />
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            );
-                                        } else if (item.type === 'header') {
-                                            return (
-                                                <div key={item.id}
-                                                     className={'sub-page-header ' + (item.className || '')}
-                                                >{item.title}</div>
-                                            );
-                                        } else {
-                                            return '';
-                                        }
-                                    })}
+                                                );
+                                            } else if (item.type === 'header') {
+                                                return (
+                                                    <div key={item.id}
+                                                         className={'sub-page-header ' + (item.className || '')}
+                                                    >{item.title}</div>
+                                                );
+                                            } else {
+                                                return '';
+                                            }
+                                        })}
+                                    </div>
+                                    <div className="settings-btn" onClick={this.storageUsageHandler}>Storage Usage</div>
                                 </Scrollbars>
                             </div>
                         </React.Fragment>}
@@ -1376,6 +1383,10 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.settingsBackgroundModalRef = ref;
     }
 
+    private settingsStorageUsageModalRefHandler = (ref: any) => {
+        this.settingsStorageUsageModalRef = ref;
+    }
+
     private settingsBackgroundModalDoneHandler = (data: ICustomBackground) => {
         const {customBackgroundSrc} = this.state;
         if (customBackgroundSrc) {
@@ -1413,6 +1424,13 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.setState({
             storageValues,
         });
+    }
+
+    private storageUsageHandler = () => {
+        if (!this.settingsStorageUsageModalRef) {
+            return;
+        }
+        this.settingsStorageUsageModalRef.openDialog();
     }
 }
 

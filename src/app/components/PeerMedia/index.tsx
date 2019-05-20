@@ -290,10 +290,10 @@ class PeerMedia extends React.Component<IProps, IState> {
             type: this.props.full ? mediaType : undefined,
         }, this.peerId).then((result) => {
             if (!this.props.full) {
-                result = result.slice(0, 4);
+                result.messages = result.messages.slice(0, 4);
             }
             this.setState({
-                items: this.modifyMediaList(result),
+                items: this.modifyMediaList(result.messages),
                 loading: false,
             });
         });
@@ -440,7 +440,7 @@ class PeerMedia extends React.Component<IProps, IState> {
             limit,
             type: mediaType,
         }, this.peerId).then((result) => {
-            if (result.length === 0) {
+            if (result.messages.length === 0) {
                 this.setState({
                     loading: false,
                 });
