@@ -402,7 +402,8 @@ class Chat extends React.Component<IProps, IState> {
                     return (<SettingsMenu updateMessages={this.settingUpdateMessageHandler} subMenu={leftMenuSub}
                                           onClose={this.bottomBarSelectHandler.bind(this, 'chat')}
                                           onSubPlaceChange={this.leftMenuSubPageChangeHandler}
-                                          onAction={this.settingActionHandler}/>);
+                                          onAction={this.settingActionHandler}
+                                          onReloadDialog={this.settingReloadDialogHandler}/>);
                 case 'contact':
                     return (<ContactMenu/>);
             }
@@ -2736,6 +2737,15 @@ class Chat extends React.Component<IProps, IState> {
         if (selectedDialogId !== 'null') {
             this.messageComponent.cache.clearAll();
             this.messageComponent.list.recomputeRowHeights();
+        }
+    }
+
+    /* SettingsMenu on reload dialog handler */
+    private settingReloadDialogHandler = (peerIds: string[]) => {
+        if (peerIds.indexOf(this.state.selectedDialogId) > -1) {
+            setTimeout(() => {
+                this.getMessagesByDialogId(this.state.selectedDialogId, true);
+            }, 1000);
         }
     }
 

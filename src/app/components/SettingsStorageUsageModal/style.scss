@@ -13,11 +13,14 @@
     align-items: center;
     justify-content: center;
     height: 58px;
-    border-bottom: 1px solid #E0E0E0;
+    border-top: 1px solid #E0E0E0;
     padding: 0 4px 0 8px;
+    cursor: pointer;
+
     &:last-of-type {
-      border-bottom: none;
+      border-bottom: 1px solid #E0E0E0;
     }
+
     .icon-container {
       .avatar {
         width: 42px;
@@ -25,6 +28,7 @@
         border-radius: 50%;
         float: left;
         margin-right: 12px;
+
         img {
           float: left;
           width: 42px;
@@ -32,17 +36,20 @@
           object-fit: cover;
           border-radius: 50%;
         }
+
         .inner {
           line-height: 1em;
         }
       }
     }
+
     .info-container {
       flex: 1;
       display: flex;
+      flex-direction: column;
       align-items: flex-start;
       justify-content: center;
-      flex-direction: column;
+
       .name-row {
         display: flex;
         align-items: center;
@@ -50,12 +57,14 @@
         font-size: 14px;
         line-height: 1.2em;
         margin: 0 0 6px;
+
         svg {
           font-size: 16px;
           vertical-align: sub;
           margin: 0 4px 0 0;
         }
       }
+
       .size-row {
         display: flex;
         align-items: center;
@@ -63,21 +72,148 @@
         font-size: 12px;
         color: var(--river);
         line-height: 1.2em;
+
+        .bullet {
+          display: inline-block;
+          height: 4px;
+          width: 4px;
+          background-color: var(--river);
+          border-radius: 50%;
+          margin: 0 4px 2px;
+        }
       }
     }
+
     .action-container {
       width: 48px;
       display: flex;
       align-items: center;
       justify-content: center;
       visibility: hidden;
+
       svg {
         color: var(--red);
       }
     }
+
+    .checkbox-container {
+      width: 48px;
+      height: 48px;
+    }
+
     &:hover {
       .action-container {
         visibility: visible;
+      }
+    }
+  }
+
+  .info-btn {
+    padding: 4px;
+  }
+
+  .progress-bar-container {
+    padding: 140px 8px 8px;
+  }
+
+  .progress-info-container {
+    padding: 12px 8px;
+    color: var(--river);
+    font-size: 14px;
+  }
+}
+
+.dialog-info-container {
+  .info-item {
+    line-height: 1.1em;
+    display: flex;
+    padding: 0 8px 0 4px;
+    border-bottom: 1px solid #E0E0E0;
+
+    &:last-of-type {
+      border-bottom: none;
+    }
+
+    .checkbox-container {
+      width: 48px;
+      height: 48px;
+    }
+
+    .info-container {
+      flex: 1;
+      padding: 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+
+      .title-row {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        font-size: 14px;
+        line-height: 1.2em;
+        margin: 0 0 2px;
+      }
+
+      .size-row {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        font-size: 12px;
+        color: var(--river);
+        line-height: 1.2em;
+
+        .bullet {
+          display: inline-block;
+          height: 4px;
+          width: 4px;
+          background-color: var(--river);
+          border-radius: 50%;
+          margin: 0 4px 2px;
+        }
+      }
+    }
+  }
+
+  .info-btn {
+    padding: 4px;
+  }
+}
+
+.confirm-dialog {
+  .cache-dialog-content {
+    width: 300px;
+  }
+}
+
+html[theme="dark"] {
+  .storage-usage .storage-item,
+  .dialog-info-container .info-item {
+    border-color: var(--dark-low-op50);
+    color: var(--white);
+    .info-container .name-row {
+      .size-row {
+        color: var(--dark-mention);
+        .bullet {
+          background-color: var(--dark-mention);
+        }
+      }
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .storage-usage .storage-item,
+  .dialog-info-container .info-item {
+    border-color: var(--dark-blue-low-op50);
+    color: var(--white);
+    .info-container .name-row {
+      .size-row {
+        color: var(--dark-mention);
+        .bullet {
+          background-color: var(--dark-mention);
+        }
       }
     }
   }

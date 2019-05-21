@@ -19,11 +19,12 @@ import './style.css';
 
 interface IProps {
     fit?: boolean;
+    height?: string;
     icon?: any;
     noScrollbar?: boolean;
     onClose?: () => void;
     open: boolean;
-    title: string;
+    title: any;
 }
 
 interface IState {
@@ -71,7 +72,7 @@ class SettingsModal extends React.Component<IProps, IState> {
                             <CloseRounded onClick={this.props.onClose}/>
                         </div>
                     </div>
-                    {Boolean(!noScrollbar) && <div className="setting-content">
+                    {Boolean(!noScrollbar) && <div className="setting-content" style={{height: this.props.height}}>
                         <Scrollbars
                             style={{
                                 height: '100%',

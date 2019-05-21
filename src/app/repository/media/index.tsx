@@ -18,6 +18,7 @@ import {kMerge} from "../../services/utilities/kDash";
 
 interface IMessageWithCount {
     count: number;
+    maxId: number;
     messages: IMessage[];
     minId: number;
 }
@@ -119,6 +120,7 @@ export default class MediaRepo {
                 if (list.length === 0) {
                     resolve({
                         count: 0,
+                        maxId: 0,
                         messages: [],
                         minId: 0,
                     });
@@ -129,8 +131,9 @@ export default class MediaRepo {
                     this.messageRepo.getIn(ids, (mode === 0x2)).then((result) => {
                         resolve({
                             count: ids.length,
+                            maxId: result.length > 0 ? (result[0].id || 0) : 0,
                             messages: result,
-                            minId: result.length > 0 ? (result[0].id || 0) : 0,
+                            minId: result.length > 0 ? (result[result.length - 1].id || 0) : 0,
                         });
                     }).then((err) => {
                         reject(err);

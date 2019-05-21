@@ -551,6 +551,11 @@ html[theme="dark"] .setting-menu .form-control .action svg,
 html[theme="dark-blue"] .setting-menu .form-control .action svg {
   color: var(--white); }
 
+html[theme="dark"] .setting-menu .menu-content .settings-btn,
+html[theme="dark-blue"] .setting-menu .menu-content .settings-btn {
+  border-color: var(--dark-low-op50);
+  color: var(--white); }
+
 html[theme="dark"] .setting-menu .theme-container .radio-item .radio-label .radio:not(.checked),
 html[theme="dark-blue"] .setting-menu .theme-container .radio-item .radio-label .radio:not(.checked) {
   color: var(--white); }
@@ -639,6 +644,10 @@ html[theme="dark-blue"] .setting-menu .theme-container .item {
     background: var(--dark-blue-accent-medium); }
   html[theme="dark-blue"] .setting-menu .theme-container .item:before {
     background: var(--dark-blue-accent-low); }
+
+html[theme="dark-blue"] .setting-menu .menu-content .settings-btn {
+  border-color: var(--dark-blue-low-op50);
+  color: var(--white); }
 
 html[theme="dark-blue"] .setting-menu .kk-card {
   background-color: var(--dark-blue-medium); }

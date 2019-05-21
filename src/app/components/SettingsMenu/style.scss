@@ -702,6 +702,12 @@ html[theme="dark-blue"] {
         }
       }
     }
+    .menu-content {
+      .settings-btn {
+        border-color: var(--dark-low-op50);
+        color: var(--white);
+      }
+    }
     .theme-container {
       .radio-item {
         .radio-label {
@@ -803,6 +809,12 @@ html[theme="dark-blue"] {
         &:before {
           background: var(--dark-blue-accent-low);
         }
+      }
+    }
+    .menu-content {
+      .settings-btn {
+        border-color: var(--dark-blue-low-op50);
+        color: var(--white);
       }
     }
     .kk-card {

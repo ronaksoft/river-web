@@ -14,6 +14,7 @@
       line-height: 0;
       max-width: 720px;
       overflow: hidden;
+      margin: 12px;
     }
   }
   .settings-modal-header {
@@ -42,6 +43,11 @@
       font-size: 14px;
       line-height: 24px;
       text-align: center;
+      svg {
+        font-size: 16px;
+        vertical-align: sub;
+        margin: 0 4px 0 0;
+      }
     }
   }
   .setting-content {

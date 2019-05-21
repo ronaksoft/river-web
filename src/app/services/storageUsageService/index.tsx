@@ -11,22 +11,24 @@ import FileRepo from '../../repository/file/index';
 import DialogRepo from '../../repository/dialog/index';
 import MediaRepo from '../../repository/media/index';
 import {PeerType} from '../sdk/messages/chat.core.types_pb';
+import MessageRepo from '../../repository/message';
 
 export interface IStorageProgress {
     done: number;
+    fileCount: number;
     total: number;
 }
 
 interface IFileInfo {
     fileId: string;
-    id: string;
+    id: number;
     mediaType: number;
     size: number;
 }
 
-interface IFileWithId {
+export interface IFileWithId {
     fileId: string;
-    id: string;
+    id: number;
 }
 
 interface IStorageInfo {
@@ -58,6 +60,7 @@ export default class StorageUsageService {
     private fileRepo: FileRepo;
     private dialogRepo: DialogRepo;
     private mediaRepo: MediaRepo;
+    private messageRepo: MessageRepo;
     private computeQueue: string[] = [];
     private dialogInfo: { [key: string]: IDialogInfo } = {};
     private totalComputations: number = 0;
@@ -69,26 +72,77 @@ export default class StorageUsageService {
         this.fileRepo = FileRepo.getInstance();
         this.dialogRepo = DialogRepo.getInstance();
         this.mediaRepo = MediaRepo.getInstance();
+        this.messageRepo = MessageRepo.getInstance();
     }
 
     public compute(progress?: (e: IStorageProgress) => void) {
+        this.progressFn = progress;
+        const promise = new Promise<IDialogInfo[]>((res, rej) => {
+            this.promise.resolve = res;
+            this.promise.reject = rej;
+        });
         if (this.isStarted) {
-            return Promise.reject('already started');
+            return promise;
         }
         this.isStarted = true;
         this.progressFn = progress;
         this.dialogInfo = {};
         this.computeQueue = [];
-        return new Promise<IDialogInfo[]>((res, rej) => {
-            this.promise.resolve = res;
-            this.promise.reject = rej;
-            this.dialogRepo.getManyCache({}).then((dialogs) => {
-                dialogs.forEach((dialog) => {
-                    this.computeQueue.push(dialog.peerid || '');
-                });
-                this.totalComputations = dialogs.length;
-                this.startComputing();
+        this.dialogRepo.getManyCache({}).then((dialogs) => {
+            dialogs.forEach((dialog) => {
+                this.computeQueue.push(dialog.peerid || '');
             });
+            this.totalComputations = dialogs.length;
+            this.startComputing();
+        });
+        return promise;
+    }
+
+    public clearCache(infoList: IFileWithId[], progress?: (e: IStorageProgress) => void) {
+        let resolve: any = null;
+        let reject: any = null;
+        const promise = new Promise<IDialogInfo[]>((res, rej) => {
+            resolve = res;
+            reject = rej;
+        });
+        const limit: number = 50;
+        let skip: number = 0;
+        const fn = () => {
+            this.clearChunk(infoList, skip, limit).then(() => {
+                skip += limit;
+                if (progress) {
+                    progress({
+                        done: Math.floor(skip / limit),
+                        fileCount: 0,
+                        total: infoList.length,
+                    });
+                }
+                if (infoList.length > skip) {
+                    fn();
+                } else {
+                    resolve();
+                }
+            }).catch((err) => {
+                reject(err);
+            });
+        };
+        fn();
+        return promise;
+    }
+
+    private clearChunk(infoList: IFileWithId[], skip?: number, limit?: number) {
+        const items = infoList.slice(skip, limit);
+        const fileIds: string[] = [];
+        items.forEach((file) => {
+            fileIds.push(file.fileId);
+        });
+        return this.fileRepo.removeMany(fileIds).then(() => {
+            return this.messageRepo.lazyUpsert(items.map((item) => {
+                return {
+                    downloaded: false,
+                    id: item.id,
+                };
+            }));
         });
     }
 
@@ -98,15 +152,25 @@ export default class StorageUsageService {
             const fileMap: any = {};
             let peerType: PeerType = PeerType.PEERUSER;
             const more = res.count === limit;
-            const ids = res.messages.filter((o) => {
+            const ids: string[] = [];
+            res.messages.filter((o) => {
                 peerType = o.peertype || PeerType.PEERUSER;
-                return (o.mediadata && o.mediadata.doc && o.mediadata.doc.id);
-            }).map((o) => {
-                fileMap[o.mediadata.doc.id] = {
-                    id: o.id,
-                    mediaType: o.messagetype,
-                };
-                return o.mediadata.doc.id;
+                return (o.mediadata && o.mediadata.doc && (o.mediadata.doc.id || (o.mediadata.doc.thumbnail && o.mediadata.doc.thumbnail.fileid)));
+            }).forEach((o) => {
+                if (o.mediadata.doc.id) {
+                    fileMap[o.mediadata.doc.id] = {
+                        id: o.id,
+                        mediaType: o.messagetype,
+                    };
+                    ids.push(o.mediadata.doc.id);
+                }
+                if (o.mediadata.doc.thumbnail && o.mediadata.doc.thumbnail.fileid) {
+                    fileMap[o.mediadata.doc.thumbnail.fileid] = {
+                        id: o.id,
+                        mediaType: o.messagetype,
+                    };
+                    ids.push(o.mediadata.doc.thumbnail.fileid);
+                }
             });
             return this.fileRepo.getIn(ids).then((files) => {
                 return {
@@ -158,22 +222,27 @@ export default class StorageUsageService {
         });
     }
 
-    private startComputing(peerId?: string, before?: number) {
+    private startComputing(peerId?: string, before?: number, total?: number) {
         if (!peerId) {
             peerId = this.computeQueue.shift();
         }
         if (peerId) {
             this.getMediaListPart(peerId, before).then((res) => {
+                if (!total) {
+                    total = 0;
+                }
+                total += res.infoList.length;
                 if (res.more) {
-                    this.startComputing(peerId, res.minId - 1);
+                    this.startComputing(peerId, res.minId - 1, total);
                 } else {
-                    this.startComputing();
-                    if (this.progressFn) {
-                        this.progressFn({
-                            done: this.totalComputations - this.computeQueue.length,
-                            total: this.totalComputations,
-                        });
-                    }
+                    this.startComputing(undefined, undefined, total);
+                }
+                if (this.progressFn) {
+                    this.progressFn({
+                        done: this.totalComputations - this.computeQueue.length,
+                        fileCount: total || 0,
+                        total: this.totalComputations,
+                    });
                 }
             }).catch((err) => {
                 this.isStarted = false;
@@ -185,6 +254,7 @@ export default class StorageUsageService {
             if (this.progressFn) {
                 this.progressFn({
                     done: this.totalComputations,
+                    fileCount: total || 0,
                     total: this.totalComputations,
                 });
             }

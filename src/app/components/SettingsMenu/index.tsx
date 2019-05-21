@@ -56,7 +56,7 @@ import SettingsStorageUsageModal from '../SettingsStorageUsageModal';
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.23.162';
+export const C_VERSION = '0.23.163';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 interface IProps {
@@ -64,6 +64,7 @@ interface IProps {
     onAction?: (cmd: 'logout') => void;
     subMenu?: string;
     updateMessages?: () => void;
+    onReloadDialog?: (peerIds: string[]) => void;
     onSubPlaceChange?: (sub: string) => void;
 }
 
@@ -241,6 +242,11 @@ class SettingsMenu extends React.Component<IProps, IState> {
             this.setState({
                 pageContent: newProps.subMenu || 'none',
             });
+            if (newProps.subMenu === 'none') {
+                this.setState({
+                    page: '1',
+                });
+            }
         }
     }
 
@@ -255,7 +261,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                          defBlur={this.state.selectedCustomBackgroundBlur}
                                          onDone={this.settingsBackgroundModalDoneHandler}
                                          onPatternSelected={this.selectBackgroundHandler}/>
-                <SettingsStorageUsageModal ref={this.settingsStorageUsageModalRefHandler}/>
+                <SettingsStorageUsageModal ref={this.settingsStorageUsageModalRefHandler}
+                                           onDone={this.props.onReloadDialog}/>
                 <div className={'page-container page-' + page}>
                     <div className="page page-1">
                         <div className="menu-header">

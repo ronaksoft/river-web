@@ -99,6 +99,10 @@ export default class FileRepo {
         return this.db.files.delete(id);
     }
 
+    public removeMany(ids: string[]) {
+        return this.db.files.bulkDelete(ids);
+    }
+
     public upsertFile(id: string, blob: Blob) {
         return this.createHash(blob).then((res) => {
             const file: IFile = {
