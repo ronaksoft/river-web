@@ -1020,9 +1020,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageComponent.setMessages(dataMsg.msgs, () => {
                     // Scroll down if possible
                     if (!tMoveDownVisible && this.isInChat) {
-                        setTimeout(() => {
-                            this.messageComponent.animateToEnd();
-                        }, 100);
+                        this.messageComponent.animateToEnd();
                         if (dataMsg.maxReadId !== -1) {
                             this.sendReadHistory(this.state.peer, dataMsg.maxReadId);
                         }
@@ -1872,12 +1870,10 @@ class Chat extends React.Component<IProps, IState> {
         this.isLoading = true;
         this.setScrollMode('none');
         this.messageComponent.setMessages(messages, () => {
+            this.messageComponent.animateToEnd();
             setTimeout(() => {
-                this.messageComponent.animateToEnd();
-                setTimeout(() => {
-                    this.isLoading = false;
-                }, 250);
-            }, 100);
+                this.isLoading = false;
+            }, 250);
         });
         this.messageRepo.lazyUpsert([message]);
     }

@@ -246,9 +246,7 @@ class Message extends React.Component<IProps, IState> {
                 moreIndex: -1,
                 readIdInit: this.props.readId,
             }, () => {
-                if (callback) {
-                    callback();
-                }
+                this.fitList();
                 this.enableLoadBefore = false;
                 this.modifyScroll(items);
                 if (this.state.items.length > 0) {
@@ -256,7 +254,9 @@ class Message extends React.Component<IProps, IState> {
                 } else {
                     this.props.onLastMessage(null);
                 }
-                this.fitList();
+                if (callback) {
+                    callback();
+                }
             });
             this.listCount = items.length;
         } else if (this.state.items === items && this.listCount !== items.length) {
@@ -265,13 +265,14 @@ class Message extends React.Component<IProps, IState> {
             }, 100);
             this.modifyScroll(items);
             this.listCount = items.length;
-            if (callback) {
-                callback();
-            }
+            this.list.forceUpdateGrid();
             if (this.state.items.length > 0) {
                 this.props.onLastMessage(this.state.items[this.state.items.length - 1]);
             } else {
                 this.props.onLastMessage(null);
+            }
+            if (callback) {
+                callback();
             }
         }
     }
@@ -334,76 +335,78 @@ class Message extends React.Component<IProps, IState> {
             //     this.props.onJumpToMessage(this.topMessageId, '');
             //     return;
             // }
-            setTimeout(() => {
-                if (instant) {
+            // setTimeout(() => {
+            if (instant) {
+                if (this.list) {
+                    this.list.scrollToRow(items.length);
                     if (this.list) {
-                        this.list.scrollToRow(items.length);
-                        if (this.list) {
-                            const el = document.querySelector('.messages-inner .chat.active-chat');
-                            if (el) {
-                                const eldiv = el.firstElementChild;
-                                if (eldiv) {
-                                    this.list.scrollToPosition((eldiv.scrollHeight - el.clientHeight) + 10);
+                        const el = document.querySelector('.messages-inner .chat.active-chat');
+                        if (el) {
+                            const eldiv = el.firstElementChild;
+                            if (eldiv) {
+                                this.list.scrollToPosition((eldiv.scrollHeight - el.clientHeight) + 10);
+                                setTimeout(() => {
                                     if (!this.isAtEnd()) {
                                         this.animateToEnd(true);
                                     }
-                                    if (items.length > 40) {
-                                        this.enableLoadBefore = true;
-                                    }
+                                }, 50);
+                                if (items.length > 40) {
+                                    this.enableLoadBefore = true;
                                 }
                             }
                         }
                     }
-                } else {
-                    setTimeout(() => {
-                        const el = document.querySelector('.messages-inner .chat.active-chat');
-                        if (el) {
-                            const options: any = {
-                                // duration of the scroll per 1000px, default 500
-                                speed: 500,
-
-                                // minimum duration of the scroll
-                                minDuration: 250,
-
-                                // maximum duration of the scroll
-                                maxDuration: 300,
-
-                                // @ts-ignore
-                                element: el,
-
-                                // Additional offset value that gets added to the desiredOffset.  This is
-                                // useful when passing a DOM object as the desiredOffset and wanting to adjust
-                                // for an fixed nav or to add some padding.
-                                offset: 10,
-
-                                // should animated scroll be canceled on user scroll/keypress
-                                // if set to "false" user input will be disabled until animated scroll is complete
-                                // (when set to false, "passive" will be also set to "false" to prevent Chrome errors)
-                                cancelOnUserAction: true,
-
-                                // Set passive event Listeners to be true by default. Stops Chrome from complaining.
-                                passive: true,
-
-                                // Scroll horizontally rather than vertically (which is the default)
-                                horizontal: false,
-
-                                onComplete: () => {
-                                    if (!this.isAtEnd()) {
-                                        this.animateToEnd();
-                                    } else {
-                                        setTimeout(() => {
-                                            if (!this.isAtEnd()) {
-                                                this.animateToEnd();
-                                            }
-                                        }, 200);
-                                    }
-                                }
-                            };
-                            animateScrollTo(el.scrollHeight + 50, options);
-                        }
-                    }, 1);
                 }
-            }, 200);
+            } else {
+                setTimeout(() => {
+                    const el = document.querySelector('.messages-inner .chat.active-chat');
+                    if (el) {
+                        const options: any = {
+                            // duration of the scroll per 1000px, default 500
+                            speed: 500,
+
+                            // minimum duration of the scroll
+                            minDuration: 250,
+
+                            // maximum duration of the scroll
+                            maxDuration: 300,
+
+                            // @ts-ignore
+                            element: el,
+
+                            // Additional offset value that gets added to the desiredOffset.  This is
+                            // useful when passing a DOM object as the desiredOffset and wanting to adjust
+                            // for an fixed nav or to add some padding.
+                            offset: 10,
+
+                            // should animated scroll be canceled on user scroll/keypress
+                            // if set to "false" user input will be disabled until animated scroll is complete
+                            // (when set to false, "passive" will be also set to "false" to prevent Chrome errors)
+                            cancelOnUserAction: true,
+
+                            // Set passive event Listeners to be true by default. Stops Chrome from complaining.
+                            passive: true,
+
+                            // Scroll horizontally rather than vertically (which is the default)
+                            horizontal: false,
+
+                            onComplete: () => {
+                                if (!this.isAtEnd()) {
+                                    this.animateToEnd();
+                                } else {
+                                    setTimeout(() => {
+                                        if (!this.isAtEnd()) {
+                                            this.animateToEnd();
+                                        }
+                                    }, 200);
+                                }
+                            }
+                        };
+                        animateScrollTo(el.scrollHeight + 50, options);
+                    }
+                }, 1);
+            }
+            // }, 200);
         }
     }
 
@@ -653,7 +656,7 @@ class Message extends React.Component<IProps, IState> {
     private isAtEnd() {
         const el = document.querySelector('.messages-inner .chat.active-chat');
         if (el) {
-            return (el.clientHeight + el.scrollTop + 4 >= el.scrollHeight);
+            return (el.clientHeight + el.scrollTop + 2 >= el.scrollHeight);
         } else {
             return true;
         }
@@ -853,6 +856,9 @@ class Message extends React.Component<IProps, IState> {
             // On load more after
             if (data.stopIndex > -1 && items[data.stopIndex]) {
                 let check = false;
+                if (data.startIndex < 5) {
+                    this.bottomOfList = false;
+                }
                 if (this.enableLoadBefore) {
                     if (data.startIndex < 5 && this.props.onLoadMoreBefore) {
                         this.loadMoreBeforeThrottle();
@@ -862,6 +868,7 @@ class Message extends React.Component<IProps, IState> {
                 }
                 if (Math.abs(items.length - data.stopIndex) < 8 && items[data.stopIndex].id && this.props.onLoadMoreAfter) {
                     this.loadMoreAfterThrottle();
+                    this.topOfList = false;
                     check = true;
                 } else {
                     this.bottomOfList = false;
