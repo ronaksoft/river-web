@@ -167,6 +167,7 @@ class Message extends React.Component<IProps, IState> {
     // @ts-ignore
     private topMessageId: number = 0;
     private disableScrolling: boolean = false;
+    private scrollToIndex?: number;
 
     constructor(props: IProps) {
         super(props);
@@ -234,6 +235,10 @@ class Message extends React.Component<IProps, IState> {
             this.bottomOfList = true;
             this.topOfList = true;
             this.firstTimeLoadAfter = true;
+            this.scrollToIndex = items.length - 1;
+            setTimeout(() => {
+                this.scrollToIndex = undefined;
+            }, 300);
             this.removeSnapshot();
             this.setState({
                 items,
@@ -478,7 +483,7 @@ class Message extends React.Component<IProps, IState> {
             this.messageSnapshotRef.classList.remove('group', 'user');
             this.messageSnapshotRef.classList.add('hidden');
             this.messageSnapshotRef.innerHTML = '';
-        }, instant ? 0 : 200);
+        }, instant ? 0 : 300);
     }
 
     public disableScroll() {
@@ -516,8 +521,9 @@ class Message extends React.Component<IProps, IState> {
                                 estimatedRowSize={41}
                                 onRowsRendered={this.onRowsRenderedHandler}
                                 noRowsRenderer={this.noRowsRenderer}
-                                scrollToAlignment="center"
+                                scrollToAlignment={(this.scrollToIndex || -1) > -1 ? 'end' : 'center'}
                                 className="chat active-chat"
+                                scrollToIndex={this.scrollToIndex}
                             />
                             <Menu
                                 anchorEl={moreAnchorEl}
