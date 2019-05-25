@@ -92,6 +92,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         zoom: 1,
     };
     private lastAnchorType?: 'message' | 'shared_media' | 'shared_media_full';
+    private inControls: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -289,7 +290,8 @@ class DocumentViewer extends React.Component<IProps, IState> {
             title: 'Download',
         }];
         return (
-            <div className="document-viewer-controls">
+            <div className="document-viewer-controls" onMouseEnter={this.controlMouseEnterHandler}
+                 onMouseLeave={this.controlMouseLeaveHandler}>
                 <div className="controls">
                     <div className="item" onClick={this.openContextMenuHandler}>
                         <MoreVertRounded/>
@@ -327,6 +329,14 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 </Menu>
             </div>
         );
+    }
+
+    private controlMouseEnterHandler = () => {
+        this.inControls = true;
+    }
+
+    private controlMouseLeaveHandler = () => {
+        this.inControls = false;
     }
 
     private initCaption() {
@@ -493,6 +503,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     private dialogCloseHandler = () => {
+        if (this.inControls) {
+            return;
+        }
         const closeDialog = () => {
             this.setState({
                 dialogOpen: false,

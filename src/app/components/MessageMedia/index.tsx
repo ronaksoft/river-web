@@ -133,6 +133,66 @@ export const getMediaInfo = (message: IMessage): IMediaInfo => {
     return info;
 };
 
+export const getContentSize = (message: IMessage): null | { height: number, width: number } => {
+    const info: {
+        height: number,
+        width: number,
+    }  = {
+        height: 0,
+        width: 0,
+    };
+    const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
+    if (!messageMediaDocument) {
+        return null;
+    }
+    messageMediaDocument.doc.attributesList.forEach((attr, index) => {
+        if (attr.type === DocumentAttributeType.ATTRIBUTETYPEPHOTO && message.attributes) {
+            const docAttr: DocumentAttributePhoto.AsObject = message.attributes[index];
+            info.height = docAttr.height || 0;
+            info.width = docAttr.width || 0;
+        } else if (attr.type === DocumentAttributeType.ATTRIBUTETYPEVIDEO && message.attributes) {
+            const docAttr: DocumentAttributeVideo.AsObject = message.attributes[index];
+            info.height = docAttr.height || 0;
+            info.width = docAttr.width || 0;
+        }
+    });
+    if (info.height === 0 || info.width === 0) {
+        return null;
+    }
+    const ratio = info.height / info.width;
+    let height = info.height;
+    let width = info.width;
+    if (ratio > 1.0) {
+        if (info.height < C_MAX_HEIGHT) {
+            height = info.height;
+            width = info.height / ratio;
+        } else {
+            height = C_MAX_HEIGHT;
+            width = C_MAX_HEIGHT / ratio;
+        }
+    } else {
+        if (info.width < C_MAX_WIDTH) {
+            width = info.width;
+            height = info.width * ratio;
+        } else {
+            width = C_MAX_WIDTH;
+            height = C_MAX_WIDTH * ratio;
+        }
+    }
+    if (isNaN(height)) {
+        height = C_MIN_HEIGHT;
+    }
+    if (isNaN(width)) {
+        width = C_MIN_WIDTH;
+    }
+    height = Math.max(height, C_MIN_HEIGHT);
+    width = Math.max(width, C_MIN_WIDTH);
+    return {
+        height,
+        width,
+    };
+};
+
 interface IProps {
     measureFn: any;
     message: IMessage;

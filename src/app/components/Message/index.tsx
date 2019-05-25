@@ -31,7 +31,7 @@ import {ErrorRounded} from '@material-ui/icons';
 import MessageFile from '../MessageFile';
 import MessageContact from '../MessageContact';
 import CachedPhoto from '../CachedPhoto';
-import MessageMedia from '../MessageMedia';
+import MessageMedia, {getContentSize} from '../MessageMedia';
 import {MediaDocument} from '../../services/sdk/messages/chat.core.message.medias_pb';
 import MessageLocation from '../MessageLocation';
 import Broadcaster from '../../services/broadcaster';
@@ -188,7 +188,7 @@ class Message extends React.Component<IProps, IState> {
         this.cache = new CellMeasurerCache({
             fixedWidth: true,
             keyMapper: this.keyMapperHandler,
-            minHeight: 35,
+            minHeight: 41,
         });
         this.broadcaster = Broadcaster.getInstance();
         this.isSimplified = UserRepo.getInstance().getBubbleMode() === '5';
@@ -515,7 +515,7 @@ class Message extends React.Component<IProps, IState> {
                             <List
                                 ref={this.refHandler}
                                 deferredMeasurementCache={this.cache}
-                                rowHeight={this.cache.rowHeight}
+                                rowHeight={this.getHeight}
                                 rowRenderer={this.rowRender}
                                 rowCount={items.length}
                                 overscanRowCount={10}
@@ -548,6 +548,22 @@ class Message extends React.Component<IProps, IState> {
                 )}
             </AutoSizer>
         );
+    }
+
+    private getHeight = (params: { index: number }) => {
+        const {items} = this.state;
+        const height = this.cache.rowHeight(params);
+        if (height === 41 && items[params.index]) {
+            switch (items[params.index].messagetype) {
+                case C_MESSAGE_TYPE.Picture:
+                case C_MESSAGE_TYPE.Video:
+                    const info = getContentSize(items[params.index]);
+                    if (info) {
+                        return info.height + 4;
+                    }
+            }
+        }
+        return height;
     }
 
     private contextMenuItem() {
@@ -1146,6 +1162,7 @@ class Message extends React.Component<IProps, IState> {
 
     /* Modify scroll position based on scroll mode */
     private modifyScroll(items: IMessage[]) {
+        window.console.log('modifyScroll');
         switch (this.scrollMode) {
             case 'stay':
                 const index = findIndex(items, {id: this.stayInfo.id});
@@ -1153,7 +1170,7 @@ class Message extends React.Component<IProps, IState> {
                     this.list.scrollToRow(index);
                     setTimeout(() => {
                         this.checkScroll(this.stayInfo.id, index);
-                    }, 100);
+                    }, 50);
                 } else {
                     this.removeSnapshot();
                     this.enableLoadBefore = true;
@@ -1234,7 +1251,7 @@ class Message extends React.Component<IProps, IState> {
                 } else {
                     fn();
                 }
-            }, 100);
+            }, 50);
         } else {
             fn();
         }
@@ -1263,7 +1280,7 @@ class Message extends React.Component<IProps, IState> {
                 case C_MESSAGE_TYPE.Location:
                     return (<MessageLocation ref={refBindHandler} message={message} peer={peer}/>);
                 default:
-                    return 'Unsupported message';
+                    return (<div>Unsupported message</div>);
             }
         } else {
             return (

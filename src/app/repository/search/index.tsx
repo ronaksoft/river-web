@@ -86,4 +86,8 @@ export default class SearchRepo {
             }).catch(reject);
         });
     }
+
+    public getCurrentUserId(): string {
+        return this.userRepo.getCurrentUserId();
+    }
 }

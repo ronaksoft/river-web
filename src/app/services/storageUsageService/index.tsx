@@ -141,6 +141,7 @@ export default class StorageUsageService {
                 return {
                     downloaded: false,
                     id: item.id,
+                    saved: false,
                 };
             }));
         });
