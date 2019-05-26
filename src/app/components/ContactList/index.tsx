@@ -123,7 +123,7 @@ class ContactList extends React.Component<IProps, IState> {
         this.setState({
             hiddenContacts: newProps.hiddenContacts || [],
         }, () => {
-            if (this.state.selectedContacts.length === 0 && this.props.disableCheckSelected) {
+            if (this.state.selectedContacts.length === 0 && !this.props.disableCheckSelected) {
                 this.getDefault();
             }
         });

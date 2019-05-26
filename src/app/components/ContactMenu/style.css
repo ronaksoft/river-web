@@ -107,27 +107,35 @@
           color: inherit;
           font-size: 75px; }
 
-.add-contact-dialog .actions-bar {
-  height: 64px;
-  padding: 18px 0 0;
-  text-align: center; }
-  .add-contact-dialog .actions-bar .add-action {
-    display: inline-flex;
-    height: 46px;
-    width: 46px;
-    border-radius: 50%;
-    background: var(--river);
-    color: var(--white);
-    justify-content: center;
+.new-contact-dialog {
+  padding: 0 12px 12px;
+  width: 300px; }
+  .new-contact-dialog .actions-bar {
+    height: 96px;
+    padding: 8px 0 0;
+    display: flex;
     align-items: center;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-    cursor: pointer;
-    transition: all 0.2s; }
-    .add-contact-dialog .actions-bar .add-action svg {
-      font-size: 40px; }
-    .add-contact-dialog .actions-bar .add-action:hover {
-      background: var(--river-dark);
-      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4); }
+    justify-content: center; }
+    .new-contact-dialog .actions-bar .add-action {
+      display: flex;
+      height: 46px;
+      width: 46px;
+      border-radius: 50%;
+      background: var(--river);
+      color: var(--white);
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+      transition: all 0.2s; }
+      .new-contact-dialog .actions-bar .add-action svg {
+        font-size: 40px; }
+      .new-contact-dialog .actions-bar .add-action:hover {
+        background: var(--river-dark);
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4); }
+      .new-contact-dialog .actions-bar .add-action.disabled {
+        background: var(--grey);
+        cursor: default; }
 
 html[theme="dark"] .contacts .menu-header,
 html[theme="dark-blue"] .contacts .menu-header {
@@ -148,15 +156,14 @@ html[theme="dark"] .contacts .contact-box .contact-container .contact-item .name
 html[theme="dark-blue"] .contacts .contact-box .contact-container .contact-item .name {
   color: var(--light); }
 
-html[theme="dark"] .add-contact-dialog div[role="document"] > div,
-html[theme="dark-blue"] .add-contact-dialog div[role="document"] > div {
-  background: var(--dark);
+html[theme="dark"] .new-contact-dialog label,
+html[theme="dark-blue"] .new-contact-dialog label {
+  color: var(--grey); }
+
+html[theme="dark"] .new-contact-dialog h2, html[theme="dark"] .new-contact-dialog input,
+html[theme="dark-blue"] .new-contact-dialog h2,
+html[theme="dark-blue"] .new-contact-dialog input {
   color: var(--white); }
-  html[theme="dark"] .add-contact-dialog div[role="document"] > div h2, html[theme="dark"] .add-contact-dialog div[role="document"] > div input, html[theme="dark"] .add-contact-dialog div[role="document"] > div label,
-  html[theme="dark-blue"] .add-contact-dialog div[role="document"] > div h2,
-  html[theme="dark-blue"] .add-contact-dialog div[role="document"] > div input,
-  html[theme="dark-blue"] .add-contact-dialog div[role="document"] > div label {
-    color: var(--white); }
 
 html[theme="dark-blue"] .contacts .menu-header {
   background-color: var(--dark-blue-medium);
@@ -164,6 +171,3 @@ html[theme="dark-blue"] .contacts .menu-header {
 
 html[theme="dark-blue"] .contacts .contact-box .contact-container .contact-item:after {
   background-color: var(--dark-blue-low-op50); }
-
-html[theme="dark-blue"] .add-contact-dialog div[role="document"] > div {
-  background: var(--dark-blue-low); }

@@ -82,7 +82,7 @@ class SettingsModal extends React.Component<IProps, IState> {
                             {this.props.children}
                         </Scrollbars>
                     </div>}
-                    {Boolean(noScrollbar) && <div className="setting-content">
+                    {Boolean(noScrollbar) && <div className="setting-content" style={{height: this.props.height}}>
                         {this.props.children}
                     </div>}
                 </React.Fragment>

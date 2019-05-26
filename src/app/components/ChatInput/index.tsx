@@ -366,6 +366,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                                placeholder="Type your message here..."
                                                style={defaultMentionInputStyle}
                                                suggestionsPortalHost={this.mentionContainer}
+                                               spellcheck={true}
                                 >
                                     <Mention
                                         trigger="@"

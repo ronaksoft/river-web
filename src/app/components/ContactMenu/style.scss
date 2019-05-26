@@ -12,6 +12,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+
   .menu-header {
     position: relative;
     background-color: var(--header-color);
@@ -21,6 +22,7 @@
     color: var(--dark-medium);
     padding: 10px 16px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
     .actions {
       position: absolute;
       top: 0;
@@ -28,15 +30,19 @@
       height: 47px;
     }
   }
+
   .search-container {
     min-height: 48px;
     padding: 10px;
     text-align: left;
   }
+
   .contact-box {
     flex: 1;
+
     .contact-container {
       height: 100%;
+
       .contact-item {
         position: relative;
         width: 100%;
@@ -44,6 +50,7 @@
         padding: 8px;
         cursor: pointer;
         text-align: left;
+
         &:after {
           position: absolute;
           bottom: 0;
@@ -55,16 +62,19 @@
           background-color: var(--light);
           transform: translate(-50%, 0);
         }
+
         &:hover {
           border: 0;
           background-color: var(--color-hover);
         }
+
         .avatar {
           width: 48px;
           height: 48px;
           border-radius: 50%;
           float: left;
           margin-right: 12px;
+
           img {
             float: left;
             width: 48px;
@@ -73,6 +83,7 @@
             border-radius: 50%;
           }
         }
+
         .name {
           min-width: auto;
           max-width: calc(100% - 62px);
@@ -84,6 +95,7 @@
           text-decoration: none;
           @include font-bold;
         }
+
         .phone {
           font-size: 14px;
           line-height: 17px;
@@ -94,12 +106,14 @@
           text-overflow: ellipsis;
           color: var(--grey);
         }
+
         &:hover {
           .name {
             max-width: calc(100% - 72px);
           }
         }
       }
+
       .category-item {
         color: var(--river);
         font-size: 24px;
@@ -108,6 +122,7 @@
         text-align: left;
         padding: 16px 8px 0;
       }
+
       .no-result {
         height: 100%;
         display: flex;
@@ -117,6 +132,7 @@
         font-size: 30px;
         font-weight: 100;
         color: var(--grey);
+
         svg {
           margin: 0 0 32px;
           color: inherit;
@@ -127,13 +143,19 @@
   }
 }
 
-.add-contact-dialog {
+.new-contact-dialog {
+  padding: 0 12px 12px;
+  width: 300px;
+
   .actions-bar {
-    height: 64px;
-    padding: 18px 0 0;
-    text-align: center;
+    height: 96px;
+    padding: 8px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     .add-action {
-      display: inline-flex;
+      display: flex;
       height: 46px;
       width: 46px;
       border-radius: 50%;
@@ -144,12 +166,19 @@
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
       cursor: pointer;
       transition: all 0.2s;
+
       svg {
         font-size: 40px;
       }
+
       &:hover {
         background: var(--river-dark);
         box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+      }
+
+      &.disabled {
+        background: var(--grey);
+        cursor: default;
       }
     }
   }
@@ -163,17 +192,20 @@ html[theme="dark-blue"] {
       color: var(--white);
       border-color: var(--dark-low-op50);
     }
+
     .search-container {
       label, input {
         color: var(--white);
       }
     }
+
     .contact-box {
       .contact-container {
         .contact-item {
           &:after {
             background-color: var(--dark-low-op50);
           }
+
           .name {
             color: var(--light);
           }
@@ -181,15 +213,13 @@ html[theme="dark-blue"] {
       }
     }
   }
-  .add-contact-dialog {
-    div[role="document"] {
-      > div {
-        background: var(--dark);
-        color: var(--white);
-        h2, input, label {
-          color: var(--white);
-        }
-      }
+
+  .new-contact-dialog {
+    label {
+      color: var(--grey);
+    }
+    h2, input {
+      color: var(--white);
     }
   }
 }
@@ -200,6 +230,7 @@ html[theme="dark-blue"] {
       background-color: var(--dark-blue-medium);
       border-color: var(--dark-blue-low-op50);
     }
+
     .contact-box {
       .contact-container {
         .contact-item {
@@ -207,13 +238,6 @@ html[theme="dark-blue"] {
             background-color: var(--dark-blue-low-op50);
           }
         }
-      }
-    }
-  }
-  .add-contact-dialog {
-    div[role="document"] {
-      > div {
-        background: var(--dark-blue-low);
       }
     }
   }

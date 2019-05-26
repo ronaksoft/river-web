@@ -16,8 +16,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
 import {
-    EditRounded, InfoOutlined, KeyboardArrowLeftRounded, MoreVertRounded, PersonAddRounded, SearchRounded,
-    SendRounded, ExpandMoreRounded,
+    EditRounded, InfoOutlined, KeyboardArrowLeftRounded, MoreVertRounded, SearchRounded, ExpandMoreRounded,
 } from '@material-ui/icons';
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
@@ -66,7 +65,7 @@ import DialogContentText from '@material-ui/core/DialogContentText/DialogContent
 import DialogActions from '@material-ui/core/DialogActions/DialogActions';
 import Button from '@material-ui/core/Button/Button';
 import UserDialog from '../../components/UserDialog';
-import SearchList, {IInputPeer} from '../../components/SearchList';
+import {IInputPeer} from '../../components/SearchList';
 import ElectronService, {C_ELECTRON_SUBJECT} from '../../services/electron';
 import FileManager from '../../services/sdk/fileManager';
 import {InputMediaType} from '../../services/sdk/messages/chat.api.messages_pb';
@@ -95,6 +94,7 @@ import {C_CUSTOM_BG} from '../../components/SettingsMenu/vars/theme';
 import SearchMessage from '../../components/SearchMessage';
 import DownloadManager from '../../services/downloadManager';
 import * as Sentry from '@sentry/browser';
+import ForwardDialog from "../../components/ForwardDialog";
 
 import './style.css';
 
@@ -114,7 +114,6 @@ interface IState {
     dialogMap: { [key: string]: number };
     dialogs: IDialog[];
     forwardRecipientDialogOpen: boolean;
-    forwardRecipients: IInputPeer[];
     isChatView: boolean;
     isConnecting: boolean;
     isTyping: boolean;
@@ -164,6 +163,7 @@ class Chat extends React.Component<IProps, IState> {
     private readHistoryMaxId: number | null = null;
     private isMobileView: boolean = false;
     private mobileBackTimeout: any = null;
+    private forwardDialogRef: ForwardDialog;
     private userDialogComponent: UserDialog;
     private fileManager: FileManager;
     private electronService: ElectronService;
@@ -191,7 +191,6 @@ class Chat extends React.Component<IProps, IState> {
             dialogMap: {},
             dialogs: [],
             forwardRecipientDialogOpen: false,
-            forwardRecipients: [],
             isChatView: false,
             isConnecting: true,
             isTyping: false,
@@ -388,7 +387,7 @@ class Chat extends React.Component<IProps, IState> {
         const {
             confirmDialogMode, confirmDialogOpen, moreInfoAnchorEl, chatMoreAnchorEl, isTypingList, leftMenu, rightMenuShrink,
             leftMenuSub, leftOverlay, textInputMessage, textInputMessageMode, peer, selectedDialogId, messageSelectable,
-            messageSelectedIds, forwardRecipientDialogOpen, forwardRecipients, unreadCounter, blurMessage,
+            messageSelectedIds, unreadCounter, blurMessage,
         } = this.state;
         const leftMenuRender = () => {
             switch (leftMenu) {
@@ -695,23 +694,8 @@ class Chat extends React.Component<IProps, IState> {
                         </DialogActions>
                     </div>}
                 </OverlayDialog>
-                <OverlayDialog
-                    open={forwardRecipientDialogOpen}
-                    onClose={this.forwardRecipientDialogCloseHandler}
-                    className="forward-recipient-dialog"
-                >
-                    {forwardRecipientDialogOpen && <div className="dialog-content">
-                        <div className="dialog-header">
-                            <PersonAddRounded/> Recipients
-                        </div>
-                        <SearchList onChange={this.forwardRecipientChangeHandler}/>
-                        {Boolean(forwardRecipients.length > 0) && <div className="actions-bar">
-                            <div className="add-action send" onClick={this.forwardHandler}>
-                                <SendRounded/>
-                            </div>
-                        </div>}
-                    </div>}
-                </OverlayDialog>
+                <ForwardDialog ref={this.forwardDialogRefHandler} onDone={this.forwardDialogDoneHandler}
+                               onClose={this.forwardDialogCloseHandler}/>
                 <UserDialog ref={this.userDialogRefHandler}/>
                 <DocumentViewer onAction={this.messageAttachmentActionHandler}/>
             </div>
@@ -1020,6 +1004,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageComponent.setMessages(dataMsg.msgs, () => {
                     // Scroll down if possible
                     if (!tMoveDownVisible && this.isInChat) {
+                        this.messageComponent.list.forceUpdateGrid();
                         this.messageComponent.animateToEnd();
                         if (dataMsg.maxReadId !== -1) {
                             this.sendReadHistory(this.state.peer, dataMsg.maxReadId);
@@ -1870,6 +1855,7 @@ class Chat extends React.Component<IProps, IState> {
         this.isLoading = true;
         this.setScrollMode('none');
         this.messageComponent.setMessages(messages, () => {
+            this.messageComponent.list.recomputeRowHeights();
             this.messageComponent.animateToEnd();
             setTimeout(() => {
                 this.isLoading = false;
@@ -2820,9 +2806,9 @@ class Chat extends React.Component<IProps, IState> {
     private chatInputBulkActionHandler = (cmd: string) => {
         switch (cmd) {
             case 'forward':
-                this.setState({
-                    forwardRecipientDialogOpen: true,
-                });
+                if (this.forwardDialogRef) {
+                    this.forwardDialogRef.openDialog();
+                }
                 break;
             case 'remove':
                 let noRevoke = true;
@@ -2880,23 +2866,16 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private forwardRecipientDialogCloseHandler = () => {
+    private forwardDialogCloseHandler = () => {
         this.setState({
-            forwardRecipientDialogOpen: false,
             messageSelectable: false,
             messageSelectedIds: {},
         });
     }
 
-    private forwardRecipientChangeHandler = (inputPeers: IInputPeer[]) => {
-        this.setState({
-            forwardRecipients: inputPeers,
-        });
-    }
-
-    private forwardHandler = () => {
+    private forwardDialogDoneHandler = (forwardRecipients: IInputPeer[]) => {
         const promises: any[] = [];
-        const {peer, forwardRecipients, messageSelectedIds} = this.state;
+        const {peer, messageSelectedIds} = this.state;
         if (!peer) {
             return;
         }
@@ -2909,7 +2888,7 @@ class Chat extends React.Component<IProps, IState> {
             targetPeer.setType(recipient.type);
             promises.push(this.sdk.forwardMessage(peer, msgIds, UniqueId.getRandomId(), targetPeer, false));
         });
-        this.forwardRecipientDialogCloseHandler();
+        this.forwardDialogCloseHandler();
         Promise.all(promises).catch((err) => {
             window.console.debug(err);
         });
@@ -3064,8 +3043,13 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* UserDialog ref handler */
-    private userDialogRefHandler = (elem: any) => {
-        this.userDialogComponent = elem;
+    private userDialogRefHandler = (ref: any) => {
+        this.userDialogComponent = ref;
+    }
+
+    /* ForwardDialog ref handler */
+    private forwardDialogRefHandler = (ref: any) => {
+        this.forwardDialogRef = ref;
     }
 
     /* Context menu handler */

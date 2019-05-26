@@ -13,15 +13,13 @@ import TextField from '@material-ui/core/TextField/TextField';
 import {CheckRounded, PersonAddRounded, PersonRounded} from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
-import DialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent/DialogContent';
-import Dialog from '@material-ui/core/Dialog/Dialog';
 import SDK from '../../services/sdk';
 import {PhoneContact} from '../../services/sdk/messages/chat.core.types_pb';
 import UniqueId from '../../services/uniqueId';
 import ContactList from '../ContactList';
 import {IUser} from '../../repository/user/interface';
 import Broadcaster from '../../services/broadcaster';
+import SettingsModal from "../SettingsModal";
 
 import './style.css';
 
@@ -39,7 +37,6 @@ interface IState {
 }
 
 class ContactMenu extends React.Component<IProps, IState> {
-    // @ts-ignore
     private contactListComponent: ContactList;
     private userRepo: UserRepo;
     private sdk: SDK;
@@ -92,15 +89,13 @@ class ContactMenu extends React.Component<IProps, IState> {
                     <ContactList ref={this.contactListRefHandler} noRowsRenderer={this.noRowsRenderer} mode="link"
                                  onContextMenuAction={this.contextMenuActionHandler} disableCheckSelected={true}/>
                 </div>
-                <Dialog
-                    open={newContactDialogOpen}
-                    onClose={this.newContactCloseHandler}
-                    aria-labelledby="form-dialog-title"
-                    maxWidth="xs"
-                    className="add-contact-dialog"
+                <SettingsModal open={newContactDialogOpen} title="New Contact"
+                               icon={<PersonAddRounded/>}
+                               onClose={this.newContactCloseHandler}
+                               noScrollbar={true}
+                               height="280px"
                 >
-                    <DialogTitle id="form-dialog-title">New Contact</DialogTitle>
-                    <DialogContent>
+                    <div className="new-contact-dialog">
                         <TextField
                             autoFocus={true}
                             fullWidth={true}
@@ -126,14 +121,15 @@ class ContactMenu extends React.Component<IProps, IState> {
                             value={phone}
                             onKeyDown={this.confirmKeyDown}
                         />
-                        {Boolean(firstname.length > 0 && lastname.length > 0 && phone.length > 5) &&
                         <div className="actions-bar">
-                            <div className="add-action" onClick={this.createContactHandler}>
+                            <div
+                                className={'add-action' + (((firstname.length > 0 || lastname.length > 0) && phone.length > 5) ? '' : ' disabled')}
+                                onClick={this.createContactHandler}>
                                 <CheckRounded/>
                             </div>
-                        </div>}
-                    </DialogContent>
-                </Dialog>
+                        </div>
+                    </div>
+                </SettingsModal>
             </div>
         );
     }
@@ -181,8 +177,11 @@ class ContactMenu extends React.Component<IProps, IState> {
     }
 
     private createContactHandler = () => {
-        this.newContactCloseHandler();
         const {firstname, lastname, phone} = this.state;
+        if (!((firstname.length > 0 || lastname.length > 0) && phone.length > 5)) {
+            return;
+        }
+        this.newContactCloseHandler();
         const contacts: PhoneContact.AsObject[] = [];
         contacts.push({
             clientid: String(UniqueId.getRandomId()),

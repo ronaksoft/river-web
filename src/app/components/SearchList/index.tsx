@@ -71,7 +71,7 @@ class SearchList extends React.Component<IProps, IState> {
     private searchRepo: SearchRepo;
     private defaultInputPeer: IDialogWithContact;
     private readonly searchDebounce: any;
-    private userId: string = '';
+    private readonly userId: string = '';
 
     constructor(props: IProps) {
         super(props);

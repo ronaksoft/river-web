@@ -168,6 +168,7 @@ class Message extends React.Component<IProps, IState> {
     private topMessageId: number = 0;
     private disableScrolling: boolean = false;
     private scrollToIndex?: number;
+    private scrollDownTimeout: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -331,11 +332,6 @@ class Message extends React.Component<IProps, IState> {
         if (this.list && jump) {
             this.list.scrollToRow(items.length);
         } else {
-            // if (this.props.onJumpToMessage && items.length > 0 && (items[items.length - 1].id || 0) < this.topMessageId) {
-            //     this.props.onJumpToMessage(this.topMessageId, '');
-            //     return;
-            // }
-            // setTimeout(() => {
             if (instant) {
                 if (this.list) {
                     this.list.scrollToRow(items.length);
@@ -358,55 +354,53 @@ class Message extends React.Component<IProps, IState> {
                     }
                 }
             } else {
-                setTimeout(() => {
-                    const el = document.querySelector('.messages-inner .chat.active-chat');
-                    if (el) {
-                        const options: any = {
-                            // duration of the scroll per 1000px, default 500
-                            speed: 500,
+                const el = document.querySelector('.messages-inner .chat.active-chat');
+                clearTimeout(this.scrollDownTimeout);
+                if (el) {
+                    const options: any = {
+                        // duration of the scroll per 1000px, default 500
+                        speed: 500,
 
-                            // minimum duration of the scroll
-                            minDuration: 250,
+                        // minimum duration of the scroll
+                        minDuration: 250,
 
-                            // maximum duration of the scroll
-                            maxDuration: 300,
+                        // maximum duration of the scroll
+                        maxDuration: 300,
 
-                            // @ts-ignore
-                            element: el,
+                        // @ts-ignore
+                        element: el,
 
-                            // Additional offset value that gets added to the desiredOffset.  This is
-                            // useful when passing a DOM object as the desiredOffset and wanting to adjust
-                            // for an fixed nav or to add some padding.
-                            offset: 10,
+                        // Additional offset value that gets added to the desiredOffset.  This is
+                        // useful when passing a DOM object as the desiredOffset and wanting to adjust
+                        // for an fixed nav or to add some padding.
+                        offset: 10,
 
-                            // should animated scroll be canceled on user scroll/keypress
-                            // if set to "false" user input will be disabled until animated scroll is complete
-                            // (when set to false, "passive" will be also set to "false" to prevent Chrome errors)
-                            cancelOnUserAction: true,
+                        // should animated scroll be canceled on user scroll/keypress
+                        // if set to "false" user input will be disabled until animated scroll is complete
+                        // (when set to false, "passive" will be also set to "false" to prevent Chrome errors)
+                        cancelOnUserAction: true,
 
-                            // Set passive event Listeners to be true by default. Stops Chrome from complaining.
-                            passive: true,
+                        // Set passive event Listeners to be true by default. Stops Chrome from complaining.
+                        passive: true,
 
-                            // Scroll horizontally rather than vertically (which is the default)
-                            horizontal: false,
+                        // Scroll horizontally rather than vertically (which is the default)
+                        horizontal: false,
 
-                            onComplete: () => {
-                                if (!this.isAtEnd()) {
-                                    this.animateToEnd();
-                                } else {
-                                    setTimeout(() => {
-                                        if (!this.isAtEnd()) {
-                                            this.animateToEnd();
-                                        }
-                                    }, 200);
-                                }
+                        onComplete: () => {
+                            if (!this.isAtEnd()) {
+                                this.animateToEnd();
+                            } else {
+                                this.scrollDownTimeout = setTimeout(() => {
+                                    if (!this.isAtEnd()) {
+                                        this.animateToEnd();
+                                    }
+                                }, 200);
                             }
-                        };
-                        animateScrollTo(el.scrollHeight + 50, options);
-                    }
-                }, 1);
+                        }
+                    };
+                    animateScrollTo(el.scrollHeight + 50, options);
+                }
             }
-            // }, 200);
         }
     }
 
@@ -1162,7 +1156,6 @@ class Message extends React.Component<IProps, IState> {
 
     /* Modify scroll position based on scroll mode */
     private modifyScroll(items: IMessage[]) {
-        window.console.log('modifyScroll');
         switch (this.scrollMode) {
             case 'stay':
                 const index = findIndex(items, {id: this.stayInfo.id});
