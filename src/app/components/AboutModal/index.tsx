@@ -24,6 +24,7 @@ interface IProps {
 interface IState {
     className?: string;
     open: boolean;
+    version: string;
 }
 
 class AboutDialog extends React.Component<IProps, IState> {
@@ -33,6 +34,7 @@ class AboutDialog extends React.Component<IProps, IState> {
 
         this.state = {
             open: false,
+            version: '0.6',
         };
 
     }
@@ -41,14 +43,15 @@ class AboutDialog extends React.Component<IProps, IState> {
         //
     }
 
-    public openDialog() {
+    public openDialog(version: string) {
         this.setState({
             open: true,
+            version,
         });
     }
 
     public render() {
-        const {open} = this.state;
+        const {open, version} = this.state;
         return (
             <Dialog
                 open={open}
@@ -59,7 +62,7 @@ class AboutDialog extends React.Component<IProps, IState> {
                     <div className="logo-container">
                         <img src={riverLogo}/>
                     </div>
-                    <div className="version-container">{C_VERSION}</div>
+                    <div className="version-container">{`${C_VERSION} (${version})`}</div>
                     <div className="about-container">
                         River is free messaging app for desktop focuses on security and speed.
                     </div>

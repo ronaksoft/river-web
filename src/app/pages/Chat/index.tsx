@@ -1365,9 +1365,9 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Electron about click handler */
-    private electronAboutHandler = () => {
+    private electronAboutHandler = (version: string) => {
         if (this.aboutDialogRef) {
-            this.aboutDialogRef.openDialog();
+            this.aboutDialogRef.openDialog(version);
         }
     }
 

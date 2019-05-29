@@ -99,7 +99,7 @@ generateMenu = () => {
             submenu: [
                 {
                     click() {
-                        callReact('about', {});
+                        callReact('about', app.getVersion());
                     },
                     label: 'About',
                 },
