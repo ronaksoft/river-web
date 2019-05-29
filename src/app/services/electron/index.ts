@@ -10,6 +10,7 @@
 import {IpcRenderer} from 'electron';
 
 export const C_ELECTRON_SUBJECT = {
+    About: 'about',
     FnCall: 'fnCall',
     FnCallback: 'fnCallback',
     Logout: 'logout',
@@ -59,6 +60,9 @@ export default class ElectronService {
         if (this.ipcRenderer) {
             this.ipcRenderer.on('settings', (event: any, msg: any) => {
                 this.callHandlers(C_ELECTRON_SUBJECT.Setting, msg);
+            });
+            this.ipcRenderer.on('about', (event: any, msg: any) => {
+                this.callHandlers(C_ELECTRON_SUBJECT.About, msg);
             });
             this.ipcRenderer.on('logout', (event: any, msg: any) => {
                 this.callHandlers(C_ELECTRON_SUBJECT.Logout, msg);

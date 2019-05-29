@@ -95,6 +95,7 @@ import SearchMessage from '../../components/SearchMessage';
 import DownloadManager from '../../services/downloadManager';
 import * as Sentry from '@sentry/browser';
 import ForwardDialog from "../../components/ForwardDialog";
+import AboutDialog from "../../components/AboutModal";
 
 import './style.css';
 
@@ -180,6 +181,7 @@ class Chat extends React.Component<IProps, IState> {
     private backgroundService: BackgroundService;
     private searchMessageRef: SearchMessage;
     private downloadManager: DownloadManager;
+    private aboutDialogRef: AboutDialog;
 
     constructor(props: IProps) {
         super(props);
@@ -326,6 +328,7 @@ class Chat extends React.Component<IProps, IState> {
 
         // Electron events
         this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.Setting, this.electronSettingsHandler));
+        this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.About, this.electronAboutHandler));
         this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.Logout, this.electronLogoutHandler));
         this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.SizeMode, this.electronSizeModeHandler));
 
@@ -698,6 +701,7 @@ class Chat extends React.Component<IProps, IState> {
                                onClose={this.forwardDialogCloseHandler}/>
                 <UserDialog ref={this.userDialogRefHandler}/>
                 <DocumentViewer onAction={this.messageAttachmentActionHandler}/>
+                <AboutDialog ref={this.aboutDialogRefHandler}/>
             </div>
         );
     }
@@ -1005,10 +1009,13 @@ class Chat extends React.Component<IProps, IState> {
                     // Scroll down if possible
                     if (!tMoveDownVisible && this.isInChat) {
                         this.messageComponent.list.forceUpdateGrid();
+                        this.messageComponent.list.recomputeRowHeights();
                         this.messageComponent.animateToEnd();
                         if (dataMsg.maxReadId !== -1) {
                             this.sendReadHistory(this.state.peer, dataMsg.maxReadId);
                         }
+                    } else {
+                        this.messageComponent.list.forceUpdateGrid();
                     }
                 });
             }
@@ -1355,6 +1362,13 @@ class Chat extends React.Component<IProps, IState> {
     /* Electron preferences click handler */
     private electronSettingsHandler = () => {
         this.bottomBarSelectHandler('settings');
+    }
+
+    /* Electron about click handler */
+    private electronAboutHandler = () => {
+        if (this.aboutDialogRef) {
+            this.aboutDialogRef.openDialog();
+        }
     }
 
     /* Electron log out click handler */
@@ -1805,14 +1819,6 @@ class Chat extends React.Component<IProps, IState> {
                     randomid: randomId,
                 }, true);
 
-                const messages = this.messages;
-                const index = findIndex(messages, (o) => {
-                    return o.id === message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
-                });
-                if (index > -1) {
-                    this.messageComponent.cache.clear(index, 0);
-                }
-
                 message.id = res.messageid;
                 this.messageRepo.lazyUpsert([message]);
                 this.updateDialogs(message, '0');
@@ -1855,6 +1861,7 @@ class Chat extends React.Component<IProps, IState> {
         this.isLoading = true;
         this.setScrollMode('none');
         this.messageComponent.setMessages(messages, () => {
+            this.messageComponent.list.forceUpdateGrid();
             this.messageComponent.list.recomputeRowHeights();
             this.messageComponent.animateToEnd();
             setTimeout(() => {
@@ -2520,6 +2527,9 @@ class Chat extends React.Component<IProps, IState> {
         }
         const peerId = inputPeer.getId() || '';
         const dialog = this.getDialogById(peerId);
+        if (msgId < 0 && this.state.selectedDialogId === peerId) {
+            msgId = this.getValidAfter();
+        }
         if (dialog) {
             const index = findLastIndex(this.messages, {id: msgId});
             if (index > -1) {
@@ -3050,6 +3060,11 @@ class Chat extends React.Component<IProps, IState> {
     /* ForwardDialog ref handler */
     private forwardDialogRefHandler = (ref: any) => {
         this.forwardDialogRef = ref;
+    }
+
+    /* AboutDialog ref handler */
+    private aboutDialogRefHandler = (ref: any) => {
+        this.aboutDialogRef = ref;
     }
 
     /* Context menu handler */

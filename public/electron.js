@@ -97,7 +97,12 @@ generateMenu = () => {
         {
             label: 'File',
             submenu: [
-                {role: 'about'},
+                {
+                    click() {
+                        callReact('about', {});
+                    },
+                    label: 'About',
+                },
                 {role: 'quit'},
                 {type: 'separator'},
                 {
@@ -144,17 +149,6 @@ generateMenu = () => {
         }
         , {
             role: 'help',
-            submenu: [
-                {
-                    click() {
-                        const {dialog} = require('electron').remote;
-                        const dialogOptions = {type: 'info', buttons: ['OK', 'Cancel'], message: 'Do it?'};
-                        dialog.showMessageBox(dialogOptions, i => console.log(i));
-
-                    },
-                    label: 'About',
-                }
-            ],
         },
     ];
 
