@@ -112,8 +112,6 @@ interface IState {
     chatMoreAnchorEl: any;
     confirmDialogMode: 'none' | 'logout' | 'remove_message' | 'remove_message_revoke' | 'delete_exit_group' | 'delete_user';
     confirmDialogOpen: boolean;
-    dialogMap: { [key: string]: number };
-    dialogs: IDialog[];
     forwardRecipientDialogOpen: boolean;
     isChatView: boolean;
     isConnecting: boolean;
@@ -182,6 +180,9 @@ class Chat extends React.Component<IProps, IState> {
     private searchMessageRef: SearchMessage;
     private downloadManager: DownloadManager;
     private aboutDialogRef: AboutDialog;
+    // test
+    private dialogMap: { [key: string]: number } = {};
+    private dialogs: IDialog[] = [];
 
     constructor(props: IProps) {
         super(props);
@@ -190,8 +191,6 @@ class Chat extends React.Component<IProps, IState> {
             chatMoreAnchorEl: null,
             confirmDialogMode: 'none',
             confirmDialogOpen: false,
-            dialogMap: {},
-            dialogs: [],
             forwardRecipientDialogOpen: false,
             isChatView: false,
             isConnecting: true,
@@ -227,7 +226,7 @@ class Chat extends React.Component<IProps, IState> {
         this.mainRepo = MainRepo.getInstance();
         this.updateManager = UpdateManager.getInstance();
         this.syncManager = SyncManager.getInstance();
-        this.dialogsSortThrottle = throttle(this.dialogsSort, 500);
+        this.dialogsSortThrottle = throttle(this.dialogsSort, 512);
         this.isInChat = (document.visibilityState === 'visible');
         this.isMobileView = (window.innerWidth < 600);
         this.updateManager.setUserId(this.connInfo.UserID || '');
@@ -388,7 +387,7 @@ class Chat extends React.Component<IProps, IState> {
 
     public render() {
         const {
-            confirmDialogMode, confirmDialogOpen, moreInfoAnchorEl, chatMoreAnchorEl, isTypingList, leftMenu, rightMenuShrink,
+            confirmDialogMode, confirmDialogOpen, moreInfoAnchorEl, chatMoreAnchorEl, leftMenu, rightMenuShrink,
             leftMenuSub, leftOverlay, textInputMessage, textInputMessageMode, peer, selectedDialogId, messageSelectable,
             messageSelectedIds, unreadCounter, blurMessage,
         } = this.state;
@@ -396,8 +395,7 @@ class Chat extends React.Component<IProps, IState> {
             switch (leftMenu) {
                 default:
                 case 'chat':
-                    return (<Dialog ref={this.dialogRefHandler} items={this.state.dialogs}
-                                    selectedId={selectedDialogId} isTypingList={isTypingList}
+                    return (<Dialog ref={this.dialogRefHandler} selectedId={selectedDialogId}
                                     cancelIsTyping={this.cancelIsTypingHandler}
                                     onContextMenu={this.dialogContextMenuHandler}/>);
                 case 'settings':
@@ -1122,6 +1120,9 @@ class Chat extends React.Component<IProps, IState> {
                         this.setState({
                             isTypingList,
                         });
+                        if (this.dialogComponent) {
+                            this.dialogComponent.setIsTypingList(isTypingList);
+                        }
                     }
                 }
             }, 6000);
@@ -1143,6 +1144,9 @@ class Chat extends React.Component<IProps, IState> {
             this.setState({
                 isTypingList,
             });
+            if (this.dialogComponent) {
+                this.dialogComponent.setIsTypingList(isTypingList);
+            }
         } else if (data.action === TypingAction.TYPINGACTIONCANCEL) {
             if (isTypingList.hasOwnProperty(data.peerid || '')) {
                 if (isTypingList[data.peerid || ''].hasOwnProperty(data.userid || 0)) {
@@ -1151,6 +1155,9 @@ class Chat extends React.Component<IProps, IState> {
                     this.setState({
                         isTypingList,
                     });
+                    if (this.dialogComponent) {
+                        this.dialogComponent.setIsTypingList(isTypingList);
+                    }
                 }
             }
         }
@@ -1213,59 +1220,60 @@ class Chat extends React.Component<IProps, IState> {
             }
 
             // Check if current dialog is visible
-            if (this.state.selectedDialogId === (peer.id || '')) {
-                const {dialogs} = this.state;
-                const messages = this.messages;
-                let updateView = false;
-                data.messageidsList.sort().forEach((id) => {
-                    // Update dialog list Top Message
-                    const dialogIndex = findIndex(dialogs, {topmessageid: id});
-                    if (dialogIndex > -1) {
-                        const inputPeer = new InputPeer();
-                        inputPeer.setId(peer.id || '');
-                        inputPeer.setAccesshash(peer.accesshash || '0');
-                        inputPeer.setType(peer.type || 0);
-                        if (id > 1) {
-                            this.messageRepo.getManyCache({before: id, limit: 1}, inputPeer).then((res) => {
-                                if (res.messages.length > 0) {
-                                    this.updateDialogs(res.messages[0], peer.accesshash || '0', true);
-                                }
-                            });
-                        }
-                    }
-                    if (peer.id === this.state.selectedDialogId) {
-                        const index = findLastIndex(messages, (o) => {
-                            return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+            data.messageidsList.sort().forEach((id) => {
+                // Update dialog list Top Message
+                const dialogIndex = findIndex(this.dialogs, {topmessageid: id});
+                let dialog: IDialog | null = null;
+                if (dialogIndex < 0) {
+                    dialog = this.getDialogById(peer.id || '');
+                }
+                if (dialogIndex > -1 || (dialog && dialog.topmessageid === id)) {
+                    const inputPeer = new InputPeer();
+                    inputPeer.setId(peer.id || '');
+                    inputPeer.setAccesshash(peer.accesshash || '0');
+                    inputPeer.setType(peer.type || 0);
+                    if (id > 1) {
+                        this.messageRepo.getManyCache({before: id, limit: 1}, inputPeer).then((res) => {
+                            if (res.messages.length > 0) {
+                                this.updateDialogs(res.messages[0], peer.accesshash || '0', true);
+                            }
                         });
-                        if (index > -1) {
-                            updateView = true;
-                            // Delete visible message if possible
-                            this.messageComponent.cache.clear(index, 0);
-                            messages.splice(index, 1);
-                            // Clear date indicator if possible
-                            const indexAlpha = index - 1;
-                            if (indexAlpha > -1 && messages.length > index) {
-                                // If date indicator were in current range boundaries
-                                if (messages[indexAlpha].messagetype === C_MESSAGE_TYPE.Date && messages[index].messagetype === C_MESSAGE_TYPE.Date) {
-                                    this.messageComponent.cache.clear(indexAlpha, 0);
-                                    messages.splice(indexAlpha, 1);
-                                }
-                            } else if (indexAlpha > -1 && messages.length === index) {
-                                // If it was last message
-                                if (messages[indexAlpha].messagetype === C_MESSAGE_TYPE.Date) {
-                                    this.messageComponent.cache.clear(indexAlpha, 0);
-                                    messages.splice(indexAlpha, 1);
-                                }
+                    }
+                }
+                if (peer.id === this.state.selectedDialogId) {
+                    const messages = this.messages;
+                    let updateView = false;
+                    const index = findLastIndex(messages, (o) => {
+                        return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                    });
+                    if (index > -1) {
+                        updateView = true;
+                        // Delete visible message if possible
+                        this.messageComponent.cache.clear(index, 0);
+                        messages.splice(index, 1);
+                        // Clear date indicator if possible
+                        const indexAlpha = index - 1;
+                        if (indexAlpha > -1 && messages.length > index) {
+                            // If date indicator were in current range boundaries
+                            if (messages[indexAlpha].messagetype === C_MESSAGE_TYPE.Date && messages[index].messagetype === C_MESSAGE_TYPE.Date) {
+                                this.messageComponent.cache.clear(indexAlpha, 0);
+                                messages.splice(indexAlpha, 1);
+                            }
+                        } else if (indexAlpha > -1 && messages.length === index) {
+                            // If it was last message
+                            if (messages[indexAlpha].messagetype === C_MESSAGE_TYPE.Date) {
+                                this.messageComponent.cache.clear(indexAlpha, 0);
+                                messages.splice(indexAlpha, 1);
                             }
                         }
                     }
-                });
-                // Update current message list if visible
-                if (updateView) {
-                    this.messageComponent.list.recomputeGridSize();
-                    this.messageComponent.fitList();
+                    // Update current message list if visible
+                    if (updateView) {
+                        this.messageComponent.list.recomputeGridSize();
+                        this.messageComponent.fitList();
+                    }
                 }
-            }
+            });
         });
     }
 
@@ -1389,8 +1397,8 @@ class Chat extends React.Component<IProps, IState> {
 
         this.newMessageFlag = false;
 
-        const {peer, dialogs} = this.state;
-        if (!peer || !dialogs) {
+        const {peer} = this.state;
+        if (!peer) {
             return;
         }
 
@@ -1859,11 +1867,15 @@ class Chat extends React.Component<IProps, IState> {
         }
         messages.push(message);
         this.isLoading = true;
-        this.setScrollMode('none');
+        this.setScrollMode('end');
         this.messageComponent.setMessages(messages, () => {
-            this.messageComponent.list.forceUpdateGrid();
-            this.messageComponent.list.recomputeRowHeights();
-            this.messageComponent.animateToEnd();
+            setTimeout(() => {
+                if (this.messageComponent) {
+                    this.messageComponent.list.forceUpdateGrid();
+                    this.messageComponent.list.recomputeRowHeights();
+                    this.messageComponent.animateToEnd();
+                }
+            }, 50);
             setTimeout(() => {
                 this.isLoading = false;
             }, 250);
@@ -1949,8 +1961,8 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private getDialogById(id: string): IDialog | null {
-        if (this.state.dialogMap.hasOwnProperty(id)) {
-            return this.state.dialogs[this.state.dialogMap[id]] || null;
+        if (this.dialogMap.hasOwnProperty(id)) {
+            return this.dialogs[this.dialogMap[id]] || null;
         }
         return null;
     }
@@ -1960,11 +1972,11 @@ class Chat extends React.Component<IProps, IState> {
         if (msg.peerid === '') {
             return;
         }
-        const {dialogs} = this.state;
+        const dialogs = this.dialogs;
         let toUpdateDialog: IDialog | null = null;
         const messageTitle = getMessageTitle(msg);
-        if (this.state.dialogMap.hasOwnProperty(id)) {
-            let index = this.state.dialogMap[id];
+        if (this.dialogMap.hasOwnProperty(id)) {
+            let index = this.dialogMap[id];
             // Double check
             if (dialogs[index].peerid !== msg.peerid) {
                 index = findIndex(dialogs, {peerid: id});
@@ -2016,11 +2028,7 @@ class Chat extends React.Component<IProps, IState> {
             }
             toUpdateDialog = dialog;
             dialogs.push(dialog);
-            const {dialogMap} = this.state;
-            dialogMap[id] = dialogs.length - 1;
-            this.setState({
-                dialogMap,
-            });
+            this.dialogMap[id] = dialogs.length - 1;
         }
 
         this.dialogsSortThrottle(dialogs);
@@ -2030,22 +2038,21 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private updateDialogsNotifySettings(peerId: string, settings: PeerNotifySettings.AsObject) {
-        const {dialogs} = this.state;
-        if (!peerId || !dialogs) {
+        if (!peerId || !this.dialogs) {
             return;
         }
-        if (this.state.dialogMap.hasOwnProperty(peerId)) {
-            const index = this.state.dialogMap[peerId];
-            dialogs[index].notifysettings = settings;
-            this.dialogsSortThrottle(dialogs);
-            this.dialogRepo.lazyUpsert([dialogs[index]]);
+        if (this.dialogMap.hasOwnProperty(peerId)) {
+            const index = this.dialogMap[peerId];
+            this.dialogs[index].notifysettings = settings;
+            this.dialogsSortThrottle(this.dialogs);
+            this.dialogRepo.lazyUpsert([this.dialogs[index]]);
         }
     }
 
     private updateDialogsCounter(peerId: string, {maxInbox, maxOutbox, unreadCounter, unreadCounterIncrease, mentionCounter, mentionCounterIncrease, scrollPos}: any) {
-        if (this.state.dialogMap.hasOwnProperty(peerId)) {
-            const {dialogs} = this.state;
-            const index = this.state.dialogMap[peerId];
+        if (this.dialogMap.hasOwnProperty(peerId)) {
+            const dialogs = this.dialogs;
+            const index = this.dialogMap[peerId];
             if (!dialogs[index]) {
                 return;
             }
@@ -2118,14 +2125,17 @@ class Chat extends React.Component<IProps, IState> {
                 tDialogMap[d.peerid || ''] = i;
             }
         });
+        this.dialogs = td;
+        this.dialogMap = tDialogMap;
+        if (this.dialogComponent) {
+            this.dialogComponent.setDialogs(this.dialogs, () => {
+                if (callback) {
+                    callback(this.dialogs);
+                }
+            });
+        }
         this.setState({
-            dialogMap: tDialogMap,
-            dialogs: td,
             unreadCounter,
-        }, () => {
-            if (callback) {
-                callback(td);
-            }
         });
     }
 
@@ -2272,7 +2282,7 @@ class Chat extends React.Component<IProps, IState> {
                         }
                     });
                     this.dialogRepo.lazyUpsert(toUpdateDialogs);
-                    this.dialogsSort(this.state.dialogs);
+                    this.dialogsSort(this.dialogs);
                 });
             }).catch(() => {
                 this.updateManager.enable();
@@ -2301,9 +2311,9 @@ class Chat extends React.Component<IProps, IState> {
             this.dialogsSort(res, (dialogs) => {
                 data.ids.forEach((id: string) => {
                     window.console.debug('dialogDBUpdated data.id:', id);
-                    if (this.state.dialogMap.hasOwnProperty(id) && dialogs[this.state.dialogMap[id]]) {
-                        window.console.debug('dialogDBUpdated peerId:', dialogs[this.state.dialogMap[id]].peerid);
-                        const maxReadInbox = dialogs[this.state.dialogMap[id]].readinboxmaxid || 0;
+                    if (this.dialogMap.hasOwnProperty(id) && dialogs[this.dialogMap[id]]) {
+                        window.console.debug('dialogDBUpdated peerId:', dialogs[this.dialogMap[id]].peerid);
+                        const maxReadInbox = dialogs[this.dialogMap[id]].readinboxmaxid || 0;
                         window.console.debug('dialogDBUpdated maxReadInbox:', maxReadInbox);
                         const dialog = this.getDialogById(id);
                         if (dialog) {
@@ -2474,7 +2484,6 @@ class Chat extends React.Component<IProps, IState> {
         });
         this.sdk.groupCreate(users, title).then((res) => {
             this.groupRepo.importBulk([res]);
-            const {dialogs} = this.state;
             const dialog: IDialog = {
                 accesshash: '0',
                 action_code: C_MESSAGE_ACTION.MessageActionGroupCreated,
@@ -2486,8 +2495,8 @@ class Chat extends React.Component<IProps, IState> {
                 sender_id: this.connInfo.UserID,
                 target_id: res.id,
             };
-            dialogs.push(dialog);
-            this.dialogsSortThrottle(dialogs);
+            this.dialogs.push(dialog);
+            this.dialogsSortThrottle(this.dialogs);
             this.props.history.push(`/chat/${res.id}`);
         });
     }
@@ -2707,6 +2716,9 @@ class Chat extends React.Component<IProps, IState> {
             this.setState({
                 isTypingList,
             });
+            if (this.dialogComponent) {
+                this.dialogComponent.setIsTypingList(isTypingList);
+            }
         }
     }
 
@@ -2751,25 +2763,16 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private dialogRemove = (id: string) => {
-        const {dialogs} = this.state;
-        if (!dialogs) {
-            return;
-        }
         this.updateManager.disable();
         this.setState({
             isUpdating: true,
         });
         if (id) {
-            const {dialogMap} = this.state;
-            const index = this.state.dialogMap[id];
-            dialogs.splice(index, 1);
+            const dialogMap = this.dialogMap;
+            const index = this.dialogMap[id];
+            this.dialogs.splice(index, 1);
             delete dialogMap[id];
-            this.setState({
-                dialogMap,
-                dialogs,
-            }, () => {
-                this.dialogsSortThrottle(this.state.dialogs);
-            });
+            this.dialogsSort(this.dialogs);
             this.dialogRepo.remove(id).then(() => {
                 this.props.history.push('/chat/null');
                 this.updateManager.enable();
@@ -2852,8 +2855,8 @@ class Chat extends React.Component<IProps, IState> {
 
     /* ChatInput action handler */
     private chatInputActionHandler = (cmd: string, message?: IMessage) => {
-        const {peer, dialogs} = this.state;
-        if (!peer || !dialogs) {
+        const {peer} = this.state;
+        if (!peer) {
             return;
         }
         switch (cmd) {
@@ -2929,8 +2932,7 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Check if can notify user */
     private canNotify(peerId: string) {
-        const {dialogs} = this.state;
-        if (!peerId || !dialogs) {
+        if (!peerId) {
             return;
         }
         const dialog = this.getDialogById(peerId);
@@ -3069,10 +3071,6 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Context menu handler */
     private dialogContextMenuHandler = (cmd: string, dialog: IDialog) => {
-        const {dialogs} = this.state;
-        if (!dialogs) {
-            return;
-        }
         const peer = new InputPeer();
         if (dialog.peertype) {
             peer.setType(dialog.peertype);
@@ -4021,7 +4019,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private pinDialog(peerId: string, pinned?: boolean) {
-        const {dialogs} = this.state;
+        const dialogs = this.dialogs;
         const index = findIndex(dialogs, {peerid: peerId});
         if (index > -1) {
             let update = false;

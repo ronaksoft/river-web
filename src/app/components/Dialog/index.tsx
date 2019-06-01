@@ -31,8 +31,6 @@ import './style.css';
 
 interface IProps {
     cancelIsTyping: (id: string) => void;
-    isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } };
-    items: IDialog[];
     onContextMenu?: (cmd: string, dialog: IDialog) => void;
     selectedId: string;
 }
@@ -65,12 +63,12 @@ class Dialog extends React.Component<IProps, IState> {
 
         this.state = {
             ids: [],
-            isTypingList: props.isTypingList,
-            items: props.items,
+            isTypingList: {},
+            items: [],
             moreAnchorEl: null,
             moreIndex: -1,
             searchEnable: false,
-            searchItems: clone(props.items),
+            searchItems: [],
             selectedId: props.selectedId,
         };
 
@@ -87,24 +85,26 @@ class Dialog extends React.Component<IProps, IState> {
     }
 
     public componentWillReceiveProps(newProps: IProps) {
-        if (this.state.items !== newProps.items) {
-            this.setState({
-                isTypingList: newProps.isTypingList,
-                items: newProps.items,
-                selectedId: newProps.selectedId,
-            }, () => {
-                this.filterItem();
-            });
-        } else {
-            // const index = findIndex(this.state.items, {peerid: newProps.selectedId});
-            this.setState({
-                isTypingList: newProps.isTypingList,
-                items: newProps.items,
-                selectedId: newProps.selectedId,
-            }, () => {
-                this.filterItem();
-            });
-        }
+        this.setState({
+            selectedId: newProps.selectedId,
+        }, () => {
+            this.filterItem();
+        });
+    }
+
+    public setDialogs(dialogs: IDialog[], callback: () => void) {
+        this.setState({
+            items: dialogs,
+        }, () => {
+            this.filterItem();
+            callback();
+        });
+    }
+
+    public setIsTypingList(isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } }) {
+        this.setState({
+            isTypingList,
+        });
     }
 
     public toggleSearch() {
