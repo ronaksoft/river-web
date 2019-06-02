@@ -57,7 +57,6 @@ import GroupRepo from '../../repository/group';
 import GroupName from '../../components/GroupName';
 import GroupInfoMenu from '../../components/GroupInfoMenu';
 import UserInfoMenu, {isMuted} from '../../components/UserInfoMenu';
-import {isTypingRender} from '../../components/DialogMessage';
 import OverlayDialog from '@material-ui/core/Dialog/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent/DialogContent';
@@ -85,7 +84,6 @@ import AudioPlayerShell from '../../components/AudioPlayerShell';
 import DocumentViewer from '../../components/DocumentViewer';
 import {IUser} from '../../repository/user/interface';
 import {IMediaItem} from '../../components/Uploader';
-import LastSeen from '../../components/LastSeen';
 import {IGeoItem} from '../../components/MapPicker';
 import RTLDetector from '../../services/utilities/rtl_detector';
 import Badge from '@material-ui/core/Badge/Badge';
@@ -96,6 +94,7 @@ import DownloadManager from '../../services/downloadManager';
 import * as Sentry from '@sentry/browser';
 import ForwardDialog from "../../components/ForwardDialog";
 import AboutDialog from "../../components/AboutModal";
+import StatusBar from "../../components/StatusBar";
 
 import './style.css';
 
@@ -115,8 +114,6 @@ interface IState {
     forwardRecipientDialogOpen: boolean;
     isChatView: boolean;
     isConnecting: boolean;
-    isTyping: boolean;
-    isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } };
     isUpdating: boolean;
     leftMenu: string;
     leftMenuSelectedDialogId: string;
@@ -142,6 +139,7 @@ class Chat extends React.Component<IProps, IState> {
     private isInChat: boolean = true;
     private rightMenuRef: any = null;
     private dialogComponent: Dialog;
+    private statusBarComponent: StatusBar;
     private popUpDateComponent: PopUpDate;
     private messageComponent: Message;
     private messages: IMessage[] = [];
@@ -180,9 +178,9 @@ class Chat extends React.Component<IProps, IState> {
     private searchMessageRef: SearchMessage;
     private downloadManager: DownloadManager;
     private aboutDialogRef: AboutDialog;
-    // test
     private dialogMap: { [key: string]: number } = {};
     private dialogs: IDialog[] = [];
+    private isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } } = {};
 
     constructor(props: IProps) {
         super(props);
@@ -194,8 +192,6 @@ class Chat extends React.Component<IProps, IState> {
             forwardRecipientDialogOpen: false,
             isChatView: false,
             isConnecting: true,
-            isTyping: false,
-            isTypingList: {},
             isUpdating: false,
             leftMenu: 'chat',
             leftMenuSelectedDialogId: '',
@@ -513,7 +509,10 @@ class Chat extends React.Component<IProps, IState> {
                                     {this.isMobileView &&
                                     <div className="back-to-chats" onClick={this.backToChatsHandler}>
                                         <KeyboardArrowLeftRounded/></div>}
-                                    {this.getChatTitle()}
+                                    <StatusBar ref={this.statusBarRefHandler} isConnecting={this.state.isConnecting}
+                                               isUpdating={this.state.isUpdating}
+                                               onAction={this.messageMoreActionHandler}
+                                               peer={peer} selectedDialogId={selectedDialogId}/>
                                     <div className="buttons">
                                         <IconButton
                                             onClick={this.messageMoreOpenHandler}
@@ -725,43 +724,6 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private getChatTitle(placeholder?: boolean) {
-        const {peer, selectedDialogId} = this.state;
-        if (!peer) {
-            return '';
-        }
-        const isGroup = peer.getType() === PeerType.PEERGROUP;
-        return (
-            <span className="chat-title" onClick={this.messageMoreActionHandler.bind(this, 'info')}>
-                {Boolean(placeholder !== true && !isGroup) &&
-                <UserName id={this.state.selectedDialogId} className="name" you={true}
-                          youPlaceholder="Saved Messages" noDetail={true}/>}
-                {Boolean(placeholder !== true && isGroup) &&
-                <GroupName id={this.state.selectedDialogId} className="name"/>}
-                {this.getChatStatus(selectedDialogId)}
-            </span>
-        );
-    }
-
-    private getChatStatus(dialogId: string) {
-        const dialog = this.getDialogById(dialogId);
-        let typingList: { [key: string]: { fn: any, action: TypingAction } } = {};
-        let ids: number = 0;
-        if (dialog && this.state.isTypingList.hasOwnProperty(dialog.peerid || '')) {
-            typingList = this.state.isTypingList[dialog.peerid || ''];
-            ids = Object.keys(typingList).length;
-        }
-        if (this.state.isConnecting) {
-            return (<span>Connecting...</span>);
-        } else if (this.state.isUpdating) {
-            return (<span>Updating...</span>);
-        } else if (dialog && ids > 0) {
-            return (isTypingRender(typingList, dialog));
-        } else {
-            return (<LastSeen id={dialogId || ''} withLastSeen={true}/>);
-        }
-    }
-
     private getConnectionStatus() {
         if (this.state.isConnecting) {
             return (<span>Connecting...</span>);
@@ -928,6 +890,13 @@ class Chat extends React.Component<IProps, IState> {
 
     private dialogRefHandler = (ref: any) => {
         this.dialogComponent = ref;
+        if (this.dialogComponent) {
+            this.dialogComponent.setDialogs(this.dialogs);
+        }
+    }
+
+    private statusBarRefHandler = (ref: any) => {
+        this.statusBarComponent = ref;
     }
 
     private rightMenuRefHandler = (ref: any) => {
@@ -1111,17 +1080,17 @@ class Chat extends React.Component<IProps, IState> {
         if (this.state.isUpdating) {
             return;
         }
-        const {isTypingList} = this.state;
+        const isTypingList = this.isTypingList;
         if (data.action !== TypingAction.TYPINGACTIONCANCEL) {
             const fn = setTimeout(() => {
                 if (isTypingList.hasOwnProperty(data.peerid || '')) {
                     if (isTypingList[data.peerid || ''].hasOwnProperty(data.userid || 0)) {
                         delete isTypingList[data.peerid || ''][data.userid || 0];
-                        this.setState({
-                            isTypingList,
-                        });
                         if (this.dialogComponent) {
                             this.dialogComponent.setIsTypingList(isTypingList);
+                        }
+                        if (this.statusBarComponent) {
+                            this.statusBarComponent.setIsTypingList(isTypingList);
                         }
                     }
                 }
@@ -1141,22 +1110,22 @@ class Chat extends React.Component<IProps, IState> {
                     fn,
                 };
             }
-            this.setState({
-                isTypingList,
-            });
             if (this.dialogComponent) {
                 this.dialogComponent.setIsTypingList(isTypingList);
+            }
+            if (this.statusBarComponent) {
+                this.statusBarComponent.setIsTypingList(isTypingList);
             }
         } else if (data.action === TypingAction.TYPINGACTIONCANCEL) {
             if (isTypingList.hasOwnProperty(data.peerid || '')) {
                 if (isTypingList[data.peerid || ''].hasOwnProperty(data.userid || 0)) {
                     clearTimeout(isTypingList[data.peerid || ''][data.userid || 0].fn);
                     delete isTypingList[data.peerid || ''][data.userid || 0];
-                    this.setState({
-                        isTypingList,
-                    });
                     if (this.dialogComponent) {
                         this.dialogComponent.setIsTypingList(isTypingList);
+                    }
+                    if (this.statusBarComponent) {
+                        this.statusBarComponent.setIsTypingList(isTypingList);
                     }
                 }
             }
@@ -1453,7 +1422,6 @@ class Chat extends React.Component<IProps, IState> {
 
             this.setState({
                 isChatView: true,
-                isTyping: false,
                 maxReadId,
             }, () => {
                 if (!this.messageComponent) {
@@ -1506,7 +1474,6 @@ class Chat extends React.Component<IProps, IState> {
             this.setChatView(true);
             this.setState({
                 isChatView: true,
-                isTyping: false,
             });
             clearTimeout(this.mobileBackTimeout);
             this.setLoading(false);
@@ -1832,6 +1799,8 @@ class Chat extends React.Component<IProps, IState> {
                 this.updateDialogs(message, '0');
                 // Force update messages
                 this.messageComponent.list.forceUpdateGrid();
+                this.messageComponent.list.recomputeRowHeights();
+                this.messageComponent.animateToEnd();
             }).catch((err) => {
                 const messages = this.messages;
                 const index = findIndex(messages, (o) => {
@@ -2710,14 +2679,13 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Cancel us typing handler */
     private cancelIsTypingHandler = (id: string) => {
-        const {isTypingList} = this.state;
-        if (isTypingList.hasOwnProperty(id)) {
-            delete isTypingList[id];
-            this.setState({
-                isTypingList,
-            });
+        if (this.isTypingList.hasOwnProperty(id)) {
+            delete this.isTypingList[id];
             if (this.dialogComponent) {
-                this.dialogComponent.setIsTypingList(isTypingList);
+                this.dialogComponent.setIsTypingList(this.isTypingList);
+            }
+            if (this.statusBarComponent) {
+                this.statusBarComponent.setIsTypingList(this.isTypingList);
             }
         }
     }

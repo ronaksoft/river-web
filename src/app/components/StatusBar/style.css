@@ -1,0 +1,33 @@
+/*
+    Creation Time: 2019 - June - 02
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2019
+*/
+.status-bar {
+  padding: 5px 0;
+  display: flex;
+  flex-direction: column;
+  color: var(--grey);
+  font-size: 12px; }
+  .status-bar .name {
+    color: var(--dark);
+    font-size: 15px;
+    margin-bottom: 5px;
+    font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; }
+    .status-bar .name svg {
+      font-size: 16px;
+      margin-right: 6px;
+      vertical-align: bottom; }
+  .status-bar .online {
+    color: var(--river); }
+
+html[theme="dark"] .status-bar .online,
+html[theme="dark-blue"] .status-bar .online {
+  color: var(--dark-mention); }

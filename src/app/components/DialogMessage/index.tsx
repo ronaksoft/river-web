@@ -13,9 +13,19 @@ import UserName from '../UserName';
 import {IDialog} from '../../repository/dialog/interface';
 import LiveDate from '../LiveDate';
 import {
-    AlternateEmailRounded, DoneAllRounded, DoneRounded, MoreVert, NotificationsOffRounded,
-    ScheduleRounded, LocationOnOutlined, PeopleOutlined, InsertDriveFileOutlined, VideocamOutlined,
-    PhotoOutlined, RecordVoiceOverOutlined, MusicNoteOutlined,
+    AlternateEmailRounded,
+    DoneAllRounded,
+    DoneRounded,
+    InsertDriveFileOutlined,
+    LocationOnOutlined,
+    MoreVert,
+    MusicNoteOutlined,
+    NotificationsOffRounded,
+    PeopleOutlined,
+    PhotoOutlined,
+    RecordVoiceOverOutlined,
+    ScheduleRounded,
+    VideocamOutlined,
 } from '@material-ui/icons';
 import {PeerNotifySettings, PeerType, TypingAction} from '../../services/sdk/messages/chat.core.types_pb';
 import GroupAvatar from '../GroupAvatar';
@@ -101,7 +111,7 @@ class DialogMessage extends React.Component<IProps, IState> {
                 {Boolean(ids.length === 0) && <span className={'preview' + (dialog.preview_rtl ? ' rtl' : '')}>
                     {this.renderPreviewMessage(dialog)}
                 </span>}
-                {isTypingRender(isTyping, dialog)}
+                {isTypingRender(isTyping, dialog.peertype || PeerType.PEERUSER)}
                 {Boolean(dialog.unreadcount && dialog.unreadcount > 0) &&
                 <span className="unread">{(dialog.unreadcount || 0) > 99 ? '+99' : dialog.unreadcount}</span>}
                 {Boolean(!dialog.unreadcount && dialog.pinned) &&
@@ -239,7 +249,7 @@ class DialogMessage extends React.Component<IProps, IState> {
     }
 }
 
-export const isTypingRender = (typingList: { [key: string]: { fn: any, action: TypingAction } }, dialog: IDialog) => {
+export const isTypingRender = (typingList: { [key: string]: { fn: any, action: TypingAction } }, peerType: PeerType) => {
     const ids = Object.keys(typingList);
     if (ids.length === 0) {
         return '';
@@ -255,7 +265,7 @@ export const isTypingRender = (typingList: { [key: string]: { fn: any, action: T
                 return 'uploading file...';
         }
     };
-    if (dialog.peertype === PeerType.PEERUSER) {
+    if (peerType === PeerType.PEERUSER) {
         return (<span className="preview">is {getActionType(typingList[ids[0]].action)}</span>);
     } else {
         const types = {};

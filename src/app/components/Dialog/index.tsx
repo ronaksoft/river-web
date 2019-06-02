@@ -78,8 +78,6 @@ class Dialog extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        this.list.recomputeRowHeights();
-        this.list.forceUpdateGrid();
         // const index = findIndex(this.state.items, {peerid: this.state.selectedId});
         // this.list.scrollToRow(index);
     }
@@ -92,18 +90,22 @@ class Dialog extends React.Component<IProps, IState> {
         });
     }
 
-    public setDialogs(dialogs: IDialog[], callback: () => void) {
+    public setDialogs(dialogs: IDialog[], callback?: () => void) {
         this.setState({
             items: dialogs,
         }, () => {
             this.filterItem();
-            callback();
+            if (callback) {
+                callback();
+            }
         });
     }
 
     public setIsTypingList(isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } }) {
         this.setState({
             isTypingList,
+        }, () => {
+            this.list.forceUpdateGrid();
         });
     }
 
