@@ -37,6 +37,11 @@ export default class ElectronService {
         return window.isElectron || false;
     }
 
+    public static openExternal(url: string) {
+        // @ts-ignore
+        return window.electronShell.openExternal(url);
+    }
+
     public static getInstance() {
         if (!this.instance) {
             this.instance = new ElectronService();
@@ -47,7 +52,7 @@ export default class ElectronService {
 
     private static instance: ElectronService;
 
-    private ipcRenderer: IpcRenderer;
+    private readonly ipcRenderer: IpcRenderer;
     private fnQueue: any = {};
     private fnIndex: number = 0;
     private reqId: number = 0;

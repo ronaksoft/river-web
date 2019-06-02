@@ -38,6 +38,7 @@ import Broadcaster from '../../services/broadcaster';
 import UserRepo from '../../repository/user';
 import MessageAudio from '../MessageAudio';
 import animateScrollTo from 'animated-scroll-to';
+import ElectronService from "../../services/electron";
 
 import './style.css';
 
@@ -169,6 +170,7 @@ class Message extends React.Component<IProps, IState> {
     private disableScrolling: boolean = false;
     private scrollToIndex?: number;
     private scrollDownTimeout: any = null;
+    private isElectron: boolean = ElectronService.isElectron();
 
     constructor(props: IProps) {
         super(props);
@@ -1136,8 +1138,15 @@ class Message extends React.Component<IProps, IState> {
                     case MessageEntityType.MESSAGEENTITYTYPEHASHTAG:
                         return (<span key={i} className="_hashtag">{elem.str}</span>);
                     case MessageEntityType.MESSAGEENTITYTYPEURL:
-                        return (
-                            <a key={i} href={this.modifyURL(elem.str)} target="_blank" className="_url">{elem.str}</a>);
+                        if (this.isElectron) {
+                            return (
+                                <a key={i} href="#" onClick={this.openExternalLink.bind(this, this.modifyURL(elem.str))}
+                                   className="_url">{elem.str}</a>);
+                        } else {
+                            return (
+                                <a key={i} href={this.modifyURL(elem.str)} target="_blank"
+                                   className="_url">{elem.str}</a>);
+                        }
                     default:
                         return (<span key={i}>{elem.str}</span>);
                 }
@@ -1394,6 +1403,11 @@ class Message extends React.Component<IProps, IState> {
         if (this.disableScrolling) {
             e.preventDefault();
         }
+    }
+
+    private openExternalLink = (url: string, e: any) => {
+        e.preventDefault();
+        ElectronService.openExternal(url);
     }
 }
 

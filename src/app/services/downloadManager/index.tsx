@@ -25,7 +25,7 @@ export interface IDownloadSettings {
 const downloadSettingsKey = 'river.settings.download';
 
 const defaultValues: IDownloadSettings = {
-    auto_save_files: false,
+    auto_save_files: true,
     chat_files: false,
     chat_photos: true,
     chat_videos: false,
