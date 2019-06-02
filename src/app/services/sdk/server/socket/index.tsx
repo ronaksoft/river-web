@@ -96,7 +96,7 @@ export default class Socket {
                     }
                     break;
                 case 'wsSend':
-                    if (this.connected) {
+                    if (this.connected && this.socket.readyState === WebSocket.OPEN) {
                         this.socket.send(base64ToU8a(d.data));
                         if (this.lastReceiveTime >= this.lastSendTime) {
                             this.lastSendTime = Date.now();
@@ -167,7 +167,7 @@ export default class Socket {
         // Connection opened
         this.socket.onopen = () => {
             window.console.log('WebSocket opened', new Date());
-            if (!this.socket.OPEN || this.socket.readyState !== 1) {
+            if (this.socket.readyState !== WebSocket.OPEN) {
                 return;
             }
             this.socket.send(ping);

@@ -2861,7 +2861,13 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         // @ts-ignore
-        const msgIds: number[] = Object.keys(messageSelectedIds);
+        const msgIds: number[] = Object.keys(messageSelectedIds).map((o) => {
+            if (typeof o === 'string') {
+                return parseInt(o, 10);
+            } else {
+                return o;
+            }
+        }).sort();
         forwardRecipients.forEach((recipient) => {
             const targetPeer = new InputPeer();
             targetPeer.setAccesshash(recipient.accesshash);
