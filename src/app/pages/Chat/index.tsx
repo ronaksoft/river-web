@@ -98,7 +98,7 @@ import StatusBar from "../../components/StatusBar";
 
 import './style.css';
 
-const C_MAX_UPDATE_DIFF = 1000;
+const C_MAX_UPDATE_DIFF = 2000;
 
 interface IProps {
     history?: any;
@@ -2208,6 +2208,9 @@ class Chat extends React.Component<IProps, IState> {
 
     private snapshot() {
         // this.messageRepo.truncate();
+        if (this.state.isUpdating) {
+            return;
+        }
         this.updateManager.disable();
         this.setState({
             isUpdating: true,
@@ -2221,7 +2224,7 @@ class Chat extends React.Component<IProps, IState> {
                     const d = find(res.dialogs, {peerid: dialog.peerid});
                     if (d && dialog.topmessageid) {
                         if (dialog.topmessageid !== d.topmessageid) {
-                            this.messageRepo.insertHole(dialog.peerid || '', dialog.topmessageid, true);
+                            this.messageRepo.clearHistory(d.peerid || '', d.topmessageid || 0);
                         }
                     }
                 });
