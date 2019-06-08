@@ -296,6 +296,14 @@
           border-top-left-radius: 7.5px;
           border-bottom-left-radius: 7.5px;
           background-color: #35cd96; }
+        .write .previews .preview-container .preview-message-wrapper .preview-thumbnail .thumbnail {
+          height: 47px;
+          width: 47px; }
+          .write .previews .preview-container .preview-message-wrapper .preview-thumbnail .thumbnail img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            object-position: center center; }
         .write .previews .preview-container .preview-message-wrapper .preview-message {
           padding: 8px 12px 9px 11px;
           min-height: 32px;

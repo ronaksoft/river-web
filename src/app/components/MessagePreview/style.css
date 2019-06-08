@@ -25,6 +25,14 @@
         border-top-left-radius: 7.5px;
         border-bottom-left-radius: 7.5px;
         background-color: #35cd96; }
+      .message-preview .preview-container .preview-message-wrapper .preview-thumbnail .thumbnail {
+        height: 47px;
+        width: 47px; }
+        .message-preview .preview-container .preview-message-wrapper .preview-thumbnail .thumbnail img {
+          height: 100%;
+          width: 100%;
+          object-fit: cover;
+          object-position: center center; }
       .message-preview .preview-container .preview-message-wrapper .preview-message {
         padding: 4px 8px;
         min-height: 32px;

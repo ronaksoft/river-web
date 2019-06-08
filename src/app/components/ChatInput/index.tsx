@@ -60,6 +60,8 @@ import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 import RiverTime from '../../services/utilities/river_time';
 import Broadcaster from '../../services/broadcaster';
 import MapPicker, {IGeoItem} from '../MapPicker';
+import CachedPhoto from "../CachedPhoto";
+import {getMediaInfo} from "../MessageMedia";
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
@@ -327,6 +329,7 @@ class ChatInput extends React.Component<IProps, IState> {
                             <div
                                 className={'preview-message-wrapper ' + this.getPreviewCN(previewMessageMode, previewMessage.senderid || '')}>
                                 <span className="preview-bar"/>
+                                {this.getThumbnail()}
                                 {Boolean(previewMessageMode === C_MSG_MODE.Reply) && <div className="preview-message">
                                     <UserName className="preview-message-user" id={previewMessage.senderid || ''}
                                               you={true}/>
@@ -1527,6 +1530,25 @@ class ChatInput extends React.Component<IProps, IState> {
             });
         }
         this.clearPreviewMessage(true);
+    }
+
+    private getThumbnail() {
+        const {previewMessage} = this.state;
+        if (!previewMessage) {
+            return '';
+        }
+        switch (previewMessage.messagetype) {
+            case C_MESSAGE_TYPE.Picture:
+            case C_MESSAGE_TYPE.Video:
+                const info = getMediaInfo(previewMessage);
+                return (
+                    <div className="preview-thumbnail">
+                        <CachedPhoto className="thumbnail" fileLocation={info.thumbFile}/>
+                    </div>
+                );
+            default:
+                return '';
+        }
     }
 
     // /* Is voice started */

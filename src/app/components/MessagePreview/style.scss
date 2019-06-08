@@ -11,16 +11,19 @@
 .message-preview {
   height: 42px;
   cursor: pointer;
+
   .preview-container {
     display: flex;
     overflow: hidden;
     flex: 1;
+
     .preview-message-wrapper {
       display: flex;
       position: relative;
       z-index: 1;
       overflow: hidden;
       width: 100%;
+
       .preview-bar {
         flex: none;
         width: 4px;
@@ -28,6 +31,22 @@
         border-bottom-left-radius: 7.5px;
         background-color: #35cd96;
       }
+
+      .preview-thumbnail {
+
+        .thumbnail {
+          height: 47px;
+          width: 47px;
+
+          img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            object-position: center center;
+          }
+        }
+      }
+
       .preview-message {
         padding: 4px 8px;
         min-height: 32px;
@@ -40,6 +59,7 @@
         background-color: var(--glass-dark-low);
         border-top-right-radius: 5px;
         border-bottom-right-radius: 5px;
+
         .preview-message-user {
           color: #35cd96;
           font-size: 12px;
@@ -48,12 +68,14 @@
           justify-content: left;
           width: 100%;
         }
+
         .preview-message-body {
           text-align: left;
           width: 100%;
           padding: 1px 0 0;
           font-size: 13px;
           font-weight: 100;
+
           > .inner {
             line-height: 1.2em;
             height: 15px;
@@ -61,10 +83,12 @@
             text-overflow: ellipsis;
             white-space: nowrap;
             padding: 0;
+
             &.rtl {
               direction: rtl;
               text-align: right;
             }
+
             &.ltr {
               direction: ltr;
               text-align: left;
@@ -72,10 +96,12 @@
           }
         }
       }
+
       &.reply-you {
         .preview-bar {
           background-color: #6bcbef;
         }
+
         .preview-message .preview-message-user {
           color: #6bcbef;
         }
@@ -89,18 +115,22 @@
     .preview-bar {
       background-color: #6bcbef;
     }
+
     .preview-message .preview-message-user {
       color: #6bcbef;
     }
   }
+
   &.reply {
     .preview-bar {
       background-color: #35cd96
     }
+
     .preview-message .preview-message-user {
       color: #35cd96;
     }
   }
+
   //.preview-message {
   //  background-color: rgba(255, 255, 255, 0.15);
   //}
@@ -131,6 +161,7 @@ html[bubble="2"] {
   .bubble-wrapper.me {
     .message-preview {
       padding-bottom: 2px;
+
       .preview-container {
         .preview-message-wrapper {
           position: relative;
@@ -138,6 +169,7 @@ html[bubble="2"] {
           border-top-right-radius: 18px;
           border-top-left-radius: 18px;
           border-bottom-left-radius: 5px;
+
           .preview-bar {
             position: absolute;
             top: 0;
@@ -146,6 +178,7 @@ html[bubble="2"] {
             left: 0;
             border-radius: 0;
           }
+
           .preview-message {
             border-top-right-radius: 18px;
             border-top-left-radius: 18px;
@@ -156,6 +189,7 @@ html[bubble="2"] {
       }
     }
   }
+
   .message-preview {
     margin-bottom: 2px;
   }
@@ -170,6 +204,7 @@ html[bubble="4"] {
           position: relative;
           overflow: hidden;
           border-radius: 8px;
+
           .preview-bar {
             position: absolute;
             top: 0;
@@ -178,6 +213,7 @@ html[bubble="4"] {
             left: 0;
             border-radius: 0;
           }
+
           .preview-message {
             border-top-right-radius: 8px;
             border-top-left-radius: 8px;
@@ -188,6 +224,7 @@ html[bubble="4"] {
       }
     }
   }
+
   .message-preview {
     margin-bottom: 2px;
   }

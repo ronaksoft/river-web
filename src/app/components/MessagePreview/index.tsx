@@ -12,9 +12,12 @@ import {IMessage} from '../../repository/message/interface';
 import UserName from '../UserName';
 import MessageRepo from '../../repository/message';
 import {InputPeer} from '../../services/sdk/messages/chat.core.types_pb';
+import {getMessageTitle} from '../Dialog/utils';
+import {C_MESSAGE_TYPE} from "../../repository/message/consts";
+import {getMediaInfo} from "../MessageMedia";
+import CachedPhoto from "../CachedPhoto";
 
 import './style.css';
-import {getMessageTitle} from '../Dialog/utils';
 
 interface IProps {
     message: IMessage;
@@ -107,6 +110,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
                 <div className="preview-container">
                     <div className={'preview-message-wrapper ' + this.getPreviewCN(previewMessage.senderid || '')}>
                         <span className="preview-bar"/>
+                        {this.getThumbnail()}
                         <div className="preview-message">
                             <div className="preview-message-user">
                                 <UserName id={previewMessage.senderid || ''} you={true}/>
@@ -158,6 +162,25 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
             return (<div className={'inner ' + (msg.rtl ? 'rtl' : 'ltr')}>{msg.body}</div>);
         } else {
             return (<div className={'inner'}>{getMessageTitle(msg).text}</div>);
+        }
+    }
+
+    private getThumbnail() {
+        const {previewMessage} = this.state;
+        if (!previewMessage) {
+            return '';
+        }
+        switch (previewMessage.messagetype) {
+            case C_MESSAGE_TYPE.Picture:
+            case C_MESSAGE_TYPE.Video:
+                const info = getMediaInfo(previewMessage);
+                return (
+                    <div className="preview-thumbnail">
+                        <CachedPhoto className="thumbnail" fileLocation={info.thumbFile}/>
+                    </div>
+                );
+            default:
+                return '';
         }
     }
 }
