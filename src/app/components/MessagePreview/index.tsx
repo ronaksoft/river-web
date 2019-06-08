@@ -13,9 +13,9 @@ import UserName from '../UserName';
 import MessageRepo from '../../repository/message';
 import {InputPeer} from '../../services/sdk/messages/chat.core.types_pb';
 import {getMessageTitle} from '../Dialog/utils';
-import {C_MESSAGE_TYPE} from "../../repository/message/consts";
-import {getMediaInfo} from "../MessageMedia";
-import CachedPhoto from "../CachedPhoto";
+import {C_MESSAGE_TYPE} from '../../repository/message/consts';
+import {getMediaInfo} from '../MessageMedia';
+import CachedPhoto from '../CachedPhoto';
 
 import './style.css';
 
