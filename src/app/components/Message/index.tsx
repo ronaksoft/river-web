@@ -456,8 +456,17 @@ class Message extends React.Component<IProps, IState> {
         } else if (this.messageInnerRef.classList.contains('user')) {
             className = 'user';
         }
+        let scrollWidth = 0;
+        const el1 = this.messageInnerRef.firstChild;
+        if (el1) {
+            const el2 = el1.firstChild;
+            if (el2) {
+                scrollWidth = el1.scrollWidth - el2.scrollWidth;
+            }
+        }
         this.messageSnapshotRef.classList.remove('group', 'user', 'hidden');
         this.messageSnapshotRef.classList.add(className);
+        this.messageSnapshotRef.style.marginRight = `${scrollWidth}px`;
         this.messageInnerRef.classList.add('hidden');
         this.messageSnapshotRef.innerHTML = this.messageInnerRef.innerHTML;
         const scrollEl = this.messageSnapshotRef.querySelector(' div > div');
