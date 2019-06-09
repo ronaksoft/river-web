@@ -159,10 +159,18 @@ export default class UpdateManager {
             this.setLastUpdateId(maxId);
         }
         updates.forEach((update) => {
-            this.responseUpdateMessageID(update);
+            try {
+                this.responseUpdateMessageID(update);
+            } catch (e) {
+                this.callHandlers(C_MSG.OutOfSync, {});
+            }
         });
         updates.forEach((update) => {
-            this.response(update);
+            try {
+                this.response(update);
+            } catch (e) {
+                this.callHandlers(C_MSG.OutOfSync, {});
+            }
         });
         if (data.usersList && data.usersList.length > 0) {
             this.callHandlers(C_MSG.UpdateUsers, data.usersList);

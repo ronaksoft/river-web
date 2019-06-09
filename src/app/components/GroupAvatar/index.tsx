@@ -97,16 +97,24 @@ class GroupAvatar extends React.Component<IProps, IState> {
         }
 
         this.groupRepo.get(this.state.id).then((group) => {
-            this.setState({
-                group,
-            });
-            this.getAvatarPhoto(group);
+            if (group) {
+                this.setState({
+                    group,
+                });
+                this.getAvatarPhoto(group);
+            } else {
+                throw Error('not found');
+            }
         }).catch(() => {
             if (this.tryCount < 10) {
                 this.tryCount++;
                 this.tryTimeout = setTimeout(() => {
                     this.getGroup();
                 }, 1000);
+            } else {
+                this.setState({
+                    photo: undefined,
+                });
             }
         });
     }

@@ -20,6 +20,7 @@ import CachedPhoto from '../CachedPhoto';
 import './style.css';
 
 interface IProps {
+    disableClick: boolean;
     message: IMessage;
     onClick?: (e: any) => void;
     onDoubleClick?: (e: any) => void;
@@ -75,7 +76,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
         }
         if (!previewMessage && error) {
             return (
-                <div className="message-preview" onDoubleClick={this.props.onDoubleClick} onClick={this.props.onClick}>
+                <div className="message-preview" onDoubleClick={this.props.onDoubleClick} onClick={this.clickHandler}>
                     <div className="preview-container">
                         <div className="preview-message-wrapper reply-you">
                             <span className="preview-bar"/>
@@ -106,7 +107,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
             </div>);
         }
         return (
-            <div className="message-preview" onDoubleClick={this.props.onDoubleClick} onClick={this.props.onClick}>
+            <div className="message-preview" onDoubleClick={this.props.onDoubleClick} onClick={this.clickHandler}>
                 <div className="preview-container">
                     <div className={'preview-message-wrapper ' + this.getPreviewCN(previewMessage.senderid || '')}>
                         <span className="preview-bar"/>
@@ -181,6 +182,12 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
                 );
             default:
                 return '';
+        }
+    }
+
+    private clickHandler = (e: any) => {
+        if (!this.props.disableClick && this.props.onClick) {
+            this.props.onClick(e);
         }
     }
 }

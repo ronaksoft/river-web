@@ -27,6 +27,7 @@
   &.no-transition {
     transition: none;
   }
+
   .chat-placeholder {
     position: relative;
     height: 100%;
@@ -34,6 +35,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
     .placeholder {
       height: 400px;
       width: 400px;
@@ -49,10 +51,12 @@
   width: 100%;
   margin-bottom: 27px;
   text-align: center;
+
   span {
     font-size: 14px;
     display: inline-block;
     color: var(--grey);
+
     &:before, &:after {
       position: absolute;
       top: 10px;
@@ -62,9 +66,11 @@
       content: '';
       background-color: var(--light);
     }
+
     &:before {
       left: 0;
     }
+
     &:after {
       right: 0;
     }
@@ -80,6 +86,7 @@
     height: 1000px;
     text-align: center;
   }
+
   .loading {
     height: 24px;
     width: 24px;
@@ -88,6 +95,7 @@
     box-shadow: 0 0 6px rgba(0, 0, 0, 0.16);
     display: inline-block;
     padding: 4.5px 4px 3.5px;
+
     .loader {
       height: 16px;
       width: 16px;
@@ -104,19 +112,24 @@
   display: inline-block;
   width: 100%;
   padding-bottom: 2px;
+
   &.date-padding {
     padding-bottom: 6px;
     padding-top: 8px;
     height: 40px;
   }
+
   &.voice {
     height: 44px;
+
     .bubble {
       padding: 3px !important;
+
       .bubble-body {
         padding: 3px !important;
         display: flex;
         flex-direction: row;
+
         .message-status {
           min-width: auto !important;
           padding: 0 0 0 6px;
@@ -124,6 +137,7 @@
       }
     }
   }
+
   &.media, &.media_caption {
     .bubble {
       .bubble-body {
@@ -132,6 +146,7 @@
       }
     }
   }
+
   .bubble-body {
     .inner.text-highlight {
       position: absolute;
@@ -143,11 +158,13 @@
       color: transparent;
     }
   }
+
   &.media {
     .bubble {
       padding: 3px !important;
     }
   }
+
   .arrow {
     position: absolute;
     top: 6px;
@@ -155,6 +172,7 @@
     height: 10px;
     width: 16px;
     overflow: hidden;
+
     &:after {
       position: absolute;
       content: '';
@@ -167,12 +185,14 @@
       transform: rotate(-45deg);
     }
   }
+
   &.you .arrow {
     position: absolute;
     top: 6px;
     right: auto;
     left: 34px;
     overflow: hidden;
+
     &:after {
       background-color: var(--message-chat);
       box-shadow: -1px 2px 0px rgba(0, 0, 0, 0.1);
@@ -180,6 +200,7 @@
       left: 5px
     }
   }
+
   .avatar {
     position: absolute;
     top: 0;
@@ -189,16 +210,19 @@
     border-radius: 50%;
     overflow: hidden;
     font-size: 12px;
+
     .text-avatar {
       height: 32px;
       width: 32px;
     }
+
     img {
       height: 32px;
       width: 32px;
       object-fit: cover;
     }
   }
+
   .checkbox {
     position: absolute;
     top: 0;
@@ -206,6 +230,7 @@
     height: 32px;
     width: 32px;
   }
+
   .error {
     position: absolute;
     right: 2px;
@@ -216,11 +241,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
     svg {
       font-size: 16px;
       color: var(--red);
     }
   }
+
   .bubble {
     position: relative;
     font-size: 14px;
@@ -234,6 +261,7 @@
     min-width: 75px;
     min-height: 35px;
     box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.1);
+
     > .name {
       display: block;
       height: 20px;
@@ -242,44 +270,55 @@
       color: var(--dark-medium);
       font-weight: 300;
     }
+
     .inner {
       direction: ltr;
       padding: 4px 4px 0 4px;
       white-space: pre-wrap;
       word-break: break-word;
+
       &.rtl {
         direction: rtl;
         text-align: right;
       }
+
       &.ltr {
         direction: ltr;
         text-align: left;
       }
+
       ._mention {
         color: var(--light-mention);
         display: inline-block;
         direction: ltr;
+
         &:hover {
           text-decoration: underline;
         }
       }
+
       ._bold {
         font-weight: bold;
       }
+
       ._italic {
         font-style: italic;
       }
+
       ._mail {
       }
+
       ._url {
         color: var(--light-mention);
         display: inline-block;
       }
+
       ._hashtag {
         color: var(--light-mention);
         display: inline-block;
       }
     }
+
     .more {
       position: absolute;
       top: 3px;
@@ -290,15 +329,18 @@
       background-color: inherit;
       visibility: hidden;
       z-index: 10;
+
       svg {
         cursor: pointer;
         height: 20px;
         font-size: 20px;
       }
     }
+
     &:hover .more {
       visibility: visible;
     }
+
     &.highlight {
       &:before {
         position: absolute;
@@ -315,10 +357,12 @@
       }
     }
   }
+
   &.you {
     &.avatar {
       padding-top: 6px;
     }
+
     .bubble {
       float: left;
       color: var(--black-text);
@@ -327,18 +371,22 @@
       animation-name: slideFromLeft;
       text-align: left;
       margin-left: 44px;
+
       &.edited {
         min-width: 80px;
       }
     }
   }
+
   &.me {
     &.avatar {
       padding-top: 6px;
     }
+
     > .avatar {
       visibility: hidden;
     }
+
     .bubble {
       float: right;
       color: var(--black-text);
@@ -347,19 +395,23 @@
       animation-name: slideFromRight;
       text-align: right;
       margin-right: 10px;
+
       &.edited {
         min-width: 106px;
       }
     }
+
     &.has-error {
       .arrow {
         right: 14px;
       }
+
       .bubble {
         margin-right: 24px;
       }
     }
   }
+
   > .date {
     background-color: rgba(225, 245, 254, 0.92);
     border-radius: 7.5px;
@@ -377,15 +429,18 @@
     text-transform: uppercase;
     height: 32px;
   }
+
   .system-message-with-picture {
     height: 36px;
     display: flex;
     justify-content: center;
     align-items: center;
+
     .picture {
       margin: 4px 0 0 12px;
       height: 32px;
       width: 32px;
+
       img {
         height: 32px;
         width: 32px;
@@ -393,6 +448,7 @@
       }
     }
   }
+
   .system-message {
     background-color: rgba(0, 0, 0, 0.31);
     border-radius: 7.5px;
@@ -407,10 +463,12 @@
     font-size: 12.5px;
     line-height: 21px;
     margin-top: 6px;
+
     > .user {
       text-transform: uppercase;
       font-style: italic;
     }
+
     &.divider {
       &:before, &:after {
         content: '';
@@ -422,6 +480,7 @@
         background: var(--grey);
         box-shadow: 0 1px 1px var(--grey);
       }
+
       &:after {
         right: 10px;
         left: calc(50% + 70px);
@@ -445,6 +504,7 @@
         left: 3px;
         padding: 6px 2px 0 0;
         border-radius: 8px 8px 0 0;
+
         &:before {
           content: '';
           position: absolute;
@@ -458,12 +518,14 @@
           transition: opacity 0.2s;
           opacity: 0;
         }
+
         svg {
           position: relative;
           color: var(--white);
           z-index: 12;
         }
       }
+
       &:hover .more {
         &:before {
           opacity: 1;
@@ -486,14 +548,17 @@
   }
 }
 
-.selectable .bubble-wrapper {
+.selectable .bubble-wrapper:not(.date-padding) {
   cursor: pointer;
+
   &:hover {
     background-color: var(--color-hover-dark);
   }
+
   &.selected {
     background-color: #27AE6030;
   }
+
   .bubble {
     .more {
       visibility: hidden !important;
@@ -505,13 +570,16 @@
   .chat {
     padding-left: 7px;
   }
+
   .bubble-wrapper.you {
     .avatar {
       display: none;
     }
+
     .arrow {
       left: 0;
     }
+
     .bubble {
       margin-left: 10px;
     }
@@ -521,6 +589,7 @@
 .messages-inner {
   position: relative;
   z-index: 2;
+
   &.hidden {
     .bubble-wrapper {
       opacity: 0;
@@ -535,9 +604,11 @@
   bottom: 0;
   left: 0;
   z-index: 1;
+
   &.hidden {
     display: none;
   }
+
   .ReactVirtualized__List.chat {
     overflow: hidden !important;
   }
@@ -550,9 +621,11 @@
   left: 0;
   top: 0;
   z-index: 30;
+
   &.hidden {
     visibility: hidden;
   }
+
   .dropzone {
     position: absolute;
     bottom: 12px;
@@ -575,6 +648,7 @@ html[theme="dark-blue"] {
   .chat {
     border-color: var(--dark-low);
   }
+
   .bubble-wrapper {
     .bubble {
       .inner {
@@ -583,14 +657,17 @@ html[theme="dark-blue"] {
         }
       }
     }
+
     &.me {
       .bubble {
         background-color: var(--dark-accent-low);
         color: #eee;
+
         > .name {
           color: #eee;
         }
       }
+
       .arrow {
         &:after {
           background-color: var(--dark-accent-low);
@@ -598,14 +675,17 @@ html[theme="dark-blue"] {
         }
       }
     }
+
     &.you {
       .bubble {
         background-color: var(--dark-accent-medium);
         color: #eee;
+
         > .name {
           color: #eee;
         }
       }
+
       .arrow {
         &:after {
           background-color: var(--dark-accent-medium);
@@ -613,38 +693,46 @@ html[theme="dark-blue"] {
         }
       }
     }
+
     > .date {
       background-color: var(--dark-high);
       text-shadow: none;
       color: var(--grey);
     }
+
     .system-message {
       background-color: rgba(255, 255, 255, 0.5);
       color: var(--dark);
     }
+
     .checkbox {
       &:not(.checked) {
         color: var(--white);
       }
     }
   }
+
   .bubble-gap,
   .bubble-wrapper {
     .loading {
       background-color: rgba(255, 255, 255, 0.5);
+
       .loader {
         background-image: url(../../../asset/image/loading/b.svg);
       }
     }
   }
+
   .selectable .bubble-wrapper {
     &:hover {
       background-color: var(--dark-hover-light);
     }
+
     &.selected {
       background-color: #27AE6020;
     }
   }
+
   .messages-dropzone {
     .dropzone {
       background-color: var(--dark-medium);
@@ -657,6 +745,7 @@ html[theme="dark-blue"] {
   .chat {
     border-color: var(--dark-blue-low);
   }
+
   .bubble-wrapper {
     .bubble {
       .inner {
@@ -665,31 +754,37 @@ html[theme="dark-blue"] {
         }
       }
     }
+
     &.me {
       .bubble {
         background-color: var(--dark-blue-accent-low);
       }
+
       .arrow {
         &:after {
           background-color: var(--dark-blue-accent-low);
         }
       }
     }
+
     &.you {
       .bubble {
         background-color: var(--dark-blue-accent-medium);
       }
+
       .arrow {
         &:after {
           background-color: var(--dark-blue-accent-medium);
         }
       }
     }
+
     > .date {
       background-color: var(--dark-blue-hover);
       color: var(--white);
     }
   }
+
   .messages-dropzone {
     .dropzone {
       background-color: var(--dark-blue-low);
@@ -703,8 +798,10 @@ html[font="0"] {
     .bubble {
       font-size: 10px;
     }
+
     .message-status {
       height: 8px;
+
       .time {
         font-size: 8px;
       }
@@ -733,12 +830,15 @@ html[font="3"] {
     .bubble {
       font-size: 16px;
       padding-bottom: 16px;
+
       .inner {
         padding-bottom: 2px !important;
       }
     }
+
     .message-status {
       height: 11px;
+
       .time {
         font-size: 11px;
       }
@@ -751,12 +851,15 @@ html[font="4"] {
     .bubble {
       font-size: 18px;
       padding-bottom: 16px;
+
       .inner {
         padding-bottom: 4px !important;
       }
     }
+
     .message-status {
       height: 11px;
+
       .time {
         font-size: 11px;
       }
@@ -769,12 +872,15 @@ html[font="5"] {
     .bubble {
       font-size: 20px;
       padding-bottom: 17px;
+
       .inner {
         padding-bottom: 6px !important;
       }
     }
+
     .message-status {
       height: 12px;
+
       .time {
         font-size: 12px;
       }
@@ -785,43 +891,53 @@ html[font="5"] {
 html[bubble="2"] {
   .bubble-wrapper {
     padding-bottom: 4px;
+
     .avatar {
       top: 6px;
     }
+
     .arrow {
       display: none;
     }
+
     .bubble {
       border-radius: 20px;
       min-width: 91px;
       padding-bottom: 16px;
+
       .inner {
         padding: 8px 12px 0 8px;
       }
+
       .name {
         padding: 4px 12px 0 8px;
       }
+
       .more {
         top: 3px;
         right: 3px;
         border-radius: 18px 18px 0 0 !important;
       }
+
       &.highlight {
         &:before {
           border-radius: 20px;
         }
       }
     }
+
     &.me {
       .bubble.edited {
         min-width: 115px;
       }
     }
+
     &.you {
       .bubble.edited {
         min-width: 95px;
       }
     }
+
     &.media {
       .bubble {
         .bubble-body {
@@ -831,6 +947,7 @@ html[bubble="2"] {
       }
     }
   }
+
   .user {
     .bubble-wrapper {
       &.media:not(.related), &.media_caption:not(.related) {
@@ -842,6 +959,7 @@ html[bubble="2"] {
       }
     }
   }
+
   .group {
     .bubble-wrapper {
       &.avatar.you {
@@ -851,6 +969,7 @@ html[bubble="2"] {
           }
         }
       }
+
       &.media.me:not(.related), &.media.you:not(.related):not(.avatar), &.media_caption.you:not(.related):not(.avatar) {
         .bubble {
           .bubble-body {
@@ -866,39 +985,48 @@ html[bubble="4"],
 html[bubble="5"] {
   .bubble-wrapper {
     padding-bottom: 4px;
+
     .arrow {
       width: 20px;
     }
+
     .bubble {
       border-radius: 10px;
       min-width: 91px;
       padding-bottom: 16px;
+
       .inner {
         padding: 8px 12px 4px 8px;
       }
+
       .name {
         padding: 4px 12px 0 8px;
       }
+
       &.highlight {
         &:before {
           border-radius: 10px;
         }
       }
     }
+
     &.me {
       .bubble.edited {
         min-width: 115px;
       }
+
       &.has-error .arrow {
         right: 10px;
       }
     }
+
     &.you {
       .bubble.edited {
         min-width: 95px;
       }
     }
   }
+
   .group {
     .bubble-wrapper {
       &.avatar.you {
@@ -917,21 +1045,25 @@ html[bubble="5"] {
     .arrow {
       display: none;
     }
+
     .bubble {
       background-color: transparent !important;
       box-shadow: none;
       margin-left: 44px !important;
       float: left;
+
       .name {
         font-weight: bold;
       }
     }
+
     &:not(.media):not(.media_caption) {
       .bubble {
         max-width: calc(100% - 50px);
         width: calc(100% - 50px);
       }
     }
+
     &.me {
       > .avatar {
         visibility: visible;

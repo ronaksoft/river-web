@@ -783,11 +783,12 @@ class Message extends React.Component<IProps, IState> {
                                  className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')}>
                                 {Boolean((peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me) || (this.isSimplified && message.avatar)) &&
                                 <UserName className="name" uniqueColor={true} id={message.senderid || ''}
-                                          hideBadge={true}/>}
+                                          hideBadge={true} noDetail={this.state.selectable}/>}
                                 {Boolean(message.replyto && message.replyto !== 0) &&
                                 <MessagePreview message={message} peer={peer}
                                                 onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}
                                                 onClick={this.props.onJumpToMessage.bind(this, message.replyto)}
+                                                disableClick={this.state.selectable}
                                 />}
                                 {Boolean(message.fwdsenderid && message.fwdsenderid !== '0') &&
                                 <MessageForwarded message={message} peer={peer}

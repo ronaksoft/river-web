@@ -231,6 +231,10 @@ class UserAvatar extends React.Component<IProps, IState> {
                 this.tryTimeout = setTimeout(() => {
                     this.getUser();
                 }, 1000);
+            } else {
+                this.setState({
+                    photo: undefined,
+                });
             }
         });
     }

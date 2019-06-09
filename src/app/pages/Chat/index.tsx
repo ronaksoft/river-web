@@ -680,7 +680,10 @@ class Chat extends React.Component<IProps, IState> {
                         <DialogContent>
                             <DialogContentText>
                                 Delete conversation with <UserName className="group-name"
-                                                                   id={this.state.leftMenuSelectedDialogId}/> ?<br/>
+                                                                   id={this.state.leftMenuSelectedDialogId}
+                                                                   you={this.state.leftMenuSelectedDialogId === this.connInfo.UserID}
+                                                                   youPlaceholder="Saved Messages"
+                            /> ?<br/>
                                 All messages will be removed!
                             </DialogContentText>
                         </DialogContent>
@@ -1459,6 +1462,9 @@ class Chat extends React.Component<IProps, IState> {
             this.setScrollMode('end');
             this.messageComponent.takeSnapshot();
             const dataMsg = this.modifyMessages(this.messages, resMsgs, false);
+            if (this.messages.length === 0) {
+                this.setMoveDownVisible(false);
+            }
             this.messageComponent.setMessages(dataMsg.msgs, () => {
                 // this.messageComponent.list.recomputeRowHeights();
                 // this.messageComponent.list.recomputeGridSize();

@@ -19,6 +19,7 @@ import {DexieDialogDB} from '../../services/db/dexie/dialog';
 import GroupRepo from '../group';
 import {getMessageTitle} from '../../components/Dialog/utils';
 import {kMerge} from "../../services/utilities/kDash";
+import {PeerType} from "../../services/sdk/messages/chat.core.types_pb";
 
 export default class DialogRepo {
     public static getInstance() {
@@ -175,7 +176,20 @@ export default class DialogRepo {
     }
 
     public findInArray(peerIds: string[], skip: number, limit: number) {
-        return this.db.dialogs.where('peerid').anyOf(peerIds).offset(skip || 0).limit(limit).toArray();
+        return this.db.dialogs.where('peerid').anyOf(peerIds).offset(skip || 0).limit(limit).toArray().then((res) => {
+            if (peerIds.indexOf(this.userId) > -1 && !find(res, {peerid: this.userId})) {
+                res.unshift({
+                    accesshash: '0',
+                    last_update: Date.now(),
+                    peerid: this.userId,
+                    peertype: PeerType.PEERUSER,
+                    preview: '',
+                    sender_id: this.userId,
+                    target_id: this.userId,
+                });
+            }
+            return res;
+        });
     }
 
     public getManyCache({skip, limit}: any): Promise<IDialog[]> {

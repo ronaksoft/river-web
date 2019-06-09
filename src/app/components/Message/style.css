@@ -373,13 +373,13 @@
 .group .bubble-wrapper.you.avatar.media .bubble .bubble-body, .group .bubble-wrapper.you.avatar.media_caption .bubble .bubble-body {
   margin-top: 4px; }
 
-.selectable .bubble-wrapper {
+.selectable .bubble-wrapper:not(.date-padding) {
   cursor: pointer; }
-  .selectable .bubble-wrapper:hover {
+  .selectable .bubble-wrapper:not(.date-padding):hover {
     background-color: var(--color-hover-dark); }
-  .selectable .bubble-wrapper.selected {
+  .selectable .bubble-wrapper:not(.date-padding).selected {
     background-color: #27AE6030; }
-  .selectable .bubble-wrapper .bubble .more {
+  .selectable .bubble-wrapper:not(.date-padding) .bubble .more {
     visibility: hidden !important; }
 
 .mobile-view .chat {
