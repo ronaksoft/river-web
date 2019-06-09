@@ -171,6 +171,7 @@ class Message extends React.Component<IProps, IState> {
     private scrollToIndex?: number;
     private scrollDownTimeout: any = null;
     private isElectron: boolean = ElectronService.isElectron();
+    private wheelDelta: number = 0;
 
     constructor(props: IProps) {
         super(props);
@@ -462,7 +463,7 @@ class Message extends React.Component<IProps, IState> {
         const scrollEl = this.messageSnapshotRef.querySelector(' div > div');
         const scrollTop = this.getScrollTop();
         if (scrollEl && scrollTop !== null) {
-            scrollEl.scrollTop = scrollTop;
+            scrollEl.scrollTop = scrollTop - this.wheelDelta;
         }
         if (!noRemove) {
             this.removeSnapshotTimeout = setTimeout(() => {
@@ -1403,6 +1404,12 @@ class Message extends React.Component<IProps, IState> {
     private scrollHandler = (e: any) => {
         if (this.disableScrolling) {
             e.preventDefault();
+        } else {
+            if (e.wheelDelta) {
+                this.wheelDelta = e.wheelDelta;
+            } else {
+                this.wheelDelta = 0;
+            }
         }
     }
 
