@@ -128,7 +128,18 @@
     }
   }
   .form-control {
+    position: relative;
     display: flex;
+    &.pad {
+      padding-top: 16px
+    }
+    label {
+      position: absolute;
+      top: 0;
+      left: 0;
+      color: var(--river);
+      font-size: 12px;
+    }
     .inner {
       flex: 1;
       display: flex;

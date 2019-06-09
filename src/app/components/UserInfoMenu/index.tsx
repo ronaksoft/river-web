@@ -156,6 +156,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                     </div>
                                     <div className="line">
                                         {!edit && <div className="form-control">
+                                            <label>First Name</label>
                                             <div className="inner">{user.firstname}</div>
                                             {isInContact && <div className="action">
                                                 <IconButton
@@ -180,6 +181,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                     </div>
                                     <div className="line">
                                         {!edit && <div className="form-control">
+                                            <label>Last Name</label>
                                             <div className="inner">{user.lastname}</div>
                                             {isInContact && <div className="action">
                                                 <IconButton
@@ -213,6 +215,18 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                             onChange={this.onPhoneChangeHandler}
                                         />}
                                     </div>
+                                    {Boolean(user && user.username !== '') && <div className="line">
+                                        <div className="form-control pad">
+                                            <label>Username</label>
+                                            <div className="inner">@{user.username}</div>
+                                        </div>
+                                    </div>}
+                                    {isInContact && user && <div className="line">
+                                        <div className="form-control pad">
+                                            <label>Phone</label>
+                                            <div className="inner">{user.phone}</div>
+                                        </div>
+                                    </div>}
                                     {Boolean(edit && user && ((user.firstname !== firstname || user.lastname !== lastname) || !isInContact)) &&
                                     <div className="actions-bar">
                                         <div className="add-action" onClick={this.confirmChangesHandler}>

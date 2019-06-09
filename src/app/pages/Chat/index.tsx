@@ -517,10 +517,10 @@ class Chat extends React.Component<IProps, IState> {
                                         <IconButton
                                             onClick={this.messageMoreOpenHandler}
                                         ><InfoOutlined/></IconButton>
-                                        <IconButton
+                                        {/*<IconButton
                                             onClick={this.testHandler}
                                         ><InfoOutlined/></IconButton>
-                                        {/*<IconButton
+                                        <IconButton
                                             onClick={this.test2Handler}
                                         ><InfoOutlined/></IconButton>*/}
                                         <Menu
@@ -4082,9 +4082,9 @@ class Chat extends React.Component<IProps, IState> {
         window.dispatchEvent(event);
     }
 
-    private testHandler = () => {
-        this.messageComponent.takeSnapshot(true);
-    }
+    // private testHandler = () => {
+    //     this.messageComponent.takeSnapshot(true);
+    // }
     //
     // private test2Handler = () => {
     //     this.messageComponent.revertPos();

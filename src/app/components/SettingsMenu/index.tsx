@@ -52,6 +52,7 @@ import BackgroundService from '../../services/backgroundService';
 import Radio from '@material-ui/core/Radio';
 import DownloadManager, {IDownloadSettings} from '../../services/downloadManager';
 import SettingsStorageUsageModal from '../SettingsStorageUsageModal';
+import {Loading} from "../Loading";
 
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -81,6 +82,7 @@ interface IState {
     firstname: string;
     fontSize: number;
     lastname: string;
+    loading: boolean;
     page: string;
     pageContent: string;
     phone: string;
@@ -144,6 +146,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             firstname: '',
             fontSize: 2,
             lastname: '',
+            loading: false,
             page: (props.subMenu && props.subMenu !== 'none' ? '2' : '1'),
             pageContent: props.subMenu || 'none',
             phone: this.sdk.getConnInfo().Phone || '',
@@ -251,7 +254,11 @@ class SettingsMenu extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {avatarMenuAnchorEl, page, pageContent, user, editProfile, editUsername, bio, firstname, lastname, phone, username, usernameAvailable, usernameValid, uploadingPhoto, debugModeOpen, sessions, confirmDialogOpen, customBackgroundSrc} = this.state;
+        const {
+            avatarMenuAnchorEl, page, pageContent, user, editProfile, editUsername, bio, firstname, lastname, phone,
+            username, usernameAvailable, usernameValid, uploadingPhoto, debugModeOpen, sessions, confirmDialogOpen,
+            customBackgroundSrc, loading
+        } = this.state;
         return (
             <div className="setting-menu">
                 <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={640}/>
@@ -657,7 +664,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                 <label>Active Sessions</label>
                             </div>
                             {sessions && <div className="menu-content">
-                                {Boolean(sessions.length > 0) && <Scrollbars
+                                {Boolean(sessions.length > 0 && !loading) && <Scrollbars
                                     autoHide={true}
                                 >
                                     <div>
@@ -704,6 +711,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                 {Boolean(sessions.length === 0) &&
                                 <div className="session-placeholder">you have no active sessions</div>}
                             </div>}
+                            {loading && <Loading/>}
                         </React.Fragment>}
                         {Boolean(pageContent === 'storage') && <React.Fragment>
                             <div className="menu-header">
@@ -1332,9 +1340,21 @@ class SettingsMenu extends React.Component<IProps, IState> {
 
     /* Get All Sessions */
     private getSessions() {
+        if (this.state.loading) {
+            return;
+        }
+        this.setState({
+            loading: true,
+        });
+
         this.sdk.sessionGetAll().then((res) => {
             this.setState({
+                loading: false,
                 sessions: this.modifySessions(res.authorizationsList),
+            });
+        }).catch(() => {
+            this.setState({
+                loading: false,
             });
         });
     }
