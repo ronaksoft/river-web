@@ -396,7 +396,8 @@
 
 .messages-inner {
   position: relative;
-  z-index: 2; }
+  z-index: 2;
+  width: 100%; }
   .messages-inner.hidden .bubble-wrapper {
     opacity: 0; }
 

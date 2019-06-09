@@ -172,6 +172,7 @@ class Message extends React.Component<IProps, IState> {
     private scrollDownTimeout: any = null;
     private isElectron: boolean = ElectronService.isElectron();
     private wheelDelta: number = 0;
+    private lastWheelDelta: number = 0;
 
     constructor(props: IProps) {
         super(props);
@@ -459,10 +460,7 @@ class Message extends React.Component<IProps, IState> {
         let scrollWidth = 0;
         const el1 = this.messageInnerRef.firstChild;
         if (el1) {
-            const el2 = el1.firstChild;
-            if (el2) {
-                scrollWidth = el1.scrollWidth - el2.scrollWidth;
-            }
+            scrollWidth = this.messageInnerRef.scrollWidth - el1.scrollWidth;
         }
         this.messageSnapshotRef.classList.remove('group', 'user', 'hidden');
         this.messageSnapshotRef.classList.add(className);
@@ -1415,7 +1413,8 @@ class Message extends React.Component<IProps, IState> {
             e.preventDefault();
         } else {
             if (e.wheelDelta) {
-                this.wheelDelta = e.wheelDelta;
+                this.wheelDelta = this.lastWheelDelta - e.wheelDelta;
+                this.lastWheelDelta = e.wheelDelta;
             } else {
                 this.wheelDelta = 0;
             }
