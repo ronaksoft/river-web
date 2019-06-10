@@ -470,7 +470,7 @@ class Message extends React.Component<IProps, IState> {
         const scrollEl = this.messageSnapshotRef.querySelector(' div > div');
         const scrollTop = this.getScrollTop();
         if (scrollEl && scrollTop !== null) {
-            scrollEl.scrollTop = scrollTop - this.wheelDelta;
+            scrollEl.scrollTop = (scrollTop + this.wheelDelta) + 8;
         }
         if (!noRemove) {
             this.removeSnapshotTimeout = setTimeout(() => {
