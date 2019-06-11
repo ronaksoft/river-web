@@ -28,6 +28,7 @@ import * as MusicMetadata from 'music-metadata-browser';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 
 import './style.css';
+import Cropper from "../Cropper";
 
 interface IMediaThumb {
     file: Blob;
@@ -84,6 +85,7 @@ class MediaPreview extends React.Component<IProps, IState> {
     private imageRef: any;
     private imageActionRef: any;
     private previewRefs: string[][] = [];
+    private cropperRef: Cropper;
 
     constructor(props: IProps) {
         super(props);
@@ -132,6 +134,8 @@ class MediaPreview extends React.Component<IProps, IState> {
                 className="uploader-dialog"
                 disableBackdropClick={loading}
             >
+                {Boolean(items.length > 0 && items[selected].mediaType === 'image') &&
+                <Cropper ref={this.cropperRefHandler} onImageReady={this.cropperImageReadyHandler}/>}
                 <div className="uploader-container">
                     {loading && <div className="uploader-loader">
                         <span>Converting...</span>
@@ -162,7 +166,8 @@ class MediaPreview extends React.Component<IProps, IState> {
                                                 <img ref={this.imageRefHandler} className="front"
                                                      src={items[selected].preview}/>
                                                 <div ref={this.imageActionRefHandler} className="image-actions">
-                                                    <CropRounded/>
+                                                    <CropRounded
+                                                        onClick={this.cropHandler.bind(this, items[selected].preview)}/>
                                                 </div>
                                             </React.Fragment>}
                                             {Boolean(items[selected].mediaType === 'video') &&
@@ -668,6 +673,39 @@ class MediaPreview extends React.Component<IProps, IState> {
                 });
             });
         }
+    }
+
+    /* Cropper ref handler */
+    private cropperRefHandler = (ref: any) => {
+        this.cropperRef = ref;
+    }
+
+    /* Crop handler */
+    private cropHandler = (url: string) => {
+        if (this.cropperRef) {
+            this.cropperRef.openFile(url);
+        }
+    }
+
+    /* Cropper image ready handler */
+    private cropperImageReadyHandler = (blob: Blob) => {
+        const {items, selected} = this.state;
+        const file = new File([blob], `cropped_file_${Date.now()}`, {type: blob.type, lastModified: Date.now()});
+        const preview = URL.createObjectURL(blob);
+        const hold = items[selected];
+        items[selected] = file;
+        items[selected].width = hold.width;
+        items[selected].caption = hold.caption;
+        items[selected].mediaType = hold.mediaType;
+        items[selected].ready = hold.ready;
+        items[selected].preview = preview;
+        if (!this.previewRefs[selected]) {
+            this.previewRefs[selected] = [];
+        }
+        this.previewRefs[selected].push(preview);
+        this.setState({
+            items,
+        });
     }
 }
 

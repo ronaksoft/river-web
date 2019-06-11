@@ -164,7 +164,7 @@ class MessageFile extends React.PureComponent<IProps, IState> {
     private fileSizeRef: any = null;
     private fileSize: number = 0;
     private downloadManager: DownloadManager;
-    private isMac: boolean = false;
+    private readonly isMac: boolean = false;
 
     constructor(props: IProps) {
         super(props);

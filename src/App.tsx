@@ -38,6 +38,9 @@ const theme = createMuiTheme({
             main: '#27AE60',
         },
     },
+    typography: {
+        fontFamily: "'YekanBakh', 'OpenSans'",
+    },
 });
 
 interface IState {

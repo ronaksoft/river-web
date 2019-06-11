@@ -9,7 +9,8 @@
 
 import * as React from 'react';
 import Dialog from '@material-ui/core/Dialog/Dialog';
-import ReactCrop, {Crop, PixelCrop} from 'react-image-crop';
+// @ts-ignore
+import ReactCrop from 'react-image-crop';
 import {CheckRounded} from '@material-ui/icons';
 
 import './style.css';
@@ -17,7 +18,6 @@ import './style.css';
 interface IProps {
     className?: string;
     onImageReady: (blob: Blob) => void;
-    width: number;
 }
 
 interface IState {
@@ -30,7 +30,8 @@ interface IState {
 class Cropper extends React.Component<IProps, IState> {
     private fileInputRef: any = null;
     private imageRef: any = null;
-    private pixelCrop: PixelCrop;
+    private pixelCrop: any;
+    private lastObjectURLImage: string;
 
     constructor(props: IProps) {
         super(props);
@@ -39,10 +40,7 @@ class Cropper extends React.Component<IProps, IState> {
             className: props.className || '',
             profileCropperOpen: false,
             profilePictureCrop: {
-                aspect: 1,
-                width: this.props.width,
-                x: 0,
-                y: 0,
+                unit: 'px',
             },
         };
 
@@ -52,17 +50,14 @@ class Cropper extends React.Component<IProps, IState> {
         //
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
-        const {profilePictureCrop} = this.state;
-        profilePictureCrop.width = newProps.width;
-        this.setState({
-            profilePictureCrop,
-        });
-    }
-
     /* Open file dialog */
-    public openFile() {
-        if (this.fileInputRef) {
+    public openFile(url?: string) {
+        if (url) {
+            this.setState({
+                profileCropperOpen: true,
+                profilePictureFile: url,
+            });
+        } else if (this.fileInputRef) {
             this.fileInputRef.click();
         }
     }
@@ -82,11 +77,11 @@ class Cropper extends React.Component<IProps, IState> {
                         Crop Picture
                     </div>
                     {Boolean(profilePictureFile) &&
-                    <ReactCrop src={profilePictureFile || ''} crop={profilePictureCrop}
-                               onChange={this.cropperChangeHandler}
-                               onImageLoaded={this.imageLoadedHandler}
-                    />
-                    }
+                    <ReactCrop
+                        src={profilePictureFile || ''} crop={profilePictureCrop}
+                        onChange={this.cropperChangeHandler}
+                        onImageLoaded={this.imageLoadedHandler}
+                    />}
                     <div className="picture-crop-footer">
                         <div className="picture-action" onClick={this.cropPictureHandler}>
                             <CheckRounded/>
@@ -108,9 +103,10 @@ class Cropper extends React.Component<IProps, IState> {
             const fileReader = new FileReader();
             fileReader.addEventListener('load', () => {
                 // @ts-ignore
+                this.lastObjectURLImage = fileReader.result;
                 this.setState({
                     profileCropperOpen: true,
-                    profilePictureFile: fileReader.result,
+                    profilePictureFile: this.lastObjectURLImage,
                 });
             });
             fileReader.readAsDataURL(e.target.files[0]);
@@ -125,13 +121,14 @@ class Cropper extends React.Component<IProps, IState> {
         if (this.fileInputRef) {
             this.fileInputRef.value = '';
         }
+        URL.revokeObjectURL(this.lastObjectURLImage);
     }
 
     /* Profile crop handler */
-    private cropperChangeHandler = (crop: Crop, pixelCrop: PixelCrop) => {
-        this.pixelCrop = pixelCrop;
+    private cropperChangeHandler = (crop: any, pixelCrop: any) => {
+        this.pixelCrop = crop;
         this.setState({
-            profilePictureCrop: crop,
+            profilePictureCrop: pixelCrop,
         });
     }
 
@@ -147,12 +144,6 @@ class Cropper extends React.Component<IProps, IState> {
             this.getCroppedImg(this.imageRef, this.pixelCrop, 'newFile.jpeg').then((blob) => {
                 this.setState({
                     profileCropperOpen: false,
-                    profilePictureCrop: {
-                        aspect: 1,
-                        width: 50,
-                        x: 0,
-                        y: 0,
-                    },
                 });
                 if (this.fileInputRef) {
                     this.fileInputRef.value = '';
@@ -163,23 +154,25 @@ class Cropper extends React.Component<IProps, IState> {
     }
 
     /* Crop final image */
-    private getCroppedImg(image: any, pixelCrop: PixelCrop, fileName: string): Promise<Blob> {
+    private getCroppedImg(image: any, pixelCrop: any, fileName: string): Promise<Blob> {
         const canvas = document.createElement('canvas');
+        const scaleX = image.naturalWidth / image.width;
+        const scaleY = image.naturalHeight / image.height;
         canvas.width = pixelCrop.width;
         canvas.height = pixelCrop.height;
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext("2d");
 
         if (ctx) {
             ctx.drawImage(
                 image,
-                pixelCrop.x,
-                pixelCrop.y,
-                pixelCrop.width,
-                pixelCrop.height,
+                pixelCrop.x * scaleX,
+                pixelCrop.y * scaleY,
+                pixelCrop.width * scaleX,
+                pixelCrop.height * scaleY,
                 0,
                 0,
                 pixelCrop.width,
-                pixelCrop.height,
+                pixelCrop.height
             );
 
             return new Promise((resolve, reject) => {

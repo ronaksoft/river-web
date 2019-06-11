@@ -300,7 +300,10 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable, disableAuthority, textareaValue, voiceMode, selectMediaOpen} = this.state;
+        const {
+            previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable,
+            disableAuthority, textareaValue, voiceMode, selectMediaOpen
+        } = this.state;
 
         if (!selectable && disableAuthority !== 0x0) {
             if (disableAuthority === 0x1) {

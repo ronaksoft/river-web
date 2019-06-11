@@ -65,7 +65,7 @@
     "react-dropzone": "^5.0.1",
     "react-fine-uploader": "^1.1.1",
     "react-google-maps": "^9.4.5",
-    "react-image-crop": "^6.0.12",
+    "react-image-crop": "^8.0.2",
     "react-intl-tel-input": "^7.0.1",
     "react-mentions": "^2.4.1",
     "react-router-dom": "^4.3.1",

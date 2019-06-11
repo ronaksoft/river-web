@@ -104,6 +104,7 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
                         {!this.downloaded && <div className="audio-performer">&nbsp;</div>}
                     </div>
                 </div>
+                {Boolean(mediaInfo.caption.length > 0) && <div className="audio-caption">{mediaInfo.caption}</div>}
             </div>
         );
     }

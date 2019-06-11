@@ -57,6 +57,10 @@
         white-space: nowrap; }
       .message-audio .audio-main .audio-info .audio-performer {
         color: var(--grey); }
+  .message-audio .audio-caption {
+    padding: 6px 6px 0;
+    white-space: pre-wrap;
+    word-break: break-word; }
 
 html[theme="dark"] .message-audio .audio-main .audio-action-wrapper .audio-item-action .audio-action {
   background-color: var(--dark-mention); }
