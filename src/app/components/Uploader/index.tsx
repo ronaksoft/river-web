@@ -28,7 +28,7 @@ import * as MusicMetadata from 'music-metadata-browser';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 
 import './style.css';
-import Cropper from "../Cropper";
+import Cropper, {IDimension} from "../Cropper";
 
 interface IMediaThumb {
     file: Blob;
@@ -688,13 +688,14 @@ class MediaPreview extends React.Component<IProps, IState> {
     }
 
     /* Cropper image ready handler */
-    private cropperImageReadyHandler = (blob: Blob) => {
+    private cropperImageReadyHandler = (blob: Blob, dimension: IDimension) => {
         const {items, selected} = this.state;
         const file = new File([blob], `cropped_file_${Date.now()}`, {type: blob.type, lastModified: Date.now()});
         const preview = URL.createObjectURL(blob);
         const hold = items[selected];
         items[selected] = file;
-        items[selected].width = hold.width;
+        items[selected].width = dimension.width;
+        items[selected].height = dimension.height;
         items[selected].caption = hold.caption;
         items[selected].mediaType = hold.mediaType;
         items[selected].ready = hold.ready;

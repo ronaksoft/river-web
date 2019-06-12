@@ -15,9 +15,14 @@ import {CheckRounded} from '@material-ui/icons';
 
 import './style.css';
 
+export interface IDimension {
+    height: number;
+    width: number;
+}
+
 interface IProps {
     className?: string;
-    onImageReady: (blob: Blob) => void;
+    onImageReady: (blob: Blob, dimension: IDimension) => void;
 }
 
 interface IState {
@@ -140,7 +145,7 @@ class Cropper extends React.Component<IProps, IState> {
     /* Crop image handler */
     private cropPictureHandler = () => {
         const {profilePictureCrop} = this.state;
-        if (this.imageRef && profilePictureCrop.width && profilePictureCrop.height) {
+        if (this.imageRef && profilePictureCrop.width && profilePictureCrop.height && this.pixelCrop) {
             this.getCroppedImg(this.imageRef, this.pixelCrop, 'newFile.jpeg').then((blob) => {
                 this.setState({
                     profileCropperOpen: false,
@@ -148,7 +153,10 @@ class Cropper extends React.Component<IProps, IState> {
                 if (this.fileInputRef) {
                     this.fileInputRef.value = '';
                 }
-                this.props.onImageReady(blob);
+                this.props.onImageReady(blob, {
+                    height: this.pixelCrop.height,
+                    width: this.pixelCrop.width,
+                });
             });
         }
     }
