@@ -682,18 +682,22 @@ class Message extends React.Component<IProps, IState> {
 
     private rowRender = ({index, key, parent, style}: any): any => {
         const message = this.state.items[index];
-        return (
-            <CellMeasurer
-                cache={this.cache}
-                columnIndex={0}
-                key={key}
-                rowIndex={index}
-                parent={parent}>
-                {({measure}) => {
-                    return this.messageItem(index, message, this.props.peer, this.readId, style, measure);
-                }}
-            </CellMeasurer>
-        );
+        if (message) {
+            return (
+                <CellMeasurer
+                    cache={this.cache}
+                    columnIndex={0}
+                    key={message.id || key}
+                    rowIndex={index}
+                    parent={parent}>
+                    {({measure}) => {
+                        return this.messageItem(index, message, this.props.peer, this.readId, style, measure);
+                    }}
+                </CellMeasurer>
+            );
+        } else {
+            return '';
+        }
     }
 
     private noRowsRenderer = () => {

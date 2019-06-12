@@ -517,10 +517,10 @@ class Chat extends React.Component<IProps, IState> {
                                         <IconButton
                                             onClick={this.messageMoreOpenHandler}
                                         ><InfoOutlined/></IconButton>
-                                        <IconButton
+                                        {/*<IconButton
                                             onClick={this.testHandler}
                                         ><InfoOutlined/></IconButton>
-                                        {/*<IconButton
+                                        <IconButton
                                             onClick={this.test2Handler}
                                         ><InfoOutlined/></IconButton>*/}
                                         <Menu
@@ -569,9 +569,8 @@ class Chat extends React.Component<IProps, IState> {
                                 {this.getMoveDown()}
                             </div>
                             <ChatInput ref={this.chatInputRefHandler} onMessage={this.chatInputTextMessageHandler}
-                                       onTyping={this.onTyping}
-                                       userId={this.connInfo.UserID} previewMessage={textInputMessage}
-                                       previewMessageMode={textInputMessageMode}
+                                       onTyping={this.onTyping} userId={this.connInfo.UserID}
+                                       previewMessage={textInputMessage} previewMessageMode={textInputMessageMode}
                                        onPreviewMessageChange={this.chatInputPreviewMessageChangeHandler}
                                        selectable={messageSelectable}
                                        selectableDisable={Boolean(messageSelectable && Object.keys(messageSelectedIds).length === 0)}
@@ -979,7 +978,6 @@ class Chat extends React.Component<IProps, IState> {
                     // Scroll down if possible
                     if (!tMoveDownVisible && this.isInChat) {
                         this.messageComponent.list.forceUpdateGrid();
-                        this.messageComponent.list.recomputeRowHeights();
                         this.messageComponent.animateToEnd();
                         if (dataMsg.maxReadId !== -1) {
                             this.sendReadHistory(this.state.peer, dataMsg.maxReadId);
@@ -1790,8 +1788,6 @@ class Chat extends React.Component<IProps, IState> {
                 message_id: id,
             });
 
-            window.console.log(peer.toObject());
-
             this.sdk.sendMessage(randomId, text, peer, replyTo, entities).then((res) => {
                 // For double checking update message id
                 this.updateManager.setMessageId(res.messageid || 0);
@@ -1805,7 +1801,6 @@ class Chat extends React.Component<IProps, IState> {
                 this.updateDialogs(message, '0');
                 // Force update messages
                 this.messageComponent.list.forceUpdateGrid();
-                this.messageComponent.list.recomputeRowHeights();
                 this.messageComponent.animateToEnd();
             }).catch((err) => {
                 const messages = this.messages;
@@ -1846,8 +1841,7 @@ class Chat extends React.Component<IProps, IState> {
         this.messageComponent.setMessages(messages, () => {
             setTimeout(() => {
                 if (this.messageComponent) {
-                    this.messageComponent.list.forceUpdateGrid();
-                    this.messageComponent.list.recomputeRowHeights();
+                    this.forceUpdate();
                     this.messageComponent.animateToEnd();
                 }
             }, 50);
@@ -3668,8 +3662,6 @@ class Chat extends React.Component<IProps, IState> {
                 break;
         }
 
-        window.console.log(peer.toObject());
-
         Promise.all(uploadPromises).then(() => {
             this.progressBroadcaster.remove(id);
             this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, replyTo).then((res) => {
@@ -4082,9 +4074,9 @@ class Chat extends React.Component<IProps, IState> {
         window.dispatchEvent(event);
     }
 
-    private testHandler = () => {
-        this.messageComponent.takeSnapshot(true);
-    }
+    // private testHandler = () => {
+    //     this.messageComponent.takeSnapshot(true);
+    // }
     //
     // private test2Handler = () => {
     //     this.messageComponent.revertPos();
