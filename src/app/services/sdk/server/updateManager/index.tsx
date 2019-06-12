@@ -249,6 +249,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateUserTyping:
                 this.callHandlers(C_MSG.UpdateUserTyping, UpdateUserTyping.deserializeBinary(data).toObject());
+
                 break;
             case C_MSG.UpdateMessageEdited:
                 const updateMessageEdited = UpdateMessageEdited.deserializeBinary(data).toObject();

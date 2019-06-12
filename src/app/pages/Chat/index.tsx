@@ -16,7 +16,12 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
 import {
-    EditRounded, InfoOutlined, KeyboardArrowLeftRounded, MoreVertRounded, SearchRounded, ExpandMoreRounded,
+    EditRounded,
+    ExpandMoreRounded,
+    InfoOutlined,
+    KeyboardArrowLeftRounded,
+    MoreVertRounded,
+    SearchRounded,
 } from '@material-ui/icons';
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
@@ -27,17 +32,38 @@ import SDK from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
 import * as core_types_pb from '../../services/sdk/messages/chat.core.types_pb';
 import {
-    FileLocation, Group, InputFile, InputFileLocation, InputPeer, InputUser, MediaType, MessageEntity,
-    MessageEntityType, PeerNotifySettings, PeerType, TypingAction, User,
+    FileLocation,
+    Group,
+    InputFile,
+    InputFileLocation,
+    InputPeer,
+    InputUser,
+    MediaType,
+    MessageEntity,
+    MessageEntityType,
+    PeerNotifySettings,
+    PeerType,
+    TypingAction,
+    User,
+    UserStatus
 } from '../../services/sdk/messages/chat.core.types_pb';
 import {IConnInfo} from '../../services/sdk/interface';
 import {IDialog} from '../../repository/dialog/interface';
 import UpdateManager, {INewMessageBulkUpdate} from '../../services/sdk/server/updateManager';
 import {C_MSG} from '../../services/sdk/const';
 import {
-    UpdateDialogPinned, UpdateGroupPhoto, UpdateMessageEdited, UpdateMessageID, UpdateMessagesDeleted,
-    UpdateNotifySettings, UpdateReadHistoryInbox, UpdateReadHistoryOutbox, UpdateReadMessagesContents, UpdateUsername,
-    UpdateUserPhoto, UpdateUserTyping,
+    UpdateDialogPinned,
+    UpdateGroupPhoto,
+    UpdateMessageEdited,
+    UpdateMessageID,
+    UpdateMessagesDeleted,
+    UpdateNotifySettings,
+    UpdateReadHistoryInbox,
+    UpdateReadHistoryOutbox,
+    UpdateReadMessagesContents,
+    UpdateUsername,
+    UpdateUserPhoto,
+    UpdateUserTyping,
 } from '../../services/sdk/messages/chat.api.updates_pb';
 import UserName from '../../components/UserName';
 import SyncManager, {C_SYNC_UPDATE} from '../../services/sdk/syncManager';
@@ -69,8 +95,16 @@ import ElectronService, {C_ELECTRON_SUBJECT} from '../../services/electron';
 import FileManager from '../../services/sdk/fileManager';
 import {InputMediaType} from '../../services/sdk/messages/chat.api.messages_pb';
 import {
-    Document, DocumentAttribute, DocumentAttributeAudio, DocumentAttributeFile, DocumentAttributePhoto,
-    DocumentAttributeType, DocumentAttributeVideo, InputMediaContact, InputMediaGeoLocation, InputMediaUploadedDocument,
+    Document,
+    DocumentAttribute,
+    DocumentAttributeAudio,
+    DocumentAttributeFile,
+    DocumentAttributePhoto,
+    DocumentAttributeType,
+    DocumentAttributeVideo,
+    InputMediaContact,
+    InputMediaGeoLocation,
+    InputMediaUploadedDocument,
     MediaDocument,
 } from '../../services/sdk/messages/chat.core.message.medias_pb';
 import RiverTime from '../../services/utilities/river_time';
@@ -989,7 +1023,12 @@ class Chat extends React.Component<IProps, IState> {
             }
         }
         this.messageRepo.lazyUpsert(data.messages);
-        this.userRepo.importBulk(false, data.senders);
+        this.userRepo.importBulk(false, data.senders.map((o, index) => {
+            if (data.messages[index].senderid === o.id) {
+                o.status = UserStatus.USERSTATUSONLINE;
+            }
+            return o;
+        }));
 
         // Update dialogs
         data.messages.forEach((message, index) => {
@@ -1160,6 +1199,10 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         window.console.debug('UpdateMaxOutbox:', data.maxid, data.peer.id);
+        this.userRepo.importBulk(false, [{
+            id: data.peer.id,
+            status: UserStatus.USERSTATUSONLINE,
+        }]);
         this.updateDialogsCounter(data.peer.id || '', {maxOutbox: data.maxid});
         if (data.peer.id === this.state.selectedDialogId) {
             this.setState({
