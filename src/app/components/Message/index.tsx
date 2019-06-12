@@ -171,8 +171,6 @@ class Message extends React.Component<IProps, IState> {
     private scrollToIndex?: number;
     private scrollDownTimeout: any = null;
     private isElectron: boolean = ElectronService.isElectron();
-    private wheelDelta: number = 0;
-    private lastWheelDelta: number = 0;
 
     constructor(props: IProps) {
         super(props);
@@ -470,7 +468,7 @@ class Message extends React.Component<IProps, IState> {
         const scrollEl = this.messageSnapshotRef.querySelector(' div > div');
         const scrollTop = this.getScrollTop();
         if (scrollEl && scrollTop !== null) {
-            scrollEl.scrollTop = (scrollTop + this.wheelDelta) + 8;
+            scrollEl.scrollTop = scrollTop;
         }
         if (!noRemove) {
             this.removeSnapshotTimeout = setTimeout(() => {
@@ -1147,13 +1145,14 @@ class Message extends React.Component<IProps, IState> {
                     case MessageEntityType.MESSAGEENTITYTYPEHASHTAG:
                         return (<span key={i} className="_hashtag">{elem.str}</span>);
                     case MessageEntityType.MESSAGEENTITYTYPEURL:
+                        const url = this.modifyURL(elem.str);
                         if (this.isElectron) {
                             return (
-                                <a key={i} href="#" onClick={this.openExternalLink.bind(this, this.modifyURL(elem.str))}
+                                <a key={i} href={url} onClick={this.openExternalLink.bind(this, url)}
                                    className="_url">{elem.str}</a>);
                         } else {
                             return (
-                                <a key={i} href={this.modifyURL(elem.str)} target="_blank"
+                                <a key={i} href={url} target="_blank"
                                    className="_url">{elem.str}</a>);
                         }
                     default:
@@ -1411,13 +1410,6 @@ class Message extends React.Component<IProps, IState> {
     private scrollHandler = (e: any) => {
         if (this.disableScrolling) {
             e.preventDefault();
-        } else {
-            if (e.wheelDelta) {
-                this.wheelDelta = this.lastWheelDelta - e.wheelDelta;
-                this.lastWheelDelta = e.wheelDelta;
-            } else {
-                this.wheelDelta = 0;
-            }
         }
     }
 

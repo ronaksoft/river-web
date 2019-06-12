@@ -245,10 +245,11 @@ export default class SyncManager {
                     break;
             }
         });
-        this.updateMessageDB(messages, toRemoveMessages);
         this.updateUserDB(users);
-        this.updateDialogDB(dialogs, toRemoveDialogs, toCheckDialogs);
         this.updateGroupDB(groups);
+        this.updateMessageDB(messages, toRemoveMessages).then(() => {
+            this.updateDialogDB(dialogs, toRemoveDialogs, toCheckDialogs);
+        });
     }
 
     private updateDialog(dialogs: { [key: number]: IDialog }, dialog: IDialog) {
@@ -261,7 +262,7 @@ export default class SyncManager {
                 dialog.readoutboxmaxid = (d.readoutboxmaxid || 0);
             }
             if (dialog.topmessageid) {
-                if (dialog.topmessageid > (d.topmessageid || 0)) {
+                if (dialog.force || dialog.topmessageid > (d.topmessageid || 0)) {
                     dialogs[dialog.peerid || 0] = kMerge(d, dialog);
                 }
             } else {
@@ -302,7 +303,6 @@ export default class SyncManager {
         if (keys.length > 0) {
             const data: IDialog[] = [];
             // TODO: check
-            this.messageRepo.flush();
             if (dialogCheck.length > 0) {
                 setTimeout(() => {
                     this.dialogRepo.lazyUpsert(data);
@@ -318,6 +318,7 @@ export default class SyncManager {
                                     this.updateDialog(dialogs, {
                                         action_code: msg.messageaction,
                                         action_data: msg.actiondata,
+                                        force: true,
                                         last_update: (msg.editedon || 0) > 0 ? msg.editedon : msg.createdon,
                                         peerid: msg.peerid,
                                         peertype: msg.peertype,
@@ -356,8 +357,9 @@ export default class SyncManager {
         }
     }
 
-    private updateMessageDB(messages: { [key: number]: IMessage }, toRemoveMessages: number[]) {
-        this.messageRepo.removeMany(toRemoveMessages);
+    private updateMessageDB(messages: { [key: number]: IMessage }, toRemoveMessages: number[]): Promise<any> {
+        const promises: any[] = [];
+        promises.push(this.messageRepo.removeMany(toRemoveMessages));
         const data: IMessage[] = [];
         const keys = Object.keys(messages);
         const peerIds: number[] = [];
@@ -368,14 +370,18 @@ export default class SyncManager {
             }
         });
         if (data.length > 0) {
-            this.messageRepo.lazyUpsert(data);
-            this.messageRepo.flush();
+            promises.push(this.messageRepo.lazyUpsert(data));
             setTimeout(() => {
                 this.broadcastEvent('Message_Sync_Updated', {
                     ids: keys,
                     peerids: peerIds,
                 });
             }, 1000);
+        }
+        if (promises.length > 0) {
+            return Promise.all(promises);
+        } else {
+            return Promise.resolve();
         }
     }
 

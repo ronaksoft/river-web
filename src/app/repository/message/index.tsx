@@ -662,14 +662,14 @@ export default class MessageRepo {
         msgs.forEach((message) => {
             message.temp = (temp === true);
         });
-        this.upsert(msgs);
+        return this.upsert(msgs);
         // End
-        return;
         // Disabling debouncer
         cloneDeep(messages).forEach((message) => {
             this.updateMap(message, temp);
         });
         this.updateThrottle();
+        return Promise.resolve();
     }
 
     public insertHole(peerId: string, id: number, asc: boolean) {

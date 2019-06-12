@@ -44,7 +44,7 @@ import {findIndex, trimStart} from 'lodash';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import ContactList from '../ContactList';
 import Checkbox from '@material-ui/core/Checkbox/Checkbox';
-import {isMuted} from '../UserInfoMenu';
+import {isMuted, notifyOptions} from '../UserInfoMenu';
 import {IDialog} from '../../repository/dialog/interface';
 import DialogRepo from '../../repository/dialog';
 import DialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
@@ -381,16 +381,10 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                             value={notifyValue}
                             onChange={this.notifyValueChangeHandler}
                         >
-                            <FormControlLabel value="-1" control={<Radio color="primary"/>}
-                                              label="Enable"/>
-                            <FormControlLabel value="-2" control={<Radio color="primary"/>}
-                                              label="Disable"/>
-                            <FormControlLabel value="480" control={<Radio color="primary"/>}
-                                              label="Disable for 8 hours"/>
-                            <FormControlLabel value="2880" control={<Radio color="primary"/>}
-                                              label="Disable for 2 days"/>
-                            <FormControlLabel value="10080" control={<Radio color="primary"/>}
-                                              label="Disable for 1 week"/>
+                            {notifyOptions.map((item, key) => {
+                                return (<FormControlLabel key={key} value={item.val} label={item.title}
+                                                          control={<Radio color="primary"/>}/>);
+                            })}
                         </RadioGroup>
                     </DialogContent>
                     <DialogActions>

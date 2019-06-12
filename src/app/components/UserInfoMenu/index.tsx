@@ -70,6 +70,23 @@ export const isMuted = (notifySettings?: PeerNotifySettings.AsObject) => {
     }
 };
 
+export const notifyOptions = [{
+    title: 'Disable',
+    val: '-1',
+}, {
+    title: 'Enable',
+    val: '-2',
+}, {
+    title: 'Disable for 8 hours',
+    val: '480',
+}, {
+    title: 'Disable for 2 days',
+    val: '2880',
+}, {
+    title: 'Disable for 1 week',
+    val: '10080',
+}];
+
 class UserInfoMenu extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
     private dialogRepo: DialogRepo;
@@ -129,8 +146,8 @@ class UserInfoMenu extends React.Component<IProps, IState> {
 
     public render() {
         const {
-            user, page, peer, edit, firstname, lastname, phone,
-            isInContact, dialog, notifySettingDialogOpen, notifyValue, shareMediaEnabled
+            user, page, peer, edit, firstname, lastname, phone, isInContact, dialog, notifySettingDialogOpen,
+            notifyValue, shareMediaEnabled
         } = this.state;
         return (
             <div className="user-info-menu">
@@ -281,16 +298,10 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                             value={notifyValue}
                             onChange={this.notifyValueChangeHandler}
                         >
-                            <FormControlLabel value="-1" control={<Radio color="primary"/>}
-                                              label="Enable"/>
-                            <FormControlLabel value="-2" control={<Radio color="primary"/>}
-                                              label="Disable"/>
-                            <FormControlLabel value="480" control={<Radio color="primary"/>}
-                                              label="Disable for 8 hours"/>
-                            <FormControlLabel value="2880" control={<Radio color="primary"/>}
-                                              label="Disable for 2 days"/>
-                            <FormControlLabel value="10080" control={<Radio color="primary"/>}
-                                              label="Disable for 1 week"/>
+                            {notifyOptions.map((item, key) => {
+                                return (<FormControlLabel key={key} value={item.val} label={item.title}
+                                                          control={<Radio color="primary"/>}/>);
+                            })}
                         </RadioGroup>
                     </DialogContent>
                     <DialogActions>
