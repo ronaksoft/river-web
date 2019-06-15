@@ -9,23 +9,12 @@
 
 import * as React from 'react';
 import {
-    AddRounded,
-    CheckRounded,
-    CloseRounded,
-    EditRounded,
-    ExitToAppRounded, KeyboardBackspaceRounded,
-    MoreVert,
-    PersonAddRounded, PhotoCameraRounded,
-    StarRateRounded,
-    StarsRounded,
+    AddRounded, CheckRounded, CloseRounded, EditRounded, ExitToAppRounded, KeyboardBackspaceRounded, MoreVert,
+    PersonAddRounded, PhotoCameraRounded, StarRateRounded, StarsRounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import {
-    GroupFlags, InputFile,
-    InputPeer,
-    InputUser,
-    ParticipantType,
-    PeerNotifySettings
+    GroupFlags, InputFile, InputPeer, InputUser, ParticipantType, PeerNotifySettings,
 } from '../../services/sdk/messages/chat.core.types_pb';
 import SDK from '../../services/sdk';
 import GroupAvatar from '../GroupAvatar';
@@ -44,7 +33,7 @@ import {findIndex, trimStart} from 'lodash';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import ContactList from '../ContactList';
 import Checkbox from '@material-ui/core/Checkbox/Checkbox';
-import {isMuted, notifyOptions} from '../UserInfoMenu';
+import {isMuted} from '../UserInfoMenu';
 import {IDialog} from '../../repository/dialog/interface';
 import DialogRepo from '../../repository/dialog';
 import DialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
@@ -65,6 +54,8 @@ import DocumentViewerService, {IDocument} from '../../services/documentViewerSer
 import AvatarCropper from '../AvatarCropper';
 import PeerMedia from '../PeerMedia';
 import Broadcaster from '../../services/broadcaster';
+import {notifyOptions} from '../../pages/Chat';
+import i18n from '../../services/i18n';
 
 import './style.css';
 
@@ -202,7 +193,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                             >
                                 <CloseRounded/>
                             </IconButton>
-                            <label>Group Info</label>
+                            <label>{i18n.t('chat.group_info')}</label>
                         </div>
                         <Scrollbars
                             autoHide={true}
@@ -217,7 +208,11 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                             {!uploadingPhoto && <React.Fragment>
                                                 <PhotoCameraRounded/>
                                                 <div className="text">
-                                                    CHANGE<br/>PROFILE<br/>PHOTO
+                                                    {i18n.t('peer_info.CHANGE')}
+                                                    <br/>
+                                                    {i18n.t('peer_info.PROFILE')}
+                                                    <br/>
+                                                    {i18n.t('peer_info.PHOTO')}
                                                 </div>
                                             </React.Fragment>}
                                             {uploadingPhoto &&
@@ -236,7 +231,6 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                             <div className="inner">{group.title}</div>
                                             {this.hasAuthority(group) && <div className="action">
                                                 <IconButton
-                                                    aria-label="Edit title"
                                                     onClick={this.onTitleEditHandler}
                                                 >
                                                     <EditRounded/>
@@ -245,7 +239,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                         </div>}
                                         {titleEdit &&
                                         <FormControl fullWidth={true} className="title-edit">
-                                            <InputLabel htmlFor="adornment-title">Title</InputLabel>
+                                            <InputLabel htmlFor="adornment-title">{i18n.t('general.title')}</InputLabel>
                                             <Input
                                                 id="adornment-title"
                                                 type="text"
@@ -254,7 +248,6 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                                 endAdornment={
                                                     <InputAdornment position="end">
                                                         <IconButton
-                                                            aria-label="Confirm changes"
                                                             onClick={this.onTitleConfirmHandler}
                                                         >
                                                             {Boolean(group.title === title) ? <CloseRounded/> :
@@ -266,11 +259,11 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                         </FormControl>}
                                     </div>
                                     <div className="created-on">
-                                        Created {TimeUtility.dynamicDate(group.createdon || 0)}
+                                        {i18n.t('peer_info.created')} {TimeUtility.dynamicDate(group.createdon || 0)}
                                     </div>
                                 </div>}
                                 {dialog && <div className="kk-card notify-settings">
-                                    <div className="label">Mute</div>
+                                    <div className="label">{i18n.t('peer_info.mute')}</div>
                                     <div className="value">
                                         <Checkbox
                                             className={'checkbox ' + (isMuted(dialog.notifysettings) ? 'checked' : '')}
@@ -282,7 +275,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                 </div>}
                                 {group && <React.Fragment>
                                     {this.hasAuthority(group) && <div className="kk-card notify-settings">
-                                        <div className="label">All Members Admin</div>
+                                        <div className="label">{i18n.t('peer_info.all_member_admin')}</div>
                                         <div className="value switch">
                                             <Switch
                                                 checked={(group.flagsList || []).indexOf(GroupFlags.GROUPFLAGSADMINSENABLED) === -1}
@@ -297,7 +290,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                 <PeerMedia className="kk-card" peer={peer} full={false}
                                            onMore={this.peerMediaMoreHandler} onAction={this.props.onAction}/>}
                                 {group && <div className="participant kk-card">
-                                    <label>{group.participants} participants</label>
+                                    <label>{i18n.tf('peer_info.participants', String(group.participants))} </label>
                                     {participants.map((participant, index) => {
                                         return (
                                             <div key={index}
@@ -310,7 +303,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                                 <span className="name"
                                                       onClick={this.participantClickHandler.bind(this, participant.userid, participant.accesshash)}>{`${participant.firstname} ${participant.lastname}`}{this.userId === participant.userid ? ' (you)' : ''}</span>
                                                 <span
-                                                    className="username">{participant.username ? participant.username : 'no username'}</span>
+                                                    className="username">{participant.username ? participant.username : i18n.t('general.no_username')}</span>
                                                 <div className="more"
                                                      onClick={this.moreOpenHandler.bind(this, participant)}>
                                                     <MoreVert/>
@@ -319,11 +312,11 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                         );
                                     })}
                                     <div className="add-member" onClick={this.addMemberDialogOpenHandler}>
-                                        <AddRounded/> Add member
+                                        <AddRounded/> {i18n.t('peer_info.add_member')}
                                     </div>
                                 </div>}
                                 <div className="leave-group kk-card" onClick={this.leaveGroupHandler}>
-                                    <ExitToAppRounded/> Leave the '{group ? group.title : ''}'
+                                    <ExitToAppRounded/> {i18n.t('peer_info.leave_the')} '{group ? group.title : ''}'
                                 </div>
                             </div>
                         </Scrollbars>
@@ -337,7 +330,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                             >
                                 <KeyboardBackspaceRounded/>
                             </IconButton>
-                            <label>Shared Media</label>
+                            <label>{i18n.t('peer_info.shared_media')}</label>
                         </div>
                         {(dialog && peer && shareMediaEnabled) &&
                         <PeerMedia className="kk-card" peer={peer} full={true} onAction={this.props.onAction}/>}
@@ -358,7 +351,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                 >
                     {addMemberDialogEnable && <div className="dialog-content">
                         <div className="dialog-header">
-                            <PersonAddRounded/> Add member
+                            <PersonAddRounded/> {i18n.t('peer_info.add_member')}}
                         </div>
                         <ContactList hiddenContacts={participants} onChange={this.addMemberChangeHandler} mode="chip"/>
                         {Boolean(this.state.newMembers.length > 0) && <div className="actions-bar">
@@ -374,7 +367,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                     maxWidth="xs"
                     className="notify-setting-dialog"
                 >
-                    <DialogTitle>Notify Settings</DialogTitle>
+                    <DialogTitle>{i18n.t('peer_info.notify_settings')}}</DialogTitle>
                     <DialogContent className="dialog-content">
                         <RadioGroup
                             name="notify-setting"
@@ -389,10 +382,10 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={this.notifySettingDialogCloseHandler} color="secondary">
-                            Disagree
+                            {i18n.t('general.cancel')}
                         </Button>
                         <Button onClick={this.applyNotifySettings} color="primary" autoFocus={true}>
-                            Apply
+                            {i18n.t('general.apply')}
                         </Button>
                     </DialogActions>
                 </Dialog>

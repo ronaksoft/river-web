@@ -1,0 +1,79 @@
+{
+  "general": {
+    "agree": "Agree",
+    "disagree": "Disagree",
+    "disable": "Disable",
+    "enable": "Enable",
+    "apply": "Apply",
+    "cancel": "Cancel",
+    "saved_messages": "Saved Messages",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "username": "Username",
+    "no_username": "no username",
+    "phone": "Phone",
+    "title": "Title",
+    "participants": "participants"
+  },
+  "bottom_bar": {
+    "contacts": "Contacts",
+    "chats": "Chats",
+    "settings": "Settings"
+  },
+  "chat": {
+    "search": "Search",
+    "more": "More",
+    "new_group": "New Group",
+    "new_message": "New Message",
+    "account_info": "Account Info",
+    "settings": "Settings",
+    "log_out": "Log Out",
+    "group_info": "Group Info",
+    "contact_info": "Contact Info",
+    "search_messages": "Search Messages",
+    "chat_placeholder": "Choose a chat to start messaging!",
+    "logout_dialog": {
+      "title": "Log Out?",
+      "p1": "We are about to log out of River.",
+      "p2": "All databases will be removed!",
+      "p3": "Are you sure?"
+    },
+    "remove_message_dialog": {
+      "title": "Remove Message?",
+      "content": "Remove {0} message(s)",
+      "remove": "Remove",
+      "remove_for_all": "Remove (for all)"
+    },
+    "exit_group_dialog": {
+      "title": "Delete and exit group?",
+      "p1": "Delete and exit ",
+      "p2": "All group messages will be removed!"
+    },
+    "delete_dialog": {
+      "title": "Delete dialog?",
+      "p1": "Delete conversation with ",
+      "p2": "All messages will be removed!"
+    }
+  },
+  "peer_info": {
+    "notify_settings": "Notify Settings",
+    "disable_for_8_hours": "Disable for 8 hours",
+    "disable_for_2_days": "Disable for 2 days",
+    "disable_for_1_week": "Disable for 1 week",
+    "add_as_contact": "Add as contact",
+    "mute": "Mute",
+    "shared_media": "Shared Media",
+    "show_all": "Show All",
+    "photo_video": "Photo & Video",
+    "audio": "Audio",
+    "file": "File",
+    "CHANGE": "CHANGE",
+    "PROFILE": "PROFILE",
+    "PHOTO": "PHOTO",
+    "created": "Created",
+    "all_member_admin": "All member admin",
+    "add_member": "Add member",
+    "leave_the": "Leave the",
+    "participants": "{0} participants"
+  }
+}

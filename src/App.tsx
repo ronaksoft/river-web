@@ -20,6 +20,7 @@ import MainRepo from './app/repository';
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 import {ErrorInfo} from 'react';
 import * as Sentry from '@sentry/browser';
+import I18n from "./app/services/i18n";
 
 import './App.css';
 
@@ -48,6 +49,14 @@ interface IState {
     clearingSiteData: boolean;
     errorMessage: string;
 }
+
+I18n.init({
+    defLang: 'fa',
+    dictionaries: {
+        en: require('./app/locales/en.json'),
+        fa: require('./app/locales/fa.json'),
+    },
+});
 
 class App extends React.Component<{}, IState> {
     private mainRepo: MainRepo;

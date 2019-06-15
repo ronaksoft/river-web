@@ -32,6 +32,7 @@ import {IMessage} from '../../repository/message/interface';
 import AudioPlayer, {IAudioEvent, IAudioInfo} from '../../services/audioPlayer';
 import ProgressBroadcaster from '../../services/progress';
 import {IFileProgress} from '../../services/sdk/fileManager';
+import i18n from '../../services/i18n';
 
 import './style.css';
 
@@ -123,15 +124,16 @@ class PeerMedia extends React.Component<IProps, IState> {
         return (
             <div className={`peer-media ${(this.props.full ? ' full' : '')} ${className}`}>
                 {!this.props.full && <div className="peer-media-title">
-                    <span className="peer-label">Shared Media</span>
-                    {Boolean(items.length > 0) && <span className="more" onClick={this.props.onMore}>Show All</span>}
+                    <span className="peer-label">{i18n.t('peer_info.shared_media')}</span>
+                    {Boolean(items.length > 0) &&
+                    <span className="more" onClick={this.props.onMore}>{i18n.t('peer_info.show_all')}</span>}
                 </div>}
                 {this.props.full && <div className="peer-media-tab">
                     <Tabs indicatorColor="primary" textColor="primary" fullWidth={true} centered={true} value={tab}
                           onChange={this.tabChangeHandler}>
-                        <Tab label="Photo & Video"/>
-                        <Tab label="Audio"/>
-                        <Tab label="File"/>
+                        <Tab label={i18n.t('peer_info.photo_video')}/>
+                        <Tab label={i18n.t('peer_info.audio')}/>
+                        <Tab label={i18n.t('peer_info.file')}/>
                     </Tabs>
                 </div>}
                 <div className="peer-media-container">

@@ -16,12 +16,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
 import {
-    EditRounded,
-    ExpandMoreRounded,
-    InfoOutlined,
-    KeyboardArrowLeftRounded,
-    MoreVertRounded,
-    SearchRounded,
+    EditRounded, ExpandMoreRounded, InfoOutlined, KeyboardArrowLeftRounded, MoreVertRounded, SearchRounded,
 } from '@material-ui/icons';
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
@@ -32,38 +27,17 @@ import SDK from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
 import * as core_types_pb from '../../services/sdk/messages/chat.core.types_pb';
 import {
-    FileLocation,
-    Group,
-    InputFile,
-    InputFileLocation,
-    InputPeer,
-    InputUser,
-    MediaType,
-    MessageEntity,
-    MessageEntityType,
-    PeerNotifySettings,
-    PeerType,
-    TypingAction,
-    User,
-    UserStatus
+    FileLocation, Group, InputFile, InputFileLocation, InputPeer, InputUser, MediaType, MessageEntity,
+    MessageEntityType, PeerNotifySettings, PeerType, TypingAction, User, UserStatus,
 } from '../../services/sdk/messages/chat.core.types_pb';
 import {IConnInfo} from '../../services/sdk/interface';
 import {IDialog} from '../../repository/dialog/interface';
 import UpdateManager, {INewMessageBulkUpdate} from '../../services/sdk/server/updateManager';
 import {C_MSG} from '../../services/sdk/const';
 import {
-    UpdateDialogPinned,
-    UpdateGroupPhoto,
-    UpdateMessageEdited,
-    UpdateMessageID,
-    UpdateMessagesDeleted,
-    UpdateNotifySettings,
-    UpdateReadHistoryInbox,
-    UpdateReadHistoryOutbox,
-    UpdateReadMessagesContents,
-    UpdateUsername,
-    UpdateUserPhoto,
-    UpdateUserTyping,
+    UpdateDialogPinned, UpdateGroupPhoto, UpdateMessageEdited, UpdateMessageID, UpdateMessagesDeleted,
+    UpdateNotifySettings, UpdateReadHistoryInbox, UpdateReadHistoryOutbox, UpdateReadMessagesContents,
+    UpdateUsername, UpdateUserPhoto, UpdateUserTyping,
 } from '../../services/sdk/messages/chat.api.updates_pb';
 import UserName from '../../components/UserName';
 import SyncManager, {C_SYNC_UPDATE} from '../../services/sdk/syncManager';
@@ -95,17 +69,8 @@ import ElectronService, {C_ELECTRON_SUBJECT} from '../../services/electron';
 import FileManager from '../../services/sdk/fileManager';
 import {InputMediaType} from '../../services/sdk/messages/chat.api.messages_pb';
 import {
-    Document,
-    DocumentAttribute,
-    DocumentAttributeAudio,
-    DocumentAttributeFile,
-    DocumentAttributePhoto,
-    DocumentAttributeType,
-    DocumentAttributeVideo,
-    InputMediaContact,
-    InputMediaGeoLocation,
-    InputMediaUploadedDocument,
-    MediaDocument,
+    Document, DocumentAttribute, DocumentAttributeAudio, DocumentAttributeFile, DocumentAttributePhoto, MediaDocument,
+    DocumentAttributeType, DocumentAttributeVideo, InputMediaContact, InputMediaGeoLocation, InputMediaUploadedDocument,
 } from '../../services/sdk/messages/chat.core.message.medias_pb';
 import RiverTime from '../../services/utilities/river_time';
 import FileRepo from '../../repository/file';
@@ -129,8 +94,11 @@ import * as Sentry from '@sentry/browser';
 import ForwardDialog from "../../components/ForwardDialog";
 import AboutDialog from "../../components/AboutModal";
 import StatusBar from "../../components/StatusBar";
+import i18n from "../../services/i18n";
 
 import './style.css';
+
+export let notifyOptions: any[] = [];
 
 const C_MAX_UPDATE_DIFF = 2000;
 
@@ -275,6 +243,23 @@ class Chat extends React.Component<IProps, IState> {
                 });
             });
         }
+
+        notifyOptions = [{
+            title: i18n.t('general.disable'),
+            val: '-1',
+        }, {
+            title: i18n.t('general.enable'),
+            val: '-2',
+        }, {
+            title: i18n.t('peer_info.disable_for_8_hours'),
+            val: '480',
+        }, {
+            title: i18n.t('peer_info.disable_for_2_days'),
+            val: '2880',
+        }, {
+            title: i18n.t('peer_info.disable_for_1_week'),
+            val: '10080',
+        }];
     }
 
     public componentDidMount() {
@@ -441,42 +426,42 @@ class Chat extends React.Component<IProps, IState> {
         const chatTopIcons = [{
             cmd: 'search',
             icon: <SearchRounded/>,
-            tooltip: 'Search',
+            tooltip: i18n.t('chat.search'),
         }, {
             cmd: 'new_message',
             icon: <EditRounded/>,
-            tooltip: 'New Message',
+            tooltip: i18n.t('chat.new_message'),
         }, {
             cmd: 'more',
             icon: <MoreVertRounded/>,
-            tooltip: 'More',
+            tooltip: i18n.t('chat.more'),
         }];
 
         const chatMoreMenuItem = [{
             cmd: 'new_group',
-            title: 'New Group',
+            title: i18n.t('chat.new_group'),
         }, {
             cmd: 'new_message',
-            title: 'New Message',
+            title: i18n.t('chat.new_message'),
         }, {
             cmd: 'account',
-            title: 'Account Info',
+            title: i18n.t('chat.account_info'),
         }, {
             cmd: 'settings',
-            title: 'Settings',
+            title: i18n.t('chat.settings'),
         }, {
             role: 'divider',
         }, {
             cmd: 'logout',
-            title: 'Log Out',
+            title: i18n.t('chat.log_out'),
         }];
 
         const messageMoreMenuItem = [{
             cmd: 'info',
-            title: (peer && peer.getType() === PeerType.PEERGROUP) ? 'Group Info' : 'Contact Info',
+            title: (peer && peer.getType() === PeerType.PEERGROUP) ? i18n.t('chat.group_info') : i18n.t('chat.contact_info'),
         }, {
             cmd: 'search',
-            title: 'Search Messages',
+            title: i18n.t('chat.search_messages'),
         }];
 
         return (
@@ -624,7 +609,7 @@ class Chat extends React.Component<IProps, IState> {
                                 <div className="start-messaging-img">
                                     <div className="image"/>
                                 </div>
-                                <div className="start-messaging-title">Choose a chat to start messaging!</div>
+                                <div className="start-messaging-title">{i18n.t('chat.chat_placeholder')}</div>
                                 <div className="start-messaging-footer"/>
                             </div>
                         </div>}
@@ -649,83 +634,83 @@ class Chat extends React.Component<IProps, IState> {
                     className="confirm-dialog"
                 >
                     {Boolean(confirmDialogMode === 'logout') && <div>
-                        <DialogTitle>Log Out?</DialogTitle>
+                        <DialogTitle>{i18n.t('chat.logout_dialog.title')}</DialogTitle>
                         <DialogContent>
                             <DialogContentText>
-                                We are about to log out of River.<br/>
-                                All databases will be removed!<br/>
-                                Are you sure?
+                                {i18n.t('chat.logout_dialog.p1')}<br/>
+                                {i18n.t('chat.logout_dialog.p2')}<br/>
+                                {i18n.t('chat.logout_dialog.p3')}
                             </DialogContentText>
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={this.confirmDialogCloseHandler} color="secondary">
-                                Disagree
+                                {i18n.t('general.disagree')}
                             </Button>
                             <Button onClick={this.confirmDialogAcceptHandler} color="primary" autoFocus={true}>
-                                Agree
+                                {i18n.t('general.agree')}
                             </Button>
                         </DialogActions>
                     </div>}
                     {Boolean(confirmDialogMode === 'remove_message' || confirmDialogMode === 'remove_message_revoke') &&
                     <div>
-                        <DialogTitle>Remove Message?</DialogTitle>
+                        <DialogTitle>{i18n.t('chat.remove_message_dialog.title')}</DialogTitle>
                         <DialogContent>
                             <DialogContentText>
-                                Remove {Object.keys(messageSelectedIds).length} message(s) <br/>
+                                {i18n.tf('chat.remove_message_dialog.content', String(Object.keys(messageSelectedIds).length))}<br/>
                             </DialogContentText>
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={this.confirmDialogCloseHandler} color="secondary">
-                                Disagree
+                                {i18n.t('general.disagree')}
                             </Button>
                             <Button onClick={this.removeMessageHandler.bind(this, false)} color="primary"
                                     autoFocus={true}>
-                                Remove
+                                {i18n.t('chat.remove_message_dialog.remove')}
                             </Button>
                             {Boolean(confirmDialogMode === 'remove_message_revoke') &&
                             <Button onClick={this.removeMessageHandler.bind(this, true)} color="primary">
-                                Remove (for all)
+                                {i18n.t('chat.remove_message_dialog.remove_for_all')}
                             </Button>}
                         </DialogActions>
                     </div>}
                     {Boolean(confirmDialogMode === 'delete_exit_group') &&
                     <div>
-                        <DialogTitle>Delete and exit group?</DialogTitle>
+                        <DialogTitle>{i18n.t('chat.exit_group_dialog.title')}</DialogTitle>
                         <DialogContent>
                             <DialogContentText>
-                                Delete and exit <GroupName className="group-name"
-                                                           id={this.state.leftMenuSelectedDialogId}/> ?<br/>
-                                All group messages will be removed!
+                                {i18n.t('chat.exit_group_dialog.p1')}<GroupName className="group-name"
+                                                                                id={this.state.leftMenuSelectedDialogId}/> ?<br/>
+                                {i18n.t('chat.exit_group_dialog.p2')}
                             </DialogContentText>
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={this.confirmDialogCloseHandler} color="secondary">
-                                Disagree
+                                {i18n.t('general.disagree')}
                             </Button>
                             <Button onClick={this.deleteAndExitGroupHandler} color="primary" autoFocus={true}>
-                                Agree
+                                {i18n.t('general.agree')}
                             </Button>
                         </DialogActions>
                     </div>}
                     {Boolean(confirmDialogMode === 'delete_user') &&
                     <div>
-                        <DialogTitle>Delete dialog?</DialogTitle>
+                        <DialogTitle>{i18n.t('chat.delete_dialog.title')}</DialogTitle>
                         <DialogContent>
                             <DialogContentText>
-                                Delete conversation with <UserName className="group-name"
-                                                                   id={this.state.leftMenuSelectedDialogId}
-                                                                   you={this.state.leftMenuSelectedDialogId === this.connInfo.UserID}
-                                                                   youPlaceholder="Saved Messages"
+                                {i18n.t('chat.delete_dialog.p1')} <UserName className="group-name"
+                                                                            id={this.state.leftMenuSelectedDialogId}
+                                                                            you={this.state.leftMenuSelectedDialogId === this.connInfo.UserID}
+                                                                            youPlaceholder={i18n.t('general.saved_messages')}
                             /> ?<br/>
-                                All messages will be removed!
+                                {i18n.t('chat.delete_dialog.p2')}
                             </DialogContentText>
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={this.confirmDialogCloseHandler} color="secondary">
-                                Disagree
+                                {i18n.t('general.disagree')}
                             </Button>
                             <Button onClick={this.deleteUserHandler} color="primary" autoFocus={true}>
-                                Agree
+                                {i18n.t('general.agree')}
                             </Button>
                         </DialogActions>
                     </div>}

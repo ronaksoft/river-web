@@ -11,8 +11,11 @@ import * as React from 'react';
 import {SettingsRounded, ChatRounded, AccountCircleRounded} from "@material-ui/icons";
 import Badge from '@material-ui/core/Badge';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
+import i18n from "../../services/i18n";
 
 import './style.css';
+
+let items: any[] = [];
 
 interface IProps {
     selected: string;
@@ -33,10 +36,22 @@ class BottomBar extends React.Component<IProps, IState> {
             selected: props.selected,
             unreadCounter: props.unreadCounter,
         };
-    }
 
-    // public componentDidMount() {
-    // }
+        items = [{
+            icon: <AccountCircleRounded/>,
+            page: 'contact',
+            title: i18n.t('bottom_bar.contacts'),
+        }, {
+            badge: true,
+            icon: <ChatRounded/>,
+            page: 'chat',
+            title: i18n.t('bottom_bar.chats'),
+        }, {
+            icon: <SettingsRounded/>,
+            page: 'settings',
+            title: i18n.t('bottom_bar.settings'),
+        }];
+    }
 
     public componentWillReceiveProps(newProps: IProps) {
         this.setState({
@@ -47,24 +62,6 @@ class BottomBar extends React.Component<IProps, IState> {
 
     public render() {
         const {selected, unreadCounter} = this.state;
-        const items: any[] = [{
-            icon: <AccountCircleRounded/>,
-            page: 'contact',
-            title: 'Contacts',
-        }, {
-            badge: true,
-            icon: <ChatRounded/>,
-            page: 'chat',
-            title: 'Chats',
-        }, {
-            icon: <SettingsRounded/>,
-            page: 'settings',
-            title: 'Settings',
-        }/*, {
-            icon: <ExitToAppRounded/>,
-            page: 'logout',
-            title: 'Logout',
-        }*/];
         return (
             <div className="bottom-bar">
                 {items.map((item, index) => {

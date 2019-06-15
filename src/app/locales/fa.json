@@ -1,0 +1,78 @@
+{
+  "general": {
+    "agree": "موافقم",
+    "disagree": "مخالفم",
+    "disable": "غیر فعال",
+    "enable": "فعال",
+    "apply": "اعمال",
+    "cancel": "لغو",
+    "saved_messages": "پیام‌های ذخیره شده",
+    "first_name": "نام",
+    "last_name": "نام خانوادگی",
+    "username": "نام کاربری",
+    "phone": "تلفن",
+    "title": "عنوان",
+    "participants": "عضو"
+  },
+  "bottom_bar": {
+    "contacts": "مخاطب‌ها",
+    "chats": "پیام‌ها",
+    "settings": "تنظیمات"
+  },
+  "chat": {
+    "search": "جستجو",
+    "more": "بیشتر",
+    "new_group": "گروه جدید",
+    "new_message": "پیام جدید",
+    "account_info": "اطلاعات حساب",
+    "settings": "تنظمیات",
+    "log_out": "خروج",
+    "group_info": "اطلاعات گروه",
+    "contact_info": "اطلاعات کاربر",
+    "search_messages": "جستجو پیام‌ها",
+    "chat_placeholder": "یک مخاطب برای شروع مکالمه انتخاب کنید",
+    "logout_dialog": {
+      "title": "می‌خواهید خوارج شوید؟",
+      "p1": "در حال خروج از River هستید",
+      "p2": "همه‌ی اطلاعات پاک خواهد شده!",
+      "p3": "آیا مطمئن هستید؟"
+    },
+    "remove_message_dialog": {
+      "title": "حدف پیام‌؟",
+      "content": "حذف {0} پیام",
+      "remove": "حذف",
+      "remove_for_all": "حذف برای همه"
+    },
+    "exit_group_dialog": {
+      "title": "حذف و خروج از گروه؟",
+      "p1": "حذف و خروج",
+      "p2": "همه پیام‌های گروه پاک خواهند شد"
+    },
+    "delete_dialog": {
+      "title": "حذف مکالمه",
+      "p1": "حدف مکالمه با ",
+      "p2": "همه پیام‌ها پاک خواهند شد"
+    }
+  },
+  "peer_info": {
+    "notify_settings": "تنظیمات اعلان‌ها",
+    "disable_for_8_hours": "بی‌صدا برای ۸ ساعت",
+    "disable_for_2_days": "بی‌صدا برای ۲ روز",
+    "disable_for_1_week": "بی‌صدا برای یک هفته",
+    "add_as_contact": "افزودن به مخاطب‌ها",
+    "mute": "بی‌ صدا",
+    "shared_media": "محتوای اشتراکی",
+    "show_all": "نمایش همه",
+    "photo_video": "تصویر و ویدو",
+    "audio": "پیام‌های صوتی",
+    "file": "فایل",
+    "CHANGE": "تغییر",
+    "PROFILE": "تصویر",
+    "PHOTO": "پروفایل",
+    "created": "ساخته شده در ",
+    "all_member_admin": "همه ادمین",
+    "add_member": "افزودن عضو",
+    "leave_the": "خروج از",
+    "participants": "{0} عضو"
+  }
+}

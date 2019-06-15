@@ -32,6 +32,8 @@ import Scrollbars from 'react-custom-scrollbars';
 import RiverTime from '../../services/utilities/river_time';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
 import PeerMedia from '../PeerMedia';
+import i18n from "../../services/i18n";
+import {notifyOptions} from "../../pages/Chat";
 
 import './style.css';
 
@@ -69,23 +71,6 @@ export const isMuted = (notifySettings?: PeerNotifySettings.AsObject) => {
         return false;
     }
 };
-
-export const notifyOptions = [{
-    title: 'Disable',
-    val: '-1',
-}, {
-    title: 'Enable',
-    val: '-2',
-}, {
-    title: 'Disable for 8 hours',
-    val: '480',
-}, {
-    title: 'Disable for 2 days',
-    val: '2880',
-}, {
-    title: 'Disable for 1 week',
-    val: '10080',
-}];
 
 class UserInfoMenu extends React.Component<IProps, IState> {
     private userRepo: UserRepo;
@@ -161,7 +146,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                             >
                                 <CloseRounded/>
                             </IconButton>
-                            <label>Contact Info</label>
+                            <label>{i18n.t('chat.contact_info')}</label>
                         </div>
                         <Scrollbars
                             autoHide={true}
@@ -173,11 +158,10 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                     </div>
                                     <div className="line">
                                         {!edit && <div className="form-control">
-                                            <label>First Name</label>
+                                            <label>{i18n.t('general.first_name')}</label>
                                             <div className="inner">{user.firstname}</div>
                                             {isInContact && <div className="action">
                                                 <IconButton
-                                                    aria-label="Edit title"
                                                     onClick={this.onEditHandler}
                                                 >
                                                     <EditRounded/>
@@ -186,7 +170,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                         </div>}
                                         {edit &&
                                         <TextField
-                                            label="First Name"
+                                            label={i18n.t('general.first_name')}
                                             fullWidth={true}
                                             inputProps={{
                                                 maxLength: 32,
@@ -198,11 +182,10 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                     </div>
                                     <div className="line">
                                         {!edit && <div className="form-control">
-                                            <label>Last Name</label>
+                                            <label>{i18n.t('general.last_name')}</label>
                                             <div className="inner">{user.lastname}</div>
                                             {isInContact && <div className="action">
                                                 <IconButton
-                                                    aria-label="Edit title"
                                                     onClick={this.onEditHandler}
                                                 >
                                                     <EditRounded/>
@@ -211,7 +194,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                         </div>}
                                         {edit &&
                                         <TextField
-                                            label="Last Name"
+                                            label={i18n.t('general.last_name')}
                                             fullWidth={true}
                                             inputProps={{
                                                 maxLength: 32,
@@ -222,7 +205,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                         />}
                                         {Boolean(edit && !isInContact) &&
                                         <TextField
-                                            label="Phone"
+                                            label={i18n.t('general.phone')}
                                             fullWidth={true}
                                             inputProps={{
                                                 maxLength: 32,
@@ -234,13 +217,13 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                     </div>
                                     {Boolean(user && user.username !== '') && <div className="line">
                                         <div className="form-control pad">
-                                            <label>Username</label>
+                                            <label>{i18n.t('general.username')}</label>
                                             <div className="inner">@{user.username}</div>
                                         </div>
                                     </div>}
                                     {isInContact && user && <div className="line">
                                         <div className="form-control pad">
-                                            <label>Phone</label>
+                                            <label>{i18n.t('general.phone')}</label>
                                             <div className="inner">{user.phone}</div>
                                         </div>
                                     </div>}
@@ -252,11 +235,11 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                     </div>}
                                     {Boolean(!isInContact && !edit) &&
                                     <div className="add-as-contact" onClick={this.addAsContactHandler}>
-                                        <AddRounded/> Add as contact
+                                        <AddRounded/> {i18n.t('peer_info.add_as_contact')}
                                     </div>}
                                 </div>}
                                 {dialog && <div className="kk-card notify-settings">
-                                    <div className="label">Mute</div>
+                                    <div className="label">{i18n.t('peer_info.mute')}</div>
                                     <div className="value">
                                         <Checkbox
                                             className={'checkbox ' + (isMuted(dialog.notifysettings) ? 'checked' : '')}
@@ -279,7 +262,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                             >
                                 <KeyboardBackspaceRounded/>
                             </IconButton>
-                            <label>Shared Media</label>
+                            <label>{i18n.t('peer_info.shared_media')}</label>
                         </div>
                         {(dialog && peer && shareMediaEnabled) &&
                         <PeerMedia className="kk-card" peer={peer} full={true} onAction={this.props.onAction}/>}
@@ -291,14 +274,14 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                     maxWidth="xs"
                     className="notify-setting-dialog"
                 >
-                    <DialogTitle>Notify Settings</DialogTitle>
+                    <DialogTitle>{i18n.t('peer_info.notify_settings')}</DialogTitle>
                     <DialogContent className="dialog-content">
                         <RadioGroup
                             name="notify-setting"
                             value={notifyValue}
                             onChange={this.notifyValueChangeHandler}
                         >
-                            {notifyOptions.map((item, key) => {
+                            {notifyOptions.map((item: any, key: number) => {
                                 return (<FormControlLabel key={key} value={item.val} label={item.title}
                                                           control={<Radio color="primary"/>}/>);
                             })}
@@ -306,10 +289,10 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={this.notifySettingDialogCloseHandler} color="secondary">
-                            Disagree
+                            {i18n.t('general.cancel')}
                         </Button>
                         <Button onClick={this.applyNotifySettings} color="primary" autoFocus={true}>
-                            Apply
+                            {i18n.t('general.apply')}
                         </Button>
                     </DialogActions>
                 </Dialog>
