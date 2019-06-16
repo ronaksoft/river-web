@@ -62,6 +62,7 @@ import Broadcaster from '../../services/broadcaster';
 import MapPicker, {IGeoItem} from '../MapPicker';
 import CachedPhoto from "../CachedPhoto";
 import {getMediaInfo} from "../MessageMedia";
+import i18n from '../../services/i18n';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
@@ -308,12 +309,12 @@ class ChatInput extends React.Component<IProps, IState> {
         if (!selectable && disableAuthority !== 0x0) {
             if (disableAuthority === 0x1) {
                 return (<div className="input-placeholder">
-                    You are no longer in this group
+                    {i18n.t('input.you_are_no_longer_in_this_group')}
                     <span className="btn"
-                          onClick={this.props.onAction.bind(this, 'remove_dialog')}>Delete and Exit</span>
+                          onClick={this.props.onAction.bind(this, 'remove_dialog')}>{i18n.t('input.delete_and_exit')}</span>
                 </div>);
             } else if (disableAuthority === 0x2) {
-                return (<div className="input-placeholder">Group is deactivated</div>);
+                return (<div className="input-placeholder">{i18n.t('input.group_is_deactivated')}</div>);
             } else {
                 return '';
             }
@@ -342,13 +343,13 @@ class ChatInput extends React.Component<IProps, IState> {
                                     </div>
                                 </div>}
                                 {Boolean(previewMessageMode === C_MSG_MODE.Edit) && <div className="preview-message">
-                                    <div className="preview-message-user">Edit message</div>
+                                    <div className="preview-message-user">{i18n.t('input.edit_message')}</div>
                                 </div>}
                             </div>
                         </div>
                         <div className="preview-clear">
                         <span onClick={this.clearPreviewMessage.bind(this, false)}>
-                            <IconButton aria-label="Delete" className="btn-clear">
+                            <IconButton className="btn-clear">
                                 <ClearRounded/>
                             </IconButton>
                         </span>
@@ -369,7 +370,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                                onKeyDown={this.inputKeyDownHandler}
                                                allowSpaceInQuery={true}
                                                className="mention"
-                                               placeholder="Type your message here..."
+                                               placeholder={i18n.t('input.type_your_message_here')}
                                                style={defaultMentionInputStyle}
                                                suggestionsPortalHost={this.mentionContainer}
                                                spellcheck={true}
@@ -401,9 +402,8 @@ class ChatInput extends React.Component<IProps, IState> {
                                 <div className="preview">
                                     <canvas ref={this.canvasRefHandler}/>
                                 </div>
-                                <div className="cancel" onClick={this.voiceCancelHandler}>
-                                    Cancel
-                                </div>
+                                <div className="cancel"
+                                     onClick={this.voiceCancelHandler}>{i18n.t('general.cancel')}</div>
                             </React.Fragment>}
                             {Boolean(this.inputsMode === 'voice' && voiceMode === 'play') && <React.Fragment>
                                 <div className="play-remove" onClick={this.voiceCancelHandler}>
@@ -434,29 +434,29 @@ class ChatInput extends React.Component<IProps, IState> {
                     {Boolean(selectable && !previewMessage) && <div className="actions">
                         <div className="left-action">
                             <Tooltip
-                                title="Close"
+                                title={i18n.t('input.close')}
                                 placement="top"
                             >
-                                <IconButton aria-label="Close" onClick={this.props.onBulkAction.bind(this, 'close')}>
+                                <IconButton onClick={this.props.onBulkAction.bind(this, 'close')}>
                                     <ClearRounded/>
                                 </IconButton>
                             </Tooltip>
                         </div>
                         <div className="right-action">
                             <Tooltip
-                                title="Remove"
+                                title={i18n.t('input.remove')}
                                 placement="top"
                             >
-                                <IconButton aria-label="Remove" onClick={this.props.onBulkAction.bind(this, 'remove')}
+                                <IconButton onClick={this.props.onBulkAction.bind(this, 'remove')}
                                             disabled={selectableDisable}>
                                     <DeleteRounded/>
                                 </IconButton>
                             </Tooltip>
                             <Tooltip
-                                title="Forward"
+                                title={i18n.t('input.forward')}
                                 placement="top"
                             >
-                                <IconButton aria-label="Forward" onClick={this.props.onBulkAction.bind(this, 'forward')}
+                                <IconButton onClick={this.props.onBulkAction.bind(this, 'forward')}
                                             disabled={selectableDisable}>
                                     <ForwardRounded/>
                                 </IconButton>

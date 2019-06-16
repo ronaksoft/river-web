@@ -18,6 +18,7 @@ import TextField from '@material-ui/core/TextField/TextField';
 import MessageRepo from '../../repository/message';
 import {IMessage} from '../../repository/message/interface';
 import {debounce} from 'lodash';
+import i18n from '../../services/i18n';
 
 import './style.css';
 
@@ -122,7 +123,7 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
                     <div className="search-input">
                         <TextField
                             inputRef={this.searchRefHandler}
-                            label="Search Messages"
+                            label={i18n.t('chat.search_messages')}
                             margin="none"
                             className={'input' + (focus ? ' focus' : '')}
                             fullWidth={true}

@@ -97,7 +97,7 @@
       .setting-menu .page-anchor .icon.color-data {
         background-color: #00C853; }
       .setting-menu .page-anchor .icon.color-session {
-        background-color: #2b92de; }
+        background-color: #ffc107; }
       .setting-menu .page-anchor .icon.color-theme {
         background-color: #F44336; }
       .setting-menu .page-anchor .icon.color-night-mode {
@@ -110,6 +110,8 @@
         background-color: #FF9800; }
       .setting-menu .page-anchor .icon.color-background {
         background-color: #9C27B0; }
+      .setting-menu .page-anchor .icon.color-language {
+        background-color: #0091EA; }
       .setting-menu .page-anchor .icon > svg {
         color: var(--white);
         font-size: 20px; }
@@ -124,6 +126,28 @@
     .setting-menu .page-anchor.log-out {
       margin-top: 12px;
       border: none; }
+  .setting-menu .info.language-list {
+    width: 100%;
+    padding: 0; }
+    .setting-menu .info.language-list .language-item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid var(--light);
+      height: 48px;
+      cursor: pointer; }
+      .setting-menu .info.language-list .language-item .language-label {
+        flex: 1;
+        text-align: left;
+        padding: 0 12px; }
+      .setting-menu .info.language-list .language-item .check {
+        width: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center; }
+        .setting-menu .info.language-list .language-item .check svg {
+          color: var(--river); }
   .setting-menu .sub-page-header {
     border-top: 1px solid #E0E0E0;
     height: 24px;
@@ -162,15 +186,17 @@
     .setting-menu .label.padding-top {
       margin-top: 12px; }
   .setting-menu .font-size-container {
-    padding: 0;
-    background-color: transparent; }
-    .setting-menu .font-size-container button {
-      min-width: 30px; }
-    .setting-menu .font-size-container div[role="progressbar"] {
-      width: calc(100% - 88px);
-      background-color: var(--light); }
-      .setting-menu .font-size-container div[role="progressbar"] > div {
-        background-color: var(--river); }
+    display: flex;
+    height: 48px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row-reverse; }
+    .setting-menu .font-size-container .slider {
+      flex: 1;
+      padding: 0 12px; }
+    .setting-menu .font-size-container > button {
+      width: 48px;
+      min-width: 48px; }
   .setting-menu .info {
     display: flex;
     justify-content: center;
@@ -492,6 +518,41 @@
   .setting-menu .setting-switch.checked span {
     color: var(--river) !important; }
 
+html[direction="rtl"] .setting-menu {
+  direction: rtl;
+  text-align: right; }
+  html[direction="rtl"] .setting-menu .page-container .page.page-1 {
+    left: 0; }
+  html[direction="rtl"] .setting-menu .page-container .page.page-2 {
+    left: -100%; }
+  html[direction="rtl"] .setting-menu .page-container.page-2 .page-1 {
+    left: 100%; }
+  html[direction="rtl"] .setting-menu .page-container.page-2 .page-2 {
+    left: 0; }
+  html[direction="rtl"] .setting-menu .menu-header {
+    direction: ltr;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: flex-start; }
+  html[direction="rtl"] .setting-menu .page-anchor .icon {
+    margin-right: 0;
+    margin-left: 8px; }
+  html[direction="rtl"] .setting-menu .page-anchor .anchor-label {
+    text-align: right; }
+  html[direction="rtl"] .setting-menu .session-item .session-info .session-row .session-col {
+    text-align: right; }
+  html[direction="rtl"] .setting-menu .session-item .session-current {
+    right: auto;
+    left: 12px; }
+  html[direction="rtl"] .setting-menu .switch-item .switch {
+    direction: ltr; }
+  html[direction="rtl"] .setting-menu .switch-item .switch-label {
+    text-align: right;
+    padding: 16px 16px 16px 0; }
+  html[direction="rtl"] .setting-menu .font-size-container {
+    flex-direction: row; }
+
 html[theme="dark"] .setting-menu .menu-header,
 html[theme="dark-blue"] .setting-menu .menu-header {
   background-color: var(--dark-medium);
@@ -506,17 +567,6 @@ html[theme="dark-blue"] .setting-menu .page-anchor,
 html[theme="dark-blue"] .setting-menu .page-content {
   color: var(--white);
   border-color: var(--dark-low-op50); }
-
-html[theme="dark"] .setting-menu .font-size-container button,
-html[theme="dark-blue"] .setting-menu .font-size-container button {
-  color: var(--light); }
-
-html[theme="dark"] .setting-menu .font-size-container div[role="progressbar"],
-html[theme="dark-blue"] .setting-menu .font-size-container div[role="progressbar"] {
-  background-color: var(--dark-low); }
-  html[theme="dark"] .setting-menu .font-size-container div[role="progressbar"] > div,
-  html[theme="dark-blue"] .setting-menu .font-size-container div[role="progressbar"] > div {
-    background-color: var(--river); }
 
 html[theme="dark"] .setting-menu .setting-switch-label > span,
 html[theme="dark-blue"] .setting-menu .setting-switch-label > span {
@@ -631,9 +681,6 @@ html[theme="dark-blue"] .setting-menu .session-item {
 html[theme="dark-blue"] .setting-menu .menu-header {
   background-color: var(--dark-blue-medium);
   border-color: var(--dark-blue-low-op50); }
-
-html[theme="dark-blue"] .setting-menu .font-size-container div[role="progressbar"] {
-  background-color: var(--dark-blue-low); }
 
 html[theme="dark-blue"] .setting-menu .sub-page-header {
   border-color: var(--dark-blue-low-op50); }

@@ -9,21 +9,20 @@
 
 import * as React from 'react';
 import Switch from '@material-ui/core/Switch';
-import MobileStepper from '@material-ui/core/MobileStepper';
 import Button from '@material-ui/core/Button';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import {
     KeyboardBackspaceRounded, PaletteRounded, PersonRounded, EditRounded, CheckRounded, BookmarkRounded,
     PhotoCameraRounded, CloseRounded, FormatSizeRounded, ChatBubbleRounded, FormatColorFillRounded, CollectionsRounded,
-    Brightness2Rounded, ClearAllRounded, StorageRounded,
+    Brightness2Rounded, ClearAllRounded, StorageRounded, LanguageRounded, DoneRounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import UserAvatar from '../UserAvatar';
 import TextField from '@material-ui/core/TextField/TextField';
 import UserRepo from '../../repository/user';
 import SDK from '../../services/sdk';
-import {debounce} from 'lodash';
+import {debounce, find} from 'lodash';
 import Scrollbars from 'react-custom-scrollbars';
 import {bgTypes, bubbles, C_CUSTOM_BG, storageItems, themes} from './vars/theme';
 import {IUser} from '../../repository/user/interface';
@@ -52,12 +51,14 @@ import BackgroundService from '../../services/backgroundService';
 import Radio from '@material-ui/core/Radio';
 import DownloadManager, {IDownloadSettings} from '../../services/downloadManager';
 import SettingsStorageUsageModal from '../SettingsStorageUsageModal';
-import {Loading} from "../Loading";
+import {Loading} from '../Loading';
+import i18n from '../../services/i18n';
+import Slider from "@material-ui/lab/Slider";
 
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.23.178';
+export const C_VERSION = '0.23.179';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 interface IProps {
@@ -95,6 +96,7 @@ interface IState {
     selectedBubble: string;
     selectedCustomBackground: string;
     selectedCustomBackgroundBlur: number;
+    selectedLanguage: string;
     selectedTheme: string;
     sessions?: AccountAuthorization.AsObject[];
     storageValues: IDownloadSettings;
@@ -127,6 +129,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private backgroundService: BackgroundService;
     private downloadManger: DownloadManager;
     private settingsStorageUsageModalRef: SettingsStorageUsageModal;
+    private readonly languageList: any[] = [];
 
     constructor(props: IProps) {
         super(props);
@@ -163,6 +166,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             selectedBubble: '1',
             selectedCustomBackground: localStorage.getItem('river.theme.bg.pic') || '-1',
             selectedCustomBackgroundBlur: parseInt(localStorage.getItem('river.theme.bg.blur') || '0', 10),
+            selectedLanguage: localStorage.getItem('river.lang') || 'en',
             selectedTheme: 'light',
             storageValues: {
                 auto_save_files: false,
@@ -198,6 +202,18 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.downloadManger = DownloadManager.getInstance();
 
         this.currentAuthID = this.sdk.getConnInfo().AuthID;
+
+        this.languageList = [{
+            dir: 'rtl',
+            label: 'Farsi',
+            lang: 'fa',
+            title: 'فارسی'
+        }, {
+            dir: 'ltr',
+            label: 'English',
+            lang: 'en',
+            title: 'English'
+        }];
     }
 
     public componentDidMount() {
@@ -280,7 +296,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                             >
                                 <KeyboardBackspaceRounded/>
                             </IconButton>
-                            <label>Settings</label>
+                            <label>{i18n.t('settings.settings')}</label>
                         </div>
                         <div className="menu-content padding-side">
                             <div className="page-anchor">
@@ -288,38 +304,44 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                     <div className="icon color-saved-messages">
                                         <BookmarkRounded/>
                                     </div>
-                                    <div className="anchor-label">Saved Messages</div>
+                                    <div className="anchor-label">{i18n.t('general.saved_messages')}</div>
                                 </Link>
                             </div>
                             <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'account')}>
                                 <div className="icon color-account">
                                     <PersonRounded/>
                                 </div>
-                                <div className="anchor-label">Account ({phone})</div>
+                                <div className="anchor-label">{i18n.tf('settings.account_phone', phone)}</div>
                             </div>
                             <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'storage')}>
                                 <div className="icon color-data">
                                     <StorageRounded/>
                                 </div>
-                                <div className="anchor-label">Data and Storage</div>
+                                <div className="anchor-label">{i18n.t('settings.data_and_storage')}</div>
                             </div>
                             <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'session')}>
                                 <div className="icon color-session">
                                     <ClearAllRounded/>
                                 </div>
-                                <div className="anchor-label">Active Sessions</div>
+                                <div className="anchor-label">{i18n.t('settings.active_sessions')}</div>
                             </div>
                             <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'theme')}>
                                 <div className="icon color-theme">
                                     <PaletteRounded/>
                                 </div>
-                                <div className="anchor-label">Theme</div>
+                                <div className="anchor-label">{i18n.t('settings.theme')}</div>
+                            </div>
+                            <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'language')}>
+                                <div className="icon color-language">
+                                    <LanguageRounded/>
+                                </div>
+                                <div className="anchor-label">{i18n.t('settings.language')}</div>
                             </div>
                             <div className="page-anchor">
                                 <div className="icon color-night-mode">
                                     <Brightness2Rounded/>
                                 </div>
-                                <div className="anchor-label">Night Mode</div>
+                                <div className="anchor-label">{i18n.t('settings.night_mode')}</div>
                                 <div className="setting-switch-label">
                                     <Switch
                                         checked={Boolean(this.state.selectedTheme !== 'light')}
@@ -345,7 +367,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                 >
                                     <KeyboardBackspaceRounded/>
                                 </IconButton>
-                                <label>Theme</label>
+                                <label>{i18n.t('settings.theme')}</label>
                             </div>
                             <div className="menu-content">
                                 <Scrollbars
@@ -357,28 +379,27 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                 <div className="icon color-font-size">
                                                     <FormatSizeRounded/>
                                                 </div>
-                                                <div className="anchor-label">Font Size</div>
+                                                <div className="anchor-label">{i18n.t('settings.font_size')}</div>
                                             </div>
                                             <div className="page-content-inner">
-                                                <MobileStepper
-                                                    variant="progress"
-                                                    steps={6}
-                                                    position="static"
-                                                    activeStep={this.state.fontSize}
-                                                    className="font-size-container"
-                                                    nextButton={
-                                                        <Button size="small" onClick={this.handleNext}
-                                                                disabled={this.state.fontSize === 5}>
-                                                            <KeyboardArrowRight/>
-                                                        </Button>
-                                                    }
-                                                    backButton={
-                                                        <Button size="small" onClick={this.handleBack}
-                                                                disabled={this.state.fontSize === 0}>
-                                                            <KeyboardArrowLeft/>
-                                                        </Button>
-                                                    }
-                                                />
+                                                <div className="font-size-container">
+                                                    <Button size="small" onClick={this.handleNext}
+                                                            disabled={this.state.fontSize === 5}>
+                                                        <KeyboardArrowRight/>
+                                                    </Button>
+                                                    <Slider
+                                                        value={this.state.fontSize}
+                                                        min={0}
+                                                        max={5}
+                                                        step={1}
+                                                        onChange={this.fontSizeChangeHandler}
+                                                        className="slider"
+                                                    />
+                                                    <Button size="small" onClick={this.handleBack}
+                                                            disabled={this.state.fontSize === 0}>
+                                                        <KeyboardArrowLeft/>
+                                                    </Button>
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="page-content">
@@ -386,7 +407,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                 <div className="icon color-theme-type">
                                                     <FormatColorFillRounded/>
                                                 </div>
-                                                <div className="anchor-label">Theme</div>
+                                                <div className="anchor-label">{i18n.t('settings.theme')}</div>
                                             </div>
                                             <div className="page-content-inner">
                                                 <div
@@ -401,7 +422,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                                 <Radio color="primary"
                                                                        className={'radio ' + (this.state.selectedTheme === theme.id ? 'checked' : '')}
                                                                        checked={(this.state.selectedTheme === theme.id)}/>
-                                                                <div className="radio-title">{theme.title}</div>
+                                                                <div className="radio-title">{i18n.t(theme.title)}</div>
                                                             </div>
                                                             <div
                                                                 className={'item theme-' + theme.id + ' bubble-' + this.state.selectedBubble + ' bg-' + this.state.selectedBackground}/>
@@ -415,7 +436,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                 <div className="icon color-bubble">
                                                     <ChatBubbleRounded/>
                                                 </div>
-                                                <div className="anchor-label">Bubble</div>
+                                                <div className="anchor-label">{i18n.t('settings.bubble')}</div>
                                             </div>
                                             <div className="page-content-inner">
                                                 <div
@@ -430,7 +451,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                                 <Radio color="primary"
                                                                        className={'radio ' + (this.state.selectedBubble === bubble.id ? 'checked' : '')}
                                                                        checked={(this.state.selectedBubble === bubble.id)}/>
-                                                                <div className="radio-title">{bubble.title}</div>
+                                                                <div
+                                                                    className="radio-title">{i18n.t(bubble.title)}</div>
                                                             </div>
                                                             <div
                                                                 className={'item bubble-' + bubble.id + ' theme-' + this.state.selectedTheme + ' bg-' + this.state.selectedBackground}/>
@@ -444,7 +466,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                 <div className="icon color-background">
                                                     <CollectionsRounded/>
                                                 </div>
-                                                <div className="anchor-label">Background</div>
+                                                <div className="anchor-label">{i18n.t('settings.background')}</div>
                                             </div>
                                             <div className="page-content-inner">
                                                 <div
@@ -459,7 +481,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                                 <Radio color="primary"
                                                                        className={'radio ' + (this.state.selectedBgType === types.id ? 'checked' : '')}
                                                                        checked={(this.state.selectedBgType === types.id)}/>
-                                                                <div className="radio-title">{types.title}</div>
+                                                                <div className="radio-title">{i18n.t(types.title)}</div>
                                                             </div>
                                                             {Boolean(types.id !== '1') && <div
                                                                 className={'item bubble-' + this.state.selectedBubble + ' theme-' + this.state.selectedTheme + ' bg-' + this.state.selectedBackground}/>}
@@ -486,7 +508,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                 >
                                     <KeyboardBackspaceRounded/>
                                 </IconButton>
-                                <label>Account</label>
+                                <label>{i18n.t('settings.account')}</label>
                             </div>
                             <div className="menu-content">
                                 {user &&
@@ -502,7 +524,11 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                 {!uploadingPhoto && <React.Fragment>
                                                     <PhotoCameraRounded/>
                                                     <div className="text">
-                                                        CHANGE<br/>PROFILE<br/>PHOTO
+                                                        {i18n.t('peer_info.CHANGE')}
+                                                        <br/>
+                                                        {i18n.t('peer_info.PROFILE')}
+                                                        <br/>
+                                                        {i18n.t('peer_info.PHOTO')}
                                                     </div>
                                                 </React.Fragment>}
                                                 {uploadingPhoto &&
@@ -520,7 +546,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                         </div>
                                         <div className="line">
                                             {!editProfile && <div className="form-control">
-                                                <label>First Name</label>
+                                                <label>{i18n.t('general.first_name')}</label>
                                                 <div className="inner">{user.firstname}</div>
                                                 <div className="action">
                                                     {!editUsername && <IconButton
@@ -533,7 +559,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                             </div>}
                                             {editProfile &&
                                             <TextField
-                                                label="First Name"
+                                                label={i18n.t('general.first_name')}
                                                 fullWidth={true}
                                                 inputProps={{
                                                     maxLength: 32,
@@ -545,11 +571,10 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                         </div>
                                         <div className="line">
                                             {!editProfile && <div className="form-control">
-                                                <label>Last Name</label>
+                                                <label>{i18n.t('general.last_name')}</label>
                                                 <div className="inner">{user.lastname}</div>
                                                 <div className="action">
                                                     {!editUsername && <IconButton
-                                                        aria-label="Edit lastname"
                                                         onClick={this.onEditProfileHandler}
                                                     >
                                                         <EditRounded/>
@@ -558,7 +583,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                             </div>}
                                             {editProfile &&
                                             <TextField
-                                                label="Last Name"
+                                                label={i18n.t('general.last_name')}
                                                 fullWidth={true}
                                                 inputProps={{
                                                     maxLength: 32,
@@ -570,11 +595,10 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                         </div>
                                         <div className="line">
                                             {!editProfile && <div className="form-control">
-                                                <label>Bio</label>
+                                                <label>{i18n.t('general.bio')}</label>
                                                 <div className="inner">{user.bio}</div>
                                                 <div className="action">
                                                     {!editUsername && <IconButton
-                                                        aria-label="Edit bio"
                                                         onClick={this.onEditProfileHandler}
                                                     >
                                                         <EditRounded/>
@@ -583,7 +607,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                             </div>}
                                             {editProfile &&
                                             <TextField
-                                                label="Bio"
+                                                label={i18n.t('general.bio')}
                                                 fullWidth={true}
                                                 inputProps={{
                                                     maxLength: 32,
@@ -597,11 +621,10 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                         </div>
                                         <div className="line">
                                             {!editUsername && <div className="form-control">
-                                                <label>Username</label>
+                                                <label>{i18n.t('general.username')}</label>
                                                 <div className="inner">{user.username}</div>
                                                 <div className="action">
                                                     {!editProfile && <IconButton
-                                                        aria-label="Edit title"
                                                         onClick={this.onEditUsernameHandler}
                                                     >
                                                         <EditRounded/>
@@ -610,7 +633,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                             </div>}
                                             {editUsername &&
                                             <TextField
-                                                label="Username"
+                                                label={i18n.t('general.username')}
                                                 fullWidth={true}
                                                 inputProps={{
                                                     maxLength: 32,
@@ -624,7 +647,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                         </div>
                                         <div className="line">
                                             <div className="form-control pad">
-                                                <label>Phone</label>
+                                                <label>{i18n.t('general.phone')}</label>
                                                 <div className="inner">{phone}</div>
                                             </div>
                                         </div>
@@ -643,10 +666,10 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                         {Boolean(editProfile || editUsername) && <div
                                             className={'actions-bar cancel' + ((user && ((user.username !== username && usernameAvailable && usernameValid) || (user.firstname !== firstname || user.lastname !== lastname || user.bio !== bio))) ? ' no-padding' : '')}
                                             onClick={this.cancelHandler}>
-                                            Cancel
+                                            {i18n.t('general.cancel')}
                                         </div>}
                                         <div className="page-anchor log-out" onClick={this.logOutHandler}>
-                                            <div className="anchor-label color-red">Log Out</div>
+                                            <div className="anchor-label color-red">{i18n.t('settings.log_out')}</div>
                                         </div>
                                     </div>
                                 </Scrollbars>}
@@ -661,7 +684,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                 >
                                     <KeyboardBackspaceRounded/>
                                 </IconButton>
-                                <label>Active Sessions</label>
+                                <label>{i18n.t('settings.active_sessions')}</label>
                             </div>
                             {sessions && <div className="menu-content">
                                 {Boolean(sessions.length > 0 && !loading) && <Scrollbars
@@ -675,7 +698,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                     return (
                                                         <div key={key} className="session-item terminate-all">
                                                             <span
-                                                                onClick={this.terminateSessionConfirmHandler.bind(this, '0')}>Terminate All Other Sessions</span>
+                                                                onClick={this.terminateSessionConfirmHandler.bind(this, '0')}>{i18n.t('settings.terminate_all_other_sessions')}</span>
                                                         </div>
                                                     );
                                                 } else {
@@ -685,22 +708,23 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                 return (
                                                     <div key={key} className="session-item">
                                                         {Boolean(this.currentAuthID === item.authid) &&
-                                                        <div className="session-current">current</div>}
+                                                        <div
+                                                            className="session-current">{i18n.t('settings.current')}</div>}
                                                         <div className="session-info">
                                                             <div className="session-row">
                                                                 <div
                                                                     className="session-col">{`Client: ${(item.model || '').split(':-').join(' ')}`}</div>
                                                             </div>
                                                             <div
-                                                                className="session-row">IP: {item.clientip} at {TimeUtility.dynamic(item.createdat)}</div>
+                                                                className="session-row">{i18n.tf('settings.ip_at', [item.clientip || '', TimeUtility.dynamic(item.createdat)])}</div>
                                                             <div className="session-row">
-                                                                <div className="session-col">Last
-                                                                    active {TimeUtility.timeAgo(item.activeat)}</div>
+                                                                <div
+                                                                    className="session-col">{i18n.tf('settings.last_active', TimeUtility.timeAgo(item.activeat))}</div>
                                                             </div>
                                                         </div>
                                                         <div className="session-action">
                                                             <span className="action-terminate"
-                                                                  onClick={this.terminateSessionConfirmHandler.bind(this, item.authid)}>Terminate</span>
+                                                                  onClick={this.terminateSessionConfirmHandler.bind(this, item.authid)}>{i18n.t('settings.terminate')}</span>
                                                         </div>
                                                     </div>
                                                 );
@@ -709,7 +733,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                     </div>
                                 </Scrollbars>}
                                 {Boolean(sessions.length === 0) &&
-                                <div className="session-placeholder">you have no active sessions</div>}
+                                <div
+                                    className="session-placeholder">{i18n.t('settings.you_have_no_active_sessions')}</div>}
                             </div>}
                             {loading && <Loading/>}
                         </React.Fragment>}
@@ -722,7 +747,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                 >
                                     <KeyboardBackspaceRounded/>
                                 </IconButton>
-                                <label>Data and Storage</label>
+                                <label>{i18n.t('settings.data_and_storage')}</label>
                             </div>
                             <div className="menu-content">
                                 <Scrollbars autoHide={true}>
@@ -732,7 +757,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                 return (
                                                     <div key={item.id}
                                                          className={'switch-item ' + (item.className || '')}>
-                                                        <div className="switch-label">{item.title}</div>
+                                                        <div className="switch-label">{i18n.t(item.title)}</div>
                                                         <div className="switch">
                                                             <Switch
                                                                 checked={Boolean(this.state.storageValues[item.id] || false)}
@@ -747,14 +772,44 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                 return (
                                                     <div key={item.id}
                                                          className={'sub-page-header ' + (item.className || '')}
-                                                    >{item.title}</div>
+                                                    >{i18n.t(item.title)}</div>
                                                 );
                                             } else {
                                                 return '';
                                             }
                                         })}
                                     </div>
-                                    <div className="settings-btn" onClick={this.storageUsageHandler}>Storage Usage</div>
+                                    <div className="settings-btn"
+                                         onClick={this.storageUsageHandler}>{i18n.t('settings.storage_usage')}</div>
+                                </Scrollbars>
+                            </div>
+                        </React.Fragment>}
+                        {Boolean(pageContent === 'language') && <React.Fragment>
+                            <div className="menu-header">
+                                <IconButton
+                                    aria-label="Prev"
+                                    aria-haspopup="true"
+                                    onClick={this.onPrevHandler}
+                                >
+                                    <KeyboardBackspaceRounded/>
+                                </IconButton>
+                                <label>{i18n.t('settings.language')}</label>
+                            </div>
+                            <div className="menu-content">
+                                <Scrollbars
+                                    autoHide={true}
+                                >
+                                    <div className="info language-list">
+                                        {this.languageList.map((item, key) => {
+                                            return (<div key={key} className="language-item"
+                                                         onClick={this.changeLanguage.bind(this, item.lang)}>
+                                                <div className="language-label">{item.title}</div>
+                                                <div className="check">
+                                                    {item.lang === this.state.selectedLanguage && <DoneRounded/>}
+                                                </div>
+                                            </div>);
+                                        })}
+                                    </div>
                                 </Scrollbars>
                             </div>
                         </React.Fragment>}
@@ -775,11 +830,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
                     disableBackdropClick={true}
                 >
                     <div>
-                        <DialogTitle>Debug Mode</DialogTitle>
+                        <DialogTitle>{i18n.t('settings.debug_mode')}</DialogTitle>
                         <DialogContent>
-                            <DialogContentText>
-                                Set test url
-                            </DialogContentText>
+                            <DialogContentText>{i18n.t('settings.set_test_url')}</DialogContentText>
                             <TextField
                                 autoFocus={true}
                                 margin="dense"
@@ -792,10 +845,10 @@ class SettingsMenu extends React.Component<IProps, IState> {
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={this.debugModeCloseHandler} color="secondary">
-                                Cancel
+                                {i18n.t('general.cancel')}
                             </Button>
                             <Button onClick={this.debugModeApplyHandler} color="primary" autoFocus={true}>
-                                Apply
+                                {i18n.t('general.apply')}
                             </Button>
                         </DialogActions>
                     </div>
@@ -805,18 +858,34 @@ class SettingsMenu extends React.Component<IProps, IState> {
                     onClose={this.confirmDialogCloseHandler}
                     className="confirm-dialog"
                 >
-                    <DialogTitle>{this.state.confirmDialogSelectedId === '0' ? 'Terminate all other sessions' : 'Terminate session?'}</DialogTitle>
+                    <DialogTitle>{this.state.confirmDialogSelectedId === '0' ? i18n.t('settings.terminate_all_other_sessions') : i18n.t('settings.terminate_session')}</DialogTitle>
                     <DialogActions>
                         <Button onClick={this.confirmDialogCloseHandler} color="secondary">
-                            Disagree
+                            {i18n.t('general.disagree')}
                         </Button>
                         <Button onClick={this.terminateSessionHandler} color="primary" autoFocus={true}>
-                            Agree
+                            {i18n.t('general.agree')}
                         </Button>
                     </DialogActions>
                 </OverlayDialog>
             </div>
         );
+    }
+
+    private changeLanguage = (lang: string) => {
+        const l = localStorage.getItem('river.lang');
+        if (l !== lang) {
+            // @ts-ignore
+            const selectedLang = find(this.languageList, {lang});
+            localStorage.setItem('river.lang', lang);
+            if (selectedLang) {
+                localStorage.setItem('river.lang.dir', selectedLang.dir);
+            }
+            this.setState({
+                selectedLanguage: lang,
+            });
+            window.location.reload();
+        }
     }
 
     /* Dark mode change handler */
@@ -852,6 +921,12 @@ class SettingsMenu extends React.Component<IProps, IState> {
             fontSize: state.fontSize - 1,
         }), () => {
             this.changeFontSize();
+        });
+    }
+
+    private fontSizeChangeHandler = (e: any, value: number) => {
+        this.setState({
+            fontSize: value,
         });
     }
 

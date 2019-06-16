@@ -22,6 +22,7 @@ import BackgroundService from '../../services/backgroundService';
 // @ts-ignore
 import glur from 'glur';
 import {C_CUSTOM_BG_ID} from '../SettingsMenu';
+import i18n from '../../services/i18n';
 
 import './style.css';
 
@@ -114,7 +115,7 @@ class SettingsBackgroundModal extends React.Component<IProps, IState> {
             <React.Fragment>
                 <input ref={this.inputRefHandler} type="file" onChange={this.inputChangeHandler}
                        accept="image/jpeg,image/png,image/svg" style={{display: 'none'}}/>
-                <SettingsModal open={openBackgroundModal} title="Chat Background"
+                <SettingsModal open={openBackgroundModal} title={i18n.t('settings.chat_background')}
                                onClose={this.backgroundModalCloseHandler}>
                     <div className="bg-pic-container">
                         <GridList cellHeight={100} spacing={6} cols={3}>
@@ -151,7 +152,7 @@ class SettingsBackgroundModal extends React.Component<IProps, IState> {
                         </GridList>
                     </div>
                 </SettingsModal>
-                <SettingsModal open={openCustomizeModal} title="Customize Background"
+                <SettingsModal open={openCustomizeModal} title={i18n.t('settings.customized_background')}
                                onClose={this.customizeModalCloseHandler} icon={<BlurOnRounded/>}>
                     <div className="customize-background-container">
                         <div className="img">

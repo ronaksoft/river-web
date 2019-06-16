@@ -13,6 +13,7 @@ import UserName from "../UserName";
 import GroupName from "../GroupName";
 import {isTypingRender} from "../DialogMessage";
 import LastSeen from "../LastSeen";
+import i18n from "../../services/i18n";
 
 import './style.css';
 
@@ -71,7 +72,7 @@ class StatusBar extends React.Component<IProps, IState> {
             <span className="status-bar" onClick={this.props.onAction.bind(this, 'info')}>
                 {!isGroup &&
                 <UserName id={this.state.selectedDialogId} className="name" you={true}
-                          youPlaceholder="Saved Messages" noDetail={true}/>}
+                          youPlaceholder={i18n.t('general.saved_messages')} noDetail={true}/>}
                 {isGroup &&
                 <GroupName id={this.state.selectedDialogId} className="name"/>}
                 {this.getChatStatus()}

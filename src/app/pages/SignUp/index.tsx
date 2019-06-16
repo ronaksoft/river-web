@@ -25,6 +25,7 @@ import SettingsModal from '../../components/SettingsModal';
 import jsQR from 'jsqr';
 import {defaultGateway} from '../../services/sdk/server/socket';
 import UserRepo from '../../repository/user';
+import i18n from '../../services/i18n';
 
 import './tel-input.css';
 import './style.css';
@@ -121,19 +122,19 @@ class SignUp extends React.Component<IProps, IState> {
                     <div className="top-logo">
                         <RiverLogo height={184} width={165}/>
                     </div>
-                    <div className="top-title">Sign in to River</div>
+                    <div className="top-title">{i18n.t('sign_up.sign_in_to_river')}</div>
                     <div className="top-desc">
-                        {step === 'workspace' && <span>Please enter you workspace URL</span>}
-                        {step === 'phone' && <span>Please enter your phone number</span>}
-                        {step === 'code' && <span>Please enter the code sent to your phone</span>}
-                        {step === 'register' && <span>Please fill in your contact info</span>}
+                        {step === 'workspace' && <span>{i18n.t('sign_up.please_enter_your_workspace_url')}</span>}
+                        {step === 'phone' && <span>{i18n.t('sign_up.please_enter_your_phone_number')}</span>}
+                        {step === 'code' && <span>{i18n.t('sign_up.please_enter_the_code_sent_to_your_phone')}</span>}
+                        {step === 'register' && <span>{i18n.t('sign_up.please_fill_in_your_contact_info')}</span>}
                     </div>
                     <div className="login-wrapper">
                         <div className="login-form river-form flex-sb flex-w">
                             <div className="input-wrapper">
                                 {step === 'workspace' &&
-                                <TextField type="text" label="Workspace"
-                                           placeholder="Enter your workspace URL"
+                                <TextField type="text" label={i18n.t('sign_up.workspace')}
+                                           placeholder={i18n.t('sign_up.enter_your_workspace_url')}
                                            margin="none" variant="outlined"
                                            className="text-input"
                                            error={Boolean(this.state.workspaceError !== '')}
@@ -149,7 +150,7 @@ class SignUp extends React.Component<IProps, IState> {
                                 </div>}
                             </div>
                             {step === 'workspace' && <div className="input-wrapper qr-wrapper">
-                                <div className="qr-link" onClick={this.qrCodeDialogOpenHandler}>Scan QR Code</div>
+                                <div className="qr-link" onClick={this.qrCodeDialogOpenHandler}>{i18n.t('sign_up.scan_qr_code')}</div>
                             </div>}
                             {step !== 'workspace' && <React.Fragment>
                                 <IntlTelInput preferredCountries={[]} defaultCountry={'ir'} value={this.state.phone}
@@ -159,18 +160,18 @@ class SignUp extends React.Component<IProps, IState> {
                                               fieldId="input-phone"/>
                                 {step === 'phone' &&
                                 <div className="grey-link">
-                                    <span onClick={this.changeWorkspaceHandler}>Change Workspace</span>
+                                    <span onClick={this.changeWorkspaceHandler}>{i18n.t('sign_up.change_workspace')}</span>
                                 </div>}
                                 {Boolean((this.state.tries > 0 && (step === 'code' || step === 'register')) || (countdown < 45)) &&
                                 <div className="try-another-phone" onClick={this.tryAnotherPhone}>
                                     <RefreshRounded/>
                                     <label>
-                                        Try another phone
+                                        {i18n.t('sign_up.try_another_phone')}
                                     </label>
                                 </div>}
                                 {step === 'code' && countdown !== 0 && <div className="input-wrapper validate-input">
                                     <TextField
-                                        label="code"
+                                        label={i18n.t('sign_up.code')}
                                         placeholder="____"
                                         margin="none"
                                         variant="outlined"
@@ -181,15 +182,15 @@ class SignUp extends React.Component<IProps, IState> {
                                         onKeyDown={this.confirmKeyDown}
                                     />
                                     <div className="countdown">
-                                        <TimerRounded/><span className="inner">{countdown}&nbsp;s</span>
+                                        <TimerRounded/><span className="inner">{countdown}&nbsp;{i18n.t('sign_up.second')}</span>
                                     </div>
                                     <div className={'grey-link ' + (countdown >= 45 ? 'disabled' : '')}>
-                                        <span onClick={this.resendCode}>Resend Code</span>
+                                        <span onClick={this.resendCode}>{i18n.t('sign_up.resend_code')}</span>
                                     </div>
                                 </div>}
                                 {step === 'register' &&
                                 <div className="input-wrapper validate-input">
-                                    <TextField className="f-fname text-input" type="text" label="First Name"
+                                    <TextField className="f-fname text-input" type="text" label={i18n.t('general.first_name')}
                                                margin="none" variant="outlined" autoComplete="off"
                                                fullWidth={true}
                                                value={this.state.fName}
@@ -199,7 +200,7 @@ class SignUp extends React.Component<IProps, IState> {
                                 </div>}
                                 {step === 'register' &&
                                 <div className="input-wrapper validate-input">
-                                    <TextField className="f-lname text-input" type="text" label="Last Name"
+                                    <TextField className="f-lname text-input" type="text" label={i18n.t('general.last_name')}
                                                margin="none" variant="outlined" autoComplete="off"
                                                fullWidth={true}
                                                value={this.state.lName}
@@ -325,7 +326,7 @@ class SignUp extends React.Component<IProps, IState> {
             window.console.warn(err);
             this.setState({
                 loading: false,
-                workspaceError: 'Cannot reach to server',
+                workspaceError: i18n.t('sign_up.cannot_reach_to_server'),
             });
         });
     }
@@ -440,7 +441,7 @@ class SignUp extends React.Component<IProps, IState> {
                 if (err.code === C_ERR.ERR_CODE_INVALID && err.items === C_ERR_ITEM.ERR_ITEM_PHONE_CODE) {
                     this.setState({
                         snackOpen: true,
-                        snackText: 'Code is incorrect!',
+                        snackText: i18n.t('sign_up.code_is_incorrect'),
                     });
                     return;
                 }
@@ -563,7 +564,7 @@ class SignUp extends React.Component<IProps, IState> {
             if (err.code === C_ERR.ERR_CODE_INVALID && err.items === C_ERR_ITEM.ERR_ITEM_PHONE_CODE) {
                 this.setState({
                     snackOpen: true,
-                    snackText: 'Code is incorrect!',
+                    snackText: i18n.t('sign_up.code_is_incorrect'),
                 });
                 return;
             }

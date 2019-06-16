@@ -9,7 +9,7 @@
 @import '../../../style/mixin';
 
 .status-bar {
-  padding: 5px 0;
+  padding: 3px 0 5px;
   display: flex;
   flex-direction: column;
   color: var(--grey);
@@ -17,8 +17,9 @@
 
   .name {
     color: var(--dark);
+    line-height: 1.3em;
     font-size: 15px;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
     @include font-bold;
 
     svg {

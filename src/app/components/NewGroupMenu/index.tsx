@@ -14,6 +14,7 @@ import {KeyboardBackspaceRounded, ArrowForwardRounded, CheckRounded} from '@mate
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import ContactList from '../ContactList';
+import i18n from '../../services/i18n';
 
 import './style.css';
 
@@ -51,13 +52,11 @@ class NewGroupMenu extends React.Component<IProps, IState> {
                     <div className="page page-1">
                         <div className="menu-header">
                             <IconButton
-                                aria-label="Close"
-                                aria-haspopup="true"
                                 onClick={this.props.onClose}
                             >
                                 <KeyboardBackspaceRounded/>
                             </IconButton>
-                            <label>Create a New Group</label>
+                            <label>{i18n.t('contact.create_a_new_group')}</label>
                         </div>
                         <div className="contact-box">
                             <ContactList onChange={this.contactListChangeHandler} mode="chip"/>
@@ -71,17 +70,15 @@ class NewGroupMenu extends React.Component<IProps, IState> {
                     <div className="page page-2">
                         <div className="menu-header">
                             <IconButton
-                                aria-label="Prev"
-                                aria-haspopup="true"
                                 onClick={this.onPrevHandler}
                             >
                                 <KeyboardBackspaceRounded/>
                             </IconButton>
-                            <label>Group setting</label>
+                            <label>{i18n.t('contact.group_settings')}</label>
                         </div>
                         <div className="input-container">
                             <TextField
-                                label="Group title"
+                                label={i18n.t('contact.group_title')}
                                 fullWidth={true}
                                 value={title}
                                 inputProps={{

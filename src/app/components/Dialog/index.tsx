@@ -26,6 +26,7 @@ import IconButton from '@material-ui/core/IconButton/IconButton';
 import FormControl from '@material-ui/core/FormControl/FormControl';
 import IsMobile from '../../services/isMobile';
 import Divider from '@material-ui/core/Divider/Divider';
+import i18n from '../../services/i18n';
 
 import './style.css';
 
@@ -57,6 +58,7 @@ class Dialog extends React.Component<IProps, IState> {
     private readonly searchDebounce: any;
     private keyword: string = '';
     private readonly isMobile: boolean = false;
+    private readonly menuItem: any = {};
 
     constructor(props: IProps) {
         super(props);
@@ -75,6 +77,44 @@ class Dialog extends React.Component<IProps, IState> {
         this.searchRepo = SearchRepo.getInstance();
         this.searchDebounce = debounce(this.search, 512);
         this.isMobile = IsMobile.isAny();
+
+        this.menuItem = {
+            0: {
+                cmd: 'divider',
+                title: '',
+            },
+            1: {
+                cmd: 'clear',
+                title: i18n.t('dialog.clear_history'),
+            },
+            2: {
+                cmd: 'remove',
+                color: '#cc0000',
+                title: i18n.t('dialog.delete_and_exit'),
+            },
+            3: {
+                cmd: 'block',
+                color: '#cc0000',
+                title: i18n.t('dialog.block'),
+            },
+            4: {
+                cmd: 'info',
+                title: i18n.t('dialog.info'),
+            },
+            5: {
+                cmd: 'remove',
+                color: '#cc0000',
+                title: i18n.t('dialog.remove'),
+            },
+            6: {
+                cmd: 'pin',
+                title: i18n.t('dialog.pin'),
+            },
+            7: {
+                cmd: 'unpin',
+                title: i18n.t('dialog.unpin'),
+            },
+        };
     }
 
     public componentDidMount() {
@@ -133,7 +173,7 @@ class Dialog extends React.Component<IProps, IState> {
             <div className="dialogs">
                 <div className={'dialog-search' + (searchEnable ? ' open' : '')}>
                     <FormControl fullWidth={true} className="title-edit">
-                        <InputLabel htmlFor="dialog-search">Search...</InputLabel>
+                        <InputLabel htmlFor="dialog-search">{i18n.t('dialog.search')}</InputLabel>
                         <Input
                             id="dialog-search"
                             type="text"
@@ -144,7 +184,6 @@ class Dialog extends React.Component<IProps, IState> {
                             endAdornment={
                                 <InputAdornment position="end" className="adornment">
                                     <IconButton
-                                        aria-label="Confirm changes"
                                         onClick={this.closeSearchHandler}
                                     >
                                         <CloseRounded/>
@@ -256,7 +295,7 @@ class Dialog extends React.Component<IProps, IState> {
         return (
             <div className="no-result">
                 <MessageRounded/>
-                compose a new message : )
+                {i18n.t('dialog.compose_a_new_message')}
             </div>);
     }
 
@@ -287,43 +326,6 @@ class Dialog extends React.Component<IProps, IState> {
         if (!searchItems[moreIndex]) {
             return '';
         }
-        const menuItem = {
-            0: {
-                cmd: 'divider',
-                title: '',
-            },
-            1: {
-                cmd: 'clear',
-                title: 'Clear history',
-            },
-            2: {
-                cmd: 'remove',
-                color: '#cc0000',
-                title: 'Delete and Exit',
-            },
-            3: {
-                cmd: 'block',
-                color: '#cc0000',
-                title: 'Block',
-            },
-            4: {
-                cmd: 'info',
-                title: 'Info',
-            },
-            5: {
-                cmd: 'remove',
-                color: '#cc0000',
-                title: 'Remove',
-            },
-            6: {
-                cmd: 'pin',
-                title: 'Pin',
-            },
-            7: {
-                cmd: 'unpin',
-                title: 'Unpin',
-            },
-        };
         const menuTypes = {
             1: [4, 0, 6, 7, 0, 1, 5],
             2: [1, 0, 6, 7, 0, 2],
@@ -338,24 +340,24 @@ class Dialog extends React.Component<IProps, IState> {
             menuTypes[1].forEach((key) => {
                 if (key === 6 || key === 7) {
                     if (key === 6 && !dialog.pinned) {
-                        menuItems.push(menuItem[key]);
+                        menuItems.push(this.menuItem[key]);
                     } else if (key === 7 && dialog.pinned) {
-                        menuItems.push(menuItem[key]);
+                        menuItems.push(this.menuItem[key]);
                     }
                 } else {
-                    menuItems.push(menuItem[key]);
+                    menuItems.push(this.menuItem[key]);
                 }
             });
         } else if (peerType === PeerType.PEERGROUP) {
             menuTypes[2].forEach((key) => {
                 if (key === 6 || key === 7) {
                     if (key === 6 && !dialog.pinned) {
-                        menuItems.push(menuItem[key]);
+                        menuItems.push(this.menuItem[key]);
                     } else if (key === 7 && dialog.pinned) {
-                        menuItems.push(menuItem[key]);
+                        menuItems.push(this.menuItem[key]);
                     }
                 } else {
-                    menuItems.push(menuItem[key]);
+                    menuItems.push(this.menuItem[key]);
                 }
             });
         }

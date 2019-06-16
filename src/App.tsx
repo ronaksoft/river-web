@@ -51,7 +51,7 @@ interface IState {
 }
 
 I18n.init({
-    defLang: 'fa',
+    defLang: localStorage.getItem('river.lang') || 'en',
     dictionaries: {
         en: require('./app/locales/en.json'),
         fa: require('./app/locales/fa.json'),
@@ -112,6 +112,7 @@ class App extends React.Component<{}, IState> {
             el.setAttribute('font', localStorage.getItem('river.theme.font') || '2');
             el.setAttribute('bg', localStorage.getItem('river.theme.bg') || '2');
             el.setAttribute('bubble', localStorage.getItem('river.theme.bubble') || '4');
+            el.setAttribute('direction', localStorage.getItem('river.lang.dir') || 'ltr');
         }
 
         const refreshEl = document.querySelector('#refresh');

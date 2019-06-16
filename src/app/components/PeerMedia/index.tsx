@@ -153,7 +153,7 @@ class PeerMedia extends React.Component<IProps, IState> {
             if (items.length > 0) {
                 return this.getGridView();
             } else {
-                return (<div className="media-placeholder"><span>No Shared Media Here!</span></div>);
+                return (<div className="media-placeholder"><span>{i18n.t('peer_info.no_shared_media')}</span></div>);
             }
         } else {
             switch (tab) {

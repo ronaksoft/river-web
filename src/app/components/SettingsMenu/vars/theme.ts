@@ -40,13 +40,13 @@ export const C_CUSTOM_BG = '21';
 
 export const bgTypes = [{
     id: '0',
-    title: 'None',
+    title: 'settings.none',
 }, {
     id: '1',
-    title: 'Custom',
+    title: 'settings.custom',
 }, {
     id: '2',
-    title: 'Pattern',
+    title: 'settings.pattern',
 }];
 
 export const backgrounds = [{
@@ -151,27 +151,27 @@ export const backgrounds = [{
 
 export const bubbles = [{
     id: '4',
-    title: 'Pad'
+    title: 'settings.pad'
 }, {
     id: '1',
-    title: 'KK'
+    title: 'settings.kk'
 }, {
     id: '2',
-    title: 'Curve'
+    title: 'settings.curve'
 }, {
     id: '5',
-    title: 'Simplified'
+    title: 'settings.simplified'
 }];
 
 export const themes = [{
     id: 'light',
-    title: 'Light'
+    title: 'settings.light'
 }, {
     id: 'dark',
-    title: 'Dark'
+    title: 'settings.dark'
 }, {
     id: 'dark-blue',
-    title: 'Dark Blue'
+    title: 'settings.dark_blue'
 }];
 
 export const bgPics = [{
@@ -203,54 +203,54 @@ export const bgPics = [{
 export const storageItems = [{
     className: 'bold',
     id: 'download_all',
-    title: 'Auto Download Media',
+    title: 'settings.auto_download_media',
     type: 'item',
 }, {
     id: 'h1',
-    title: 'Private Chats',
+    title: 'settings.private_chats',
     type: 'header',
 }, {
     id: 'chat_photos',
-    title: 'Photos',
+    title: 'settings.photos',
     type: 'item',
 }, {
     id: 'chat_videos',
-    title: 'Videos',
+    title: 'settings.videos',
     type: 'item',
 }, {
     id: 'chat_voices',
-    title: 'Voices',
+    title: 'settings.voices',
     type: 'item',
 }, {
     id: 'chat_files',
-    title: 'Files',
+    title: 'settings.files',
     type: 'item',
 }, {
     id: 'h2',
-    title: 'Group Chats',
+    title: 'settings.group_chats',
     type: 'header',
 }, {
     id: 'group_photos',
-    title: 'Photos',
+    title: 'settings.photos',
     type: 'item',
 }, {
     id: 'group_videos',
-    title: 'Videos',
+    title: 'settings.videos',
     type: 'item',
 }, {
     id: 'group_voices',
-    title: 'Voices',
+    title: 'settings.voices',
     type: 'item',
 }, {
     id: 'group_files',
-    title: 'Files',
+    title: 'settings.files',
     type: 'item',
 }, {
     id: 'h3',
-    title: 'Auto save',
+    title: 'settings.auto_save',
     type: 'header',
 }, {
     id: 'auto_save_files',
-    title: 'Files',
+    title: 'settings.files',
     type: 'item',
 }];

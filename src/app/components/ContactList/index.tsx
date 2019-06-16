@@ -24,6 +24,7 @@ import Scrollbars from 'react-custom-scrollbars';
 import {IUser} from '../../repository/user/interface';
 import UserRepo from '../../repository/user';
 import LastSeen from '../LastSeen';
+import i18n from '../../services/i18n';
 
 import './style.css';
 
@@ -139,7 +140,7 @@ class ContactList extends React.Component<IProps, IState> {
             <div className="contact-list">
                 <div className="contact-input-container">
                     {Boolean(this.props.mode === 'chip') && <ChipInput
-                        label="Search contacts"
+                        label={i18n.t('contact.search_contact')}
                         value={selectedContacts}
                         chipRenderer={this.chipRenderer}
                         fullWidth={true}
@@ -149,7 +150,7 @@ class ContactList extends React.Component<IProps, IState> {
                         classes={{}}
                     />}
                     {Boolean(this.props.mode === 'link') && <TextField
-                        label="Search..."
+                        label={i18n.t('contact.search')}
                         fullWidth={true}
                         inputProps={{
                             maxLength: 32,
@@ -168,6 +169,7 @@ class ContactList extends React.Component<IProps, IState> {
                                         width: width + 'px',
                                     }}
                                     onScroll={this.handleScroll}
+                                    rtl={true}
                                 >
                                     <List
                                         ref={this.refHandler}
@@ -233,7 +235,7 @@ class ContactList extends React.Component<IProps, IState> {
                         <UserAvatar id={contact.id || ''}/>
                     </span>
                         <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>
-                        <span className="phone">{contact.phone ? contact.phone : 'no phone'}</span>
+                        <span className="phone">{contact.phone ? contact.phone : i18n.t('contact.no_phone')}</span>
                         {Boolean(this.props.onContextMenuAction) &&
                         <div className="more" onClick={this.contextMenuOpenHandler.bind(this, index)}>
                             <MoreVert/>
@@ -251,7 +253,7 @@ class ContactList extends React.Component<IProps, IState> {
                                 <span className="inner">{`${contact.firstname} ${contact.lastname}`}</span>
                                 <LastSeen className="last-seen" id={contact.id || ''}/>
                             </span>
-                            <span className="phone">{contact.phone ? contact.phone : 'no phone'}</span>
+                            <span className="phone">{contact.phone ? contact.phone : i18n.t('contact.no_phone')}</span>
                             {Boolean(this.props.onContextMenuAction) &&
                             <div className="more" onClick={this.contextMenuOpenHandler.bind(this, index)}>
                                 <MoreVert/>
@@ -268,7 +270,7 @@ class ContactList extends React.Component<IProps, IState> {
         return (
             <div className="no-result">
                 <NotInterestedRounded/>
-                no result!
+                {i18n.t('contact.no_result')}
             </div>
         );
     }
@@ -406,7 +408,7 @@ class ContactList extends React.Component<IProps, IState> {
         const menuItems = [{
             cmd: 'remove',
             color: '#cc0000',
-            title: 'Remove',
+            title: i18n.t('contact.remove'),
         }];
         return menuItems.map((item, index) => {
             let style = {};

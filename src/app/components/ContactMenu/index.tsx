@@ -19,7 +19,8 @@ import UniqueId from '../../services/uniqueId';
 import ContactList from '../ContactList';
 import {IUser} from '../../repository/user/interface';
 import Broadcaster from '../../services/broadcaster';
-import SettingsModal from "../SettingsModal";
+import SettingsModal from '../SettingsModal';
+import i18n from '../../services/i18n';
 
 import './style.css';
 
@@ -69,15 +70,13 @@ class ContactMenu extends React.Component<IProps, IState> {
         return (
             <div className="contacts">
                 <div className="menu-header">
-                    <label>Contacts</label>
+                    <label>{i18n.t('contact.contacts')}</label>
                     <span className="actions">
                         <Tooltip
-                            title="New Contact"
+                            title={i18n.t('contact.new_contact')}
                             placement="bottom"
                         >
                             <IconButton
-                                aria-label="New Contact"
-                                aria-haspopup="true"
                                 onClick={this.newContactOpenHandler}
                             >
                                 <PersonAddRounded/>
@@ -89,7 +88,7 @@ class ContactMenu extends React.Component<IProps, IState> {
                     <ContactList ref={this.contactListRefHandler} noRowsRenderer={this.noRowsRenderer} mode="link"
                                  onContextMenuAction={this.contextMenuActionHandler} disableCheckSelected={true}/>
                 </div>
-                <SettingsModal open={newContactDialogOpen} title="New Contact"
+                <SettingsModal open={newContactDialogOpen} title={i18n.t('contact.new_contact')}
                                icon={<PersonAddRounded/>}
                                onClose={this.newContactCloseHandler}
                                noScrollbar={true}
@@ -99,7 +98,7 @@ class ContactMenu extends React.Component<IProps, IState> {
                         <TextField
                             autoFocus={true}
                             fullWidth={true}
-                            label="First Name"
+                            label={i18n.t('general.first_name')}
                             margin="dense"
                             onChange={this.firstnameHandleChange}
                             value={firstname}
@@ -107,7 +106,7 @@ class ContactMenu extends React.Component<IProps, IState> {
                         />
                         <TextField
                             fullWidth={true}
-                            label="Last Name"
+                            label={i18n.t('general.last_name')}
                             margin="dense"
                             onChange={this.lastnameHandleChange}
                             value={lastname}
@@ -115,7 +114,7 @@ class ContactMenu extends React.Component<IProps, IState> {
                         />
                         <TextField
                             fullWidth={true}
-                            label="Phone"
+                            label={i18n.t('general.phone')}
                             margin="dense"
                             onChange={this.phoneHandleChange}
                             value={phone}
@@ -142,7 +141,7 @@ class ContactMenu extends React.Component<IProps, IState> {
         return (
             <div className="no-result">
                 <PersonRounded/>
-                add a contact : )
+                {i18n.t('contact.placeholder')}
             </div>);
     }
 

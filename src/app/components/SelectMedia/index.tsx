@@ -9,18 +9,14 @@
 
 import * as React from 'react';
 import {
-    ImageTwoTone,
-    // MovieTwoTone,
-    HeadsetTwoTone,
-    InsertDriveFileTwoTone,
-    PeopleOutlineRounded,
-    PlaceTwoTone,
+    ImageTwoTone, HeadsetTwoTone, InsertDriveFileTwoTone, PeopleOutlineRounded, PlaceTwoTone,
 } from '@material-ui/icons';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener/ClickAwayListener';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
 import {makeStyles} from '@material-ui/styles';
 import {debounce} from 'lodash';
+import i18n from '../../services/i18n';
 
 import './style.css';
 
@@ -35,38 +31,7 @@ const tooltipClass: any = makeStyles({
     }
 });
 
-const items: any[] = [
-    {
-        cmd: 'media',
-        icon: <ImageTwoTone/>,
-        title: 'Photo & Video',
-    },
-    // {
-    //     cmd: 'video',
-    //     icon: <MovieTwoTone/>,
-    //     title: 'Video',
-    // },
-    {
-        cmd: 'music',
-        icon: <HeadsetTwoTone/>,
-        title: 'Audio',
-    },
-    {
-        cmd: 'contact',
-        icon: <PeopleOutlineRounded/>,
-        title: 'Contact',
-    },
-    {
-        cmd: 'location',
-        icon: <PlaceTwoTone/>,
-        title: 'Location',
-    },
-    {
-        cmd: 'file',
-        icon: <InsertDriveFileTwoTone/>,
-        title: 'File',
-    },
-];
+let items: any[] = [];
 
 interface IProps {
     onAction: (cmd: 'media' | 'music' | 'contact' | 'location' | 'file') => void;
@@ -91,6 +56,34 @@ class SelectMedia extends React.Component<IProps, IState> {
         };
 
         this.leaveDebounce = debounce(this.leaveHandler, 256);
+
+        items = [
+            {
+                cmd: 'media',
+                icon: <ImageTwoTone/>,
+                title: i18n.t('media.photo_video'),
+            },
+            {
+                cmd: 'music',
+                icon: <HeadsetTwoTone/>,
+                title: i18n.t('media.audio'),
+            },
+            {
+                cmd: 'contact',
+                icon: <PeopleOutlineRounded/>,
+                title: i18n.t('media.contact'),
+            },
+            {
+                cmd: 'location',
+                icon: <PlaceTwoTone/>,
+                title: i18n.t('media.location'),
+            },
+            {
+                cmd: 'file',
+                icon: <InsertDriveFileTwoTone/>,
+                title: i18n.t('media.file'),
+            },
+        ];
     }
 
     public componentWillReceiveProps(newProps: IProps) {

@@ -103,7 +103,8 @@
       text-align: right; }
   .user-info-menu .form-control {
     position: relative;
-    display: flex; }
+    display: flex;
+    height: 48px; }
     .user-info-menu .form-control.pad {
       padding-top: 16px; }
     .user-info-menu .form-control label {

@@ -13,18 +13,8 @@ import UserName from '../UserName';
 import {IDialog} from '../../repository/dialog/interface';
 import LiveDate from '../LiveDate';
 import {
-    AlternateEmailRounded,
-    DoneAllRounded,
-    DoneRounded,
-    InsertDriveFileOutlined,
-    LocationOnOutlined,
-    MoreVert,
-    MusicNoteOutlined,
-    NotificationsOffRounded,
-    PeopleOutlined,
-    PhotoOutlined,
-    RecordVoiceOverOutlined,
-    ScheduleRounded,
+    AlternateEmailRounded, DoneAllRounded, DoneRounded, InsertDriveFileOutlined, LocationOnOutlined, MoreVert,
+    MusicNoteOutlined, NotificationsOffRounded, PeopleOutlined, PhotoOutlined, RecordVoiceOverOutlined, ScheduleRounded,
     VideocamOutlined,
 } from '@material-ui/icons';
 import {PeerNotifySettings, PeerType, TypingAction} from '../../services/sdk/messages/chat.core.types_pb';
