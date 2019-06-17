@@ -16,6 +16,7 @@ import {IUser} from '../../repository/user/interface';
 import {UserStatus} from '../../services/sdk/messages/chat.core.types_pb';
 import Broadcaster from '../../services/broadcaster';
 import {IGroup} from '../../repository/group/interface';
+import i18n from "../../services/i18n";
 
 interface IProps {
     className?: string;
@@ -97,15 +98,15 @@ class LastSeen extends React.Component<IProps, IState> {
     private getStatus() {
         if (this.state.id.indexOf('-') === 0) {
             const {group} = this.state;
-            return `${group.participants || 0} members`;
+            return i18n.tf('status.members', String(group.participants || 0));
         } else {
             const {user} = this.state;
             if (this.state.you || this.riverTime.now() - (user.status_last_modified || 0) < 60 && user.status === UserStatus.USERSTATUSONLINE) {
-                return (<span className="online">online</span>);
+                return (<span className="online">{i18n.t('status.online')}</span>);
             } else if (!user.status_last_modified) {
-                return `${this.props.withLastSeen ? 'last seen' : ''} recently`;
+                return `${this.props.withLastSeen ? i18n.t('status.last_seen') : ''} ${i18n.t('status.recently')}`;
             } else {
-                return `${this.props.withLastSeen ? 'last seen' : ''} ${TimeUtility.timeAgo(user.status_last_modified || 0)}`;
+                return `${this.props.withLastSeen ? i18n.t('status.last_seen') : ''} ${TimeUtility.timeAgo(user.status_last_modified || 0)}`;
             }
         }
     }

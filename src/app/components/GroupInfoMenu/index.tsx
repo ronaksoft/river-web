@@ -351,7 +351,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                 >
                     {addMemberDialogEnable && <div className="dialog-content">
                         <div className="dialog-header">
-                            <PersonAddRounded/> {i18n.t('peer_info.add_member')}}
+                            <PersonAddRounded/> {i18n.t('peer_info.add_member')}
                         </div>
                         <ContactList hiddenContacts={participants} onChange={this.addMemberChangeHandler} mode="chip"/>
                         {Boolean(this.state.newMembers.length > 0) && <div className="actions-bar">

@@ -313,6 +313,35 @@ html[direction="rtl"] .group-info-menu {
     left: 100%; }
   html[direction="rtl"] .group-info-menu .page-container.page-2 .page-2 {
     left: 0; }
+  html[direction="rtl"] .group-info-menu .leave-group {
+    direction: rtl; }
+    html[direction="rtl"] .group-info-menu .leave-group svg {
+      margin-right: 0;
+      margin-left: 10px; }
+  html[direction="rtl"] .group-info-menu .participant label {
+    text-align: right;
+    direction: rtl; }
+  html[direction="rtl"] .group-info-menu .participant .add-member {
+    direction: rtl; }
+  html[direction="rtl"] .group-info-menu .participant .contact-item {
+    direction: rtl;
+    text-align: right; }
+    html[direction="rtl"] .group-info-menu .participant .contact-item .avatar {
+      float: right;
+      margin-right: 0;
+      margin-left: 12px; }
+    html[direction="rtl"] .group-info-menu .participant .contact-item .admin-wrapper {
+      left: auto;
+      right: 64px; }
+    html[direction="rtl"] .group-info-menu .participant .contact-item.admin .name {
+      padding-left: 0;
+      padding-right: 16px; }
+    html[direction="rtl"] .group-info-menu .participant .contact-item .more {
+      right: auto;
+      left: 5px; }
+
+html[direction="rtl"] .add-member-dialog .dialog-content .dialog-header {
+  direction: rtl; }
 
 html[theme="dark"] .group-info-menu,
 html[theme="dark-blue"] .group-info-menu {

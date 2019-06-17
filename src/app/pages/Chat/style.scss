@@ -623,6 +623,13 @@ html[direction="rtl"] {
         transition: right 0.2s ease-out;
       }
 
+      .top-bar {
+        .actions {
+          right: auto;
+          left: 0;
+        }
+      }
+
       &.left-overlay-enable {
         .left-overlay {
           right: 0;
@@ -635,24 +642,21 @@ html[direction="rtl"] {
       right: auto;
     }
 
-    .column-center.shrink {
-      margin-right: 0;
-      margin-left: 318px;
-    }
+    .column-center {
+      .top {
+        .info-bar {
+          text-align: left;
 
-    .column-left {
-      position: relative;
-      width: 318px;
-      height: 100%;
-      flex: none;
-      border: 1px solid var(--light);
-      background-color: var(--white);
-
-      .top-bar {
-        .actions {
-          right: auto;
-          left: 0;
+          .buttons {
+            right: auto;
+            left: 0;
+          }
         }
+      }
+
+      &.shrink {
+        margin-right: 0;
+        margin-left: 318px;
       }
     }
   }

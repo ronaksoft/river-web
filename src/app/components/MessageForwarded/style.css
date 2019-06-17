@@ -45,6 +45,9 @@
           margin-right: 3px;
           vertical-align: middle; }
 
+html[direction="rtl"] .message-forwarded .forwarded-container .forwarded-message-wrapper .forward-message-detail {
+  direction: rtl; }
+
 html[theme="dark"] .message-forwarded .forwarded-container .forwarded-message-wrapper .forwarded-bar {
   background-color: var(--dark-low); }
 

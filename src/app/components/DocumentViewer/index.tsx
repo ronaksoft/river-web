@@ -25,6 +25,7 @@ import {MapComponent} from '../MapPicker/map';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';
 import Menu from '@material-ui/core/Menu/Menu';
 import {ClickAwayListener} from "@material-ui/core";
+import i18n from '../../services/i18n';
 
 import './style.css';
 
@@ -287,7 +288,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         }
         const contextMenuItems = [{
             cmd: 'download',
-            title: 'Download',
+            title: i18n.t('general.download'),
         }];
         return (
             <div className="document-viewer-controls" onMouseEnter={this.controlMouseEnterHandler}

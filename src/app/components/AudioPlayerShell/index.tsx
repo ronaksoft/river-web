@@ -28,6 +28,7 @@ import {getDuration} from '../PeerMedia';
 import Slider from '@material-ui/lab/Slider';
 import DownloadProgress from '../DownloadProgress';
 import {findIndex} from 'lodash';
+import i18n from '../../services/i18n';
 
 import './style.css';
 
@@ -129,7 +130,7 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
                     <div className="audio-player-content">
                         {Boolean(userId !== '') && <div className="audio-player-anchor">
                             <Link to={`/chat/${peerId}/${messageId}`}>
-                                Playing from: <UserName className="user" id={userId} unsafe={true} noDetail={true}/>
+                                {i18n.t('media.playing_from')} <UserName className="user" id={userId} unsafe={true} noDetail={true}/>
                             </Link>
                         </div>}
                     </div>

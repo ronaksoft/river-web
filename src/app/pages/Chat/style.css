@@ -503,24 +503,22 @@ html[direction="rtl"] .container {
     left: auto;
     right: calc(-100% - 1px);
     transition: right 0.2s ease-out; }
+  html[direction="rtl"] .container .column-left .top-bar .actions {
+    right: auto;
+    left: 0; }
   html[direction="rtl"] .container .column-left.left-overlay-enable .left-overlay {
     right: 0; }
   html[direction="rtl"] .container .column-right {
     left: 0;
     right: auto; }
+  html[direction="rtl"] .container .column-center .top .info-bar {
+    text-align: left; }
+    html[direction="rtl"] .container .column-center .top .info-bar .buttons {
+      right: auto;
+      left: 0; }
   html[direction="rtl"] .container .column-center.shrink {
     margin-right: 0;
     margin-left: 318px; }
-  html[direction="rtl"] .container .column-left {
-    position: relative;
-    width: 318px;
-    height: 100%;
-    flex: none;
-    border: 1px solid var(--light);
-    background-color: var(--white); }
-    html[direction="rtl"] .container .column-left .top-bar .actions {
-      right: auto;
-      left: 0; }
 
 html[direction="rtl"] .kk-context-menu, html[direction="rtl"] .confirm-dialog {
   direction: rtl; }

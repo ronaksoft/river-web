@@ -40,16 +40,16 @@ class BottomBar extends React.Component<IProps, IState> {
         items = [{
             icon: <AccountCircleRounded/>,
             page: 'contact',
-            title: i18n.t('bottom_bar.contacts'),
+            title: i18n.t('general.contacts'),
         }, {
             badge: true,
             icon: <ChatRounded/>,
             page: 'chat',
-            title: i18n.t('bottom_bar.chats'),
+            title: i18n.t('general.chats'),
         }, {
             icon: <SettingsRounded/>,
             page: 'settings',
-            title: i18n.t('bottom_bar.settings'),
+            title: i18n.t('general.settings'),
         }];
     }
 

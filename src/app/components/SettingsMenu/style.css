@@ -538,13 +538,16 @@ html[direction="rtl"] .setting-menu {
     justify-content: flex-start; }
     html[direction="rtl"] .setting-menu .menu-header > button {
       transform: rotateY(180deg); }
+  html[direction="rtl"] .setting-menu .menu-content {
+    direction: ltr; }
   html[direction="rtl"] .setting-menu .page-anchor .icon {
     margin-right: 0;
     margin-left: 8px; }
   html[direction="rtl"] .setting-menu .page-anchor .anchor-label {
     text-align: right; }
   html[direction="rtl"] .setting-menu .session-item .session-info .session-row .session-col {
-    text-align: right; }
+    text-align: right;
+    line-height: 1.4em; }
   html[direction="rtl"] .setting-menu .session-item .session-current {
     right: auto;
     left: 12px; }
@@ -555,6 +558,10 @@ html[direction="rtl"] .setting-menu {
     padding: 16px 16px 16px 0; }
   html[direction="rtl"] .setting-menu .font-size-container {
     flex-direction: row; }
+  html[direction="rtl"] .setting-menu .info.language-list .language-item {
+    flex-direction: row-reverse; }
+    html[direction="rtl"] .setting-menu .info.language-list .language-item .language-label {
+      text-align: right; }
 
 html[theme="dark"] .setting-menu .menu-header,
 html[theme="dark-blue"] .setting-menu .menu-header {

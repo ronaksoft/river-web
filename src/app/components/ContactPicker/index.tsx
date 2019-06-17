@@ -13,6 +13,7 @@ import {CloseRounded, SendRounded} from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import ContactList from '../ContactList';
 import {IUser} from '../../repository/user/interface';
+import i18n from '../../services/i18n';
 
 import './style.css';
 
@@ -68,7 +69,7 @@ class ContactPicker extends React.Component<IProps, IState> {
                                     >
                                         <CloseRounded/>
                                     </IconButton>
-                                    Choose Recipient(s)
+                                    {i18n.t('general.choose_recipients')}
                                 </div>
                                 <ContactList onChange={this.addRecipientChangeHandler} mode="chip"/>
                                 {Boolean(recipients.length > 0) && <div className="actions-bar">

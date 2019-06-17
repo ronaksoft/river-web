@@ -184,7 +184,7 @@ class ChatInput extends React.Component<IProps, IState> {
             previewMessage: props.previewMessage || null,
             previewMessageHeight: 0,
             previewMessageMode: props.previewMessageMode || C_MSG_MODE.Normal,
-            rtl: false,
+            rtl: localStorage.getItem('river.lang') === 'fa' || false,
             selectMediaOpen: false,
             selectable: props.selectable,
             selectableDisable: props.selectableDisable,

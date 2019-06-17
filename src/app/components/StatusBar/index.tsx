@@ -92,9 +92,9 @@ class StatusBar extends React.Component<IProps, IState> {
             ids = Object.keys(typingList).length;
         }
         if (this.state.isConnecting) {
-            return (<span>Connecting...</span>);
+            return (<span>{i18n.t('status.connecting')}</span>);
         } else if (this.state.isUpdating) {
-            return (<span>Updating...</span>);
+            return (<span>{i18n.t('status.updating')}</span>);
         } else if (ids > 0) {
             return (isTypingRender(typingList, peer.getType() || PeerType.PEERUSER));
         } else {

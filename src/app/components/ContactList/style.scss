@@ -21,6 +21,7 @@
 
     .chip {
       margin: 0 3px 3px 0;
+      direction: ltr;
     }
   }
 
@@ -177,26 +178,32 @@ html[direction="rtl"] {
   .contact-list {
     direction: rtl;
 
-    .contact-list-container .contact-container .contact-item {
-      text-align: right;
-
-      .avatar {
-        float: right;
-        margin-right: 0;
-        margin-left: 12px;
+    .contact-list-container .contact-container {
+      .category-item {
+        text-align: right;
       }
 
-      .name {
-        direction: rtl;
+      .contact-item {
+        text-align: right;
 
-        .inner {
-          text-align: right;
+        .avatar {
+          float: right;
+          margin-right: 0;
+          margin-left: 12px;
         }
-      }
 
-      .more {
-        right: auto;
-        left: 0px;
+        .name {
+          direction: rtl;
+
+          .inner {
+            text-align: right;
+          }
+        }
+
+        .more {
+          right: auto;
+          left: 0px;
+        }
       }
     }
   }

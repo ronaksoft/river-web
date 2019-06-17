@@ -125,7 +125,7 @@ class TimeUntiles {
             if (this.lang === 'en') {
                 return date.format('MMM DD');
             } else {
-                return date.format('jMMMM jDD');
+                return date.format('jDD jMMMM');
             }
         }
 
@@ -167,7 +167,7 @@ class TimeUntiles {
             if (this.lang === 'en') {
                 return date.format('MMM DD');
             } else {
-                return date.format('jMMM jDD');
+                return date.format('jDD jMMMM');
             }
         }
 
@@ -213,7 +213,7 @@ class TimeUntiles {
             if (this.lang === 'en') {
                 return date.format('MMM DD');
             } else {
-                return date.format('jMMM jDD');
+                return date.format('jDD jMMMM');
             }
         }
 

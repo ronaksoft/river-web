@@ -16,11 +16,8 @@ import ChipInput from 'material-ui-chip-input';
 import Chip from '@material-ui/core/Chip';
 import UserName from '../UserName';
 import {
-    InsertDriveFileOutlined,
-    LocationOnOutlined,
-    NotInterestedRounded,
-    PeopleOutlined, PhotoOutlined, RecordVoiceOverOutlined,
-    VideocamOutlined
+    InsertDriveFileOutlined, LocationOnOutlined, NotInterestedRounded, PeopleOutlined, PhotoOutlined,
+    RecordVoiceOverOutlined, VideocamOutlined,
 } from '@material-ui/icons';
 import {IDialog} from '../../repository/dialog/interface';
 import SearchRepo from '../../repository/search';
@@ -31,6 +28,7 @@ import GroupName from '../GroupName';
 import {categorizeContact} from '../ContactList';
 import Scrollbars from 'react-custom-scrollbars';
 import {C_MESSAGE_ICON} from '../Dialog/utils';
+import i18n from '../../services/i18n';
 
 import './style.css';
 
@@ -100,7 +98,7 @@ class SearchList extends React.Component<IProps, IState> {
             <div className="search-list">
                 <div className="search-input-container">
                     <ChipInput
-                        label="Search"
+                        label={i18n.t('chat.search')}
                         value={selectedInputPeers}
                         chipRenderer={this.chipRenderer}
                         fullWidth={true}
@@ -230,7 +228,7 @@ class SearchList extends React.Component<IProps, IState> {
         return (
             <div className="no-result">
                 <NotInterestedRounded/>
-                no result!
+                {i18n.t('contact.no_result')}
             </div>
         );
     }
@@ -332,7 +330,7 @@ class SearchList extends React.Component<IProps, IState> {
         const items: ISearchItem[] = [];
         if (this.inputPeerRes.dialogs.length > 0) {
             items.push({
-                label: 'Chats',
+                label: i18n.t('general.chats'),
                 mode: 'label',
             });
         }
@@ -353,7 +351,7 @@ class SearchList extends React.Component<IProps, IState> {
         });
         if (this.inputPeerRes.contacts.length > 0) {
             items.push({
-                label: 'Contacts',
+                label:  i18n.t('general.contacts'),
                 mode: 'label',
             });
         }

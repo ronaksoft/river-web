@@ -11,6 +11,7 @@ import * as React from 'react';
 import SettingsModal from '../SettingsModal';
 import {PersonAddRounded, SendRounded} from '@material-ui/icons';
 import SearchList, {IInputPeer} from '../SearchList';
+import i18n from '../../services/i18n';
 
 import './style.css';
 
@@ -48,7 +49,7 @@ class ForwardDialog extends React.Component<IProps, IState> {
     public render() {
         const {open, forwardRecipients} = this.state;
         return (
-            <SettingsModal open={open} title="Recipient"
+            <SettingsModal open={open} title={i18n.t('general.recipient')}
                            icon={<PersonAddRounded/>}
                            onClose={this.modalCloseHandler}
                            height="500px"

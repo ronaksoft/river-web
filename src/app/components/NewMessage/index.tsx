@@ -15,6 +15,7 @@ import ContactList from '../ContactList';
 import {IUser} from '../../repository/user/interface';
 import TextField from '@material-ui/core/TextField';
 import {trimStart} from 'lodash';
+import i18n from '../../services/i18n';
 
 import './style.css';
 
@@ -72,7 +73,7 @@ class NewMessage extends React.Component<IProps, IState> {
                                     >
                                         <CloseRounded/>
                                     </IconButton>
-                                    Choose Recipient(s)
+                                    {i18n.t('general.choose_recipients')}
                                 </div>
                                 <ContactList onChange={this.addRecipientChangeHandler} mode="chip"/>
                                 {Boolean(recipients.length > 0) && <div className="actions-bar">

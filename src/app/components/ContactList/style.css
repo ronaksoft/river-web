@@ -16,7 +16,8 @@
     padding: 10px;
     text-align: left; }
     .contact-list .contact-input-container .chip {
-      margin: 0 3px 3px 0; }
+      margin: 0 3px 3px 0;
+      direction: ltr; }
   .contact-list .contact-list-container {
     flex: 1; }
     .contact-list .contact-list-container .contact-container {
@@ -127,6 +128,8 @@
 
 html[direction="rtl"] .contact-list {
   direction: rtl; }
+  html[direction="rtl"] .contact-list .contact-list-container .contact-container .category-item {
+    text-align: right; }
   html[direction="rtl"] .contact-list .contact-list-container .contact-container .contact-item {
     text-align: right; }
     html[direction="rtl"] .contact-list .contact-list-container .contact-container .contact-item .avatar {

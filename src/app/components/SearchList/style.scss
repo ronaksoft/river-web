@@ -153,6 +153,42 @@
   }
 }
 
+html[direction="rtl"] {
+  .search-list {
+    .search-list-container {
+      .search-container {
+        .category-item {
+          text-align: right;
+        }
+
+        .search-item {
+          direction: rtl;
+          text-align: right;
+
+          .avatar {
+            float: right;
+            margin-right: 0;
+            margin-left: 12px;
+          }
+
+          .name {
+            svg {
+              margin-right: 0;
+              margin-left: 6px;
+            }
+          }
+
+          .phone {
+            .preview-icon {
+              margin: 0 0 3px 4px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 html[theme="dark"],
 html[theme="dark-blue"] {
   .search-list {

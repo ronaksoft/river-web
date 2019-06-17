@@ -10,22 +10,27 @@
 
 .peer-media {
   padding: 6px 0 12px;
+
   &.full {
     height: 100%;
     display: flex;
     flex-direction: column;
+
     .peer-media-container {
       flex: 1;
     }
   }
+
   .peer-media-title {
     padding: 6px 12px 0;
     display: flex;
     align-items: center;
+
     .peer-label {
       flex: 1;
       text-align: left;
     }
+
     .more {
       width: 64px;
       color: var(--river);
@@ -35,18 +40,23 @@
       cursor: pointer;
     }
   }
+
   .peer-media-tab {
     margin: -8px 0 8px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+
     button {
       min-width: 75px;
+
       > span > span {
         padding: 6px;
       }
     }
   }
+
   .peer-media-container {
     padding: 0 0 0 12px;
+
     .media-loading {
       text-align: center;
       color: var(--grey);
@@ -56,6 +66,7 @@
       align-items: center;
       justify-content: center;
     }
+
     .media-placeholder {
       text-align: center;
       color: var(--grey);
@@ -65,6 +76,7 @@
       align-items: center;
       justify-content: center;
       padding-top: 32px;
+
       .img {
         height: 170px;
         width: 170px;
@@ -72,17 +84,21 @@
         background-size: 100% 100%;
         border-radius: 50%;
         border: 3px solid #fff;
+
         &.media {
           background-image: url('../../../asset/image/media-placeholder.svg');
         }
+
         &.audio {
           background-image: url('../../../asset/image/audio-placeholder.svg');
         }
+
         &.file {
           background-image: url('../../../asset/image/file-placeholder.svg');
         }
       }
     }
+
     .media-grid-view,
     .media-list-view {
       .file-icon {
@@ -94,6 +110,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+
         .file-extension {
           position: absolute;
           top: 50%;
@@ -103,28 +120,35 @@
           text-transform: uppercase;
           color: #2D9CDB;
         }
+
         svg {
           color: #2D9CDB;
           font-size: 24px;
         }
+
         &.music {
           border-color: #9B51E0;
+
           .file-extension, svg {
             color: #9B51E0;
           }
         }
+
         &.voice {
           border-color: #FFCC00;
+
           .file-extension, svg {
             color: #FFCC00;
           }
         }
       }
     }
+
     .media-grid-view {
       min-height: 74px;
       display: inline-block;
       width: 100%;
+
       .media-item {
         position: relative;
         width: calc(25% - 12px);
@@ -132,11 +156,13 @@
         margin: 12px 12px 0 0;
         cursor: pointer;
         float: left;
+
         .picture {
           height: 100%;
           width: 100%;
           border-radius: 3px;
           overflow: hidden;
+
           img {
             height: 100%;
             width: 100%;
@@ -144,16 +170,20 @@
             object-position: center center;
           }
         }
+
         .file-icon {
           height: 100%;
           width: 100%;
+
           .file-extension {
             font-size: 10px;
           }
+
           svg {
             font-size: 48px;
           }
         }
+
         .video-icon {
           position: absolute;
           top: 50%;
@@ -167,11 +197,13 @@
           display: flex;
           align-items: center;
           justify-content: center;
+
           svg {
             font-size: 30px;
             color: var(--white);
           }
         }
+
         .media-duration {
           position: absolute;
           top: 4px;
@@ -188,6 +220,7 @@
         }
       }
     }
+
     .media-list-view {
       .media-item {
         position: relative;
@@ -197,14 +230,17 @@
         display: flex;
         align-items: center;
         justify-content: flex-start;
+
         &:first-of-type {
           margin-top: 6px;
         }
+
         .picture {
           height: 48px;
           width: 48px;
           border-radius: 3px;
           overflow: hidden;
+
           img {
             height: 100%;
             width: 100%;
@@ -212,6 +248,7 @@
             object-position: center center;
           }
         }
+
         .media-item-info {
           flex: 1;
           display: flex;
@@ -220,6 +257,7 @@
           padding: 0 8px;
           height: 48px;
           width: calc(100% - 108px);
+
           .media-name {
             font-size: 14px;
             color: var(--black);
@@ -228,24 +266,28 @@
             text-overflow: ellipsis;
             white-space: nowrap;
           }
+
           .media-size {
             font-size: 10px;
             color: var(--grey);
             text-align: left;
           }
         }
+
         .media-item-action {
           height: 48px;
           width: 48px;
           display: flex;
           align-items: center;
           justify-content: center;
+
           .media-action {
             position: relative;
             top: auto;
             left: auto;
             transform: none;
           }
+
           .audio-action {
             position: relative;
             display: flex;
@@ -257,17 +299,20 @@
             border-radius: 50%;
             background-color: rgba(0, 0, 0, 0.32);
             z-index: 910;
+
             svg {
               color: var(--white);
             }
           }
         }
+
         .media-file-action {
           height: 48px;
           width: 48px;
           display: flex;
           align-items: center;
           justify-content: center;
+
           span {
             color: var(--river);
             font-size: 11px;
@@ -280,18 +325,29 @@
   }
 }
 
+html[direction="rtl"] {
+  .peer-media {
+    .peer-media-container .media-grid-view .media-item {
+      float: right;
+    }
+  }
+}
+
 html[theme="dark"],
 html[theme="dark-blue"] {
   .peer-media {
     .peer-media-title {
       color: var(--white);
     }
+
     .peer-media-tab {
       border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+
       button[aria-selected="false"] {
         color: var(--white);
       }
     }
+
     .media-list-view {
       .media-item {
         .file-icon {
@@ -299,6 +355,7 @@ html[theme="dark-blue"] {
             color: var(--white);
           }
         }
+
         .media-item-info {
           .media-name {
             color: var(--white);

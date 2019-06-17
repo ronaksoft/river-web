@@ -18,6 +18,7 @@ import {IFileProgress} from '../../services/sdk/fileManager';
 import ProgressBroadcaster from '../../services/progress';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 import DownloadManager from '../../services/downloadManager';
+import i18n from '../../services/i18n';
 
 import './style.css';
 
@@ -253,7 +254,7 @@ class MessageFile extends React.PureComponent<IProps, IState> {
                     <div className="file-action">
                         {Boolean(fileState === 'view' || fileState === 'open') &&
                         <Tooltip
-                            title={fileState === 'open' ? 'Preview' : ''}
+                            title={fileState === 'open' ? i18n.t('media.preview') : ''}
                             placement="top"
                             className="tooltip"
                         >
@@ -278,9 +279,9 @@ class MessageFile extends React.PureComponent<IProps, IState> {
                         <div className="file-row">
                             <div className="file-size" ref={this.fileSizeRefHandler}>0 KB</div>
                             {Boolean(fileState === 'view') &&
-                            <div className="file-download" onClick={this.viewFileHandler}>Save</div>}
+                            <div className="file-download" onClick={this.viewFileHandler}>{i18n.t('general.save')}</div>}
                             {Boolean(fileState === 'open') &&
-                            <div className="file-download" onClick={this.openFileHandler}>{this.isMac ? 'Show in Finder' : 'Show in Folder'}</div>}
+                            <div className="file-download" onClick={this.openFileHandler}>{this.isMac ? i18n.t('general.show_in_finder') : i18n.t('general.show_in_folder')}</div>}
                         </div>
                     </div>
                 </div>

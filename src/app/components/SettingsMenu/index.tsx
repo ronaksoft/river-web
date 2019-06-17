@@ -58,7 +58,7 @@ import Slider from "@material-ui/lab/Slider";
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.23.179';
+export const C_VERSION = '0.24.0';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 interface IProps {
@@ -716,7 +716,10 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                                     className="session-col">{`Client: ${(item.model || '').split(':-').join(' ')}`}</div>
                                                             </div>
                                                             <div
-                                                                className="session-row">{i18n.tf('settings.ip_at', [item.clientip || '', TimeUtility.dynamic(item.createdat)])}</div>
+                                                                className="session-row">
+                                                                <div
+                                                                    className="session-col">{i18n.tf('settings.ip_at', [item.clientip || '', TimeUtility.dynamic(item.createdat)])}</div>
+                                                            </div>
                                                             <div className="session-row">
                                                                 <div
                                                                     className="session-col">{i18n.tf('settings.last_active', TimeUtility.timeAgo(item.activeat))}</div>

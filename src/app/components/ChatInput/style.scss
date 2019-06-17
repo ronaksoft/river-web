@@ -573,11 +573,20 @@
 }
 
 html[direction="rtl"] {
-  .write .previews {
+  .write {
+    .actions .right-action {
+      text-align: left;
 
-    .preview-container {
-      direction: ltr;
-      margin: 8px 48px 0 0;
+      > button {
+        transform: rotateY(180deg);
+      }
+    }
+
+    .previews {
+      .preview-container {
+        direction: ltr;
+        margin: 8px 48px 0 0;
+      }
     }
   }
 }

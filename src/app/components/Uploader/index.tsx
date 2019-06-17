@@ -26,9 +26,10 @@ import readAndCompressImage from 'browser-image-resizer';
 import {getFileExtension, getHumanReadableSize} from '../MessageFile';
 import * as MusicMetadata from 'music-metadata-browser';
 import IconButton from '@material-ui/core/IconButton/IconButton';
+import Cropper, {IDimension} from '../Cropper';
+import i18n from '../../services/i18n';
 
 import './style.css';
-import Cropper, {IDimension} from "../Cropper";
 
 interface IMediaThumb {
     file: Blob;
@@ -138,10 +139,10 @@ class MediaPreview extends React.Component<IProps, IState> {
                 <Cropper ref={this.cropperRefHandler} onImageReady={this.cropperImageReadyHandler}/>}
                 <div className="uploader-container">
                     {loading && <div className="uploader-loader">
-                        <span>Converting...</span>
+                        <span>{i18n.t('uploader.converting')}</span>
                     </div>}
                     <div className="uploader-header">
-                        <span className="header-title">Upload Media</span>
+                        <span className="header-title">{i18n.t('uploader.upload_media')}</span>
                         <IconButton
                             className="header-icon"
                             onClick={this.dialogCloseHandler}
@@ -154,7 +155,6 @@ class MediaPreview extends React.Component<IProps, IState> {
                             ref={this.dropzoneRefHandler}
                             onDrop={this.onDrop}
                             className="uploader-dropzone"
-                            // disableClick={true}
                             accept={isFile ? undefined : this.props.accept}
                         >
                             <div className="slider-attachment">
@@ -205,14 +205,14 @@ class MediaPreview extends React.Component<IProps, IState> {
                                     </div>
                                 )}
                                 {Boolean(items.length === 0) && <div className="slide">
-                                    Drop your {isFile ? '' : 'media '} files here
+                                    {i18n.tf('uploader.drop_you_param_here', isFile ? '' : 'media ')}
                                 </div>}
                             </div>
                         </Dropzone>
                         <div className="attachment-details-container">
                             <TextField
                                 className="caption-input"
-                                label="Write a caption"
+                                label={i18n.t('uploader.write_a_caption')}
                                 fullWidth={true}
                                 multiline={true}
                                 rowsMax={2}
@@ -269,7 +269,7 @@ class MediaPreview extends React.Component<IProps, IState> {
                                 })}
                                 <div key="add-file" className="item add-file" onClick={this.addMediaHandler}>
                                     <AddRounded/>
-                                    <span className="text">Add Media</span>
+                                    <span className="text">{i18n.t('uploader.add_media')}</span>
                                 </div>
                             </div>
                         </Scrollbars>

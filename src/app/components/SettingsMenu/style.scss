@@ -847,6 +847,10 @@ html[direction="rtl"] {
       }
     }
 
+    .menu-content {
+      direction: ltr;
+    }
+
     .page-anchor {
       .icon {
         margin-right: 0;
@@ -861,6 +865,7 @@ html[direction="rtl"] {
     .session-item {
       .session-info .session-row .session-col {
         text-align: right;
+        line-height: 1.4em;
       }
 
       .session-current {
@@ -882,6 +887,16 @@ html[direction="rtl"] {
 
     .font-size-container {
       flex-direction: row;
+    }
+
+    .info.language-list {
+      .language-item {
+        flex-direction: row-reverse;
+
+        .language-label {
+          text-align: right;
+        }
+      }
     }
   }
 }

@@ -13,9 +13,21 @@
     "phone": "تلفن",
     "title": "عنوان",
     "participants": "عضو",
-    "bio": "بیوگرافی"
-  },
-  "bottom_bar": {
+    "bio": "بیوگرافی",
+    "download": "دریافت",
+    "send_message": "ارسال پیام",
+    "choose_recipient": "انتخاب مخاطب",
+    "reply": "پاسخ",
+    "forward": "هدایت",
+    "edit": "ویرایش",
+    "remove": "حذف",
+    "resend": "ارسال مجدد",
+    "save": "ذخیره",
+    "is": " ",
+    "are": " ",
+    "show_in_finder": "نمایش در Finder",
+    "show_in_folder": "نمایش در پوشه‌ها",
+    "recipient": "مخاطب",
     "contacts": "مخاطب‌ها",
     "chats": "پیام‌ها",
     "settings": "تنظیمات"
@@ -149,7 +161,9 @@
     "audio": "پیام‌های صوتی",
     "contact": "مخاطب",
     "location": "نقشه",
-    "file": "فایل"
+    "file": "فایل",
+    "playing_from": "در حال پخش از:",
+    "preview": "پیش نمایش"
   },
   "input": {
     "you_are_no_longer_in_this_group": "شما دیگر در این گروه عضو نیستید",
@@ -177,5 +191,49 @@
     "resend_code": "بازارسال کد",
     "cannot_reach_to_server": "سرور قابل دسترس نیست",
     "code_is_incorrect": "کد غلط است"
+  },
+  "status": {
+    "members": "{0} عضو",
+    "connecting": "در‌حال اتصال",
+    "updating": "در حال بروزرسانی...",
+    "last_seen": "آخرین بازدید",
+    "recently": "به تازگی",
+    "online": "آنلاین",
+    "typing": "در حاب تایپ...",
+    "recording_voice": "در حال ضبط صوت...",
+    "uploading_file": "در حال بارگزاری فایل...",
+    "doing": "در حال..."
+  },
+  "message": {
+    "voice_message": "پیام صوتی",
+    "audio_message": "رسانه صوتی",
+    "video_message": "ویدئو",
+    "photo_message": "پیام تصویری",
+    "file": "فایل",
+    "gif": "GIF",
+    "contact": "مخاطب",
+    "location": "نقشه",
+    "forwarded_message_from": "پیام هدایت شده از ",
+    "forwarded_message": "پیام هدایت شده",
+    "joined_river": "به River ملحق شد",
+    "created_the_group": "گروه را ساخت",
+    "added_a_user": "کاربری را افزود",
+    "removed_a_user": "کاربر را حذف کرد",
+    "left": "گروه را ترک کرد",
+    "changed_the_title": "عنوان گروه را تغییر داد",
+    "changed_the_title_to": "عنوان گروه را به '{0}' تغییر داد",
+    "removed_the_group_photo": "عکس گروه را حذف کرد",
+    "changed_the_group_photo": "عکس گروه را تغییر داد",
+    "cleared_the_history": "تاریخچه را پاک کرد",
+    "added": "افزود",
+    "removed": "حذف کرد",
+    "unsupported_message": "پیام مبهم"
+  },
+  "uploader": {
+    "converting": "درحال تبدیل کردن...",
+    "upload_media": "بارگزاری رسانه",
+    "drop_you_param_here": "فایل‌های {0} را اینجا رها کنید",
+    "add_media": "افزودن رسانه",
+    "write_a_caption": "عنوانی بنویسید..."
   }
 }

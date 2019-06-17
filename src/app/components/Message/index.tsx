@@ -38,7 +38,8 @@ import Broadcaster from '../../services/broadcaster';
 import UserRepo from '../../repository/user';
 import MessageAudio from '../MessageAudio';
 import animateScrollTo from 'animated-scroll-to';
-import ElectronService from "../../services/electron";
+import ElectronService from '../../services/electron';
+import i18n from '../../services/i18n';
 
 import './style.css';
 
@@ -171,6 +172,7 @@ class Message extends React.Component<IProps, IState> {
     private scrollToIndex?: number;
     private scrollDownTimeout: any = null;
     private isElectron: boolean = ElectronService.isElectron();
+    private readonly menuItem: any = {};
 
     constructor(props: IProps) {
         super(props);
@@ -198,6 +200,41 @@ class Message extends React.Component<IProps, IState> {
         this.loadMoreAfterThrottle = throttle(this.loadMoreAfter, 250);
         this.loadMoreBeforeThrottle = throttle(this.loadMoreBefore, 50);
         this.fitListCompleteThrottle = throttle(this.fitListComplete, 250);
+
+        this.menuItem = {
+            1: {
+                cmd: 'reply',
+                title: i18n.t('general.reply'),
+            },
+            2: {
+                cmd: 'forward',
+                title: i18n.t('general.forward'),
+            },
+            3: {
+                cmd: 'edit',
+                title: i18n.t('general.edit'),
+            },
+            4: {
+                cmd: 'remove',
+                title: i18n.t('general.remove'),
+            },
+            5: {
+                cmd: 'cancel',
+                title: i18n.t('general.cancel'),
+            },
+            6: {
+                cmd: 'resend',
+                title: i18n.t('general.resend'),
+            },
+            7: {
+                cmd: 'download',
+                title: i18n.t('general.download'),
+            },
+            8: {
+                cmd: 'save',
+                title: i18n.t('general.save'),
+            },
+        };
     }
 
     public componentDidMount() {
@@ -573,40 +610,6 @@ class Message extends React.Component<IProps, IState> {
         if (!items[moreIndex]) {
             return '';
         }
-        const menuItem = {
-            1: {
-                cmd: 'reply',
-                title: 'Reply',
-            },
-            2: {
-                cmd: 'forward',
-                title: 'Forward',
-            },
-            3: {
-                cmd: 'edit',
-                title: 'Edit',
-            },
-            4: {
-                cmd: 'remove',
-                title: 'Remove',
-            },
-            5: {
-                cmd: 'cancel',
-                title: 'Cancel',
-            },
-            6: {
-                cmd: 'resend',
-                title: 'Resend',
-            },
-            7: {
-                cmd: 'download',
-                title: 'Download',
-            },
-            8: {
-                cmd: 'save',
-                title: 'Save',
-            },
-        };
         const menuTypes = {
             1: [1, 2, 3, 4, 7, 8],
             2: [1, 2, 4, 7, 8],
@@ -619,10 +622,10 @@ class Message extends React.Component<IProps, IState> {
             menuTypes[3].forEach((key) => {
                 if (key === 6) {
                     if (items[moreIndex].error) {
-                        menuItems.push(menuItem[key]);
+                        menuItems.push(this.menuItem[key]);
                     }
                 } else {
-                    menuItems.push(menuItem[key]);
+                    menuItems.push(this.menuItem[key]);
                 }
             });
         } else if (me === true && id && id > 0) {
@@ -632,32 +635,32 @@ class Message extends React.Component<IProps, IState> {
                         (items[moreIndex].fwdsenderid === '0' || !items[moreIndex].fwdsenderid) &&
                         (items[moreIndex].messagetype === C_MESSAGE_TYPE.Normal || (items[moreIndex].messagetype || 0) === 0)
                     ) {
-                        menuItems.push(menuItem[key]);
+                        menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 7) {
                     if (!items[moreIndex].downloaded && [C_MESSAGE_TYPE.File, C_MESSAGE_TYPE.Voice].indexOf(items[moreIndex].messagetype || 0) > -1) {
-                        menuItems.push(menuItem[key]);
+                        menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 8) {
                     if (items[moreIndex].downloaded && [C_MESSAGE_TYPE.File, C_MESSAGE_TYPE.Voice].indexOf(items[moreIndex].messagetype || 0) > -1) {
-                        menuItems.push(menuItem[key]);
+                        menuItems.push(this.menuItem[key]);
                     }
                 } else {
-                    menuItems.push(menuItem[key]);
+                    menuItems.push(this.menuItem[key]);
                 }
             });
         } else if (me === false && id && id > 0) {
             menuTypes[2].forEach((key) => {
                 if (key === 7) {
                     if (!items[moreIndex].downloaded && [C_MESSAGE_TYPE.File, C_MESSAGE_TYPE.Voice].indexOf(items[moreIndex].messagetype || 0) > -1) {
-                        menuItems.push(menuItem[key]);
+                        menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 8) {
                     if (items[moreIndex].downloaded && [C_MESSAGE_TYPE.File, C_MESSAGE_TYPE.Voice].indexOf(items[moreIndex].messagetype || 0) > -1) {
-                        menuItems.push(menuItem[key]);
+                        menuItems.push(this.menuItem[key]);
                     }
                 } else {
-                    menuItems.push(menuItem[key]);
+                    menuItems.push(this.menuItem[key]);
                 }
             });
         }
@@ -963,18 +966,18 @@ class Message extends React.Component<IProps, IState> {
         switch (message.messageaction) {
             case C_MESSAGE_ACTION.MessageActionContactRegistered:
                 return (<span className="system-message">
-                    <UserName className="user" id={message.senderid || ''}/> Joined River</span>);
+                    <UserName className="user" id={message.senderid || ''}/> {i18n.t('message.joined_river')}</span>);
             case C_MESSAGE_ACTION.MessageActionGroupCreated:
                 return (<span className="system-message"><UserName className="sender" id={message.senderid || ''}
-                                                                   you={true}/> created the Group</span>);
+                                                                   you={true}/> {i18n.t('message.created_the_group')}</span>);
             case C_MESSAGE_ACTION.MessageActionGroupAddUser:
                 if (!message.actiondata) {
                     return (<span className="system-message">
-                        <UserName className="user" id={message.senderid || ''} you={true}/> Added a User</span>);
+                        <UserName className="user" id={message.senderid || ''} you={true}/> {i18n.t('message.added_a_user')}</span>);
                 } else {
                     return (<span className="system-message">
                         <UserName className="user" id={message.senderid || ''}
-                                  you={true}/> Added {message.actiondata.useridsList.map((id: string, index: number) => {
+                                  you={true}/> {i18n.t('message.added')} {message.actiondata.useridsList.map((id: string, index: number) => {
                         return (
                             <span key={index}>
                                 {index !== 0 ? ', ' : ''}
@@ -985,16 +988,16 @@ class Message extends React.Component<IProps, IState> {
             case C_MESSAGE_ACTION.MessageActionGroupDeleteUser:
                 if (!message.actiondata) {
                     return (<span className="system-message"><UserName className="user" id={message.senderid || ''}
-                                                                       you={true}/> Removed a User</span>);
+                                                                       you={true}/> {i18n.t('message.removed_a_user')}</span>);
                 } else {
                     if (message.actiondata.useridsList.indexOf(message.senderid) > -1) {
                         return (
                             <span className="system-message"><UserName className="user" id={message.senderid || ''}
-                                                                       you={true}/> Left</span>);
+                                                                       you={true}/> {i18n.t('message.left')}</span>);
                     }
                     return (<span className="system-message">
                     <UserName className="user" id={message.senderid || ''}
-                              you={true}/> Removed {message.actiondata.useridsList.map((id: string, index: number) => {
+                              you={true}/> {i18n.t('message.removed')} {message.actiondata.useridsList.map((id: string, index: number) => {
                         return (
                             <span key={index}>
                             {index !== 0 ? ', ' : ''}
@@ -1005,17 +1008,17 @@ class Message extends React.Component<IProps, IState> {
             case C_MESSAGE_ACTION.MessageActionGroupTitleChanged:
                 if (!message.actiondata) {
                     return (<span className="system-message"><UserName className="user" id={message.senderid || ''}
-                                                                       you={true}/> Changed the Title</span>);
+                                                                       you={true}/> {i18n.t('message.changed_the_title')}</span>);
                 } else {
                     return (<span className="system-message"><UserName className="user" id={message.senderid || ''}
-                                                                       you={true}/> Changed the Title to '{message.actiondata.grouptitle}'</span>);
+                                                                       you={true}/> {i18n.tf('message.changed_the_title_to', message.actiondata.grouptitle)}</span>);
                 }
             case C_MESSAGE_ACTION.MessageActionClearHistory:
-                return (<span className="system-message">History cleared</span>);
+                return (<span className="system-message">{i18n.t('message.cleared_the_history')}</span>);
             case C_MESSAGE_ACTION.MessageActionGroupPhotoChanged:
                 if (!message.actiondata) {
                     return (<span className="system-message"><UserName className="user" id={message.senderid || ''}
-                                                                       you={true}/> Removed the Group Photo</span>);
+                                                                       you={true}/> {i18n.t('message.removed_the_group_photo')}</span>);
                 } else {
                     const photo: GroupPhoto.AsObject = message.actiondata.photo;
                     const fileLocation = new InputFileLocation();
@@ -1027,7 +1030,7 @@ class Message extends React.Component<IProps, IState> {
                         return (
                             <div className="system-message-with-picture">
                                 <span className="system-message">
-                                    <UserName className="user" id={message.senderid || ''} you={true}/> Removed Group Photo
+                                    <UserName className="user" id={message.senderid || ''} you={true}/> {i18n.t('message.removed_the_group_photo')}
                                 </span>
                             </div>
                         );
@@ -1035,7 +1038,7 @@ class Message extends React.Component<IProps, IState> {
                         return (
                             <div className="system-message-with-picture">
                                 <span className="system-message">
-                                    <UserName className="user" id={message.senderid || ''} you={true}/> Changed Group Photo
+                                    <UserName className="user" id={message.senderid || ''} you={true}/> {i18n.t('message.changed_the_group_photo')}
                                 </span>
                                 <CachedPhoto className="picture" fileLocation={fileLocation.toObject()}/>
                             </div>
@@ -1043,7 +1046,7 @@ class Message extends React.Component<IProps, IState> {
                     }
                 }
             default:
-                return (<span className="system-message">Unsupported system message</span>);
+                return (<span className="system-message">{i18n.t('message.unsupported_message')}</span>);
         }
     }
 

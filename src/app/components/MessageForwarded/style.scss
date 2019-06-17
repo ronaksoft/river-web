@@ -10,16 +10,19 @@
 
 .message-forwarded {
   height: 26px;
+
   .forwarded-container {
     display: flex;
     overflow: hidden;
     flex: 1;
+
     .forwarded-message-wrapper {
       display: flex;
       position: relative;
       z-index: 1;
       overflow: hidden;
       width: 100%;
+
       .forwarded-bar {
         flex: none;
         width: 4px;
@@ -27,6 +30,7 @@
         border-bottom-left-radius: 7.5px;
         background-color: var(--grey);
       }
+
       .forward-message-detail {
         padding: 4px 8px 4px 4px;
         display: flex;
@@ -39,15 +43,29 @@
         font-weight: bold;
         font-size: 12px;
         flex-grow: 1;
+
         > span {
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
+
         svg {
           font-size: 14px;
           margin-right: 3px;
           vertical-align: middle;
+        }
+      }
+    }
+  }
+}
+
+html[direction="rtl"] {
+  .message-forwarded {
+    .forwarded-container {
+      .forwarded-message-wrapper {
+        .forward-message-detail {
+          direction: rtl;
         }
       }
     }
@@ -61,6 +79,7 @@ html[theme="dark"] {
         .forwarded-bar {
           background-color: var(--dark-low);
         }
+
         .forward-message-detail {
           background-color: var(--glass-dark-high);
         }
@@ -76,6 +95,7 @@ html[theme="dark-blue"] {
         .forwarded-bar {
           background-color: var(--dark-blue-low);
         }
+
         .forward-message-detail {
           background-color: var(--glass-dark-high);
         }
@@ -95,6 +115,7 @@ html[bubble="2"] {
           border-top-right-radius: 18px;
           border-top-left-radius: 18px;
           border-bottom-left-radius: 5px;
+
           .forwarded-bar {
             position: absolute;
             top: 0;
@@ -103,6 +124,7 @@ html[bubble="2"] {
             left: 0;
             border-radius: 0;
           }
+
           .forward-message-detail {
             border-top-right-radius: 18px;
             border-top-left-radius: 18px;
@@ -124,6 +146,7 @@ html[bubble="4"] {
           position: relative;
           overflow: hidden;
           border-radius: 8px;
+
           .forwarded-bar {
             position: absolute;
             top: 0;
@@ -132,6 +155,7 @@ html[bubble="4"] {
             left: 0;
             border-radius: 0;
           }
+
           .forward-message-detail {
             border-top-right-radius: 8px;
             border-top-left-radius: 8px;

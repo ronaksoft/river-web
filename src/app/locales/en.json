@@ -14,11 +14,23 @@
     "phone": "Phone",
     "title": "Title",
     "participants": "participants",
-    "bio": "Bio"
-  },
-  "bottom_bar": {
-    "contacts": "Contacts",
+    "bio": "Bio",
+    "download": "Download",
+    "send_message": "Send Message",
+    "choose_recipient": "Choose Recipient(s)",
+    "reply": "Reply",
+    "forward": "Forward",
+    "edit": "Edit",
+    "remove": "Remove",
+    "resend": "Resend",
+    "save": "Save",
+    "is": "is",
+    "are": "are",
+    "show_in_finder": "Show in Finder",
+    "show_in_folder": "Show in Folder",
+    "recipient": "Recipient",
     "chats": "Chats",
+    "contacts": "Contacts",
     "settings": "Settings"
   },
   "chat": {
@@ -76,7 +88,7 @@
     "add_member": "Add member",
     "leave_the": "Leave the",
     "participants": "{0} participants",
-    "no_shared_media" : "No Shared Media Here!"
+    "no_shared_media": "No Shared Media Here!"
   },
   "dialog": {
     "search": "Search...",
@@ -119,7 +131,7 @@
     "photos": "Photos",
     "videos": "Videos",
     "voices": "Voices",
-    "files" :"Files",
+    "files": "Files",
     "group_chats": "Group Chats",
     "auto_save": "Auto save",
     "light": "Light",
@@ -153,7 +165,9 @@
     "audio": "Audio",
     "contact": "Contact",
     "location": "Location",
-    "file": "File"
+    "file": "File",
+    "playing_from": "Playing from:",
+    "preview": "Preview"
   },
   "input": {
     "you_are_no_longer_in_this_group": "You are no longer in this group",
@@ -181,5 +195,49 @@
     "resend_code": "Resend Code",
     "cannot_reach_to_server": "Cannot reach to server",
     "code_is_incorrect": "Code is incorrect"
+  },
+  "status": {
+    "members": "{0} members",
+    "connecting": "Connecting...",
+    "updating": "Updating...",
+    "last_seen": "Last seen",
+    "recently": "recently",
+    "online": "online",
+    "typing": "typing...",
+    "recording_voice": "recording voice...",
+    "uploading_file": "uploading file...",
+    "doing": "doing..."
+  },
+  "message": {
+    "voice_message": "Voice Message",
+    "audio_message": "Audio Message",
+    "video_message": "Video Message",
+    "photo_message": "Photo Message",
+    "file": "File",
+    "gif": "GIF",
+    "contact": "Contact",
+    "location": "Location",
+    "forwarded_message_from": "Forward message from ",
+    "forwarded_message": "Forward message",
+    "joined_river": "joined River",
+    "created_the_group": "Created the group",
+    "added_a_user": "added a user",
+    "removed_a_user": "removed a user",
+    "left": "left",
+    "changed_the_title": "changed the group title",
+    "changed_the_title_to": "changed the group title to '{0}'",
+    "removed_the_group_photo": "removed the group photo",
+    "changed_the_group_photo": "changed the group photo",
+    "cleared_the_history": "Cleared the History",
+    "added": "added",
+    "removed": "removed",
+    "unsupported_message": "Unsupported Message"
+  },
+  "uploader": {
+    "converting": "Converting...",
+    "upload_media": "Upload Media",
+    "drop_you_param_here": "Drop your {0} files here",
+    "add_media": "Add Media",
+    "write_a_caption": "Write a Caption..."
   }
 }

@@ -236,6 +236,9 @@
           font-weight: bold;
           cursor: pointer; }
 
+html[direction="rtl"] .peer-media .peer-media-container .media-grid-view .media-item {
+  float: right; }
+
 html[theme="dark"] .peer-media .peer-media-title,
 html[theme="dark-blue"] .peer-media .peer-media-title {
   color: var(--white); }

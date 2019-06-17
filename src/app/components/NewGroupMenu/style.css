@@ -125,6 +125,15 @@
         background: var(--river-dark);
         box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4); }
 
+html[direction="rtl"] .new-group-menu .menu-header {
+  direction: ltr;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: flex-start; }
+  html[direction="rtl"] .new-group-menu .menu-header > button {
+    transform: rotateY(180deg); }
+
 html[theme="dark"] .new-group-menu .menu-header,
 html[theme="dark-blue"] .new-group-menu .menu-header {
   background-color: var(--dark-medium);

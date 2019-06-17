@@ -10,11 +10,13 @@
 
 .new-group-menu {
   height: 100%;
+
   .page-container {
     position: relative;
     height: 100%;
     width: 100%;
     overflow: hidden;
+
     .page {
       position: absolute;
       top: 0;
@@ -24,42 +26,53 @@
       display: flex;
       flex-direction: column;
       transition: left 0.2s ease-out;
+
       &.page-1 {
         left: 0;
       }
+
       &.page-2 {
         left: 100%;
       }
     }
+
     &.page-2 {
       .page-1 {
         left: -100%;
       }
+
       .page-2 {
         left: 0;
       }
     }
   }
+
   .menu-header {
     text-align: left;
     height: 47px;
     background-color: var(--header-color);
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
     label {
       padding: 10px 10px 10px 0;
     }
   }
+
   .input-container {
     min-height: 48px;
     padding: 10px;
+
     .chip {
       margin: 0 3px 3px 0;
     }
   }
+
   .contact-box {
     flex: 1;
+
     .contact-container {
       height: 100%;
+
       .contact-item {
         position: relative;
         width: 100%;
@@ -67,6 +80,7 @@
         padding: 8px;
         cursor: pointer;
         text-align: left;
+
         &:after {
           position: absolute;
           bottom: 0;
@@ -78,16 +92,19 @@
           background-color: var(--light);
           transform: translate(-50%, 0);
         }
+
         &:hover {
           border: 0;
           background-color: var(--color-hover);
         }
+
         .avatar {
           width: 48px;
           height: 48px;
           border-radius: 50%;
           float: left;
           margin-right: 12px;
+
           img {
             float: left;
             width: 48px;
@@ -96,6 +113,7 @@
             border-radius: 50%;
           }
         }
+
         .name {
           display: inline-block;
           min-width: 200px;
@@ -109,6 +127,7 @@
           text-overflow: ellipsis;
           max-width: 230px;
         }
+
         .phone {
           font-size: 14px;
           line-height: 17px;
@@ -122,14 +141,17 @@
       }
     }
   }
+
   .actions-bar {
     height: 86px;
     padding: 18px 0 22px;
     text-align: center;
     background-color: var(--message-chat);
+
     &.no-bg {
       background-color: transparent;
     }
+
     .add-action {
       display: inline-flex;
       height: 46px;
@@ -142,12 +164,30 @@
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
       cursor: pointer;
       transition: all 0.2s;
+
       svg {
         font-size: 40px;
       }
+
       &:hover {
         background: var(--river-dark);
         box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+      }
+    }
+  }
+}
+
+html[direction="rtl"] {
+  .new-group-menu {
+    .menu-header {
+      direction: ltr;
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
+      justify-content: flex-start;
+
+      > button {
+        transform: rotateY(180deg);
       }
     }
   }
@@ -160,35 +200,43 @@ html[theme="dark-blue"] {
       background-color: var(--dark-medium);
       color: var(--white);
       border-color: var(--dark-low-op50);
+
       svg {
         color: var(--white);
       }
     }
+
     .input-container {
       color: var(--white);
+
       .chip {
         background-color: var(--dark-high);
         color: var(--white);
       }
+
       label, input {
         color: var(--white);
       }
     }
+
     .contact-box {
       .contact-container {
         .contact-item {
           &:after {
             background-color: var(--dark-low-op50);
           }
+
           .name {
             color: var(--light);
           }
         }
       }
     }
+
     .actions-bar {
       background-color: var(--dark-medium);
       border-top: 1px solid var(--dark-low-op50);
+
       &.no-bg {
         background-color: transparent;
       }
@@ -202,11 +250,13 @@ html[theme="dark-blue"] {
       background-color: var(--dark-blue-medium);
       border-color: var(--dark-blue-low-op50);
     }
+
     .input-container {
       .chip {
         background-color: var(--dark-blue-high);
       }
     }
+
     .contact-box {
       .contact-container {
         .contact-item {
@@ -216,6 +266,7 @@ html[theme="dark-blue"] {
         }
       }
     }
+
     .actions-bar {
       border-top: 1px solid var(--dark-blue-low-op50);
       background-color: var(--dark-blue-medium);

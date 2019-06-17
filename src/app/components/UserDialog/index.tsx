@@ -30,9 +30,11 @@ import {Link} from 'react-router-dom';
 import RiverTime from '../../services/utilities/river_time';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
 import {isMuted} from '../UserInfoMenu';
+import Broadcaster from '../../services/broadcaster';
+import i18n from '../../services/i18n';
+import {notifyOptions} from "../../pages/Chat";
 
 import './style.css';
-import Broadcaster from '../../services/broadcaster';
 
 interface IProps {
     onClose?: () => void;
@@ -142,11 +144,10 @@ class UserDialog extends React.Component<IProps, IState> {
                         </div>
                         <div className="line">
                             {!edit && <div className="form-control">
-                                <label>First Name</label>
+                                <label>{i18n.t('general.first_name')}</label>
                                 <div className="inner">{user.firstname}</div>
                                 {isInContact && <div className="action">
                                     <IconButton
-                                        aria-label="Edit title"
                                         onClick={this.onEditHandler}
                                     >
                                         <EditRounded/>
@@ -155,7 +156,7 @@ class UserDialog extends React.Component<IProps, IState> {
                             </div>}
                             {edit &&
                             <TextField
-                                label="First Name"
+                                label={i18n.t('general.first_name')}
                                 fullWidth={true}
                                 inputProps={{
                                     maxLength: 32,
@@ -167,11 +168,10 @@ class UserDialog extends React.Component<IProps, IState> {
                         </div>
                         <div className="line">
                             {!edit && <div className="form-control">
-                                <label>Last Name</label>
+                                <label>{i18n.t('general.last_name')}</label>
                                 <div className="inner">{user.lastname}</div>
                                 {isInContact && <div className="action">
                                     <IconButton
-                                        aria-label="Edit title"
                                         onClick={this.onEditHandler}
                                     >
                                         <EditRounded/>
@@ -180,7 +180,7 @@ class UserDialog extends React.Component<IProps, IState> {
                             </div>}
                             {edit &&
                             <TextField
-                                label="Last Name"
+                                label={i18n.t('general.last_name')}
                                 fullWidth={true}
                                 inputProps={{
                                     maxLength: 32,
@@ -191,7 +191,7 @@ class UserDialog extends React.Component<IProps, IState> {
                             />}
                             {Boolean(edit && !isInContact) &&
                             <TextField
-                                label="Phone"
+                                label={i18n.t('general.phone')}
                                 fullWidth={true}
                                 inputProps={{
                                     maxLength: 32,
@@ -203,19 +203,19 @@ class UserDialog extends React.Component<IProps, IState> {
                         </div>
                         {Boolean(isInContact && !edit) && <div className="line">
                             <div className="form-control">
-                                <label>Phone</label>
+                                <label>{i18n.t('general.phone')}</label>
                                 <div className="inner">{user.phone}</div>
                             </div>
                         </div>}
                         {Boolean(user.username && user.username.length > 0) && <div className="line">
                             <div className="form-control">
-                                <label>Username</label>
+                                <label>{i18n.t('general.username')}</label>
                                 <div className="inner">@{user.username}</div>
                             </div>
                         </div>}
                         {Boolean(user.bio && user.bio.length > 0) && <div className="line">
                             <div className="form-control">
-                                <label>Bio</label>
+                                <label>{i18n.t('general.bio')}</label>
                                 <div className="inner">{user.bio}</div>
                             </div>
                         </div>}
@@ -226,15 +226,15 @@ class UserDialog extends React.Component<IProps, IState> {
                             </div>
                         </div>}
                         {Boolean(edit) && <div className="actions-bar cancel" onClick={this.cancelHandler}>
-                            Cancel
+                            {i18n.t('general.general')}
                         </div>}
                         {Boolean(!isInContact && !edit) &&
                         <div className="add-as-contact" onClick={this.addAsContactHandler}>
-                            <AddRounded/> Add as contact
+                            <AddRounded/> {i18n.t('peer_info.add_as_contact')}
                         </div>}
                     </div>}
                     {notifySetting && <div className="kk-card notify-settings">
-                        <div className="label">Mute</div>
+                        <div className="label">{i18n.t('peer_info.mute')}</div>
                         <div className="value">
                             <Checkbox
                                 className={'checkbox ' + (isMuted(notifySetting) ? 'checked' : '')}
@@ -245,7 +245,7 @@ class UserDialog extends React.Component<IProps, IState> {
                     {sendMessageEnable && <div className="kk-card">
                         <Link className="send-message" to={`/chat/${user ? user.id : 'null'}`}
                               onClick={this.close}>
-                            <SendRounded/> Send Message
+                            <SendRounded/> {i18n.t('general.send_message')}
                         </Link>
                     </div>}
                     <Dialog
@@ -254,31 +254,25 @@ class UserDialog extends React.Component<IProps, IState> {
                         maxWidth="xs"
                         className="notify-setting-dialog"
                     >
-                        <DialogTitle>Notify Settings</DialogTitle>
+                        <DialogTitle>{i18n.t('peer_info.notify_settings')}</DialogTitle>
                         <DialogContent className="dialog-content">
                             <RadioGroup
                                 name="notify-setting"
                                 value={notifyValue}
                                 onChange={this.notifyValueChangeHandler}
                             >
-                                <FormControlLabel value="-1" control={<Radio color="primary"/>}
-                                                  label="Enable"/>
-                                <FormControlLabel value="-2" control={<Radio color="primary"/>}
-                                                  label="Disable"/>
-                                <FormControlLabel value="480" control={<Radio color="primary"/>}
-                                                  label="Disable for 8 hours"/>
-                                <FormControlLabel value="2880" control={<Radio color="primary"/>}
-                                                  label="Disable for 2 days"/>
-                                <FormControlLabel value="10080" control={<Radio color="primary"/>}
-                                                  label="Disable for 1 week"/>
+                                {notifyOptions.map((item: any, key: number) => {
+                                    return (<FormControlLabel key={key} value={item.val} label={item.title}
+                                                              control={<Radio color="primary"/>}/>);
+                                })}
                             </RadioGroup>
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={this.notifySettingDialogCloseHandler} color="secondary">
-                                Disagree
+                                {i18n.t('general.disagree')}
                             </Button>
                             <Button onClick={this.applyNotifySettings} color="primary" autoFocus={true}>
-                                Apply
+                                {i18n.t('general.apply')}
                             </Button>
                         </DialogActions>
                     </Dialog>

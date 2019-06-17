@@ -24,6 +24,7 @@ import {C_MESSAGE_ACTION} from '../../repository/message/consts';
 import {isMuted} from '../UserInfoMenu';
 import {isEqual} from 'lodash';
 import {C_MESSAGE_ICON} from '../Dialog/utils';
+import i18n from '../../services/i18n';
 
 import './style.css';
 
@@ -172,20 +173,20 @@ class DialogMessage extends React.Component<IProps, IState> {
         switch (dialog.action_code) {
             case C_MESSAGE_ACTION.MessageActionContactRegistered:
                 return (<span className="preview-message">
-                    <UserName className="sender" id={dialog.sender_id || ''} noDetail={true}/> joined River</span>);
+                    <UserName className="sender" id={dialog.sender_id || ''} noDetail={true}/> {i18n.t('message.joined_river')}</span>);
             case C_MESSAGE_ACTION.MessageActionGroupCreated:
                 return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
-                                                                    you={true} onlyFirstName={true} noDetail={true}/> created the Group</span>);
+                                                                    you={true} onlyFirstName={true} noDetail={true}/> {i18n.t('message.created_the_group')}</span>);
             case C_MESSAGE_ACTION.MessageActionGroupAddUser:
                 if (!dialog.action_data) {
                     return (<span className="preview-message">
                         <UserName className="sender" id={dialog.sender_id || ''} you={true} onlyFirstName={true}
-                                  noDetail={true}/> added a User</span>);
+                                  noDetail={true}/> {i18n.t('message.added_a_user')}</span>);
                 } else {
                     return (<span className="preview-message">
                         <UserName className="sender" id={dialog.sender_id || ''}
                                   you={true} onlyFirstName={true}
-                                  noDetail={true}/> added {dialog.action_data.useridsList.map((id: string, index: number) => {
+                                  noDetail={true}/> {i18n.t('message.added')} {dialog.action_data.useridsList.map((id: string, index: number) => {
                         return (
                             <span key={index}>
                                 {index !== 0 ? ', ' : ''}
@@ -197,18 +198,18 @@ class DialogMessage extends React.Component<IProps, IState> {
                 if (!dialog.action_data) {
                     return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
                                                                         you={true} onlyFirstName={true}
-                                                                        noDetail={true}/> removed a User</span>);
+                                                                        noDetail={true}/> {i18n.t('message.removed_a_user')}</span>);
                 } else {
                     if (dialog.action_data.useridsList.indexOf(dialog.sender_id) > -1) {
                         return (
                             <span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
                                                                         you={true} onlyFirstName={true}
-                                                                        noDetail={true}/> left</span>);
+                                                                        noDetail={true}/> {i18n.t('message.left')}</span>);
                     }
                     return (<span className="preview-message">
                     <UserName className="sender" id={dialog.sender_id || ''}
                               you={true} onlyFirstName={true}
-                              noDetail={true}/> removed {dialog.action_data.useridsList.map((id: string, index: number) => {
+                              noDetail={true}/> {i18n.t('message.removed')} {dialog.action_data.useridsList.map((id: string, index: number) => {
                         return (
                             <span key={index}>
                             {index !== 0 ? ', ' : ''}
@@ -220,18 +221,24 @@ class DialogMessage extends React.Component<IProps, IState> {
                 if (!dialog.action_data) {
                     return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
                                                                         you={true} onlyFirstName={true}
-                                                                        noDetail={true}/> changed the Title</span>);
+                                                                        noDetail={true}/> {i18n.t('message.changed_the_title')}</span>);
                 } else {
                     return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
                                                                         you={true} onlyFirstName={true}
-                                                                        noDetail={true}/> changed the Title to '{dialog.action_data.grouptitle}'</span>);
+                                                                        noDetail={true}/> {i18n.tf('message.changed_the_title_to', dialog.action_data.grouptitle)}</span>);
                 }
             case C_MESSAGE_ACTION.MessageActionClearHistory:
-                return (<span className="preview-message">History cleared</span>);
+                return (<span className="preview-message">{i18n.t('message.cleared_the_history')}</span>);
             case C_MESSAGE_ACTION.MessageActionGroupPhotoChanged:
-                return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
-                                                                    you={true} onlyFirstName={true}
-                                                                    noDetail={true}/> changed the Group Photo</span>);
+                if (!dialog.action_data) {
+                    return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
+                                                                        you={true} onlyFirstName={true}
+                                                                        noDetail={true}/> {i18n.t('message.removed_the_group_photo')}</span>);
+                } else {
+                    return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
+                                                                        you={true} onlyFirstName={true}
+                                                                        noDetail={true}/> {i18n.t('message.changed_the_group_photo')}</span>);
+                }
             default:
                 return (<span className="preview-message">{this.getIcon(dialog.preview_icon)}<span
                     className="preview-inner">{dialog.preview}</span></span>);
@@ -248,15 +255,15 @@ export const isTypingRender = (typingList: { [key: string]: { fn: any, action: T
         switch (action) {
             default:
             case TypingAction.TYPINGACTIONTYPING:
-                return 'typing...';
+                return i18n.t('status.typing');
             case TypingAction.TYPINGACTIONRECORDINGVOICE:
-                return 'recording voice...';
+                return i18n.t('status.recording_voice');
             case TypingAction.TYPINGACTIONUPLOADING:
-                return 'uploading file...';
+                return i18n.t('status.uploading_file');
         }
     };
     if (peerType === PeerType.PEERUSER) {
-        return (<span className="preview">is {getActionType(typingList[ids[0]].action)}</span>);
+        return (<span className="preview">{i18n.t('general.is')} {getActionType(typingList[ids[0]].action)}</span>);
     } else {
         const types = {};
         let distinct = 0;
@@ -276,8 +283,8 @@ export const isTypingRender = (typingList: { [key: string]: { fn: any, action: T
                     </span>);
                 })}
             {Boolean(ids.length > 2) && <span> & {ids.length - 2} more</span>}
-            {ids.length === 1 ? ' is ' : ' are '}
-            {distinct > 1 ? ' doing ...' : getActionType(typingList[ids[0]].action)}
+            {ids.length === 1 ? ` ${i18n.t('general.is')} ` : ` ${i18n.t('general.are')} `}
+            {distinct > 1 ? ` ${i18n.t('status.doing')}` : getActionType(typingList[ids[0]].action)}
             </span>);
     }
 };

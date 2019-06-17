@@ -20,6 +20,9 @@
     line-height: 1.3em;
     font-size: 15px;
     margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     @include font-bold;
 
     svg {
@@ -27,14 +30,23 @@
       margin-right: 6px;
       vertical-align: bottom;
     }
-
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 
   .online {
     color: var(--river);
+  }
+}
+
+html[direction="rtl"] {
+  .status-bar {
+    align-items: flex-start;
+
+    .name {
+      svg {
+        margin-right: 0;
+        margin-left: 6px;
+      }
+    }
   }
 }
 
