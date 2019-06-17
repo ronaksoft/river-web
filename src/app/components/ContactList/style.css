@@ -39,8 +39,7 @@
         width: 100%;
         height: 64px;
         padding: 8px 8px 8px 16px;
-        cursor: pointer;
-        text-align: left; }
+        cursor: pointer; }
         .contact-list .contact-list-container .contact-container .contact-item:after {
           position: absolute;
           bottom: 0;
@@ -98,7 +97,8 @@
           width: 70%;
           white-space: nowrap;
           text-overflow: ellipsis;
-          color: var(--grey); }
+          color: var(--grey);
+          direction: ltr; }
         .contact-list .contact-list-container .contact-container .contact-item .more {
           position: absolute;
           top: 6px;
@@ -124,6 +124,22 @@
         height: 40px;
         text-align: left;
         padding: 16px 8px 0; }
+
+html[direction="rtl"] .contact-list {
+  direction: rtl; }
+  html[direction="rtl"] .contact-list .contact-list-container .contact-container .contact-item {
+    text-align: right; }
+    html[direction="rtl"] .contact-list .contact-list-container .contact-container .contact-item .avatar {
+      float: right;
+      margin-right: 0;
+      margin-left: 12px; }
+    html[direction="rtl"] .contact-list .contact-list-container .contact-container .contact-item .name {
+      direction: rtl; }
+      html[direction="rtl"] .contact-list .contact-list-container .contact-container .contact-item .name .inner {
+        text-align: right; }
+    html[direction="rtl"] .contact-list .contact-list-container .contact-container .contact-item .more {
+      right: auto;
+      left: 0px; }
 
 html[theme="dark"] .contact-list .contact-input-container {
   color: var(--white); }

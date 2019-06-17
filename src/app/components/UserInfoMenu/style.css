@@ -8,7 +8,8 @@
 */
 .user-info-menu {
   height: 100%;
-  background: var(--bg); }
+  background: var(--bg);
+  direction: ltr; }
   .user-info-menu .page-container {
     position: relative;
     height: 100%;
@@ -134,6 +135,17 @@
 
 .container:not(.mobile-view) .user-info-menu {
   width: 318px; }
+
+html[direction="rtl"] .user-info-menu {
+  direction: ltr; }
+  html[direction="rtl"] .user-info-menu .page-container .page.page-1 {
+    left: 0; }
+  html[direction="rtl"] .user-info-menu .page-container .page.page-2 {
+    left: -100%; }
+  html[direction="rtl"] .user-info-menu .page-container.page-2 .page-1 {
+    left: 100%; }
+  html[direction="rtl"] .user-info-menu .page-container.page-2 .page-2 {
+    left: 0; }
 
 html[theme="dark"] .user-info-menu,
 html[theme="dark-blue"] .user-info-menu {

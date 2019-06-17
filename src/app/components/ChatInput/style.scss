@@ -572,6 +572,16 @@
   }
 }
 
+html[direction="rtl"] {
+  .write .previews {
+
+    .preview-container {
+      direction: ltr;
+      margin: 8px 48px 0 0;
+    }
+  }
+}
+
 html[theme="dark"],
 html[theme="dark-blue"] {
   .write {

@@ -7,7 +7,9 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as moment from 'moment';
+import * as moment from 'moment-jalaali';
+// @ts-ignore
+import fa from "moment/locale/fa";
 import RiverTime from './river_time';
 
 /**
@@ -16,9 +18,14 @@ import RiverTime from './river_time';
  */
 class TimeUntiles {
     private riverTime: RiverTime;
+    private lang: string = localStorage.getItem('river.lang') || 'en';
 
     constructor() {
         this.riverTime = RiverTime.getInstance();
+        if (this.lang === 'fa') {
+            moment.locale("fa", fa);
+            moment.loadPersian();
+        }
     }
 
     /**
@@ -29,7 +36,11 @@ class TimeUntiles {
      * @memberof TimeUntiles
      */
     public full(timestamp: number) {
-        return moment(timestamp).format('dddd, MMMM DD YYYY, HH:mm');
+        if (this.lang === 'en') {
+            return moment(timestamp).format('dddd, MMMM DD YYYY, HH:mm');
+        } else {
+            return moment(timestamp).format('jdddd, jMMMM jDD jYYYY, HH:mm');
+        }
     }
 
     public fullOnlyDate(timestamp: number) {
@@ -88,7 +99,11 @@ class TimeUntiles {
 
         const justNow = moment().startOf('minute');
         if (date.isSameOrAfter(justNow)) {
-            return 'Just Now';
+            if (this.lang === 'en') {
+                return 'Just Now';
+            } else {
+                return 'همین الان';
+            }
         }
 
         const today = moment(current).startOf('day');
@@ -98,15 +113,27 @@ class TimeUntiles {
 
         const yesterday = moment(current).startOf('day').subtract(1, 'days');
         if (date.isSameOrAfter(yesterday)) {
-            return date.format('[Yesterday] HH:mm');
+            if (this.lang === 'en') {
+                return date.format('[Yesterday] HH:mm');
+            } else {
+                return date.format('[دیروز] HH:mm');
+            }
         }
 
         const thisYear = moment(current).startOf('year');
         if (date.isSameOrAfter(thisYear)) {
-            return date.format('MMM DD');
+            if (this.lang === 'en') {
+                return date.format('MMM DD');
+            } else {
+                return date.format('jMMMM jDD');
+            }
         }
 
-        return date.format('DD[/]MM[/]YYYY');
+        if (this.lang === 'en') {
+            return date.format('DD[/]MM[/]YYYY');
+        } else {
+            return date.format('jDD[/]jMM[/]jYYYY');
+        }
     }
 
     public dynamicDate(timestamp: number | undefined) {
@@ -119,20 +146,36 @@ class TimeUntiles {
 
         const today = moment(current).startOf('day');
         if (date.isSameOrAfter(today)) {
-            return date.format('[Today]');
+            if (this.lang === 'en') {
+                return date.format('[Today]');
+            } else {
+                return date.format('[امروز]');
+            }
         }
 
         const yesterday = moment(current).startOf('day').subtract(1, 'days');
         if (date.isSameOrAfter(yesterday)) {
-            return date.format('[Yesterday]');
+            if (this.lang === 'en') {
+                return date.format('[Yesterday]');
+            } else {
+                return date.format('[دیروز]');
+            }
         }
 
         const thisYear = moment(current).startOf('year');
         if (date.isSameOrAfter(thisYear)) {
-            return date.format('MMM DD');
+            if (this.lang === 'en') {
+                return date.format('MMM DD');
+            } else {
+                return date.format('jMMM jDD');
+            }
         }
 
-        return date.format('DD[/]MM[/]YYYY');
+        if (this.lang === 'en') {
+            return date.format('DD[/]MM[/]YYYY');
+        } else {
+            return date.format('jDD[/]jMM[/]jYYYY');
+        }
     }
 
     public timeAgo(timestamp: number | undefined) {
@@ -145,7 +188,11 @@ class TimeUntiles {
         const date = moment(timestamp * 1000);
 
         if (date.isSameOrAfter(today)) {
-            return `${date.from(current, true)} ago`;
+            if (this.lang === 'en') {
+                return `${date.from(current, true)} ago`;
+            } else {
+                return `${date.from(current, true)} پیش `;
+            }
         }
 
         if (date.isSameOrAfter(today)) {
@@ -154,15 +201,27 @@ class TimeUntiles {
 
         const yesterday = moment(current).startOf('day').subtract(1, 'days');
         if (date.isSameOrAfter(yesterday)) {
-            return date.format('[Yesterday] HH:mm');
+            if (this.lang === 'en') {
+                return date.format('[Yesterday] HH:mm');
+            } else {
+                return date.format('[دیروز] HH:mm');
+            }
         }
 
         const thisYear = moment(current).startOf('year');
         if (date.isSameOrAfter(thisYear)) {
-            return date.format('MMM DD');
+            if (this.lang === 'en') {
+                return date.format('MMM DD');
+            } else {
+                return date.format('jMMM jDD');
+            }
         }
 
-        return date.format('DD[/]MM[/]YYYY');
+        if (this.lang === 'en') {
+            return date.format('DD[/]MM[/]YYYY');
+        } else {
+            return date.format('jDD[/]jMM[/]jYYYY');
+        }
     }
 
     public isInSameDay(time1?: number, time2?: number): boolean {

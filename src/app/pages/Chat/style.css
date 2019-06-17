@@ -197,7 +197,8 @@ input {
       background-repeat: repeat;
       background-size: 100px;
       transition: background 0.2s;
-      overflow: hidden; }
+      overflow: hidden;
+      direction: ltr; }
       .container .column-center .conversation.no-result {
         background-image: none !important; }
       .container .column-center .conversation .move-down {
@@ -495,6 +496,34 @@ html[theme="dark-blue"][bg="14"] .container .column-center .start-messaging {
   font-weight: bold; }
   .confirm-dialog .group-name svg {
     display: none; }
+
+html[direction="rtl"] .container {
+  direction: rtl; }
+  html[direction="rtl"] .container .column-left .left-overlay {
+    left: auto;
+    right: calc(-100% - 1px);
+    transition: right 0.2s ease-out; }
+  html[direction="rtl"] .container .column-left.left-overlay-enable .left-overlay {
+    right: 0; }
+  html[direction="rtl"] .container .column-right {
+    left: 0;
+    right: auto; }
+  html[direction="rtl"] .container .column-center.shrink {
+    margin-right: 0;
+    margin-left: 318px; }
+  html[direction="rtl"] .container .column-left {
+    position: relative;
+    width: 318px;
+    height: 100%;
+    flex: none;
+    border: 1px solid var(--light);
+    background-color: var(--white); }
+    html[direction="rtl"] .container .column-left .top-bar .actions {
+      right: auto;
+      left: 0; }
+
+html[direction="rtl"] .kk-context-menu, html[direction="rtl"] .confirm-dialog {
+  direction: rtl; }
 
 html[theme="dark"] .bg,
 html[theme="dark-blue"] .bg {

@@ -73,6 +73,9 @@
           color: inherit;
           font-size: 75px; }
 
+html[direction="rtl"] .dialogs-inner > div {
+  direction: ltr; }
+
 html[theme="dark"] .dialogs .dialog-search label, html[theme="dark"] .dialogs .dialog-search input, html[theme="dark"] .dialogs .dialog-search svg {
   color: var(--white); }
 

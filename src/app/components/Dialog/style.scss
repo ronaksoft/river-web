@@ -12,28 +12,35 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+
   .dialog-search {
     height: 0;
     padding: 0 12px 0;
     overflow: hidden;
     transition: height 0.1s ease-out, padding 0.1s ease-out;
+
     &.open {
       padding-top: 6px;
       height: 64px;
     }
+
     .adornment {
       margin: -8px -8px 8px 0;
     }
   }
+
   .dialog-list {
     flex: 1;
     overflow: hidden;
+
     .dialog-container {
       height: 100%;
+
       a {
         text-decoration: none;
         text-transform: none;
       }
+
       .dialog {
         position: relative;
         width: 100%;
@@ -41,6 +48,7 @@
         padding: 8px;
         cursor: pointer;
         text-align: left;
+
         &:after {
           position: absolute;
           bottom: 0;
@@ -52,26 +60,32 @@
           background-color: var(--light);
           transform: translate(-50%, 0);
         }
+
         &.pinned {
           background-color: var(--header-color);
         }
+
         &:hover {
           border: 0;
           background-color: var(--color-hover);
+
           > span {
             color: var(--color-text-hover);
             background: transparent;
           }
         }
+
         &.active {
           border: 0;
           background-color: var(--color-hover-dark);
+
           > span {
             color: var(--color-text-hover);
             background: transparent;
           }
         }
       }
+
       .no-result {
         height: 100%;
         display: flex;
@@ -81,12 +95,21 @@
         font-size: 30px;
         font-weight: 100;
         color: var(--grey);
+
         svg {
           margin: 0 0 32px;
           color: inherit;
           font-size: 75px;
         }
       }
+    }
+  }
+}
+
+html[direction="rtl"] {
+  .dialogs-inner {
+    > div {
+      direction: ltr;
     }
   }
 }
@@ -98,23 +121,29 @@ html[theme="dark"] {
         color: var(--white);
       }
     }
+
     .dialog-list {
       .dialog-container {
         .dialog {
           &:after {
             background-color: var(--dark-low-op50);
           }
+
           &.pinned {
             background-color: var(--dark-low);
           }
+
           &:hover {
             background-color: var(--dark-hover);
+
             > span {
               color: var(--color-text-hover);
             }
           }
+
           &.active {
             background-color: var(--dark-hover-light);
+
             > span {
               color: var(--color-text-hover);
             }
@@ -132,23 +161,29 @@ html[theme="dark-blue"] {
         color: var(--white);
       }
     }
+
     .dialog-list {
       .dialog-container {
         .dialog {
           &:after {
             background-color: var(--dark-blue-low-op50);
           }
+
           &.pinned {
             background-color: var(--dark-blue-low);
           }
+
           &:hover {
             background-color: var(--dark-blue-hover-light);
+
             > span {
               color: var(--color-text-hover);
             }
           }
+
           &.active {
             background-color: var(--dark-blue-hover);
+
             > span {
               color: var(--color-text-hover);
             }

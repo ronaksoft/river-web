@@ -121,6 +121,7 @@
       .setting-menu .page-anchor .anchor-label.color-red {
         color: var(--red); }
     .setting-menu .page-anchor .setting-switch-label {
+      direction: ltr;
       width: 64px;
       margin: -10px 0; }
     .setting-menu .page-anchor.log-out {
@@ -195,8 +196,8 @@
       flex: 1;
       padding: 0 12px; }
     .setting-menu .font-size-container > button {
-      width: 48px;
-      min-width: 48px; }
+      width: 36px;
+      min-width: 36px; }
   .setting-menu .info {
     display: flex;
     justify-content: center;
@@ -535,6 +536,8 @@ html[direction="rtl"] .setting-menu {
     flex-direction: row-reverse;
     align-items: center;
     justify-content: flex-start; }
+    html[direction="rtl"] .setting-menu .menu-header > button {
+      transform: rotateY(180deg); }
   html[direction="rtl"] .setting-menu .page-anchor .icon {
     margin-right: 0;
     margin-left: 8px; }
@@ -604,6 +607,15 @@ html[theme="dark-blue"] .setting-menu .form-control .action svg {
 html[theme="dark"] .setting-menu .menu-content .settings-btn,
 html[theme="dark-blue"] .setting-menu .menu-content .settings-btn {
   border-color: var(--dark-low-op50);
+  color: var(--white); }
+
+html[theme="dark"] .setting-menu .info.language-list .language-item,
+html[theme="dark-blue"] .setting-menu .info.language-list .language-item {
+  color: var(--white);
+  border-color: var(--dark-low-op50); }
+
+html[theme="dark"] .setting-menu .font-size-container > button,
+html[theme="dark-blue"] .setting-menu .font-size-container > button {
   color: var(--white); }
 
 html[theme="dark"] .setting-menu .theme-container .radio-item .radio-label .radio:not(.checked),
@@ -695,6 +707,9 @@ html[theme="dark-blue"] .setting-menu .theme-container .item {
 html[theme="dark-blue"] .setting-menu .menu-content .settings-btn {
   border-color: var(--dark-blue-low-op50);
   color: var(--white); }
+
+html[theme="dark-blue"] .setting-menu .info.language-list .language-item {
+  border-color: var(--dark-blue-low-op50); }
 
 html[theme="dark-blue"] .setting-menu .kk-card {
   background-color: var(--dark-blue-medium); }

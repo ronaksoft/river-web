@@ -13,18 +13,23 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+
   .contact-input-container {
     min-height: 48px;
     padding: 10px;
     text-align: left;
+
     .chip {
       margin: 0 3px 3px 0;
     }
   }
+
   .contact-list-container {
     flex: 1;
+
     .contact-container {
       height: 100%;
+
       .no-result {
         height: 100%;
         display: flex;
@@ -34,19 +39,21 @@
         font-size: 30px;
         font-weight: 100;
         color: var(--grey);
+
         svg {
           margin: 0 0 32px;
           color: inherit;
           font-size: 75px;
         }
       }
+
       .contact-item {
         position: relative;
         width: 100%;
         height: 64px;
         padding: 8px 8px 8px 16px;
         cursor: pointer;
-        text-align: left;
+
         &:after {
           position: absolute;
           bottom: 0;
@@ -58,19 +65,23 @@
           background-color: var(--light);
           transform: translate(-50%, 0);
         }
+
         &:hover {
           border: 0;
           background-color: var(--color-hover);
         }
+
         a {
           text-decoration: none;
         }
+
         .avatar {
           width: 48px;
           height: 48px;
           border-radius: 50%;
           float: left;
           margin-right: 12px;
+
           img {
             float: left;
             width: 48px;
@@ -79,6 +90,7 @@
             border-radius: 50%;
           }
         }
+
         .name {
           display: inline-flex;
           min-width: 200px;
@@ -90,20 +102,24 @@
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
+
           .inner {
             flex: 1;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
           }
+
           .last-seen {
             font-weight: normal;
             font-size: 11px;
+
             .online {
               color: var(--river);
             }
           }
         }
+
         .phone {
           font-size: 14px;
           line-height: 17px;
@@ -113,7 +129,9 @@
           white-space: nowrap;
           text-overflow: ellipsis;
           color: var(--grey);
+          direction: ltr;
         }
+
         .more {
           position: absolute;
           top: 6px;
@@ -124,21 +142,25 @@
           cursor: pointer;
           background-color: inherit;
           z-index: 10;
+
           svg {
             height: 26px;
             font-size: 26px;
             color: var(--grey);
           }
         }
+
         &:hover {
           .more {
             display: block;
           }
+
           .name {
             min-width: 186px;
           }
         }
       }
+
       .category-item {
         color: var(--river);
         font-size: 24px;
@@ -151,27 +173,61 @@
   }
 }
 
+html[direction="rtl"] {
+  .contact-list {
+    direction: rtl;
+
+    .contact-list-container .contact-container .contact-item {
+      text-align: right;
+
+      .avatar {
+        float: right;
+        margin-right: 0;
+        margin-left: 12px;
+      }
+
+      .name {
+        direction: rtl;
+
+        .inner {
+          text-align: right;
+        }
+      }
+
+      .more {
+        right: auto;
+        left: 0px;
+      }
+    }
+  }
+}
+
 html[theme="dark"] {
   .contact-list {
     .contact-input-container {
       color: var(--white);
+
       .chip {
         background-color: var(--dark-high);
         color: var(--white);
       }
+
       label, input {
         color: var(--white);
       }
     }
+
     .contact-list-container {
       .contact-container {
         .contact-item {
           &:after {
             background-color: var(--dark-low);
           }
+
           .name {
             color: var(--light);
           }
+
           .last-seen {
             .online {
               color: var(--dark-mention);
@@ -187,23 +243,28 @@ html[theme="dark-blue"] {
   .contact-list {
     .contact-input-container {
       color: var(--white);
+
       .chip {
         background-color: var(--dark-blue-high);
         color: var(--white);
       }
+
       label, input {
         color: var(--white);
       }
     }
+
     .contact-list-container {
       .contact-container {
         .contact-item {
           &:after {
             background-color: var(--dark-blue-low);
           }
+
           .name {
             color: var(--white);
           }
+
           .last-seen {
             .online {
               color: var(--dark-mention);

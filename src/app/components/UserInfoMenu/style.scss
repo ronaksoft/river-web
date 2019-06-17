@@ -11,11 +11,14 @@
 .user-info-menu {
   height: 100%;
   background: var(--bg);
+  direction: ltr;
+
   .page-container {
     position: relative;
     height: 100%;
     width: 100%;
     overflow: hidden;
+
     .page {
       position: absolute;
       top: 0;
@@ -23,37 +26,45 @@
       height: calc(100% - 48px);
       width: 100%;
       transition: left 0.2s ease-out;
+
       &.page-1 {
         left: 0;
       }
+
       &.page-2 {
         left: 100%;
       }
     }
+
     &.page-2 {
       .page-1 {
         left: -100%;
       }
+
       .page-2 {
         left: 0;
       }
     }
   }
+
   .menu-header {
     background-color: var(--header-color);
     text-align: left;
     height: 48px;
     color: var(--dark-medium);
+
     label {
       padding: 10px 10px 10px 0;
     }
   }
+
   .info {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     padding: 20px 10px;
+
     .avatar {
       height: 200px;
       width: 200px;
@@ -62,14 +73,17 @@
       font-size: 75px;
       cursor: pointer;
     }
+
     .line {
       padding: 16px 10px 0;
       text-align: left;
       width: 100%;
+
       .input-edit {
         margin-bottom: 10px;
       }
     }
+
     .created-on {
       padding: 0 10px;
       text-align: left;
@@ -77,6 +91,7 @@
       color: var(--grey);
     }
   }
+
   .add-as-contact {
     display: flex;
     align-items: center;
@@ -85,14 +100,17 @@
     height: 40px;
     cursor: pointer;
     width: 100%;
+
     &:hover {
       background-color: var(--color-hover);
     }
   }
+
   .actions-bar {
     height: 86px;
     padding: 18px 0 22px;
     text-align: center;
+
     .add-action {
       display: inline-flex;
       height: 46px;
@@ -105,35 +123,43 @@
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
       cursor: pointer;
       transition: all 0.2s;
+
       svg {
         font-size: 40px;
       }
+
       &:hover {
         background: var(--river-dark);
         box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
       }
     }
   }
+
   .notify-settings {
     display: flex;
+
     .label {
       flex: 1;
       text-align: left;
       line-height: 48px;
       padding-left: 12px;
     }
+
     .value {
       width: 50px;
       text-align: right;
     }
   }
+
   .form-control {
     position: relative;
     display: flex;
     height: 48px;
+
     &.pad {
       padding-top: 16px
     }
+
     label {
       position: absolute;
       top: 0;
@@ -141,6 +167,7 @@
       color: var(--river);
       font-size: 12px;
     }
+
     .inner {
       flex: 1;
       display: flex;
@@ -149,14 +176,17 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+
     .action {
       width: 48px;
     }
   }
+
   .kk-card {
     margin-bottom: 10px;
     background-color: var(--white);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+
     &:last-of-type {
       margin-bottom: 0;
     }
@@ -175,27 +205,60 @@
   }
 }
 
+html[direction="rtl"] {
+  .user-info-menu {
+    direction: ltr;
+
+    .page-container {
+      .page {
+        &.page-1 {
+          left: 0;
+        }
+
+        &.page-2 {
+          left: -100%;
+        }
+      }
+
+      &.page-2 {
+        .page-1 {
+          left: 100%;
+        }
+
+        .page-2 {
+          left: 0;
+        }
+      }
+    }
+  }
+}
+
 html[theme="dark"],
 html[theme="dark-blue"] {
   .user-info-menu {
     background-color: var(--dark-high);
+
     .menu-header {
       background-color: var(--dark-medium);
       color: var(--white);
+
       svg {
         color: var(--white);
       }
     }
+
     .info {
       .line, .input-edit input, .input-edit label, .input-edit svg {
         color: var(--white);
       }
     }
+
     .notify-settings {
       .label {
         color: var(--white);
       }
     }
+
     .form-control {
       .action {
         svg {
@@ -203,19 +266,23 @@ html[theme="dark-blue"] {
         }
       }
     }
+
     .kk-card {
       background-color: var(--dark-medium);
     }
   }
+
   .checkbox {
     &:not(.checked) {
       color: var(--white);
     }
   }
+
   .notify-setting-dialog {
     div[role="document"] {
       > div {
         background-color: var(--dark);
+
         h2, p, .dialog-content span {
           color: var(--white);
         }
@@ -227,13 +294,16 @@ html[theme="dark-blue"] {
 html[theme="dark-blue"] {
   .user-info-menu {
     background-color: var(--dark-blue-low);
+
     .menu-header {
       background-color: var(--dark-blue-medium);
     }
+
     .kk-card {
       background-color: var(--dark-blue-medium);
     }
   }
+
   .notify-setting-dialog {
     div[role="document"] {
       > div {

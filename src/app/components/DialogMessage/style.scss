@@ -12,12 +12,14 @@
   height: 48px;
   width: 100%;
   user-select: none;
+
   .avatar {
     width: 48px;
     height: 48px;
     border-radius: 50%;
     float: left;
     margin-right: 12px;
+
     img {
       float: left;
       width: 48px;
@@ -26,20 +28,24 @@
       border-radius: 50%;
     }
   }
+
   .dialog-top-bar {
     display: inline-flex;
     min-width: 200px;
     width: calc(100% - 60px);
     margin: 0 0 4px;
     align-items: center;
+
     .muted-wrapper {
       height: 16px;
       width: 16px;
+
       svg {
         font-size: 16px;
         color: var(--dark);
       }
     }
+
     .name {
       flex: 1;
       font-size: 12px;
@@ -49,15 +55,18 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+
       svg {
         font-size: 15px;
         margin-right: 6px;
         vertical-align: sub;
       }
     }
+
     .status {
       height: 18px;
       width: 20px;
+
       svg {
         height: 18px;
         width: 18px;
@@ -65,12 +74,14 @@
         color: var(--grey);
       }
     }
+
     .time {
       font-size: 11px;
       color: var(--grey);
       transition: right 0.2s;
     }
   }
+
   &.muted {
     .dialog-top-bar {
       .name {
@@ -78,6 +89,7 @@
       }
     }
   }
+
   .preview {
     font-size: 14px;
     line-height: 17px;
@@ -87,32 +99,39 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     color: var(--grey);
+
     &.rtl {
       direction: rtl;
+
       .preview-inner {
         direction: rtl;
       }
     }
+
     .preview-icon {
       display: inline-block;
       font-size: 14px;
       margin: 0 4px 3px 0;
       vertical-align: bottom;
     }
+
     .sender {
       font-weight: bold;
     }
+
     .preview-message {
       display: block;
       width: 100%;
       overflow: hidden;
     }
   }
+
   &.has-mention {
     .preview {
       width: 68%;
     }
   }
+
   .unread {
     font-size: 11px;
     position: absolute;
@@ -130,6 +149,7 @@
     color: #fff;
     border-radius: 8px;
   }
+
   .pin {
     font-size: 20px;
     position: absolute;
@@ -137,11 +157,13 @@
     right: 6px;
     color: #C6C6C6;
   }
+
   &.muted {
     .unread {
       background-color: #C6C6C6;
     }
   }
+
   .mention {
     position: absolute;
     top: 30px;
@@ -153,11 +175,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
     svg {
       font-size: 12px;
       color: var(--white);
     }
   }
+
   .more {
     position: absolute;
     top: 6px;
@@ -168,18 +192,73 @@
     cursor: pointer;
     background-color: inherit;
     z-index: 10;
+
     svg {
       height: 26px;
       font-size: 26px;
       color: var(--grey);
     }
   }
+
   &:hover {
     .more {
       display: block;
     }
+
     .dialog-top-bar {
       width: calc(100% - 76px);
+    }
+  }
+}
+
+html[direction="rtl"] {
+  .dialog-wrapper {
+    direction: rtl;
+    text-align: right;
+
+    .avatar {
+      float: right;
+      margin-right: 0;
+      margin-left: 12px;
+    }
+
+    .dialog-top-bar {
+      .name {
+        svg {
+          margin-right: 0;
+          margin-left: 6px;
+        }
+      }
+    }
+
+    &.muted {
+      .dialog-top-bar {
+        .name {
+          padding-left: 0;
+          padding-right: 4px;
+        }
+      }
+    }
+
+    .preview {
+      .preview-icon {
+        margin: 0 0 3px 4px;
+      }
+    }
+
+    .unread {
+      right: auto;
+      left: 8px;
+    }
+
+    .pin {
+      right: auto;
+      left: 6px;
+    }
+
+    .more {
+      right: auto;
+      left: 6px;
     }
   }
 }
@@ -189,11 +268,13 @@ html[theme="dark"] {
     .name {
       color: var(--light);
     }
+
     .muted-wrapper {
       svg {
         color: var(--white);
       }
     }
+
     &.muted {
       .unread {
         color: var(--dark);
@@ -207,19 +288,23 @@ html[theme="dark-blue"] {
     .name {
       color: var(--white);
     }
+
     .muted-wrapper {
       svg {
         color: var(--white);
       }
     }
+
     .preview, .time {
       color: var(--light);
     }
+
     .more {
       svg {
         color: var(--white);
       }
     }
+
     &.muted {
       .unread {
         color: var(--dark);

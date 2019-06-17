@@ -8,7 +8,8 @@
 */
 .group-info-menu {
   height: 100%;
-  background: var(--bg); }
+  background: var(--bg);
+  direction: ltr; }
   .group-info-menu .page-container {
     position: relative;
     height: 100%;
@@ -301,6 +302,17 @@
 
 .container:not(.mobile-view) .group-info-menu {
   width: 318px; }
+
+html[direction="rtl"] .group-info-menu {
+  direction: ltr; }
+  html[direction="rtl"] .group-info-menu .page-container .page.page-1 {
+    left: 0; }
+  html[direction="rtl"] .group-info-menu .page-container .page.page-2 {
+    left: -100%; }
+  html[direction="rtl"] .group-info-menu .page-container.page-2 .page-1 {
+    left: 100%; }
+  html[direction="rtl"] .group-info-menu .page-container.page-2 .page-2 {
+    left: 0; }
 
 html[theme="dark"] .group-info-menu,
 html[theme="dark-blue"] .group-info-menu {

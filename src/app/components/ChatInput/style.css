@@ -374,6 +374,10 @@
     .input-placeholder .btn:hover {
       text-decoration: underline; }
 
+html[direction="rtl"] .write .previews .preview-container {
+  direction: ltr;
+  margin: 8px 48px 0 0; }
+
 html[theme="dark"] .write,
 html[theme="dark-blue"] .write {
   border: 1px solid var(--dark-medium);

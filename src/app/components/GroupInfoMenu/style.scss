@@ -11,11 +11,14 @@
 .group-info-menu {
   height: 100%;
   background: var(--bg);
+  direction: ltr;
+
   .page-container {
     position: relative;
     height: 100%;
     width: 100%;
     overflow: hidden;
+
     .page {
       position: absolute;
       top: 0;
@@ -23,37 +26,45 @@
       height: calc(100% - 48px);
       width: 100%;
       transition: left 0.2s ease-out;
+
       &.page-1 {
         left: 0;
       }
+
       &.page-2 {
         left: 100%;
       }
     }
+
     &.page-2 {
       .page-1 {
         left: -100%;
       }
+
       .page-2 {
         left: 0;
       }
     }
   }
+
   .menu-header {
     background-color: var(--header-color);
     text-align: left;
     height: 48px;
     color: var(--dark-medium);
+
     label {
       padding: 10px 10px 10px 0;
     }
   }
+
   .info {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     padding: 20px 10px;
+
     .avatar {
       position: relative;
       height: 200px;
@@ -61,11 +72,13 @@
       border-radius: 50%;
       display: inline-block;
       font-size: 75px;
+
       .avatar-image {
         height: 200px;
         width: 200px;
         border-radius: 50%;
       }
+
       .overlay {
         position: absolute;
         top: 0;
@@ -81,16 +94,20 @@
         justify-content: center;
         align-items: center;
         flex-direction: column;
+
         &.show {
           opacity: 1;
         }
+
         svg {
           color: var(--light-alt);
         }
+
         .text {
           font-size: 13px;
           color: var(--light-alt);
         }
+
         .progress-action {
           position: relative;
           height: 32px;
@@ -98,6 +115,7 @@
           display: flex;
           align-items: center;
           justify-content: center;
+
           .progress {
             position: absolute;
             top: 0;
@@ -109,12 +127,14 @@
             animation-duration: 3s;
             animation-iteration-count: infinite;
             animation-timing-function: linear;
+
             svg {
               position: absolute;
               top: 0;
               left: 0;
               height: 32px;
               width: 32px;
+
               circle {
                 fill: transparent;
                 stroke: var(--white);
@@ -124,6 +144,7 @@
               }
             }
           }
+
           > svg {
             position: absolute;
             top: 50%;
@@ -134,20 +155,24 @@
           }
         }
       }
+
       &:hover {
         .overlay {
           opacity: 1;
         }
       }
     }
+
     .title {
       padding: 16px 10px 0;
       text-align: left;
       width: 100%;
+
       .title-edit {
         margin-bottom: 10px;
       }
     }
+
     .created-on {
       padding: 0 10px;
       text-align: left;
@@ -155,30 +180,37 @@
       color: var(--grey);
     }
   }
+
   .notify-settings {
     display: flex;
+
     .label {
       flex: 1;
       text-align: left;
       line-height: 48px;
       padding-left: 12px;
     }
+
     .value {
       width: 50px;
       text-align: right;
+
       &.switch {
         width: 80px;
       }
     }
   }
+
   .participant {
     padding: 16px 0 0;
+
     label {
       text-align: left;
       color: var(--river);
       display: block;
       padding: 0 16px 10px;
     }
+
     .contact-item {
       position: relative;
       width: 100%;
@@ -186,18 +218,22 @@
       padding: 8px;
       text-align: left;
       border-bottom: 1px solid var(--light);
+
       &:last-of-type {
         border-color: transparent !important;
       }
+
       &:hover {
         background-color: var(--color-hover);
       }
+
       .avatar {
         width: 48px;
         height: 48px;
         border-radius: 50%;
         float: left;
         margin-right: 12px;
+
         img {
           float: left;
           width: 48px;
@@ -206,17 +242,20 @@
           border-radius: 50%;
         }
       }
+
       .admin-wrapper {
         position: absolute;
         top: 11px;
         left: 64px;
         width: 16px;
         height: 16px;
+
         svg {
           font-size: 16px;
           color: var(--dark);
         }
       }
+
       .name {
         display: inline-block;
         min-width: 200px;
@@ -230,11 +269,13 @@
         text-overflow: ellipsis;
         max-width: 230px;
       }
+
       &.admin {
         .name {
           padding-left: 16px;
         }
       }
+
       .username {
         font-size: 14px;
         line-height: 17px;
@@ -245,6 +286,7 @@
         text-overflow: ellipsis;
         color: var(--grey);
       }
+
       .more {
         position: absolute;
         top: 5px;
@@ -254,15 +296,18 @@
         display: none;
         cursor: pointer;
         z-index: 10;
+
         svg {
           height: 25px;
           font-size: 25px;
         }
       }
+
       &:hover .more {
         display: block;
       }
     }
+
     .add-member {
       display: flex;
       align-items: center;
@@ -270,11 +315,13 @@
       color: var(--river);
       height: 40px;
       cursor: pointer;
+
       &:hover {
         background-color: var(--color-hover);
       }
     }
   }
+
   .leave-group {
     height: 48px;
     display: flex;
@@ -283,17 +330,21 @@
     color: var(--red);
     padding: 0 10px;
     cursor: pointer;
+
     svg {
       color: var(--red);
       margin-right: 10px;
     }
   }
+
   .contact-box {
     flex: 1;
   }
+
   .form-control {
     display: flex;
     height: 48px;
+
     .inner {
       flex: 1;
       display: flex;
@@ -302,14 +353,17 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+
     .action {
       width: 48px;
     }
   }
+
   .kk-card {
     margin-bottom: 10px;
     background-color: var(--white);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+
     &:last-of-type {
       margin-bottom: 0;
     }
@@ -322,6 +376,7 @@
     height: 500px;
     display: flex;
     flex-direction: column;
+
     .dialog-header {
       display: flex;
       justify-content: center;
@@ -330,19 +385,23 @@
       background-color: var(--river);
       color: var(--white);
       text-transform: uppercase;
+
       svg {
         margin: 0 5px;
       }
     }
+
     .contact-list {
       flex: 1;
       height: auto;
     }
+
     .actions-bar {
       height: 86px;
       padding: 18px 0 22px;
       text-align: center;
       background-color: var(--message-chat);
+
       .add-action {
         display: inline-flex;
         height: 46px;
@@ -355,9 +414,11 @@
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
         cursor: pointer;
         transition: all 0.2s;
+
         svg {
           font-size: 40px;
         }
+
         &:hover {
           background: var(--river-dark);
           box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
@@ -379,46 +440,84 @@
   }
 }
 
+html[direction="rtl"] {
+  .group-info-menu {
+    direction: ltr;
+
+    .page-container {
+      .page {
+        &.page-1 {
+          left: 0;
+        }
+
+        &.page-2 {
+          left: -100%;
+        }
+      }
+
+      &.page-2 {
+        .page-1 {
+          left: 100%;
+        }
+
+        .page-2 {
+          left: 0;
+        }
+      }
+    }
+  }
+}
+
 html[theme="dark"],
 html[theme="dark-blue"] {
   .group-info-menu {
     background-color: var(--dark-high);
+
     .menu-header {
       background-color: var(--dark-medium);
       color: var(--white);
+
       svg {
         color: var(--white);
       }
     }
+
     .info {
       .title, .title-edit input, .title-edit label, .title-edit svg {
         color: var(--white);
       }
     }
+
     .notify-settings {
       .label {
         color: var(--white);
       }
+
       .value .admin-switch {
         span {
           color: var(--river) !important;
         }
       }
     }
+
     .participant {
       .contact-item {
         border-color: var(--dark-low);
+
         &:hover {
           background-color: var(--dark-color-hover);
         }
+
         .admin-wrapper {
           svg {
             color: var(--white);
           }
         }
+
         .name {
           color: var(--light);
         }
+
         .more {
           svg {
             color: var(--white);
@@ -426,6 +525,7 @@ html[theme="dark-blue"] {
         }
       }
     }
+
     .form-control {
       .action {
         svg {
@@ -433,22 +533,27 @@ html[theme="dark-blue"] {
         }
       }
     }
+
     .kk-card {
       background-color: var(--dark-medium);
     }
   }
+
   .add-member-dialog {
     .dialog-content {
       background-color: var(--dark);
+
       .actions-bar {
         background-color: var(--dark-medium);
       }
     }
   }
+
   .notify-setting-dialog {
     div[role="document"] {
       > div {
         background-color: var(--dark);
+
         h2, p, .dialog-content span {
           color: var(--white);
         }
@@ -460,26 +565,32 @@ html[theme="dark-blue"] {
 html[theme="dark-blue"] {
   .group-info-menu {
     background-color: var(--dark-blue-low);
+
     .menu-header {
       background-color: var(--dark-blue-medium);
     }
+
     .participant {
       .contact-item {
         border-color: var(--dark-blue-low);
       }
     }
+
     .kk-card {
       background-color: var(--dark-blue-medium);
     }
   }
+
   .add-member-dialog {
     .dialog-content {
       background-color: var(--dark-blue-low);
+
       .actions-bar {
         background-color: var(--dark-blue-medium);
       }
     }
   }
+
   .notify-setting-dialog {
     div[role="document"] {
       > div {

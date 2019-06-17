@@ -145,6 +145,31 @@
   .dialog-wrapper:hover .dialog-top-bar {
     width: calc(100% - 76px); }
 
+html[direction="rtl"] .dialog-wrapper {
+  direction: rtl;
+  text-align: right; }
+  html[direction="rtl"] .dialog-wrapper .avatar {
+    float: right;
+    margin-right: 0;
+    margin-left: 12px; }
+  html[direction="rtl"] .dialog-wrapper .dialog-top-bar .name svg {
+    margin-right: 0;
+    margin-left: 6px; }
+  html[direction="rtl"] .dialog-wrapper.muted .dialog-top-bar .name {
+    padding-left: 0;
+    padding-right: 4px; }
+  html[direction="rtl"] .dialog-wrapper .preview .preview-icon {
+    margin: 0 0 3px 4px; }
+  html[direction="rtl"] .dialog-wrapper .unread {
+    right: auto;
+    left: 8px; }
+  html[direction="rtl"] .dialog-wrapper .pin {
+    right: auto;
+    left: 6px; }
+  html[direction="rtl"] .dialog-wrapper .more {
+    right: auto;
+    left: 6px; }
+
 html[theme="dark"] .dialog-wrapper .name {
   color: var(--light); }
 

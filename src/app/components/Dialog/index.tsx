@@ -59,6 +59,7 @@ class Dialog extends React.Component<IProps, IState> {
     private keyword: string = '';
     private readonly isMobile: boolean = false;
     private readonly menuItem: any = {};
+    private readonly rtl: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -115,6 +116,8 @@ class Dialog extends React.Component<IProps, IState> {
                 title: i18n.t('dialog.unpin'),
             },
         };
+
+        this.rtl = localStorage.getItem('river.lang.dir') === 'rtl';
     }
 
     public componentDidMount() {
@@ -232,7 +235,7 @@ class Dialog extends React.Component<IProps, IState> {
             return (
                 <AutoSizer>
                     {({width, height}: any) => (
-                        <div>
+                        <div className="dialogs-inner">
                             <Scrollbars
                                 autoHide={true}
                                 style={{
@@ -241,7 +244,7 @@ class Dialog extends React.Component<IProps, IState> {
                                 }}
                                 onScroll={this.handleScroll}
                                 hideTracksWhenNotNeeded={true}
-                                rtl={true}
+                                rtl={!this.rtl}
                             >
                                 <List
                                     ref={this.refHandler}
