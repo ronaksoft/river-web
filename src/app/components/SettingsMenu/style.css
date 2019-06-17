@@ -538,7 +538,7 @@ html[direction="rtl"] .setting-menu {
     justify-content: flex-start; }
     html[direction="rtl"] .setting-menu .menu-header > button {
       transform: rotateY(180deg); }
-  html[direction="rtl"] .setting-menu .menu-content {
+  html[direction="rtl"] .setting-menu .form-control {
     direction: ltr; }
   html[direction="rtl"] .setting-menu .page-anchor .icon {
     margin-right: 0;
