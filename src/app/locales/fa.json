@@ -199,7 +199,7 @@
     "last_seen": "آخرین بازدید",
     "recently": "به تازگی",
     "online": "آنلاین",
-    "typing": "در حاب تایپ...",
+    "typing": "در حال تایپ...",
     "recording_voice": "در حال ضبط صوت...",
     "uploading_file": "در حال بارگزاری فایل...",
     "doing": "در حال..."
@@ -227,7 +227,8 @@
     "cleared_the_history": "تاریخچه را پاک کرد",
     "added": "افزود",
     "removed": "حذف کرد",
-    "unsupported_message": "پیام مبهم"
+    "unsupported_message": "پیام مبهم",
+    "unread_messages": "پیام‌های جدید"
   },
   "uploader": {
     "converting": "درحال تبدیل کردن...",

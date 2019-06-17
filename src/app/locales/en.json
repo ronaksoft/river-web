@@ -231,7 +231,8 @@
     "cleared_the_history": "Cleared the History",
     "added": "added",
     "removed": "removed",
-    "unsupported_message": "Unsupported Message"
+    "unsupported_message": "Unsupported Message",
+    "unread_messages": "Unread Messages"
   },
   "uploader": {
     "converting": "Converting...",
