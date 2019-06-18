@@ -10,6 +10,8 @@
 import * as moment from 'moment-jalaali';
 // @ts-ignore
 import fa from "moment/locale/fa";
+// @ts-ignore
+import en from "moment/locale/en-ca";
 import RiverTime from './river_time';
 
 /**
@@ -21,11 +23,16 @@ class TimeUntiles {
     private lang: string = localStorage.getItem('river.lang') || 'en';
 
     constructor() {
-        this.riverTime = RiverTime.getInstance();
         if (this.lang === 'fa') {
-            moment.locale("fa", fa);
-            moment.loadPersian();
+            moment.locale('fa', fa);
+            moment.loadPersian({
+                dialect: 'persian-modern',
+                usePersianDigits: true,
+            });
+        } else {
+            moment.locale('en', en);
         }
+        this.riverTime = RiverTime.getInstance();
     }
 
     /**

@@ -25,6 +25,7 @@ import {isMuted} from '../UserInfoMenu';
 import {isEqual} from 'lodash';
 import {C_MESSAGE_ICON} from '../Dialog/utils';
 import i18n from '../../services/i18n';
+import {localize} from '../../services/utilities/localize';
 
 import './style.css';
 
@@ -104,7 +105,8 @@ class DialogMessage extends React.Component<IProps, IState> {
                 </span>}
                 {isTypingRender(isTyping, dialog.peertype || PeerType.PEERUSER)}
                 {Boolean(dialog.unreadcount && dialog.unreadcount > 0) &&
-                <span className="unread">{(dialog.unreadcount || 0) > 99 ? '+99' : dialog.unreadcount}</span>}
+                <span
+                    className="unread">{(dialog.unreadcount || 0) > 99 ? localize('+99') : localize(dialog.unreadcount || 0)}</span>}
                 {Boolean(!dialog.unreadcount && dialog.pinned) &&
                 this.getPinIcon()}
                 {Boolean(dialog.mentionedcount && dialog.mentionedcount > 0) &&
@@ -173,10 +175,12 @@ class DialogMessage extends React.Component<IProps, IState> {
         switch (dialog.action_code) {
             case C_MESSAGE_ACTION.MessageActionContactRegistered:
                 return (<span className="preview-message">
-                    <UserName className="sender" id={dialog.sender_id || ''} noDetail={true}/> {i18n.t('message.joined_river')}</span>);
+                    <UserName className="sender" id={dialog.sender_id || ''}
+                              noDetail={true}/> {i18n.t('message.joined_river')}</span>);
             case C_MESSAGE_ACTION.MessageActionGroupCreated:
                 return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
-                                                                    you={true} onlyFirstName={true} noDetail={true}/> {i18n.t('message.created_the_group')}</span>);
+                                                                    you={true} onlyFirstName={true}
+                                                                    noDetail={true}/> {i18n.t('message.created_the_group')}</span>);
             case C_MESSAGE_ACTION.MessageActionGroupAddUser:
                 if (!dialog.action_data) {
                     return (<span className="preview-message">

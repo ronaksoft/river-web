@@ -11,7 +11,8 @@ import * as React from 'react';
 import {SettingsRounded, ChatRounded, AccountCircleRounded} from "@material-ui/icons";
 import Badge from '@material-ui/core/Badge';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
-import i18n from "../../services/i18n";
+import i18n from '../../services/i18n';
+import {localize} from '../../services/utilities/localize';
 
 import './style.css';
 
@@ -75,7 +76,7 @@ class BottomBar extends React.Component<IProps, IState> {
                             <a onClick={this.onClickHandler.bind(this, item.page)}
                                className={item.page === selected ? 'active' : ''}>
 
-                                {Boolean(item.badge) && <Badge color="primary" badgeContent={unreadCounter}
+                                {Boolean(item.badge) && <Badge color="primary" badgeContent={localize(unreadCounter)}
                                                                invisible={Boolean(unreadCounter === 0)}>{item.icon}</Badge>}
                                 {!Boolean(item.badge) && <span>{item.icon}</span>}
                                 <span className="title">{item.title}</span>
