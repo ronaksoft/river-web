@@ -164,6 +164,8 @@ html[direction="rtl"] .dialog-wrapper {
     padding-right: 4px; }
   html[direction="rtl"] .dialog-wrapper .preview .preview-icon {
     margin: 0 0 3px 4px; }
+  html[direction="rtl"] .dialog-wrapper .preview .system-message {
+    direction: rtl; }
   html[direction="rtl"] .dialog-wrapper .unread {
     right: auto;
     left: 8px; }

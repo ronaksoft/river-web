@@ -252,6 +252,10 @@ html[direction="rtl"] {
       .preview-icon {
         margin: 0 0 3px 4px;
       }
+
+      .system-message {
+        direction: rtl;
+      }
     }
 
     .unread {

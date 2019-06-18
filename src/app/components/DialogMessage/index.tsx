@@ -100,7 +100,7 @@ class DialogMessage extends React.Component<IProps, IState> {
                     </span>}
                     <LiveDate className="time" time={dialog.last_update || 0}/>
                 </div>
-                {Boolean(ids.length === 0) && <span className={'preview' + (dialog.preview_rtl ? ' rtl' : ' ltr')}>
+                {Boolean(ids.length === 0) && <span className={'preview ' + (dialog.preview_rtl ? 'rtl' : 'ltr')}>
                     {this.renderPreviewMessage(dialog)}
                 </span>}
                 {isTypingRender(isTyping, dialog.peertype || PeerType.PEERUSER)}
@@ -174,20 +174,20 @@ class DialogMessage extends React.Component<IProps, IState> {
         }
         switch (dialog.action_code) {
             case C_MESSAGE_ACTION.MessageActionContactRegistered:
-                return (<span className="preview-message">
+                return (<span className="preview-message system-message">
                     <UserName className="sender" id={dialog.sender_id || ''}
                               noDetail={true}/> {i18n.t('message.joined_river')}</span>);
             case C_MESSAGE_ACTION.MessageActionGroupCreated:
-                return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
+                return (<span className="preview-message system-message"><UserName className="sender" id={dialog.sender_id || ''}
                                                                     you={true} onlyFirstName={true}
                                                                     noDetail={true}/> {i18n.t('message.created_the_group')}</span>);
             case C_MESSAGE_ACTION.MessageActionGroupAddUser:
                 if (!dialog.action_data) {
-                    return (<span className="preview-message">
+                    return (<span className="preview-message system-message">
                         <UserName className="sender" id={dialog.sender_id || ''} you={true} onlyFirstName={true}
                                   noDetail={true}/> {i18n.t('message.added_a_user')}</span>);
                 } else {
-                    return (<span className="preview-message">
+                    return (<span className="preview-message system-message">
                         <UserName className="sender" id={dialog.sender_id || ''}
                                   you={true} onlyFirstName={true}
                                   noDetail={true}/> {i18n.t('message.added')} {dialog.action_data.useridsList.map((id: string, index: number) => {
@@ -200,17 +200,17 @@ class DialogMessage extends React.Component<IProps, IState> {
                 }
             case C_MESSAGE_ACTION.MessageActionGroupDeleteUser:
                 if (!dialog.action_data) {
-                    return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
+                    return (<span className="preview-message system-message"><UserName className="sender" id={dialog.sender_id || ''}
                                                                         you={true} onlyFirstName={true}
                                                                         noDetail={true}/> {i18n.t('message.removed_a_user')}</span>);
                 } else {
                     if (dialog.action_data.useridsList.indexOf(dialog.sender_id) > -1) {
                         return (
-                            <span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
+                            <span className="preview-message system-message"><UserName className="sender" id={dialog.sender_id || ''}
                                                                         you={true} onlyFirstName={true}
                                                                         noDetail={true}/> {i18n.t('message.left')}</span>);
                     }
-                    return (<span className="preview-message">
+                    return (<span className="preview-message system-message">
                     <UserName className="sender" id={dialog.sender_id || ''}
                               you={true} onlyFirstName={true}
                               noDetail={true}/> {i18n.t('message.removed')} {dialog.action_data.useridsList.map((id: string, index: number) => {
@@ -223,23 +223,23 @@ class DialogMessage extends React.Component<IProps, IState> {
                 }
             case C_MESSAGE_ACTION.MessageActionGroupTitleChanged:
                 if (!dialog.action_data) {
-                    return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
+                    return (<span className="preview-message system-message"><UserName className="sender" id={dialog.sender_id || ''}
                                                                         you={true} onlyFirstName={true}
                                                                         noDetail={true}/> {i18n.t('message.changed_the_title')}</span>);
                 } else {
-                    return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
+                    return (<span className="preview-message system-message"><UserName className="sender" id={dialog.sender_id || ''}
                                                                         you={true} onlyFirstName={true}
                                                                         noDetail={true}/> {i18n.tf('message.changed_the_title_to', dialog.action_data.grouptitle)}</span>);
                 }
             case C_MESSAGE_ACTION.MessageActionClearHistory:
-                return (<span className="preview-message">{i18n.t('message.history_cleared')}</span>);
+                return (<span className="preview-message system-message">{i18n.t('message.history_cleared')}</span>);
             case C_MESSAGE_ACTION.MessageActionGroupPhotoChanged:
                 if (!dialog.action_data) {
-                    return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
+                    return (<span className="preview-message system-message"><UserName className="sender" id={dialog.sender_id || ''}
                                                                         you={true} onlyFirstName={true}
                                                                         noDetail={true}/> {i18n.t('message.removed_the_group_photo')}</span>);
                 } else {
-                    return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}
+                    return (<span className="preview-message system-message"><UserName className="sender" id={dialog.sender_id || ''}
                                                                         you={true} onlyFirstName={true}
                                                                         noDetail={true}/> {i18n.t('message.changed_the_group_photo')}</span>);
                 }
