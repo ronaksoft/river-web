@@ -75,7 +75,8 @@
         width: 100%;
         white-space: nowrap;
         text-overflow: ellipsis;
-        overflow: hidden; }
+        overflow: hidden;
+        max-width: 400px; }
       .message-file .file-content .file-info .file-row {
         display: flex;
         flex-direction: row;
@@ -119,3 +120,9 @@ html[theme="dark-blue"] .message-file .file-content .file-info .extension {
 
 html[theme="dark-blue"] .message-file .file-content .file-info .file-download {
   color: var(--dark-blue-mention); }
+
+@media screen and (max-width: 600px) {
+  .message-file {
+    padding: 0 0 0 6px; }
+    .message-file .file-content .file-info .file-name {
+      max-width: 270px; } }

@@ -10,10 +10,12 @@
 
 .message-file {
   padding: 0 0 0 6px;
+
   .file-content {
     display: flex;
     flex-direction: row;
     align-items: center;
+
     .file-action {
       position: relative;
       width: 32px;
@@ -25,11 +27,13 @@
       align-items: center;
       border-radius: 50%;
       background-color: var(--glass-dark-low);
+
       .tooltip {
         display: flex;
         justify-content: center;
         align-items: center;
       }
+
       .extension {
         position: absolute;
         top: 50%;
@@ -42,15 +46,18 @@
         text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
         text-transform: uppercase;
       }
+
       svg {
         font-size: 20px;
         color: var(--grey);
       }
+
       &:hover {
         svg {
           color: var(--dark);
         }
       }
+
       .progress {
         position: absolute;
         top: 0;
@@ -61,9 +68,11 @@
         animation-duration: 3s;
         animation-iteration-count: infinite;
         animation-timing-function: linear;
+
         svg {
           height: 32px;
           width: 32px;
+
           circle {
             fill: transparent;
             stroke: var(--grey);
@@ -73,40 +82,48 @@
           }
         }
       }
+
       .action {
         position: relative;
         z-index: 10;
       }
     }
+
     .file-info {
       padding: 6px 6px 0;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
       justify-content: center;
+
       .file-name {
         width: 100%;
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
+        max-width: 400px;
       }
+
       .file-row {
         display: flex;
         flex-direction: row;
         align-items: flex-start;
         justify-content: center;
+
         .file-download {
           padding: 0 0 0 6px;
           font-size: 12px;
           color: var(--light-mention);
           cursor: pointer;
         }
+
         .file-size {
           font-size: 12px;
         }
       }
     }
   }
+
   .file-caption {
     padding: 0 6px;
     white-space: pre-wrap;
@@ -120,18 +137,22 @@ html[theme="dark-blue"] {
     .file-content {
       .file-action {
         background-color: var(--glass-dark-high);
+
         .extension {
           color: var(--dark-accent-low);
           text-shadow: 0 0 1px rgba(255, 255, 255, 0.4);
         }
+
         svg {
           color: var(--light);
         }
+
         &:hover {
           svg {
             color: var(--light);
           }
         }
+
         .progress {
           svg {
             circle {
@@ -140,6 +161,7 @@ html[theme="dark-blue"] {
           }
         }
       }
+
       .file-info {
         .file-download {
           color: var(--dark-mention);
@@ -156,10 +178,21 @@ html[theme="dark-blue"] {
         .extension {
           color: var(--dark-blue-medium);
         }
+
         .file-download {
           color: var(--dark-blue-mention);
         }
       }
+    }
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .message-file {
+    padding: 0 0 0 6px;
+
+    .file-content .file-info .file-name {
+      max-width: 270px;
     }
   }
 }
