@@ -40,6 +40,9 @@
       top: 5px;
       opacity: 1; }
 
+html[direction="rtl"] .pop-up-date-container .pop-up-date {
+  direction: rtl; }
+
 html[theme="dark"] .pop-up-date-container .pop-up-date {
   background-color: var(--dark-high);
   text-shadow: none;

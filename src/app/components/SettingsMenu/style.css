@@ -561,7 +561,7 @@ html[direction="rtl"] .setting-menu {
   html[direction="rtl"] .setting-menu .info.language-list .language-item {
     flex-direction: row-reverse; }
     html[direction="rtl"] .setting-menu .info.language-list .language-item .language-label {
-      text-align: right; }
+      text-align: left; }
 
 html[theme="dark"] .setting-menu .menu-header,
 html[theme="dark-blue"] .setting-menu .menu-header {

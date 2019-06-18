@@ -645,6 +645,14 @@
   }
 }
 
+html[direction="rtl"] {
+  .bubble-wrapper {
+    > .date {
+      direction: rtl;
+    }
+  }
+}
+
 html[theme="dark"],
 html[theme="dark-blue"] {
   .chat {

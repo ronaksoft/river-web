@@ -100,7 +100,7 @@ class DialogMessage extends React.Component<IProps, IState> {
                     </span>}
                     <LiveDate className="time" time={dialog.last_update || 0}/>
                 </div>
-                {Boolean(ids.length === 0) && <span className={'preview' + (dialog.preview_rtl ? ' rtl' : '')}>
+                {Boolean(ids.length === 0) && <span className={'preview' + (dialog.preview_rtl ? ' rtl' : ' ltr')}>
                     {this.renderPreviewMessage(dialog)}
                 </span>}
                 {isTypingRender(isTyping, dialog.peertype || PeerType.PEERUSER)}

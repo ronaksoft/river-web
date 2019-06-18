@@ -172,6 +172,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
     private lastMessage: IMessage | null = null;
+    private rtl: boolean = localStorage.getItem('river.lang') === 'fa' || false;
 
     constructor(props: IProps) {
         super(props);
@@ -184,7 +185,7 @@ class ChatInput extends React.Component<IProps, IState> {
             previewMessage: props.previewMessage || null,
             previewMessageHeight: 0,
             previewMessageMode: props.previewMessageMode || C_MSG_MODE.Normal,
-            rtl: localStorage.getItem('river.lang') === 'fa' || false,
+            rtl: this.rtl,
             selectMediaOpen: false,
             selectable: props.selectable,
             selectableDisable: props.selectableDisable,
@@ -639,6 +640,12 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     private detectRTL = (text: string) => {
+        if (text.length === 0) {
+            this.setState({
+                rtl: this.rtl,
+            });
+            return;
+        }
         const rtl = this.rtlDetector.direction(text);
         this.setState({
             rtl,

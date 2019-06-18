@@ -71,6 +71,10 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     color: var(--grey); }
+    .dialog-wrapper .preview.ltr {
+      direction: ltr; }
+      .dialog-wrapper .preview.ltr .preview-inner {
+        direction: ltr; }
     .dialog-wrapper .preview.rtl {
       direction: rtl; }
       .dialog-wrapper .preview.rtl .preview-inner {
