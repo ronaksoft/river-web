@@ -30,7 +30,9 @@
     "recipient": "مخاطب",
     "contacts": "مخاطب‌ها",
     "chats": "پیام‌ها",
-    "settings": "تنظیمات"
+    "settings": "تنظیمات",
+    "choose_recipients": "مخاطب",
+    "you": "شما"
   },
   "chat": {
     "search": "جستجو",

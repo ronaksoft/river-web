@@ -973,7 +973,8 @@ class Message extends React.Component<IProps, IState> {
             case C_MESSAGE_ACTION.MessageActionGroupAddUser:
                 if (!message.actiondata) {
                     return (<span className="system-message">
-                        <UserName className="user" id={message.senderid || ''} you={true}/> {i18n.t('message.added_a_user')}</span>);
+                        <UserName className="user" id={message.senderid || ''}
+                                  you={true}/> {i18n.t('message.added_a_user')}</span>);
                 } else {
                     return (<span className="system-message">
                         <UserName className="user" id={message.senderid || ''}
@@ -1014,7 +1015,7 @@ class Message extends React.Component<IProps, IState> {
                                                                        you={true}/> {i18n.tf('message.changed_the_title_to', message.actiondata.grouptitle)}</span>);
                 }
             case C_MESSAGE_ACTION.MessageActionClearHistory:
-                return (<span className="system-message">{i18n.t('message.cleared_the_history')}</span>);
+                return (<span className="system-message">{i18n.t('message.history_cleared')}</span>);
             case C_MESSAGE_ACTION.MessageActionGroupPhotoChanged:
                 if (!message.actiondata) {
                     return (<span className="system-message"><UserName className="user" id={message.senderid || ''}
@@ -1030,7 +1031,8 @@ class Message extends React.Component<IProps, IState> {
                         return (
                             <div className="system-message-with-picture">
                                 <span className="system-message">
-                                    <UserName className="user" id={message.senderid || ''} you={true}/> {i18n.t('message.removed_the_group_photo')}
+                                    <UserName className="user" id={message.senderid || ''}
+                                              you={true}/> {i18n.t('message.removed_the_group_photo')}
                                 </span>
                             </div>
                         );
@@ -1038,7 +1040,8 @@ class Message extends React.Component<IProps, IState> {
                         return (
                             <div className="system-message-with-picture">
                                 <span className="system-message">
-                                    <UserName className="user" id={message.senderid || ''} you={true}/> {i18n.t('message.changed_the_group_photo')}
+                                    <UserName className="user" id={message.senderid || ''}
+                                              you={true}/> {i18n.t('message.changed_the_group_photo')}
                                 </span>
                                 <CachedPhoto className="picture" fileLocation={fileLocation.toObject()}/>
                             </div>

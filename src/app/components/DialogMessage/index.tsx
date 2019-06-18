@@ -232,7 +232,7 @@ class DialogMessage extends React.Component<IProps, IState> {
                                                                         noDetail={true}/> {i18n.tf('message.changed_the_title_to', dialog.action_data.grouptitle)}</span>);
                 }
             case C_MESSAGE_ACTION.MessageActionClearHistory:
-                return (<span className="preview-message">{i18n.t('message.cleared_the_history')}</span>);
+                return (<span className="preview-message">{i18n.t('message.history_cleared')}</span>);
             case C_MESSAGE_ACTION.MessageActionGroupPhotoChanged:
                 if (!dialog.action_data) {
                     return (<span className="preview-message"><UserName className="sender" id={dialog.sender_id || ''}

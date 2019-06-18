@@ -13,6 +13,7 @@ import UserRepo from '../../repository/user';
 import {GetUniqueColor, TextColors} from '../UserAvatar';
 import {VerifiedUserRounded} from '@material-ui/icons';
 import Broadcaster from '../../services/broadcaster';
+import i18n from '../../services/i18n';
 
 interface IProps {
     className?: string;
@@ -130,7 +131,7 @@ class UserName extends React.Component<IProps, IState> {
         if (this.props.you && this.userRepo.getCurrentUserId() === this.state.id) {
             this.setState({
                 user: {
-                    firstname: this.props.youPlaceholder || 'You',
+                    firstname: this.props.youPlaceholder || i18n.t('general.you'),
                     id: this.userRepo.getCurrentUserId(),
                     lastname: '',
                 },

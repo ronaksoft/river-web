@@ -31,7 +31,9 @@
     "recipient": "Recipient",
     "chats": "Chats",
     "contacts": "Contacts",
-    "settings": "Settings"
+    "settings": "Settings",
+    "choose_recipients": "Choose Recipient(s)",
+    "you": "You"
   },
   "chat": {
     "search": "Search",
@@ -229,6 +231,7 @@
     "removed_the_group_photo": "removed the group photo",
     "changed_the_group_photo": "changed the group photo",
     "cleared_the_history": "Cleared the History",
+    "history_cleared": "History Cleared",
     "added": "added",
     "removed": "removed",
     "unsupported_message": "Unsupported Message",
