@@ -499,6 +499,10 @@ html[theme="dark-blue"][bg="14"] .container .column-center .start-messaging {
 
 html[direction="rtl"] .container {
   direction: rtl; }
+  html[direction="rtl"] .container.mobile-view {
+    margin-left: -100vw; }
+    html[direction="rtl"] .container.mobile-view.chat-view {
+      margin-left: 0; }
   html[direction="rtl"] .container .column-left .left-overlay {
     left: auto;
     right: calc(-100% - 1px);
@@ -516,12 +520,21 @@ html[direction="rtl"] .container {
     html[direction="rtl"] .container .column-center .top .info-bar .buttons {
       right: auto;
       left: 0; }
+    html[direction="rtl"] .container .column-center .top .info-bar .back-to-chats {
+      right: 5px;
+      left: auto;
+      transform: translateY(-50%) rotateY(180deg); }
   html[direction="rtl"] .container .column-center.shrink {
     margin-right: 0;
     margin-left: 318px; }
 
 html[direction="rtl"] .kk-context-menu, html[direction="rtl"] .confirm-dialog {
   direction: rtl; }
+
+html[direction="rtl"] .container.mobile-view .column-left .top .info-bar,
+html[direction="rtl"] .container.mobile-view .column-center .top .info-bar {
+  padding-right: 42px;
+  padding-left: 8px; }
 
 html[theme="dark"] .bg,
 html[theme="dark-blue"] .bg {

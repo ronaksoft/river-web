@@ -616,6 +616,14 @@ html[direction="rtl"] {
   .container {
     direction: rtl;
 
+    &.mobile-view {
+      margin-left: -100vw;
+
+      &.chat-view {
+        margin-left: 0;
+      }
+    }
+
     .column-left {
       .left-overlay {
         left: auto;
@@ -651,6 +659,12 @@ html[direction="rtl"] {
             right: auto;
             left: 0;
           }
+
+          .back-to-chats {
+            right: 5px;
+            left: auto;
+            transform: translateY(-50%) rotateY(180deg);
+          }
         }
       }
 
@@ -663,6 +677,12 @@ html[direction="rtl"] {
 
   .kk-context-menu, .confirm-dialog {
     direction: rtl;
+  }
+
+  .container.mobile-view .column-left .top .info-bar,
+  .container.mobile-view .column-center .top .info-bar {
+    padding-right: 42px;
+    padding-left: 8px;
   }
 }
 
