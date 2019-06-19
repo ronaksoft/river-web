@@ -58,7 +58,7 @@
     "music-metadata-browser": "^0.7.1",
     "opus-recorder": "^6.1.1",
     "protobufjs": "^6.8.8",
-    "rc-progress": "^2.2.6",
+    "rc-progress": "^2.4.1",
     "react": "^16.8.1",
     "react-avatar-editor": "^11.0.6",
     "react-custom-scrollbars": "ronaksoft/react-custom-scrollbars",

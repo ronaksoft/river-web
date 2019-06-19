@@ -159,7 +159,6 @@ class Chat extends React.Component<IProps, IState> {
     private connInfo: IConnInfo;
     private eventReferences: any[] = [];
     private readonly dialogsSortThrottle: any = null;
-    private readHistoryMaxId: number | null = null;
     private isMobileView: boolean = false;
     private mobileBackTimeout: any = null;
     private forwardDialogRef: ForwardDialog;
@@ -368,10 +367,6 @@ class Chat extends React.Component<IProps, IState> {
             });
         } else {
             const peer = this.getPeerByDialogId(selectedId);
-            // Clear read history in dialog change
-            if (this.state.peer && peer && this.state.peer.getId() !== peer.getId()) {
-                this.readHistoryMaxId = null;
-            }
             this.setState({
                 leftMenu: 'chat',
                 messageSelectable: false,
@@ -2520,10 +2515,10 @@ class Chat extends React.Component<IProps, IState> {
 
     private windowFocusHandler = () => {
         this.isInChat = true;
-        if (this.readHistoryMaxId) {
-            const {peer} = this.state;
-            this.sendReadHistory(peer, this.readHistoryMaxId);
-        }
+        // if (this.readHistoryMaxId) {
+        //     const {peer} = this.state;
+        //     this.sendReadHistory(peer, this.readHistoryMaxId);
+        // }
     }
 
     private windowBlurHandler = () => {
@@ -2567,7 +2562,6 @@ class Chat extends React.Component<IProps, IState> {
                 });
             }
         }
-        this.readHistoryMaxId = null;
     }
 
     private readMessageThrottle(inputPeer: InputPeer, id: number) {

@@ -9,7 +9,6 @@
 
 import * as React from 'react';
 import SDK from '../../services/sdk';
-// @ts-ignore
 import {Circle} from 'rc-progress';
 import RiverLogo from '../../components/RiverLogo';
 
@@ -64,7 +63,7 @@ class Loading extends React.Component<IProps, IState> {
         return (
             <div className="loading-page">
                 <div className="loading-area">
-                    <Circle percent={percent} strokeWidth="1" strokeColor="#008c3d"/>
+                    <Circle percent={percent} strokeWidth={1} strokeColor="#008c3d"/>
                     <div className="loading-text">
                         Securing connection<br/> Please wait <br/>
                         {msg === '' && <span className="info">It might take up to 60 seconds!</span>}
