@@ -22,7 +22,9 @@ import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
 import ChatInput from '../../components/ChatInput/index';
-import {clone, differenceBy, find, findIndex, findLastIndex, intersectionBy, throttle, trimStart} from 'lodash';
+import {
+    clone, differenceBy, find, findIndex, findLastIndex, intersectionBy, throttle, trimStart, cloneDeep,
+} from 'lodash';
 import SDK from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
 import * as core_types_pb from '../../services/sdk/messages/chat.core.types_pb';
@@ -100,7 +102,7 @@ import './style.css';
 
 export let notifyOptions: any[] = [];
 
-const C_MAX_UPDATE_DIFF = 2000;
+const C_MAX_UPDATE_DIFF = 10;
 
 interface IProps {
     history?: any;
@@ -2241,8 +2243,8 @@ class Chat extends React.Component<IProps, IState> {
         this.dialogRepo.getManyCache({}).then((oldDialogs) => {
             this.dialogRepo.getSnapshot({}).then((res) => {
                 // Insert holes on snapshot if it has difference
-                const sameItems: IDialog[] = intersectionBy(oldDialogs, res.dialogs, 'peerid');
-                const newItems: IDialog[] = differenceBy(res.dialogs, oldDialogs, 'peerid');
+                const sameItems: IDialog[] = intersectionBy(cloneDeep(oldDialogs), res.dialogs, 'peerid');
+                const newItems: IDialog[] = differenceBy(cloneDeep(res.dialogs), oldDialogs, 'peerid');
                 sameItems.forEach((dialog) => {
                     const d = find(res.dialogs, {peerid: dialog.peerid});
                     if (d && dialog.topmessageid) {
@@ -2257,7 +2259,11 @@ class Chat extends React.Component<IProps, IState> {
                     }
                 });
                 // Sorts dialogs by last update
-                this.dialogsSortThrottle(res.dialogs);
+                this.dialogRepo.lazyUpsert(res.dialogs.map((o) => {
+                    o.force = true;
+                    return o;
+                }));
+                this.dialogsSort(res.dialogs);
                 this.syncManager.setLastUpdateId(res.updateid || 0);
                 this.updateManager.enable();
                 this.setState({
@@ -2266,18 +2272,6 @@ class Chat extends React.Component<IProps, IState> {
                     if (res.dialogs.length > 0) {
                         this.startSyncing();
                     }
-                });
-                this.sdk.dialogGetPinned().then((pinnedDialogs) => {
-                    const toUpdateDialogs: IDialog[] = [];
-                    pinnedDialogs.dialogsList.forEach((item) => {
-                        const index = findIndex(res.dialogs, {peerid: item.peerid});
-                        if (index > -1) {
-                            res.dialogs[index].pinned = true;
-                            toUpdateDialogs.push(res.dialogs[index]);
-                        }
-                    });
-                    this.dialogRepo.lazyUpsert(toUpdateDialogs);
-                    this.dialogsSort(this.dialogs);
                 });
             }).catch(() => {
                 this.updateManager.enable();
@@ -2519,6 +2513,9 @@ class Chat extends React.Component<IProps, IState> {
         //     const {peer} = this.state;
         //     this.sendReadHistory(peer, this.readHistoryMaxId);
         // }
+        if (this.state.selectedDialogId !== 'null' && this.messages.length > 0) {
+            this.sendReadHistory(this.state.peer, Math.floor(this.messages[this.messages.length - 1].id || 0));
+        }
     }
 
     private windowBlurHandler = () => {
