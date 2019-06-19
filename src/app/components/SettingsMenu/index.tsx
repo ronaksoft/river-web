@@ -58,7 +58,7 @@ import Slider from "@material-ui/lab/Slider";
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.24.8';
+export const C_VERSION = '0.24.9';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 interface IProps {
