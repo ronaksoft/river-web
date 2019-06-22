@@ -175,7 +175,8 @@
     "type_your_message_here": "پیام خود را بنویسید...",
     "close": "لغو",
     "remove": "حذف",
-    "forward": "هدایت"
+    "forward": "هدایت",
+    "type": "بنویسید..."
   },
   "sign_up": {
     "sign_in_to_river": "ورود به ریور",

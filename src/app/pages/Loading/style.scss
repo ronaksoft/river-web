@@ -18,7 +18,22 @@
   align-items: center;
   background-color: #21352e;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cpolygon fill='%23000' fill-opacity='.1' points='120 0 120 60 90 30 60 0 0 0 0 0 60 60 0 120 60 120 90 90 120 60 120 0'/%3E%3C/svg%3E");
+  overflow: hidden;
   z-index: 1;
+
+  .close-btn {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+
+    button {
+      svg {
+        font-size: 28px;
+        color: var(--white);
+      }
+    }
+  }
+
   .loading-area {
     position: relative;
     display: flex;
@@ -26,10 +41,12 @@
     width: 400px;
     background: #fff;
     border-radius: 50%;
+
     .rc-progress-circle {
       height: 400px;
       width: 400px;
     }
+
     .loading-text {
       @include font;
       position: absolute;
@@ -39,12 +56,14 @@
       font-size: 20px;
       line-height: 40px;
       font-weight: 100;
+
       .info {
         color: #00a24d;
         font-size: 15px;
         white-space: nowrap;
       }
     }
+
     .logo {
       position: absolute;
       top: 70%;
@@ -59,17 +78,21 @@
     .loading-area {
       height: 300px;
       width: 300px;
+
       .rc-progress-circle {
         height: 300px;
         width: 300px;
       }
+
       .loading-text {
         font-size: 15px;
         line-height: 30px;
+
         .info {
           font-size: 13px;
         }
       }
+
       .logo {
         transform: translateX(-50%) scale(0.7);
       }

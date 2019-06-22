@@ -21,6 +21,7 @@ import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 import {ErrorInfo} from 'react';
 import * as Sentry from '@sentry/browser';
 import I18n from "./app/services/i18n";
+import IframeService, {C_IFRAME_SUBJECT} from "./app/services/iframe";
 
 import './App.css';
 
@@ -61,6 +62,7 @@ I18n.init({
 class App extends React.Component<{}, IState> {
     private mainRepo: MainRepo;
     private readonly isElectron: boolean = false;
+    private iframeService: IframeService;
 
     constructor(props: {}) {
         super(props);
@@ -77,6 +79,8 @@ class App extends React.Component<{}, IState> {
         if (window.isElectron) {
             this.isElectron = true;
         }
+
+        this.iframeService = IframeService.getInstance();
     }
 
     public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
@@ -119,6 +123,10 @@ class App extends React.Component<{}, IState> {
         if (refreshEl) {
             refreshEl.remove();
         }
+
+        this.iframeService.listen(C_IFRAME_SUBJECT.IsLoaded, (e) => {
+            this.iframeService.loaded(e.reqId);
+        });
     }
 
     public render() {

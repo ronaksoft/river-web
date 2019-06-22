@@ -13,6 +13,10 @@ import {Circle} from 'rc-progress';
 import RiverLogo from '../../components/RiverLogo';
 
 import './style.css';
+import Tooltip from "@material-ui/core/Tooltip";
+import IconButton from "@material-ui/core/IconButton";
+import {CloseRounded} from "@material-ui/icons";
+import IframeService, {C_IFRAME_SUBJECT} from "../../services/iframe";
 
 interface IProps {
     match?: any;
@@ -22,6 +26,7 @@ interface IProps {
 
 interface IState {
     limit: number;
+    iframeActive: boolean;
     msg: string;
     percent: number;
 }
@@ -29,10 +34,15 @@ interface IState {
 class Loading extends React.Component<IProps, IState> {
     private sdk: SDK;
     private tm: any = null;
+    private iframeService: IframeService;
+    private eventReferences: any[] = [];
 
     constructor(props: IProps) {
         super(props);
+
+        this.iframeService = IframeService.getInstance();
         this.state = {
+            iframeActive: this.iframeService.isActive(),
             limit: 0,
             msg: '',
             percent: 0,
@@ -50,18 +60,42 @@ class Loading extends React.Component<IProps, IState> {
         } else if (this.sdk.getConnInfo().AuthID !== '0') {
             this.props.history.push('/signup');
         }
+
+        if (!this.state.iframeActive) {
+            this.eventReferences.push(this.iframeService.listen(C_IFRAME_SUBJECT.IsLoaded, (e) => {
+                this.setState({
+                    iframeActive: true,
+                });
+            }));
+        }
     }
 
     public componentWillUnmount() {
         window.removeEventListener('wasmInit', this.wasmInitHandler);
         window.removeEventListener('authProgress', this.authProgressHandler);
         window.removeEventListener('fnStarted', this.fnStartedHandler);
+        this.eventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
+        });
     }
 
     public render() {
-        const {percent, msg} = this.state;
+        const {percent, msg, iframeActive} = this.state;
         return (
             <div className="loading-page">
+                {iframeActive && <span className="close-btn">
+                                    <Tooltip
+                                        title="close"
+                                        placement="bottom"
+                                        onClick={this.closeIframeHandler}
+                                    >
+                                        <IconButton>
+                                            <CloseRounded/>
+                                        </IconButton>
+                                    </Tooltip>
+                                </span>}
                 <div className="loading-area">
                     <Circle percent={percent} strokeWidth={1} strokeColor="#008c3d"/>
                     <div className="loading-text">
@@ -121,6 +155,10 @@ class Loading extends React.Component<IProps, IState> {
                 }
             }, 3000);
         }
+    }
+
+    private closeIframeHandler = () => {
+        this.iframeService.close();
     }
 }
 

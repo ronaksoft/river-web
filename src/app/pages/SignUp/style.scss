@@ -31,11 +31,25 @@ input {
   background-color: var(--white);
   flex-direction: column;
   z-index: 1;
+
+  .close-btn {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+
+    button {
+      svg {
+        font-size: 28px;
+      }
+    }
+  }
+
   .login-wrapper {
     position: relative;
     width: 440px;
     min-height: 380px;
     border-radius: 10px;
+
     .login-form {
       width: 100%;
       padding: 10px;
@@ -58,6 +72,7 @@ input {
       border: 1px solid transparent;
       border-radius: 3px;
       margin-bottom: 16px;
+
       .text-wrapper {
         border: 1px solid #c4c4c4;
         border-radius: 7px;
@@ -70,9 +85,11 @@ input {
         font-weight: bold;
         padding: 4px 12px;
       }
+
       &.qr-wrapper {
         text-align: right;
       }
+
       .qr-link {
         font-weight: bold;
         font-size: 17px;
@@ -154,14 +171,17 @@ input {
       border: 0;
       cursor: pointer;
       transition: all 0.4s;
+
       &.disabled {
         animation-name: button-disabled;
         animation-iteration-count: infinite;
         animation-duration: 0.5s;
       }
+
       &:hover {
         background-color: var(--river-dark);
       }
+
       svg {
         font-size: 40px;
         color: var(--white);
@@ -175,6 +195,7 @@ input {
       line-height: 18px;
       text-align: right;
       cursor: pointer;
+
       &.disabled {
         opacity: 0.3;
         cursor: default;
@@ -188,6 +209,7 @@ input {
       display: block;
       margin-top: -8px;
       cursor: pointer;
+
       label {
         vertical-align: top;
       }
@@ -203,6 +225,7 @@ input {
     display: flex;
     justify-content: center;
     align-items: center;
+
     .river-logo {
       transition: opacity 0.3s;
     }
@@ -232,9 +255,11 @@ input {
       flex-direction: row-reverse;
       border-radius: 7px;
       border: 1px solid #c4c4c4;
+
       &:hover {
         border-color: #212121;
       }
+
       input[type=tel] {
         @include font;
         position: relative;
@@ -253,6 +278,7 @@ input {
         border-left: none;
         border-radius: 0 5px 5px 0;
       }
+
       .flag-dropdown {
         position: static;
         background-color: #fff;
@@ -260,12 +286,15 @@ input {
         flex: 1;
         border-right: 1px solid #ddd;
         border-radius: 5px 0 0 5px;
+
         &:hover {
           background-color: #fff;
+
           .selected-flag {
             background-color: transparent;
           }
         }
+
         .selected-flag {
           z-index: 13;
           position: relative;
@@ -277,8 +306,10 @@ input {
           display: flex;
           justify-content: center;
           align-items: center;
+
           .arrow {
             border-top: 4px solid #ababab;
+
             &.up {
               border-top: none;
               border-bottom: 4px solid #ababab;
@@ -286,30 +317,36 @@ input {
           }
         }
       }
+
       .flag {
         transform: scale(1.5);
       }
+
       .country-list {
         .country {
           padding: 7px 10px;
           text-align: left;
         }
+
         .country-name {
           margin-right: 6px;
           margin-left: 6px;
         }
       }
     }
+
     .countdown {
       display: flex;
       align-items: center;
       justify-content: flex-end;
       margin: 5px;
+
       .inner {
         color: var(--river);
         font-weight: bold;
         font-size: 17px;
       }
+
       svg {
         color: var(--river);
         font-size: 17px;
@@ -339,10 +376,12 @@ input {
     .login-wrapper {
       width: 300px;
       min-height: 300px;
+
       .login-form {
         padding: 0;
       }
     }
+
     .river-form {
       .intl-tel-input {
         input[type=tel] {
@@ -350,12 +389,15 @@ input {
         }
       }
     }
+
     .top-logo {
       transform: scale(0.7);
     }
+
     .top-title {
       padding-top: 6px;
     }
+
     .top-desc {
       width: 300px;
       font-size: 15px;
@@ -373,39 +415,57 @@ input {
 html[theme="dark"] {
   .login-page {
     background-color: var(--dark-low);
+
+    .close-btn {
+      button {
+        svg {
+          color: var(--white);
+        }
+      }
+    }
+
     .top-logo {
       background-color: transparent;
     }
+
     .top-title {
       color: var(--white);
     }
+
     .text-input {
       label {
         color: var(--white);
       }
+
       input {
         color: var(--white);
         background-color: var(--dark-medium);
       }
+
       fieldset {
         border: 1px solid var(--white) !important;
       }
     }
+
     .river-form {
       .intl-tel-input {
         border-color: var(--white);
         background-color: var(--dark-medium);
+
         &:hover {
           border-color: var(--light);
         }
+
         .flag-container {
           background-color: var(--dark-medium);
         }
+
         input[type=tel] {
           @include font;
           background-color: var(--dark-medium);
           color: var(--white);
         }
+
         .flag-dropdown {
           background-color: var(--dark-medium);
         }
@@ -417,39 +477,57 @@ html[theme="dark"] {
 html[theme="dark-blue"] {
   .login-page {
     background-color: var(--dark-blue-low);
+
+    .close-btn {
+      button {
+        svg {
+          color: var(--white);
+        }
+      }
+    }
+
     .top-logo {
       background-color: transparent;
     }
+
     .top-title {
       color: var(--white);
     }
+
     .text-input {
       label {
         color: var(--white);
       }
+
       input {
         color: var(--white);
         background-color: var(--dark-blue-medium);
       }
+
       fieldset {
         border: 1px solid var(--white) !important;
       }
     }
+
     .river-form {
       .intl-tel-input {
         border-color: var(--white);
         background-color: var(--dark-blue-medium);
+
         &:hover {
           border-color: var(--light);
         }
+
         .flag-container {
           background-color: var(--dark-blue-medium);
         }
+
         input[type=tel] {
           @include font;
           background-color: var(--dark-blue-medium);
           color: var(--white);
         }
+
         .flag-dropdown {
           background-color: var(--dark-blue-medium);
         }

@@ -128,6 +128,10 @@ input {
         content: '';
         background-color: var(--light);
         transform: translate(-50%, 0); }
+      .container .column-left .top-bar .close-btn {
+        margin-left: -12px; }
+        .container .column-left .top-bar .close-btn button svg {
+          font-size: 28px; }
       .container .column-left .top-bar .new-message {
         color: #60BF70;
         cursor: pointer; }
@@ -550,6 +554,9 @@ html[theme="dark-blue"] .container {
     html[theme="dark"] .container .column-left .top-bar,
     html[theme="dark-blue"] .container .column-left .top-bar {
       border-bottom: 1px solid var(--dark-low-op50); }
+      html[theme="dark"] .container .column-left .top-bar .close-btn button svg,
+      html[theme="dark-blue"] .container .column-left .top-bar .close-btn button svg {
+        color: var(--white); }
     html[theme="dark"] .container .column-left .actions svg,
     html[theme="dark-blue"] .container .column-left .actions svg {
       color: var(--light); }

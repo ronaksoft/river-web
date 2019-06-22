@@ -12,7 +12,7 @@ import SDK from '../../services/sdk';
 // @ts-ignore
 import IntlTelInput from 'react-intl-tel-input';
 import Snackbar from '@material-ui/core/Snackbar';
-import {RefreshRounded} from '@material-ui/icons';
+import {CloseRounded, RefreshRounded} from '@material-ui/icons';
 import {C_ERR, C_ERR_ITEM} from '../../services/sdk/const';
 import RiverLogo from '../../components/RiverLogo';
 import NotificationService from '../../services/notification';
@@ -29,6 +29,9 @@ import i18n from '../../services/i18n';
 
 import './tel-input.css';
 import './style.css';
+import Tooltip from "@material-ui/core/Tooltip";
+import IconButton from "@material-ui/core/IconButton";
+import IframeService, {C_IFRAME_SUBJECT} from "../../services/iframe";
 
 const C_CLIENT = `Web:- ${window.navigator.userAgent}`;
 
@@ -43,6 +46,7 @@ interface IState {
     code: string;
     countdown: number;
     fName: string;
+    iframeActive: boolean;
     lName: string;
     loading: boolean;
     phone?: string;
@@ -64,6 +68,8 @@ class SignUp extends React.Component<IProps, IState> {
     private workspaceManager: WorkspaceManger;
     private qrCanvasRef: any = null;
     private qrStart: boolean = false;
+    private iframeService: IframeService;
+    private eventReferences: any[] = [];
 
     constructor(props: IProps) {
         super(props);
@@ -73,11 +79,14 @@ class SignUp extends React.Component<IProps, IState> {
                 step = 'workspace';
             }
         }
+
+        this.iframeService = IframeService.getInstance();
         this.state = {
             anchorEl: null,
             code: '',
             countdown: 60,
             fName: '',
+            iframeActive: this.iframeService.isActive(),
             lName: '',
             loading: false,
             phone: '',
@@ -104,21 +113,54 @@ class SignUp extends React.Component<IProps, IState> {
             this.props.history.push('/loading');
         }
         this.initPhoneInput();
+        if (!this.state.iframeActive) {
+            this.eventReferences.push(this.iframeService.listen(C_IFRAME_SUBJECT.IsLoaded, (e) => {
+                this.setState({
+                    iframeActive: true,
+                });
+            }));
+        }
+
+        this.eventReferences.push(this.iframeService.listen(C_IFRAME_SUBJECT.UserInfo, (e) => {
+            this.iframeService.bool(e.reqId);
+            this.setState({
+                fName: e.data.firstname,
+                lName: e.data.lastname,
+                phone: e.data.phone,
+                workspace: e.data.workspace,
+            });
+        }));
     }
 
     public componentWillUnmount() {
         window.removeEventListener('wasmInit', this.wasmInitHandler);
         window.removeEventListener('wsOpen', this.wsOpenHandler);
         clearInterval(this.countdownInterval);
+        this.eventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
+        });
     }
 
     public render() {
         // const {moreInfoAnchorEl} = this.state;
         // const open = Boolean(moreInfoAnchorEl);
-        const {step, countdown, workspaceInfo} = this.state;
+        const {step, countdown, workspaceInfo, iframeActive} = this.state;
         return (
             <div className="limiter">
                 <div className="login-page">
+                    {iframeActive && <span className="close-btn">
+                                    <Tooltip
+                                        title="close"
+                                        placement="bottom"
+                                        onClick={this.closeIframeHandler}
+                                    >
+                                        <IconButton>
+                                            <CloseRounded/>
+                                        </IconButton>
+                                    </Tooltip>
+                                </span>}
                     <div className="top-logo">
                         <RiverLogo height={184} width={165}/>
                     </div>
@@ -150,7 +192,8 @@ class SignUp extends React.Component<IProps, IState> {
                                 </div>}
                             </div>
                             {step === 'workspace' && <div className="input-wrapper qr-wrapper">
-                                <div className="qr-link" onClick={this.qrCodeDialogOpenHandler}>{i18n.t('sign_up.scan_qr_code')}</div>
+                                <div className="qr-link"
+                                     onClick={this.qrCodeDialogOpenHandler}>{i18n.t('sign_up.scan_qr_code')}</div>
                             </div>}
                             {step !== 'workspace' && <React.Fragment>
                                 <IntlTelInput preferredCountries={[]} defaultCountry={'ir'} value={this.state.phone}
@@ -160,7 +203,8 @@ class SignUp extends React.Component<IProps, IState> {
                                               fieldId="input-phone"/>
                                 {step === 'phone' &&
                                 <div className="grey-link">
-                                    <span onClick={this.changeWorkspaceHandler}>{i18n.t('sign_up.change_workspace')}</span>
+                                    <span
+                                        onClick={this.changeWorkspaceHandler}>{i18n.t('sign_up.change_workspace')}</span>
                                 </div>}
                                 {Boolean((this.state.tries > 0 && (step === 'code' || step === 'register')) || (countdown < 45)) &&
                                 <div className="try-another-phone" onClick={this.tryAnotherPhone}>
@@ -182,7 +226,8 @@ class SignUp extends React.Component<IProps, IState> {
                                         onKeyDown={this.confirmKeyDown}
                                     />
                                     <div className="countdown">
-                                        <TimerRounded/><span className="inner">{countdown}&nbsp;{i18n.t('sign_up.second')}</span>
+                                        <TimerRounded/><span
+                                        className="inner">{countdown}&nbsp;{i18n.t('sign_up.second')}</span>
                                     </div>
                                     <div className={'grey-link ' + (countdown >= 45 ? 'disabled' : '')}>
                                         <span onClick={this.resendCode}>{i18n.t('sign_up.resend_code')}</span>
@@ -190,7 +235,8 @@ class SignUp extends React.Component<IProps, IState> {
                                 </div>}
                                 {step === 'register' &&
                                 <div className="input-wrapper validate-input">
-                                    <TextField className="f-fname text-input" type="text" label={i18n.t('general.first_name')}
+                                    <TextField className="f-fname text-input" type="text"
+                                               label={i18n.t('general.first_name')}
                                                margin="none" variant="outlined" autoComplete="off"
                                                fullWidth={true}
                                                value={this.state.fName}
@@ -200,7 +246,8 @@ class SignUp extends React.Component<IProps, IState> {
                                 </div>}
                                 {step === 'register' &&
                                 <div className="input-wrapper validate-input">
-                                    <TextField className="f-lname text-input" type="text" label={i18n.t('general.last_name')}
+                                    <TextField className="f-lname text-input" type="text"
+                                               label={i18n.t('general.last_name')}
                                                margin="none" variant="outlined" autoComplete="off"
                                                fullWidth={true}
                                                value={this.state.lName}
@@ -446,11 +493,19 @@ class SignUp extends React.Component<IProps, IState> {
                     return;
                 }
                 if (err.code === C_ERR.ERR_CODE_UNAVAILABLE && err.items === C_ERR_ITEM.ERR_ITEM_PHONE) {
-                    this.setState({
-                        fName: '',
-                        lName: '',
-                        step: 'register',
-                    }, () => {
+                    let state: any = {};
+                    if (this.iframeService.isActive()) {
+                        state = {
+                            step: 'register',
+                        };
+                    } else {
+                        state = {
+                            fName: '',
+                            lName: '',
+                            step: 'register',
+                        };
+                    }
+                    this.setState(state, () => {
                         this.focus('f-fname');
                     });
                     return;
@@ -727,6 +782,10 @@ class SignUp extends React.Component<IProps, IState> {
 
     private stopQR() {
         this.qrStart = false;
+    }
+
+    private closeIframeHandler = () => {
+        this.iframeService.close();
     }
 }
 

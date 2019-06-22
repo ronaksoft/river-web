@@ -17,6 +17,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
 import {
     EditRounded, ExpandMoreRounded, InfoOutlined, KeyboardArrowLeftRounded, MoreVertRounded, SearchRounded,
+    CloseRounded,
 } from '@material-ui/icons';
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
@@ -97,6 +98,7 @@ import ForwardDialog from "../../components/ForwardDialog";
 import AboutDialog from "../../components/AboutModal";
 import StatusBar from "../../components/StatusBar";
 import i18n from "../../services/i18n";
+import IframeService, {C_IFRAME_SUBJECT} from '../../services/iframe';
 
 import './style.css';
 
@@ -116,6 +118,7 @@ interface IState {
     confirmDialogMode: 'none' | 'logout' | 'remove_message' | 'remove_message_revoke' | 'delete_exit_group' | 'delete_user';
     confirmDialogOpen: boolean;
     forwardRecipientDialogOpen: boolean;
+    iframeActive: boolean;
     isChatView: boolean;
     isConnecting: boolean;
     isUpdating: boolean;
@@ -184,15 +187,20 @@ class Chat extends React.Component<IProps, IState> {
     private dialogMap: { [key: string]: number } = {};
     private dialogs: IDialog[] = [];
     private isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } } = {};
+    private iframeService: IframeService;
 
     constructor(props: IProps) {
         super(props);
+
+        this.iframeService = IframeService.getInstance();
+
         this.state = {
             blurMessage: false,
             chatMoreAnchorEl: null,
             confirmDialogMode: 'none',
             confirmDialogOpen: false,
             forwardRecipientDialogOpen: false,
+            iframeActive: this.iframeService.isActive(),
             isChatView: false,
             isConnecting: true,
             isUpdating: false,
@@ -350,6 +358,14 @@ class Chat extends React.Component<IProps, IState> {
         if (localStorage.getItem('river.theme.bg') === C_CUSTOM_BG) {
             this.backgroundService.getBackground(C_CUSTOM_BG_ID, true);
         }
+
+        if (!this.state.iframeActive) {
+            this.eventReferences.push(this.iframeService.listen(C_IFRAME_SUBJECT.IsLoaded, (e) => {
+                this.setState({
+                    iframeActive: true,
+                });
+            }));
+        }
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -401,7 +417,7 @@ class Chat extends React.Component<IProps, IState> {
         const {
             confirmDialogMode, confirmDialogOpen, moreInfoAnchorEl, chatMoreAnchorEl, leftMenu, rightMenuShrink,
             leftMenuSub, leftOverlay, textInputMessage, textInputMessageMode, peer, selectedDialogId, messageSelectable,
-            messageSelectedIds, unreadCounter, blurMessage,
+            messageSelectedIds, unreadCounter, blurMessage, iframeActive,
         } = this.state;
         const leftMenuRender = () => {
             switch (leftMenu) {
@@ -470,6 +486,17 @@ class Chat extends React.Component<IProps, IState> {
                         <div
                             className={'column-left ' + (leftMenu === 'chat' ? 'with-top-bar' : '') + (leftOverlay ? ' left-overlay-enable' : '')}>
                             <div className="top-bar">
+                                {iframeActive && <span className="close-btn">
+                                    <Tooltip
+                                        title="close"
+                                        placement="bottom"
+                                        onClick={this.closeIframeHandler}
+                                    >
+                                        <IconButton>
+                                            <CloseRounded/>
+                                        </IconButton>
+                                    </Tooltip>
+                                </span>}
                                 <span className="new-message">
                                     <RiverLogo height={24} width={24}/>
                                 </span>
@@ -2131,6 +2158,7 @@ class Chat extends React.Component<IProps, IState> {
         this.setState({
             unreadCounter,
         });
+        this.iframeService.setUnreadCounter(unreadCounter);
     }
 
     private checkSync(): Promise<any> {
@@ -4093,6 +4121,9 @@ class Chat extends React.Component<IProps, IState> {
         window.dispatchEvent(event);
     }
 
+    private closeIframeHandler = () => {
+        this.iframeService.close();
+    }
     // private testHandler = () => {
     //     this.messageComponent.takeSnapshot(true);
     // }

@@ -179,7 +179,8 @@
     "type_your_message_here": "Type your message here...",
     "close": "Close",
     "remove": "Remove",
-    "forward": "Forward"
+    "forward": "Forward",
+    "type": "Type..."
   },
   "sign_up": {
     "sign_in_to_river": "Sign In to River",

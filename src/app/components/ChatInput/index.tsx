@@ -173,6 +173,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private eventReferences: any[] = [];
     private lastMessage: IMessage | null = null;
     private rtl: boolean = localStorage.getItem('river.lang') === 'fa' || false;
+    private isMobileView: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -214,6 +215,8 @@ class ChatInput extends React.Component<IProps, IState> {
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
         this.broadcaster = Broadcaster.getInstance();
+
+        this.isMobileView = (window.innerWidth < 600);
     }
 
     public componentDidMount() {
@@ -371,7 +374,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                                onKeyDown={this.inputKeyDownHandler}
                                                allowSpaceInQuery={true}
                                                className="mention"
-                                               placeholder={i18n.t('input.type_your_message_here')}
+                                               placeholder={this.isMobileView? i18n.t('input.type') : i18n.t('input.type_your_message_here')}
                                                style={defaultMentionInputStyle}
                                                suggestionsPortalHost={this.mentionContainer}
                                                spellcheck={true}

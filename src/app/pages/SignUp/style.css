@@ -101,6 +101,12 @@ input {
   background-color: var(--white);
   flex-direction: column;
   z-index: 1; }
+  .login-page .close-btn {
+    position: fixed;
+    top: 8px;
+    left: 8px; }
+    .login-page .close-btn button svg {
+      font-size: 28px; }
   .login-page .login-wrapper {
     position: relative;
     width: 440px;
@@ -364,6 +370,8 @@ input {
 
 html[theme="dark"] .login-page {
   background-color: var(--dark-low); }
+  html[theme="dark"] .login-page .close-btn button svg {
+    color: var(--white); }
   html[theme="dark"] .login-page .top-logo {
     background-color: transparent; }
   html[theme="dark"] .login-page .top-title {
@@ -392,6 +400,8 @@ html[theme="dark"] .login-page {
 
 html[theme="dark-blue"] .login-page {
   background-color: var(--dark-blue-low); }
+  html[theme="dark-blue"] .login-page .close-btn button svg {
+    color: var(--white); }
   html[theme="dark-blue"] .login-page .top-logo {
     background-color: transparent; }
   html[theme="dark-blue"] .login-page .top-title {

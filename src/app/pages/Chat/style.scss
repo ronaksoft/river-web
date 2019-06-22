@@ -63,6 +63,16 @@
         transform: translate(-50%, 0);
       }
 
+      .close-btn {
+        margin-left: -12px;
+
+        button {
+          svg {
+            font-size: 28px;
+          }
+        }
+      }
+
       .new-message {
         color: #60BF70;
         cursor: pointer;
@@ -701,6 +711,14 @@ html[theme="dark-blue"] {
 
       .top-bar {
         border-bottom: 1px solid var(--dark-low-op50);
+
+        .close-btn {
+          button {
+            svg {
+              color: var(--white);
+            }
+          }
+        }
       }
 
       .actions {
