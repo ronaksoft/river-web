@@ -33,7 +33,8 @@
     "contacts": "Contacts",
     "settings": "Settings",
     "choose_recipients": "Choose Recipient(s)",
-    "you": "You"
+    "you": "You",
+    "close": "Close"
   },
   "chat": {
     "search": "Search",

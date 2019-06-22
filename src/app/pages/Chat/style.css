@@ -130,8 +130,10 @@ input {
         transform: translate(-50%, 0); }
       .container .column-left .top-bar .close-btn {
         margin-left: -12px; }
-        .container .column-left .top-bar .close-btn button svg {
-          font-size: 28px; }
+        .container .column-left .top-bar .close-btn button {
+          padding: 6px; }
+          .container .column-left .top-bar .close-btn button svg {
+            font-size: 28px; }
       .container .column-left .top-bar .new-message {
         color: #60BF70;
         cursor: pointer; }
@@ -514,6 +516,9 @@ html[direction="rtl"] .container {
   html[direction="rtl"] .container .column-left .top-bar .actions {
     right: auto;
     left: 0; }
+  html[direction="rtl"] .container .column-left .top-bar .close-btn {
+    margin-left: 0;
+    margin-right: -12px; }
   html[direction="rtl"] .container .column-left.left-overlay-enable .left-overlay {
     right: 0; }
   html[direction="rtl"] .container .column-right {

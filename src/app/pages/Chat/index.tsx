@@ -488,7 +488,7 @@ class Chat extends React.Component<IProps, IState> {
                             <div className="top-bar">
                                 {iframeActive && <span className="close-btn">
                                     <Tooltip
-                                        title="close"
+                                        title={i18n.t('general.close')}
                                         placement="bottom"
                                         onClick={this.closeIframeHandler}
                                     >

@@ -105,8 +105,10 @@ input {
     position: fixed;
     top: 8px;
     left: 8px; }
-    .login-page .close-btn button svg {
-      font-size: 28px; }
+    .login-page .close-btn button {
+      padding: 6px; }
+      .login-page .close-btn button svg {
+        font-size: 28px; }
   .login-page .login-wrapper {
     position: relative;
     width: 440px;

@@ -67,6 +67,8 @@
         margin-left: -12px;
 
         button {
+          padding: 6px;
+
           svg {
             font-size: 28px;
           }
@@ -645,6 +647,11 @@ html[direction="rtl"] {
         .actions {
           right: auto;
           left: 0;
+        }
+
+        .close-btn {
+          margin-left: 0;
+          margin-right: -12px;
         }
       }
 

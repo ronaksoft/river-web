@@ -96,9 +96,11 @@ input {
     position: fixed;
     top: 8px;
     left: 8px; }
-    .loading-page .close-btn button svg {
-      font-size: 28px;
-      color: var(--white); }
+    .loading-page .close-btn button {
+      padding: 6px; }
+      .loading-page .close-btn button svg {
+        font-size: 28px;
+        color: var(--white); }
   .loading-page .loading-area {
     position: relative;
     display: flex;

@@ -32,7 +32,8 @@
     "chats": "پیام‌ها",
     "settings": "تنظیمات",
     "choose_recipients": "مخاطب",
-    "you": "شما"
+    "you": "شما",
+    "close": "بستن"
   },
   "chat": {
     "search": "جستجو",
