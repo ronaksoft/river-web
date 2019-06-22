@@ -1,114 +1,114 @@
-<style>
-    #river-embed {
-        position: fixed;
-        width: 375px;
-        height: 520px;
-        bottom: 24px;
-        right: 24px;
-        border: none;
-        padding: 0;
-        margin: 0;
-        overflow: hidden;
-        border-radius: 5px;
-        visibility: hidden;
-    }
-
-    #river-embed.show {
-        visibility: visible;
-    }
-
-    #river-embed.show.fixed {
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-    }
-
-    #river-embed .river-mask {
-        position: absolute;
-        bottom: 24px;
-        right: 24px;
-        height: 0;
-        width: 0;
-        background: #ddddddcc;
-        border-radius: 3px;
-        z-index: 10;
-        transition: all 0.5s;
-    }
-
-    #river-embed.show .river-mask {
-        bottom: 0;
-        right: 0;
-        height: 100%;
-        width: 100%;
-    }
-
-    #river-embed.fixed .river-mask {
-        visibility: hidden;
-    }
-
-    #river-embed iframe {
-        position: absolute;
-        border: none;
-        bottom: 0;
-        right: 0;
-        padding: 0;
-        margin: 0;
-        width: 375px;
-        height: 520px;
-        opacity: 0;
-    }
-
-    #river-embed.fixed iframe {
-        opacity: 1;
-    }
-
-    #river-anchor {
-        position: fixed;
-        width: 48px;
-        height: 48px;
-        bottom: 24px;
-        right: 24px;
-        cursor: pointer;
-    }
-
-    #river-anchor.hide {
-        visibility: hidden;
-    }
-
-    #river-anchor img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: center center;
-    }
-
-    #river-anchor .badge {
-        position: absolute;
-        color: #fff;
-        background-color: #f34;
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        line-height: 12px;
-        text-align: center;
-        font-size: 12px;
-        font-weight: 600;
-        top: -2px;
-        right: -2px;
-        padding: 3px 5px 1px;
-        min-width: 16px;
-        justify-content: center;
-        transform: scale(0);
-        transition: transform 0.2s;
-    }
-
-    #river-anchor .badge.show {
-        transform: scale(1);
-    }
-</style>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
     <title>Iframe Test</title>
+    <style>
+        #river-embed {
+            position: fixed;
+            width: 375px;
+            height: 520px;
+            bottom: 24px;
+            right: 24px;
+            border: none;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+            border-radius: 5px;
+            visibility: hidden;
+        }
+
+        #river-embed.show {
+            visibility: visible;
+        }
+
+        #river-embed.show.fixed {
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        }
+
+        #river-embed .river-mask {
+            position: absolute;
+            bottom: 24px;
+            right: 24px;
+            height: 0;
+            width: 0;
+            background: #ddddddcc;
+            border-radius: 3px;
+            z-index: 10;
+            transition: all 0.5s;
+        }
+
+        #river-embed.show .river-mask {
+            bottom: 0;
+            right: 0;
+            height: 100%;
+            width: 100%;
+        }
+
+        #river-embed.fixed .river-mask {
+            visibility: hidden;
+        }
+
+        #river-embed iframe {
+            position: absolute;
+            border: none;
+            bottom: 0;
+            right: 0;
+            padding: 0;
+            margin: 0;
+            width: 375px;
+            height: 520px;
+            opacity: 0;
+        }
+
+        #river-embed.fixed iframe {
+            opacity: 1;
+        }
+
+        #river-anchor {
+            position: fixed;
+            width: 48px;
+            height: 48px;
+            bottom: 24px;
+            right: 24px;
+            cursor: pointer;
+        }
+
+        #river-anchor.hide {
+            visibility: hidden;
+        }
+
+        #river-anchor img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center center;
+        }
+
+        #river-anchor .badge {
+            position: absolute;
+            color: #fff;
+            background-color: #f34;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            line-height: 12px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            top: -2px;
+            right: -2px;
+            padding: 3px 5px 1px;
+            min-width: 16px;
+            justify-content: center;
+            transform: scale(0);
+            transition: transform 0.2s;
+        }
+
+        #river-anchor .badge.show {
+            transform: scale(1);
+        }
+    </style>
 </head>
 <body>
 <div id="river-embed">
