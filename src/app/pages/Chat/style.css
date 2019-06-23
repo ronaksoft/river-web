@@ -129,7 +129,8 @@ input {
         background-color: var(--light);
         transform: translate(-50%, 0); }
       .container .column-left .top-bar .close-btn {
-        margin-left: -12px; }
+        margin-left: -12px;
+        margin-right: 6px; }
         .container .column-left .top-bar .close-btn button {
           padding: 6px; }
           .container .column-left .top-bar .close-btn button svg {
@@ -137,6 +138,8 @@ input {
       .container .column-left .top-bar .new-message {
         color: #60BF70;
         cursor: pointer; }
+        .container .column-left .top-bar .new-message .river-logo {
+          margin: 0 6px 0 0; }
       .container .column-left .top-bar .actions {
         position: absolute;
         top: 0;
@@ -274,13 +277,13 @@ input {
     z-index: 120;
     width: 0;
     overflow: hidden;
-    transition: width 0.3s linear;
+    transition: width 0.05s linear;
     display: block; }
     .container .column-right.active {
       width: 318px; }
   .container.mobile-view {
     width: 200vw;
-    transition: margin-left 0.3s linear; }
+    transition: margin-left 0.05s linear; }
     .container.mobile-view.chat-view {
       margin-left: -100vw; }
     .container.mobile-view .column-left,
@@ -517,8 +520,10 @@ html[direction="rtl"] .container {
     right: auto;
     left: 0; }
   html[direction="rtl"] .container .column-left .top-bar .close-btn {
-    margin-left: 0;
+    margin-left: 6px;
     margin-right: -12px; }
+  html[direction="rtl"] .container .column-left .top-bar .new-message .river-logo {
+    margin: 0 0 0 6px; }
   html[direction="rtl"] .container .column-left.left-overlay-enable .left-overlay {
     right: 0; }
   html[direction="rtl"] .container .column-right {

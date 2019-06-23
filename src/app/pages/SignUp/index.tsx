@@ -12,13 +12,13 @@ import SDK from '../../services/sdk';
 // @ts-ignore
 import IntlTelInput from 'react-intl-tel-input';
 import Snackbar from '@material-ui/core/Snackbar';
-import {CloseRounded, RefreshRounded} from '@material-ui/icons';
+import {CloseRounded, DoneRounded, RefreshRounded} from '@material-ui/icons';
 import {C_ERR, C_ERR_ITEM} from '../../services/sdk/const';
 import RiverLogo from '../../components/RiverLogo';
 import NotificationService from '../../services/notification';
-import {C_VERSION} from '../../components/SettingsMenu';
+import {C_VERSION, languageList} from '../../components/SettingsMenu';
 import TextField from '@material-ui/core/TextField';
-import {TimerRounded, ArrowForwardRounded, CropFreeRounded} from '@material-ui/icons';
+import {TimerRounded, ArrowForwardRounded, CropFreeRounded, LanguageRounded} from '@material-ui/icons';
 import {SystemInfo} from '../../services/sdk/messages/chat.api.system_pb';
 import WorkspaceManger from '../../services/workspaceManager';
 import SettingsModal from '../../components/SettingsModal';
@@ -26,12 +26,13 @@ import jsQR from 'jsqr';
 import {defaultGateway} from '../../services/sdk/server/socket';
 import UserRepo from '../../repository/user';
 import i18n from '../../services/i18n';
-
-import './tel-input.css';
-import './style.css';
 import Tooltip from "@material-ui/core/Tooltip";
 import IconButton from "@material-ui/core/IconButton";
 import IframeService, {C_IFRAME_SUBJECT} from "../../services/iframe";
+import {find} from 'lodash';
+
+import './tel-input.css';
+import './style.css';
 
 const C_CLIENT = `Web:- ${window.navigator.userAgent}`;
 
@@ -48,10 +49,12 @@ interface IState {
     fName: string;
     iframeActive: boolean;
     lName: string;
+    languageDialogOpen: boolean;
     loading: boolean;
     phone?: string;
     phoneHash?: string;
     qrCodeOpen: boolean;
+    selectedLanguage: string;
     snackOpen: boolean;
     snackText: string;
     step: string;
@@ -88,10 +91,12 @@ class SignUp extends React.Component<IProps, IState> {
             fName: '',
             iframeActive: this.iframeService.isActive(),
             lName: '',
+            languageDialogOpen: false,
             loading: false,
             phone: '',
             phoneHash: '',
             qrCodeOpen: false,
+            selectedLanguage: localStorage.getItem('river.lang') || 'en',
             snackOpen: false,
             snackText: '',
             step,
@@ -144,12 +149,10 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     public render() {
-        // const {moreInfoAnchorEl} = this.state;
-        // const open = Boolean(moreInfoAnchorEl);
         const {step, countdown, workspaceInfo, iframeActive} = this.state;
         return (
-            <div className="limiter">
-                <div className="login-page">
+            <div className="login-page">
+                <div className="login-page-container">
                     {iframeActive && <span className="close-btn">
                                     <Tooltip
                                         title={i18n.t('general.close')}
@@ -283,6 +286,18 @@ class SignUp extends React.Component<IProps, IState> {
                         </div>
                     </div>
                 </div>
+                <div className="login-bottom-bar">
+                    <div className="version-container">{C_VERSION}</div>
+                    <div className="link-container">
+                        <a href="https://river.im" target="_blank">{i18n.t('sign_up.home')}</a>
+                        <span className="bullet"/>
+                        <a href="https://river.im/faq" target="_blank">{i18n.t('sign_up.faq')}</a>
+                        <span className="bullet"/>
+                        <a href="https://river.im/terms" target="_blank">{i18n.t('sign_up.term_of_services')}</a>
+                    </div>
+                    <div className="language-container"
+                         onClick={this.showLanguageDialogHandler}>{i18n.t(`sign_up.${this.state.selectedLanguage}`)}</div>
+                </div>
                 <Snackbar
                     anchorOrigin={{vertical: 'top', horizontal: 'center'}}
                     open={this.state.snackOpen}
@@ -296,13 +311,31 @@ class SignUp extends React.Component<IProps, IState> {
                 <SettingsModal
                     open={this.state.qrCodeOpen}
                     onClose={this.qrCodeDialogCloseHandler}
-                    title="Scan QR Code"
+                    title={i18n.t('sign_up.scan_qr_code')}
                     fit={true}
                     icon={<CropFreeRounded/>}
                     noScrollbar={true}
                 >
                     <div className="qr-code-container">
                         <canvas ref={this.qrCanvasRefHandler} height="320" width="320"/>
+                    </div>
+                </SettingsModal>
+                <SettingsModal
+                    open={this.state.languageDialogOpen}
+                    onClose={this.languageDialogCloseHandler}
+                    title={i18n.t('sign_up.change_language')}
+                    icon={<LanguageRounded/>}
+                >
+                    <div className="language-list-container">
+                        {languageList.map((item, key) => {
+                            return (<div key={key} className="language-item"
+                                         onClick={this.changeLanguage.bind(this, item.lang)}>
+                                <div className="language-label">{item.title}</div>
+                                <div className="check">
+                                    {item.lang === this.state.selectedLanguage && <DoneRounded/>}
+                                </div>
+                            </div>);
+                        })}
                     </div>
                 </SettingsModal>
             </div>
@@ -786,6 +819,34 @@ class SignUp extends React.Component<IProps, IState> {
 
     private closeIframeHandler = () => {
         this.iframeService.close();
+    }
+
+    private showLanguageDialogHandler = () => {
+        this.setState({
+            languageDialogOpen: true,
+        });
+    }
+
+    private changeLanguage = (lang: string) => {
+        const l = localStorage.getItem('river.lang');
+        if (l !== lang) {
+            // @ts-ignore
+            const selectedLang = find(languageList, {lang});
+            localStorage.setItem('river.lang', lang);
+            if (selectedLang) {
+                localStorage.setItem('river.lang.dir', selectedLang.dir);
+            }
+            this.setState({
+                selectedLanguage: lang,
+            });
+            window.location.reload();
+        }
+    }
+
+    private languageDialogCloseHandler = () => {
+        this.setState({
+            languageDialogOpen: false,
+        });
     }
 }
 

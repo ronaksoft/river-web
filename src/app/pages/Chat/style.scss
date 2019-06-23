@@ -65,6 +65,7 @@
 
       .close-btn {
         margin-left: -12px;
+        margin-right: 6px;
 
         button {
           padding: 6px;
@@ -78,6 +79,10 @@
       .new-message {
         color: #60BF70;
         cursor: pointer;
+
+        .river-logo {
+          margin: 0 6px 0 0;
+        }
       }
 
       .actions {
@@ -281,7 +286,7 @@
     z-index: 120;
     width: 0;
     overflow: hidden;
-    transition: width 0.3s linear;
+    transition: width 0.05s linear;
     display: block;
 
     &.active {
@@ -291,7 +296,7 @@
 
   &.mobile-view {
     width: 200vw;
-    transition: margin-left 0.3s linear;
+    transition: margin-left 0.05s linear;
 
     &.chat-view {
       margin-left: -100vw;
@@ -650,8 +655,14 @@ html[direction="rtl"] {
         }
 
         .close-btn {
-          margin-left: 0;
+          margin-left: 6px;
           margin-right: -12px;
+        }
+
+        .new-message {
+          .river-logo {
+            margin: 0 0 0 6px;
+          }
         }
       }
 

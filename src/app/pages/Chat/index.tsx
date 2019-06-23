@@ -176,6 +176,7 @@ class Chat extends React.Component<IProps, IState> {
     private rtlDetector: RTLDetector;
     private moveDownRef: any = null;
     private moveDownVisible: boolean = false;
+    private endOfMessage: boolean = false;
     private lastMessageId: number = -1;
     private dialogReadMap: { [key: string]: { peer: InputPeer, id: number } } = {};
     private readonly messageReadThrottle: any = null;
@@ -370,7 +371,11 @@ class Chat extends React.Component<IProps, IState> {
 
     public componentWillReceiveProps(newProps: IProps) {
         const selectedId = newProps.match.params.id;
-        if (selectedId === this.state.selectedDialogId) {
+        if (selectedId === 'null') {
+            if (this.isMobileView) {
+                this.setChatView(false);
+            }
+        } else if (selectedId === this.state.selectedDialogId) {
             if (this.isMobileView) {
                 this.setChatView(true);
             }
@@ -498,7 +503,9 @@ class Chat extends React.Component<IProps, IState> {
                                     </Tooltip>
                                 </span>}
                                 <span className="new-message">
-                                    <RiverLogo height={24} width={24}/>
+                                    {iframeActive &&
+                                    <a href="/" target="_blank"><RiverLogo height={28} width={28}/></a>}
+                                    {!iframeActive && <RiverLogo height={28} width={28}/>}
                                 </span>
                                 <div className="actions">
                                     {chatTopIcons.map((item, key) => {
@@ -1009,7 +1016,6 @@ class Chat extends React.Component<IProps, IState> {
         if (this.state.isUpdating) {
             return;
         }
-        const tMoveDownVisible = this.moveDownVisible;
         if (data.peerid === this.state.selectedDialogId && this.messageComponent) {
             // Check if Top Message exits
             const dialog = this.getDialogById(this.state.selectedDialogId);
@@ -1019,7 +1025,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.setScrollMode('none');
                 this.messageComponent.setMessages(dataMsg.msgs, () => {
                     // Scroll down if possible
-                    if (!tMoveDownVisible && this.isInChat) {
+                    if (!this.endOfMessage && this.isInChat) {
                         this.messageComponent.list.forceUpdateGrid();
                         this.messageComponent.animateToEnd();
                         if (dataMsg.maxReadId !== -1) {
@@ -1071,7 +1077,7 @@ class Chat extends React.Component<IProps, IState> {
                         this.dialogRemove(message.peerid || '');
                     }
                 });
-            } else if (message.senderid !== this.connInfo.UserID && (message.peerid !== this.state.selectedDialogId || tMoveDownVisible || !this.isInChat)) {
+            } else if (message.senderid !== this.connInfo.UserID && (message.peerid !== this.state.selectedDialogId || this.endOfMessage || !this.isInChat)) {
                 this.updateDialogsCounter(message.peerid || '', {
                     mentionCounterIncrease: (message.mention_me ? 1 : 0),
                     unreadCounterIncrease: 1,
@@ -1514,6 +1520,7 @@ class Chat extends React.Component<IProps, IState> {
             const dataMsg = this.modifyMessages(this.messages, resMsgs, false);
             if (this.messages.length === 0) {
                 this.setMoveDownVisible(false);
+                this.setEndOfMessage(false);
             }
             this.messageComponent.setMessages(dataMsg.msgs, () => {
                 // this.messageComponent.list.recomputeRowHeights();
@@ -1565,6 +1572,7 @@ class Chat extends React.Component<IProps, IState> {
             }
             this.setScrollMode('none');
             this.setMoveDownVisible(res.messages.length > 0);
+            this.setEndOfMessage(res.messages.length > 0);
             const dataMsg = this.modifyMessages(this.messages, res.messages, true, dialog.readinboxmaxid || 0);
             this.messageComponent.setMessages(dataMsg.msgs);
             this.setLoading(false);
@@ -2389,7 +2397,6 @@ class Chat extends React.Component<IProps, IState> {
         if (data.peerids && data.peerids.indexOf(this.state.selectedDialogId) > -1) {
             // this.getMessagesByDialogId(this.state.selectedDialogId);
             const after = this.getValidAfter();
-            const tMoveDownVisible = this.moveDownVisible;
             this.messageRepo.getManyCache({after, limit: 100, ignoreMax: true}, peer).then((res) => {
                 if (!this.messageComponent) {
                     return;
@@ -2397,7 +2404,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.setScrollMode('none');
                 const modifiedMsgs = this.modifyMessages(this.messages, res.messages, true);
                 this.messageComponent.setMessages(modifiedMsgs.msgs, () => {
-                    if (!tMoveDownVisible && this.isInChat) {
+                    if (!this.endOfMessage && this.isInChat) {
                         setTimeout(() => {
                             this.messageComponent.animateToEnd();
                         }, 100);
@@ -2687,7 +2694,8 @@ class Chat extends React.Component<IProps, IState> {
     private messageRenderedHandler = (info: any) => {
         const messages = this.messages;
         const diff = messages.length - info.stopIndex;
-        this.setMoveDownVisible(diff > 2);
+        this.setMoveDownVisible(diff > 1);
+        this.setEndOfMessage(diff > 2);
         if (this.isLoading) {
             return;
         }
@@ -4085,6 +4093,10 @@ class Chat extends React.Component<IProps, IState> {
 
     private moveDownClickHandler = () => {
         this.messageComponent.animateToEnd();
+    }
+
+    private setEndOfMessage(end: boolean) {
+        this.endOfMessage = end;
     }
 
     private setMoveDownVisible(visible: boolean) {

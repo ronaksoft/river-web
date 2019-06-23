@@ -8,7 +8,7 @@
 */
 @import '../../../style/mixin';
 
-.bottom-bar {
+.chat-bottom-bar {
   position: relative;
   width: calc(100% - 12px);
   height: 50px;
@@ -55,7 +55,7 @@
 }
 
 html[theme="dark"] {
-  .bottom-bar {
+  .chat-bottom-bar {
     &:before {
       background-color: var(--dark-low-op50);
     }
@@ -73,7 +73,7 @@ html[theme="dark"] {
 }
 
 html[theme="dark-blue"] {
-  .bottom-bar {
+  .chat-bottom-bar {
     &:before {
       background-color: var(--dark-blue-low-op50);
     }

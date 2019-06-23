@@ -194,7 +194,13 @@
     "second": "ثانیه",
     "resend_code": "بازارسال کد",
     "cannot_reach_to_server": "سرور قابل دسترس نیست",
-    "code_is_incorrect": "کد غلط است"
+    "code_is_incorrect": "کد غلط است",
+    "change_language": "تغییر زبان",
+    "home": "صفحه اصلی",
+    "faq": "سوالات متداول",
+    "term_of_services": "شرایط استفاده",
+    "en": "en",
+    "fa": "فا"
   },
   "status": {
     "members": "{0} عضو",

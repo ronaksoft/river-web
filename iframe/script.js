@@ -1,4 +1,4 @@
-class IframeService {
+class RiverService {
     iframe = null;
     anchor = null;
     fnQueue = {};
@@ -9,18 +9,21 @@ class IframeService {
     anchorEl = '';
     riverOpen = false;
     onload = null;
+    visible = false;
 
-    constructor(el, anchorEl) {
-        if (!!IframeService.instance) {
-            return IframeService.instance;
+    constructor(url) {
+        if (!!RiverService.instance) {
+            return RiverService.instance;
         }
 
-        IframeService.instance = this;
+        this.init(url);
 
-        this.iframeEl = el;
-        this.anchorEl = anchorEl;
+        RiverService.instance = this;
 
-        this.iframe = document.querySelector(`${el} iframe`);
+        this.iframeEl = `#river-iframe`;
+        this.anchorEl = `#river-anchor`;
+
+        this.iframe = document.querySelector(`${this.iframeEl} iframe`);
 
         window.addEventListener('message', (e) => {
             if (e.data) {
@@ -48,12 +51,160 @@ class IframeService {
                 });
                 this.anchor.classList.remove('hide');
             }
+            this.visible = true;
             if (this.onload) {
                 this.onload();
             }
         };
 
         return this;
+    }
+
+    init(url) {
+        const css = `
+        #river-embed.hide {
+            display: none;
+        }
+        
+        #river-iframe {
+            position: fixed;
+            width: 375px;
+            height: 520px;
+            bottom: 24px;
+            right: 24px;
+            border: none;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+            border-radius: 5px;
+            visibility: hidden;
+        }
+
+        #river-iframe.show {
+            visibility: visible;
+        }
+
+        #river-iframe.show.fixed {
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        }
+
+        #river-iframe .river-mask {
+            position: absolute;
+            bottom: 24px;
+            right: 24px;
+            height: 0;
+            width: 0;
+            background: #ddddddcc;
+            border-radius: 3px;
+            z-index: 10;
+            transition: all 0.5s;
+        }
+
+        #river-iframe.show .river-mask {
+            bottom: 0;
+            right: 0;
+            height: 100%;
+            width: 100%;
+        }
+
+        #river-iframe.fixed .river-mask {
+            visibility: hidden;
+        }
+
+        #river-iframe iframe {
+            position: absolute;
+            border: none;
+            bottom: 0;
+            right: 0;
+            padding: 0;
+            margin: 0;
+            width: 375px;
+            height: 520px;
+            opacity: 0;
+            z-index: 10;
+        }
+
+        #river-iframe.fixed iframe {
+            opacity: 1;
+        }
+
+        #river-anchor {
+            position: fixed;
+            width: 48px;
+            height: 48px;
+            bottom: 24px;
+            right: 24px;
+            cursor: pointer;
+        }
+
+        #river-anchor.hide {
+            visibility: hidden;
+        }
+
+        #river-anchor img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center center;
+        }
+
+        #river-anchor .badge {
+            position: absolute;
+            color: #fff;
+            background-color: #f34;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            line-height: 12px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            top: -2px;
+            right: -2px;
+            padding: 3px 5px 1px;
+            min-width: 16px;
+            justify-content: center;
+            transform: scale(0);
+            transition: transform 0.2s;
+        }
+
+        #river-anchor .badge.show {
+            transform: scale(1);
+        }`;
+        const style = document.createElement('style');
+        style.innerHTML = css;
+        document.body.appendChild(style);
+
+        const div = document.createElement('div');
+        div.setAttribute('id', 'river-embed');
+        div.innerHTML = `<div id="river-iframe">
+            <div class="river-mask"></div>
+            <iframe src="${url || 'https://web.river.im'}">
+                <p>Your browser does not support iframes.</p>
+            </iframe>
+        </div>
+        <div id="river-anchor" class="hide">
+            <div class="badge">0</div>
+            <img src="icon.png"/>
+        </div>`;
+        document.body.appendChild(div);
+    }
+
+    toggleVisible(visible) {
+        if (visible === undefined) {
+            this.visible = !this.visible;
+        } else {
+            this.visible = visible;
+        }
+        const el = document.querySelector('#river-embed');
+        window.console.log(this.visible);
+        if (el) {
+            if (!this.visible) {
+                el.classList.add('hide');
+            } else {
+                el.classList.remove('hide');
+            }
+        }
     }
 
     riverLoaded() {

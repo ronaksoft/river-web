@@ -198,7 +198,13 @@
     "second": "s",
     "resend_code": "Resend Code",
     "cannot_reach_to_server": "Cannot reach to server",
-    "code_is_incorrect": "Code is incorrect"
+    "code_is_incorrect": "Code is incorrect",
+    "change_language": "Change Language",
+    "home": "Home",
+    "faq": "FAQ",
+    "term_of_services": "Term of Services",
+    "en": "en",
+    "fa": "fa"
   },
   "status": {
     "members": "{0} members",

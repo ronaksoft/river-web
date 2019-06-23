@@ -6,7 +6,7 @@
     Auditor: HamidrezaKK
     Copyright Ronak Software Group 2018
 */
-.bottom-bar {
+.chat-bottom-bar {
   position: relative;
   width: calc(100% - 12px);
   height: 50px;
@@ -14,7 +14,7 @@
   display: flex;
   align-items: center;
   justify-content: center; }
-  .bottom-bar:before {
+  .chat-bottom-bar:before {
     position: absolute;
     top: 0;
     left: 0;
@@ -23,7 +23,7 @@
     height: 1px;
     content: '';
     background-color: var(--light); }
-  .bottom-bar a {
+  .chat-bottom-bar a {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -31,38 +31,38 @@
     align-items: center;
     cursor: pointer;
     transform: translateY(2px); }
-    .bottom-bar a .title {
+    .chat-bottom-bar a .title {
       font-size: 12px;
       color: var(--grey); }
-    .bottom-bar a svg {
+    .chat-bottom-bar a svg {
       cursor: pointer;
       fill: var(--grey);
       font-size: 24px; }
-    .bottom-bar a.active .title, .bottom-bar a:hover .title {
+    .chat-bottom-bar a.active .title, .chat-bottom-bar a:hover .title {
       color: var(--dark); }
-    .bottom-bar a.active svg, .bottom-bar a:hover svg {
+    .chat-bottom-bar a.active svg, .chat-bottom-bar a:hover svg {
       fill: var(--dark); }
 
-html[theme="dark"] .bottom-bar:before {
+html[theme="dark"] .chat-bottom-bar:before {
   background-color: var(--dark-low-op50); }
 
-html[theme="dark"] .bottom-bar a.active .title, html[theme="dark"] .bottom-bar a:hover .title {
+html[theme="dark"] .chat-bottom-bar a.active .title, html[theme="dark"] .chat-bottom-bar a:hover .title {
   color: var(--light); }
 
-html[theme="dark"] .bottom-bar a.active svg, html[theme="dark"] .bottom-bar a:hover svg {
+html[theme="dark"] .chat-bottom-bar a.active svg, html[theme="dark"] .chat-bottom-bar a:hover svg {
   fill: var(--light); }
 
-html[theme="dark-blue"] .bottom-bar:before {
+html[theme="dark-blue"] .chat-bottom-bar:before {
   background-color: var(--dark-blue-low-op50); }
 
-html[theme="dark-blue"] .bottom-bar a:hover .title {
+html[theme="dark-blue"] .chat-bottom-bar a:hover .title {
   color: var(--dark-blue-hover); }
 
-html[theme="dark-blue"] .bottom-bar a:hover svg {
+html[theme="dark-blue"] .chat-bottom-bar a:hover svg {
   fill: var(--dark-blue-hover); }
 
-html[theme="dark-blue"] .bottom-bar a.active .title {
+html[theme="dark-blue"] .chat-bottom-bar a.active .title {
   color: var(--dark-blue-high-alt); }
 
-html[theme="dark-blue"] .bottom-bar a.active svg {
+html[theme="dark-blue"] .chat-bottom-bar a.active svg {
   fill: var(--dark-blue-high-alt); }

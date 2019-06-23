@@ -1248,8 +1248,10 @@ class Message extends React.Component<IProps, IState> {
             }
             if (tries <= 60) {
                 window.requestAnimationFrame(() => {
-                    this.list.scrollToRow(index);
-                    this.checkScroll(id, index, tries);
+                    if (this.list) {
+                        this.list.scrollToRow(index);
+                        this.checkScroll(id, index, tries);
+                    }
                 });
             } else {
                 this.removeSnapshot();

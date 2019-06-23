@@ -64,7 +64,7 @@ class BottomBar extends React.Component<IProps, IState> {
     public render() {
         const {selected, unreadCounter} = this.state;
         return (
-            <div className="bottom-bar">
+            <div className="chat-bottom-bar">
                 {items.map((item, index) => {
                     return (
                         <Tooltip

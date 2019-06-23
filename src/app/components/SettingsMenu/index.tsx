@@ -58,8 +58,20 @@ import Slider from "@material-ui/lab/Slider";
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.24.11';
+export const C_VERSION = '0.24.12';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
+
+export const languageList = [{
+    dir: 'rtl',
+    label: 'Farsi',
+    lang: 'fa',
+    title: 'فارسی'
+}, {
+    dir: 'ltr',
+    label: 'English',
+    lang: 'en',
+    title: 'English'
+}];
 
 interface IProps {
     onClose?: () => void;
@@ -129,7 +141,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private backgroundService: BackgroundService;
     private downloadManger: DownloadManager;
     private settingsStorageUsageModalRef: SettingsStorageUsageModal;
-    private readonly languageList: any[] = [];
 
     constructor(props: IProps) {
         super(props);
@@ -202,18 +213,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.downloadManger = DownloadManager.getInstance();
 
         this.currentAuthID = this.sdk.getConnInfo().AuthID;
-
-        this.languageList = [{
-            dir: 'rtl',
-            label: 'Farsi',
-            lang: 'fa',
-            title: 'فارسی'
-        }, {
-            dir: 'ltr',
-            label: 'English',
-            lang: 'en',
-            title: 'English'
-        }];
     }
 
     public componentDidMount() {
@@ -803,7 +802,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                     autoHide={true}
                                 >
                                     <div className="info language-list">
-                                        {this.languageList.map((item, key) => {
+                                        {languageList.map((item, key) => {
                                             return (<div key={key} className="language-item"
                                                          onClick={this.changeLanguage.bind(this, item.lang)}>
                                                 <div className="language-label">{item.title}</div>
@@ -879,7 +878,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         const l = localStorage.getItem('river.lang');
         if (l !== lang) {
             // @ts-ignore
-            const selectedLang = find(this.languageList, {lang});
+            const selectedLang = find(languageList, {lang});
             localStorage.setItem('river.lang', lang);
             if (selectedLang) {
                 localStorage.setItem('river.lang.dir', selectedLang.dir);

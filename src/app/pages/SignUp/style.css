@@ -85,11 +85,46 @@ input {
   outline: none;
   border: none; }
 
-.limiter {
+.login-page {
   width: 100%;
   margin: 0 auto; }
+  .login-page .login-bottom-bar {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 48px;
+    background-color: #2E2E2E;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    z-index: 10; }
+    .login-page .login-bottom-bar .version-container {
+      width: 72px;
+      color: #ACB0B4; }
+    .login-page .login-bottom-bar .link-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center; }
+      .login-page .login-bottom-bar .link-container .bullet {
+        height: 4px;
+        width: 4px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.32);
+        margin: 0 6px; }
+      .login-page .login-bottom-bar .link-container a {
+        color: var(--white);
+        text-transform: none;
+        text-decoration: none; }
+    .login-page .login-bottom-bar .language-container {
+      width: 64px;
+      text-transform: uppercase;
+      cursor: pointer; }
 
-.login-page {
+.login-page-container {
   position: relative;
   width: 100%;
   min-height: 100vh;
@@ -101,23 +136,24 @@ input {
   background-color: var(--white);
   flex-direction: column;
   z-index: 1; }
-  .login-page .close-btn {
+  .login-page-container .close-btn {
     position: fixed;
     top: 8px;
     left: 8px; }
-    .login-page .close-btn button {
+    .login-page-container .close-btn button {
       padding: 6px; }
-      .login-page .close-btn button svg {
+      .login-page-container .close-btn button svg {
         font-size: 28px; }
-  .login-page .login-wrapper {
+  .login-page-container .login-wrapper {
     position: relative;
     width: 440px;
     min-height: 380px;
-    border-radius: 10px; }
-    .login-page .login-wrapper .login-form {
+    border-radius: 10px;
+    margin-bottom: 48px; }
+    .login-page-container .login-wrapper .login-form {
       width: 100%;
       padding: 10px; }
-    .login-page .login-wrapper .login-form-title {
+    .login-page-container .login-wrapper .login-form-title {
       font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
       font-weight: 600;
       font-size: 30px;
@@ -127,13 +163,13 @@ input {
       text-align: center;
       width: 100%;
       display: block; }
-    .login-page .login-wrapper .input-wrapper {
+    .login-page-container .login-wrapper .input-wrapper {
       width: 100%;
       position: relative;
       border: 1px solid transparent;
       border-radius: 3px;
       margin-bottom: 16px; }
-      .login-page .login-wrapper .input-wrapper .text-wrapper {
+      .login-page-container .login-wrapper .input-wrapper .text-wrapper {
         border: 1px solid #c4c4c4;
         border-radius: 7px;
         height: 56px;
@@ -144,15 +180,15 @@ input {
         font-size: 22px;
         font-weight: bold;
         padding: 4px 12px; }
-      .login-page .login-wrapper .input-wrapper.qr-wrapper {
+      .login-page-container .login-wrapper .input-wrapper.qr-wrapper {
         text-align: right; }
-      .login-page .login-wrapper .input-wrapper .qr-link {
+      .login-page-container .login-wrapper .input-wrapper .qr-link {
         font-weight: bold;
         font-size: 17px;
         line-height: 22px;
         color: #479FF6;
         cursor: pointer; }
-    .login-page .login-wrapper .input {
+    .login-page-container .login-wrapper .input {
       font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
       font-weight: 400;
       color: #0f954b;
@@ -162,10 +198,10 @@ input {
       height: 54px;
       display: block;
       background: transparent; }
-    .login-page .login-wrapper .code input {
+    .login-page-container .login-wrapper .code input {
       text-align: center;
       letter-spacing: 30px; }
-    .login-page .login-wrapper .focus-input {
+    .login-page-container .login-wrapper .focus-input {
       position: absolute;
       display: block;
       width: calc(100% + 2px);
@@ -179,15 +215,15 @@ input {
       opacity: 0;
       transition: all 0.4s;
       transform: scaleX(1.1) scaleY(1.3); }
-    .login-page .login-wrapper .input:focus + .focus-input {
+    .login-page-container .login-wrapper .input:focus + .focus-input {
       visibility: visible;
       opacity: 1;
       transform: scale(1); }
-    .login-page .login-wrapper .eff-focus-selection {
+    .login-page-container .login-wrapper .eff-focus-selection {
       visibility: visible;
       opacity: 1;
       transform: scale(1); }
-    .login-page .login-wrapper .container-login-form-btn {
+    .login-page-container .login-wrapper .container-login-form-btn {
       position: absolute;
       width: 100%;
       display: flex;
@@ -199,7 +235,7 @@ input {
       bottom: 0;
       left: 0;
       right: 0; }
-    .login-page .login-wrapper .login-form-btn {
+    .login-page-container .login-wrapper .login-form-btn {
       height: 56px;
       width: 56px;
       display: flex;
@@ -211,35 +247,35 @@ input {
       border: 0;
       cursor: pointer;
       transition: all 0.4s; }
-      .login-page .login-wrapper .login-form-btn.disabled {
+      .login-page-container .login-wrapper .login-form-btn.disabled {
         animation-name: button-disabled;
         animation-iteration-count: infinite;
         animation-duration: 0.5s; }
-      .login-page .login-wrapper .login-form-btn:hover {
+      .login-page-container .login-wrapper .login-form-btn:hover {
         background-color: var(--river-dark); }
-      .login-page .login-wrapper .login-form-btn svg {
+      .login-page-container .login-wrapper .login-form-btn svg {
         font-size: 40px;
         color: var(--white); }
-    .login-page .login-wrapper .grey-link {
+    .login-page-container .login-wrapper .grey-link {
       color: #8C8C8C;
       font-size: 16px;
       font-weight: bold;
       line-height: 18px;
       text-align: right;
       cursor: pointer; }
-      .login-page .login-wrapper .grey-link.disabled {
+      .login-page-container .login-wrapper .grey-link.disabled {
         opacity: 0.3;
         cursor: default; }
-    .login-page .login-wrapper .try-another-phone {
+    .login-page-container .login-wrapper .try-another-phone {
       color: #999;
       text-align: left;
       line-height: 24px;
       display: block;
       margin-top: -8px;
       cursor: pointer; }
-      .login-page .login-wrapper .try-another-phone label {
+      .login-page-container .login-wrapper .try-another-phone label {
         vertical-align: top; }
-  .login-page .top-logo {
+  .login-page-container .top-logo {
     position: relative;
     height: 156px;
     width: 156px;
@@ -248,14 +284,14 @@ input {
     display: flex;
     justify-content: center;
     align-items: center; }
-    .login-page .top-logo .river-logo {
+    .login-page-container .top-logo .river-logo {
       transition: opacity 0.3s; }
-  .login-page .top-title {
+  .login-page-container .top-title {
     color: var(--dark);
     font-size: 32px;
     font-weight: bold;
     padding: 32px 10px 0; }
-  .login-page .top-desc {
+  .login-page-container .top-desc {
     color: var(--grey);
     width: 435px;
     height: 32px;
@@ -263,15 +299,15 @@ input {
     text-align: center;
     font-size: 20px;
     margin-bottom: 44px; }
-  .login-page .river-form .intl-tel-input {
+  .login-page-container .river-form .intl-tel-input {
     margin-bottom: 16px;
     display: flex;
     flex-direction: row-reverse;
     border-radius: 7px;
     border: 1px solid #c4c4c4; }
-    .login-page .river-form .intl-tel-input:hover {
+    .login-page-container .river-form .intl-tel-input:hover {
       border-color: #212121; }
-    .login-page .river-form .intl-tel-input input[type=tel] {
+    .login-page-container .river-form .intl-tel-input input[type=tel] {
       font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
       font-weight: 400;
       position: relative;
@@ -289,18 +325,18 @@ input {
       outline: none;
       border-left: none;
       border-radius: 0 5px 5px 0; }
-    .login-page .river-form .intl-tel-input .flag-dropdown {
+    .login-page-container .river-form .intl-tel-input .flag-dropdown {
       position: static;
       background-color: #fff;
       border: 1px solid #cacaca;
       flex: 1;
       border-right: 1px solid #ddd;
       border-radius: 5px 0 0 5px; }
-      .login-page .river-form .intl-tel-input .flag-dropdown:hover {
+      .login-page-container .river-form .intl-tel-input .flag-dropdown:hover {
         background-color: #fff; }
-        .login-page .river-form .intl-tel-input .flag-dropdown:hover .selected-flag {
+        .login-page-container .river-form .intl-tel-input .flag-dropdown:hover .selected-flag {
           background-color: transparent; }
-      .login-page .river-form .intl-tel-input .flag-dropdown .selected-flag {
+      .login-page-container .river-form .intl-tel-input .flag-dropdown .selected-flag {
         z-index: 13;
         position: relative;
         width: auto;
@@ -311,29 +347,29 @@ input {
         display: flex;
         justify-content: center;
         align-items: center; }
-        .login-page .river-form .intl-tel-input .flag-dropdown .selected-flag .arrow {
+        .login-page-container .river-form .intl-tel-input .flag-dropdown .selected-flag .arrow {
           border-top: 4px solid #ababab; }
-          .login-page .river-form .intl-tel-input .flag-dropdown .selected-flag .arrow.up {
+          .login-page-container .river-form .intl-tel-input .flag-dropdown .selected-flag .arrow.up {
             border-top: none;
             border-bottom: 4px solid #ababab; }
-    .login-page .river-form .intl-tel-input .flag {
+    .login-page-container .river-form .intl-tel-input .flag {
       transform: scale(1.5); }
-    .login-page .river-form .intl-tel-input .country-list .country {
+    .login-page-container .river-form .intl-tel-input .country-list .country {
       padding: 7px 10px;
       text-align: left; }
-    .login-page .river-form .intl-tel-input .country-list .country-name {
+    .login-page-container .river-form .intl-tel-input .country-list .country-name {
       margin-right: 6px;
       margin-left: 6px; }
-  .login-page .river-form .countdown {
+  .login-page-container .river-form .countdown {
     display: flex;
     align-items: center;
     justify-content: flex-end;
     margin: 5px; }
-    .login-page .river-form .countdown .inner {
+    .login-page-container .river-form .countdown .inner {
       color: var(--river);
       font-weight: bold;
       font-size: 17px; }
-    .login-page .river-form .countdown svg {
+    .login-page-container .river-form .countdown svg {
       color: var(--river);
       font-size: 17px; }
 
@@ -370,62 +406,102 @@ input {
   min-width: 320px;
   background-color: var(--white); }
 
-html[theme="dark"] .login-page {
+.language-list-container {
+  width: 100%;
+  padding: 0; }
+  .language-list-container .language-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid var(--light);
+    height: 48px;
+    cursor: pointer; }
+    .language-list-container .language-item .language-label {
+      flex: 1;
+      text-align: left;
+      padding: 0 12px; }
+    .language-list-container .language-item .check {
+      width: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center; }
+      .language-list-container .language-item .check svg {
+        color: var(--river); }
+
+html[direction="rtl"] .login-page-container .login-wrapper .input-wrapper .qr-link {
+  direction: rtl; }
+
+html[theme="dark"] .login-page-container {
   background-color: var(--dark-low); }
-  html[theme="dark"] .login-page .close-btn button svg {
+  html[theme="dark"] .login-page-container .close-btn button svg {
     color: var(--white); }
-  html[theme="dark"] .login-page .top-logo {
+  html[theme="dark"] .login-page-container .top-logo {
     background-color: transparent; }
-  html[theme="dark"] .login-page .top-title {
+  html[theme="dark"] .login-page-container .top-title {
     color: var(--white); }
-  html[theme="dark"] .login-page .text-input label {
+  html[theme="dark"] .login-page-container .text-input label {
     color: var(--white); }
-  html[theme="dark"] .login-page .text-input input {
+  html[theme="dark"] .login-page-container .text-input input {
     color: var(--white);
     background-color: var(--dark-medium); }
-  html[theme="dark"] .login-page .text-input fieldset {
+  html[theme="dark"] .login-page-container .text-input fieldset {
     border: 1px solid var(--white) !important; }
-  html[theme="dark"] .login-page .river-form .intl-tel-input {
+  html[theme="dark"] .login-page-container .river-form .intl-tel-input {
     border-color: var(--white);
     background-color: var(--dark-medium); }
-    html[theme="dark"] .login-page .river-form .intl-tel-input:hover {
+    html[theme="dark"] .login-page-container .river-form .intl-tel-input:hover {
       border-color: var(--light); }
-    html[theme="dark"] .login-page .river-form .intl-tel-input .flag-container {
+    html[theme="dark"] .login-page-container .river-form .intl-tel-input .flag-container {
       background-color: var(--dark-medium); }
-    html[theme="dark"] .login-page .river-form .intl-tel-input input[type=tel] {
+    html[theme="dark"] .login-page-container .river-form .intl-tel-input input[type=tel] {
       font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
       font-weight: 400;
       background-color: var(--dark-medium);
       color: var(--white); }
-    html[theme="dark"] .login-page .river-form .intl-tel-input .flag-dropdown {
+    html[theme="dark"] .login-page-container .river-form .intl-tel-input .flag-dropdown {
       background-color: var(--dark-medium); }
 
-html[theme="dark-blue"] .login-page {
+html[theme="dark"] .qr-code-container {
+  background-color: var(--dark-low); }
+
+html[theme="dark"] .language-list-container .language-item {
+  color: var(--white);
+  border-color: var(--dark-low-op50); }
+
+html[theme="dark-blue"] .login-page-container {
   background-color: var(--dark-blue-low); }
-  html[theme="dark-blue"] .login-page .close-btn button svg {
+  html[theme="dark-blue"] .login-page-container .close-btn button svg {
     color: var(--white); }
-  html[theme="dark-blue"] .login-page .top-logo {
+  html[theme="dark-blue"] .login-page-container .top-logo {
     background-color: transparent; }
-  html[theme="dark-blue"] .login-page .top-title {
+  html[theme="dark-blue"] .login-page-container .top-title {
     color: var(--white); }
-  html[theme="dark-blue"] .login-page .text-input label {
+  html[theme="dark-blue"] .login-page-container .text-input label {
     color: var(--white); }
-  html[theme="dark-blue"] .login-page .text-input input {
+  html[theme="dark-blue"] .login-page-container .text-input input {
     color: var(--white);
     background-color: var(--dark-blue-medium); }
-  html[theme="dark-blue"] .login-page .text-input fieldset {
+  html[theme="dark-blue"] .login-page-container .text-input fieldset {
     border: 1px solid var(--white) !important; }
-  html[theme="dark-blue"] .login-page .river-form .intl-tel-input {
+  html[theme="dark-blue"] .login-page-container .river-form .intl-tel-input {
     border-color: var(--white);
     background-color: var(--dark-blue-medium); }
-    html[theme="dark-blue"] .login-page .river-form .intl-tel-input:hover {
+    html[theme="dark-blue"] .login-page-container .river-form .intl-tel-input:hover {
       border-color: var(--light); }
-    html[theme="dark-blue"] .login-page .river-form .intl-tel-input .flag-container {
+    html[theme="dark-blue"] .login-page-container .river-form .intl-tel-input .flag-container {
       background-color: var(--dark-blue-medium); }
-    html[theme="dark-blue"] .login-page .river-form .intl-tel-input input[type=tel] {
+    html[theme="dark-blue"] .login-page-container .river-form .intl-tel-input input[type=tel] {
       font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
       font-weight: 400;
       background-color: var(--dark-blue-medium);
       color: var(--white); }
-    html[theme="dark-blue"] .login-page .river-form .intl-tel-input .flag-dropdown {
+    html[theme="dark-blue"] .login-page-container .river-form .intl-tel-input .flag-dropdown {
       background-color: var(--dark-blue-medium); }
+
+html[theme="dark-blue"] .qr-code-container {
+  background-color: var(--dark-blue-low); }
+
+html[theme="dark-blue"] .language-list-container .language-item {
+  color: var(--white);
+  border-color: var(--dark-low-op50); }
