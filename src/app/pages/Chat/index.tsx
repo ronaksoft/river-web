@@ -1025,14 +1025,12 @@ class Chat extends React.Component<IProps, IState> {
                 this.setScrollMode('none');
                 this.messageComponent.setMessages(dataMsg.msgs, () => {
                     // Scroll down if possible
+                    this.messageComponent.list.forceUpdateGrid();
                     if (!this.endOfMessage && this.isInChat) {
-                        this.messageComponent.list.forceUpdateGrid();
                         this.messageComponent.animateToEnd();
                         if (dataMsg.maxReadId !== -1) {
                             this.sendReadHistory(this.state.peer, dataMsg.maxReadId);
                         }
-                    } else {
-                        this.messageComponent.list.forceUpdateGrid();
                     }
                 });
             }
