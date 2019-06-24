@@ -28,6 +28,7 @@ import {ClickAwayListener} from "@material-ui/core";
 import i18n from '../../services/i18n';
 
 import './style.css';
+import {Loading} from "../Loading";
 
 const C_MAX_WIDTH = 800;
 const C_MAX_HEIGHT = 600;
@@ -164,6 +165,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                             <React.Fragment key={index}>
                                 {item.thumbFileLocation && <div className="thumbnail">
                                     <CachedPhoto className="thumb-picture" fileLocation={item.thumbFileLocation}/>
+                                    <Loading/>
                                 </div>}
                                 <div className="photo">
                                     <CachedPhoto fileLocation={item.fileLocation}/>

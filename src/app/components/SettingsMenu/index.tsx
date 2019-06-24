@@ -13,7 +13,7 @@ import Button from '@material-ui/core/Button';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import {
-    KeyboardBackspaceRounded, PaletteRounded, PersonRounded, EditRounded, CheckRounded, BookmarkRounded,
+    KeyboardBackspaceRounded, PaletteRounded/*, PersonRounded*/, EditRounded, CheckRounded, BookmarkRounded,
     PhotoCameraRounded, CloseRounded, FormatSizeRounded, ChatBubbleRounded, FormatColorFillRounded, CollectionsRounded,
     Brightness2Rounded, ClearAllRounded, StorageRounded, LanguageRounded, DoneRounded,
 } from '@material-ui/icons';
@@ -54,11 +54,12 @@ import SettingsStorageUsageModal from '../SettingsStorageUsageModal';
 import {Loading} from '../Loading';
 import i18n from '../../services/i18n';
 import Slider from "@material-ui/lab/Slider";
+import UserName from "../UserName";
 
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.24.12';
+export const C_VERSION = '0.24.13';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{
@@ -178,7 +179,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             selectedCustomBackground: localStorage.getItem('river.theme.bg.pic') || '-1',
             selectedCustomBackgroundBlur: parseInt(localStorage.getItem('river.theme.bg.blur') || '0', 10),
             selectedLanguage: localStorage.getItem('river.lang') || 'en',
-            selectedTheme: 'light',
+            selectedTheme: localStorage.getItem('river.theme.color') || 'light',
             storageValues: {
                 auto_save_files: false,
                 chat_files: false,
@@ -298,6 +299,15 @@ class SettingsMenu extends React.Component<IProps, IState> {
                             <label>{i18n.t('settings.settings')}</label>
                         </div>
                         <div className="menu-content padding-side">
+                            <div className="account-summary">
+                                <div className="account-profile" onClick={this.selectPageHandler.bind(this, 'account')}>
+                                    <UserAvatar className="avatar" id={this.userId} noDetail={true}/>
+                                </div>
+                                <div className="account-info" onClick={this.selectPageHandler.bind(this, 'account')}>
+                                    <UserName className="username" id={this.userId}/>
+                                    <div className="account-phone">{phone}</div>
+                                </div>
+                            </div>
                             <div className="page-anchor">
                                 <Link to={`/chat/${this.userId}`}>
                                     <div className="icon color-saved-messages">
@@ -306,12 +316,12 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                     <div className="anchor-label">{i18n.t('general.saved_messages')}</div>
                                 </Link>
                             </div>
-                            <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'account')}>
+                            {/*<div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'account')}>
                                 <div className="icon color-account">
                                     <PersonRounded/>
                                 </div>
                                 <div className="anchor-label">{i18n.tf('settings.account_phone', phone)}</div>
-                            </div>
+                            </div>*/}
                             <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'storage')}>
                                 <div className="icon color-data">
                                     <StorageRounded/>
@@ -1304,13 +1314,13 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private avatarContextMenuItem() {
         const menuItems = [{
             cmd: 'show',
-            title: 'Show Photo',
+            title: i18n.t('settings.show_photo'),
         }, {
             cmd: 'remove',
-            title: 'Remove Photo',
+            title: i18n.t('settings.remove_photo'),
         }, {
             cmd: 'change',
-            title: 'Change Photo',
+            title: i18n.t('settings.change_photo'),
         }];
         return menuItems.map((item, index) => {
             return (<MenuItem key={index} onClick={this.avatarMoreCmdHandler.bind(this, item.cmd)}

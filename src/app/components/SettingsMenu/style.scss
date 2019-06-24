@@ -154,7 +154,7 @@
       }
 
       &.color-night-mode {
-        background-color: #795548;
+        background-color: #AB47BC;
       }
 
       &.color-font-size {
@@ -202,6 +202,51 @@
     &.log-out {
       margin-top: 12px;
       border: none;
+    }
+  }
+
+  .account-summary {
+    height: 128px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .account-profile {
+      width: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+
+      .avatar {
+        height: 64px;
+        width: 64px;
+
+        .avatar-image {
+          box-shadow: 0px 4px 8px rgba(107, 107, 107, 0.5);
+        }
+      }
+    }
+
+    .account-info {
+      padding: 0 0 0 24px;
+      flex: 1;
+      cursor: pointer;
+
+      .username {
+        font-size: 14px;
+        line-height: 24px;
+        font-weight: bold;
+        margin-bottom: 8px;
+        direction: ltr;
+      }
+
+      .account-phone {
+        font-size: 14px;
+        line-height: 24px;
+        color: #333333;
+        direction: ltr;
+      }
     }
   }
 
@@ -357,6 +402,7 @@
         .text {
           font-size: 13px;
           color: var(--light-alt);
+          text-align: center;
         }
 
         .progress-action {
@@ -835,6 +881,56 @@ html[direction="rtl"] {
       }
     }
 
+    .account-summary {
+      height: 128px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .account-profile {
+        width: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+
+        .avatar {
+          height: 64px;
+          width: 64px;
+
+          .avatar-image {
+            box-shadow: 0px 4px 8px rgba(107, 107, 107, 0.5);
+          }
+        }
+      }
+
+      .account-info {
+        padding: 0 0 0 24px;
+        flex: 1;
+        cursor: pointer;
+
+        .username {
+          font-size: 14px;
+          line-height: 24px;
+          font-weight: bold;
+          margin-bottom: 8px;
+        }
+
+        .account-phone {
+          font-size: 14px;
+          line-height: 24px;
+          color: #333333;
+        }
+      }
+    }
+
+    .account-summary {
+      .account-info {
+        padding: 0 24px 0 0;
+        text-align: right;
+      }
+    }
+
     .menu-header {
       direction: ltr;
       display: flex;
@@ -917,6 +1013,31 @@ html[theme="dark-blue"] {
     .page-anchor, .page-content {
       color: var(--white);
       border-color: var(--dark-low-op50);
+    }
+
+    .account-summary {
+      height: 128px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .account-profile {
+        .avatar {
+          .avatar-image {
+            box-shadow: 0 4px 8px rgba(36, 36, 36, 0.5);
+          }
+        }
+      }
+
+      .account-info {
+        .username {
+          color: var(--white);
+        }
+
+        .account-phone {
+          color: #bbb;
+        }
+      }
     }
 
     .setting-switch-label {

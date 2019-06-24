@@ -148,7 +148,10 @@
     "custom": "Custom",
     "pattern": "Pattern",
     "chat_background": "Chat Background",
-    "customized_background": "Customized Background"
+    "customized_background": "Customized Background",
+    "show_photo": "Show Photo",
+    "remove_photo": "Remove Photo",
+    "change_photo": "Change Photo"
   },
   "contact": {
     "contacts": "Contacts",

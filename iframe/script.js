@@ -11,12 +11,12 @@ class RiverService {
     onload = null;
     visible = false;
 
-    constructor(url) {
+    constructor(params) {
         if (!!RiverService.instance) {
             return RiverService.instance;
         }
 
-        this.init(url);
+        this.init(params || {});
 
         RiverService.instance = this;
 
@@ -60,7 +60,7 @@ class RiverService {
         return this;
     }
 
-    init(url) {
+    init({url, icon, rtl}) {
         const css = `
         #river-embed.hide {
             display: none;
@@ -78,6 +78,11 @@ class RiverService {
             overflow: hidden;
             border-radius: 5px;
             visibility: hidden;
+        }
+        
+        #river-embed.rtl #river-iframe {
+            right: auto;
+            left: 24px;
         }
 
         #river-iframe.show {
@@ -97,7 +102,12 @@ class RiverService {
             background: #ddddddcc;
             border-radius: 3px;
             z-index: 10;
-            transition: all 0.5s;
+            transition: all 0.3s;
+        }
+        
+        #river-embed.rtl #river-iframe .river-mask {
+            right: auto;
+            left: 24px;
         }
 
         #river-iframe.show .river-mask {
@@ -105,6 +115,11 @@ class RiverService {
             right: 0;
             height: 100%;
             width: 100%;
+        }
+        
+        #river-embed.rtl #river-iframe.show .river-mask {
+            right: auto;
+            left: 0;
         }
 
         #river-iframe.fixed .river-mask {
@@ -123,6 +138,11 @@ class RiverService {
             opacity: 0;
             z-index: 10;
         }
+        
+        #river-embed.rtl #river-iframe iframe {
+            right: auto;
+            left: 0;
+        }
 
         #river-iframe.fixed iframe {
             opacity: 1;
@@ -137,6 +157,11 @@ class RiverService {
             cursor: pointer;
         }
 
+        #river-embed.rtl #river-anchor {
+            right: auto;
+            left: 24px;            
+        }
+        
         #river-anchor.hide {
             visibility: hidden;
         }
@@ -167,26 +192,36 @@ class RiverService {
             transform: scale(0);
             transition: transform 0.2s;
         }
+        
+        #river-embed.rtl #river-anchor .badge {
+            right: auto;
+            left: -2px;            
+        }
 
         #river-anchor .badge.show {
             transform: scale(1);
         }`;
+
         const style = document.createElement('style');
         style.innerHTML = css;
         document.body.appendChild(style);
 
         const div = document.createElement('div');
         div.setAttribute('id', 'river-embed');
-        div.innerHTML = `<div id="river-iframe">
-            <div class="river-mask"></div>
-            <iframe src="${url || 'https://web.river.im'}">
-                <p>Your browser does not support iframes.</p>
-            </iframe>
-        </div>
-        <div id="river-anchor" class="hide">
-            <div class="badge">0</div>
-            <img src="icon.png"/>
-        </div>`;
+        if (rtl) {
+            div.classList.add('rtl');
+        }
+        div.innerHTML = `
+            <div id="river-iframe">
+                <div class="river-mask"></div>
+                <iframe src="${url || 'https://web.river.im'}">
+                    <p>Your browser does not support iframes.</p>
+                </iframe>
+            </div>
+            <div id="river-anchor" class="hide">
+                <div class="badge">0</div>
+                <img src="${icon || 'icon.png'}"/>
+            </div>`;
         document.body.appendChild(div);
     }
 
@@ -197,12 +232,22 @@ class RiverService {
             this.visible = visible;
         }
         const el = document.querySelector('#river-embed');
-        window.console.log(this.visible);
         if (el) {
             if (!this.visible) {
                 el.classList.add('hide');
             } else {
                 el.classList.remove('hide');
+            }
+        }
+    }
+
+    setRTL(enable) {
+        const el = document.querySelector('#river-embed');
+        if (el) {
+            if (enable) {
+                el.classList.add('rtl');
+            } else {
+                el.classList.remove('rtl');
             }
         }
     }

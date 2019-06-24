@@ -6,7 +6,7 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 	"math/big"
-	"math/rand"
+	mathRand "math/rand"
 	"time"
 )
 
@@ -25,7 +25,7 @@ func _SplitPQ(pq *big.Int) (p1, p2 *big.Int) {
 	rndmax := big.NewInt(0).SetBit(big.NewInt(0), 64, 1)
 
 	what := big.NewInt(0).Set(pq)
-	rnd := rand.New(rand.NewSource(time.Now().UnixNano()))
+	rnd := mathRand.New(mathRand.NewSource(time.Now().UnixNano()))
 	g := big.NewInt(0)
 	i := 0
 	for !(g.Cmp(value_1) == 1 && g.Cmp(what) == -1) {
@@ -230,18 +230,18 @@ func _Sha512(in []byte) ([]byte, error) {
 
 // RandUint64 produces a pseudo-random unsigned number
 func _RandomUint64() uint64 {
-	return rand.Uint64()
+	return mathRand.Uint64()
 }
 
 func _RandomInt63() int64 {
-	return rand.Int63()
+	return mathRand.Int63()
 }
 
 // _RandomID generates a pseudo-random string with length 'n' which characters are alphanumerics.
 func _RandomID(n int) string {
 	b := make([]byte, n)
 	for i := range b {
-		b[i] = ALPHANUMERICS[rand.Intn(len(ALPHANUMERICS))]
+		b[i] = ALPHANUMERICS[mathRand.Intn(len(ALPHANUMERICS))]
 	}
 	return string(b)
 }
