@@ -16,6 +16,7 @@ interface IProps {
     blur?: number;
     className?: string;
     fileLocation: InputFileLocation.AsObject;
+    onClick?: () => void;
     onLoad?: () => void;
     searchTemp?: boolean;
     style?: CSSProperties;
@@ -65,7 +66,7 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
     public render() {
         const {className, src} = this.state;
         return (
-            <div className={className} style={this.props.style}>
+            <div className={className} style={this.props.style} onClick={this.props.onClick}>
                 {src && <img src={src} onLoad={this.props.onLoad} onError={this.imgErrorHandler}/>}
             </div>
         );

@@ -59,7 +59,7 @@ import UserName from "../UserName";
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.24.13';
+export const C_VERSION = '0.24.14';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{
@@ -304,7 +304,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                     <UserAvatar className="avatar" id={this.userId} noDetail={true}/>
                                 </div>
                                 <div className="account-info" onClick={this.selectPageHandler.bind(this, 'account')}>
-                                    <UserName className="username" id={this.userId}/>
+                                    <UserName className="username" id={this.userId} noDetail={true}/>
                                     <div className="account-phone">{phone}</div>
                                 </div>
                             </div>

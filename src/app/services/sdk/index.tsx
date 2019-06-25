@@ -90,7 +90,6 @@ export default class SDK {
         if (!this.instance) {
             this.instance = new SDK();
         }
-
         return this.instance;
     }
 
@@ -208,6 +207,7 @@ export default class SDK {
     public recall(clientId: string): Promise<AuthRecalled.AsObject> {
         const data = new AuthRecall();
         data.setClientid(clientId);
+        data.setVersion(0);
         return this.server.send(C_MSG.AuthRecall, data.serializeBinary(), true);
     }
 

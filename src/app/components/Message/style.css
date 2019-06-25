@@ -304,7 +304,8 @@
     .bubble-wrapper .system-message-with-picture .picture {
       margin: 4px 0 0 12px;
       height: 32px;
-      width: 32px; }
+      width: 32px;
+      cursor: pointer; }
       .bubble-wrapper .system-message-with-picture .picture img {
         height: 32px;
         width: 32px;

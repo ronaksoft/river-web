@@ -2167,17 +2167,16 @@ class Chat extends React.Component<IProps, IState> {
         this.iframeService.setUnreadCounter(unreadCounter);
     }
 
-    private checkSync(): Promise<any> {
+    private checkSync(updateId?: number): Promise<any> {
         const lastId = this.syncManager.getLastUpdateId();
         return new Promise((resolve, reject) => {
-            this.sdk.getUpdateState().then((res) => {
-                // TODO: check
-                if ((res.updateid || 0) - lastId > C_MAX_UPDATE_DIFF) {
+            const fn = (id: number) => {
+                if (id - lastId > C_MAX_UPDATE_DIFF) {
                     reject({
                         err: 'too_late',
                     });
                 } else {
-                    if ((res.updateid || 0) - lastId > 0) {
+                    if (id - lastId > 0) {
                         resolve(lastId);
                         this.syncThemAll(lastId + 1, 100);
                     } else {
@@ -2186,7 +2185,15 @@ class Chat extends React.Component<IProps, IState> {
                         });
                     }
                 }
-            }).catch(reject);
+            };
+            if (updateId) {
+                fn(updateId);
+            } else {
+                this.sdk.getUpdateState().then((res) => {
+                    // TODO: check
+                    fn(res.updateid || 0);
+                }).catch(reject);
+            }
         });
     }
 
@@ -2240,12 +2247,16 @@ class Chat extends React.Component<IProps, IState> {
             }
             if (this.firstTimeLoad) {
                 this.firstTimeLoad = false;
-                this.startSyncing();
+                this.startSyncing(res.updateid || 0);
+            } else {
+                setTimeout(() => {
+                    this.startSyncing(res.updateid || 0);
+                }, 1000);
             }
         });
     }
 
-    private startSyncing() {
+    private startSyncing(updateId?: number) {
         const lastId = this.syncManager.getLastUpdateId();
         // Checks if it is the first time to sync
         if (lastId === 0) {
@@ -2253,7 +2264,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         // Normal syncing
-        this.checkSync().then(() => {
+        this.checkSync(updateId).then(() => {
             this.updateManager.disable();
             this.setState({
                 isUpdating: true,

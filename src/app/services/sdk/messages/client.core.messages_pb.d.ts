@@ -90,9 +90,9 @@ export namespace ClientPendingMessage {
     replyto?: number,
     body?: string,
     senderid?: number,
-    entitiesList: Array<chat_core_types_pb.MessageEntity.AsObject>,
+    entitiesList?: Array<chat_core_types_pb.MessageEntity.AsObject>,
     mediatype?: chat_api_messages_pb.InputMediaType,
-    media: Uint8Array | string,
+    media?: Uint8Array | string,
   }
 }
 
@@ -164,7 +164,7 @@ export class ClientSendMessageMedia extends jspb.Message {
 
 export namespace ClientSendMessageMedia {
   export type AsObject = {
-    peer: chat_core_types_pb.InputPeer.AsObject,
+    peer?: chat_core_types_pb.InputPeer.AsObject,
     mediatype?: chat_api_messages_pb.InputMediaType,
     caption?: string,
     filename?: string,
@@ -174,7 +174,7 @@ export namespace ClientSendMessageMedia {
     thumbmime?: string,
     replyto?: number,
     cleardraft?: boolean,
-    attributesList: Array<chat_core_message_medias_pb.DocumentAttribute.AsObject>,
+    attributesList?: Array<chat_core_message_medias_pb.DocumentAttribute.AsObject>,
   }
 }
 
@@ -221,6 +221,84 @@ export namespace ClientSearchResult {
     groupsList: Array<chat_core_types_pb.Group.AsObject>,
     matchedusersList: Array<chat_core_types_pb.ContactUser.AsObject>,
     matchedgroupsList: Array<chat_core_types_pb.Group.AsObject>,
+  }
+}
+
+export class DBMediaInfo extends jspb.Message {
+  clearMediainfoList(): void;
+  getMediainfoList(): Array<PeerMediaInfo>;
+  setMediainfoList(value: Array<PeerMediaInfo>): void;
+  addMediainfo(value?: PeerMediaInfo, index?: number): PeerMediaInfo;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): DBMediaInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: DBMediaInfo): DBMediaInfo.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: DBMediaInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): DBMediaInfo;
+  static deserializeBinaryFromReader(message: DBMediaInfo, reader: jspb.BinaryReader): DBMediaInfo;
+}
+
+export namespace DBMediaInfo {
+  export type AsObject = {
+    mediainfoList: Array<PeerMediaInfo.AsObject>,
+  }
+}
+
+export class PeerMediaInfo extends jspb.Message {
+  hasPeerid(): boolean;
+  clearPeerid(): void;
+  getPeerid(): number | undefined;
+  setPeerid(value: number): void;
+
+  clearMediaList(): void;
+  getMediaList(): Array<MediaSize>;
+  setMediaList(value: Array<MediaSize>): void;
+  addMedia(value?: MediaSize, index?: number): MediaSize;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PeerMediaInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: PeerMediaInfo): PeerMediaInfo.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PeerMediaInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PeerMediaInfo;
+  static deserializeBinaryFromReader(message: PeerMediaInfo, reader: jspb.BinaryReader): PeerMediaInfo;
+}
+
+export namespace PeerMediaInfo {
+  export type AsObject = {
+    peerid?: number,
+    mediaList: Array<MediaSize.AsObject>,
+  }
+}
+
+export class MediaSize extends jspb.Message {
+  hasMediatype(): boolean;
+  clearMediatype(): void;
+  getMediatype(): number | undefined;
+  setMediatype(value: number): void;
+
+  hasTotalsize(): boolean;
+  clearTotalsize(): void;
+  getTotalsize(): number | undefined;
+  setTotalsize(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MediaSize.AsObject;
+  static toObject(includeInstance: boolean, msg: MediaSize): MediaSize.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MediaSize, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MediaSize;
+  static deserializeBinaryFromReader(message: MediaSize, reader: jspb.BinaryReader): MediaSize;
+}
+
+export namespace MediaSize {
+  export type AsObject = {
+    mediatype?: number,
+    totalsize?: number,
   }
 }
 

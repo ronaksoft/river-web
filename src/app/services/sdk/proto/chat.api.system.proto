@@ -42,7 +42,9 @@ message SystemGetSalts {
 
 // SystemSalts
 message SystemSalts {
-    repeated Salt Salts = 1;
+    repeated int64 Salts = 1;
+    required int64 StartsFrom = 2;
+    required int64 Duration = 3;
 }
 
 // AppUpdate

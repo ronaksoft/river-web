@@ -855,8 +855,9 @@ proto.msg.SystemSalts.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.SystemSalts.toObject = function(includeInstance, msg) {
   var f, obj = {
-    saltsList: jspb.Message.toObjectList(msg.getSaltsList(),
-    chat_core_types_pb.Salt.toObject, includeInstance)
+    saltsList: jspb.Message.getRepeatedField(msg, 1),
+    startsfrom: jspb.Message.getField(msg, 2),
+    duration: jspb.Message.getField(msg, 3)
   };
 
   if (includeInstance) {
@@ -894,9 +895,16 @@ proto.msg.SystemSalts.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new chat_core_types_pb.Salt;
-      reader.readMessage(value,chat_core_types_pb.Salt.deserializeBinaryFromReader);
+      var value = /** @type {number} */ (reader.readInt64());
       msg.addSalts(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setStartsfrom(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setDuration(value);
       break;
     default:
       reader.skipField();
@@ -929,43 +937,112 @@ proto.msg.SystemSalts.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getSaltsList();
   if (f.length > 0) {
-    writer.writeRepeatedMessage(
+    writer.writeRepeatedInt64(
       1,
-      f,
-      chat_core_types_pb.Salt.serializeBinaryToWriter
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeInt64(
+      2,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeInt64(
+      3,
+      f
     );
   }
 };
 
 
 /**
- * repeated Salt Salts = 1;
- * @return {!Array.<!proto.msg.Salt>}
+ * repeated int64 Salts = 1;
+ * @return {!Array.<number>}
  */
 proto.msg.SystemSalts.prototype.getSaltsList = function() {
-  return /** @type{!Array.<!proto.msg.Salt>} */ (
-    jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.Salt, 1));
+  return /** @type {!Array.<number>} */ (jspb.Message.getRepeatedField(this, 1));
 };
 
 
-/** @param {!Array.<!proto.msg.Salt>} value */
+/** @param {!Array.<number>} value */
 proto.msg.SystemSalts.prototype.setSaltsList = function(value) {
-  jspb.Message.setRepeatedWrapperField(this, 1, value);
+  jspb.Message.setField(this, 1, value || []);
 };
 
 
 /**
- * @param {!proto.msg.Salt=} opt_value
+ * @param {!number} value
  * @param {number=} opt_index
- * @return {!proto.msg.Salt}
  */
-proto.msg.SystemSalts.prototype.addSalts = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.msg.Salt, opt_index);
+proto.msg.SystemSalts.prototype.addSalts = function(value, opt_index) {
+  jspb.Message.addToRepeatedField(this, 1, value, opt_index);
 };
 
 
 proto.msg.SystemSalts.prototype.clearSaltsList = function() {
   this.setSaltsList([]);
+};
+
+
+/**
+ * required int64 StartsFrom = 2;
+ * @return {number}
+ */
+proto.msg.SystemSalts.prototype.getStartsfrom = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.SystemSalts.prototype.setStartsfrom = function(value) {
+  jspb.Message.setField(this, 2, value);
+};
+
+
+proto.msg.SystemSalts.prototype.clearStartsfrom = function() {
+  jspb.Message.setField(this, 2, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.SystemSalts.prototype.hasStartsfrom = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * required int64 Duration = 3;
+ * @return {number}
+ */
+proto.msg.SystemSalts.prototype.getDuration = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.SystemSalts.prototype.setDuration = function(value) {
+  jspb.Message.setField(this, 3, value);
+};
+
+
+proto.msg.SystemSalts.prototype.clearDuration = function() {
+  jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.SystemSalts.prototype.hasDuration = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 

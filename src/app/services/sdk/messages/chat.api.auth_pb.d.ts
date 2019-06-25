@@ -212,6 +212,11 @@ export class AuthRecall extends jspb.Message {
   getClientid(): string | undefined;
   setClientid(value: string): void;
 
+  hasVersion(): boolean;
+  clearVersion(): void;
+  getVersion(): number | undefined;
+  setVersion(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AuthRecall.AsObject;
   static toObject(includeInstance: boolean, msg: AuthRecall): AuthRecall.AsObject;
@@ -225,6 +230,7 @@ export class AuthRecall extends jspb.Message {
 export namespace AuthRecall {
   export type AsObject = {
     clientid?: string,
+    version?: number,
   }
 }
 
@@ -255,6 +261,11 @@ export class AuthRecalled extends jspb.Message {
   getTimestamp(): number | undefined;
   setTimestamp(value: number): void;
 
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AuthRecalled.AsObject;
   static toObject(includeInstance: boolean, msg: AuthRecalled): AuthRecalled.AsObject;
@@ -269,6 +280,7 @@ export namespace AuthRecalled {
   export type AsObject = {
     clientid?: string,
     timestamp?: number,
+    updateid?: number,
   }
 }
 

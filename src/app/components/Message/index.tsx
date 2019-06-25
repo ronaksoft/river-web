@@ -40,6 +40,7 @@ import MessageAudio from '../MessageAudio';
 import animateScrollTo from 'animated-scroll-to';
 import ElectronService from '../../services/electron';
 import i18n from '../../services/i18n';
+import DocumentViewerService, {IDocument} from "../../services/documentViewerService";
 
 import './style.css';
 
@@ -173,6 +174,7 @@ class Message extends React.Component<IProps, IState> {
     private scrollDownTimeout: any = null;
     private isElectron: boolean = ElectronService.isElectron();
     private readonly menuItem: any = {};
+    private documentViewerService: DocumentViewerService;
 
     constructor(props: IProps) {
         super(props);
@@ -200,6 +202,7 @@ class Message extends React.Component<IProps, IState> {
         this.loadMoreAfterThrottle = throttle(this.loadMoreAfter, 250);
         this.loadMoreBeforeThrottle = throttle(this.loadMoreBefore, 50);
         this.fitListCompleteThrottle = throttle(this.fitListComplete, 250);
+        this.documentViewerService = DocumentViewerService.getInstance();
 
         this.menuItem = {
             1: {
@@ -1043,7 +1046,8 @@ class Message extends React.Component<IProps, IState> {
                                     <UserName className="user" id={message.senderid || ''}
                                               you={true}/> {i18n.t('message.changed_the_group_photo')}
                                 </span>
-                                <CachedPhoto className="picture" fileLocation={fileLocation.toObject()}/>
+                                <CachedPhoto className="picture" fileLocation={fileLocation.toObject()}
+                                             onClick={this.openAvatar.bind(this, photo)}/>
                             </div>
                         );
                     }
@@ -1424,6 +1428,18 @@ class Message extends React.Component<IProps, IState> {
     private openExternalLink = (url: string, e: any) => {
         e.preventDefault();
         ElectronService.openExternal(url);
+    }
+
+    private openAvatar(photo: GroupPhoto.AsObject) {
+        const doc: IDocument = {
+            items: [{
+                caption: '',
+                fileLocation: photo.photobig,
+                thumbFileLocation: photo.photosmall,
+            }],
+            type: 'avatar'
+        };
+        this.documentViewerService.loadDocument(doc);
     }
 }
 

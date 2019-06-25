@@ -219,7 +219,7 @@ export default class Server {
         if (res) {
             if (constructor === C_MSG.Error) {
                 const resp = res.toObject();
-                if (false && resp.code === 'E01' && resp.items === 'AUTH') {
+                if (resp.code === 'E01' && resp.items === 'AUTH') {
                     const authErrorEvent = new CustomEvent('authErrorEvent', {});
                     window.dispatchEvent(authErrorEvent);
                 }

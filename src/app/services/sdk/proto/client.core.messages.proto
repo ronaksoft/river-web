@@ -43,3 +43,20 @@ message ClientSearchResult {
     repeated ContactUser MatchedUsers = 5;
     repeated Group MatchedGroups = 6;
 }
+
+// DBMediaInfo
+message DBMediaInfo  {
+    repeated PeerMediaInfo MediaInfo = 1;
+}
+
+// PeerMediaInfo
+message PeerMediaInfo {
+    required int64 PeerID = 1;
+    repeated MediaSize Media = 2;
+}
+
+// MediaSize
+message MediaSize {
+    required int32 MediaType = 1;
+    required int32 TotalSize = 2;
+}

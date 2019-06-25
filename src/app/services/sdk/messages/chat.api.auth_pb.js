@@ -1499,7 +1499,8 @@ proto.msg.AuthRecall.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.AuthRecall.toObject = function(includeInstance, msg) {
   var f, obj = {
-    clientid: jspb.Message.getField(msg, 1)
+    clientid: jspb.Message.getField(msg, 1),
+    version: jspb.Message.getField(msg, 2)
   };
 
   if (includeInstance) {
@@ -1540,6 +1541,10 @@ proto.msg.AuthRecall.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readInt64String());
       msg.setClientid(value);
       break;
+    case 2:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setVersion(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1576,6 +1581,13 @@ proto.msg.AuthRecall.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = /** @type {number} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeUint32(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -1605,6 +1617,35 @@ proto.msg.AuthRecall.prototype.clearClientid = function() {
  */
 proto.msg.AuthRecall.prototype.hasClientid = function() {
   return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * optional uint32 Version = 2;
+ * @return {number}
+ */
+proto.msg.AuthRecall.prototype.getVersion = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.AuthRecall.prototype.setVersion = function(value) {
+  jspb.Message.setField(this, 2, value);
+};
+
+
+proto.msg.AuthRecall.prototype.clearVersion = function() {
+  jspb.Message.setField(this, 2, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AuthRecall.prototype.hasVersion = function() {
+  return jspb.Message.getField(this, 2) != null;
 };
 
 
@@ -1772,7 +1813,8 @@ proto.msg.AuthRecalled.prototype.toObject = function(opt_includeInstance) {
 proto.msg.AuthRecalled.toObject = function(includeInstance, msg) {
   var f, obj = {
     clientid: jspb.Message.getField(msg, 1),
-    timestamp: jspb.Message.getField(msg, 2)
+    timestamp: jspb.Message.getField(msg, 2),
+    updateid: jspb.Message.getField(msg, 3)
   };
 
   if (includeInstance) {
@@ -1817,6 +1859,10 @@ proto.msg.AuthRecalled.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {number} */ (reader.readInt64());
       msg.setTimestamp(value);
       break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setUpdateid(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1857,6 +1903,13 @@ proto.msg.AuthRecalled.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeInt64(
       2,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeInt64(
+      3,
       f
     );
   }
@@ -1918,6 +1971,35 @@ proto.msg.AuthRecalled.prototype.clearTimestamp = function() {
  */
 proto.msg.AuthRecalled.prototype.hasTimestamp = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional int64 UpdateID = 3;
+ * @return {number}
+ */
+proto.msg.AuthRecalled.prototype.getUpdateid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.AuthRecalled.prototype.setUpdateid = function(value) {
+  jspb.Message.setField(this, 3, value);
+};
+
+
+proto.msg.AuthRecalled.prototype.clearUpdateid = function() {
+  jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AuthRecalled.prototype.hasUpdateid = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 

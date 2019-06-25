@@ -1,29 +1,11 @@
 syntax = "proto2";
 package msg;
 
-// InitDB
-message InitDB {
-    required string KeySpace = 1;
-    required string Host = 2;
-    required string Username = 3;
-    required string Password = 4;
-}
-
 // InitConnect
 // @Function
 // @Return: InitResponse
 message InitConnect {
     required fixed64 ClientNonce = 1;
-}
-
-// InitResponse
-message InitResponse {
-    required fixed64 ClientNonce = 1;
-    required fixed64 ServerNonce = 2;
-    required fixed64 RSAPubKeyFingerPrint = 3;
-    required fixed64 DHGroupFingerPrint = 4;
-    required fixed64 PQ = 5;
-    required int64 ServerTimestamp = 6;
 }
 
 // InitCompleteAuth
@@ -36,6 +18,28 @@ message InitCompleteAuth {
     required fixed64 P = 6;
     required fixed64 Q = 7;
     required bytes EncryptedPayload = 8;
+}
+
+// InitConnectTest
+// @Function
+// @Return: InitTestAuth
+message InitConnectTest {
+}
+
+// InitTestAuth
+message InitTestAuth {
+    required int64 AuthID = 1;
+    required bytes AuthKey = 2;
+}
+
+// InitResponse
+message InitResponse {
+    required fixed64 ClientNonce = 1;
+    required fixed64 ServerNonce = 2;
+    required fixed64 RSAPubKeyFingerPrint = 3;
+    required fixed64 DHGroupFingerPrint = 4;
+    required fixed64 PQ = 5;
+    required int64 ServerTimestamp = 6;
 }
 
 // InitCompleteAuthInternal
@@ -56,7 +60,6 @@ message InitAuthCompleted {
     required fixed64 SecretHash = 4;
     required bytes ServerDHPubKey = 5;
 }
-
 
 // /////////////////
 // This part will be used by EDGE-PLAIN server only.

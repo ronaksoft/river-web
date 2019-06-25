@@ -114,9 +114,19 @@ export namespace SystemGetSalts {
 
 export class SystemSalts extends jspb.Message {
   clearSaltsList(): void;
-  getSaltsList(): Array<chat_core_types_pb.Salt>;
-  setSaltsList(value: Array<chat_core_types_pb.Salt>): void;
-  addSalts(value?: chat_core_types_pb.Salt, index?: number): chat_core_types_pb.Salt;
+  getSaltsList(): Array<number>;
+  setSaltsList(value: Array<number>): void;
+  addSalts(value: number, index?: number): number;
+
+  hasStartsfrom(): boolean;
+  clearStartsfrom(): void;
+  getStartsfrom(): number | undefined;
+  setStartsfrom(value: number): void;
+
+  hasDuration(): boolean;
+  clearDuration(): void;
+  getDuration(): number | undefined;
+  setDuration(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): SystemSalts.AsObject;
@@ -130,7 +140,9 @@ export class SystemSalts extends jspb.Message {
 
 export namespace SystemSalts {
   export type AsObject = {
-    saltsList: Array<chat_core_types_pb.Salt.AsObject>,
+    saltsList: Array<number>,
+    startsfrom?: number,
+    duration?: number,
   }
 }
 

@@ -3,46 +3,6 @@
 
 import * as jspb from "google-protobuf";
 
-export class InitDB extends jspb.Message {
-  hasKeyspace(): boolean;
-  clearKeyspace(): void;
-  getKeyspace(): string | undefined;
-  setKeyspace(value: string): void;
-
-  hasHost(): boolean;
-  clearHost(): void;
-  getHost(): string | undefined;
-  setHost(value: string): void;
-
-  hasUsername(): boolean;
-  clearUsername(): void;
-  getUsername(): string | undefined;
-  setUsername(value: string): void;
-
-  hasPassword(): boolean;
-  clearPassword(): void;
-  getPassword(): string | undefined;
-  setPassword(value: string): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): InitDB.AsObject;
-  static toObject(includeInstance: boolean, msg: InitDB): InitDB.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: InitDB, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): InitDB;
-  static deserializeBinaryFromReader(message: InitDB, reader: jspb.BinaryReader): InitDB;
-}
-
-export namespace InitDB {
-  export type AsObject = {
-    keyspace?: string,
-    host?: string,
-    username?: string,
-    password?: string,
-  }
-}
-
 export class InitConnect extends jspb.Message {
   hasClientnonce(): boolean;
   clearClientnonce(): void;
@@ -62,58 +22,6 @@ export class InitConnect extends jspb.Message {
 export namespace InitConnect {
   export type AsObject = {
     clientnonce?: number,
-  }
-}
-
-export class InitResponse extends jspb.Message {
-  hasClientnonce(): boolean;
-  clearClientnonce(): void;
-  getClientnonce(): number | undefined;
-  setClientnonce(value: number): void;
-
-  hasServernonce(): boolean;
-  clearServernonce(): void;
-  getServernonce(): number | undefined;
-  setServernonce(value: number): void;
-
-  hasRsapubkeyfingerprint(): boolean;
-  clearRsapubkeyfingerprint(): void;
-  getRsapubkeyfingerprint(): number | undefined;
-  setRsapubkeyfingerprint(value: number): void;
-
-  hasDhgroupfingerprint(): boolean;
-  clearDhgroupfingerprint(): void;
-  getDhgroupfingerprint(): number | undefined;
-  setDhgroupfingerprint(value: number): void;
-
-  hasPq(): boolean;
-  clearPq(): void;
-  getPq(): number | undefined;
-  setPq(value: number): void;
-
-  hasServertimestamp(): boolean;
-  clearServertimestamp(): void;
-  getServertimestamp(): number | undefined;
-  setServertimestamp(value: number): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): InitResponse.AsObject;
-  static toObject(includeInstance: boolean, msg: InitResponse): InitResponse.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: InitResponse, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): InitResponse;
-  static deserializeBinaryFromReader(message: InitResponse, reader: jspb.BinaryReader): InitResponse;
-}
-
-export namespace InitResponse {
-  export type AsObject = {
-    clientnonce?: number,
-    servernonce?: number,
-    rsapubkeyfingerprint?: number,
-    dhgroupfingerprint?: number,
-    pq?: number,
-    servertimestamp?: number,
   }
 }
 
@@ -170,6 +78,104 @@ export namespace InitCompleteAuth {
     p?: number,
     q?: number,
     encryptedpayload: Uint8Array | string,
+  }
+}
+
+export class InitConnectTest extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): InitConnectTest.AsObject;
+  static toObject(includeInstance: boolean, msg: InitConnectTest): InitConnectTest.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: InitConnectTest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): InitConnectTest;
+  static deserializeBinaryFromReader(message: InitConnectTest, reader: jspb.BinaryReader): InitConnectTest;
+}
+
+export namespace InitConnectTest {
+  export type AsObject = {
+  }
+}
+
+export class InitTestAuth extends jspb.Message {
+  hasAuthid(): boolean;
+  clearAuthid(): void;
+  getAuthid(): number | undefined;
+  setAuthid(value: number): void;
+
+  hasAuthkey(): boolean;
+  clearAuthkey(): void;
+  getAuthkey(): Uint8Array | string;
+  getAuthkey_asU8(): Uint8Array;
+  getAuthkey_asB64(): string;
+  setAuthkey(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): InitTestAuth.AsObject;
+  static toObject(includeInstance: boolean, msg: InitTestAuth): InitTestAuth.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: InitTestAuth, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): InitTestAuth;
+  static deserializeBinaryFromReader(message: InitTestAuth, reader: jspb.BinaryReader): InitTestAuth;
+}
+
+export namespace InitTestAuth {
+  export type AsObject = {
+    authid?: number,
+    authkey: Uint8Array | string,
+  }
+}
+
+export class InitResponse extends jspb.Message {
+  hasClientnonce(): boolean;
+  clearClientnonce(): void;
+  getClientnonce(): number | undefined;
+  setClientnonce(value: number): void;
+
+  hasServernonce(): boolean;
+  clearServernonce(): void;
+  getServernonce(): number | undefined;
+  setServernonce(value: number): void;
+
+  hasRsapubkeyfingerprint(): boolean;
+  clearRsapubkeyfingerprint(): void;
+  getRsapubkeyfingerprint(): number | undefined;
+  setRsapubkeyfingerprint(value: number): void;
+
+  hasDhgroupfingerprint(): boolean;
+  clearDhgroupfingerprint(): void;
+  getDhgroupfingerprint(): number | undefined;
+  setDhgroupfingerprint(value: number): void;
+
+  hasPq(): boolean;
+  clearPq(): void;
+  getPq(): number | undefined;
+  setPq(value: number): void;
+
+  hasServertimestamp(): boolean;
+  clearServertimestamp(): void;
+  getServertimestamp(): number | undefined;
+  setServertimestamp(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): InitResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: InitResponse): InitResponse.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: InitResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): InitResponse;
+  static deserializeBinaryFromReader(message: InitResponse, reader: jspb.BinaryReader): InitResponse;
+}
+
+export namespace InitResponse {
+  export type AsObject = {
+    clientnonce?: number,
+    servernonce?: number,
+    rsapubkeyfingerprint?: number,
+    dhgroupfingerprint?: number,
+    pq?: number,
+    servertimestamp?: number,
   }
 }
 

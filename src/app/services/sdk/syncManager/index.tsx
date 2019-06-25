@@ -47,7 +47,6 @@ export default class SyncManager {
         if (!this.instance) {
             this.instance = new SyncManager();
         }
-
         return this.instance;
     }
 
@@ -57,7 +56,6 @@ export default class SyncManager {
     private dialogRepo: DialogRepo;
     private messageRepo: MessageRepo;
     private userRepo: UserRepo;
-    // @ts-ignore
     private groupRepo: GroupRepo;
     private fnIndex: number = 0;
     private fnQueue: any = {};
