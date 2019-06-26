@@ -2292,10 +2292,8 @@ class Chat extends React.Component<IProps, IState> {
                 const newItems: IDialog[] = differenceBy(cloneDeep(res.dialogs), oldDialogs, 'peerid');
                 sameItems.forEach((dialog) => {
                     const d = find(res.dialogs, {peerid: dialog.peerid});
-                    if (d && dialog.topmessageid) {
-                        if (dialog.topmessageid !== d.topmessageid) {
-                            this.messageRepo.clearHistory(d.peerid || '', d.topmessageid || 0);
-                        }
+                    if (d) {
+                        this.messageRepo.clearHistory(d.peerid || '', d.topmessageid || 0);
                     }
                 });
                 newItems.forEach((dialog) => {
