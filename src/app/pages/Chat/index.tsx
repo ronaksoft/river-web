@@ -104,7 +104,7 @@ import './style.css';
 
 export let notifyOptions: any[] = [];
 
-const C_MAX_UPDATE_DIFF = 10;
+const C_MAX_UPDATE_DIFF = 2000;
 
 interface IProps {
     history?: any;
