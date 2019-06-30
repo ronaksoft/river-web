@@ -65,7 +65,6 @@
             border-radius: 3px;
 
             overflow: hidden;
-            z-index: 1000;
         }
 
         .pace .pace-progress {
@@ -224,7 +223,7 @@
             document: true,
             eventLag: false
         };
-        Pace.on('done', function () {
+        window.clearLoading = () => {
             const elems = [document.querySelector('#pace-js'), document.querySelector('#pace-css'), document.querySelector('body > .pace'), document.querySelector('body > .splash-river-logo')];
             elems.forEach((elem) => {
                 if (elem) {
@@ -235,6 +234,13 @@
             if (refEl) {
                 refEl.classList.remove('hide');
             }
+            const paceEl = document.querySelector('.pace');
+            if (paceEl) {
+                paceEl.remove();
+            }
+        };
+        Pace.on('done', function () {
+            window.clearLoading();
         });
         errorReload = false;
         const loadErrorFN = () => {

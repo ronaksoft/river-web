@@ -124,6 +124,12 @@ class App extends React.Component<{}, IState> {
             refreshEl.remove();
         }
 
+        // @ts-ignore
+        if (window.clearLoading) {
+            // @ts-ignore
+            window.clearLoading();
+        }
+
         this.iframeService.listen(C_IFRAME_SUBJECT.IsLoaded, (e) => {
             this.iframeService.loaded(e.reqId);
         });
