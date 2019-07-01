@@ -59,7 +59,7 @@ import UserName from "../UserName";
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.24.18';
+export const C_VERSION = '0.24.19';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{
@@ -298,68 +298,71 @@ class SettingsMenu extends React.Component<IProps, IState> {
                             </IconButton>
                             <label>{i18n.t('settings.settings')}</label>
                         </div>
-                        <div className="menu-content padding-side">
-                            <div className="account-summary">
-                                <div className="account-profile" onClick={this.selectPageHandler.bind(this, 'account')}>
-                                    <UserAvatar className="avatar" id={this.userId} noDetail={true}/>
-                                </div>
-                                <div className="account-info" onClick={this.selectPageHandler.bind(this, 'account')}>
-                                    <UserName className="username" id={this.userId} noDetail={true}/>
-                                    <div className="account-phone">{phone}</div>
-                                </div>
-                            </div>
-                            <div className="page-anchor">
-                                <Link to={`/chat/${this.userId}`}>
-                                    <div className="icon color-saved-messages">
-                                        <BookmarkRounded/>
+                        <div className="menu-content with-footer">
+                            <Scrollbars
+                                autoHide={true}
+                            >
+                                <div className="padding-side">
+                                    <div className="account-summary">
+                                        <div className="account-profile"
+                                             onClick={this.selectPageHandler.bind(this, 'account')}>
+                                            <UserAvatar className="avatar" id={this.userId} noDetail={true}/>
+                                        </div>
+                                        <div className="account-info"
+                                             onClick={this.selectPageHandler.bind(this, 'account')}>
+                                            <UserName className="username" id={this.userId} noDetail={true}/>
+                                            <div className="account-phone">{phone}</div>
+                                        </div>
                                     </div>
-                                    <div className="anchor-label">{i18n.t('general.saved_messages')}</div>
-                                </Link>
-                            </div>
-                            {/*<div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'account')}>
-                                <div className="icon color-account">
-                                    <PersonRounded/>
+                                    <div className="page-anchor">
+                                        <Link to={`/chat/${this.userId}`}>
+                                            <div className="icon color-saved-messages">
+                                                <BookmarkRounded/>
+                                            </div>
+                                            <div className="anchor-label">{i18n.t('general.saved_messages')}</div>
+                                        </Link>
+                                    </div>
+                                    <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'storage')}>
+                                        <div className="icon color-data">
+                                            <StorageRounded/>
+                                        </div>
+                                        <div className="anchor-label">{i18n.t('settings.data_and_storage')}</div>
+                                    </div>
+                                    <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'session')}>
+                                        <div className="icon color-session">
+                                            <ClearAllRounded/>
+                                        </div>
+                                        <div className="anchor-label">{i18n.t('settings.active_sessions')}</div>
+                                    </div>
+                                    <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'theme')}>
+                                        <div className="icon color-theme">
+                                            <PaletteRounded/>
+                                        </div>
+                                        <div className="anchor-label">{i18n.t('settings.theme')}</div>
+                                    </div>
+                                    <div className="page-anchor"
+                                         onClick={this.selectPageHandler.bind(this, 'language')}>
+                                        <div className="icon color-language">
+                                            <LanguageRounded/>
+                                        </div>
+                                        <div className="anchor-label">{i18n.t('settings.language')}</div>
+                                    </div>
+                                    <div className="page-anchor">
+                                        <div className="icon color-night-mode">
+                                            <Brightness2Rounded/>
+                                        </div>
+                                        <div className="anchor-label">{i18n.t('settings.night_mode')}</div>
+                                        <div className="setting-switch-label">
+                                            <Switch
+                                                checked={Boolean(this.state.selectedTheme !== 'light')}
+                                                className={'setting-switch' + (Boolean(this.state.selectedTheme !== 'light') ? ' checked' : '')}
+                                                color="default"
+                                                onChange={this.nightModeHandler}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="anchor-label">{i18n.tf('settings.account_phone', phone)}</div>
-                            </div>*/}
-                            <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'storage')}>
-                                <div className="icon color-data">
-                                    <StorageRounded/>
-                                </div>
-                                <div className="anchor-label">{i18n.t('settings.data_and_storage')}</div>
-                            </div>
-                            <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'session')}>
-                                <div className="icon color-session">
-                                    <ClearAllRounded/>
-                                </div>
-                                <div className="anchor-label">{i18n.t('settings.active_sessions')}</div>
-                            </div>
-                            <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'theme')}>
-                                <div className="icon color-theme">
-                                    <PaletteRounded/>
-                                </div>
-                                <div className="anchor-label">{i18n.t('settings.theme')}</div>
-                            </div>
-                            <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'language')}>
-                                <div className="icon color-language">
-                                    <LanguageRounded/>
-                                </div>
-                                <div className="anchor-label">{i18n.t('settings.language')}</div>
-                            </div>
-                            <div className="page-anchor">
-                                <div className="icon color-night-mode">
-                                    <Brightness2Rounded/>
-                                </div>
-                                <div className="anchor-label">{i18n.t('settings.night_mode')}</div>
-                                <div className="setting-switch-label">
-                                    <Switch
-                                        checked={Boolean(this.state.selectedTheme !== 'light')}
-                                        className={'setting-switch' + (Boolean(this.state.selectedTheme !== 'light') ? ' checked' : '')}
-                                        color="default"
-                                        onChange={this.nightModeHandler}
-                                    />
-                                </div>
-                            </div>
+                            </Scrollbars>
                         </div>
                         <div className="version" onClick={this.versionClickHandler}>
                             v{C_VERSION}

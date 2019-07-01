@@ -5,12 +5,13 @@
     <title>Iframe Test</title>
 </head>
 <body>
+<div style="height: 200vh">hey</div>
 <script src="script.js"></script>
 <script>
     const srv = new RiverService({
         icon: 'icon.png',
         rtl: false,
-        url: 'https://web.river.im'
+        url: 'http://localhost:3000'
     });
     srv.onload = () => {
         srv.setUserInfo({

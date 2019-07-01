@@ -59,6 +59,10 @@
     text-align: left;
     height: calc(100% - 50px);
 
+    &.with-footer {
+      height: calc(100% - 86px);
+    }
+
     &.padding-side,
     .padding-side {
       padding: 0 12px;

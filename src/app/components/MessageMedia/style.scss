@@ -10,6 +10,7 @@
 
 .message-media {
   padding: 0;
+
   .media-content {
     position: relative;
     min-height: 64px;
@@ -17,17 +18,20 @@
     border-radius: 6px;
     overflow: hidden;
     margin: 0 auto;
+
     .media-thumb,
     .media-big {
       position: relative;
       height: 100%;
       width: 100%;
+
       .picture {
         position: relative;
         height: 100%;
         width: 100%;
         line-height: 0;
         z-index: 9;
+
         img {
           height: 100%;
           width: 100%;
@@ -35,6 +39,7 @@
           object-position: center center;
         }
       }
+
       .media-action {
         position: absolute;
         top: 50%;
@@ -46,6 +51,7 @@
         z-index: 10;
         background-color: rgba(0, 0, 0, 0.32);
         cursor: pointer;
+
         .progress {
           position: absolute;
           top: 2px;
@@ -57,12 +63,14 @@
           animation-duration: 3s;
           animation-iteration-count: infinite;
           animation-timing-function: linear;
+
           svg {
             position: absolute;
             top: 0;
             left: 0;
             height: 32px;
             width: 32px;
+
             circle {
               fill: transparent;
               stroke: var(--white);
@@ -72,6 +80,7 @@
             }
           }
         }
+
         > svg {
           position: absolute;
           top: 50%;
@@ -83,14 +92,17 @@
         }
       }
     }
+
     .media-thumb {
       width: 100% !important;
     }
+
     .media-big {
       cursor: pointer;
       display: flex;
       justify-content: center;
       align-items: center;
+
       .blurred-picture {
         position: absolute;
         top: 0;
@@ -98,6 +110,7 @@
         bottom: 0;
         left: 0;
         z-index: 8;
+
         img {
           height: 100%;
           width: 100%;
@@ -107,6 +120,7 @@
       }
 
     }
+
     .media-duration {
       position: absolute;
       display: flex;
@@ -123,16 +137,19 @@
       color: var(--white);
       white-space: nowrap;
       z-index: 20;
+
       svg {
         font-size: 14px;
         color: inherit;
         display: inline-block;
         margin: 0 2px 0 0;
       }
+
       span {
         padding-top: 2px;
         line-height: 12px;
       }
+
       .unread-bullet {
         position: absolute;
         top: 50%;
@@ -144,6 +161,7 @@
         transform: translateY(-50%);
       }
     }
+
     .media-size {
       position: absolute;
       top: calc(50% + 30px);
@@ -159,12 +177,14 @@
       transform: translate(-50%, -50%);
       z-index: 20;
     }
+
     &.video {
       .media-big {
         cursor: default;
       }
     }
   }
+
   &.tiny-message {
     .media-content {
       .media-thumb {
@@ -173,12 +193,14 @@
           transform: translate(-50%, 0);
         }
       }
+
       .media-size {
         top: 10px;
         transform: translate(-50%, 0);
       }
     }
   }
+
   .media-caption {
     padding: 4px 6px 0;
     white-space: pre-wrap;
@@ -205,10 +227,12 @@ html[bubble="2"] {
       height: 18px;
       border-radius: 8px;
       line-height: 18px;
+
       span {
         padding-top: 2px;
       }
     }
+
     .media-size {
       height: 18px;
       padding: 1px 6px 0;

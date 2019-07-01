@@ -137,7 +137,7 @@ export const getContentSize = (message: IMessage): null | { height: number, widt
     const info: {
         height: number,
         width: number,
-    }  = {
+    } = {
         height: 0,
         width: 0,
     };
