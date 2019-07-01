@@ -1498,10 +1498,6 @@ class Chat extends React.Component<IProps, IState> {
                         updateState();
                     }
                     this.setLoading(false);
-                    //
-                    if (this.chatInputComponent) {
-                        this.chatInputComponent.focus();
-                    }
                     clearTimeout(this.mobileBackTimeout);
                 });
             });
@@ -1510,6 +1506,11 @@ class Chat extends React.Component<IProps, IState> {
             if (this.state.selectedDialogId !== dialogId) {
                 this.setLoading(false);
                 return;
+            }
+
+            //
+            if (this.chatInputComponent) {
+                this.chatInputComponent.focus();
             }
 
             const minIdIndex = findIndex(resMsgs, {id: minId});
@@ -1531,7 +1532,9 @@ class Chat extends React.Component<IProps, IState> {
                 if (messageId && messageId !== '0') {
                     this.messageJumpToMessageHandler(parseInt(messageId, 10));
                 }
-                this.messageComponent.removeSnapshot(true);
+                setTimeout(() => {
+                    this.messageComponent.removeSnapshot(true);
+                }, 100);
             });
             this.setLoading(false);
         }).catch((err: any) => {
