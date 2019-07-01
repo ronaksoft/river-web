@@ -39,4 +39,4 @@ deploy:production:
     - docker build --pull -t $CI_REGISTRY_IMAGE:$IMAGE_TAG .
     - docker push $CI_REGISTRY_IMAGE:$IMAGE_TAG
   dependencies:
-    - build:mobile
+    - build:app
