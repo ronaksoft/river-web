@@ -151,7 +151,7 @@ export default class UserRepo {
                 return this.mergeUser(users, user, force);
             });
             createItems.map((user: IUser) => {
-                if (user.status === UserStatus.USERSTATUSONLINE) {
+                if (user.status === UserStatus.USERSTATUSONLINE && !user.status_last_modified) {
                     user.status_last_modified = RiverTime.getInstance().now();
                 }
             });
@@ -207,7 +207,7 @@ export default class UserRepo {
     private mergeUser(users: IUser[], user: IUser, force?: boolean) {
         const t = find(users, {id: user.id});
         const modifyUser = (u1: IUser, u2: IUser): IUser => {
-            if (u2.status === UserStatus.USERSTATUSONLINE) {
+            if (u2.status === UserStatus.USERSTATUSONLINE && !u2.status_last_modified) {
                 u2.status_last_modified = RiverTime.getInstance().now();
             }
             if (u1.status !== undefined && u2.status === undefined) {

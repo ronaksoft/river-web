@@ -1039,6 +1039,10 @@ class Chat extends React.Component<IProps, IState> {
         this.userRepo.importBulk(false, data.senders.map((o, index) => {
             if (data.messages[index].senderid === o.id) {
                 o.status = UserStatus.USERSTATUSONLINE;
+                if (data.messages.length > 0) {
+                    // @ts-ignore
+                    o.status_last_modified = data.messages[0].createdon || 0;
+                }
             }
             return o;
         }));

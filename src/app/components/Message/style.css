@@ -102,14 +102,16 @@
   .bubble-wrapper.media .bubble .bubble-body, .bubble-wrapper.media_caption .bubble .bubble-body {
     border-radius: 8px;
     overflow: hidden; }
-  .bubble-wrapper .bubble-body .inner.text-highlight {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 2;
-    color: transparent; }
+  .bubble-wrapper .bubble-body {
+    overflow: hidden; }
+    .bubble-wrapper .bubble-body .inner.text-highlight {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 2;
+      color: transparent; }
   .bubble-wrapper.media .bubble {
     padding: 3px !important; }
   .bubble-wrapper .arrow {
