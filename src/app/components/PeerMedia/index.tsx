@@ -129,7 +129,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                     <span className="more" onClick={this.props.onMore}>{i18n.t('peer_info.show_all')}</span>}
                 </div>}
                 {this.props.full && <div className="peer-media-tab">
-                    <Tabs indicatorColor="primary" textColor="primary" fullWidth={true} centered={true} value={tab}
+                    <Tabs indicatorColor="primary" textColor="primary" variant="fullWidth" centered={true} value={tab}
                           onChange={this.tabChangeHandler}>
                         <Tab label={i18n.t('peer_info.photo_video')}/>
                         <Tab label={i18n.t('peer_info.audio')}/>

@@ -122,6 +122,14 @@ export default class Server {
         return promise;
     }
 
+    public startNetwork() {
+        this.socket.start();
+    }
+
+    public stopNetwork() {
+        this.socket.stop();
+    }
+
     /* Generate string from request and send to the api */
     private sendRequest(request: IServerRequest) {
         window.console.debug(`%c${C_MSG_NAME[request.constructor]} ${request.reqId}`, 'color: #f9d71c');

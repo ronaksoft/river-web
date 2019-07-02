@@ -95,7 +95,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
                                onClose={this.modalCloseHandler}>
                     {!loading && <div className="storage-usage">
                         <div className="info-btn">
-                            <Button color="secondary" fullWidth={true} variant="raised"
+                            <Button color="secondary" fullWidth={true} variant="contained"
                                     onClick={this.clearCacheHandler}>
                                 Clear Cache ({getHumanReadableSize(this.state.totalSize)})
                             </Button>
@@ -165,7 +165,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
                             );
                         })}
                         <div className="info-btn">
-                            <Button color="secondary" fullWidth={true} variant="raised"
+                            <Button color="secondary" fullWidth={true} variant="contained"
                                     onClick={this.clearCacheHandler}>
                                 Clear Cache ({getHumanReadableSize(this.state.totalSelectedSize)})
                             </Button>

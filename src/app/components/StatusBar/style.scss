@@ -33,7 +33,7 @@
   }
 
   .online {
-    color: var(--river);
+    color: var(--river) !important;
   }
 }
 
@@ -54,7 +54,7 @@ html[theme="dark"],
 html[theme="dark-blue"] {
   .status-bar {
     .online {
-      color: var(--dark-mention);
+      color: var(--dark-mention) !important;
     }
   }
 }

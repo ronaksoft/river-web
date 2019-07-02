@@ -20,6 +20,7 @@ export const C_IFRAME_CMD = {
     Close: 'close',
     Error: 'error',
     Loaded: 'loaded',
+    NewSession: 'new_session',
     Unread: 'unread_counter',
 };
 
@@ -129,6 +130,13 @@ export default class IframeService {
             return;
         }
         return this.send(C_IFRAME_CMD.Close, {});
+    }
+
+    public newSession() {
+        if (!this.active) {
+            return;
+        }
+        return this.send(C_IFRAME_CMD.NewSession, {});
     }
 
     public isActive() {

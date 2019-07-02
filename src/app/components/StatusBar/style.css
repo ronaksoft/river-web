@@ -27,7 +27,7 @@
       margin-right: 6px;
       vertical-align: bottom; }
   .status-bar .online {
-    color: var(--river); }
+    color: var(--river) !important; }
 
 html[direction="rtl"] .status-bar {
   align-items: flex-start; }
@@ -37,4 +37,4 @@ html[direction="rtl"] .status-bar {
 
 html[theme="dark"] .status-bar .online,
 html[theme="dark-blue"] .status-bar .online {
-  color: var(--dark-mention); }
+  color: var(--dark-mention) !important; }

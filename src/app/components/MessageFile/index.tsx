@@ -107,7 +107,7 @@ export const getFileExtension = (type: string) => {
         case 'video/webm':
             return 'webm';
         case 'video/quicktime':
-            return 'move';
+            return 'mov';
         case 'video/x-matroska':
             return 'mkv';
         case 'video/x-matroska-3d':

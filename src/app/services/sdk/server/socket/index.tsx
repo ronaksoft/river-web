@@ -151,6 +151,14 @@ export default class Socket {
         this.fnError = fn;
     }
 
+    public start() {
+        this.initWebSocket();
+    }
+
+    public stop() {
+        this.closeWire();
+    }
+
     private initWebSocket() {
         clearTimeout(this.initTimeout);
 

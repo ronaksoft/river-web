@@ -22,6 +22,9 @@ import {ErrorInfo} from 'react';
 import * as Sentry from '@sentry/browser';
 import I18n from "./app/services/i18n";
 import IframeService, {C_IFRAME_SUBJECT} from "./app/services/iframe";
+import UniqueId from "./app/services/uniqueId";
+import {C_VERSION} from "./app/components/SettingsMenu";
+import Server from "./app/services/sdk/server";
 
 import './App.css';
 
@@ -63,6 +66,10 @@ class App extends React.Component<{}, IState> {
     private mainRepo: MainRepo;
     private readonly isElectron: boolean = false;
     private iframeService: IframeService;
+    private readonly broadcastChannel: BroadcastChannel;
+    private readonly sessionId: number = 0;
+    private multipleSession: boolean = false;
+    private sessionsIds: number[] = [];
 
     constructor(props: {}) {
         super(props);
@@ -81,6 +88,11 @@ class App extends React.Component<{}, IState> {
         }
 
         this.iframeService = IframeService.getInstance();
+
+        this.sessionId = UniqueId.getRandomId();
+        if (BroadcastChannel) {
+            this.broadcastChannel = new BroadcastChannel('river_channel');
+        }
     }
 
     public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
@@ -96,6 +108,9 @@ class App extends React.Component<{}, IState> {
     public componentDidMount() {
         document.addEventListener('drop', (e) => e.preventDefault(), false);
         document.addEventListener('dragover', (e) => e.preventDefault(), false);
+        window.addEventListener('focus', this.windowFocusHandler);
+        window.addEventListener('blur', this.windowBlurHandler);
+        window.addEventListener('beforeunload', this.windowBeforeUnloadHandler);
         window.addEventListener('authErrorEvent', (event: any) => {
             this.setState({
                 alertOpen: true,
@@ -133,6 +148,21 @@ class App extends React.Component<{}, IState> {
         this.iframeService.listen(C_IFRAME_SUBJECT.IsLoaded, (e) => {
             this.iframeService.loaded(e.reqId);
         });
+
+        if (this.broadcastChannel) {
+            this.broadcastChannel.addEventListener('message', this.channelMessageHandler);
+            this.sendSessionMessage('loaded', {version: C_VERSION});
+        }
+    }
+
+    public componentWillUnmount() {
+        window.removeEventListener('focus', this.windowFocusHandler);
+        window.removeEventListener('blur', this.windowBlurHandler);
+
+        if (this.broadcastChannel) {
+            this.broadcastChannel.removeEventListener('message', this.channelMessageHandler);
+            this.broadcastChannel.close();
+        }
     }
 
     public render() {
@@ -191,6 +221,70 @@ class App extends React.Component<{}, IState> {
             }, () => {
                 window.location.reload();
             });
+        });
+    }
+
+    private channelMessageHandler = (e: any) => {
+        const data = e.data;
+        if (data.uuid === this.sessionId) {
+            return;
+        }
+        switch (data.cmd) {
+            case 'loaded':
+                Server.getInstance().stopNetwork();
+                IframeService.getInstance().newSession();
+                this.multipleSession = true;
+                if (this.sessionsIds.indexOf(data.uuid) === -1) {
+                    this.sessionsIds.push(data.uuid);
+                }
+                this.sendSessionMessage('loaded_res', {id: this.sessionId});
+                break;
+            case 'loaded_res':
+                if (data.payload.id === this.sessionId) {
+                    this.multipleSession = true;
+                    if (this.sessionsIds.indexOf(data.uuid) === -1) {
+                        this.sessionsIds.push(data.uuid);
+                    }
+                }
+                break;
+            case 'close_session':
+                const index = this.sessionsIds.indexOf(data.uuid);
+                if (index > -1) {
+                    this.sessionsIds.splice(index, 1);
+                }
+                if (this.sessionsIds.length === 0) {
+                    this.multipleSession = false;
+                }
+                break;
+        }
+    }
+
+    private windowFocusHandler = () => {
+        if (!this.multipleSession) {
+            return;
+        }
+        Server.getInstance().startNetwork();
+    }
+
+    private windowBlurHandler = () => {
+        if (!this.multipleSession) {
+            return;
+        }
+        Server.getInstance().stopNetwork();
+    }
+
+    private windowBeforeUnloadHandler = () => {
+        this.sendSessionMessage('close_session', {});
+    }
+
+    private sendSessionMessage(cmd: string, payload: any) {
+        if (!this.broadcastChannel) {
+            return;
+        }
+        this.broadcastChannel.postMessage({
+            cmd,
+            payload,
+            uuid: this.sessionId,
         });
     }
 }

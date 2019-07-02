@@ -430,7 +430,6 @@ html[theme="dark-blue"] .write {
     color: var(--grey); }
   html[theme="dark"] .write .previews,
   html[theme="dark-blue"] .write .previews {
-    color: var(--light);
     color: var(--light); }
     html[theme="dark"] .write .previews .preview-container .preview-message-wrapper,
     html[theme="dark-blue"] .write .previews .preview-container .preview-message-wrapper {
@@ -516,7 +515,6 @@ html .mobile-view .column-center .write .inputs .input .textarea-container {
   font-size: 16px !important;
   line-height: 20px; }
   html .mobile-view .column-center .write .inputs .input .textarea-container textarea {
-    padding: 5px 10px;
     font-size: 16px !important; }
 
 @keyframes bulbBlink {
