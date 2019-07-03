@@ -1,4 +1,4 @@
-importScripts('wasm_exec.js?v1');
+importScripts('/bin/wasm_exec.js?v2');
 
 let run;
 let initSDK = null;

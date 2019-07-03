@@ -391,6 +391,11 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
         if (playState === 'progress' || playState === 'download') {
             return;
         }
+        if (this.audioPlayer.isSongPlaying()) {
+            if (this.props.message && this.props.message.id !== this.audioPlayer.getCurrentTrack()) {
+                return;
+            }
+        }
         this.onSeek = true;
         const rect = e.currentTarget.getBoundingClientRect();
         const ratio = (e.clientX - rect.left) / rect.width;

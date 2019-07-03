@@ -45,7 +45,7 @@ export default class Http {
         this.testUrl = localStorage.getItem('river.workspace_url') || '';
 
         this.reqId = 0;
-        this.worker = new Worker('/bin/worker.js?v14');
+        this.worker = new Worker('/bin/worker.js?v15');
         this.workerId = id;
 
         if (this.testUrl.length > 0) {

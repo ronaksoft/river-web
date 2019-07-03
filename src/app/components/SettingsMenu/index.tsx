@@ -59,7 +59,7 @@ import UserName from "../UserName";
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.24.21';
+export const C_VERSION = '0.24.22';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{
@@ -849,25 +849,29 @@ class SettingsMenu extends React.Component<IProps, IState> {
                     <div>
                         <DialogTitle>{i18n.t('settings.debug_mode')}</DialogTitle>
                         <DialogContent>
-                            <DialogContentText>{i18n.t('settings.set_test_url')}</DialogContentText>
-                            <TextField
-                                autoFocus={true}
-                                margin="dense"
-                                label={i18n.t('settings.test_url')}
-                                type="text"
-                                fullWidth={true}
-                                value={this.state.debugModeUrl}
-                                onChange={this.debugModeUrlChange}
-                            />
-                            <TextField
-                                autoFocus={true}
-                                margin="dense"
-                                label={i18n.t('settings.throttle_interval')}
-                                type="text"
-                                fullWidth={true}
-                                value={this.state.debugThrottleInterval}
-                                onChange={this.debugModeThrottleIntervalChange}
-                            />
+                            <div style={{width: '300px'}}>
+                                <DialogContentText>{i18n.t('settings.set_test_url')}</DialogContentText>
+                                <TextField
+                                    autoFocus={true}
+                                    margin="dense"
+                                    label={i18n.t('settings.test_url')}
+                                    type="text"
+                                    fullWidth={true}
+                                    value={this.state.debugModeUrl}
+                                    onChange={this.debugModeUrlChange}
+                                />
+                                <TextField
+                                    autoFocus={true}
+                                    margin="dense"
+                                    label={i18n.t('settings.throttle_interval')}
+                                    type="text"
+                                    fullWidth={true}
+                                    value={this.state.debugThrottleInterval}
+                                    onChange={this.debugModeThrottleIntervalChange}
+                                />
+                                <Button onClick={this.debugModeClearAllDataHandler} variant="raised" color="secondary"
+                                        fullWidth={true}>{i18n.t('settings.clear_all_data')}</Button>
+                            </div>
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={this.debugModeCloseHandler} color="secondary">
@@ -1394,6 +1398,11 @@ class SettingsMenu extends React.Component<IProps, IState> {
                 debugModeOpen: true,
             });
         }
+    }
+
+    private debugModeClearAllDataHandler = () => {
+        const authErrorEvent = new CustomEvent('authErrorEvent', {});
+        window.dispatchEvent(authErrorEvent);
     }
 
     /* Debug mode close handler */

@@ -151,7 +151,8 @@
     "debug_mode": "حالت دیباگ",
     "set_test_url": "Set test url",
     "test_url": "Test URL",
-    "throttle_interval": "Throttle Interval"
+    "throttle_interval": "Throttle Interval",
+    "clear_all_data": "خذف تمام اطلاعات"
   },
   "contact": {
     "contacts": "مخاطب‌ها",

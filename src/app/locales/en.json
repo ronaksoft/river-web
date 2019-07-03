@@ -155,7 +155,8 @@
     "debug_mode": "Debug Mode",
     "set_test_url": "Set test URL",
     "test_url": "Test URL",
-    "throttle_interval": "Throttle Interval"
+    "throttle_interval": "Throttle Interval",
+    "clear_all_data": "Clear all data"
   },
   "contact": {
     "contacts": "Contacts",

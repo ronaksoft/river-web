@@ -150,6 +150,9 @@ class Dialog extends React.Component<IProps, IState> {
                 this.firstTimeTimeout = setTimeout(() => {
                     this.firstTimeLoad = false;
                     this.forceUpdate();
+                    if (this.list) {
+                        this.list.forceUpdateGrid();
+                    }
                 }, 5000);
             }
         });

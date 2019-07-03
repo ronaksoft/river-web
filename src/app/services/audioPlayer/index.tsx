@@ -123,6 +123,10 @@ export default class AudioPlayer {
         return this.currentTrack;
     }
 
+    public isSongPlaying() {
+        return this.isPlaying(this.currentTrack);
+    }
+
     /* Add audio to playlist */
     public addToPlaylist(messageId: number, peerId: string, fileId: string, userId: string, downloaded: boolean, mediaInfo?: IMediaInfo) {
         if (this.playingFromPeerId && this.playingFromPeerId !== peerId) {
