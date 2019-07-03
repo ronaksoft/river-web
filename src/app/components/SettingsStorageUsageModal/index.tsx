@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import SettingsModal from '../SettingsModal';
-import {DeleteForeverRounded, StorageRounded} from '@material-ui/icons';
+import {DeleteForeverRounded, DataUsageRounded} from '@material-ui/icons';
 import StorageUsageService, {IDialogInfo, IFileWithId, IStorageProgress} from '../../services/storageUsageService';
 import UserAvatar from '../UserAvatar';
 import {PeerType} from '../../services/sdk/messages/chat.core.types_pb';
@@ -27,6 +27,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
+import i18n from "../../services/i18n";
+import {localize} from '../../services/utilities/localize';
 
 import './style.css';
 
@@ -90,14 +92,14 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
         const {loading, loadingProgress, open, list, selectedDialog, progress, confirmOpen} = this.state;
         return (
             <React.Fragment>
-                <SettingsModal open={open} title="Storage Usage"
-                               icon={<StorageRounded/>}
+                <SettingsModal open={open} title={i18n.t('settings.storage_usage')}
+                               icon={<DataUsageRounded/>}
                                onClose={this.modalCloseHandler}>
                     {!loading && <div className="storage-usage">
                         <div className="info-btn">
                             <Button color="secondary" fullWidth={true} variant="contained"
                                     onClick={this.clearCacheHandler}>
-                                Clear Cache ({getHumanReadableSize(this.state.totalSize)})
+                                {i18n.tf('settings.clear_cache_param', getHumanReadableSize(this.state.totalSize))}
                             </Button>
                         </div>
                         {list.map((item, key) => {
@@ -110,7 +112,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
                                     <div className="size-row">
                                         {getHumanReadableSize(item.totalSize)}
                                         <span className="bullet"/>
-                                        {item.totalFile} {item.totalFile === 1 ? 'file' : 'files'}
+                                        {localize(item.totalFile)} {item.totalFile === 1 ? i18n.t('settings.file') : i18n.t('settings.files2')}
                                     </div>
                                 </div>
                                 <div className="checkbox-container">
@@ -131,7 +133,8 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
                         <div className="progress-bar-container">
                             <LinearProgress variant="determinate" value={progress.percent}/>
                         </div>
-                        <div className="progress-info-container">{`Scanning ${progress.filesTotal} files...`}</div>
+                        <div
+                            className="progress-info-container">{i18n.tf('settings.scanning_files', String(progress.filesTotal))}</div>
                     </div>}
                 </SettingsModal>
                 {selectedDialog && <SettingsModal open={Boolean(open)} title={this.getName(selectedDialog)}
@@ -158,7 +161,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
                                         <div className="size-row">
                                             {getHumanReadableSize(selectedDialog.mediaTypes[key].totalSize)}
                                             <span className="bullet"/>
-                                            {selectedDialog.mediaTypes[key].totalFile} {selectedDialog.mediaTypes[key].totalFile === 1 ? 'file' : 'files'}
+                                            {selectedDialog.mediaTypes[key].totalFile} {selectedDialog.mediaTypes[key].totalFile === 1 ? i18n.t('settings.file') : i18n.t('settings.files2')}
                                         </div>
                                     </div>
                                 </div>
@@ -166,9 +169,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
                         })}
                         <div className="info-btn">
                             <Button color="secondary" fullWidth={true} variant="contained"
-                                    onClick={this.clearCacheHandler}>
-                                Clear Cache ({getHumanReadableSize(this.state.totalSelectedSize)})
-                            </Button>
+                                    onClick={this.clearCacheHandler}>{i18n.tf('settings.clear_cache_param', getHumanReadableSize(this.state.totalSelectedSize))}</Button>
                         </div>
                     </div>
                 </SettingsModal>}
@@ -179,18 +180,18 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
                     disableEscapeKeyDown={Boolean(loadingProgress)}
                     disableBackdropClick={Boolean(loadingProgress)}
                 >
-                    <DialogTitle>Are you sure?</DialogTitle>
+                    <DialogTitle>{i18n.t('general.are_you_sure')}</DialogTitle>
                     <DialogContent className="cache-dialog-content">
                         {!loadingProgress && <DialogContentText>
-                            All media will stay in River cloud and can be re-downloaded, <br/>If you need it again.
+                            {i18n.t('settings.clear_cache_confirm_text')}<br/>{i18n.t('settings.clear_cache_confirm_text2')}
                         </DialogContentText>}
                         {loadingProgress && <LinearProgress variant="determinate" value={loadingProgress.percent}/>}
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={this.confirmCloseHandler} color="secondary"
-                                disabled={Boolean(loadingProgress)}>Cancel</Button>
+                                disabled={Boolean(loadingProgress)}>{i18n.t('general.cancel')}</Button>
                         <Button onClick={this.confirmAcceptHandler} color="primary" autoFocus={true}
-                                disabled={Boolean(loadingProgress)}>Yes</Button>
+                                disabled={Boolean(loadingProgress)}>{i18n.t('general.yes')}</Button>
                     </DialogActions>
                 </OverlayDialog>
             </React.Fragment>
@@ -318,17 +319,17 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
     private getMediaTypeTitle(type: string) {
         switch (parseInt(type, 10)) {
             case C_MESSAGE_TYPE.Audio:
-                return 'Audio';
+                return i18n.t('settings.audios');
             case C_MESSAGE_TYPE.File:
-                return 'File';
+                return i18n.t('settings.files');
             case C_MESSAGE_TYPE.Picture:
-                return 'Photo';
+                return i18n.t('settings.photos');
             case C_MESSAGE_TYPE.Video:
-                return 'Video';
+                return i18n.t('settings.videos');
             case C_MESSAGE_TYPE.Voice:
-                return 'Voice';
+                return i18n.t('settings.voices');
             default:
-                return 'Other';
+                return i18n.t('settings.other');
         }
     }
 

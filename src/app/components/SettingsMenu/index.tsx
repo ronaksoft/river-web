@@ -15,7 +15,7 @@ import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import {
     KeyboardBackspaceRounded, PaletteRounded/*, PersonRounded*/, EditRounded, CheckRounded, BookmarkRounded,
     PhotoCameraRounded, CloseRounded, FormatSizeRounded, ChatBubbleRounded, FormatColorFillRounded, CollectionsRounded,
-    Brightness2Rounded, ClearAllRounded, StorageRounded, LanguageRounded, DoneRounded,
+    Brightness2Rounded, ClearAllRounded, DataUsageRounded, LanguageRounded, DoneRounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import UserAvatar from '../UserAvatar';
@@ -59,7 +59,7 @@ import UserName from "../UserName";
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.24.22';
+export const C_VERSION = '0.24.23';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{
@@ -326,7 +326,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                     </div>
                                     <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'storage')}>
                                         <div className="icon color-data">
-                                            <StorageRounded/>
+                                            <DataUsageRounded/>
                                         </div>
                                         <div className="anchor-label">{i18n.t('settings.data_and_storage')}</div>
                                     </div>

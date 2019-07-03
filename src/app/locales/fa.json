@@ -33,7 +33,9 @@
     "settings": "تنظیمات",
     "choose_recipients": "مخاطب",
     "you": "شما",
-    "close": "بستن"
+    "close": "بستن",
+    "yes": "بله",
+    "are_you_sure": "مطمئن هستید؟"
   },
   "chat": {
     "search": "جستجو",
@@ -132,6 +134,7 @@
     "videos": "ویدو‌ها",
     "voices": "صدا‌ها",
     "files": "فایل‌ها",
+    "other": "باقی فایل‌ها",
     "auto_save": "ذخیره خودکار",
     "light": "روشن",
     "dark": "تیره",
@@ -152,7 +155,13 @@
     "set_test_url": "Set test url",
     "test_url": "Test URL",
     "throttle_interval": "Throttle Interval",
-    "clear_all_data": "خذف تمام اطلاعات"
+    "clear_all_data": "خذف تمام اطلاعات",
+    "clear_cache_confirm_text": "تمام رسانه ها در River باقی خواهند ماند و می توانند دوباره دانلود شوند،",
+    "clear_cache_confirm_text2": "اگر دوباره به آن نیاز دارید.",
+    "clear_cache_param": "حذف کش ({0})",
+    "scanning_files": "درحال اسکن {0} فایل...",
+    "files2": "فایل",
+    "file": "فایل"
   },
   "contact": {
     "contacts": "مخاطب‌ها",

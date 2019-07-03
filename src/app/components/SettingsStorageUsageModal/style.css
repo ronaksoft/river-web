@@ -131,6 +131,18 @@
 .confirm-dialog .cache-dialog-content {
   width: 300px; }
 
+html[direction="rtl"] .storage-usage {
+  direction: rtl; }
+  html[direction="rtl"] .storage-usage .storage-item {
+    padding: 0 8px 0 4px; }
+    html[direction="rtl"] .storage-usage .storage-item .icon-container .avatar {
+      float: right;
+      margin-right: auto;
+      margin-left: 12px; }
+
+html[direction="rtl"] .dialog-info-container {
+  direction: rtl; }
+
 html[theme="dark"] .storage-usage .storage-item,
 html[theme="dark"] .dialog-info-container .info-item {
   border-color: var(--dark-low-op50);

@@ -187,14 +187,38 @@
   }
 }
 
+html[direction="rtl"] {
+  .storage-usage {
+    direction: rtl;
+
+    .storage-item {
+      padding: 0 8px 0 4px;
+
+      .icon-container {
+        .avatar {
+          float: right;
+          margin-right: auto;
+          margin-left: 12px;
+        }
+      }
+    }
+  }
+
+  .dialog-info-container {
+    direction: rtl;
+  }
+}
+
 html[theme="dark"] {
   .storage-usage .storage-item,
   .dialog-info-container .info-item {
     border-color: var(--dark-low-op50);
     color: var(--white);
+
     .info-container .name-row {
       .size-row {
         color: var(--dark-mention);
+
         .bullet {
           background-color: var(--dark-mention);
         }
@@ -208,9 +232,11 @@ html[theme="dark-blue"] {
   .dialog-info-container .info-item {
     border-color: var(--dark-blue-low-op50);
     color: var(--white);
+
     .info-container .name-row {
       .size-row {
         color: var(--dark-mention);
+
         .bullet {
           background-color: var(--dark-mention);
         }

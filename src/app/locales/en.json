@@ -34,7 +34,9 @@
     "settings": "Settings",
     "choose_recipients": "Choose Recipient(s)",
     "you": "You",
-    "close": "Close"
+    "close": "Close",
+    "yes": "Yes",
+    "are_you_sure": "Are you sure?"
   },
   "chat": {
     "search": "Search",
@@ -135,6 +137,7 @@
     "videos": "Videos",
     "voices": "Voices",
     "files": "Files",
+    "other": "Other",
     "group_chats": "Group Chats",
     "auto_save": "Auto save",
     "light": "Light",
@@ -156,7 +159,13 @@
     "set_test_url": "Set test URL",
     "test_url": "Test URL",
     "throttle_interval": "Throttle Interval",
-    "clear_all_data": "Clear all data"
+    "clear_all_data": "Clear all data",
+    "clear_cache_confirm_text": "All media will stay in River cloud and can be re-downloaded,",
+    "clear_cache_confirm_text2": "If you need it again.",
+    "clear_cache_param": "Clear Cache ({0})",
+    "scanning_files": "Scanning {0} files...",
+    "files2": "files",
+    "file": "file"
   },
   "contact": {
     "contacts": "Contacts",
