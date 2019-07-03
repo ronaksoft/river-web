@@ -80,7 +80,12 @@ export default class Server {
 
             this.updateThrottler();
             this.updateManager = UpdateManager.getInstance();
-            this.executeSendThrottledRequestThrottle = throttle(this.executeSendThrottledRequest, 200);
+            let throttleInterval = 200;
+            const tils = localStorage.getItem('river.debug.throttle_interval');
+            if (tils) {
+                throttleInterval = parseInt(tils, 10);
+            }
+            this.executeSendThrottledRequestThrottle = throttle(this.executeSendThrottledRequest, throttleInterval);
         }
     }
 

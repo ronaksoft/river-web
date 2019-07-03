@@ -151,7 +151,11 @@
     "customized_background": "Customized Background",
     "show_photo": "Show Photo",
     "remove_photo": "Remove Photo",
-    "change_photo": "Change Photo"
+    "change_photo": "Change Photo",
+    "debug_mode": "Debug Mode",
+    "set_test_url": "Set test URL",
+    "test_url": "Test URL",
+    "throttle_interval": "Throttle Interval"
   },
   "contact": {
     "contacts": "Contacts",

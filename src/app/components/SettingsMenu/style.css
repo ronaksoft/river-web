@@ -54,7 +54,8 @@
     font-size: 12px;
     color: var(--grey);
     text-align: right;
-    opacity: 0.5; }
+    opacity: 0.5;
+    user-select: none; }
     .setting-menu .version:hover {
       opacity: 1; }
     .setting-menu .version .group-name {

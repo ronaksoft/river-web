@@ -30,7 +30,7 @@ import './App.css';
 
 if (!process || !process.env || process.env.NODE_ENV !== 'development') {
     Sentry.init({
-        dsn: "https://7f5b41c4b12d473bbe8db09fe0420c8a@sentry.ronaksoftware.com/8"
+        dsn: "https://ec65e55c384f43f2ac2ed7c66e319b1a@sentry.ronaksoftware.com/4"
     });
 }
 

@@ -41,6 +41,7 @@ import animateScrollTo from 'animated-scroll-to';
 import ElectronService from '../../services/electron';
 import i18n from '../../services/i18n';
 import DocumentViewerService, {IDocument} from "../../services/documentViewerService";
+import {Loading} from "../Loading";
 
 import './style.css';
 
@@ -703,8 +704,10 @@ class Message extends React.Component<IProps, IState> {
     }
 
     private noRowsRenderer = () => {
-        if (this.state.loading) {
-            return (<div className="chat-placeholder"/>);
+        if (this.state.loading || this.state.loadingPersist) {
+            return (<div className="chat-placeholder">
+                <Loading/>
+            </div>);
         } else {
             return (<div className="chat-placeholder">
                 <div className="placeholder"/>

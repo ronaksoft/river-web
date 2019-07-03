@@ -82,6 +82,7 @@
     color: var(--grey);
     text-align: right;
     opacity: 0.5;
+    user-select: none;
 
     &:hover {
       opacity: 1;

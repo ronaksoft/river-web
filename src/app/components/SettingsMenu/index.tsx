@@ -59,7 +59,7 @@ import UserName from "../UserName";
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.24.20';
+export const C_VERSION = '0.24.21';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{
@@ -91,6 +91,7 @@ interface IState {
     customBackgroundSrc?: string;
     debugModeOpen: boolean;
     debugModeUrl: string;
+    debugThrottleInterval: number;
     editProfile: boolean;
     editUsername: boolean;
     firstname: string;
@@ -156,6 +157,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             confirmDialogSelectedId: '',
             debugModeOpen: false,
             debugModeUrl: localStorage.getItem('river.workspace_url') || 'cyrus.river.im',
+            debugThrottleInterval: parseInt(localStorage.getItem('river.debug.throttle_interval') || '200', 10),
             editProfile: false,
             editUsername: false,
             firstname: '',
@@ -851,11 +853,20 @@ class SettingsMenu extends React.Component<IProps, IState> {
                             <TextField
                                 autoFocus={true}
                                 margin="dense"
-                                label="Test Url"
+                                label={i18n.t('settings.test_url')}
                                 type="text"
                                 fullWidth={true}
                                 value={this.state.debugModeUrl}
                                 onChange={this.debugModeUrlChange}
+                            />
+                            <TextField
+                                autoFocus={true}
+                                margin="dense"
+                                label={i18n.t('settings.throttle_interval')}
+                                type="text"
+                                fullWidth={true}
+                                value={this.state.debugThrottleInterval}
+                                onChange={this.debugModeThrottleIntervalChange}
                             />
                         </DialogContent>
                         <DialogActions>
@@ -1395,6 +1406,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     /* Debug mode apply handler */
     private debugModeApplyHandler = () => {
         localStorage.setItem('river.workspace_url', this.state.debugModeUrl);
+        localStorage.setItem('river.debug.throttle_interval', String(this.state.debugThrottleInterval));
         window.location.reload();
     }
 
@@ -1402,6 +1414,13 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private debugModeUrlChange = (e: any) => {
         this.setState({
             debugModeUrl: e.currentTarget.value,
+        });
+    }
+
+    /* Debug mode Throttle Interval change handler */
+    private debugModeThrottleIntervalChange = (e: any) => {
+        this.setState({
+            debugThrottleInterval: e.currentTarget.value,
         });
     }
 
