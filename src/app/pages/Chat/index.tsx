@@ -391,7 +391,9 @@ class Chat extends React.Component<IProps, IState> {
         } else {
             const peer = this.getPeerByDialogId(selectedId);
             this.setLoading(true);
-            this.messageComponent.setMessages([]);
+            if (this.messageComponent) {
+                this.messageComponent.setMessages([]);
+            }
             this.setState({
                 leftMenu: 'chat',
                 messageSelectable: false,
