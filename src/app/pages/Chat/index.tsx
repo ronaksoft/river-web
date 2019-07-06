@@ -1800,6 +1800,7 @@ class Chat extends React.Component<IProps, IState> {
             message.body = text;
             message.editedon = this.riverTime.now();
             message.rtl = this.rtlDetector.direction(text || '');
+            message.messagetype = C_MESSAGE_TYPE.Normal;
 
             let entities;
             if (param && param.entities) {
@@ -1829,6 +1830,7 @@ class Chat extends React.Component<IProps, IState> {
                 id,
                 me: true,
                 messageaction: C_MESSAGE_ACTION.MessageActionNope,
+                messagetype: C_MESSAGE_TYPE.Normal,
                 peerid: this.state.selectedDialogId,
                 peertype: peer.getType(),
                 rtl: this.rtlDetector.direction(text || ''),
@@ -1863,10 +1865,10 @@ class Chat extends React.Component<IProps, IState> {
                     messageid: res.messageid,
                     randomid: randomId,
                 }, true);
-
                 message.id = res.messageid;
                 this.messageRepo.lazyUpsert([message]);
                 this.updateDialogs(message, '0');
+                this.checkMessageOrder(message.id || 0);
                 // Force update messages
                 this.messageComponent.list.forceUpdateGrid();
                 this.messageComponent.animateToEnd();
@@ -1918,6 +1920,31 @@ class Chat extends React.Component<IProps, IState> {
             }, 250);
         });
         this.messageRepo.lazyUpsert([message]);
+    }
+
+    private checkMessageOrder(newId: number) {
+        if (!this.messageComponent) {
+            return;
+        }
+        const index = findLastIndex(this.messages, {id: newId});
+        const len = this.messages.length;
+        if (len > index + 1) {
+            if ((this.messages[index + 1].id || 0) > 0 && (this.messages[index + 1].id || 0) < newId) {
+                for (let i = index + 1; i >= 0; i++) {
+                    if ((this.messages[i].id || 0) > 0 && (this.messages[i].id || 0) < newId) {
+                        const hold = this.messages[i];
+                        this.messages[i] = this.messages[index];
+                        this.messages[index] = hold;
+                        if (this.messageComponent) {
+                            this.messageComponent.cache.clear(i, 0);
+                            this.messageComponent.cache.clear(index, 0);
+                            this.messageComponent.list.recomputeRowHeights();
+                        }
+                    }
+                }
+                return;
+            }
+        }
     }
 
     private onNewMessageOpen = () => {
@@ -3364,7 +3391,6 @@ class Chat extends React.Component<IProps, IState> {
                 if (message.mediatype !== MediaType.MEDIATYPEEMPTY && message.messagetype !== 0 && message.messagetype !== C_MESSAGE_TYPE.Normal) {
                     this.resendMediaMessage(res.id, message, res.file_ids[0], res.data);
                 } else if (message.messagetype === 0 || message.messagetype === C_MESSAGE_TYPE.Normal) {
-                    window.console.log(res.id);
                     this.resendTextMessage(res.id, message);
                 }
             }
@@ -3756,6 +3782,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageRepo.lazyUpsert([message]);
                 this.updateDialogs(message, '0');
 
+                this.checkMessageOrder(message.id || 0);
                 // Force update messages
                 this.messageComponent.list.forceUpdateGrid();
             }).catch((err) => {
@@ -3887,6 +3914,7 @@ class Chat extends React.Component<IProps, IState> {
             this.messageRepo.lazyUpsert([message]);
             this.updateDialogs(message, '0');
 
+            this.checkMessageOrder(message.id || 0);
             // Force update messages
             this.messageComponent.list.forceUpdateGrid();
 
