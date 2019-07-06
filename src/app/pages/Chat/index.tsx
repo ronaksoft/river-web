@@ -390,6 +390,8 @@ class Chat extends React.Component<IProps, IState> {
             });
         } else {
             const peer = this.getPeerByDialogId(selectedId);
+            this.setLoading(true);
+            this.messageComponent.setMessages([]);
             this.setState({
                 leftMenu: 'chat',
                 messageSelectable: false,
@@ -1429,10 +1431,9 @@ class Chat extends React.Component<IProps, IState> {
 
         const {peer} = this.state;
         if (!peer) {
+            this.setLoading(false);
             return;
         }
-
-        this.setLoading(true);
 
         this.messages = [];
 
