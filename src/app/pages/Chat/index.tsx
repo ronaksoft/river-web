@@ -1940,23 +1940,28 @@ class Chat extends React.Component<IProps, IState> {
         if (!this.messageComponent) {
             return;
         }
-        const index = findLastIndex(this.messages, {id: newId});
-        const len = this.messages.length;
-        if (len > index + 1) {
-            if ((this.messages[index + 1].id || 0) > 0 && (this.messages[index + 1].id || 0) < newId) {
-                for (let i = index + 1; i >= 0; i++) {
-                    if ((this.messages[i].id || 0) > 0 && (this.messages[i].id || 0) < newId) {
-                        const hold = this.messages[i];
-                        this.messages[i] = this.messages[index];
-                        this.messages[index] = hold;
-                        if (this.messageComponent) {
-                            this.messageComponent.cache.clear(i, 0);
-                            this.messageComponent.cache.clear(index, 0);
-                        }
-                    }
-                }
+        const swap = (i1: number, i2: number) => {
+            if (!this.messageComponent) {
                 return;
             }
+            const hold = this.messages[i1];
+            this.messages[i1] = this.messages[i2];
+            this.messages[i2] = hold;
+            if (this.messageComponent) {
+                this.messageComponent.cache.clear(i1, 0);
+                this.messageComponent.cache.clear(i2, 0);
+            }
+        };
+        const index = findLastIndex(this.messages, {id: newId});
+        if (index > 0 && ((this.messages[index - 1].id || 0) > newId || (this.messages[index - 1].id || 0) < 0)) {
+            for (let i = index - 1; i >= 0; i--) {
+                if ((this.messages[i].id || 0) > 0 && (this.messages[i].id || 0) < newId) {
+                    swap(i + 1, index);
+                    return;
+                }
+            }
+            swap(0, index);
+            return;
         }
     }
 
