@@ -454,6 +454,10 @@ class Message extends React.Component<IProps, IState> {
         this.scrollMode = mode;
     }
 
+    public keepView() {
+        this.modifyScroll(this.state.items);
+    }
+
     public fitList(instant?: boolean) {
         setTimeout(() => {
             const el: any = document.querySelector('.messages-inner .chat.active-chat');
@@ -499,7 +503,7 @@ class Message extends React.Component<IProps, IState> {
         let scrollWidth = 0;
         const el1 = this.messageInnerRef.firstChild;
         if (el1) {
-            scrollWidth = this.messageInnerRef.scrollWidth - el1.scrollWidth;
+            scrollWidth = this.messageInnerRef.scrollWidth - el1.scrollWidth - 1;
         }
         this.messageSnapshotRef.classList.remove('group', 'user', 'hidden');
         this.messageSnapshotRef.classList.add(className);
@@ -518,8 +522,9 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
-    public removeSnapshot(instant?: boolean) {
+    public removeSnapshot(instant?: boolean | number) {
         this.enableScroll();
+        const timeout = instant ? ((typeof instant === 'boolean') ? 0 : instant) : 300;
         setTimeout(() => {
             clearTimeout(this.removeSnapshotTimeout);
             if (!this.messageInnerRef || !this.messageSnapshotRef) {
@@ -529,7 +534,7 @@ class Message extends React.Component<IProps, IState> {
             this.messageSnapshotRef.classList.remove('group', 'user');
             this.messageSnapshotRef.classList.add('hidden');
             this.messageSnapshotRef.innerHTML = '';
-        }, instant ? 0 : 300);
+        }, timeout);
     }
 
     public disableScroll() {
@@ -1190,7 +1195,9 @@ class Message extends React.Component<IProps, IState> {
             case 'stay':
                 const index = findIndex(items, {id: this.stayInfo.id});
                 if (index > -1) {
-                    this.list.scrollToRow(index);
+                    if (!(this.messageScroll.startIndex <= index + 1 && this.messageScroll.stopIndex >= index)) {
+                        this.list.scrollToRow(index);
+                    }
                     setTimeout(() => {
                         this.checkScroll(this.stayInfo.id, index);
                     }, 50);
@@ -1256,7 +1263,9 @@ class Message extends React.Component<IProps, IState> {
             if (tries <= 60) {
                 window.requestAnimationFrame(() => {
                     if (this.list) {
-                        this.list.scrollToRow(index);
+                        if (!(this.messageScroll.startIndex <= index && this.messageScroll.stopIndex >= index)) {
+                            this.list.scrollToRow(index);
+                        }
                         this.checkScroll(id, index, tries);
                     }
                 });

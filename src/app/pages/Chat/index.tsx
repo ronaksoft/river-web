@@ -1789,6 +1789,9 @@ class Chat extends React.Component<IProps, IState> {
 
         const {peer} = this.state;
         if (!peer) {
+            if (this.messageComponent) {
+                this.messageComponent.setLoading(false);
+            }
             return;
         }
 
@@ -1811,12 +1814,23 @@ class Chat extends React.Component<IProps, IState> {
             }
 
             this.sdk.editMessage(randomId, message.id || 0, text, peer, entities).then(() => {
+                if (this.messageComponent) {
+                    this.messageComponent.setScrollMode('stay');
+                    this.messageComponent.takeSnapshot();
+                }
                 const index = findIndex(messages, (o) => {
                     return o.id === message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
                 });
                 if (index > -1) {
                     messages[index] = message;
-                    this.messageComponent.list.forceUpdateGrid();
+                    if (this.messageComponent) {
+                        this.messageComponent.list.forceUpdateGrid();
+                        this.messageComponent.keepView();
+                        this.messageComponent.removeSnapshot(20);
+                    }
+                    if (this.chatInputComponent && index + 1 === this.messages.length) {
+                        this.chatInputComponent.setLastMessage(message);
+                    }
                 }
                 this.messageRepo.lazyUpsert([message]);
             }).catch((err) => {
@@ -4180,13 +4194,13 @@ class Chat extends React.Component<IProps, IState> {
     private closeIframeHandler = () => {
         this.iframeService.close();
     }
-    // private testHandler = () => {
-    //     this.messageComponent.takeSnapshot(true);
-    // }
-    //
-    // private test2Handler = () => {
-    //     this.messageComponent.revertPos();
-    // }
+    /*private testHandler = () => {
+        this.messageComponent.takeSnapshot(true);
+    }
+
+    private test2Handler = () => {
+        this.messageComponent.removeSnapshot(true);
+    }*/
 }
 
 export default Chat;
