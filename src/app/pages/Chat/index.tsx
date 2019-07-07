@@ -1938,7 +1938,6 @@ class Chat extends React.Component<IProps, IState> {
                         if (this.messageComponent) {
                             this.messageComponent.cache.clear(i, 0);
                             this.messageComponent.cache.clear(index, 0);
-                            this.messageComponent.list.recomputeRowHeights();
                         }
                     }
                 }
