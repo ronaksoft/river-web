@@ -11,13 +11,8 @@ import * as React from 'react';
 import Dropzone, {FileWithPreview} from 'react-dropzone';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import {
-    AddRounded,
-    CancelRounded,
-    CheckRounded,
-    CropRounded,
-    PlayCircleFilledRounded,
-    ConfirmationNumberRounded, InsertDriveFileRounded,
-    MusicNoteRounded, CloseRounded,
+    AddRounded, CancelRounded, CheckRounded, CropRounded, PlayCircleFilledRounded, ConfirmationNumberRounded,
+    InsertDriveFileRounded, MusicNoteRounded, CloseRounded,
 } from '@material-ui/icons';
 import Scrollbars from 'react-custom-scrollbars';
 import TextField from '@material-ui/core/TextField/TextField';
@@ -28,6 +23,8 @@ import * as MusicMetadata from 'music-metadata-browser';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import Cropper, {IDimension} from '../Cropper';
 import i18n from '../../services/i18n';
+import RTLDetector from "../../services/utilities/rtl_detector";
+import {throttle} from 'lodash';
 
 import './style.css';
 
@@ -60,6 +57,7 @@ export interface IUploaderFile extends FileWithPreview {
     mediaType?: 'image' | 'video' | 'audio' | 'none';
     performer?: string;
     ready?: boolean;
+    rtl?: boolean;
     tempThumb?: File;
     title?: string;
     videoThumb?: string;
@@ -87,6 +85,9 @@ class MediaPreview extends React.Component<IProps, IState> {
     private imageActionRef: any;
     private previewRefs: string[][] = [];
     private cropperRef: Cropper;
+    private rtl: boolean = localStorage.getItem('river.lang') === 'fa' || false;
+    private rtlDetector: RTLDetector;
+    private rtlDetectorThrottle: any;
 
     constructor(props: IProps) {
         super(props);
@@ -100,6 +101,9 @@ class MediaPreview extends React.Component<IProps, IState> {
             selected: 0,
             show: true,
         };
+
+        this.rtlDetector = RTLDetector.getInstance();
+        this.rtlDetectorThrottle = throttle(this.detectRTL, 250);
     }
 
     public openDialog(items: File[], isFile?: boolean) {
@@ -211,7 +215,7 @@ class MediaPreview extends React.Component<IProps, IState> {
                         </Dropzone>
                         <div className="attachment-details-container">
                             <TextField
-                                className="caption-input"
+                                className={'caption-input ' + (items[selected] && items[selected].rtl ? 'rtl' : 'ltr')}
                                 label={i18n.t('uploader.write_a_caption')}
                                 fullWidth={true}
                                 multiline={true}
@@ -517,7 +521,9 @@ class MediaPreview extends React.Component<IProps, IState> {
     private captionChangeHandler = (e: any) => {
         const {items, selected} = this.state;
         if (items[selected]) {
-            items[selected].caption = e.currentTarget.value;
+            const text = e.currentTarget.value;
+            items[selected].caption = text;
+            this.rtlDetectorThrottle(text);
             this.setState({
                 items,
             });
@@ -707,6 +713,20 @@ class MediaPreview extends React.Component<IProps, IState> {
         this.setState({
             items,
         });
+    }
+
+    private detectRTL = (text: string) => {
+        const {selected, items} = this.state;
+        if (items[selected]) {
+            if (text.length === 0) {
+                items[selected].rtl = this.rtl;
+            } else {
+                items[selected].rtl = this.rtlDetector.direction(text);
+            }
+            this.setState({
+                items,
+            });
+        }
     }
 }
 

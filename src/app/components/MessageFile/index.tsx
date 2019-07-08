@@ -247,7 +247,7 @@ class MessageFile extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {caption, type, fileName, fileState} = this.state;
+        const {caption, type, fileName, fileState, message} = this.state;
         return (
             <div className="message-file">
                 <div className="file-content">
@@ -279,13 +279,16 @@ class MessageFile extends React.PureComponent<IProps, IState> {
                         <div className="file-row">
                             <div className="file-size" ref={this.fileSizeRefHandler}>0 KB</div>
                             {Boolean(fileState === 'view') &&
-                            <div className="file-download" onClick={this.viewFileHandler}>{i18n.t('general.save')}</div>}
+                            <div className="file-download"
+                                 onClick={this.viewFileHandler}>{i18n.t('general.save')}</div>}
                             {Boolean(fileState === 'open') &&
-                            <div className="file-download" onClick={this.openFileHandler}>{this.isMac ? i18n.t('general.show_in_finder') : i18n.t('general.show_in_folder')}</div>}
+                            <div className="file-download"
+                                 onClick={this.openFileHandler}>{this.isMac ? i18n.t('general.show_in_finder') : i18n.t('general.show_in_folder')}</div>}
                         </div>
                     </div>
                 </div>
-                {Boolean(caption.length > 0) && <div className="file-caption">{caption}</div>}
+                {Boolean(caption.length > 0) &&
+                <div className={'file-caption ' + (message.rtl ? 'rtl' : 'ltr')}>{caption}</div>}
             </div>
         );
     }

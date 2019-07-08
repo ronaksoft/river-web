@@ -82,6 +82,16 @@
     padding: 6px 6px 0;
     white-space: pre-wrap;
     word-break: break-word;
+
+    &.rtl {
+      direction: rtl;
+      text-align: right;
+    }
+
+    &.ltr {
+      direction: ltr;
+      text-align: left;
+    }
   }
 }
 

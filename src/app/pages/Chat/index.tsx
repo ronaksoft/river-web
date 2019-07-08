@@ -101,6 +101,7 @@ import i18n from "../../services/i18n";
 import IframeService, {C_IFRAME_SUBJECT} from '../../services/iframe';
 
 import './style.css';
+import PopUpNewMessage from "../../components/PopUpNewMessage";
 
 export let notifyOptions: any[] = [];
 
@@ -148,6 +149,7 @@ class Chat extends React.Component<IProps, IState> {
     private dialogComponent: Dialog;
     private statusBarComponent: StatusBar;
     private popUpDateComponent: PopUpDate;
+    private popUpNewMessageComponent: PopUpNewMessage;
     private messageComponent: Message;
     private messages: IMessage[] = [];
     private messageRepo: MessageRepo;
@@ -599,6 +601,8 @@ class Chat extends React.Component<IProps, IState> {
                             </div>
                             <div ref={this.conversationRefHandler} className="conversation">
                                 <PopUpDate ref={this.popUpDateRefHandler}/>
+                                <PopUpNewMessage ref={this.popUpNewMessageRefHandler}
+                                                 onClick={this.popUpNewMessageClickHandler}/>
                                 <SearchMessage ref={this.searchMessageHandler} peer={peer}
                                                onFind={this.searchMessageFindHandler}
                                                onClose={this.searchMessageCloseHandler}/>
@@ -607,6 +611,7 @@ class Chat extends React.Component<IProps, IState> {
                                          contextMenu={this.messageContextMenuHandler}
                                          peer={peer}
                                          showDate={this.messageShowDateHandler}
+                                         showNewMessage={this.messageShowNewMessageHandler}
                                          selectable={messageSelectable}
                                          selectedIds={messageSelectedIds}
                                          onSelectedIdsChange={this.messageSelectedIdsChangeHandler}
@@ -961,6 +966,16 @@ class Chat extends React.Component<IProps, IState> {
 
     private popUpDateRefHandler = (ref: any) => {
         this.popUpDateComponent = ref;
+    }
+
+    private popUpNewMessageRefHandler = (ref: any) => {
+        this.popUpNewMessageComponent = ref;
+    }
+
+    private popUpNewMessageClickHandler = () => {
+        if (this.messageComponent) {
+            this.messageComponent.focusOnNewMessage();
+        }
     }
 
     private searchMessageHandler = (ref: any) => {
@@ -1955,6 +1970,10 @@ class Chat extends React.Component<IProps, IState> {
         const index = findLastIndex(this.messages, {id: newId});
         if (index > 0 && ((this.messages[index - 1].id || 0) > newId || (this.messages[index - 1].id || 0) < 0)) {
             for (let i = index - 1; i >= 0; i--) {
+                // Check first message, shouldn't be after date message
+                if (this.messages[index - 1].messagetype === C_MESSAGE_TYPE.Date && i === index - 1) {
+                    return;
+                }
                 if ((this.messages[i].id || 0) > 0 && (this.messages[i].id || 0) < newId) {
                     swap(i + 1, index);
                     return;
@@ -2751,6 +2770,11 @@ class Chat extends React.Component<IProps, IState> {
         this.popUpDateComponent.updateDate(timestamp);
     }
 
+    /* PopUpDate show date handler */
+    private messageShowNewMessageHandler = (visible: boolean) => {
+        this.popUpNewMessageComponent.setVisible(visible);
+    }
+
     /* Message Rendered Handler
      * We use it for scroll event in message list */
     private messageRenderedHandler = (info: any) => {
@@ -2824,11 +2848,19 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* SettingsMenu on update handler */
-    private settingUpdateMessageHandler = () => {
+    private settingUpdateMessageHandler = (keep?: boolean) => {
+        if (keep && this.messageComponent) {
+            this.messageComponent.setScrollMode('stay');
+            this.messageComponent.takeSnapshot();
+        }
         const {selectedDialogId} = this.state;
         if (selectedDialogId !== 'null') {
             this.messageComponent.cache.clearAll();
             this.messageComponent.list.recomputeRowHeights();
+        }
+        if (keep && this.messageComponent) {
+            this.messageComponent.keepView();
+            this.messageComponent.removeSnapshot(50);
         }
     }
 
@@ -3328,6 +3360,10 @@ class Chat extends React.Component<IProps, IState> {
             if (res) {
                 this.messageRepo.removePending(randomId).then(() => {
                     if (!remove && res.file_ids && res.file_ids.length > 0) {
+                        this.messageRepo.upsert([{
+                            id: res.message_id,
+                            pmodified: true,
+                        }]);
                         this.messageRepo.addPending({
                             file_ids: res.file_ids,
                             id: data.messageid || 0,

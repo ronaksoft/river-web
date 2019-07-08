@@ -24,7 +24,7 @@ import {MoreVert} from '@material-ui/icons';
 import UserName from '../UserName';
 import Checkbox from '@material-ui/core/Checkbox';
 import MessageForwarded from '../MessageForwarded';
-import {clone, throttle, findIndex} from 'lodash';
+import {clone, throttle, findIndex, findLastIndex} from 'lodash';
 import MessageVoice from '../MessageVoice';
 import RiverTime from '../../services/utilities/river_time';
 import {ErrorRounded} from '@material-ui/icons';
@@ -62,6 +62,7 @@ interface IProps {
     selectable: boolean;
     selectedIds: { [key: number]: number };
     showDate?: (timestamp: number | null) => void;
+    showNewMessage?: (visible: boolean) => void;
 }
 
 interface IState {
@@ -549,6 +550,16 @@ class Message extends React.Component<IProps, IState> {
         this.loadMoreBeforeThrottle(true);
     }
 
+    public focusOnNewMessage() {
+        const {items} = this.state;
+        if (items) {
+            const index = findLastIndex(items, {messagetype: C_MESSAGE_TYPE.NewMessage});
+            if (index > -1 && this.list) {
+                this.list.scrollToRow(index);
+            }
+        }
+    }
+
     public render() {
         const {peer} = this.props;
         const {items, moreAnchorEl, selectable} = this.state;
@@ -875,14 +886,21 @@ class Message extends React.Component<IProps, IState> {
         const {items} = this.state;
         if (items.length > 0 && data.startIndex > -1 && items[data.startIndex]) {
             // Show/Hide date
-            if (items[data.startIndex].messagetype === C_MESSAGE_TYPE.Date ||
-                (items[data.startIndex + 1] && items[data.startIndex + 1].messagetype === C_MESSAGE_TYPE.Date)) {
-                if (this.props.showDate) {
+            if (this.props.showDate) {
+                if (items[data.startIndex].messagetype === C_MESSAGE_TYPE.Date ||
+                    (items[data.startIndex + 1] && items[data.startIndex + 1].messagetype === C_MESSAGE_TYPE.Date)) {
                     this.props.showDate(null);
-                }
-            } else {
-                if (this.props.showDate) {
+                } else {
                     this.props.showDate(items[data.startIndex].createdon || 0);
+                }
+            }
+
+            if (this.props.showNewMessage) {
+                if (items[data.stopIndex].messagetype === C_MESSAGE_TYPE.NewMessage ||
+                    (items[data.stopIndex + 1] && items[data.stopIndex + 1].messagetype === C_MESSAGE_TYPE.NewMessage)) {
+                    this.props.showNewMessage(true);
+                } else {
+                    this.props.showNewMessage(false);
                 }
             }
 
@@ -1102,7 +1120,7 @@ class Message extends React.Component<IProps, IState> {
     }
 
     /* Render body based on entities */
-    private renderBody(message: IMessage) {
+    private renderBody(message: IMessage, measureFn?: any) {
         if (!message.entitiesList || message.entitiesList.length === 0) {
             return message.body;
         } else {
@@ -1143,16 +1161,16 @@ class Message extends React.Component<IProps, IState> {
                     });
                 }
             });
-            return elems.map((elem, i) => {
+            const render = elems.map((elem, i) => {
                 switch (elem.type) {
                     case MessageEntityType.MESSAGEENTITYTYPEMENTION:
                         if (elem.str.indexOf('@') === 0) {
                             return (
                                 <UserName key={i} className="_mention" id={elem.userId} username={true} prefix="@"
-                                          unsafe={true} defaultString={elem.str.substr(1)}/>);
+                                          unsafe={true} defaultString={elem.str.substr(1)} onLoad={measureFn}/>);
                         } else {
                             return (<UserName key={i} className="_mention" id={elem.userId} unsafe={true}
-                                              defaultString={elem.str}/>);
+                                              defaultString={elem.str} onLoad={measureFn}/>);
                         }
                     case MessageEntityType.MESSAGEENTITYTYPEBOLD:
                         return (<span key={i} className="_bold">{elem.str}</span>);
@@ -1177,6 +1195,7 @@ class Message extends React.Component<IProps, IState> {
                         return (<span key={i}>{elem.str}</span>);
                 }
             });
+            return render;
         }
     }
 
@@ -1319,7 +1338,7 @@ class Message extends React.Component<IProps, IState> {
         } else {
             return (
                 <div className={'inner ' + (message.rtl ? 'rtl' : 'ltr')}
-                     onDoubleClick={this.selectText}>{this.renderBody(message)}</div>
+                     onDoubleClick={this.selectText}>{this.renderBody(message, measureFn)}</div>
             );
         }
     }

@@ -61,6 +61,12 @@
     padding: 6px 6px 0;
     white-space: pre-wrap;
     word-break: break-word; }
+    .message-audio .audio-caption.rtl {
+      direction: rtl;
+      text-align: right; }
+    .message-audio .audio-caption.ltr {
+      direction: ltr;
+      text-align: left; }
 
 html[theme="dark"] .message-audio .audio-main .audio-action-wrapper .audio-item-action .audio-action {
   background-color: var(--dark-mention); }

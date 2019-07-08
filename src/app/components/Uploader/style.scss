@@ -258,7 +258,19 @@
         justify-content: center;
 
         .caption-input {
+          &.rtl {
+            textarea {
+              direction: rtl;
+              text-align: right;
+            }
+          }
 
+          &.ltr {
+            textarea {
+              direction: ltr;
+              text-align: left;
+            }
+          }
         }
 
         .attachment-action {

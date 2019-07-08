@@ -25,9 +25,9 @@ import {IDocument} from '../../services/documentViewerService';
 import DocumentViewerService from '../../services/documentViewerService';
 import {getHumanReadableSize} from '../MessageFile';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
+import DownloadManager from '../../services/downloadManager';
 
 import './style.css';
-import DownloadManager from '../../services/downloadManager';
 
 const C_MAX_HEIGHT = 256;
 const C_MIN_HEIGHT = 86;
@@ -387,7 +387,8 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                         </div>
                     </React.Fragment>}
                 </div>
-                {Boolean(info.caption.length > 0) && <div className="media-caption">{info.caption}</div>}
+                {Boolean(info.caption.length > 0) &&
+                <div className={'media-caption ' + (message.rtl ? 'rtl' : 'ltr')}>{info.caption}</div>}
             </div>
         );
     }
@@ -595,6 +596,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                 fileSize: info.size,
                 height: info.height,
                 id: message.id || 0,
+                rtl: message.rtl,
                 thumbFileLocation: message.messagetype !== C_MESSAGE_TYPE.Picture ? info.thumbFile : undefined,
                 width: info.width,
             }],

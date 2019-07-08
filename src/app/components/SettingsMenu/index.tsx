@@ -59,7 +59,7 @@ import UserName from "../UserName";
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.24.29';
+export const C_VERSION = '0.24.30';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{
@@ -78,7 +78,7 @@ interface IProps {
     onClose?: () => void;
     onAction?: (cmd: 'logout') => void;
     subMenu?: string;
-    updateMessages?: () => void;
+    updateMessages?: (keep?: boolean) => void;
     onReloadDialog?: (peerIds: string[]) => void;
     onSubPlaceChange?: (sub: string) => void;
 }
@@ -961,6 +961,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
     }
 
     private changeFontSize() {
+        if (this.props.updateMessages) {
+            this.props.updateMessages(true);
+        }
         const el = document.querySelector('html');
         if (!el) {
             return;
@@ -1130,6 +1133,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
     }
 
     private selectBubbleHandler = (id: string) => {
+        if (this.props.updateMessages) {
+            this.props.updateMessages(true);
+        }
         this.setState({
             selectedBubble: id,
         }, () => {

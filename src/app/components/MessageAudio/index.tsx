@@ -91,7 +91,7 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {mediaInfo} = this.state;
+        const {mediaInfo, message} = this.state;
         return (
             <div className="message-audio">
                 <div className="audio-main">
@@ -104,7 +104,8 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
                         {!this.downloaded && <div className="audio-performer">&nbsp;</div>}
                     </div>
                 </div>
-                {Boolean(mediaInfo.caption.length > 0) && <div className="audio-caption">{mediaInfo.caption}</div>}
+                {Boolean(mediaInfo.caption.length > 0) &&
+                <div className={'audio-caption ' + (message.rtl ? 'rtl' : 'ltr')}>{mediaInfo.caption}</div>}
             </div>
         );
     }

@@ -16,11 +16,12 @@ interface IDocumentItem {
     downloaded?: boolean;
     fileLocation: InputFileLocation.AsObject;
     fileSize?: number;
+    geo?: google.maps.LatLngLiteral;
     height?: number;
     id?: number;
+    rtl?: boolean;
     thumbFileLocation?: InputFileLocation.AsObject;
     width?: number;
-    geo?: google.maps.LatLngLiteral;
 }
 
 export interface IDocument {

@@ -179,6 +179,9 @@ export default class MessageRepo {
         if (out.body) {
             out.rtl = RTLDetector.getInstance().direction(out.body);
         }
+        if (out.mediadata && out.mediadata.caption && out.mediadata.caption.length > 0) {
+            out.rtl = RTLDetector.getInstance().direction(out.mediadata.caption);
+        }
         out.me = (userId === out.senderid);
         return out;
     }
@@ -683,7 +686,9 @@ export default class MessageRepo {
     private getPeerPendingMessage(peer: InputPeer, fnCallback: (resMsgs: IMessage[]) => void) {
         const peerId = peer.getId() || '';
         const fn = (msg: IMessage[]) => {
-            this.db.messages.where('[peerid+id]').between([peerId, Dexie.minKey], [peerId, -1], true, true).toArray().then((items) => {
+            this.db.messages.where('[peerid+id]').between([peerId, Dexie.minKey], [peerId, -1], true, true).filter((o) => {
+                return !Boolean(o.pmodified);
+            }).toArray().then((items) => {
                 fnCallback(items.concat(msg));
             }).catch(() => {
                 fnCallback(msg);

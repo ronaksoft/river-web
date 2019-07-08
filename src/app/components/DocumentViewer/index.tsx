@@ -350,7 +350,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         return (
             <div className="document-viewer-caption">
                 <div className="caption-wrapper">
-                    <div className="caption">{doc.items[0].caption}</div>
+                    <div className={'caption ' + (doc.items[0].rtl ? 'rtl' : 'ltr')}>{doc.items[0].caption}</div>
                 </div>
             </div>
         );

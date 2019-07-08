@@ -93,6 +93,12 @@
     padding: 0 6px;
     white-space: pre-wrap;
     word-break: break-word; }
+    .message-file .file-caption.rtl {
+      direction: rtl;
+      text-align: right; }
+    .message-file .file-caption.ltr {
+      direction: ltr;
+      text-align: left; }
 
 html[theme="dark"] .message-file .file-content .file-action,
 html[theme="dark-blue"] .message-file .file-content .file-action {

@@ -156,6 +156,12 @@
       color: var(--white);
       white-space: pre-wrap;
       word-break: break-word; }
+      .document-viewer-dialog .document-viewer-caption .caption-wrapper .caption.rtl {
+        direction: rtl;
+        text-align: right; }
+      .document-viewer-dialog .document-viewer-caption .caption-wrapper .caption.ltr {
+        direction: ltr;
+        text-align: left; }
 
 .document-viewer-dialog .document-viewer-pagination {
   position: absolute;

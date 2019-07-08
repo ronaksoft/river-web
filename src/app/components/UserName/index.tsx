@@ -28,6 +28,7 @@ interface IProps {
     username?: boolean;
     you?: boolean;
     youPlaceholder?: string;
+    onLoad?: () => void;
 }
 
 interface IState {
@@ -135,6 +136,10 @@ class UserName extends React.Component<IProps, IState> {
                     id: this.userRepo.getCurrentUserId(),
                     lastname: '',
                 },
+            }, () => {
+                if (this.props.onLoad) {
+                    this.props.onLoad();
+                }
             });
             return;
         }
@@ -143,6 +148,10 @@ class UserName extends React.Component<IProps, IState> {
             if (user) {
                 this.setState({
                     user,
+                }, () => {
+                    if (this.props.onLoad) {
+                        this.props.onLoad();
+                    }
                 });
             } else {
                 throw Error('not found');

@@ -158,6 +158,12 @@
     padding: 4px 6px 0;
     white-space: pre-wrap;
     word-break: break-word; }
+    .message-media .media-caption.rtl {
+      direction: rtl;
+      text-align: right; }
+    .message-media .media-caption.ltr {
+      direction: ltr;
+      text-align: left; }
 
 html[bubble="2"] .message-media .media-duration {
   top: 8px;

@@ -188,6 +188,12 @@
       display: flex;
       align-items: center;
       justify-content: center; }
+      .uploader-dialog .uploader-container .attachment-preview-container .attachment-details-container .caption-input.rtl textarea {
+        direction: rtl;
+        text-align: right; }
+      .uploader-dialog .uploader-container .attachment-preview-container .attachment-details-container .caption-input.ltr textarea {
+        direction: ltr;
+        text-align: left; }
       .uploader-dialog .uploader-container .attachment-preview-container .attachment-details-container .attachment-action {
         position: absolute;
         height: 48px;

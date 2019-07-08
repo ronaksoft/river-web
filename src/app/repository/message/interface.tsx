@@ -18,6 +18,7 @@ interface IMessage extends UserMessage.AsObject {
     me?: boolean;
     mediadata?: any;
     mention_me?: boolean;
+    pmodified?: boolean;
     rtl?: boolean;
     saved?: boolean;
     savedPath?: string;
