@@ -887,8 +887,8 @@ class Message extends React.Component<IProps, IState> {
         if (items.length > 0 && data.startIndex > -1 && items[data.startIndex]) {
             // Show/Hide date
             if (this.props.showDate) {
-                if (items[data.startIndex].messagetype === C_MESSAGE_TYPE.Date ||
-                    (items[data.startIndex + 1] && items[data.startIndex + 1].messagetype === C_MESSAGE_TYPE.Date)) {
+                if ((items[data.startIndex] && items[data.startIndex].messagetype === C_MESSAGE_TYPE.Date) ||
+                    ((items[data.startIndex + 1] && items[data.startIndex + 1].messagetype === C_MESSAGE_TYPE.Date))) {
                     this.props.showDate(null);
                 } else {
                     this.props.showDate(items[data.startIndex].createdon || 0);
@@ -896,8 +896,8 @@ class Message extends React.Component<IProps, IState> {
             }
 
             if (this.props.showNewMessage) {
-                if (items[data.stopIndex].messagetype === C_MESSAGE_TYPE.NewMessage ||
-                    (items[data.stopIndex + 1] && items[data.stopIndex + 1].messagetype === C_MESSAGE_TYPE.NewMessage)) {
+                if ((items[data.stopIndex] && items[data.stopIndex].messagetype === C_MESSAGE_TYPE.NewMessage) ||
+                    ((items[data.stopIndex + 1] && items[data.stopIndex + 1].messagetype === C_MESSAGE_TYPE.NewMessage))) {
                     this.props.showNewMessage(true);
                 } else {
                     this.props.showNewMessage(false);

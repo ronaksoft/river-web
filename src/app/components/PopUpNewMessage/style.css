@@ -17,6 +17,7 @@
   .pop-up-new-message-container .pop-up-new-message {
     position: absolute;
     left: 50%;
+    bottom: 25px;
     transform: translateX(-50%);
     border-radius: 7.5px;
     padding: 5px 10px 6px 10px;
@@ -34,8 +35,7 @@
     text-transform: uppercase;
     opacity: 0;
     transition: opacity 0.5s;
-    cursor: pointer;
-    bottom: 25px; }
+    cursor: pointer; }
   .pop-up-new-message-container .arrow-icon {
     position: absolute;
     bottom: 0;
