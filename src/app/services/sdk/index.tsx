@@ -49,7 +49,7 @@ import {
     MessagesDelete,
     MessagesDialogs,
     MessagesEdit,
-    MessagesForward,
+    MessagesForward, MessagesGet,
     MessagesGetDialogs,
     MessagesGetHistory, MessagesGetPinnedDialogs,
     MessagesMany,
@@ -318,7 +318,14 @@ export default class SDK {
         data.setLimit(limit || 0);
         data.setMinid(Math.floor(minId || 0));
         data.setMaxid(Math.floor(maxId || 0));
-        return this.server.send(C_MSG.MessagesGetHistory, data.serializeBinary(), false);
+        return this.server.send(C_MSG.MessagesGetHistory, data.serializeBinary(), true);
+    }
+
+    public getManyMessage(peer: InputPeer, ids: number[]) {
+        const data = new MessagesGet();
+        data.setPeer(peer);
+        data.setMessagesidsList(ids);
+        return this.server.send(C_MSG.MessagesGet, data.serializeBinary(), true);
     }
 
     public typing(peer: InputPeer, type: TypingAction): Promise<MessagesMany.AsObject> {
