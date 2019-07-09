@@ -59,7 +59,7 @@ import UserName from "../UserName";
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.24.31';
+export const C_VERSION = '0.24.32';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{
@@ -388,7 +388,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                     autoHide={true}
                                 >
                                     <div className="padding-side">
-                                        <div className="page-content">
+                                        <div className="page-content" style={{overflow: 'hidden'}}>
                                             <div className="page-anchor">
                                                 <div className="icon color-font-size">
                                                     <FormatSizeRounded/>
