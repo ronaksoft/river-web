@@ -143,6 +143,9 @@ export default class ElectronService {
     }
 
     private send(cmd: string, data: any) {
+        if (!this.ipcRenderer) {
+            return Promise.reject('non ipcRenderer');
+        }
         let internalResolve = null;
         let internalReject = null;
 
