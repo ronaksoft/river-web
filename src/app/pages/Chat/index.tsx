@@ -1515,7 +1515,6 @@ class Chat extends React.Component<IProps, IState> {
                     if (force === true) {
                         updateState();
                     }
-                    this.setLoading(false);
                     clearTimeout(this.mobileBackTimeout);
                 });
             });
@@ -1552,9 +1551,9 @@ class Chat extends React.Component<IProps, IState> {
                 }
                 setTimeout(() => {
                     this.messageComponent.removeSnapshot(true);
+                    this.setLoading(false);
                 }, 100);
             });
-            this.setLoading(false);
         }).catch((err: any) => {
             window.console.warn(err);
             this.setChatView(true);
@@ -1810,8 +1809,9 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
+        const randomId = UniqueId.getRandomId();
+
         if (param && param.mode === C_MSG_MODE.Edit) {
-            const randomId = UniqueId.getRandomId();
             const messages = this.messages;
             const message: IMessage = param.message;
             message.body = text;
@@ -1851,71 +1851,66 @@ class Chat extends React.Component<IProps, IState> {
                 window.console.debug(err);
             });
         } else {
-            for (let i = 0; i < 100; i++) {
-                setTimeout(() => {
-                    const randomId = UniqueId.getRandomId();
-                    const id = -this.riverTime.milliNow();
-                    const message: IMessage = {
-                        body: `${i} - ${text}`,
-                        createdon: this.riverTime.now(),
-                        id,
-                        me: true,
-                        messageaction: C_MESSAGE_ACTION.MessageActionNope,
-                        messagetype: C_MESSAGE_TYPE.Normal,
-                        peerid: this.state.selectedDialogId,
-                        peertype: peer.getType(),
-                        rtl: this.rtlDetector.direction(text || ''),
-                        senderid: this.connInfo.UserID,
-                    };
+            const id = -this.riverTime.milliNow();
+            const message: IMessage = {
+                body: text,
+                createdon: this.riverTime.now(),
+                id,
+                me: true,
+                messageaction: C_MESSAGE_ACTION.MessageActionNope,
+                messagetype: C_MESSAGE_TYPE.Normal,
+                peerid: this.state.selectedDialogId,
+                peertype: peer.getType(),
+                rtl: this.rtlDetector.direction(text || ''),
+                senderid: this.connInfo.UserID,
+            };
 
-                    let replyTo;
-                    if (param && param.mode === C_MSG_MODE.Reply) {
-                        message.replyto = param.message.id;
-                        replyTo = param.message.id;
-                    }
-
-                    let entities;
-                    if (param && param.entities) {
-                        message.entitiesList = param.entities.map((entity: core_types_pb.MessageEntity) => {
-                            return entity.toObject();
-                        });
-                        entities = param.entities;
-                    }
-
-                    this.pushMessage(message);
-
-                    this.messageRepo.addPending({
-                        id: randomId,
-                        message_id: id,
-                    });
-
-                    this.sdk.sendMessage(randomId, `${i} - ${text}`, peer, replyTo, entities).then((res) => {
-                        // For double checking update message id
-                        this.updateManager.setMessageId(res.messageid || 0);
-                        this.modifyPendingMessage({
-                            messageid: res.messageid,
-                            randomid: randomId,
-                        }, true);
-                        message.id = res.messageid;
-                        this.messageRepo.lazyUpsert([message]);
-                        this.updateDialogs(message, '0');
-                        this.checkMessageOrder(message.id || 0);
-                        // Force update messages
-                        this.messageComponent.list.forceUpdateGrid();
-                        this.messageComponent.animateToEnd();
-                    }).catch((err) => {
-                        const messages = this.messages;
-                        const index = findIndex(messages, (o) => {
-                            return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
-                        });
-                        if (index > -1) {
-                            messages[index].error = true;
-                            this.messageRepo.importBulk([messages[index]], false);
-                            this.messageComponent.list.forceUpdateGrid();
-                        }
-                    });
-                }, 10);
+            let replyTo;
+            if (param && param.mode === C_MSG_MODE.Reply) {
+                message.replyto = param.message.id;
+                replyTo = param.message.id;
             }
+
+            let entities;
+            if (param && param.entities) {
+                message.entitiesList = param.entities.map((entity: core_types_pb.MessageEntity) => {
+                    return entity.toObject();
+                });
+                entities = param.entities;
+            }
+
+            this.pushMessage(message);
+
+            this.messageRepo.addPending({
+                id: randomId,
+                message_id: id,
+            });
+
+            this.sdk.sendMessage(randomId, text, peer, replyTo, entities).then((res) => {
+                // For double checking update message id
+                this.updateManager.setMessageId(res.messageid || 0);
+                this.modifyPendingMessage({
+                    messageid: res.messageid,
+                    randomid: randomId,
+                }, true);
+                message.id = res.messageid;
+                this.messageRepo.lazyUpsert([message]);
+                this.updateDialogs(message, '0');
+                this.checkMessageOrder(message.id || 0);
+                // Force update messages
+                this.messageComponent.list.forceUpdateGrid();
+                this.messageComponent.animateToEnd();
+            }).catch((err) => {
+                const messages = this.messages;
+                const index = findIndex(messages, (o) => {
+                    return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                });
+                if (index > -1) {
+                    messages[index].error = true;
+                    this.messageRepo.importBulk([messages[index]], false);
+                    this.messageComponent.list.forceUpdateGrid();
+                }
+            });
         }
     }
 

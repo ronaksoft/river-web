@@ -129,7 +129,8 @@
       margin: -10px 0; }
     .setting-menu .page-anchor.log-out {
       margin-top: 12px;
-      border: none; }
+      border: none;
+      width: 100%; }
   .setting-menu .account-summary {
     height: 128px;
     display: flex;

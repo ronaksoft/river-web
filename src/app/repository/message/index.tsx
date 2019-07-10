@@ -19,27 +19,31 @@ import {DexieMessageDB} from '../../services/db/dexie/message';
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from './consts';
 import GroupRepo from '../group';
 import {
-    DocumentAttribute,
-    DocumentAttributeAudio,
-    DocumentAttributeFile,
-    DocumentAttributePhoto,
-    DocumentAttributeType,
-    DocumentAttributeVideo,
-    MediaContact,
-    MediaDocument, MediaGeoLocation,
-    MediaPhoto
+    DocumentAttribute, DocumentAttributeAudio, DocumentAttributeFile, DocumentAttributePhoto, DocumentAttributeType,
+    DocumentAttributeVideo, MediaContact, MediaDocument, MediaGeoLocation, MediaPhoto,
 } from '../../services/sdk/messages/chat.core.message.medias_pb';
 import {
-    MessageActionClearHistory,
-    MessageActionContactRegistered,
-    MessageActionGroupAddUser,
-    MessageActionGroupCreated,
-    MessageActionGroupDeleteUser, MessageActionGroupPhotoChanged,
-    MessageActionGroupTitleChanged,
+    MessageActionClearHistory, MessageActionContactRegistered, MessageActionGroupAddUser, MessageActionGroupCreated,
+    MessageActionGroupDeleteUser, MessageActionGroupPhotoChanged, MessageActionGroupTitleChanged,
 } from '../../services/sdk/messages/chat.core.message.actions_pb';
 import MediaRepo from '../media';
 import {C_MEDIA_TYPE} from '../media/interface';
 import {kMerge} from "../../services/utilities/kDash";
+
+interface IMessageBundlePromise {
+    reject: any;
+    resolve: any;
+}
+
+interface IMessageBundleReq {
+    id: number;
+    promises: IMessageBundlePromise[];
+}
+
+interface IMessageBundle {
+    peer: InputPeer;
+    reqs: { [key: string]: IMessageBundleReq };
+}
 
 export default class MessageRepo {
     public static parseAttributes(attrs: DocumentAttribute.AsObject[], flags: { type: number }) {
@@ -209,6 +213,9 @@ export default class MessageRepo {
     private groupRepo: GroupRepo;
     private userId: string;
     private lazyMap: { [key: number]: IMessage } = {};
+    private messageBundle: { [key: string]: IMessageBundle } = {};
+    // @ts-ignore
+    private readonly getBundleMessageThrottle: any = null;
     private readonly updateThrottle: any = null;
 
     private constructor() {
@@ -220,6 +227,7 @@ export default class MessageRepo {
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
         this.updateThrottle = throttle(this.insertToDb, 300);
+        this.getBundleMessageThrottle = throttle(this.getMessageForBundle, 300);
     }
 
     public loadConnInfo() {
@@ -274,6 +282,7 @@ export default class MessageRepo {
     }
 
     public getMany({peer, limit, before, after, ignoreMax}: any, callback?: (resMsgs: IMessage[]) => void): Promise<IMessage[]> {
+        window.console.log(peer.getId());
         limit = limit || 30;
         let fnCallback = callback;
         if (ignoreMax && callback) {
@@ -480,14 +489,8 @@ export default class MessageRepo {
                 }
             }).catch(() => {
                 if (peer) {
-                    this.sdk.getMessageHistory(peer, {minId: id, maxId: id}).then((remoteRes) => {
-                        if (remoteRes.messagesList.length === 0) {
-                            resolve(null);
-                        } else {
-                            const message = MessageRepo.parseMessage(remoteRes.messagesList[0], this.userId);
-                            this.lazyUpsert([message], true);
-                            resolve(message);
-                        }
+                    this.getBundleMessage(peer, id).then((remoteRes) => {
+                        resolve(remoteRes);
                     }).catch((err) => {
                         reject(err);
                     });
@@ -496,6 +499,43 @@ export default class MessageRepo {
                 }
             });
         });
+    }
+
+    public getBundleMessage(peer: InputPeer, id: number): Promise<IMessage> {
+        let internalResolve = null;
+        let internalReject = null;
+
+        const promise = new Promise<IMessage>((res, rej) => {
+            internalResolve = res;
+            internalReject = rej;
+        });
+
+        const peerId = peer.getId() || '';
+
+        if (!this.messageBundle.hasOwnProperty(peerId)) {
+            this.messageBundle[peerId] = {
+                peer,
+                reqs: {},
+            };
+        }
+
+        const idStr = String(id);
+
+        if (!this.messageBundle[peerId].reqs.hasOwnProperty(idStr)) {
+            this.messageBundle[peerId].reqs[idStr] = {
+                id,
+                promises: [],
+            };
+        }
+
+        this.messageBundle[peerId].reqs[idStr].promises.push({
+            reject: internalReject,
+            resolve: internalResolve,
+        });
+
+        this.getBundleMessageThrottle();
+
+        return promise;
     }
 
     // Search message bodies
@@ -788,6 +828,44 @@ export default class MessageRepo {
         message.entitiesList = newMessage.entitiesList;
         const d = kMerge(message, newMessage);
         return d;
+    }
+
+    private getMessageForBundle = () => {
+        Object.keys(this.messageBundle).forEach((peerid) => {
+            const peer = this.messageBundle[peerid].peer;
+            const ids: number[] = [];
+            Object.keys(this.messageBundle[peerid].reqs).forEach((idStr) => {
+                ids.push(this.messageBundle[peerid].reqs[idStr].id);
+            });
+            if (ids.length === 0) {
+                delete this.messageBundle[peerid];
+                return;
+            }
+            this.sdk.getManyMessage(peer, ids).then((res) => {
+                const messages: IMessage[] = [];
+                res.messagesList.forEach((msg) => {
+                    const idStr = String(msg.id || 0);
+                    const message = MessageRepo.parseMessage(msg, this.userId);
+                    messages.push(message);
+                    if (this.messageBundle[peerid].reqs[idStr]) {
+                        this.messageBundle[peerid].reqs[idStr].promises.forEach((promise) => {
+                            promise.resolve(message);
+                        });
+                    }
+                });
+                this.lazyUpsert(messages, true);
+                delete this.messageBundle[peerid];
+            }).catch((err) => {
+                if (this.messageBundle.hasOwnProperty(peerid) && this.messageBundle[peerid].reqs) {
+                    Object.keys(this.messageBundle[peerid].reqs).forEach((idStr) => {
+                        this.messageBundle[peerid].reqs[idStr].promises.forEach((promise) => {
+                            promise.reject(err);
+                        });
+                    });
+                }
+                delete this.messageBundle[peerid];
+            });
+        });
     }
 
     private broadcastEvent(name: string, data: any) {

@@ -683,7 +683,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                             {i18n.t('general.cancel')}
                                         </div>}
                                         <div className="page-anchor log-out" onClick={this.logOutHandler}>
-                                            <div className="anchor-label color-red">{i18n.t('settings.log_out')}</div>
+                                            <Button color="secondary" fullWidth={true}>
+                                                {i18n.t('settings.log_out')}
+                                            </Button>
                                         </div>
                                     </div>
                                 </Scrollbars>}

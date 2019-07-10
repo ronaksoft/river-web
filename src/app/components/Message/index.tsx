@@ -177,6 +177,7 @@ class Message extends React.Component<IProps, IState> {
     private isElectron: boolean = ElectronService.isElectron();
     private readonly menuItem: any = {};
     private documentViewerService: DocumentViewerService;
+    private enableLoadBeforeTimeout: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -292,6 +293,7 @@ class Message extends React.Component<IProps, IState> {
                 readIdInit: this.props.readId,
             }, () => {
                 this.fitList();
+                clearTimeout(this.enableLoadBeforeTimeout);
                 this.enableLoadBefore = false;
                 this.modifyScroll(items);
                 if (this.state.items.length > 0) {
@@ -391,7 +393,7 @@ class Message extends React.Component<IProps, IState> {
                                     }
                                 }, 50);
                                 if (items.length > 40) {
-                                    this.enableLoadBefore = true;
+                                    this.setEnableBefore();
                                 }
                             }
                         }
@@ -1222,7 +1224,7 @@ class Message extends React.Component<IProps, IState> {
                     }, 50);
                 } else {
                     this.removeSnapshot();
-                    this.enableLoadBefore = true;
+                    this.setEnableBefore();
                 }
                 return;
             case 'end':
@@ -1290,7 +1292,7 @@ class Message extends React.Component<IProps, IState> {
                 });
             } else {
                 this.removeSnapshot();
-                this.enableLoadBefore = true;
+                this.setEnableBefore();
             }
         };
         const cellTop = this.getCellTop(Math.floor(id));
@@ -1299,7 +1301,7 @@ class Message extends React.Component<IProps, IState> {
             setTimeout(() => {
                 const cellTopCheck = this.getCellTop(Math.floor(id));
                 if (cellTopCheck === cellTop) {
-                    this.enableLoadBefore = true;
+                    this.setEnableBefore();
                     this.removeSnapshot();
                 } else {
                     fn();
@@ -1471,6 +1473,13 @@ class Message extends React.Component<IProps, IState> {
             type: 'avatar'
         };
         this.documentViewerService.loadDocument(doc);
+    }
+
+    private setEnableBefore() {
+        clearTimeout(this.enableLoadBeforeTimeout);
+        this.enableLoadBeforeTimeout = setTimeout(() => {
+            this.enableLoadBefore = true;
+        }, 500);
     }
 }
 

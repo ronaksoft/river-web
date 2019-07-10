@@ -321,7 +321,7 @@ export default class SDK {
         return this.server.send(C_MSG.MessagesGetHistory, data.serializeBinary(), true);
     }
 
-    public getManyMessage(peer: InputPeer, ids: number[]) {
+    public getManyMessage(peer: InputPeer, ids: number[]): Promise<MessagesMany.AsObject> {
         const data = new MessagesGet();
         data.setPeer(peer);
         data.setMessagesidsList(ids);
