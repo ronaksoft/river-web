@@ -213,9 +213,9 @@
         justify-content: center;
         left: 50%;
         top: 0;
-        height: 0;
-        width: 0;
-        transform: translate(-50%, -50%);
+        height: 24px;
+        width: 24px;
+        transform: translate(-50%, -50%) scale(0);
         background-color: var(--white);
         border-radius: 50%;
         border: 1px solid var(--light);
@@ -226,8 +226,7 @@
           color: var(--red) !important; }
         .write .inputs .input-actions .voice .lock-wrapper.show {
           top: -32px;
-          height: 24px;
-          width: 24px; }
+          transform: translate(-50%, -50%) scale(1); }
     .write .inputs.mode-voice .input, .write .inputs.mode-play .input {
       display: none; }
     .write .inputs.mode-voice .voice-recorder, .write .inputs.mode-play .voice-recorder {
