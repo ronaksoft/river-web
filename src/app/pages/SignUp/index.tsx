@@ -391,7 +391,7 @@ class SignUp extends React.Component<IProps, IState> {
                     workspaceInfo: res,
                 });
                 const localWorkspace = localStorage.getItem('river.workspace_url');
-                if (localStorage.getItem('river.workspace_url') !== workspace) {
+                if ((localWorkspace || 'cyrus.river.im') !== workspace) {
                     this.workspaceManager.closeWire();
                     localStorage.setItem('river.workspace_url', workspace);
                     localStorage.removeItem('river.contacts.hash');

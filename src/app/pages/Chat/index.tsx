@@ -2238,6 +2238,7 @@ class Chat extends React.Component<IProps, IState> {
             unreadCounter,
         });
         this.iframeService.setUnreadCounter(unreadCounter);
+        this.electronService.setBadgeCounter(unreadCounter);
     }
 
     private checkSync(updateId?: number): Promise<any> {

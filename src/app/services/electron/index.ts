@@ -23,6 +23,7 @@ export const C_ELECTRON_CMD = {
     Error: 'error',
     PreviewFile: 'previewFile',
     RevealFile: 'revealFile',
+    SetBadgeCounter: 'setBadgeCounter',
 };
 
 interface IMessageListener {
@@ -116,6 +117,14 @@ export default class ElectronService {
     public previewFile(path: string) {
         return this.send(C_ELECTRON_CMD.PreviewFile, {
             path,
+        });
+    }
+
+
+    /* Set Badge Counter*/
+    public setBadgeCounter(counter: number) {
+        return this.send(C_ELECTRON_CMD.SetBadgeCounter, {
+            counter,
         });
     }
 

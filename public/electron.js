@@ -29,6 +29,8 @@ createWindow = () => {
         },
         height: 860,
         width: 1280,
+        simpleFullscreen: true,
+        vibrancy: 'dark'
     });
 
     mainWindow.loadURL(
@@ -160,8 +162,9 @@ app.on('ready', () => {
     generateMenu();
 });
 
-app.on('window-all-closed', () => {
-    app.quit();
+app.on('window-all-closed', (e) => {
+    // app.quit();
+    mainWindow = null;
 });
 
 app.on('activate', () => {
@@ -200,9 +203,33 @@ ipcMain.on('fnCall', (e, arg) => {
             break;
         case 'revealFile':
             shell.showItemInFolder(arg.data.path);
+            callReact('fnCallback', {
+                cmd: 'bool',
+                reqId: arg.reqId,
+                data: {
+                    bool: true,
+                },
+            });
             break;
         case 'previewFile':
             mainWindow.previewFile(arg.data.path);
+            callReact('fnCallback', {
+                cmd: 'bool',
+                reqId: arg.reqId,
+                data: {
+                    bool: true,
+                },
+            });
+            break;
+        case 'setBadgeCounter':
+            app.setBadgeCount(arg.data.counter);
+            callReact('fnCallback', {
+                cmd: 'bool',
+                reqId: arg.reqId,
+                data: {
+                    bool: true,
+                },
+            });
             break;
     }
 });
