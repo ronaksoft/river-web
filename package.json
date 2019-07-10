@@ -12,7 +12,7 @@
     "watch-css": "npm run build-css && node-sass-chokidar src/ -o src/ --watch --recursive",
     "start-js": "react-scripts-ts start",
     "start": "npm-run-all start-js watch-css",
-    "build-js": "GENERATE_SOURCEMAP=true react-scripts-ts build",
+    "build-js": "PUBLIC_URL=https://web.river.im/ GENERATE_SOURCEMAP=true react-scripts-ts build",
     "build": "npm-run-all build-css build-js",
     "postinstall": "mkdir -p node_modules/@material-ui/core/node_modules/@types/jss && cp -r node_modules/@types/jss node_modules/@material-ui/core/node_modules/@types",
     "test": "react-scripts-ts test --env=jsdom",

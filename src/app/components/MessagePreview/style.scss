@@ -106,6 +106,13 @@
           color: #6bcbef;
         }
       }
+
+      &.with-thumbnail {
+        .preview-message {
+          border-top-left-radius: 0 !important;
+          border-bottom-left-radius: 0 !important;
+        }
+      }
     }
   }
 }

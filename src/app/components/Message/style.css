@@ -295,6 +295,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    white-space: nowrap;
     padding: 2px 10px 0; }
   .bubble-wrapper .system-message-with-picture {
     height: 36px;

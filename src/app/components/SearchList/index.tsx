@@ -154,16 +154,20 @@ class SearchList extends React.Component<IProps, IState> {
             return (<span/>);
         }
         if (value.mode === 'contact' && value.contact) {
-            return (<Chip key={key} avatar={<UserAvatar id={value.contact.id} noDetail={true} savedMessages={true}/>}
+            return (<Chip key={key} avatar={<UserAvatar id={value.contact.id} noDetail={true}
+                                                        savedMessages={this.userId === value.contact.id}/>}
                           tabIndex={-1} label={<UserName id={value.contact.id} noDetail={true} unsafe={true}
-                                                         you={true} youPlaceholder="Saved Messages"/>}
+                                                         you={this.userId === value.contact.id}
+                                                         youPlaceholder="Saved Messages"/>}
                           onDelete={this.removeItemHandler.bind(this, value)} className="chip"/>);
         } else if (value.mode === 'dialog' && value.dialog) {
             if (value.dialog.peertype === PeerType.PEERUSER || value.dialog.peertype === PeerType.PEERSELF) {
                 return (
-                    <Chip key={key} avatar={<UserAvatar id={value.dialog.peerid} noDetail={true} savedMessages={true}/>}
+                    <Chip key={key} avatar={<UserAvatar id={value.dialog.peerid} noDetail={true}
+                                                        savedMessages={this.userId === value.dialog.peerid}/>}
                           tabIndex={-1} label={<UserName id={value.dialog.peerid} noDetail={true} unsafe={true}
-                                                         you={true} youPlaceholder="Saved Messages"/>}
+                                                         you={this.userId === value.dialog.peerid}
+                                                         youPlaceholder="Saved Messages"/>}
                           onDelete={this.removeItemHandler.bind(this, value)} className="chip"/>);
             } else if (value.dialog.peertype === PeerType.PEERGROUP) {
                 return (<Chip key={key} avatar={<GroupAvatar id={value.dialog.peerid}/>} tabIndex={-1}
@@ -351,7 +355,7 @@ class SearchList extends React.Component<IProps, IState> {
         });
         if (this.inputPeerRes.contacts.length > 0) {
             items.push({
-                label:  i18n.t('general.contacts'),
+                label: i18n.t('general.contacts'),
                 mode: 'label',
             });
         }

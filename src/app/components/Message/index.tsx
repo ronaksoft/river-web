@@ -1306,7 +1306,7 @@ class Message extends React.Component<IProps, IState> {
                 } else {
                     fn();
                 }
-            }, 50);
+            }, 10);
         } else {
             fn();
         }

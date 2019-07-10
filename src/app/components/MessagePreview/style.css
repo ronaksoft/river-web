@@ -76,6 +76,9 @@
         background-color: #6bcbef; }
       .message-preview .preview-container .preview-message-wrapper.reply-you .preview-message .preview-message-user {
         color: #6bcbef; }
+      .message-preview .preview-container .preview-message-wrapper.with-thumbnail .preview-message {
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important; }
 
 .me .message-preview .preview-container .preview-message-wrapper.reply-you .preview-bar {
   background-color: #6bcbef; }

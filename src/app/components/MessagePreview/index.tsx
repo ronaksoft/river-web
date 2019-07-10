@@ -109,7 +109,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
         return (
             <div className="message-preview" onDoubleClick={this.props.onDoubleClick} onClick={this.clickHandler}>
                 <div className="preview-container">
-                    <div className={'preview-message-wrapper ' + this.getPreviewCN(previewMessage.senderid || '')}>
+                    <div className={'preview-message-wrapper ' + this.getPreviewCN(previewMessage)}>
                         <span className="preview-bar"/>
                         {this.getThumbnail()}
                         <div className="preview-message">
@@ -126,13 +126,23 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
         );
     }
 
-    private getPreviewCN(senderid: string) {
-        if (senderid === this.userId) {
-            return 'reply-you';
-        } else if (senderid !== this.userId) {
-            return 'reply';
+    private getPreviewCN(msg: IMessage) {
+        if (!msg) {
+            return '';
         }
-        return '';
+        let cn = '';
+        if (msg.senderid === this.userId) {
+            cn = 'reply-you';
+        } else {
+            cn = 'reply';
+        }
+        switch (msg.messagetype) {
+            case C_MESSAGE_TYPE.Picture:
+            case C_MESSAGE_TYPE.Video:
+                cn += ' with-thumbnail';
+                break;
+        }
+        return cn;
     }
 
     private getMessage() {
