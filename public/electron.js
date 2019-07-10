@@ -6,6 +6,7 @@ const contextMenu = require('electron-context-menu');
 
 let mainWindow;
 let sizeMode = 'desktop';
+let firstTimeLoad = false;
 
 if (isDev) {
     require('electron-debug')();
@@ -17,7 +18,8 @@ const callReact = (cmd, params) => {
 
 contextMenu({});
 
-createWindow = () => {
+createWindow = (forceShow) => {
+    firstTimeLoad = true;
     mainWindow = new BrowserWindow({
         backgroundColor: '#27AE60',
         minWidth: 316,
@@ -75,12 +77,18 @@ createWindow = () => {
     `);
 
     mainWindow.once('ready-to-show', () => {
-        mainWindow.show();
+        if (!forceShow) {
+            mainWindow.show();
+        }
 
         ipcMain.on('open-external-window', (event, arg) => {
             shell.openExternal(arg);
         });
     });
+
+    if (forceShow) {
+        mainWindow.show();
+    }
 
     mainWindow.on('resize', () => {
         const width = mainWindow.getBounds().width;
@@ -169,7 +177,7 @@ app.on('window-all-closed', (e) => {
 
 app.on('activate', () => {
     if (mainWindow === null) {
-        createWindow();
+        createWindow(firstTimeLoad);
     }
 });
 
