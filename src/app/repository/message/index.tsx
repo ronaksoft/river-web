@@ -282,7 +282,6 @@ export default class MessageRepo {
     }
 
     public getMany({peer, limit, before, after, ignoreMax}: any, callback?: (resMsgs: IMessage[]) => void): Promise<IMessage[]> {
-        window.console.log(peer.getId());
         limit = limit || 30;
         let fnCallback = callback;
         if (ignoreMax && callback) {
