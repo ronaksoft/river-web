@@ -185,7 +185,6 @@ export default class DialogRepo {
                     peertype: PeerType.PEERUSER,
                     preview: '',
                     sender_id: this.userId,
-                    target_id: this.userId,
                 });
             }
             return res;
@@ -304,7 +303,6 @@ export default class DialogRepo {
         dialog.preview_me = (msg.senderid === this.userId);
         dialog.preview_rtl = msg.rtl;
         dialog.last_update = msg.createdon;
-        dialog.target_id = msg.peerid;
         dialog.sender_id = msg.senderid;
         dialog.saved_messages = (msg.peerid === this.userId);
         return dialog;

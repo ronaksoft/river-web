@@ -208,16 +208,16 @@ class SearchList extends React.Component<IProps, IState> {
                 <div style={style} key={index} className="search-item"
                      onClick={this.addItemHandler.bind(this, inputPeer)}>
                     {Boolean(inputPeer.dialog.peertype === PeerType.PEERUSER || inputPeer.dialog.peertype === PeerType.PEERSELF) &&
-                    <UserAvatar className="avatar" id={inputPeer.dialog.target_id || ''} noDetail={true}
-                                savedMessages={this.userId === inputPeer.dialog.target_id}/>}
+                    <UserAvatar className="avatar" id={inputPeer.dialog.peerid || ''} noDetail={true}
+                                savedMessages={this.userId === inputPeer.dialog.peerid}/>}
                     {Boolean(inputPeer.dialog.peertype === PeerType.PEERUSER || inputPeer.dialog.peertype === PeerType.PEERSELF) &&
-                    <UserName className="name" id={inputPeer.dialog.target_id || ''} noDetail={true}
-                              you={this.userId === inputPeer.dialog.target_id}
+                    <UserName className="name" id={inputPeer.dialog.peerid || ''} noDetail={true}
+                              you={this.userId === inputPeer.dialog.peerid}
                               youPlaceholder="Saved Messages"/>}
                     {Boolean(inputPeer.dialog.peertype === PeerType.PEERGROUP) &&
-                    <GroupAvatar className="avatar" id={inputPeer.dialog.target_id || ''}/>}
+                    <GroupAvatar className="avatar" id={inputPeer.dialog.peerid || ''}/>}
                     {Boolean(inputPeer.dialog.peertype === PeerType.PEERGROUP) &&
-                    <GroupName className="name" id={inputPeer.dialog.target_id || ''}/>}
+                    <GroupName className="name" id={inputPeer.dialog.peerid || ''}/>}
                     <span
                         className="phone">{this.getIcon(inputPeer.dialog.preview_icon)}{inputPeer.dialog.preview}</span>
                 </div>

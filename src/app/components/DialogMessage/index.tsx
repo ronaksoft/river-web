@@ -88,17 +88,17 @@ class DialogMessage extends React.Component<IProps, IState> {
             <div
                 className={'dialog-wrapper' + (muted ? ' muted' : '') + ((dialog.mentionedcount && dialog.mentionedcount > 0) ? ' has-mention' : '')}>
                 {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
-                <UserAvatar className="avatar" id={dialog.target_id || ''} noDetail={true}
+                <UserAvatar className="avatar" id={dialog.peerid || ''} noDetail={true}
                             savedMessages={dialog.saved_messages}/>}
                 {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
-                <GroupAvatar className="avatar" id={dialog.target_id || ''}/>}
+                <GroupAvatar className="avatar" id={dialog.peerid || ''}/>}
                 <div className="dialog-top-bar">
                     {muted && <div className="muted-wrapper"><NotificationsOffRounded/></div>}
                     {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
-                    <UserName className="name" id={dialog.target_id || ''} noDetail={true} you={dialog.saved_messages}
+                    <UserName className="name" id={dialog.peerid || ''} noDetail={true} you={dialog.saved_messages}
                               youPlaceholder="Saved Messages"/>}
                     {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
-                    <GroupName className="name" id={dialog.target_id || ''}/>}
+                    <GroupName className="name" id={dialog.peerid || ''}/>}
                     {dialog.preview_me && dialog.peerid !== this.userId && <span className="status">
                         {this.getStatus(dialog.topmessageid || 0, dialog.readoutboxmaxid || 0)}
                     </span>}

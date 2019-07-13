@@ -1084,6 +1084,7 @@ class Chat extends React.Component<IProps, IState> {
          */
         data.messages.forEach((message) => {
             this.checkPendingMessage(message.id || 0);
+            this.checkMessageOrder(message.id || 0);
             // Clear the message history
             if (message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
                 this.messageRepo.clearHistory(message.peerid || '', message.actiondata.maxid).then(() => {
@@ -1553,8 +1554,13 @@ class Chat extends React.Component<IProps, IState> {
                 }
                 setTimeout(() => {
                     this.setLoading(false);
+                    if (this.messageComponent) {
+                        this.messageComponent.keepView();
+                    }
                 }, 100);
-                this.messageComponent.removeSnapshot(300);
+                if (this.messageComponent) {
+                    this.messageComponent.removeSnapshot(300);
+                }
             });
         }).catch((err: any) => {
             window.console.warn(err);
@@ -2094,7 +2100,6 @@ class Chat extends React.Component<IProps, IState> {
                 dialogs[index].preview_me = msg.me;
                 dialogs[index].preview_rtl = msg.rtl;
                 dialogs[index].sender_id = msg.senderid;
-                dialogs[index].target_id = msg.peerid;
                 dialogs[index].last_update = msg.createdon;
                 dialogs[index].peerid = id;
                 dialogs[index].peertype = msg.peertype;
@@ -2120,7 +2125,6 @@ class Chat extends React.Component<IProps, IState> {
                 preview_rtl: msg.rtl,
                 saved_messages: (this.connInfo.UserID === id),
                 sender_id: msg.senderid,
-                target_id: msg.peerid,
                 topmessageid: msg.id,
                 unreadcount: 0,
             };
@@ -2419,15 +2423,15 @@ class Chat extends React.Component<IProps, IState> {
         this.dialogRepo.getManyCache({}).then((res) => {
             this.dialogsSort(res, (dialogs) => {
                 data.ids.forEach((id: string) => {
-                    window.console.debug('dialogDBUpdated data.id:', id);
+                    // window.console.debug('dialogDBUpdated data.id:', id);
                     if (this.dialogMap.hasOwnProperty(id) && dialogs[this.dialogMap[id]]) {
-                        window.console.debug('dialogDBUpdated peerId:', dialogs[this.dialogMap[id]].peerid);
+                        // window.console.debug('dialogDBUpdated peerId:', dialogs[this.dialogMap[id]].peerid);
                         const maxReadInbox = dialogs[this.dialogMap[id]].readinboxmaxid || 0;
-                        window.console.debug('dialogDBUpdated maxReadInbox:', maxReadInbox);
+                        // window.console.debug('dialogDBUpdated maxReadInbox:', maxReadInbox);
                         const dialog = this.getDialogById(id);
                         if (dialog) {
                             this.messageRepo.getUnreadCount(id, maxReadInbox, dialog ? (dialog.topmessageid || 0) : 0).then((count) => {
-                                window.console.debug('dialogDBUpdated getUnreadCount:', count);
+                                // window.console.debug('dialogDBUpdated getUnreadCount:', count);
                                 this.updateDialogsCounter(id, {
                                     mentionCounter: count.mention,
                                     unreadCounter: count.message,
@@ -2601,7 +2605,6 @@ class Chat extends React.Component<IProps, IState> {
                 peertype: PeerType.PEERGROUP,
                 preview: 'Group created',
                 sender_id: this.connInfo.UserID,
-                target_id: res.id,
             };
             this.dialogs.push(dialog);
             this.dialogsSortThrottle(this.dialogs);
