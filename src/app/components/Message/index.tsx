@@ -309,8 +309,8 @@ class Message extends React.Component<IProps, IState> {
         } else if (this.state.items === items && this.listCount !== items.length) {
             setTimeout(() => {
                 this.fitList();
+                this.modifyScroll(items);
             }, 100);
-            this.modifyScroll(items);
             this.listCount = items.length;
             this.list.forceUpdateGrid();
             if (this.state.items.length > 0) {
