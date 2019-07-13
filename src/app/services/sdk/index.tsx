@@ -538,4 +538,12 @@ export default class SDK {
         const data = new SystemGetSalts();
         return this.server.send(C_MSG.SystemGetSalts, data.serializeBinary(), true);
     }
+
+    public startNetWork() {
+        this.server.startNetwork();
+    }
+
+    public stopNetWork() {
+        this.server.stopNetwork();
+    }
 }

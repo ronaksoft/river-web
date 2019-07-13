@@ -59,7 +59,7 @@ import UserName from "../UserName";
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.24.35';
+export const C_VERSION = '0.24.36';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{

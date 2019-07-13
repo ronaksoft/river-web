@@ -1,6 +1,6 @@
 {
   "name": "river",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "private": true,
   "description": "River chat",
   "author": "Hamidreza KK <hamidrezakks@gmail.com>",
@@ -44,7 +44,6 @@
     "file-saver": "^2.0.2",
     "fine-uploader": "^5.16.2",
     "fine-uploader-wrappers": "^1.0.1",
-    "firebase": "^5.11.0",
     "glur": "^1.1.2",
     "google-protobuf": "^3.9.0-rc.1",
     "int64-buffer": "^0.99.1007",

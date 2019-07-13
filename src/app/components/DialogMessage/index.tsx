@@ -26,6 +26,7 @@ import {isEqual} from 'lodash';
 import {C_MESSAGE_ICON} from '../Dialog/utils';
 import i18n from '../../services/i18n';
 import {localize} from '../../services/utilities/localize';
+import sdk from '../../services/sdk';
 
 import './style.css';
 
@@ -45,6 +46,7 @@ class DialogMessage extends React.Component<IProps, IState> {
     private lastUpdate: number | undefined;
     private notifySetting: PeerNotifySettings.AsObject | undefined;
     private isTyping: { [key: string]: any };
+    private userId: string;
 
     constructor(props: IProps) {
         super(props);
@@ -53,6 +55,8 @@ class DialogMessage extends React.Component<IProps, IState> {
             dialog: props.dialog,
             isTyping: props.isTyping,
         };
+
+        this.userId = sdk.getInstance().getConnInfo().UserID || '';
     }
 
     public componentDidMount() {
@@ -95,7 +99,7 @@ class DialogMessage extends React.Component<IProps, IState> {
                               youPlaceholder="Saved Messages"/>}
                     {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
                     <GroupName className="name" id={dialog.target_id || ''}/>}
-                    {dialog.preview_me && <span className="status">
+                    {dialog.preview_me && dialog.peerid !== this.userId && <span className="status">
                         {this.getStatus(dialog.topmessageid || 0, dialog.readoutboxmaxid || 0)}
                     </span>}
                     <LiveDate className="time" time={dialog.last_update || 0}/>

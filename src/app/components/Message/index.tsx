@@ -321,6 +321,8 @@ class Message extends React.Component<IProps, IState> {
             if (callback) {
                 callback();
             }
+        } else if (callback) {
+            callback();
         }
     }
 

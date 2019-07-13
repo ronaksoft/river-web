@@ -191,6 +191,7 @@ class Chat extends React.Component<IProps, IState> {
     private dialogs: IDialog[] = [];
     private isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } } = {};
     private iframeService: IframeService;
+    private newMessageLoadThrottle: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -246,6 +247,7 @@ class Chat extends React.Component<IProps, IState> {
         this.messageReadThrottle = throttle(this.readMessage, 512);
         this.backgroundService = BackgroundService.getInstance();
         this.downloadManager = DownloadManager.getInstance();
+        this.newMessageLoadThrottle = throttle(this.newMessageLoad, 200);
 
         if (!process || !process.env || process.env.NODE_ENV !== 'development') {
             Sentry.configureScope((scope) => {
@@ -383,6 +385,7 @@ class Chat extends React.Component<IProps, IState> {
             }
             return;
         }
+        this.newMessageLoadThrottle.cancel();
         const selectedMessageId = newProps.match.params.mid;
         this.updateDialogsCounter(this.state.selectedDialogId, {scrollPos: this.lastMessageId});
         if (selectedId === 'null') {
@@ -573,10 +576,10 @@ class Chat extends React.Component<IProps, IState> {
                                         <IconButton
                                             onClick={this.messageMoreOpenHandler}
                                         ><InfoOutlined/></IconButton>
-                                        {/*<IconButton
+                                        <IconButton
                                             onClick={this.testHandler}
                                         ><InfoOutlined/></IconButton>
-                                        <IconButton
+                                        {/*<IconButton
                                             onClick={this.test2Handler}
                                         ><InfoOutlined/></IconButton>*/}
                                         <Menu
@@ -1044,12 +1047,13 @@ class Chat extends React.Component<IProps, IState> {
                 this.setScrollMode('none');
                 this.messageComponent.setMessages(dataMsg.msgs, () => {
                     // Scroll down if possible
-                    this.messageComponent.list.forceUpdateGrid();
                     if (!this.endOfMessage && this.isInChat) {
-                        this.messageComponent.animateToEnd();
+                        this.newMessageLoadThrottle();
                         if (dataMsg.maxReadId !== -1) {
                             this.sendReadHistory(this.state.peer, dataMsg.maxReadId);
                         }
+                    } else {
+                        this.messageComponent.list.forceUpdateGrid();
                     }
                 });
             }
@@ -1541,11 +1545,9 @@ class Chat extends React.Component<IProps, IState> {
             if (this.messages.length === 0) {
                 this.setMoveDownVisible(false);
                 this.setEndOfMessage(false);
+                this.setLoading(false);
             }
             this.messageComponent.setMessages(dataMsg.msgs, () => {
-                // this.messageComponent.list.recomputeRowHeights();
-                // this.messageComponent.list.recomputeGridSize();
-                // this.messageComponent.list.forceUpdateGrid();
                 if (messageId && messageId !== '0') {
                     this.messageJumpToMessageHandler(parseInt(messageId, 10));
                 }
@@ -1897,9 +1899,8 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageRepo.lazyUpsert([message]);
                 this.updateDialogs(message, '0');
                 this.checkMessageOrder(message.id || 0);
-                // Force update messages
-                this.messageComponent.list.forceUpdateGrid();
-                this.messageComponent.animateToEnd();
+
+                this.newMessageLoadThrottle();
             }).catch((err) => {
                 const messages = this.messages;
                 const index = findIndex(messages, (o) => {
@@ -2238,7 +2239,9 @@ class Chat extends React.Component<IProps, IState> {
             unreadCounter,
         });
         this.iframeService.setUnreadCounter(unreadCounter);
-        this.electronService.setBadgeCounter(unreadCounter);
+        if (ElectronService.isElectron()) {
+            this.electronService.setBadgeCounter(unreadCounter);
+        }
     }
 
     private checkSync(updateId?: number): Promise<any> {
@@ -2608,6 +2611,7 @@ class Chat extends React.Component<IProps, IState> {
 
     private logOutHandler() {
         const wipe = () => {
+            this.sdk.stopNetWork();
             this.sdk.resetConnInfo();
             this.mainRepo.destroyDB().then(() => {
                 this.updateManager.setLastUpdateId(0);
@@ -2616,6 +2620,7 @@ class Chat extends React.Component<IProps, IState> {
                 // window.location.reload();
             });
         };
+        this.updateManager.disable();
         this.sdk.logout(this.connInfo.AuthID).then((res) => {
             wipe();
         }).catch(() => {
@@ -4235,13 +4240,20 @@ class Chat extends React.Component<IProps, IState> {
     private closeIframeHandler = () => {
         this.iframeService.close();
     }
-    /*private testHandler = () => {
-        this.messageComponent.takeSnapshot(true);
+
+    private newMessageLoad = () => {
+        // Force update messages
+        this.messageComponent.list.forceUpdateGrid();
+        this.messageComponent.animateToEnd();
     }
 
-    private test2Handler = () => {
-        this.messageComponent.removeSnapshot(true);
-    }*/
+    private testHandler = () => {
+        this.snapshot();
+    }
+    /*
+        private test2Handler = () => {
+            this.messageComponent.removeSnapshot(true);
+        }*/
 }
 
 export default Chat;
