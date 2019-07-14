@@ -292,7 +292,6 @@ class Message extends React.Component<IProps, IState> {
                 moreIndex: -1,
                 readIdInit: this.props.readId,
             }, () => {
-                this.fitList();
                 clearTimeout(this.enableLoadBeforeTimeout);
                 this.enableLoadBefore = false;
                 this.modifyScroll(items);
@@ -301,6 +300,7 @@ class Message extends React.Component<IProps, IState> {
                 } else {
                     this.props.onLastMessage(null);
                 }
+                this.fitList();
                 if (callback) {
                     callback();
                 }
@@ -308,20 +308,22 @@ class Message extends React.Component<IProps, IState> {
             this.listCount = items.length;
         } else if (this.state.items === items && this.listCount !== items.length) {
             setTimeout(() => {
-                this.fitList();
+                this.fitList(true);
             }, 100);
             this.modifyScroll(items);
             this.listCount = items.length;
-            this.list.forceUpdateGrid();
             if (this.state.items.length > 0) {
                 this.props.onLastMessage(this.state.items[this.state.items.length - 1]);
             } else {
                 this.props.onLastMessage(null);
             }
+            this.list.forceUpdateGrid();
+            this.forceUpdate();
             if (callback) {
                 callback();
             }
         } else if (callback) {
+            this.list.forceUpdateGrid();
             callback();
         }
     }
@@ -485,7 +487,7 @@ class Message extends React.Component<IProps, IState> {
                     if (diff > 8 && !instant) {
                         setTimeout(() => {
                             this.fitList(true);
-                        }, 300);
+                        }, 100);
                     }
                     return;
                 }

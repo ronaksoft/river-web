@@ -101,10 +101,10 @@ export default class UpdateManager {
     }
 
     public parseUpdate(bytes: string) {
+        const data = UpdateContainer.deserializeBinary(base64ToU8a(bytes)).toObject();
         if (!this.active) {
             return;
         }
-        const data = UpdateContainer.deserializeBinary(base64ToU8a(bytes)).toObject();
         const currentUpdateId = this.lastUpdateId;
         const minId = data.minupdateid || 0;
         const maxId = data.maxupdateid || 0;
@@ -154,10 +154,6 @@ export default class UpdateManager {
 
     private applyUpdates(data: UpdateContainer.AsObject) {
         const updates = data.updatesList;
-        const maxId = data.maxupdateid;
-        if (maxId && maxId !== 0) {
-            this.setLastUpdateId(maxId);
-        }
         updates.forEach((update) => {
             try {
                 this.responseUpdateMessageID(update);
@@ -218,6 +214,9 @@ export default class UpdateManager {
     private responseUpdateMessageID(update: UpdateEnvelope.AsObject) {
         // @ts-ignore
         const data: Uint8Array = update.update;
+        if (this.checkIncrementalUpdateId(update.updateid || 0)) {
+            return;
+        }
         switch (update.constructor) {
             case C_MSG.UpdateMessageID:
                 const updateMessageId = UpdateMessageID.deserializeBinary(data).toObject();
@@ -231,6 +230,9 @@ export default class UpdateManager {
         let flushUpdateId = false;
         // @ts-ignore
         const data: Uint8Array = update.update;
+        if (this.checkIncrementalUpdateId(update.updateid || 0)) {
+            return;
+        }
         switch (update.constructor) {
             case C_MSG.UpdateNewMessage:
                 const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
@@ -319,6 +321,19 @@ export default class UpdateManager {
         if (flushUpdateId) {
             this.flushUpdateIdThrottle();
         }
+    }
+
+    private checkIncrementalUpdateId(updateId: number) {
+        if (updateId === 0) {
+            return false;
+        }
+        // if (updateId !== this.lastUpdateId + 1) {
+        //     this.callHandlers(C_MSG.OutOfSync, {});
+        //     return true;
+        // } else {
+        this.setLastUpdateId(updateId);
+        // }
+        return false;
     }
 
     private callHandlers(eventConstructor: number, payload: any) {

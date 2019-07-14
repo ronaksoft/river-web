@@ -80,7 +80,7 @@ export default class Server {
 
             this.updateThrottler();
             this.updateManager = UpdateManager.getInstance();
-            let throttleInterval = 200;
+            let throttleInterval = 128;
             const tils = localStorage.getItem('river.debug.throttle_interval');
             if (tils) {
                 throttleInterval = parseInt(tils, 10);
@@ -140,7 +140,7 @@ export default class Server {
         window.console.debug(`%c${C_MSG_NAME[request.constructor]} ${request.reqId}`, 'color: #f9d71c');
         request.timeout = setTimeout(() => {
             this.dispatchTimeout(request.reqId);
-        }, 10000);
+        }, 20000);
         this.socket.send(request);
     }
 
@@ -148,7 +148,7 @@ export default class Server {
         window.console.debug(`%c${C_MSG_NAME[request.constructor]} ${request.reqId}`, 'color: #f9d71c');
         request.timeout = setTimeout(() => {
             this.dispatchTimeout(request.reqId);
-        }, 10000);
+        }, 20000);
         const data = new MessageEnvelope();
         data.setConstructor(request.constructor);
         data.setMessage(request.data);
