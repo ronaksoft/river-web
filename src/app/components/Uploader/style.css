@@ -177,7 +177,10 @@
               .uploader-dialog .uploader-container .attachment-preview-container .uploader-dropzone .slider-attachment .slide .file-slide .icon .extension {
                 font-size: 14px;
                 line-height: 1.2em;
-                padding: 12px; }
+                padding: 12px;
+                max-width: 100%;
+                overflow: hidden;
+                word-break: break-word; }
                 .uploader-dialog .uploader-container .attachment-preview-container .uploader-dropzone .slider-attachment .slide .file-slide .icon .extension .size {
                   font-size: 12px;
                   line-height: 2.2em; }
@@ -278,6 +281,7 @@
             transform: translate(-50%, -50%);
             text-transform: uppercase;
             font-weight: bold;
+            line-height: 1em;
             color: var(--white); }
         .uploader-dialog .uploader-container .attachments-slide-container .attachment-items .item .remove {
           position: absolute;
@@ -351,6 +355,8 @@ html[theme="dark"] .uploader-container {
         background-color: var(--dark-high); }
         html[theme="dark"] .uploader-container .attachments-slide-container .attachment-items .item .file-preview svg {
           color: var(--white); }
+        html[theme="dark"] .uploader-container .attachments-slide-container .attachment-items .item .file-preview .extension {
+          color: var(--grey); }
         html[theme="dark"] .uploader-container .attachments-slide-container .attachment-items .item.selected .file-preview {
           border: 2px solid var(--white); }
         html[theme="dark"] .uploader-container .attachments-slide-container .attachment-items .item.add-file {
@@ -374,6 +380,8 @@ html[theme="dark-blue"] .uploader-container {
         background-color: var(--dark-blue-medium); }
         html[theme="dark-blue"] .uploader-container .attachments-slide-container .attachment-items .item .file-preview svg {
           color: var(--white); }
+        html[theme="dark-blue"] .uploader-container .attachments-slide-container .attachment-items .item .file-preview .extension {
+          color: var(--grey); }
         html[theme="dark-blue"] .uploader-container .attachments-slide-container .attachment-items .item.selected .file-preview {
           border: 2px solid var(--white); }
         html[theme="dark-blue"] .uploader-container .attachments-slide-container .attachment-items .item.add-file {

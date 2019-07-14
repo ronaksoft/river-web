@@ -237,6 +237,9 @@
                   font-size: 14px;
                   line-height: 1.2em;
                   padding: 12px;
+                  max-width: 100%;
+                  overflow: hidden;
+                  word-break: break-word;
 
                   .size {
                     font-size: 12px;
@@ -377,6 +380,7 @@
               transform: translate(-50%, -50%);
               text-transform: uppercase;
               font-weight: bold;
+              line-height: 1em;
               color: var(--white);
             }
           }
@@ -501,6 +505,10 @@ html[theme="dark"] {
             svg {
               color: var(--white);
             }
+
+            .extension {
+              color: var(--grey);
+            }
           }
 
           &.selected {
@@ -550,6 +558,10 @@ html[theme="dark-blue"] {
           .file-preview {
             svg {
               color: var(--white);
+            }
+
+            .extension {
+              color: var(--grey);
             }
           }
 

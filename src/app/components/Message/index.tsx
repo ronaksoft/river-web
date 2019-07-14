@@ -132,7 +132,7 @@ interface IStayInfo {
     offset: number;
 }
 
-class Message extends React.Component<IProps, IState> {
+class Message extends React.PureComponent<IProps, IState> {
     public list: List;
     public cache: CellMeasurerCache;
     private listCount: number;
@@ -581,7 +581,7 @@ class Message extends React.Component<IProps, IState> {
                                 rowHeight={this.getHeight}
                                 rowRenderer={this.rowRender}
                                 rowCount={items.length}
-                                overscanRowCount={10}
+                                overscanRowCount={40}
                                 width={width}
                                 height={height}
                                 estimatedRowSize={41}
@@ -1277,19 +1277,19 @@ class Message extends React.Component<IProps, IState> {
 
     /* Try to find correct position */
     private checkScroll(id: number, index: number, tries?: number) {
-        const fn = () => {
-            if (!tries) {
-                tries = 1;
+        const fn = (t?: number) => {
+            if (!t) {
+                t = 1;
             } else {
-                tries++;
+                t++;
             }
-            if (tries <= 60) {
+            if (t <= 60) {
                 window.requestAnimationFrame(() => {
                     if (this.list) {
                         if (!(this.messageScroll.startIndex <= index && this.messageScroll.stopIndex >= index)) {
                             this.list.scrollToRow(index);
                         }
-                        this.checkScroll(id, index, tries);
+                        this.checkScroll(id, index, t);
                     }
                 });
             } else {
@@ -1306,11 +1306,11 @@ class Message extends React.Component<IProps, IState> {
                     this.setEnableBefore();
                     this.removeSnapshot();
                 } else {
-                    fn();
+                    fn(tries);
                 }
             }, 10);
         } else {
-            fn();
+            fn(tries);
         }
     }
 

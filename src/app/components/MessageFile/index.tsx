@@ -58,7 +58,7 @@ export const getFileInfo = (message: IMessage): IFileInfo => {
     return info;
 };
 
-export const getFileExtension = (type: string) => {
+export const getFileExtension = (type: string, name?: string) => {
     switch (type) {
         case 'text/plain':
             return 'txt';
@@ -129,6 +129,12 @@ export const getFileExtension = (type: string) => {
         case 'application/ogg':
             return 'ogx';
         default:
+            if (name) {
+                const parts = name.split('.');
+                if (parts.length > 1) {
+                    return parts[parts.length - 1];
+                }
+            }
             return '';
     }
 };

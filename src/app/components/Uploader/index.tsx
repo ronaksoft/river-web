@@ -261,7 +261,7 @@ class MediaPreview extends React.Component<IProps, IState> {
                                             </React.Fragment>}
                                             {Boolean(isFile) && <div className="file-preview">
                                                 <InsertDriveFileRounded/>
-                                                <span className="extension">{getFileExtension(item.type)}</span>
+                                                <span className="extension">{getFileExtension(item.type, item.name)}</span>
                                             </div>}
                                             {Boolean(!item.ready) &&
                                             <div className="item-busy"><ConfirmationNumberRounded/></div>}
