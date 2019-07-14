@@ -132,7 +132,7 @@ interface IStayInfo {
     offset: number;
 }
 
-class Message extends React.PureComponent<IProps, IState> {
+class Message extends React.Component<IProps, IState> {
     public list: List;
     public cache: CellMeasurerCache;
     private listCount: number;

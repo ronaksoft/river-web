@@ -99,9 +99,9 @@ import AboutDialog from "../../components/AboutModal";
 import StatusBar from "../../components/StatusBar";
 import i18n from "../../services/i18n";
 import IframeService, {C_IFRAME_SUBJECT} from '../../services/iframe';
+import PopUpNewMessage from "../../components/PopUpNewMessage";
 
 import './style.css';
-import PopUpNewMessage from "../../components/PopUpNewMessage";
 
 export let notifyOptions: any[] = [];
 
@@ -191,7 +191,7 @@ class Chat extends React.Component<IProps, IState> {
     private dialogs: IDialog[] = [];
     private isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } } = {};
     private iframeService: IframeService;
-    private newMessageLoadThrottle: any = null;
+    private readonly newMessageLoadThrottle: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -237,14 +237,14 @@ class Chat extends React.Component<IProps, IState> {
         this.mainRepo = MainRepo.getInstance();
         this.updateManager = UpdateManager.getInstance();
         this.syncManager = SyncManager.getInstance();
-        this.dialogsSortThrottle = throttle(this.dialogsSort, 512);
+        this.dialogsSortThrottle = throttle(this.dialogsSort, 256);
         this.isInChat = (document.visibilityState === 'visible');
         this.isMobileView = (window.innerWidth < 600);
         this.updateManager.setUserId(this.connInfo.UserID || '');
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
         this.electronService = ElectronService.getInstance();
         this.rtlDetector = RTLDetector.getInstance();
-        this.messageReadThrottle = throttle(this.readMessage, 512);
+        this.messageReadThrottle = throttle(this.readMessage, 256);
         this.backgroundService = BackgroundService.getInstance();
         this.downloadManager = DownloadManager.getInstance();
         this.newMessageLoadThrottle = throttle(this.newMessageLoad, 200);
@@ -1047,13 +1047,12 @@ class Chat extends React.Component<IProps, IState> {
                 this.setScrollMode('none');
                 this.messageComponent.setMessages(dataMsg.msgs, () => {
                     // Scroll down if possible
+                    this.messageComponent.list.forceUpdateGrid();
                     if (!this.endOfMessage && this.isInChat) {
                         this.newMessageLoadThrottle();
                         if (dataMsg.maxReadId !== -1) {
                             this.sendReadHistory(this.state.peer, dataMsg.maxReadId);
                         }
-                    } else {
-                        this.messageComponent.list.forceUpdateGrid();
                     }
                 });
             }
@@ -1082,9 +1081,12 @@ class Chat extends React.Component<IProps, IState> {
          * In this section we check clear history and pending messages
          * Also counters will be increased here
          */
+        let forceUpdate = false;
         data.messages.forEach((message) => {
             this.checkPendingMessage(message.id || 0);
-            this.checkMessageOrder(message.id || 0);
+            if (this.checkMessageOrder(message.id || 0)) {
+                forceUpdate = true;
+            }
             // Clear the message history
             if (message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
                 this.messageRepo.clearHistory(message.peerid || '', message.actiondata.maxid).then(() => {
@@ -1110,6 +1112,9 @@ class Chat extends React.Component<IProps, IState> {
                 });
             }
         });
+        if (forceUpdate && this.messageComponent) {
+            this.messageComponent.list.forceUpdateGrid();
+        }
     }
 
     /* Update drop message */
@@ -1905,7 +1910,9 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageRepo.lazyUpsert([message]);
                 this.updateDialogs(message, '0');
                 this.checkMessageOrder(message.id || 0);
-
+                if (this.messageComponent) {
+                    this.messageComponent.list.forceUpdateGrid();
+                }
                 this.newMessageLoadThrottle();
             }).catch((err) => {
                 const messages = this.messages;
@@ -1978,16 +1985,17 @@ class Chat extends React.Component<IProps, IState> {
             for (let i = index - 1; i >= 0; i--) {
                 // Check first message, shouldn't be after date message
                 if (this.messages[index - 1].messagetype === C_MESSAGE_TYPE.Date && i === index - 1) {
-                    return;
+                    return false;
                 }
                 if ((this.messages[i].id || 0) > 0 && (this.messages[i].id || 0) < newId) {
                     swap(i + 1, index);
-                    return;
+                    return true;
                 }
             }
             swap(0, index);
-            return;
+            return true;
         }
+        return false;
     }
 
     private onNewMessageOpen = () => {
@@ -3846,7 +3854,10 @@ class Chat extends React.Component<IProps, IState> {
 
                 this.checkMessageOrder(message.id || 0);
                 // Force update messages
-                this.messageComponent.list.forceUpdateGrid();
+                if (this.messageComponent) {
+                    this.messageComponent.list.forceUpdateGrid();
+                }
+                this.newMessageLoadThrottle();
             }).catch((err) => {
                 const messages = this.messages;
                 const index = findIndex(messages, (o) => {
@@ -3855,7 +3866,9 @@ class Chat extends React.Component<IProps, IState> {
                 if (index > -1) {
                     messages[index].error = true;
                     this.messageRepo.importBulk([messages[index]], false);
-                    this.messageComponent.list.forceUpdateGrid();
+                    if (this.messageComponent) {
+                        this.messageComponent.list.forceUpdateGrid();
+                    }
                 }
             });
         }).catch((err) => {
@@ -3868,7 +3881,9 @@ class Chat extends React.Component<IProps, IState> {
                 if (index > -1) {
                     messages[index].error = true;
                     this.messageRepo.importBulk([messages[index]], false);
-                    this.messageComponent.list.forceUpdateGrid();
+                    if (this.messageComponent) {
+                        this.messageComponent.list.forceUpdateGrid();
+                    }
                 }
             }
         });
@@ -3978,7 +3993,10 @@ class Chat extends React.Component<IProps, IState> {
 
             this.checkMessageOrder(message.id || 0);
             // Force update messages
-            this.messageComponent.list.forceUpdateGrid();
+            if (this.messageComponent) {
+                this.messageComponent.list.forceUpdateGrid();
+            }
+            this.newMessageLoadThrottle();
 
             if (caption.length > 0) {
                 this.chatInputTextMessageHandler(caption, {mode: C_MSG_MODE.Reply, message: {id: res.messageid}});
@@ -3991,7 +4009,9 @@ class Chat extends React.Component<IProps, IState> {
             if (index > -1) {
                 messages[index].error = true;
                 this.messageRepo.importBulk([messages[index]], false);
-                this.messageComponent.list.forceUpdateGrid();
+                if (this.messageComponent) {
+                    this.messageComponent.list.forceUpdateGrid();
+                }
             }
         });
     }
@@ -4246,7 +4266,6 @@ class Chat extends React.Component<IProps, IState> {
 
     private newMessageLoad = () => {
         // Force update messages
-        this.messageComponent.list.forceUpdateGrid();
         this.messageComponent.animateToEnd();
     }
 
