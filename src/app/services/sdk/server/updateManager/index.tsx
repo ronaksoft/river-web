@@ -60,9 +60,9 @@ export default class UpdateManager {
     public constructor() {
         window.console.debug('Update manager started');
         this.lastUpdateId = this.loadLastUpdateId();
-        this.newMessageThrottle = throttle(this.executeNewMessageThrottle, 300);
-        this.newMessageDropThrottle = throttle(this.executeNewMessageDropThrottle, 300);
-        this.flushUpdateIdThrottle = throttle(this.flushLastUpdateId, 300);
+        this.newMessageThrottle = throttle(this.executeNewMessageThrottle, 128);
+        this.newMessageDropThrottle = throttle(this.executeNewMessageDropThrottle, 128);
+        this.flushUpdateIdThrottle = throttle(this.flushLastUpdateId, 128);
     }
 
     /* Loads last update id form localStorage */
@@ -405,6 +405,21 @@ export default class UpdateManager {
                 }
             }
             if (batchUpdate.messages.length > 0) {
+                /*const swap = (obj: any, a: number, b: number) => {
+                    const hold = obj[a];
+                    obj[a] = obj[b];
+                    obj[b] = hold;
+                };
+                for (let i = 0; i < batchUpdate.messages.length; i++) {
+                    for (let j = 0; j < i; j++) {
+                        if ((batchUpdate.messages[i].id || 0) < (batchUpdate.messages[j].id || 0)) {
+                            swap(batchUpdate.messages, i, j);
+                            swap(batchUpdate.accessHashes, i, j);
+                            swap(batchUpdate.senderIds, i, j);
+                            swap(batchUpdate.senders, i, j);
+                        }
+                    }
+                }*/
                 this.callHandlers(eventConstructor, batchUpdate);
             }
         });
