@@ -1971,12 +1971,7 @@ class Chat extends React.Component<IProps, IState> {
         messages.push(message);
         // this.isLoading = true;
         this.setScrollMode('end');
-        this.messageComponent.setMessages(messages, () => {
-            this.newMessageLoadThrottle();
-            // setTimeout(() => {
-            //     this.isLoading = false;
-            // }, 250);
-        });
+        this.messageComponent.setMessages(messages);
         this.messageRepo.lazyUpsert([message]);
     }
 
@@ -2513,13 +2508,13 @@ class Chat extends React.Component<IProps, IState> {
                 if (!this.messageComponent) {
                     return;
                 }
-                this.setScrollMode('none');
+                if (!this.endOfMessage && this.isInChat) {
+                    this.setScrollMode('end');
+                } else {
+                    this.setScrollMode('none');
+                }
                 const modifiedMsgs = this.modifyMessages(this.messages, res.messages, true);
-                this.messageComponent.setMessages(modifiedMsgs.msgs, () => {
-                    if (!this.endOfMessage && this.isInChat) {
-                        this.newMessageLoadThrottle();
-                    }
-                });
+                this.messageComponent.setMessages(modifiedMsgs.msgs);
             });
         }
     }
@@ -2672,7 +2667,7 @@ class Chat extends React.Component<IProps, IState> {
         this.isInChat = false;
     }
 
-    private sendReadHistory(inputPeer: InputPeer | null, msgId: number) {
+    private sendReadHistory(inputPeer: InputPeer | null, msgId: number, showMoveDown?: boolean) {
         if (!inputPeer || !this.isInChat) {
             return;
         }
@@ -2682,6 +2677,13 @@ class Chat extends React.Component<IProps, IState> {
             msgId = this.getValidAfter();
         }
         if (dialog) {
+            if (showMoveDown !== undefined) {
+                if (showMoveDown) {
+                    this.setMoveDownVisible(true);
+                } else if (dialog.unreadcount === 0) {
+                    this.setMoveDownVisible(false);
+                }
+            }
             const index = findLastIndex(this.messages, {id: msgId});
             if (index > -1) {
                 if (this.messages[index].me) {
@@ -2701,7 +2703,7 @@ class Chat extends React.Component<IProps, IState> {
                 });
             }
             // If unread counter was no correct we force it to be zero
-            else if (dialog && (dialog.unreadcount || 0) > 0 && (dialog.readinboxmaxid || 0) === msgId) {
+            else if (dialog && (dialog.unreadcount || 0) > 0 && (dialog.topmessageid || 0) === msgId) {
                 this.readMessageThrottle(inputPeer, msgId);
                 this.updateDialogsCounter(peerId, {
                     mentionCounter: 0,
@@ -2815,7 +2817,6 @@ class Chat extends React.Component<IProps, IState> {
         const messages = this.messages;
         const diff = messages.length - info.stopIndex;
         this.scrollInfo = info;
-        this.setMoveDownVisible(diff > 1);
         this.setEndOfMessage(diff > 2);
         if (this.isLoading) {
             return;
@@ -2829,7 +2830,7 @@ class Chat extends React.Component<IProps, IState> {
                 }
                 if (messages[info.stopIndex].id !== -1) {
                     // Update unread counter in dialog
-                    this.sendReadHistory(this.state.peer, Math.floor(messages[info.stopIndex].id || 0));
+                    this.sendReadHistory(this.state.peer, Math.floor(messages[info.stopIndex].id || 0), diff > 1);
                 }
             }
         }
