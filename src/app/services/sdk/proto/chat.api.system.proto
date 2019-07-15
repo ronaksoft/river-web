@@ -63,6 +63,7 @@ message SystemInfo {
     required string WorkGroupName = 1;
     required string BigPhotoUrl = 2;
     required string SmallPhotoUrl = 3;
+    optional string StorageUrl = 4;
 }
 
 // SystemServerTime

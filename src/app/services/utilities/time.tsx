@@ -14,10 +14,6 @@ import fa from "moment/locale/fa";
 import en from "moment/locale/en-ca";
 import RiverTime from './river_time';
 
-/**
- * @class TimeUntiles
- * @desc Formats a timestamp (usually provided by Cyrus) in full and dynamic formats
- */
 class TimeUntiles {
     private riverTime: RiverTime;
     private lang: string = localStorage.getItem('river.lang') || 'en';
@@ -35,13 +31,6 @@ class TimeUntiles {
         this.riverTime = RiverTime.getInstance();
     }
 
-    /**
-     * @func full
-     * @desc Formats the given timestamp in full mode
-     * @param {number} timestamp
-     * @returns {string}
-     * @memberof TimeUntiles
-     */
     public full(timestamp: number) {
         if (this.lang === 'en') {
             return moment(timestamp).format('dddd, MMMM DD YYYY, HH:mm');
@@ -89,13 +78,6 @@ class TimeUntiles {
         return moment(timestamp * 1000).format('hh:mm a');
     }
 
-    /**
-     * @func dynamic
-     * @desc Formates the given timestamp dynamically.
-     * @param {number} timestamp
-     * @returns {string} Time related to now
-     * @memberof TimeUntiles
-     */
     public dynamic(timestamp: number | undefined) {
         if (!timestamp) {
             return '';

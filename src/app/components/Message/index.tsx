@@ -15,6 +15,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import {
     GroupPhoto, InputFileLocation, InputPeer, MediaType, MessageEntityType, PeerType,
 } from '../../services/sdk/messages/chat.core.types_pb';
+import {clone, throttle, findIndex, findLastIndex} from 'lodash';
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from '../../repository/message/consts';
 import TimeUtility from '../../services/utilities/time';
 import UserAvatar from '../UserAvatar';
@@ -24,7 +25,6 @@ import {MoreVert} from '@material-ui/icons';
 import UserName from '../UserName';
 import Checkbox from '@material-ui/core/Checkbox';
 import MessageForwarded from '../MessageForwarded';
-import {clone, throttle, findIndex, findLastIndex} from 'lodash';
 import MessageVoice from '../MessageVoice';
 import RiverTime from '../../services/utilities/river_time';
 import {ErrorRounded} from '@material-ui/icons';

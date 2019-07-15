@@ -274,6 +274,11 @@ export namespace Error {
 }
 
 export class Ack extends jspb.Message {
+  clearMessageidsList(): void;
+  getMessageidsList(): Array<number>;
+  setMessageidsList(value: Array<number>): void;
+  addMessageids(value: number, index?: number): number;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Ack.AsObject;
   static toObject(includeInstance: boolean, msg: Ack): Ack.AsObject;
@@ -286,6 +291,7 @@ export class Ack extends jspb.Message {
 
 export namespace Ack {
   export type AsObject = {
+    messageidsList: Array<number>,
   }
 }
 

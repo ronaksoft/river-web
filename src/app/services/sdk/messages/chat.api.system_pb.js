@@ -1501,7 +1501,8 @@ proto.msg.SystemInfo.toObject = function(includeInstance, msg) {
   var f, obj = {
     workgroupname: jspb.Message.getField(msg, 1),
     bigphotourl: jspb.Message.getField(msg, 2),
-    smallphotourl: jspb.Message.getField(msg, 3)
+    smallphotourl: jspb.Message.getField(msg, 3),
+    storageurl: jspb.Message.getField(msg, 4)
   };
 
   if (includeInstance) {
@@ -1550,6 +1551,10 @@ proto.msg.SystemInfo.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setSmallphotourl(value);
       break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setStorageurl(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1597,6 +1602,13 @@ proto.msg.SystemInfo.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeString(
       3,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 4));
+  if (f != null) {
+    writer.writeString(
+      4,
       f
     );
   }
@@ -1687,6 +1699,35 @@ proto.msg.SystemInfo.prototype.clearSmallphotourl = function() {
  */
 proto.msg.SystemInfo.prototype.hasSmallphotourl = function() {
   return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional string StorageUrl = 4;
+ * @return {string}
+ */
+proto.msg.SystemInfo.prototype.getStorageurl = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.SystemInfo.prototype.setStorageurl = function(value) {
+  jspb.Message.setField(this, 4, value);
+};
+
+
+proto.msg.SystemInfo.prototype.clearStorageurl = function() {
+  jspb.Message.setField(this, 4, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.SystemInfo.prototype.hasStorageurl = function() {
+  return jspb.Message.getField(this, 4) != null;
 };
 
 

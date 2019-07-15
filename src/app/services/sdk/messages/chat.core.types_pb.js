@@ -2025,12 +2025,19 @@ proto.msg.Error.prototype.hasItems = function() {
  * @constructor
  */
 proto.msg.Ack = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.msg.Ack.repeatedFields_, null);
 };
 goog.inherits(proto.msg.Ack, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   proto.msg.Ack.displayName = 'proto.msg.Ack';
 }
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.msg.Ack.repeatedFields_ = [1];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -2060,7 +2067,7 @@ proto.msg.Ack.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.Ack.toObject = function(includeInstance, msg) {
   var f, obj = {
-
+    messageidsList: jspb.Message.getRepeatedField(msg, 1)
   };
 
   if (includeInstance) {
@@ -2097,6 +2104,10 @@ proto.msg.Ack.deserializeBinaryFromReader = function(msg, reader) {
     }
     var field = reader.getFieldNumber();
     switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.addMessageids(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -2126,6 +2137,42 @@ proto.msg.Ack.prototype.serializeBinary = function() {
  */
 proto.msg.Ack.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = message.getMessageidsList();
+  if (f.length > 0) {
+    writer.writeRepeatedUint64(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * repeated uint64 MessageIDs = 1;
+ * @return {!Array.<number>}
+ */
+proto.msg.Ack.prototype.getMessageidsList = function() {
+  return /** @type {!Array.<number>} */ (jspb.Message.getRepeatedField(this, 1));
+};
+
+
+/** @param {!Array.<number>} value */
+proto.msg.Ack.prototype.setMessageidsList = function(value) {
+  jspb.Message.setField(this, 1, value || []);
+};
+
+
+/**
+ * @param {!number} value
+ * @param {number=} opt_index
+ */
+proto.msg.Ack.prototype.addMessageids = function(value, opt_index) {
+  jspb.Message.addToRepeatedField(this, 1, value, opt_index);
+};
+
+
+proto.msg.Ack.prototype.clearMessageidsList = function() {
+  this.setMessageidsList([]);
 };
 
 

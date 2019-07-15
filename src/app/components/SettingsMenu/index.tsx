@@ -59,7 +59,7 @@ import UserName from "../UserName";
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.24.44';
+export const C_VERSION = '0.24.45';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{
@@ -156,7 +156,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             confirmDialogOpen: false,
             confirmDialogSelectedId: '',
             debugModeOpen: false,
-            debugModeUrl: localStorage.getItem('river.workspace_url') || 'cyrus.river.im',
+            debugModeUrl: localStorage.getItem('river.workspace_url') || 'river.ronaksoftware.com',
             debugThrottleInterval: parseInt(localStorage.getItem('river.debug.throttle_interval') || '200', 10),
             editProfile: false,
             editUsername: false,

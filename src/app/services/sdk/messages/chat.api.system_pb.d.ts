@@ -220,6 +220,11 @@ export class SystemInfo extends jspb.Message {
   getSmallphotourl(): string | undefined;
   setSmallphotourl(value: string): void;
 
+  hasStorageurl(): boolean;
+  clearStorageurl(): void;
+  getStorageurl(): string | undefined;
+  setStorageurl(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): SystemInfo.AsObject;
   static toObject(includeInstance: boolean, msg: SystemInfo): SystemInfo.AsObject;
@@ -235,6 +240,7 @@ export namespace SystemInfo {
     workgroupname?: string,
     bigphotourl?: string,
     smallphotourl?: string,
+    storageurl?: string,
   }
 }
 

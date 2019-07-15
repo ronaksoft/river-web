@@ -103,6 +103,7 @@ export default class SDK {
 
     public constructor() {
         this.server = Server.getInstance();
+
         const s = localStorage.getItem('river.conn.info');
         if (s) {
             this.connInfo = JSON.parse(s);
@@ -117,14 +118,11 @@ export default class SDK {
                 Username: ''
             };
         }
+
         const id = localStorage.getItem('river.conn.client.id');
         if (id) {
             this.clientId = parseInt(id, 10);
         }
-        // this.msgId = 0;
-        // this.messageRepo = new MessageRepo();
-        // this.dialogRepo = new DialogRepo();
-        // this.userRepor = new UserRepo();
     }
 
     public getConnInfo(): IConnInfo {

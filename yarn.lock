@@ -4817,11 +4817,6 @@ google-maps-infobox@^2.0.0:
   resolved "https://registry.yarnpkg.com/google-maps-infobox/-/google-maps-infobox-2.0.0.tgz#1ea6de93c0cdf4138c2d586331835c83dcc59dc2"
   integrity sha512-hTuWmWZZSOxf5D/z7l3/hTF1grgRvLG53BEKMdjiKOG+FcK/kH7vqseUeyIU9Zj2ZIqKTOaro0nknxpAuRq4Vw==
 
-google-protobuf@^3.6.1:
-  version "3.8.0"
-  resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.8.0.tgz#4fd2ee3a97751cb543dc5de85ffd264aff9f4980"
-  integrity sha512-tx39PTc//HaIT7K/baUF/8JYLGDozEi1e4xwPP1qSx3InP78cNpbSJpxiDsDMwj77qNOndVBDXnn7oi9zKxZew==
-
 google-protobuf@^3.9.0-rc.1:
   version "3.9.0-rc.1"
   resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.9.0-rc.1.tgz#99217fb9d72c0c8f93a04c42834d914188a4093f"
@@ -10765,12 +10760,10 @@ ts-loader@^2.3.7:
     loader-utils "^1.0.2"
     semver "^5.0.1"
 
-ts-protoc-gen@^0.10.0:
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/ts-protoc-gen/-/ts-protoc-gen-0.10.0.tgz#f708d99be59ad0be6bdce6f4fe893ec41757d2c9"
-  integrity sha512-EEbgDWNHK3CvcNhmib94I4HMO23qLddjLRdXW8EUE11VJxbi3n5J0l2DiX/L1pijOaPTkbEoRK+zQinKgKGqsw==
-  dependencies:
-    google-protobuf "^3.6.1"
+ts-protoc-gen@0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/ts-protoc-gen/-/ts-protoc-gen-0.9.0.tgz#3910a67dc4445acf4bc3c6f7f67709619e987a6e"
+  integrity sha512-cFEUTY9U9o6C4DPPfMHk2ZUdIAKL91hZN1fyx5Stz3g56BDVOC7hk+r5fEMCAGaaIgi2akkT1a2hrxu1wo2Phg==
 
 tsconfig-paths-webpack-plugin@^2.0.0:
   version "2.0.0"

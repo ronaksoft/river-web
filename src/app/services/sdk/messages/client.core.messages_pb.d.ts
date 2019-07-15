@@ -90,9 +90,9 @@ export namespace ClientPendingMessage {
     replyto?: number,
     body?: string,
     senderid?: number,
-    entitiesList?: Array<chat_core_types_pb.MessageEntity.AsObject>,
+    entitiesList: Array<chat_core_types_pb.MessageEntity.AsObject>,
     mediatype?: chat_api_messages_pb.InputMediaType,
-    media?: Uint8Array | string,
+    media: Uint8Array | string,
   }
 }
 
@@ -164,7 +164,7 @@ export class ClientSendMessageMedia extends jspb.Message {
 
 export namespace ClientSendMessageMedia {
   export type AsObject = {
-    peer?: chat_core_types_pb.InputPeer.AsObject,
+    peer: chat_core_types_pb.InputPeer.AsObject,
     mediatype?: chat_api_messages_pb.InputMediaType,
     caption?: string,
     filename?: string,
@@ -174,7 +174,7 @@ export namespace ClientSendMessageMedia {
     thumbmime?: string,
     replyto?: number,
     cleardraft?: boolean,
-    attributesList?: Array<chat_core_message_medias_pb.DocumentAttribute.AsObject>,
+    attributesList: Array<chat_core_message_medias_pb.DocumentAttribute.AsObject>,
   }
 }
 
