@@ -1043,17 +1043,22 @@ class Chat extends React.Component<IProps, IState> {
             // Check if Top Message exits
             const dialog = this.getDialogById(this.state.selectedDialogId);
             // @ts-ignore
-            if (dialog && this.messages.length > 0 && (dialog.topmessageid || 0) <= (this.messages[this.messages.length - 1].id || 0)) {
+            if (dialog && this.messages.length > 0 && this.messages[this.messages.length - 1] && (dialog.topmessageid || 0) <= (this.messages[this.messages.length - 1].id || 0)) {
                 const dataMsg = this.modifyMessages(this.messages, data.messages.reverse(), true);
-                this.setScrollMode('none');
+                if (!this.endOfMessage && this.isInChat) {
+                    this.setScrollMode('end');
+                } else {
+                    this.setScrollMode('none');
+                }
                 this.messageComponent.setMessages(dataMsg.msgs, () => {
                     // Scroll down if possible
                     if (!this.endOfMessage && this.isInChat) {
-                        this.newMessageLoadThrottle();
                         if (dataMsg.maxReadId !== -1) {
                             if (this.scrollInfo && this.scrollInfo.stopIndex && this.messages[this.scrollInfo.stopIndex]) {
+                                window.console.log('case#1');
                                 this.sendReadHistory(this.state.peer, Math.floor(this.messages[this.scrollInfo.stopIndex].id || 0));
                             } else {
+                                window.console.log('case#2');
                                 this.sendReadHistory(this.state.peer, dataMsg.maxReadId);
                             }
                         }
@@ -1063,7 +1068,7 @@ class Chat extends React.Component<IProps, IState> {
         }
         this.messageRepo.lazyUpsert(data.messages);
         this.userRepo.importBulk(false, data.senders.map((o, index) => {
-            if (data.messages[index].senderid === o.id) {
+            if (data.messages[index] && o.id && data.messages[index].senderid === o.id) {
                 o.status = UserStatus.USERSTATUSONLINE;
                 if (data.messages.length > 0) {
                     // @ts-ignore
@@ -1075,7 +1080,9 @@ class Chat extends React.Component<IProps, IState> {
 
         // Update dialogs
         data.messages.forEach((message, index) => {
-            this.updateDialogs(message, data.accessHashes[index] || '0');
+            if (data.accessHashes[index]) {
+                this.updateDialogs(message, data.accessHashes[index] || '0');
+            }
         });
 
         // Notify user if possible
@@ -1086,6 +1093,9 @@ class Chat extends React.Component<IProps, IState> {
          * Also counters will be increased here
          */
         data.messages.forEach((message) => {
+            if (!message || !message.id) {
+                return;
+            }
             this.checkPendingMessage(message.id || 0);
             // Clear the message history
             if (message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
@@ -2641,7 +2651,7 @@ class Chat extends React.Component<IProps, IState> {
         if (this.state.selectedDialogId !== 'null' && this.messages.length > 0) {
             if (this.scrollInfo && this.scrollInfo.stopIndex && this.messages[this.scrollInfo.stopIndex]) {
                 this.sendReadHistory(this.state.peer, Math.floor(this.messages[this.scrollInfo.stopIndex].id || 0));
-            } else {
+            } else if (this.messages[this.messages.length - 1]) {
                 this.sendReadHistory(this.state.peer, Math.floor(this.messages[this.messages.length - 1].id || 0));
             }
         }

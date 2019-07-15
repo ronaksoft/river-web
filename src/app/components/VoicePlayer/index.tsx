@@ -14,11 +14,11 @@ import {IMessage} from '../../repository/message/interface';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import AudioPlayer, {C_INSTANT_AUDIO, IAudioEvent} from '../../services/audioPlayer';
 import Broadcaster from '../../services/broadcaster';
-
-import './style.css';
 import {PeerType} from '../../services/sdk/messages/chat.core.types_pb';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 import DownloadManager from '../../services/downloadManager';
+
+import './style.css';
 
 interface IProps {
     className?: string;
@@ -73,6 +73,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
     private broadcaster: Broadcaster;
     private downloadManager: DownloadManager;
     private objectUrlImages: string[] = [];
+    private lastId: number = 0;
 
     constructor(props: IProps) {
         super(props);
@@ -90,6 +91,10 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
 
         this.broadcaster = Broadcaster.getInstance();
         this.downloadManager = DownloadManager.getInstance();
+
+        if (props.message) {
+            this.lastId = props.message.id || 0;
+        }
     }
 
     public componentDidMount() {
@@ -97,6 +102,17 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
         this.eventReferences.push(this.broadcaster.listen('Theme_Changed', this.themeChangedHandler));
         if (this.props.message && (this.props.message.id || 0) > 0) {
             this.eventReferences.push(this.audioPlayer.listen(this.props.message.id || 0, this.audioPlayerHandler));
+        }
+    }
+
+    public componentWillReceiveProps(newProps: IProps) {
+        if (newProps.message) {
+            if (this.lastId !== newProps.message.id) {
+                if (this.lastId !== newProps.message.id && this.lastId < 0) {
+                    this.audioPlayer.removeFromPlaylist(this.lastId);
+                    this.removeAllListeners();
+                }
+            }
         }
     }
 
@@ -126,9 +142,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
         if (data.voiceId) {
             this.voiceId = data.voiceId;
             if (message) {
-                this.audioPlayer.removeFromPlaylist(message.id || 0);
                 this.audioPlayer.addToPlaylist(message.id || 0, message.peerid || '', this.voiceId, message.senderid || '', message.downloaded || false);
-                this.removeAllListeners();
                 this.eventReferences.push(this.audioPlayer.listen(message.id || 0, this.audioPlayerHandler));
             }
         }

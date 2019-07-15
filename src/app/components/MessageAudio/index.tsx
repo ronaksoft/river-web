@@ -66,7 +66,7 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
         if (newProps.message) {
             const mInfo = getMediaInfo(newProps.message);
             if (this.lastId !== newProps.message.id || this.fileId !== mInfo.file.fileid) {
-                if (this.lastId !== newProps.message.id) {
+                if (this.lastId !== newProps.message.id && this.lastId < 0) {
                     this.audioPlayer.removeFromPlaylist(this.lastId);
                     this.removeAllListeners();
                     this.eventReferences.push(this.audioPlayer.listen(newProps.message.id || 0, this.audioPlayerHandler));

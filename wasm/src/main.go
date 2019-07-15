@@ -75,21 +75,25 @@ func initSDK(this js.Value, args []js.Value) interface{} {
 	return nil
 }
 
-func fnCall(this js.Value, args []js.Value) interface{} {
-	reqId := uint64(args[0].Int())
-	constructor := int64(args[1].Int())
-	enc, err := base64.StdEncoding.DecodeString(args[2].String())
-	if err == nil {
-		river.ExecuteRemoteCommand(reqId, constructor, &enc, nil)
-	}
+func fnCall(this js.Value, inps []js.Value) interface{} {
+	go func(args []js.Value) {
+		reqId := uint64(args[0].Int())
+		constructor := int64(args[1].Int())
+		enc, err := base64.StdEncoding.DecodeString(args[2].String())
+		if err == nil {
+			river.ExecuteRemoteCommand(reqId, constructor, &enc, nil)
+		}
+	}(inps)
 	return nil
 }
 
-func wsReceive(this js.Value, args []js.Value) interface{} {
-	enc, err := base64.StdEncoding.DecodeString(args[0].String())
-	if err == nil {
-		river.receive(&enc, true)
-	}
+func wsReceive(this js.Value, inps []js.Value) interface{} {
+	go func(args []js.Value) {
+		enc, err := base64.StdEncoding.DecodeString(args[0].String())
+		if err == nil {
+			river.receive(&enc, true)
+		}
+	}(inps)
 	return nil
 }
 
@@ -98,21 +102,25 @@ func wsOpen(this js.Value, args []js.Value) interface{} {
 	return nil
 }
 
-func fnEncrypt(this js.Value, args []js.Value) interface{} {
-	reqId := uint64(args[0].Int())
-	constructor := int64(args[1].Int())
-	enc, err := base64.StdEncoding.DecodeString(args[2].String())
-	if err == nil {
-		river.ExecuteEncrypt(reqId, constructor, &enc)
-	}
+func fnEncrypt(this js.Value, inps []js.Value) interface{} {
+	go func(args []js.Value) {
+		reqId := uint64(args[0].Int())
+		constructor := int64(args[1].Int())
+		enc, err := base64.StdEncoding.DecodeString(args[2].String())
+		if err == nil {
+			river.ExecuteEncrypt(reqId, constructor, &enc)
+		}
+	}(inps)
 	return nil
 }
 
-func fnDecrypt(this js.Value, args []js.Value) interface{} {
-	enc, err := base64.StdEncoding.DecodeString(args[0].String())
-	if err == nil {
-		river.receive(&enc, false)
-	}
+func fnDecrypt(this js.Value, inps []js.Value) interface{} {
+	go func(args []js.Value) {
+		enc, err := base64.StdEncoding.DecodeString(args[0].String())
+		if err == nil {
+			river.receive(&enc, false)
+		}
+	}(inps)
 	return nil
 }
 
