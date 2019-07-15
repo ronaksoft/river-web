@@ -178,7 +178,7 @@ export default class Socket {
             if (this.socket.readyState !== WebSocket.OPEN) {
                 return;
             }
-            this.socket.send(ping);
+            // this.socket.send(ping);
             this.pingCounter = 0;
             this.tryCounter = 0;
             this.connected = true;
@@ -243,7 +243,7 @@ export default class Socket {
                 const now = Date.now();
                 if (now - this.lastSendTime > 5000) {
                     window.console.log('bad network');
-                    this.closeWire();
+                    // this.closeWire();
                 }
             }
         }, 5000);

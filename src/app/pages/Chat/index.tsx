@@ -1039,6 +1039,17 @@ class Chat extends React.Component<IProps, IState> {
         if (this.state.isUpdating) {
             return;
         }
+        this.messageRepo.lazyUpsert(data.messages);
+        this.userRepo.importBulk(false, data.senders.map((o, index) => {
+            if (data.messages[index] && o.id && data.messages[index].senderid === o.id) {
+                o.status = UserStatus.USERSTATUSONLINE;
+                if (data.messages.length > 0) {
+                    // @ts-ignore
+                    o.status_last_modified = data.messages[0].createdon || 0;
+                }
+            }
+            return o;
+        }));
         if (data.peerid === this.state.selectedDialogId && this.messageComponent) {
             // Check if Top Message exits
             const dialog = this.getDialogById(this.state.selectedDialogId);
@@ -1066,17 +1077,6 @@ class Chat extends React.Component<IProps, IState> {
                 });
             }
         }
-        this.messageRepo.lazyUpsert(data.messages);
-        this.userRepo.importBulk(false, data.senders.map((o, index) => {
-            if (data.messages[index] && o.id && data.messages[index].senderid === o.id) {
-                o.status = UserStatus.USERSTATUSONLINE;
-                if (data.messages.length > 0) {
-                    // @ts-ignore
-                    o.status_last_modified = data.messages[0].createdon || 0;
-                }
-            }
-            return o;
-        }));
 
         // Update dialogs
         data.messages.forEach((message, index) => {
@@ -1129,12 +1129,15 @@ class Chat extends React.Component<IProps, IState> {
         if (this.state.isUpdating) {
             return;
         }
+        this.messageRepo.lazyUpsert(data.messages);
+        this.userRepo.importBulk(false, data.senders);
         data.messages.forEach((message, index) => {
+            if (!message) {
+                return;
+            }
             this.checkPendingMessage(message.id || 0);
             this.updateDialogs(message, data.accessHashes[index] || '0');
         });
-        this.messageRepo.lazyUpsert(data.messages);
-        this.userRepo.importBulk(false, data.senders);
     }
 
     /* Update message edit */
@@ -1160,10 +1163,12 @@ class Chat extends React.Component<IProps, IState> {
                 if (messages[index].body) {
                     messages[index].rtl = this.rtlDetector.direction(messages[index].body || '');
                 }
-                this.messageComponent.cache.clear(index, 0);
-                this.messageComponent.list.recomputeRowHeights(index);
-                this.messageComponent.list.recomputeGridSize();
-                this.messageComponent.list.forceUpdateGrid();
+                if (this.messageComponent) {
+                    this.messageComponent.cache.clear(index, 0);
+                    this.messageComponent.list.recomputeRowHeights(index);
+                    this.messageComponent.list.recomputeGridSize();
+                    this.messageComponent.list.forceUpdateGrid();
+                }
             }
         }
     }
@@ -1456,7 +1461,7 @@ class Chat extends React.Component<IProps, IState> {
         this.forceUpdate();
     }
 
-    private getMessagesByDialogId(dialogId: string, force?: boolean, messageId?: string) {
+    private getMessagesByDialogId(dialogId: string, force?: boolean, messageId?: string, beforeMsg?: number) {
         // if (this.isLoading) {
         //     return;
         // }
@@ -1484,13 +1489,17 @@ class Chat extends React.Component<IProps, IState> {
 
         let before = 10000000000;
         // Scroll pos check
-        if (dialog) {
-            if ((dialog.scroll_pos || -1) !== -1) {
-                before = dialog.scroll_pos || 0;
-            } else if ((dialog.unreadcount || 0) > 1) {
-                const tBefore = Math.max((dialog.readinboxmaxid || 0), (dialog.readoutboxmaxid || 0));
-                if (tBefore > 0) {
-                    before = tBefore + 1;
+        if (beforeMsg !== undefined) {
+            before = beforeMsg + 1;
+        } else {
+            if (dialog) {
+                if ((dialog.scroll_pos || -1) !== -1) {
+                    before = dialog.scroll_pos || 0;
+                } else if ((dialog.unreadcount || 0) > 1) {
+                    const tBefore = Math.max((dialog.readinboxmaxid || 0), (dialog.readoutboxmaxid || 0));
+                    if (tBefore > 0) {
+                        before = tBefore + 1;
+                    }
                 }
             }
         }
@@ -1533,7 +1542,7 @@ class Chat extends React.Component<IProps, IState> {
                         updateState();
                     }
                     clearTimeout(this.mobileBackTimeout);
-                });
+                }, Boolean(beforeMsg));
             });
         }).then((resMsgs) => {
             // Checks peerid on transition
@@ -1553,7 +1562,9 @@ class Chat extends React.Component<IProps, IState> {
             }
 
             this.setScrollMode('end');
-            this.messageComponent.takeSnapshot();
+            if (!beforeMsg) {
+                this.messageComponent.takeSnapshot();
+            }
             const dataMsg = this.modifyMessages(this.messages, resMsgs, false);
             if (this.messages.length === 0) {
                 this.setMoveDownVisible(false);
@@ -4227,7 +4238,50 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private moveDownClickHandler = () => {
-        this.messageComponent.animateToEnd();
+        if (!this.messageComponent) {
+            return;
+        }
+        const dialog = this.getDialogById(this.state.selectedDialogId);
+        if (dialog) {
+            const scrollDown = () => {
+                if ((this.messages.length > 0 && this.messages[this.messages.length - 1].id === dialog.topmessageid) || !dialog.topmessageid) {
+                    // Normal scroll down
+                    this.messageComponent.animateToEnd();
+                } else {
+                    // Load to the end
+                    this.messageComponent.takeSnapshot(true);
+                    this.messageComponent.setLoading(true, true);
+                    this.getMessagesByDialogId(this.state.selectedDialogId, true, undefined, dialog.topmessageid + 1);
+                }
+            };
+            if ((dialog.unreadcount || 0) > 0) {
+                // New message breakpoint
+                const before = Math.max((dialog.readinboxmaxid || 0), (dialog.readoutboxmaxid || 0));
+                const index = findLastIndex(this.messages, {id: before});
+                if (index > -1) {
+                    if (this.scrollInfo && (this.messages[this.scrollInfo.stopIndex].id || 0) < before) {
+                        this.messageJumpToMessageHandler(before);
+                        setTimeout(() => {
+                            if (this.messageComponent) {
+                                this.messageComponent.focusOnNewMessage();
+                            }
+                        }, 200);
+                    } else {
+                        scrollDown();
+                    }
+                } else {
+                    // Load until new message
+                    this.messageComponent.takeSnapshot(true);
+                    this.messageComponent.setLoading(true, true);
+                    this.getMessagesByDialogId(this.state.selectedDialogId, true, undefined, before);
+                }
+            } else {
+                scrollDown();
+            }
+        } else {
+            // Normal scroll down
+            this.messageComponent.animateToEnd();
+        }
     }
 
     private setEndOfMessage(end: boolean) {

@@ -278,12 +278,12 @@ export default class Server {
         this.dispatchUpdate();
         setInterval(() => {
             this.dispatchUpdate();
-        }, 5);
+        }, 10);
     }
 
     private dispatchUpdate() {
         if (this.updateQueue.length > 0) {
-            this.updateManager.parseUpdate(this.updateQueue.pop());
+            this.updateManager.parseUpdate(this.updateQueue.shift());
         }
     }
 

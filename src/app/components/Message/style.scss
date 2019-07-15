@@ -651,6 +651,20 @@
   }
 }
 
+.messages-overlay-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60px;
+  height: 60px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 40;
+}
+
 html[direction="rtl"] {
   .bubble-wrapper {
     > .date {
@@ -754,6 +768,10 @@ html[theme="dark-blue"] {
       color: var(--white);
     }
   }
+
+  .messages-overlay-loading {
+    background-color: var(--dark-medium);
+  }
 }
 
 html[theme="dark-blue"] {
@@ -805,6 +823,10 @@ html[theme="dark-blue"] {
       background-color: var(--dark-blue-low);
       color: var(--white);
     }
+  }
+
+  .messages-overlay-loading {
+    background-color: var(--dark-blue-medium);
   }
 }
 

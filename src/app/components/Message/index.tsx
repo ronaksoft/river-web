@@ -68,6 +68,7 @@ interface IProps {
 interface IState {
     items: IMessage[];
     loading: boolean;
+    loadingOverlay: boolean;
     loadingPersist: boolean;
     moreAnchorEl: any;
     moreIndex: number;
@@ -185,6 +186,7 @@ class Message extends React.Component<IProps, IState> {
         this.state = {
             items: [],
             loading: false,
+            loadingOverlay: false,
             loadingPersist: false,
             moreAnchorEl: null,
             moreIndex: -1,
@@ -273,7 +275,7 @@ class Message extends React.Component<IProps, IState> {
         this.topMessageId = topMessageId;
     }
 
-    public setMessages(items: IMessage[], callback?: () => void) {
+    public setMessages(items: IMessage[], callback?: () => void, noRemoveSnapshot?: boolean) {
         if (this.state.items !== items) {
             this.loadMoreAfterThrottle.cancel();
             this.fitListCompleteThrottle.cancel();
@@ -285,7 +287,9 @@ class Message extends React.Component<IProps, IState> {
             setTimeout(() => {
                 this.scrollToIndex = undefined;
             }, 300);
-            this.removeSnapshot();
+            if (!noRemoveSnapshot) {
+                this.removeSnapshot();
+            }
             this.setState({
                 items,
                 moreAnchorEl: null,
@@ -294,7 +298,9 @@ class Message extends React.Component<IProps, IState> {
             }, () => {
                 clearTimeout(this.enableLoadBeforeTimeout);
                 this.enableLoadBefore = false;
-                this.modifyScroll(items);
+                if (!noRemoveSnapshot) {
+                    this.modifyScroll(items);
+                }
                 if (this.state.items.length > 0) {
                     this.props.onLastMessage(this.state.items[this.state.items.length - 1]);
                 } else {
@@ -341,26 +347,35 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
-    public setLoading(loading: boolean) {
-        const state: any = {
-            loading,
-        };
-        if (loading) {
-            state.loadingPersist = true;
-        }
-        this.setState(state, () => {
-            if (this.state.loading) {
-                clearTimeout(this.loadingTimeout);
-                this.loadingTimeout = setTimeout(() => {
-                    this.setState({
-                        loadingPersist: false,
-                    }, () => {
-                        this.list.forceUpdateGrid();
-                    });
-                }, 500);
+    public setLoading(loading: boolean, overlay?: boolean) {
+        if (overlay) {
+            this.setState({
+                loadingOverlay: loading,
+            });
+        } else {
+            const state: any = {
+                loading,
+            };
+            if (loading) {
+                state.loadingPersist = true;
             }
-            this.list.forceUpdateGrid();
-        });
+            if (!loading) {
+                state.loadingOverlay = false;
+            }
+            this.setState(state, () => {
+                if (this.state.loading) {
+                    clearTimeout(this.loadingTimeout);
+                    this.loadingTimeout = setTimeout(() => {
+                        this.setState({
+                            loadingPersist: false,
+                        }, () => {
+                            this.list.forceUpdateGrid();
+                        });
+                    }, 500);
+                }
+                this.list.forceUpdateGrid();
+            });
+        }
     }
 
     public animateToEnd(instant?: boolean) {
@@ -568,7 +583,7 @@ class Message extends React.Component<IProps, IState> {
 
     public render() {
         const {peer} = this.props;
-        const {items, moreAnchorEl, selectable} = this.state;
+        const {items, moreAnchorEl, selectable, loadingOverlay} = this.state;
         return (
             <AutoSizer>
                 {({width, height}: any) => (
@@ -609,6 +624,9 @@ class Message extends React.Component<IProps, IState> {
                                 Drop your files here
                             </div>
                         </div>
+                        {loadingOverlay && <div className="messages-overlay-loading">
+                            <Loading/>
+                        </div>}
                     </div>
                 )}
             </AutoSizer>

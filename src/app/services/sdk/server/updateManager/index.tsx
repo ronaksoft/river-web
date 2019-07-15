@@ -180,7 +180,7 @@ export default class UpdateManager {
     private outOfSyncCheck(data?: UpdateContainer.AsObject) {
         if (data) {
             window.console.debug('%c outOfSyncCheck', 'color: orange;');
-            this.updateList.push(data);
+            this.updateList.unshift(data);
             this.updateList.sort((i1, i2) => {
                 return (i1.minupdateid || 0) - (i2.minupdateid || 0);
             });
