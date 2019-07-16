@@ -1679,7 +1679,7 @@ class Chat extends React.Component<IProps, IState> {
                 setTimeout(() => {
                     this.setLoading(false);
                 }, 100);
-                this.messageComponent.removeSnapshot(300);
+                this.messageComponent.removeSnapshot(500);
             });
         }).catch(() => {
             this.setLoading(false);
@@ -1711,8 +1711,8 @@ class Chat extends React.Component<IProps, IState> {
                     (key > 0 && messages[key - 1].messageaction !== C_MESSAGE_ACTION.MessageActionNope);
 
                 // date breakpoint
-                if ((key === 0 && (defaultMessages.length === 0 || (defaultMessages.length > 0 && !TimeUtility.isInSameDay(msg.createdon, defaultMessages[defaultMessages.length - 1].createdon))))
-                    || (key > 0 && !TimeUtility.isInSameDay(msg.createdon, messages[key - 1].createdon))) {
+                if (msg.messagetype !== C_MESSAGE_TYPE.End && ((key === 0 && (defaultMessages.length === 0 || (defaultMessages.length > 0 && !TimeUtility.isInSameDay(msg.createdon, defaultMessages[defaultMessages.length - 1].createdon))))
+                    || (key > 0 && !TimeUtility.isInSameDay(msg.createdon, messages[key - 1].createdon)))) {
                     defaultMessages.push({
                         createdon: msg.createdon,
                         id: msg.id,
@@ -1755,8 +1755,8 @@ class Chat extends React.Component<IProps, IState> {
 
                 defaultMessages.unshift(msg);
                 // date breakpoint
-                if (messages.length - 1 === key // End of message list
-                    || (defaultMessages.length > 1 && !TimeUtility.isInSameDay(msg.createdon, defaultMessages[1].createdon))) {
+                if (msg.messagetype !== C_MESSAGE_TYPE.End && (messages.length - 1 === key // End of message list
+                    || (defaultMessages.length > 1 && !TimeUtility.isInSameDay(msg.createdon, defaultMessages[1].createdon)))) {
                     defaultMessages.unshift({
                         createdon: msg.createdon,
                         id: msg.id,

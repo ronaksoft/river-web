@@ -9,7 +9,7 @@
 
 import MessageDB from '../../services/db/message';
 import {IMessage, IMessageWithCount, IPendingMessage} from './interface';
-import {cloneDeep, differenceBy, find, throttle} from 'lodash';
+import {cloneDeep, differenceBy, find, throttle, findIndex} from 'lodash';
 import SDK from '../../services/sdk';
 import UserRepo from '../user';
 import RTLDetector from '../../services/utilities/rtl_detector';
@@ -291,6 +291,13 @@ export default class MessageRepo {
             this.getManyCache({limit, before, after, ignoreMax}, peer, fnCallback).then((res) => {
                 const len = res.count;
                 if (len < limit) {
+                    if (before !== undefined && len > 0) {
+                        const index = findIndex(res.messages, {messagetype: C_MESSAGE_TYPE.End});
+                        if (index > -1) {
+                            resolve(res.messages);
+                            return;
+                        }
+                    }
                     let maxId = null;
                     let minId = null;
                     if (before !== undefined) {
@@ -316,6 +323,7 @@ export default class MessageRepo {
                         remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userId);
                         return this.transform(remoteRes.messagesList);
                     }).then((remoteRes) => {
+                        this.checkBoundaries(peer.getId() || '', lim, res.messages, remoteRes, before !== undefined);
                         this.importBulk(remoteRes, true);
                         resolve([...res.messages, ...remoteRes]);
                     }).catch((err2) => {
@@ -326,33 +334,7 @@ export default class MessageRepo {
                 } else {
                     resolve(res.messages);
                 }
-            });/*.catch((err) => {
-                window.console.log(err);
-                let maxId = null;
-                let minId = null;
-                if (before !== undefined) {
-                    maxId = before - 1;
-                }
-                if (after !== undefined) {
-                    minId = after + 1;
-                }
-                this.sdk.getMessageHistory(peer, {maxId, minId, limit}).then((remoteRes) => {
-                    this.userRepo.importBulk(false, remoteRes.usersList);
-                    this.groupRepo.importBulk(remoteRes.groupsList);
-                    remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userId);
-                    return this.transform(remoteRes.messagesList);
-                }).then((remoteRes) => {
-                    this.importBulk(remoteRes, true);
-                    if (typeof fnCallback === 'function') {
-                        fnCallback(remoteRes);
-                        resolve([]);
-                    } else {
-                        resolve(remoteRes);
-                    }
-                }).catch((err2) => {
-                    reject(err2);
-                });
-            });*/
+            });
         });
     }
 
@@ -406,7 +388,7 @@ export default class MessageRepo {
         });
         return pipe2.limit(limit + (ignoreMax ? 1 : 2)).toArray().then((res) => {
             const cacheMsgs: IMessage[] = [];
-            const hasHole = res.some((msg) => {
+            const hasHole = res.some((msg, key) => {
                 if (fnCallback && ignoreMax && mode === 0x1) {
                     if (msg.messagetype === C_MESSAGE_TYPE.Hole) {
                         fnCallback(cacheMsgs);
@@ -417,7 +399,8 @@ export default class MessageRepo {
                 return (msg.messagetype === C_MESSAGE_TYPE.Hole);
             });
             window.console.debug('has hole:', hasHole);
-            if (!hasHole) {
+            const endIndex = findIndex(res, {messagetype: C_MESSAGE_TYPE.End});
+            if (!hasHole || endIndex > -1) {
                 // Trims start of result
                 if (res.length > 0) {
                     if (mode === 0x2) {
@@ -722,6 +705,14 @@ export default class MessageRepo {
         });
     }
 
+    public insertEnd(peerId: string, id: number) {
+        return this.db.messages.put({
+            id: id - 0.5,
+            messagetype: C_MESSAGE_TYPE.End,
+            peerid: peerId,
+        });
+    }
+
     private getPeerPendingMessage(peer: InputPeer, fnCallback: (resMsgs: IMessage[]) => void) {
         const peerId = peer.getId() || '';
         const fn = (msg: IMessage[]) => {
@@ -865,6 +856,31 @@ export default class MessageRepo {
                 delete this.messageBundle[peerid];
             });
         });
+    }
+
+    private checkBoundaries(peeId: string, limit: number, local: IMessage[], remote: IMessage[], before: boolean) {
+        if (local.length > 0) {
+            let min = local[local.length - 1].id || 0;
+            let max = local[0].id || 0;
+            min = Math.min(min, max);
+            if (remote.length > 0) {
+                min = remote[remote.length - 1].id || 0;
+                max = remote[0].id || 0;
+                min = Math.min(min, max);
+                if (before) {
+                    this.insertHole(peeId, min, true);
+                    if (remote.length < limit) {
+                        this.insertEnd(peeId, min);
+                    }
+                }
+            } else {
+                if (before && local.length < limit) {
+                    this.insertEnd(peeId, min);
+                }
+            }
+        } else if (before) {
+            this.insertEnd(peeId, 1.5);
+        }
     }
 
     private broadcastEvent(name: string, data: any) {

@@ -95,6 +95,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     };
     private lastAnchorType?: 'message' | 'shared_media' | 'shared_media_full';
     private inControls: boolean = false;
+    private firstTimeLoad: boolean = true;
 
     constructor(props: IProps) {
         super(props);
@@ -206,8 +207,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
                                     </div>}
                                     {this.getDownloadAction()}
                                     {Boolean(item.downloaded !== false) &&
-                                    <CachedVideo className="video" fileLocation={item.fileLocation} autoPlay={false}
-                                                 timeOut={200}/>}
+                                    <CachedVideo className="video" fileLocation={item.fileLocation}
+                                                 autoPlay={this.firstTimeLoad}
+                                                 timeOut={200} onPlay={this.cachedVideoPlayHandler}/>}
                                 </div>
                             </React.Fragment>
                         );
@@ -518,6 +520,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
             });
             this.animated = false;
             this.reset();
+            this.firstTimeLoad = true;
         };
         const {doc} = this.state;
         if (doc && (doc.type === 'picture' || doc.type === 'video')) {
@@ -791,6 +794,13 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 break;
             default:
                 break;
+        }
+    }
+
+    /* CachedVideo Play handler */
+    private cachedVideoPlayHandler = () => {
+        if (this.firstTimeLoad) {
+            this.firstTimeLoad = false;
         }
     }
 }

@@ -179,6 +179,7 @@ class Message extends React.Component<IProps, IState> {
     private readonly menuItem: any = {};
     private documentViewerService: DocumentViewerService;
     private enableLoadBeforeTimeout: any = null;
+    private hasEnd: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -277,6 +278,8 @@ class Message extends React.Component<IProps, IState> {
 
     public setMessages(items: IMessage[], callback?: () => void, noRemoveSnapshot?: boolean) {
         if (this.state.items !== items) {
+            this.hasEnd = false;
+            this.checkEnd(items);
             this.loadMoreAfterThrottle.cancel();
             this.fitListCompleteThrottle.cancel();
             // this.cache.clearAll();
@@ -313,6 +316,7 @@ class Message extends React.Component<IProps, IState> {
             });
             this.listCount = items.length;
         } else if (this.state.items === items && this.listCount !== items.length) {
+            this.checkEnd(items);
             setTimeout(() => {
                 this.fitList(true);
             }, 100);
@@ -328,9 +332,12 @@ class Message extends React.Component<IProps, IState> {
             if (callback) {
                 callback();
             }
-        } else if (callback) {
+        } else {
             this.list.forceUpdateGrid();
-            callback();
+            this.setEnableBefore();
+            if (callback) {
+                callback();
+            }
         }
     }
 
@@ -776,6 +783,7 @@ class Message extends React.Component<IProps, IState> {
         };
         switch (message.messagetype) {
             case C_MESSAGE_TYPE.Hole:
+            case C_MESSAGE_TYPE.End:
                 return '';
             case C_MESSAGE_TYPE.Gap:
                 return (<div style={style} className="bubble-gap">
@@ -928,14 +936,14 @@ class Message extends React.Component<IProps, IState> {
                 }
             }
 
-            // On load more after
+            // On load more after or before
             if (data.stopIndex > -1 && items[data.stopIndex]) {
                 let check = false;
                 if (data.startIndex < 5) {
                     this.bottomOfList = false;
                 }
-                if (this.enableLoadBefore) {
-                    if (data.startIndex < 5 && this.props.onLoadMoreBefore) {
+                if (this.enableLoadBefore && !this.hasEnd) {
+                    if (data.startIndex < 9 && this.props.onLoadMoreBefore) {
                         this.loadMoreBeforeThrottle();
                     } else {
                         this.topOfList = false;
@@ -978,6 +986,7 @@ class Message extends React.Component<IProps, IState> {
             this.props.onLoadMoreBefore();
             this.enableLoadBefore = false;
             this.topOfList = true;
+            this.setEnableBefore();
         }
     }
 
@@ -1243,7 +1252,7 @@ class Message extends React.Component<IProps, IState> {
                     }
                     setTimeout(() => {
                         this.checkScroll(this.stayInfo.id, index);
-                    }, 50);
+                    }, 10);
                 } else {
                     this.removeSnapshot();
                     this.setEnableBefore();
@@ -1502,6 +1511,16 @@ class Message extends React.Component<IProps, IState> {
         this.enableLoadBeforeTimeout = setTimeout(() => {
             this.enableLoadBefore = true;
         }, 500);
+    }
+
+    private checkEnd(items: IMessage[]) {
+        for (let i = 0; i < 5 || i < items.length; i++) {
+            if (items[i] && items[i].messagetype === C_MESSAGE_TYPE.End) {
+                this.hasEnd = true;
+                return;
+            }
+        }
+        this.hasEnd = false;
     }
 }
 

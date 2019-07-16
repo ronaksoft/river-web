@@ -16,6 +16,7 @@ interface IProps {
     className?: string;
     fileLocation: InputFileLocation.AsObject;
     onLoad?: () => void;
+    onPlay?: () => void;
     searchTemp?: boolean;
     timeOut?: number;
 }
@@ -51,7 +52,7 @@ class CachedVideo extends React.PureComponent<IProps, IState> {
         const {className, src} = this.state;
         return (
             <div className={className}>
-                {src && <video onLoad={this.props.onLoad} autoPlay={this.props.autoPlay} controls={true}
+                {src && <video onLoad={this.props.onLoad} onPlay={this.props.onPlay} autoPlay={this.props.autoPlay} controls={true}
                                onError={this.videoErrorHandler}>
                     <source src={src}/>
                 </video>}
