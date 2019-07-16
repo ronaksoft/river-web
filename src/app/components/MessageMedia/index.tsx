@@ -219,9 +219,10 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     private mediaSizeRef: any = null;
     private fileSize: number = 0;
     private documentViewerService: DocumentViewerService;
-    private readonly pictureContentSize: { height: string, maxWidth: string, width: string } = {
+    private readonly pictureContentSize: { height: string, maxWidth: string, nHeight: number, width: string } = {
         height: `${C_MIN_HEIGHT}px`,
         maxWidth: `${C_MIN_WIDTH}px`,
+        nHeight: 0,
         width: `${C_MIN_WIDTH}px`,
     };
     private mediaBigRef: any = null;
@@ -523,7 +524,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
 
     /* CachedPhoto onLoad handler */
     private cachedPhotoLoadHandler = () => {
-        if (this.props.measureFn) {
+        if (this.props.measureFn && this.pictureContentSize.nHeight < 10) {
             this.props.measureFn();
         }
     }
@@ -534,7 +535,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     }
 
     /* Get content size */
-    private getContentSize(info: IMediaInfo): { height: string, maxWidth: string, width: string } {
+    private getContentSize(info: IMediaInfo): { height: string, maxWidth: string, nHeight: number, width: string } {
         const ratio = info.height / info.width;
         let height = info.height;
         let width = info.width;
@@ -574,6 +575,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         return {
             height: `${height}px`,
             maxWidth: `${maxWidth}px`,
+            nHeight: height,
             width: `${width}px`,
         };
     }
