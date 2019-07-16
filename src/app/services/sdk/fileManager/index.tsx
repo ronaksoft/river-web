@@ -112,6 +112,12 @@ export default class FileManager {
         this.fileRepo = FileRepo.getInstance();
     }
 
+    public setUrl(url: string) {
+        this.httpWorkers.forEach((file) => {
+            file.setUrl(url);
+        });
+    }
+
     /* Send the whole file */
     public sendFile(id: string, blob: Blob, onProgress?: (e: IFileProgress) => void) {
         const chunks = this.chunkBlob(blob);

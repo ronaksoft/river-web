@@ -33,6 +33,7 @@ import {find} from 'lodash';
 
 import './tel-input.css';
 import './style.css';
+import FileManager from "../../services/sdk/fileManager";
 
 const C_CLIENT = `Web:- ${window.navigator.userAgent}`;
 
@@ -390,6 +391,10 @@ class SignUp extends React.Component<IProps, IState> {
                     workspaceError: '',
                     workspaceInfo: res,
                 });
+                if (res.storageurl && res.storageurl.length > 0) {
+                    localStorage.setItem('river.workspace_url_file', res.storageurl || '');
+                    FileManager.getInstance().setUrl(res.storageurl);
+                }
                 const localWorkspace = localStorage.getItem('river.workspace_url');
                 if ((localWorkspace || 'river.ronaksoftware.com') !== workspace) {
                     this.workspaceManager.closeWire();

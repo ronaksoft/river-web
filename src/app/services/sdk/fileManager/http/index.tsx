@@ -39,23 +39,32 @@ export default class Http {
     private workerId: number = 0;
     private isWorkerReady: boolean = false;
     private readyHandler: any = null;
-    private readonly testUrl: string = '';
 
     public constructor(bytes: any, id: number) {
-        this.testUrl = localStorage.getItem('river.workspace_url') || '';
+        const wsUrl = localStorage.getItem('river.workspace_url') || '';
+        const fileUrl = localStorage.getItem('river.workspace_url_file') || '';
 
         this.reqId = 0;
         this.worker = new Worker('/bin/worker.js?v15');
         this.workerId = id;
 
-        if (this.testUrl.length > 0) {
-            this.dataCenterUrl = 'http://' + this.testUrl + '/file';
+        window.console.log(window.location.host, fileUrl);
+        if (fileUrl && fileUrl.length > 0 && (ElectronService.isElectron() || window.location.host.indexOf('localhost') === 0)) {
+            this.dataCenterUrl = 'http://' + fileUrl;
+        } else if (wsUrl.length > 0) {
+            this.dataCenterUrl = 'http://' + wsUrl + '/file';
         } else if (window.location.protocol === 'https:' && !ElectronService.isElectron()) {
             this.dataCenterUrl = 'https://' + window.location.host + '/file';
         }
 
         this.workerMessage('init', {});
         this.initWorkerEvent();
+    }
+
+    public setUrl(url: string) {
+        if (url && url.length > 0 && (ElectronService.isElectron() || window.location.host.indexOf('localhost') === 0)) {
+            this.dataCenterUrl = 'http://' + url;
+        }
     }
 
     /* Worker is ready handler */

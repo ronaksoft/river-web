@@ -176,7 +176,7 @@ export default class WorkspaceManger {
         if (constructor === C_MSG.Error) {
             this.messageListeners[reqId].reject(res.toObject());
         } else {
-            this.messageListeners[reqId].resolve(res);
+            this.messageListeners[reqId].resolve(res.toObject());
         }
         delete this.messageListeners[reqId];
         this.clearQueueById(reqId);

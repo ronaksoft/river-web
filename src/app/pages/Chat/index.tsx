@@ -1056,6 +1056,9 @@ class Chat extends React.Component<IProps, IState> {
             // @ts-ignore
             if (dialog && this.messages.length > 0 && this.messages[this.messages.length - 1] && (dialog.topmessageid || 0) <= (this.messages[this.messages.length - 1].id || 0)) {
                 const dataMsg = this.modifyMessages(this.messages, data.messages.reverse(), true);
+                data.messages.reverse().forEach((message) => {
+                    this.checkMessageOrder(message);
+                });
                 if (!this.endOfMessage && this.isInChat) {
                     this.setScrollMode('end');
                 } else {
@@ -1066,10 +1069,8 @@ class Chat extends React.Component<IProps, IState> {
                     if (!this.endOfMessage && this.isInChat) {
                         if (dataMsg.maxReadId !== -1) {
                             if (this.scrollInfo && this.scrollInfo.stopIndex && this.messages[this.scrollInfo.stopIndex]) {
-                                window.console.log('case#1');
-                                this.sendReadHistory(this.state.peer, Math.floor(this.messages[this.scrollInfo.stopIndex].id || 0));
+                                this.sendReadHistory(this.state.peer, Math.floor(this.messages[this.scrollInfo.stopIndex].id || 0), this.scrollInfo.stopIndex);
                             } else {
-                                window.console.log('case#2');
                                 this.sendReadHistory(this.state.peer, dataMsg.maxReadId);
                             }
                         }
@@ -1930,7 +1931,7 @@ class Chat extends React.Component<IProps, IState> {
                 message.id = res.messageid;
                 this.messageRepo.lazyUpsert([message]);
                 this.updateDialogs(message, '0');
-                this.checkMessageOrder(message.id || 0);
+                this.checkMessageOrder(message);
                 if (this.messageComponent) {
                     this.messageComponent.list.forceUpdateGrid();
                 }
@@ -1975,7 +1976,7 @@ class Chat extends React.Component<IProps, IState> {
         this.messageRepo.lazyUpsert([message]);
     }
 
-    private checkMessageOrder(newId: number) {
+    private checkMessageOrder(msg: IMessage) {
         if (!this.messageComponent) {
             return;
         }
@@ -1991,19 +1992,36 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageComponent.cache.clear(i2, 0);
             }
         };
-        const index = findLastIndex(this.messages, {id: newId});
-        if (index > 0 && ((this.messages[index - 1].id || 0) > newId || (this.messages[index - 1].id || 0) < 0)) {
-            for (let i = index - 1; i >= 0; i--) {
-                // Check first message, shouldn't be after date message
-                if (this.messages[index - 1].messagetype === C_MESSAGE_TYPE.Date && i === index - 1) {
-                    return false;
-                }
-                if ((this.messages[i].id || 0) > 0 && (this.messages[i].id || 0) < newId) {
-                    swap(i + 1, index);
-                    return true;
-                }
+        const index = findLastIndex(this.messages, {id: msg.id});
+        if (index < -1) {
+            return false;
+        }
+
+        const findNewMessagePosition = (message: IMessage) => {
+            let position = this.messages.length - 1;
+            if (this.messages.length === 0) {
+                return position;
             }
-            swap(0, index);
+
+            while (position === 0) {
+                if ((message.createdon || 0) < (this.messages[position].createdon || 0)) {
+                    position--;
+                    continue;
+                } else if (message.createdon === this.messages[position].createdon) {
+                    if ((message.id || 0) < (this.messages[position].id || 0)) {
+                        position--;
+                        continue;
+                    }
+                }
+
+                return position;
+            }
+            return position;
+        };
+
+        const pos = findNewMessagePosition(msg);
+        if (index !== pos) {
+            swap(pos, index);
             return true;
         }
         return false;
@@ -2212,6 +2230,9 @@ class Chat extends React.Component<IProps, IState> {
                 dialogs[index].scroll_pos = scrollPos;
             }
             this.dialogsSortThrottle(dialogs);
+            if (unreadCounter === 0 && this.scrollInfo) {
+                this.setEndOfMessage(this.messages.length - this.scrollInfo.stopIndex > 1);
+            }
             this.dialogRepo.lazyUpsert([dialogs[index]]);
         }
     }
@@ -2463,9 +2484,9 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private getValidAfter(): number {
+    private getValidAfter(offset?: number): number {
         const messages = this.messages;
-        let after = 0;
+        let after = offset || 0;
         if (messages.length > 0) {
             // Check if it is not pending message
             after = messages[messages.length - 1].id || 0;
@@ -2514,6 +2535,9 @@ class Chat extends React.Component<IProps, IState> {
                     this.setScrollMode('none');
                 }
                 const modifiedMsgs = this.modifyMessages(this.messages, res.messages, true);
+                res.messages.forEach((msg) => {
+                    this.checkMessageOrder(msg);
+                });
                 this.messageComponent.setMessages(modifiedMsgs.msgs);
             });
         }
@@ -2656,7 +2680,7 @@ class Chat extends React.Component<IProps, IState> {
         // }
         if (this.state.selectedDialogId !== 'null' && this.messages.length > 0) {
             if (this.scrollInfo && this.scrollInfo.stopIndex && this.messages[this.scrollInfo.stopIndex]) {
-                this.sendReadHistory(this.state.peer, Math.floor(this.messages[this.scrollInfo.stopIndex].id || 0));
+                this.sendReadHistory(this.state.peer, Math.floor(this.messages[this.scrollInfo.stopIndex].id || 0), this.scrollInfo.stopIndex);
             } else if (this.messages[this.messages.length - 1]) {
                 this.sendReadHistory(this.state.peer, Math.floor(this.messages[this.messages.length - 1].id || 0));
             }
@@ -2667,14 +2691,14 @@ class Chat extends React.Component<IProps, IState> {
         this.isInChat = false;
     }
 
-    private sendReadHistory(inputPeer: InputPeer | null, msgId: number, showMoveDown?: boolean) {
+    private sendReadHistory(inputPeer: InputPeer | null, msgId: number, endIndex?: number, showMoveDown?: boolean) {
         if (!inputPeer || !this.isInChat) {
             return;
         }
         const peerId = inputPeer.getId() || '';
         const dialog = this.getDialogById(peerId);
         if (msgId < 0 && this.state.selectedDialogId === peerId) {
-            msgId = this.getValidAfter();
+            msgId = this.getValidAfter(endIndex);
         }
         if (dialog) {
             if (showMoveDown !== undefined) {
@@ -2830,7 +2854,7 @@ class Chat extends React.Component<IProps, IState> {
                 }
                 if (messages[info.stopIndex].id !== -1) {
                     // Update unread counter in dialog
-                    this.sendReadHistory(this.state.peer, Math.floor(messages[info.stopIndex].id || 0), diff > 1);
+                    this.sendReadHistory(this.state.peer, Math.floor(messages[info.stopIndex].id || 0), info.stopIndex, diff > 1);
                 }
             }
         }
@@ -3872,7 +3896,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageRepo.lazyUpsert([message]);
                 this.updateDialogs(message, '0');
 
-                this.checkMessageOrder(message.id || 0);
+                this.checkMessageOrder(message);
                 // Force update messages
                 if (this.messageComponent) {
                     this.messageComponent.list.forceUpdateGrid();
@@ -4011,7 +4035,7 @@ class Chat extends React.Component<IProps, IState> {
             this.messageRepo.lazyUpsert([message]);
             this.updateDialogs(message, '0');
 
-            this.checkMessageOrder(message.id || 0);
+            this.checkMessageOrder(message);
             // Force update messages
             if (this.messageComponent) {
                 this.messageComponent.list.forceUpdateGrid();
