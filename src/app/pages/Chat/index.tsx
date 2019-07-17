@@ -1667,21 +1667,23 @@ class Chat extends React.Component<IProps, IState> {
             this.messageComponent.disableScroll();
             this.messageComponent.takeSnapshot();
             this.setScrollMode('stay');
-            const messages = this.messages;
-            const messageSize = messages.length;
-            const dataMsg = this.modifyMessages(messages, data, false);
-            this.messageComponent.setMessages(dataMsg.msgs, () => {
-                this.messageComponent.enableScroll();
-                // clears the gap between each message load
-                for (let i = 0; i <= (dataMsg.msgs.length - messageSize) + 1; i++) {
-                    this.messageComponent.cache.clear(i, 0);
-                }
-                this.messageComponent.list.recomputeGridSize();
-                setTimeout(() => {
-                    this.setLoading(false);
-                }, 100);
-                this.messageComponent.removeSnapshot(500);
-            });
+            setTimeout(() => {
+                const messages = this.messages;
+                const messageSize = messages.length;
+                const dataMsg = this.modifyMessages(messages, data, false);
+                this.messageComponent.setMessages(dataMsg.msgs, () => {
+                    this.messageComponent.enableScroll();
+                    // clears the gap between each message load
+                    for (let i = 0; i <= (dataMsg.msgs.length - messageSize) + 1; i++) {
+                        this.messageComponent.cache.clear(i, 0);
+                    }
+                    this.messageComponent.list.recomputeGridSize();
+                    setTimeout(() => {
+                        this.setLoading(false);
+                    }, 100);
+                    // this.messageComponent.removeSnapshot(500);
+                });
+            }, 10);
         }).catch(() => {
             this.setLoading(false);
         });
@@ -4356,12 +4358,17 @@ class Chat extends React.Component<IProps, IState> {
         this.messageComponent.animateToEnd();
     }
 
-    /* private testHandler = () => {
-        this.snapshot();
+    /*private testHandler = () => {
+        setTimeout(() => {
+            this.messageComponent.disableScroll();
+            window.console.log('disableScroll');
+        }, 2000);
+        // this.messageComponent.setScrollMode('stay');
+        // this.messageComponent.takeSnapshot(true);
     }
 
     private test2Handler = () => {
-        this.messageComponent.removeSnapshot(true);
+        this.messageComponent.keepView();
     }*/
 }
 

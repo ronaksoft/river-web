@@ -34,25 +34,21 @@ export default class Http {
     private reqId: number;
     private messageListeners: { [key: number]: IMessageListener } = {};
     private sentQueue: number[] = [];
-    private dataCenterUrl: string = 'http://river.ronaksoftware.com/file';
+    private dataCenterUrl: string = 'http://file.river.me';
     // @ts-ignore
     private workerId: number = 0;
     private isWorkerReady: boolean = false;
     private readyHandler: any = null;
 
     public constructor(bytes: any, id: number) {
-        const wsUrl = localStorage.getItem('river.workspace_url') || '';
         const fileUrl = localStorage.getItem('river.workspace_url_file') || '';
 
         this.reqId = 0;
         this.worker = new Worker('/bin/worker.js?v15');
         this.workerId = id;
 
-        window.console.log(window.location.host, fileUrl);
         if (fileUrl && fileUrl.length > 0 && (ElectronService.isElectron() || window.location.host.indexOf('localhost') === 0)) {
             this.dataCenterUrl = 'http://' + fileUrl;
-        } else if (wsUrl.length > 0) {
-            this.dataCenterUrl = 'http://' + wsUrl + '/file';
         } else if (window.location.protocol === 'https:' && !ElectronService.isElectron()) {
             this.dataCenterUrl = 'https://' + window.location.host + '/file';
         }

@@ -390,13 +390,15 @@ class SignUp extends React.Component<IProps, IState> {
                     step: 'phone',
                     workspaceError: '',
                     workspaceInfo: res,
+                }, () => {
+                    this.initPhoneInput();
                 });
                 if (res.storageurl && res.storageurl.length > 0) {
                     localStorage.setItem('river.workspace_url_file', res.storageurl || '');
                     FileManager.getInstance().setUrl(res.storageurl);
                 }
                 const localWorkspace = localStorage.getItem('river.workspace_url');
-                if ((localWorkspace || 'river.ronaksoftware.com') !== workspace) {
+                if ((localWorkspace || 'cyrus.river.im') !== workspace) {
                     this.workspaceManager.closeWire();
                     localStorage.setItem('river.workspace_url', workspace);
                     localStorage.removeItem('river.contacts.hash');
@@ -556,26 +558,24 @@ class SignUp extends React.Component<IProps, IState> {
         if (this.state.loading) {
             return;
         }
-        const {phone, phoneHash, code, countdown} = this.state;
-        if ((!phone || !phoneHash || (code.length < 4 && countdown !== 0))) {
+        const {phone, phoneHash, countdown} = this.state;
+        if (!phone || !phoneHash || countdown >= 45) {
             return;
         }
         this.setState({
             loading: true,
         });
-        if (countdown < 45) {
-            this.sdk.resendCode(phone.slice(1), phoneHash).then(() => {
-                this.focus('f-code');
-                this.startCountdown();
-                this.setState({
-                    loading: false,
-                });
-            }).catch(() => {
-                this.setState({
-                    loading: false,
-                });
+        this.sdk.resendCode(phone.slice(1), phoneHash).then(() => {
+            this.focus('f-code');
+            this.startCountdown();
+            this.setState({
+                loading: false,
             });
-        }
+        }).catch(() => {
+            this.setState({
+                loading: false,
+            });
+        });
     }
 
     private confirmKeyDown = (e: any) => {
@@ -709,6 +709,10 @@ class SignUp extends React.Component<IProps, IState> {
                 this.setState({
                     workspaceInfo: res,
                 });
+                if (res.storageurl && res.storageurl.length > 0) {
+                    localStorage.setItem('river.workspace_url_file', res.storageurl || '');
+                    FileManager.getInstance().setUrl(res.storageurl);
+                }
             });
         }
     }

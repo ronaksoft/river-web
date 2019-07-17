@@ -180,6 +180,8 @@ class Message extends React.Component<IProps, IState> {
     private documentViewerService: DocumentViewerService;
     private enableLoadBeforeTimeout: any = null;
     private hasEnd: boolean = false;
+    private scrollContainerEl: any;
+    private readonly isMac: boolean = navigator.platform.indexOf('Mac') > -1;
 
     constructor(props: IProps) {
         super(props);
@@ -251,10 +253,14 @@ class Message extends React.Component<IProps, IState> {
         this.eventReferences.push(this.broadcaster.listen('Theme_Changed', this.themeChangeHandler));
         window.addEventListener('mouseup', this.dragLeaveHandler, true);
 
-        const el = document.querySelector('.messages-inner .chat.active-chat');
-        if (el) {
-            el.addEventListener('mousewheel', this.scrollHandler);
+        this.scrollContainerEl = document.querySelector('.messages-inner .chat.active-chat');
+        if (this.scrollContainerEl) {
+            this.scrollContainerEl.addEventListener('mousewheel', this.scrollHandler, true);
         }
+
+        window.addEventListener('keydown', () => {
+            this.disableScroll();
+        });
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -348,9 +354,8 @@ class Message extends React.Component<IProps, IState> {
             }
         });
         window.removeEventListener('mouseup', this.dragLeaveHandler, true);
-        const el = document.querySelector('.messages-inner .chat.active-chat');
-        if (el) {
-            el.addEventListener('mousewheel', this.scrollHandler);
+        if (this.scrollContainerEl) {
+            this.scrollContainerEl.addEventListener('mousewheel', this.scrollHandler, true);
         }
     }
 
@@ -408,11 +413,10 @@ class Message extends React.Component<IProps, IState> {
                 if (this.list) {
                     this.list.scrollToRow(items.length);
                     if (this.list) {
-                        const el = document.querySelector('.messages-inner .chat.active-chat');
-                        if (el) {
-                            const eldiv = el.firstElementChild;
+                        if (this.scrollContainerEl) {
+                            const eldiv = this.scrollContainerEl.firstElementChild;
                             if (eldiv) {
-                                this.list.scrollToPosition((eldiv.scrollHeight - el.clientHeight) + 10);
+                                this.list.scrollToPosition((eldiv.scrollHeight - this.scrollContainerEl.clientHeight) + 10);
                                 setTimeout(() => {
                                     if (!this.isAtEnd()) {
                                         this.animateToEnd(true);
@@ -426,9 +430,8 @@ class Message extends React.Component<IProps, IState> {
                     }
                 }
             } else {
-                const el = document.querySelector('.messages-inner .chat.active-chat');
                 clearTimeout(this.scrollDownTimeout);
-                if (el) {
+                if (this.scrollContainerEl) {
                     const options: any = {
                         // duration of the scroll per 1000px, default 500
                         speed: 500,
@@ -440,7 +443,7 @@ class Message extends React.Component<IProps, IState> {
                         maxDuration: 300,
 
                         // @ts-ignore
-                        element: el,
+                        element: this.scrollContainerEl,
 
                         // Additional offset value that gets added to the desiredOffset.  This is
                         // useful when passing a DOM object as the desiredOffset and wanting to adjust
@@ -470,7 +473,7 @@ class Message extends React.Component<IProps, IState> {
                             }
                         }
                     };
-                    animateScrollTo(el.scrollHeight + 50, options);
+                    animateScrollTo(this.scrollContainerEl.scrollHeight + 50, options);
                 }
             }
         }
@@ -489,19 +492,18 @@ class Message extends React.Component<IProps, IState> {
 
     public fitList(instant?: boolean) {
         setTimeout(() => {
-            const el: any = document.querySelector('.messages-inner .chat.active-chat');
-            if (!el || !el.style) {
+            if (!this.scrollContainerEl || !this.scrollContainerEl.style) {
                 return;
             }
             if (this.state.items.length === 0) {
-                el.style.paddingTop = '0px';
+                this.scrollContainerEl.style.paddingTop = '0px';
                 return;
             }
-            const list = document.querySelector('.messages-inner .chat.active-chat > div');
+            const list = this.scrollContainerEl.firstElementChild;
             if (list) {
                 const diff = (this.list.props.height - 8) - list.clientHeight;
                 if (diff > 0) {
-                    el.style.paddingTop = diff + 'px';
+                    this.scrollContainerEl.style.paddingTop = diff + 'px';
                     if (this.props.onLoadMoreAfter) {
                         this.props.onLoadMoreAfter();
                     }
@@ -514,7 +516,7 @@ class Message extends React.Component<IProps, IState> {
                     return;
                 }
             }
-            el.style.paddingTop = '0px';
+            this.scrollContainerEl.style.paddingTop = '0px';
         }, instant ? 0 : 10);
     }
 
@@ -553,7 +555,7 @@ class Message extends React.Component<IProps, IState> {
 
     public removeSnapshot(instant?: boolean | number) {
         this.enableScroll();
-        const timeout = instant ? ((typeof instant === 'boolean') ? 0 : instant) : 300;
+        const timeout = instant ? ((typeof instant === 'boolean') ? 0 : instant) : 100;
         setTimeout(() => {
             clearTimeout(this.removeSnapshotTimeout);
             if (!this.messageInnerRef || !this.messageSnapshotRef) {
@@ -568,10 +570,16 @@ class Message extends React.Component<IProps, IState> {
 
     public disableScroll() {
         this.disableScrolling = true;
+        if (this.isMac && this.scrollContainerEl) {
+            this.scrollContainerEl.style.overflow = 'hidden';
+        }
     }
 
     public enableScroll() {
         this.disableScrolling = false;
+        if (this.isMac && this.scrollContainerEl) {
+            this.scrollContainerEl.style.overflow = 'hidden auto';
+        }
     }
 
     public tryLoadBefore() {
@@ -611,7 +619,7 @@ class Message extends React.Component<IProps, IState> {
                                 estimatedRowSize={41}
                                 onRowsRendered={this.onRowsRenderedHandler}
                                 noRowsRenderer={this.noRowsRenderer}
-                                scrollToAlignment={(this.scrollToIndex || -1) > -1 ? 'end' : 'center'}
+                                scrollToAlignment={(this.scrollToIndex || -1) > -1 ? 'end' : 'start'}
                                 className="chat active-chat"
                                 scrollToIndex={this.scrollToIndex}
                             />
@@ -726,9 +734,8 @@ class Message extends React.Component<IProps, IState> {
     }
 
     private isAtEnd() {
-        const el = document.querySelector('.messages-inner .chat.active-chat');
-        if (el) {
-            return (el.clientHeight + el.scrollTop + 2 >= el.scrollHeight);
+        if (this.scrollContainerEl) {
+            return (this.scrollContainerEl.clientHeight + this.scrollContainerEl.scrollTop + 2 >= this.scrollContainerEl.scrollHeight);
         } else {
             return true;
         }
@@ -1279,9 +1286,8 @@ class Message extends React.Component<IProps, IState> {
     }
 
     private getScrollTop() {
-        const el = document.querySelector('.messages-inner .chat.active-chat');
-        if (el) {
-            return el.scrollTop;
+        if (this.scrollContainerEl) {
+            return this.scrollContainerEl.scrollTop;
         }
         return null;
     }
@@ -1486,6 +1492,7 @@ class Message extends React.Component<IProps, IState> {
     private scrollHandler = (e: any) => {
         if (this.disableScrolling) {
             e.preventDefault();
+            e.stopPropagation();
         }
     }
 

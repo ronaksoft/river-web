@@ -859,6 +859,7 @@ export default class MessageRepo {
     }
 
     private checkBoundaries(peeId: string, limit: number, local: IMessage[], remote: IMessage[], before: boolean) {
+        return;
         if (local.length > 0) {
             let min = local[local.length - 1].id || 0;
             let max = local[0].id || 0;

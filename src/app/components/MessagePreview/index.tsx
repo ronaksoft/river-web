@@ -16,6 +16,7 @@ import {getMessageTitle} from '../Dialog/utils';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 import {getMediaInfo} from '../MessageMedia';
 import CachedPhoto from '../CachedPhoto';
+import CachedMessageService from '../../services/cachedMessageService';
 
 import './style.css';
 
@@ -37,14 +38,22 @@ interface IState {
 class MessagePreview extends React.PureComponent<IProps, IState> {
     private messageRepo: MessageRepo;
     private userId: string;
+    private cachedMessageService: CachedMessageService;
 
     constructor(props: IProps) {
         super(props);
 
+        this.cachedMessageService = CachedMessageService.getInstance();
+
+        let message = null;
+        if (this.props.message && this.props.message.replyto !== 0) {
+            message = this.cachedMessageService.getMessage(this.props.message.peerid || '', this.props.message.replyto || 0);
+        }
         this.state = {
             error: false,
             message: props.message,
             peer: props.peer,
+            previewMessage: message,
         };
 
         this.messageRepo = MessageRepo.getInstance();
@@ -52,20 +61,35 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
 
     public componentDidMount() {
         this.userId = this.messageRepo.getCurrentUserId();
-        if (this.state.message.replyto && this.state.message.replyto !== 0) {
+        if (!this.state.previewMessage && this.state.message.replyto && this.state.message.replyto !== 0) {
             this.getMessage();
         }
     }
 
     public componentWillReceiveProps(newProps: IProps) {
         if (this.state.message !== newProps.message) {
+            this.cachedMessageService.unmountCache(this.state.message.id || 0);
             this.setState({
                 message: newProps.message,
             }, () => {
                 if (this.state.message.replyto && this.state.message.replyto !== 0) {
-                    this.getMessage();
+                    const message = this.cachedMessageService.getMessage(this.state.message.peerid || '', this.state.message.replyto || 0);
+                    if (message) {
+                        this.setState({
+                            error: false,
+                            previewMessage: message,
+                        });
+                    } else {
+                        this.getMessage();
+                    }
                 }
             });
+        }
+    }
+
+    public componentWillUnmount() {
+        if (this.state.message) {
+            this.cachedMessageService.unmountCache(this.state.message.replyto || 0);
         }
     }
 
@@ -153,10 +177,11 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
                     error: false,
                     previewMessage: res,
                 });
+                this.cachedMessageService.setMessage(res);
             } else {
                 this.setState({
                     error: true,
-                    previewMessage: res,
+                    previewMessage: null,
                 });
             }
         }).catch(() => {

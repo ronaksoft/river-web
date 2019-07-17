@@ -11,7 +11,7 @@ import {base64ToU8a, uint8ToBase64} from '../../fileManager/http/utils';
 import {IServerRequest} from '../index';
 import ElectronService from '../../../electron';
 
-export const defaultGateway = 'river.ronaksoftware.com';
+export const defaultGateway = 'cyrus.river.im';
 
 export const ping = new Uint8Array([0x50, 0x49, 0x4e, 0x47]);
 
