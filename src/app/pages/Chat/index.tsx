@@ -102,6 +102,7 @@ import IframeService, {C_IFRAME_SUBJECT} from '../../services/iframe';
 import PopUpNewMessage from "../../components/PopUpNewMessage";
 
 import './style.css';
+import CachedMessageService from "../../services/cachedMessageService";
 
 export let notifyOptions: any[] = [];
 
@@ -116,7 +117,7 @@ interface IProps {
 interface IState {
     blurMessage: boolean;
     chatMoreAnchorEl: any;
-    confirmDialogMode: 'none' | 'logout' | 'remove_message' | 'remove_message_revoke' | 'delete_exit_group' | 'delete_user';
+    confirmDialogMode: 'none' | 'logout' | 'remove_message' | 'remove_message_revoke' | 'remove_message_pending' | 'delete_exit_group' | 'delete_user';
     confirmDialogOpen: boolean;
     forwardRecipientDialogOpen: boolean;
     iframeActive: boolean;
@@ -193,6 +194,7 @@ class Chat extends React.Component<IProps, IState> {
     private iframeService: IframeService;
     private readonly newMessageLoadThrottle: any = null;
     private scrollInfo: any = null;
+    private cachedMessageService: CachedMessageService;
 
     constructor(props: IProps) {
         super(props);
@@ -249,6 +251,7 @@ class Chat extends React.Component<IProps, IState> {
         this.backgroundService = BackgroundService.getInstance();
         this.downloadManager = DownloadManager.getInstance();
         this.newMessageLoadThrottle = throttle(this.newMessageLoad, 200);
+        this.cachedMessageService = CachedMessageService.getInstance();
 
         if (!process || !process.env || process.env.NODE_ENV !== 'development') {
             Sentry.configureScope((scope) => {
@@ -386,6 +389,7 @@ class Chat extends React.Component<IProps, IState> {
             }
             return;
         }
+        this.cachedMessageService.clearPeerId(this.state.selectedDialogId);
         this.newMessageLoadThrottle.cancel();
         const selectedMessageId = newProps.match.params.mid;
         this.updateDialogsCounter(this.state.selectedDialogId, {scrollPos: this.lastMessageId});
@@ -695,7 +699,7 @@ class Chat extends React.Component<IProps, IState> {
                             </Button>
                         </DialogActions>
                     </div>}
-                    {Boolean(confirmDialogMode === 'remove_message' || confirmDialogMode === 'remove_message_revoke') &&
+                    {Boolean(confirmDialogMode === 'remove_message' || confirmDialogMode === 'remove_message_revoke' || 'remove_message_pending') &&
                     <div>
                         <DialogTitle>{i18n.t('chat.remove_message_dialog.title')}</DialogTitle>
                         <DialogContent>
@@ -707,13 +711,17 @@ class Chat extends React.Component<IProps, IState> {
                             <Button onClick={this.confirmDialogCloseHandler} color="secondary">
                                 {i18n.t('general.disagree')}
                             </Button>
-                            <Button onClick={this.removeMessageHandler.bind(this, false)} color="primary"
+                            <Button onClick={this.removeMessageHandler.bind(this, 0)} color="primary"
                                     autoFocus={true}>
                                 {i18n.t('chat.remove_message_dialog.remove')}
                             </Button>
                             {Boolean(confirmDialogMode === 'remove_message_revoke') &&
-                            <Button onClick={this.removeMessageHandler.bind(this, true)} color="primary">
+                            <Button onClick={this.removeMessageHandler.bind(this, 1)} color="primary">
                                 {i18n.t('chat.remove_message_dialog.remove_for_all')}
+                            </Button>}
+                            {Boolean(confirmDialogMode === 'remove_message_pending') &&
+                            <Button onClick={this.removeMessageHandler.bind(this, 2)} color="primary">
+                                {i18n.t('chat.remove_message_dialog.remove_all_pending')}
                             </Button>}
                         </DialogActions>
                     </div>}
@@ -3007,20 +3015,36 @@ class Chat extends React.Component<IProps, IState> {
                 break;
             case 'remove':
                 let noRevoke = true;
+                let allPending = true;
                 const messages = this.messages;
                 const now = this.riverTime.now();
                 // Checks if revoke is unavailable
                 for (const i in this.state.messageSelectedIds) {
                     if (this.state.messageSelectedIds.hasOwnProperty(i)) {
                         const msg = messages[this.state.messageSelectedIds[i]];
-                        if (msg && (msg.me !== true || (now - (msg.createdon || 0)) >= 86400)) {
+                        if (msg && ((msg.me !== true || (now - (msg.createdon || 0)) >= 86400) || (msg.id || 0) < 0)) {
                             noRevoke = false;
-                            break;
+                            if (!allPending) {
+                                break;
+                            }
+                        }
+                        if (msg && (msg.id || 0) > 0) {
+                            allPending = false;
+                            if (!noRevoke) {
+                                break;
+                            }
                         }
                     }
                 }
+                let mode: any = 'remove_message';
+                if (allPending) {
+                    mode = 'remove_message_pending';
+                }
+                if (noRevoke) {
+                    mode = 'remove_message_revoke';
+                }
                 this.setState({
-                    confirmDialogMode: (noRevoke ? 'remove_message_revoke' : 'remove_message'),
+                    confirmDialogMode: mode,
                     confirmDialogOpen: true,
                 });
                 break;
@@ -3095,25 +3119,33 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private removeMessageHandler = (revoke: boolean) => {
+    private removeMessageHandler = (mode: number) => {
         const {peer, messageSelectedIds} = this.state;
         if (!peer) {
             return;
         }
-        const remoteMsgIds: number[] = [];
-        Object.keys(messageSelectedIds).forEach((id) => {
-            const nid = parseInt(id, 10);
-            if (nid > 0) {
-                remoteMsgIds.push(nid);
-            } else {
-                // Remove pending messages
-                this.cancelSend(nid);
-            }
-        });
-        if (remoteMsgIds.length > 0) {
-            this.sdk.removeMessage(peer, remoteMsgIds, revoke).catch((err) => {
-                window.console.debug(err);
+        if (mode === 2) {
+            this.messages.forEach((msg) => {
+                if ((msg.id || 0) < 0) {
+                    this.cancelSend(msg.id || 0);
+                }
             });
+        } else {
+            const remoteMsgIds: number[] = [];
+            Object.keys(messageSelectedIds).forEach((id) => {
+                const nid = parseInt(id, 10);
+                if (nid > 0) {
+                    remoteMsgIds.push(nid);
+                } else {
+                    // Remove pending messages
+                    this.cancelSend(nid);
+                }
+            });
+            if (remoteMsgIds.length > 0) {
+                this.sdk.removeMessage(peer, remoteMsgIds, mode === 1).catch((err) => {
+                    window.console.debug(err);
+                });
+            }
         }
         this.confirmDialogCloseHandler();
     }

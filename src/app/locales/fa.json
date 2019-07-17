@@ -59,7 +59,8 @@
       "title": "حدف پیام‌؟",
       "content": "حذف {0} پیام",
       "remove": "حذف",
-      "remove_for_all": "حذف برای همه"
+      "remove_for_all": "حذف برای همه",
+      "remove_all_pending": "حذف تمام در انتظارها"
     },
     "exit_group_dialog": {
       "title": "حذف و خروج از گروه؟",
