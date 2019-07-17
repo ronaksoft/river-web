@@ -176,12 +176,19 @@ class ContactMenu extends React.Component<IProps, IState> {
     }
 
     private createContactHandler = () => {
-        const {firstname, lastname, phone} = this.state;
+        let {firstname, lastname} = this.state;
+        const {phone} = this.state;
         if (!((firstname.length > 0 || lastname.length > 0) && phone.length > 5)) {
             return;
         }
         this.newContactCloseHandler();
         const contacts: PhoneContact.AsObject[] = [];
+        if (firstname.length === 0) {
+            firstname = ' ';
+        }
+        if (lastname.length === 0) {
+            lastname = ' ';
+        }
         contacts.push({
             clientid: String(UniqueId.getRandomId()),
             firstname,
