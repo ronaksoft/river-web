@@ -699,7 +699,7 @@ class Chat extends React.Component<IProps, IState> {
                             </Button>
                         </DialogActions>
                     </div>}
-                    {Boolean(confirmDialogMode === 'remove_message' || confirmDialogMode === 'remove_message_revoke' || 'remove_message_pending') &&
+                    {Boolean(confirmDialogMode === 'remove_message' || confirmDialogMode === 'remove_message_revoke' || confirmDialogMode === 'remove_message_pending') &&
                     <div>
                         <DialogTitle>{i18n.t('chat.remove_message_dialog.title')}</DialogTitle>
                         <DialogContent>
