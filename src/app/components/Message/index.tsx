@@ -257,10 +257,6 @@ class Message extends React.Component<IProps, IState> {
         if (this.scrollContainerEl) {
             this.scrollContainerEl.addEventListener('mousewheel', this.scrollHandler, true);
         }
-
-        window.addEventListener('keydown', () => {
-            this.disableScroll();
-        });
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -339,8 +335,6 @@ class Message extends React.Component<IProps, IState> {
                 callback();
             }
         } else {
-            this.list.forceUpdateGrid();
-            this.setEnableBefore();
             if (callback) {
                 callback();
             }
