@@ -240,6 +240,8 @@
         font-size: 20px; }
     .bubble-wrapper .bubble:hover .more {
       visibility: visible; }
+    .bubble-wrapper .bubble:active .more {
+      visibility: hidden; }
     .bubble-wrapper .bubble.highlight:before {
       position: absolute;
       content: '';
