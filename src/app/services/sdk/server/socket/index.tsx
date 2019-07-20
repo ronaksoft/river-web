@@ -159,6 +159,10 @@ export default class Socket {
         this.closeWire();
     }
 
+    public isStarted() {
+        return this.started;
+    }
+
     private initWebSocket() {
         clearTimeout(this.initTimeout);
 
@@ -243,7 +247,7 @@ export default class Socket {
                 const now = Date.now();
                 if (now - this.lastSendTime > 5000) {
                     window.console.log('bad network');
-                    // this.closeWire();
+                    this.closeWire();
                 }
             }
         }, 5000);

@@ -544,4 +544,8 @@ export default class SDK {
     public stopNetWork() {
         this.server.stopNetwork();
     }
+
+    public isStarted() {
+        return this.server.isStarted();
+    }
 }

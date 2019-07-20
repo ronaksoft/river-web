@@ -190,6 +190,10 @@
         #refresh .refresh-container.win-enable .win-item {
             display: flex;
         }
+
+        #refresh .refresh-container.mobile-item-enable .mobile-item {
+            display: flex;
+        }
     </style>
     <script>
         function isMac() {
@@ -200,12 +204,16 @@
             return navigator.platform.indexOf('Win') > -1
         }
 
+        function isLinux() {
+            return navigator.platform.indexOf('Linux') > -1
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const refreshEl = document.querySelector('#refresh .refresh-container');
             if (refreshEl) {
                 if (isMac()) {
                     refreshEl.classList.add('mac-enable');
-                } else if (isWin()) {
+                } else if (isWin() || isLinux()) {
                     refreshEl.classList.add('win-enable');
                 } else {
                     refreshEl.classList.add('mobile-enable');

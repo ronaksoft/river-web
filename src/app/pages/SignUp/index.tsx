@@ -118,6 +118,9 @@ class SignUp extends React.Component<IProps, IState> {
         if (this.sdk.getConnInfo().AuthID === '0') {
             this.props.history.push('/loading');
         }
+        if (this.sdk.isStarted()) {
+            this.wsOpenHandler();
+        }
         this.initPhoneInput();
         if (!this.state.iframeActive) {
             this.eventReferences.push(this.iframeService.listen(C_IFRAME_SUBJECT.IsLoaded, (e) => {

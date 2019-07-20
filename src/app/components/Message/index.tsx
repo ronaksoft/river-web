@@ -607,7 +607,7 @@ class Message extends React.Component<IProps, IState> {
                                 rowHeight={this.getHeight}
                                 rowRenderer={this.rowRender}
                                 rowCount={items.length}
-                                overscanRowCount={40}
+                                overscanRowCount={this.isMac ? 10 : 40}
                                 width={width}
                                 height={height}
                                 estimatedRowSize={41}

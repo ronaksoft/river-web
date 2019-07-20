@@ -135,6 +135,10 @@ export default class Server {
         this.socket.stop();
     }
 
+    public isStarted() {
+        return this.socket.isStarted();
+    }
+
     /* Generate string from request and send to the api */
     private sendRequest(request: IServerRequest) {
         window.console.debug(`%c${C_MSG_NAME[request.constructor]} ${request.reqId}`, 'color: #f9d71c');
