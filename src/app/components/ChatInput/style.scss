@@ -422,12 +422,12 @@
 
   .previews {
     display: flex;
-    transition: height 0.1s;
     overflow: hidden;
     height: 0;
 
     .preview-container {
       margin: 8px 0 0 48px;
+      transition: height 0.1s;
       overflow: hidden;
       flex: 1;
 

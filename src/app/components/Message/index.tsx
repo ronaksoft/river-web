@@ -549,7 +549,7 @@ class Message extends React.Component<IProps, IState> {
 
     public removeSnapshot(instant?: boolean | number) {
         this.enableScroll();
-        const timeout = instant ? ((typeof instant === 'boolean') ? 0 : instant) : 100;
+        const timeout = instant ? ((typeof instant === 'boolean') ? 0 : instant) : 10;
         setTimeout(() => {
             clearTimeout(this.removeSnapshotTimeout);
             if (!this.messageInnerRef || !this.messageSnapshotRef) {

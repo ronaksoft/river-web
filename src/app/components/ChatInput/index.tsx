@@ -80,7 +80,6 @@ interface IProps {
     peer: InputPeer | null;
     previewMessage?: IMessage;
     previewMessageMode?: number;
-    ref?: (ref: any) => void;
     selectable: boolean;
     selectableDisable: boolean;
     text?: string;
@@ -196,10 +195,6 @@ class ChatInput extends React.Component<IProps, IState> {
             voiceMode: 'up',
         };
 
-        if (this.props.ref) {
-            this.props.ref(this);
-        }
-
         this.rtlDetector = RTLDetector.getInstance();
         this.rtlDetectorThrottle = throttle(this.detectRTL, 250);
 
@@ -229,6 +224,13 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     public componentWillReceiveProps(newProps: IProps) {
+        if ((newProps.previewMessageMode === C_MSG_MODE.Edit || newProps.previewMessageMode === C_MSG_MODE.Reply) && newProps.selectable) {
+            this.setInputMode('default');
+            if (this.props.onPreviewMessageChange) {
+                this.props.onPreviewMessageChange(undefined, C_MSG_MODE.Normal);
+            }
+            return;
+        }
         if (newProps.previewMessageMode === C_MSG_MODE.Edit && newProps.previewMessage) {
             // this.textarea.value = newProps.previewMessage.body;
             this.setState({
@@ -374,7 +376,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                                onKeyDown={this.inputKeyDownHandler}
                                                allowSpaceInQuery={true}
                                                className="mention"
-                                               placeholder={this.isMobileView? i18n.t('input.type') : i18n.t('input.type_your_message_here')}
+                                               placeholder={this.isMobileView ? i18n.t('input.type') : i18n.t('input.type_your_message_here')}
                                                style={defaultMentionInputStyle}
                                                suggestionsPortalHost={this.mentionContainer}
                                                spellcheck={true}
