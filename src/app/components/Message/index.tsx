@@ -940,7 +940,7 @@ class Message extends React.Component<IProps, IState> {
             // On load more after or before
             if (data.stopIndex > -1 && items[data.stopIndex]) {
                 let check = false;
-                if (data.startIndex < 5) {
+                if (data.startIndex < 3) {
                     this.bottomOfList = false;
                 }
                 if (this.enableLoadBefore && !this.hasEnd) {
@@ -950,7 +950,7 @@ class Message extends React.Component<IProps, IState> {
                         this.topOfList = false;
                     }
                 }
-                if (Math.abs(items.length - data.stopIndex) < 8 && items[data.stopIndex].id && this.props.onLoadMoreAfter) {
+                if (Math.abs(items.length - data.stopIndex) < 4 && items[data.stopIndex].id && this.props.onLoadMoreAfter) {
                     this.loadMoreAfterThrottle();
                     this.topOfList = false;
                     check = true;
@@ -1248,12 +1248,12 @@ class Message extends React.Component<IProps, IState> {
             case 'stay':
                 const index = findIndex(items, {id: this.stayInfo.id});
                 if (index > -1) {
-                    if (!(this.messageScroll.startIndex <= index + 1 && this.messageScroll.stopIndex >= index)) {
+                    if (!(this.messageScroll.overscanStartIndex <= index + 1 && this.messageScroll.overscanStopIndex >= index)) {
                         this.list.scrollToRow(index);
                     }
                     setTimeout(() => {
                         this.checkScroll(this.stayInfo.id, index);
-                    }, 10);
+                    }, 1);
                 } else {
                     this.removeSnapshot();
                     this.setEnableBefore();
@@ -1315,7 +1315,7 @@ class Message extends React.Component<IProps, IState> {
             if (t <= 60) {
                 window.requestAnimationFrame(() => {
                     if (this.list) {
-                        if (!(this.messageScroll.startIndex <= index && this.messageScroll.stopIndex >= index)) {
+                        if (!(this.messageScroll.overscanStartIndex <= index && this.messageScroll.overscanStopIndex >= index)) {
                             this.list.scrollToRow(index);
                         }
                         this.checkScroll(id, index, t);
@@ -1337,7 +1337,7 @@ class Message extends React.Component<IProps, IState> {
                 } else {
                     fn(tries);
                 }
-            }, 10);
+            }, 1);
         } else {
             fn(tries);
         }
