@@ -419,8 +419,7 @@
       height: 10%;
       background-color: rgba(0, 0, 0, 0.6);
       border-radius: 8px;
-      cursor: pointer;
-      transition: top 0.128s linear; }
+      cursor: pointer; }
 
 .messages-snapshot {
   position: absolute;

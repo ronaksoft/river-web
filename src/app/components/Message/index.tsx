@@ -184,7 +184,6 @@ class Message extends React.Component<IProps, IState> {
     private scrollContainerEl: any;
     private readonly isMac: boolean = navigator.platform.indexOf('Mac') > -1;
     private scrollThumbRef: any = null;
-    private readonly renderScrollbarThrottle: any = null;
     private scrollbar: {
         clickPos: number,
         clickScrollTop: number,
@@ -237,7 +236,6 @@ class Message extends React.Component<IProps, IState> {
 
         if (this.scrollbar.width > 0) {
             this.scrollbar.enable = true;
-            this.renderScrollbarThrottle = throttle(this.modifyScrollThumb, 25);
             this.modifyScrollThumb();
         }
 
@@ -1519,7 +1517,7 @@ class Message extends React.Component<IProps, IState> {
 
     private scrollHandler = (e: any) => {
         if (!this.scrollbar.dragged && this.scrollbar.enable) {
-            this.renderScrollbarThrottle();
+            this.modifyScrollThumb();
         }
         if (this.disableScrolling) {
             e.preventDefault();
