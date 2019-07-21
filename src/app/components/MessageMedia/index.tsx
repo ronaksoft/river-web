@@ -242,7 +242,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
             setTimeout(() => {
                 if (this.props.parentEl && this.props.parentEl.ref) {
                     this.props.parentEl.ref.style.maxWidth = this.pictureContentSize.maxWidth;
-                    this.cachedPhotoLoadHandler();
+                    this.cachedPhotoLoadHandler(true);
                 }
             }, 1);
         }
@@ -525,8 +525,8 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     }
 
     /* CachedPhoto onLoad handler */
-    private cachedPhotoLoadHandler = () => {
-        if (this.props.measureFn && this.pictureContentSize.nHeight < 10) {
+    private cachedPhotoLoadHandler = (force?: boolean) => {
+        if (this.props.measureFn && (this.pictureContentSize.nHeight < 10 || force)) {
             this.props.measureFn();
         }
     }
@@ -567,6 +567,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         height = Math.max(height, C_MIN_HEIGHT);
         width = Math.max(width, C_MIN_WIDTH);
         let maxWidth = width;
+        window.console.log(info.hasRelation);
         if (info.caption.length > C_MIN_CAPTION_LEN_APPLIER || info.hasRelation) {
             maxWidth = C_MAX_CAPTION_WIDTH;
             this.blurredImageEnable = true;
