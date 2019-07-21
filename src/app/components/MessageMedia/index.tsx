@@ -274,6 +274,14 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         this.displayFileSize(0);
         this.fileId = messageMediaDocument.doc.id || '';
         this.initProgress();
+
+        if (this.state.info.caption.length > 0) {
+            setTimeout(() => {
+                if (this.props.measureFn) {
+                    this.props.measureFn();
+                }
+            }, 1);
+        }
     }
 
     public componentWillReceiveProps(newProps: IProps) {

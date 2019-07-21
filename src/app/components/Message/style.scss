@@ -351,6 +351,10 @@
       visibility: hidden;
     }
 
+    .more:active {
+      visibility: visible !important;
+    }
+
     &.highlight {
       &:before {
         position: absolute;

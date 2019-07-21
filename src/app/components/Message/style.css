@@ -242,6 +242,8 @@
       visibility: visible; }
     .bubble-wrapper .bubble:active .more {
       visibility: hidden; }
+    .bubble-wrapper .bubble .more:active {
+      visibility: visible !important; }
     .bubble-wrapper .bubble.highlight:before {
       position: absolute;
       content: '';
