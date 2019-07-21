@@ -42,6 +42,7 @@ import ElectronService from '../../services/electron';
 import i18n from '../../services/i18n';
 import DocumentViewerService, {IDocument} from "../../services/documentViewerService";
 import {Loading} from "../Loading";
+import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 
 import './style.css';
 
@@ -182,6 +183,23 @@ class Message extends React.Component<IProps, IState> {
     private hasEnd: boolean = false;
     private scrollContainerEl: any;
     private readonly isMac: boolean = navigator.platform.indexOf('Mac') > -1;
+    private scrollThumbRef: any = null;
+    private readonly renderScrollbarThrottle: any = null;
+    private scrollbar: {
+        clickPos: number,
+        clickScrollTop: number,
+        clickTop: number,
+        dragged: boolean,
+        enable: boolean,
+        width: number,
+    } = {
+        clickPos: 0,
+        clickScrollTop: 0,
+        clickTop: 0,
+        dragged: false,
+        enable: false,
+        width: 0,
+    };
 
     constructor(props: IProps) {
         super(props);
@@ -211,6 +229,17 @@ class Message extends React.Component<IProps, IState> {
         this.loadMoreBeforeThrottle = throttle(this.loadMoreBefore, 50);
         this.fitListCompleteThrottle = throttle(this.fitListComplete, 250);
         this.documentViewerService = DocumentViewerService.getInstance();
+
+        this.scrollbar.width = getScrollbarWidth();
+        if (this.scrollbar.width > 0) {
+            this.scrollbar.width++;
+        }
+
+        if (this.scrollbar.width > 0) {
+            this.scrollbar.enable = true;
+            this.renderScrollbarThrottle = throttle(this.modifyScrollThumb, 128);
+            this.modifyScrollThumb();
+        }
 
         this.menuItem = {
             1: {
@@ -511,6 +540,7 @@ class Message extends React.Component<IProps, IState> {
                 }
             }
             this.scrollContainerEl.style.paddingTop = '0px';
+            this.modifyScrollThumb();
         }, instant ? 0 : 10);
     }
 
@@ -525,14 +555,8 @@ class Message extends React.Component<IProps, IState> {
         } else if (this.messageInnerRef.classList.contains('user')) {
             className = 'user';
         }
-        let scrollWidth = 0;
-        const el1 = this.messageInnerRef.firstChild;
-        if (el1) {
-            scrollWidth = this.messageInnerRef.scrollWidth - el1.scrollWidth - 1;
-        }
         this.messageSnapshotRef.classList.remove('group', 'user', 'hidden');
         this.messageSnapshotRef.classList.add(className);
-        this.messageSnapshotRef.style.marginRight = `${scrollWidth}px`;
         this.messageInnerRef.classList.add('hidden');
         this.messageSnapshotRef.innerHTML = this.messageInnerRef.innerHTML;
         const scrollEl = this.messageSnapshotRef.querySelector(' div > div');
@@ -600,6 +624,7 @@ class Message extends React.Component<IProps, IState> {
                         <div ref={this.messageInnerRefHandler}
                              className={'messages-inner ' + ((peer && peer.getType() === PeerType.PEERGROUP || this.isSimplified) ? 'group' : 'user') + (selectable ? ' selectable' : '')}
                              onDragEnter={this.dragEnterHandler} onDragEnd={this.dragLeaveHandler}
+                             style={{height: `${height}px`, width: `${width}px`}}
                         >
                             <List
                                 ref={this.refHandler}
@@ -608,7 +633,7 @@ class Message extends React.Component<IProps, IState> {
                                 rowRenderer={this.rowRender}
                                 rowCount={items.length}
                                 overscanRowCount={this.isMac ? 10 : 40}
-                                width={width}
+                                width={width + this.scrollbar.width}
                                 height={height}
                                 estimatedRowSize={41}
                                 onRowsRendered={this.onRowsRenderedHandler}
@@ -617,6 +642,11 @@ class Message extends React.Component<IProps, IState> {
                                 className="chat active-chat"
                                 scrollToIndex={this.scrollToIndex}
                             />
+                            {this.scrollbar.enable &&
+                            <div className="kk-scrollbar-track" onMouseDown={this.scrollbarTrackDownHandler}>
+                                <div ref={this.scrollbarThumbRefHandler} className="kk-scrollbar-thumb"
+                                     onMouseDown={this.scrollbarThumbDownHandler}/>
+                            </div>}
                             <Menu
                                 anchorEl={moreAnchorEl}
                                 open={Boolean(moreAnchorEl)}
@@ -1483,11 +1513,130 @@ class Message extends React.Component<IProps, IState> {
         this.props.onDrop(files);
     }
 
+    private scrollbarThumbRefHandler = (ref: any) => {
+        this.scrollThumbRef = ref;
+    }
+
     private scrollHandler = (e: any) => {
+        if (!this.scrollbar.dragged && this.scrollbar.enable) {
+            this.renderScrollbarThrottle();
+        }
         if (this.disableScrolling) {
             e.preventDefault();
             e.stopPropagation();
         }
+    }
+
+    private modifyScrollThumb = () => {
+        if (!this.scrollThumbRef) {
+            return;
+        }
+        const eldiv = this.scrollContainerEl.firstElementChild;
+        if (!eldiv) {
+            return;
+        }
+        let top = (this.scrollContainerEl.scrollTop / eldiv.scrollHeight) * 100;
+        const height = (this.scrollContainerEl.clientHeight / eldiv.scrollHeight) * 100;
+        if (top + height > 100) {
+            top = 100 - height;
+        }
+        this.scrollThumbRef.style.top = `${top}%`;
+        this.scrollThumbRef.style.height = `${height}%`;
+    }
+
+    private scrollbarTrackDownHandler = (e: any) => {
+        if (!this.scrollThumbRef || !this.scrollContainerEl) {
+            return;
+        }
+        const rect = this.scrollThumbRef.getBoundingClientRect();
+        const top = rect.top + rect.height / 2;
+        const diff = Math.min(Math.max(Math.abs(top - e.pageY), 100), 400);
+        if (top > e.pageY) {
+            this.scrollToPosition(this.scrollContainerEl.scrollTop - diff);
+        } else {
+            this.scrollToPosition(this.scrollContainerEl.scrollTop + diff);
+        }
+        setTimeout(() => {
+            this.modifyScrollThumb();
+        }, 10);
+    }
+
+    private scrollbarThumbDownHandler = (e: any) => {
+        if (!this.scrollContainerEl) {
+            return;
+        }
+        e.stopPropagation();
+        e.preventDefault();
+        const eldiv = this.scrollContainerEl.firstElementChild;
+        if (eldiv) {
+            this.scrollbar.dragged = true;
+            this.scrollbar.clickPos = e.pageY;
+            this.scrollbar.clickTop = (this.scrollContainerEl.scrollTop / eldiv.scrollHeight) * this.scrollContainerEl.clientHeight;
+            this.scrollbar.clickScrollTop = this.scrollContainerEl.scrollTop;
+            this.setupDragging();
+        }
+    }
+
+    private scrollbarThumbMoveHandler = (e: any) => {
+        if (!this.scrollThumbRef || !this.scrollContainerEl || !this.scrollbar.dragged) {
+            return;
+        }
+        const eldiv = this.scrollContainerEl.firstElementChild;
+        if (!eldiv) {
+            return;
+        }
+        const offset = e.pageY - this.scrollbar.clickPos;
+        const scrollTop = this.scrollbar.clickScrollTop + offset * (eldiv.scrollHeight / this.scrollContainerEl.clientHeight);
+        this.scrollToPosition(scrollTop);
+        let top = this.scrollbar.clickTop + offset;
+        if (top < 0) {
+            top = 0;
+        }
+        if (top > (this.scrollContainerEl.clientHeight - this.scrollThumbRef.clientHeight)) {
+            top = this.scrollContainerEl.clientHeight - this.scrollThumbRef.clientHeight;
+        }
+        this.scrollThumbRef.style.top = `${top}px`;
+    }
+
+    private scrollbarThumbUpHandler = () => {
+        this.scrollbar.dragged = false;
+        this.teardownDragging();
+    }
+
+    private setupDragging() {
+        if (!this.scrollContainerEl) {
+            return;
+        }
+        this.scrollContainerEl.style.userSelect = 'none';
+        document.addEventListener('mousemove', this.scrollbarThumbMoveHandler);
+        document.addEventListener('mouseup', this.scrollbarThumbUpHandler);
+        document.addEventListener('mousedown', this.teardownDragging);
+    }
+
+    private teardownDragging = () => {
+        if (!this.scrollContainerEl) {
+            return;
+        }
+        this.scrollContainerEl.style.userSelect = 'auto';
+        document.removeEventListener('mousemove', this.scrollbarThumbMoveHandler);
+        document.removeEventListener('mouseup', this.scrollbarThumbUpHandler);
+        document.removeEventListener('mousedown', this.teardownDragging);
+    }
+
+    private scrollToPosition(pos: number) {
+        if (pos < 0) {
+            pos = 0;
+        }
+        if (this.scrollContainerEl) {
+            const eldiv = this.scrollContainerEl.firstElementChild;
+            if (!eldiv) {
+                const lim = eldiv.scrollHeight - this.scrollContainerEl.clientHeight;
+                if (pos > lim) {
+                    pos = lim;
+                }
+            }
+        }
+        this.list.scrollToPosition(pos);
     }
 
     private openExternalLink = (url: string, e: any) => {

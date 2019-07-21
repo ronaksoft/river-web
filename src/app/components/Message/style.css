@@ -402,6 +402,23 @@
   width: 100%; }
   .messages-inner.hidden .bubble-wrapper {
     opacity: 0; }
+  .messages-inner .kk-scrollbar-track {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 10px;
+    background-color: rgba(255, 255, 255, 0.05); }
+    .messages-inner .kk-scrollbar-track .kk-scrollbar-thumb {
+      position: absolute;
+      top: 10%;
+      right: 2px;
+      left: 2px;
+      height: 10%;
+      background-color: rgba(0, 0, 0, 0.6);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: top 0.128s linear; }
 
 .messages-snapshot {
   position: absolute;

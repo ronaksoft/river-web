@@ -169,6 +169,7 @@ class ContactList extends React.Component<IProps, IState> {
                                         width: width + 'px',
                                     }}
                                     onScroll={this.handleScroll}
+                                    universal={true}
                                     rtl={true}
                                 >
                                     <List

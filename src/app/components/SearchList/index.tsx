@@ -118,6 +118,7 @@ class SearchList extends React.Component<IProps, IState> {
                                     width: width + 'px',
                                 }}
                                 onScroll={this.handleScroll}
+                                universal={true}
                             >
                                 <List
                                     ref={this.refHandler}
