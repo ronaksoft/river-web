@@ -7,7 +7,8 @@
     Copyright Ronak Software Group 2019
 */
 .message-media {
-  padding: 0; }
+  padding: 0;
+  display: inline-block; }
   .message-media .media-content {
     position: relative;
     min-height: 64px;

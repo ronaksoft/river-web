@@ -274,14 +274,6 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         this.displayFileSize(0);
         this.fileId = messageMediaDocument.doc.id || '';
         this.initProgress();
-
-        if (this.state.info.caption.length > 0) {
-            setTimeout(() => {
-                if (this.props.measureFn) {
-                    this.props.measureFn();
-                }
-            }, 1);
-        }
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -397,7 +389,9 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                     </React.Fragment>}
                 </div>
                 {Boolean(info.caption.length > 0) &&
-                <div className={'media-caption ' + (message.rtl ? 'rtl' : 'ltr')}>{info.caption}</div>}
+                <div className={'media-caption ' + (message.rtl ? 'rtl' : 'ltr')}
+                     style={{minWidth: this.pictureContentSize.width, maxWidth: this.pictureContentSize.maxWidth}}
+                >{info.caption}</div>}
             </div>
         );
     }

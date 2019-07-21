@@ -237,7 +237,7 @@ class Message extends React.Component<IProps, IState> {
 
         if (this.scrollbar.width > 0) {
             this.scrollbar.enable = true;
-            this.renderScrollbarThrottle = throttle(this.modifyScrollThumb, 128);
+            this.renderScrollbarThrottle = throttle(this.modifyScrollThumb, 25);
             this.modifyScrollThumb();
         }
 
