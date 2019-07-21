@@ -567,7 +567,6 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         height = Math.max(height, C_MIN_HEIGHT);
         width = Math.max(width, C_MIN_WIDTH);
         let maxWidth = width;
-        window.console.log(info.hasRelation);
         if (info.caption.length > C_MIN_CAPTION_LEN_APPLIER || info.hasRelation) {
             maxWidth = C_MAX_CAPTION_WIDTH;
             this.blurredImageEnable = true;
