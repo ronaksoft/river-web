@@ -190,7 +190,7 @@ class Cropper extends React.Component<IProps, IState> {
                         return;
                     }
                     resolve(blob);
-                }, 'image/jpeg');
+                }, 'image/jpeg', 1);
             });
         } else {
             return Promise.reject();

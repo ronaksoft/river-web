@@ -261,7 +261,8 @@ class MediaPreview extends React.Component<IProps, IState> {
                                             </React.Fragment>}
                                             {Boolean(isFile) && <div className="file-preview">
                                                 <InsertDriveFileRounded/>
-                                                <span className="extension">{getFileExtension(item.type, item.name)}</span>
+                                                <span
+                                                    className="extension">{getFileExtension(item.type, item.name)}</span>
                                             </div>}
                                             {Boolean(!item.ready) &&
                                             <div className="item-busy"><ConfirmationNumberRounded/></div>}
@@ -666,8 +667,8 @@ class MediaPreview extends React.Component<IProps, IState> {
                         thumb: dist[i * 2 + 1] ? {
                             file: dist[i * 2 + 1],
                             fileType: 'image/jpeg',
-                            height: items[i].height || 0,
-                            width: items[i].width || 0,
+                            height: Math.round(items[i].height || 0),
+                            width: Math.round(items[i].width || 0),
                         } : undefined,
                         title: items[i].title,
                     });
