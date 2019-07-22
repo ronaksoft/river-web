@@ -94,7 +94,7 @@
     "@types/react-textarea-autosize": "^4.3.3",
     "@types/react-virtualized": "^9.21.2",
     "@types/xregexp": "^3.0.29",
-    "electron": "^5.0.6",
+    "electron": "^5.0.7",
     "electron-builder": "^20.44.4",
     "electron-devtools-installer": "^2.2.4",
     "grpc": "^1.12.4",
