@@ -2,7 +2,6 @@ package main
 
 import (
 	"syscall/js"
-	"encoding/json"
 	"strconv"
 	"time"
 	"fmt"
@@ -97,7 +96,8 @@ func (v *RiverConnection) Save() {
 		Phone:     v.Phone,
 		UserID:    strconv.FormatInt(v.UserID, 10),
 	}
-	if bytes, err := json.Marshal(vv); err != nil {
+
+	if bytes, err := vv.MarshalJSON(); err != nil {
 		fmt.Println(err.Error(), _LK_FUNC_NAME, "RiverConnection::Save")
 	} else {
 		js.Global().Call("saveConnInfo", string(bytes))
@@ -107,7 +107,7 @@ func (v *RiverConnection) Save() {
 // Load
 func (v *RiverConnection) Load(connInfo string) error {
 	var vv = RiverConnectionJS{}
-	if err := json.Unmarshal([]byte(connInfo), &vv); err != nil {
+	if err := vv.UnmarshalJSON([]byte(connInfo)); err != nil {
 		fmt.Println(err.Error(), _LK_FUNC_NAME, "RiverConnection::Load")
 		return err
 	}

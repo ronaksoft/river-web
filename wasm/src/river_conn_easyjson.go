@@ -3,10 +3,10 @@
 package main
 
 import (
-	"encoding/json"
-	"github.com/mailru/easyjson"
-	"github.com/mailru/easyjson/jlexer"
-	"github.com/mailru/easyjson/jwriter"
+	json "encoding/json"
+	easyjson "github.com/mailru/easyjson"
+	jlexer "github.com/mailru/easyjson/jlexer"
+	jwriter "github.com/mailru/easyjson/jwriter"
 )
 
 // suppress unused package warning
@@ -17,7 +17,7 @@ var (
 	_ easyjson.Marshaler
 )
 
-func easyjson94b2531bDecodeGitRonaksoftwareComRonakSdkRiver(in *jlexer.Lexer, out *serverKeys) {
+func easyjson785d9294DecodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels(in *jlexer.Lexer, out *serverKeys) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -53,9 +53,7 @@ func easyjson94b2531bDecodeGitRonaksoftwareComRonakSdkRiver(in *jlexer.Lexer, ou
 				}
 				for !in.IsDelim(']') {
 					var v1 publicKey
-					if data := in.Raw(); in.Ok() {
-						in.AddError((v1).UnmarshalJSON(data))
-					}
+					(v1).UnmarshalEasyJSON(in)
 					out.PublicKeys = append(out.PublicKeys, v1)
 					in.WantComma()
 				}
@@ -78,9 +76,7 @@ func easyjson94b2531bDecodeGitRonaksoftwareComRonakSdkRiver(in *jlexer.Lexer, ou
 				}
 				for !in.IsDelim(']') {
 					var v2 dHGroup
-					if data := in.Raw(); in.Ok() {
-						in.AddError((v2).UnmarshalJSON(data))
-					}
+					(v2).UnmarshalEasyJSON(in)
 					out.DHGroups = append(out.DHGroups, v2)
 					in.WantComma()
 				}
@@ -96,7 +92,7 @@ func easyjson94b2531bDecodeGitRonaksoftwareComRonakSdkRiver(in *jlexer.Lexer, ou
 		in.Consumed()
 	}
 }
-func easyjson94b2531bEncodeGitRonaksoftwareComRonakSdkRiver(out *jwriter.Writer, in serverKeys) {
+func easyjson785d9294EncodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels(out *jwriter.Writer, in serverKeys) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -116,7 +112,7 @@ func easyjson94b2531bEncodeGitRonaksoftwareComRonakSdkRiver(out *jwriter.Writer,
 				if v3 > 0 {
 					out.RawByte(',')
 				}
-				out.Raw((v4).MarshalJSON())
+				(v4).MarshalEasyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -137,7 +133,7 @@ func easyjson94b2531bEncodeGitRonaksoftwareComRonakSdkRiver(out *jwriter.Writer,
 				if v5 > 0 {
 					out.RawByte(',')
 				}
-				out.Raw((v6).MarshalJSON())
+				(v6).MarshalEasyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -148,27 +144,27 @@ func easyjson94b2531bEncodeGitRonaksoftwareComRonakSdkRiver(out *jwriter.Writer,
 // MarshalJSON supports json.Marshaler interface
 func (v serverKeys) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjson94b2531bEncodeGitRonaksoftwareComRonakSdkRiver(&w, v)
+	easyjson785d9294EncodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v serverKeys) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson94b2531bEncodeGitRonaksoftwareComRonakSdkRiver(w, v)
+	easyjson785d9294EncodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *serverKeys) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjson94b2531bDecodeGitRonaksoftwareComRonakSdkRiver(&r, v)
+	easyjson785d9294DecodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *serverKeys) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson94b2531bDecodeGitRonaksoftwareComRonakSdkRiver(l, v)
+	easyjson785d9294DecodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels(l, v)
 }
-func easyjson94b2531bDecodeGitRonaksoftwareComRonakSdkRiver1(in *jlexer.Lexer, out *publicKey) {
+func easyjson785d9294DecodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels1(in *jlexer.Lexer, out *publicKey) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -203,7 +199,7 @@ func easyjson94b2531bDecodeGitRonaksoftwareComRonakSdkRiver1(in *jlexer.Lexer, o
 		in.Consumed()
 	}
 }
-func easyjson94b2531bEncodeGitRonaksoftwareComRonakSdkRiver1(out *jwriter.Writer, in publicKey) {
+func easyjson785d9294EncodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels1(out *jwriter.Writer, in publicKey) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -243,27 +239,27 @@ func easyjson94b2531bEncodeGitRonaksoftwareComRonakSdkRiver1(out *jwriter.Writer
 // MarshalJSON supports json.Marshaler interface
 func (v publicKey) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjson94b2531bEncodeGitRonaksoftwareComRonakSdkRiver1(&w, v)
+	easyjson785d9294EncodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels1(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v publicKey) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson94b2531bEncodeGitRonaksoftwareComRonakSdkRiver1(w, v)
+	easyjson785d9294EncodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels1(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *publicKey) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjson94b2531bDecodeGitRonaksoftwareComRonakSdkRiver1(&r, v)
+	easyjson785d9294DecodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels1(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *publicKey) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson94b2531bDecodeGitRonaksoftwareComRonakSdkRiver1(l, v)
+	easyjson785d9294DecodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels1(l, v)
 }
-func easyjson94b2531bDecodeGitRonaksoftwareComRonakSdkRiver2(in *jlexer.Lexer, out *dHGroup) {
+func easyjson785d9294DecodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels2(in *jlexer.Lexer, out *dHGroup) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -298,7 +294,7 @@ func easyjson94b2531bDecodeGitRonaksoftwareComRonakSdkRiver2(in *jlexer.Lexer, o
 		in.Consumed()
 	}
 }
-func easyjson94b2531bEncodeGitRonaksoftwareComRonakSdkRiver2(out *jwriter.Writer, in dHGroup) {
+func easyjson785d9294EncodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels2(out *jwriter.Writer, in dHGroup) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -338,27 +334,174 @@ func easyjson94b2531bEncodeGitRonaksoftwareComRonakSdkRiver2(out *jwriter.Writer
 // MarshalJSON supports json.Marshaler interface
 func (v dHGroup) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjson94b2531bEncodeGitRonaksoftwareComRonakSdkRiver2(&w, v)
+	easyjson785d9294EncodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels2(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v dHGroup) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson94b2531bEncodeGitRonaksoftwareComRonakSdkRiver2(w, v)
+	easyjson785d9294EncodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels2(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *dHGroup) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjson94b2531bDecodeGitRonaksoftwareComRonakSdkRiver2(&r, v)
+	easyjson785d9294DecodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels2(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *dHGroup) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson94b2531bDecodeGitRonaksoftwareComRonakSdkRiver2(l, v)
+	easyjson785d9294DecodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels2(l, v)
 }
-func easyjson94b2531bDecodeGitRonaksoftwareComRonakSdkRiver3(in *jlexer.Lexer, out *RiverConnection) {
+func easyjson785d9294DecodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels3(in *jlexer.Lexer, out *RiverConnectionJS) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeString()
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "AuthID":
+			out.AuthID = string(in.String())
+		case "AuthKey":
+			if in.IsNull() {
+				in.Skip()
+			} else {
+				copy(out.AuthKey[:], in.Bytes())
+			}
+		case "UserID":
+			out.UserID = string(in.String())
+		case "Username":
+			out.Username = string(in.String())
+		case "Phone":
+			out.Phone = string(in.String())
+		case "FirstName":
+			out.FirstName = string(in.String())
+		case "LastName":
+			out.LastName = string(in.String())
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjson785d9294EncodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels3(out *jwriter.Writer, in RiverConnectionJS) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"AuthID\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.AuthID))
+	}
+	{
+		const prefix string = ",\"AuthKey\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Base64Bytes(in.AuthKey[:])
+	}
+	{
+		const prefix string = ",\"UserID\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.UserID))
+	}
+	{
+		const prefix string = ",\"Username\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Username))
+	}
+	{
+		const prefix string = ",\"Phone\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Phone))
+	}
+	{
+		const prefix string = ",\"FirstName\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.FirstName))
+	}
+	{
+		const prefix string = ",\"LastName\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.LastName))
+	}
+	out.RawByte('}')
+}
+
+// MarshalJSON supports json.Marshaler interface
+func (v RiverConnectionJS) MarshalJSON() ([]byte, error) {
+	w := jwriter.Writer{}
+	easyjson785d9294EncodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels3(&w, v)
+	return w.Buffer.BuildBytes(), w.Error
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v RiverConnectionJS) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjson785d9294EncodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels3(w, v)
+}
+
+// UnmarshalJSON supports json.Unmarshaler interface
+func (v *RiverConnectionJS) UnmarshalJSON(data []byte) error {
+	r := jlexer.Lexer{Data: data}
+	easyjson785d9294DecodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels3(&r, v)
+	return r.Error()
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *RiverConnectionJS) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjson785d9294DecodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels3(l, v)
+}
+func easyjson785d9294DecodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels4(in *jlexer.Lexer, out *RiverConnection) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -395,6 +538,8 @@ func easyjson94b2531bDecodeGitRonaksoftwareComRonakSdkRiver3(in *jlexer.Lexer, o
 			out.FirstName = string(in.String())
 		case "LastName":
 			out.LastName = string(in.String())
+		case "DiffTime":
+			out.DiffTime = int64(in.Int64())
 		default:
 			in.SkipRecursive()
 		}
@@ -405,7 +550,7 @@ func easyjson94b2531bDecodeGitRonaksoftwareComRonakSdkRiver3(in *jlexer.Lexer, o
 		in.Consumed()
 	}
 }
-func easyjson94b2531bEncodeGitRonaksoftwareComRonakSdkRiver3(out *jwriter.Writer, in RiverConnection) {
+func easyjson785d9294EncodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels4(out *jwriter.Writer, in RiverConnection) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -479,29 +624,39 @@ func easyjson94b2531bEncodeGitRonaksoftwareComRonakSdkRiver3(out *jwriter.Writer
 		}
 		out.String(string(in.LastName))
 	}
+	{
+		const prefix string = ",\"DiffTime\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Int64(int64(in.DiffTime))
+	}
 	out.RawByte('}')
 }
 
 // MarshalJSON supports json.Marshaler interface
 func (v RiverConnection) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjson94b2531bEncodeGitRonaksoftwareComRonakSdkRiver3(&w, v)
+	easyjson785d9294EncodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels4(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v RiverConnection) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson94b2531bEncodeGitRonaksoftwareComRonakSdkRiver3(w, v)
+	easyjson785d9294EncodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels4(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *RiverConnection) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjson94b2531bDecodeGitRonaksoftwareComRonakSdkRiver3(&r, v)
+	easyjson785d9294DecodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels4(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *RiverConnection) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson94b2531bDecodeGitRonaksoftwareComRonakSdkRiver3(l, v)
+	easyjson785d9294DecodeGitRonaksoftwareComSnappfoodSocialSharedModelsDatamodels4(l, v)
 }
