@@ -125,6 +125,13 @@ input {
         color: #00a24d;
         font-size: 15px;
         white-space: nowrap; }
+      .loading-page .loading-area .loading-text a {
+        text-decoration: none;
+        text-transform: none;
+        color: #8C8C8C;
+        font-size: 16px;
+        font-weight: bold;
+        line-height: 18px; }
     .loading-page .loading-area .logo {
       position: absolute;
       top: 70%;

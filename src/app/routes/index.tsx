@@ -17,7 +17,7 @@ import Loading from './../pages/Loading';
 export default (
     <Switch>
         <Route path="/chat/:id/:mid?" component={Chat}/>
-        <Route path="/signup" component={SignUp}/>
+        <Route path="/signup/:mode" component={SignUp}/>
         <Route path="/loading" component={Loading}/>
         <Redirect from="/" to="/loading"/>
     </Switch>

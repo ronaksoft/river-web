@@ -11,12 +11,13 @@ import * as React from 'react';
 import SDK from '../../services/sdk';
 import {Circle} from 'rc-progress';
 import RiverLogo from '../../components/RiverLogo';
-
-import './style.css';
 import Tooltip from "@material-ui/core/Tooltip";
 import IconButton from "@material-ui/core/IconButton";
 import {CloseRounded} from "@material-ui/icons";
 import IframeService, {C_IFRAME_SUBJECT} from "../../services/iframe";
+
+import './style.css';
+import {Link} from "react-router-dom";
 
 interface IProps {
     match?: any;
@@ -58,7 +59,7 @@ class Loading extends React.Component<IProps, IState> {
         if ((this.sdk.getConnInfo().UserID || 0) > 0) {
             this.props.history.push('/chat/null');
         } else if (this.sdk.getConnInfo().AuthID !== '0') {
-            this.props.history.push('/signup');
+            this.props.history.push('/signup/null');
         }
 
         if (!this.state.iframeActive) {
@@ -99,6 +100,7 @@ class Loading extends React.Component<IProps, IState> {
                 <div className="loading-area">
                     <Circle percent={percent} strokeWidth={1} strokeColor="#008c3d"/>
                     <div className="loading-text">
+                        <Link to={'/signup/workspace'}>Change Workspace</Link><br/>
                         Securing connection<br/> Please wait <br/>
                         {msg === '' && <span className="info">It might take up to 60 seconds!</span>}
                         {msg !== '' && <span className="info">{msg}</span>}
@@ -141,7 +143,7 @@ class Loading extends React.Component<IProps, IState> {
             if ((this.sdk.getConnInfo().UserID || 0) > 0) {
                 this.props.history.push('/chat/null');
             } else {
-                this.props.history.push('/signup');
+                this.props.history.push('/signup/null');
             }
         } else {
             this.setState({
@@ -151,7 +153,7 @@ class Loading extends React.Component<IProps, IState> {
                 if ((this.sdk.getConnInfo().UserID || 0) > 0) {
                     this.props.history.push('/chat/null');
                 } else {
-                    this.props.history.push('/signup');
+                    this.props.history.push('/signup/null');
                 }
             }, 3000);
         }

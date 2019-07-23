@@ -84,6 +84,10 @@ class SignUp extends React.Component<IProps, IState> {
             }
         }
 
+        if (props.match.params.mode === 'workspace') {
+            step = 'workspace';
+        }
+
         this.iframeService = IframeService.getInstance();
         this.state = {
             anchorEl: null,
@@ -115,7 +119,7 @@ class SignUp extends React.Component<IProps, IState> {
         window.addEventListener('wasmInit', this.wasmInitHandler);
         window.addEventListener('wsOpen', this.wsOpenHandler);
         this.sdk.loadConnInfo();
-        if (this.sdk.getConnInfo().AuthID === '0') {
+        if (this.sdk.getConnInfo().AuthID === '0' && this.props.match.params.mode !== 'workspace') {
             this.props.history.push('/loading');
         }
         if (this.sdk.isStarted()) {

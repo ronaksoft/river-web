@@ -283,7 +283,7 @@ class Chat extends React.Component<IProps, IState> {
 
     public componentDidMount() {
         if (this.connInfo.AuthID === '0' || this.connInfo.UserID === '0') {
-            this.props.history.push('/signup');
+            this.props.history.push('/signup/null');
             return;
         }
 

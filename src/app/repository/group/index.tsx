@@ -65,6 +65,9 @@ export default class GroupRepo {
     }
 
     public importBulk(groups: IGroup[], callerId?: number): Promise<any> {
+        if (!groups || groups.length === 0) {
+            return Promise.resolve();
+        }
         const tempGroup = uniqBy(groups, 'id');
         return this.upsert(tempGroup, callerId);
     }

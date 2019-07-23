@@ -224,7 +224,7 @@ class Message extends React.Component<IProps, IState> {
         });
         this.broadcaster = Broadcaster.getInstance();
         this.isSimplified = UserRepo.getInstance().getBubbleMode() === '5';
-        this.loadMoreAfterThrottle = throttle(this.loadMoreAfter, 250);
+        this.loadMoreAfterThrottle = throttle(this.loadMoreAfter, 50);
         this.loadMoreBeforeThrottle = throttle(this.loadMoreBefore, 50);
         this.fitListCompleteThrottle = throttle(this.fitListComplete, 250);
         this.documentViewerService = DocumentViewerService.getInstance();

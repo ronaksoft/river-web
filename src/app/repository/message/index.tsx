@@ -515,7 +515,9 @@ export default class MessageRepo {
             resolve: internalResolve,
         });
 
-        this.getBundleMessageThrottle();
+        setTimeout(() => {
+            this.getBundleMessageThrottle();
+        }, 100);
 
         return promise;
     }
@@ -822,38 +824,40 @@ export default class MessageRepo {
 
     private getMessageForBundle = () => {
         Object.keys(this.messageBundle).forEach((peerid) => {
-            const peer = this.messageBundle[peerid].peer;
+            const data = this.messageBundle[peerid];
+            const peer = data.peer;
             const ids: number[] = [];
-            Object.keys(this.messageBundle[peerid].reqs).forEach((idStr) => {
-                ids.push(this.messageBundle[peerid].reqs[idStr].id);
+            Object.keys(data.reqs).forEach((idStr) => {
+                ids.push(data.reqs[idStr].id);
             });
             if (ids.length === 0) {
                 delete this.messageBundle[peerid];
                 return;
             }
+            delete this.messageBundle[peerid];
             this.sdk.getManyMessage(peer, ids).then((res) => {
                 const messages: IMessage[] = [];
                 res.messagesList.forEach((msg) => {
                     const idStr = String(msg.id || 0);
                     const message = MessageRepo.parseMessage(msg, this.userId);
                     messages.push(message);
-                    if (this.messageBundle[peerid].reqs[idStr]) {
-                        this.messageBundle[peerid].reqs[idStr].promises.forEach((promise) => {
+                    if (data.reqs[idStr]) {
+                        data.reqs[idStr].promises.forEach((promise) => {
                             promise.resolve(message);
                         });
                     }
                 });
                 this.lazyUpsert(messages, true);
-                delete this.messageBundle[peerid];
+                this.userRepo.importBulk(false, res.usersList);
+                this.groupRepo.importBulk(res.groupsList);
             }).catch((err) => {
-                if (this.messageBundle.hasOwnProperty(peerid) && this.messageBundle[peerid].reqs) {
-                    Object.keys(this.messageBundle[peerid].reqs).forEach((idStr) => {
-                        this.messageBundle[peerid].reqs[idStr].promises.forEach((promise) => {
+                if (data.reqs) {
+                    Object.keys(data.reqs).forEach((idStr) => {
+                        data.reqs[idStr].promises.forEach((promise) => {
                             promise.reject(err);
                         });
                     });
                 }
-                delete this.messageBundle[peerid];
             });
         });
     }

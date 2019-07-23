@@ -132,6 +132,9 @@ export default class UserRepo {
     }
 
     public importBulk(isContact: boolean, users: IUser[], force?: boolean): Promise<any> {
+        if (!users || users.length === 0) {
+            return Promise.resolve();
+        }
         const tempUsers = uniqBy(users, 'id');
         return this.upsert(isContact, tempUsers, force);
     }
