@@ -29,7 +29,8 @@
     background-repeat: no-repeat;
     background-position: center center; }
   .message-status .time {
-    line-height: 10px; }
+    line-height: 10px;
+    user-select: none; }
   .message-status .edited {
     padding: 0 3px 0 5px; }
 

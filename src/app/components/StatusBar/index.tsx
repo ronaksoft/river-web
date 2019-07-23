@@ -34,6 +34,7 @@ interface IState {
 }
 
 class StatusBar extends React.Component<IProps, IState> {
+    private disableClick: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -69,7 +70,7 @@ class StatusBar extends React.Component<IProps, IState> {
         }
         const isGroup = peer.getType() === PeerType.PEERGROUP;
         return (
-            <span className="status-bar" onClick={this.props.onAction.bind(this, 'info')}>
+            <span className="status-bar" onClick={this.clickHandler}>
                 {!isGroup &&
                 <UserName id={this.state.selectedDialogId} className="name" you={true}
                           youPlaceholder={i18n.t('general.saved_messages')} noDetail={true}/>}
@@ -100,6 +101,17 @@ class StatusBar extends React.Component<IProps, IState> {
         } else {
             return (<LastSeen id={selectedDialogId} withLastSeen={true}/>);
         }
+    }
+
+    private clickHandler = () => {
+        if (this.disableClick) {
+            return;
+        }
+        this.disableClick = true;
+        this.props.onAction('info');
+        setTimeout(() => {
+            this.disableClick = false;
+        }, 300);
     }
 }
 

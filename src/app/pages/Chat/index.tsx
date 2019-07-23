@@ -100,9 +100,9 @@ import StatusBar from "../../components/StatusBar";
 import i18n from "../../services/i18n";
 import IframeService, {C_IFRAME_SUBJECT} from '../../services/iframe';
 import PopUpNewMessage from "../../components/PopUpNewMessage";
+import CachedMessageService from "../../services/cachedMessageService";
 
 import './style.css';
-import CachedMessageService from "../../services/cachedMessageService";
 
 export let notifyOptions: any[] = [];
 
@@ -1107,6 +1107,7 @@ class Chat extends React.Component<IProps, IState> {
                 return;
             }
             this.checkPendingMessage(message.id || 0);
+            this.downloadThumbnail(message);
             // Clear the message history
             if (message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
                 this.messageRepo.clearHistory(message.peerid || '', message.actiondata.maxid).then(() => {
@@ -2566,6 +2567,7 @@ class Chat extends React.Component<IProps, IState> {
                 }
                 const modifiedMsgs = this.modifyMessages(this.messages, res.messages, true);
                 res.messages.forEach((msg) => {
+                    this.downloadThumbnail(msg);
                     this.checkMessageOrder(msg);
                 });
                 this.messageComponent.setMessages(modifiedMsgs.msgs);
@@ -4412,6 +4414,23 @@ class Chat extends React.Component<IProps, IState> {
     private newMessageLoad = () => {
         // Force update messages
         this.messageComponent.animateToEnd();
+    }
+
+    private downloadThumbnail = (message: IMessage) => {
+        switch (message.messagetype) {
+            case C_MESSAGE_TYPE.Picture:
+            case C_MESSAGE_TYPE.Video:
+                const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
+                if (messageMediaDocument && messageMediaDocument.doc.thumbnail) {
+                    const fileLocation = new InputFileLocation();
+                    fileLocation.setFileid(messageMediaDocument.doc.thumbnail.fileid || '');
+                    fileLocation.setAccesshash(messageMediaDocument.doc.thumbnail.accesshash || '');
+                    fileLocation.setClusterid(messageMediaDocument.doc.thumbnail.clusterid || 0);
+                    fileLocation.setVersion(0);
+                    this.fileManager.receiveFile(fileLocation, 0, 'image/jpeg');
+                }
+                break;
+        }
     }
 
     /*private testHandler = () => {

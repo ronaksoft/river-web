@@ -21,6 +21,7 @@
   color: var(--grey-low);
   font-size: 10px;
   white-space: nowrap;
+
   .icon {
     display: inline-block;
     height: 13px;
@@ -31,9 +32,12 @@
     background-repeat: no-repeat;
     background-position: center center;
   }
+
   .time {
     line-height: 10px;
+    user-select: none;
   }
+
   .edited {
     padding: 0 3px 0 5px;
   }
@@ -65,6 +69,7 @@
   bottom: 3px;
   color: var(--white) !important;
   padding: 0 3px;
+
   &:before {
     content: '';
     position: absolute;
@@ -76,6 +81,7 @@
     border-radius: 0 0 8px 8px;
     z-index: 10;
   }
+
   > span,
   > svg {
     position: relative;
@@ -87,6 +93,7 @@ html[theme="dark"] {
   .message-status {
     color: var(--grey);
   }
+
   .me .bubble .message-status {
     color: var(--grey);
   }
@@ -96,6 +103,7 @@ html[theme="dark-blue"] {
   .message-status {
     color: rgba(255, 255, 255, 0.5);
   }
+
   .me .bubble .message-status {
     color: rgba(255, 255, 255, 0.5);
   }
@@ -107,10 +115,12 @@ html[bubble="2"] {
     right: 11px;
     bottom: 6px;
   }
+
   .media {
     .bubble {
       .message-status {
         padding: 0 10px 4px 3px;
+
         &:before {
           border-radius: 0 0 18px 18px !important;
         }
