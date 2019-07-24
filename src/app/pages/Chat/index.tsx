@@ -2516,13 +2516,16 @@ class Chat extends React.Component<IProps, IState> {
 
     private getValidAfter(offset?: number): number {
         const messages = this.messages;
-        let after = offset || 0;
+        let after = 0;
+        let tries = 1;
+        if (offset && offset > 0) {
+            tries = messages.length - offset;
+        }
         if (messages.length > 0) {
             // Check if it is not pending message
-            after = messages[messages.length - 1].id || 0;
+            after = messages[messages.length - tries].id || 0;
             if (after < 0) {
                 if (messages.length > 0) {
-                    let tries = 0;
                     // Check if it is not pending message
                     while (true) {
                         tries++;
@@ -4199,9 +4202,7 @@ class Chat extends React.Component<IProps, IState> {
     private readMessageContent(message: IMessage) {
         const {peer} = this.state;
         if (message && !message.contentread && message.senderid !== this.connInfo.UserID && peer) {
-            this.sdk.readMessageContent([message.id || 0], peer).then(() => {
-                //
-            });
+            this.sdk.readMessageContent([message.id || 0], peer);
         }
     }
 
