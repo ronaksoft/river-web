@@ -2529,10 +2529,10 @@ class Chat extends React.Component<IProps, IState> {
                     // Check if it is not pending message
                     while (true) {
                         tries++;
-                        after = messages[messages.length - tries].id || 0;
-                        if (!after) {
+                        if (!messages[messages.length - tries]) {
                             return 0;
                         }
+                        after = messages[messages.length - tries].id || 0;
                         if (after > 0 || tries >= messages.length) {
                             break;
                         }
