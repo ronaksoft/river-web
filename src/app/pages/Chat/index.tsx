@@ -2530,6 +2530,9 @@ class Chat extends React.Component<IProps, IState> {
                     while (true) {
                         tries++;
                         after = messages[messages.length - tries].id || 0;
+                        if (!after) {
+                            return 0;
+                        }
                         if (after > 0 || tries >= messages.length) {
                             break;
                         }
