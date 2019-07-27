@@ -13,6 +13,7 @@ import {base64ToU8a, uint8ToBase64} from './utils';
 import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from '../const/const';
 import {C_MSG} from '../../const';
 import ElectronService from '../../../electron';
+import {serverKeys} from "../../server";
 
 export interface IHttpRequest {
     constructor: number;
@@ -131,7 +132,7 @@ export default class Http {
             const d = e.data;
             switch (d.cmd) {
                 case 'loadConnInfo':
-                    this.workerMessage('loadConnInfo', localStorage.getItem('river.conn.info'));
+                    this.workerMessage('loadConnInfo', {connInfo: localStorage.getItem('river.conn.info'), serverKeys});
                     this.workerMessage('initSDK', 1);
                     break;
                 case 'fnStarted':

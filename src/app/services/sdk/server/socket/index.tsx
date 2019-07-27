@@ -8,7 +8,7 @@
 */
 
 import {base64ToU8a, uint8ToBase64} from '../../fileManager/http/utils';
-import {IServerRequest} from '../index';
+import {IServerRequest, serverKeys} from '../index';
 import ElectronService from '../../../electron';
 
 export const defaultGateway = 'cyrus.river.im';
@@ -74,7 +74,7 @@ export default class Socket {
                     localStorage.setItem('river.conn.info', d.data);
                     break;
                 case 'loadConnInfo':
-                    this.workerMessage('loadConnInfo', localStorage.getItem('river.conn.info'));
+                    this.workerMessage('loadConnInfo', {connInfo: localStorage.getItem('river.conn.info'), serverKeys});
                     this.initWebSocket();
                     this.workerMessage('initSDK', 0);
                     setTimeout(() => {

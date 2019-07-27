@@ -14,6 +14,7 @@ var (
 	no             int
 	beforeUnloadCh = make(chan struct{})
 	connInfo       string
+	serverPubKeys  string
 	duration       int64
 )
 
@@ -23,6 +24,7 @@ func main() {
 
 	loadCB := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		connInfo = args[0].String()
+		serverPubKeys = args[1].String()
 		return nil
 	})
 	defer loadCB.Release()
@@ -71,7 +73,7 @@ func initSDK(this js.Value, args []js.Value) interface{} {
 			js.Global().Call("fnStarted", duration)
 		}
 	}
-	river.Start(connInfo, &cb)
+	river.Start(connInfo, serverPubKeys, &cb)
 	return nil
 }
 
