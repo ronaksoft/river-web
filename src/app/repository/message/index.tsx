@@ -837,6 +837,7 @@ export default class MessageRepo {
             delete this.messageBundle[peerid];
             this.sdk.getManyMessage(peer, ids).then((res) => {
                 const messages: IMessage[] = [];
+                const dataIds = Object.keys(data.reqs);
                 res.messagesList.forEach((msg) => {
                     const idStr = String(msg.id || 0);
                     const message = MessageRepo.parseMessage(msg, this.userId);
@@ -845,7 +846,16 @@ export default class MessageRepo {
                         data.reqs[idStr].promises.forEach((promise) => {
                             promise.resolve(message);
                         });
+                        const index = dataIds.indexOf(idStr);
+                        if (index > -1) {
+                            ids.splice(index, 0);
+                        }
                     }
+                });
+                dataIds.forEach((id) => {
+                    data.reqs[id].promises.forEach((promise) => {
+                        promise.reject();
+                    });
                 });
                 this.lazyUpsert(messages, true);
                 this.userRepo.importBulk(false, res.usersList);
