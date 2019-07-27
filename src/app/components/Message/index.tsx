@@ -679,7 +679,7 @@ class Message extends React.Component<IProps, IState> {
                 case C_MESSAGE_TYPE.Video:
                     const info = getContentSize(items[params.index]);
                     if (info) {
-                        return info.height + 4;
+                        return info.height + 10;
                     }
             }
         }
