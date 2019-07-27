@@ -1620,6 +1620,7 @@ class Chat extends React.Component<IProps, IState> {
         if (this.isLoading) {
             return;
         }
+        window.console.log('messageLoadMoreAfterHandler');
         const {peer} = this.state;
         if (!peer) {
             return;
@@ -2559,7 +2560,6 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         if (data.peerids && data.peerids.indexOf(this.state.selectedDialogId) > -1) {
-            window.console.log('messageDBUpdatedHandler, ids:', data.ids);
             // this.getMessagesByDialogId(this.state.selectedDialogId);
             const after = this.getValidAfter();
             this.messageRepo.getManyCache({after, limit: 100, ignoreMax: true}, peer).then((res) => {

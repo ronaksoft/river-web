@@ -518,11 +518,14 @@ class Message extends React.Component<IProps, IState> {
             }
             if (this.state.items.length === 0) {
                 this.scrollContainerEl.style.paddingTop = '0px';
+                if (this.props.onLoadMoreAfter) {
+                    this.props.onLoadMoreAfter();
+                }
                 return;
             }
             const list = this.scrollContainerEl.firstElementChild;
             if (list) {
-                const diff = (this.list.props.height - 8) - list.clientHeight;
+                const diff = (this.list.props.height - 12) - list.clientHeight;
                 if (diff > 0) {
                     this.scrollContainerEl.style.paddingTop = diff + 'px';
                     if (this.props.onLoadMoreAfter) {
