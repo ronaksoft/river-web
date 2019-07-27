@@ -49,6 +49,7 @@ export default class Socket {
     private readonly testUrl: string = '';
     private lastSendTime: number = 0;
     private lastReceiveTime: number = 0;
+    private online: boolean = navigator.onLine || true;
 
     public constructor() {
         this.testUrl = localStorage.getItem('river.workspace_url') || '';
@@ -61,10 +62,12 @@ export default class Socket {
 
         window.addEventListener('online', () => {
             this.initWebSocket();
+            this.online = true;
         });
 
         window.addEventListener('offline', () => {
             this.closeWire();
+            this.online = false;
         });
 
         this.worker.onmessage = (e) => {
@@ -129,6 +132,10 @@ export default class Socket {
         };
 
         this.checkNetwork();
+    }
+
+    public isOnline() {
+        return this.online;
     }
 
     public send(data: IServerRequest) {

@@ -344,6 +344,9 @@ export default class Server {
 
     private startIdleCheck() {
         setInterval(() => {
+            if (!this.socket.isOnline()) {
+                return;
+            }
             const now = this.getTime();
             if (now - this.lastActivityTime > C_IDLE_TIME) {
                 this.lastActivityTime = now;
