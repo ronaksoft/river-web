@@ -699,6 +699,7 @@ class Message extends React.Component<IProps, IState> {
         const menuItems: any[] = [];
         const id = items[moreIndex].id;
         const me = items[moreIndex].me;
+        const saveAndDownloadFilter = [C_MESSAGE_TYPE.File, C_MESSAGE_TYPE.Voice, C_MESSAGE_TYPE.Audio];
         if (id && id < 0) {
             menuTypes[3].forEach((key) => {
                 if (key === 6) {
@@ -719,11 +720,11 @@ class Message extends React.Component<IProps, IState> {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 7) {
-                    if (!items[moreIndex].downloaded && [C_MESSAGE_TYPE.File, C_MESSAGE_TYPE.Voice, C_MESSAGE_TYPE.Audio].indexOf(items[moreIndex].messagetype || 0) > -1) {
+                    if (!items[moreIndex].downloaded && saveAndDownloadFilter.indexOf(items[moreIndex].messagetype || 0) > -1) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 8) {
-                    if (items[moreIndex].downloaded && [C_MESSAGE_TYPE.File, C_MESSAGE_TYPE.Voice, C_MESSAGE_TYPE.Audio].indexOf(items[moreIndex].messagetype || 0) > -1) {
+                    if (items[moreIndex].downloaded && saveAndDownloadFilter.indexOf(items[moreIndex].messagetype || 0) > -1) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else {
@@ -733,11 +734,11 @@ class Message extends React.Component<IProps, IState> {
         } else if (me === false && id && id > 0) {
             menuTypes[2].forEach((key) => {
                 if (key === 7) {
-                    if (!items[moreIndex].downloaded && [C_MESSAGE_TYPE.File, C_MESSAGE_TYPE.Voice, C_MESSAGE_TYPE.Audio].indexOf(items[moreIndex].messagetype || 0) > -1) {
+                    if (!items[moreIndex].downloaded && saveAndDownloadFilter.indexOf(items[moreIndex].messagetype || 0) > -1) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else if (key === 8) {
-                    if (items[moreIndex].downloaded && [C_MESSAGE_TYPE.File, C_MESSAGE_TYPE.Voice, C_MESSAGE_TYPE.Audio].indexOf(items[moreIndex].messagetype || 0) > -1) {
+                    if (items[moreIndex].downloaded && saveAndDownloadFilter.indexOf(items[moreIndex].messagetype || 0) > -1) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else {
