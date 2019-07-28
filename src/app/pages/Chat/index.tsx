@@ -1571,7 +1571,6 @@ class Chat extends React.Component<IProps, IState> {
                 return;
             }
 
-            //
             if (this.chatInputComponent) {
                 this.chatInputComponent.focus();
             }
@@ -1608,8 +1607,7 @@ class Chat extends React.Component<IProps, IState> {
                     }, 250);
                 }
             });
-        }).catch((err: any) => {
-            window.console.warn(err);
+        }).catch(() => {
             this.setChatView(true);
             this.setState({
                 isChatView: true,
