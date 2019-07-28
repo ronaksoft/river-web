@@ -612,6 +612,7 @@ class ChatInput extends React.Component<IProps, IState> {
             if ((this.riverTime.now() - (message.createdon || 0)) < 86400 &&
                 (message.fwdsenderid === '0' || !message.fwdsenderid) &&
                 (message.messagetype === C_MESSAGE_TYPE.Normal || (message.messagetype || 0) === 0)) {
+                e.preventDefault();
                 if (this.props.onAction) {
                     this.props.onAction('edit', message);
                 }

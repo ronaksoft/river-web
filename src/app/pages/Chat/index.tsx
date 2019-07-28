@@ -1160,7 +1160,7 @@ class Chat extends React.Component<IProps, IState> {
         const dialog = this.getDialogById(data.message.peerid || '');
         if (dialog) {
             if (dialog.topmessageid === data.message.id) {
-                this.updateDialogs(data.message, dialog.accesshash || '0');
+                this.updateDialogs(data.message, dialog.accesshash || '0', true);
             }
         }
         if (this.state.selectedDialogId === data.message.peerid) {
@@ -1170,10 +1170,6 @@ class Chat extends React.Component<IProps, IState> {
             });
             if (index > -1) {
                 messages[index] = data.message;
-                messages[index].me = (this.connInfo.UserID === data.message.senderid);
-                if (messages[index].body) {
-                    messages[index].rtl = this.rtlDetector.direction(messages[index].body || '');
-                }
                 if (this.messageComponent) {
                     this.messageComponent.cache.clear(index, 0);
                     this.messageComponent.list.recomputeRowHeights(index);
@@ -2195,7 +2191,6 @@ class Chat extends React.Component<IProps, IState> {
             dialogs.push(dialog);
             this.dialogMap[id] = dialogs.length - 1;
         }
-
         this.dialogsSortThrottle(dialogs);
         if (toUpdateDialog) {
             this.dialogRepo.lazyUpsert([toUpdateDialog]);

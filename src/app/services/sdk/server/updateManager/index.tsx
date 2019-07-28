@@ -255,6 +255,7 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateMessageEdited:
                 const updateMessageEdited = UpdateMessageEdited.deserializeBinary(data).toObject();
+                updateMessageEdited.message = MessageRepo.parseMessage(updateMessageEdited.message, this.userId);
                 if (updateMessageEdited.message && this.messageList.hasOwnProperty(updateMessageEdited.message.peerid || '')) {
                     const index = findIndex(this.messageList[updateMessageEdited.message.peerid || ''], (item) => {
                         return item.message.id === updateMessageEdited.message.id;
