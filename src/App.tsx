@@ -90,7 +90,8 @@ class App extends React.Component<{}, IState> {
         this.iframeService = IframeService.getInstance();
 
         this.sessionId = UniqueId.getRandomId();
-        if (BroadcastChannel) {
+        // @ts-ignore
+        if (window.BroadcastChannel) {
             this.broadcastChannel = new BroadcastChannel('river_channel');
         }
     }
