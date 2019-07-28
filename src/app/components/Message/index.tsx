@@ -199,6 +199,7 @@ class Message extends React.Component<IProps, IState> {
         enable: false,
         width: 0,
     };
+    private newMessageIndex: number = -1;
 
     constructor(props: IProps) {
         super(props);
@@ -306,7 +307,12 @@ class Message extends React.Component<IProps, IState> {
     }
 
     public setMessages(items: IMessage[], callback?: () => void, noRemoveSnapshot?: boolean) {
+        const fn = () => {
+            this.newMessageIndex = findLastIndex(this.state.items, {messagetype: C_MESSAGE_TYPE.NewMessage});
+        };
+
         if (this.state.items !== items) {
+            fn();
             this.hasEnd = false;
             this.checkEnd(items);
             this.loadMoreAfterThrottle.cancel();
@@ -345,10 +351,13 @@ class Message extends React.Component<IProps, IState> {
             });
             this.listCount = items.length;
         } else if (this.state.items === items && this.listCount !== items.length) {
+            fn();
             this.checkEnd(items);
-            setTimeout(() => {
-                this.fitList(true);
-            }, 100);
+            if (this.state.items.length < 20) {
+                setTimeout(() => {
+                    this.fitList(true);
+                }, 100);
+            }
             this.modifyScroll(items);
             this.listCount = items.length;
             if (this.state.items.length > 0) {
@@ -528,14 +537,12 @@ class Message extends React.Component<IProps, IState> {
                 const diff = (this.list.props.height - 12) - list.clientHeight;
                 if (diff > 0) {
                     this.scrollContainerEl.style.paddingTop = diff + 'px';
-                    if (this.props.onLoadMoreAfter) {
-                        this.props.onLoadMoreAfter();
-                    }
+                    this.loadMoreAfterThrottle();
                     this.fitListCompleteThrottle();
                     if (diff > 8 && !instant) {
                         setTimeout(() => {
                             this.fitList(true);
-                        }, 100);
+                        }, 1);
                     }
                     return;
                 }
@@ -568,7 +575,7 @@ class Message extends React.Component<IProps, IState> {
         if (!noRemove) {
             this.removeSnapshotTimeout = setTimeout(() => {
                 this.removeSnapshot();
-            }, 1600);
+            }, 1500);
         }
     }
 
@@ -960,9 +967,14 @@ class Message extends React.Component<IProps, IState> {
                 }
             }
 
-            if (this.props.showNewMessage) {
-                if ((items[data.stopIndex] && items[data.stopIndex].messagetype === C_MESSAGE_TYPE.NewMessage) ||
-                    ((items[data.stopIndex + 1] && items[data.stopIndex + 1].messagetype === C_MESSAGE_TYPE.NewMessage))) {
+            if (this.props.showNewMessage && this.newMessageIndex > -1) {
+                // if ((items[data.stopIndex] && items[data.stopIndex].messagetype === C_MESSAGE_TYPE.NewMessage) ||
+                //     ((items[data.stopIndex + 1] && items[data.stopIndex + 1].messagetype === C_MESSAGE_TYPE.NewMessage))) {
+                //     this.props.showNewMessage(true);
+                // } else {
+                //     this.props.showNewMessage(false);
+                // }
+                if (items[data.stopIndex] && data.stopIndex <= this.newMessageIndex) {
                     this.props.showNewMessage(true);
                 } else {
                     this.props.showNewMessage(false);

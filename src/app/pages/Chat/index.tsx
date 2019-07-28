@@ -1603,6 +1603,9 @@ class Chat extends React.Component<IProps, IState> {
                 }, 100);
                 if (this.messageComponent) {
                     this.messageComponent.removeSnapshot(300);
+                    setTimeout(() => {
+                        this.messageLoadMoreAfterHandler();
+                    }, 250);
                 }
             });
         }).catch((err: any) => {
@@ -1620,7 +1623,6 @@ class Chat extends React.Component<IProps, IState> {
         if (this.isLoading) {
             return;
         }
-        window.console.log('messageLoadMoreAfterHandler');
         const {peer} = this.state;
         if (!peer) {
             return;
@@ -1647,9 +1649,11 @@ class Chat extends React.Component<IProps, IState> {
             this.setScrollMode('none');
             this.setMoveDownVisible(res.messages.length > 0);
             this.setEndOfMessage(res.messages.length > 0);
-            const dataMsg = this.modifyMessages(this.messages, res.messages, true, dialog.readinboxmaxid || 0);
-            this.messageComponent.setMessages(dataMsg.msgs);
-            this.setLoading(false);
+            setTimeout(() => {
+                const dataMsg = this.modifyMessages(this.messages, res.messages, true, dialog.readinboxmaxid || 0);
+                this.messageComponent.setMessages(dataMsg.msgs);
+                this.setLoading(false);
+            }, 1);
         }).catch(() => {
             this.setLoading(false);
         });
@@ -1669,7 +1673,6 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
-        window.console.log('messageLoadMoreBeforeHandler');
         const dialogId = peer.getId() || '';
 
         this.setLoading(true);
@@ -2740,7 +2743,7 @@ class Chat extends React.Component<IProps, IState> {
         }
         if (dialog) {
             if (showMoveDown !== undefined) {
-                if (showMoveDown) {
+                if (showMoveDown || (dialog.unreadcount || 0) > 0) {
                     this.setMoveDownVisible(true);
                 } else if (dialog.unreadcount === 0) {
                     this.setMoveDownVisible(false);
@@ -2886,9 +2889,9 @@ class Chat extends React.Component<IProps, IState> {
         const diff = messages.length - info.stopIndex;
         this.scrollInfo = info;
         this.setEndOfMessage(diff > 2);
-        if (this.isLoading) {
-            return;
-        }
+        // if (this.isLoading) {
+        //     return;
+        // }
         if (messages && messages[info.stopIndex]) {
             if (diff <= 2) {
                 this.lastMessageId = -1;
