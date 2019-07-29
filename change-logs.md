@@ -1,3 +1,6 @@
+## 0.25.26
+* Scrollbar width on small dialogs fixed
+
 ## 0.25.25
 * Nginx expire header updated
 * Voice player bug fixed on send

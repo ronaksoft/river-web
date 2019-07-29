@@ -190,6 +190,7 @@ class Message extends React.Component<IProps, IState> {
         clickTop: number,
         dragged: boolean,
         enable: boolean,
+        noScroll: boolean,
         width: number,
     } = {
         clickPos: 0,
@@ -197,6 +198,7 @@ class Message extends React.Component<IProps, IState> {
         clickTop: 0,
         dragged: false,
         enable: false,
+        noScroll: false,
         width: 0,
     };
     private newMessageIndex: number = -1;
@@ -280,6 +282,9 @@ class Message extends React.Component<IProps, IState> {
         this.topOfList = false;
         this.eventReferences.push(this.broadcaster.listen('Theme_Changed', this.themeChangeHandler));
         window.addEventListener('mouseup', this.dragLeaveHandler, true);
+        if (this.scrollbar.enable) {
+            window.addEventListener('resize', this.modifyScrollThumb);
+        }
 
         this.scrollContainerEl = document.querySelector('.messages-inner .chat.active-chat');
         if (this.scrollContainerEl) {
@@ -322,6 +327,7 @@ class Message extends React.Component<IProps, IState> {
             this.topOfList = true;
             this.firstTimeLoadAfter = true;
             this.scrollToIndex = items.length - 1;
+            this.scrollbar.noScroll = false;
             setTimeout(() => {
                 this.scrollToIndex = undefined;
             }, 300);
@@ -383,6 +389,9 @@ class Message extends React.Component<IProps, IState> {
                 canceller();
             }
         });
+        if (this.scrollbar.enable) {
+            window.removeEventListener('resize', this.modifyScrollThumb);
+        }
         window.removeEventListener('mouseup', this.dragLeaveHandler, true);
         if (this.scrollContainerEl) {
             this.scrollContainerEl.addEventListener('mousewheel', this.scrollHandler, true);
@@ -544,6 +553,7 @@ class Message extends React.Component<IProps, IState> {
                             this.fitList(true);
                         }, 100);
                     }
+                    this.modifyScrollThumb();
                     return;
                 }
             }
@@ -641,7 +651,7 @@ class Message extends React.Component<IProps, IState> {
                                 rowRenderer={this.rowRender}
                                 rowCount={items.length}
                                 overscanRowCount={this.isMac ? 10 : 40}
-                                width={width + this.scrollbar.width}
+                                width={width + (this.scrollbar.noScroll ? 0 : this.scrollbar.width)}
                                 height={height}
                                 estimatedRowSize={41}
                                 onRowsRendered={this.onRowsRenderedHandler}
@@ -651,7 +661,8 @@ class Message extends React.Component<IProps, IState> {
                                 scrollToIndex={this.scrollToIndex}
                             />
                             {this.scrollbar.enable &&
-                            <div className="kk-scrollbar-track" onMouseDown={this.scrollbarTrackDownHandler}>
+                            <div className="kk-scrollbar-track" onMouseDown={this.scrollbarTrackDownHandler}
+                                 hidden={this.scrollbar.noScroll}>
                                 <div ref={this.scrollbarThumbRefHandler} className="kk-scrollbar-thumb"
                                      onMouseDown={this.scrollbarThumbDownHandler}/>
                             </div>}
@@ -1549,13 +1560,19 @@ class Message extends React.Component<IProps, IState> {
         if (!eldiv) {
             return;
         }
-        let top = (this.scrollContainerEl.scrollTop / eldiv.scrollHeight) * 100;
-        const height = (this.scrollContainerEl.clientHeight / eldiv.scrollHeight) * 100;
-        if (top + height > 100) {
-            top = 100 - height;
+        this.scrollbar.noScroll = (this.scrollContainerEl.clientHeight > eldiv.scrollHeight);
+        if (!this.scrollbar.noScroll) {
+            let top = (this.scrollContainerEl.scrollTop / eldiv.scrollHeight) * 100;
+            const height = (this.scrollContainerEl.clientHeight / eldiv.scrollHeight) * 100;
+            if (top + height > 100) {
+                top = 100 - height;
+            }
+            this.scrollThumbRef.style.top = `${top}%`;
+            this.scrollThumbRef.style.height = `${height}%`;
         }
-        this.scrollThumbRef.style.top = `${top}%`;
-        this.scrollThumbRef.style.height = `${height}%`;
+        if (this.scrollbar.noScroll) {
+            this.forceUpdate();
+        }
     }
 
     private scrollbarTrackDownHandler = (e: any) => {
