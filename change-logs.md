@@ -1,3 +1,6 @@
+## 0.25.28
+* Now we detect network change (VPN use)
+
 ## 0.25.27
 * Blink on first load bug fixed
 

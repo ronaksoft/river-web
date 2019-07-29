@@ -70,6 +70,14 @@ export default class Socket {
             this.online = false;
         });
 
+        // @ts-ignore
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        if (connection) {
+            connection.addEventListener('change', () => {
+                this.closeWire();
+            });
+        }
+
         this.worker.onmessage = (e) => {
             const d = e.data;
             switch (d.cmd) {
@@ -219,6 +227,7 @@ export default class Socket {
     }
 
     private closeWire() {
+        window.console.log('closeWire');
         this.connected = false;
         const event = new CustomEvent('wsClose');
         window.dispatchEvent(event);
