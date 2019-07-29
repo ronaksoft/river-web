@@ -359,11 +359,9 @@ class Message extends React.Component<IProps, IState> {
         } else if (this.state.items === items && this.listCount !== items.length) {
             fn();
             this.checkEnd(items);
-            if (this.state.items.length < 20) {
-                setTimeout(() => {
-                    this.fitList(true);
-                }, 100);
-            }
+            setTimeout(() => {
+                this.fitList(true);
+            }, 100);
             this.modifyScroll(items);
             this.listCount = items.length;
             if (this.state.items.length > 0) {
@@ -551,7 +549,7 @@ class Message extends React.Component<IProps, IState> {
                     if (diff > 8 && !instant) {
                         setTimeout(() => {
                             this.fitList(true);
-                        }, 100);
+                        }, 1);
                     }
                     this.modifyScrollThumb();
                     return;

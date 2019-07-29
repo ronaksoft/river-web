@@ -1,3 +1,6 @@
+## 0.25.27
+* Blink on first load bug fixed
+
 ## 0.25.26
 * Scrollbar width on small dialogs fixed
 
