@@ -522,7 +522,7 @@ class Message extends React.Component<IProps, IState> {
 
     public fitList(instant?: boolean) {
         setTimeout(() => {
-            if (!this.scrollContainerEl || !this.scrollContainerEl.style) {
+            if (!this.scrollContainerEl || !this.scrollContainerEl.style || !this.props) {
                 return;
             }
             if (this.state.items.length === 0) {
