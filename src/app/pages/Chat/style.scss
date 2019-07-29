@@ -12,26 +12,30 @@
 .bg {
   height: 100vh;
   width: 100vw;
-  background-color: #21352e;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cpolygon fill='%23000' fill-opacity='.1' points='120 0 120 60 90 30 60 0 0 0 0 0 60 60 0 120 60 120 90 90 120 60 120 0'/%3E%3C/svg%3E");
-  transition: background-color 1s;
+  background-color: #eaeaea;
+  background-image: url('../../../asset/image/pattern.png');
+  background-size: 200px;
+  background-position: center center;
+  transition: background-color 0.5s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .wrapper {
   position: relative;
   width: var(--wrapper);
-  margin: 0 auto;
+  height: 900px;
   overflow: hidden;
-  display: flex;
-  height: 100vh;
-  align-items: center;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
+  border-radius: 3px;
 }
 
 .container {
   position: relative;
   display: flex;
   width: 100%;
-  height: 800px;
+  height: 100%;
   background-color: var(--white);
 
   .column-left {
@@ -575,7 +579,7 @@ html[theme="dark-blue"][bg="14"] {
   }
 }
 
-@media screen and (max-height: 800px) {
+@media screen and (max-height: 900px) {
   .wrapper {
     height: 100vh;
     display: flex;
@@ -597,6 +601,7 @@ html[theme="dark-blue"][bg="14"] {
     height: 100vh;
     display: flex;
     align-items: center;
+    border-radius: 0;
   }
   .container {
     height: 100vh;
@@ -944,6 +949,8 @@ html[theme="dark-blue"] {
     width: 100vw !important;
     display: flex;
     align-items: center;
+    box-shadow: none;
+    border-radius: 0;
   }
 
   .container:not(.mobile-view) {

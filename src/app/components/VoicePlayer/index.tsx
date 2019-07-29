@@ -73,7 +73,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
     private broadcaster: Broadcaster;
     private downloadManager: DownloadManager;
     private objectUrlImages: string[] = [];
-    private lastId: number = 0;
+    private readonly lastId: number = 0;
 
     constructor(props: IProps) {
         super(props);
@@ -111,6 +111,9 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
                 if (this.lastId !== newProps.message.id && this.lastId < 0) {
                     this.audioPlayer.removeFromPlaylist(this.lastId);
                     this.removeAllListeners();
+                    if (newProps.message && (newProps.message.id || 0) > 0) {
+                        this.eventReferences.push(this.audioPlayer.listen(newProps.message.id || 0, this.audioPlayerHandler));
+                    }
                 }
             }
         }
@@ -135,6 +138,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
         }, 100);
         if (data.voice) {
             this.voice = data.voice;
+            this.removeAllListeners();
             this.eventReferences.push(this.audioPlayer.listen(C_INSTANT_AUDIO, this.audioPlayerHandler));
             this.audioPlayer.setInstantVoice(this.voice);
         }
@@ -143,6 +147,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
             this.voiceId = data.voiceId;
             if (message) {
                 this.audioPlayer.addToPlaylist(message.id || 0, message.peerid || '', this.voiceId, message.senderid || '', message.downloaded || false);
+                this.removeAllListeners();
                 this.eventReferences.push(this.audioPlayer.listen(message.id || 0, this.audioPlayerHandler));
             }
         }

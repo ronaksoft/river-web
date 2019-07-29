@@ -77,6 +77,7 @@ interface IProps {
     onPreviewMessageChange?: (previewMessage: IMessage | undefined, previewMessageMode: number) => void;
     onTyping?: (typing: TypingAction) => void;
     onVoiceSend: (item: IMediaItem, {mode, message}?: any) => void;
+    onVoiceStateChange?: (state: 'lock' | 'down' | 'up' | 'play') => void;
     peer: InputPeer | null;
     previewMessage?: IMessage;
     previewMessageMode?: number;
@@ -172,7 +173,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private eventReferences: any[] = [];
     private lastMessage: IMessage | null = null;
     private rtl: boolean = localStorage.getItem('river.lang') === 'fa' || false;
-    private isMobileView: boolean = false;
+    private readonly isMobileView: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -257,6 +258,9 @@ class ChatInput extends React.Component<IProps, IState> {
             }
         });
         if (this.state.peer !== newProps.peer) {
+            if (this.state.voiceMode === 'lock' || this.state.voiceMode === 'down') {
+                this.voiceCancelHandler();
+            }
             this.setState({
                 peer: newProps.peer,
             }, () => {
@@ -670,6 +674,8 @@ class ChatInput extends React.Component<IProps, IState> {
                 previewMessage: null,
                 previewMessageMode: C_MSG_MODE.Normal,
                 voiceMode: 'up',
+            }, () => {
+                this.voiceStateChange();
             });
             this.setInputMode('default');
             if (this.props.onPreviewMessageChange) {
@@ -1046,6 +1052,8 @@ class ChatInput extends React.Component<IProps, IState> {
             this.voiceMouseIn = true;
             this.setState({
                 voiceMode: 'down',
+            }, () => {
+                this.voiceStateChange();
             });
             this.voiceRecord();
         }
@@ -1057,6 +1065,8 @@ class ChatInput extends React.Component<IProps, IState> {
             e.stopPropagation();
             this.setState({
                 voiceMode: 'up',
+            }, () => {
+                this.voiceStateChange();
             });
             this.voiceMouseIn = false;
             this.voiceRecordEnd();
@@ -1072,6 +1082,8 @@ class ChatInput extends React.Component<IProps, IState> {
         if (this.state.voiceMode !== 'down') {
             this.setState({
                 voiceMode: 'down',
+            }, () => {
+                this.voiceStateChange();
             });
         }
     }
@@ -1084,6 +1096,8 @@ class ChatInput extends React.Component<IProps, IState> {
         if (this.state.voiceMode !== 'lock') {
             this.setState({
                 voiceMode: 'lock',
+            }, () => {
+                this.voiceStateChange();
             });
         }
     }
@@ -1094,6 +1108,8 @@ class ChatInput extends React.Component<IProps, IState> {
             this.voiceRecordEnd();
             this.setState({
                 voiceMode: 'play',
+            }, () => {
+                this.voiceStateChange();
             });
         } else if (this.state.voiceMode === 'play') {
             this.sendVoice();
@@ -1161,6 +1177,8 @@ class ChatInput extends React.Component<IProps, IState> {
         this.setInputMode('default');
         this.setState({
             voiceMode: 'up',
+        }, () => {
+            this.voiceStateChange();
         });
     }
 
@@ -1564,6 +1582,12 @@ class ChatInput extends React.Component<IProps, IState> {
                 );
             default:
                 return '';
+        }
+    }
+
+    private voiceStateChange() {
+        if (this.props.onVoiceStateChange) {
+            this.props.onVoiceStateChange(this.state.voiceMode);
         }
     }
 

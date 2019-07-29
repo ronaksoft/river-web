@@ -542,7 +542,7 @@ class Message extends React.Component<IProps, IState> {
                     if (diff > 8 && !instant) {
                         setTimeout(() => {
                             this.fitList(true);
-                        }, 1);
+                        }, 100);
                     }
                     return;
                 }

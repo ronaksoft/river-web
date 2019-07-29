@@ -14,6 +14,14 @@ http {
         '' close;
     }
 
+    map ${DOLLAR}sent_http_content_type ${DOLLAR}expires {
+        default                    off;
+        text/html                  epoch;
+        text/css                   max;
+        application/javascript     max;
+        ~image/                    max;
+    }
+
     include       mime.types;
     default_type  application/octet-stream;
 
@@ -46,11 +54,13 @@ http {
         ssl_prefer_server_ciphers on;
         ssl_session_cache shared:SSL:10m;
 
+        expires ${DOLLAR}expires;
+
         location / {
             root   /ronak/app;
             index  index.html;
             location ~* \.html$ {
-                expires -1;
+                expires epoch;
                 add_header Pragma no-cache;
                 add_header Cache-Control no-cache;
             }

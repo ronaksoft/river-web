@@ -9,6 +9,14 @@ events {
 }
 
 http {
+    map ${DOLLAR}sent_http_content_type ${DOLLAR}expires {
+        default                    off;
+        text/html                  epoch;
+        text/css                   max;
+        application/javascript     max;
+        ~image/                    max;
+    }
+
     include       mime.types;
     default_type  application/octet-stream;
 
@@ -28,11 +36,13 @@ http {
     server {
         listen       80 default_server;
 
+        expires ${DOLLAR}expires;
+
         location / {
             root   /ronak/app;
             index  index.html;
             location ~* \.html$ {
-                expires 0;
+                expires epoch;
                 add_header Pragma public;
                 add_header Cache-Control "public";
             }

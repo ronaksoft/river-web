@@ -72,6 +72,10 @@
       "title": "Delete dialog?",
       "p1": "Delete conversation with ",
       "p2": "All messages will be removed!"
+    },
+    "cancel_recording_dialog": {
+      "title": "Cancel recording?",
+      "p": "Recorded voice will be lost!"
     }
   },
   "peer_info": {

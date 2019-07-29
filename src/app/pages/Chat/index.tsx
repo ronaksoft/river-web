@@ -117,7 +117,7 @@ interface IProps {
 interface IState {
     blurMessage: boolean;
     chatMoreAnchorEl: any;
-    confirmDialogMode: 'none' | 'logout' | 'remove_message' | 'remove_message_revoke' | 'remove_message_pending' | 'delete_exit_group' | 'delete_user';
+    confirmDialogMode: 'none' | 'logout' | 'remove_message' | 'remove_message_revoke' | 'remove_message_pending' | 'delete_exit_group' | 'delete_user' | 'cancel_recording';
     confirmDialogOpen: boolean;
     forwardRecipientDialogOpen: boolean;
     iframeActive: boolean;
@@ -196,6 +196,8 @@ class Chat extends React.Component<IProps, IState> {
     private scrollInfo: any = null;
     private cachedMessageService: CachedMessageService;
     private updateReadInboxTimeout: any;
+    private isRecording: boolean = false;
+    private upcomingDialogId: string = 'null';
 
     constructor(props: IProps) {
         super(props);
@@ -388,6 +390,15 @@ class Chat extends React.Component<IProps, IState> {
             if (this.isMobileView) {
                 this.setChatView(true);
             }
+            return;
+        }
+        if (this.isRecording && this.upcomingDialogId !== '!' + selectedId) {
+            this.props.history.push(`/chat/${this.state.selectedDialogId}`);
+            this.upcomingDialogId = selectedId;
+            this.setState({
+                confirmDialogMode: 'cancel_recording',
+                confirmDialogOpen: true,
+            });
             return;
         }
         this.cachedMessageService.clearPeerId(this.state.selectedDialogId);
@@ -648,6 +659,7 @@ class Chat extends React.Component<IProps, IState> {
                                        onMediaSelected={this.chatInputMediaSelectHandler}
                                        onContactSelected={this.chatInputContactSelectHandler}
                                        onMapSelected={this.chatInputMapSelectHandler}
+                                       onVoiceStateChange={this.chatInputVoiceStateChangeHandler}
                             />
                         </div>}
                         {selectedDialogId === 'null' && <div className="column-center">
@@ -764,6 +776,23 @@ class Chat extends React.Component<IProps, IState> {
                             </Button>
                             <Button onClick={this.deleteUserHandler} color="primary" autoFocus={true}>
                                 {i18n.t('general.agree')}
+                            </Button>
+                        </DialogActions>
+                    </div>}
+                    {Boolean(confirmDialogMode === 'cancel_recording') &&
+                    <div>
+                        <DialogTitle>{i18n.t('chat.cancel_recording_dialog.title')}</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>
+                                {i18n.t('chat.cancel_recording_dialog.p')}
+                            </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={this.confirmDialogCloseHandler} color="secondary">
+                                {i18n.t('general.cancel')}
+                            </Button>
+                            <Button onClick={this.cancelRecordingHandler} color="primary" autoFocus={true}>
+                                {i18n.t('general.yes')}
                             </Button>
                         </DialogActions>
                     </div>}
@@ -4122,6 +4151,11 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
+    /* ChatInput voice state change handler */
+    private chatInputVoiceStateChangeHandler = (state: 'lock' | 'down' | 'up' | 'play') => {
+        this.isRecording = (state === 'lock' || state === 'down');
+    }
+
     /* Save file by type */
     private saveFile(msg: IMessage) {
         switch (msg.mediatype) {
@@ -4255,6 +4289,13 @@ class Chat extends React.Component<IProps, IState> {
         if (dialog && dialog.topmessageid) {
             this.sdk.clearMessage(peer, dialog.topmessageid, true);
         }
+        this.confirmDialogCloseHandler();
+    }
+
+    /* Cancel recording handler */
+    private cancelRecordingHandler = () => {
+        this.props.history.push(`/chat/${this.upcomingDialogId}`);
+        this.upcomingDialogId = '!' + this.upcomingDialogId;
         this.confirmDialogCloseHandler();
     }
 
