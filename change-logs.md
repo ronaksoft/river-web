@@ -1,3 +1,10 @@
+## 0.25.30
+* Deleted reply message will be removed after second time
+* Logs added 
+* Dev tools added to electron app
+* Idle connection improved
+* Header added (Sec-WebSocket-Protocol: web-client)
+
 ## 0.25.29
 * Dialog sort bug fixed
 

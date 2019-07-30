@@ -54,7 +54,7 @@ export default class Server {
     public constructor() {
         this.socket = Socket.getInstance();
         this.reqId = 0;
-        this.lastActivityTime = this.getTime();
+        this.getLastActivityTime();
         this.startIdleCheck();
         const version = this.shouldMigrate(localStorage.getItem('river.version'));
         if (version !== false) {
@@ -201,6 +201,7 @@ export default class Server {
     }
 
     private response({reqId, constructor, data}: any) {
+        this.getLastActivityTime();
         if (constructor !== C_MSG.Error) {
             window.console.debug(`%c${C_MSG_NAME[constructor]} ${reqId}`, 'color: #f9d71c');
         }
@@ -280,6 +281,7 @@ export default class Server {
     }
 
     private update(bytes: any) {
+        this.getLastActivityTime();
         this.updateQueue.push(bytes);
     }
 
@@ -353,5 +355,9 @@ export default class Server {
                 this.updateManager.idleHandler();
             }
         }, 10000);
+    }
+
+    private getLastActivityTime() {
+        this.lastActivityTime = this.getTime();
     }
 }

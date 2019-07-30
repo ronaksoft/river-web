@@ -95,7 +95,7 @@ export const getMediaInfo = (message: IMessage): IMediaInfo => {
             fileid: messageMediaDocument.doc.thumbnail.fileid,
         };
     }
-    if (message.replyto || (message.fwdsenderid && message.fwdsenderid !== '0')) {
+    if ((message.replyto && message.deleted_reply !== true) || (message.fwdsenderid && message.fwdsenderid !== '0')) {
         info.hasRelation = true;
     }
     if (!message.attributes) {

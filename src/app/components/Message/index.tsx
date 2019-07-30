@@ -896,7 +896,7 @@ class Message extends React.Component<IProps, IState> {
                                 {Boolean((peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me) || (this.isSimplified && message.avatar)) &&
                                 <UserName className="name" uniqueColor={true} id={message.senderid || ''}
                                           hideBadge={true} noDetail={this.state.selectable}/>}
-                                {Boolean(message.replyto && message.replyto !== 0) &&
+                                {Boolean(message.replyto && message.replyto !== 0 && message.deleted_reply !== true) &&
                                 <MessagePreview message={message} peer={peer}
                                                 onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}
                                                 onClick={this.props.onJumpToMessage.bind(this, message.replyto)}
@@ -1461,7 +1461,7 @@ class Message extends React.Component<IProps, IState> {
             }
         }
         let related = '';
-        if (message.replyto || (message.fwdsenderid && message.fwdsenderid !== '0')) {
+        if ((message.replyto && message.deleted_reply !== true) || (message.fwdsenderid && message.fwdsenderid !== '0')) {
             related = 'related';
         }
         return ` ${type} ${related}`;

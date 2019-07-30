@@ -74,6 +74,7 @@ export default class Socket {
         const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
         if (connection) {
             connection.addEventListener('change', () => {
+                window.console.log('connection changed!');
                 this.closeWire();
             });
         }
@@ -182,12 +183,15 @@ export default class Socket {
         clearTimeout(this.initTimeout);
 
         this.tryCounter++;
+
+        const protocol = ["web-client"];
+
         if (this.testUrl.length > 0) {
-            this.socket = new WebSocket(`ws://${this.testUrl}`);
+            this.socket = new WebSocket(`ws://${this.testUrl}`, protocol);
         } else if (window.location.protocol === 'https:' && !ElectronService.isElectron()) {
-            this.socket = new WebSocket('wss://' + window.location.host + '/ws');
+            this.socket = new WebSocket('wss://' + window.location.host + '/ws', protocol);
         } else {
-            this.socket = new WebSocket(`ws://${defaultGateway}`);
+            this.socket = new WebSocket(`ws://${defaultGateway}`, protocol);
         }
         this.socket.binaryType = 'arraybuffer';
 

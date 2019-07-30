@@ -1650,6 +1650,7 @@ class Chat extends React.Component<IProps, IState> {
         if (!peer) {
             return;
         }
+        window.console.log('messageLoadMoreAfterHandler');
         const peerId = peer.getId() || '';
         if (this.state.selectedDialogId !== peerId) {
             this.setLoading(false);
@@ -1695,6 +1696,8 @@ class Chat extends React.Component<IProps, IState> {
         if (this.messages[0].id === 1) {
             return;
         }
+
+        window.console.log('messageLoadMoreBeforeHandler');
 
         const dialogId = peer.getId() || '';
 
@@ -2925,6 +2928,7 @@ class Chat extends React.Component<IProps, IState> {
             } else {
                 this.lastMessageId = messages[info.stopIndex].id || -1;
             }
+            window.console.log(this.lastMessageId);
             if (messages[info.stopIndex].id !== -1) {
                 // Update unread counter in dialog
                 this.sendReadHistory(this.state.peer, Math.floor(messages[info.stopIndex].id || 0), info.stopIndex, diff > 1);

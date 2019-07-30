@@ -155,6 +155,8 @@ generateMenu = () => {
                 {role: 'zoomout'},
                 {type: 'separator'},
                 {role: 'togglefullscreen'},
+                {type: 'separator'},
+                {role: 'toggledevtools'},
             ],
         }
         , {

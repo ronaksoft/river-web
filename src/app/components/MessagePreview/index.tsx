@@ -46,7 +46,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
         this.cachedMessageService = CachedMessageService.getInstance();
 
         let message = null;
-        if (this.props.message && this.props.message.replyto !== 0) {
+        if (this.props.message && this.props.message.replyto !== 0 && this.props.message.deleted_reply !== true) {
             message = this.cachedMessageService.getMessage(this.props.message.peerid || '', this.props.message.replyto || 0);
         }
         this.state = {
@@ -72,7 +72,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
             this.setState({
                 message: newProps.message,
             }, () => {
-                if (this.state.message.replyto && this.state.message.replyto !== 0) {
+                if (this.state.message.replyto && this.state.message.replyto !== 0 && this.state.message.deleted_reply !== true) {
                     const message = this.cachedMessageService.getMessage(this.state.message.peerid || '', this.state.message.replyto || 0);
                     if (message) {
                         this.setState({
@@ -189,6 +189,12 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
                 error: true,
                 previewMessage: null,
             });
+            if (message.id) {
+                this.messageRepo.lazyUpsert([{
+                    deleted_reply: true,
+                    id: message.id,
+                }]);
+            }
         });
     }
 
