@@ -1,3 +1,6 @@
+## 0.25.31
+* Header removed (Sec-WebSocket-Protocol: web-client)
+
 ## 0.25.30
 * Deleted reply message will be removed after second time
 * Logs added 

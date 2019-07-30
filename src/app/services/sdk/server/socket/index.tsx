@@ -184,14 +184,12 @@ export default class Socket {
 
         this.tryCounter++;
 
-        const protocol = ["web-client"];
-
         if (this.testUrl.length > 0) {
-            this.socket = new WebSocket(`ws://${this.testUrl}`, protocol);
+            this.socket = new WebSocket(`ws://${this.testUrl}`);
         } else if (window.location.protocol === 'https:' && !ElectronService.isElectron()) {
-            this.socket = new WebSocket('wss://' + window.location.host + '/ws', protocol);
+            this.socket = new WebSocket('wss://' + window.location.host + '/ws');
         } else {
-            this.socket = new WebSocket(`ws://${defaultGateway}`, protocol);
+            this.socket = new WebSocket(`ws://${defaultGateway}`);
         }
         this.socket.binaryType = 'arraybuffer';
 
