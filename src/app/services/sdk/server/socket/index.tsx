@@ -227,7 +227,6 @@ export default class Socket {
     }
 
     private closeWire() {
-        window.console.log('closeWire');
         this.connected = false;
         const event = new CustomEvent('wsClose');
         window.dispatchEvent(event);

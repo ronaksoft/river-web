@@ -1,3 +1,6 @@
+## 0.25.29
+* Dialog sort bug fixed
+
 ## 0.25.28
 * Now we detect network change (VPN use)
 

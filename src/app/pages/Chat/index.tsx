@@ -2313,21 +2313,24 @@ class Chat extends React.Component<IProps, IState> {
                     return (i2.last_update || 0) - (i1.last_update || 0);
                 });
             }
+
+            const tDialogMap: any = {};
+            td.forEach((d, i) => {
+                if (d) {
+                    tDialogMap[d.peerid || ''] = i;
+                }
+            });
+            this.dialogMap = tDialogMap;
+            this.dialogs = td;
         }
+
         let unreadCounter = 0;
         td.forEach((d) => {
             if (d && d.unreadcount) {
                 unreadCounter += d.unreadcount;
             }
         });
-        const tDialogMap: any = {};
-        td.forEach((d, i) => {
-            if (d) {
-                tDialogMap[d.peerid || ''] = i;
-            }
-        });
-        this.dialogs = td;
-        this.dialogMap = tDialogMap;
+
         if (this.dialogComponent) {
             this.dialogComponent.setDialogs(this.dialogs, () => {
                 if (callback) {
@@ -2335,9 +2338,11 @@ class Chat extends React.Component<IProps, IState> {
                 }
             });
         }
+
         this.setState({
             unreadCounter,
         });
+
         this.iframeService.setUnreadCounter(unreadCounter);
         if (ElectronService.isElectron()) {
             this.electronService.setBadgeCounter(unreadCounter);
