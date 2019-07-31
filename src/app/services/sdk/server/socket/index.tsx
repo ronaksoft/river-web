@@ -231,6 +231,11 @@ export default class Socket {
     private closeWire() {
         this.connected = false;
         const event = new CustomEvent('wsClose');
+        try {
+            this.socket.close();
+        } catch (e) {
+            window.console.log(e);
+        }
         window.dispatchEvent(event);
         if (this.tryCounter === 0) {
             this.initTimeout = setTimeout(() => {
