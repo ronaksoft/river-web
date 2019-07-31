@@ -1650,7 +1650,6 @@ class Chat extends React.Component<IProps, IState> {
         if (!peer) {
             return;
         }
-        window.console.log('messageLoadMoreAfterHandler');
         const peerId = peer.getId() || '';
         if (this.state.selectedDialogId !== peerId) {
             this.setLoading(false);
@@ -1661,9 +1660,11 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         const after = this.getValidAfter();
-        if ((dialog.topmessageid || 0) <= after && (dialog.unreadcount || 0) === 0) {
+        if ((dialog.topmessageid || 0) <= after && (dialog.unreadcount || 0) === 0 || after === 0) {
             return;
         }
+
+        window.console.log('messageLoadMoreAfterHandler');
         this.setLoading(true);
         this.messageRepo.getManyCache({peer, limit: 25, after, ignoreMax: true}, peer).then((res) => {
             if (this.state.selectedDialogId !== peerId || !this.messageComponent) {
@@ -1762,6 +1763,15 @@ class Chat extends React.Component<IProps, IState> {
                     (key > 0 && msg.senderid !== messages[key - 1].senderid) ||
                     (key > 0 && messages[key - 1].messageaction !== C_MESSAGE_ACTION.MessageActionNope);
 
+                if (messageReadId !== undefined && !this.newMessageFlag && (msg.id || 0) > messageReadId && !msg.me) {
+                    defaultMessages.push({
+                        createdon: msg.createdon,
+                        id: (msg.id || 0) + 0.5,
+                        messagetype: C_MESSAGE_TYPE.NewMessage,
+                    });
+                    this.newMessageFlag = true;
+                }
+
                 // date breakpoint
                 if (msg.messagetype !== C_MESSAGE_TYPE.End && ((key === 0 && (defaultMessages.length === 0 || (defaultMessages.length > 0 && !TimeUtility.isInSameDay(msg.createdon, defaultMessages[defaultMessages.length - 1].createdon))))
                     || (key > 0 && !TimeUtility.isInSameDay(msg.createdon, messages[key - 1].createdon)))) {
@@ -1771,16 +1781,6 @@ class Chat extends React.Component<IProps, IState> {
                         messagetype: C_MESSAGE_TYPE.Date,
                         senderid: msg.senderid,
                     });
-                    msg.avatar = true;
-                }
-
-                if (messageReadId !== undefined && !this.newMessageFlag && (msg.id || 0) > messageReadId && !msg.me) {
-                    defaultMessages.push({
-                        createdon: msg.createdon,
-                        id: (msg.id || 0) + 0.5,
-                        messagetype: C_MESSAGE_TYPE.NewMessage,
-                    });
-                    this.newMessageFlag = true;
                     msg.avatar = true;
                 }
 
@@ -2928,7 +2928,6 @@ class Chat extends React.Component<IProps, IState> {
             } else {
                 this.lastMessageId = messages[info.stopIndex].id || -1;
             }
-            window.console.log(this.lastMessageId);
             if (messages[info.stopIndex].id !== -1) {
                 // Update unread counter in dialog
                 this.sendReadHistory(this.state.peer, Math.floor(messages[info.stopIndex].id || 0), info.stopIndex, diff > 1);

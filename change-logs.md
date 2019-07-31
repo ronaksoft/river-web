@@ -1,3 +1,6 @@
+## 0.25.32
+* Message load more after bug fixed
+
 ## 0.25.31
 * Header removed (Sec-WebSocket-Protocol: web-client)
 
