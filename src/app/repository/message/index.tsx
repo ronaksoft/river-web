@@ -271,6 +271,20 @@ export default class MessageRepo {
         return this.db.messages.clear();
     }
 
+    public exists(id: number) {
+        return new Promise((resolve) => {
+            return this.db.messages.get(id).then((res) => {
+                if (res) {
+                    resolve(true);
+                } else {
+                    resolve(false);
+                }
+            }).catch(() => {
+                resolve(false);
+            });
+        });
+    }
+
     public removeMany(ids: number[]) {
         ids.map((id) => {
             delete this.lazyMap[id];

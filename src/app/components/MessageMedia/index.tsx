@@ -353,9 +353,13 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                     {Boolean(fileState !== 'view' && fileState !== 'open') &&
                     <React.Fragment>
                         <div className="media-size" ref={this.mediaSizeRefHandler}>0 KB</div>
-                        <div className="media-thumb" style={this.pictureContentSize}>
+                        <div className="media-big" style={{height: this.pictureContentSize.height}}>
+                            {this.blurredImageEnable &&
+                            <CachedPhoto className="blurred-picture" blur={10}
+                                         fileLocation={info.thumbFile}/>}
                             <CachedPhoto className="picture"
                                          fileLocation={(message.id || 0) < 0 && message.messagetype === C_MESSAGE_TYPE.Picture ? info.file : info.thumbFile}
+                                         style={this.pictureContentSize}
                                          onLoad={this.cachedPhotoLoadHandler} blur={10} searchTemp={true}/>
                             <div className="media-action">
                                 {Boolean(fileState === 'download') &&
@@ -591,6 +595,11 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         if (!info || !info.file) {
             return;
         }
+        let el = (e.currentTarget || e);
+        const picEl = el.querySelector('.picture');
+        if (picEl) {
+            el = picEl;
+        }
         const doc: IDocument = {
             anchor: 'message',
             items: [{
@@ -605,7 +614,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                 width: info.width,
             }],
             peerId: message.peerid || '',
-            rect: (e.currentTarget || e).getBoundingClientRect(),
+            rect: el.getBoundingClientRect(),
             type: message.messagetype === C_MESSAGE_TYPE.Picture ? 'picture' : 'video',
         };
         this.documentViewerService.loadDocument(doc);

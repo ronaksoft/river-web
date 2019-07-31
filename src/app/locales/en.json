@@ -238,7 +238,8 @@
     "typing": "typing...",
     "recording_voice": "recording voice...",
     "uploading_file": "uploading file...",
-    "doing": "doing..."
+    "doing": "doing...",
+    "waiting_for_network": "Waiting for network..."
   },
   "message": {
     "voice_message": "Voice Message",

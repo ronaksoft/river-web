@@ -547,9 +547,9 @@ class Message extends React.Component<IProps, IState> {
                     this.loadMoreAfterThrottle();
                     this.fitListCompleteThrottle();
                     if (diff > 8 && !instant) {
-                        setTimeout(() => {
+                        requestAnimationFrame(() => {
                             this.fitList(true);
-                        }, 1);
+                        });
                     }
                     this.modifyScrollThumb();
                     return;
@@ -557,7 +557,7 @@ class Message extends React.Component<IProps, IState> {
             }
             this.scrollContainerEl.style.paddingTop = '0px';
             this.modifyScrollThumb();
-        }, instant ? 0 : 10);
+        }, instant ? 1 : 10);
     }
 
     public takeSnapshot(noRemove?: boolean) {
@@ -1304,9 +1304,9 @@ class Message extends React.Component<IProps, IState> {
                     if (!(this.messageScroll.overscanStartIndex <= index + 1 && this.messageScroll.overscanStopIndex >= index)) {
                         this.list.scrollToRow(index);
                     }
-                    setTimeout(() => {
+                    requestAnimationFrame(() => {
                         this.checkScroll(this.stayInfo.id, index);
-                    }, 1);
+                    });
                 } else {
                     this.removeSnapshot();
                     this.setEnableBefore();
@@ -1382,7 +1382,7 @@ class Message extends React.Component<IProps, IState> {
         const cellTop = this.getCellTop(Math.floor(id));
         if (cellTop) {
             this.list.scrollToPosition(cellTop - this.stayInfo.offset);
-            setTimeout(() => {
+            requestAnimationFrame(() => {
                 const cellTopCheck = this.getCellTop(Math.floor(id));
                 if (cellTopCheck === cellTop) {
                     this.setEnableBefore();
@@ -1390,7 +1390,7 @@ class Message extends React.Component<IProps, IState> {
                 } else {
                     fn(tries);
                 }
-            }, 1);
+            });
         } else {
             fn(tries);
         }

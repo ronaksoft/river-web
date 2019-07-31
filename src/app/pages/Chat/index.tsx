@@ -123,6 +123,7 @@ interface IState {
     iframeActive: boolean;
     isChatView: boolean;
     isConnecting: boolean;
+    isOnline: boolean;
     isUpdating: boolean;
     leftMenu: string;
     leftMenuSelectedDialogId: string;
@@ -213,6 +214,7 @@ class Chat extends React.Component<IProps, IState> {
             iframeActive: this.iframeService.isActive(),
             isChatView: false,
             isConnecting: true,
+            isOnline: navigator.onLine || true,
             isUpdating: false,
             leftMenu: 'chat',
             leftMenuSelectedDialogId: '',
@@ -296,6 +298,7 @@ class Chat extends React.Component<IProps, IState> {
         window.addEventListener('wsOpen', this.wsOpenHandler);
         window.addEventListener('wsClose', this.wsCloseHandler);
         window.addEventListener('fnStarted', this.fnStartedHandler);
+        window.addEventListener('networkStatus', this.networkStatusHandler);
         window.addEventListener('Dialog_Sync_Updated', this.dialogDBUpdatedHandler);
         window.addEventListener('Message_Sync_Updated', this.messageDBUpdatedHandler);
 
@@ -440,6 +443,7 @@ class Chat extends React.Component<IProps, IState> {
         window.removeEventListener('wasmInit', this.wasmInitHandler);
         window.removeEventListener('wsOpen', this.wsOpenHandler);
         window.removeEventListener('fnStarted', this.fnStartedHandler);
+        window.removeEventListener('networkStatus', this.networkStatusHandler);
         window.removeEventListener('Dialog_Sync_Updated', this.dialogDBUpdatedHandler);
         window.removeEventListener('Message_Sync_Updated', this.messageDBUpdatedHandler);
     }
@@ -586,6 +590,7 @@ class Chat extends React.Component<IProps, IState> {
                                     <div className="back-to-chats" onClick={this.backToChatsHandler}>
                                         <KeyboardArrowLeftRounded/></div>}
                                     <StatusBar ref={this.statusBarRefHandler} isConnecting={this.state.isConnecting}
+                                               isOnline={this.state.isOnline}
                                                isUpdating={this.state.isUpdating}
                                                onAction={this.messageMoreActionHandler}
                                                peer={peer} selectedDialogId={selectedDialogId}/>
@@ -1156,9 +1161,13 @@ class Chat extends React.Component<IProps, IState> {
                     }
                 });
             } else if (message.senderid !== this.connInfo.UserID && (message.peerid !== this.state.selectedDialogId || this.endOfMessage || !this.isInChat)) {
-                this.updateDialogsCounter(message.peerid || '', {
-                    mentionCounterIncrease: (message.mention_me ? 1 : 0),
-                    unreadCounterIncrease: 1,
+                this.messageRepo.exists(message.id || 0).then((exists) => {
+                    if (!exists) {
+                        this.updateDialogsCounter(message.peerid || '', {
+                            mentionCounterIncrease: (message.mention_me ? 1 : 0),
+                            unreadCounterIncrease: 1,
+                        });
+                    }
                 });
             }
         });
@@ -2520,6 +2529,13 @@ class Chat extends React.Component<IProps, IState> {
         this.messageRepo.loadConnInfo();
         this.connInfo = this.sdk.getConnInfo();
         this.updateManager.setUserId(this.connInfo.UserID || '');
+    }
+
+    private networkStatusHandler = (event: any) => {
+        const data = event.detail;
+        this.setState({
+            isOnline: data.online,
+        });
     }
 
     private dialogDBUpdatedHandler = (event: any) => {

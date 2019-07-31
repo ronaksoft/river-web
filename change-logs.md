@@ -1,3 +1,14 @@
+## 0.25.34
+* Message media updated
+* requestAnimationFrame added instead of timeout for scrolling
+* Waiting for network status added
+* Network connection updated
+* Unread counters now have confirmation
+* Translations updated
+
+## 0.25.33
+* Un-downloaded Message Media appearance updated
+
 ## 0.25.32
 * Message load more after bug fixed
 * Close wire improved

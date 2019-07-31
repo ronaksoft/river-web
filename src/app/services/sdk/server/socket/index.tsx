@@ -61,13 +61,17 @@ export default class Socket {
         }, 100);
 
         window.addEventListener('online', () => {
-            this.initWebSocket();
             this.online = true;
+            this.dispatchEvent('networkStatus', {online: true});
+            this.initTimeout = setTimeout(() => {
+                this.initWebSocket();
+            }, 10);
         });
 
         window.addEventListener('offline', () => {
-            this.closeWire();
             this.online = false;
+            this.dispatchEvent('networkStatus', {online: false});
+            this.closeWire();
         });
 
         // @ts-ignore
@@ -75,7 +79,9 @@ export default class Socket {
         if (connection) {
             connection.addEventListener('change', () => {
                 window.console.log('connection changed!');
-                this.closeWire();
+                if (this.online) {
+                    this.closeWire();
+                }
             });
         }
 
@@ -168,7 +174,9 @@ export default class Socket {
     }
 
     public start() {
-        this.initWebSocket();
+        this.initTimeout = setTimeout(() => {
+            this.initWebSocket();
+        }, 10);
     }
 
     public stop() {
@@ -206,8 +214,7 @@ export default class Socket {
             this.lastSendTime = Date.now();
             this.lastReceiveTime = Date.now();
             if (this.started) {
-                const event = new CustomEvent('wsOpen');
-                window.dispatchEvent(event);
+                this.dispatchEvent('wsOpen', null);
             }
             this.workerMessage('wsOpen', null);
         };
@@ -230,13 +237,22 @@ export default class Socket {
 
     private closeWire() {
         this.connected = false;
-        const event = new CustomEvent('wsClose');
-        try {
-            this.socket.close();
-        } catch (e) {
-            window.console.log(e);
+        if (this.socket) {
+            this.socket.onclose = null;
+            this.socket.onmessage = null;
         }
-        window.dispatchEvent(event);
+        if (this.socket.readyState === WebSocket.OPEN) {
+            try {
+                this.socket.close();
+            } catch (e) {
+                window.console.log(e);
+            }
+        }
+        this.dispatchEvent('wsClose', null);
+        if (!this.online) {
+            return;
+        }
+        clearTimeout(this.initTimeout);
         if (this.tryCounter === 0) {
             this.initTimeout = setTimeout(() => {
                 this.initWebSocket();
@@ -267,7 +283,7 @@ export default class Socket {
         setInterval(() => {
             if (this.lastSendTime > this.lastReceiveTime) {
                 const now = Date.now();
-                if (now - this.lastSendTime > 5000) {
+                if (now - this.lastSendTime > 10000) {
                     window.console.log('bad network');
                     this.closeWire();
                 }

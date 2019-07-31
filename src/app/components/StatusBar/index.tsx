@@ -19,6 +19,7 @@ import './style.css';
 
 interface IProps {
     isConnecting: boolean;
+    isOnline: boolean;
     isUpdating: boolean;
     onAction: (cmd: string) => void;
     peer: InputPeer | null;
@@ -27,6 +28,7 @@ interface IProps {
 
 interface IState {
     isConnecting: boolean;
+    isOnline: boolean;
     isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } };
     isUpdating: boolean;
     peer: InputPeer | null;
@@ -41,6 +43,7 @@ class StatusBar extends React.Component<IProps, IState> {
 
         this.state = {
             isConnecting: false,
+            isOnline: props.isOnline,
             isTypingList: {},
             isUpdating: false,
             peer: null,
@@ -51,6 +54,7 @@ class StatusBar extends React.Component<IProps, IState> {
     public componentWillReceiveProps(newProps: IProps) {
         this.setState({
             isConnecting: newProps.isConnecting,
+            isOnline: newProps.isOnline,
             isUpdating: newProps.isUpdating,
             peer: newProps.peer,
             selectedDialogId: newProps.selectedDialogId,
@@ -92,7 +96,9 @@ class StatusBar extends React.Component<IProps, IState> {
             typingList = this.state.isTypingList[selectedDialogId];
             ids = Object.keys(typingList).length;
         }
-        if (this.state.isConnecting) {
+        if (!this.state.isOnline) {
+            return (<span>{i18n.t('status.waiting_for_network')}</span>);
+        } else if (this.state.isConnecting) {
             return (<span>{i18n.t('status.connecting')}</span>);
         } else if (this.state.isUpdating) {
             return (<span>{i18n.t('status.updating')}</span>);
