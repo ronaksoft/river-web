@@ -1772,15 +1772,6 @@ class Chat extends React.Component<IProps, IState> {
                     (key > 0 && msg.senderid !== messages[key - 1].senderid) ||
                     (key > 0 && messages[key - 1].messageaction !== C_MESSAGE_ACTION.MessageActionNope);
 
-                if (messageReadId !== undefined && !this.newMessageFlag && (msg.id || 0) > messageReadId && !msg.me) {
-                    defaultMessages.push({
-                        createdon: msg.createdon,
-                        id: (msg.id || 0) + 0.5,
-                        messagetype: C_MESSAGE_TYPE.NewMessage,
-                    });
-                    this.newMessageFlag = true;
-                }
-
                 // date breakpoint
                 if (msg.messagetype !== C_MESSAGE_TYPE.End && ((key === 0 && (defaultMessages.length === 0 || (defaultMessages.length > 0 && !TimeUtility.isInSameDay(msg.createdon, defaultMessages[defaultMessages.length - 1].createdon))))
                     || (key > 0 && !TimeUtility.isInSameDay(msg.createdon, messages[key - 1].createdon)))) {
@@ -1790,6 +1781,16 @@ class Chat extends React.Component<IProps, IState> {
                         messagetype: C_MESSAGE_TYPE.Date,
                         senderid: msg.senderid,
                     });
+                    msg.avatar = true;
+                }
+
+                if (messageReadId !== undefined && !this.newMessageFlag && (msg.id || 0) > messageReadId && !msg.me) {
+                    defaultMessages.push({
+                        createdon: msg.createdon,
+                        id: (msg.id || 0) + 0.5,
+                        messagetype: C_MESSAGE_TYPE.NewMessage,
+                    });
+                    this.newMessageFlag = true;
                     msg.avatar = true;
                 }
 
