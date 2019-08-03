@@ -241,7 +241,7 @@ export default class Socket {
             this.socket.onclose = null;
             this.socket.onmessage = null;
         }
-        if (this.socket.readyState === WebSocket.OPEN) {
+        if (this.socket && this.socket.readyState === WebSocket.OPEN) {
             try {
                 this.socket.close();
             } catch (e) {

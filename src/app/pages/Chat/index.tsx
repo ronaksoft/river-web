@@ -101,6 +101,7 @@ import i18n from "../../services/i18n";
 import IframeService, {C_IFRAME_SUBJECT} from '../../services/iframe';
 import PopUpNewMessage from "../../components/PopUpNewMessage";
 import CachedMessageService from "../../services/cachedMessageService";
+import {isProd} from "../../../App";
 
 import './style.css';
 
@@ -258,7 +259,7 @@ class Chat extends React.Component<IProps, IState> {
         this.newMessageLoadThrottle = throttle(this.newMessageLoad, 200);
         this.cachedMessageService = CachedMessageService.getInstance();
 
-        if (!process || !process.env || process.env.NODE_ENV !== 'development') {
+        if (isProd) {
             Sentry.configureScope((scope) => {
                 scope.setUser({
                     'auth_id': this.connInfo.AuthID,

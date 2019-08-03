@@ -16,6 +16,8 @@ import {ITempFile} from '../../../repository/file/interface';
 import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from './const/const';
 import {findIndex} from 'lodash';
 import * as core_types_pb from '../messages/chat.core.types_pb';
+import * as Sentry from '@sentry/browser';
+import {isProd} from "../../../../App";
 
 export interface IFileProgress {
     active?: boolean;
@@ -412,6 +414,9 @@ export default class FileManager {
                     if (chunkInfo.fileLocation) {
                         this.fileTransferQueue[id].pipelines++;
                         this.download(chunkInfo.fileLocation, chunk.part, chunk.offset, chunk.limit, cancelHandler, uploadProgress, downloadProgress).then((res) => {
+                            if (chunk.limit !== 0 && chunk.limit !== res && chunkInfo.fileLocation && isProd) {
+                                Sentry.captureMessage(`Files' size are not match, offset: ${chunk.offset}, limit: ${chunk.limit}, size: ${res}, parts: ${chunk.part}/${chunkInfo.totalParts}, location: ${JSON.stringify(chunkInfo.fileLocation.toObject())}`, Sentry.Severity.Warning);
+                            }
                             if (this.fileTransferQueue.hasOwnProperty(id)) {
                                 this.fileTransferQueue[id].doneParts++;
                                 this.fileTransferQueue[id].pipelines--;

@@ -1,3 +1,7 @@
+## 0.25.37
+* File log added
+* Websocket bug fixed
+
 ## 0.25.36
 * Cache size bug fixed
 

@@ -28,7 +28,8 @@ import Server from "./app/services/sdk/server";
 
 import './App.css';
 
-if (!process || !process.env || process.env.NODE_ENV !== 'development') {
+export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
+if (isProd) {
     Sentry.init({
         dsn: "https://ec65e55c384f43f2ac2ed7c66e319b1a@sentry.ronaksoftware.com/4"
     });
@@ -97,7 +98,7 @@ class App extends React.Component<{}, IState> {
     }
 
     public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-        if (!process || !process.env || process.env.NODE_ENV !== 'development') {
+        if (isProd) {
             Sentry.withScope((scope) => {
                 scope.setExtras(errorInfo);
                 const eventId = Sentry.captureException(error);
