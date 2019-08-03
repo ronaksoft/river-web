@@ -1,3 +1,6 @@
+## 0.25.36
+* Cache size bug fixed
+
 ## 0.25.35
 * Jump on scroll bug fixed
 * File manager on http fixed

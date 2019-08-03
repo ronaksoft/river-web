@@ -715,7 +715,7 @@ class Message extends React.Component<IProps, IState> {
             if ((peer && peer.getType() === PeerType.PEERGROUP || this.isSimplified) && message.avatar) {
                 height += 20;
             }
-            if (message.replyto !== 0 && message.deleted_reply !== true) {
+            if (message.replyto && message.replyto !== 0 && message.deleted_reply !== true) {
                 height += 41;
             }
             if (message.fwdsenderid && message.fwdsenderid !== '0') {
