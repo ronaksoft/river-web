@@ -648,10 +648,10 @@ class Message extends React.Component<IProps, IState> {
                                 rowHeight={this.getHeight}
                                 rowRenderer={this.rowRender}
                                 rowCount={items.length}
-                                overscanRowCount={this.isMac ? 10 : 40}
+                                overscanRowCount={this.isMac ? 32 : 48}
                                 width={width + (this.scrollbar.noScroll ? 0 : this.scrollbar.width)}
                                 height={height}
-                                estimatedRowSize={41}
+                                estimatedRowSize={52}
                                 onRowsRendered={this.onRowsRenderedHandler}
                                 noRowsRenderer={this.noRowsRenderer}
                                 scrollToAlignment={(this.scrollToIndex || -1) > -1 ? 'end' : 'start'}
@@ -690,16 +690,36 @@ class Message extends React.Component<IProps, IState> {
     }
 
     private getHeight = (params: { index: number }) => {
+        const {peer} = this.props;
         const {items} = this.state;
-        const height = this.cache.rowHeight(params);
-        if (height === 41 && items[params.index]) {
-            switch (items[params.index].messagetype) {
+        let height = this.cache.rowHeight(params);
+        const message = items[params.index];
+        if (!message) {
+            return height;
+        }
+        if (height === 52) {
+            switch (message.messagetype) {
                 case C_MESSAGE_TYPE.Picture:
                 case C_MESSAGE_TYPE.Video:
-                    const info = getContentSize(items[params.index]);
+                    const info = getContentSize(message);
                     if (info) {
-                        return info.height + 10;
+                        height = info.height + 10;
                     }
+                    break;
+                case C_MESSAGE_TYPE.Voice:
+                    height = 42;
+                    break;
+                case C_MESSAGE_TYPE.System:
+                    return 41;
+            }
+            if ((peer && peer.getType() === PeerType.PEERGROUP || this.isSimplified) && message.avatar) {
+                height += 20;
+            }
+            if (message.replyto !== 0 && message.deleted_reply !== true) {
+                height += 41;
+            }
+            if (message.fwdsenderid && message.fwdsenderid !== '0') {
+                height += 25;
             }
         }
         return height;

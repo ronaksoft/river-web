@@ -1,3 +1,9 @@
+## 0.25.35
+* Jump on scroll bug fixed
+* File manager on http fixed
+* Pre-Cache height improved 
+* Change-logs.md renamed to CHANGELOG.md
+
 ## 0.25.34
 * Message media updated
 * requestAnimationFrame added instead of timeout for scrolling

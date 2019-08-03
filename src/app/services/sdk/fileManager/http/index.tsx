@@ -35,7 +35,7 @@ export default class Http {
     private reqId: number;
     private messageListeners: { [key: number]: IMessageListener } = {};
     private sentQueue: number[] = [];
-    private dataCenterUrl: string = 'http://file.river.me';
+    private dataCenterUrl: string = 'http://file.river.im';
     // @ts-ignore
     private workerId: number = 0;
     private isWorkerReady: boolean = false;
@@ -52,6 +52,8 @@ export default class Http {
             this.dataCenterUrl = 'http://' + fileUrl;
         } else if (window.location.protocol === 'https:' && !ElectronService.isElectron()) {
             this.dataCenterUrl = 'https://' + window.location.host + '/file';
+        } else if (window.location.protocol === 'http:') {
+            this.dataCenterUrl = 'http://' + fileUrl;
         }
 
         this.workerMessage('init', {});
