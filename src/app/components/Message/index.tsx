@@ -454,11 +454,11 @@ class Message extends React.Component<IProps, IState> {
                             const eldiv = this.scrollContainerEl.firstElementChild;
                             if (eldiv) {
                                 this.list.scrollToPosition((eldiv.scrollHeight - this.scrollContainerEl.clientHeight) + 10);
-                                setTimeout(() => {
+                                requestAnimationFrame(() => {
                                     if (!this.isAtEnd()) {
                                         this.animateToEnd(true);
                                     }
-                                }, 50);
+                                });
                                 if (items.length > 40) {
                                     this.setEnableBefore();
                                 }
