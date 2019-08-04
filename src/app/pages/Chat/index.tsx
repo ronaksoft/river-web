@@ -102,6 +102,7 @@ import IframeService, {C_IFRAME_SUBJECT} from '../../services/iframe';
 import PopUpNewMessage from "../../components/PopUpNewMessage";
 import CachedMessageService from "../../services/cachedMessageService";
 import {isProd} from "../../../App";
+import {emojiLevel} from "../../services/utilities/emoji";
 
 import './style.css';
 
@@ -1283,11 +1284,12 @@ class Chat extends React.Component<IProps, IState> {
         }
         window.console.debug('UpdateMaxInbox:', data.maxid);
         const peerId = data.peer.id || '';
-        this.updateDialogsCounter(peerId, {maxInbox: data.maxid});
         const dialog = this.getDialogById(peerId);
         if (!dialog) {
             return;
         }
+        const readinboxmaxid = dialog.readinboxmaxid || 0;
+        this.updateDialogsCounter(peerId, {maxInbox: data.maxid});
         const fn = () => {
             this.messageRepo.getUnreadCount(peerId, data.maxid || 0, dialog ? (dialog.topmessageid || 0) : 0).then((count) => {
                 this.updateDialogsCounter(peerId, {
@@ -1297,7 +1299,7 @@ class Chat extends React.Component<IProps, IState> {
             });
         };
         if (this.state.selectedDialogId === (data.peer.id || '')) {
-            if ((dialog.readinboxmaxid || 0) < (data.maxid || 0)) {
+            if (readinboxmaxid < (data.maxid || 0)) {
                 clearTimeout(this.updateReadInboxTimeout);
                 this.updateReadInboxTimeout = setTimeout(fn, 500);
             }
@@ -1961,6 +1963,11 @@ class Chat extends React.Component<IProps, IState> {
                 rtl: this.rtlDetector.direction(text || ''),
                 senderid: this.connInfo.UserID,
             };
+
+            const emLe = emojiLevel(text);
+            if (emLe) {
+                message.em_le = emLe;
+            }
 
             let replyTo;
             if (param && param.mode === C_MSG_MODE.Reply) {

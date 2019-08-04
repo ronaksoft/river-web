@@ -293,6 +293,19 @@
         text-align: left;
       }
 
+      &.emoji_1 {
+        font-size: 25px !important;
+        line-height: 1.1em !important;
+        letter-spacing: 3px;
+        text-align: center;
+      }
+
+      &.emoji_2 {
+        font-size: 36px !important;
+        line-height: 1.1em;
+        text-align: center;
+      }
+
       ._mention {
         color: var(--light-mention);
         display: inline-block;

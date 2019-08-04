@@ -29,6 +29,7 @@ import {
 import MediaRepo from '../media';
 import {C_MEDIA_TYPE} from '../media/interface';
 import {kMerge} from "../../services/utilities/kDash";
+import {emojiLevel} from "../../services/utilities/emoji";
 
 interface IMessageBundlePromise {
     reject: any;
@@ -185,6 +186,10 @@ export default class MessageRepo {
         }
         if (out.mediadata && out.mediadata.caption && out.mediadata.caption.length > 0) {
             out.rtl = RTLDetector.getInstance().direction(out.mediadata.caption);
+        }
+        const emLe = emojiLevel(out.body);
+        if (emLe) {
+            out.em_le = emLe;
         }
         out.me = (userId === out.senderid);
         return out;

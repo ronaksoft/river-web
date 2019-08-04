@@ -1,3 +1,9 @@
+## 0.25.38
+* Emoji magnifier added
+* Cell height cache updated
+* Websocket connecting bug fixed
+* Unread counter: read on other device bug fixed
+
 ## 0.25.37
 * File log added
 * Websocket bug fixed

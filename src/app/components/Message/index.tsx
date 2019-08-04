@@ -711,6 +711,16 @@ class Message extends React.Component<IProps, IState> {
                     break;
                 case C_MESSAGE_TYPE.System:
                     return 41;
+                case C_MESSAGE_TYPE.Normal:
+                case undefined:
+                    if (message.em_le) {
+                        if (message.em_le === 1) {
+                            height = 74;
+                        } else {
+                            height = 62;
+                        }
+                    }
+                    break;
             }
             if ((peer && peer.getType() === PeerType.PEERGROUP || this.isSimplified) && message.avatar) {
                 height += 20;
@@ -1442,8 +1452,12 @@ class Message extends React.Component<IProps, IState> {
                     return (<div>Unsupported message</div>);
             }
         } else {
+            let emojiClass = '';
+            if (message.em_le) {
+                emojiClass = ` emoji_${message.em_le}`;
+            }
             return (
-                <div className={'inner ' + (message.rtl ? 'rtl' : 'ltr')}
+                <div className={'inner ' + (message.rtl ? 'rtl' : 'ltr') + emojiClass}
                      onDoubleClick={this.selectText}>{this.renderBody(message, measureFn)}</div>
             );
         }

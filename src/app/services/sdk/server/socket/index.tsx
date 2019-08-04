@@ -249,9 +249,6 @@ export default class Socket {
             }
         }
         this.dispatchEvent('wsClose', null);
-        if (!this.online) {
-            return;
-        }
         clearTimeout(this.initTimeout);
         if (this.tryCounter === 0) {
             this.initTimeout = setTimeout(() => {

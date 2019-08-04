@@ -24,6 +24,7 @@ interface IMessage extends UserMessage.AsObject {
     savedPath?: string;
     temp?: boolean;
     deleted_reply?: boolean;
+    em_le?: number;
 }
 
 interface IPendingMessage {
