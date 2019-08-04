@@ -1,3 +1,6 @@
+## 0.25.39
+* Emoji on simplified view fixed 
+
 ## 0.25.38
 * Emoji magnifier added
 * Cell height cache updated

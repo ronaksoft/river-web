@@ -716,6 +716,8 @@ html[bubble="5"] .bubble-wrapper .bubble {
   box-shadow: none;
   margin-left: 44px !important;
   float: left; }
+  html[bubble="5"] .bubble-wrapper .bubble .inner.emoji_1, html[bubble="5"] .bubble-wrapper .bubble .inner.emoji_2 {
+    text-align: left; }
   html[bubble="5"] .bubble-wrapper .bubble .name {
     font-weight: bold; }
 

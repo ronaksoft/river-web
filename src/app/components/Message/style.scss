@@ -1128,6 +1128,12 @@ html[bubble="5"] {
       margin-left: 44px !important;
       float: left;
 
+      .inner {
+        &.emoji_1, &.emoji_2 {
+          text-align: left;
+        }
+      }
+
       .name {
         font-weight: bold;
       }
