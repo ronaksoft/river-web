@@ -74,6 +74,14 @@ export default class Socket {
             this.closeWire();
         });
 
+        setTimeout(() => {
+            if (!navigator.onLine) {
+                this.online = false;
+                this.dispatchEvent('networkStatus', {online: false});
+                this.closeWire();
+            }
+        }, 3000);
+
         // @ts-ignore
         const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
         if (connection) {
@@ -254,6 +262,9 @@ export default class Socket {
             }
         }
         this.dispatchEvent('wsClose', null);
+        if (!this.online && !force) {
+            return;
+        }
         clearTimeout(this.initTimeout);
         if (force) {
             this.initWebSocket();
@@ -287,7 +298,7 @@ export default class Socket {
 
     private checkNetwork() {
         setInterval(() => {
-            if (this.lastSendTime > this.lastReceiveTime) {
+            if (this.lastSendTime > this.lastReceiveTime && this.online) {
                 const now = Date.now();
                 if (now - this.lastSendTime > 12000) {
                     window.console.log('bad network');

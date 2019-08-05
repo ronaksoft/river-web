@@ -43,10 +43,10 @@ class StatusBar extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
-            isConnecting: false,
+            isConnecting: props.isConnecting,
             isOnline: props.isOnline,
             isTypingList: {},
-            isUpdating: false,
+            isUpdating: props.isUpdating,
             peer: null,
             selectedDialogId: props.selectedDialogId,
         };

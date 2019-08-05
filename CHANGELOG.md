@@ -1,6 +1,7 @@
 ## 0.25.41
 * **Try again** added in connecting status
 * Translations updated
+* Waiting for network indicator improved
 
 ## 0.25.40
 * Bad network bug fixed
