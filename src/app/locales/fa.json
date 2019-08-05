@@ -235,7 +235,8 @@
     "recording_voice": "در حال ضبط صوت...",
     "uploading_file": "در حال بارگزاری فایل...",
     "doing": "در حال...",
-    "waiting_for_network": "منتظر شبکه..."
+    "waiting_for_network": "منتظر شبکه...",
+    "try_again": "(تلاش مجدد)"
   },
   "message": {
     "voice_message": "پیام صوتی",

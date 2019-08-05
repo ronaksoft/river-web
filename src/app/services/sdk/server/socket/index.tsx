@@ -187,6 +187,11 @@ export default class Socket {
         return this.started;
     }
 
+    public tryAgain() {
+        this.tryCounter = 0;
+        this.closeWire(true);
+    }
+
     private initWebSocket() {
         clearTimeout(this.initTimeout);
 
@@ -235,7 +240,7 @@ export default class Socket {
         };
     }
 
-    private closeWire() {
+    private closeWire(force?: boolean) {
         this.connected = false;
         if (this.socket) {
             this.socket.onclose = null;
@@ -250,14 +255,18 @@ export default class Socket {
         }
         this.dispatchEvent('wsClose', null);
         clearTimeout(this.initTimeout);
-        if (this.tryCounter === 0) {
-            this.initTimeout = setTimeout(() => {
-                this.initWebSocket();
-            }, 1000);
+        if (force) {
+            this.initWebSocket();
         } else {
-            this.initTimeout = setTimeout(() => {
-                this.initWebSocket();
-            }, 5000 + Math.floor(Math.random() * 3000));
+            if (this.tryCounter === 0) {
+                this.initTimeout = setTimeout(() => {
+                    this.initWebSocket();
+                }, 1000);
+            } else {
+                this.initTimeout = setTimeout(() => {
+                    this.initWebSocket();
+                }, 5000 + Math.floor(Math.random() * 3000));
+            }
         }
     }
 

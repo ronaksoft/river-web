@@ -28,6 +28,15 @@
       vertical-align: bottom; }
   .status-bar .online {
     color: var(--river) !important; }
+  .status-bar .try-again-container {
+    display: block; }
+    .status-bar .try-again-container .try-again {
+      display: none;
+      color: var(--dark);
+      margin: 0 6px; }
+  .status-bar:hover .try-again-container .try-again {
+    display: inline-block;
+    cursor: pointer; }
 
 html[direction="rtl"] .status-bar {
   align-items: flex-start; }

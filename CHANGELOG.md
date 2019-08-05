@@ -1,3 +1,7 @@
+## 0.25.41
+* **Try again** added in connecting status
+* Translations updated
+
 ## 0.25.40
 * Bad network bug fixed
 

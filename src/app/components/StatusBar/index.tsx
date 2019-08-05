@@ -14,6 +14,7 @@ import GroupName from "../GroupName";
 import {isTypingRender} from "../DialogMessage";
 import LastSeen from "../LastSeen";
 import i18n from "../../services/i18n";
+import Socket from "../../services/sdk/server/socket";
 
 import './style.css';
 
@@ -99,7 +100,8 @@ class StatusBar extends React.Component<IProps, IState> {
         if (!this.state.isOnline) {
             return (<span>{i18n.t('status.waiting_for_network')}</span>);
         } else if (this.state.isConnecting) {
-            return (<span>{i18n.t('status.connecting')}</span>);
+            return (<span className="try-again-container"><span>{i18n.t('status.connecting')}</span><span
+                className="try-again" onClick={this.tryAgainHandler}>{i18n.t('status.try_again')}</span></span>);
         } else if (this.state.isUpdating) {
             return (<span>{i18n.t('status.updating')}</span>);
         } else if (ids > 0) {
@@ -118,6 +120,12 @@ class StatusBar extends React.Component<IProps, IState> {
         setTimeout(() => {
             this.disableClick = false;
         }, 300);
+    }
+
+    private tryAgainHandler = (e: any) => {
+        e.stopPropagation();
+        e.preventDefault();
+        Socket.getInstance().tryAgain();
     }
 }
 

@@ -35,6 +35,25 @@
   .online {
     color: var(--river) !important;
   }
+
+  .try-again-container {
+    display: block;
+
+    .try-again {
+      display: none;
+      color: var(--dark);
+      margin: 0 6px;
+    }
+  }
+
+  &:hover {
+    .try-again-container {
+      .try-again {
+        display: inline-block;
+        cursor: pointer;
+      }
+    }
+  }
 }
 
 html[direction="rtl"] {

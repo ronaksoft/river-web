@@ -239,7 +239,8 @@
     "recording_voice": "recording voice...",
     "uploading_file": "uploading file...",
     "doing": "doing...",
-    "waiting_for_network": "Waiting for network..."
+    "waiting_for_network": "Waiting for network...",
+    "try_again": "(try again)"
   },
   "message": {
     "voice_message": "Voice Message",
