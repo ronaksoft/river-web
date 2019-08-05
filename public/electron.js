@@ -1,5 +1,5 @@
 /* tslint:disable */
-const {app, BrowserWindow, shell, ipcMain, Menu} = require('electron');
+const {app, BrowserWindow, shell, ipcMain, Menu, systemPreferences} = require('electron');
 const isDev = require('electron-is-dev');
 const {download} = require('electron-dl');
 const contextMenu = require('electron-context-menu');
@@ -15,6 +15,31 @@ if (isDev) {
 const callReact = (cmd, params) => {
     mainWindow.webContents.send(cmd, params);
 };
+
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+    app.quit();
+} else {
+    app.on('second-instance', (event, commandLine, workingDirectory) => {
+        // Someone tried to run a second instance, we should focus our window.
+        if (mainWindow) {
+            if (mainWindow.isMinimized()) {
+                mainWindow.restore();
+            }
+            mainWindow.focus();
+        }
+    });
+}
+
+// Dark theme on macOS
+systemPreferences.setAppLevelAppearance(systemPreferences.isDarkMode() ? 'dark' : 'light');
+systemPreferences.subscribeNotification(
+    'AppleInterfaceThemeChangedNotification',
+    () => {
+        systemPreferences.setAppLevelAppearance(systemPreferences.isDarkMode() ? 'dark' : 'light');
+    }
+);
 
 contextMenu({});
 
@@ -32,7 +57,8 @@ createWindow = (forceShow) => {
         height: 860,
         width: 1280,
         simpleFullscreen: true,
-        vibrancy: 'dark'
+        vibrancy: 'dark',
+        darkTheme: true,
     });
 
     mainWindow.loadURL(
@@ -77,6 +103,10 @@ createWindow = (forceShow) => {
     `);
 
     mainWindow.once('ready-to-show', () => {
+        if (process.platform === 'win32' || process.platform === 'linux') {
+            mainWindow.setMenuBarVisibility(false);
+        }
+
         if (!forceShow) {
             mainWindow.show();
         }
@@ -173,8 +203,10 @@ app.on('ready', () => {
 });
 
 app.on('window-all-closed', (e) => {
-    // app.quit();
     mainWindow = null;
+    if (process.platform === 'win32') {
+        app.quit();
+    }
 });
 
 app.on('activate', () => {
@@ -238,6 +270,16 @@ ipcMain.on('fnCall', (e, arg) => {
                 reqId: arg.reqId,
                 data: {
                     bool: true,
+                },
+            });
+            break;
+        case 'toggleMenuBar':
+            mainWindow.setMenuBarVisibility(!mainWindow.isMenuBarVisible());
+            callReact('fnCallback', {
+                cmd: 'bool',
+                reqId: arg.reqId,
+                data: {
+                    bool: mainWindow.isMenuBarVisible(),
                 },
             });
             break;

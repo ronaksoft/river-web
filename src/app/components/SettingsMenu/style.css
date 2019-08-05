@@ -115,6 +115,8 @@
         background-color: #9C27B0; }
       .setting-menu .page-anchor .icon.color-language {
         background-color: #0091EA; }
+      .setting-menu .page-anchor .icon.color-menu-bar {
+        background-color: #777; }
       .setting-menu .page-anchor .icon > svg {
         color: var(--white);
         font-size: 20px; }

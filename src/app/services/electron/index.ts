@@ -24,6 +24,7 @@ export const C_ELECTRON_CMD = {
     PreviewFile: 'previewFile',
     RevealFile: 'revealFile',
     SetBadgeCounter: 'setBadgeCounter',
+    ToggleMenuBar: 'toggleMenuBar',
 };
 
 interface IMessageListener {
@@ -120,12 +121,16 @@ export default class ElectronService {
         });
     }
 
-
-    /* Set Badge Counter*/
+    /* Set Badge Counter */
     public setBadgeCounter(counter: number) {
         return this.send(C_ELECTRON_CMD.SetBadgeCounter, {
             counter,
         });
+    }
+
+    /* Toggle menu bar */
+    public toggleMenuBar() {
+        return this.send(C_ELECTRON_CMD.ToggleMenuBar, {});
     }
 
     /* Call queue handler */

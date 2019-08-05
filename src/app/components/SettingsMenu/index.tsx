@@ -15,7 +15,7 @@ import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import {
     KeyboardBackspaceRounded, PaletteRounded/*, PersonRounded*/, EditRounded, CheckRounded, BookmarkRounded,
     PhotoCameraRounded, CloseRounded, FormatSizeRounded, ChatBubbleRounded, FormatColorFillRounded, CollectionsRounded,
-    Brightness2Rounded, ClearAllRounded, DataUsageRounded, LanguageRounded, DoneRounded,
+    Brightness2Rounded, ClearAllRounded, DataUsageRounded, LanguageRounded, DoneRounded, MaximizeRounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import UserAvatar from '../UserAvatar';
@@ -55,11 +55,12 @@ import {Loading} from '../Loading';
 import i18n from '../../services/i18n';
 import Slider from "@material-ui/lab/Slider";
 import UserName from "../UserName";
+import ElectronService from "../../services/electron";
 
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.25.41';
+export const C_VERSION = '0.25.42';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{
@@ -143,6 +144,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private backgroundService: BackgroundService;
     private downloadManger: DownloadManager;
     private settingsStorageUsageModalRef: SettingsStorageUsageModal;
+    private electronService: ElectronService;
 
     constructor(props: IProps) {
         super(props);
@@ -216,6 +218,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.downloadManger = DownloadManager.getInstance();
 
         this.currentAuthID = this.sdk.getConnInfo().AuthID;
+
+        this.electronService = ElectronService.getInstance();
     }
 
     public componentDidMount() {
@@ -416,6 +420,13 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                 </div>
                                             </div>
                                         </div>
+                                        {ElectronService.isElectron() &&
+                                        <div className="page-anchor" onClick={this.toggleMenuBarHandler}>
+                                            <div className="icon color-menu-bar">
+                                                <MaximizeRounded/>
+                                            </div>
+                                            <div className="anchor-label">{i18n.t('settings.toggle_menu_bar')}</div>
+                                        </div>}
                                         <div className="page-content">
                                             <div className="page-anchor">
                                                 <div className="icon color-theme-type">
@@ -1584,6 +1595,11 @@ class SettingsMenu extends React.Component<IProps, IState> {
             return;
         }
         this.settingsStorageUsageModalRef.openDialog();
+    }
+
+    private toggleMenuBarHandler = () => {
+        //
+        this.electronService.toggleMenuBar();
     }
 }
 

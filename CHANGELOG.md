@@ -1,3 +1,9 @@
+## 0.25.42
+* Electron updated
+* Single instance app added
+* Dark mode in macOS added
+* Toggle menubar option added
+
 ## 0.25.41
 * `Try again` added in connecting status
 * Translations updated
