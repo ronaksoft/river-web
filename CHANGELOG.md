@@ -1,3 +1,6 @@
+## 0.25.40
+* Bad network bug fixed
+
 ## 0.25.39
 * Emoji on simplified view fixed 
 

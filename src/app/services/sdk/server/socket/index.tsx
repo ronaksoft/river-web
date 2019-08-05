@@ -280,11 +280,11 @@ export default class Socket {
         setInterval(() => {
             if (this.lastSendTime > this.lastReceiveTime) {
                 const now = Date.now();
-                if (now - this.lastSendTime > 10000) {
+                if (now - this.lastSendTime > 12000) {
                     window.console.log('bad network');
                     this.closeWire();
                 }
             }
-        }, 5000);
+        }, 12000);
     }
 }
