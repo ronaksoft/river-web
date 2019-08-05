@@ -1,3 +1,6 @@
+## 0.25.43
+* Max-width set to 256px add message cell
+
 ## 0.25.42
 * Electron updated
 * Single instance app added

@@ -44,7 +44,8 @@
         flex-direction: column;
         background-color: var(--glass-dark-low);
         border-top-right-radius: 5px;
-        border-bottom-right-radius: 5px; }
+        border-bottom-right-radius: 5px;
+        max-width: 256px; }
         .message-preview .preview-container .preview-message-wrapper .preview-message .preview-message-user {
           color: #35cd96;
           font-size: 12px;
@@ -52,13 +53,19 @@
           font-weight: 600;
           text-align: left;
           justify-content: left;
-          width: 100%; }
+          width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap; }
         .message-preview .preview-container .preview-message-wrapper .preview-message .preview-message-body {
           text-align: left;
           width: 100%;
           padding: 0;
           font-size: 13px;
-          font-weight: 100; }
+          font-weight: 100;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap; }
           .message-preview .preview-container .preview-message-wrapper .preview-message .preview-message-body > .inner {
             line-height: 1.3em;
             height: 16px;

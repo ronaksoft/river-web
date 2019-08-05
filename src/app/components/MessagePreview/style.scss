@@ -59,6 +59,7 @@
         background-color: var(--glass-dark-low);
         border-top-right-radius: 5px;
         border-bottom-right-radius: 5px;
+        max-width: 256px;
 
         .preview-message-user {
           color: #35cd96;
@@ -67,6 +68,9 @@
           text-align: left;
           justify-content: left;
           width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
         .preview-message-body {
@@ -75,6 +79,9 @@
           padding: 0;
           font-size: 13px;
           font-weight: 100;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
 
           > .inner {
             line-height: 1.3em;

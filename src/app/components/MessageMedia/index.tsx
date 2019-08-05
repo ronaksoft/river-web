@@ -238,14 +238,14 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
 
         this.pictureContentSize = this.getContentSize(info);
         // Resize parent cell (bubble max-width) for media messages with caption
-        if (this.blurredImageEnable) {
-            // setTimeout(() => {
-            //     if (this.props.parentEl && this.props.parentEl.ref) {
-            //         this.props.parentEl.ref.style.maxWidth = this.pictureContentSize.maxWidth;
-            //         this.cachedPhotoLoadHandler(true);
-            //     }
-            // }, 1);
-        }
+        // if (this.blurredImageEnable) {
+        //     setTimeout(() => {
+        //         if (this.props.parentEl && this.props.parentEl.ref) {
+        //             this.props.parentEl.ref.style.maxWidth = this.pictureContentSize.maxWidth;
+        //             this.cachedPhotoLoadHandler(true);
+        //         }
+        //     }, 1);
+        // }
 
         this.state = {
             fileState: this.getFileState(props.message),
