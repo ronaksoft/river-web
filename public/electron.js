@@ -33,13 +33,15 @@ if (!gotTheLock) {
 }
 
 // Dark theme on macOS
-systemPreferences.setAppLevelAppearance(systemPreferences.isDarkMode() ? 'dark' : 'light');
-systemPreferences.subscribeNotification(
-    'AppleInterfaceThemeChangedNotification',
-    () => {
-        systemPreferences.setAppLevelAppearance(systemPreferences.isDarkMode() ? 'dark' : 'light');
-    }
-);
+if (process.platform === 'darwin') {
+    systemPreferences.setAppLevelAppearance(systemPreferences.isDarkMode() ? 'dark' : 'light');
+    systemPreferences.subscribeNotification(
+        'AppleInterfaceThemeChangedNotification',
+        () => {
+            systemPreferences.setAppLevelAppearance(systemPreferences.isDarkMode() ? 'dark' : 'light');
+        }
+    );
+}
 
 contextMenu({});
 
@@ -103,7 +105,7 @@ createWindow = (forceShow) => {
     `);
 
     mainWindow.once('ready-to-show', () => {
-        if (process.platform === 'win32' || process.platform === 'linux') {
+        if (process.platform !== 'darwin') {
             mainWindow.setMenuBarVisibility(false);
         }
 
@@ -204,7 +206,7 @@ app.on('ready', () => {
 
 app.on('window-all-closed', (e) => {
     mainWindow = null;
-    if (process.platform === 'win32') {
+    if (process.platform !== 'darwin') {
         app.quit();
     }
 });
