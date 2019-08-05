@@ -44,8 +44,7 @@
         flex-direction: column;
         background-color: var(--glass-dark-low);
         border-top-right-radius: 5px;
-        border-bottom-right-radius: 5px;
-        max-width: 256px; }
+        border-bottom-right-radius: 5px; }
         .message-preview .preview-container .preview-message-wrapper .preview-message .preview-message-user {
           color: #35cd96;
           font-size: 12px;
@@ -86,6 +85,9 @@
       .message-preview .preview-container .preview-message-wrapper.with-thumbnail .preview-message {
         border-top-left-radius: 0 !important;
         border-bottom-left-radius: 0 !important; }
+
+.message-media .message-preview .preview-container .preview-message-wrapper .preview-message {
+  max-width: 256px; }
 
 .me .message-preview .preview-container .preview-message-wrapper.reply-you .preview-bar {
   background-color: #6bcbef; }

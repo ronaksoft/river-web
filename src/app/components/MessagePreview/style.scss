@@ -59,7 +59,6 @@
         background-color: var(--glass-dark-low);
         border-top-right-radius: 5px;
         border-bottom-right-radius: 5px;
-        max-width: 256px;
 
         .preview-message-user {
           color: #35cd96;
@@ -121,6 +120,12 @@
         }
       }
     }
+  }
+}
+
+.message-media {
+  .message-preview .preview-container .preview-message-wrapper .preview-message {
+    max-width: 256px;
   }
 }
 

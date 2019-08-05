@@ -1,3 +1,6 @@
+## 0.25.44
+* Max-width will be applied on media messages
+
 ## 0.25.43
 * Max-width set to 256px add message cell
 

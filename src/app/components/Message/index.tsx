@@ -922,7 +922,7 @@ class Message extends React.Component<IProps, IState> {
                             {Boolean(message.me && message.error) &&
                             <span className="error" onClick={this.contextMenuHandler.bind(this, index)}><ErrorRounded/></span>}
                             <div ref={parenElRefHandler}
-                                 className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '')}>
+                                 className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '') + ((message.messagetype === C_MESSAGE_TYPE.Video || message.messagetype === C_MESSAGE_TYPE.Picture) ? ' media-message' : '')}>
                                 {Boolean((peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me) || (this.isSimplified && message.avatar)) &&
                                 <UserName className="name" uniqueColor={true} id={message.senderid || ''}
                                           hideBadge={true} noDetail={this.state.selectable}/>}

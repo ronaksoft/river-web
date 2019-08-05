@@ -61,6 +61,12 @@
   }
 }
 
+.message-media {
+  .message-forwarded .forwarded-container .forwarded-message-wrapper .forward-message-detail {
+    max-width: 256px;
+  }
+}
+
 html[direction="rtl"] {
   .message-forwarded {
     .forwarded-container {
