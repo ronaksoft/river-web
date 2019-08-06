@@ -77,6 +77,10 @@ export default class AudioPlayer {
     private playingFromPeerId: string | undefined;
     private fastEnable: boolean;
     private backUpPeerId: string = '';
+    private errFn?: (info: IAudioInfo, err: any) => void;
+    private updateDurationFn?: (info: IAudioInfo, duration: number) => void;
+    private playTimeout: any = null;
+    private pauseTimeout: any = null;
 
     private constructor() {
         this.audio = document.createElement('audio');
@@ -137,7 +141,7 @@ export default class AudioPlayer {
             if (!this.backUpTracks.hasOwnProperty(messageId)) {
                 this.backUpTracks[messageId] = {
                     downloaded,
-                    duration: 0,
+                    duration: mediaInfo ? (mediaInfo.duration || 0) : 0,
                     event: {
                         currentTime: 0,
                         currentTrack: 0,
@@ -169,7 +173,7 @@ export default class AudioPlayer {
             if (!this.tracks.hasOwnProperty(messageId)) {
                 this.tracks[messageId] = {
                     downloaded,
-                    duration: 0,
+                    duration: mediaInfo ? (mediaInfo.duration || 0) : 0,
                     event: {
                         currentTime: 0,
                         currentTrack: 0,
@@ -261,6 +265,8 @@ export default class AudioPlayer {
                 return false;
             }
             this.audio.play().then(() => {
+                clearTimeout(this.playTimeout);
+                this.playTimeout = null;
                 if (this.fastEnable) {
                     this.audio.playbackRate = 2.0;
                 } else {
@@ -284,6 +290,11 @@ export default class AudioPlayer {
     public pause(messageId: number) {
         if (this.audio && !this.audio.paused) {
             this.audio.pause();
+            clearTimeout(this.pauseTimeout);
+            this.pauseTimeout = null;
+            this.setState(messageId, 'pause');
+            this.stopPlayerInterval();
+        } else {
             this.setState(messageId, 'pause');
             this.stopPlayerInterval();
         }
@@ -435,6 +446,16 @@ export default class AudioPlayer {
         }
     }
 
+    /* Set audio err function */
+    public setErrorFn(fn: (info: IAudioInfo, err: any) => void) {
+        this.errFn = fn;
+    }
+
+    /* Set audio err function */
+    public setUpateDurationFn(fn: (info: IAudioInfo, duration: number) => void) {
+        this.updateDurationFn = fn;
+    }
+
     /* Get audio from database and prepare it for playing */
     private prepareTrack(messageId: number) {
         if (!this.tracks.hasOwnProperty(messageId)) {
@@ -447,21 +468,66 @@ export default class AudioPlayer {
         if (!this.tracks.hasOwnProperty(messageId)) {
             return;
         }
-        const fileId = this.tracks[messageId].fileId;
+        const track = this.tracks[messageId];
+        const fileId = track.fileId;
         this.fileRepo.get(fileId).then((res) => {
             if (res) {
                 this.audio.src = URL.createObjectURL(res.data);
                 this.lastObjectUrl = this.audio.src;
                 this.audio.onloadedmetadata = (e) => {
                     if (this.tracks.hasOwnProperty(messageId)) {
+                        if (this.tracks[messageId].duration === 0 && this.audio.duration > 0 && this.updateDurationFn) {
+                            this.updateDurationFn({
+                                fast: false,
+                                messageId,
+                                peerId: track.peerId || '',
+                                userId: track.userId,
+                            }, this.audio.duration);
+                            setTimeout(() => {
+                                this.callUpdatePlaylistHandler();
+                            }, 10);
+                        }
                         this.tracks[messageId].duration = this.audio.duration;
+                        if (this.tracks[messageId].music) {
+                            // @ts-ignore
+                            this.tracks[messageId].music.duration = Math.floor(this.audio.duration);
+                        }
                     }
                 };
                 this.audio.onloadeddata = (e) => {
                     this.currentTrack = messageId;
                     this.play(messageId);
                 };
+                this.audio.onerror = (err) => {
+                    if (this.errFn) {
+                        this.errFn({
+                            fast: false,
+                            messageId,
+                            peerId: track.peerId || '',
+                            userId: track.userId,
+                        }, err);
+                    }
+                };
+                this.audio.onpause = () => {
+                    this.pauseTimeout = setTimeout(() => {
+                        this.pause(messageId);
+                    }, 100);
+                };
+                this.audio.onplay = () => {
+                    this.playTimeout = setTimeout(() => {
+                        this.play(messageId);
+                    }, 100);
+                };
                 this.audio.load();
+            } else {
+                if (this.errFn) {
+                    this.errFn({
+                        fast: false,
+                        messageId,
+                        peerId: track.peerId || '',
+                        userId: track.userId,
+                    }, Error('not found'));
+                }
             }
         });
     }

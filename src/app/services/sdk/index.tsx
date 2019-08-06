@@ -84,6 +84,7 @@ import {
 } from './messages/chat.api.groups_pb';
 import {UsersGetFull, UsersMany} from './messages/chat.api.users_pb';
 import {SystemGetInfo, SystemInfo, SystemGetSalts, SystemSalts} from './messages/chat.api.system_pb';
+import {parsePhoneNumberFromString} from 'libphonenumber-js';
 
 export default class SDK {
     public static getInstance() {
@@ -235,7 +236,11 @@ export default class SDK {
                 contact.setLastname(cont.lastname);
             }
             if (cont.phone) {
-                contact.setPhone(cont.phone);
+                const phoneObj = parsePhoneNumberFromString(cont.phone, 'IR');
+                if (phoneObj) {
+                    // @ts-ignore
+                    contact.setPhone(phoneObj.number);
+                }
             }
             arr.push(contact);
         });

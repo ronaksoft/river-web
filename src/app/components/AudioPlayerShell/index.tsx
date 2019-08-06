@@ -130,7 +130,8 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
                     <div className="audio-player-content">
                         {Boolean(userId !== '') && <div className="audio-player-anchor">
                             <Link to={`/chat/${peerId}/${messageId}`}>
-                                {i18n.t('media.playing_from')} <UserName className="user" id={userId} unsafe={true} noDetail={true}/>
+                                {i18n.t('media.playing_from')} <UserName className="user" id={userId} unsafe={true}
+                                                                         noDetail={true}/>
                             </Link>
                         </div>}
                     </div>
@@ -415,6 +416,7 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
             playlist: this.audioPlayer.getMusicPlayList(),
         }, () => {
             const {playlist} = this.state;
+            window.console.log('initPlaylist', playlist);
             const currentTrack = this.audioPlayer.getCurrentTrack();
             const index = findIndex(playlist, {id: currentTrack});
             if (index > -1) {

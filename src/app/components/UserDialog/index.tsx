@@ -207,13 +207,13 @@ class UserDialog extends React.Component<IProps, IState> {
                                 <div className="inner">{user.phone}</div>
                             </div>
                         </div>}
-                        {Boolean(user.username && user.username.length > 0) && <div className="line">
+                        {Boolean(user.username && (user.username || '').length > 0) && <div className="line">
                             <div className="form-control">
                                 <label>{i18n.t('general.username')}</label>
                                 <div className="inner">@{user.username}</div>
                             </div>
                         </div>}
-                        {Boolean(user.bio && user.bio.length > 0) && <div className="line">
+                        {Boolean(user.bio && (user.bio || '').length > 0) && <div className="line">
                             <div className="form-control">
                                 <label>{i18n.t('general.bio')}</label>
                                 <div className="inner">{user.bio}</div>
@@ -288,15 +288,18 @@ class UserDialog extends React.Component<IProps, IState> {
             return;
         }
 
-
-        this.userRepo.get(peer.getId() || '').then((res) => {
+        const fn = (user: IUser) => {
             this.setState({
-                firstname: res.firstname || '',
-                isInContact: (res.is_contact === 1),
-                lastname: res.lastname || '',
-                sendMessageEnable: Boolean(res.accesshash && res.accesshash.length > 0),
-                user: res,
+                firstname: user.firstname || '',
+                isInContact: (user.is_contact === 1),
+                lastname: user.lastname || '',
+                sendMessageEnable: Boolean(user.accesshash && user.accesshash.length > 0),
+                user,
             });
+        };
+
+        this.userRepo.getFull(peer.getId() || '', fn).then((res) => {
+            fn(res);
         });
 
         if ((peer.getAccesshash() || '').length > 0) {

@@ -1406,7 +1406,7 @@ class ChatInput extends React.Component<IProps, IState> {
 
     /* Set typing */
     private setTyping(typing: TypingAction) {
-        if (!this.props.onTyping) {
+        if (!this.props.onTyping || (this.props.peer && (this.props.peer.getId() === this.props.userId || this.props.peer.getId() === '2374'))) {
             return;
         }
         if (typing === TypingAction.TYPINGACTIONCANCEL) {

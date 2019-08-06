@@ -16,7 +16,7 @@ import Dexie from 'dexie';
 import {Int64BE} from 'int64-buffer';
 // @ts-ignore
 import CRC from 'js-crc/build/crc.min';
-import {UserStatus} from '../../services/sdk/messages/chat.core.types_pb';
+import {InputUser, UserStatus} from '../../services/sdk/messages/chat.core.types_pb';
 import RiverTime from '../../services/utilities/river_time';
 import Broadcaster from '../../services/broadcaster';
 import {kMerge} from "../../services/utilities/kDash";
@@ -96,6 +96,34 @@ export default class UserRepo {
                 this.dbService.setUser(u);
             }
             return u;
+        });
+    }
+
+    public getFull(id: string, cacheCB?: (us: IUser) => void): Promise<IUser> {
+        return new Promise<IUser>((resolve, reject) => {
+            this.get(id).then((user) => {
+                if (user) {
+                    if (cacheCB) {
+                        cacheCB(user);
+                    }
+                    const input: InputUser = new InputUser();
+                    input.setUserid(user.id || '');
+                    input.setAccesshash(user.accesshash || '');
+                    this.sdk.getUserFull([input]).then((res) => {
+                        this.upsert(false, res.usersList);
+                        const u = find(res.usersList, {id});
+                        if (u) {
+                            resolve(u);
+                        } else {
+                            reject('none found');
+                        }
+                    }).catch((err) => {
+                        reject(err);
+                    });
+                } else {
+                    reject('none found');
+                }
+            });
         });
     }
 

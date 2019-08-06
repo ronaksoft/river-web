@@ -1,3 +1,15 @@
+## 0.25.45
+* Unread counter: (multiple timeout checker)
+* New pipeline for thumbnails
+* Bug fixed in blurred `CachedPhoto`
+* `UserGetFull` with cached first added in `UserDialog` and `UserInfoMenu`
+* Upload file bug fixed
+* Prevent set typing in saved messages and river official account
+* Audio player improved
+* Playlist bug fixed
+* Duration health check added
+* Headphone Play\Pause events are now being applied
+
 ## 0.25.44
 * Max-width will be applied on media messages
 

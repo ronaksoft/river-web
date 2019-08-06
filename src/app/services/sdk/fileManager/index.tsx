@@ -75,6 +75,7 @@ const C_MAX_UPLOAD_QUEUE_SIZE = 2;
 const C_MAX_UPLOAD_PIPELINE_SIZE = 4;
 const C_UPLOAD_CHUNK_SIZE = 256 * 1024;
 const C_MAX_DOWNLOAD_QUEUE_SIZE = 4;
+const C_MAX_INSTANT_DOWNLOAD_QUEUE_SIZE = 32;
 const C_MAX_DOWNLOAD_PIPELINE_SIZE = 4;
 const C_DOWNLOAD_CHUNK_SIZE = 256 * 1024;
 const C_MAX_RETRIES = 10;
@@ -97,7 +98,9 @@ export default class FileManager {
     private uploadQueue: string[] = [];
     private onWireUploads: string[] = [];
     private downloadQueue: string[] = [];
+    private instantDownloadQueue: string[] = [];
     private onWireDownloads: string[] = [];
+    private onWireInstantDownloads: string[] = [];
 
     public constructor() {
         if (localStorage.getItem('river.conn.info')) {
@@ -171,7 +174,11 @@ export default class FileManager {
         const download = () => {
             this.prepareDownloadTransfer(location, size, mimeType, internalResolve, internalReject, () => {
                 if (this.httpWorkers[0] && this.httpWorkers[0].isReady()) {
-                    this.startDownloadQueue();
+                    if (size === 0) {
+                        this.startInstanceDownloadQueue();
+                    } else {
+                        this.startDownloadQueue();
+                    }
                 }
             }, onProgress);
         };
@@ -266,13 +273,24 @@ export default class FileManager {
 
     /* Start download queue */
     private startDownloadQueue() {
-        if (this.onWireUploads.length < C_MAX_DOWNLOAD_QUEUE_SIZE && this.downloadQueue.length > 0) {
+        if (this.onWireDownloads.length < C_MAX_DOWNLOAD_QUEUE_SIZE && this.downloadQueue.length > 0) {
             const id = this.downloadQueue.shift();
             if (id) {
                 this.onWireDownloads.push(id);
                 this.startDownloading(id);
             }
             this.startDownloadQueue();
+        }
+    }
+
+    private startInstanceDownloadQueue() {
+        if (this.onWireInstantDownloads.length < C_MAX_INSTANT_DOWNLOAD_QUEUE_SIZE && this.instantDownloadQueue.length > 0) {
+            const id = this.instantDownloadQueue.shift();
+            if (id) {
+                this.onWireInstantDownloads.push(id);
+                this.startDownloading(id);
+            }
+            this.startInstanceDownloadQueue();
         }
     }
 
@@ -491,14 +509,29 @@ export default class FileManager {
 
     /* Clear download queue by id */
     private clearDownloadQueueById(id: string) {
-        clearInterval(this.fileTransferQueue[id].interval);
-        const index = this.downloadQueue.indexOf(id);
-        if (index > -1) {
-            this.downloadQueue.splice(index, 1);
+        if (!this.fileTransferQueue.hasOwnProperty(id)) {
+            return;
         }
-        const wireIndex = this.onWireDownloads.indexOf(id);
-        if (wireIndex > -1) {
-            this.onWireDownloads.splice(wireIndex, 1);
+        const isInstance = this.fileTransferQueue[id].size === 0;
+        clearInterval(this.fileTransferQueue[id].interval);
+        if (isInstance) {
+            const index = this.instantDownloadQueue.indexOf(id);
+            if (index > -1) {
+                this.instantDownloadQueue.splice(index, 1);
+            }
+            const wireIndex = this.onWireInstantDownloads.indexOf(id);
+            if (wireIndex > -1) {
+                this.onWireInstantDownloads.splice(wireIndex, 1);
+            }
+        } else {
+            const index = this.downloadQueue.indexOf(id);
+            if (index > -1) {
+                this.downloadQueue.splice(index, 1);
+            }
+            const wireIndex = this.onWireDownloads.indexOf(id);
+            if (wireIndex > -1) {
+                this.onWireDownloads.splice(wireIndex, 1);
+            }
         }
     }
 
@@ -700,10 +733,18 @@ export default class FileManager {
                     this.fileTransferQueue[id].doneParts++;
                 }
             });
-            this.downloadQueue.push(id);
+            if (size === 0) {
+                this.instantDownloadQueue.push(id);
+            } else {
+                this.downloadQueue.push(id);
+            }
             doneCallback();
         }).catch(() => {
-            this.downloadQueue.push(id);
+            if (size === 0) {
+                this.instantDownloadQueue.push(id);
+            } else {
+                this.downloadQueue.push(id);
+            }
             doneCallback();
         });
         this.fileTransferQueue[id].interval = setInterval(() => {
@@ -759,12 +800,9 @@ export default class FileManager {
             for (let i = 0; i < C_FILE_SERVER_HTTP_WORKER_NUM; i++) {
                 this.httpWorkers[i] = new Http('', i + 1);
                 this.httpWorkers[i].ready(() => {
-                    if (i === 1) {
-                        this.startUploadQueue();
-                    }
-                    if (i === 0) {
-                        this.startDownloadQueue();
-                    }
+                    this.startDownloadQueue();
+                    this.startInstanceDownloadQueue();
+                    this.startUploadQueue();
                     window.console.log(`Http WASM worker ${i} is ready`);
                 });
             }

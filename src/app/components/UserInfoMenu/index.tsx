@@ -215,7 +215,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                             onChange={this.onPhoneChangeHandler}
                                         />}
                                     </div>
-                                    {Boolean(user && user.username !== '') && <div className="line">
+                                    {Boolean(user && (user.username || '').length > 0) && <div className="line">
                                         <div className="form-control">
                                             <label>{i18n.t('general.username')}</label>
                                             <div className="inner">@{user.username}</div>
@@ -225,6 +225,12 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                         <div className="form-control">
                                             <label>{i18n.t('general.phone')}</label>
                                             <div className="inner">{user.phone}</div>
+                                        </div>
+                                    </div>}
+                                    {Boolean(user && (user.bio || '').length > 0) && <div className="line">
+                                        <div className="form-control">
+                                            <label>{i18n.t('general.bio')}</label>
+                                            <div className="inner">{user.bio}</div>
                                         </div>
                                     </div>}
                                     {Boolean(edit && user && ((user.firstname !== firstname || user.lastname !== lastname) || !isInContact)) &&
@@ -307,13 +313,17 @@ class UserInfoMenu extends React.Component<IProps, IState> {
             return;
         }
 
-        this.userRepo.get(peer.getId() || '').then((res) => {
+        const fn = (user: IUser) => {
             this.setState({
-                firstname: res.firstname || '',
-                isInContact: (res.is_contact === 1),
-                lastname: res.lastname || '',
-                user: res,
+                firstname: user.firstname || '',
+                isInContact: (user.is_contact === 1),
+                lastname: user.lastname || '',
+                user,
             });
+        };
+
+        this.userRepo.getFull(peer.getId() || '', fn).then((res) => {
+            fn(res);
         });
 
         this.dialogRepo.get(peer.getId() || '').then((dialog) => {

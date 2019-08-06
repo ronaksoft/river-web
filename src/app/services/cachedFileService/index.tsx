@@ -238,8 +238,15 @@ export default class CachedFileService {
                                     blobs.push(temp.data);
                                 });
                                 const blob = new Blob(blobs, {type: tempFileRes[0].data.type || 'application/octet-stream'});
-                                this.files[id].src = URL.createObjectURL(blob);
-                                resolve(this.files[id].src);
+                                if (blurRadius && blob.size > 0) {
+                                    this.getBlurredImage(id, blob, blurRadius).then((blurredBlob) => {
+                                        this.files[id].blurSrc[blurRadius] = URL.createObjectURL(blurredBlob);
+                                        resolve(this.files[id].blurSrc[blurRadius]);
+                                    });
+                                } else {
+                                    this.files[id].src = URL.createObjectURL(blob);
+                                    resolve(this.files[id].src);
+                                }
                             }
                         });
                     } else {

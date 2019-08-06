@@ -60,7 +60,7 @@ import ElectronService from "../../services/electron";
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.25.44';
+export const C_VERSION = '0.25.45';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{
@@ -1349,6 +1349,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
 
     /* Decides what content the participants' "more" menu must have */
     private avatarContextMenuItem() {
+        const {user} = this.state;
         const menuItems = [{
             cmd: 'show',
             title: i18n.t('settings.show_photo'),
@@ -1359,7 +1360,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
             cmd: 'change',
             title: i18n.t('settings.change_photo'),
         }];
-        return menuItems.map((item, index) => {
+        return menuItems.filter((item) => {
+            return (item.cmd === 'change') || ((item.cmd === 'show' || item.cmd === 'remove') && (user && user.photo && user.photo.photosmall && user.photo.photosmall.fileid !== '0'));
+        }).map((item, index) => {
             return (<MenuItem key={index} onClick={this.avatarMoreCmdHandler.bind(this, item.cmd)}
                               className="context-item">{item.title}</MenuItem>);
         });

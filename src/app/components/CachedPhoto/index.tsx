@@ -27,7 +27,7 @@ interface IState {
     src?: string;
 }
 
-class CachedPhoto extends React.PureComponent<IProps, IState> {
+class CachedPhoto extends React.Component<IProps, IState> {
     private cachedFileService: CachedFileService;
     private lastFileId: string;
     private lastBlur: number;
@@ -84,7 +84,7 @@ class CachedPhoto extends React.PureComponent<IProps, IState> {
                 requestAnimationFrame(() => {
                     setTimeout(() => {
                         this.getFile();
-                    }, 100);
+                    }, 500);
                 });
             }
         });

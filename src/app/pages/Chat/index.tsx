@@ -105,6 +105,7 @@ import {isProd} from "../../../App";
 import {emojiLevel} from "../../services/utilities/emoji";
 
 import './style.css';
+import AudioPlayer, {IAudioInfo} from "../../services/audioPlayer";
 
 export let notifyOptions: any[] = [];
 
@@ -259,6 +260,9 @@ class Chat extends React.Component<IProps, IState> {
         this.downloadManager = DownloadManager.getInstance();
         this.newMessageLoadThrottle = throttle(this.newMessageLoad, 200);
         this.cachedMessageService = CachedMessageService.getInstance();
+        const audioPlayer = AudioPlayer.getInstance();
+        audioPlayer.setErrorFn(this.audioPlayerErrorHandler);
+        audioPlayer.setUpateDurationFn(this.audioPlayerUpdateDurationHandler);
 
         if (isProd) {
             Sentry.configureScope((scope) => {
@@ -1162,7 +1166,7 @@ class Chat extends React.Component<IProps, IState> {
                         this.dialogRemove(message.peerid || '');
                     }
                 });
-            } else if (message.senderid !== this.connInfo.UserID && (message.peerid !== this.state.selectedDialogId || this.endOfMessage || !this.isInChat)) {
+            } else if (!message.me && (message.peerid !== this.state.selectedDialogId || this.endOfMessage || !this.isInChat)) {
                 this.messageRepo.exists(message.id || 0).then((exists) => {
                     if (!exists) {
                         this.updateDialogsCounter(message.peerid || '', {
@@ -1291,6 +1295,7 @@ class Chat extends React.Component<IProps, IState> {
         const readinboxmaxid = dialog.readinboxmaxid || 0;
         this.updateDialogsCounter(peerId, {maxInbox: data.maxid});
         const fn = () => {
+            delete this.updateReadInboxTimeout[peerId];
             this.messageRepo.getUnreadCount(peerId, data.maxid || 0, dialog ? (dialog.topmessageid || 0) : 0).then((count) => {
                 this.updateDialogsCounter(peerId, {
                     mentionCounter: count.mention,
@@ -1300,8 +1305,10 @@ class Chat extends React.Component<IProps, IState> {
         };
         if (this.state.selectedDialogId === (data.peer.id || '')) {
             if (readinboxmaxid < (data.maxid || 0)) {
-                clearTimeout(this.updateReadInboxTimeout);
-                this.updateReadInboxTimeout = setTimeout(fn, 500);
+                if (this.updateReadInboxTimeout.hasOwnProperty(peerId)) {
+                    clearTimeout(this.updateReadInboxTimeout[peerId]);
+                }
+                this.updateReadInboxTimeout[peerId] = setTimeout(fn, 500);
             }
         } else {
             fn();
@@ -4267,7 +4274,7 @@ class Chat extends React.Component<IProps, IState> {
     /* Read message content */
     private readMessageContent(message: IMessage) {
         const {peer} = this.state;
-        if (message && !message.contentread && message.senderid !== this.connInfo.UserID && peer) {
+        if (message && !message.contentread && !message.me && peer) {
             this.sdk.readMessageContent([message.id || 0], peer);
         }
     }
@@ -4505,6 +4512,37 @@ class Chat extends React.Component<IProps, IState> {
                 }
                 break;
         }
+    }
+
+    private audioPlayerErrorHandler = (info: IAudioInfo, err: any) => {
+        this.messageRepo.lazyUpsert([{
+            downloaded: false,
+            id: info.messageId,
+            saved: false,
+        }]);
+        if (this.state.selectedDialogId === info.peerId) {
+            const index = findLastIndex(this.messages, (o) => {
+                return o.id === info.messageId && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+            });
+            if (index > -1 && this.messageComponent) {
+                this.messages[index].downloaded = false;
+                this.messages[index].saved = false;
+                this.messageComponent.list.forceUpdateGrid();
+                this.messageComponent.forceUpdate();
+            }
+        }
+    }
+
+    private audioPlayerUpdateDurationHandler = (info: IAudioInfo, duration: number) => {
+        this.messageRepo.get(info.messageId).then((res) => {
+            if (res && res.messagetype === C_MESSAGE_TYPE.Audio && res.mediadata.doc && res.mediadata.doc.attributesList && res.attributes) {
+                const index = findIndex(res.mediadata.doc.attributesList, {type: DocumentAttributeType.ATTRIBUTETYPEAUDIO});
+                if (index > -1 && res.attributes[index]) {
+                    res.attributes[index].duration = Math.floor(duration);
+                    this.messageRepo.lazyUpsert([res]);
+                }
+            }
+        });
     }
 
     /*private testHandler = () => {
