@@ -60,7 +60,7 @@ import ElectronService from "../../services/electron";
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.25.45';
+export const C_VERSION = '0.25.46';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{

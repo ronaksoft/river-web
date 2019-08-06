@@ -1,3 +1,6 @@
+## 0.25.46
+* Clear history scroll position bug fixed
+
 ## 0.25.45
 * Unread counter: (multiple timeout checker)
 * New pipeline for thumbnails

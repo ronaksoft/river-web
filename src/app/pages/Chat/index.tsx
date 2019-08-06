@@ -1171,6 +1171,7 @@ class Chat extends React.Component<IProps, IState> {
                     if (!exists) {
                         this.updateDialogsCounter(message.peerid || '', {
                             mentionCounterIncrease: (message.mention_me ? 1 : 0),
+                            scrollPos: -1,
                             unreadCounterIncrease: 1,
                         });
                     }
@@ -1685,7 +1686,12 @@ class Chat extends React.Component<IProps, IState> {
 
         window.console.log('messageLoadMoreAfterHandler');
         this.setLoading(true);
-        this.messageRepo.getManyCache({peer, limit: 25, after, ignoreMax: true}, peer).then((res) => {
+        this.messageRepo.getManyCache({
+            after,
+            ignoreMax: true,
+            limit: 25,
+            peer
+        }, peer).then((res) => {
             if (this.state.selectedDialogId !== peerId || !this.messageComponent) {
                 this.setLoading(false);
                 return;
