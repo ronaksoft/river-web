@@ -1,7 +1,10 @@
+## 0.25.50
+* Downloaded thumbnail is now have better quality 
+
 ## 0.25.49
 * Protobuff updated
 * Send as SMS added
-* Message resized event added
+* Message resize event added
 
 ## 0.25.48
 * Blink on reply bug fixed
