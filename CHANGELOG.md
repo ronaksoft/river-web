@@ -1,4 +1,7 @@
 ## 0.25.47
+* Blink on reply bug fixed
+
+## 0.25.47
 * File download/upload pipeline bug fixed
 * Unread counter clearTimeout bug fixed
 
