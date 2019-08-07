@@ -264,7 +264,9 @@ export default class FileManager {
         if (this.onWireUploads.length < C_MAX_UPLOAD_QUEUE_SIZE && this.uploadQueue.length > 0) {
             const id = this.uploadQueue.shift();
             if (id) {
-                this.onWireUploads.push(id);
+                if (this.onWireUploads.indexOf(id) === -1) {
+                    this.onWireUploads.push(id);
+                }
                 this.startUploading(id);
             }
             this.startUploadQueue();
@@ -276,7 +278,9 @@ export default class FileManager {
         if (this.onWireDownloads.length < C_MAX_DOWNLOAD_QUEUE_SIZE && this.downloadQueue.length > 0) {
             const id = this.downloadQueue.shift();
             if (id) {
-                this.onWireDownloads.push(id);
+                if (this.onWireDownloads.indexOf(id) === -1) {
+                    this.onWireDownloads.push(id);
+                }
                 this.startDownloading(id);
             }
             this.startDownloadQueue();
@@ -287,7 +291,9 @@ export default class FileManager {
         if (this.onWireInstantDownloads.length < C_MAX_INSTANT_DOWNLOAD_QUEUE_SIZE && this.instantDownloadQueue.length > 0) {
             const id = this.instantDownloadQueue.shift();
             if (id) {
-                this.onWireInstantDownloads.push(id);
+                if (this.onWireInstantDownloads.indexOf(id) === -1) {
+                    this.onWireInstantDownloads.push(id);
+                }
                 this.startDownloading(id);
             }
             this.startInstanceDownloadQueue();
@@ -399,7 +405,11 @@ export default class FileManager {
                     code: C_FILE_ERR_CODE.MAX_TRY,
                     message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.MAX_TRY],
                 });
-                this.startDownloadQueue();
+                if (this.fileTransferQueue[id].size === 0) {
+                    this.startInstanceDownloadQueue();
+                } else {
+                    this.startDownloadQueue();
+                }
                 return;
             }
             const chunkInfo = this.fileTransferQueue[id];
@@ -469,6 +479,7 @@ export default class FileManager {
                     if (this.fileTransferQueue[id].completed) {
                         return;
                     }
+                    const instant = this.fileTransferQueue[id].size === 0;
                     this.fileTransferQueue[id].completed = true;
                     this.clearDownloadQueueById(id);
                     this.dispatchProgress(id, 'complete');
@@ -483,8 +494,15 @@ export default class FileManager {
                             delete this.fileTransferQueue[id];
                         }
                     });
+                    if (instant) {
+                        this.startInstanceDownloadQueue();
+                    } else {
+                        this.startDownloadQueue();
+                    }
+                } else {
+                    this.startInstanceDownloadQueue();
+                    this.startDownloadQueue();
                 }
-                this.startDownloadQueue();
             }
         }
         if (this.httpWorkers.length > 0 && this.httpWorkers[0].isReady() && this.fileTransferQueue.hasOwnProperty(id)) {
@@ -512,9 +530,8 @@ export default class FileManager {
         if (!this.fileTransferQueue.hasOwnProperty(id)) {
             return;
         }
-        const isInstance = this.fileTransferQueue[id].size === 0;
         clearInterval(this.fileTransferQueue[id].interval);
-        if (isInstance) {
+        if (this.fileTransferQueue[id].size === 0) {
             const index = this.instantDownloadQueue.indexOf(id);
             if (index > -1) {
                 this.instantDownloadQueue.splice(index, 1);
@@ -620,6 +637,12 @@ export default class FileManager {
 
     /* Prepare upload transfer */
     private prepareUploadTransfer(id: string, chunks: Blob[], size: number, resolve: any, reject: any, onProgress?: (e: IFileProgress) => void) {
+        if (this.fileTransferQueue.hasOwnProperty(id)) {
+            this.fileTransferQueue[id].onProgress = onProgress;
+            this.fileTransferQueue[id].reject = reject;
+            this.fileTransferQueue[id].resolve = resolve;
+            return;
+        }
         this.fileTransferQueue[id] = {
             completed: false,
             doneParts: 0,
@@ -654,7 +677,9 @@ export default class FileManager {
         while (chunks.length > 0) {
             chunks.pop();
         }
-        this.uploadQueue.push(id);
+        if (this.uploadQueue.indexOf(id) === -1) {
+            this.uploadQueue.push(id);
+        }
         this.fileTransferQueue[id].interval = setInterval(() => {
             this.dispatchProgress(id, 'loading');
         }, 500);
@@ -663,6 +688,12 @@ export default class FileManager {
     /* Prepare download transfer */
     private prepareDownloadTransfer(file: core_types_pb.InputFileLocation, size: number, mimeType: string, resolve: any, reject: any, doneCallback: () => void, onProgress?: (e: IFileProgress) => void) {
         const id = file.getFileid() || '';
+        if (this.fileTransferQueue.hasOwnProperty(id)) {
+            this.fileTransferQueue[id].onProgress = onProgress;
+            this.fileTransferQueue[id].reject = reject;
+            this.fileTransferQueue[id].resolve = resolve;
+            return;
+        }
         const totalParts = (size === 0) ? 1 : Math.ceil(size / C_DOWNLOAD_CHUNK_SIZE);
         const chunks: IReceiveChunk[] = [];
         const updates: IChunkUpdate[] = [];
@@ -734,16 +765,24 @@ export default class FileManager {
                 }
             });
             if (size === 0) {
-                this.instantDownloadQueue.push(id);
+                if (this.instantDownloadQueue.indexOf(id) === -1) {
+                    this.instantDownloadQueue.push(id);
+                }
             } else {
-                this.downloadQueue.push(id);
+                if (this.downloadQueue.indexOf(id) === -1) {
+                    this.downloadQueue.push(id);
+                }
             }
             doneCallback();
         }).catch(() => {
             if (size === 0) {
-                this.instantDownloadQueue.push(id);
+                if (this.instantDownloadQueue.indexOf(id) === -1) {
+                    this.instantDownloadQueue.push(id);
+                }
             } else {
-                this.downloadQueue.push(id);
+                if (this.downloadQueue.indexOf(id) === -1) {
+                    this.downloadQueue.push(id);
+                }
             }
             doneCallback();
         });

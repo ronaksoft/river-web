@@ -1,3 +1,7 @@
+## 0.25.47
+* File download/upload pipeline bug fixed
+* Unread counter clearTimeout bug fixed
+
 ## 0.25.46
 * Clear history scroll position bug fixed
 

@@ -199,7 +199,7 @@ class Chat extends React.Component<IProps, IState> {
     private readonly newMessageLoadThrottle: any = null;
     private scrollInfo: any = null;
     private cachedMessageService: CachedMessageService;
-    private updateReadInboxTimeout: any;
+    private updateReadInboxTimeout: any = {};
     private isRecording: boolean = false;
     private upcomingDialogId: string = 'null';
 
@@ -2823,7 +2823,9 @@ class Chat extends React.Component<IProps, IState> {
                     return;
                 }
             }
-            clearTimeout(this.updateReadInboxTimeout);
+            if (this.updateReadInboxTimeout.hasOwnProperty(peerId) && this.updateReadInboxTimeout[peerId]) {
+                clearTimeout(this.updateReadInboxTimeout[peerId]);
+            }
             // Last message pointer must be greater than msgId
             if (dialog && (dialog.readinboxmaxid || 0) < msgId) {
                 this.readMessageThrottle(inputPeer, msgId, dialog.topmessageid || 0);
