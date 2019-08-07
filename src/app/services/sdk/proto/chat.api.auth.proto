@@ -49,6 +49,7 @@ message AuthCheckPhone {
 // @Return: AuthSentCode
 message AuthSendCode {
     required string Phone = 1;
+    optional string AppHash = 2;
 }
 
 // AuthResendCode
@@ -57,6 +58,7 @@ message AuthSendCode {
 message AuthResendCode {
     required string Phone = 1;
     required string PhoneCodeHash = 2;
+    optional string AppHash = 3;
 }
 
 // AuthRecall

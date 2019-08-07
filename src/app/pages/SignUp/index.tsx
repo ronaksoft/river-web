@@ -54,6 +54,7 @@ interface IState {
     loading: boolean;
     phone?: string;
     phoneHash?: string;
+    sendToPhone: boolean;
     qrCodeOpen: boolean;
     selectedLanguage: string;
     snackOpen: boolean;
@@ -102,6 +103,7 @@ class SignUp extends React.Component<IProps, IState> {
             phoneHash: '',
             qrCodeOpen: false,
             selectedLanguage: localStorage.getItem('river.lang') || 'en',
+            sendToPhone: false,
             snackOpen: false,
             snackText: '',
             step,
@@ -157,7 +159,7 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {step, countdown, workspaceInfo, iframeActive} = this.state;
+        const {step, countdown, workspaceInfo, iframeActive, sendToPhone} = this.state;
         return (
             <div className="login-page">
                 <div className="login-page-container">
@@ -240,9 +242,13 @@ class SignUp extends React.Component<IProps, IState> {
                                         <TimerRounded/><span
                                         className="inner">{countdown}&nbsp;{i18n.t('sign_up.second')}</span>
                                     </div>
+                                    {sendToPhone &&
                                     <div className={'grey-link ' + (countdown >= 45 ? 'disabled' : '')}>
                                         <span onClick={this.resendCode}>{i18n.t('sign_up.resend_code')}</span>
-                                    </div>
+                                    </div>}
+                                    {!sendToPhone && <div className="grey-link">
+                                        <span onClick={this.resendCode}>{i18n.t('sign_up.send_as_sms')}</span>
+                                    </div>}
                                 </div>}
                                 {step === 'register' &&
                                 <div className="input-wrapper validate-input">
@@ -437,6 +443,7 @@ class SignUp extends React.Component<IProps, IState> {
                 loading: false,
                 phone: '+' + data.phone,
                 phoneHash: data.phonecodehash,
+                sendToPhone: data.sendtophone || false,
                 step: 'code',
             }, () => {
                 this.focus('f-code');
@@ -565,8 +572,8 @@ class SignUp extends React.Component<IProps, IState> {
         if (this.state.loading) {
             return;
         }
-        const {phone, phoneHash, countdown} = this.state;
-        if (!phone || !phoneHash || countdown >= 45) {
+        const {phone, phoneHash, countdown, sendToPhone} = this.state;
+        if (!phone || !phoneHash || (countdown >= 45 && sendToPhone)) {
             return;
         }
         this.setState({

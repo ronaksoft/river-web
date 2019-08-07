@@ -162,6 +162,11 @@ export class AuthSendCode extends jspb.Message {
   getPhone(): string | undefined;
   setPhone(value: string): void;
 
+  hasApphash(): boolean;
+  clearApphash(): void;
+  getApphash(): string | undefined;
+  setApphash(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AuthSendCode.AsObject;
   static toObject(includeInstance: boolean, msg: AuthSendCode): AuthSendCode.AsObject;
@@ -175,6 +180,7 @@ export class AuthSendCode extends jspb.Message {
 export namespace AuthSendCode {
   export type AsObject = {
     phone?: string,
+    apphash?: string,
   }
 }
 
@@ -188,6 +194,11 @@ export class AuthResendCode extends jspb.Message {
   clearPhonecodehash(): void;
   getPhonecodehash(): string | undefined;
   setPhonecodehash(value: string): void;
+
+  hasApphash(): boolean;
+  clearApphash(): void;
+  getApphash(): string | undefined;
+  setApphash(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AuthResendCode.AsObject;
@@ -203,6 +214,7 @@ export namespace AuthResendCode {
   export type AsObject = {
     phone?: string,
     phonecodehash?: string,
+    apphash?: string,
   }
 }
 

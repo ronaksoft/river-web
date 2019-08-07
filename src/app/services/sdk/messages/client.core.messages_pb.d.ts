@@ -69,6 +69,11 @@ export class ClientPendingMessage extends jspb.Message {
   getMedia_asB64(): string;
   setMedia(value: Uint8Array | string): void;
 
+  hasCleardraft(): boolean;
+  clearCleardraft(): void;
+  getCleardraft(): boolean | undefined;
+  setCleardraft(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ClientPendingMessage.AsObject;
   static toObject(includeInstance: boolean, msg: ClientPendingMessage): ClientPendingMessage.AsObject;
@@ -93,6 +98,7 @@ export namespace ClientPendingMessage {
     entitiesList: Array<chat_core_types_pb.MessageEntity.AsObject>,
     mediatype?: chat_api_messages_pb.InputMediaType,
     media: Uint8Array | string,
+    cleardraft?: boolean,
   }
 }
 

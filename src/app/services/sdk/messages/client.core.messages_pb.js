@@ -86,7 +86,8 @@ proto.msg.ClientPendingMessage.toObject = function(includeInstance, msg) {
     entitiesList: jspb.Message.toObjectList(msg.getEntitiesList(),
     chat_core_types_pb.MessageEntity.toObject, includeInstance),
     mediatype: jspb.Message.getField(msg, 11),
-    media: msg.getMedia_asB64()
+    media: msg.getMedia_asB64(),
+    cleardraft: jspb.Message.getField(msg, 13)
   };
 
   if (includeInstance) {
@@ -171,6 +172,10 @@ proto.msg.ClientPendingMessage.deserializeBinaryFromReader = function(msg, reade
     case 12:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setMedia(value);
+      break;
+    case 13:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setCleardraft(value);
       break;
     default:
       reader.skipField();
@@ -283,6 +288,13 @@ proto.msg.ClientPendingMessage.serializeBinaryToWriter = function(message, write
   if (f != null) {
     writer.writeBytes(
       12,
+      f
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 13));
+  if (f != null) {
+    writer.writeBool(
+      13,
       f
     );
   }
@@ -660,6 +672,37 @@ proto.msg.ClientPendingMessage.prototype.clearMedia = function() {
  */
 proto.msg.ClientPendingMessage.prototype.hasMedia = function() {
   return jspb.Message.getField(this, 12) != null;
+};
+
+
+/**
+ * optional bool ClearDraft = 13;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.msg.ClientPendingMessage.prototype.getCleardraft = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 13, false));
+};
+
+
+/** @param {boolean} value */
+proto.msg.ClientPendingMessage.prototype.setCleardraft = function(value) {
+  jspb.Message.setField(this, 13, value);
+};
+
+
+proto.msg.ClientPendingMessage.prototype.clearCleardraft = function() {
+  jspb.Message.setField(this, 13, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.ClientPendingMessage.prototype.hasCleardraft = function() {
+  return jspb.Message.getField(this, 13) != null;
 };
 
 

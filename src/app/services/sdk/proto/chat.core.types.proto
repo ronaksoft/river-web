@@ -67,6 +67,7 @@ message Ack {
 message Bool {
     required bool Result = 1;
 }
+
 // TypingAction
 enum TypingAction {
     TypingActionTyping = 0;
@@ -162,6 +163,8 @@ message User {
     required fixed64 AccessHash = 7 [jstype = JS_STRING];
     optional UserPhoto Photo = 8;
     optional string Bio = 9;
+    optional string Phone = 10;
+    optional int64 LastSeen = 11;
 }
 
 // ContactUser
@@ -339,4 +342,32 @@ message InputDocument {
 enum PushTokenProvider {
     PushTokenFirebase = 0;
     PushTokenApn = 1;
+}
+
+// AccountPrivacyKey
+enum PrivacyKey {
+    PrivacyKeyNone = 0;
+    PrivacyKeyChatInvite = 1;
+    PrivacyKeyLastSeen = 2;
+    PrivacyKeyPhoneNumber = 3;
+    PrivacyKeyProfilePhoto = 4;
+    PrivacyKeyForwardedMessage = 5;
+    PrivacyKeyCall = 6;
+
+}
+
+// AccountPrivacyValue
+enum PrivacyType {
+    PrivacyTypeAllowAll = 0;
+    PrivacyTypeAllowContacts = 1;
+    PrivacyTypeDisallowAll = 2;
+    //    Order is very important, exceptions are started from 101
+    PrivacyTypeAllowUsers = 101;
+    PrivacyTypeDisallowUsers = 102;
+}
+
+// PrivacyRule
+message PrivacyRule {
+    required PrivacyType PrivacyType = 1;
+    repeated int64 UserIDs = 2;
 }

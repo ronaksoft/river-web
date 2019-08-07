@@ -19,10 +19,7 @@ goog.exportSymbol('proto.msg.AccountCheckUsername', null, global);
 goog.exportSymbol('proto.msg.AccountGetAuthorizations', null, global);
 goog.exportSymbol('proto.msg.AccountGetNotifySettings', null, global);
 goog.exportSymbol('proto.msg.AccountGetPrivacy', null, global);
-goog.exportSymbol('proto.msg.AccountPrivacyKey', null, global);
-goog.exportSymbol('proto.msg.AccountPrivacyRule', null, global);
 goog.exportSymbol('proto.msg.AccountPrivacyRules', null, global);
-goog.exportSymbol('proto.msg.AccountPrivacyType', null, global);
 goog.exportSymbol('proto.msg.AccountRegisterDevice', null, global);
 goog.exportSymbol('proto.msg.AccountRemovePhoto', null, global);
 goog.exportSymbol('proto.msg.AccountResetAuthorization', null, global);
@@ -2282,7 +2279,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.msg.AccountSetPrivacy.repeatedFields_ = [2];
+proto.msg.AccountSetPrivacy.repeatedFields_ = [1,2,3,4,5,6];
 
 
 
@@ -2313,9 +2310,18 @@ proto.msg.AccountSetPrivacy.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.AccountSetPrivacy.toObject = function(includeInstance, msg) {
   var f, obj = {
-    key: jspb.Message.getField(msg, 1),
-    rulesList: jspb.Message.toObjectList(msg.getRulesList(),
-    proto.msg.AccountPrivacyRule.toObject, includeInstance)
+    chatinviteList: jspb.Message.toObjectList(msg.getChatinviteList(),
+    chat_core_types_pb.PrivacyRule.toObject, includeInstance),
+    lastseenList: jspb.Message.toObjectList(msg.getLastseenList(),
+    chat_core_types_pb.PrivacyRule.toObject, includeInstance),
+    phonenumberList: jspb.Message.toObjectList(msg.getPhonenumberList(),
+    chat_core_types_pb.PrivacyRule.toObject, includeInstance),
+    profilephotoList: jspb.Message.toObjectList(msg.getProfilephotoList(),
+    chat_core_types_pb.PrivacyRule.toObject, includeInstance),
+    forwardedmessageList: jspb.Message.toObjectList(msg.getForwardedmessageList(),
+    chat_core_types_pb.PrivacyRule.toObject, includeInstance),
+    callList: jspb.Message.toObjectList(msg.getCallList(),
+    chat_core_types_pb.PrivacyRule.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -2353,13 +2359,34 @@ proto.msg.AccountSetPrivacy.deserializeBinaryFromReader = function(msg, reader) 
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {!proto.msg.AccountPrivacyKey} */ (reader.readEnum());
-      msg.setKey(value);
+      var value = new chat_core_types_pb.PrivacyRule;
+      reader.readMessage(value,chat_core_types_pb.PrivacyRule.deserializeBinaryFromReader);
+      msg.addChatinvite(value);
       break;
     case 2:
-      var value = new proto.msg.AccountPrivacyRule;
-      reader.readMessage(value,proto.msg.AccountPrivacyRule.deserializeBinaryFromReader);
-      msg.addRules(value);
+      var value = new chat_core_types_pb.PrivacyRule;
+      reader.readMessage(value,chat_core_types_pb.PrivacyRule.deserializeBinaryFromReader);
+      msg.addLastseen(value);
+      break;
+    case 3:
+      var value = new chat_core_types_pb.PrivacyRule;
+      reader.readMessage(value,chat_core_types_pb.PrivacyRule.deserializeBinaryFromReader);
+      msg.addPhonenumber(value);
+      break;
+    case 4:
+      var value = new chat_core_types_pb.PrivacyRule;
+      reader.readMessage(value,chat_core_types_pb.PrivacyRule.deserializeBinaryFromReader);
+      msg.addProfilephoto(value);
+      break;
+    case 5:
+      var value = new chat_core_types_pb.PrivacyRule;
+      reader.readMessage(value,chat_core_types_pb.PrivacyRule.deserializeBinaryFromReader);
+      msg.addForwardedmessage(value);
+      break;
+    case 6:
+      var value = new chat_core_types_pb.PrivacyRule;
+      reader.readMessage(value,chat_core_types_pb.PrivacyRule.deserializeBinaryFromReader);
+      msg.addCall(value);
       break;
     default:
       reader.skipField();
@@ -2390,81 +2417,240 @@ proto.msg.AccountSetPrivacy.prototype.serializeBinary = function() {
  */
 proto.msg.AccountSetPrivacy.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {!proto.msg.AccountPrivacyKey} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
-    writer.writeEnum(
+  f = message.getChatinviteList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
       1,
-      f
+      f,
+      chat_core_types_pb.PrivacyRule.serializeBinaryToWriter
     );
   }
-  f = message.getRulesList();
+  f = message.getLastseenList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
       2,
       f,
-      proto.msg.AccountPrivacyRule.serializeBinaryToWriter
+      chat_core_types_pb.PrivacyRule.serializeBinaryToWriter
+    );
+  }
+  f = message.getPhonenumberList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      3,
+      f,
+      chat_core_types_pb.PrivacyRule.serializeBinaryToWriter
+    );
+  }
+  f = message.getProfilephotoList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      4,
+      f,
+      chat_core_types_pb.PrivacyRule.serializeBinaryToWriter
+    );
+  }
+  f = message.getForwardedmessageList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      5,
+      f,
+      chat_core_types_pb.PrivacyRule.serializeBinaryToWriter
+    );
+  }
+  f = message.getCallList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      6,
+      f,
+      chat_core_types_pb.PrivacyRule.serializeBinaryToWriter
     );
   }
 };
 
 
 /**
- * required AccountPrivacyKey Key = 1;
- * @return {!proto.msg.AccountPrivacyKey}
+ * repeated PrivacyRule ChatInvite = 1;
+ * @return {!Array.<!proto.msg.PrivacyRule>}
  */
-proto.msg.AccountSetPrivacy.prototype.getKey = function() {
-  return /** @type {!proto.msg.AccountPrivacyKey} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+proto.msg.AccountSetPrivacy.prototype.getChatinviteList = function() {
+  return /** @type{!Array.<!proto.msg.PrivacyRule>} */ (
+    jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.PrivacyRule, 1));
 };
 
 
-/** @param {!proto.msg.AccountPrivacyKey} value */
-proto.msg.AccountSetPrivacy.prototype.setKey = function(value) {
-  jspb.Message.setField(this, 1, value);
-};
-
-
-proto.msg.AccountSetPrivacy.prototype.clearKey = function() {
-  jspb.Message.setField(this, 1, undefined);
+/** @param {!Array.<!proto.msg.PrivacyRule>} value */
+proto.msg.AccountSetPrivacy.prototype.setChatinviteList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
 
 
 /**
- * Returns whether this field is set.
- * @return {!boolean}
+ * @param {!proto.msg.PrivacyRule=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.msg.PrivacyRule}
  */
-proto.msg.AccountSetPrivacy.prototype.hasKey = function() {
-  return jspb.Message.getField(this, 1) != null;
+proto.msg.AccountSetPrivacy.prototype.addChatinvite = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.msg.PrivacyRule, opt_index);
+};
+
+
+proto.msg.AccountSetPrivacy.prototype.clearChatinviteList = function() {
+  this.setChatinviteList([]);
 };
 
 
 /**
- * repeated AccountPrivacyRule Rules = 2;
- * @return {!Array.<!proto.msg.AccountPrivacyRule>}
+ * repeated PrivacyRule LastSeen = 2;
+ * @return {!Array.<!proto.msg.PrivacyRule>}
  */
-proto.msg.AccountSetPrivacy.prototype.getRulesList = function() {
-  return /** @type{!Array.<!proto.msg.AccountPrivacyRule>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.msg.AccountPrivacyRule, 2));
+proto.msg.AccountSetPrivacy.prototype.getLastseenList = function() {
+  return /** @type{!Array.<!proto.msg.PrivacyRule>} */ (
+    jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.PrivacyRule, 2));
 };
 
 
-/** @param {!Array.<!proto.msg.AccountPrivacyRule>} value */
-proto.msg.AccountSetPrivacy.prototype.setRulesList = function(value) {
+/** @param {!Array.<!proto.msg.PrivacyRule>} value */
+proto.msg.AccountSetPrivacy.prototype.setLastseenList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 2, value);
 };
 
 
 /**
- * @param {!proto.msg.AccountPrivacyRule=} opt_value
+ * @param {!proto.msg.PrivacyRule=} opt_value
  * @param {number=} opt_index
- * @return {!proto.msg.AccountPrivacyRule}
+ * @return {!proto.msg.PrivacyRule}
  */
-proto.msg.AccountSetPrivacy.prototype.addRules = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.msg.AccountPrivacyRule, opt_index);
+proto.msg.AccountSetPrivacy.prototype.addLastseen = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.msg.PrivacyRule, opt_index);
 };
 
 
-proto.msg.AccountSetPrivacy.prototype.clearRulesList = function() {
-  this.setRulesList([]);
+proto.msg.AccountSetPrivacy.prototype.clearLastseenList = function() {
+  this.setLastseenList([]);
+};
+
+
+/**
+ * repeated PrivacyRule PhoneNumber = 3;
+ * @return {!Array.<!proto.msg.PrivacyRule>}
+ */
+proto.msg.AccountSetPrivacy.prototype.getPhonenumberList = function() {
+  return /** @type{!Array.<!proto.msg.PrivacyRule>} */ (
+    jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.PrivacyRule, 3));
+};
+
+
+/** @param {!Array.<!proto.msg.PrivacyRule>} value */
+proto.msg.AccountSetPrivacy.prototype.setPhonenumberList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 3, value);
+};
+
+
+/**
+ * @param {!proto.msg.PrivacyRule=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.msg.PrivacyRule}
+ */
+proto.msg.AccountSetPrivacy.prototype.addPhonenumber = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.msg.PrivacyRule, opt_index);
+};
+
+
+proto.msg.AccountSetPrivacy.prototype.clearPhonenumberList = function() {
+  this.setPhonenumberList([]);
+};
+
+
+/**
+ * repeated PrivacyRule ProfilePhoto = 4;
+ * @return {!Array.<!proto.msg.PrivacyRule>}
+ */
+proto.msg.AccountSetPrivacy.prototype.getProfilephotoList = function() {
+  return /** @type{!Array.<!proto.msg.PrivacyRule>} */ (
+    jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.PrivacyRule, 4));
+};
+
+
+/** @param {!Array.<!proto.msg.PrivacyRule>} value */
+proto.msg.AccountSetPrivacy.prototype.setProfilephotoList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 4, value);
+};
+
+
+/**
+ * @param {!proto.msg.PrivacyRule=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.msg.PrivacyRule}
+ */
+proto.msg.AccountSetPrivacy.prototype.addProfilephoto = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.msg.PrivacyRule, opt_index);
+};
+
+
+proto.msg.AccountSetPrivacy.prototype.clearProfilephotoList = function() {
+  this.setProfilephotoList([]);
+};
+
+
+/**
+ * repeated PrivacyRule ForwardedMessage = 5;
+ * @return {!Array.<!proto.msg.PrivacyRule>}
+ */
+proto.msg.AccountSetPrivacy.prototype.getForwardedmessageList = function() {
+  return /** @type{!Array.<!proto.msg.PrivacyRule>} */ (
+    jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.PrivacyRule, 5));
+};
+
+
+/** @param {!Array.<!proto.msg.PrivacyRule>} value */
+proto.msg.AccountSetPrivacy.prototype.setForwardedmessageList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 5, value);
+};
+
+
+/**
+ * @param {!proto.msg.PrivacyRule=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.msg.PrivacyRule}
+ */
+proto.msg.AccountSetPrivacy.prototype.addForwardedmessage = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 5, opt_value, proto.msg.PrivacyRule, opt_index);
+};
+
+
+proto.msg.AccountSetPrivacy.prototype.clearForwardedmessageList = function() {
+  this.setForwardedmessageList([]);
+};
+
+
+/**
+ * repeated PrivacyRule Call = 6;
+ * @return {!Array.<!proto.msg.PrivacyRule>}
+ */
+proto.msg.AccountSetPrivacy.prototype.getCallList = function() {
+  return /** @type{!Array.<!proto.msg.PrivacyRule>} */ (
+    jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.PrivacyRule, 6));
+};
+
+
+/** @param {!Array.<!proto.msg.PrivacyRule>} value */
+proto.msg.AccountSetPrivacy.prototype.setCallList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 6, value);
+};
+
+
+/**
+ * @param {!proto.msg.PrivacyRule=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.msg.PrivacyRule}
+ */
+proto.msg.AccountSetPrivacy.prototype.addCall = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 6, opt_value, proto.msg.PrivacyRule, opt_index);
+};
+
+
+proto.msg.AccountSetPrivacy.prototype.clearCallList = function() {
+  this.setCallList([]);
 };
 
 
@@ -2553,7 +2739,7 @@ proto.msg.AccountGetPrivacy.deserializeBinaryFromReader = function(msg, reader) 
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {!proto.msg.AccountPrivacyKey} */ (reader.readEnum());
+      var value = /** @type {!proto.msg.PrivacyKey} */ (reader.readEnum());
       msg.setKey(value);
       break;
     default:
@@ -2585,7 +2771,7 @@ proto.msg.AccountGetPrivacy.prototype.serializeBinary = function() {
  */
 proto.msg.AccountGetPrivacy.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {!proto.msg.AccountPrivacyKey} */ (jspb.Message.getField(message, 1));
+  f = /** @type {!proto.msg.PrivacyKey} */ (jspb.Message.getField(message, 1));
   if (f != null) {
     writer.writeEnum(
       1,
@@ -2596,15 +2782,15 @@ proto.msg.AccountGetPrivacy.serializeBinaryToWriter = function(message, writer) 
 
 
 /**
- * required AccountPrivacyKey Key = 1;
- * @return {!proto.msg.AccountPrivacyKey}
+ * required PrivacyKey Key = 1;
+ * @return {!proto.msg.PrivacyKey}
  */
 proto.msg.AccountGetPrivacy.prototype.getKey = function() {
-  return /** @type {!proto.msg.AccountPrivacyKey} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {!proto.msg.PrivacyKey} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
-/** @param {!proto.msg.AccountPrivacyKey} value */
+/** @param {!proto.msg.PrivacyKey} value */
 proto.msg.AccountGetPrivacy.prototype.setKey = function(value) {
   jspb.Message.setField(this, 1, value);
 };
@@ -3603,7 +3789,7 @@ proto.msg.AccountPrivacyRules.prototype.toObject = function(opt_includeInstance)
 proto.msg.AccountPrivacyRules.toObject = function(includeInstance, msg) {
   var f, obj = {
     rulesList: jspb.Message.toObjectList(msg.getRulesList(),
-    proto.msg.AccountPrivacyRule.toObject, includeInstance)
+    chat_core_types_pb.PrivacyRule.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -3641,8 +3827,8 @@ proto.msg.AccountPrivacyRules.deserializeBinaryFromReader = function(msg, reader
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.msg.AccountPrivacyRule;
-      reader.readMessage(value,proto.msg.AccountPrivacyRule.deserializeBinaryFromReader);
+      var value = new chat_core_types_pb.PrivacyRule;
+      reader.readMessage(value,chat_core_types_pb.PrivacyRule.deserializeBinaryFromReader);
       msg.addRules(value);
       break;
     default:
@@ -3679,35 +3865,35 @@ proto.msg.AccountPrivacyRules.serializeBinaryToWriter = function(message, writer
     writer.writeRepeatedMessage(
       1,
       f,
-      proto.msg.AccountPrivacyRule.serializeBinaryToWriter
+      chat_core_types_pb.PrivacyRule.serializeBinaryToWriter
     );
   }
 };
 
 
 /**
- * repeated AccountPrivacyRule Rules = 1;
- * @return {!Array.<!proto.msg.AccountPrivacyRule>}
+ * repeated PrivacyRule Rules = 1;
+ * @return {!Array.<!proto.msg.PrivacyRule>}
  */
 proto.msg.AccountPrivacyRules.prototype.getRulesList = function() {
-  return /** @type{!Array.<!proto.msg.AccountPrivacyRule>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.msg.AccountPrivacyRule, 1));
+  return /** @type{!Array.<!proto.msg.PrivacyRule>} */ (
+    jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.PrivacyRule, 1));
 };
 
 
-/** @param {!Array.<!proto.msg.AccountPrivacyRule>} value */
+/** @param {!Array.<!proto.msg.PrivacyRule>} value */
 proto.msg.AccountPrivacyRules.prototype.setRulesList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
 
 
 /**
- * @param {!proto.msg.AccountPrivacyRule=} opt_value
+ * @param {!proto.msg.PrivacyRule=} opt_value
  * @param {number=} opt_index
- * @return {!proto.msg.AccountPrivacyRule}
+ * @return {!proto.msg.PrivacyRule}
  */
 proto.msg.AccountPrivacyRules.prototype.addRules = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.msg.AccountPrivacyRule, opt_index);
+  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.msg.PrivacyRule, opt_index);
 };
 
 
@@ -3715,248 +3901,5 @@ proto.msg.AccountPrivacyRules.prototype.clearRulesList = function() {
   this.setRulesList([]);
 };
 
-
-
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.msg.AccountPrivacyRule = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.msg.AccountPrivacyRule, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  proto.msg.AccountPrivacyRule.displayName = 'proto.msg.AccountPrivacyRule';
-}
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto suitable for use in Soy templates.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
- * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
- *     for transitional soy proto support: http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.msg.AccountPrivacyRule.prototype.toObject = function(opt_includeInstance) {
-  return proto.msg.AccountPrivacyRule.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Whether to include the JSPB
- *     instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.msg.AccountPrivacyRule} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.msg.AccountPrivacyRule.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    privacytype: jspb.Message.getField(msg, 1),
-    data: msg.getData_asB64()
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.msg.AccountPrivacyRule}
- */
-proto.msg.AccountPrivacyRule.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.msg.AccountPrivacyRule;
-  return proto.msg.AccountPrivacyRule.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.msg.AccountPrivacyRule} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.msg.AccountPrivacyRule}
- */
-proto.msg.AccountPrivacyRule.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {!proto.msg.AccountPrivacyType} */ (reader.readEnum());
-      msg.setPrivacytype(value);
-      break;
-    case 2:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setData(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.msg.AccountPrivacyRule.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.msg.AccountPrivacyRule.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.msg.AccountPrivacyRule} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.msg.AccountPrivacyRule.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = /** @type {!proto.msg.AccountPrivacyType} */ (jspb.Message.getField(message, 1));
-  if (f != null) {
-    writer.writeEnum(
-      1,
-      f
-    );
-  }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
-    writer.writeBytes(
-      2,
-      f
-    );
-  }
-};
-
-
-/**
- * required AccountPrivacyType PrivacyType = 1;
- * @return {!proto.msg.AccountPrivacyType}
- */
-proto.msg.AccountPrivacyRule.prototype.getPrivacytype = function() {
-  return /** @type {!proto.msg.AccountPrivacyType} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
-};
-
-
-/** @param {!proto.msg.AccountPrivacyType} value */
-proto.msg.AccountPrivacyRule.prototype.setPrivacytype = function(value) {
-  jspb.Message.setField(this, 1, value);
-};
-
-
-proto.msg.AccountPrivacyRule.prototype.clearPrivacytype = function() {
-  jspb.Message.setField(this, 1, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.msg.AccountPrivacyRule.prototype.hasPrivacytype = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required bytes Data = 2;
- * @return {!(string|Uint8Array)}
- */
-proto.msg.AccountPrivacyRule.prototype.getData = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * required bytes Data = 2;
- * This is a type-conversion wrapper around `getData()`
- * @return {string}
- */
-proto.msg.AccountPrivacyRule.prototype.getData_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getData()));
-};
-
-
-/**
- * required bytes Data = 2;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getData()`
- * @return {!Uint8Array}
- */
-proto.msg.AccountPrivacyRule.prototype.getData_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getData()));
-};
-
-
-/** @param {!(string|Uint8Array)} value */
-proto.msg.AccountPrivacyRule.prototype.setData = function(value) {
-  jspb.Message.setField(this, 2, value);
-};
-
-
-proto.msg.AccountPrivacyRule.prototype.clearData = function() {
-  jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.msg.AccountPrivacyRule.prototype.hasData = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * @enum {number}
- */
-proto.msg.AccountPrivacyKey = {
-  ACCOUNTPRIVACYKEYNONE: 0,
-  ACCOUNTPRIVACYKEYCHATINVITE: 1,
-  ACCOUNTPRIVACYKEYSTATUSTIMESTAMP: 2,
-  ACCOUNTPRIVACYKEYPHONECALL: 3
-};
-
-/**
- * @enum {number}
- */
-proto.msg.AccountPrivacyType = {
-  ACCOUNTPRIVACYTYPEALLOWALL: 0,
-  ACCOUNTPRIVACYTYPEALLOWCONTACTS: 1,
-  ACCOUNTPRIVACYTYPEALLOWUSERS: 2,
-  ACCOUNTPRIVACYTYPEDISALLOWALL: 3,
-  ACCOUNTPRIVACYTYPEDISALLOWCONTACTS: 4,
-  ACCOUNTPRIVACYTYPEDISALLOWUSERS: 5
-};
 
 goog.object.extend(exports, proto.msg);

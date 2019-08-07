@@ -1146,7 +1146,8 @@ proto.msg.AuthSendCode.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.AuthSendCode.toObject = function(includeInstance, msg) {
   var f, obj = {
-    phone: jspb.Message.getField(msg, 1)
+    phone: jspb.Message.getField(msg, 1),
+    apphash: jspb.Message.getField(msg, 2)
   };
 
   if (includeInstance) {
@@ -1187,6 +1188,10 @@ proto.msg.AuthSendCode.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setPhone(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setApphash(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1223,6 +1228,13 @@ proto.msg.AuthSendCode.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = /** @type {string} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -1252,6 +1264,35 @@ proto.msg.AuthSendCode.prototype.clearPhone = function() {
  */
 proto.msg.AuthSendCode.prototype.hasPhone = function() {
   return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * optional string AppHash = 2;
+ * @return {string}
+ */
+proto.msg.AuthSendCode.prototype.getApphash = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.AuthSendCode.prototype.setApphash = function(value) {
+  jspb.Message.setField(this, 2, value);
+};
+
+
+proto.msg.AuthSendCode.prototype.clearApphash = function() {
+  jspb.Message.setField(this, 2, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AuthSendCode.prototype.hasApphash = function() {
+  return jspb.Message.getField(this, 2) != null;
 };
 
 
@@ -1303,7 +1344,8 @@ proto.msg.AuthResendCode.prototype.toObject = function(opt_includeInstance) {
 proto.msg.AuthResendCode.toObject = function(includeInstance, msg) {
   var f, obj = {
     phone: jspb.Message.getField(msg, 1),
-    phonecodehash: jspb.Message.getField(msg, 2)
+    phonecodehash: jspb.Message.getField(msg, 2),
+    apphash: jspb.Message.getField(msg, 3)
   };
 
   if (includeInstance) {
@@ -1348,6 +1390,10 @@ proto.msg.AuthResendCode.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setPhonecodehash(value);
       break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setApphash(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1388,6 +1434,13 @@ proto.msg.AuthResendCode.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeString(
       2,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeString(
+      3,
       f
     );
   }
@@ -1449,6 +1502,35 @@ proto.msg.AuthResendCode.prototype.clearPhonecodehash = function() {
  */
 proto.msg.AuthResendCode.prototype.hasPhonecodehash = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional string AppHash = 3;
+ * @return {string}
+ */
+proto.msg.AuthResendCode.prototype.getApphash = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.AuthResendCode.prototype.setApphash = function(value) {
+  jspb.Message.setField(this, 3, value);
+};
+
+
+proto.msg.AuthResendCode.prototype.clearApphash = function() {
+  jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AuthResendCode.prototype.hasApphash = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 

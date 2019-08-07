@@ -1006,3 +1006,67 @@ export namespace UpdateDialogPinnedReorder {
   }
 }
 
+export class UpdateAccountPrivacy extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  clearChatinviteList(): void;
+  getChatinviteList(): Array<chat_core_types_pb.PrivacyRule>;
+  setChatinviteList(value: Array<chat_core_types_pb.PrivacyRule>): void;
+  addChatinvite(value?: chat_core_types_pb.PrivacyRule, index?: number): chat_core_types_pb.PrivacyRule;
+
+  clearLastseenList(): void;
+  getLastseenList(): Array<chat_core_types_pb.PrivacyRule>;
+  setLastseenList(value: Array<chat_core_types_pb.PrivacyRule>): void;
+  addLastseen(value?: chat_core_types_pb.PrivacyRule, index?: number): chat_core_types_pb.PrivacyRule;
+
+  clearPhonenumberList(): void;
+  getPhonenumberList(): Array<chat_core_types_pb.PrivacyRule>;
+  setPhonenumberList(value: Array<chat_core_types_pb.PrivacyRule>): void;
+  addPhonenumber(value?: chat_core_types_pb.PrivacyRule, index?: number): chat_core_types_pb.PrivacyRule;
+
+  clearProfilephotoList(): void;
+  getProfilephotoList(): Array<chat_core_types_pb.PrivacyRule>;
+  setProfilephotoList(value: Array<chat_core_types_pb.PrivacyRule>): void;
+  addProfilephoto(value?: chat_core_types_pb.PrivacyRule, index?: number): chat_core_types_pb.PrivacyRule;
+
+  clearForwardedmessageList(): void;
+  getForwardedmessageList(): Array<chat_core_types_pb.PrivacyRule>;
+  setForwardedmessageList(value: Array<chat_core_types_pb.PrivacyRule>): void;
+  addForwardedmessage(value?: chat_core_types_pb.PrivacyRule, index?: number): chat_core_types_pb.PrivacyRule;
+
+  clearCallList(): void;
+  getCallList(): Array<chat_core_types_pb.PrivacyRule>;
+  setCallList(value: Array<chat_core_types_pb.PrivacyRule>): void;
+  addCall(value?: chat_core_types_pb.PrivacyRule, index?: number): chat_core_types_pb.PrivacyRule;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateAccountPrivacy.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateAccountPrivacy): UpdateAccountPrivacy.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateAccountPrivacy, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateAccountPrivacy;
+  static deserializeBinaryFromReader(message: UpdateAccountPrivacy, reader: jspb.BinaryReader): UpdateAccountPrivacy;
+}
+
+export namespace UpdateAccountPrivacy {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+    chatinviteList: Array<chat_core_types_pb.PrivacyRule.AsObject>,
+    lastseenList: Array<chat_core_types_pb.PrivacyRule.AsObject>,
+    phonenumberList: Array<chat_core_types_pb.PrivacyRule.AsObject>,
+    profilephotoList: Array<chat_core_types_pb.PrivacyRule.AsObject>,
+    forwardedmessageList: Array<chat_core_types_pb.PrivacyRule.AsObject>,
+    callList: Array<chat_core_types_pb.PrivacyRule.AsObject>,
+  }
+}
+

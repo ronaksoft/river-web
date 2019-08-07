@@ -319,15 +319,35 @@ export namespace AccountChangePhone {
 }
 
 export class AccountSetPrivacy extends jspb.Message {
-  hasKey(): boolean;
-  clearKey(): void;
-  getKey(): AccountPrivacyKey | undefined;
-  setKey(value: AccountPrivacyKey): void;
+  clearChatinviteList(): void;
+  getChatinviteList(): Array<chat_core_types_pb.PrivacyRule>;
+  setChatinviteList(value: Array<chat_core_types_pb.PrivacyRule>): void;
+  addChatinvite(value?: chat_core_types_pb.PrivacyRule, index?: number): chat_core_types_pb.PrivacyRule;
 
-  clearRulesList(): void;
-  getRulesList(): Array<AccountPrivacyRule>;
-  setRulesList(value: Array<AccountPrivacyRule>): void;
-  addRules(value?: AccountPrivacyRule, index?: number): AccountPrivacyRule;
+  clearLastseenList(): void;
+  getLastseenList(): Array<chat_core_types_pb.PrivacyRule>;
+  setLastseenList(value: Array<chat_core_types_pb.PrivacyRule>): void;
+  addLastseen(value?: chat_core_types_pb.PrivacyRule, index?: number): chat_core_types_pb.PrivacyRule;
+
+  clearPhonenumberList(): void;
+  getPhonenumberList(): Array<chat_core_types_pb.PrivacyRule>;
+  setPhonenumberList(value: Array<chat_core_types_pb.PrivacyRule>): void;
+  addPhonenumber(value?: chat_core_types_pb.PrivacyRule, index?: number): chat_core_types_pb.PrivacyRule;
+
+  clearProfilephotoList(): void;
+  getProfilephotoList(): Array<chat_core_types_pb.PrivacyRule>;
+  setProfilephotoList(value: Array<chat_core_types_pb.PrivacyRule>): void;
+  addProfilephoto(value?: chat_core_types_pb.PrivacyRule, index?: number): chat_core_types_pb.PrivacyRule;
+
+  clearForwardedmessageList(): void;
+  getForwardedmessageList(): Array<chat_core_types_pb.PrivacyRule>;
+  setForwardedmessageList(value: Array<chat_core_types_pb.PrivacyRule>): void;
+  addForwardedmessage(value?: chat_core_types_pb.PrivacyRule, index?: number): chat_core_types_pb.PrivacyRule;
+
+  clearCallList(): void;
+  getCallList(): Array<chat_core_types_pb.PrivacyRule>;
+  setCallList(value: Array<chat_core_types_pb.PrivacyRule>): void;
+  addCall(value?: chat_core_types_pb.PrivacyRule, index?: number): chat_core_types_pb.PrivacyRule;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountSetPrivacy.AsObject;
@@ -341,16 +361,20 @@ export class AccountSetPrivacy extends jspb.Message {
 
 export namespace AccountSetPrivacy {
   export type AsObject = {
-    key?: AccountPrivacyKey,
-    rulesList: Array<AccountPrivacyRule.AsObject>,
+    chatinviteList: Array<chat_core_types_pb.PrivacyRule.AsObject>,
+    lastseenList: Array<chat_core_types_pb.PrivacyRule.AsObject>,
+    phonenumberList: Array<chat_core_types_pb.PrivacyRule.AsObject>,
+    profilephotoList: Array<chat_core_types_pb.PrivacyRule.AsObject>,
+    forwardedmessageList: Array<chat_core_types_pb.PrivacyRule.AsObject>,
+    callList: Array<chat_core_types_pb.PrivacyRule.AsObject>,
   }
 }
 
 export class AccountGetPrivacy extends jspb.Message {
   hasKey(): boolean;
   clearKey(): void;
-  getKey(): AccountPrivacyKey | undefined;
-  setKey(value: AccountPrivacyKey): void;
+  getKey(): chat_core_types_pb.PrivacyKey | undefined;
+  setKey(value: chat_core_types_pb.PrivacyKey): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountGetPrivacy.AsObject;
@@ -364,7 +388,7 @@ export class AccountGetPrivacy extends jspb.Message {
 
 export namespace AccountGetPrivacy {
   export type AsObject = {
-    key?: AccountPrivacyKey,
+    key?: chat_core_types_pb.PrivacyKey,
   }
 }
 
@@ -500,9 +524,9 @@ export namespace AccountAuthorization {
 
 export class AccountPrivacyRules extends jspb.Message {
   clearRulesList(): void;
-  getRulesList(): Array<AccountPrivacyRule>;
-  setRulesList(value: Array<AccountPrivacyRule>): void;
-  addRules(value?: AccountPrivacyRule, index?: number): AccountPrivacyRule;
+  getRulesList(): Array<chat_core_types_pb.PrivacyRule>;
+  setRulesList(value: Array<chat_core_types_pb.PrivacyRule>): void;
+  addRules(value?: chat_core_types_pb.PrivacyRule, index?: number): chat_core_types_pb.PrivacyRule;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountPrivacyRules.AsObject;
@@ -516,53 +540,7 @@ export class AccountPrivacyRules extends jspb.Message {
 
 export namespace AccountPrivacyRules {
   export type AsObject = {
-    rulesList: Array<AccountPrivacyRule.AsObject>,
+    rulesList: Array<chat_core_types_pb.PrivacyRule.AsObject>,
   }
-}
-
-export class AccountPrivacyRule extends jspb.Message {
-  hasPrivacytype(): boolean;
-  clearPrivacytype(): void;
-  getPrivacytype(): AccountPrivacyType | undefined;
-  setPrivacytype(value: AccountPrivacyType): void;
-
-  hasData(): boolean;
-  clearData(): void;
-  getData(): Uint8Array | string;
-  getData_asU8(): Uint8Array;
-  getData_asB64(): string;
-  setData(value: Uint8Array | string): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): AccountPrivacyRule.AsObject;
-  static toObject(includeInstance: boolean, msg: AccountPrivacyRule): AccountPrivacyRule.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: AccountPrivacyRule, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): AccountPrivacyRule;
-  static deserializeBinaryFromReader(message: AccountPrivacyRule, reader: jspb.BinaryReader): AccountPrivacyRule;
-}
-
-export namespace AccountPrivacyRule {
-  export type AsObject = {
-    privacytype?: AccountPrivacyType,
-    data: Uint8Array | string,
-  }
-}
-
-export enum AccountPrivacyKey {
-  ACCOUNTPRIVACYKEYNONE = 0,
-  ACCOUNTPRIVACYKEYCHATINVITE = 1,
-  ACCOUNTPRIVACYKEYSTATUSTIMESTAMP = 2,
-  ACCOUNTPRIVACYKEYPHONECALL = 3,
-}
-
-export enum AccountPrivacyType {
-  ACCOUNTPRIVACYTYPEALLOWALL = 0,
-  ACCOUNTPRIVACYTYPEALLOWCONTACTS = 1,
-  ACCOUNTPRIVACYTYPEALLOWUSERS = 2,
-  ACCOUNTPRIVACYTYPEDISALLOWALL = 3,
-  ACCOUNTPRIVACYTYPEDISALLOWCONTACTS = 4,
-  ACCOUNTPRIVACYTYPEDISALLOWUSERS = 5,
 }
 

@@ -649,6 +649,16 @@ export class User extends jspb.Message {
   getBio(): string | undefined;
   setBio(value: string): void;
 
+  hasPhone(): boolean;
+  clearPhone(): void;
+  getPhone(): string | undefined;
+  setPhone(value: string): void;
+
+  hasLastseen(): boolean;
+  clearLastseen(): void;
+  getLastseen(): number | undefined;
+  setLastseen(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): User.AsObject;
   static toObject(includeInstance: boolean, msg: User): User.AsObject;
@@ -670,6 +680,8 @@ export namespace User {
     accesshash?: string,
     photo?: UserPhoto.AsObject,
     bio?: string,
+    phone?: string,
+    lastseen?: number,
   }
 }
 
@@ -1369,6 +1381,34 @@ export namespace InputDocument {
   }
 }
 
+export class PrivacyRule extends jspb.Message {
+  hasPrivacytype(): boolean;
+  clearPrivacytype(): void;
+  getPrivacytype(): PrivacyType | undefined;
+  setPrivacytype(value: PrivacyType): void;
+
+  clearUseridsList(): void;
+  getUseridsList(): Array<number>;
+  setUseridsList(value: Array<number>): void;
+  addUserids(value: number, index?: number): number;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PrivacyRule.AsObject;
+  static toObject(includeInstance: boolean, msg: PrivacyRule): PrivacyRule.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PrivacyRule, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PrivacyRule;
+  static deserializeBinaryFromReader(message: PrivacyRule, reader: jspb.BinaryReader): PrivacyRule;
+}
+
+export namespace PrivacyRule {
+  export type AsObject = {
+    privacytype?: PrivacyType,
+    useridsList: Array<number>,
+  }
+}
+
 export enum TypingAction {
   TYPINGACTIONTYPING = 0,
   TYPINGACTIONRECORDINGVOICE = 1,
@@ -1428,5 +1468,23 @@ export enum ParticipantType {
 export enum PushTokenProvider {
   PUSHTOKENFIREBASE = 0,
   PUSHTOKENAPN = 1,
+}
+
+export enum PrivacyKey {
+  PRIVACYKEYNONE = 0,
+  PRIVACYKEYCHATINVITE = 1,
+  PRIVACYKEYLASTSEEN = 2,
+  PRIVACYKEYPHONENUMBER = 3,
+  PRIVACYKEYPROFILEPHOTO = 4,
+  PRIVACYKEYFORWARDEDMESSAGE = 5,
+  PRIVACYKEYCALL = 6,
+}
+
+export enum PrivacyType {
+  PRIVACYTYPEALLOWALL = 0,
+  PRIVACYTYPEALLOWCONTACTS = 1,
+  PRIVACYTYPEDISALLOWALL = 2,
+  PRIVACYTYPEALLOWUSERS = 101,
+  PRIVACYTYPEDISALLOWUSERS = 102,
 }
 

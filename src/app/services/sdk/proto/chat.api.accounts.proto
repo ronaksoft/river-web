@@ -95,15 +95,19 @@ message AccountChangePhone {
 // @Function
 // @Return: AccountPrivacyRules
 message AccountSetPrivacy {
-    required AccountPrivacyKey Key = 1;
-    repeated AccountPrivacyRule Rules = 2;
+    repeated PrivacyRule ChatInvite = 1;
+    repeated PrivacyRule LastSeen = 2;
+    repeated PrivacyRule PhoneNumber = 3;
+    repeated PrivacyRule ProfilePhoto = 4;
+    repeated PrivacyRule ForwardedMessage = 5;
+    repeated PrivacyRule Call = 6;
 }
 
 // AccountGetPrivacy
 // @Function
 // @Return: AccountPrivacyRules
 message AccountGetPrivacy {
-    required AccountPrivacyKey Key = 1;
+    required PrivacyKey Key = 1;
 }
 
 // AccountGetAuthorizations
@@ -137,30 +141,8 @@ message AccountAuthorization {
     required int64 LastAccess = 8;
 }
 
-// AccountPrivacyKey
-enum AccountPrivacyKey {
-    AccountPrivacyKeyNone = 0;
-    AccountPrivacyKeyChatInvite = 1;
-    AccountPrivacyKeyStatusTimestamp = 2;
-    AccountPrivacyKeyPhoneCall = 3;
-}
-// AccountPrivacyValue
-enum AccountPrivacyType {
-    AccountPrivacyTypeAllowAll = 0;
-    AccountPrivacyTypeAllowContacts = 1;
-    AccountPrivacyTypeAllowUsers = 2;
-    AccountPrivacyTypeDisallowAll = 3;
-    AccountPrivacyTypeDisallowContacts = 4;
-    AccountPrivacyTypeDisallowUsers = 5;
-}
-
 // AccountPrivacyRules
 message AccountPrivacyRules {
-    repeated AccountPrivacyRule Rules = 1;
+    repeated PrivacyRule Rules = 1;
 }
 
-// AccountPrivacyRule
-message AccountPrivacyRule {
-    required AccountPrivacyType PrivacyType = 1;
-    required bytes Data = 2;
-}

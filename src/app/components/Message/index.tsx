@@ -282,9 +282,7 @@ class Message extends React.Component<IProps, IState> {
         this.topOfList = false;
         this.eventReferences.push(this.broadcaster.listen('Theme_Changed', this.themeChangeHandler));
         window.addEventListener('mouseup', this.dragLeaveHandler, true);
-        if (this.scrollbar.enable) {
-            window.addEventListener('resize', this.modifyScrollThumb);
-        }
+        window.addEventListener('resize', this.windowResizeHandler);
 
         this.scrollContainerEl = document.querySelector('.messages-inner .chat.active-chat');
         if (this.scrollContainerEl) {
@@ -387,10 +385,8 @@ class Message extends React.Component<IProps, IState> {
                 canceller();
             }
         });
-        if (this.scrollbar.enable) {
-            window.removeEventListener('resize', this.modifyScrollThumb);
-        }
         window.removeEventListener('mouseup', this.dragLeaveHandler, true);
+        window.removeEventListener('resize', this.windowResizeHandler);
         if (this.scrollContainerEl) {
             this.scrollContainerEl.addEventListener('mousewheel', this.scrollHandler, true);
         }
@@ -451,9 +447,9 @@ class Message extends React.Component<IProps, IState> {
                     this.list.scrollToRow(items.length);
                     if (this.list) {
                         if (this.scrollContainerEl) {
-                            const eldiv = this.scrollContainerEl.firstElementChild;
-                            if (eldiv) {
-                                this.list.scrollToPosition((eldiv.scrollHeight - this.scrollContainerEl.clientHeight) + 10);
+                            const elDiv = this.scrollContainerEl.firstElementChild;
+                            if (elDiv) {
+                                this.list.scrollToPosition((elDiv.scrollHeight - this.scrollContainerEl.clientHeight) + 10);
                                 requestAnimationFrame(() => {
                                     if (!this.isAtEnd()) {
                                         this.animateToEnd(true);
@@ -1529,6 +1525,14 @@ class Message extends React.Component<IProps, IState> {
 
     private dropZoneRefHandler = (ref: any) => {
         this.dropZoneRef = ref;
+    }
+
+    private windowResizeHandler = () => {
+        if (this.scrollbar.enable) {
+            this.modifyScrollThumb();
+        }
+        this.fitList(true);
+        window.console.log('windowResizeHandler');
     }
 
     private dragEnterHandler = (e: any) => {

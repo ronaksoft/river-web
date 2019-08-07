@@ -1,4 +1,9 @@
-## 0.25.47
+## 0.25.49
+* Protobuff updated
+* Send as SMS added
+* Message resized event added
+
+## 0.25.48
 * Blink on reply bug fixed
 
 ## 0.25.47
