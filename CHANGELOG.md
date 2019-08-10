@@ -1,3 +1,6 @@
+## 0.25.51
+* Unread counter improvements
+
 ## 0.25.50
 * Downloaded thumbnail is now have better quality 
 

@@ -1068,7 +1068,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         window.console.debug('snapshot!');
-        this.checkSync().then(() => {
+        this.canSync().then(() => {
             this.updateManager.disable();
             this.setState({
                 isUpdating: true,
@@ -2383,7 +2383,7 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private checkSync(updateId?: number): Promise<any> {
+    private canSync(updateId?: number): Promise<any> {
         const lastId = this.syncManager.getLastUpdateId();
         return new Promise((resolve, reject) => {
             const fn = (id: number) => {
@@ -2425,7 +2425,7 @@ class Chat extends React.Component<IProps, IState> {
                     isUpdating: false,
                 });
                 if (err2.code === -1) {
-                    this.checkSync().then(() => {
+                    this.canSync().then(() => {
                         this.updateManager.disable();
                         this.setState({
                             isUpdating: true,
@@ -2480,7 +2480,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         // Normal syncing
-        this.checkSync(updateId).then(() => {
+        this.canSync(updateId).then(() => {
             this.updateManager.disable();
             this.setState({
                 isUpdating: true,
@@ -2820,6 +2820,13 @@ class Chat extends React.Component<IProps, IState> {
             const index = findLastIndex(this.messages, {id: msgId});
             if (index > -1) {
                 if (this.messages[index].me) {
+                    if (dialog && (dialog.unreadcount || 0) > 0 && (dialog.topmessageid || 0) === msgId) {
+                        this.readMessageThrottle(inputPeer, msgId, dialog.topmessageid || 0);
+                        this.updateDialogsCounter(peerId, {
+                            mentionCounter: 0,
+                            unreadCounter: 0,
+                        });
+                    }
                     return;
                 }
             }

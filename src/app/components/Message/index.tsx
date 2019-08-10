@@ -1532,7 +1532,6 @@ class Message extends React.Component<IProps, IState> {
             this.modifyScrollThumb();
         }
         this.fitList(true);
-        window.console.log('windowResizeHandler');
     }
 
     private dragEnterHandler = (e: any) => {
