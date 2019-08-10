@@ -3705,7 +3705,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Cancel sending message */
-    private cancelSend(id: number) {
+    private cancelSend(id: number, noUpdate?: boolean) {
         const removeMessage = () => {
             this.messageRepo.remove(id).then(() => {
                 const messages = this.messages;
@@ -3716,8 +3716,10 @@ class Chat extends React.Component<IProps, IState> {
                     if (index > -1) {
                         this.messageComponent.cache.clear(index, 0);
                         messages.splice(index, 1);
-                        this.messageComponent.list.forceUpdateGrid();
-                        this.messageComponent.list.recomputeGridSize();
+                        if (noUpdate !== true) {
+                            this.messageComponent.list.forceUpdateGrid();
+                            this.messageComponent.list.recomputeGridSize();
+                        }
                     }
                 }
             }).catch((err) => {
