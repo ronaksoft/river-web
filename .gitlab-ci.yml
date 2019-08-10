@@ -14,7 +14,7 @@ build:app:
   script:
     - cp -a ./. /var/lib/app
     - cd /var/lib/app
-    - npm install
+    - yarn
     - npm run build
     - mkdir -p $BUILD_DIR/app
     - cp -r ./build/* $BUILD_DIR/app
