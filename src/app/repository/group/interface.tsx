@@ -12,6 +12,7 @@ import {Group, GroupParticipant} from '../../services/sdk/messages/chat.core.typ
 interface IGroup extends Group.AsObject {
     avatar?: string;
     participantList?: GroupParticipant.AsObject[];
+    delete_photo?: boolean;
 }
 
 export {IGroup};

@@ -105,6 +105,10 @@ export default class GroupRepo {
     private mergeCheck(group: IGroup, newGroup: IGroup): IGroup {
         const d = kMerge(group, newGroup);
         d.flagsList = newGroup.flagsList || [];
+        if (newGroup.delete_photo) {
+            delete d.delete_photo;
+            d.photo = undefined;
+        }
         return d;
     }
 }

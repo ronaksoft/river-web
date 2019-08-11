@@ -512,10 +512,12 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         }
         const menuItems = [];
         if (this.hasAuthority(group)) {
-            menuItems.push({
-                cmd: 'remove',
-                title: 'Remove',
-            });
+            if (currentUser.userid !== this.userId) {
+                menuItems.push({
+                    cmd: 'remove',
+                    title: 'Remove',
+                });
+            }
             if (this.hasAuthority(group)) {
                 if (currentUser.type === ParticipantType.PARTICIPANTTYPEMEMBER) {
                     menuItems.push({
@@ -899,7 +901,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             this.setState({
                 avatarMenuAnchorEl: e.currentTarget,
             });
-        } else {
+        } else if (group.photo && group.photo.photosmall.fileid !== '0') {
             this.showAvatarHandler();
         }
     }
@@ -909,10 +911,10 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         const menuItems = [{
             cmd: 'show',
             title: 'Show Photo',
-        }/*, {
+        }, {
             cmd: 'remove',
             title: 'Remove Photo',
-        }*/, {
+        }, {
             cmd: 'change',
             title: 'Change Photo',
         }];

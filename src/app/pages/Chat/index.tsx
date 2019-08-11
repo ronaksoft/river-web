@@ -1498,6 +1498,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         this.groupRepo.importBulk([{
+            delete_photo: data.photo ? undefined : true,
             id: data.groupid,
             photo: data.photo,
         }]);
@@ -2674,7 +2675,7 @@ class Chat extends React.Component<IProps, IState> {
                         this.notify(
                             `${data.senders[0].firstname} ${data.senders[0].lastname} mentioned you in ${groupTitle}`,
                             messageTitle.text, data.messages[0].peerid || 'null');
-                    } else {
+                    } else if (!data.messages[0].me) {
                         this.notify(
                             `New message from ${data.senders[0].firstname} ${data.senders[0].lastname} in ${groupTitle}`,
                             messageTitle.text, data.messages[0].peerid || 'null');
@@ -2685,14 +2686,16 @@ class Chat extends React.Component<IProps, IState> {
                 }
             });
         } else {
-            if (data.messages.length === 1) {
-                const messageTitle = getMessageTitle(data.messages[0]);
-                this.notify(
-                    `New message from ${data.senders[0].firstname} ${data.senders[0].lastname}`,
-                    messageTitle.text, data.messages[0].peerid || 'null');
-            } else {
-                this.notify(
-                    `${data.messages.length} new messages from ${data.senders[0].firstname} ${data.senders[0].lastname}`, '', data.messages[0].peerid || 'null');
+            if (data.messages.length > 0 && !data.messages[0].me) {
+                if (data.messages.length === 1) {
+                    const messageTitle = getMessageTitle(data.messages[0]);
+                    this.notify(
+                        `New message from ${data.senders[0].firstname} ${data.senders[0].lastname}`,
+                        messageTitle.text, data.messages[0].peerid || 'null');
+                } else {
+                    this.notify(
+                        `${data.messages.length} new messages from ${data.senders[0].firstname} ${data.senders[0].lastname}`, '', data.messages[0].peerid || 'null');
+                }
             }
         }
     }
@@ -3081,7 +3084,9 @@ class Chat extends React.Component<IProps, IState> {
             delete dialogMap[id];
             this.dialogsSort(this.dialogs);
             this.dialogRepo.remove(id).then(() => {
-                this.props.history.push('/chat/null');
+                if (this.state.selectedDialogId === id) {
+                    this.props.history.push('/chat/null');
+                }
                 this.updateManager.enable();
                 this.setState({
                     isUpdating: false,

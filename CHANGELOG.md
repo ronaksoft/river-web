@@ -1,3 +1,9 @@
+## 0.25.53
+* Group permission updated
+* Remove group photo added
+* New loading page
+* Message notification bug fixed
+
 ## 0.25.52
 * Scroll improved
 * Attempt to fix unread counters on sync
