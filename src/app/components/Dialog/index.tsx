@@ -158,6 +158,13 @@ class Dialog extends React.Component<IProps, IState> {
         });
     }
 
+    public forceRender() {
+        this.forceUpdate();
+        if (this.list) {
+            this.list.forceUpdateGrid();
+        }
+    }
+
     public setIsTypingList(isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } }) {
         this.setState({
             isTypingList,

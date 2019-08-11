@@ -2285,6 +2285,9 @@ class Chat extends React.Component<IProps, IState> {
             }
             if (maxOutbox && maxOutbox > (dialogs[index].readoutboxmaxid || 0)) {
                 dialogs[index].readoutboxmaxid = maxOutbox;
+                if (this.dialogComponent) {
+                    this.dialogComponent.forceRender();
+                }
             }
             if (unreadCounterIncrease === 1) {
                 shouldUpdate = true;
