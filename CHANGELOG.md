@@ -1,3 +1,7 @@
+## 0.25.52
+* Scroll improved
+* Attempt to fix unread counters on sync
+
 ## 0.25.51
 * Unread counter improvements
 

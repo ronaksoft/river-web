@@ -585,8 +585,7 @@ class Message extends React.Component<IProps, IState> {
 
     public removeSnapshot(instant?: boolean | number) {
         this.enableScroll();
-        const timeout = instant ? ((typeof instant === 'boolean') ? 0 : instant) : 10;
-        setTimeout(() => {
+        const fn = () => {
             clearTimeout(this.removeSnapshotTimeout);
             if (!this.messageInnerRef || !this.messageSnapshotRef) {
                 return;
@@ -595,7 +594,12 @@ class Message extends React.Component<IProps, IState> {
             this.messageSnapshotRef.classList.remove('group', 'user');
             this.messageSnapshotRef.classList.add('hidden');
             this.messageSnapshotRef.innerHTML = '';
-        }, timeout);
+        };
+        if (typeof instant === 'boolean') {
+            requestAnimationFrame(fn);
+        } else {
+            setTimeout(fn, instant ? instant : 10);
+        }
     }
 
     public disableScroll() {
@@ -1334,7 +1338,7 @@ class Message extends React.Component<IProps, IState> {
                         this.checkScroll(this.stayInfo.id, index);
                     });
                 } else {
-                    this.removeSnapshot();
+                    this.removeSnapshot(true);
                     this.setEnableBefore();
                 }
                 return;
@@ -1391,7 +1395,7 @@ class Message extends React.Component<IProps, IState> {
             } else {
                 t++;
             }
-            if (t <= 60) {
+            if (t <= 10) {
                 window.requestAnimationFrame(() => {
                     if (this.list) {
                         if (!(this.messageScroll.overscanStartIndex <= index && this.messageScroll.overscanStopIndex >= index)) {

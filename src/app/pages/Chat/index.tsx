@@ -103,9 +103,9 @@ import PopUpNewMessage from "../../components/PopUpNewMessage";
 import CachedMessageService from "../../services/cachedMessageService";
 import {isProd} from "../../../App";
 import {emojiLevel} from "../../services/utilities/emoji";
+import AudioPlayer, {IAudioInfo} from "../../services/audioPlayer";
 
 import './style.css';
-import AudioPlayer, {IAudioInfo} from "../../services/audioPlayer";
 
 export let notifyOptions: any[] = [];
 
@@ -2564,24 +2564,26 @@ class Chat extends React.Component<IProps, IState> {
         const data = event.detail;
         this.dialogRepo.getManyCache({}).then((res) => {
             this.dialogsSort(res, (dialogs) => {
-                data.ids.forEach((id: string) => {
-                    // window.console.debug('dialogDBUpdated data.id:', id);
-                    if (this.dialogMap.hasOwnProperty(id) && dialogs[this.dialogMap[id]]) {
-                        // window.console.debug('dialogDBUpdated peerId:', dialogs[this.dialogMap[id]].peerid);
-                        const maxReadInbox = dialogs[this.dialogMap[id]].readinboxmaxid || 0;
-                        // window.console.debug('dialogDBUpdated maxReadInbox:', maxReadInbox);
-                        const dialog = this.getDialogById(id);
-                        if (dialog) {
-                            this.messageRepo.getUnreadCount(id, maxReadInbox, dialog ? (dialog.topmessageid || 0) : 0).then((count) => {
-                                // window.console.debug('dialogDBUpdated getUnreadCount:', count);
-                                this.updateDialogsCounter(id, {
-                                    mentionCounter: count.mention,
-                                    unreadCounter: count.message,
+                if (data.counters) {
+                    data.ids.forEach((id: string) => {
+                        // window.console.debug('dialogDBUpdated data.id:', id);
+                        if (this.dialogMap.hasOwnProperty(id) && dialogs[this.dialogMap[id]]) {
+                            // window.console.debug('dialogDBUpdated peerId:', dialogs[this.dialogMap[id]].peerid);
+                            const maxReadInbox = dialogs[this.dialogMap[id]].readinboxmaxid || 0;
+                            // window.console.debug('dialogDBUpdated maxReadInbox:', maxReadInbox);
+                            const dialog = this.getDialogById(id);
+                            if (dialog) {
+                                this.messageRepo.getUnreadCount(id, maxReadInbox, dialog ? (dialog.topmessageid || 0) : 0).then((count) => {
+                                    // window.console.debug('dialogDBUpdated getUnreadCount:', count);
+                                    this.updateDialogsCounter(id, {
+                                        mentionCounter: count.mention,
+                                        unreadCounter: count.message,
+                                    });
                                 });
-                            });
+                            }
                         }
-                    }
-                });
+                    });
+                }
             });
         });
     }

@@ -83,7 +83,7 @@ export default class SyncManager {
             if (lastUpdateId > 0) {
                 this.setLastUpdateId(lastUpdateId);
             }
-            this.updateMany(data.updatesList, data.groupsList);
+            this.updateMany(data.updatesList, data.groupsList, !(data.more || false));
             if (data.more) {
                 setTimeout(() => {
                     resolve((data.maxupdateid || 0) + 1);
@@ -110,7 +110,7 @@ export default class SyncManager {
         };
     }
 
-    private updateMany(envelopes: UpdateEnvelope.AsObject[], groups: Group.AsObject[]) {
+    private updateMany(envelopes: UpdateEnvelope.AsObject[], groups: Group.AsObject[], lastOne: boolean) {
         let dialogs: { [key: number]: IDialog } = {};
         const toRemoveDialogs: IRemoveDialog[] = [];
         const messages: { [key: number]: IMessage } = {};
@@ -245,7 +245,7 @@ export default class SyncManager {
         this.updateUserDB(users);
         this.updateGroupDB(groups);
         this.updateMessageDB(messages, toRemoveMessages).then(() => {
-            this.updateDialogDB(dialogs, toRemoveDialogs, toCheckDialogs);
+            this.updateDialogDB(dialogs, toRemoveDialogs, toCheckDialogs, lastOne);
         });
     }
 
@@ -273,7 +273,7 @@ export default class SyncManager {
         return dialogs;
     }
 
-    private updateDialogDB(dialogs: { [key: number]: IDialog }, toRemoveDialogs: IRemoveDialog[], dialogCheck: string[]) {
+    private updateDialogDB(dialogs: { [key: number]: IDialog }, toRemoveDialogs: IRemoveDialog[], dialogCheck: string[], lastOne: boolean) {
         toRemoveDialogs.forEach((item) => {
             if (item.remove) {
                 this.dialogRepo.remove(item.peerId);
@@ -287,11 +287,11 @@ export default class SyncManager {
             this.dialogRepo.lazyUpsert(d);
             this.dialogRepo.flush().then(() => {
                 setTimeout(() => {
-                    this.broadcastEvent('Dialog_Sync_Updated', {ids: keys});
+                    this.broadcastEvent('Dialog_Sync_Updated', {ids: keys, counters: lastOne});
                 }, 100);
             }).catch(() => {
                 setTimeout(() => {
-                    this.broadcastEvent('Dialog_Sync_Updated', {ids: keys});
+                    this.broadcastEvent('Dialog_Sync_Updated', {ids: keys, counters: lastOne});
                 }, 100);
             });
         };
@@ -336,7 +336,7 @@ export default class SyncManager {
                         });
                     }).catch(() => {
                         setTimeout(() => {
-                            this.broadcastEvent('Dialog_Sync_Updated', {ids: keys});
+                            this.broadcastEvent('Dialog_Sync_Updated', {ids: keys, counters: lastOne});
                         }, 100);
                     });
                 }, 100);
