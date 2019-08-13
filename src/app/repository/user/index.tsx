@@ -253,6 +253,9 @@ export default class UserRepo {
             if (!force && u1.bio && u1.bio.length > 0 && (!u2.bio || (u2.bio && u2.bio.length === 0))) {
                 u2.bio = u1.bio;
             }
+            if (!force && u1.phone && u1.phone.length > 0 && (!u2.phone || (u2.phone && u2.phone.length === 0))) {
+                u2.phone = u1.phone;
+            }
             return kMerge(u1, u2);
         };
         if (t && user.is_contact === 1) {

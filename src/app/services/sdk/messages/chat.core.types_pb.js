@@ -9942,7 +9942,7 @@ proto.msg.PrivacyRule.deserializeBinaryFromReader = function(msg, reader) {
       msg.setPrivacytype(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.addUserids(value);
       break;
     default:
@@ -9983,7 +9983,7 @@ proto.msg.PrivacyRule.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getUseridsList();
   if (f.length > 0) {
-    writer.writeRepeatedInt64(
+    writer.writeRepeatedInt64String(
       2,
       f
     );
@@ -10022,21 +10022,21 @@ proto.msg.PrivacyRule.prototype.hasPrivacytype = function() {
 
 /**
  * repeated int64 UserIDs = 2;
- * @return {!Array.<number>}
+ * @return {!Array.<string>}
  */
 proto.msg.PrivacyRule.prototype.getUseridsList = function() {
-  return /** @type {!Array.<number>} */ (jspb.Message.getRepeatedField(this, 2));
+  return /** @type {!Array.<string>} */ (jspb.Message.getRepeatedField(this, 2));
 };
 
 
-/** @param {!Array.<number>} value */
+/** @param {!Array.<string>} value */
 proto.msg.PrivacyRule.prototype.setUseridsList = function(value) {
   jspb.Message.setField(this, 2, value || []);
 };
 
 
 /**
- * @param {!number} value
+ * @param {!string} value
  * @param {number=} opt_index
  */
 proto.msg.PrivacyRule.prototype.addUserids = function(value, opt_index) {

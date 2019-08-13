@@ -15,7 +15,7 @@ import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import {
     KeyboardBackspaceRounded, PaletteRounded/*, PersonRounded*/, EditRounded, CheckRounded, BookmarkRounded,
     PhotoCameraRounded, CloseRounded, FormatSizeRounded, ChatBubbleRounded, FormatColorFillRounded, CollectionsRounded,
-    Brightness2Rounded, ClearAllRounded, DataUsageRounded, LanguageRounded, DoneRounded, MaximizeRounded,
+    Brightness2Rounded, ClearAllRounded, DataUsageRounded, LanguageRounded, DoneRounded, MaximizeRounded, LockRounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import UserAvatar from '../UserAvatar';
@@ -24,7 +24,7 @@ import UserRepo from '../../repository/user';
 import SDK from '../../services/sdk';
 import {debounce, find} from 'lodash';
 import Scrollbars from 'react-custom-scrollbars';
-import {bgTypes, bubbles, C_CUSTOM_BG, storageItems, themes} from './vars/theme';
+import {bgTypes, bubbles, C_CUSTOM_BG, privacyItems, privacyRuleItems, storageItems, themes} from './vars/theme';
 import {IUser} from '../../repository/user/interface';
 import {Link} from 'react-router-dom';
 import FileManager, {IFileProgress} from '../../services/sdk/fileManager';
@@ -41,6 +41,8 @@ import DialogContent from '@material-ui/core/DialogContent/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions/DialogActions';
 import OverlayDialog from '@material-ui/core/Dialog/Dialog';
+import RadioGroup from '@material-ui/core/RadioGroup/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel/FormControlLabel';
 import Broadcaster from '../../services/broadcaster';
 import {AccountAuthorization} from '../../services/sdk/messages/chat.api.accounts_pb';
 import TimeUtility from '../../services/utilities/time';
@@ -60,7 +62,7 @@ import ElectronService from "../../services/electron";
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.25.53';
+export const C_VERSION = '0.25.54';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{
@@ -78,10 +80,9 @@ export const languageList = [{
 interface IProps {
     onClose?: () => void;
     onAction?: (cmd: 'logout') => void;
-    subMenu?: string;
     updateMessages?: (keep?: boolean) => void;
     onReloadDialog?: (peerIds: string[]) => void;
-    onSubPlaceChange?: (sub: string) => void;
+    onSubPlaceChange?: (sub: string, subChild: string) => void;
 }
 
 interface IState {
@@ -101,6 +102,7 @@ interface IState {
     loading: boolean;
     page: string;
     pageContent: string;
+    pageSubContent: string;
     phone: string;
     profileCropperOpen: boolean;
     profilePictureCrop: any;
@@ -166,8 +168,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
             fontSize: 2,
             lastname: '',
             loading: false,
-            page: (props.subMenu && props.subMenu !== 'none' ? '2' : '1'),
-            pageContent: props.subMenu || 'none',
+            page: '1',
+            pageContent: 'none',
+            pageSubContent: 'none',
             phone: this.sdk.getConnInfo().Phone || '',
             profileCropperOpen: false,
             profilePictureCrop: {
@@ -204,9 +207,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
         };
         this.userRepo = UserRepo.getInstance();
         this.usernameCheckDebounce = debounce(this.checkUsername, 256);
-        if (props.subMenu === 'account') {
-            this.getUser();
-        }
         this.fileManager = FileManager.getInstance();
         this.fileRepo = FileRepo.getInstance();
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
@@ -255,31 +255,30 @@ class SettingsMenu extends React.Component<IProps, IState> {
     }
 
     public componentWillReceiveProps(newProps: IProps) {
-        if (newProps.subMenu !== 'none') {
-            this.setState({
-                page: '2',
-                pageContent: newProps.subMenu || 'none',
-            });
-            if (newProps.subMenu === 'account') {
-                this.getUser();
-            }
-        } else {
-            this.setState({
-                pageContent: newProps.subMenu || 'none',
-            });
-            if (newProps.subMenu === 'none') {
-                this.setState({
-                    page: '1',
-                });
-            }
+        //
+    }
+
+    public navigateToPage(pageContent: string, pageSubContent: string) {
+        this.setState({
+            page: pageContent === 'none' ? '1' : (pageSubContent !== 'none' ? '3' : '2'),
+            pageContent,
+            pageSubContent,
+        }, () => {
+            this.dispatchSubPlaceChange();
+        });
+        if (pageContent === 'account') {
+            this.getUser();
+        }
+        if (pageSubContent === 'session') {
+            this.getSessions();
         }
     }
 
     public render() {
         const {
-            avatarMenuAnchorEl, page, pageContent, user, editProfile, editUsername, bio, firstname, lastname, phone,
-            username, usernameAvailable, usernameValid, uploadingPhoto, debugModeOpen, sessions, confirmDialogOpen,
-            customBackgroundSrc, loading
+            avatarMenuAnchorEl, page, pageContent, pageSubContent, user, editProfile, editUsername, bio, firstname,
+            lastname, phone, username, usernameAvailable, usernameValid, uploadingPhoto, debugModeOpen, sessions,
+            confirmDialogOpen, customBackgroundSrc, loading
         } = this.state;
         return (
             <div className="setting-menu">
@@ -334,11 +333,11 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                         </div>
                                         <div className="anchor-label">{i18n.t('settings.data_and_storage')}</div>
                                     </div>
-                                    <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'session')}>
+                                    <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'privacy')}>
                                         <div className="icon color-session">
-                                            <ClearAllRounded/>
+                                            <LockRounded/>
                                         </div>
-                                        <div className="anchor-label">{i18n.t('settings.active_sessions')}</div>
+                                        <div className="anchor-label">{i18n.t('settings.privacy_and_security')}</div>
                                     </div>
                                     <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'theme')}>
                                         <div className="icon color-theme">
@@ -379,8 +378,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
                         {Boolean(pageContent === 'theme') && <React.Fragment>
                             <div className="menu-header">
                                 <IconButton
-                                    aria-label="Prev"
-                                    aria-haspopup="true"
                                     onClick={this.onPrevHandler}
                                 >
                                     <KeyboardBackspaceRounded/>
@@ -527,8 +524,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
                         {Boolean(pageContent === 'account') && <React.Fragment>
                             <div className="menu-header">
                                 <IconButton
-                                    aria-label="Prev"
-                                    aria-haspopup="true"
                                     onClick={this.onPrevHandler}
                                 >
                                     <KeyboardBackspaceRounded/>
@@ -702,12 +697,124 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                 </Scrollbars>}
                             </div>
                         </React.Fragment>}
-                        {Boolean(pageContent === 'session') && <React.Fragment>
+                        {Boolean(pageContent === 'privacy') && <React.Fragment>
                             <div className="menu-header">
                                 <IconButton
-                                    aria-label="Prev"
-                                    aria-haspopup="true"
                                     onClick={this.onPrevHandler}
+                                >
+                                    <KeyboardBackspaceRounded/>
+                                </IconButton>
+                                <label>{i18n.t('settings.privacy_and_security')}</label>
+                            </div>
+                            <div className="menu-content">
+                                <Scrollbars
+                                    autoHide={true}
+                                >
+                                    <div>
+                                        <div className="page-anchor anchor-padding-side"
+                                             onClick={this.selectSubPageHandler.bind(this, 'session')}>
+                                            <div className="icon color-session">
+                                                <ClearAllRounded/>
+                                            </div>
+                                            <div className="anchor-label">{i18n.t('settings.active_sessions')}</div>
+                                        </div>
+                                        <div
+                                            className="sub-page-header-alt">{i18n.t('settings.privacy')}</div>
+                                        {privacyItems.map((item) => {
+                                            return (
+                                                <div key={item.id} className="page-anchor anchor-padding-side"
+                                                     onClick={this.selectSubPageHandler.bind(this, item.id)}>
+                                                    <div className="icon color-theme-type" style={{
+                                                        backgroundColor: item.color,
+                                                    }}>
+                                                        {item.icon}
+                                                    </div>
+                                                    <div
+                                                        className="anchor-label">{i18n.t(item.title)}</div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </Scrollbars>
+                            </div>
+                        </React.Fragment>}
+                        {Boolean(pageContent === 'storage') && <React.Fragment>
+                            <div className="menu-header">
+                                <IconButton
+                                    onClick={this.onPrevHandler}
+                                >
+                                    <KeyboardBackspaceRounded/>
+                                </IconButton>
+                                <label>{i18n.t('settings.data_and_storage')}</label>
+                            </div>
+                            <div className="menu-content">
+                                <Scrollbars autoHide={true}>
+                                    <div>
+                                        {storageItems.map((item) => {
+                                            if (item.type === 'item') {
+                                                return (
+                                                    <div key={item.id}
+                                                         className={'switch-item ' + (item.className || '')}>
+                                                        <div className="switch-label">{i18n.t(item.title)}</div>
+                                                        <div className="switch">
+                                                            <Switch
+                                                                checked={Boolean(this.state.storageValues[item.id] || false)}
+                                                                className={'setting-switch' + (this.state.storageValues[item.id] ? ' checked' : '')}
+                                                                color="default"
+                                                                onChange={this.storageToggleHandler.bind(this, item.id)}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                );
+                                            } else if (item.type === 'header') {
+                                                return (
+                                                    <div key={item.id}
+                                                         className={'sub-page-header ' + (item.className || '')}
+                                                    >{i18n.t(item.title)}</div>
+                                                );
+                                            } else {
+                                                return '';
+                                            }
+                                        })}
+                                    </div>
+                                    <div className="settings-btn"
+                                         onClick={this.storageUsageHandler}>{i18n.t('settings.storage_usage')}</div>
+                                </Scrollbars>
+                            </div>
+                        </React.Fragment>}
+                        {Boolean(pageContent === 'language') && <React.Fragment>
+                            <div className="menu-header">
+                                <IconButton
+                                    onClick={this.onPrevHandler}
+                                >
+                                    <KeyboardBackspaceRounded/>
+                                </IconButton>
+                                <label>{i18n.t('settings.language')}</label>
+                            </div>
+                            <div className="menu-content">
+                                <Scrollbars
+                                    autoHide={true}
+                                >
+                                    <div className="info language-list">
+                                        {languageList.map((item, key) => {
+                                            return (<div key={key} className="language-item"
+                                                         onClick={this.changeLanguage.bind(this, item.lang)}>
+                                                <div className="language-label">{item.title}</div>
+                                                <div className="check">
+                                                    {item.lang === this.state.selectedLanguage && <DoneRounded/>}
+                                                </div>
+                                            </div>);
+                                        })}
+                                    </div>
+                                </Scrollbars>
+                            </div>
+                        </React.Fragment>}
+                    </div>
+                    <div className="page page-3">
+                        {Boolean(pageSubContent === 'session') && <React.Fragment>
+                            <div className="menu-header">
+                                <IconButton
+                                    onClick={this.onSubPrevHandler}
                                 >
                                     <KeyboardBackspaceRounded/>
                                 </IconButton>
@@ -768,81 +875,51 @@ class SettingsMenu extends React.Component<IProps, IState> {
                             </div>}
                             {loading && <Loading/>}
                         </React.Fragment>}
-                        {Boolean(pageContent === 'storage') && <React.Fragment>
-                            <div className="menu-header">
-                                <IconButton
-                                    aria-label="Prev"
-                                    aria-haspopup="true"
-                                    onClick={this.onPrevHandler}
-                                >
-                                    <KeyboardBackspaceRounded/>
-                                </IconButton>
-                                <label>{i18n.t('settings.data_and_storage')}</label>
-                            </div>
-                            <div className="menu-content">
-                                <Scrollbars autoHide={true}>
-                                    <div>
-                                        {storageItems.map((item) => {
-                                            if (item.type === 'item') {
-                                                return (
-                                                    <div key={item.id}
-                                                         className={'switch-item ' + (item.className || '')}>
-                                                        <div className="switch-label">{i18n.t(item.title)}</div>
-                                                        <div className="switch">
-                                                            <Switch
-                                                                checked={Boolean(this.state.storageValues[item.id] || false)}
-                                                                className={'setting-switch' + (this.state.storageValues[item.id] ? ' checked' : '')}
-                                                                color="default"
-                                                                onChange={this.storageToggleHandler.bind(this, item.id)}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                );
-                                            } else if (item.type === 'header') {
-                                                return (
-                                                    <div key={item.id}
-                                                         className={'sub-page-header ' + (item.className || '')}
-                                                    >{i18n.t(item.title)}</div>
-                                                );
-                                            } else {
-                                                return '';
-                                            }
-                                        })}
+                        {privacyItems.filter(o => o.id === pageSubContent).map((item) => {
+                            return (
+                                <React.Fragment key={item.id}>
+                                    <div className="menu-header">
+                                        <IconButton
+                                            onClick={this.onSubPrevHandler}
+                                        >
+                                            <KeyboardBackspaceRounded/>
+                                        </IconButton>
+                                        <label>{i18n.t(`settings.${item.id}`)}</label>
                                     </div>
-                                    <div className="settings-btn"
-                                         onClick={this.storageUsageHandler}>{i18n.t('settings.storage_usage')}</div>
-                                </Scrollbars>
-                            </div>
-                        </React.Fragment>}
-                        {Boolean(pageContent === 'language') && <React.Fragment>
-                            <div className="menu-header">
-                                <IconButton
-                                    aria-label="Prev"
-                                    aria-haspopup="true"
-                                    onClick={this.onPrevHandler}
-                                >
-                                    <KeyboardBackspaceRounded/>
-                                </IconButton>
-                                <label>{i18n.t('settings.language')}</label>
-                            </div>
-                            <div className="menu-content">
-                                <Scrollbars
-                                    autoHide={true}
-                                >
-                                    <div className="info language-list">
-                                        {languageList.map((item, key) => {
-                                            return (<div key={key} className="language-item"
-                                                         onClick={this.changeLanguage.bind(this, item.lang)}>
-                                                <div className="language-label">{item.title}</div>
-                                                <div className="check">
-                                                    {item.lang === this.state.selectedLanguage && <DoneRounded/>}
-                                                </div>
-                                            </div>);
-                                        })}
+                                    <div
+                                        className="sub-page-header-alt header-column">
+                                        <div className="header-label">{i18n.t(item.title)}</div>
+                                        <div className="header-hint">{i18n.t(item.hint)}</div>
                                     </div>
-                                </Scrollbars>
-                            </div>
-                        </React.Fragment>}
+                                    <div className="radio-item">
+                                        <RadioGroup name="position">
+                                            {privacyRuleItems.map((prItem) => {
+                                                return (
+                                                    <FormControlLabel
+                                                        key={prItem.id}
+                                                        value={prItem.id}
+                                                        control={<Radio color="primary" className="pr-radio"/>}
+                                                        label={i18n.t(prItem.title)}
+                                                        labelPlacement="end"
+                                                    />);
+                                            })}
+                                        </RadioGroup>
+                                    </div>
+                                    <div
+                                        className="sub-page-header-alt">
+                                        <div
+                                            className="header-label">{i18n.t('settings.privacy_never_share_with')}</div>
+                                        <div className="header-value">0</div>
+                                    </div>
+                                    <div
+                                        className="sub-page-header-alt">
+                                        <div
+                                            className="header-label">{i18n.t('settings.privacy_always_share_with')}</div>
+                                        <div className="header-value">0</div>
+                                    </div>
+                                </React.Fragment>
+                            );
+                        })}
                     </div>
                 </div>
                 <Menu
@@ -999,10 +1076,31 @@ class SettingsMenu extends React.Component<IProps, IState> {
         });
     }
 
+    private onSubPrevHandler = () => {
+        this.setState({
+            page: '2',
+            pageSubContent: 'none',
+        }, () => {
+            this.dispatchSubPlaceChange();
+        });
+    }
+
     private selectPageHandler = (target: string) => {
         this.setState({
             page: '2',
             pageContent: target,
+        }, () => {
+            this.dispatchSubPlaceChange();
+        });
+        if (target === 'account') {
+            this.getUser();
+        }
+    }
+
+    private selectSubPageHandler = (target: string) => {
+        this.setState({
+            page: '3',
+            pageSubContent: target,
         }, () => {
             this.dispatchSubPlaceChange();
         });
@@ -1230,7 +1328,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     /* Dispatch sub place change */
     private dispatchSubPlaceChange() {
         if (this.props.onSubPlaceChange) {
-            this.props.onSubPlaceChange(this.state.pageContent);
+            this.props.onSubPlaceChange(this.state.pageContent, this.state.pageSubContent);
         }
     }
 
@@ -1604,6 +1702,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         //
         this.electronService.toggleMenuBar();
     }
+
 }
 
 export default SettingsMenu;

@@ -1388,9 +1388,9 @@ export class PrivacyRule extends jspb.Message {
   setPrivacytype(value: PrivacyType): void;
 
   clearUseridsList(): void;
-  getUseridsList(): Array<number>;
-  setUseridsList(value: Array<number>): void;
-  addUserids(value: number, index?: number): number;
+  getUseridsList(): Array<string>;
+  setUseridsList(value: Array<string>): void;
+  addUserids(value: string, index?: number): string;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PrivacyRule.AsObject;
@@ -1405,7 +1405,7 @@ export class PrivacyRule extends jspb.Message {
 export namespace PrivacyRule {
   export type AsObject = {
     privacytype?: PrivacyType,
-    useridsList: Array<number>,
+    useridsList: Array<string>,
   }
 }
 

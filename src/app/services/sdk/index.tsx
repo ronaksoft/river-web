@@ -38,7 +38,7 @@ import {
     InputUser,
     MessageEntity,
     PeerNotifySettings,
-    PhoneContact,
+    PhoneContact, PrivacyKey, PrivacyRule,
     PushTokenProvider,
     TypingAction,
     User
@@ -64,10 +64,10 @@ import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from
 import {
     AccountAuthorizations,
     AccountCheckUsername, AccountGetAuthorizations,
-    AccountGetNotifySettings,
+    AccountGetNotifySettings, AccountGetPrivacy, AccountPrivacyRules,
     AccountRegisterDevice,
     AccountRemovePhoto, AccountResetAuthorization,
-    AccountSetNotifySettings,
+    AccountSetNotifySettings, AccountSetPrivacy,
     AccountUpdateProfile,
     AccountUpdateUsername,
     AccountUploadPhoto
@@ -535,6 +535,23 @@ export default class SDK {
         data.setPeer(peer);
         data.setPin(pin);
         return this.server.send(C_MSG.MessagesToggleDialogPin, data.serializeBinary(), true);
+    }
+
+    public getPrivacy(privacyKey: PrivacyKey): Promise<AccountPrivacyRules.AsObject> {
+        const data = new AccountGetPrivacy();
+        data.setKey(privacyKey);
+        return this.server.send(C_MSG.AccountGetPrivacy, data.serializeBinary(), false);
+    }
+
+    public setPrivacy({callList, chatInviteList, chatForwardedList, lastSeenList, phoneNumberList, profilePhotoList}: { callList?: PrivacyRule[], chatInviteList?: PrivacyRule[], chatForwardedList?: PrivacyRule[], lastSeenList?: PrivacyRule[], phoneNumberList?: PrivacyRule[], profilePhotoList?: PrivacyRule[] }): Promise<Bool.AsObject> {
+        const data = new AccountSetPrivacy();
+        data.setCallList(callList || []);
+        data.setChatinviteList(chatInviteList || []);
+        data.setForwardedmessageList(chatForwardedList || []);
+        data.setLastseenList(lastSeenList || []);
+        data.setPhonenumberList(phoneNumberList || []);
+        data.setProfilephotoList(profilePhotoList || []);
+        return this.server.send(C_MSG.AccountSetPrivacy, data.serializeBinary(), false);
     }
 
     public getServerSalts(): Promise<SystemSalts.AsObject> {

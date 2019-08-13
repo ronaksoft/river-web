@@ -1,3 +1,13 @@
+## 0.25.54
+* PeerMedia video thumbnail bug fixed
+* Privacy and Security added
+* Settings menu rewrite
+* Translations updated
+* Proto Messages updated
+* SDK updated
+* User server's phone bug fixed
+* User dialog typo fixed
+
 ## 0.25.53
 * Group permission updated
 * Remove group photo added

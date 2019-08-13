@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 import bg1 from '../../../../asset/image/bgpic/bg1.jpg';
 import bg2 from '../../../../asset/image/bgpic/bg2.jpg';
 import bg3 from '../../../../asset/image/bgpic/bg3.jpg';
@@ -35,6 +37,15 @@ import lbg13 from '../../../../asset/image/bgl/tic-tac-toe.svg';
 import dbg13 from '../../../../asset/image/bgd/tic-tac-toe.svg';
 import lbg14 from '../../../../asset/image/bgl/topography.svg';
 import dbg14 from '../../../../asset/image/bgd/topography.svg';
+
+import {
+    CallRounded,
+    GroupRounded,
+    ForwardRounded,
+    VisibilityRounded,
+    SimCardRounded,
+    PersonRounded
+} from '@material-ui/icons';
 
 export const C_CUSTOM_BG = '21';
 
@@ -253,4 +264,53 @@ export const storageItems = [{
     id: 'auto_save_files',
     title: 'settings.files',
     type: 'item',
+}];
+
+export const privacyItems = [{
+    color: '#27AE60',
+    hint: 'settings.privacy_call_hint',
+    icon: <CallRounded/>,
+    id: 'privacy_call',
+    title: 'settings.privacy_call',
+}, {
+    color: '#3AB4EB',
+    hint: 'settings.privacy_chat_invite_hint',
+    icon: <GroupRounded/>,
+    id: 'privacy_chat_invite',
+    title: 'settings.privacy_chat_invite',
+}, {
+    color: '#FF7D00',
+    hint: 'settings.privacy_forwarded_message_hint',
+    icon: <ForwardRounded/>,
+    id: 'privacy_forwarded_message',
+    title: 'settings.privacy_forwarded_message',
+}, {
+    color: '#7479EA',
+    hint: 'settings.privacy_last_seen_hint',
+    icon: <VisibilityRounded/>,
+    id: 'privacy_last_seen',
+    title: 'settings.privacy_last_seen',
+}, {
+    color: '#FFD501',
+    hint: 'settings.privacy_phone_number_hint',
+    icon: <SimCardRounded/>,
+    id: 'privacy_phone_number',
+    title: 'settings.privacy_phone_number',
+}, {
+    color: '#F75176',
+    hint: 'settings.privacy_profile_photo_hint',
+    icon: <PersonRounded/>,
+    id: 'privacy_profile_photo',
+    title: 'settings.privacy_profile_photo',
+}];
+
+export const privacyRuleItems = [{
+    id: 'everyone',
+    title: 'settings.privacy_everyone'
+}, {
+    id: 'my_contacts',
+    title: 'settings.privacy_my_contacts'
+}, {
+    id: 'no_one',
+    title: 'settings.privacy_no_one'
 }];

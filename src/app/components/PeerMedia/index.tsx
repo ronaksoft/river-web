@@ -245,7 +245,8 @@ class PeerMedia extends React.Component<IProps, IState> {
     /* Get file icon */
     private getFileIcon(item: IMedia) {
         if (item.info.thumbFile.fileid !== '') {
-            return (<CachedPhoto className="picture" fileLocation={item.download ? item.info.file : item.info.thumbFile}
+            return (<CachedPhoto className="picture"
+                                 fileLocation={(item.download && item.type === C_MESSAGE_TYPE.Picture) ? item.info.file : item.info.thumbFile}
                                  blur={item.download ? 0 : 10}/>);
         } else {
             switch (item.type) {

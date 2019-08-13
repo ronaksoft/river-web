@@ -226,7 +226,7 @@ class UserDialog extends React.Component<IProps, IState> {
                             </div>
                         </div>}
                         {Boolean(edit) && <div className="actions-bar cancel" onClick={this.cancelHandler}>
-                            {i18n.t('general.general')}
+                            {i18n.t('general.cancel')}
                         </div>}
                         {Boolean(!isInContact && !edit) &&
                         <div className="add-as-contact" onClick={this.addAsContactHandler}>

@@ -369,5 +369,5 @@ enum PrivacyType {
 // PrivacyRule
 message PrivacyRule {
     required PrivacyType PrivacyType = 1;
-    repeated int64 UserIDs = 2;
+    repeated int64 UserIDs = 2 [jstype = JS_STRING];
 }

@@ -287,9 +287,10 @@ input {
       width: 318px; }
   .container.mobile-view {
     width: 200vw;
-    transition: margin-left 0.05s linear; }
+    transition: transform 0.05s linear;
+    will-change: transform; }
     .container.mobile-view.chat-view {
-      margin-left: -100vw; }
+      transform: translateX(-100vw); }
     .container.mobile-view .column-left,
     .container.mobile-view .column-center {
       width: 100vw; }

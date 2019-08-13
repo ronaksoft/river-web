@@ -17,7 +17,7 @@ import {
     UpdateDifference, UpdateNewMessage, UpdateReadHistoryInbox, UpdateReadHistoryOutbox, UpdateState, UpdateUserTyping,
 } from '../messages/chat.api.updates_pb';
 import {File} from '../messages/chat.api.files_pb';
-import {AccountAuthorizations} from '../messages/chat.api.accounts_pb';
+import {AccountAuthorizations, AccountPrivacyRules} from '../messages/chat.api.accounts_pb';
 import {SystemInfo, SystemSalts, SystemServerTime} from '../messages/chat.api.system_pb';
 import {UsersMany} from '../messages/chat.api.users_pb';
 
@@ -72,6 +72,8 @@ export default class UniqueId {
                 return UsersMany.deserializeBinary(data);
             case C_MSG.SystemSalts:
                 return SystemSalts.deserializeBinary(data);
+            case C_MSG.AccountPrivacyRules:
+                return AccountPrivacyRules.deserializeBinary(data);
             default:
                 return null;
         }
