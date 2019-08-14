@@ -15,7 +15,7 @@ build:app:
     - cp -a ./. /var/lib/app
     - cd /var/lib/app
     - yarn
-    - npm run build
+    - yarn run build
     - mkdir -p $BUILD_DIR/app
     - cp -r ./build/* $BUILD_DIR/app
     - cp ./nginx.conf.template $BUILD_DIR/app/
