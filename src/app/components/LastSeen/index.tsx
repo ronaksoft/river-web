@@ -17,6 +17,7 @@ import {UserStatus} from '../../services/sdk/messages/chat.core.types_pb';
 import Broadcaster from '../../services/broadcaster';
 import {IGroup} from '../../repository/group/interface';
 import i18n from "../../services/i18n";
+import {localize} from "../../services/utilities/localize";
 
 interface IProps {
     className?: string;
@@ -98,7 +99,7 @@ class LastSeen extends React.Component<IProps, IState> {
     private getStatus() {
         if (this.state.id.indexOf('-') === 0) {
             const {group} = this.state;
-            return i18n.tf('status.members', String(group.participants || 0));
+            return i18n.tf('status.members', String(localize(group.participants || 0)));
         } else {
             const {user} = this.state;
             if (this.state.you || this.riverTime.now() - (user.status_last_modified || 0) < 60 && user.status === UserStatus.USERSTATUSONLINE) {

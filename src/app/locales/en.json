@@ -36,7 +36,9 @@
     "you": "You",
     "close": "Close",
     "yes": "Yes",
-    "are_you_sure": "Are you sure?"
+    "are_you_sure": "Are you sure?",
+    "loading": "Loading...",
+    "user_list": "User List"
   },
   "chat": {
     "search": "Search",
@@ -179,7 +181,7 @@
     "privacy_chat_invite": "Chat Invite",
     "privacy_chat_invite_hint": "Who can add me to groups?",
     "privacy_forwarded_message": "Forwarded Message",
-    "privacy_forwarded_hint": "Who can see my forwarded messages?",
+    "privacy_forwarded_message_hint": "Who can see my forwarded messages?",
     "privacy_last_seen": "Last Seen",
     "privacy_last_seen_hint": "Who can see my online status?",
     "privacy_phone_number": "Phone Number",

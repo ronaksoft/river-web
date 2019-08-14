@@ -54,7 +54,7 @@ export default class SearchRepo {
         });
     }
 
-    public search({skip, limit, keyword}: any): Promise<IDialogWithContact> {
+    public search = ({skip, limit, keyword}: any): Promise<IDialogWithContact> => {
         const promises: any[] = [];
         limit = limit || 16;
         skip = skip || 0;
@@ -85,6 +85,21 @@ export default class SearchRepo {
                 });
             }).catch(reject);
         });
+    }
+
+    public searchUser = ({skip, limit, keyword}: any): Promise<IDialogWithContact> => {
+        return this.userRepo.getManyCache(false, {limit, keyword}).then((res) => {
+            return ({
+                contacts: res.filter((user: IUser) => {
+                    return user.lastname !== undefined || user.firstname !== undefined;
+                }),
+                dialogs: [],
+            });
+        });
+    }
+
+    public searchUsersById(ids: string[]) {
+        return this.userRepo.findInArray(ids, 0, 1000);
     }
 
     public getCurrentUserId(): string {

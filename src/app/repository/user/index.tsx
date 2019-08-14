@@ -99,6 +99,10 @@ export default class UserRepo {
         });
     }
 
+    public findInArray(ids: string[], skip: number, limit: number) {
+        return this.db.users.where('id').anyOf(ids).offset(skip || 0).limit(limit).toArray();
+    }
+
     public getFull(id: string, cacheCB?: (us: IUser) => void): Promise<IUser> {
         return new Promise<IUser>((resolve, reject) => {
             this.get(id).then((user) => {

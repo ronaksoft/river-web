@@ -13,16 +13,31 @@ import Button from '@material-ui/core/Button';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import {
-    KeyboardBackspaceRounded, PaletteRounded/*, PersonRounded*/, EditRounded, CheckRounded, BookmarkRounded,
-    PhotoCameraRounded, CloseRounded, FormatSizeRounded, ChatBubbleRounded, FormatColorFillRounded, CollectionsRounded,
-    Brightness2Rounded, ClearAllRounded, DataUsageRounded, LanguageRounded, DoneRounded, MaximizeRounded, LockRounded,
+    BookmarkRounded,
+    Brightness2Rounded,
+    ChatBubbleRounded,
+    CheckRounded,
+    ClearAllRounded,
+    CloseRounded,
+    CollectionsRounded,
+    DataUsageRounded,
+    DoneRounded,
+    EditRounded,
+    FormatColorFillRounded,
+    FormatSizeRounded,
+    KeyboardBackspaceRounded,
+    LanguageRounded,
+    LockRounded,
+    MaximizeRounded,
+    PaletteRounded,
+    PhotoCameraRounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import UserAvatar from '../UserAvatar';
 import TextField from '@material-ui/core/TextField/TextField';
 import UserRepo from '../../repository/user';
 import SDK from '../../services/sdk';
-import {debounce, find} from 'lodash';
+import {cloneDeep, debounce, find, findIndex, isEqual} from 'lodash';
 import Scrollbars from 'react-custom-scrollbars';
 import {bgTypes, bubbles, C_CUSTOM_BG, privacyItems, privacyRuleItems, storageItems, themes} from './vars/theme';
 import {IUser} from '../../repository/user/interface';
@@ -31,7 +46,13 @@ import FileManager, {IFileProgress} from '../../services/sdk/fileManager';
 import UniqueId from '../../services/uniqueId';
 import ProgressBroadcaster from '../../services/progress';
 import RiverTime from '../../services/utilities/river_time';
-import {InputFile, InputUser} from '../../services/sdk/messages/chat.core.types_pb';
+import {
+    InputFile,
+    InputUser,
+    PrivacyKey,
+    PrivacyRule,
+    PrivacyType
+} from '../../services/sdk/messages/chat.core.types_pb';
 import DocumentViewerService, {IDocument} from '../../services/documentViewerService';
 import Menu from '@material-ui/core/Menu/Menu';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';
@@ -44,9 +65,8 @@ import OverlayDialog from '@material-ui/core/Dialog/Dialog';
 import RadioGroup from '@material-ui/core/RadioGroup/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel/FormControlLabel';
 import Broadcaster from '../../services/broadcaster';
-import {AccountAuthorization} from '../../services/sdk/messages/chat.api.accounts_pb';
+import {AccountAuthorization, AccountPrivacyRules} from '../../services/sdk/messages/chat.api.accounts_pb';
 import TimeUtility from '../../services/utilities/time';
-import {findIndex} from 'lodash';
 import SettingsBackgroundModal, {ICustomBackground} from '../SettingsBackgroundModal';
 import FileRepo from '../../repository/file';
 import BackgroundService from '../../services/backgroundService';
@@ -58,6 +78,9 @@ import i18n from '../../services/i18n';
 import Slider from "@material-ui/lab/Slider";
 import UserName from "../UserName";
 import ElectronService from "../../services/electron";
+import UserListDialog from "../UserListDialog";
+import {IInputPeer} from "../SearchList";
+import {localize} from "../../services/utilities/localize";
 
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -76,6 +99,52 @@ export const languageList = [{
     lang: 'en',
     title: 'English'
 }];
+
+const privacyDefault: { [key: string]: IPrivacy } = {
+    'privacy_call': {
+        excludeIds: [],
+        includeIds: [],
+        loading: false,
+        mode: 'everyone',
+    },
+    'privacy_chat_invite': {
+        excludeIds: [],
+        includeIds: [],
+        loading: false,
+        mode: 'everyone',
+    },
+    'privacy_forwarded_message': {
+        excludeIds: [],
+        includeIds: [],
+        loading: false,
+        mode: 'everyone',
+    },
+    'privacy_last_seen': {
+        excludeIds: [],
+        includeIds: [],
+        loading: false,
+        mode: 'everyone',
+    },
+    'privacy_phone_number': {
+        excludeIds: [],
+        includeIds: [],
+        loading: false,
+        mode: 'everyone',
+    },
+    'privacy_profile_photo': {
+        excludeIds: [],
+        includeIds: [],
+        loading: false,
+        mode: 'everyone',
+    },
+};
+
+interface IPrivacy {
+    excludeIds: string[];
+    includeIds: string[];
+    loading: boolean;
+    mode: 'everyone' | 'my_contacts' | 'no_one';
+}
 
 interface IProps {
     onClose?: () => void;
@@ -104,6 +173,7 @@ interface IState {
     pageContent: string;
     pageSubContent: string;
     phone: string;
+    privacy: { [key: string]: IPrivacy };
     profileCropperOpen: boolean;
     profilePictureCrop: any;
     profilePictureFile?: string;
@@ -147,6 +217,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private downloadManger: DownloadManager;
     private settingsStorageUsageModalRef: SettingsStorageUsageModal;
     private electronService: ElectronService;
+    private userListDialogRef: UserListDialog;
+    private lastPrivacy: { [key: string]: IPrivacy } = cloneDeep(privacyDefault);
 
     constructor(props: IProps) {
         super(props);
@@ -172,6 +244,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             pageContent: 'none',
             pageSubContent: 'none',
             phone: this.sdk.getConnInfo().Phone || '',
+            privacy: cloneDeep(privacyDefault),
             profileCropperOpen: false,
             profilePictureCrop: {
                 aspect: 1,
@@ -272,13 +345,16 @@ class SettingsMenu extends React.Component<IProps, IState> {
         if (pageSubContent === 'session') {
             this.getSessions();
         }
+        if (this.state.pageSubContent.indexOf('privacy_') > -1) {
+            this.checkPrivacyDiff();
+        }
     }
 
     public render() {
         const {
             avatarMenuAnchorEl, page, pageContent, pageSubContent, user, editProfile, editUsername, bio, firstname,
             lastname, phone, username, usernameAvailable, usernameValid, uploadingPhoto, debugModeOpen, sessions,
-            confirmDialogOpen, customBackgroundSrc, loading
+            confirmDialogOpen, customBackgroundSrc, loading, privacy,
         } = this.state;
         return (
             <div className="setting-menu">
@@ -291,6 +367,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                          onPatternSelected={this.selectBackgroundHandler}/>
                 <SettingsStorageUsageModal ref={this.settingsStorageUsageModalRefHandler}
                                            onDone={this.props.onReloadDialog}/>
+                <UserListDialog ref={this.userListDialogRefHandler} onDone={this.userListDialogDoneHandler}/>
                 <div className={'page-container page-' + page}>
                     <div className="page page-1">
                         <div className="menu-header">
@@ -730,7 +807,11 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                         {item.icon}
                                                     </div>
                                                     <div
-                                                        className="anchor-label">{i18n.t(item.title)}</div>
+                                                        className="anchor-label anchor-label-privacy">
+                                                        <span className="anchor-label-title">{i18n.t(item.title)}</span>
+                                                        <span className="anchor-label-status"
+                                                        >{(!privacy.hasOwnProperty(item.id) || privacy[item.id].loading) ? i18n.t('general.loading') : this.getPrivacyModeTitle(privacy[item.id].mode)}</span>
+                                                    </div>
                                                 </div>
                                             );
                                         })}
@@ -892,31 +973,42 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                         <div className="header-hint">{i18n.t(item.hint)}</div>
                                     </div>
                                     <div className="radio-item">
-                                        <RadioGroup name="position">
+                                        <RadioGroup name="position"
+                                                    value={privacy[item.id].mode}
+                                                    onChange={this.privacyRuleChangeHandler.bind(this, item.id)}
+                                        >
                                             {privacyRuleItems.map((prItem) => {
                                                 return (
                                                     <FormControlLabel
                                                         key={prItem.id}
                                                         value={prItem.id}
-                                                        control={<Radio color="primary" className="pr-radio"/>}
+                                                        control={<Radio color="primary" className="pr-radio" classes={{
+                                                            checked: 'pr-radio-checked',
+                                                        }}/>}
                                                         label={i18n.t(prItem.title)}
                                                         labelPlacement="end"
                                                     />);
                                             })}
                                         </RadioGroup>
                                     </div>
-                                    <div
-                                        className="sub-page-header-alt">
-                                        <div
-                                            className="header-label">{i18n.t('settings.privacy_never_share_with')}</div>
-                                        <div className="header-value">0</div>
-                                    </div>
-                                    <div
-                                        className="sub-page-header-alt">
-                                        <div
-                                            className="header-label">{i18n.t('settings.privacy_always_share_with')}</div>
-                                        <div className="header-value">0</div>
-                                    </div>
+                                    {privacy[item.id].mode !== 'no_one' &&
+                                    <div className="sub-page-header-alt"
+                                         onClick={this.openPrivacyUsersHandler.bind(this, `exclude:${item.id}`)}
+                                    >
+                                        <div className="header-label"
+                                        >{i18n.t('settings.privacy_never_share_with')}</div>
+                                        <div className="header-value"
+                                        >{privacy.hasOwnProperty(item.id) ? localize(privacy[item.id].excludeIds.length) : localize(0)}</div>
+                                    </div>}
+                                    {privacy[item.id].mode !== 'everyone' &&
+                                    <div className="sub-page-header-alt"
+                                         onClick={this.openPrivacyUsersHandler.bind(this, `include:${item.id}`)}
+                                    >
+                                        <div className="header-label"
+                                        >{i18n.t('settings.privacy_always_share_with')}</div>
+                                        <div className="header-value"
+                                        >{privacy.hasOwnProperty(item.id) ? localize(privacy[item.id].includeIds.length) : localize(0)}</div>
+                                    </div>}
                                 </React.Fragment>
                             );
                         })}
@@ -1083,6 +1175,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
         }, () => {
             this.dispatchSubPlaceChange();
         });
+        if (this.state.pageSubContent.indexOf('privacy_') > -1) {
+            this.checkPrivacyDiff();
+        }
     }
 
     private selectPageHandler = (target: string) => {
@@ -1094,6 +1189,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
         });
         if (target === 'account') {
             this.getUser();
+        } else if (target === 'privacy') {
+            this.getPrivacy();
         }
     }
 
@@ -1703,6 +1800,234 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.electronService.toggleMenuBar();
     }
 
+    private getPrivacy() {
+        const privacyList: PrivacyKey[] = [PrivacyKey.PRIVACYKEYCALL, PrivacyKey.PRIVACYKEYCHATINVITE, PrivacyKey.PRIVACYKEYFORWARDEDMESSAGE, PrivacyKey.PRIVACYKEYLASTSEEN, PrivacyKey.PRIVACYKEYPHONENUMBER, PrivacyKey.PRIVACYKEYPROFILEPHOTO];
+        privacyList.forEach((pr) => {
+            const key = this.getPrivacyType(pr);
+            this.sdk.getPrivacy(pr).then((res) => {
+                const {privacy} = this.state;
+                privacy[key] = this.transformPrivacy(res);
+                privacy[key].loading = false;
+                this.setState({
+                    privacy,
+                });
+                this.lastPrivacy = cloneDeep(privacy);
+            }).catch(() => {
+                const {privacy} = this.state;
+                privacy[key].loading = false;
+                this.setState({
+                    privacy,
+                });
+            });
+        });
+    }
+
+    private getPrivacyModeTitle(mode: string) {
+        switch (mode) {
+            case 'everyone':
+            default:
+                return i18n.t('settings.privacy_everyone');
+            case 'my_contacts':
+                return i18n.t('settings.privacy_my_contacts');
+            case 'no_one':
+                return i18n.t('settings.privacy_no_one');
+        }
+    }
+
+    private getPrivacyModeType(mode: string) {
+        switch (mode) {
+            case 'everyone':
+            default:
+                return PrivacyType.PRIVACYTYPEALLOWALL;
+            case 'my_contacts':
+                return PrivacyType.PRIVACYTYPEALLOWCONTACTS;
+            case 'no_one':
+                return PrivacyType.PRIVACYTYPEDISALLOWALL;
+        }
+    }
+
+    private getPrivacyType(key: PrivacyKey) {
+        switch (key) {
+            case PrivacyKey.PRIVACYKEYCALL:
+                return 'privacy_call';
+            case PrivacyKey.PRIVACYKEYCHATINVITE:
+                return 'privacy_chat_invite';
+            case PrivacyKey.PRIVACYKEYFORWARDEDMESSAGE:
+                return 'privacy_forwarded_message';
+            case PrivacyKey.PRIVACYKEYLASTSEEN:
+                return 'privacy_last_seen';
+            case PrivacyKey.PRIVACYKEYPHONENUMBER:
+                return 'privacy_phone_number';
+            case PrivacyKey.PRIVACYKEYPROFILEPHOTO:
+                return 'privacy_profile_photo';
+        }
+        return '';
+    }
+
+    private transformPrivacy(rules: AccountPrivacyRules.AsObject) {
+        const privacy: IPrivacy = {
+            excludeIds: [],
+            includeIds: [],
+            loading: false,
+            mode: 'everyone',
+        };
+        rules.rulesList.forEach((rule) => {
+            if (rule.privacytype === PrivacyType.PRIVACYTYPEDISALLOWUSERS) {
+                privacy.excludeIds = rule.useridsList;
+            }
+            if (rule.privacytype === PrivacyType.PRIVACYTYPEALLOWUSERS) {
+                privacy.includeIds = rule.useridsList;
+            } else {
+                if (rule.privacytype === PrivacyType.PRIVACYTYPEALLOWALL) {
+                    privacy.mode = 'everyone';
+                } else if (rule.privacytype === PrivacyType.PRIVACYTYPEALLOWCONTACTS) {
+                    privacy.mode = 'my_contacts';
+                } else if (rule.privacytype === PrivacyType.PRIVACYTYPEDISALLOWALL) {
+                    privacy.mode = 'no_one';
+                }
+            }
+        });
+        return privacy;
+    }
+
+    private privacyRuleChangeHandler = (id: string, e: any) => {
+        const {privacy} = this.state;
+        if (!privacy.hasOwnProperty(id)) {
+            return;
+        }
+        privacy[id].mode = e.target.value;
+        this.setState({
+            privacy
+        });
+    }
+
+    private userListDialogRefHandler = (ref: any) => {
+        this.userListDialogRef = ref;
+    }
+
+    private openPrivacyUsersHandler = (target: string) => {
+        if (!this.userListDialogRef) {
+            return;
+        }
+        const {privacy} = this.state;
+        const d = target.split(':');
+        if (!privacy.hasOwnProperty(d[1])) {
+            return;
+        }
+        this.userListDialogRef.openDialog(target, d[0] === 'include' ? privacy[d[1]].includeIds : privacy[d[1]].excludeIds);
+    }
+
+    private userListDialogDoneHandler = (target: string, inputPeers: IInputPeer[]) => {
+        const {privacy} = this.state;
+        const d = target.split(':');
+        if (!privacy.hasOwnProperty(d[1])) {
+            return;
+        }
+        if (d[0] === 'exclude') {
+            privacy[d[1]].excludeIds = inputPeers.map((o) => {
+                return o.id;
+            });
+        } else if (d[0] === 'include') {
+            privacy[d[1]].includeIds = inputPeers.map((o) => {
+                return o.id;
+            });
+        }
+        this.setState({
+            privacy,
+        });
+    }
+
+    private getPrivacyRules(key: string) {
+        const {privacy} = this.state;
+        if (!privacy.hasOwnProperty(key)) {
+            return [];
+        }
+        const rules: PrivacyRule[] = [];
+        const privacyRule = new PrivacyRule();
+        privacyRule.setUseridsList([]);
+        privacyRule.setPrivacytype(this.getPrivacyModeType(privacy[key].mode));
+        rules.push(privacyRule);
+        if (privacy[key].excludeIds.length > 0) {
+            const privacyRuleExclude = new PrivacyRule();
+            privacyRuleExclude.setUseridsList(privacy[key].excludeIds);
+            privacyRuleExclude.setPrivacytype(PrivacyType.PRIVACYTYPEDISALLOWUSERS);
+            rules.push(privacyRuleExclude);
+        }
+        if (privacy[key].includeIds.length > 0) {
+            const privacyRuleInclude = new PrivacyRule();
+            privacyRuleInclude.setUseridsList(privacy[key].includeIds);
+            privacyRuleInclude.setPrivacytype(PrivacyType.PRIVACYTYPEALLOWUSERS);
+            rules.push(privacyRuleInclude);
+        }
+        return rules;
+    }
+
+    private checkPrivacyDiff() {
+        const {privacy} = this.state;
+        const hasDiff = (key: string) => {
+            if (privacy[key].mode !== this.lastPrivacy[key].mode) {
+                return true;
+            }
+            if (!isEqual(privacy[key].excludeIds.sort(), this.lastPrivacy[key].excludeIds.sort())) {
+                return true;
+            }
+            if (!isEqual(privacy[key].includeIds.sort(), this.lastPrivacy[key].includeIds.sort())) {
+                return true;
+            }
+            return false;
+        };
+        const data: {
+            callList?: PrivacyRule[],
+            chatInviteList?: PrivacyRule[],
+            chatForwardedList?: PrivacyRule[],
+            lastSeenList?: PrivacyRule[],
+            phoneNumberList?: PrivacyRule[],
+            profilePhotoList?: PrivacyRule[]
+        } = {
+            callList: [],
+            chatForwardedList: [],
+            chatInviteList: [],
+            lastSeenList: [],
+            phoneNumberList: [],
+            profilePhotoList: [],
+        };
+        let diff = false;
+        Object.keys(privacy).forEach((key: string) => {
+            if (hasDiff(key)) {
+                diff = true;
+                switch (key) {
+                    case 'privacy_call':
+                        data.callList = this.getPrivacyRules(key);
+                        break;
+                    case 'privacy_chat_invite':
+                        data.chatInviteList = this.getPrivacyRules(key);
+                        break;
+                    case 'privacy_forwarded_message':
+                        data.chatForwardedList = this.getPrivacyRules(key);
+                        break;
+                    default:
+                    case 'privacy_last_seen':
+                        data.lastSeenList = this.getPrivacyRules(key);
+                        break;
+                    case 'privacy_phone_number':
+                        data.phoneNumberList = this.getPrivacyRules(key);
+                        break;
+                    case 'privacy_profile_photo':
+                        data.profilePhotoList = this.getPrivacyRules(key);
+                        break;
+                }
+            }
+        });
+        if (diff) {
+            this.sdk.setPrivacy(data).then(() => {
+                this.lastPrivacy = cloneDeep(privacy);
+            }).catch(() => {
+                this.setState({
+                    privacy: cloneDeep(this.lastPrivacy),
+                });
+            });
+        }
+    }
 }
 
 export default SettingsMenu;

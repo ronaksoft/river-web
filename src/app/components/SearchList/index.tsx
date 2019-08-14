@@ -48,6 +48,8 @@ export interface IInputPeer {
 
 interface IProps {
     onChange?: (peerInputs: IInputPeer[]) => void;
+    onlyContact?: boolean;
+    selectedIds?: string[];
 }
 
 interface IState {
@@ -70,6 +72,8 @@ class SearchList extends React.Component<IProps, IState> {
     private defaultInputPeer: IDialogWithContact;
     private readonly searchDebounce: any;
     private readonly userId: string = '';
+    private readonly searchApi: any;
+    private selectedIds: string[] = [];
 
     constructor(props: IProps) {
         super(props);
@@ -83,6 +87,11 @@ class SearchList extends React.Component<IProps, IState> {
         };
 
         this.searchRepo = SearchRepo.getInstance();
+        if (props.onlyContact) {
+            this.searchApi = this.searchRepo.searchUser;
+        } else {
+            this.searchApi = this.searchRepo.search;
+        }
         this.searchDebounce = debounce(this.search, 512);
         this.userId = this.searchRepo.getCurrentUserId();
     }
@@ -90,6 +99,25 @@ class SearchList extends React.Component<IProps, IState> {
     public componentDidMount() {
         // Gets all contacts on mount
         this.getDefault();
+        if (this.props.selectedIds && this.props.selectedIds !== this.selectedIds) {
+            this.selectedIds = this.props.selectedIds;
+            this.getSelectedInputPeersFromUserId(this.props.selectedIds).then((selectedInputPeers) => {
+                this.setState({
+                    selectedInputPeers,
+                });
+            });
+        }
+    }
+
+    public componentWillReceiveProps(newProps: IProps) {
+        if (newProps.selectedIds && this.props.selectedIds !== this.selectedIds) {
+            this.selectedIds = newProps.selectedIds;
+            this.getSelectedInputPeersFromUserId(newProps.selectedIds).then((selectedInputPeers) => {
+                this.setState({
+                    selectedInputPeers,
+                });
+            });
+        }
     }
 
     public render() {
@@ -224,7 +252,11 @@ class SearchList extends React.Component<IProps, IState> {
                 </div>
             );
         } else if (inputPeer.mode === 'label' && inputPeer.label) {
-            return (<div style={style} key={index} className="category-item">{inputPeer.label}</div>);
+            if (this.props.onlyContact) {
+                return '';
+            } else {
+                return (<div style={style} key={index} className="category-item">{inputPeer.label}</div>);
+            }
         }
     }
 
@@ -240,7 +272,7 @@ class SearchList extends React.Component<IProps, IState> {
 
     /* Get all contacts */
     private getDefault() {
-        this.searchRepo.search({}).then((res) => {
+        this.searchApi({}).then((res: IDialogWithContact) => {
             this.defaultInputPeer = res;
             this.inputPeerRes = clone(res);
             this.setState({
@@ -270,7 +302,7 @@ class SearchList extends React.Component<IProps, IState> {
 
     /* For debouncing the query in order to have best performance */
     private search = (text: string) => {
-        this.searchRepo.search({keyword: text, limit: 12}).then((res) => {
+        this.searchApi({keyword: text, limit: 12}).then((res: IDialogWithContact) => {
             this.inputPeerRes = clone(res || []);
             this.setState({
                 inputPeers: this.getTrimmedList(this.state.selectedInputPeers),
@@ -406,6 +438,9 @@ class SearchList extends React.Component<IProps, IState> {
                 return 64;
             }
         } else {
+            if (this.props.onlyContact) {
+                return 0;
+            }
             return 64;
         }
     }
@@ -428,6 +463,21 @@ class SearchList extends React.Component<IProps, IState> {
             default:
                 return '';
         }
+    }
+
+    private getSelectedInputPeersFromUserId(ids: string[]) {
+        if (ids.length === 0) {
+            return Promise.resolve([]);
+        }
+        return this.searchRepo.searchUsersById(ids).then((res) => {
+            return res.map((item): ISearchItem => {
+                return {
+                    contact: item,
+                    id: item.id,
+                    mode: 'contact',
+                };
+            });
+        });
     }
 }
 

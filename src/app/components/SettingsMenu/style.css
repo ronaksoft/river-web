@@ -138,6 +138,17 @@
       flex: 1; }
       .setting-menu .page-anchor .anchor-label.color-red {
         color: var(--red); }
+      .setting-menu .page-anchor .anchor-label.anchor-label-privacy {
+        display: flex;
+        justify-content: center;
+        text-align: center; }
+      .setting-menu .page-anchor .anchor-label .anchor-label-title {
+        flex: 1;
+        text-align: left; }
+      .setting-menu .page-anchor .anchor-label .anchor-label-status {
+        color: var(--river);
+        font-size: 12px;
+        line-height: 18px; }
     .setting-menu .page-anchor .setting-switch-label {
       direction: ltr;
       width: 64px;
@@ -200,7 +211,7 @@
         .setting-menu .info.language-list .language-item .check svg {
           color: var(--river); }
   .setting-menu .sub-page-header {
-    border-top: 1px solid #E0E0E0;
+    border-top: 1px solid #E0E0E080;
     height: 24px;
     font-size: 10px;
     color: #7D7D7D;
@@ -210,7 +221,7 @@
     padding: 0 16px;
     margin-top: 6px; }
   .setting-menu .sub-page-header-alt {
-    border-top: 1px solid #E0E0E0;
+    border-top: 1px solid #E0E0E080;
     height: 48px;
     font-size: 16px;
     font-weight: bold;
@@ -222,6 +233,8 @@
     user-select: none; }
     .setting-menu .sub-page-header-alt:first-of-type {
       border-top: none; }
+    .setting-menu .sub-page-header-alt:last-of-type {
+      border-bottom: 1px solid #E0E0E080; }
     .setting-menu .sub-page-header-alt .header-label {
       flex: 1;
       text-align: left;
@@ -236,7 +249,8 @@
       font-size: 14px; }
     .setting-menu .sub-page-header-alt.header-column {
       flex-direction: column;
-      justify-content: space-evenly; }
+      justify-content: space-evenly;
+      padding-top: 6px; }
       .setting-menu .sub-page-header-alt.header-column .header-label, .setting-menu .sub-page-header-alt.header-column .header-hint {
         flex: none;
         width: 100%; }
@@ -609,13 +623,23 @@ html[direction="rtl"] .setting-menu {
   direction: rtl;
   text-align: right; }
   html[direction="rtl"] .setting-menu .page-container .page.page-1 {
-    left: 0; }
+    transform: translateX(0); }
   html[direction="rtl"] .setting-menu .page-container .page.page-2 {
-    left: -100%; }
+    transform: translateX(-100%); }
+  html[direction="rtl"] .setting-menu .page-container .page.page-3 {
+    transform: translateX(-200%); }
   html[direction="rtl"] .setting-menu .page-container.page-2 .page-1 {
-    left: 100%; }
+    transform: translateX(100%); }
   html[direction="rtl"] .setting-menu .page-container.page-2 .page-2 {
-    left: 0; }
+    transform: translateX(0); }
+  html[direction="rtl"] .setting-menu .page-container.page-2 .page-3 {
+    transform: translateX(-100%); }
+  html[direction="rtl"] .setting-menu .page-container.page-3 .page-1 {
+    transform: translateX(200%); }
+  html[direction="rtl"] .setting-menu .page-container.page-3 .page-2 {
+    transform: translateX(100%); }
+  html[direction="rtl"] .setting-menu .page-container.page-3 .page-3 {
+    transform: translateX(0); }
   html[direction="rtl"] .setting-menu .account-summary {
     height: 128px;
     display: flex;
@@ -658,11 +682,15 @@ html[direction="rtl"] .setting-menu {
       transform: rotateY(180deg); }
   html[direction="rtl"] .setting-menu .form-control {
     direction: ltr; }
-  html[direction="rtl"] .setting-menu .page-anchor .icon {
-    margin-right: 0;
-    margin-left: 8px; }
-  html[direction="rtl"] .setting-menu .page-anchor .anchor-label {
+  html[direction="rtl"] .setting-menu .page-anchor {
     text-align: right; }
+    html[direction="rtl"] .setting-menu .page-anchor .icon {
+      margin-right: 0;
+      margin-left: 8px; }
+    html[direction="rtl"] .setting-menu .page-anchor .anchor-label {
+      text-align: right; }
+      html[direction="rtl"] .setting-menu .page-anchor .anchor-label .anchor-label-title {
+        text-align: right; }
   html[direction="rtl"] .setting-menu .session-item .session-info .session-row .session-col {
     text-align: right;
     line-height: 1.4em; }
@@ -680,6 +708,11 @@ html[direction="rtl"] .setting-menu {
     flex-direction: row-reverse; }
     html[direction="rtl"] .setting-menu .info.language-list .language-item .language-label {
       text-align: left; }
+  html[direction="rtl"] .setting-menu .sub-page-header .header-label, html[direction="rtl"] .setting-menu .sub-page-header .header-hint, html[direction="rtl"] .setting-menu .sub-page-header-alt .header-label, html[direction="rtl"] .setting-menu .sub-page-header-alt .header-hint {
+    text-align: right; }
+  html[direction="rtl"] .setting-menu .radio-item div[role="radiogroup"] label {
+    margin-left: 16px;
+    margin-right: -14px; }
 
 html[theme="dark"] .setting-menu .menu-header,
 html[theme="dark-blue"] .setting-menu .menu-header {
@@ -720,8 +753,9 @@ html[theme="dark"] .setting-menu .setting-switch.blue span,
 html[theme="dark-blue"] .setting-menu .setting-switch.blue span {
   color: var(--dark-accent-medium) !important; }
 
-html[theme="dark"] .setting-menu .sub-page-header,
-html[theme="dark-blue"] .setting-menu .sub-page-header {
+html[theme="dark"] .setting-menu .sub-page-header, html[theme="dark"] .setting-menu .sub-page-header-alt,
+html[theme="dark-blue"] .setting-menu .sub-page-header,
+html[theme="dark-blue"] .setting-menu .sub-page-header-alt {
   border-color: var(--dark-low-op50);
   color: var(--grey); }
 
@@ -757,6 +791,14 @@ html[theme="dark-blue"] .setting-menu .info.language-list .language-item {
 
 html[theme="dark"] .setting-menu .font-size-container > button,
 html[theme="dark-blue"] .setting-menu .font-size-container > button {
+  color: var(--white); }
+
+html[theme="dark"] .setting-menu .radio-item label span:nth-child(2),
+html[theme="dark-blue"] .setting-menu .radio-item label span:nth-child(2) {
+  color: var(--white); }
+
+html[theme="dark"] .setting-menu .radio-item .pr-radio:not(.pr-radio-checked),
+html[theme="dark-blue"] .setting-menu .radio-item .pr-radio:not(.pr-radio-checked) {
   color: var(--white); }
 
 html[theme="dark"] .setting-menu .theme-container .radio-item .radio-label .radio:not(.checked),
@@ -835,7 +877,7 @@ html[theme="dark-blue"] .setting-menu .menu-header {
   background-color: var(--dark-blue-medium);
   border-color: var(--dark-blue-low-op50); }
 
-html[theme="dark-blue"] .setting-menu .sub-page-header {
+html[theme="dark-blue"] .setting-menu .sub-page-header, html[theme="dark-blue"] .setting-menu .sub-page-header-alt {
   border-color: var(--dark-blue-low-op50); }
 
 html[theme="dark-blue"] .setting-menu .theme-container .item {

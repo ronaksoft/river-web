@@ -35,7 +35,9 @@
     "you": "شما",
     "close": "بستن",
     "yes": "بله",
-    "are_you_sure": "مطمئن هستید؟"
+    "are_you_sure": "مطمئن هستید؟",
+    "loading": "شکیبا باشید...",
+    "user_list": "لیست کاربرها"
   },
   "chat": {
     "search": "جستجو",
@@ -115,6 +117,7 @@
     "account_phone": "حساب ({0})",
     "data_and_storage": "داده‌ها و ذخیره‌سازی",
     "active_sessions": "نشست‌های فعال",
+    "privacy_and_security": "حریم خصوصی و امنیت",
     "theme": "پوسته",
     "language": "زبان",
     "night_mode": "حالت شب",
@@ -167,7 +170,25 @@
     "clear_cache_param": "حذف کش ({0})",
     "scanning_files": "درحال اسکن {0} فایل...",
     "files2": "فایل",
-    "file": "فایل"
+    "file": "فایل",
+    "privacy": "حریم خصوصی",
+    "privacy_call": "تماس",
+    "privacy_call_hint": "چه کسی می‌تواند با من تماس بگیرد؟",
+    "privacy_chat_invite": "دعوت به گروه",
+    "privacy_chat_invite_hint": "چه کسی می‌تواند مرا به گروه اضافه کند؟",
+    "privacy_forwarded_message": "پیام های هدایت شده",
+    "privacy_forwarded_message_hint": " کسی می‌تواند مرا از طریق پیام های هدایت شده‌ام ببیند؟",
+    "privacy_last_seen": "برچسب زمانی",
+    "privacy_last_seen_hint": "چه کسی می‌تواند برچسب زمانی مرا ببیند؟",
+    "privacy_phone_number": "شماره تلفن",
+    "privacy_phone_number_hint": "چه کسی می‌تواند شماره مرا ببیند؟",
+    "privacy_profile_photo": "عکس پروفایل",
+    "privacy_profile_photo_hint": "چه کسی می‌تواند عکس مرا ببیند؟",
+    "privacy_everyone": "همه",
+    "privacy_my_contacts": "مخاطب‌های من",
+    "privacy_no_one": "هیچ‌ کس",
+    "privacy_always_share_with": "همواره به اشتراک گذاشته شود با",
+    "privacy_never_share_with": "هرگز به اشتراک گذاشته نشود با"
   },
   "contact": {
     "contacts": "مخاطب‌ها",

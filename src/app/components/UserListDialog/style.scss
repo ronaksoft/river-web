@@ -1,0 +1,75 @@
+/*
+    Creation Time: 2019 - Aug - 14
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2019
+*/
+
+.user-list-dialog {
+  width: 300px;
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+
+  .actions-bar {
+    height: 86px;
+    padding: 18px 0 22px;
+    text-align: center;
+    background-color: var(--message-chat);
+
+    .add-action {
+      display: inline-flex;
+      height: 46px;
+      width: 46px;
+      border-radius: 50%;
+      background: var(--river);
+      color: var(--white);
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+      transition: all 0.2s;
+
+      svg {
+        font-size: 40px;
+      }
+
+      &:hover {
+        background: var(--river-dark);
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+      }
+
+      &.send {
+        svg {
+          font-size: 30px;
+          margin-left: 2px;
+          transition: transform 0.2s ease-out;
+        }
+
+        &:hover {
+          svg {
+            transform: rotate(-30deg);
+          }
+        }
+      }
+    }
+  }
+}
+
+html[theme="dark"] {
+  .user-list-dialog {
+    .actions-bar {
+      background-color: var(--dark-medium);
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .user-list-dialog {
+    .actions-bar {
+      background-color: var(--dark-blue-medium);
+    }
+  }
+}

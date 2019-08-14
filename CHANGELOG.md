@@ -7,6 +7,11 @@
 * SDK updated
 * User server's phone bug fixed
 * User dialog typo fixed
+* Last seen in group user count localized
+* UserList component added
+* Farsi translation updated
+* User repo updated (get in Ids)
+* Set and Get privacy with diff added
 
 ## 0.25.53
 * Group permission updated
