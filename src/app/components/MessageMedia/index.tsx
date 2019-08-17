@@ -399,6 +399,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                 {Boolean(info.caption.length > 0) &&
                 <div className={'media-caption ' + (message.rtl ? 'rtl' : 'ltr')}
                      style={{minWidth: this.pictureContentSize.width, maxWidth: this.pictureContentSize.maxWidth}}
+                     onClick={this.captionClickHandler}
                 >{info.caption}</div>}
             </div>
         );
@@ -651,6 +652,11 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
             sec = '0' + sec;
         }
         return `${Math.floor(duration / 60)}:${sec}`;
+    }
+
+    private captionClickHandler = (e: any) => {
+        e.stopPropagation();
+        e.preventDefault();
     }
 }
 
