@@ -1993,6 +1993,7 @@ class Chat extends React.Component<IProps, IState> {
             if (param && param.mode === C_MSG_MODE.Reply) {
                 message.replyto = param.message.id;
                 replyTo = param.message.id;
+                this.cachedMessageService.setMessage(param.message);
             }
 
             let entities;
