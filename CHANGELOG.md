@@ -1,3 +1,6 @@
+## 0.25.56
+* Active sessions updated
+
 ## 0.25.55
 * Checksum validation to file manager
 * File repository updated

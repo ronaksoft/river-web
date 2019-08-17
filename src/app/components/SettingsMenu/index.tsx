@@ -85,7 +85,7 @@ import {localize} from "../../services/utilities/localize";
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.25.55';
+export const C_VERSION = '0.25.56';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{
@@ -937,7 +937,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                             </div>
                                                             <div className="session-row">
                                                                 <div
-                                                                    className="session-col">{i18n.tf('settings.last_active', TimeUtility.timeAgo(item.activeat))}</div>
+                                                                    className="session-col">{this.currentAuthID === item.authid ? i18n.t('status.online') : i18n.tf('settings.last_active', TimeUtility.timeAgo(item.lastaccess))}</div>
                                                             </div>
                                                         </div>
                                                         <div className="session-action">
@@ -1683,7 +1683,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
         });
 
         this.sdk.sessionGetAll().then((res) => {
-            window.console.log(res);
             this.setState({
                 loading: false,
                 sessions: this.modifySessions(res.authorizationsList),
