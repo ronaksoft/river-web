@@ -45,6 +45,8 @@ export interface IMediaInfo {
     fileName: string;
     hasRelation: boolean;
     height: number;
+    md5?: string;
+    mimeType?: string;
     performer?: string;
     size: number;
     thumbFile: FileLocation.AsObject;
@@ -88,6 +90,8 @@ export const getMediaInfo = (message: IMessage): IMediaInfo => {
         clusterid: messageMediaDocument.doc.clusterid,
         fileid: messageMediaDocument.doc.id,
     };
+    info.mimeType = messageMediaDocument.doc.mimetype;
+    info.md5 = messageMediaDocument.doc.md5checksum;
     if (messageMediaDocument.doc.thumbnail) {
         info.thumbFile = {
             accesshash: messageMediaDocument.doc.thumbnail.accesshash,
@@ -610,6 +614,8 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                 fileSize: info.size,
                 height: info.height,
                 id: message.id || 0,
+                md5: info.md5,
+                mimeType: info.mimeType,
                 rtl: message.rtl,
                 thumbFileLocation: message.messagetype !== C_MESSAGE_TYPE.Picture ? info.thumbFile : undefined,
                 width: info.width,

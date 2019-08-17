@@ -383,7 +383,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                                placeholder={this.isMobileView ? i18n.t('input.type') : i18n.t('input.type_your_message_here')}
                                                style={defaultMentionInputStyle}
                                                suggestionsPortalHost={this.mentionContainer}
-                                               spellcheck={true}
+                                               spellCheck={true}
                                 >
                                     <Mention
                                         trigger="@"

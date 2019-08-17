@@ -331,6 +331,8 @@ class PeerMedia extends React.Component<IProps, IState> {
                     fileSize: item.info.size,
                     height: item.info.height,
                     id: item.id || 0,
+                    md5: item.info.md5,
+                    mimeType: item.info.mimeType,
                     thumbFileLocation: item.info.thumbFile,
                     width: item.info.width,
                 }],

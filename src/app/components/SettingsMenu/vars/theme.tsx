@@ -39,7 +39,7 @@ import lbg14 from '../../../../asset/image/bgl/topography.svg';
 import dbg14 from '../../../../asset/image/bgd/topography.svg';
 
 import {
-    CallRounded,
+    /*CallRounded,*/
     GroupRounded,
     ForwardRounded,
     VisibilityRounded,
@@ -266,13 +266,13 @@ export const storageItems = [{
     type: 'item',
 }];
 
-export const privacyItems = [{
+export const privacyItems = [/*{
     color: '#27AE60',
     hint: 'settings.privacy_call_hint',
     icon: <CallRounded/>,
     id: 'privacy_call',
     title: 'settings.privacy_call',
-}, {
+}, */{
     color: '#3AB4EB',
     hint: 'settings.privacy_chat_invite_hint',
     icon: <GroupRounded/>,

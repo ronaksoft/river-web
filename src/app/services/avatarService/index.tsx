@@ -126,7 +126,7 @@ export default class AvatarService {
                         fileLocation.setClusterid(res.photosmall.clusterid || 1);
                         fileLocation.setFileid(res.photosmall.fileid || '');
                         fileLocation.setVersion(0);
-                        this.fileManager.receiveFile(fileLocation, 0, 'image/jpeg').then(() => {
+                        this.fileManager.receiveFile(fileLocation, '', 0, 'image/jpeg').then(() => {
                             this.fileRepo.get(fileId).then((fileRes) => {
                                 if (fileRes) {
                                     this.removeCache(id, fileId);

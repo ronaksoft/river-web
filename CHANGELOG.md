@@ -1,3 +1,14 @@
+## 0.25.55
+* Checksum validation to file manager
+* File repository updated
+* CachedPhoto mimeType and md5 implemented
+* CachedVideo mimeType and md5 implemented
+* Call removed from privacy and security
+* Uploader document updated
+* Protobuffs updated
+* Video thumbnail quality improved
+* Unread counter data race bug fixed and patched
+
 ## 0.25.54
 * PeerMedia video thumbnail bug fixed
 * Privacy and Security added

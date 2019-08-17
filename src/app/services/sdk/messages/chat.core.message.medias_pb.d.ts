@@ -224,6 +224,11 @@ export class Document extends jspb.Message {
   getThumbnail(): chat_core_types_pb.FileLocation | undefined;
   setThumbnail(value?: chat_core_types_pb.FileLocation): void;
 
+  hasMd5checksum(): boolean;
+  clearMd5checksum(): void;
+  getMd5checksum(): string | undefined;
+  setMd5checksum(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Document.AsObject;
   static toObject(includeInstance: boolean, msg: Document): Document.AsObject;
@@ -245,6 +250,7 @@ export namespace Document {
     clusterid?: number,
     attributesList: Array<DocumentAttribute.AsObject>,
     thumbnail?: chat_core_types_pb.FileLocation.AsObject,
+    md5checksum?: string,
   }
 }
 

@@ -15,6 +15,8 @@ interface IProps {
     autoPlay?: boolean;
     className?: string;
     fileLocation: InputFileLocation.AsObject;
+    md5?: string;
+    mimeType?: string;
     onLoad?: () => void;
     onPlay?: () => void;
     searchTemp?: boolean;
@@ -52,7 +54,8 @@ class CachedVideo extends React.PureComponent<IProps, IState> {
         const {className, src} = this.state;
         return (
             <div className={className}>
-                {src && <video onLoad={this.props.onLoad} onPlay={this.props.onPlay} autoPlay={this.props.autoPlay} controls={true}
+                {src && <video onLoad={this.props.onLoad} onPlay={this.props.onPlay} autoPlay={this.props.autoPlay}
+                               controls={true}
                                onError={this.videoErrorHandler}>
                     <source src={src}/>
                 </video>}
@@ -62,7 +65,7 @@ class CachedVideo extends React.PureComponent<IProps, IState> {
 
     /* Get file from cached storage */
     private getFile() {
-        this.cachedFileService.getFile(this.props.fileLocation, 0, this.props.searchTemp).then((src) => {
+        this.cachedFileService.getFile(this.props.fileLocation, this.props.md5 || '', 0, this.props.mimeType || 'video/mp4', this.props.searchTemp).then((src) => {
             setTimeout(() => {
                 this.setState({
                     src,

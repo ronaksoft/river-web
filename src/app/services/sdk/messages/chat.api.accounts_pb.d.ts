@@ -544,3 +544,31 @@ export namespace AccountPrivacyRules {
   }
 }
 
+export class AccountSetLang extends jspb.Message {
+  hasLangcode(): boolean;
+  clearLangcode(): void;
+  getLangcode(): LangCode | undefined;
+  setLangcode(value: LangCode): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountSetLang.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountSetLang): AccountSetLang.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountSetLang, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountSetLang;
+  static deserializeBinaryFromReader(message: AccountSetLang, reader: jspb.BinaryReader): AccountSetLang;
+}
+
+export namespace AccountSetLang {
+  export type AsObject = {
+    langcode?: LangCode,
+  }
+}
+
+export enum LangCode {
+  LANGCODEUNKNOWN = 0,
+  LANGCODEEN = 1,
+  LANGCODEFA = 2,
+}
+

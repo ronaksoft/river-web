@@ -11,7 +11,7 @@ import Http from './http';
 import {C_MSG} from '../const';
 import {File, FileGet, FileSavePart} from '../messages/chat.api.files_pb';
 import {Bool} from '../messages/chat.core.types_pb';
-import FileRepo from '../../../repository/file';
+import FileRepo, {md5FromBlob} from '../../../repository/file';
 import {ITempFile} from '../../../repository/file/interface';
 import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from './const/const';
 import {findIndex} from 'lodash';
@@ -56,6 +56,7 @@ interface IChunksInfo {
     doneParts: number;
     fileLocation?: core_types_pb.InputFileLocation;
     interval: any;
+    md5: string;
     mimeType?: string;
     onProgress?: (e: IFileProgress) => void;
     pipelines: number;
@@ -127,6 +128,7 @@ export default class FileManager {
     public sendFile(id: string, blob: Blob, onProgress?: (e: IFileProgress) => void) {
         const chunks = this.chunkBlob(blob);
         const saveFileToDBPromises: any[] = [];
+        saveFileToDBPromises.push(md5FromBlob(blob));
         chunks.forEach((chunk, index) => {
             const temp: ITempFile = {
                 data: chunk,
@@ -136,7 +138,7 @@ export default class FileManager {
             saveFileToDBPromises.push(this.fileRepo.setTemp(temp));
         });
 
-        return Promise.all(saveFileToDBPromises).then(() => {
+        return Promise.all(saveFileToDBPromises).then((arr) => {
             let internalResolve = null;
             let internalReject = null;
 
@@ -145,7 +147,7 @@ export default class FileManager {
                 internalReject = rej;
             });
 
-            this.prepareUploadTransfer(id, chunks, blob.size, internalResolve, internalReject, onProgress);
+            this.prepareUploadTransfer(id, arr.length === 0 ? '' : arr[0], chunks, blob.size, internalResolve, internalReject, onProgress);
 
             if (this.httpWorkers[0] && this.httpWorkers[0].isReady()) {
                 this.startUploadQueue();
@@ -156,7 +158,7 @@ export default class FileManager {
     }
 
     /* Receive the whole file */
-    public receiveFile(location: core_types_pb.InputFileLocation, size: number, mimeType: string, onProgress?: (e: IFileProgress) => void) {
+    public receiveFile(location: core_types_pb.InputFileLocation, md5: string, size: number, mimeType: string, onProgress?: (e: IFileProgress) => void) {
         if (this.fileTransferQueue.hasOwnProperty(location.getFileid() || '')) {
             return Promise.reject({
                 code: C_FILE_ERR_CODE.ALREADY_IN_QUEUE,
@@ -172,7 +174,7 @@ export default class FileManager {
         });
 
         const download = () => {
-            this.prepareDownloadTransfer(location, size, mimeType, internalResolve, internalReject, () => {
+            this.prepareDownloadTransfer(location, md5, size, mimeType, internalResolve, internalReject, () => {
                 if (this.httpWorkers[0] && this.httpWorkers[0].isReady()) {
                     if (size === 0) {
                         this.startInstanceDownloadQueue();
@@ -224,7 +226,7 @@ export default class FileManager {
                     return temp.data;
                 });
 
-                this.prepareUploadTransfer(id, blobs, size, internalResolve, internalReject, onProgress);
+                this.prepareUploadTransfer(id, '', blobs, size, internalResolve, internalReject, onProgress);
 
                 this.startUploadQueue();
 
@@ -383,7 +385,7 @@ export default class FileManager {
                     this.fileTransferQueue[id].completed = true;
                     this.clearUploadQueueById(id);
                     this.dispatchProgress(id, 'complete');
-                    this.fileTransferQueue[id].resolve();
+                    this.fileTransferQueue[id].resolve(this.fileTransferQueue[id].md5);
                     delete this.fileTransferQueue[id];
                 }
                 this.startUploadQueue();
@@ -483,9 +485,13 @@ export default class FileManager {
                     this.fileTransferQueue[id].completed = true;
                     this.clearDownloadQueueById(id);
                     this.dispatchProgress(id, 'complete');
-                    this.fileRepo.persistTempFiles(id, id, this.fileTransferQueue[id].mimeType || 'application/octet-stream').then(() => {
+                    this.fileRepo.persistTempFiles(id, id, this.fileTransferQueue[id].mimeType || 'application/octet-stream').then((res) => {
                         if (this.fileTransferQueue.hasOwnProperty(id)) {
-                            this.fileTransferQueue[id].resolve();
+                            if (res && this.fileTransferQueue[id].md5 && this.fileTransferQueue[id].md5 !== '' && this.fileTransferQueue[id].md5 !== res.md5) {
+                                this.fileTransferQueue[id].reject('md5 hashes are not match');
+                            } else {
+                                this.fileTransferQueue[id].resolve();
+                            }
                             delete this.fileTransferQueue[id];
                         }
                     }).catch((err) => {
@@ -636,7 +642,7 @@ export default class FileManager {
     }
 
     /* Prepare upload transfer */
-    private prepareUploadTransfer(id: string, chunks: Blob[], size: number, resolve: any, reject: any, onProgress?: (e: IFileProgress) => void) {
+    private prepareUploadTransfer(id: string, md5: string, chunks: Blob[], size: number, resolve: any, reject: any, onProgress?: (e: IFileProgress) => void) {
         if (this.fileTransferQueue.hasOwnProperty(id)) {
             this.fileTransferQueue[id].onProgress = onProgress;
             this.fileTransferQueue[id].reject = reject;
@@ -647,6 +653,7 @@ export default class FileManager {
             completed: false,
             doneParts: 0,
             interval: null,
+            md5,
             onProgress,
             pipelines: 0,
             receiveChunks: [],
@@ -686,7 +693,7 @@ export default class FileManager {
     }
 
     /* Prepare download transfer */
-    private prepareDownloadTransfer(file: core_types_pb.InputFileLocation, size: number, mimeType: string, resolve: any, reject: any, doneCallback: () => void, onProgress?: (e: IFileProgress) => void) {
+    private prepareDownloadTransfer(file: core_types_pb.InputFileLocation, md5: string, size: number, mimeType: string, resolve: any, reject: any, doneCallback: () => void, onProgress?: (e: IFileProgress) => void) {
         const id = file.getFileid() || '';
         if (this.fileTransferQueue.hasOwnProperty(id)) {
             this.fileTransferQueue[id].onProgress = onProgress;
@@ -737,6 +744,7 @@ export default class FileManager {
             doneParts: 0,
             fileLocation: file,
             interval: null,
+            md5,
             mimeType,
             onProgress,
             pipelines: 0,

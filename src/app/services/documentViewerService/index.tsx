@@ -19,6 +19,8 @@ interface IDocumentItem {
     geo?: google.maps.LatLngLiteral;
     height?: number;
     id?: number;
+    md5?: string;
+    mimeType?: string;
     rtl?: boolean;
     thumbFileLocation?: InputFileLocation.AsObject;
     width?: number;

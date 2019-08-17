@@ -13,6 +13,7 @@ interface IFile {
     id: string;
     data: Blob;
     hash: string;
+    md5: string;
     size: number;
 }
 

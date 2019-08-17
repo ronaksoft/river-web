@@ -45,7 +45,7 @@ export default class CachedFileService {
     }
 
     /* Get file */
-    public getFile(fileLocation: InputFileLocation.AsObject, size: number, searchTemp?: boolean, blurRadius?: number): Promise<string> {
+    public getFile(fileLocation: InputFileLocation.AsObject, md5: string, size: number, mimeType: string, searchTemp?: boolean, blurRadius?: number): Promise<string> {
         const id = fileLocation.fileid || '';
         return new Promise((resolve, reject) => {
             if (this.files.hasOwnProperty(id)) {
@@ -80,7 +80,7 @@ export default class CachedFileService {
                     this.getLocalFile(id, searchTemp, blurRadius).then((res) => {
                         resolve(res);
                     }).catch(() => {
-                        this.getRemoteFile(fileLocation, size, blurRadius).then((res) => {
+                        this.getRemoteFile(fileLocation, md5, size, mimeType, blurRadius).then((res) => {
                             resolve(res);
                         }).catch(() => {
                             reject();
@@ -176,7 +176,7 @@ export default class CachedFileService {
     }
 
     /* Get remote file */
-    private getRemoteFile(fileLoc: InputFileLocation.AsObject, size: number, blurRadius?: number): Promise<string> {
+    private getRemoteFile(fileLoc: InputFileLocation.AsObject, md5: string, size: number, mimeType: string, blurRadius?: number): Promise<string> {
         const id = fileLoc.fileid || '';
         return new Promise((resolve, reject) => {
             const fileLocation = new InputFileLocation();
@@ -184,7 +184,7 @@ export default class CachedFileService {
             fileLocation.setAccesshash(fileLoc.accesshash || '');
             fileLocation.setClusterid(fileLoc.clusterid || 1);
             fileLocation.setVersion(fileLoc.version || 0);
-            this.fileManager.receiveFile(fileLocation, size, 'image/jpeg').then(() => {
+            this.fileManager.receiveFile(fileLocation, md5, size, mimeType).then(() => {
                 this.fileRepo.get(fileLoc.fileid || '').then((fileRes) => {
                     if (fileRes && this.files[id]) {
                         this.files[id].retries = 0;

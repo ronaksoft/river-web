@@ -1336,7 +1336,8 @@ proto.msg.Document.toObject = function(includeInstance, msg) {
     clusterid: jspb.Message.getField(msg, 7),
     attributesList: jspb.Message.toObjectList(msg.getAttributesList(),
     proto.msg.DocumentAttribute.toObject, includeInstance),
-    thumbnail: (f = msg.getThumbnail()) && chat_core_types_pb.FileLocation.toObject(includeInstance, f)
+    thumbnail: (f = msg.getThumbnail()) && chat_core_types_pb.FileLocation.toObject(includeInstance, f),
+    md5checksum: jspb.Message.getField(msg, 10)
   };
 
   if (includeInstance) {
@@ -1410,6 +1411,10 @@ proto.msg.Document.deserializeBinaryFromReader = function(msg, reader) {
       var value = new chat_core_types_pb.FileLocation;
       reader.readMessage(value,chat_core_types_pb.FileLocation.deserializeBinaryFromReader);
       msg.setThumbnail(value);
+      break;
+    case 10:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setMd5checksum(value);
       break;
     default:
       reader.skipField();
@@ -1503,6 +1508,13 @@ proto.msg.Document.serializeBinaryToWriter = function(message, writer) {
       9,
       f,
       chat_core_types_pb.FileLocation.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 10));
+  if (f != null) {
+    writer.writeString(
+      10,
+      f
     );
   }
 };
@@ -1769,6 +1781,35 @@ proto.msg.Document.prototype.clearThumbnail = function() {
  */
 proto.msg.Document.prototype.hasThumbnail = function() {
   return jspb.Message.getField(this, 9) != null;
+};
+
+
+/**
+ * optional string MD5Checksum = 10;
+ * @return {string}
+ */
+proto.msg.Document.prototype.getMd5checksum = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.Document.prototype.setMd5checksum = function(value) {
+  jspb.Message.setField(this, 10, value);
+};
+
+
+proto.msg.Document.prototype.clearMd5checksum = function() {
+  jspb.Message.setField(this, 10, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.Document.prototype.hasMd5checksum = function() {
+  return jspb.Message.getField(this, 10) != null;
 };
 
 

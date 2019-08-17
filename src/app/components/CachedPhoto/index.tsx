@@ -74,7 +74,7 @@ class CachedPhoto extends React.Component<IProps, IState> {
 
     /* Get file from cached storage */
     private getFile() {
-        this.cachedFileService.getFile(this.props.fileLocation, 0, this.props.searchTemp, this.props.blur).then((src) => {
+        this.cachedFileService.getFile(this.props.fileLocation, '', 0, 'image/jpeg', this.props.searchTemp, this.props.blur).then((src) => {
             this.setState({
                 src,
             });

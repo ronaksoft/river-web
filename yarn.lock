@@ -3680,10 +3680,10 @@ electron-to-chromium@^1.2.7, electron-to-chromium@^1.3.30:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.135.tgz#f5799b95f2bcd8de17cde47d63392d83a4477041"
   integrity sha512-xXLNstRdVsisPF3pL3H9TVZo2XkMILfqtD6RiWIUmDK2sFX1Bjwqmd8LBp0Kuo2FgKO63JXPoEVGm8WyYdwP0Q==
 
-electron@^6.0.1:
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-6.0.1.tgz#9dcdb3773e933890f432403f2ff5851cffbea126"
-  integrity sha512-XY69rI5IThIxsOS2BD+1ZkHE9hqkm4xN5a3WQFSmFRr2by4q5CnIe9vXmptlouGPTLs3tb7ySX/+K9CvH3szvg==
+electron@^6.0.2:
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-6.0.2.tgz#437f3ac2bcb42116d92a3f1084280e0b2cff1493"
+  integrity sha512-2SV10JlUsEGZ8CePeQIllFBwrOmm1EONne3Ev7Ro1F4tuS9sF184d3/3wZjEtwOs7hsM6elceYnNuZfx93++YA==
   dependencies:
     "@types/node" "^10.12.18"
     electron-download "^4.1.0"
@@ -4263,6 +4263,11 @@ file-type@^11.0.0:
   version "11.0.0"
   resolved "https://registry.yarnpkg.com/file-type/-/file-type-11.0.0.tgz#576ca9ec099925b0c4df7e75d3be52696b62fb52"
   integrity sha512-ixd0mHkDO8KJ1S+ANTM+cZoZgL+TB0txLMm9KjTndfOjFYuRmrUcOtmSEm+e9s7wrynZOvvRD/8LwMQ6a24Irg==
+
+file-worker@0.0.13:
+  version "0.0.13"
+  resolved "https://registry.yarnpkg.com/file-worker/-/file-worker-0.0.13.tgz#8d7e0aea8a33a8b3009a5401a0b96fad7b8f1b23"
+  integrity sha1-jX4K6oozqLMAmlQBoLlvrXuPGyM=
 
 filename-regex@^2.0.0:
   version "2.0.1"
@@ -6906,6 +6911,13 @@ math-random@^1.0.1:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/math-random/-/math-random-1.0.4.tgz#5dd6943c938548267016d4e34f057583080c514c"
   integrity sha512-rUxjysqif/BZQH2yhd5Aaq7vXMSx9NdEsQcyA07uEzIvxgI7zIr33gGsh+RU0/XjmQpCW7RsVof1vlkvQVCK5A==
+
+md5-webworker@^0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/md5-webworker/-/md5-webworker-0.0.5.tgz#122217999e0f436924440aa6999386550c979d44"
+  integrity sha1-EiIXmZ4PQ2kkRAqmmZOGVQyXnUQ=
+  dependencies:
+    file-worker "0.0.13"
 
 md5.js@^1.3.4:
   version "1.3.5"

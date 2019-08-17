@@ -608,9 +608,9 @@ class MediaPreview extends React.Component<IProps, IState> {
         };
         const videoThumbConfig = {
             autoRotate: true,
-            maxHeight: 250,
-            maxWidth: 250,
-            quality: 0.8,
+            maxHeight: 360,
+            maxWidth: 360,
+            quality: 0.9,
         };
         const promise: any[] = [];
         items.forEach((item) => {

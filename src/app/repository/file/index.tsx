@@ -13,6 +13,14 @@ import {DexieFileDB} from '../../services/db/dexie/file';
 import Dexie from 'dexie';
 import {arrayBufferToBase64} from '../../services/sdk/fileManager/http/utils';
 import {sha256} from 'js-sha256';
+import md5 from "md5-webworker";
+
+export const md5FromBlob = (theBlob: Blob): Promise<string> => {
+    const b: any = theBlob;
+    b.lastModifiedDate = new Date();
+    b.name = 'tempfile';
+    return md5(theBlob as File);
+};
 
 export default class FileRepo {
     public static getInstance() {
@@ -59,11 +67,17 @@ export default class FileRepo {
     public persistTempFiles(id: string, docId: string, mimeType: string) {
         return this.get(docId).then((file) => {
             if (file) {
-                return file.hash;
+                return {
+                    md5: file.md5,
+                    sha256: file.hash,
+                };
             } else {
                 return this.getTempsById(id).then((temps) => {
                     if (temps.length === 0) {
-                        return '';
+                        return {
+                            md5: '',
+                            sha256: '',
+                        };
                     }
                     const blobs: Blob[] = [];
                     temps.forEach((temp) => {
@@ -81,12 +95,16 @@ export default class FileRepo {
         return this.createHash(blob).then((res) => {
             const file: IFile = {
                 data: blob,
-                hash: res,
+                hash: res.sha256,
                 id,
+                md5: res.md5,
                 size: blob.size,
             };
-            return this.create(file).catch((err) => {
-                return err;
+            return this.create(file).then(() => {
+                return {
+                    md5: res.md5,
+                    sha256: res.sha256,
+                };
             });
         });
     }
@@ -107,8 +125,9 @@ export default class FileRepo {
         return this.createHash(blob).then((res) => {
             const file: IFile = {
                 data: blob,
-                hash: res,
+                hash: res.sha256,
                 id,
+                md5: res.md5,
                 size: blob.size,
             };
             return this.db.files.put(file);
@@ -119,7 +138,7 @@ export default class FileRepo {
         return this.db.files.get(id);
     }
 
-    private createHash(blob: Blob): Promise<string> {
+    private createSha256(blob: Blob): Promise<string> {
         return new Promise((resolve) => {
             const fileReader = new FileReader();
             fileReader.onload = (event) => {
@@ -134,6 +153,20 @@ export default class FileRepo {
                 }
             };
             fileReader.readAsArrayBuffer(blob);
+        });
+    }
+
+    private createHash(blob: Blob): Promise<{ md5: string, sha256: string }> {
+        return new Promise<{ md5: string, sha256: string }>((resolve, reject) => {
+            const promise: any[] = [];
+            promise.push(this.createSha256(blob));
+            promise.push(md5FromBlob(blob));
+            Promise.all(promise).then((res) => {
+                resolve({
+                    md5: res[0],
+                    sha256: res[1],
+                });
+            }).catch(reject);
         });
     }
 }

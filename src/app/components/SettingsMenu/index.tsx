@@ -85,7 +85,7 @@ import {localize} from "../../services/utilities/localize";
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.25.54';
+export const C_VERSION = '0.25.55';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{
@@ -1683,6 +1683,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         });
 
         this.sdk.sessionGetAll().then((res) => {
+            window.console.log(res);
             this.setState({
                 loading: false,
                 sessions: this.modifySessions(res.authorizationsList),

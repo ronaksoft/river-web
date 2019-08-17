@@ -2283,9 +2283,16 @@ class Chat extends React.Component<IProps, IState> {
     private updateDialogsCounter(peerId: string, {maxInbox, maxOutbox, unreadCounter, unreadCounterIncrease, mentionCounter, mentionCounterIncrease, scrollPos}: any) {
         if (this.dialogMap.hasOwnProperty(peerId)) {
             const dialogs = this.dialogs;
-            const index = this.dialogMap[peerId];
+            let index = this.dialogMap[peerId];
             if (!dialogs[index]) {
                 return;
+            }
+            // Double check
+            if (dialogs[index].peerid !== peerId) {
+                index = findIndex(dialogs, {peerid: peerId});
+                if (index === -1) {
+                    return;
+                }
             }
             let shouldUpdate = false;
             if (maxInbox && maxInbox > (dialogs[index].readinboxmaxid || 0)) {
@@ -2582,7 +2589,7 @@ class Chat extends React.Component<IProps, IState> {
                             // window.console.debug('dialogDBUpdated peerId:', dialogs[this.dialogMap[id]].peerid);
                             const maxReadInbox = dialogs[this.dialogMap[id]].readinboxmaxid || 0;
                             // window.console.debug('dialogDBUpdated maxReadInbox:', maxReadInbox);
-                            const dialog = this.getDialogById(id);
+                            const dialog = cloneDeep(this.getDialogById(id));
                             if (dialog) {
                                 this.messageRepo.getUnreadCount(id, maxReadInbox, dialog ? (dialog.topmessageid || 0) : 0).then((count) => {
                                     // window.console.debug('dialogDBUpdated getUnreadCount:', count);
@@ -3765,7 +3772,7 @@ class Chat extends React.Component<IProps, IState> {
                     fileLocation.setClusterid(mediaDocument.doc.clusterid || 1);
                     fileLocation.setFileid(mediaDocument.doc.id);
                     fileLocation.setVersion(mediaDocument.doc.version || 0);
-                    this.fileManager.receiveFile(fileLocation, mediaDocument.doc.filesize || 0, mediaDocument.doc.mimetype || 'application/octet-stream', (progress) => {
+                    this.fileManager.receiveFile(fileLocation, mediaDocument.doc.md5checksum || '', mediaDocument.doc.filesize || 0, mediaDocument.doc.mimetype || 'application/octet-stream', (progress) => {
                         this.progressBroadcaster.publish(msg.id || 0, progress);
                     }).then(() => {
                         this.broadcastEvent('File_Downloaded', {id: msg.id});
@@ -4004,7 +4011,7 @@ class Chat extends React.Component<IProps, IState> {
 
         this.pushMessage(message);
 
-        const data = mediaData.serializeBinary();
+        let data = mediaData.serializeBinary();
 
         const uploadPromises: any[] = [];
 
@@ -4034,8 +4041,19 @@ class Chat extends React.Component<IProps, IState> {
                 break;
         }
 
-        Promise.all(uploadPromises).then(() => {
+        Promise.all(uploadPromises).then((arr) => {
             this.progressBroadcaster.remove(id);
+            if (arr.length !== 0) {
+                inputFile.setMd5checksum(arr[0]);
+                mediaData.setFile(inputFile);
+                data = mediaData.serializeBinary();
+                this.messageRepo.addPending({
+                    data,
+                    file_ids: fileIds,
+                    id: randomId,
+                    message_id: id,
+                });
+            }
             this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, replyTo).then((res) => {
                 // For double checking update message id
                 this.updateManager.setMessageId(res.messageid || 0);
@@ -4536,7 +4554,7 @@ class Chat extends React.Component<IProps, IState> {
                     fileLocation.setAccesshash(messageMediaDocument.doc.thumbnail.accesshash || '');
                     fileLocation.setClusterid(messageMediaDocument.doc.thumbnail.clusterid || 0);
                     fileLocation.setVersion(0);
-                    this.fileManager.receiveFile(fileLocation, 0, 'image/jpeg');
+                    this.fileManager.receiveFile(fileLocation, '', 0, 'image/jpeg');
                 }
                 break;
         }

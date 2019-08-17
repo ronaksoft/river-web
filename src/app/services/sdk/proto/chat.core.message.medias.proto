@@ -76,6 +76,7 @@ message Document {
     required int32 ClusterID = 7;
     repeated DocumentAttribute Attributes = 8;
     optional FileLocation Thumbnail = 9;
+    optional string MD5Checksum = 10;
 }
 
 // InputMediaUploadedPhoto

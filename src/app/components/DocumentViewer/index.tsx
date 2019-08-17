@@ -651,6 +651,8 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 fileSize: info.size,
                 height: info.height,
                 id: message.id || 0,
+                md5: info.md5,
+                mimeType: info.mimeType,
                 thumbFileLocation: info.thumbFile,
                 width: info.width,
             }],
