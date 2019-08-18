@@ -149,6 +149,9 @@ export default class Http {
                 case 'fnDecryptCallback':
                     this.resolveDecrypt(d.data.reqId, d.data.constructor, d.data.data);
                     break;
+                case 'wsError':
+                    window.console.log('file error', d.data);
+                    break;
                 default:
                     break;
             }

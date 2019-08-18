@@ -137,7 +137,8 @@ class DocumentViewer extends React.Component<IProps, IState> {
             >
                 <ClickAwayListener onClickAway={this.dialogCloseHandler}>
                     <div ref={this.documentContainerRefHandler} className="document-container"
-                         onMouseDown={this.mediaDocumentMouseDownHandler} onWheel={this.mediaDocumentWheelHandler}>
+                         onMouseDown={this.mediaDocumentMouseDownHandler}
+                         onWheelCapture={this.mediaDocumentWheelHandler}>
                         {this.getContent()}
                         {this.initPagination()}
                     </div>
@@ -673,9 +674,13 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 break;
             case 'rotate-cw':
                 this.mediaTransform.rotate += 90;
+                this.mediaTransform.origin.x = 50;
+                this.mediaTransform.origin.y = 50;
                 break;
             case 'rotate-ccw':
                 this.mediaTransform.rotate -= 90;
+                this.mediaTransform.origin.x = 50;
+                this.mediaTransform.origin.y = 50;
                 break;
             case 'reset':
                 this.mediaTransform.zoom = 1.0;
@@ -733,6 +738,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
             this.mediaTransform.pan.x -= e.deltaX;
             this.mediaTransform.pan.y -= e.deltaY;
         }
+        const rect = e.currentTarget.getBoundingClientRect();
+        this.mediaTransform.origin.x = ((e.pageX - rect.left) / rect.width) * 100;
+        this.mediaTransform.origin.y = ((e.pageY - rect.top) / rect.height) * 100;
         this.applyMediaTransform(false);
     }
 
@@ -755,6 +763,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 this.documentContainerRef.style.transition = `none`;
             }, 200);
         }
+        this.documentContainerRef.style.transformOrigin = `${this.mediaTransform.origin.x}% ${this.mediaTransform.origin.y}%`;
         this.documentContainerRef.style.transform = `translate(${this.mediaTransform.pan.x}px, ${this.mediaTransform.pan.y}px) scale(${this.mediaTransform.zoom}) rotate(${this.mediaTransform.rotate}deg)`;
     }
 

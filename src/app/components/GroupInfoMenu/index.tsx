@@ -829,7 +829,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             }
             const inputFile = new InputFile();
             inputFile.setFileid(this.fileId);
-            inputFile.setFilename(`picture_${id}.ogg`);
+            inputFile.setFilename(`picture_${id}.jpg`);
             inputFile.setMd5checksum('');
             inputFile.setTotalparts(1);
             this.sdk.groupUploadPicture(group.id || '', inputFile).then((res) => {
@@ -910,13 +910,13 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     private avatarContextMenuItem() {
         const menuItems = [{
             cmd: 'show',
-            title: 'Show Photo',
+            title: i18n.t('settings.show_photo'),
         }, {
             cmd: 'remove',
-            title: 'Remove Photo',
+            title: i18n.t('settings.remove_photo'),
         }, {
             cmd: 'change',
-            title: 'Change Photo',
+            title: i18n.t('settings.change_photo'),
         }];
         return menuItems.map((item, index) => {
             return (<MenuItem key={index} onClick={this.avatarMoreCmdHandler.bind(this, item.cmd)}

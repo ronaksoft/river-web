@@ -1220,7 +1220,9 @@ class Chat extends React.Component<IProps, IState> {
                 return o.id === data.message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
             });
             if (index > -1) {
+                const avatar = messages[index].avatar;
                 messages[index] = data.message;
+                messages[index].avatar = avatar;
                 if (this.messageRef) {
                     this.messageRef.cache.clear(index, 0);
                     this.messageRef.list.recomputeRowHeights(index);
@@ -2754,7 +2756,7 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private onGroupCreateHandler = (contacts: IUser[], title: string) => {
+    private onGroupCreateHandler = (contacts: IUser[], title: string, fileId: string) => {
         const users: InputUser[] = [];
         contacts.forEach((contact) => {
             const user = new InputUser();
@@ -2777,6 +2779,14 @@ class Chat extends React.Component<IProps, IState> {
             this.dialogs.push(dialog);
             this.dialogsSortThrottle(this.dialogs);
             this.props.history.push(`/chat/${res.id}`);
+            if (fileId !== '') {
+                const inputFile = new InputFile();
+                inputFile.setFileid(fileId);
+                inputFile.setFilename(`picture_${fileId}.jpg`);
+                inputFile.setMd5checksum('');
+                inputFile.setTotalparts(1);
+                this.sdk.groupUploadPicture(res.id || '', inputFile);
+            }
         });
     }
 

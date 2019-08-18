@@ -1,3 +1,12 @@
+## 0.25.57
+* Now you can add group photo on create
+* Edit bug fixed
+* Edit avatar bug fixed
+* Translation bug fixed
+* Logs added for file error
+* CachedPhoto bug fixed
+* Document zoom updated
+
 ## 0.25.56
 * Active sessions updated
 

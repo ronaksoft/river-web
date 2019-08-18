@@ -456,6 +456,7 @@ export default class FileManager {
                                 window.console.debug(`${chunk.part}/${chunkInfo.totalParts} downloaded, size: ${res}`);
                             }
                         }).catch((err) => {
+                            window.console.log(err);
                             if (this.fileTransferQueue.hasOwnProperty(id)) {
                                 this.fileTransferQueue[id].pipelines--;
                                 if (err.code === C_FILE_ERR_CODE.NO_WORKER) {

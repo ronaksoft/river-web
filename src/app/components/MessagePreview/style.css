@@ -44,7 +44,8 @@
         flex-direction: column;
         background-color: var(--glass-dark-low);
         border-top-right-radius: 5px;
-        border-bottom-right-radius: 5px; }
+        border-bottom-right-radius: 5px;
+        max-width: 320px; }
         .message-preview .preview-container .preview-message-wrapper .preview-message .preview-message-user {
           color: #35cd96;
           font-size: 12px;

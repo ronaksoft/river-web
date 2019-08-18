@@ -232,6 +232,13 @@ class ChatInput extends React.Component<IProps, IState> {
             }
             return;
         }
+        if (this.state.previewMessageMode === C_MSG_MODE.Edit && newProps.previewMessageMode === C_MSG_MODE.Normal) {
+            this.setState({
+                textareaValue: '',
+            }, () => {
+                this.computeLines();
+            });
+        }
         if (newProps.previewMessageMode === C_MSG_MODE.Edit && newProps.previewMessage) {
             // this.textarea.value = newProps.previewMessage.body;
             this.setState({
@@ -518,13 +525,14 @@ class ChatInput extends React.Component<IProps, IState> {
                         entities,
                     });
                 } else if (previewMessageMode !== C_MSG_MODE.Normal) {
-                    const message = cloneDeep(previewMessage);
-                    this.props.onMessage(this.textarea.value, {
-                        entities,
-                        message,
-                        mode: previewMessageMode,
+                    this.clearPreviewMessage(true).finally(() => {
+                        const message = cloneDeep(previewMessage);
+                        this.props.onMessage(this.textarea.value, {
+                            entities,
+                            message,
+                            mode: previewMessageMode,
+                        });
                     });
-                    this.clearPreviewMessage(true);
                 }
             }
         }
@@ -561,13 +569,14 @@ class ChatInput extends React.Component<IProps, IState> {
                             entities,
                         });
                     } else if (previewMessageMode !== C_MSG_MODE.Normal) {
-                        const message = cloneDeep(previewMessage);
-                        this.props.onMessage(text, {
-                            entities,
-                            message,
-                            mode: previewMessageMode,
+                        this.clearPreviewMessage(true).finally(() => {
+                            const message = cloneDeep(previewMessage);
+                            this.props.onMessage(text, {
+                                entities,
+                                message,
+                                mode: previewMessageMode,
+                            });
                         });
-                        this.clearPreviewMessage(true);
                     }
                 }
                 this.textarea.value = '';
@@ -666,9 +675,6 @@ class ChatInput extends React.Component<IProps, IState> {
         this.setState({
             previewMessageHeight: 0,
         });
-        if (removeDraft && this.state.peer) {
-            this.dialogRepo.removeDraft(this.state.peer.getId() || '');
-        }
         setTimeout(() => {
             this.setState({
                 previewMessage: null,
@@ -682,6 +688,11 @@ class ChatInput extends React.Component<IProps, IState> {
                 this.props.onPreviewMessageChange(undefined, C_MSG_MODE.Normal);
             }
         }, 102);
+        if (removeDraft && this.state.peer) {
+            return this.dialogRepo.removeDraft(this.state.peer.getId() || '');
+        } else {
+            return Promise.resolve();
+        }
     }
 
     private animatePreviewMessage() {
