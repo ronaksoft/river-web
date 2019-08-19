@@ -489,7 +489,9 @@ export default class FileManager {
                     this.fileRepo.persistTempFiles(id, id, this.fileTransferQueue[id].mimeType || 'application/octet-stream').then((res) => {
                         if (this.fileTransferQueue.hasOwnProperty(id)) {
                             if (res && this.fileTransferQueue[id].md5 && this.fileTransferQueue[id].md5 !== '' && this.fileTransferQueue[id].md5 !== res.md5) {
-                                this.fileTransferQueue[id].reject('md5 hashes are not match');
+                                this.fileRepo.remove(id).finally(() => {
+                                    this.fileTransferQueue[id].reject('md5 hashes are not match');
+                                });
                             } else {
                                 this.fileTransferQueue[id].resolve();
                             }

@@ -1,3 +1,6 @@
+## 0.25.63
+* MD5 bug fixed
+
 ## 0.25.62
 * Toggle menu bar removed in macOS
 

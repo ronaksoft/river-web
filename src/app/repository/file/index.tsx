@@ -159,8 +159,8 @@ export default class FileRepo {
     private createHash(blob: Blob): Promise<{ md5: string, sha256: string }> {
         return new Promise<{ md5: string, sha256: string }>((resolve, reject) => {
             const promise: any[] = [];
-            promise.push(this.createSha256(blob));
             promise.push(md5FromBlob(blob));
+            promise.push(this.createSha256(blob));
             Promise.all(promise).then((res) => {
                 resolve({
                     md5: res[0],
