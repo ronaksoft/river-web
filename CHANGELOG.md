@@ -1,6 +1,7 @@
 ## 0.25.61
 * Last seen recently updated
 * MessageReadInbox bug updated
+* Recording bug fixed
 
 ## 0.25.60
 * AuthRecall bug fixed

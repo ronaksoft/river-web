@@ -285,6 +285,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 canceller();
             }
         });
+        clearInterval(this.timerInterval);
     }
 
     public focus() {
