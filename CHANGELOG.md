@@ -1,3 +1,6 @@
+## 0.25.58
+* UI bug fixed
+
 ## 0.25.57
 * Now you can add group photo on create
 * Edit bug fixed

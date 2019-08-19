@@ -35,8 +35,7 @@
         border-bottom-right-radius: 5px;
         font-weight: bold;
         font-size: 12px;
-        flex-grow: 1;
-        max-width: 256px; }
+        flex-grow: 1; }
         .message-forwarded .forwarded-container .forwarded-message-wrapper .forward-message-detail > span {
           white-space: nowrap;
           overflow: hidden;
