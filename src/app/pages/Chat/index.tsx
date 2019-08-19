@@ -1295,17 +1295,16 @@ class Chat extends React.Component<IProps, IState> {
         if (this.state.isUpdating) {
             return;
         }
-        window.console.debug('UpdateMaxInbox:', data.maxid);
         const peerId = data.peer.id || '';
         const dialog = this.getDialogById(peerId);
         if (!dialog) {
             return;
         }
         const readinboxmaxid = dialog.readinboxmaxid || 0;
-        this.updateDialogsCounter(peerId, {maxInbox: data.maxid});
+        const td = this.updateDialogsCounter(peerId, {maxInbox: data.maxid});
         const fn = () => {
             delete this.updateReadInboxTimeout[peerId];
-            this.messageRepo.getUnreadCount(peerId, data.maxid || 0, dialog ? (dialog.topmessageid || 0) : 0).then((count) => {
+            this.messageRepo.getUnreadCount(peerId, td ? (td.readinboxmaxid || 0) : (data.maxid || 0), dialog ? (dialog.topmessageid || 0) : 0).then((count) => {
                 this.updateDialogsCounter(peerId, {
                     mentionCounter: count.mention,
                     unreadCounter: count.message,
@@ -1329,7 +1328,6 @@ class Chat extends React.Component<IProps, IState> {
         if (this.state.isUpdating) {
             return;
         }
-        window.console.debug('UpdateMaxOutbox:', data.maxid, data.peer.id);
         this.userRepo.importBulk(false, [{
             id: data.peer.id,
             status: UserStatus.USERSTATUSONLINE,
@@ -2342,7 +2340,9 @@ class Chat extends React.Component<IProps, IState> {
                 this.setEndOfMessage(this.messages.length - this.scrollInfo.stopIndex > 1);
             }
             this.dialogRepo.lazyUpsert([dialogs[index]]);
+            return dialogs[index];
         }
+        return null;
     }
 
     private dialogsSort(dialogs: IDialog[], callback?: (ds: IDialog[]) => void, noSort?: boolean) {

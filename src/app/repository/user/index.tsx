@@ -265,6 +265,12 @@ export default class UserRepo {
             if (!force && u1.phone && u1.phone.length > 0 && (!u2.phone || (u2.phone && u2.phone.length === 0))) {
                 u2.phone = u1.phone;
             }
+            if ((u2.status_last_modified || 0) < (u2.lastseen || 0)) {
+                u2.status_last_modified = u2.lastseen;
+            }
+            if (u2.status === UserStatus.USERSTATUSOFFLINE) {
+                u2.status_last_modified = 0;
+            }
             return kMerge(u1, u2);
         };
         if (t && user.is_contact === 1) {
