@@ -85,7 +85,7 @@ import {localize} from "../../services/utilities/localize";
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.25.61';
+export const C_VERSION = '0.25.62';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{
@@ -219,6 +219,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private electronService: ElectronService;
     private userListDialogRef: UserListDialog;
     private lastPrivacy: { [key: string]: IPrivacy } = cloneDeep(privacyDefault);
+    private readonly isMac: boolean = navigator.platform.indexOf('Mac') > -1;
 
     constructor(props: IProps) {
         super(props);
@@ -494,7 +495,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                 </div>
                                             </div>
                                         </div>
-                                        {ElectronService.isElectron() &&
+                                        {ElectronService.isElectron() && !this.isMac &&
                                         <div className="page-anchor" onClick={this.toggleMenuBarHandler}>
                                             <div className="icon color-menu-bar">
                                                 <MaximizeRounded/>

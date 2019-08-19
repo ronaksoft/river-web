@@ -1,3 +1,6 @@
+## 0.25.62
+* Toggle menu bar removed in macOS
+
 ## 0.25.61
 * Last seen recently updated
 * MessageReadInbox bug updated
