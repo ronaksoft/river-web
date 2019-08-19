@@ -255,7 +255,8 @@ class PeerMedia extends React.Component<IProps, IState> {
                     return (
                         <div className="file-icon">
                             <InsertDriveFileTwoTone/>
-                            <span className="file-extension">{getFileExtension(item.info.type)}</span>
+                            <span
+                                className="file-extension">{getFileExtension(item.info.type, item.info.fileName)}</span>
                         </div>);
                 case C_MESSAGE_TYPE.Audio:
                     return (

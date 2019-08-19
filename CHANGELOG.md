@@ -1,3 +1,6 @@
+## 0.25.60
+* AuthRecall bug fixed
+
 ## 0.25.59
 * SDK AuthRecall updated
 

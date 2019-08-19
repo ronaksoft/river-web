@@ -205,7 +205,7 @@ export default class SDK {
 
     public authRecall(): Promise<AuthRecalled.AsObject> {
         const data = new AuthRecall();
-        data.setClientid('official');
+        data.setClientid('0');
         data.setVersion(0);
         return this.server.send(C_MSG.AuthRecall, data.serializeBinary(), true);
     }
