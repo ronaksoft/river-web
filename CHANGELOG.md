@@ -1,5 +1,7 @@
 ## 0.25.58
 * UI bug fixed
+* User is_contact modified
+* User phone added
 
 ## 0.25.57
 * Now you can add group photo on create

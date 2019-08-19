@@ -221,7 +221,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                             <div className="inner">@{user.username}</div>
                                         </div>
                                     </div>}
-                                    {isInContact && user && <div className="line">
+                                    {isInContact && user && (user.phone || '').length > 0 && <div className="line">
                                         <div className="form-control">
                                             <label>{i18n.t('general.phone')}</label>
                                             <div className="inner">{user.phone}</div>

@@ -201,7 +201,7 @@ class UserDialog extends React.Component<IProps, IState> {
                                 onChange={this.onPhoneChangeHandler}
                             />}
                         </div>
-                        {Boolean(isInContact && !edit) && <div className="line">
+                        {Boolean(isInContact && !edit && (user.phone || '').length > 0) && <div className="line">
                             <div className="form-control">
                                 <label>{i18n.t('general.phone')}</label>
                                 <div className="inner">{user.phone}</div>

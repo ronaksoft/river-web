@@ -117,6 +117,11 @@ export default class UserRepo {
                         this.upsert(false, res.usersList);
                         const u = find(res.usersList, {id});
                         if (u) {
+                            // @ts-ignore
+                            u.is_contact = user.is_contact;
+                            if (user.phone && user.phone.length > 0) {
+                                u.phone = user.phone;
+                            }
                             resolve(u);
                         } else {
                             reject('none found');
