@@ -1,3 +1,6 @@
+## 0.25.59
+* SDK AuthRecall updated
+
 ## 0.25.58
 * UI bug fixed
 * User is_contact modified

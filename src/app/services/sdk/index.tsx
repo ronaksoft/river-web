@@ -203,9 +203,9 @@ export default class SDK {
         return this.server.send(C_MSG.AuthLogin, data.serializeBinary(), true);
     }
 
-    public recall(clientId: string): Promise<AuthRecalled.AsObject> {
+    public authRecall(): Promise<AuthRecalled.AsObject> {
         const data = new AuthRecall();
-        data.setClientid(clientId);
+        data.setClientid('official');
         data.setVersion(0);
         return this.server.send(C_MSG.AuthRecall, data.serializeBinary(), true);
     }
@@ -371,7 +371,7 @@ export default class SDK {
         data.setSystemversion(systemVersion);
         data.setToken(token);
         data.setTokentype(PushTokenProvider.PUSHTOKENFIREBASE);
-        data.setClientid('river');
+        data.setClientid('official');
         return this.server.send(C_MSG.AccountRegisterDevice, data.serializeBinary(), true);
     }
 

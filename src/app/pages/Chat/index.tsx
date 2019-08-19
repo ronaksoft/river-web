@@ -2476,7 +2476,7 @@ class Chat extends React.Component<IProps, IState> {
         this.setState({
             isConnecting: false,
         });
-        this.sdk.recall('0').then((res) => {
+        this.sdk.authRecall().then((res) => {
             if (res.timestamp) {
                 this.riverTime.setServerTime(res.timestamp);
                 this.userRepo.getAllContacts();

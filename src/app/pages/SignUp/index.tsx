@@ -710,7 +710,7 @@ class SignUp extends React.Component<IProps, IState> {
 
     private wsOpenHandler = () => {
         if ((this.sdk.getConnInfo().UserID || 0) > 0) {
-            this.sdk.recall('0').then(() => {
+            this.sdk.authRecall().then(() => {
                 this.props.history.push('/chat/null');
                 return;
             }).catch((err) => {
