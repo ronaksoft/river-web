@@ -260,7 +260,7 @@
     "online": "online",
     "typing": "typing...",
     "recording_voice": "recording voice...",
-    "uploading_file": "uploading file...",
+    "uploading_file": "uploading...",
     "doing": "doing...",
     "waiting_for_network": "Waiting for network...",
     "try_again": "(try again)"
@@ -297,6 +297,8 @@
     "upload_media": "Upload Media",
     "drop_you_param_here": "Drop your {0} files here",
     "add_media": "Add Media",
-    "write_a_caption": "Write a Caption..."
+    "write_a_caption": "Write a Caption...",
+    "map_caption": "Write a caption (would be sent as a reply)",
+    "share_location": "Share Location"
   }
 }

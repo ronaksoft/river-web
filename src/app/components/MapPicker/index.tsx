@@ -12,6 +12,7 @@ import Dialog from '@material-ui/core/Dialog/Dialog';
 import {CheckRounded} from '@material-ui/icons';
 import TextField from '@material-ui/core/TextField/TextField';
 import {MapComponent} from './map';
+import i18n from '../../services/i18n';
 
 import './style.css';
 
@@ -85,10 +86,10 @@ class MapPicker extends React.Component<IProps, IState> {
             >
                 <div className="map-picker-container">
                     {loading && <div className="map-picker-loader">
-                        <span>Loading...</span>
+                        <span>{i18n.t('general.loading')}</span>
                     </div>}
                     <div className="map-picker-header">
-                        <span>Share Location</span>
+                        <span>{i18n.t('uploader.share_location')}</span>
                     </div>
                     <div className="map-picker-preview-container">
                         <div className="map-picker-canvas">
@@ -106,7 +107,7 @@ class MapPicker extends React.Component<IProps, IState> {
                         <div className="map-picker-details-container">
                             <TextField
                                 className="caption-input"
-                                label="Write a caption"
+                                label={i18n.t('uploader.map_caption')}
                                 fullWidth={true}
                                 multiline={true}
                                 rowsMax={2}
@@ -157,6 +158,7 @@ class MapPicker extends React.Component<IProps, IState> {
     /* Close dialog handler */
     private dialogCloseHandler = () => {
         this.setState({
+            caption: '',
             dialogOpen: false,
         });
     }

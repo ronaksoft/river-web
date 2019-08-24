@@ -87,6 +87,13 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
     public componentDidMount() {
         this.eventReferences.push(this.audioPlayer.globalListen(this.audioProgressHandler));
         this.eventReferences.push(this.audioPlayer.playlistUpdateListen(this.audioProgressPlaylistUpdateHandler));
+        // @ts-ignore
+        if (navigator.mediaSession && navigator.mediaSession.setActionHandler) {
+            // @ts-ignore
+            navigator.mediaSession.setActionHandler('previoustrack', this.previousTrackHandler);
+            // @ts-ignore
+            navigator.mediaSession.setActionHandler('nexttrack', this.nextTrackHandler);
+        }
     }
 
     public componentWillUnmount() {
@@ -95,6 +102,13 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
                 canceller();
             }
         });
+        // @ts-ignore
+        if (navigator.mediaSession && navigator.mediaSession.setActionHandler) {
+            // @ts-ignore
+            navigator.mediaSession.setActionHandler('previoustrack', null);
+            // @ts-ignore
+            navigator.mediaSession.setActionHandler('nexttrack', null);
+        }
     }
 
     public render() {
@@ -416,7 +430,6 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
             playlist: this.audioPlayer.getMusicPlayList(),
         }, () => {
             const {playlist} = this.state;
-            window.console.log('initPlaylist', playlist);
             const currentTrack = this.audioPlayer.getCurrentTrack();
             const index = findIndex(playlist, {id: currentTrack});
             if (index > -1) {
@@ -459,6 +472,16 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
                 playlist,
             });
         }
+    }
+
+    /* Previous track handler */
+    private previousTrackHandler = () => {
+        this.audioPlayer.prev(true);
+    }
+
+    /* Next track handler */
+    private nextTrackHandler = () => {
+        this.audioPlayer.next(true);
     }
 }
 

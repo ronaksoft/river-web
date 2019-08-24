@@ -254,12 +254,17 @@ export default class AudioPlayer {
     }
 
     /* Play audio */
-    public play(messageId: number) {
+    public play(messageId: number, force?: boolean) {
         // TODO: fix bad instant bug
         if (this.currentTrack !== messageId && messageId !== C_INSTANT_AUDIO) {
             URL.revokeObjectURL(this.lastObjectUrl);
             this.stop(this.currentTrack);
-            this.prepareTrack(messageId);
+            this.prepareTrack(messageId).then(() => {
+                if (force) {
+                    clearInterval(this.pauseTimeout);
+                    clearInterval(this.playTimeout);
+                }
+            });
         } else {
             if (!this.audio) {
                 return false;
@@ -325,14 +330,14 @@ export default class AudioPlayer {
     }
 
     /* Next audio */
-    public next() {
+    public next(force?: boolean) {
         if (this.currentTrack > 0) {
             let index = this.voicePlaylist.indexOf(this.currentTrack);
             if (index > -1) {
                 const nextIndex = index + 1;
                 if (index > -1 && this.voicePlaylist.length > nextIndex) {
                     if (this.tracks.hasOwnProperty(this.voicePlaylist[nextIndex]) && this.tracks[this.voicePlaylist[nextIndex]].downloaded) {
-                        this.play(this.voicePlaylist[nextIndex]);
+                        this.play(this.voicePlaylist[nextIndex], force);
                     } else {
                         this.playingFromPeerId = undefined;
                     }
@@ -344,7 +349,7 @@ export default class AudioPlayer {
                 const nextIndex = index + 1;
                 if (index > -1 && this.musicPlaylist.length > nextIndex) {
                     if (this.tracks.hasOwnProperty(this.musicPlaylist[nextIndex]) && this.tracks[this.musicPlaylist[nextIndex]].downloaded) {
-                        this.play(this.musicPlaylist[nextIndex]);
+                        this.play(this.musicPlaylist[nextIndex], force);
                     } else {
                         this.playingFromPeerId = undefined;
                     }
@@ -352,19 +357,18 @@ export default class AudioPlayer {
                     this.playingFromPeerId = undefined;
                 }
             }
-
         }
     }
 
     /* Prev audio */
-    public prev() {
+    public prev(force?: boolean) {
         if (this.currentTrack > 0) {
             let index = this.voicePlaylist.indexOf(this.currentTrack);
             if (index > -1) {
                 const prevIndex = index - 1;
                 if (index > -1 && prevIndex >= 0) {
                     if (this.tracks.hasOwnProperty(this.voicePlaylist[prevIndex]) && this.tracks[this.voicePlaylist[prevIndex]].downloaded) {
-                        this.play(this.voicePlaylist[prevIndex]);
+                        this.play(this.voicePlaylist[prevIndex], force);
                     }
                 }
             } else {
@@ -372,7 +376,7 @@ export default class AudioPlayer {
                 const prevIndex = index - 1;
                 if (index > -1 && prevIndex >= 0) {
                     if (this.tracks.hasOwnProperty(this.musicPlaylist[prevIndex]) && this.tracks[this.musicPlaylist[prevIndex]].downloaded) {
-                        this.play(this.musicPlaylist[prevIndex]);
+                        this.play(this.musicPlaylist[prevIndex], force);
                     }
                 }
             }
@@ -452,83 +456,87 @@ export default class AudioPlayer {
     }
 
     /* Set audio err function */
-    public setUpateDurationFn(fn: (info: IAudioInfo, duration: number) => void) {
+    public setUpdateDurationFn(fn: (info: IAudioInfo, duration: number) => void) {
         this.updateDurationFn = fn;
     }
 
     /* Get audio from database and prepare it for playing */
-    private prepareTrack(messageId: number) {
+    private prepareTrack(messageId: number): Promise<any> {
         if (!this.tracks.hasOwnProperty(messageId)) {
             if (this.backUpTracks.hasOwnProperty(messageId)) {
                 this.copyFromBackup();
-                this.prepareTrack(messageId);
-                return;
+                return this.prepareTrack(messageId);
             }
         }
         if (!this.tracks.hasOwnProperty(messageId)) {
-            return;
+            return Promise.reject('not found');
         }
-        const track = this.tracks[messageId];
-        const fileId = track.fileId;
-        this.fileRepo.get(fileId).then((res) => {
-            if (res) {
-                this.audio.src = URL.createObjectURL(res.data);
-                this.lastObjectUrl = this.audio.src;
-                this.audio.onloadedmetadata = (e) => {
-                    if (this.tracks.hasOwnProperty(messageId)) {
-                        if (this.tracks[messageId].duration === 0 && this.audio.duration > 0 && this.updateDurationFn) {
-                            this.updateDurationFn({
+        return new Promise((resolve, reject) => {
+            const track = this.tracks[messageId];
+            const fileId = track.fileId;
+            this.fileRepo.get(fileId).then((res) => {
+                if (res) {
+                    this.audio.src = URL.createObjectURL(res.data);
+                    this.lastObjectUrl = this.audio.src;
+                    this.audio.onloadedmetadata = (e) => {
+                        if (this.tracks.hasOwnProperty(messageId)) {
+                            if (this.tracks[messageId].duration === 0 && this.audio.duration > 0 && this.updateDurationFn) {
+                                this.updateDurationFn({
+                                    fast: false,
+                                    messageId,
+                                    peerId: track.peerId || '',
+                                    userId: track.userId,
+                                }, this.audio.duration);
+                                setTimeout(() => {
+                                    this.callUpdatePlaylistHandler();
+                                }, 10);
+                            }
+                            this.tracks[messageId].duration = this.audio.duration;
+                            if (this.tracks[messageId].music) {
+                                // @ts-ignore
+                                this.tracks[messageId].music.duration = Math.floor(this.audio.duration);
+                            }
+                        }
+                    };
+                    this.audio.onloadeddata = (e) => {
+                        this.currentTrack = messageId;
+                        this.play(messageId);
+                        resolve();
+                    };
+                    this.audio.onerror = (err) => {
+                        if (this.errFn) {
+                            this.errFn({
                                 fast: false,
                                 messageId,
                                 peerId: track.peerId || '',
                                 userId: track.userId,
-                            }, this.audio.duration);
-                            setTimeout(() => {
-                                this.callUpdatePlaylistHandler();
-                            }, 10);
+                            }, err);
                         }
-                        this.tracks[messageId].duration = this.audio.duration;
-                        if (this.tracks[messageId].music) {
-                            // @ts-ignore
-                            this.tracks[messageId].music.duration = Math.floor(this.audio.duration);
-                        }
-                    }
-                };
-                this.audio.onloadeddata = (e) => {
-                    this.currentTrack = messageId;
-                    this.play(messageId);
-                };
-                this.audio.onerror = (err) => {
+                        reject(err);
+                    };
+                    this.audio.onpause = () => {
+                        this.pauseTimeout = setTimeout(() => {
+                            this.pause(messageId);
+                        }, 100);
+                    };
+                    this.audio.onplay = () => {
+                        this.playTimeout = setTimeout(() => {
+                            this.play(messageId);
+                        }, 100);
+                    };
+                    this.audio.load();
+                } else {
                     if (this.errFn) {
                         this.errFn({
                             fast: false,
                             messageId,
                             peerId: track.peerId || '',
                             userId: track.userId,
-                        }, err);
+                        }, Error('not found'));
                     }
-                };
-                this.audio.onpause = () => {
-                    this.pauseTimeout = setTimeout(() => {
-                        this.pause(messageId);
-                    }, 100);
-                };
-                this.audio.onplay = () => {
-                    this.playTimeout = setTimeout(() => {
-                        this.play(messageId);
-                    }, 100);
-                };
-                this.audio.load();
-            } else {
-                if (this.errFn) {
-                    this.errFn({
-                        fast: false,
-                        messageId,
-                        peerId: track.peerId || '',
-                        userId: track.userId,
-                    }, Error('not found'));
+                    reject('not found');
                 }
-            }
+            });
         });
     }
 

@@ -19,6 +19,13 @@
     padding: 10px;
     text-align: left;
 
+    .contact-chips-container {
+      > div {
+        max-height: 140px;
+        overflow-y: auto;
+      }
+    }
+
     .chip {
       margin: 0 3px 3px 0;
       direction: ltr;

@@ -148,6 +148,7 @@ class ContactList extends React.Component<IProps, IState> {
                         onDelete={this.removeMemberHandler}
                         // @ts-ignore
                         classes={{}}
+                        className="contact-chips-container"
                     />}
                     {Boolean(this.props.mode === 'link') && <TextField
                         label={i18n.t('contact.search')}

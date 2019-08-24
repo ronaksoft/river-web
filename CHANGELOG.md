@@ -1,3 +1,12 @@
+## 0.25.64
+* AudioPlayer next and previous implemented
+* Typings interval constant added
+* Max height added to chips container
+* Map picker translation updated
+* Translations updated
+* Uploading doc status added
+* AudioPlayer bug fixed
+
 ## 0.25.63
 * MD5 bug fixed
 

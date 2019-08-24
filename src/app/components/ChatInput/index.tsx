@@ -125,6 +125,8 @@ const defaultMentionInputStyle = {
     },
 };
 
+export const C_TYPING_INTERVAL = 5000;
+
 class ChatInput extends React.Component<IProps, IState> {
     private mentionContainer: any = null;
     private textarea: any = null;
@@ -1437,7 +1439,7 @@ class ChatInput extends React.Component<IProps, IState> {
                             this.typingThrottle.cancel();
                         }
                     }
-                }, 5000);
+                }, C_TYPING_INTERVAL);
             } else {
                 this.typingThrottle();
                 clearTimeout(this.typingTimeout);
@@ -1448,7 +1450,7 @@ class ChatInput extends React.Component<IProps, IState> {
                     if (this.props.onTyping) {
                         this.props.onTyping(TypingAction.TYPINGACTIONCANCEL);
                     }
-                }, 5000);
+                }, C_TYPING_INTERVAL);
             }
         }
     }

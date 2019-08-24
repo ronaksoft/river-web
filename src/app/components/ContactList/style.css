@@ -15,6 +15,9 @@
     min-height: 48px;
     padding: 10px;
     text-align: left; }
+    .contact-list .contact-input-container .contact-chips-container > div {
+      max-height: 140px;
+      overflow-y: auto; }
     .contact-list .contact-input-container .chip {
       margin: 0 3px 3px 0;
       direction: ltr; }

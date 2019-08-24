@@ -256,7 +256,7 @@
     "online": "آنلاین",
     "typing": "در حال تایپ...",
     "recording_voice": "در حال ضبط صوت...",
-    "uploading_file": "در حال بارگزاری فایل...",
+    "uploading_file": "در حال بارگزاری...",
     "doing": "در حال...",
     "waiting_for_network": "منتظر شبکه...",
     "try_again": "(تلاش مجدد)"
@@ -293,6 +293,8 @@
     "upload_media": "بارگزاری رسانه",
     "drop_you_param_here": "فایل‌های {0} را اینجا رها کنید",
     "add_media": "افزودن رسانه",
-    "write_a_caption": "عنوانی بنویسید..."
+    "write_a_caption": "عنوانی بنویسید...",
+    "map_caption": "عنوانی بنویسید (به عنوان پاسخ ارسال خواهد شد)",
+    "share_location": "اشتراک نقشه"
   }
 }

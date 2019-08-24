@@ -16,31 +16,65 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
 import {
-    EditRounded, ExpandMoreRounded, InfoOutlined, KeyboardArrowLeftRounded, MoreVertRounded, SearchRounded,
     CloseRounded,
+    EditRounded,
+    ExpandMoreRounded,
+    InfoOutlined,
+    KeyboardArrowLeftRounded,
+    MoreVertRounded,
+    SearchRounded,
 } from '@material-ui/icons';
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
-import ChatInput from '../../components/ChatInput/index';
+import ChatInput, {C_TYPING_INTERVAL} from '../../components/ChatInput/index';
 import {
-    clone, differenceBy, find, findIndex, findLastIndex, intersectionBy, throttle, trimStart, cloneDeep,
+    clone,
+    cloneDeep,
+    differenceBy,
+    find,
+    findIndex,
+    findLastIndex,
+    intersectionBy,
+    throttle,
+    trimStart,
 } from 'lodash';
 import SDK from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
 import * as core_types_pb from '../../services/sdk/messages/chat.core.types_pb';
 import {
-    FileLocation, Group, InputFile, InputFileLocation, InputPeer, InputUser, MediaType, MessageEntity,
-    MessageEntityType, PeerNotifySettings, PeerType, TypingAction, User, UserStatus,
+    FileLocation,
+    Group,
+    InputFile,
+    InputFileLocation,
+    InputPeer,
+    InputUser,
+    MediaType,
+    MessageEntity,
+    MessageEntityType,
+    PeerNotifySettings,
+    PeerType,
+    TypingAction,
+    User,
+    UserStatus
 } from '../../services/sdk/messages/chat.core.types_pb';
 import {IConnInfo} from '../../services/sdk/interface';
 import {IDialog} from '../../repository/dialog/interface';
 import UpdateManager, {INewMessageBulkUpdate} from '../../services/sdk/server/updateManager';
 import {C_MSG} from '../../services/sdk/const';
 import {
-    UpdateDialogPinned, UpdateGroupPhoto, UpdateMessageEdited, UpdateMessageID, UpdateMessagesDeleted,
-    UpdateNotifySettings, UpdateReadHistoryInbox, UpdateReadHistoryOutbox, UpdateReadMessagesContents,
-    UpdateUsername, UpdateUserPhoto, UpdateUserTyping,
+    UpdateDialogPinned,
+    UpdateGroupPhoto,
+    UpdateMessageEdited,
+    UpdateMessageID,
+    UpdateMessagesDeleted,
+    UpdateNotifySettings,
+    UpdateReadHistoryInbox,
+    UpdateReadHistoryOutbox,
+    UpdateReadMessagesContents,
+    UpdateUsername,
+    UpdateUserPhoto,
+    UpdateUserTyping,
 } from '../../services/sdk/messages/chat.api.updates_pb';
 import UserName from '../../components/UserName';
 import SyncManager, {C_SYNC_UPDATE} from '../../services/sdk/syncManager';
@@ -72,8 +106,17 @@ import ElectronService, {C_ELECTRON_SUBJECT} from '../../services/electron';
 import FileManager from '../../services/sdk/fileManager';
 import {InputMediaType} from '../../services/sdk/messages/chat.api.messages_pb';
 import {
-    Document, DocumentAttribute, DocumentAttributeAudio, DocumentAttributeFile, DocumentAttributePhoto, MediaDocument,
-    DocumentAttributeType, DocumentAttributeVideo, InputMediaContact, InputMediaGeoLocation, InputMediaUploadedDocument,
+    Document,
+    DocumentAttribute,
+    DocumentAttributeAudio,
+    DocumentAttributeFile,
+    DocumentAttributePhoto,
+    DocumentAttributeType,
+    DocumentAttributeVideo,
+    InputMediaContact,
+    InputMediaGeoLocation,
+    InputMediaUploadedDocument,
+    MediaDocument,
 } from '../../services/sdk/messages/chat.core.message.medias_pb';
 import RiverTime from '../../services/utilities/river_time';
 import FileRepo from '../../repository/file';
@@ -261,7 +304,7 @@ class Chat extends React.Component<IProps, IState> {
         this.cachedMessageService = CachedMessageService.getInstance();
         const audioPlayer = AudioPlayer.getInstance();
         audioPlayer.setErrorFn(this.audioPlayerErrorHandler);
-        audioPlayer.setUpateDurationFn(this.audioPlayerUpdateDurationHandler);
+        audioPlayer.setUpdateDurationFn(this.audioPlayerUpdateDurationHandler);
 
         if (isProd) {
             Sentry.configureScope((scope) => {
@@ -1165,6 +1208,7 @@ class Chat extends React.Component<IProps, IState> {
                     }
                     this.updateDialogsCounter(message.peerid || '', {
                         mentionCounter: 0,
+                        scrollPos: -1,
                         unreadCounter: 0,
                     });
                     if (message.actiondata.pb_delete) {
@@ -1172,12 +1216,16 @@ class Chat extends React.Component<IProps, IState> {
                         this.dialogRemove(message.peerid || '');
                     }
                 });
-            } else if (!message.me && (message.peerid !== this.state.selectedDialogId || this.endOfMessage || !this.isInChat)) {
+            } else
+            // Increase counter when
+            // 1. Current Dialog is different from message peerid
+            // 2. Is not at the end of conversations
+            // 3. Is not focused on the River app
+            if (!message.me && (message.peerid !== this.state.selectedDialogId || this.endOfMessage || !this.isInChat)) {
                 this.messageRepo.exists(message.id || 0).then((exists) => {
                     if (!exists) {
                         this.updateDialogsCounter(message.peerid || '', {
                             mentionCounterIncrease: (message.mention_me ? 1 : 0),
-                            scrollPos: -1,
                             unreadCounterIncrease: 1,
                         });
                     }
@@ -1252,7 +1300,7 @@ class Chat extends React.Component<IProps, IState> {
                         }
                     }
                 }
-            }, 6000);
+            }, C_TYPING_INTERVAL + 1000);
             if (!isTypingList.hasOwnProperty(data.peerid || '')) {
                 isTypingList[data.peerid || ''] = {};
                 isTypingList[data.peerid || ''][data.userid || 0] = {
@@ -2147,8 +2195,8 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private onTyping = (typing: TypingAction) => {
-        const {peer} = this.state;
+    private onTyping = (typing: TypingAction, forcePeer?: InputPeer) => {
+        const peer = forcePeer || this.state.peer;
         if (peer === null) {
             return;
         }
@@ -3841,7 +3889,7 @@ class Chat extends React.Component<IProps, IState> {
         if (type === 'none') {
             return;
         }
-        const {peer} = this.state;
+        const peer = cloneDeep(this.state.peer);
         if (!peer) {
             return;
         }
@@ -4051,7 +4099,9 @@ class Chat extends React.Component<IProps, IState> {
                 break;
         }
 
+        this.onTyping(TypingAction.TYPINGACTIONUPLOADING, peer);
         Promise.all(uploadPromises).then((arr) => {
+            this.onTyping(TypingAction.TYPINGACTIONCANCEL, peer);
             this.progressBroadcaster.remove(id);
             if (arr.length !== 0) {
                 inputFile.setMd5checksum(arr[0]);
@@ -4105,6 +4155,7 @@ class Chat extends React.Component<IProps, IState> {
             });
         }).catch((err) => {
             this.progressBroadcaster.remove(id);
+            this.onTyping(TypingAction.TYPINGACTIONCANCEL, peer);
             if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
                 const messages = this.messages;
                 const index = findIndex(messages, (o) => {
