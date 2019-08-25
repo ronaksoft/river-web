@@ -127,6 +127,7 @@
     position: relative;
     height: 640px;
     width: 640px;
+    background-color: var(--grey);
     z-index: 1310; }
     .document-viewer-dialog .document-container .location-container .map-marker svg {
       font-size: 48px;

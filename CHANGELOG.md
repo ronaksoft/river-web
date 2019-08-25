@@ -1,3 +1,7 @@
+## 0.25.65
+* Static map updated to Yandex(TM)
+* Map viewer background color updated
+
 ## 0.25.64
 * AudioPlayer next and previous implemented
 * Typings interval constant added

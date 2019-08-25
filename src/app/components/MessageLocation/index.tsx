@@ -83,13 +83,15 @@ class MessageLocation extends React.PureComponent<IProps, IState> {
     }
     // https://maps.googleapis.com/maps/api/staticmap?center=35.76344299316406,51.37594985961914&zoom=15&size=300x300&maptype=roadmap&key=AIzaSyAxXaCNUveWAy2fxxv824mFe1n53sLUSL4
     // https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${long}&zoom=14&size=300x300&maptype=mapnik
+    // https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${long}&zoom=14&size=300x300&maptype=mapnik
+    // https://static-maps.yandex.ru/1.x/?lang=en-US&ll=-73.7638,42.6564&z=13&l=map&size=300,300
     public render() {
         const {lat, long} = this.state;
         return (
             <div className="message-location">
                 <div className="location-content" onClick={this.showLocationHandler}>
                     <img
-                        src={`https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${long}&zoom=14&size=300x300&maptype=mapnik`}/>
+                        src={`https://static-maps.yandex.ru/1.x/?lang=en-US&ll=${long},${lat}&z=14&l=map&size=300,300`}/>
                     <PlaceRounded/>
                 </div>
             </div>
