@@ -1,3 +1,6 @@
+## 0.25.66
+* Code len updated to 5 digits
+
 ## 0.25.65
 * Static map updated to Yandex(TM)
 * Map viewer background color updated

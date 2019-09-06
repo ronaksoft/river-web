@@ -36,6 +36,8 @@ import './style.css';
 import FileManager from "../../services/sdk/fileManager";
 
 const C_CLIENT = `Web:- ${window.navigator.userAgent}`;
+const codeLen = 5;
+const codePlaceholder = [...new Array(codeLen)].map(o => '_').join('');
 
 interface IProps {
     match?: any;
@@ -229,7 +231,7 @@ class SignUp extends React.Component<IProps, IState> {
                                 {step === 'code' && countdown !== 0 && <div className="input-wrapper validate-input">
                                     <TextField
                                         label={i18n.t('sign_up.code')}
-                                        placeholder="____"
+                                        placeholder={codePlaceholder}
                                         margin="none"
                                         variant="outlined"
                                         className="code f-code text-input"
@@ -463,11 +465,11 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     private modifyCode(str: string, remove?: boolean): { code: string, len: number } {
-        const s = '____'.split('');
+        const s = codePlaceholder.split('');
         let nums = str.match(/\d+/g);
         const len = nums ? nums.join('').length : 0;
         if (nums) {
-            nums = nums.join('').split('').slice(0, 4);
+            nums = nums.join('').split('').slice(0, codeLen);
             nums.forEach((val, key) => {
                 if (remove && nums && nums.length > 0 && nums.length - 1 === key) {
                     s[key] = '_';
@@ -484,7 +486,7 @@ class SignUp extends React.Component<IProps, IState> {
         this.setState({
             code: data.code,
         }, () => {
-            if (data.len === 4) {
+            if (data.len === codeLen) {
                 this.confirmCode();
             }
         });
@@ -495,7 +497,7 @@ class SignUp extends React.Component<IProps, IState> {
             return;
         }
         const {phone, phoneHash, code, countdown} = this.state;
-        if ((!phone || !phoneHash || (code.length < 4 && countdown !== 0))) {
+        if ((!phone || !phoneHash || (code.length < codeLen && countdown !== 0))) {
             return;
         }
         this.setState({
@@ -607,7 +609,7 @@ class SignUp extends React.Component<IProps, IState> {
 
     private tryAnotherPhone = () => {
         this.setState({
-            code: '____',
+            code: codePlaceholder,
             phone: '+98',
             phoneHash: '',
             step: 'phone',
@@ -639,7 +641,7 @@ class SignUp extends React.Component<IProps, IState> {
 
     private register = () => {
         const {phone, phoneHash, code, fName, lName} = this.state;
-        if (!phone || !phoneHash || code.length < 4) {
+        if (!phone || !phoneHash || code.length < codeLen) {
             return;
         }
         this.setState({
