@@ -1,3 +1,11 @@
+## 0.25.67
+* Mention bug fixed
+* `MessagePreview` UI bug fixed
+* `MessageForward` UI bug fixed
+* Iframe service log removed
+* Now it ignores outdated counter update
+* ReactMentions updated
+
 ## 0.25.66
 * Code len updated to 5 digits
 

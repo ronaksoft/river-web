@@ -86,7 +86,7 @@
         border-top-left-radius: 0 !important;
         border-bottom-left-radius: 0 !important; }
 
-.message-media .message-preview .preview-container .preview-message-wrapper .preview-message {
+.media-message .message-preview .preview-container .preview-message-wrapper .preview-message {
   max-width: 256px; }
 
 .me .message-preview .preview-container .preview-message-wrapper.reply-you .preview-bar {

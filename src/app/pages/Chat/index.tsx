@@ -1354,6 +1354,7 @@ class Chat extends React.Component<IProps, IState> {
             delete this.updateReadInboxTimeout[peerId];
             this.messageRepo.getUnreadCount(peerId, td ? (td.readinboxmaxid || 0) : (data.maxid || 0), dialog ? (dialog.topmessageid || 0) : 0).then((count) => {
                 this.updateDialogsCounter(peerId, {
+                    maxInbox: data.maxid,
                     mentionCounter: count.mention,
                     unreadCounter: count.message,
                 });
@@ -2343,6 +2344,16 @@ class Chat extends React.Component<IProps, IState> {
                 }
             }
             let shouldUpdate = false;
+            if (unreadCounter !== undefined) {
+                shouldUpdate = true;
+                if (maxInbox) {
+                    if ((dialogs[index].readinboxmaxid || 0) <= maxInbox) {
+                        dialogs[index].unreadcount = unreadCounter;
+                    }
+                } else {
+                    dialogs[index].unreadcount = unreadCounter;
+                }
+            }
             if (maxInbox && maxInbox > (dialogs[index].readinboxmaxid || 0)) {
                 dialogs[index].readinboxmaxid = maxInbox;
             }
@@ -2360,10 +2371,6 @@ class Chat extends React.Component<IProps, IState> {
                 } else {
                     dialogs[index].unreadcount = 1;
                 }
-            }
-            if (unreadCounter !== undefined) {
-                shouldUpdate = true;
-                dialogs[index].unreadcount = unreadCounter;
             }
             if (mentionCounterIncrease === 1) {
                 shouldUpdate = true;

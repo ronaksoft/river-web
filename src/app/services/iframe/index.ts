@@ -75,7 +75,7 @@ export default class IframeService {
                         }
                     }
                 } catch (e) {
-                    window.console.warn(e);
+                    // window.console.warn(e);
                 }
             }
         });

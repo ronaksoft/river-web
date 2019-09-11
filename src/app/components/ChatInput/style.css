@@ -92,7 +92,7 @@
           position: static !important; }
           .write .inputs .input .textarea-container .mention .mention__control .mention__highlighter {
             position: absolute !important;
-            left: 21px;
+            left: 21px !important;
             top: 3px !important; }
             .write .inputs .input .textarea-container .mention .mention__control .mention__highlighter .mention-item {
               border-bottom: 1px solid var(--grey); }

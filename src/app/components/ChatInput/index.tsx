@@ -32,7 +32,8 @@ import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 import {
     GroupFlags,
     GroupParticipant,
-    InputPeer, MessageEntity,
+    InputPeer,
+    MessageEntity,
     MessageEntityType,
     PeerType,
     TypingAction
@@ -66,6 +67,23 @@ import i18n from '../../services/i18n';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
+
+// @[@yasaman](580637822969180) hi
+const mentionize = (text: string, sortedEntities: Array<{ offset: number, length: number, val: string }>) => {
+    sortedEntities.sort((i1, i2) => {
+        if (i1.offset === undefined || i2.offset === undefined) {
+            return 0;
+        }
+        return i1.offset - i2.offset;
+    });
+    const fn = (t1: string, t2: string, s: number, e: number) => {
+        return t1.substr(0, s) + t2 + t1.substr(s + e, t1.length);
+    };
+    sortedEntities.forEach((en) => {
+        text = fn(text, `@[${text.substr(en.offset, en.length)}](${en.val})`, en.offset, en.length);
+    });
+    return text;
+};
 
 interface IProps {
     onAction: (cmd: string, message?: IMessage) => void;
@@ -242,9 +260,18 @@ class ChatInput extends React.Component<IProps, IState> {
             });
         }
         if (newProps.previewMessageMode === C_MSG_MODE.Edit && newProps.previewMessage) {
-            // this.textarea.value = newProps.previewMessage.body;
+            let text = newProps.previewMessage.body || '';
+            if (newProps.previewMessage.entitiesList && newProps.previewMessage.entitiesList.some(o => o.type === MessageEntityType.MESSAGEENTITYTYPEMENTION)) {
+                text = mentionize(text, newProps.previewMessage.entitiesList.filter(o => o.type === MessageEntityType.MESSAGEENTITYTYPEMENTION).map(o => {
+                    return {
+                        length: o.length || 0,
+                        offset: o.offset || 0,
+                        val: o.userid || '',
+                    };
+                }));
+            }
             this.setState({
-                textareaValue: newProps.previewMessage.body || '',
+                textareaValue: text,
             }, () => {
                 if (this.textarea) {
                     this.detectRTL(this.textarea.value);
