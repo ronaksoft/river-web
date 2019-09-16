@@ -1,3 +1,6 @@
+## 0.25.71
+* Worker version updated
+
 ## 0.25.70
 * Golang updated to 1.13
 * wasm_exec.js updated

@@ -45,7 +45,7 @@ export default class Http {
         const fileUrl = localStorage.getItem('river.workspace_url_file') || '';
 
         this.reqId = 0;
-        this.worker = new Worker('/bin/worker.js?v16');
+        this.worker = new Worker('/bin/worker.js?v17');
         this.workerId = id;
 
         if (fileUrl && fileUrl.length > 0 && (ElectronService.isElectron() || window.location.host.indexOf('localhost') === 0)) {
