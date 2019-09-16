@@ -1,3 +1,6 @@
+## 0.25.69
+* `GetDialogById` double check added
+
 ## 0.25.68
 * Draft updated
 * Server draft implemented

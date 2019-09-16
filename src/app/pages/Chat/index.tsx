@@ -2252,7 +2252,18 @@ class Chat extends React.Component<IProps, IState> {
 
     private getDialogById(id: string): IDialog | null {
         if (this.dialogMap.hasOwnProperty(id)) {
-            return this.dialogs[this.dialogMap[id]] || null;
+            const dialog = this.dialogs[this.dialogMap[id]];
+            if (dialog && dialog.peerid === id) {
+                return dialog;
+            } else {
+                // double check
+                const index = findIndex(this.dialogs, {peerid: id});
+                if (index > -1) {
+                    return this.dialogs[index];
+                } else {
+                    return null;
+                }
+            }
         }
         return null;
     }
