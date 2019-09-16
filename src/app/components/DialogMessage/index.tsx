@@ -34,7 +34,7 @@ interface IProps {
     cancelIsTyping?: (id: string) => void;
     dialog: IDialog;
     isTyping: { [key: string]: { fn: any, action: TypingAction } };
-    onContextMenuOpen: (e: any) => void;
+    onContextMenuOpen?: (e: any) => void;
 }
 
 interface IState {
@@ -102,7 +102,7 @@ class DialogMessage extends React.Component<IProps, IState> {
                     {dialog.preview_me && dialog.peerid !== this.userId && <span className="status">
                         {this.getStatus(dialog.topmessageid || 0, dialog.readoutboxmaxid || 0)}
                     </span>}
-                    <LiveDate className="time" time={dialog.last_update || 0}/>
+                    {dialog.last_update && <LiveDate className="time" time={dialog.last_update || 0}/>}
                 </div>
                 {Boolean(ids.length === 0) && <span className={'preview ' + (dialog.preview_rtl ? 'rtl' : 'ltr')}>
                     {this.renderPreviewMessage(dialog)}
@@ -115,9 +115,9 @@ class DialogMessage extends React.Component<IProps, IState> {
                 this.getPinIcon()}
                 {Boolean(dialog.mentionedcount && dialog.mentionedcount > 0) &&
                 <span className="mention"><AlternateEmailRounded/></span>}
-                <div className="more" onClick={this.props.onContextMenuOpen}>
+                {Boolean(dialog.only_contact !== true) && <div className="more" onClick={this.props.onContextMenuOpen}>
                     <MoreVert/>
-                </div>
+                </div>}
             </div>
         );
     }

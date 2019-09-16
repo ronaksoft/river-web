@@ -255,6 +255,10 @@ export default class DialogRepo {
         if (newDialog.force !== true && newDialog.topmessageid !== undefined && newDialog.topmessageid < (dialog.topmessageid || 0)) {
             newDialog.topmessageid = dialog.topmessageid;
         }
+        if (newDialog.draft && !newDialog.draft.peerid) {
+            dialog.draft = {};
+            newDialog.draft = {};
+        }
         const d = kMerge(dialog, newDialog);
         if (newDialog.force === true) {
             delete d.force;

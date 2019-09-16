@@ -38,7 +38,8 @@
     "yes": "Yes",
     "are_you_sure": "Are you sure?",
     "loading": "Loading...",
-    "user_list": "User List"
+    "user_list": "User List",
+    "no_message": "no message"
   },
   "chat": {
     "search": "Search",

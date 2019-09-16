@@ -10,7 +10,7 @@
 import * as React from 'react';
 import {List, AutoSizer} from 'react-virtualized';
 import {Link} from 'react-router-dom';
-import {debounce, intersectionBy, clone} from 'lodash';
+import {debounce, intersectionBy, clone, differenceBy} from 'lodash';
 import {IDialog} from '../../repository/dialog/interface';
 import DialogMessage from '../DialogMessage';
 import {CloseRounded, MessageRounded} from '@material-ui/icons';
@@ -27,6 +27,7 @@ import FormControl from '@material-ui/core/FormControl/FormControl';
 import IsMobile from '../../services/isMobile';
 import Divider from '@material-ui/core/Divider/Divider';
 import i18n from '../../services/i18n';
+import {IUser} from "../../repository/user/interface";
 
 import './style.css';
 
@@ -43,6 +44,7 @@ interface IState {
     moreAnchorEl: any;
     moreIndex: number;
     searchEnable: boolean;
+    searchAddedItems: IDialog[];
     searchItems: IDialog[];
     selectedId: string;
 }
@@ -72,6 +74,7 @@ class Dialog extends React.Component<IProps, IState> {
             items: [],
             moreAnchorEl: null,
             moreIndex: -1,
+            searchAddedItems: [],
             searchEnable: false,
             searchItems: [],
             selectedId: props.selectedId,
@@ -233,7 +236,7 @@ class Dialog extends React.Component<IProps, IState> {
     }
 
     private getWrapper() {
-        const {searchItems} = this.state;
+        const {searchItems, searchAddedItems} = this.state;
         if (this.isMobile) {
             return (
                 <AutoSizer>
@@ -242,7 +245,7 @@ class Dialog extends React.Component<IProps, IState> {
                             ref={this.refHandler}
                             rowHeight={64}
                             rowRenderer={this.rowRender}
-                            rowCount={searchItems.length}
+                            rowCount={searchItems.length + searchAddedItems.length}
                             overscanRowCount={30}
                             width={width}
                             height={height}
@@ -272,7 +275,7 @@ class Dialog extends React.Component<IProps, IState> {
                                     ref={this.refHandler}
                                     rowHeight={64}
                                     rowRenderer={this.rowRender}
-                                    rowCount={searchItems.length}
+                                    rowCount={searchItems.length + searchAddedItems.length}
                                     overscanRowCount={30}
                                     width={width}
                                     height={height}
@@ -301,19 +304,36 @@ class Dialog extends React.Component<IProps, IState> {
     }
 
     private rowRender = ({index, key, parent, style}: any): any => {
-        const dialog = this.state.searchItems[index];
-        const isTyping = this.state.isTypingList.hasOwnProperty(dialog.peerid || '') ? this.state.isTypingList[dialog.peerid || ''] : {};
-        return (
-            <div style={style} key={dialog.peerid || key}>
-                <Link to={`/chat/${dialog.peerid}`}>
-                    <div
-                        className={'dialog' + (dialog.peerid === this.state.selectedId ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}>
-                        <DialogMessage dialog={dialog} isTyping={isTyping}
-                                       onContextMenuOpen={this.contextMenuOpenHandler.bind(this, index)}/>
+        if (this.state.searchItems.length > index) {
+            const dialog = this.state.searchItems[index];
+            const isTyping = this.state.isTypingList.hasOwnProperty(dialog.peerid || '') ? this.state.isTypingList[dialog.peerid || ''] : {};
+            return (
+                <div style={style} key={dialog.peerid || key}>
+                    <Link to={`/chat/${dialog.peerid}`}>
+                        <div
+                            className={'dialog' + (dialog.peerid === this.state.selectedId ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}>
+                            <DialogMessage dialog={dialog} isTyping={isTyping}
+                                           onContextMenuOpen={this.contextMenuOpenHandler.bind(this, index)}/>
+                        </div>
+                    </Link>
+                </div>
+            );
+        } else {
+            const dialog = this.state.searchAddedItems[(this.state.searchItems.length - index) + 1];
+            if (dialog) {
+                return (
+                    <div style={style} key={dialog.peerid || key} onClick={this.closeSearchHandler}>
+                        <Link to={`/chat/${dialog.peerid}`}>
+                            <div className="dialog">
+                                <DialogMessage dialog={dialog} isTyping={{}}/>
+                            </div>
+                        </Link>
                     </div>
-                </Link>
-            </div>
-        );
+                );
+            } else {
+                return '';
+            }
+        }
     }
 
     private noRowsRenderer = () => {
@@ -442,32 +462,43 @@ class Dialog extends React.Component<IProps, IState> {
 
     private search = (keyword: string) => {
         this.keyword = keyword;
-        this.searchRepo.searchIds({keyword, limit: 100}).then((ids) => {
+        this.searchRepo.search({keyword, limit: 100}).then((res) => {
             this.setState({
-                ids,
+                ids: res.dialogs.map(o => (o.peerid || '')),
             }, () => {
-                this.filterItem();
+                this.filterItem(res.contacts);
             });
         });
     }
 
-    private filterItem(currentItems?: IDialog[]) {
+    private filterItem(users?: IUser[]) {
         const {ids, items} = this.state;
-        if (!currentItems) {
-            currentItems = items;
-        }
         let searchItems: IDialog[] = [];
+        let searchAddedItems: IDialog[] = [];
         if (ids.length === 0 && this.keyword.length === 0 || !this.state.searchEnable) {
-            searchItems = clone(currentItems);
+            searchItems = clone(items);
         } else {
             const peerIds = ids.map((id) => {
                 return {
                     peerid: id,
                 };
             });
-            searchItems = intersectionBy(currentItems, peerIds, 'peerid');
+            searchItems = intersectionBy(items, peerIds, 'peerid');
+            const noMessageText = i18n.t('general.no_message');
+            searchAddedItems = (users ? users.map((u) => {
+                return {
+                    accesshash: u.accesshash,
+                    only_contact: true,
+                    peerid: u.id,
+                    peertype: PeerType.PEERUSER,
+                    preview: noMessageText,
+                    preview_me: false,
+                };
+            }) : []);
+            searchAddedItems = differenceBy(searchAddedItems, searchItems, 'peerid');
         }
         this.setState({
+            searchAddedItems,
             searchItems,
         }, () => {
             this.list.recomputeRowHeights();

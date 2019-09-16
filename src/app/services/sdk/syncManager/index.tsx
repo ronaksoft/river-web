@@ -10,8 +10,18 @@
 import {C_MSG} from '../const';
 import {UpdateEnvelope} from '../messages/chat.core.types_pb';
 import {
-    UpdateDialogPinned, UpdateDifference, UpdateMessageEdited, UpdateMessageID, UpdateMessagesDeleted, UpdateNewMessage,
-    UpdateNotifySettings, UpdateReadHistoryInbox, UpdateReadHistoryOutbox, UpdateReadMessagesContents, UpdateUsername,
+    UpdateDialogPinned,
+    UpdateDifference,
+    UpdateDraftMessage, UpdateDraftMessageCleared,
+    UpdateMessageEdited,
+    UpdateMessageID,
+    UpdateMessagesDeleted,
+    UpdateNewMessage,
+    UpdateNotifySettings,
+    UpdateReadHistoryInbox,
+    UpdateReadHistoryOutbox,
+    UpdateReadMessagesContents,
+    UpdateUsername,
     UpdateUserPhoto,
 } from '../messages/chat.api.updates_pb';
 import {IUser} from '../../../repository/user/interface';
@@ -236,6 +246,20 @@ export default class SyncManager {
                     dialogs = this.updateDialog(dialogs, {
                         peerid: updateDialogPinned.peer.id,
                         pinned: updateDialogPinned.pinned,
+                    });
+                    break;
+                case C_MSG.UpdateDraftMessage:
+                    const updateDraftMessage = UpdateDraftMessage.deserializeBinary(data).toObject();
+                    dialogs = this.updateDialog(dialogs, {
+                        draft: updateDraftMessage.message,
+                        peerid: updateDraftMessage.message.peerid,
+                    });
+                    break;
+                case C_MSG.UpdateDraftMessageCleared:
+                    const updateDraftMessageCleared = UpdateDraftMessageCleared.deserializeBinary(data).toObject();
+                    dialogs = this.updateDialog(dialogs, {
+                        draft: {},
+                        peerid: updateDraftMessageCleared.peer.id,
                     });
                     break;
                 default:

@@ -44,7 +44,7 @@ import {
     User
 } from './messages/chat.core.types_pb';
 import {
-    InputMediaType,
+    InputMediaType, MessagesClearDraft,
     MessagesClearHistory,
     MessagesDelete,
     MessagesDialogs,
@@ -54,7 +54,7 @@ import {
     MessagesGetHistory, MessagesGetPinnedDialogs,
     MessagesMany,
     MessagesReadContents,
-    MessagesReadHistory,
+    MessagesReadHistory, MessagesSaveDraft,
     MessagesSend,
     MessagesSendMedia,
     MessagesSent,
@@ -552,6 +552,32 @@ export default class SDK {
         data.setPhonenumberList(phoneNumberList || []);
         data.setProfilephotoList(profilePhotoList || []);
         return this.server.send(C_MSG.AccountSetPrivacy, data.serializeBinary(), false);
+    }
+
+    public saveDraft(peer: InputPeer, body: string, replyTo?: number, entities?: MessageEntity.AsObject[]): Promise<Bool.AsObject> {
+        const data = new MessagesSaveDraft();
+        data.setPeer(peer);
+        data.setBody(body);
+        data.setReplyto(replyTo || 0);
+        const messageEntities: MessageEntity[] = [];
+        if (entities) {
+            entities.forEach((o) => {
+                const entity = new MessageEntity();
+                entity.setLength(o.length || 0);
+                entity.setOffset(o.offset || 0);
+                entity.setType(o.type || 0);
+                entity.setUserid(o.userid || '');
+                messageEntities.push(entity);
+            });
+        }
+        data.setEntitiesList(messageEntities);
+        return this.server.send(C_MSG.MessagesSaveDraft, data.serializeBinary(), true);
+    }
+
+    public clearDraft(peer: InputPeer): Promise<Bool.AsObject> {
+        const data = new MessagesClearDraft();
+        data.setPeer(peer);
+        return this.server.send(C_MSG.MessagesClearDraft, data.serializeBinary(), true);
     }
 
     public getServerSalts(): Promise<SystemSalts.AsObject> {

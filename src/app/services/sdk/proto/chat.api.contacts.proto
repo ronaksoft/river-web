@@ -27,12 +27,14 @@ message ContactsDelete {
 
 // ContactsImported
 message ContactsImported {
-    repeated ContactUser Users = 1;
+    repeated ContactUser ContactUsers = 1;
+    repeated User Users = 2;
 }
 
 // ContactsMany
 message ContactsMany {
     repeated PhoneContact Contacts = 1;
-    repeated ContactUser Users = 2;
+    repeated ContactUser ContactUsers = 2;
     required bool Modified = 3;
+    repeated User Users = 4;
 }

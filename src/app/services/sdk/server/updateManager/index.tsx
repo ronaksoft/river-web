@@ -10,9 +10,20 @@
 import {C_MSG} from '../../const';
 import {UpdateContainer, UpdateEnvelope} from '../../messages/chat.core.types_pb';
 import {
-    UpdateDialogPinned, UpdateGroupPhoto, UpdateMessageEdited, UpdateMessageID, UpdateMessagesDeleted,
-    UpdateNewMessage, UpdateNotifySettings, UpdateReadHistoryInbox, UpdateReadHistoryOutbox, UpdateReadMessagesContents,
-    UpdateUsername, UpdateUserPhoto, UpdateUserTyping,
+    UpdateDialogPinned,
+    UpdateDraftMessage, UpdateDraftMessageCleared,
+    UpdateGroupPhoto,
+    UpdateMessageEdited,
+    UpdateMessageID,
+    UpdateMessagesDeleted,
+    UpdateNewMessage,
+    UpdateNotifySettings,
+    UpdateReadHistoryInbox,
+    UpdateReadHistoryOutbox,
+    UpdateReadMessagesContents,
+    UpdateUsername,
+    UpdateUserPhoto,
+    UpdateUserTyping,
 } from '../../messages/chat.api.updates_pb';
 import {throttle, findIndex} from 'lodash';
 import {User} from '../../messages/chat.core.types_pb';
@@ -230,9 +241,7 @@ export default class UpdateManager {
         let flushUpdateId = false;
         // @ts-ignore
         const data: Uint8Array = update.update;
-        if (this.checkIncrementalUpdateId(update.updateid || 0)) {
-            return;
-        }
+        this.checkIncrementalUpdateId(update.updateid || 0);
         switch (update.constructor) {
             case C_MSG.UpdateNewMessage:
                 const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
@@ -251,7 +260,6 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateUserTyping:
                 this.callHandlers(C_MSG.UpdateUserTyping, UpdateUserTyping.deserializeBinary(data).toObject());
-
                 break;
             case C_MSG.UpdateMessageEdited:
                 const updateMessageEdited = UpdateMessageEdited.deserializeBinary(data).toObject();
@@ -315,6 +323,12 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateDialogPinned:
                 this.callHandlers(C_MSG.UpdateDialogPinned, UpdateDialogPinned.deserializeBinary(data).toObject());
+                break;
+            case C_MSG.UpdateDraftMessage:
+                this.callHandlers(C_MSG.UpdateDraftMessage, UpdateDraftMessage.deserializeBinary(data).toObject());
+                break;
+            case C_MSG.UpdateDraftMessageCleared:
+                this.callHandlers(C_MSG.UpdateDraftMessageCleared, UpdateDraftMessageCleared.deserializeBinary(data).toObject());
                 break;
             default:
                 break;

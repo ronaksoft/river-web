@@ -77,10 +77,15 @@ export namespace ContactsDelete {
 }
 
 export class ContactsImported extends jspb.Message {
+  clearContactusersList(): void;
+  getContactusersList(): Array<chat_core_types_pb.ContactUser>;
+  setContactusersList(value: Array<chat_core_types_pb.ContactUser>): void;
+  addContactusers(value?: chat_core_types_pb.ContactUser, index?: number): chat_core_types_pb.ContactUser;
+
   clearUsersList(): void;
-  getUsersList(): Array<chat_core_types_pb.ContactUser>;
-  setUsersList(value: Array<chat_core_types_pb.ContactUser>): void;
-  addUsers(value?: chat_core_types_pb.ContactUser, index?: number): chat_core_types_pb.ContactUser;
+  getUsersList(): Array<chat_core_types_pb.User>;
+  setUsersList(value: Array<chat_core_types_pb.User>): void;
+  addUsers(value?: chat_core_types_pb.User, index?: number): chat_core_types_pb.User;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ContactsImported.AsObject;
@@ -94,7 +99,8 @@ export class ContactsImported extends jspb.Message {
 
 export namespace ContactsImported {
   export type AsObject = {
-    usersList: Array<chat_core_types_pb.ContactUser.AsObject>,
+    contactusersList: Array<chat_core_types_pb.ContactUser.AsObject>,
+    usersList: Array<chat_core_types_pb.User.AsObject>,
   }
 }
 
@@ -104,15 +110,20 @@ export class ContactsMany extends jspb.Message {
   setContactsList(value: Array<chat_core_types_pb.PhoneContact>): void;
   addContacts(value?: chat_core_types_pb.PhoneContact, index?: number): chat_core_types_pb.PhoneContact;
 
-  clearUsersList(): void;
-  getUsersList(): Array<chat_core_types_pb.ContactUser>;
-  setUsersList(value: Array<chat_core_types_pb.ContactUser>): void;
-  addUsers(value?: chat_core_types_pb.ContactUser, index?: number): chat_core_types_pb.ContactUser;
+  clearContactusersList(): void;
+  getContactusersList(): Array<chat_core_types_pb.ContactUser>;
+  setContactusersList(value: Array<chat_core_types_pb.ContactUser>): void;
+  addContactusers(value?: chat_core_types_pb.ContactUser, index?: number): chat_core_types_pb.ContactUser;
 
   hasModified(): boolean;
   clearModified(): void;
   getModified(): boolean | undefined;
   setModified(value: boolean): void;
+
+  clearUsersList(): void;
+  getUsersList(): Array<chat_core_types_pb.User>;
+  setUsersList(value: Array<chat_core_types_pb.User>): void;
+  addUsers(value?: chat_core_types_pb.User, index?: number): chat_core_types_pb.User;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ContactsMany.AsObject;
@@ -127,8 +138,9 @@ export class ContactsMany extends jspb.Message {
 export namespace ContactsMany {
   export type AsObject = {
     contactsList: Array<chat_core_types_pb.PhoneContact.AsObject>,
-    usersList: Array<chat_core_types_pb.ContactUser.AsObject>,
+    contactusersList: Array<chat_core_types_pb.ContactUser.AsObject>,
     modified?: boolean,
+    usersList: Array<chat_core_types_pb.User.AsObject>,
   }
 }
 

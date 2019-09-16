@@ -430,6 +430,28 @@ export namespace AccountResetAuthorization {
   }
 }
 
+export class AccountUpdateStatus extends jspb.Message {
+  hasOnline(): boolean;
+  clearOnline(): void;
+  getOnline(): boolean | undefined;
+  setOnline(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountUpdateStatus.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountUpdateStatus): AccountUpdateStatus.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountUpdateStatus, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountUpdateStatus;
+  static deserializeBinaryFromReader(message: AccountUpdateStatus, reader: jspb.BinaryReader): AccountUpdateStatus;
+}
+
+export namespace AccountUpdateStatus {
+  export type AsObject = {
+    online?: boolean,
+  }
+}
+
 export class AccountAuthorizations extends jspb.Message {
   clearAuthorizationsList(): void;
   getAuthorizationsList(): Array<AccountAuthorization>;
@@ -547,8 +569,8 @@ export namespace AccountPrivacyRules {
 export class AccountSetLang extends jspb.Message {
   hasLangcode(): boolean;
   clearLangcode(): void;
-  getLangcode(): LangCode | undefined;
-  setLangcode(value: LangCode): void;
+  getLangcode(): string | undefined;
+  setLangcode(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountSetLang.AsObject;
@@ -562,13 +584,7 @@ export class AccountSetLang extends jspb.Message {
 
 export namespace AccountSetLang {
   export type AsObject = {
-    langcode?: LangCode,
+    langcode?: string,
   }
-}
-
-export enum LangCode {
-  LANGCODEUNKNOWN = 0,
-  LANGCODEEN = 1,
-  LANGCODEFA = 2,
 }
 

@@ -98,6 +98,11 @@ export class File extends jspb.Message {
   getBytes_asB64(): string;
   setBytes(value: Uint8Array | string): void;
 
+  hasMd5hash(): boolean;
+  clearMd5hash(): void;
+  getMd5hash(): string | undefined;
+  setMd5hash(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): File.AsObject;
   static toObject(includeInstance: boolean, msg: File): File.AsObject;
@@ -113,6 +118,7 @@ export namespace File {
     type?: FileType,
     modifiedtime?: number,
     bytes: Uint8Array | string,
+    md5hash?: string,
   }
 }
 

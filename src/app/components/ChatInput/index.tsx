@@ -30,6 +30,7 @@ import UserName from '../UserName';
 import {C_MSG_MODE} from './consts';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 import {
+    DraftMessage,
     GroupFlags,
     GroupParticipant,
     InputPeer,
@@ -46,7 +47,6 @@ import SDK from '../../services/sdk';
 import {IUser} from '../../repository/user/interface';
 import {IGroup} from '../../repository/group/interface';
 import DialogRepo from '../../repository/dialog';
-import {IDraft} from '../../repository/dialog/interface';
 // @ts-ignore
 import Recorder from 'opus-recorder/dist/recorder.min';
 import VoicePlayer from '../VoicePlayer';
@@ -67,6 +67,8 @@ import i18n from '../../services/i18n';
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
+import {IDialog} from "../../repository/dialog/interface";
+import MessageRepo from "../../repository/message";
 
 // @[@yasaman](580637822969180) hi
 const mentionize = (text: string, sortedEntities: Array<{ offset: number, length: number, val: string }>) => {
@@ -103,6 +105,7 @@ interface IProps {
     selectableDisable: boolean;
     text?: string;
     userId?: string;
+    getDialog: (id: string) => IDialog | null;
 }
 
 interface IState {
@@ -155,6 +158,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private groupRepo: GroupRepo;
     private userRepo: UserRepo;
     private dialogRepo: DialogRepo;
+    private messageRepo: MessageRepo;
     private lastLines: number = 1;
     private sdk: SDK;
     private mentions: IMentions[] = [];
@@ -222,6 +226,7 @@ class ChatInput extends React.Component<IProps, IState> {
         this.groupRepo = GroupRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.dialogRepo = DialogRepo.getInstance();
+        this.messageRepo = MessageRepo.getInstance();
         this.sdk = SDK.getInstance();
         this.riverTime = RiverTime.getInstance();
 
@@ -260,16 +265,7 @@ class ChatInput extends React.Component<IProps, IState> {
             });
         }
         if (newProps.previewMessageMode === C_MSG_MODE.Edit && newProps.previewMessage) {
-            let text = newProps.previewMessage.body || '';
-            if (newProps.previewMessage.entitiesList && newProps.previewMessage.entitiesList.some(o => o.type === MessageEntityType.MESSAGEENTITYTYPEMENTION)) {
-                text = mentionize(text, newProps.previewMessage.entitiesList.filter(o => o.type === MessageEntityType.MESSAGEENTITYTYPEMENTION).map(o => {
-                    return {
-                        length: o.length || 0,
-                        offset: o.offset || 0,
-                        val: o.userid || '',
-                    };
-                }));
-            }
+            const text = this.modifyBody(newProps.previewMessage.body || '', newProps.previewMessage.entitiesList);
             this.setState({
                 textareaValue: text,
             }, () => {
@@ -515,6 +511,23 @@ class ChatInput extends React.Component<IProps, IState> {
         }
     }
 
+    // add mention entities
+    private modifyBody(text: string, entities?: MessageEntity.AsObject[]) {
+        if (!entities) {
+            return text;
+        }
+        if (entities.some(o => o.type === MessageEntityType.MESSAGEENTITYTYPEMENTION)) {
+            text = mentionize(text, entities.filter(o => o.type === MessageEntityType.MESSAGEENTITYTYPEMENTION).map(o => {
+                return {
+                    length: o.length || 0,
+                    offset: o.offset || 0,
+                    val: o.userid || '',
+                };
+            }));
+        }
+        return text;
+    }
+
     private getVoiceIcon() {
         switch (this.state.voiceMode) {
             case 'lock':
@@ -719,7 +732,21 @@ class ChatInput extends React.Component<IProps, IState> {
             }
         }, 102);
         if (removeDraft && this.state.peer) {
-            return this.dialogRepo.removeDraft(this.state.peer.getId() || '');
+            const dialog = this.props.getDialog(this.state.peer.getId() || '');
+            if (dialog && dialog.draft && dialog.draft.peerid) {
+                return this.sdk.clearDraft(this.state.peer).then(() => {
+                    if (this.state.peer) {
+                        return this.dialogRepo.upsert([{
+                            draft: {},
+                            peerid: this.state.peer.getId() || '',
+                        }]);
+                    } else {
+                        return Promise.resolve();
+                    }
+                });
+            } else {
+                return Promise.resolve();
+            }
         } else {
             return Promise.resolve();
         }
@@ -959,39 +986,58 @@ class ChatInput extends React.Component<IProps, IState> {
 
         if (oldPeer) {
             const oldPeerObj = oldPeer.toObject();
-            const draft: IDraft = {
-                message: !message ? undefined : message,
-                mode,
+            const draftMessage: DraftMessage.AsObject = {
+                body: this.state.textareaValue,
+                date: this.riverTime.now(),
+                entitiesList: message ? message.entitiesList : undefined,
                 peerid: oldPeerObj.id || '',
-                text: this.state.textareaValue,
+                peertype: message ? message.peertype : undefined,
+                replyto: message ? message.id : undefined,
             };
-            if (draft.text.length > 0 || (mode && mode !== C_MSG_MODE.Normal)) {
-                this.dialogRepo.saveDraft(draft);
+            if ((draftMessage.body || '').length > 0 || (mode && mode !== C_MSG_MODE.Normal)) {
+                this.sdk.saveDraft(oldPeer, draftMessage.body || '', draftMessage.replyto, draftMessage.entitiesList).then(() => {
+                    this.dialogRepo.lazyUpsert([{
+                        draft: draftMessage,
+                        peerid: oldPeerObj.id || '',
+                    }]);
+                });
             } else {
-                this.dialogRepo.removeDraft(oldPeerObj.id || '');
+                const oldDialog = cloneDeep(this.props.getDialog(oldPeerObj.id || ''));
+                if (oldDialog && oldDialog.draft && oldDialog.draft.peerid) {
+                    this.sdk.clearDraft(oldPeer).then(() => {
+                        this.dialogRepo.lazyUpsert([{
+                            draft: {},
+                            peerid: oldPeerObj.id || '',
+                        }]);
+                    });
+                }
             }
         }
-
         const newPeerObj = newPeer.toObject();
-        this.dialogRepo.getDraft(newPeerObj.id || '').then((res) => {
-            if (res) {
-                if (res.message && res.mode !== C_MSG_MODE.Normal) {
-                    this.changePreviewMessage(res.text, res.mode, res.message, () => {
+        const dialog = cloneDeep(this.props.getDialog(newPeerObj.id || ''));
+        if (!dialog || !dialog.draft || !dialog.draft.peerid) {
+            window.console.log('changePreviewMessage');
+            this.changePreviewMessage('', C_MSG_MODE.Normal, null);
+            return;
+        }
+        if (dialog.draft.replyto) {
+            this.messageRepo.get(dialog.draft.replyto, this.state.peer).then((msg) => {
+                if (msg && dialog && dialog.draft) {
+                    this.changePreviewMessage(dialog.draft.body || '', C_MSG_MODE.Reply, msg, () => {
                         this.animatePreviewMessage();
                     });
-                } else {
-                    this.changePreviewMessage(res.text, C_MSG_MODE.Normal, null);
+                } else if (dialog.draft) {
+                    this.changePreviewMessage(dialog.draft.body || '', C_MSG_MODE.Normal, null);
                 }
-            } else {
-                this.changePreviewMessage('', C_MSG_MODE.Normal, null);
-            }
-        }).catch(() => {
-            this.changePreviewMessage('', C_MSG_MODE.Normal, null);
-        });
+            });
+        } else {
+            this.changePreviewMessage(dialog.draft.body || '', C_MSG_MODE.Normal, null);
+        }
     }
 
     /* Modify textarea and preview message */
     private changePreviewMessage(text: string, mode: number | undefined, msg: IMessage | null, callback?: any) {
+        text = this.modifyBody(text, msg ? msg.entitiesList : []);
         this.setState({
             previewMessage: msg,
             previewMessageMode: mode || C_MSG_MODE.Normal,
@@ -1005,6 +1051,9 @@ class ChatInput extends React.Component<IProps, IState> {
             }
             this.computeLines();
         });
+        if (mode === C_MSG_MODE.Normal || !msg) {
+            this.clearPreviewMessage();
+        }
     }
 
     /* Inputs ref handler */

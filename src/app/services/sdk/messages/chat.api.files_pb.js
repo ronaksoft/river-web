@@ -609,7 +609,8 @@ proto.msg.File.toObject = function(includeInstance, msg) {
   var f, obj = {
     type: jspb.Message.getField(msg, 1),
     modifiedtime: jspb.Message.getField(msg, 2),
-    bytes: msg.getBytes_asB64()
+    bytes: msg.getBytes_asB64(),
+    md5hash: jspb.Message.getField(msg, 5)
   };
 
   if (includeInstance) {
@@ -658,6 +659,10 @@ proto.msg.File.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setBytes(value);
       break;
+    case 5:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setMd5hash(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -705,6 +710,13 @@ proto.msg.File.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeBytes(
       4,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 5));
+  if (f != null) {
+    writer.writeString(
+      5,
       f
     );
   }
@@ -819,6 +831,35 @@ proto.msg.File.prototype.clearBytes = function() {
  */
 proto.msg.File.prototype.hasBytes = function() {
   return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * optional string MD5Hash = 5;
+ * @return {string}
+ */
+proto.msg.File.prototype.getMd5hash = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.File.prototype.setMd5hash = function(value) {
+  jspb.Message.setField(this, 5, value);
+};
+
+
+proto.msg.File.prototype.clearMd5hash = function() {
+  jspb.Message.setField(this, 5, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.File.prototype.hasMd5hash = function() {
+  return jspb.Message.getField(this, 5) != null;
 };
 
 

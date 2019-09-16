@@ -1,3 +1,13 @@
+## 0.25.68
+* Draft updated
+* Server draft implemented
+* Dialog Repo updated
+* Proto messages updated
+* Translations updated
+* Dialog search now shows contacts as well
+* UpdateManger updated
+* SyncManger updated
+
 ## 0.25.67
 * Mention bug fixed
 * `MessagePreview` UI bug fixed

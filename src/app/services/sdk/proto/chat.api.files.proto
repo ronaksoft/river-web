@@ -26,6 +26,7 @@ message File {
     required FileType Type = 1;
     required int64 ModifiedTime = 2;
     required bytes Bytes = 4;
+    optional string MD5Hash = 5;
 }
 
 // FileType

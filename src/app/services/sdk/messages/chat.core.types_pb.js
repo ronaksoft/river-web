@@ -1403,7 +1403,7 @@ proto.msg.ProtoMessage.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required int64 AuthID = 1;
+ * optional int64 AuthID = 1;
  * @return {number}
  */
 proto.msg.ProtoMessage.prototype.getAuthid = function() {
@@ -1432,7 +1432,7 @@ proto.msg.ProtoMessage.prototype.hasAuthid = function() {
 
 
 /**
- * required bytes MessageKey = 2;
+ * optional bytes MessageKey = 2;
  * @return {!(string|Uint8Array)}
  */
 proto.msg.ProtoMessage.prototype.getMessagekey = function() {
@@ -1441,7 +1441,7 @@ proto.msg.ProtoMessage.prototype.getMessagekey = function() {
 
 
 /**
- * required bytes MessageKey = 2;
+ * optional bytes MessageKey = 2;
  * This is a type-conversion wrapper around `getMessagekey()`
  * @return {string}
  */
@@ -1452,7 +1452,7 @@ proto.msg.ProtoMessage.prototype.getMessagekey_asB64 = function() {
 
 
 /**
- * required bytes MessageKey = 2;
+ * optional bytes MessageKey = 2;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getMessagekey()`
@@ -10131,7 +10131,8 @@ proto.msg.ParticipantType = {
  */
 proto.msg.PushTokenProvider = {
   PUSHTOKENFIREBASE: 0,
-  PUSHTOKENAPN: 1
+  PUSHTOKENAPN: 1,
+  PUSHTOKENPUSHKIT: 2
 };
 
 /**

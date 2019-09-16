@@ -23,6 +23,7 @@ interface IDialog extends Dialog.AsObject {
     saved_messages?: boolean;
     scroll_pos?: number;
     sender_id?: string;
+    only_contact?: boolean;
 }
 
 interface IDialogWithUpdateId {

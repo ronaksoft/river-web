@@ -63,7 +63,7 @@ import {IDialog} from '../../repository/dialog/interface';
 import UpdateManager, {INewMessageBulkUpdate} from '../../services/sdk/server/updateManager';
 import {C_MSG} from '../../services/sdk/const';
 import {
-    UpdateDialogPinned,
+    UpdateDialogPinned, UpdateDraftMessage, UpdateDraftMessageCleared,
     UpdateGroupPhoto,
     UpdateMessageEdited,
     UpdateMessageID,
@@ -407,6 +407,12 @@ class Chat extends React.Component<IProps, IState> {
         // Update: dialog pinned
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateDialogPinned, this.updateDialogPinnedHandler));
 
+        // Update: dialog draft message
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateDraftMessage, this.updateDraftMessageHandler));
+
+        // Update: dialog draft message cleared
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateDraftMessageCleared, this.updateDraftMessageClearedHandler));
+
         // Sync: MessageId
         this.eventReferences.push(this.syncManager.listen(C_SYNC_UPDATE.MessageId, this.updateMessageIDHandler));
 
@@ -713,6 +719,7 @@ class Chat extends React.Component<IProps, IState> {
                                        onContactSelected={this.chatInputContactSelectHandler}
                                        onMapSelected={this.chatInputMapSelectHandler}
                                        onVoiceStateChange={this.chatInputVoiceStateChangeHandler}
+                                       getDialog={this.chatInputGetDialogHandler}
                             />
                         </div>}
                         {selectedDialogId === 'null' && <div className="column-center">
@@ -2329,7 +2336,7 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private updateDialogsCounter(peerId: string, {maxInbox, maxOutbox, unreadCounter, unreadCounterIncrease, mentionCounter, mentionCounterIncrease, scrollPos}: any) {
+    private updateDialogsCounter(peerId: string, {maxInbox, maxOutbox, unreadCounter, unreadCounterIncrease, mentionCounter, mentionCounterIncrease, scrollPos, draft}: any) {
         if (this.dialogMap.hasOwnProperty(peerId)) {
             const dialogs = this.dialogs;
             let index = this.dialogMap[peerId];
@@ -2393,6 +2400,9 @@ class Chat extends React.Component<IProps, IState> {
             }
             if (unreadCounter === 0 && this.scrollInfo) {
                 this.setEndOfMessage(this.messages.length - this.scrollInfo.stopIndex > 1);
+            }
+            if (draft !== undefined) {
+                dialogs[index].draft = draft;
             }
             this.dialogRepo.lazyUpsert([dialogs[index]]);
             return dialogs[index];
@@ -4311,6 +4321,11 @@ class Chat extends React.Component<IProps, IState> {
         this.isRecording = (state === 'lock' || state === 'down');
     }
 
+    /* ChatInput get dialog handler */
+    private chatInputGetDialogHandler = (id: string): IDialog | null => {
+        return this.getDialogById(id);
+    }
+
     /* Save file by type */
     private saveFile(msg: IMessage) {
         switch (msg.mediatype) {
@@ -4472,6 +4487,16 @@ class Chat extends React.Component<IProps, IState> {
     /* Update dialog pinned handler */
     private updateDialogPinnedHandler = (data: UpdateDialogPinned.AsObject) => {
         this.pinDialog(data.peer.id || '', data.pinned);
+    }
+
+    /* Update dialog draft message handler */
+    private updateDraftMessageHandler = (data: UpdateDraftMessage.AsObject) => {
+        this.updateDialogsCounter(data.message.peerid || '', {draft: data.message});
+    }
+
+    /* Update dialog draft message cleared handler */
+    private updateDraftMessageClearedHandler = (data: UpdateDraftMessageCleared.AsObject) => {
+        this.updateDialogsCounter(data.peer.id || '', {draft: {}});
     }
 
     private pinDialog(peerId: string, pinned?: boolean) {

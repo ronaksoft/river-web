@@ -936,7 +936,7 @@ export namespace DraftMessage {
     peertype?: number,
     date?: number,
     body?: string,
-    entitiesList: Array<MessageEntity.AsObject>,
+    entitiesList?: Array<MessageEntity.AsObject>,
     replyto?: number,
   }
 }
@@ -1468,6 +1468,7 @@ export enum ParticipantType {
 export enum PushTokenProvider {
   PUSHTOKENFIREBASE = 0,
   PUSHTOKENAPN = 1,
+  PUSHTOKENPUSHKIT = 2,
 }
 
 export enum PrivacyKey {

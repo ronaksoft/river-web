@@ -570,7 +570,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.msg.ContactsImported.repeatedFields_ = [1];
+proto.msg.ContactsImported.repeatedFields_ = [1,2];
 
 
 
@@ -601,8 +601,10 @@ proto.msg.ContactsImported.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.ContactsImported.toObject = function(includeInstance, msg) {
   var f, obj = {
+    contactusersList: jspb.Message.toObjectList(msg.getContactusersList(),
+    chat_core_types_pb.ContactUser.toObject, includeInstance),
     usersList: jspb.Message.toObjectList(msg.getUsersList(),
-    chat_core_types_pb.ContactUser.toObject, includeInstance)
+    chat_core_types_pb.User.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -642,6 +644,11 @@ proto.msg.ContactsImported.deserializeBinaryFromReader = function(msg, reader) {
     case 1:
       var value = new chat_core_types_pb.ContactUser;
       reader.readMessage(value,chat_core_types_pb.ContactUser.deserializeBinaryFromReader);
+      msg.addContactusers(value);
+      break;
+    case 2:
+      var value = new chat_core_types_pb.User;
+      reader.readMessage(value,chat_core_types_pb.User.deserializeBinaryFromReader);
       msg.addUsers(value);
       break;
     default:
@@ -673,7 +680,7 @@ proto.msg.ContactsImported.prototype.serializeBinary = function() {
  */
 proto.msg.ContactsImported.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getUsersList();
+  f = message.getContactusersList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
       1,
@@ -681,21 +688,29 @@ proto.msg.ContactsImported.serializeBinaryToWriter = function(message, writer) {
       chat_core_types_pb.ContactUser.serializeBinaryToWriter
     );
   }
+  f = message.getUsersList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      2,
+      f,
+      chat_core_types_pb.User.serializeBinaryToWriter
+    );
+  }
 };
 
 
 /**
- * repeated ContactUser Users = 1;
+ * repeated ContactUser ContactUsers = 1;
  * @return {!Array.<!proto.msg.ContactUser>}
  */
-proto.msg.ContactsImported.prototype.getUsersList = function() {
+proto.msg.ContactsImported.prototype.getContactusersList = function() {
   return /** @type{!Array.<!proto.msg.ContactUser>} */ (
     jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.ContactUser, 1));
 };
 
 
 /** @param {!Array.<!proto.msg.ContactUser>} value */
-proto.msg.ContactsImported.prototype.setUsersList = function(value) {
+proto.msg.ContactsImported.prototype.setContactusersList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
 
@@ -705,8 +720,39 @@ proto.msg.ContactsImported.prototype.setUsersList = function(value) {
  * @param {number=} opt_index
  * @return {!proto.msg.ContactUser}
  */
-proto.msg.ContactsImported.prototype.addUsers = function(opt_value, opt_index) {
+proto.msg.ContactsImported.prototype.addContactusers = function(opt_value, opt_index) {
   return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.msg.ContactUser, opt_index);
+};
+
+
+proto.msg.ContactsImported.prototype.clearContactusersList = function() {
+  this.setContactusersList([]);
+};
+
+
+/**
+ * repeated User Users = 2;
+ * @return {!Array.<!proto.msg.User>}
+ */
+proto.msg.ContactsImported.prototype.getUsersList = function() {
+  return /** @type{!Array.<!proto.msg.User>} */ (
+    jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.User, 2));
+};
+
+
+/** @param {!Array.<!proto.msg.User>} value */
+proto.msg.ContactsImported.prototype.setUsersList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 2, value);
+};
+
+
+/**
+ * @param {!proto.msg.User=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.msg.User}
+ */
+proto.msg.ContactsImported.prototype.addUsers = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.msg.User, opt_index);
 };
 
 
@@ -738,7 +784,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.msg.ContactsMany.repeatedFields_ = [1,2];
+proto.msg.ContactsMany.repeatedFields_ = [1,2,4];
 
 
 
@@ -771,9 +817,11 @@ proto.msg.ContactsMany.toObject = function(includeInstance, msg) {
   var f, obj = {
     contactsList: jspb.Message.toObjectList(msg.getContactsList(),
     chat_core_types_pb.PhoneContact.toObject, includeInstance),
-    usersList: jspb.Message.toObjectList(msg.getUsersList(),
+    contactusersList: jspb.Message.toObjectList(msg.getContactusersList(),
     chat_core_types_pb.ContactUser.toObject, includeInstance),
-    modified: jspb.Message.getField(msg, 3)
+    modified: jspb.Message.getField(msg, 3),
+    usersList: jspb.Message.toObjectList(msg.getUsersList(),
+    chat_core_types_pb.User.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -818,11 +866,16 @@ proto.msg.ContactsMany.deserializeBinaryFromReader = function(msg, reader) {
     case 2:
       var value = new chat_core_types_pb.ContactUser;
       reader.readMessage(value,chat_core_types_pb.ContactUser.deserializeBinaryFromReader);
-      msg.addUsers(value);
+      msg.addContactusers(value);
       break;
     case 3:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setModified(value);
+      break;
+    case 4:
+      var value = new chat_core_types_pb.User;
+      reader.readMessage(value,chat_core_types_pb.User.deserializeBinaryFromReader);
+      msg.addUsers(value);
       break;
     default:
       reader.skipField();
@@ -861,7 +914,7 @@ proto.msg.ContactsMany.serializeBinaryToWriter = function(message, writer) {
       chat_core_types_pb.PhoneContact.serializeBinaryToWriter
     );
   }
-  f = message.getUsersList();
+  f = message.getContactusersList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
       2,
@@ -874,6 +927,14 @@ proto.msg.ContactsMany.serializeBinaryToWriter = function(message, writer) {
     writer.writeBool(
       3,
       f
+    );
+  }
+  f = message.getUsersList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      4,
+      f,
+      chat_core_types_pb.User.serializeBinaryToWriter
     );
   }
 };
@@ -911,17 +972,17 @@ proto.msg.ContactsMany.prototype.clearContactsList = function() {
 
 
 /**
- * repeated ContactUser Users = 2;
+ * repeated ContactUser ContactUsers = 2;
  * @return {!Array.<!proto.msg.ContactUser>}
  */
-proto.msg.ContactsMany.prototype.getUsersList = function() {
+proto.msg.ContactsMany.prototype.getContactusersList = function() {
   return /** @type{!Array.<!proto.msg.ContactUser>} */ (
     jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.ContactUser, 2));
 };
 
 
 /** @param {!Array.<!proto.msg.ContactUser>} value */
-proto.msg.ContactsMany.prototype.setUsersList = function(value) {
+proto.msg.ContactsMany.prototype.setContactusersList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 2, value);
 };
 
@@ -931,13 +992,13 @@ proto.msg.ContactsMany.prototype.setUsersList = function(value) {
  * @param {number=} opt_index
  * @return {!proto.msg.ContactUser}
  */
-proto.msg.ContactsMany.prototype.addUsers = function(opt_value, opt_index) {
+proto.msg.ContactsMany.prototype.addContactusers = function(opt_value, opt_index) {
   return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.msg.ContactUser, opt_index);
 };
 
 
-proto.msg.ContactsMany.prototype.clearUsersList = function() {
-  this.setUsersList([]);
+proto.msg.ContactsMany.prototype.clearContactusersList = function() {
+  this.setContactusersList([]);
 };
 
 
@@ -969,6 +1030,37 @@ proto.msg.ContactsMany.prototype.clearModified = function() {
  */
 proto.msg.ContactsMany.prototype.hasModified = function() {
   return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * repeated User Users = 4;
+ * @return {!Array.<!proto.msg.User>}
+ */
+proto.msg.ContactsMany.prototype.getUsersList = function() {
+  return /** @type{!Array.<!proto.msg.User>} */ (
+    jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.User, 4));
+};
+
+
+/** @param {!Array.<!proto.msg.User>} value */
+proto.msg.ContactsMany.prototype.setUsersList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 4, value);
+};
+
+
+/**
+ * @param {!proto.msg.User=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.msg.User}
+ */
+proto.msg.ContactsMany.prototype.addUsers = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.msg.User, opt_index);
+};
+
+
+proto.msg.ContactsMany.prototype.clearUsersList = function() {
+  this.setUsersList([]);
 };
 
 

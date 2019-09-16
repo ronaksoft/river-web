@@ -123,6 +123,13 @@ message AccountResetAuthorization {
     required int64 AuthID = 1 [jstype = JS_STRING];
 }
 
+// AccountUpdateStatus
+// @Function
+// @Returns: Bool
+message AccountUpdateStatus {
+    required bool Online = 1;
+}
+
 // AccountAuthorizations
 message AccountAuthorizations {
     repeated AccountAuthorization Authorizations = 1;
@@ -150,12 +157,5 @@ message AccountPrivacyRules {
 // @Function
 // @Returns: Bool
 message AccountSetLang {
-    required LangCode LangCode = 1;
-}
-
-// LangCode
-enum LangCode {
-    LangCodeUnknown = 0;
-    LangCodeEn = 1;
-    LangCodeFa = 2;
+    required string LangCode = 1;
 }
