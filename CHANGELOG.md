@@ -1,3 +1,9 @@
+## 0.25.70
+* Golang updated to 1.13
+* wasm_exec.js updated
+* wasm binary updated
+* workers updated
+
 ## 0.25.69
 * `GetDialogById` double check added
 

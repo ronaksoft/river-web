@@ -1016,7 +1016,6 @@ class ChatInput extends React.Component<IProps, IState> {
         const newPeerObj = newPeer.toObject();
         const dialog = cloneDeep(this.props.getDialog(newPeerObj.id || ''));
         if (!dialog || !dialog.draft || !dialog.draft.peerid) {
-            window.console.log('changePreviewMessage');
             this.changePreviewMessage('', C_MSG_MODE.Normal, null);
             return;
         }
