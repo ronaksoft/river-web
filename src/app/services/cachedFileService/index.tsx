@@ -124,6 +124,15 @@ export default class CachedFileService {
         }
     }
 
+    public swap(id: string, targetLocation: InputFileLocation.AsObject) {
+        if (this.files.hasOwnProperty(id)) {
+            const file = this.files[id];
+            file.location = targetLocation;
+            const newId = targetLocation.fileid || '';
+            this.files[newId] = file;
+        }
+    }
+
     public remove(id: string) {
         this.unmountCache(id, 0);
         return this.fileRepo.remove(id);

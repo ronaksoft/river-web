@@ -1,3 +1,9 @@
+## 0.25.72
+* Media Uploader bug fixed
+* Media reorder bug fixed
+* Pending messages improvements
+* Swap added in `CachedFileService` for reusing cache 
+
 ## 0.25.71
 * Worker version updated
 

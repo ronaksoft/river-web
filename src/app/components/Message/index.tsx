@@ -1434,16 +1434,19 @@ class Message extends React.Component<IProps, IState> {
         if (message.mediatype !== MediaType.MEDIATYPEEMPTY && message.mediatype !== undefined) {
             switch (message.messagetype) {
                 case C_MESSAGE_TYPE.Voice:
-                    return (<MessageVoice message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
+                    return (<MessageVoice key={message.id} message={message} peer={peer}
+                                          onAction={this.props.onAttachmentAction}/>);
                 case C_MESSAGE_TYPE.Audio:
-                    return (<MessageAudio message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
+                    return (<MessageAudio key={message.id} message={message} peer={peer}
+                                          onAction={this.props.onAttachmentAction}/>);
                 case C_MESSAGE_TYPE.File:
-                    return (<MessageFile message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
+                    return (<MessageFile key={message.id} message={message} peer={peer}
+                                         onAction={this.props.onAttachmentAction}/>);
                 case C_MESSAGE_TYPE.Contact:
                     return (<MessageContact message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
                 case C_MESSAGE_TYPE.Picture:
                 case C_MESSAGE_TYPE.Video:
-                    return (<MessageMedia ref={refBindHandler} message={message} peer={peer}
+                    return (<MessageMedia key={message.id} ref={refBindHandler} message={message} peer={peer}
                                           onAction={this.props.onAttachmentAction}
                                           parentEl={parentEl} measureFn={measureFn}/>);
                 case C_MESSAGE_TYPE.Location:

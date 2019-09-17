@@ -149,6 +149,7 @@ import {emojiLevel} from "../../services/utilities/emoji";
 import AudioPlayer, {IAudioInfo} from "../../services/audioPlayer";
 
 import './style.css';
+import CachedFileService from "../../services/cachedFileService";
 
 export let notifyOptions: any[] = [];
 const C_MAX_UPDATE_DIFF = 2000;
@@ -245,6 +246,7 @@ class Chat extends React.Component<IProps, IState> {
     private updateReadInboxTimeout: any = {};
     private isRecording: boolean = false;
     private upcomingDialogId: string = 'null';
+    private cachedFileService: CachedFileService;
 
     constructor(props: IProps) {
         super(props);
@@ -302,6 +304,7 @@ class Chat extends React.Component<IProps, IState> {
         this.downloadManager = DownloadManager.getInstance();
         this.newMessageLoadThrottle = throttle(this.newMessageLoad, 200);
         this.cachedMessageService = CachedMessageService.getInstance();
+        this.cachedFileService = CachedFileService.getInstance();
         const audioPlayer = AudioPlayer.getInstance();
         audioPlayer.setErrorFn(this.audioPlayerErrorHandler);
         audioPlayer.setUpdateDurationFn(this.audioPlayerUpdateDurationHandler);
@@ -1361,7 +1364,7 @@ class Chat extends React.Component<IProps, IState> {
             delete this.updateReadInboxTimeout[peerId];
             this.messageRepo.getUnreadCount(peerId, td ? (td.readinboxmaxid || 0) : (data.maxid || 0), dialog ? (dialog.topmessageid || 0) : 0).then((count) => {
                 this.updateDialogsCounter(peerId, {
-                    maxInbox: data.maxid,
+                    maxInbox: td ? (td.readinboxmaxid || 0) : (data.maxid || 0),
                     mentionCounter: count.mention,
                     unreadCounter: count.message,
                 });
@@ -3658,7 +3661,7 @@ class Chat extends React.Component<IProps, IState> {
         if (this.state.isUpdating) {
             return;
         }
-        this.modifyPendingMessage(data);
+        // this.modifyPendingMessage(data);
     }
 
     /* Modify pending message */
@@ -3704,7 +3707,7 @@ class Chat extends React.Component<IProps, IState> {
                     }
                 }
             });
-        }, instant ? 0 : 200);
+        }, instant ? 0 : 1000);
     }
 
     /* Modify temp chunks */
@@ -3715,9 +3718,16 @@ class Chat extends React.Component<IProps, IState> {
                 if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
                     const persistFilePromises: any[] = [];
                     persistFilePromises.push(this.fileRepo.persistTempFiles(ids[0], mediaDocument.doc.id, mediaDocument.doc.mimetype || 'application/octet-stream'));
+                    this.cachedFileService.swap(ids[0], {
+                        accesshash: mediaDocument.doc.accesshash,
+                        clusterid: mediaDocument.doc.clusterid,
+                        fileid: mediaDocument.doc.id,
+                        version: 0,
+                    });
                     // Check thumbnail
                     if (ids.length > 1 && mediaDocument.doc.thumbnail) {
                         persistFilePromises.push(this.fileRepo.persistTempFiles(ids[1], mediaDocument.doc.thumbnail.fileid || '', 'image/jpeg'));
+                        this.cachedFileService.swap(ids[0], mediaDocument.doc.thumbnail);
                     }
                     Promise.all(persistFilePromises).then(() => {
                         this.messageRepo.get(message.id || 0).then((msg) => {

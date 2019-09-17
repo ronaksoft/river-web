@@ -283,6 +283,9 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     public componentWillReceiveProps(newProps: IProps) {
         if (newProps.message && this.lastId !== newProps.message.id) {
             this.lastId = newProps.message.id || 0;
+            this.downloaded = newProps.message.downloaded || false;
+            this.saved = newProps.message.saved || false;
+            this.contentRead = newProps.message.contentread || false;
             const info = getMediaInfo(newProps.message);
             this.fileSize = info.size;
             this.displayFileSize(0);

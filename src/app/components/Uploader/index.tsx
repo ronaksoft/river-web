@@ -87,7 +87,7 @@ class MediaPreview extends React.Component<IProps, IState> {
     private cropperRef: Cropper;
     private rtl: boolean = localStorage.getItem('river.lang') === 'fa' || false;
     private rtlDetector: RTLDetector;
-    private rtlDetectorThrottle: any;
+    private readonly rtlDetectorThrottle: any;
 
     constructor(props: IProps) {
         super(props);
@@ -332,6 +332,11 @@ class MediaPreview extends React.Component<IProps, IState> {
     private dialogCloseHandler = () => {
         this.setState({
             dialogOpen: false,
+            items: [],
+            lastSelected: 0,
+            loading: false,
+            selected: 0,
+            show: true,
         });
     }
 
@@ -657,8 +662,8 @@ class MediaPreview extends React.Component<IProps, IState> {
                 for (let i = 0; i < items.length; i++) {
                     output.push({
                         album: items[i].album,
-                        caption: items[i].caption,
-                        duration: items[i].duration,
+                        caption: items[i].caption || '',
+                        duration: items[i].duration ? Math.round(items[i].duration || 0) : undefined,
                         file: dist[i * 2],
                         fileType: items[i].type,
                         mediaType: items[i].mediaType || 'none',
