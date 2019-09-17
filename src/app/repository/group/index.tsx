@@ -60,8 +60,10 @@ export default class GroupRepo {
         if (!keyword) {
             return this.db.groups.limit(limit || 100).toArray();
         }
-        return this.db.groups
-            .where('title').startsWithIgnoreCase(keyword).limit(limit || 12).toArray();
+        const reg = new RegExp(keyword || '', 'gi');
+        return this.db.groups.filter((g) => {
+            return reg.test(g.title || '');
+        }).limit(limit || 12).toArray();
     }
 
     public importBulk(groups: IGroup[], callerId?: number): Promise<any> {

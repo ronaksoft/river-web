@@ -287,7 +287,8 @@
     "added": "افزود",
     "removed": "حذف کرد",
     "unsupported_message": "پیام مبهم",
-    "unread_messages": "پیام‌های جدید"
+    "unread_messages": "پیام‌های جدید",
+    "draft": "پیش‌نویس:"
   },
   "uploader": {
     "converting": "درحال تبدیل کردن...",

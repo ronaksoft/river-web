@@ -1,3 +1,12 @@
+## 0.25.73
+* `ChatInput` send button bug fixed
+* `ChatInput` live draft added
+* translation updated
+* `DialogMessage` draft indicator added
+* `MessageStatus` UI bug fixed
+* SetLang API added
+* Search result improved
+
 ## 0.25.72
 * Media Uploader bug fixed
 * Media reorder bug fixed

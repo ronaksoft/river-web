@@ -147,9 +147,9 @@ import CachedMessageService from "../../services/cachedMessageService";
 import {isProd} from "../../../App";
 import {emojiLevel} from "../../services/utilities/emoji";
 import AudioPlayer, {IAudioInfo} from "../../services/audioPlayer";
+import CachedFileService from "../../services/cachedFileService";
 
 import './style.css';
-import CachedFileService from "../../services/cachedFileService";
 
 export let notifyOptions: any[] = [];
 const C_MAX_UPDATE_DIFF = 2000;
@@ -198,7 +198,6 @@ class Chat extends React.Component<IProps, IState> {
     private popUpDateRef: PopUpDate;
     private popUpNewMessageRef: PopUpNewMessage;
     private messageRef: Message;
-    // @ts-ignore
     private settingsMenuRef: SettingsMenu;
     private messages: IMessage[] = [];
     private messageRepo: MessageRepo;
@@ -2409,14 +2408,18 @@ class Chat extends React.Component<IProps, IState> {
             if (scrollPos !== undefined) {
                 dialogs[index].scroll_pos = scrollPos;
             }
+            if (draft !== undefined) {
+                dialogs[index].draft = draft;
+                shouldUpdate = true;
+            }
             if (shouldUpdate) {
                 this.dialogsSort(dialogs, undefined, true);
+                if (this.dialogRef) {
+                    this.dialogRef.forceRender();
+                }
             }
             if (unreadCounter === 0 && this.scrollInfo) {
                 this.setEndOfMessage(this.messages.length - this.scrollInfo.stopIndex > 1);
-            }
-            if (draft !== undefined) {
-                dialogs[index].draft = draft;
             }
             this.dialogRepo.lazyUpsert([dialogs[index]]);
             return dialogs[index];
@@ -4513,11 +4516,17 @@ class Chat extends React.Component<IProps, IState> {
     /* Update dialog draft message handler */
     private updateDraftMessageHandler = (data: UpdateDraftMessage.AsObject) => {
         this.updateDialogsCounter(data.message.peerid || '', {draft: data.message});
+        if (this.chatInputComponent && this.state.selectedDialogId === (data.message.peerid || '')) {
+            this.chatInputComponent.checkDraft();
+        }
     }
 
     /* Update dialog draft message cleared handler */
     private updateDraftMessageClearedHandler = (data: UpdateDraftMessageCleared.AsObject) => {
         this.updateDialogsCounter(data.peer.id || '', {draft: {}});
+        if (this.chatInputComponent && this.state.selectedDialogId === (data.peer.id || '')) {
+            this.chatInputComponent.checkDraft();
+        }
     }
 
     private pinDialog(peerId: string, pinned?: boolean) {

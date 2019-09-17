@@ -343,6 +343,32 @@ class ChatInput extends React.Component<IProps, IState> {
         this.lastMessage = message;
     }
 
+    public checkDraft(newPeer?: InputPeer) {
+        if (!this.state.peer && !newPeer) {
+            return;
+        }
+        // @ts-ignore
+        const newPeerObj = newPeer? newPeer.toObject() : this.state.peer.toObject();
+        const dialog = cloneDeep(this.props.getDialog(newPeerObj.id || ''));
+        if (!dialog || !dialog.draft || !dialog.draft.peerid) {
+            this.changePreviewMessage('', C_MSG_MODE.Normal, null);
+            return;
+        }
+        if (dialog.draft.replyto) {
+            this.messageRepo.get(dialog.draft.replyto, this.state.peer).then((msg) => {
+                if (msg && dialog && dialog.draft) {
+                    this.changePreviewMessage(dialog.draft.body || '', C_MSG_MODE.Reply, msg, () => {
+                        this.animatePreviewMessage();
+                    });
+                } else if (dialog.draft) {
+                    this.changePreviewMessage(dialog.draft.body || '', C_MSG_MODE.Normal, null);
+                }
+            });
+        } else {
+            this.changePreviewMessage(dialog.draft.body || '', C_MSG_MODE.Normal, null);
+        }
+    }
+
     public render() {
         const {
             previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable,
@@ -560,23 +586,22 @@ class ChatInput extends React.Component<IProps, IState> {
 
     private submitMessage = () => {
         const {previewMessage, previewMessageMode} = this.state;
+        const text = this.textarea.value || '';
         if (this.props.onMessage) {
-            if (this.props.onMessage) {
-                const entities = this.generateEntities();
-                if (previewMessageMode === C_MSG_MODE.Normal) {
-                    this.props.onMessage(this.textarea.value, {
+            const entities = this.generateEntities();
+            if (previewMessageMode === C_MSG_MODE.Normal) {
+                this.props.onMessage(text, {
+                    entities,
+                });
+            } else {
+                this.clearPreviewMessage(true).finally(() => {
+                    const message = cloneDeep(previewMessage);
+                    this.props.onMessage(text, {
                         entities,
+                        message,
+                        mode: previewMessageMode,
                     });
-                } else if (previewMessageMode !== C_MSG_MODE.Normal) {
-                    this.clearPreviewMessage(true).finally(() => {
-                        const message = cloneDeep(previewMessage);
-                        this.props.onMessage(this.textarea.value, {
-                            entities,
-                            message,
-                            mode: previewMessageMode,
-                        });
-                    });
-                }
+                });
             }
         }
         this.textarea.value = '';
@@ -1013,25 +1038,8 @@ class ChatInput extends React.Component<IProps, IState> {
                 }
             }
         }
-        const newPeerObj = newPeer.toObject();
-        const dialog = cloneDeep(this.props.getDialog(newPeerObj.id || ''));
-        if (!dialog || !dialog.draft || !dialog.draft.peerid) {
-            this.changePreviewMessage('', C_MSG_MODE.Normal, null);
-            return;
-        }
-        if (dialog.draft.replyto) {
-            this.messageRepo.get(dialog.draft.replyto, this.state.peer).then((msg) => {
-                if (msg && dialog && dialog.draft) {
-                    this.changePreviewMessage(dialog.draft.body || '', C_MSG_MODE.Reply, msg, () => {
-                        this.animatePreviewMessage();
-                    });
-                } else if (dialog.draft) {
-                    this.changePreviewMessage(dialog.draft.body || '', C_MSG_MODE.Normal, null);
-                }
-            });
-        } else {
-            this.changePreviewMessage(dialog.draft.body || '', C_MSG_MODE.Normal, null);
-        }
+
+        this.checkDraft(newPeer);
     }
 
     /* Modify textarea and preview message */

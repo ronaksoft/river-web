@@ -71,6 +71,8 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     color: var(--grey); }
+    .dialog-wrapper .preview .red-font {
+      color: var(--red); }
     .dialog-wrapper .preview.ltr {
       direction: ltr; }
       .dialog-wrapper .preview.ltr .preview-inner {
@@ -165,6 +167,8 @@ html[direction="rtl"] .dialog-wrapper {
   html[direction="rtl"] .dialog-wrapper .preview .preview-icon {
     margin: 0 0 3px 4px; }
   html[direction="rtl"] .dialog-wrapper .preview .system-message {
+    direction: rtl; }
+  html[direction="rtl"] .dialog-wrapper .preview .preview-message.draft-message {
     direction: rtl; }
   html[direction="rtl"] .dialog-wrapper .unread {
     right: auto;

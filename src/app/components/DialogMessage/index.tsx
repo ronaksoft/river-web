@@ -166,6 +166,14 @@ class DialogMessage extends React.Component<IProps, IState> {
     }
 
     private renderPreviewMessage(dialog: IDialog) {
+        if (dialog.draft && dialog.draft.peerid) {
+            return (
+                <span className="preview-message draft-message">
+                    <span className="preview-inner"><span
+                        className="red-font">{i18n.t('message.draft')}</span>&nbsp;{dialog.draft.body}</span>
+                </span>
+            );
+        }
         if (dialog.action_code === C_MESSAGE_ACTION.MessageActionNope) {
             return (
                 <span className="preview-message">

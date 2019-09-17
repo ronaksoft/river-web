@@ -66,7 +66,7 @@ import {
     AccountCheckUsername, AccountGetAuthorizations,
     AccountGetNotifySettings, AccountGetPrivacy, AccountPrivacyRules,
     AccountRegisterDevice,
-    AccountRemovePhoto, AccountResetAuthorization,
+    AccountRemovePhoto, AccountResetAuthorization, AccountSetLang,
     AccountSetNotifySettings, AccountSetPrivacy,
     AccountUpdateProfile,
     AccountUpdateUsername,
@@ -360,7 +360,7 @@ export default class SDK {
     public logout(authId: string): Promise<Bool> {
         const data = new AuthLogout();
         data.setAuthidsList([authId]);
-        return this.server.send(C_MSG.AuthLogout, data.serializeBinary(), true);
+        return this.server.send(C_MSG.AuthLogout, data.serializeBinary(), true, 5000);
     }
 
     public registerDevice(token: string, tokenType: number, appVersion: string, deviceModel: string, langCode: string, systemVersion: string): Promise<Bool.AsObject> {
@@ -578,6 +578,12 @@ export default class SDK {
         const data = new MessagesClearDraft();
         data.setPeer(peer);
         return this.server.send(C_MSG.MessagesClearDraft, data.serializeBinary(), true);
+    }
+
+    public setLang(langCode: string): Promise<Bool.AsObject> {
+        const data = new AccountSetLang();
+        data.setLangcode(langCode);
+        return this.server.send(C_MSG.AccountSetLang, data.serializeBinary(), true, 3000);
     }
 
     public getServerSalts(): Promise<SystemSalts.AsObject> {

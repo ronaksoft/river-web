@@ -85,7 +85,7 @@ import {localize} from "../../services/utilities/localize";
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.25.72';
+export const C_VERSION = '0.25.73';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{
@@ -1087,7 +1087,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
 
     private changeLanguage = (lang: string) => {
         const l = localStorage.getItem('river.lang');
-        if (l !== lang) {
+        const fn = () => {
             // @ts-ignore
             const selectedLang = find(languageList, {lang});
             localStorage.setItem('river.lang', lang);
@@ -1098,6 +1098,13 @@ class SettingsMenu extends React.Component<IProps, IState> {
                 selectedLanguage: lang,
             });
             window.location.reload();
+        };
+        if (l !== lang) {
+            this.sdk.setLang(lang).then(() => {
+                fn();
+            }).catch(() => {
+                fn();
+            });
         }
     }
 

@@ -291,7 +291,8 @@
     "added": "added",
     "removed": "removed",
     "unsupported_message": "Unsupported Message",
-    "unread_messages": "Unread Messages"
+    "unread_messages": "Unread Messages",
+    "draft": "Draft:"
   },
   "uploader": {
     "converting": "Converting...",
