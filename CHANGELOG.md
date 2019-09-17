@@ -1,3 +1,11 @@
+## 0.25.74
+* Translations updated
+* `ClearDraft` improved
+* Chat Updating fixed
+* Clear draft after sending if possible
+* Focus on scroll added
+* Focus at end of input
+
 ## 0.25.73
 * `ChatInput` send button bug fixed
 * `ChatInput` live draft added

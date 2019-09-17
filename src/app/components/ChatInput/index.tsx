@@ -64,11 +64,12 @@ import MapPicker, {IGeoItem} from '../MapPicker';
 import CachedPhoto from "../CachedPhoto";
 import {getMediaInfo} from "../MessageMedia";
 import i18n from '../../services/i18n';
+import {IDialog} from "../../repository/dialog/interface";
+import MessageRepo from "../../repository/message";
+import {UpdateDraftMessageCleared} from "../../services/sdk/messages/chat.api.updates_pb";
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
-import {IDialog} from "../../repository/dialog/interface";
-import MessageRepo from "../../repository/message";
 
 // @[@yasaman](580637822969180) hi
 const mentionize = (text: string, sortedEntities: Array<{ offset: number, length: number, val: string }>) => {
@@ -106,6 +107,7 @@ interface IProps {
     text?: string;
     userId?: string;
     getDialog: (id: string) => IDialog | null;
+    onClearDraft?: (data: UpdateDraftMessageCleared.AsObject) => void;
 }
 
 interface IState {
@@ -318,6 +320,9 @@ class ChatInput extends React.Component<IProps, IState> {
             return;
         }
         this.textarea.focus();
+        if (this.textarea.value) {
+            this.textarea.setSelectionRange(this.textarea.value.length, this.textarea.value.length);
+        }
     }
 
     public openUploader(files: File[]) {
@@ -348,7 +353,7 @@ class ChatInput extends React.Component<IProps, IState> {
             return;
         }
         // @ts-ignore
-        const newPeerObj = newPeer? newPeer.toObject() : this.state.peer.toObject();
+        const newPeerObj = newPeer ? newPeer.toObject() : this.state.peer.toObject();
         const dialog = cloneDeep(this.props.getDialog(newPeerObj.id || ''));
         if (!dialog || !dialog.draft || !dialog.draft.peerid) {
             this.changePreviewMessage('', C_MSG_MODE.Normal, null);
@@ -590,8 +595,10 @@ class ChatInput extends React.Component<IProps, IState> {
         if (this.props.onMessage) {
             const entities = this.generateEntities();
             if (previewMessageMode === C_MSG_MODE.Normal) {
-                this.props.onMessage(text, {
-                    entities,
+                this.removeDraft(true).finally(() => {
+                    this.props.onMessage(text, {
+                        entities,
+                    });
                 });
             } else {
                 this.clearPreviewMessage(true).finally(() => {
@@ -633,8 +640,10 @@ class ChatInput extends React.Component<IProps, IState> {
                 if (this.props.onMessage) {
                     const entities = this.generateEntities();
                     if (previewMessageMode === C_MSG_MODE.Normal) {
-                        this.props.onMessage(text, {
-                            entities,
+                        this.removeDraft(true).finally(() => {
+                            this.props.onMessage(text, {
+                                entities,
+                            });
                         });
                     } else if (previewMessageMode !== C_MSG_MODE.Normal) {
                         this.clearPreviewMessage(true).finally(() => {
@@ -756,9 +765,19 @@ class ChatInput extends React.Component<IProps, IState> {
                 this.props.onPreviewMessageChange(undefined, C_MSG_MODE.Normal);
             }
         }, 102);
+        return this.removeDraft(removeDraft);
+    }
+
+    private removeDraft(removeDraft?: boolean) {
         if (removeDraft && this.state.peer) {
             const dialog = this.props.getDialog(this.state.peer.getId() || '');
             if (dialog && dialog.draft && dialog.draft.peerid) {
+                if (this.props.onClearDraft && this.state.peer) {
+                    this.props.onClearDraft({
+                        peer: this.state.peer.toObject(),
+                        ucount: 1,
+                    });
+                }
                 return this.sdk.clearDraft(this.state.peer).then(() => {
                     if (this.state.peer) {
                         return this.dialogRepo.upsert([{
@@ -1029,6 +1048,12 @@ class ChatInput extends React.Component<IProps, IState> {
             } else {
                 const oldDialog = cloneDeep(this.props.getDialog(oldPeerObj.id || ''));
                 if (oldDialog && oldDialog.draft && oldDialog.draft.peerid) {
+                    if (this.props.onClearDraft && this.state.peer) {
+                        this.props.onClearDraft({
+                            peer: this.state.peer.toObject(),
+                            ucount: 1,
+                        });
+                    }
                     this.sdk.clearDraft(oldPeer).then(() => {
                         this.dialogRepo.lazyUpsert([{
                             draft: {},

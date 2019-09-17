@@ -344,6 +344,7 @@ class Chat extends React.Component<IProps, IState> {
         // Global event listeners
         window.addEventListener('focus', this.windowFocusHandler);
         window.addEventListener('blur', this.windowBlurHandler);
+        window.addEventListener('mousewheel', this.windowMouseWheelHandler);
         window.addEventListener('wasmInit', this.wasmInitHandler);
         window.addEventListener('wsOpen', this.wsOpenHandler);
         window.addEventListener('wsClose', this.wsCloseHandler);
@@ -496,6 +497,7 @@ class Chat extends React.Component<IProps, IState> {
 
         window.removeEventListener('focus', this.windowFocusHandler);
         window.removeEventListener('blur', this.windowBlurHandler);
+        window.removeEventListener('mousewheel', this.windowMouseWheelHandler);
         window.removeEventListener('wasmInit', this.wasmInitHandler);
         window.removeEventListener('wsOpen', this.wsOpenHandler);
         window.removeEventListener('fnStarted', this.fnStartedHandler);
@@ -722,6 +724,7 @@ class Chat extends React.Component<IProps, IState> {
                                        onMapSelected={this.chatInputMapSelectHandler}
                                        onVoiceStateChange={this.chatInputVoiceStateChangeHandler}
                                        getDialog={this.chatInputGetDialogHandler}
+                                       onClearDraft={this.updateDraftMessageClearedHandler}
                             />
                         </div>}
                         {selectedDialogId === 'null' && <div className="column-center">
@@ -1292,9 +1295,6 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Update user typing */
     private updateUserTypeHandler = (data: UpdateUserTyping.AsObject) => {
-        if (this.state.isUpdating) {
-            return;
-        }
         const isTypingList = this.isTypingList;
         if (data.action !== TypingAction.TYPINGACTIONCANCEL) {
             const fn = setTimeout(() => {
@@ -2904,10 +2904,19 @@ class Chat extends React.Component<IProps, IState> {
                 this.sendReadHistory(this.state.peer, Math.floor(this.messages[this.messages.length - 1].id || 0));
             }
         }
+        if (this.chatInputComponent) {
+            this.chatInputComponent.focus();
+        }
     }
 
     private windowBlurHandler = () => {
         this.isInChat = false;
+    }
+
+    private windowMouseWheelHandler = () => {
+        if (!this.isInChat) {
+            this.windowFocusHandler();
+        }
     }
 
     private sendReadHistory(inputPeer: InputPeer | null, msgId: number, endIndex?: number, showMoveDown?: boolean) {
@@ -4510,11 +4519,17 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Update dialog pinned handler */
     private updateDialogPinnedHandler = (data: UpdateDialogPinned.AsObject) => {
+        if (this.state.isUpdating) {
+            return;
+        }
         this.pinDialog(data.peer.id || '', data.pinned);
     }
 
     /* Update dialog draft message handler */
     private updateDraftMessageHandler = (data: UpdateDraftMessage.AsObject) => {
+        if (this.state.isUpdating) {
+            return;
+        }
         this.updateDialogsCounter(data.message.peerid || '', {draft: data.message});
         if (this.chatInputComponent && this.state.selectedDialogId === (data.message.peerid || '')) {
             this.chatInputComponent.checkDraft();
@@ -4523,6 +4538,9 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Update dialog draft message cleared handler */
     private updateDraftMessageClearedHandler = (data: UpdateDraftMessageCleared.AsObject) => {
+        if (this.state.isUpdating) {
+            return;
+        }
         this.updateDialogsCounter(data.peer.id || '', {draft: {}});
         if (this.chatInputComponent && this.state.selectedDialogId === (data.peer.id || '')) {
             this.chatInputComponent.checkDraft();

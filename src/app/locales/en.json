@@ -56,7 +56,7 @@
     "logout_dialog": {
       "title": "Log Out?",
       "p1": "We are about to log out of River.",
-      "p2": "All databases will be removed!",
+      "p2": "All your data will be removed!",
       "p3": "Are you sure?"
     },
     "remove_message_dialog": {
