@@ -85,7 +85,7 @@ import {localize} from "../../services/utilities/localize";
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.25.74';
+export const C_VERSION = '0.25.75';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{
@@ -1677,6 +1677,15 @@ class SettingsMenu extends React.Component<IProps, IState> {
         } else {
             // @ts-ignore
             sessions.splice(1, 0, {type: 'terminate_all'});
+        }
+        for (let i = 2; i < sessions.length; i++) {
+            for (let j = i; j < sessions.length; j++) {
+                if ((sessions[i].lastaccess || 0) < (sessions[j].lastaccess || 0)) {
+                    const hold = sessions[i];
+                    sessions[i] = sessions[j];
+                    sessions[j] = hold;
+                }
+            }
         }
         return sessions;
     }

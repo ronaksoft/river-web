@@ -1,3 +1,7 @@
+## 0.25.75
+* Session reorder updated
+* SDK updated
+
 ## 0.25.74
 * Translations updated
 * `ClearDraft` improved

@@ -160,7 +160,7 @@ export default class Server {
         window.console.debug(`%c${C_MSG_NAME[request.constructor]} ${request.reqId}`, 'color: #f9d71c');
         request.timeout = setTimeout(() => {
             this.dispatchTimeout(request.reqId);
-        }, C_TIMEOUT);
+        }, request.timeoutAmount || C_TIMEOUT);
         const data = new MessageEnvelope();
         data.setConstructor(request.constructor);
         data.setMessage(request.data);
