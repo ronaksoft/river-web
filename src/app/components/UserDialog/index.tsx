@@ -406,10 +406,10 @@ class UserDialog extends React.Component<IProps, IState> {
             settings.setMuteuntil(mode);
         } else if (mode > 0) {
             mode += this.riverTime.now();
+            settings.setMuteuntil(mode);
         }
         settings.setFlags(0);
         settings.setSound('');
-        settings.setMuteuntil(mode);
         this.sdk.setNotifySettings(peer, settings).then(() => {
             this.setState({
                 notifySetting: settings.toObject(),

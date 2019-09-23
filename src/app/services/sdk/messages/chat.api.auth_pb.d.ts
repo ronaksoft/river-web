@@ -229,6 +229,26 @@ export class AuthRecall extends jspb.Message {
   getVersion(): number | undefined;
   setVersion(value: number): void;
 
+  hasAppversion(): boolean;
+  clearAppversion(): void;
+  getAppversion(): string | undefined;
+  setAppversion(value: string): void;
+
+  hasPlatform(): boolean;
+  clearPlatform(): void;
+  getPlatform(): string | undefined;
+  setPlatform(value: string): void;
+
+  hasVendor(): boolean;
+  clearVendor(): void;
+  getVendor(): string | undefined;
+  setVendor(value: string): void;
+
+  hasOsversion(): boolean;
+  clearOsversion(): void;
+  getOsversion(): string | undefined;
+  setOsversion(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AuthRecall.AsObject;
   static toObject(includeInstance: boolean, msg: AuthRecall): AuthRecall.AsObject;
@@ -243,6 +263,10 @@ export namespace AuthRecall {
   export type AsObject = {
     clientid?: string,
     version?: number,
+    appversion?: string,
+    platform?: string,
+    vendor?: string,
+    osversion?: string,
   }
 }
 
@@ -278,6 +302,21 @@ export class AuthRecalled extends jspb.Message {
   getUpdateid(): number | undefined;
   setUpdateid(value: number): void;
 
+  hasAvailable(): boolean;
+  clearAvailable(): void;
+  getAvailable(): boolean | undefined;
+  setAvailable(value: boolean): void;
+
+  hasForce(): boolean;
+  clearForce(): void;
+  getForce(): boolean | undefined;
+  setForce(value: boolean): void;
+
+  hasCurrentversion(): boolean;
+  clearCurrentversion(): void;
+  getCurrentversion(): string | undefined;
+  setCurrentversion(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AuthRecalled.AsObject;
   static toObject(includeInstance: boolean, msg: AuthRecalled): AuthRecalled.AsObject;
@@ -293,6 +332,9 @@ export namespace AuthRecalled {
     clientid?: string,
     timestamp?: number,
     updateid?: number,
+    available?: boolean,
+    force?: boolean,
+    currentversion?: string,
   }
 }
 

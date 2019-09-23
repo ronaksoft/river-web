@@ -900,7 +900,7 @@ class Message extends React.Component<IProps, IState> {
                             {this.state.selectable && <Checkbox
                                 className={'checkbox ' + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? 'checked' : '')}
                                 color="primary" checked={this.state.selectedIds.hasOwnProperty(message.id || 0)}
-                                onChange={this.selectMessageHandler.bind(this, message.id || 0, index)}/>}
+                                onChange={this.selectMessageHandler.bind(this, message.id || 0, index, null)}/>}
                             {this.renderSystemMessage(message)}
                         </div>
                     );
@@ -917,7 +917,7 @@ class Message extends React.Component<IProps, IState> {
                             {this.state.selectable && <Checkbox
                                 className={'checkbox ' + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? 'checked' : '')}
                                 color="primary" checked={this.state.selectedIds.hasOwnProperty(message.id || 0)}
-                                onChange={this.selectMessageHandler.bind(this, message.id || 0, index)}/>}
+                                onChange={this.selectMessageHandler.bind(this, message.id || 0, index, null)}/>}
                             {Boolean(message.avatar && message.senderid) && (<div className="arrow"/>)}
                             {Boolean(message.me && message.error) &&
                             <span className="error" onClick={this.contextMenuHandler.bind(this, index)}><ErrorRounded/></span>}
@@ -974,7 +974,11 @@ class Message extends React.Component<IProps, IState> {
             this.props.contextMenu(cmd, this.state.items[index]);
         }
         if (cmd === 'forward') {
-            this.selectMessageHandler(this.state.items[index].id || 0, index);
+            this.selectMessageHandler(this.state.items[index].id || 0, index, () => {
+                if (this.props.contextMenu) {
+                    this.props.contextMenu('forward_dialog', this.state.items[index]);
+                }
+            });
         }
         this.setState({
             moreAnchorEl: null,
@@ -990,7 +994,7 @@ class Message extends React.Component<IProps, IState> {
                 this.props.onSelectableChange(true);
             });
         }
-        this.selectMessageHandler(this.state.items[index].id || 0, index);
+        this.selectMessageHandler(this.state.items[index].id || 0, index, null);
     }
 
     private onRowsRenderedHandler = (data: any) => {
@@ -1201,7 +1205,7 @@ class Message extends React.Component<IProps, IState> {
     }
 
     /* Add/Remove selected id to selectedIds map */
-    private selectMessageHandler = (id: number, index: number, e?: any) => {
+    private selectMessageHandler = (id: number, index: number, cb: any, e?: any) => {
         const {selectedIds} = this.state;
         if (!e || (e && e.currentTarget.checked)) {
             selectedIds[id] = index;
@@ -1213,6 +1217,9 @@ class Message extends React.Component<IProps, IState> {
         }, () => {
             this.props.onSelectedIdsChange(selectedIds);
             this.list.forceUpdateGrid();
+            if (cb) {
+                cb();
+            }
         });
     }
 

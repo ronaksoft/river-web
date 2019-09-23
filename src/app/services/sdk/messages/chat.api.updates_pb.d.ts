@@ -79,6 +79,11 @@ export class UpdateDifference extends jspb.Message {
   setGroupsList(value: Array<chat_core_types_pb.Group>): void;
   addGroups(value?: chat_core_types_pb.Group, index?: number): chat_core_types_pb.Group;
 
+  hasCurrentupdateid(): boolean;
+  clearCurrentupdateid(): void;
+  getCurrentupdateid(): number | undefined;
+  setCurrentupdateid(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateDifference.AsObject;
   static toObject(includeInstance: boolean, msg: UpdateDifference): UpdateDifference.AsObject;
@@ -97,6 +102,7 @@ export namespace UpdateDifference {
     updatesList: Array<chat_core_types_pb.UpdateEnvelope.AsObject>,
     usersList: Array<chat_core_types_pb.User.AsObject>,
     groupsList: Array<chat_core_types_pb.Group.AsObject>,
+    currentupdateid?: number,
   }
 }
 
@@ -882,6 +888,11 @@ export class UpdateDraftMessage extends jspb.Message {
   getUcount(): number | undefined;
   setUcount(value: number): void;
 
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
   hasMessage(): boolean;
   clearMessage(): void;
   getMessage(): chat_core_types_pb.DraftMessage;
@@ -900,6 +911,7 @@ export class UpdateDraftMessage extends jspb.Message {
 export namespace UpdateDraftMessage {
   export type AsObject = {
     ucount?: number,
+    updateid?: number,
     message: chat_core_types_pb.DraftMessage.AsObject,
   }
 }
@@ -909,6 +921,11 @@ export class UpdateDraftMessageCleared extends jspb.Message {
   clearUcount(): void;
   getUcount(): number | undefined;
   setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
 
   hasPeer(): boolean;
   clearPeer(): void;
@@ -928,6 +945,7 @@ export class UpdateDraftMessageCleared extends jspb.Message {
 export namespace UpdateDraftMessageCleared {
   export type AsObject = {
     ucount?: number,
+    updateid?: number,
     peer: chat_core_types_pb.Peer.AsObject,
   }
 }

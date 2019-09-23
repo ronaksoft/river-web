@@ -1,3 +1,12 @@
+## 0.25.77
+* ProtoMessages updated
+* Client ProtoMessages removed
+* Sync mechanism updated
+* UpdateNotifySettings improved
+* Now you can mute/unmute peers from dialog
+* Translations updated
+* Instant forward added
+
 ## 0.25.76
 * Mention Counter and Unread Counter now have more robust checking
 * Mention bug fixed

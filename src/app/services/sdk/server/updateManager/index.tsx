@@ -164,7 +164,18 @@ export default class UpdateManager {
     }
 
     private applyUpdates(data: UpdateContainer.AsObject) {
-        const updates = data.updatesList;
+        const updates = data.updatesList.sort((a, b) => {
+            if (!a.updateid || !b.updateid) {
+                return 0;
+            }
+            if (a.updateid < b.updateid) {
+                return -1;
+            }
+            if (a.updateid > b.updateid) {
+                return 1;
+            }
+            return 0;
+        });
         updates.forEach((update) => {
             try {
                 this.responseUpdateMessageID(update);

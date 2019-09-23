@@ -89,7 +89,7 @@ export default class SyncManager {
 
     public applyUpdate(data: UpdateDifference.AsObject): Promise<number> {
         return new Promise((resolve, reject) => {
-            const lastUpdateId = data.maxupdateid || 0;
+            const lastUpdateId = data.more ? (data.maxupdateid || 0) : (data.currentupdateid || data.maxupdateid || 0);
             if (lastUpdateId > 0) {
                 this.setLastUpdateId(lastUpdateId);
             }

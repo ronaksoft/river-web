@@ -367,7 +367,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                     maxWidth="xs"
                     className="notify-setting-dialog"
                 >
-                    <DialogTitle>{i18n.t('peer_info.notify_settings')}}</DialogTitle>
+                    <DialogTitle>{i18n.t('peer_info.notify_settings')}</DialogTitle>
                     <DialogContent className="dialog-content">
                         <RadioGroup
                             name="notify-setting"
@@ -708,10 +708,10 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             settings.setMuteuntil(mode);
         } else if (mode > 0) {
             mode += this.riverTime.now();
+            settings.setMuteuntil(mode);
         }
         settings.setFlags(0);
         settings.setSound('');
-        settings.setMuteuntil(mode);
         this.sdk.setNotifySettings(peer, settings).then(() => {
             dialog.notifysettings = settings.toObject();
             this.setState({

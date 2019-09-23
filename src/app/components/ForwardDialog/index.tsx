@@ -69,6 +69,7 @@ class ForwardDialog extends React.Component<IProps, IState> {
 
     private modalCloseHandler = () => {
         this.setState({
+            forwardRecipients: [],
             open: false,
         });
         this.props.onClose();

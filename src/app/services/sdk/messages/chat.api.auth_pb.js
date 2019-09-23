@@ -1582,7 +1582,11 @@ proto.msg.AuthRecall.prototype.toObject = function(opt_includeInstance) {
 proto.msg.AuthRecall.toObject = function(includeInstance, msg) {
   var f, obj = {
     clientid: jspb.Message.getField(msg, 1),
-    version: jspb.Message.getField(msg, 2)
+    version: jspb.Message.getField(msg, 2),
+    appversion: jspb.Message.getField(msg, 3),
+    platform: jspb.Message.getField(msg, 4),
+    vendor: jspb.Message.getField(msg, 5),
+    osversion: jspb.Message.getField(msg, 6)
   };
 
   if (includeInstance) {
@@ -1627,6 +1631,22 @@ proto.msg.AuthRecall.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {number} */ (reader.readUint32());
       msg.setVersion(value);
       break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setAppversion(value);
+      break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPlatform(value);
+      break;
+    case 5:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setVendor(value);
+      break;
+    case 6:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setOsversion(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1667,6 +1687,34 @@ proto.msg.AuthRecall.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeUint32(
       2,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 4));
+  if (f != null) {
+    writer.writeString(
+      4,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 5));
+  if (f != null) {
+    writer.writeString(
+      5,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 6));
+  if (f != null) {
+    writer.writeString(
+      6,
       f
     );
   }
@@ -1728,6 +1776,122 @@ proto.msg.AuthRecall.prototype.clearVersion = function() {
  */
 proto.msg.AuthRecall.prototype.hasVersion = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional string AppVersion = 3;
+ * @return {string}
+ */
+proto.msg.AuthRecall.prototype.getAppversion = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.AuthRecall.prototype.setAppversion = function(value) {
+  jspb.Message.setField(this, 3, value);
+};
+
+
+proto.msg.AuthRecall.prototype.clearAppversion = function() {
+  jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AuthRecall.prototype.hasAppversion = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional string Platform = 4;
+ * @return {string}
+ */
+proto.msg.AuthRecall.prototype.getPlatform = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.AuthRecall.prototype.setPlatform = function(value) {
+  jspb.Message.setField(this, 4, value);
+};
+
+
+proto.msg.AuthRecall.prototype.clearPlatform = function() {
+  jspb.Message.setField(this, 4, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AuthRecall.prototype.hasPlatform = function() {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * optional string Vendor = 5;
+ * @return {string}
+ */
+proto.msg.AuthRecall.prototype.getVendor = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.AuthRecall.prototype.setVendor = function(value) {
+  jspb.Message.setField(this, 5, value);
+};
+
+
+proto.msg.AuthRecall.prototype.clearVendor = function() {
+  jspb.Message.setField(this, 5, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AuthRecall.prototype.hasVendor = function() {
+  return jspb.Message.getField(this, 5) != null;
+};
+
+
+/**
+ * optional string OSVersion = 6;
+ * @return {string}
+ */
+proto.msg.AuthRecall.prototype.getOsversion = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.AuthRecall.prototype.setOsversion = function(value) {
+  jspb.Message.setField(this, 6, value);
+};
+
+
+proto.msg.AuthRecall.prototype.clearOsversion = function() {
+  jspb.Message.setField(this, 6, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AuthRecall.prototype.hasOsversion = function() {
+  return jspb.Message.getField(this, 6) != null;
 };
 
 
@@ -1896,7 +2060,10 @@ proto.msg.AuthRecalled.toObject = function(includeInstance, msg) {
   var f, obj = {
     clientid: jspb.Message.getField(msg, 1),
     timestamp: jspb.Message.getField(msg, 2),
-    updateid: jspb.Message.getField(msg, 3)
+    updateid: jspb.Message.getField(msg, 3),
+    available: jspb.Message.getField(msg, 4),
+    force: jspb.Message.getField(msg, 5),
+    currentversion: jspb.Message.getField(msg, 6)
   };
 
   if (includeInstance) {
@@ -1945,6 +2112,18 @@ proto.msg.AuthRecalled.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {number} */ (reader.readInt64());
       msg.setUpdateid(value);
       break;
+    case 4:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setAvailable(value);
+      break;
+    case 5:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setForce(value);
+      break;
+    case 6:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setCurrentversion(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1992,6 +2171,27 @@ proto.msg.AuthRecalled.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeInt64(
       3,
+      f
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 4));
+  if (f != null) {
+    writer.writeBool(
+      4,
+      f
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 5));
+  if (f != null) {
+    writer.writeBool(
+      5,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 6));
+  if (f != null) {
+    writer.writeString(
+      6,
       f
     );
   }
@@ -2082,6 +2282,97 @@ proto.msg.AuthRecalled.prototype.clearUpdateid = function() {
  */
 proto.msg.AuthRecalled.prototype.hasUpdateid = function() {
   return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional bool Available = 4;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.msg.AuthRecalled.prototype.getAvailable = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 4, false));
+};
+
+
+/** @param {boolean} value */
+proto.msg.AuthRecalled.prototype.setAvailable = function(value) {
+  jspb.Message.setField(this, 4, value);
+};
+
+
+proto.msg.AuthRecalled.prototype.clearAvailable = function() {
+  jspb.Message.setField(this, 4, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AuthRecalled.prototype.hasAvailable = function() {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * optional bool Force = 5;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.msg.AuthRecalled.prototype.getForce = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 5, false));
+};
+
+
+/** @param {boolean} value */
+proto.msg.AuthRecalled.prototype.setForce = function(value) {
+  jspb.Message.setField(this, 5, value);
+};
+
+
+proto.msg.AuthRecalled.prototype.clearForce = function() {
+  jspb.Message.setField(this, 5, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AuthRecalled.prototype.hasForce = function() {
+  return jspb.Message.getField(this, 5) != null;
+};
+
+
+/**
+ * optional string CurrentVersion = 6;
+ * @return {string}
+ */
+proto.msg.AuthRecalled.prototype.getCurrentversion = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.AuthRecalled.prototype.setCurrentversion = function(value) {
+  jspb.Message.setField(this, 6, value);
+};
+
+
+proto.msg.AuthRecalled.prototype.clearCurrentversion = function() {
+  jspb.Message.setField(this, 6, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AuthRecalled.prototype.hasCurrentversion = function() {
+  return jspb.Message.getField(this, 6) != null;
 };
 
 

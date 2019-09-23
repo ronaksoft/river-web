@@ -415,7 +415,8 @@ proto.msg.UpdateDifference.toObject = function(includeInstance, msg) {
     usersList: jspb.Message.toObjectList(msg.getUsersList(),
     chat_core_types_pb.User.toObject, includeInstance),
     groupsList: jspb.Message.toObjectList(msg.getGroupsList(),
-    chat_core_types_pb.Group.toObject, includeInstance)
+    chat_core_types_pb.Group.toObject, includeInstance),
+    currentupdateid: jspb.Message.getField(msg, 7)
   };
 
   if (includeInstance) {
@@ -478,6 +479,10 @@ proto.msg.UpdateDifference.deserializeBinaryFromReader = function(msg, reader) {
       var value = new chat_core_types_pb.Group;
       reader.readMessage(value,chat_core_types_pb.Group.deserializeBinaryFromReader);
       msg.addGroups(value);
+      break;
+    case 7:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setCurrentupdateid(value);
       break;
     default:
       reader.skipField();
@@ -551,6 +556,13 @@ proto.msg.UpdateDifference.serializeBinaryToWriter = function(message, writer) {
       6,
       f,
       chat_core_types_pb.Group.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 7));
+  if (f != null) {
+    writer.writeInt64(
+      7,
+      f
     );
   }
 };
@@ -735,6 +747,35 @@ proto.msg.UpdateDifference.prototype.addGroups = function(opt_value, opt_index) 
 
 proto.msg.UpdateDifference.prototype.clearGroupsList = function() {
   this.setGroupsList([]);
+};
+
+
+/**
+ * optional int64 CurrentUpdateID = 7;
+ * @return {number}
+ */
+proto.msg.UpdateDifference.prototype.getCurrentupdateid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.UpdateDifference.prototype.setCurrentupdateid = function(value) {
+  jspb.Message.setField(this, 7, value);
+};
+
+
+proto.msg.UpdateDifference.prototype.clearCurrentupdateid = function() {
+  jspb.Message.setField(this, 7, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateDifference.prototype.hasCurrentupdateid = function() {
+  return jspb.Message.getField(this, 7) != null;
 };
 
 
@@ -6254,6 +6295,7 @@ proto.msg.UpdateDraftMessage.prototype.toObject = function(opt_includeInstance) 
 proto.msg.UpdateDraftMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
     ucount: jspb.Message.getField(msg, 100),
+    updateid: jspb.Message.getField(msg, 101),
     message: (f = msg.getMessage()) && chat_core_types_pb.DraftMessage.toObject(includeInstance, f)
   };
 
@@ -6294,6 +6336,10 @@ proto.msg.UpdateDraftMessage.deserializeBinaryFromReader = function(msg, reader)
     case 100:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setUcount(value);
+      break;
+    case 101:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setUpdateid(value);
       break;
     case 1:
       var value = new chat_core_types_pb.DraftMessage;
@@ -6336,6 +6382,13 @@ proto.msg.UpdateDraftMessage.serializeBinaryToWriter = function(message, writer)
       f
     );
   }
+  f = /** @type {number} */ (jspb.Message.getField(message, 101));
+  if (f != null) {
+    writer.writeInt64(
+      101,
+      f
+    );
+  }
   f = message.getMessage();
   if (f != null) {
     writer.writeMessage(
@@ -6373,6 +6426,35 @@ proto.msg.UpdateDraftMessage.prototype.clearUcount = function() {
  */
 proto.msg.UpdateDraftMessage.prototype.hasUcount = function() {
   return jspb.Message.getField(this, 100) != null;
+};
+
+
+/**
+ * optional int64 UpdateID = 101;
+ * @return {number}
+ */
+proto.msg.UpdateDraftMessage.prototype.getUpdateid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 101, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.UpdateDraftMessage.prototype.setUpdateid = function(value) {
+  jspb.Message.setField(this, 101, value);
+};
+
+
+proto.msg.UpdateDraftMessage.prototype.clearUpdateid = function() {
+  jspb.Message.setField(this, 101, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateDraftMessage.prototype.hasUpdateid = function() {
+  return jspb.Message.getField(this, 101) != null;
 };
 
 
@@ -6454,6 +6536,7 @@ proto.msg.UpdateDraftMessageCleared.prototype.toObject = function(opt_includeIns
 proto.msg.UpdateDraftMessageCleared.toObject = function(includeInstance, msg) {
   var f, obj = {
     ucount: jspb.Message.getField(msg, 100),
+    updateid: jspb.Message.getField(msg, 101),
     peer: (f = msg.getPeer()) && chat_core_types_pb.Peer.toObject(includeInstance, f)
   };
 
@@ -6494,6 +6577,10 @@ proto.msg.UpdateDraftMessageCleared.deserializeBinaryFromReader = function(msg, 
     case 100:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setUcount(value);
+      break;
+    case 101:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setUpdateid(value);
       break;
     case 1:
       var value = new chat_core_types_pb.Peer;
@@ -6536,6 +6623,13 @@ proto.msg.UpdateDraftMessageCleared.serializeBinaryToWriter = function(message, 
       f
     );
   }
+  f = /** @type {number} */ (jspb.Message.getField(message, 101));
+  if (f != null) {
+    writer.writeInt64(
+      101,
+      f
+    );
+  }
   f = message.getPeer();
   if (f != null) {
     writer.writeMessage(
@@ -6573,6 +6667,35 @@ proto.msg.UpdateDraftMessageCleared.prototype.clearUcount = function() {
  */
 proto.msg.UpdateDraftMessageCleared.prototype.hasUcount = function() {
   return jspb.Message.getField(this, 100) != null;
+};
+
+
+/**
+ * optional int64 UpdateID = 101;
+ * @return {number}
+ */
+proto.msg.UpdateDraftMessageCleared.prototype.getUpdateid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 101, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.UpdateDraftMessageCleared.prototype.setUpdateid = function(value) {
+  jspb.Message.setField(this, 101, value);
+};
+
+
+proto.msg.UpdateDraftMessageCleared.prototype.clearUpdateid = function() {
+  jspb.Message.setField(this, 101, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateDraftMessageCleared.prototype.hasUpdateid = function() {
+  return jspb.Message.getField(this, 101) != null;
 };
 
 

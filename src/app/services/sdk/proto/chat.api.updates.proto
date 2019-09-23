@@ -24,6 +24,7 @@ message UpdateDifference {
     repeated UpdateEnvelope Updates = 4;
     repeated User Users = 5;
     repeated Group Groups = 6;
+    optional int64 CurrentUpdateID = 7;
 }
 
 // UpdateTooLong
@@ -186,12 +187,14 @@ message UpdateAuthorizationReset {
 // UpdateDraftMessage
 message UpdateDraftMessage {
     required int32 UCount = 100;
+    optional int64 UpdateID = 101;
     required DraftMessage Message = 1;
 }
 
 // UpdateDraftMessageCleared
 message UpdateDraftMessageCleared {
     required int32 UCount = 100;
+    optional int64 UpdateID = 101;
     required Peer Peer = 1;
 }
 

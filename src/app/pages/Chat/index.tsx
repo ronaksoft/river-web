@@ -319,10 +319,10 @@ class Chat extends React.Component<IProps, IState> {
 
         notifyOptions = [{
             title: i18n.t('general.disable'),
-            val: '-1',
+            val: '-2',
         }, {
             title: i18n.t('general.enable'),
-            val: '-2',
+            val: '-1',
         }, {
             title: i18n.t('peer_info.disable_for_8_hours'),
             val: '480',
@@ -2342,10 +2342,15 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         if (this.dialogMap.hasOwnProperty(peerId)) {
-            const index = this.dialogMap[peerId];
-            this.dialogs[index].notifysettings = settings;
-            this.dialogsSortThrottle(this.dialogs);
-            this.dialogRepo.lazyUpsert([this.dialogs[index]]);
+            let index = this.dialogMap[peerId];
+            if (this.dialogs[index].peerid !== peerId) {
+                index = findIndex(this.dialogs, {peerid: peerId});
+            }
+            if (index > -1) {
+                this.dialogs[index].notifysettings = settings;
+                this.dialogsSortThrottle(this.dialogs);
+                this.dialogRepo.lazyUpsert([this.dialogs[index]]);
+            }
         }
     }
 
@@ -3042,6 +3047,11 @@ class Chat extends React.Component<IProps, IState> {
                     messageSelectable: true,
                 });
                 break;
+            case 'forward_dialog':
+                if (this.forwardDialogRef) {
+                    this.forwardDialogRef.openDialog();
+                }
+                break;
             case 'resend':
                 this.resendMessage(message);
                 break;
@@ -3558,6 +3568,12 @@ class Chat extends React.Component<IProps, IState> {
                 this.sdk.dialogTogglePin(peer, false).then(() => {
                     this.pinDialog(peer.getId() || '', false);
                 });
+                break;
+            case 'mute':
+                this.setNotifySettings(peer, -2);
+                break;
+            case 'unmute':
+                this.setNotifySettings(peer, -1);
                 break;
             default:
                 break;
@@ -4733,6 +4749,19 @@ class Chat extends React.Component<IProps, IState> {
                     this.messageRepo.lazyUpsert([res]);
                 }
             }
+        });
+    }
+
+    private setNotifySettings(peer: InputPeer, mode: number) {
+        if (!peer) {
+            return;
+        }
+        const settings = new PeerNotifySettings();
+        settings.setMuteuntil(mode);
+        settings.setFlags(0);
+        settings.setSound('');
+        this.sdk.setNotifySettings(peer, settings).then(() => {
+            this.updateDialogsNotifySettings(peer.getId() || '', settings.toObject());
         });
     }
 

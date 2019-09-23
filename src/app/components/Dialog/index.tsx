@@ -28,6 +28,7 @@ import IsMobile from '../../services/isMobile';
 import Divider from '@material-ui/core/Divider/Divider';
 import i18n from '../../services/i18n';
 import {IUser} from "../../repository/user/interface";
+import {isMuted} from "../UserInfoMenu";
 
 import './style.css';
 
@@ -119,6 +120,14 @@ class Dialog extends React.Component<IProps, IState> {
             7: {
                 cmd: 'unpin',
                 title: i18n.t('dialog.unpin'),
+            },
+            8: {
+                cmd: 'mute',
+                title: i18n.t('peer_info.mute'),
+            },
+            9: {
+                cmd: 'unmute',
+                title: i18n.t('peer_info.unmute'),
             },
         };
 
@@ -385,8 +394,8 @@ class Dialog extends React.Component<IProps, IState> {
             return '';
         }
         const menuTypes = {
-            1: [4, 0, 6, 7, 0, 1, 5],
-            2: [1, 0, 6, 7, 0, 2],
+            1: [4, 8, 9, 0, 6, 7, 0, 1, 5],
+            2: [8, 9, 0, 1, 0, 6, 7, 0, 2],
         };
         const menuItems: any[] = [];
         const peerType = searchItems[moreIndex].peertype;
@@ -394,12 +403,19 @@ class Dialog extends React.Component<IProps, IState> {
         if (!dialog) {
             return;
         }
+        const muted = isMuted(dialog.notifysettings);
         if (peerType === PeerType.PEERUSER) {
             menuTypes[1].forEach((key) => {
                 if (key === 6 || key === 7) {
                     if (key === 6 && !dialog.pinned) {
                         menuItems.push(this.menuItem[key]);
                     } else if (key === 7 && dialog.pinned) {
+                        menuItems.push(this.menuItem[key]);
+                    }
+                } else if (key === 8 || key === 9) {
+                    if (key === 8 && !muted) {
+                        menuItems.push(this.menuItem[key]);
+                    } else if (key === 9 && muted) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else {
@@ -412,6 +428,12 @@ class Dialog extends React.Component<IProps, IState> {
                     if (key === 6 && !dialog.pinned) {
                         menuItems.push(this.menuItem[key]);
                     } else if (key === 7 && dialog.pinned) {
+                        menuItems.push(this.menuItem[key]);
+                    }
+                } else if (key === 8 || key === 9) {
+                    if (key === 8 && !muted) {
+                        menuItems.push(this.menuItem[key]);
+                    } else if (key === 9 && muted) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else {
