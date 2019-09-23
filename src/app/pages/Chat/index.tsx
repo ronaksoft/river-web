@@ -2957,7 +2957,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.readMessageThrottle(inputPeer, msgId, dialog.topmessageid || 0);
             }
             // If unread counter was no correct we force it to be zero
-            else if (dialog && (dialog.unreadcount || 0) > 0 && (dialog.topmessageid || 0) === msgId) {
+            else if (dialog && ((dialog.unreadcount || 0) > 0 || (dialog.mentionedcount || 0) > 0) && (dialog.topmessageid || 0) === msgId) {
                 this.readMessageThrottle(inputPeer, msgId, dialog.topmessageid || 0);
                 this.updateDialogsCounter(peerId, {
                     mentionCounter: 0,

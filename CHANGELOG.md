@@ -1,3 +1,8 @@
+## 0.25.76
+* Mention Counter and Unread Counter now have more robust checking
+* Mention bug fixed
+* File manager download queue changed to LIFO
+
 ## 0.25.75
 * Session reorder updated
 * SDK updated

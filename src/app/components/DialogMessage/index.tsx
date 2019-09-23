@@ -84,9 +84,10 @@ class DialogMessage extends React.Component<IProps, IState> {
         const {dialog, isTyping} = this.state;
         const ids = Object.keys(isTyping);
         const muted = isMuted(dialog.notifysettings);
+        const hasMention = (dialog.mentionedcount && dialog.mentionedcount > 0);
         return (
             <div
-                className={'dialog-wrapper' + (muted ? ' muted' : '') + ((dialog.mentionedcount && dialog.mentionedcount > 0) ? ' has-mention' : '')}>
+                className={'dialog-wrapper' + (muted ? ' muted' : '') + (hasMention ? ' has-mention' : '')}>
                 {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
                 <UserAvatar className="avatar" id={dialog.peerid || ''} noDetail={true}
                             savedMessages={dialog.saved_messages}/>}
@@ -108,12 +109,12 @@ class DialogMessage extends React.Component<IProps, IState> {
                     {this.renderPreviewMessage(dialog)}
                 </span>}
                 {isTypingRender(isTyping, dialog.peertype || PeerType.PEERUSER)}
-                {Boolean(dialog.unreadcount && dialog.unreadcount > 0) &&
+                {Boolean(dialog.unreadcount && dialog.unreadcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me) &&
                 <span
                     className="unread">{(dialog.unreadcount || 0) > 99 ? localize('+99') : localize(dialog.unreadcount || 0)}</span>}
                 {Boolean(!dialog.unreadcount && dialog.pinned) &&
                 this.getPinIcon()}
-                {Boolean(dialog.mentionedcount && dialog.mentionedcount > 0) &&
+                {Boolean(dialog.mentionedcount && dialog.mentionedcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me) &&
                 <span className="mention"><AlternateEmailRounded/></span>}
                 {Boolean(dialog.only_contact !== true) && <div className="more" onClick={this.props.onContextMenuOpen}>
                     <MoreVert/>

@@ -76,7 +76,7 @@ const C_MAX_UPLOAD_QUEUE_SIZE = 2;
 const C_MAX_UPLOAD_PIPELINE_SIZE = 4;
 const C_UPLOAD_CHUNK_SIZE = 256 * 1024;
 const C_MAX_DOWNLOAD_QUEUE_SIZE = 4;
-const C_MAX_INSTANT_DOWNLOAD_QUEUE_SIZE = 32;
+const C_MAX_INSTANT_DOWNLOAD_QUEUE_SIZE = 12;
 const C_MAX_DOWNLOAD_PIPELINE_SIZE = 4;
 const C_DOWNLOAD_CHUNK_SIZE = 256 * 1024;
 const C_MAX_RETRIES = 10;
@@ -278,7 +278,7 @@ export default class FileManager {
     /* Start download queue */
     private startDownloadQueue() {
         if (this.onWireDownloads.length < C_MAX_DOWNLOAD_QUEUE_SIZE && this.downloadQueue.length > 0) {
-            const id = this.downloadQueue.shift();
+            const id = this.downloadQueue.pop();
             if (id) {
                 if (this.onWireDownloads.indexOf(id) === -1) {
                     this.onWireDownloads.push(id);
@@ -291,7 +291,7 @@ export default class FileManager {
 
     private startInstanceDownloadQueue() {
         if (this.onWireInstantDownloads.length < C_MAX_INSTANT_DOWNLOAD_QUEUE_SIZE && this.instantDownloadQueue.length > 0) {
-            const id = this.instantDownloadQueue.shift();
+            const id = this.instantDownloadQueue.pop();
             if (id) {
                 if (this.onWireInstantDownloads.indexOf(id) === -1) {
                     this.onWireInstantDownloads.push(id);
@@ -311,6 +311,7 @@ export default class FileManager {
                     code: C_FILE_ERR_CODE.MAX_TRY,
                     message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.MAX_TRY],
                 });
+                delete this.fileTransferQueue[id];
                 this.startUploadQueue();
                 return;
             }
