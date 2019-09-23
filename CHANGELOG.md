@@ -1,3 +1,6 @@
+## 0.25.78
+* Prompt in removing message from saved messages updated
+
 ## 0.25.77
 * ProtoMessages updated
 * Client ProtoMessages removed

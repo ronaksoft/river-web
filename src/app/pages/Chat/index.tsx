@@ -793,7 +793,7 @@ class Chat extends React.Component<IProps, IState> {
                                     autoFocus={true}>
                                 {i18n.t('chat.remove_message_dialog.remove')}
                             </Button>
-                            {Boolean(confirmDialogMode === 'remove_message_revoke') &&
+                            {Boolean(confirmDialogMode === 'remove_message_revoke' && selectedDialogId !== this.connInfo.UserID) &&
                             <Button onClick={this.removeMessageHandler.bind(this, 1)} color="primary">
                                 {i18n.t('chat.remove_message_dialog.remove_for_all')}
                             </Button>}
