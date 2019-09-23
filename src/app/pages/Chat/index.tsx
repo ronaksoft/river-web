@@ -4574,10 +4574,14 @@ class Chat extends React.Component<IProps, IState> {
     private getMoveDown() {
         const {selectedDialogId} = this.state;
         const dialog = this.getDialogById(selectedDialogId);
+        let unreadCounter = 0;
         if (dialog) {
+            if (dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me) {
+                unreadCounter = dialog.unreadcount || 0;
+            }
             return (<div ref={this.moveDownRefHandler} className="move-down" onClick={this.moveDownClickHandler}>
-                <Badge color="primary" badgeContent={dialog.unreadcount}
-                       invisible={Boolean(dialog.unreadcount === 0)}>
+                <Badge color="primary" badgeContent={unreadCounter}
+                       invisible={Boolean(unreadCounter === 0)}>
                     <ExpandMoreRounded/>
                 </Badge>
             </div>);
