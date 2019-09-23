@@ -39,7 +39,8 @@
     "are_you_sure": "Are you sure?",
     "loading": "Loading...",
     "user_list": "User List",
-    "no_message": "no message"
+    "no_message": "no message",
+    "error": "Error"
   },
   "chat": {
     "search": "Search",
@@ -293,7 +294,8 @@
     "removed": "removed",
     "unsupported_message": "Unsupported Message",
     "unread_messages": "Unread Messages",
-    "draft": "Draft:"
+    "draft": "Draft:",
+    "replied_message": "Replied message"
   },
   "uploader": {
     "converting": "Converting...",

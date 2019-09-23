@@ -38,7 +38,8 @@
     "are_you_sure": "مطمئن هستید؟",
     "loading": "شکیبا باشید...",
     "user_list": "لیست کاربرها",
-    "no_message": "بدون پیام"
+    "no_message": "بدون پیام",
+    "error": "خطا"
   },
   "chat": {
     "search": "جستجو",
@@ -289,7 +290,8 @@
     "removed": "حذف کرد",
     "unsupported_message": "پیام مبهم",
     "unread_messages": "پیام‌های جدید",
-    "draft": "پیش‌نویس:"
+    "draft": "پیش‌نویس:",
+    "replied_message": "پیام پاسخ داده شده"
   },
   "uploader": {
     "converting": "درحال تبدیل کردن...",

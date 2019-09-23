@@ -15,6 +15,16 @@ interface ICachedMessage {
     timeout: any;
 }
 
+export interface ICachedMessageServiceBroadcastItemData {
+    id: number;
+    mode: 'updated' | 'removed';
+}
+
+interface IBroadcastItem {
+    fnQueue: { [key: number]: any };
+    data: ICachedMessageServiceBroadcastItemData | null;
+}
+
 const C_CACHE_TTL = 67;
 
 export default class CachedMessageService {
@@ -29,6 +39,9 @@ export default class CachedMessageService {
 
     private messages: { [key: number]: ICachedMessage } = {};
     private peerIds: { [key: string]: number[] } = {};
+
+    private fnIndex: number = 0;
+    private listeners: { [key: string]: IBroadcastItem } = {};
 
     public constructor() {
         //
@@ -68,6 +81,42 @@ export default class CachedMessageService {
         }
     }
 
+    /* Update message */
+    public updateMessage(message: IMessage) {
+        const id = message.id || 0;
+        const peerId = message.peerid || '';
+        if (!this.peerIds.hasOwnProperty(peerId)) {
+            return;
+        }
+        this.messages[id] = {
+            message,
+            peerId,
+            timeout: null,
+        };
+        this.callHandlers(id, {
+            id,
+            mode: 'updated',
+        });
+    }
+
+    /* Remove message */
+    public removeMessage(id: number) {
+        if (this.messages.hasOwnProperty(id)) {
+            if (this.peerIds.hasOwnProperty(this.messages[id].peerId)) {
+                const index = this.peerIds[this.messages[id].peerId].indexOf(id);
+                if (index > -1) {
+                    this.peerIds[this.messages[id].peerId].splice(index);
+                }
+            }
+            clearTimeout(this.messages[id].timeout);
+            delete this.messages[id];
+            this.callHandlers(id, {
+                id,
+                mode: 'removed',
+            });
+        }
+    }
+
     /* Start cache clear timeout */
     public unmountCache(id: number, ttl?: number) {
         if (this.messages.hasOwnProperty(id)) {
@@ -98,5 +147,42 @@ export default class CachedMessageService {
             });
             delete this.peerIds[peerId];
         }
+    }
+
+    /* Listen to message change */
+    public listen(messageId: number, fn: any): (() => void) | null {
+        if (!messageId) {
+            return null;
+        }
+        const name = String(messageId);
+        this.fnIndex++;
+        const fnIndex = this.fnIndex;
+        if (!this.listeners.hasOwnProperty(name)) {
+            this.listeners[name] = {
+                data: null,
+                fnQueue: [],
+            };
+        }
+        this.listeners[name].fnQueue[fnIndex] = fn;
+        return () => {
+            if (this.listeners.hasOwnProperty(name)) {
+                delete this.listeners[name].fnQueue[fnIndex];
+            }
+        };
+    }
+
+    private callHandlers(messageId: number, data: ICachedMessageServiceBroadcastItemData) {
+        const name = String(messageId);
+        if (!this.listeners.hasOwnProperty(name)) {
+            return;
+        }
+        this.listeners[name].data = data;
+        const keys = Object.keys(this.listeners[name].fnQueue);
+        keys.forEach((key) => {
+            const fn = this.listeners[name].fnQueue[key];
+            if (fn) {
+                fn(data);
+            }
+        });
     }
 }

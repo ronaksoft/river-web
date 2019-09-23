@@ -1,3 +1,8 @@
+## 0.25.79
+* Reply message improvements
+* Translations updated
+* CachedMessageService event handler added
+
 ## 0.25.78
 * Prompt in removing message from saved messages updated
 

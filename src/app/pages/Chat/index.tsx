@@ -1275,6 +1275,9 @@ class Chat extends React.Component<IProps, IState> {
             }
         }
         if (this.state.selectedDialogId === data.message.peerid) {
+            // Update and broadcast changes in cache
+            this.cachedMessageService.updateMessage(data.message);
+
             const messages = this.messages;
             const index = findIndex(messages, (o) => {
                 return o.id === data.message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
@@ -1441,6 +1444,9 @@ class Chat extends React.Component<IProps, IState> {
                     }
                 }
                 if (peer.id === this.state.selectedDialogId) {
+                    // Update and broadcast changes in cache
+                    this.cachedMessageService.removeMessage(id);
+
                     const messages = this.messages;
                     let updateView = false;
                     const index = findLastIndex(messages, (o) => {
@@ -2467,7 +2473,7 @@ class Chat extends React.Component<IProps, IState> {
 
         let unreadCounter = 0;
         td.forEach((d) => {
-            if (d && d.unreadcount) {
+            if (d && d.unreadcount && d.unreadcount > 0 && d.readinboxmaxid !== d.topmessageid && !d.preview_me) {
                 unreadCounter += d.unreadcount;
             }
         });

@@ -16,14 +16,15 @@ import {getMessageTitle} from '../Dialog/utils';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 import {getMediaInfo} from '../MessageMedia';
 import CachedPhoto from '../CachedPhoto';
-import CachedMessageService from '../../services/cachedMessageService';
+import CachedMessageService, {ICachedMessageServiceBroadcastItemData} from '../../services/cachedMessageService';
+import i18n from '../../services/i18n';
 
 import './style.css';
 
 interface IProps {
     disableClick: boolean;
     message: IMessage;
-    onClick?: (e: any) => void;
+    onClick?: (id: number, e: any) => void;
     onDoubleClick?: (e: any) => void;
     peer: InputPeer | null;
 }
@@ -39,6 +40,8 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
     private messageRepo: MessageRepo;
     private userId: string;
     private cachedMessageService: CachedMessageService;
+    private eventReferences: any[] = [];
+    private lastId: number = 0;
 
     constructor(props: IProps) {
         super(props);
@@ -47,7 +50,9 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
 
         let message = null;
         if (this.props.message && this.props.message.replyto !== 0 && this.props.message.deleted_reply !== true) {
+            this.lastId = this.props.message.replyto || 0;
             message = this.cachedMessageService.getMessage(this.props.message.peerid || '', this.props.message.replyto || 0);
+            this.eventReferences.push(this.cachedMessageService.listen(this.props.message.replyto || 0, this.cachedMessageServiceHandler));
         }
         this.state = {
             error: false,
@@ -67,12 +72,15 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
     }
 
     public componentWillReceiveProps(newProps: IProps) {
-        if (this.state.message !== newProps.message) {
+        if (this.lastId !== newProps.message.peertype) {
+            this.lastId = newProps.message.peertype || 0;
             this.cachedMessageService.unmountCache(this.state.message.id || 0);
+            this.removeAllListeners();
             this.setState({
                 message: newProps.message,
             }, () => {
                 if (this.state.message.replyto && this.state.message.replyto !== 0 && this.state.message.deleted_reply !== true) {
+                    this.eventReferences.push(this.cachedMessageService.listen(this.state.message.replyto, this.cachedMessageServiceHandler));
                     const message = this.cachedMessageService.getMessage(this.state.message.peerid || '', this.state.message.replyto || 0);
                     if (message) {
                         this.setState({
@@ -91,6 +99,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
         if (this.state.message) {
             this.cachedMessageService.unmountCache(this.state.message.replyto || 0);
         }
+        this.removeAllListeners();
     }
 
     public render() {
@@ -105,9 +114,9 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
                         <div className="preview-message-wrapper reply-you">
                             <span className="preview-bar"/>
                             <div className="preview-message">
-                                <span className="preview-message-user">Error</span>
+                                <span className="preview-message-user">{i18n.t('general.error')}</span>
                                 <div className="preview-message-body">
-                                    <div className="inner ltr">Replied message</div>
+                                    <div className="inner ltr">{i18n.t('message.replied_message')}</div>
                                 </div>
                             </div>
                         </div>
@@ -227,8 +236,35 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
     }
 
     private clickHandler = (e: any) => {
-        if (!this.props.disableClick && this.props.onClick) {
-            this.props.onClick(e);
+        if (!this.props.disableClick && this.props.onClick && !this.state.error) {
+            this.props.onClick(this.props.message.replyto || 0, e);
+        }
+    }
+
+    /* Remove all listeners */
+    private removeAllListeners() {
+        this.eventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
+        });
+    }
+
+    private cachedMessageServiceHandler = (data: ICachedMessageServiceBroadcastItemData) => {
+        if (data.mode === 'removed') {
+            this.setState({
+                error: true,
+                previewMessage: null,
+            });
+        } else if (data.mode === 'updated') {
+            if (this.props.message && this.props.message.replyto !== 0 && this.props.message.deleted_reply !== true) {
+                const previewMessage = this.cachedMessageService.getMessage(this.props.message.peerid || '', this.props.message.replyto || 0);
+                if (previewMessage) {
+                    this.setState({
+                        previewMessage,
+                    });
+                }
+            }
         }
     }
 }

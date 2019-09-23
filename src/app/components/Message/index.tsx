@@ -929,7 +929,7 @@ class Message extends React.Component<IProps, IState> {
                                 {Boolean(message.replyto && message.replyto !== 0 && message.deleted_reply !== true) &&
                                 <MessagePreview message={message} peer={peer}
                                                 onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}
-                                                onClick={this.props.onJumpToMessage.bind(this, message.replyto)}
+                                                onClick={this.props.onJumpToMessage}
                                                 disableClick={this.state.selectable}
                                 />}
                                 {Boolean(message.fwdsenderid && message.fwdsenderid !== '0') &&
