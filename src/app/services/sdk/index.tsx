@@ -371,7 +371,7 @@ export default class SDK {
         data.setSystemversion(systemVersion);
         data.setToken(token);
         data.setTokentype(PushTokenProvider.PUSHTOKENFIREBASE);
-        data.setClientid('official');
+        data.setClientid('river');
         return this.server.send(C_MSG.AccountRegisterDevice, data.serializeBinary(), true);
     }
 
