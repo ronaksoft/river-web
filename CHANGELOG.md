@@ -1,3 +1,6 @@
+## 0.25.82
+* Nginx types updated
+
 ## 0.25.81
 * Nginx types updated
 * More concurrent pipeline in download/upload
