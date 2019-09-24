@@ -1,3 +1,6 @@
+## 0.25.83
+* Nginx types updated (wasm)
+
 ## 0.25.82
 * Nginx types updated
 
