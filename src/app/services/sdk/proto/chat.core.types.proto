@@ -165,6 +165,7 @@ message User {
     optional string Bio = 9;
     optional string Phone = 10;
     optional int64 LastSeen = 11;
+    repeated UserPhoto PhotoGallery = 12;
 }
 
 // ContactUser
@@ -220,6 +221,7 @@ message DraftMessage {
     required string Body = 5;
     repeated MessageEntity Entities = 6;
     required int64 ReplyTo = 7;
+    optional int64 EditedID = 8;
 }
 
 // MessageEntityType
@@ -302,7 +304,6 @@ message Group {
     optional int64 EditedOn = 5;
     repeated GroupFlags Flags = 6;
     optional GroupPhoto Photo = 7;
-
 }
 
 // GroupFull
@@ -311,6 +312,7 @@ message GroupFull {
     repeated User Users = 2;
     repeated GroupParticipant Participants = 3;
     required PeerNotifySettings NotifySettings = 4;
+    repeated GroupPhoto PhotoGallery = 5;
 }
 
 // ParticipantType

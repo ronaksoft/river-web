@@ -1,3 +1,11 @@
+## 0.25.80
+* Gallery SlideShow implemented
+* Proto Messages updated
+* Document Viewer updated
+* UserInfoMenu view anchor updated
+* UserDialog view anchor updated
+* Minor bugs fixed
+
 ## 0.25.79
 * Reply message improvements
 * Translations updated

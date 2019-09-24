@@ -4357,12 +4357,19 @@ proto.msg.UserPhoto.prototype.hasPhotoid = function() {
  * @constructor
  */
 proto.msg.User = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.msg.User.repeatedFields_, null);
 };
 goog.inherits(proto.msg.User, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   proto.msg.User.displayName = 'proto.msg.User';
 }
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.msg.User.repeatedFields_ = [12];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -4402,7 +4409,9 @@ proto.msg.User.toObject = function(includeInstance, msg) {
     photo: (f = msg.getPhoto()) && proto.msg.UserPhoto.toObject(includeInstance, f),
     bio: jspb.Message.getField(msg, 9),
     phone: jspb.Message.getField(msg, 10),
-    lastseen: jspb.Message.getField(msg, 11)
+    lastseen: jspb.Message.getField(msg, 11),
+    photogalleryList: jspb.Message.toObjectList(msg.getPhotogalleryList(),
+    proto.msg.UserPhoto.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -4483,6 +4492,11 @@ proto.msg.User.deserializeBinaryFromReader = function(msg, reader) {
     case 11:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setLastseen(value);
+      break;
+    case 12:
+      var value = new proto.msg.UserPhoto;
+      reader.readMessage(value,proto.msg.UserPhoto.deserializeBinaryFromReader);
+      msg.addPhotogallery(value);
       break;
     default:
       reader.skipField();
@@ -4589,6 +4603,14 @@ proto.msg.User.serializeBinaryToWriter = function(message, writer) {
     writer.writeInt64(
       11,
       f
+    );
+  }
+  f = message.getPhotogalleryList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      12,
+      f,
+      proto.msg.UserPhoto.serializeBinaryToWriter
     );
   }
 };
@@ -4913,6 +4935,37 @@ proto.msg.User.prototype.clearLastseen = function() {
  */
 proto.msg.User.prototype.hasLastseen = function() {
   return jspb.Message.getField(this, 11) != null;
+};
+
+
+/**
+ * repeated UserPhoto PhotoGallery = 12;
+ * @return {!Array.<!proto.msg.UserPhoto>}
+ */
+proto.msg.User.prototype.getPhotogalleryList = function() {
+  return /** @type{!Array.<!proto.msg.UserPhoto>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.msg.UserPhoto, 12));
+};
+
+
+/** @param {!Array.<!proto.msg.UserPhoto>} value */
+proto.msg.User.prototype.setPhotogalleryList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 12, value);
+};
+
+
+/**
+ * @param {!proto.msg.UserPhoto=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.msg.UserPhoto}
+ */
+proto.msg.User.prototype.addPhotogallery = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 12, opt_value, proto.msg.UserPhoto, opt_index);
+};
+
+
+proto.msg.User.prototype.clearPhotogalleryList = function() {
+  this.setPhotogalleryList([]);
 };
 
 
@@ -6421,7 +6474,8 @@ proto.msg.DraftMessage.toObject = function(includeInstance, msg) {
     body: jspb.Message.getField(msg, 5),
     entitiesList: jspb.Message.toObjectList(msg.getEntitiesList(),
     proto.msg.MessageEntity.toObject, includeInstance),
-    replyto: jspb.Message.getField(msg, 7)
+    replyto: jspb.Message.getField(msg, 7),
+    editedid: jspb.Message.getField(msg, 8)
   };
 
   if (includeInstance) {
@@ -6482,6 +6536,10 @@ proto.msg.DraftMessage.deserializeBinaryFromReader = function(msg, reader) {
     case 7:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setReplyto(value);
+      break;
+    case 8:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setEditedid(value);
       break;
     default:
       reader.skipField();
@@ -6552,6 +6610,13 @@ proto.msg.DraftMessage.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeInt64(
       7,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 8));
+  if (f != null) {
+    writer.writeInt64(
+      8,
       f
     );
   }
@@ -6731,6 +6796,35 @@ proto.msg.DraftMessage.prototype.clearReplyto = function() {
  */
 proto.msg.DraftMessage.prototype.hasReplyto = function() {
   return jspb.Message.getField(this, 7) != null;
+};
+
+
+/**
+ * optional int64 EditedID = 8;
+ * @return {number}
+ */
+proto.msg.DraftMessage.prototype.getEditedid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.DraftMessage.prototype.setEditedid = function(value) {
+  jspb.Message.setField(this, 8, value);
+};
+
+
+proto.msg.DraftMessage.prototype.clearEditedid = function() {
+  jspb.Message.setField(this, 8, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.DraftMessage.prototype.hasEditedid = function() {
+  return jspb.Message.getField(this, 8) != null;
 };
 
 
@@ -8923,7 +9017,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.msg.GroupFull.repeatedFields_ = [2,3];
+proto.msg.GroupFull.repeatedFields_ = [2,3,5];
 
 
 
@@ -8959,7 +9053,9 @@ proto.msg.GroupFull.toObject = function(includeInstance, msg) {
     proto.msg.User.toObject, includeInstance),
     participantsList: jspb.Message.toObjectList(msg.getParticipantsList(),
     proto.msg.GroupParticipant.toObject, includeInstance),
-    notifysettings: (f = msg.getNotifysettings()) && proto.msg.PeerNotifySettings.toObject(includeInstance, f)
+    notifysettings: (f = msg.getNotifysettings()) && proto.msg.PeerNotifySettings.toObject(includeInstance, f),
+    photogalleryList: jspb.Message.toObjectList(msg.getPhotogalleryList(),
+    proto.msg.GroupPhoto.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -9015,6 +9111,11 @@ proto.msg.GroupFull.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.msg.PeerNotifySettings;
       reader.readMessage(value,proto.msg.PeerNotifySettings.deserializeBinaryFromReader);
       msg.setNotifysettings(value);
+      break;
+    case 5:
+      var value = new proto.msg.GroupPhoto;
+      reader.readMessage(value,proto.msg.GroupPhoto.deserializeBinaryFromReader);
+      msg.addPhotogallery(value);
       break;
     default:
       reader.skipField();
@@ -9075,6 +9176,14 @@ proto.msg.GroupFull.serializeBinaryToWriter = function(message, writer) {
       4,
       f,
       proto.msg.PeerNotifySettings.serializeBinaryToWriter
+    );
+  }
+  f = message.getPhotogalleryList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      5,
+      f,
+      proto.msg.GroupPhoto.serializeBinaryToWriter
     );
   }
 };
@@ -9199,6 +9308,37 @@ proto.msg.GroupFull.prototype.clearNotifysettings = function() {
  */
 proto.msg.GroupFull.prototype.hasNotifysettings = function() {
   return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * repeated GroupPhoto PhotoGallery = 5;
+ * @return {!Array.<!proto.msg.GroupPhoto>}
+ */
+proto.msg.GroupFull.prototype.getPhotogalleryList = function() {
+  return /** @type{!Array.<!proto.msg.GroupPhoto>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.msg.GroupPhoto, 5));
+};
+
+
+/** @param {!Array.<!proto.msg.GroupPhoto>} value */
+proto.msg.GroupFull.prototype.setPhotogalleryList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 5, value);
+};
+
+
+/**
+ * @param {!proto.msg.GroupPhoto=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.msg.GroupPhoto}
+ */
+proto.msg.GroupFull.prototype.addPhotogallery = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 5, opt_value, proto.msg.GroupPhoto, opt_index);
+};
+
+
+proto.msg.GroupFull.prototype.clearPhotogalleryList = function() {
+  this.setPhotogalleryList([]);
 };
 
 

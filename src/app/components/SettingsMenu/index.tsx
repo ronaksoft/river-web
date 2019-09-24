@@ -48,7 +48,9 @@ import ProgressBroadcaster from '../../services/progress';
 import RiverTime from '../../services/utilities/river_time';
 import {
     InputFile,
+    InputPeer,
     InputUser,
+    PeerType,
     PrivacyKey,
     PrivacyRule,
     PrivacyType
@@ -85,7 +87,7 @@ import {localize} from "../../services/utilities/localize";
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.25.79';
+export const C_VERSION = '0.25.80';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{
@@ -1594,13 +1596,21 @@ class SettingsMenu extends React.Component<IProps, IState> {
         if (!user || !user.photo) {
             return;
         }
+        let peer: InputPeer | undefined;
+        if (user.accesshash) {
+            peer = new InputPeer();
+            peer.setAccesshash(user.accesshash);
+            peer.setId(user.id || '');
+            peer.setType(PeerType.PEERUSER);
+        }
         const doc: IDocument = {
             items: [{
                 caption: '',
                 fileLocation: user.photo.photobig,
                 thumbFileLocation: user.photo.photosmall,
             }],
-            type: 'avatar'
+            peer,
+            type: 'avatar',
         };
         this.documentViewerService.loadDocument(doc);
     }

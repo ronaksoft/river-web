@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2019
 */
 
-import {InputFileLocation} from '../sdk/messages/chat.core.types_pb';
+import {InputFileLocation, InputPeer} from '../sdk/messages/chat.core.types_pb';
 import MediaRepo from '../../repository/media';
 import {C_MEDIA_TYPE} from '../../repository/media/interface';
 
@@ -31,6 +31,7 @@ export interface IDocument {
     items: IDocumentItem[];
     peerId?: string;
     rect?: ClientRect;
+    peer?: InputPeer;
     type: 'avatar' | 'picture' | 'video' | 'location';
 }
 

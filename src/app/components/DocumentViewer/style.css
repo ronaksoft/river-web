@@ -164,6 +164,47 @@
         direction: ltr;
         text-align: left; }
 
+.document-viewer-dialog .document-viewer-slide-show {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  min-height: 32px;
+  max-height: 256px;
+  max-width: 800px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.64);
+  border-radius: 5px;
+  padding: 6px;
+  user-select: none; }
+  .document-viewer-dialog .document-viewer-slide-show .slide {
+    height: 48px;
+    width: 48px;
+    margin: 0 6px 0 0;
+    opacity: 0.4;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    overflow: hidden;
+    transition: 0.1s opacity, 0.1s border; }
+    .document-viewer-dialog .document-viewer-slide-show .slide:hover {
+      border-color: rgba(255, 255, 255, 0.64); }
+    .document-viewer-dialog .document-viewer-slide-show .slide.selected {
+      opacity: 1;
+      border-color: #fff; }
+    .document-viewer-dialog .document-viewer-slide-show .slide:last-of-type {
+      margin: 0; }
+    .document-viewer-dialog .document-viewer-slide-show .slide .thumbnail {
+      height: 100%;
+      width: 100%; }
+      .document-viewer-dialog .document-viewer-slide-show .slide .thumbnail img {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+        object-position: center center; }
+
 .document-viewer-dialog .document-viewer-pagination {
   position: absolute;
   top: 0;

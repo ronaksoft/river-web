@@ -486,13 +486,21 @@ class UserDialog extends React.Component<IProps, IState> {
         if (!user || !user.photo) {
             return;
         }
+        let peer: InputPeer | undefined;
+        if (user.accesshash) {
+            peer = new InputPeer();
+            peer.setAccesshash(user.accesshash);
+            peer.setId(user.id || '');
+            peer.setType(PeerType.PEERUSER);
+        }
         const doc: IDocument = {
             items: [{
                 caption: '',
                 fileLocation: user.photo.photobig,
                 thumbFileLocation: user.photo.photosmall,
             }],
-            type: 'avatar'
+            peer,
+            type: 'avatar',
         };
         this.documentViewerService.loadDocument(doc);
     }

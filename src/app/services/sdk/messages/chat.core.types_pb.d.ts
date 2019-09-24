@@ -659,6 +659,11 @@ export class User extends jspb.Message {
   getLastseen(): number | undefined;
   setLastseen(value: number): void;
 
+  clearPhotogalleryList(): void;
+  getPhotogalleryList(): Array<UserPhoto>;
+  setPhotogalleryList(value: Array<UserPhoto>): void;
+  addPhotogallery(value?: UserPhoto, index?: number): UserPhoto;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): User.AsObject;
   static toObject(includeInstance: boolean, msg: User): User.AsObject;
@@ -682,6 +687,7 @@ export namespace User {
     bio?: string,
     phone?: string,
     lastseen?: number,
+    photogalleryList?: Array<UserPhoto.AsObject>,
   }
 }
 
@@ -920,6 +926,11 @@ export class DraftMessage extends jspb.Message {
   getReplyto(): number | undefined;
   setReplyto(value: number): void;
 
+  hasEditedid(): boolean;
+  clearEditedid(): void;
+  getEditedid(): number | undefined;
+  setEditedid(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): DraftMessage.AsObject;
   static toObject(includeInstance: boolean, msg: DraftMessage): DraftMessage.AsObject;
@@ -938,6 +949,7 @@ export namespace DraftMessage {
     body?: string,
     entitiesList?: Array<MessageEntity.AsObject>,
     replyto?: number,
+    editedid?: number,
   }
 }
 
@@ -1270,6 +1282,11 @@ export class GroupFull extends jspb.Message {
   getNotifysettings(): PeerNotifySettings;
   setNotifysettings(value?: PeerNotifySettings): void;
 
+  clearPhotogalleryList(): void;
+  getPhotogalleryList(): Array<GroupPhoto>;
+  setPhotogalleryList(value: Array<GroupPhoto>): void;
+  addPhotogallery(value?: GroupPhoto, index?: number): GroupPhoto;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GroupFull.AsObject;
   static toObject(includeInstance: boolean, msg: GroupFull): GroupFull.AsObject;
@@ -1286,6 +1303,7 @@ export namespace GroupFull {
     usersList: Array<User.AsObject>,
     participantsList: Array<GroupParticipant.AsObject>,
     notifysettings: PeerNotifySettings.AsObject,
+    photogalleryList: Array<GroupPhoto.AsObject>,
   }
 }
 

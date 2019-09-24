@@ -14,7 +14,7 @@ import {
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import {
-    GroupFlags, InputFile, InputPeer, InputUser, ParticipantType, PeerNotifySettings,
+    GroupFlags, InputFile, InputPeer, InputUser, ParticipantType, PeerNotifySettings, PeerType,
 } from '../../services/sdk/messages/chat.core.types_pb';
 import SDK from '../../services/sdk';
 import GroupAvatar from '../GroupAvatar';
@@ -431,6 +431,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         this.sdk.groupGetFull(peer).then((res) => {
             const group: IGroup = res.group;
             group.participantList = res.participantsList;
+            group.photogalleryList = res.photogalleryList;
             this.groupRepo.importBulk([group], this.callerId);
             const contacts: IUser[] = [];
             res.participantsList.forEach((list) => {
@@ -947,13 +948,19 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         if (!group || !group.photo) {
             return;
         }
+        let peer: InputPeer | undefined;
+        peer = new InputPeer();
+        peer.setAccesshash('0');
+        peer.setId(group.id || '');
+        peer.setType(PeerType.PEERGROUP);
         const doc: IDocument = {
             items: [{
                 caption: '',
                 fileLocation: group.photo.photobig,
                 thumbFileLocation: group.photo.photosmall,
             }],
-            type: 'avatar'
+            peer,
+            type: 'avatar',
         };
         this.documentViewerService.loadDocument(doc);
     }

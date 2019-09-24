@@ -3634,7 +3634,8 @@ proto.msg.MessagesSaveDraft.toObject = function(includeInstance, msg) {
     replyto: jspb.Message.getField(msg, 2),
     body: jspb.Message.getField(msg, 3),
     entitiesList: jspb.Message.toObjectList(msg.getEntitiesList(),
-    chat_core_types_pb.MessageEntity.toObject, includeInstance)
+    chat_core_types_pb.MessageEntity.toObject, includeInstance),
+    editedid: jspb.Message.getField(msg, 5)
   };
 
   if (includeInstance) {
@@ -3688,6 +3689,10 @@ proto.msg.MessagesSaveDraft.deserializeBinaryFromReader = function(msg, reader) 
       var value = new chat_core_types_pb.MessageEntity;
       reader.readMessage(value,chat_core_types_pb.MessageEntity.deserializeBinaryFromReader);
       msg.addEntities(value);
+      break;
+    case 5:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setEditedid(value);
       break;
     default:
       reader.skipField();
@@ -3746,6 +3751,13 @@ proto.msg.MessagesSaveDraft.serializeBinaryToWriter = function(message, writer) 
       4,
       f,
       chat_core_types_pb.MessageEntity.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 5));
+  if (f != null) {
+    writer.writeInt64(
+      5,
+      f
     );
   }
 };
@@ -3867,6 +3879,35 @@ proto.msg.MessagesSaveDraft.prototype.addEntities = function(opt_value, opt_inde
 
 proto.msg.MessagesSaveDraft.prototype.clearEntitiesList = function() {
   this.setEntitiesList([]);
+};
+
+
+/**
+ * optional int64 EditedID = 5;
+ * @return {number}
+ */
+proto.msg.MessagesSaveDraft.prototype.getEditedid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.MessagesSaveDraft.prototype.setEditedid = function(value) {
+  jspb.Message.setField(this, 5, value);
+};
+
+
+proto.msg.MessagesSaveDraft.prototype.clearEditedid = function() {
+  jspb.Message.setField(this, 5, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.MessagesSaveDraft.prototype.hasEditedid = function() {
+  return jspb.Message.getField(this, 5) != null;
 };
 
 

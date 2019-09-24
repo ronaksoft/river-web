@@ -938,6 +938,7 @@ class ChatInput extends React.Component<IProps, IState> {
             this.sdk.groupGetFull(peer).then((res) => {
                 const group: IGroup = res.group;
                 group.participantList = res.participantsList;
+                group.photogalleryList = res.photogalleryList;
                 if (res && res.participantsList) {
                     searchParticipant(keyword, res.participantsList);
                 }

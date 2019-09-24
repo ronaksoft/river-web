@@ -26,9 +26,15 @@ import MenuItem from '@material-ui/core/MenuItem/MenuItem';
 import Menu from '@material-ui/core/Menu/Menu';
 import {ClickAwayListener} from "@material-ui/core";
 import i18n from '../../services/i18n';
+import {Loading} from "../Loading";
+import SDK from "../../services/sdk";
+import {InputPeer, PeerType, UserPhoto} from "../../services/sdk/messages/chat.core.types_pb";
+import UserRepo from "../../repository/user";
+import GroupRepo from "../../repository/group";
+import {IUser} from "../../repository/user/interface";
+import {IGroup} from "../../repository/group/interface";
 
 import './style.css';
-import {Loading} from "../Loading";
 
 const C_MAX_WIDTH = 800;
 const C_MAX_HEIGHT = 600;
@@ -64,6 +70,8 @@ interface IState {
     dialogOpen: boolean;
     doc: IDocument | null;
     fileState: 'download' | 'view' | 'progress' | 'open';
+    galleryList: UserPhoto.AsObject[];
+    gallerySelect: number;
     next: IMessage | null;
     prev: IMessage | null;
     size?: ISize;
@@ -96,6 +104,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
     private lastAnchorType?: 'message' | 'shared_media' | 'shared_media_full';
     private inControls: boolean = false;
     private firstTimeLoad: boolean = true;
+    private sdk: SDK;
+    private userRepo: UserRepo;
+    private groupRepo: GroupRepo;
 
     constructor(props: IProps) {
         super(props);
@@ -106,11 +117,16 @@ class DocumentViewer extends React.Component<IProps, IState> {
             dialogOpen: false,
             doc: null,
             fileState: 'view',
+            galleryList: [],
+            gallerySelect: 0,
             next: null,
             prev: null,
         };
 
         this.documentViewerService = DocumentViewService.getInstance();
+        this.sdk = SDK.getInstance();
+        this.userRepo = UserRepo.getInstance();
+        this.groupRepo = GroupRepo.getInstance();
     }
 
     public componentDidMount() {
@@ -146,6 +162,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 {this.initCaption()}
                 {this.initControls()}
                 {this.getFloatObj()}
+                {this.initSlideShow()}
             </Dialog>
         );
     }
@@ -155,27 +172,46 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     private getContent() {
-        const {doc, size} = this.state;
+        const {doc, size, galleryList, gallerySelect} = this.state;
         if (!doc) {
             return '';
         }
         switch (doc.type) {
             case 'avatar':
-                return (<div className="avatar-container">
-                    {doc.items.map((item, index) => {
+                if (galleryList.length === 0 || gallerySelect === 0) {
+                    return (<div className="avatar-container">
+                        {doc.items.map((item, index) => {
+                            return (
+                                <React.Fragment key={index}>
+                                    {item.thumbFileLocation && <div className="thumbnail">
+                                        <CachedPhoto className="thumb-picture" fileLocation={item.thumbFileLocation}/>
+                                        <Loading/>
+                                    </div>}
+                                    <div className="photo">
+                                        <CachedPhoto fileLocation={item.fileLocation}/>
+                                    </div>
+                                </React.Fragment>
+                            );
+                        })}
+                    </div>);
+                } else {
+                    const picture = galleryList[gallerySelect];
+                    if (picture) {
                         return (
-                            <React.Fragment key={index}>
-                                {item.thumbFileLocation && <div className="thumbnail">
-                                    <CachedPhoto className="thumb-picture" fileLocation={item.thumbFileLocation}/>
+                            <div className="avatar-container">
+                                {picture.photosmall && <div className="thumbnail">
+                                    <CachedPhoto className="thumb-picture" fileLocation={picture.photosmall}/>
                                     <Loading/>
                                 </div>}
-                                <div className="photo">
-                                    <CachedPhoto fileLocation={item.fileLocation}/>
+                                <div className="photo" key={picture.photoid}>
+                                    <CachedPhoto fileLocation={picture.photobig}/>
                                 </div>
-                            </React.Fragment>
+                            </div>
                         );
-                    })}
-                </div>);
+                    } else {
+                        return '';
+                    }
+                }
             case 'picture':
                 return (<div className="picture-container">
                     {doc.items.map((item, index) => {
@@ -270,9 +306,23 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     private initPagination() {
-        const {doc, prev, next} = this.state;
-        if (!doc || doc.type === 'avatar' || doc.type === 'location') {
+        const {doc, prev, next, galleryList, gallerySelect} = this.state;
+        if (!doc || doc.type === 'location') {
             return '';
+        }
+        if (doc.type === 'avatar' && galleryList.length > 0) {
+            return (
+                <div className="document-viewer-pagination">
+                    <div className="pagination-item prev" hidden={Boolean(gallerySelect === 0)}
+                         onClick={this.prevGalleryHandler}>
+                        <KeyboardArrowLeftRounded/>
+                    </div>
+                    <div className="pagination-item next" hidden={Boolean(gallerySelect === (galleryList.length - 1))}
+                         onClick={this.nextGalleryHandler}>
+                        <KeyboardArrowRightRounded/>
+                    </div>
+                </div>
+            );
         }
         return (
             <div className="document-viewer-pagination">
@@ -515,6 +565,8 @@ class DocumentViewer extends React.Component<IProps, IState> {
         const closeDialog = () => {
             this.setState({
                 dialogOpen: false,
+                galleryList: [],
+                gallerySelect: 0,
                 next: null,
                 prev: null,
                 size: undefined,
@@ -544,6 +596,8 @@ class DocumentViewer extends React.Component<IProps, IState> {
             if (doc.type === 'picture' || doc.type === 'video') {
                 this.calculateImageSize();
                 this.initPaginationHandlers();
+            } else if (doc.type === 'avatar') {
+                this.initAvatar();
             }
         });
     }
@@ -630,13 +684,22 @@ class DocumentViewer extends React.Component<IProps, IState> {
         if (!this.state.dialogOpen || !this.hasControl()) {
             return;
         }
+        const {doc} = this.state;
         if (e.keyCode === 39) {
-            if (this.state.next) {
-                this.nextHandler();
+            if (doc && doc.type === 'avatar') {
+                this.nextGalleryHandler();
+            } else {
+                if (this.state.next) {
+                    this.nextHandler();
+                }
             }
         } else if (e.keyCode === 37) {
-            if (this.state.prev) {
-                this.prevHandler();
+            if (doc && doc.type === 'avatar') {
+                this.prevGalleryHandler();
+            } else {
+                if (this.state.prev) {
+                    this.prevHandler();
+                }
             }
         }
     }
@@ -813,6 +876,104 @@ class DocumentViewer extends React.Component<IProps, IState> {
         if (this.firstTimeLoad) {
             this.firstTimeLoad = false;
         }
+    }
+
+    /* Init Avatar */
+    private initAvatar() {
+        const {doc} = this.state;
+        if (!doc || !doc.peer) {
+            return;
+        }
+        switch (doc.peer.getType()) {
+            case PeerType.PEERUSER:
+                this.initUserAvatar(doc.peer);
+                break;
+            case PeerType.PEERGROUP:
+                this.initGroupAvatar(doc.peer);
+                break;
+        }
+    }
+
+    /* Init user avatar */
+    private initUserAvatar(peer: InputPeer) {
+        const fn = (user: IUser) => {
+            this.setState({
+                galleryList: user.photogalleryList || [],
+            });
+        };
+        this.userRepo.getFull(peer.getId() || '', fn).then(fn);
+    }
+
+    /* Init group avatar */
+    private initGroupAvatar(peer: InputPeer) {
+        const fn = (group: IGroup) => {
+            this.setState({
+                galleryList: group.photogalleryList || [],
+            });
+        };
+        this.groupRepo.get(peer.getId() || '').then(fn);
+        this.sdk.groupGetFull(peer).then(fn);
+    }
+
+    /* Init slide show */
+    private initSlideShow() {
+        const {doc, galleryList, gallerySelect} = this.state;
+        if (!doc || doc.type !== 'avatar') {
+            return '';
+        }
+        if (galleryList.length === 0) {
+            return '';
+        }
+        return (
+            <div className="document-viewer-slide-show" onMouseEnter={this.controlMouseEnterHandler}
+                 onMouseLeave={this.controlMouseLeaveHandler}>
+                {galleryList.map((gallery, key) => {
+                    return (<div key={key} className={'slide' + (gallerySelect === key ? ' selected' : '')}
+                                 onClick={this.selectGalleryIndexHandler.bind(this, key)}>
+                        <CachedPhoto className="thumbnail" fileLocation={gallery.photosmall}/>
+                    </div>);
+                })}
+            </div>
+        );
+    }
+
+    /* Gallery select gallery by index */
+    private selectGalleryIndexHandler = (index: number) => {
+        const {galleryList, gallerySelect} = this.state;
+        if (index < 0) {
+            return;
+        }
+        if (index >= galleryList.length) {
+            return;
+        }
+        if (index === gallerySelect) {
+            return;
+        }
+        this.setState({
+            gallerySelect: index,
+        });
+    }
+
+    /* Gallery prev gallery handler */
+    private prevGalleryHandler = () => {
+        const {gallerySelect} = this.state;
+        if (gallerySelect <= 0) {
+            return;
+        }
+        this.setState({
+            gallerySelect: gallerySelect - 1,
+        });
+    }
+
+    /* Gallery next gallery handler */
+    private nextGalleryHandler = () => {
+        const {galleryList, gallerySelect} = this.state;
+        if (gallerySelect >= (galleryList.length - 1)) {
+            return;
+        }
+        this.setState({
+            gallerySelect: gallerySelect + 1,
+        });
     }
 }
 

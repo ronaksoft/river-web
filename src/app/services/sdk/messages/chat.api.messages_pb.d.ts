@@ -515,6 +515,11 @@ export class MessagesSaveDraft extends jspb.Message {
   setEntitiesList(value: Array<chat_core_types_pb.MessageEntity>): void;
   addEntities(value?: chat_core_types_pb.MessageEntity, index?: number): chat_core_types_pb.MessageEntity;
 
+  hasEditedid(): boolean;
+  clearEditedid(): void;
+  getEditedid(): number | undefined;
+  setEditedid(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesSaveDraft.AsObject;
   static toObject(includeInstance: boolean, msg: MessagesSaveDraft): MessagesSaveDraft.AsObject;
@@ -531,6 +536,7 @@ export namespace MessagesSaveDraft {
     replyto?: number,
     body?: string,
     entitiesList: Array<chat_core_types_pb.MessageEntity.AsObject>,
+    editedid?: number,
   }
 }
 

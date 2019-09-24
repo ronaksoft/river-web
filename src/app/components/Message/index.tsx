@@ -1731,7 +1731,7 @@ class Message extends React.Component<IProps, IState> {
                 fileLocation: photo.photobig,
                 thumbFileLocation: photo.photosmall,
             }],
-            type: 'avatar'
+            type: 'avatar',
         };
         this.documentViewerService.loadDocument(doc);
     }

@@ -152,6 +152,7 @@ message MessagesSaveDraft {
     required int64 ReplyTo = 2;
     required string Body = 3;
     repeated MessageEntity Entities = 4;
+    optional int64 EditedID = 5;
 }
 
 // MessagesClearDraft
