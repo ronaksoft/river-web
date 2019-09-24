@@ -1,5 +1,6 @@
 ## 0.25.81
 * Nginx types updated
+* More concurrent pipeline in download/upload
 
 ## 0.25.80
 * Gallery SlideShow implemented

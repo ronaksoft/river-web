@@ -18,9 +18,6 @@ http {
     }
 
     include       mime.types;
-    types {
-        application/wasm        wasm;
-    }
     default_type  application/octet-stream;
 
     sendfile        on;
@@ -48,6 +45,10 @@ http {
                 expires epoch;
                 add_header Pragma public;
                 add_header Cache-Control "public";
+            }
+
+            location ~* \.wasm$ {
+                add_header Content-Type application/wasm;
             }
         }
 
