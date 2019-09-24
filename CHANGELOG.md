@@ -1,3 +1,6 @@
+## 0.25.81
+* Nginx types updated
+
 ## 0.25.80
 * Gallery SlideShow implemented
 * Proto Messages updated
