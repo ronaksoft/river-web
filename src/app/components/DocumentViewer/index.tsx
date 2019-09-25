@@ -33,6 +33,11 @@ import UserRepo from "../../repository/user";
 import GroupRepo from "../../repository/group";
 import {IUser} from "../../repository/user/interface";
 import {IGroup} from "../../repository/group/interface";
+import Tooltip from "@material-ui/core/Tooltip";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogActions from "@material-ui/core/DialogActions";
+import Button from "@material-ui/core/Button";
+import {hasAuthority} from "../GroupInfoMenu";
 
 import './style.css';
 
@@ -66,6 +71,8 @@ interface IProps {
 
 interface IState {
     className: string;
+    confirmDialogIndex: number;
+    confirmDialogOpen: boolean;
     contextMenuAnchorEl: any;
     dialogOpen: boolean;
     doc: IDocument | null;
@@ -107,12 +114,16 @@ class DocumentViewer extends React.Component<IProps, IState> {
     private sdk: SDK;
     private userRepo: UserRepo;
     private groupRepo: GroupRepo;
+    private userId: string = '';
+    private hasAccess: boolean = false;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
             className: props.className || '',
+            confirmDialogIndex: -1,
+            confirmDialogOpen: false,
             contextMenuAnchorEl: null,
             dialogOpen: false,
             doc: null,
@@ -130,6 +141,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
+        this.userId = this.userRepo.getCurrentUserId();
         this.documentViewerService.setDocumentReady(this.documentReadyHandler);
         window.addEventListener('keydown', this.windowKeyDownHandler, true);
         window.addEventListener('mousemove', this.mediaDocumentMouseMoveHandler);
@@ -182,7 +194,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     return (<div className="avatar-container">
                         {doc.items.map((item, index) => {
                             return (
-                                <React.Fragment key={index}>
+                                <React.Fragment key={item.fileLocation ? (item.fileLocation.fileid || index) : index}>
                                     {item.thumbFileLocation && <div className="thumbnail">
                                         <CachedPhoto className="thumb-picture" fileLocation={item.thumbFileLocation}/>
                                         <Loading/>
@@ -345,6 +357,12 @@ class DocumentViewer extends React.Component<IProps, IState> {
             cmd: 'download',
             title: i18n.t('general.download'),
         }];
+        if (doc.type === 'avatar' && this.hasAccess) {
+            contextMenuItems.push({
+                cmd: 'remove_photo',
+                title: i18n.t('settings.remove_photo'),
+            });
+        }
         return (
             <div className="document-viewer-controls" onMouseEnter={this.controlMouseEnterHandler}
                  onMouseLeave={this.controlMouseLeaveHandler}>
@@ -383,6 +401,21 @@ class DocumentViewer extends React.Component<IProps, IState> {
                         );
                     })}
                 </Menu>
+                <Dialog
+                    open={this.state.confirmDialogOpen}
+                    onClose={this.confirmDialogCloseHandler}
+                    className="confirm-dialog"
+                >
+                    <DialogTitle>{i18n.t('settings.remove_photo')}</DialogTitle>
+                    <DialogActions>
+                        <Button onClick={this.confirmDialogCloseHandler} color="secondary">
+                            {i18n.t('general.cancel')}
+                        </Button>
+                        <Button onClick={this.removePhotoHandler} color="primary" autoFocus={true}>
+                            {i18n.t('general.yes')}
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </div>
         );
     }
@@ -574,6 +607,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
             this.animated = false;
             this.reset();
             this.firstTimeLoad = true;
+            this.hasAccess = false;
         };
         const {doc} = this.state;
         if (doc && (doc.type === 'picture' || doc.type === 'video')) {
@@ -596,8 +630,10 @@ class DocumentViewer extends React.Component<IProps, IState> {
             if (doc.type === 'picture' || doc.type === 'video') {
                 this.calculateImageSize();
                 this.initPaginationHandlers();
+                this.hasAccess = false;
             } else if (doc.type === 'avatar') {
                 this.initAvatar();
+                this.checkAccess();
             }
         });
     }
@@ -866,6 +902,12 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     this.props.onAction('save_as', doc.items[0].id || 0, doc.items[0].fileLocation.fileid);
                 }
                 break;
+            case 'remove_photo':
+                this.setState({
+                    confirmDialogIndex: this.state.gallerySelect,
+                    confirmDialogOpen: true,
+                });
+                break;
             default:
                 break;
         }
@@ -911,8 +953,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 galleryList: group.photogalleryList || [],
             });
         };
-        this.groupRepo.get(peer.getId() || '').then(fn);
-        this.sdk.groupGetFull(peer).then(fn);
+        this.groupRepo.getFull(peer.getId() || '', fn).then(fn);
     }
 
     /* Init slide show */
@@ -928,10 +969,25 @@ class DocumentViewer extends React.Component<IProps, IState> {
             <div className="document-viewer-slide-show" onMouseEnter={this.controlMouseEnterHandler}
                  onMouseLeave={this.controlMouseLeaveHandler}>
                 {galleryList.map((gallery, key) => {
-                    return (<div key={key} className={'slide' + (gallerySelect === key ? ' selected' : '')}
-                                 onClick={this.selectGalleryIndexHandler.bind(this, key)}>
-                        <CachedPhoto className="thumbnail" fileLocation={gallery.photosmall}/>
-                    </div>);
+                    if (this.hasAccess) {
+                        return (
+                            <Tooltip key={gallery.photoid || key} interactive={true} enterDelay={500} leaveDelay={200}
+                                     title={<span className="document-viewer-slide-show-remove"
+                                                  onClick={this.confirmRemovePhotoHandler.bind(this, key)}>{i18n.t('general.remove')}</span>}>
+                                <div className={'slide' + (gallerySelect === key ? ' selected' : '')}
+                                     onClick={this.selectGalleryIndexHandler.bind(this, key)}>
+
+                                    <CachedPhoto className="thumbnail" fileLocation={gallery.photosmall}/>
+                                </div>
+                            </Tooltip>);
+                    } else {
+                        return (<div key={gallery.photoid || key}
+                                     className={'slide' + (gallerySelect === key ? ' selected' : '')}
+                                     onClick={this.selectGalleryIndexHandler.bind(this, key)}>
+
+                            <CachedPhoto className="thumbnail" fileLocation={gallery.photosmall}/>
+                        </div>);
+                    }
                 })}
             </div>
         );
@@ -974,6 +1030,92 @@ class DocumentViewer extends React.Component<IProps, IState> {
         this.setState({
             gallerySelect: gallerySelect + 1,
         });
+    }
+
+    /* Confirm dialog close handler */
+    private confirmDialogCloseHandler = () => {
+        this.setState({
+            confirmDialogIndex: -1,
+            confirmDialogOpen: false,
+        });
+    }
+
+    /* Confirm remove photo handler */
+    private confirmRemovePhotoHandler = (index: number) => {
+        this.setState({
+            confirmDialogIndex: index,
+            confirmDialogOpen: true,
+        });
+    }
+
+    /* Remove photo handler */
+    private removePhotoHandler = () => {
+        const index = this.state.confirmDialogIndex;
+        const {galleryList, gallerySelect, doc} = this.state;
+        if (!doc || !doc.peer || !galleryList[index]) {
+            return;
+        }
+        const fn = (group: boolean) => {
+            galleryList.splice(index, 1);
+            let offset = 0;
+            if (index < gallerySelect) {
+                offset = -1;
+            }
+            if (index === 0 && galleryList.length > 0) {
+                doc.items[0].fileLocation = galleryList[0].photobig;
+                doc.items[0].thumbFileLocation = galleryList[0].photosmall;
+            }
+            if (doc.peer) {
+                const id = doc.peer.getId() || '';
+                if (group) {
+                    this.groupRepo.upsert([{
+                        id,
+                        photogalleryList: galleryList,
+                    }]);
+                } else {
+                    this.userRepo.upsert(false, [{
+                        id,
+                        photogalleryList: galleryList,
+                    }]);
+                }
+            }
+            this.setState({
+                doc,
+                galleryList,
+                gallerySelect: gallerySelect + offset,
+            });
+            this.confirmDialogCloseHandler();
+        };
+        switch (doc.peer.getType()) {
+            case PeerType.PEERUSER:
+                this.sdk.removeProfilePicture(galleryList[index].photoid || '0').then(() => {
+                    fn(false);
+                });
+                break;
+            case PeerType.PEERGROUP:
+                this.sdk.groupRemovePicture(doc.peer.getId() || '', galleryList[index].photoid || '0').then(() => {
+                    fn(true);
+                });
+                break;
+        }
+    }
+
+    private checkAccess() {
+        const {doc} = this.state;
+        if (!doc || !doc.peer) {
+            this.hasAccess = false;
+            return;
+        }
+        if (doc.peer.getType() === PeerType.PEERUSER) {
+            this.hasAccess = (doc.peer.getId() === this.userId);
+        } else if (doc.peer.getType() === PeerType.PEERGROUP) {
+            this.groupRepo.get(doc.peer.getId() || '').then((group) => {
+                this.hasAccess = hasAuthority(group);
+                this.forceUpdate();
+            }).catch(() => {
+                this.hasAccess = false;
+            });
+        }
     }
 }
 

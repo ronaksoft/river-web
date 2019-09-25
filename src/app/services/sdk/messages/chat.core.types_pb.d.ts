@@ -582,8 +582,8 @@ export class UserPhoto extends jspb.Message {
 
   hasPhotoid(): boolean;
   clearPhotoid(): void;
-  getPhotoid(): number | undefined;
-  setPhotoid(value: number): void;
+  getPhotoid(): string | undefined;
+  setPhotoid(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UserPhoto.AsObject;
@@ -599,7 +599,7 @@ export namespace UserPhoto {
   export type AsObject = {
     photobig: FileLocation.AsObject,
     photosmall: FileLocation.AsObject,
-    photoid?: number,
+    photoid?: string,
   }
 }
 
@@ -1186,6 +1186,11 @@ export class GroupPhoto extends jspb.Message {
   getPhotosmall(): FileLocation;
   setPhotosmall(value?: FileLocation): void;
 
+  hasPhotoid(): boolean;
+  clearPhotoid(): void;
+  getPhotoid(): string | undefined;
+  setPhotoid(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GroupPhoto.AsObject;
   static toObject(includeInstance: boolean, msg: GroupPhoto): GroupPhoto.AsObject;
@@ -1200,6 +1205,7 @@ export namespace GroupPhoto {
   export type AsObject = {
     photobig: FileLocation.AsObject,
     photosmall: FileLocation.AsObject,
+    photoid?: string,
   }
 }
 

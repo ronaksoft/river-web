@@ -240,6 +240,11 @@ export class GroupsRemovePhoto extends jspb.Message {
   getGroupid(): string | undefined;
   setGroupid(value: string): void;
 
+  hasPhotoid(): boolean;
+  clearPhotoid(): void;
+  getPhotoid(): string | undefined;
+  setPhotoid(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GroupsRemovePhoto.AsObject;
   static toObject(includeInstance: boolean, msg: GroupsRemovePhoto): GroupsRemovePhoto.AsObject;
@@ -253,6 +258,29 @@ export class GroupsRemovePhoto extends jspb.Message {
 export namespace GroupsRemovePhoto {
   export type AsObject = {
     groupid?: string,
+    photoid?: string,
+  }
+}
+
+export class GroupsUpdatePhoto extends jspb.Message {
+  hasPhotoid(): boolean;
+  clearPhotoid(): void;
+  getPhotoid(): string | undefined;
+  setPhotoid(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GroupsUpdatePhoto.AsObject;
+  static toObject(includeInstance: boolean, msg: GroupsUpdatePhoto): GroupsUpdatePhoto.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: GroupsUpdatePhoto, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GroupsUpdatePhoto;
+  static deserializeBinaryFromReader(message: GroupsUpdatePhoto, reader: jspb.BinaryReader): GroupsUpdatePhoto;
+}
+
+export namespace GroupsUpdatePhoto {
+  export type AsObject = {
+    photoid?: string,
   }
 }
 

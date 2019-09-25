@@ -427,8 +427,9 @@ export default class SDK {
         return this.server.send(C_MSG.AccountUploadPhoto, data.serializeBinary(), true);
     }
 
-    public removeProfilePicture(): Promise<Bool.AsObject> {
+    public removeProfilePicture(id?: string): Promise<Bool.AsObject> {
         const data = new AccountRemovePhoto();
+        data.setPhotoid(id || '0');
         return this.server.send(C_MSG.AccountRemovePhoto, data.serializeBinary(), true);
     }
 
@@ -508,9 +509,10 @@ export default class SDK {
         return this.server.send(C_MSG.GroupsUploadPhoto, data.serializeBinary(), true);
     }
 
-    public groupRemovePicture(groupId: string): Promise<Bool.AsObject> {
+    public groupRemovePicture(groupId: string, id?: string): Promise<Bool.AsObject> {
         const data = new GroupsRemovePhoto();
         data.setGroupid(groupId);
+        data.setPhotoid(id || '0');
         return this.server.send(C_MSG.GroupsRemovePhoto, data.serializeBinary(), true);
     }
 

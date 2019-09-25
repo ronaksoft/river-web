@@ -149,7 +149,7 @@ message FileLocation {
 message UserPhoto {
     required FileLocation PhotoBig = 1;
     required FileLocation PhotoSmall = 2;
-    required int64 PhotoID = 3;
+    required int64 PhotoID = 3 [jstype = JS_STRING];
 }
 
 // User
@@ -293,6 +293,7 @@ enum GroupFlags {
 message GroupPhoto {
     required FileLocation PhotoBig = 1;
     required FileLocation PhotoSmall = 2;
+    optional int64 PhotoID = 3 [jstype = JS_STRING];
 }
 
 // Group

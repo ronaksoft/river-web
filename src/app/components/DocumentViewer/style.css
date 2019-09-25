@@ -281,3 +281,6 @@
       width: 100%;
       object-fit: cover;
       object-position: center center; }
+
+.document-viewer-slide-show-remove {
+  cursor: pointer; }

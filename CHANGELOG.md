@@ -1,3 +1,8 @@
+## 0.25.84
+* Photo Gallery remove implemented
+* Proto Messages updated
+* Group Repo getGull updated
+
 ## 0.25.83
 * Nginx types updated (wasm)
 

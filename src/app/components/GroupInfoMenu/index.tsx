@@ -86,6 +86,15 @@ interface IState {
     uploadingPhoto: boolean;
 }
 
+/* hasAuthority checks user permission for group actions */
+export const hasAuthority = (group: IGroup) => {
+    if (group.flagsList) {
+        return group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMIN) > -1 || group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMINSENABLED) === -1;
+    } else {
+        return false;
+    }
+};
+
 class GroupInfoMenu extends React.Component<IProps, IState> {
     private groupRepo: GroupRepo;
     private dialogRepo: DialogRepo;
@@ -203,7 +212,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                     <div className="avatar" onClick={this.avatarMenuAnchorOpenHandler}>
                                         {!uploadingPhoto && <GroupAvatar id={group.id || ''}/>}
                                         {uploadingPhoto && <img src={this.profileTempPhoto} className="avatar-image"/>}
-                                        {this.hasAuthority(group) &&
+                                        {hasAuthority(group) &&
                                         <div className={'overlay ' + (uploadingPhoto ? 'show' : '')}>
                                             {!uploadingPhoto && <React.Fragment>
                                                 <PhotoCameraRounded/>
@@ -229,7 +238,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                     <div className="title">
                                         {!titleEdit && <div className="form-control">
                                             <div className="inner">{group.title}</div>
-                                            {this.hasAuthority(group) && <div className="action">
+                                            {hasAuthority(group) && <div className="action">
                                                 <IconButton
                                                     onClick={this.onTitleEditHandler}
                                                 >
@@ -274,7 +283,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                     </div>
                                 </div>}
                                 {group && <React.Fragment>
-                                    {this.hasAuthority(group) && <div className="kk-card notify-settings">
+                                    {hasAuthority(group) && <div className="kk-card notify-settings">
                                         <div className="label">{i18n.t('peer_info.all_member_admin')}</div>
                                         <div className="value switch">
                                             <Switch
@@ -512,14 +521,14 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             return;
         }
         const menuItems = [];
-        if (this.hasAuthority(group)) {
+        if (hasAuthority(group)) {
             if (currentUser.userid !== this.userId) {
                 menuItems.push({
                     cmd: 'remove',
                     title: 'Remove',
                 });
             }
-            if (this.hasAuthority(group)) {
+            if (hasAuthority(group)) {
                 if (currentUser.type === ParticipantType.PARTICIPANTTYPEMEMBER) {
                     menuItems.push({
                         cmd: 'promote',
@@ -775,15 +784,6 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         });
     }
 
-    /* hasAuthority checks user permission for group actions */
-    private hasAuthority(group: IGroup) {
-        if (group.flagsList) {
-            return group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMIN) > -1 || group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMINSENABLED) === -1;
-        } else {
-            return false;
-        }
-    }
-
     /* Participant onClick handler */
     private participantClickHandler = (id: string, accesshash: string) => {
         this.broadcastEvent('User_Dialog_Open', {
@@ -898,7 +898,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         if (!group) {
             return;
         }
-        if (this.hasAuthority(group)) {
+        if (hasAuthority(group)) {
             this.setState({
                 avatarMenuAnchorEl: e.currentTarget,
             });

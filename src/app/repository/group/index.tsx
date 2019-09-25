@@ -13,6 +13,8 @@ import {differenceBy, find, uniqBy} from 'lodash';
 import {DexieUserDB} from '../../services/db/dexie/user';
 import Broadcaster from '../../services/broadcaster';
 import {kMerge} from "../../services/utilities/kDash";
+import {InputPeer, PeerType} from "../../services/sdk/messages/chat.core.types_pb";
+import SDK from "../../services/sdk";
 
 export default class GroupRepo {
     public static getInstance() {
@@ -28,11 +30,13 @@ export default class GroupRepo {
     private dbService: DB;
     private db: DexieUserDB;
     private broadcaster: Broadcaster;
+    private sdk: SDK;
 
     private constructor() {
         this.dbService = DB.getInstance();
         this.db = this.dbService.getDB();
         this.broadcaster = Broadcaster.getInstance();
+        this.sdk = SDK.getInstance();
     }
 
     public create(group: IGroup) {
@@ -53,6 +57,34 @@ export default class GroupRepo {
                 this.dbService.setGroup(g);
             }
             return g;
+        });
+    }
+
+    public getFull(id: string, cacheCB?: (gs: IGroup) => void): Promise<IGroup> {
+        return new Promise<IGroup>((resolve, reject) => {
+            this.get(id).then((group) => {
+                if (group) {
+                    if (cacheCB) {
+                        cacheCB(group);
+                    }
+                    const input: InputPeer = new InputPeer();
+                    input.setType(PeerType.PEERGROUP);
+                    input.setId(id);
+                    input.setAccesshash('0');
+                    this.sdk.groupGetFull(input).then((res) => {
+                        if (res) {
+                            this.upsert([res]);
+                            resolve(res);
+                        } else {
+                            reject('none found');
+                        }
+                    }).catch((err) => {
+                        reject(err);
+                    });
+                } else {
+                    reject('none found');
+                }
+            });
         });
     }
 

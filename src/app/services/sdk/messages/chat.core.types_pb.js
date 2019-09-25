@@ -4198,7 +4198,7 @@ proto.msg.UserPhoto.deserializeBinaryFromReader = function(msg, reader) {
       msg.setPhotosmall(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setPhotoid(value);
       break;
     default:
@@ -4246,9 +4246,9 @@ proto.msg.UserPhoto.serializeBinaryToWriter = function(message, writer) {
       proto.msg.FileLocation.serializeBinaryToWriter
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       3,
       f
     );
@@ -4318,14 +4318,14 @@ proto.msg.UserPhoto.prototype.hasPhotosmall = function() {
 
 /**
  * required int64 PhotoID = 3;
- * @return {number}
+ * @return {string}
  */
 proto.msg.UserPhoto.prototype.getPhotoid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, "0"));
 };
 
 
-/** @param {number} value */
+/** @param {string} value */
 proto.msg.UserPhoto.prototype.setPhotoid = function(value) {
   jspb.Message.setField(this, 3, value);
 };
@@ -8427,7 +8427,8 @@ proto.msg.GroupPhoto.prototype.toObject = function(opt_includeInstance) {
 proto.msg.GroupPhoto.toObject = function(includeInstance, msg) {
   var f, obj = {
     photobig: (f = msg.getPhotobig()) && proto.msg.FileLocation.toObject(includeInstance, f),
-    photosmall: (f = msg.getPhotosmall()) && proto.msg.FileLocation.toObject(includeInstance, f)
+    photosmall: (f = msg.getPhotosmall()) && proto.msg.FileLocation.toObject(includeInstance, f),
+    photoid: jspb.Message.getField(msg, 3)
   };
 
   if (includeInstance) {
@@ -8474,6 +8475,10 @@ proto.msg.GroupPhoto.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,proto.msg.FileLocation.deserializeBinaryFromReader);
       msg.setPhotosmall(value);
       break;
+    case 3:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setPhotoid(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -8517,6 +8522,13 @@ proto.msg.GroupPhoto.serializeBinaryToWriter = function(message, writer) {
       2,
       f,
       proto.msg.FileLocation.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeInt64String(
+      3,
+      f
     );
   }
 };
@@ -8579,6 +8591,35 @@ proto.msg.GroupPhoto.prototype.clearPhotosmall = function() {
  */
 proto.msg.GroupPhoto.prototype.hasPhotosmall = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional int64 PhotoID = 3;
+ * @return {string}
+ */
+proto.msg.GroupPhoto.prototype.getPhotoid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, "0"));
+};
+
+
+/** @param {string} value */
+proto.msg.GroupPhoto.prototype.setPhotoid = function(value) {
+  jspb.Message.setField(this, 3, value);
+};
+
+
+proto.msg.GroupPhoto.prototype.clearPhotoid = function() {
+  jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.GroupPhoto.prototype.hasPhotoid = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 

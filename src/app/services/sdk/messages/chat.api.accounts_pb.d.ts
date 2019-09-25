@@ -247,10 +247,10 @@ export namespace AccountUploadPhoto {
 }
 
 export class AccountUpdatePhoto extends jspb.Message {
-  hasPhoto(): boolean;
-  clearPhoto(): void;
-  getPhoto(): chat_core_types_pb.InputDocument;
-  setPhoto(value?: chat_core_types_pb.InputDocument): void;
+  hasPhotoid(): boolean;
+  clearPhotoid(): void;
+  getPhotoid(): string | undefined;
+  setPhotoid(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountUpdatePhoto.AsObject;
@@ -264,11 +264,16 @@ export class AccountUpdatePhoto extends jspb.Message {
 
 export namespace AccountUpdatePhoto {
   export type AsObject = {
-    photo: chat_core_types_pb.InputDocument.AsObject,
+    photoid?: string,
   }
 }
 
 export class AccountRemovePhoto extends jspb.Message {
+  hasPhotoid(): boolean;
+  clearPhotoid(): void;
+  getPhotoid(): string | undefined;
+  setPhotoid(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountRemovePhoto.AsObject;
   static toObject(includeInstance: boolean, msg: AccountRemovePhoto): AccountRemovePhoto.AsObject;
@@ -281,6 +286,7 @@ export class AccountRemovePhoto extends jspb.Message {
 
 export namespace AccountRemovePhoto {
   export type AsObject = {
+    photoid?: string,
   }
 }
 

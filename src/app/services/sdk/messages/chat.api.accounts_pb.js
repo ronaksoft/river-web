@@ -1792,7 +1792,7 @@ proto.msg.AccountUpdatePhoto.prototype.toObject = function(opt_includeInstance) 
  */
 proto.msg.AccountUpdatePhoto.toObject = function(includeInstance, msg) {
   var f, obj = {
-    photo: (f = msg.getPhoto()) && chat_core_types_pb.InputDocument.toObject(includeInstance, f)
+    photoid: jspb.Message.getField(msg, 1)
   };
 
   if (includeInstance) {
@@ -1830,9 +1830,8 @@ proto.msg.AccountUpdatePhoto.deserializeBinaryFromReader = function(msg, reader)
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new chat_core_types_pb.InputDocument;
-      reader.readMessage(value,chat_core_types_pb.InputDocument.deserializeBinaryFromReader);
-      msg.setPhoto(value);
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setPhotoid(value);
       break;
     default:
       reader.skipField();
@@ -1863,34 +1862,32 @@ proto.msg.AccountUpdatePhoto.prototype.serializeBinary = function() {
  */
 proto.msg.AccountUpdatePhoto.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getPhoto();
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeMessage(
+    writer.writeInt64String(
       1,
-      f,
-      chat_core_types_pb.InputDocument.serializeBinaryToWriter
+      f
     );
   }
 };
 
 
 /**
- * required InputDocument Photo = 1;
- * @return {!proto.msg.InputDocument}
+ * required int64 PhotoID = 1;
+ * @return {string}
  */
-proto.msg.AccountUpdatePhoto.prototype.getPhoto = function() {
-  return /** @type{!proto.msg.InputDocument} */ (
-    jspb.Message.getWrapperField(this, chat_core_types_pb.InputDocument, 1, 1));
+proto.msg.AccountUpdatePhoto.prototype.getPhotoid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
-/** @param {!proto.msg.InputDocument} value */
-proto.msg.AccountUpdatePhoto.prototype.setPhoto = function(value) {
-  jspb.Message.setWrapperField(this, 1, value);
+/** @param {string} value */
+proto.msg.AccountUpdatePhoto.prototype.setPhotoid = function(value) {
+  jspb.Message.setField(this, 1, value);
 };
 
 
-proto.msg.AccountUpdatePhoto.prototype.clearPhoto = function() {
+proto.msg.AccountUpdatePhoto.prototype.clearPhotoid = function() {
   jspb.Message.setField(this, 1, undefined);
 };
 
@@ -1899,7 +1896,7 @@ proto.msg.AccountUpdatePhoto.prototype.clearPhoto = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.msg.AccountUpdatePhoto.prototype.hasPhoto = function() {
+proto.msg.AccountUpdatePhoto.prototype.hasPhotoid = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -1951,7 +1948,7 @@ proto.msg.AccountRemovePhoto.prototype.toObject = function(opt_includeInstance) 
  */
 proto.msg.AccountRemovePhoto.toObject = function(includeInstance, msg) {
   var f, obj = {
-
+    photoid: jspb.Message.getField(msg, 1)
   };
 
   if (includeInstance) {
@@ -1988,6 +1985,10 @@ proto.msg.AccountRemovePhoto.deserializeBinaryFromReader = function(msg, reader)
     }
     var field = reader.getFieldNumber();
     switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setPhotoid(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -2017,6 +2018,42 @@ proto.msg.AccountRemovePhoto.prototype.serializeBinary = function() {
  */
 proto.msg.AccountRemovePhoto.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
+  if (f != null) {
+    writer.writeInt64String(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional int64 PhotoID = 1;
+ * @return {string}
+ */
+proto.msg.AccountRemovePhoto.prototype.getPhotoid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
+};
+
+
+/** @param {string} value */
+proto.msg.AccountRemovePhoto.prototype.setPhotoid = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+proto.msg.AccountRemovePhoto.prototype.clearPhotoid = function() {
+  jspb.Message.setField(this, 1, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AccountRemovePhoto.prototype.hasPhotoid = function() {
+  return jspb.Message.getField(this, 1) != null;
 };
 
 
