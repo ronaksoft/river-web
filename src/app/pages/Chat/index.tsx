@@ -1547,6 +1547,14 @@ class Chat extends React.Component<IProps, IState> {
         if (this.state.isUpdating) {
             return;
         }
+        if (!data.photo) {
+            this.userRepo.get(data.userid || '').then((res) => {
+                if (res && res.photo) {
+                    this.fileRepo.remove(res.photo.photosmall.fileid || '');
+                    this.fileRepo.remove(res.photo.photobig.fileid || '');
+                }
+            });
+        }
         this.userRepo.importBulk(false, [{
             id: data.userid,
             photo: data.photo,
@@ -1566,6 +1574,14 @@ class Chat extends React.Component<IProps, IState> {
     private updateGroupPhotoHandler = (data: UpdateGroupPhoto.AsObject) => {
         if (this.state.isUpdating) {
             return;
+        }
+        if (!data.photo) {
+            this.groupRepo.get(data.groupid || '').then((res) => {
+                if (res && res.photo) {
+                    this.fileRepo.remove(res.photo.photosmall.fileid || '');
+                    this.fileRepo.remove(res.photo.photobig.fileid || '');
+                }
+            });
         }
         this.groupRepo.importBulk([{
             delete_photo: data.photo ? undefined : true,
