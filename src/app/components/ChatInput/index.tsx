@@ -313,6 +313,7 @@ class ChatInput extends React.Component<IProps, IState> {
             }
         });
         clearInterval(this.timerInterval);
+        clearTimeout(this.typingTimeout);
     }
 
     public focus() {
@@ -1385,6 +1386,7 @@ class ChatInput extends React.Component<IProps, IState> {
     /* Start voice recorder timer */
     private startTimer() {
         clearInterval(this.timerInterval);
+        clearTimeout(this.typingTimeout);
         this.timerDuration = 0;
         this.displayTimer();
         this.timerInterval = setInterval(() => {
@@ -1398,6 +1400,9 @@ class ChatInput extends React.Component<IProps, IState> {
     private stopTimer() {
         clearInterval(this.timerInterval);
         this.setTyping(TypingAction.TYPINGACTIONCANCEL);
+        if (this.typingThrottle !== null) {
+            this.typingThrottle.cancel();
+        }
     }
 
     /* Display voice recorder timer */
