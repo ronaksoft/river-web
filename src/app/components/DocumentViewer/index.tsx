@@ -1046,6 +1046,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
             confirmDialogIndex: index,
             confirmDialogOpen: true,
         });
+        this.inControls = false;
     }
 
     /* Remove photo handler */

@@ -1,10 +1,13 @@
+## 0.25.85
+* Minor bug fixed
+
 ## 0.25.84
 * Photo Gallery remove implemented
 * Proto Messages updated
 * Group Repo getGull updated
 
 ## 0.25.83
-* Nginx types updated (wasm)
+* Nginx types updated (WASM)
 
 ## 0.25.82
 * Nginx types updated
