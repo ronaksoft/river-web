@@ -1131,7 +1131,7 @@ class ChatInput extends React.Component<IProps, IState> {
         if (!this.recorder) {
             this.initRecorder();
         }
-        if (!this.recorder && !this.recorder.start) {
+        if (!this.recorder || !this.recorder.start) {
             return;
         }
         this.setInputMode('voice');
