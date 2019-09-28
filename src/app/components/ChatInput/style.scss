@@ -481,6 +481,11 @@
             text-align: left;
             justify-content: left;
             width: 100%;
+
+            svg {
+              font-size: 13px;
+              margin: 0 3px 0 0;
+            }
           }
 
           .preview-message-body {

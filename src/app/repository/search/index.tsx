@@ -56,7 +56,7 @@ export default class SearchRepo {
 
     public search = ({skip, limit, keyword}: any): Promise<IDialogWithContact> => {
         const promises: any[] = [];
-        limit = limit || 16;
+        limit = limit || 128;
         skip = skip || 0;
         promises.push(this.userRepo.getManyCache(false, {limit, keyword}));
         promises.push(this.groupRepo.getManyCache({limit, keyword}));
@@ -76,11 +76,19 @@ export default class SearchRepo {
                             return user.is_contact === 1;
                         }),
                         dialogs: res.sort((i1, i2) => {
+                            const p1 = i1.pinned ? 1 : 0;
+                            const p2 = i2.pinned ? 1 : 0;
+                            if (p1 < p2) {
+                                return 1;
+                            }
+                            if (p1 > p2) {
+                                return -1;
+                            }
                             if (!i1.last_update || !i2.last_update) {
                                 return 0;
                             }
-                            return i2.last_update - i1.last_update;
-                        }),
+                            return (i2.last_update || 0) - (i1.last_update || 0);
+                        }).slice(0, 16),
                     });
                 });
             }).catch(reject);

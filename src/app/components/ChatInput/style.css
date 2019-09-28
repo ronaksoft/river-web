@@ -320,6 +320,9 @@
             text-align: left;
             justify-content: left;
             width: 100%; }
+            .write .previews .preview-container .preview-message-wrapper .preview-message .preview-message-user svg {
+              font-size: 13px;
+              margin: 0 3px 0 0; }
           .write .previews .preview-container .preview-message-wrapper .preview-message .preview-message-body {
             text-align: left;
             width: 100%;

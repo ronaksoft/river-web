@@ -1,3 +1,9 @@
+## 0.25.87
+* ChatInput bug fixed
+* StatusBar UI bug fixed
+* Search Repo updated
+* Search order updated 
+
 ## 0.25.86
 * Retry message updated
 * Retry options in socket (server)
