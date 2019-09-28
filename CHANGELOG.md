@@ -1,3 +1,6 @@
+## 0.25.88
+* Min recorder time is 1 sec
+
 ## 0.25.87
 * ChatInput bug fixed
 * StatusBar UI bug fixed

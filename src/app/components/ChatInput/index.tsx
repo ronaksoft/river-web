@@ -1131,33 +1131,42 @@ class ChatInput extends React.Component<IProps, IState> {
         if (!this.recorder) {
             this.initRecorder();
         }
+        if (!this.recorder && !this.recorder.start) {
+            return;
+        }
         this.setInputMode('voice');
         this.bars = [];
         this.maxBarVal = 0;
-        this.recorder.start().then(() => {
-            this.startTimer();
-            const audioAnalyser = this.recorder.audioContext.createAnalyser();
-            audioAnalyser.minDecibels = -100;
-            audioAnalyser.fftSize = 256;
-            audioAnalyser.smoothingTimeConstant = 0.1;
+        try {
+            this.recorder.start().then(() => {
+                this.startTimer();
+                const audioAnalyser = this.recorder.audioContext.createAnalyser();
+                audioAnalyser.minDecibels = -100;
+                audioAnalyser.fftSize = 256;
+                audioAnalyser.smoothingTimeConstant = 0.1;
 
-            this.recorder.sourceNode.connect(audioAnalyser);
-            const data = new Uint8Array(audioAnalyser.frequencyBinCount);
+                this.recorder.sourceNode.connect(audioAnalyser);
+                const data = new Uint8Array(audioAnalyser.frequencyBinCount);
 
-            const loop = () => {
-                if (this.inputsMode !== 'voice') {
-                    return;
-                }
-                if (this.state.voiceMode !== 'lock' && this.state.voiceMode !== 'down') {
-                    return;
-                }
-                audioAnalyser.getByteFrequencyData(data); // get current data
-                this.visualize(data, () => {
-                    loop();
-                });
-            };
-            loop();
-        });
+                const loop = () => {
+                    if (this.inputsMode !== 'voice') {
+                        return;
+                    }
+                    if (this.state.voiceMode !== 'lock' && this.state.voiceMode !== 'down') {
+                        return;
+                    }
+                    audioAnalyser.getByteFrequencyData(data); // get current data
+                    this.visualize(data, () => {
+                        loop();
+                    });
+                };
+                loop();
+            });
+        } catch (e) {
+            clearInterval(this.timerInterval);
+            clearTimeout(this.typingTimeout);
+            this.timerDuration = 0;
+        }
     }
 
     /* On record voice end handler */
@@ -1242,20 +1251,24 @@ class ChatInput extends React.Component<IProps, IState> {
 
     /* Send voice */
     private sendVoice() {
-        const {previewMessage, previewMessageMode} = this.state;
-        const message = cloneDeep(previewMessage);
-        const item: IMediaItem = {
-            duration: this.timerDuration,
-            file: this.voice,
-            fileType: 'audio/ogg',
-            mediaType: 'voice',
-            name: `voice_${Math.floor(Date.now() / 1000)}.ogg`,
-            waveform: to4bitResolution(this.bars),
-        };
-        this.props.onVoiceSend(item, {
-            message,
-            mode: previewMessageMode,
-        });
+        if (this.timerDuration >= 1) {
+            const {previewMessage, previewMessageMode} = this.state;
+            const message = cloneDeep(previewMessage);
+            const item: IMediaItem = {
+                duration: this.timerDuration,
+                file: this.voice,
+                fileType: 'audio/ogg',
+                mediaType: 'voice',
+                name: `voice_${Math.floor(Date.now() / 1000)}.ogg`,
+                waveform: to4bitResolution(this.bars),
+            };
+            this.props.onVoiceSend(item, {
+                message,
+                mode: previewMessageMode,
+            });
+        } else {
+            this.stopTimer();
+        }
         this.clearPreviewMessage(true);
     }
 
