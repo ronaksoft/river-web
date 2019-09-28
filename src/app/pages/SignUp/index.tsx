@@ -541,14 +541,14 @@ class SignUp extends React.Component<IProps, IState> {
                     loading: false,
                     tries: this.state.tries + 1,
                 });
-                if (err.code === C_ERR.ERR_CODE_INVALID && err.items === C_ERR_ITEM.ERR_ITEM_PHONE_CODE) {
+                if (err.code === C_ERR.ErrCodeInvalid && err.items === C_ERR_ITEM.ErrItemPhoneCode) {
                     this.setState({
                         snackOpen: true,
                         snackText: i18n.t('sign_up.code_is_incorrect'),
                     });
                     return;
                 }
-                if (err.code === C_ERR.ERR_CODE_UNAVAILABLE && err.items === C_ERR_ITEM.ERR_ITEM_PHONE) {
+                if (err.code === C_ERR.ErrCodeUnavailable && err.items === C_ERR_ITEM.ErrItemPhone) {
                     let state: any = {};
                     if (this.iframeService.isActive()) {
                         state = {
@@ -670,7 +670,7 @@ class SignUp extends React.Component<IProps, IState> {
                 loading: false,
                 tries: this.state.tries + 1,
             });
-            if (err.code === C_ERR.ERR_CODE_INVALID && err.items === C_ERR_ITEM.ERR_ITEM_PHONE_CODE) {
+            if (err.code === C_ERR.ErrCodeInvalid && err.items === C_ERR_ITEM.ErrItemPhoneCode) {
                 this.setState({
                     snackOpen: true,
                     snackText: i18n.t('sign_up.code_is_incorrect'),

@@ -20,7 +20,7 @@ import {
     AuthSentCode
 } from './messages/chat.api.auth_pb';
 import Server from './server';
-import {C_MSG} from './const';
+import {C_ERR, C_ERR_ITEM, C_MSG} from './const';
 import {IConnInfo} from './interface';
 import {
     ContactsDelete,
@@ -246,26 +246,39 @@ export default class SDK {
         });
         data.setContactsList(arr);
         data.setReplace(replace);
-        return this.server.send(C_MSG.ContactsImport, data.serializeBinary());
+        return this.server.send(C_MSG.ContactsImport, data.serializeBinary(), false);
     }
 
     public getContacts(crc?: number): Promise<ContactsMany.AsObject> {
         const data = new ContactsGet();
         data.setCrc32hash(crc || 0);
-        return this.server.send(C_MSG.ContactsGet, data.serializeBinary());
+        return this.server.send(C_MSG.ContactsGet, data.serializeBinary(), false, {
+            retry: 2,
+            retryErrors: [{
+                code: C_ERR.ErrCodeInternal,
+                items: C_ERR_ITEM.ErrItemTimeout
+            }],
+        });
     }
 
     public removeContact(contactIds: string[]): Promise<Bool.AsObject> {
         const data = new ContactsDelete();
         data.setUseridsList(contactIds);
-        return this.server.send(C_MSG.ContactsDelete, data.serializeBinary());
+        return this.server.send(C_MSG.ContactsDelete, data.serializeBinary(), false);
     }
 
     public getDialogs(skip: number, limit: number): Promise<MessagesDialogs.AsObject> {
         const data = new MessagesGetDialogs();
         data.setOffset(skip || 0);
         data.setLimit(limit || 0);
-        return this.server.send(C_MSG.MessagesGetDialogs, data.serializeBinary());
+        return this.server.send(C_MSG.MessagesGetDialogs, data.serializeBinary(), false, {
+            retry: 5,
+            retryErrors: [{
+                code: C_ERR.ErrCodeInternal,
+                items: C_ERR_ITEM.ErrItemTimeout
+            }],
+            timeout: 10000,
+        });
     }
 
     public sendMessage(randomId: number, body: string, peer: InputPeer, replyTo?: number, entities?: MessageEntity[]): Promise<MessagesSent.AsObject> {
@@ -280,7 +293,13 @@ export default class SDK {
         if (entities) {
             data.setEntitiesList(entities);
         }
-        return this.server.send(C_MSG.MessagesSend, data.serializeBinary());
+        return this.server.send(C_MSG.MessagesSend, data.serializeBinary(), false, {
+            retry: 1,
+            retryErrors: [{
+                code: C_ERR.ErrCodeInternal,
+                items: C_ERR_ITEM.ErrItemTimeout
+            }],
+        });
     }
 
     public editMessage(randomId: number, id: number, body: string, peer: InputPeer, entities?: MessageEntity[]): Promise<MessagesSent.AsObject> {
@@ -292,7 +311,13 @@ export default class SDK {
         if (entities) {
             data.setEntitiesList(entities);
         }
-        return this.server.send(C_MSG.MessagesEdit, data.serializeBinary());
+        return this.server.send(C_MSG.MessagesEdit, data.serializeBinary(), true, {
+            retry: 1,
+            retryErrors: [{
+                code: C_ERR.ErrCodeInternal,
+                items: C_ERR_ITEM.ErrItemTimeout
+            }],
+        });
     }
 
     public sendMediaMessage(randomId: number, peer: InputPeer, mediaType: InputMediaType, mediaData: Uint8Array, replyTo?: number): Promise<MessagesSent.AsObject> {
@@ -305,14 +330,24 @@ export default class SDK {
         if (replyTo) {
             data.setReplyto(replyTo);
         }
-        return this.server.send(C_MSG.MessagesSendMedia, data.serializeBinary());
+        return this.server.send(C_MSG.MessagesSendMedia, data.serializeBinary(), false, {
+            retry: 3,
+            retryErrors: [{
+                code: C_ERR.ErrCodeInternal,
+                items: C_ERR_ITEM.ErrItemTimeout
+            }, {
+                code: C_ERR.ErrCodeInvalid,
+                items: C_ERR_ITEM.ErrItemNotFound
+            }],
+            retryWait: 1000,
+        });
     }
 
     public readMessageContent(ids: number[], peer: InputPeer): Promise<MessagesSent.AsObject> {
         const data = new MessagesReadContents();
         data.setPeer(peer);
         data.setMessageidsList(ids);
-        return this.server.send(C_MSG.MessagesReadContents, data.serializeBinary());
+        return this.server.send(C_MSG.MessagesReadContents, data.serializeBinary(), false);
     }
 
     public getMessageHistory(peer: InputPeer, {limit, minId, maxId}: any): Promise<MessagesMany.AsObject> {
@@ -342,7 +377,13 @@ export default class SDK {
         const data = new MessagesReadHistory();
         data.setPeer(peer);
         data.setMaxid(maxId);
-        return this.server.send(C_MSG.MessagesReadHistory, data.serializeBinary(), true);
+        return this.server.send(C_MSG.MessagesReadHistory, data.serializeBinary(), true, {
+            retry: 3,
+            retryErrors: [{
+                code: C_ERR.ErrCodeInternal,
+                items: C_ERR_ITEM.ErrItemTimeout
+            }],
+        });
     }
 
     public getUpdateState(): Promise<UpdateState.AsObject> {
@@ -360,7 +401,7 @@ export default class SDK {
     public logout(authId: string): Promise<Bool> {
         const data = new AuthLogout();
         data.setAuthidsList([authId]);
-        return this.server.send(C_MSG.AuthLogout, data.serializeBinary(), true, 5000);
+        return this.server.send(C_MSG.AuthLogout, data.serializeBinary(), true, {timeout: 5000});
     }
 
     public registerDevice(token: string, tokenType: number, appVersion: string, deviceModel: string, langCode: string, systemVersion: string): Promise<Bool.AsObject> {
@@ -585,7 +626,7 @@ export default class SDK {
     public setLang(langCode: string): Promise<Bool.AsObject> {
         const data = new AccountSetLang();
         data.setLangcode(langCode);
-        return this.server.send(C_MSG.AccountSetLang, data.serializeBinary(), true, 3000);
+        return this.server.send(C_MSG.AccountSetLang, data.serializeBinary(), true, {timeout: 3000});
     }
 
     public getServerSalts(): Promise<SystemSalts.AsObject> {

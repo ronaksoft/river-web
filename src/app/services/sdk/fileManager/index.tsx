@@ -210,16 +210,16 @@ export default class FileManager {
 
     /* Retry uploading/downloading file */
     public retry(id: string, onProgress?: (e: IFileProgress) => void): Promise<any> {
-        return this.fileRepo.getTempsById(id).then((temps) => {
-            if (temps.length > 0) {
-                let internalResolve = null;
-                let internalReject = null;
+        let internalResolve: any = null;
+        let internalReject: any = null;
 
-                const promise = new Promise((res, rej) => {
-                    internalResolve = res;
-                    internalReject = rej;
-                });
+        const promise = new Promise((res, rej) => {
+            internalResolve = res;
+            internalReject = rej;
+        });
 
+        this.fileRepo.getTempsById(id).then((temps) => {
+            if (temps && temps.length > 0) {
                 let size = 0;
                 const blobs = temps.map((temp) => {
                     size += temp.data.size;
@@ -229,15 +229,15 @@ export default class FileManager {
                 this.prepareUploadTransfer(id, '', blobs, size, internalResolve, internalReject, onProgress);
 
                 this.startUploadQueue();
-
-                return promise;
             } else {
-                return Promise.reject({
+                internalReject({
                     code: C_FILE_ERR_CODE.NO_TEMP_FILES,
                     message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.NO_TEMP_FILES],
                 });
             }
         });
+
+        return promise;
     }
 
     /* Cancel request */

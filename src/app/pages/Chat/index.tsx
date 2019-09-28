@@ -3655,16 +3655,13 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Resend media message */
-    private resendMediaMessage(randomId: number, message: IMessage, fileId: string, data: any) {
+    private resendMediaMessage(randomId: number, message: IMessage, fileIds: string[], data: any) {
         const {peer} = this.state;
         if (peer === null) {
             return;
         }
 
-        this.fileManager.retry(fileId, (progress) => {
-            this.progressBroadcaster.publish(message.id || 0, progress);
-        }).then(() => {
-            this.progressBroadcaster.remove(message.id || 0);
+        const fn = () => {
             this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, message.replyto).then((res) => {
                 // For double checking update message id
                 this.updateManager.setMessageId(res.messageid || 0);
@@ -3690,9 +3687,27 @@ class Chat extends React.Component<IProps, IState> {
                 // Force update messages
                 this.messageRef.list.forceUpdateGrid();
             });
-        }).catch((err) => {
+        };
+
+        const promises: any[] = [];
+        fileIds.forEach((id, key) => {
+            if (key === 0) {
+                promises.push(this.fileManager.retry(id, (progress) => {
+                    this.progressBroadcaster.publish(message.id || 0, progress);
+                }));
+            } else {
+                promises.push(this.fileManager.retry(id));
+            }
+        });
+        Promise.all(promises).then(() => {
             this.progressBroadcaster.remove(message.id || 0);
-            if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
+            fn();
+        }).catch((errs) => {
+            const err = errs.length ? errs[0] : errs;
+            this.progressBroadcaster.remove(message.id || 0);
+            if (err.code === C_FILE_ERR_CODE.NO_TEMP_FILES) {
+                fn();
+            } else if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
                 const messages = this.messages;
                 const index = findIndex(messages, (o) => {
                     return o.id === message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
@@ -3804,7 +3819,7 @@ class Chat extends React.Component<IProps, IState> {
     /* Resend message */
     private resendMessage(message: IMessage) {
         this.messageRepo.getPendingByMessageId(message.id || 0).then((res) => {
-            if (res && res.file_ids && res.file_ids.length === 1) {
+            if (res) {
                 const messages = this.messages;
                 const index = findIndex(messages, (o) => {
                     return o.id === message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
@@ -3813,8 +3828,8 @@ class Chat extends React.Component<IProps, IState> {
                     messages[index].error = false;
                     this.messageRef.list.forceUpdateGrid();
                 }
-                if (message.mediatype !== MediaType.MEDIATYPEEMPTY && message.messagetype !== 0 && message.messagetype !== C_MESSAGE_TYPE.Normal) {
-                    this.resendMediaMessage(res.id, message, res.file_ids[0], res.data);
+                if (res.file_ids && res.file_ids.length > 0 && message.mediatype !== MediaType.MEDIATYPEEMPTY && message.messagetype !== 0 && message.messagetype !== C_MESSAGE_TYPE.Normal) {
+                    this.resendMediaMessage(res.id, message, res.file_ids, res.data);
                 } else if (message.messagetype === 0 || message.messagetype === C_MESSAGE_TYPE.Normal) {
                     this.resendTextMessage(res.id, message);
                 }
@@ -4229,6 +4244,7 @@ class Chat extends React.Component<IProps, IState> {
                 }
                 this.newMessageLoadThrottle();
             }).catch((err) => {
+                window.console.warn(err);
                 const messages = this.messages;
                 const index = findIndex(messages, (o) => {
                     return o.id === id && o.messagetype === messageType;
@@ -4373,6 +4389,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.chatInputTextMessageHandler(caption, {mode: C_MSG_MODE.Reply, message: {id: res.messageid}});
             }
         }).catch((err) => {
+            window.console.warn(err);
             const messages = this.messages;
             const index = findIndex(messages, (o) => {
                 return o.id === id && o.messagetype === messageType;

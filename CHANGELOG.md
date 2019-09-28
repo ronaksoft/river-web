@@ -1,3 +1,13 @@
+## 0.25.86
+* Retry message updated
+* Retry options in socket (server)
+* File manager retry updated
+* Errors updated
+* SignUp errors updated
+* SendMediaMessage API updated
+* SendTextMessage API updated
+* ReplyMessage API updated
+
 ## 0.25.85
 * Minor bug fixed
 
