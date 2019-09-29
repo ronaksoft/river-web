@@ -614,8 +614,7 @@ export default class MessageRepo {
     }
 
     public upsert(msgs: IMessage[], callerId?: number): Promise<any> {
-        const peerIdMap: object = {};
-        const newIds: number[] = [];
+        const peerIdMap: { [key: string]: number[] } = {};
         const ids = msgs.map((msg) => {
             return msg.id || '';
         });
@@ -635,13 +634,15 @@ export default class MessageRepo {
                 }
             });
             createItems.forEach((msg) => {
-                if (msg.peerid && !peerIdMap.hasOwnProperty(msg.peerid)) {
-                    peerIdMap[msg.peerid] = true;
+                if (msg.peerid) {
+                    if (!peerIdMap.hasOwnProperty(msg.peerid)) {
+                        peerIdMap[msg.peerid] = [];
+                    }
+                    peerIdMap[msg.peerid].push(msg.id || 0);
                 }
-                newIds.push(msg.id || 0);
             });
             return this.createMany([...createItems, ...updateItems]).then((res) => {
-                this.broadcastEvent('Message_DB_Added', {ids: newIds, peerids: Object.keys(peerIdMap), callerId});
+                this.broadcastEvent('Message_DB_Added', {newMsg: peerIdMap, callerId});
                 return res;
             });
         });

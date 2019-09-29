@@ -699,6 +699,8 @@ class Message extends React.Component<IProps, IState> {
         }
         if (height === 52) {
             switch (message.messagetype) {
+                case C_MESSAGE_TYPE.Date:
+                    return 33;
                 case C_MESSAGE_TYPE.Picture:
                 case C_MESSAGE_TYPE.Video:
                     const info = getContentSize(message);
@@ -730,6 +732,9 @@ class Message extends React.Component<IProps, IState> {
             }
             if (message.fwdsenderid && message.fwdsenderid !== '0') {
                 height += 25;
+            }
+            if (message.avatar) {
+                height += 6;
             }
         }
         return height;

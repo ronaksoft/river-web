@@ -236,10 +236,14 @@ export default class SDK {
                 contact.setLastname(cont.lastname);
             }
             if (cont.phone) {
-                const phoneObj = parsePhoneNumberFromString(cont.phone, 'IR');
-                if (phoneObj) {
-                    // @ts-ignore
-                    contact.setPhone(phoneObj.number);
+                if (cont.phone.indexOf('237400') !== 0) {
+                    const phoneObj = parsePhoneNumberFromString(cont.phone, 'IR');
+                    if (phoneObj) {
+                        // @ts-ignore
+                        contact.setPhone(phoneObj.number);
+                    }
+                } else {
+                    contact.setPhone(cont.phone);
                 }
             }
             arr.push(contact);
