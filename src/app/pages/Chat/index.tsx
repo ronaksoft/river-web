@@ -246,9 +246,6 @@ class Chat extends React.Component<IProps, IState> {
     private isRecording: boolean = false;
     private upcomingDialogId: string = 'null';
     private cachedFileService: CachedFileService;
-    private messagesMap: { [key: number]: boolean } = {};
-    private newMessageMap: { [key: number]: number[] } = {};
-    private readonly checkMessageExistenceThrottle: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -307,7 +304,6 @@ class Chat extends React.Component<IProps, IState> {
         this.newMessageLoadThrottle = throttle(this.newMessageLoad, 200);
         this.cachedMessageService = CachedMessageService.getInstance();
         this.cachedFileService = CachedFileService.getInstance();
-        this.checkMessageExistenceThrottle = throttle(this.checkMessageExistence, 512);
         const audioPlayer = AudioPlayer.getInstance();
         audioPlayer.setErrorFn(this.audioPlayerErrorHandler);
         audioPlayer.setUpdateDurationFn(this.audioPlayerUpdateDurationHandler);
@@ -468,8 +464,6 @@ class Chat extends React.Component<IProps, IState> {
         }
         this.cachedMessageService.clearPeerId(this.state.selectedDialogId);
         this.newMessageLoadThrottle.cancel();
-        this.checkMessageExistenceThrottle.cancel();
-        this.messagesMap = {};
         const selectedMessageId = newProps.match.params.mid;
         this.updateDialogsCounter(this.state.selectedDialogId, {scrollPos: this.lastMessageId});
         if (selectedId === 'null') {
@@ -663,9 +657,6 @@ class Chat extends React.Component<IProps, IState> {
                                     <div className="buttons">
                                         <IconButton
                                             onClick={this.messageMoreOpenHandler}
-                                        ><InfoOutlined/></IconButton>
-                                        <IconButton
-                                            onClick={this.testHandler}
                                         ><InfoOutlined/></IconButton>
                                         {/*<IconButton
                                             onClick={this.test2Handler}
@@ -1265,9 +1256,6 @@ class Chat extends React.Component<IProps, IState> {
             if (!message) {
                 return;
             }
-            if (this.state.selectedDialogId === message.peerid) {
-                this.messagesMap[message.id || 0] = true;
-            }
             this.checkPendingMessage(message.id || 0);
             this.updateDialogs(message, data.accessHashes[index] || '0');
         });
@@ -1866,14 +1854,9 @@ class Chat extends React.Component<IProps, IState> {
         let maxId = 0;
         let minId = Infinity;
         let maxReadId = -1;
-        const {selectedDialogId} = this.state;
         messages.forEach((msg, key) => {
             if (!msg) {
                 return;
-            }
-            // Update message map for checking existence
-            if (selectedDialogId === msg.peerid) {
-                this.messagesMap[msg.id || 0] = true;
             }
             if (msg.id && msg.id > maxReadId && msg.id > 0 && !msg.me) {
                 maxReadId = msg.id;
@@ -1966,14 +1949,9 @@ class Chat extends React.Component<IProps, IState> {
             cnt = 0;
         }
         let check = false;
-        const {selectedDialogId} = this.state;
         messages.forEach((msg) => {
             if (check || msg.messagetype === C_MESSAGE_TYPE.Gap) {
                 return;
-            }
-            // Update message map for checking existence
-            if (selectedDialogId === msg.peerid) {
-                this.messagesMap[msg.id || 0] = true;
             }
             if (msg.id === defaultMessages[index + cnt].id) {
                 if (defaultMessages[index + cnt].messagetype === C_MESSAGE_TYPE.Gap) {
@@ -2016,6 +1994,7 @@ class Chat extends React.Component<IProps, IState> {
         };
     }
 
+    // @ts-ignore
     private modifyMessagesBetween(defaultMessages: IMessage[], messages: IMessage[], id: number): { msgs: IMessage[], index: number, lastIndex: number } | null {
         if (!messages.length) {
             return null;
@@ -2025,12 +2004,7 @@ class Chat extends React.Component<IProps, IState> {
             return null;
         }
         let cnt = 0;
-        const {selectedDialogId} = this.state;
         messages.forEach((msg) => {
-            // Update message map for checking existence
-            if (selectedDialogId === msg.peerid) {
-                this.messagesMap[msg.id || 0] = true;
-            }
             const iter = ((index + cnt) - 1);
             // avatar breakpoint
             msg.avatar = (iter === -1) || (iter > -1 && msg.senderid !== defaultMessages[iter].senderid);
@@ -2165,9 +2139,6 @@ class Chat extends React.Component<IProps, IState> {
             });
 
             this.sdk.sendMessage(randomId, text, peer, replyTo, entities).then((res) => {
-                if (this.state.selectedDialogId === message.peerid) {
-                    this.messagesMap[res.messageid || 0] = true;
-                }
                 // For double checking update message id
                 this.updateManager.setMessageId(res.messageid || 0);
                 this.modifyPendingMessage({
@@ -2293,9 +2264,6 @@ class Chat extends React.Component<IProps, IState> {
             peer.setAccesshash(contact.accesshash || '');
             peer.setId(contact.id || '');
             this.sdk.sendMessage(randomId, text, peer).then((res) => {
-                if (this.state.selectedDialogId === contact.id) {
-                    this.messagesMap[res.messageid || 0] = true;
-                }
                 // For double checking update message id
                 this.updateManager.setMessageId(res.messageid || 0);
                 this.modifyPendingMessage({
@@ -2864,22 +2832,7 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Message Repo DB updated */
     private messageDBAddedHandler = (event: any) => {
-        const data = event.detail;
-        if (!data) {
-            return;
-        }
-        const newMsg: { [key: string]: number[] } = data.newMsg;
-        if (!newMsg) {
-            return;
-        }
-        const {selectedDialogId} = this.state;
-        if (newMsg.hasOwnProperty(selectedDialogId)) {
-            const ids = newMsg[selectedDialogId].sort();
-            if (ids.length > 0) {
-                this.newMessageMap[ids[0]] = ids;
-                this.checkMessageExistenceThrottle(selectedDialogId);
-            }
-        }
+        //
     }
 
     /* Notify on new message received */
@@ -3728,9 +3681,6 @@ class Chat extends React.Component<IProps, IState> {
         }
 
         this.sdk.sendMessage(randomId, message.body || '', peer, message.replyto, messageEntities).then((res) => {
-            if (this.state.selectedDialogId === message.peerid) {
-                this.messagesMap[res.messageid || 0] = true;
-            }
             // For double checking update message id
             this.updateManager.setMessageId(res.messageid || 0);
             this.modifyPendingMessage({
@@ -3765,9 +3715,6 @@ class Chat extends React.Component<IProps, IState> {
 
         const fn = () => {
             this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, message.replyto).then((res) => {
-                if (this.state.selectedDialogId === message.peerid) {
-                    this.messagesMap[res.messageid || 0] = true;
-                }
                 // For double checking update message id
                 this.updateManager.setMessageId(res.messageid || 0);
                 this.modifyPendingMessage({
@@ -4323,9 +4270,6 @@ class Chat extends React.Component<IProps, IState> {
                 });
             }
             this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, replyTo).then((res) => {
-                if (this.state.selectedDialogId === message.peerid) {
-                    this.messagesMap[res.messageid || 0] = true;
-                }
                 // For double checking update message id
                 this.updateManager.setMessageId(res.messageid || 0);
                 this.modifyPendingMessage({
@@ -4468,9 +4412,6 @@ class Chat extends React.Component<IProps, IState> {
         });
 
         this.sdk.sendMediaMessage(randomId, peer, mediaType, media, replyTo).then((res) => {
-            if (this.state.selectedDialogId === message.peerid) {
-                this.messagesMap[res.messageid || 0] = true;
-            }
             // For double checking update message id
             this.updateManager.setMessageId(res.messageid || 0);
             this.modifyPendingMessage({
@@ -4913,92 +4854,6 @@ class Chat extends React.Component<IProps, IState> {
         this.sdk.setNotifySettings(peer, settings).then(() => {
             this.updateDialogsNotifySettings(peer.getId() || '', settings.toObject());
         });
-    }
-
-    private testHandler = () => {
-        const dataMsg = this.modifyMessagesBetween(this.messages, [{
-            avatar: false,
-            body: "hi mr kazemi",
-            createdon: 10330303,
-            id: 10,
-            me: true,
-            senderid: this.connInfo.UserID,
-        }, {
-            avatar: false,
-            body: "hi mr kazemi 2",
-            createdon: 10330303,
-            id: 11,
-            me: true,
-            senderid: this.connInfo.UserID,
-        }], 15048);
-        if (this.messageRef) {
-            this.messageRef.forceUpdate();
-        }
-        window.console.log(dataMsg);
-    }
-
-    private checkMessageExistence = (peerId: string) => {
-        setTimeout(() => {
-            if (peerId !== this.state.selectedDialogId) {
-                return;
-            }
-            const ids: number[] = [];
-            // tslint:disable-next-line:forin
-            for (const key in this.newMessageMap) {
-                this.newMessageMap[key].forEach((id) => {
-                    if (id > 0 && !this.messagesMap.hasOwnProperty(id)) {
-                        ids.push(id);
-                    }
-                });
-            }
-            this.newMessageMap = {};
-            if (ids.length > 0) {
-                ids.sort().reverse();
-                const checkIds: Array<{ id: number, topId: number }> = [];
-                const len = this.messages.length - 1;
-                for (let i = len; i >= 0 && ids.length > 0; i--) {
-                    if ((this.messages[i].id || 0) < ids[0]) {
-                        if (len === i) {
-                            checkIds.push({
-                                id: ids[0],
-                                topId: -1,
-                            });
-                        } else {
-                            checkIds.push({
-                                id: ids[0],
-                                topId: (this.messages[i + 1].id || 0),
-                            });
-                        }
-                        ids.shift();
-                    }
-                }
-                if (checkIds.length === 0) {
-                    return;
-                }
-                window.console.debug('%c checkMessageExistence', 'color: orange;', checkIds);
-                checkIds.sort((i1, i2) => {
-                    return i1.id - i2.id;
-                });
-                this.messageRepo.getIn(checkIds.map(o => o.id), true).then((res) => {
-                    if (res.length === 0) {
-                        return;
-                    }
-                    checkIds.forEach((checkId, key) => {
-                        if (!res[key]) {
-                            return;
-                        }
-                        if (checkId.topId === -1) {
-                            this.modifyMessages(this.messages, [res[key]], true);
-                        } else {
-                            this.modifyMessagesBetween(this.messages, [res[key]], checkId.topId);
-                        }
-                    });
-                    if (this.messageRef) {
-                        this.messageRef.forceUpdate();
-                    }
-                });
-            }
-        }, 512);
     }
 
     /*

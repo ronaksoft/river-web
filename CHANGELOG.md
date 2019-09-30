@@ -1,3 +1,6 @@
+## 0.25.90
+* Revert missing messages
+
 ## 0.25.89
 * Trying to recover missing messages
 

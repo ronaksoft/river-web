@@ -303,6 +303,7 @@ export default class SDK {
                 code: C_ERR.ErrCodeInternal,
                 items: C_ERR_ITEM.ErrItemTimeout
             }],
+            timeout: 5000,
         });
     }
 
