@@ -137,9 +137,10 @@ fnCallback = (reqId, constructor, data) => {
     });
 };
 
-fnStarted = (duration) => {
+fnStarted = (duration, time) => {
     workerMessage('fnStarted', {
         duration,
+        time,
     });
 };
 

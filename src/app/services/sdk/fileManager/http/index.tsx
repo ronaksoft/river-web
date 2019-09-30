@@ -14,6 +14,7 @@ import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from '../const/const';
 import {C_MSG} from '../../const';
 import ElectronService from '../../../electron';
 import {serverKeys} from "../../server";
+import {serverTime} from '../../server/socket';
 
 export interface IHttpRequest {
     constructor: number;
@@ -45,7 +46,7 @@ export default class Http {
         const fileUrl = localStorage.getItem('river.workspace_url_file') || '';
 
         this.reqId = 0;
-        this.worker = new Worker('/bin/worker.js?v17');
+        this.worker = new Worker('/bin/worker.js?v18');
         this.workerId = id;
 
         if (fileUrl && fileUrl.length > 0 && (ElectronService.isElectron() || window.location.host.indexOf('localhost') === 0)) {
@@ -56,8 +57,17 @@ export default class Http {
             this.dataCenterUrl = 'http://' + fileUrl;
         }
 
-        this.workerMessage('init', {});
-        this.initWorkerEvent();
+        const fn = () => {
+            window.removeEventListener('wsOpen', fn);
+            this.workerMessage('init', {});
+            this.initWorkerEvent();
+        };
+
+        if (serverTime === 0) {
+            window.addEventListener('wsOpen', fn);
+        } else {
+            fn();
+        }
     }
 
     public setUrl(url: string) {
@@ -135,7 +145,7 @@ export default class Http {
             switch (d.cmd) {
                 case 'loadConnInfo':
                     this.workerMessage('loadConnInfo', {connInfo: localStorage.getItem('river.conn.info'), serverKeys});
-                    this.workerMessage('initSDK', 1);
+                    this.workerMessage('initSDK', !serverTime ? 1 : serverTime);
                     break;
                 case 'fnStarted':
                     if (this.readyHandler) {

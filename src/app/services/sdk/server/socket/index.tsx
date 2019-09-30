@@ -24,6 +24,8 @@ export const checkPong = (data: any) => {
     return false;
 };
 
+export let serverTime: number = 0;
+
 export default class Socket {
     public static getInstance() {
         if (!this.instance) {
@@ -54,7 +56,7 @@ export default class Socket {
     public constructor() {
         this.testUrl = localStorage.getItem('river.workspace_url') || '';
 
-        this.worker = new Worker('/bin/worker.js?v17');
+        this.worker = new Worker('/bin/worker.js?v18');
 
         setTimeout(() => {
             this.workerMessage('init', {});
@@ -142,6 +144,7 @@ export default class Socket {
                     this.dispatchEvent('authProgress', d.data);
                     break;
                 case 'fnStarted':
+                    serverTime = d.data.time;
                     if (!this.started && this.connected) {
                         this.dispatchEvent('wsOpen', null);
                     }

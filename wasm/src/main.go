@@ -59,18 +59,21 @@ func main() {
 }
 
 func initSDK(this js.Value, args []js.Value) interface{} {
-	isHttp := uint64(args[0].Int())
+	timeInput := uint64(args[0].Int())
 	duration = 0
-	var startCb Callback = func(time int64) {
-		river.ConnInfo.SetServerTime(time)
-		js.Global().Call("fnStarted", duration)
+	var startCb Callback = func(time2 int64) {
+		river.ConnInfo.SetServerTime(time2)
+		js.Global().Call("fnStarted", duration, time2)
 	}
 	var cb Callback = func(dur int64) {
 		duration = dur
-		if isHttp == 0 {
+		if timeInput == 0 {
 			river.SetServerTime(startCb)
 		} else {
-			js.Global().Call("fnStarted", duration)
+			if timeInput != 1 {
+			    river.ConnInfo.SetServerTime(int64(timeInput))
+			}
+			js.Global().Call("fnStarted", duration, timeInput)
 		}
 	}
 	river.Start(connInfo, serverPubKeys, &cb)
