@@ -248,7 +248,7 @@ class Chat extends React.Component<IProps, IState> {
     private cachedFileService: CachedFileService;
     private messagesMap: { [key: number]: boolean } = {};
     private newMessageMap: { [key: number]: number[] } = {};
-    private checkMessageExistenceThrottle: any = null;
+    private readonly checkMessageExistenceThrottle: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -468,6 +468,7 @@ class Chat extends React.Component<IProps, IState> {
         }
         this.cachedMessageService.clearPeerId(this.state.selectedDialogId);
         this.newMessageLoadThrottle.cancel();
+        this.checkMessageExistenceThrottle.cancel();
         this.messagesMap = {};
         const selectedMessageId = newProps.match.params.mid;
         this.updateDialogsCounter(this.state.selectedDialogId, {scrollPos: this.lastMessageId});
@@ -1264,9 +1265,9 @@ class Chat extends React.Component<IProps, IState> {
             if (!message) {
                 return;
             }
-            // if (this.state.selectedDialogId === message.peerid) {
-            //     this.messagesMap[message.id || 0] = true;
-            // }
+            if (this.state.selectedDialogId === message.peerid) {
+                this.messagesMap[message.id || 0] = true;
+            }
             this.checkPendingMessage(message.id || 0);
             this.updateDialogs(message, data.accessHashes[index] || '0');
         });
@@ -2019,7 +2020,7 @@ class Chat extends React.Component<IProps, IState> {
         if (!messages.length) {
             return null;
         }
-        const index = findIndex(defaultMessages, {id});
+        const index = findLastIndex(defaultMessages, {id});
         if (index === -1) {
             return null;
         }
@@ -2164,6 +2165,9 @@ class Chat extends React.Component<IProps, IState> {
             });
 
             this.sdk.sendMessage(randomId, text, peer, replyTo, entities).then((res) => {
+                if (this.state.selectedDialogId === message.peerid) {
+                    this.messagesMap[res.messageid || 0] = true;
+                }
                 // For double checking update message id
                 this.updateManager.setMessageId(res.messageid || 0);
                 this.modifyPendingMessage({
@@ -2289,6 +2293,9 @@ class Chat extends React.Component<IProps, IState> {
             peer.setAccesshash(contact.accesshash || '');
             peer.setId(contact.id || '');
             this.sdk.sendMessage(randomId, text, peer).then((res) => {
+                if (this.state.selectedDialogId === contact.id) {
+                    this.messagesMap[res.messageid || 0] = true;
+                }
                 // For double checking update message id
                 this.updateManager.setMessageId(res.messageid || 0);
                 this.modifyPendingMessage({
@@ -2870,52 +2877,9 @@ class Chat extends React.Component<IProps, IState> {
             const ids = newMsg[selectedDialogId].sort();
             if (ids.length > 0) {
                 this.newMessageMap[ids[0]] = ids;
-                this.checkMessageExistenceThrottle();
+                this.checkMessageExistenceThrottle(selectedDialogId);
             }
         }
-        // {
-        //     setTimeout(() => {
-        //         if (selectedDialogId !== this.state.selectedDialogId) {
-        //             return;
-        //         }
-        //         const ids: number[] = [];
-        //         newMsg[selectedDialogId].forEach((id) => {
-        //             if (id > 0 && !this.messagesMap.hasOwnProperty(id)) {
-        //                 ids.push(id);
-        //             }
-        //         });
-        //         if (ids.length > 0) {
-        //             ids.sort().reverse();
-        //             window.console.log(ids);
-        //             const checkIds: Array<{ id: number, topId: number }> = [];
-        //             const len = this.messages.length - 1;
-        //             for (let i = len; i >= 0 && ids.length > 0; i--) {
-        //                 if ((this.messages[i].id || 0) < ids[0]) {
-        //                     if (len === i) {
-        //                         checkIds.push({
-        //                             id: ids[0],
-        //                             topId: -1,
-        //                         });
-        //                     } else {
-        //                         checkIds.push({
-        //                             id: ids[0],
-        //                             topId: (this.messages[i + 1].id || 0),
-        //                         });
-        //                     }
-        //                     ids.shift();
-        //                 }
-        //             }
-        //             window.console.log(checkIds);
-        //             this.messageRepo.getIn(checkIds.map(o => o.id), true).then((res) => {
-        //                 window.console.log(res);
-        //                 this.modifyMessagesBetween(this.messages, res, checkIds[0].topId);
-        //                 if (this.messageRef) {
-        //                     this.messageRef.forceUpdate();
-        //                 }
-        //             });
-        //         }
-        //     }, 1000);
-        // }
     }
 
     /* Notify on new message received */
@@ -3764,6 +3728,9 @@ class Chat extends React.Component<IProps, IState> {
         }
 
         this.sdk.sendMessage(randomId, message.body || '', peer, message.replyto, messageEntities).then((res) => {
+            if (this.state.selectedDialogId === message.peerid) {
+                this.messagesMap[res.messageid || 0] = true;
+            }
             // For double checking update message id
             this.updateManager.setMessageId(res.messageid || 0);
             this.modifyPendingMessage({
@@ -3798,6 +3765,9 @@ class Chat extends React.Component<IProps, IState> {
 
         const fn = () => {
             this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, message.replyto).then((res) => {
+                if (this.state.selectedDialogId === message.peerid) {
+                    this.messagesMap[res.messageid || 0] = true;
+                }
                 // For double checking update message id
                 this.updateManager.setMessageId(res.messageid || 0);
                 this.modifyPendingMessage({
@@ -4353,6 +4323,9 @@ class Chat extends React.Component<IProps, IState> {
                 });
             }
             this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, replyTo).then((res) => {
+                if (this.state.selectedDialogId === message.peerid) {
+                    this.messagesMap[res.messageid || 0] = true;
+                }
                 // For double checking update message id
                 this.updateManager.setMessageId(res.messageid || 0);
                 this.modifyPendingMessage({
@@ -4495,6 +4468,9 @@ class Chat extends React.Component<IProps, IState> {
         });
 
         this.sdk.sendMediaMessage(randomId, peer, mediaType, media, replyTo).then((res) => {
+            if (this.state.selectedDialogId === message.peerid) {
+                this.messagesMap[res.messageid || 0] = true;
+            }
             // For double checking update message id
             this.updateManager.setMessageId(res.messageid || 0);
             this.modifyPendingMessage({
@@ -4961,8 +4937,11 @@ class Chat extends React.Component<IProps, IState> {
         window.console.log(dataMsg);
     }
 
-    private checkMessageExistence = () => {
+    private checkMessageExistence = (peerId: string) => {
         setTimeout(() => {
+            if (peerId !== this.state.selectedDialogId) {
+                return;
+            }
             const ids: number[] = [];
             // tslint:disable-next-line:forin
             for (const key in this.newMessageMap) {
@@ -4975,7 +4954,6 @@ class Chat extends React.Component<IProps, IState> {
             this.newMessageMap = {};
             if (ids.length > 0) {
                 ids.sort().reverse();
-                window.console.log(ids);
                 const checkIds: Array<{ id: number, topId: number }> = [];
                 const len = this.messages.length - 1;
                 for (let i = len; i >= 0 && ids.length > 0; i--) {
@@ -4994,16 +4972,33 @@ class Chat extends React.Component<IProps, IState> {
                         ids.shift();
                     }
                 }
-                window.console.log(checkIds);
+                if (checkIds.length === 0) {
+                    return;
+                }
+                window.console.debug('%c checkMessageExistence', 'color: orange;', checkIds);
+                checkIds.sort((i1, i2) => {
+                    return i1.id - i2.id;
+                });
                 this.messageRepo.getIn(checkIds.map(o => o.id), true).then((res) => {
-                    window.console.log(res);
-                    this.modifyMessagesBetween(this.messages, res, checkIds[0].topId);
+                    if (res.length === 0) {
+                        return;
+                    }
+                    checkIds.forEach((checkId, key) => {
+                        if (!res[key]) {
+                            return;
+                        }
+                        if (checkId.topId === -1) {
+                            this.modifyMessages(this.messages, [res[key]], true);
+                        } else {
+                            this.modifyMessagesBetween(this.messages, [res[key]], checkId.topId);
+                        }
+                    });
                     if (this.messageRef) {
                         this.messageRef.forceUpdate();
                     }
                 });
             }
-        }, 256);
+        }, 512);
     }
 
     /*
