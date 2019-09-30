@@ -1,3 +1,6 @@
+## 0.25.89
+* Trying to recover missing messages
+
 ## 0.25.88
 * Min recorder time is 1 sec
 
