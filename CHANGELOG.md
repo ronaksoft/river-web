@@ -1,3 +1,7 @@
+## 0.25.92
+* Insert messages on pending bug fixed
+* Double check in syncManger dialog update
+
 ## 0.25.91
 * File server time bug fixed
 

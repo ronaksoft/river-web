@@ -1163,7 +1163,7 @@ class Chat extends React.Component<IProps, IState> {
             // Check if Top Message exits
             const dialog = this.getDialogById(this.state.selectedDialogId);
             // @ts-ignore
-            if (dialog && this.messages.length > 0 && this.messages[this.messages.length - 1] && (dialog.topmessageid || 0) <= (this.messages[this.messages.length - 1].id || 0)) {
+            if (dialog && this.messages.length > 0 && this.messages[this.messages.length - 1] && ((dialog.topmessageid || 0) <= (this.messages[this.messages.length - 1].id || 0) || (this.messages[this.messages.length - 1].id || 0) < 0)) {
                 const dataMsg = this.modifyMessages(this.messages, data.messages.reverse(), true);
                 data.messages.reverse().forEach((message) => {
                     this.checkMessageOrder(message);

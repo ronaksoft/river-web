@@ -357,6 +357,8 @@ export default class SyncManager {
                                 data.push(dialogs[key]);
                             });
                             updateDialogs(data);
+                        }).catch(() => {
+                            updateDialogs(data);
                         });
                     }).catch(() => {
                         setTimeout(() => {
