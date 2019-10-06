@@ -249,7 +249,7 @@ class NewGroupMenu extends React.Component<IProps, IState> {
 
     /* Context menu options */
     private avatarContextMenuItem() {
-        const menuItems = [{
+        const menuItems: Array<{cmd: 'remove' | 'change'; title: string}> = [{
             cmd: 'remove',
             title: i18n.t('settings.remove_photo'),
         }, {
@@ -263,12 +263,12 @@ class NewGroupMenu extends React.Component<IProps, IState> {
                 return true;
             }
         }).map((item, index) => {
-            return (<MenuItem key={index} onClick={this.avatarMoreCmdHandler.bind(this, item.cmd)}
+            return (<MenuItem key={index} onClick={this.avatarMoreCmdHandler(item.cmd)}
                               className="context-item">{item.title}</MenuItem>);
         });
     }
 
-    private avatarMoreCmdHandler = (cmd: 'remove' | 'change') => {
+    private avatarMoreCmdHandler = (cmd: 'remove' | 'change') => (e: any) => {
         switch (cmd) {
             case 'remove':
                 this.photoBlob = undefined;

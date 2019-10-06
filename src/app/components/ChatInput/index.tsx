@@ -89,8 +89,8 @@ const mentionize = (text: string, sortedEntities: Array<{ offset: number, length
 };
 
 interface IProps {
-    onAction: (cmd: string, message?: IMessage) => void;
-    onBulkAction: (cmd: string) => void;
+    onAction: (cmd: string, message?: IMessage) => (e: any) => void;
+    onBulkAction: (cmd: string) => (e: any) => void;
     onContactSelected: (users: IUser[], caption: string, {mode, message}?: any) => void;
     onMapSelected: (item: IGeoItem, {mode, message}?: any) => void;
     onMediaSelected: (items: IMediaItem[], {mode, message}?: any) => void;
@@ -386,7 +386,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 return (<div className="input-placeholder">
                     {i18n.t('input.you_are_no_longer_in_this_group')}
                     <span className="btn"
-                          onClick={this.props.onAction.bind(this, 'remove_dialog')}>{i18n.t('input.delete_and_exit')}</span>
+                          onClick={this.props.onAction('remove_dialog')}>{i18n.t('input.delete_and_exit')}</span>
                 </div>);
             } else if (disableAuthority === 0x2) {
                 return (<div className="input-placeholder">{i18n.t('input.group_is_deactivated')}</div>);
@@ -423,7 +423,7 @@ class ChatInput extends React.Component<IProps, IState> {
                             </div>
                         </div>
                         <div className="preview-clear">
-                        <span onClick={this.clearPreviewMessage.bind(this, false)}>
+                        <span onClick={this.clearPreviewMessage(false)}>
                             <IconButton className="btn-clear">
                                 <ClearRounded/>
                             </IconButton>
@@ -512,7 +512,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                 title={i18n.t('input.close')}
                                 placement="top"
                             >
-                                <IconButton onClick={this.props.onBulkAction.bind(this, 'close')}>
+                                <IconButton onClick={this.props.onBulkAction('close')}>
                                     <ClearRounded/>
                                 </IconButton>
                             </Tooltip>
@@ -522,7 +522,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                 title={i18n.t('input.remove')}
                                 placement="top"
                             >
-                                <IconButton onClick={this.props.onBulkAction.bind(this, 'remove')}
+                                <IconButton onClick={this.props.onBulkAction('remove')}
                                             disabled={selectableDisable}>
                                     <DeleteRounded/>
                                 </IconButton>
@@ -531,7 +531,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                 title={i18n.t('input.forward')}
                                 placement="top"
                             >
-                                <IconButton onClick={this.props.onBulkAction.bind(this, 'forward')}
+                                <IconButton onClick={this.props.onBulkAction('forward')}
                                             disabled={selectableDisable}>
                                     <ForwardRounded/>
                                 </IconButton>
@@ -602,7 +602,7 @@ class ChatInput extends React.Component<IProps, IState> {
                     });
                 });
             } else {
-                this.clearPreviewMessage(true).finally(() => {
+                this.clearPreviewMessage(true, () => {
                     const message = cloneDeep(previewMessage);
                     this.props.onMessage(text, {
                         entities,
@@ -647,7 +647,7 @@ class ChatInput extends React.Component<IProps, IState> {
                             });
                         });
                     } else if (previewMessageMode !== C_MSG_MODE.Normal) {
-                        this.clearPreviewMessage(true).finally(() => {
+                        this.clearPreviewMessage(true, () => {
                             const message = cloneDeep(previewMessage);
                             this.props.onMessage(text, {
                                 entities,
@@ -749,7 +749,7 @@ class ChatInput extends React.Component<IProps, IState> {
         });
     }
 
-    private clearPreviewMessage = (removeDraft?: boolean) => {
+    private clearPreviewMessage = (removeDraft?: boolean, cb?: any) => (e: any) => {
         this.setState({
             previewMessageHeight: 0,
         });
@@ -766,7 +766,11 @@ class ChatInput extends React.Component<IProps, IState> {
                 this.props.onPreviewMessageChange(undefined, C_MSG_MODE.Normal);
             }
         }, 102);
-        return this.removeDraft(removeDraft);
+        this.removeDraft(removeDraft).finally(() => {
+            if (cb) {
+                cb();
+            }
+        });
     }
 
     private removeDraft(removeDraft?: boolean) {
@@ -1596,7 +1600,7 @@ class ChatInput extends React.Component<IProps, IState> {
         });
     }
 
-    private selectMediaActionHandler = (mode: 'media' | 'music' | 'file' | 'contact' | 'location') => {
+    private selectMediaActionHandler = (mode: 'media' | 'music' | 'file' | 'contact' | 'location') => (e: any) => {
         this.setState({
             mediaInputMode: mode,
         }, () => {

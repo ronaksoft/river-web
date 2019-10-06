@@ -34,7 +34,7 @@ const tooltipClass: any = makeStyles({
 let items: any[] = [];
 
 interface IProps {
-    onAction: (cmd: 'media' | 'music' | 'contact' | 'location' | 'file') => void;
+    onAction: (cmd: 'media' | 'music' | 'contact' | 'location' | 'file') => (e: any) => void;
     onClose?: () => void;
     open: boolean;
 }
@@ -106,8 +106,8 @@ class SelectMedia extends React.Component<IProps, IState> {
                                              TransitionComponent={Zoom}>
                                         <div
                                             className={'media-item ' + item.cmd + (currentCmd === item.cmd ? ' selected' : '')}
-                                            onClick={this.props.onAction.bind(this, item.cmd)}
-                                            onMouseEnter={this.mouseEnterHandler.bind(this, item.cmd)}
+                                            onClick={this.props.onAction(item.cmd)}
+                                            onMouseEnter={this.mouseEnterHandler(item.cmd)}
                                             onMouseLeave={this.mouseLeaveHandler}>
                                             {item.icon}
                                         </div>
@@ -132,7 +132,7 @@ class SelectMedia extends React.Component<IProps, IState> {
     }
 
     /* Mouse enter handler */
-    private mouseEnterHandler = (cmd: string) => {
+    private mouseEnterHandler = (cmd: string) => (e: any) => {
         this.leaveDebounce.cancel();
         if (this.state.currentCmd !== cmd) {
             this.setState({

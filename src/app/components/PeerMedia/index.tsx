@@ -201,7 +201,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                 {items.map((item, i) => {
                     return (
                         <div key={item.id} className={`media-item item_${item.id}`}
-                             onClick={this.showMediaHandler.bind(this, i)}>
+                             onClick={this.showMediaHandler(i)}>
                             {this.getFileIcon(item)}
                             {Boolean(item.type === C_MESSAGE_TYPE.Video) &&
                             <div className="video-icon">
@@ -224,7 +224,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                 {items.map((item, i) => {
                     return (
                         <div key={item.id} className={`media-item item_${item.id}`}
-                             onClick={this.showMediaHandler.bind(this, i)}>
+                             onClick={this.showMediaHandler(i)}>
                             {this.getFileIcon(item)}
                             <div className="media-item-info">
                                 <div
@@ -313,7 +313,7 @@ class PeerMedia extends React.Component<IProps, IState> {
     }
 
     /* Show media handler */
-    private showMediaHandler = (i: number, e: any) => {
+    private showMediaHandler = (i: number) => (e: any) => {
         try {
             const {items} = this.state;
             const item = items[i];
@@ -376,7 +376,7 @@ class PeerMedia extends React.Component<IProps, IState> {
             switch (tab) {
                 case 1:
                     return (<div className="media-item-action">
-                        <div className="audio-action" onClick={this.audioActionClickHandler.bind(this, item.id)}>
+                        <div className="audio-action" onClick={this.audioActionClickHandler(item.id)}>
                             {!item.playing && <PlayArrowRounded/>}
                             {item.playing && <PauseRounded/>}
                         </div>
@@ -385,18 +385,18 @@ class PeerMedia extends React.Component<IProps, IState> {
                 default:
                     if (!item.saved) {
                         return (<div className="media-file-action">
-                            <span onClick={this.mediaActionClickHandler.bind(this, item.id, 'view')}>SAVE</span>
+                            <span onClick={this.mediaActionClickHandler(item.id, 'view')}>SAVE</span>
                         </div>);
                     } else {
                         return (<div className="media-file-action">
-                            <span onClick={this.mediaActionClickHandler.bind(this, item.id, 'open')}>OPEN</span>
+                            <span onClick={this.mediaActionClickHandler(item.id, 'open')}>OPEN</span>
                         </div>);
                     }
             }
         }
     }
 
-    private mediaActionClickHandler = (id: number, cmd: 'view' | 'open') => {
+    private mediaActionClickHandler = (id: number, cmd: 'view' | 'open') => (e: any) => {
         if (this.props.onAction) {
             this.props.onAction(cmd, id);
         }
@@ -520,7 +520,7 @@ class PeerMedia extends React.Component<IProps, IState> {
     }
 
     /* Audio action click handler */
-    private audioActionClickHandler = (id: number) => {
+    private audioActionClickHandler = (id: number) => (e: any) => {
         if (!this.itemMap.hasOwnProperty(id)) {
             return;
         }

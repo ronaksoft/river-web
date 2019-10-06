@@ -345,7 +345,7 @@ class SignUp extends React.Component<IProps, IState> {
                     <div className="language-list-container">
                         {languageList.map((item, key) => {
                             return (<div key={key} className="language-item"
-                                         onClick={this.changeLanguage.bind(this, item.lang)}>
+                                         onClick={this.changeLanguage(item.lang)}>
                                 <div className="language-label">{item.title}</div>
                                 <div className="check">
                                     {item.lang === this.state.selectedLanguage && <DoneRounded/>}
@@ -852,7 +852,7 @@ class SignUp extends React.Component<IProps, IState> {
         });
     }
 
-    private changeLanguage = (lang: string) => {
+    private changeLanguage = (lang: string) => (e: any) => {
         const l = localStorage.getItem('river.lang');
         if (l !== lang) {
             // @ts-ignore

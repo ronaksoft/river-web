@@ -357,9 +357,9 @@ class Message extends React.Component<IProps, IState> {
         } else if (this.state.items === items && this.listCount !== items.length) {
             fn();
             this.checkEnd(items);
-            setTimeout(() => {
+            requestAnimationFrame(() => {
                 this.fitList(true);
-            }, 100);
+            });
             this.modifyScroll(items);
             this.listCount = items.length;
             if (this.state.items.length > 0) {
@@ -524,7 +524,7 @@ class Message extends React.Component<IProps, IState> {
     }
 
     public fitList(instant?: boolean) {
-        setTimeout(() => {
+        requestAnimationFrame(() => {
             if (!this.scrollContainerEl || !this.scrollContainerEl.style || !this.props) {
                 return;
             }
@@ -553,7 +553,7 @@ class Message extends React.Component<IProps, IState> {
             }
             this.scrollContainerEl.style.paddingTop = '0px';
             this.modifyScrollThumb();
-        }, instant ? 1 : 10);
+        });
     }
 
     public takeSnapshot(noRemove?: boolean) {
@@ -801,7 +801,7 @@ class Message extends React.Component<IProps, IState> {
             });
         }
         return menuItems.map((item, index) => {
-            return (<MenuItem key={index} onClick={this.moreCmdHandler.bind(this, item.cmd, moreIndex)}
+            return (<MenuItem key={index} onClick={this.moreCmdHandler(item.cmd, moreIndex)}
                               className="context-item">{item.title}</MenuItem>);
         });
     }
@@ -900,12 +900,12 @@ class Message extends React.Component<IProps, IState> {
                     return (
                         <div style={style}
                              className={'bubble-wrapper' + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '')}
-                             onClick={this.toggleSelectHandler.bind(this, message.id || 0, index)}
-                             onDoubleClick={this.selectMessage.bind(this, index)}>
+                             onClick={this.toggleSelectHandler(message.id || 0, index)}
+                             onDoubleClick={this.selectMessage(index)}>
                             {this.state.selectable && <Checkbox
                                 className={'checkbox ' + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? 'checked' : '')}
                                 color="primary" checked={this.state.selectedIds.hasOwnProperty(message.id || 0)}
-                                onChange={this.selectMessageHandler.bind(this, message.id || 0, index, null)}/>}
+                                onChange={this.selectMessageHandler(message.id || 0, index, null)}/>}
                             {this.renderSystemMessage(message)}
                         </div>
                     );
@@ -913,8 +913,8 @@ class Message extends React.Component<IProps, IState> {
                     return (
                         <div style={style}
                              className={'bubble-wrapper _bubble' + (message.me && !this.isSimplified ? ' me' : ' you') + (message.avatar ? ' avatar' : '') + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '') + this.getMessageType(message) + ((message.me && message.error) ? ' has-error' : '')}
-                             onClick={this.toggleSelectHandler.bind(this, message.id || 0, index)}
-                             onDoubleClick={this.selectMessage.bind(this, index)}
+                             onClick={this.toggleSelectHandler(message.id || 0, index)}
+                             onDoubleClick={this.selectMessage(index)}
                         >
                             {(!this.state.selectable && message.avatar && message.senderid) && (
                                 <UserAvatar id={message.senderid} className="avatar"/>
@@ -922,10 +922,10 @@ class Message extends React.Component<IProps, IState> {
                             {this.state.selectable && <Checkbox
                                 className={'checkbox ' + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? 'checked' : '')}
                                 color="primary" checked={this.state.selectedIds.hasOwnProperty(message.id || 0)}
-                                onChange={this.selectMessageHandler.bind(this, message.id || 0, index, null)}/>}
+                                onChange={this.selectMessageHandler(message.id || 0, index, null)}/>}
                             {Boolean(message.avatar && message.senderid) && (<div className="arrow"/>)}
                             {Boolean(message.me && message.error) &&
-                            <span className="error" onClick={this.contextMenuHandler.bind(this, index)}><ErrorRounded/></span>}
+                            <span className="error" onClick={this.contextMenuHandler(index)}><ErrorRounded/></span>}
                             <div ref={parenElRefHandler}
                                  className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '') + ((message.messagetype === C_MESSAGE_TYPE.Video || message.messagetype === C_MESSAGE_TYPE.Picture) ? ' media-message' : '')}>
                                 {Boolean((peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me) || (this.isSimplified && message.avatar)) &&
@@ -933,21 +933,21 @@ class Message extends React.Component<IProps, IState> {
                                           hideBadge={true} noDetail={this.state.selectable}/>}
                                 {Boolean(message.replyto && message.replyto !== 0 && message.deleted_reply !== true) &&
                                 <MessagePreview message={message} peer={peer}
-                                                onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}
+                                                onDoubleClick={this.moreCmdHandler('reply', index)}
                                                 onClick={this.props.onJumpToMessage}
                                                 disableClick={this.state.selectable}
                                 />}
                                 {Boolean(message.fwdsenderid && message.fwdsenderid !== '0') &&
                                 <MessageForwarded message={message} peer={peer}
-                                                  onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>}
+                                                  onDoubleClick={this.moreCmdHandler('reply', index)}/>}
                                 <div className="bubble-body" onClick={bubbleClickHandler}>
                                     {this.renderMessageBody(message, peer, messageMedia, parentEl, measureFn)}
                                     <MessageStatus status={message.me || false} id={message.id} readId={readId}
                                                    time={message.createdon || 0} editedTime={message.editedon || 0}
-                                                   onDoubleClick={this.moreCmdHandler.bind(this, 'reply', index)}/>
+                                                   onDoubleClick={this.moreCmdHandler('reply', index)}/>
                                 </div>
                                 <div className="more" onClick={bubbleClickHandler}>
-                                    <MoreVert onClick={this.contextMenuHandler.bind(this, index)}/>
+                                    <MoreVert onClick={this.contextMenuHandler(index)}/>
                                 </div>
                             </div>
                         </div>
@@ -956,7 +956,7 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
-    private contextMenuHandler = (index: number, e: any) => {
+    private contextMenuHandler = (index: number) => (e: any) => {
         if (index === -1) {
             return;
         }
@@ -973,7 +973,7 @@ class Message extends React.Component<IProps, IState> {
         });
     }
 
-    private moreCmdHandler = (cmd: string, index: number, e: any) => {
+    private moreCmdHandler = (cmd: string, index: number) => (e: any) => {
         e.stopPropagation();
         if (this.props.contextMenu && index > -1) {
             this.props.contextMenu(cmd, this.state.items[index]);
@@ -990,7 +990,7 @@ class Message extends React.Component<IProps, IState> {
         });
     }
 
-    private selectMessage = (index: number, e: any) => {
+    private selectMessage = (index: number) => (e: any) => {
         e.stopPropagation();
         if (!this.state.selectable) {
             this.setState({
@@ -1199,7 +1199,7 @@ class Message extends React.Component<IProps, IState> {
                                               you={true}/> {i18n.t('message.changed_the_group_photo')}
                                 </span>
                                 <CachedPhoto className="picture" fileLocation={fileLocation.toObject()}
-                                             onClick={this.openAvatar.bind(this, photo)}/>
+                                             onClick={this.openAvatar(photo)}/>
                             </div>
                         );
                     }
@@ -1210,7 +1210,7 @@ class Message extends React.Component<IProps, IState> {
     }
 
     /* Add/Remove selected id to selectedIds map */
-    private selectMessageHandler = (id: number, index: number, cb: any, e?: any) => {
+    private selectMessageHandler = (id: number, index: number, cb: any) => (e?: any) => {
         const {selectedIds} = this.state;
         if (!e || (e && e.currentTarget.checked)) {
             selectedIds[id] = index;
@@ -1229,7 +1229,7 @@ class Message extends React.Component<IProps, IState> {
     }
 
     /* Toggle selected id in selectedIds map */
-    private toggleSelectHandler = (id: number, index: number, e: any) => {
+    private toggleSelectHandler = (id: number, index: number) => (e: any) => {
         if (!this.state.selectable) {
             return;
         }
@@ -1313,7 +1313,7 @@ class Message extends React.Component<IProps, IState> {
                         const url = this.modifyURL(elem.str);
                         if (this.isElectron) {
                             return (
-                                <a key={i} href={url} onClick={this.openExternalLink.bind(this, url)}
+                                <a key={i} href={url} onClick={this.openExternalLink(url)}
                                    className="_url">{elem.str}</a>);
                         } else {
                             return (
@@ -1724,12 +1724,12 @@ class Message extends React.Component<IProps, IState> {
         this.list.scrollToPosition(pos);
     }
 
-    private openExternalLink = (url: string, e: any) => {
+    private openExternalLink = (url: string) => (e: any) => {
         e.preventDefault();
         ElectronService.openExternal(url);
     }
 
-    private openAvatar(photo: GroupPhoto.AsObject) {
+    private openAvatar = (photo: GroupPhoto.AsObject) => (e: any) => {
         const doc: IDocument = {
             items: [{
                 caption: '',

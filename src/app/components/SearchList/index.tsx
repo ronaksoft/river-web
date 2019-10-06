@@ -188,7 +188,7 @@ class SearchList extends React.Component<IProps, IState> {
                           tabIndex={-1} label={<UserName id={value.contact.id} noDetail={true} unsafe={true}
                                                          you={this.userId === value.contact.id}
                                                          youPlaceholder="Saved Messages"/>}
-                          onDelete={this.removeItemHandler.bind(this, value)} className="chip"/>);
+                          onDelete={this.removeItemHandler(value)} className="chip"/>);
         } else if (value.mode === 'dialog' && value.dialog) {
             if (value.dialog.peertype === PeerType.PEERUSER || value.dialog.peertype === PeerType.PEERSELF) {
                 return (
@@ -197,11 +197,11 @@ class SearchList extends React.Component<IProps, IState> {
                           tabIndex={-1} label={<UserName id={value.dialog.peerid} noDetail={true} unsafe={true}
                                                          you={this.userId === value.dialog.peerid}
                                                          youPlaceholder="Saved Messages"/>}
-                          onDelete={this.removeItemHandler.bind(this, value)} className="chip"/>);
+                          onDelete={this.removeItemHandler(value)} className="chip"/>);
             } else if (value.dialog.peertype === PeerType.PEERGROUP) {
                 return (<Chip key={key} avatar={<GroupAvatar id={value.dialog.peerid}/>} tabIndex={-1}
                               label={<GroupName id={value.dialog.peerid} className="group-name"/>}
-                              onDelete={this.removeItemHandler.bind(this, value)} className="chip"/>);
+                              onDelete={this.removeItemHandler(value)} className="chip"/>);
             } else {
                 return (<span/>);
             }
@@ -224,7 +224,7 @@ class SearchList extends React.Component<IProps, IState> {
             } else {
                 return (
                     <div style={style} key={index} className="search-item"
-                         onClick={this.addItemHandler.bind(this, inputPeer)}>
+                         onClick={this.addItemHandler(inputPeer)}>
                         <UserAvatar className="avatar" id={inputPeer.contact.id || ''}
                                     savedMessages={this.userId === inputPeer.contact.id}/>
                         <span className="name">{`${inputPeer.contact.firstname} ${inputPeer.contact.lastname}`}</span>
@@ -235,7 +235,7 @@ class SearchList extends React.Component<IProps, IState> {
         } else if (inputPeer.mode === 'dialog' && inputPeer.dialog) {
             return (
                 <div style={style} key={index} className="search-item"
-                     onClick={this.addItemHandler.bind(this, inputPeer)}>
+                     onClick={this.addItemHandler(inputPeer)}>
                     {Boolean(inputPeer.dialog.peertype === PeerType.PEERUSER || inputPeer.dialog.peertype === PeerType.PEERSELF) &&
                     <UserAvatar className="avatar" id={inputPeer.dialog.peerid || ''} noDetail={true}
                                 savedMessages={this.userId === inputPeer.dialog.peerid}/>}
@@ -314,7 +314,7 @@ class SearchList extends React.Component<IProps, IState> {
     }
 
     /* Add item to selectedInputPeers */
-    private addItemHandler = (inputPeer: ISearchItem) => {
+    private addItemHandler = (inputPeer: ISearchItem) => (e: any) => {
         const {selectedInputPeers} = this.state;
         if (!selectedInputPeers || !inputPeer) {
             return;
@@ -338,7 +338,7 @@ class SearchList extends React.Component<IProps, IState> {
     }
 
     /* Remove item from selectedInputPeers */
-    private removeItemHandler = (inputPeer: ISearchItem) => {
+    private removeItemHandler = (inputPeer: ISearchItem) => (e: any) => {
         const {selectedInputPeers} = this.state;
         if (!selectedInputPeers || !inputPeer) {
             return;

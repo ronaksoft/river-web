@@ -310,11 +310,11 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                                 {participant.type === ParticipantType.PARTICIPANTTYPEADMIN &&
                                                 <div className="admin-wrapper"><StarRateRounded/></div>}
                                                 <span className="name"
-                                                      onClick={this.participantClickHandler.bind(this, participant.userid, participant.accesshash)}>{`${participant.firstname} ${participant.lastname}`}{this.userId === participant.userid ? ' (you)' : ''}</span>
+                                                      onClick={this.participantClickHandler(participant.userid, participant.accesshash)}>{`${participant.firstname} ${participant.lastname}`}{this.userId === participant.userid ? ' (you)' : ''}</span>
                                                 <span
                                                     className="username">{participant.username ? participant.username : i18n.t('general.no_username')}</span>
                                                 <div className="more"
-                                                     onClick={this.moreOpenHandler.bind(this, participant)}>
+                                                     onClick={this.moreOpenHandler(participant)}>
                                                     <MoreVert/>
                                                 </div>
                                             </div>
@@ -546,13 +546,13 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             return (<span>You have no authority!</span>);
         }
         return menuItems.map((item, index) => {
-            return (<MenuItem key={index} onClick={this.moreCmdHandler.bind(this, item.cmd)}
+            return (<MenuItem key={index} onClick={this.moreCmdHandler(item.cmd)}
                               className="context-item">{item.title}</MenuItem>);
         });
     }
 
     /* Decide what action should be done on current user */
-    private moreCmdHandler = (cmd: string) => {
+    private moreCmdHandler = (cmd: string) => (e: any) => {
         const {peer, currentUser, participants, group} = this.state;
         if (!peer || !currentUser || !group) {
             return;
@@ -602,7 +602,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
 
     /* Opens participants' "more" menu
     *  and sets the current user */
-    private moreOpenHandler = (user: IUser, e: any) => {
+    private moreOpenHandler = (user: IUser) => (e: any) => {
         this.setState({
             currentUser: user,
             moreAnchorEl: e.currentTarget,
@@ -785,7 +785,10 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     }
 
     /* Participant onClick handler */
-    private participantClickHandler = (id: string, accesshash: string) => {
+    private participantClickHandler = (id: string | undefined, accesshash: string | undefined) => (e: any) => {
+        if (!id || !accesshash) {
+            return;
+        }
         this.broadcastEvent('User_Dialog_Open', {
             accesshash,
             id,
@@ -909,7 +912,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
 
     /* Decides what content the participants' "more" menu must have */
     private avatarContextMenuItem() {
-        const menuItems = [{
+        const menuItems: Array<{ cmd: 'show' | 'remove' | 'change', title: string }> = [{
             cmd: 'show',
             title: i18n.t('settings.show_photo'),
         }, {
@@ -920,12 +923,12 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             title: i18n.t('settings.change_photo'),
         }];
         return menuItems.map((item, index) => {
-            return (<MenuItem key={index} onClick={this.avatarMoreCmdHandler.bind(this, item.cmd)}
+            return (<MenuItem key={index} onClick={this.avatarMoreCmdHandler(item.cmd)}
                               className="context-item">{item.title}</MenuItem>);
         });
     }
 
-    private avatarMoreCmdHandler = (cmd: 'show' | 'remove' | 'change') => {
+    private avatarMoreCmdHandler = (cmd: 'show' | 'remove' | 'change') => (e: any) => {
         switch (cmd) {
             case 'show':
                 this.showAvatarHandler();

@@ -322,7 +322,7 @@ class Dialog extends React.Component<IProps, IState> {
                         <div
                             className={'dialog' + (dialog.peerid === this.state.selectedId ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}>
                             <DialogMessage dialog={dialog} isTyping={isTyping}
-                                           onContextMenuOpen={this.contextMenuOpenHandler.bind(this, index)}/>
+                                           onContextMenuOpen={this.contextMenuOpenHandler(index)}/>
                         </div>
                     </Link>
                 </div>
@@ -367,7 +367,7 @@ class Dialog extends React.Component<IProps, IState> {
     }
 
     /* Context menu open handler */
-    private contextMenuOpenHandler = (index: number, e: any) => {
+    private contextMenuOpenHandler = (index: number) => (e: any) => {
         const {searchItems} = this.state;
         if (!searchItems || index === -1) {
             return;
@@ -451,13 +451,13 @@ class Dialog extends React.Component<IProps, IState> {
             if (item.cmd === 'divider') {
                 return (<Divider key={key}/>);
             } else {
-                return (<MenuItem key={key} onClick={this.moreCmdHandler.bind(this, item.cmd, dialog)}
+                return (<MenuItem key={key} onClick={this.moreCmdHandler(item.cmd, dialog)}
                                   className="context-item" style={style}>{item.title}</MenuItem>);
             }
         });
     }
 
-    private moreCmdHandler = (cmd: string, dialog: IDialog, e: any) => {
+    private moreCmdHandler = (cmd: string, dialog: IDialog) => (e: any) => {
         e.stopPropagation();
         if (this.props.onContextMenu && dialog) {
             this.props.onContextMenu(cmd, dialog);

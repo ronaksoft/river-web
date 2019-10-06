@@ -240,7 +240,7 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
                                         return (<div key={item.id}
                                                      className={'playlist-item' + (!item.downloaded ? ' download' : '')}>
                                             <div className="playlist-avatar"
-                                                 onClick={this.playHandlerById.bind(this, item.id)}>
+                                                 onClick={this.playHandlerById(item.id)}>
                                                 {item.music.thumbFile.fileid !== '' &&
                                                 <CachedPhoto className="picture" fileLocation={item.music.thumbFile}/>}
                                                 {item.music.thumbFile.fileid === '' && <div className="picture">
@@ -448,7 +448,7 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
         });
     }
 
-    private playHandlerById = (id: number) => {
+    private playHandlerById = (id: number) => (e: any) => {
         if (this.audioPlayer.isPlaying(id)) {
             this.audioPlayer.pause(id);
         } else {

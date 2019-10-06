@@ -16,7 +16,7 @@ interface IProps {
     blur?: number;
     className?: string;
     fileLocation: InputFileLocation.AsObject;
-    onClick?: () => void;
+    onClick?: (e: any) => void;
     onLoad?: () => void;
     searchTemp?: boolean;
     style?: CSSProperties;

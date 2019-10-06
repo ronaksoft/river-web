@@ -171,7 +171,7 @@ class MediaPreview extends React.Component<IProps, IState> {
                                                      src={items[selected].preview}/>
                                                 <div ref={this.imageActionRefHandler} className="image-actions">
                                                     <CropRounded
-                                                        onClick={this.cropHandler.bind(this, items[selected].preview)}/>
+                                                        onClick={this.cropHandler(items[selected].preview)}/>
                                                 </div>
                                             </React.Fragment>}
                                             {Boolean(items[selected].mediaType === 'video') &&
@@ -240,7 +240,7 @@ class MediaPreview extends React.Component<IProps, IState> {
                                     return (
                                         <div key={index}
                                              className={'item' + (selected === index ? ' selected' : '')}
-                                             onClick={this.selectMedia.bind(this, index, null)}
+                                             onClick={this.selectMedia(index, undefined)}
                                         >
                                             {Boolean(!isFile && item.mediaType === 'image') &&
                                             <div className="preview"
@@ -266,7 +266,7 @@ class MediaPreview extends React.Component<IProps, IState> {
                                             </div>}
                                             {Boolean(!item.ready) &&
                                             <div className="item-busy"><ConfirmationNumberRounded/></div>}
-                                            <div className="remove" onClick={this.removeItemHandler.bind(this, index)}>
+                                            <div className="remove" onClick={this.removeItemHandler(index)}>
                                                 <CancelRounded/>
                                             </div>
                                         </div>
@@ -307,7 +307,7 @@ class MediaPreview extends React.Component<IProps, IState> {
     }
 
     /* Select media */
-    private selectMedia = (index: number, callback?: () => void) => {
+    private selectMedia = (index: number, callback?: () => void) => (e: any) => {
         if (this.state.selected === index) {
             return;
         }
@@ -492,7 +492,7 @@ class MediaPreview extends React.Component<IProps, IState> {
     }
 
     /* Remove item handler */
-    private removeItemHandler = (index: number, e: any) => {
+    private removeItemHandler = (index: number) => (e: any) => {
         e.stopPropagation();
         const {items, selected} = this.state;
         const removeItem = () => {
@@ -693,8 +693,8 @@ class MediaPreview extends React.Component<IProps, IState> {
     }
 
     /* Crop handler */
-    private cropHandler = (url: string) => {
-        if (this.cropperRef) {
+    private cropHandler = (url: string | undefined) => (e: any) => {
+        if (this.cropperRef && url) {
             this.cropperRef.openFile(url);
         }
     }

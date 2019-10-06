@@ -390,11 +390,11 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                 <div className="padding-side">
                                     <div className="account-summary">
                                         <div className="account-profile"
-                                             onClick={this.selectPageHandler.bind(this, 'account')}>
+                                             onClick={this.selectPageHandler('account')}>
                                             <UserAvatar className="avatar" id={this.userId} noDetail={true}/>
                                         </div>
                                         <div className="account-info"
-                                             onClick={this.selectPageHandler.bind(this, 'account')}>
+                                             onClick={this.selectPageHandler('account')}>
                                             <UserName className="username" id={this.userId} noDetail={true}/>
                                             <div className="account-phone">{phone}</div>
                                         </div>
@@ -407,26 +407,26 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                             <div className="anchor-label">{i18n.t('general.saved_messages')}</div>
                                         </Link>
                                     </div>
-                                    <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'storage')}>
+                                    <div className="page-anchor" onClick={this.selectPageHandler('storage')}>
                                         <div className="icon color-data">
                                             <DataUsageRounded/>
                                         </div>
                                         <div className="anchor-label">{i18n.t('settings.data_and_storage')}</div>
                                     </div>
-                                    <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'privacy')}>
+                                    <div className="page-anchor" onClick={this.selectPageHandler('privacy')}>
                                         <div className="icon color-session">
                                             <LockRounded/>
                                         </div>
                                         <div className="anchor-label">{i18n.t('settings.privacy_and_security')}</div>
                                     </div>
-                                    <div className="page-anchor" onClick={this.selectPageHandler.bind(this, 'theme')}>
+                                    <div className="page-anchor" onClick={this.selectPageHandler('theme')}>
                                         <div className="icon color-theme">
                                             <PaletteRounded/>
                                         </div>
                                         <div className="anchor-label">{i18n.t('settings.theme')}</div>
                                     </div>
                                     <div className="page-anchor"
-                                         onClick={this.selectPageHandler.bind(this, 'language')}>
+                                         onClick={this.selectPageHandler('language')}>
                                         <div className="icon color-language">
                                             <LanguageRounded/>
                                         </div>
@@ -518,7 +518,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                     {themes.map((theme, index) => (
                                                         <div key={index}
                                                              className={'radio-item ' + (this.state.selectedTheme === theme.id ? 'selected' : '')}
-                                                             onClick={this.selectThemeHandler.bind(this, theme.id)}
+                                                             onClick={this.selectThemeHandler(theme.id)}
                                                         >
                                                             <div className="radio-label">
                                                                 <Radio color="primary"
@@ -547,7 +547,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                     {bubbles.map((bubble, index) => (
                                                         <div key={index}
                                                              className={'radio-item ' + (this.state.selectedBubble === bubble.id ? 'selected' : '')}
-                                                             onClick={this.selectBubbleHandler.bind(this, bubble.id)}
+                                                             onClick={this.selectBubbleHandler(bubble.id)}
                                                         >
                                                             <div className="radio-label">
                                                                 <Radio color="primary"
@@ -577,7 +577,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                     {bgTypes.map((types, index) => (
                                                         <div key={index}
                                                              className={'radio-item ' + (this.state.selectedBgType === types.id ? 'selected' : '')}
-                                                             onClick={this.selectBgTypeHandler.bind(this, types.id)}
+                                                             onClick={this.selectBgTypeHandler(types.id)}
                                                         >
                                                             <div className="radio-label">
                                                                 <Radio color="primary"
@@ -792,7 +792,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                 >
                                     <div>
                                         <div className="page-anchor anchor-padding-side"
-                                             onClick={this.selectSubPageHandler.bind(this, 'session')}>
+                                             onClick={this.selectSubPageHandler('session')}>
                                             <div className="icon color-session">
                                                 <ClearAllRounded/>
                                             </div>
@@ -803,7 +803,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                         {privacyItems.map((item) => {
                                             return (
                                                 <div key={item.id} className="page-anchor anchor-padding-side"
-                                                     onClick={this.selectSubPageHandler.bind(this, item.id)}>
+                                                     onClick={this.selectSubPageHandler(item.id)}>
                                                     <div className="icon color-theme-type" style={{
                                                         backgroundColor: item.color,
                                                     }}>
@@ -845,7 +845,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                                 checked={Boolean(this.state.storageValues[item.id] || false)}
                                                                 className={'setting-switch' + (this.state.storageValues[item.id] ? ' checked' : '')}
                                                                 color="default"
-                                                                onChange={this.storageToggleHandler.bind(this, item.id)}
+                                                                onChange={this.storageToggleHandler(item.id)}
                                                             />
                                                         </div>
                                                     </div>
@@ -882,7 +882,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                     <div className="info language-list">
                                         {languageList.map((item, key) => {
                                             return (<div key={key} className="language-item"
-                                                         onClick={this.changeLanguage.bind(this, item.lang)}>
+                                                         onClick={this.changeLanguage(item.lang)}>
                                                 <div className="language-label">{item.title}</div>
                                                 <div className="check">
                                                     {item.lang === this.state.selectedLanguage && <DoneRounded/>}
@@ -916,7 +916,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                     return (
                                                         <div key={key} className="session-item terminate-all">
                                                             <span
-                                                                onClick={this.terminateSessionConfirmHandler.bind(this, '0')}>{i18n.t('settings.terminate_all_other_sessions')}</span>
+                                                                onClick={this.terminateSessionConfirmHandler('0')}>{i18n.t('settings.terminate_all_other_sessions')}</span>
                                                         </div>
                                                     );
                                                 } else {
@@ -945,7 +945,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                         </div>
                                                         <div className="session-action">
                                                             <span className="action-terminate"
-                                                                  onClick={this.terminateSessionConfirmHandler.bind(this, item.authid)}>{i18n.t('settings.terminate')}</span>
+                                                                  onClick={this.terminateSessionConfirmHandler(item.authid)}>{i18n.t('settings.terminate')}</span>
                                                         </div>
                                                     </div>
                                                 );
@@ -978,7 +978,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                     <div className="radio-item">
                                         <RadioGroup name="position"
                                                     value={privacy[item.id].mode}
-                                                    onChange={this.privacyRuleChangeHandler.bind(this, item.id)}
+                                                    onChange={this.privacyRuleChangeHandler(item.id)}
                                         >
                                             {privacyRuleItems.map((prItem) => {
                                                 return (
@@ -996,7 +996,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                     </div>
                                     {privacy[item.id].mode !== 'no_one' &&
                                     <div className="sub-page-header-alt"
-                                         onClick={this.openPrivacyUsersHandler.bind(this, `exclude:${item.id}`)}
+                                         onClick={this.openPrivacyUsersHandler(`exclude:${item.id}`)}
                                     >
                                         <div className="header-label"
                                         >{i18n.t('settings.privacy_never_share_with')}</div>
@@ -1005,7 +1005,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                     </div>}
                                     {privacy[item.id].mode !== 'everyone' &&
                                     <div className="sub-page-header-alt"
-                                         onClick={this.openPrivacyUsersHandler.bind(this, `include:${item.id}`)}
+                                         onClick={this.openPrivacyUsersHandler(`include:${item.id}`)}
                                     >
                                         <div className="header-label"
                                         >{i18n.t('settings.privacy_always_share_with')}</div>
@@ -1087,7 +1087,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         );
     }
 
-    private changeLanguage = (lang: string) => {
+    private changeLanguage = (lang: string) => (e: any) => {
         const l = localStorage.getItem('river.lang');
         const fn = () => {
             // @ts-ignore
@@ -1190,7 +1190,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         }
     }
 
-    private selectPageHandler = (target: string) => {
+    private selectPageHandler = (target: string) => (e: any) => {
         this.setState({
             page: '2',
             pageContent: target,
@@ -1204,7 +1204,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         }
     }
 
-    private selectSubPageHandler = (target: string) => {
+    private selectSubPageHandler = (target: string) => (e: any) => {
         this.setState({
             page: '3',
             pageSubContent: target,
@@ -1307,7 +1307,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         });
     }
 
-    private selectThemeHandler = (id: string) => {
+    private selectThemeHandler = (id: string) => (e: any) => {
         this.setState({
             selectedTheme: id,
         }, () => {
@@ -1333,7 +1333,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         }
     }
 
-    private selectBgTypeHandler = (id: string) => {
+    private selectBgTypeHandler = (id: string) => (e: any) => {
         if (id === '1') {
             this.settingsBackgroundModalRef.openDialog();
         } else {
@@ -1350,7 +1350,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         });
     }
 
-    private selectBubbleHandler = (id: string) => {
+    private selectBubbleHandler = (id: string) => (e: any) => {
         if (this.props.updateMessages) {
             this.props.updateMessages(true);
         }
@@ -1555,7 +1555,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     /* Decides what content the participants' "more" menu must have */
     private avatarContextMenuItem() {
         const {user} = this.state;
-        const menuItems = [{
+        const menuItems: Array<{ cmd: 'show' | 'remove' | 'change', title: string }> = [{
             cmd: 'show',
             title: i18n.t('settings.show_photo'),
         }, {
@@ -1568,12 +1568,12 @@ class SettingsMenu extends React.Component<IProps, IState> {
         return menuItems.filter((item) => {
             return (item.cmd === 'change') || ((item.cmd === 'show' || item.cmd === 'remove') && (user && user.photo && user.photo.photosmall && user.photo.photosmall.fileid !== '0'));
         }).map((item, index) => {
-            return (<MenuItem key={index} onClick={this.avatarMoreCmdHandler.bind(this, item.cmd)}
+            return (<MenuItem key={index} onClick={this.avatarMoreCmdHandler(item.cmd)}
                               className="context-item">{item.title}</MenuItem>);
         });
     }
 
-    private avatarMoreCmdHandler = (cmd: 'show' | 'remove' | 'change') => {
+    private avatarMoreCmdHandler = (cmd: 'show' | 'remove' | 'change') => (e: any) => {
         switch (cmd) {
             case 'show':
                 this.showAvatarHandler();
@@ -1722,7 +1722,10 @@ class SettingsMenu extends React.Component<IProps, IState> {
     }
 
     /* Open confirm dialog for terminate session by Id */
-    private terminateSessionConfirmHandler(id: string) {
+    private terminateSessionConfirmHandler = (id: string | undefined) => (e: any) => {
+        if (!id) {
+            return;
+        }
         this.setState({
             confirmDialogOpen: true,
             confirmDialogSelectedId: id
@@ -1799,7 +1802,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         });
     }
 
-    private storageToggleHandler = (id: string, e: any) => {
+    private storageToggleHandler = (id: string) => (e: any) => {
         const {storageValues} = this.state;
         storageValues[id] = e.target.checked;
         if (id === 'download_all') {
@@ -1917,7 +1920,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         return privacy;
     }
 
-    private privacyRuleChangeHandler = (id: string, e: any) => {
+    private privacyRuleChangeHandler = (id: string) => (e: any) => {
         const {privacy} = this.state;
         if (!privacy.hasOwnProperty(id)) {
             return;
@@ -1932,7 +1935,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.userListDialogRef = ref;
     }
 
-    private openPrivacyUsersHandler = (target: string) => {
+    private openPrivacyUsersHandler = (target: string) => (e: any) => {
         if (!this.userListDialogRef) {
             return;
         }

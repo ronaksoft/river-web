@@ -123,7 +123,7 @@ class SettingsBackgroundModal extends React.Component<IProps, IState> {
                                 <GridListTile key={index} cols={1} rows={1}>
                                     <div
                                         className={'item' + (selectedPic === pic.id ? ' selected' : '')}
-                                        onClick={this.selectBackgroundPicHandler.bind(this, pic.id)}>
+                                        onClick={this.selectBackgroundPicHandler(pic.id)}>
                                         <div className="customize" onClick={this.customizeBackgroundHandler}>
                                             <BlurOnRounded/>
                                         </div>
@@ -134,7 +134,7 @@ class SettingsBackgroundModal extends React.Component<IProps, IState> {
                             <GridListTile key={8} cols={1} rows={1}>
                                 {Boolean(uploadedSrc !== '') &&
                                 <div className={'item uploaded-file' + (selectedPic === '-21' ? ' selected' : '')}
-                                     onClick={this.selectBackgroundPicHandler.bind(this, '-21')}>
+                                     onClick={this.selectBackgroundPicHandler('-21')}>
                                     <div className="customize" onClick={this.customizeBackgroundHandler}>
                                         <BlurOnRounded/>
                                     </div>
@@ -183,7 +183,7 @@ class SettingsBackgroundModal extends React.Component<IProps, IState> {
                                 <GridListTile key={index} cols={1} rows={1}>
                                     <div
                                         className={'item' + (selectedPattern === pic.id ? ' selected' : '')}
-                                        onClick={this.selectPatternHandler.bind(this, pic.id)}>
+                                        onClick={this.selectPatternHandler(pic.id)}>
                                         {this.props.dark && <img src={pic.src.l}/>}
                                         {!this.props.dark && <img src={pic.src.d}/>}
                                     </div>
@@ -196,7 +196,7 @@ class SettingsBackgroundModal extends React.Component<IProps, IState> {
         );
     }
 
-    private selectBackgroundPicHandler = (id: string) => {
+    private selectBackgroundPicHandler = (id: string) => (e: any) => {
         const bg = bgPics.find((o) => o.id === id);
         const tSrc = (id === '-21') ? this.state.uploadedSrc : (bg ? bg.src : '');
         this.setState({
@@ -216,7 +216,7 @@ class SettingsBackgroundModal extends React.Component<IProps, IState> {
         });
     }
 
-    private selectPatternHandler = (id: string) => {
+    private selectPatternHandler = (id: string) => (e: any) => {
         this.setState({
             selectedPattern: id,
         });

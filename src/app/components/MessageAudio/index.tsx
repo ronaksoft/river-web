@@ -120,7 +120,7 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
                                   onAction={this.downloadProgressActionHandler}/>);
         } else {
             return (<div className="audio-item-action">
-                <div className="audio-action" onClick={this.audioActionClickHandler.bind(this, message.id || 0)}>
+                <div className="audio-action" onClick={this.audioActionClickHandler(message.id || 0)}>
                     {!playing && <PlayArrowRounded/>}
                     {playing && <PauseRounded/>}
                 </div>
@@ -137,7 +137,7 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
     }
 
     /* Audio action handler */
-    private audioActionClickHandler = (id: number) => {
+    private audioActionClickHandler = (id: number) => (e: any) => {
         const {playing} = this.state;
         if (!playing) {
             this.audioPlayer.play(id);

@@ -370,19 +370,19 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     <div className="item" onClick={this.openContextMenuHandler}>
                         <MoreVertRounded/>
                     </div>
-                    <div className="item" onClick={this.transformHandler.bind(this, 'rotate-cw')}>
+                    <div className="item" onClick={this.transformHandler('rotate-cw')}>
                         <RotateRightRounded/>
                     </div>
-                    <div className="item" onClick={this.transformHandler.bind(this, 'rotate-ccw')}>
+                    <div className="item" onClick={this.transformHandler('rotate-ccw')}>
                         <RotateLeftRounded/>
                     </div>
-                    <div className="item" onClick={this.transformHandler.bind(this, 'zoom-out')}>
+                    <div className="item" onClick={this.transformHandler('zoom-out')}>
                         <ZoomOutRounded/>
                     </div>
-                    <div className="item" onClick={this.transformHandler.bind(this, 'zoom-in')}>
+                    <div className="item" onClick={this.transformHandler('zoom-in')}>
                         <ZoomInRounded/>
                     </div>
-                    <div className="item" onClick={this.transformHandler.bind(this, 'reset')}>
+                    <div className="item" onClick={this.transformHandler('reset')}>
                         <CropFreeRounded/>
                     </div>
                 </div>
@@ -395,7 +395,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     {contextMenuItems.map((item, key) => {
                         return (
                             <MenuItem key={key}
-                                      onClick={this.contextMenuActionHandler.bind(this, item.cmd)}
+                                      onClick={this.contextMenuActionHandler(item.cmd)}
                                       className="context-item"
                             >{item.title}</MenuItem>
                         );
@@ -763,7 +763,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     /* Document transform handler */
-    private transformHandler = (cmd: string) => {
+    private transformHandler = (cmd: string) => (e: any) => {
         switch (cmd) {
             case 'zoom-in':
                 this.mediaTransform.zoom += 0.15;
@@ -893,7 +893,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     /* Context menu action handler */
-    private contextMenuActionHandler = (cmd: string) => {
+    private contextMenuActionHandler = (cmd: string) => (e: any) => {
         this.contextMenuCloseHandler();
         const {doc} = this.state;
         switch (cmd) {
@@ -973,9 +973,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
                         return (
                             <Tooltip key={gallery.photoid || key} interactive={true} enterDelay={500} leaveDelay={200}
                                      title={<span className="document-viewer-slide-show-remove"
-                                                  onClick={this.confirmRemovePhotoHandler.bind(this, key)}>{i18n.t('general.remove')}</span>}>
+                                                  onClick={this.confirmRemovePhotoHandler(key)}>{i18n.t('general.remove')}</span>}>
                                 <div className={'slide' + (gallerySelect === key ? ' selected' : '')}
-                                     onClick={this.selectGalleryIndexHandler.bind(this, key)}>
+                                     onClick={this.selectGalleryIndexHandler(key)}>
 
                                     <CachedPhoto className="thumbnail" fileLocation={gallery.photosmall}/>
                                 </div>
@@ -983,7 +983,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     } else {
                         return (<div key={gallery.photoid || key}
                                      className={'slide' + (gallerySelect === key ? ' selected' : '')}
-                                     onClick={this.selectGalleryIndexHandler.bind(this, key)}>
+                                     onClick={this.selectGalleryIndexHandler(key)}>
 
                             <CachedPhoto className="thumbnail" fileLocation={gallery.photosmall}/>
                         </div>);
@@ -994,7 +994,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     /* Gallery select gallery by index */
-    private selectGalleryIndexHandler = (index: number) => {
+    private selectGalleryIndexHandler = (index: number) => (e: any) => {
         const {galleryList, gallerySelect} = this.state;
         if (index < 0) {
             return;
@@ -1041,7 +1041,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     /* Confirm remove photo handler */
-    private confirmRemovePhotoHandler = (index: number) => {
+    private confirmRemovePhotoHandler = (index: number) => (e: any) => {
         this.setState({
             confirmDialogIndex: index,
             confirmDialogOpen: true,

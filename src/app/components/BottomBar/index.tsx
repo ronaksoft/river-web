@@ -73,7 +73,7 @@ class BottomBar extends React.Component<IProps, IState> {
                             placement="top"
                             enterDelay={1000}
                         >
-                            <a onClick={this.onClickHandler.bind(this, item.page)}
+                            <a onClick={this.onClickHandler(item.page)}
                                className={item.page === selected ? 'active' : ''}>
 
                                 {Boolean(item.badge) && <Badge color="primary" badgeContent={localize(unreadCounter)}
@@ -87,7 +87,7 @@ class BottomBar extends React.Component<IProps, IState> {
         );
     }
 
-    private onClickHandler = (item: string) => {
+    private onClickHandler = (item: string) => (e: any) => {
         if (this.props.onSelect) {
             this.props.onSelect(item);
         }

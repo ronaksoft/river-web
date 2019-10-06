@@ -214,7 +214,7 @@ class ContactList extends React.Component<IProps, IState> {
     private chipRenderer = ({value, text}: any, key: any): React.ReactNode => {
         return (<Chip key={key} avatar={<UserAvatar id={value.id} noDetail={true}/>} tabIndex={-1}
                       label={<UserName id={value.id} noDetail={true} unsafe={true}/>}
-                      onDelete={this.removeMemberHandler.bind(this, value)} className="chip"/>);
+                      onDelete={this.removeMemberHandler(value)} className="chip"/>);
     }
 
     /* Gets list element */
@@ -232,14 +232,14 @@ class ContactList extends React.Component<IProps, IState> {
             if (this.props.mode === 'chip') {
                 return (
                     <div style={style} key={contact.id || ''} className="contact-item"
-                         onClick={this.addMemberHandler.bind(this, contact)}>
+                         onClick={this.addMemberHandler(contact)}>
                     <span className="avatar">
                         <UserAvatar id={contact.id || ''}/>
                     </span>
                         <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>
                         <span className="phone">{contact.phone ? contact.phone : i18n.t('contact.no_phone')}</span>
                         {Boolean(this.props.onContextMenuAction) &&
-                        <div className="more" onClick={this.contextMenuOpenHandler.bind(this, index)}>
+                        <div className="more" onClick={this.contextMenuOpenHandler(index)}>
                             <MoreVert/>
                         </div>}
                     </div>
@@ -257,7 +257,7 @@ class ContactList extends React.Component<IProps, IState> {
                             </span>
                             <span className="phone">{contact.phone ? contact.phone : i18n.t('contact.no_phone')}</span>
                             {Boolean(this.props.onContextMenuAction) &&
-                            <div className="more" onClick={this.contextMenuOpenHandler.bind(this, index)}>
+                            <div className="more" onClick={this.contextMenuOpenHandler(index)}>
                                 <MoreVert/>
                             </div>}
                         </Link>
@@ -321,7 +321,7 @@ class ContactList extends React.Component<IProps, IState> {
     }
 
     /* Add member to selectedContacts */
-    private addMemberHandler = (contact: IUser) => {
+    private addMemberHandler = (contact: IUser) => (e: any) => {
         const {selectedContacts} = this.state;
         if (findIndex(selectedContacts, {id: contact.id || ''}) === -1) {
             selectedContacts.push(contact);
@@ -336,7 +336,7 @@ class ContactList extends React.Component<IProps, IState> {
     }
 
     /* Remove member from selectedContacts */
-    private removeMemberHandler = (contact: IUser) => {
+    private removeMemberHandler = (contact: IUser) => (e: any) => {
         const {selectedContacts} = this.state;
         if (!selectedContacts || !contact) {
             return;
@@ -378,7 +378,7 @@ class ContactList extends React.Component<IProps, IState> {
     }
 
     /* Context menu open handler */
-    private contextMenuOpenHandler = (index: number, e: any) => {
+    private contextMenuOpenHandler = (index: number) => (e: any) => {
         const {contacts} = this.state;
         if (!contacts || index === -1) {
             return;
@@ -419,13 +419,13 @@ class ContactList extends React.Component<IProps, IState> {
                     color: item.color,
                 };
             }
-            return (<MenuItem onClick={this.contextMenuActionHandler.bind(this, item.cmd, contacts[moreIndex])}
+            return (<MenuItem onClick={this.contextMenuActionHandler(item.cmd, contacts[moreIndex])}
                               key={index} className="context-item" style={style}>{item.title}</MenuItem>);
         });
     }
 
     /* Context Menu action handler */
-    private contextMenuActionHandler = (cmd: string, contact: IUser, e: any) => {
+    private contextMenuActionHandler = (cmd: string, contact: IUser) => (e: any) => {
         this.moreCloseHandler();
         if (this.props.onContextMenuAction) {
             e.preventDefault();

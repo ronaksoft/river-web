@@ -3324,7 +3324,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* ChatInput bulk action handler */
-    private chatInputBulkActionHandler = (cmd: string) => {
+    private chatInputBulkActionHandler = (cmd: string) => (e: any) => {
         switch (cmd) {
             case 'forward':
                 if (this.forwardDialogRef) {
@@ -3378,7 +3378,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* ChatInput action handler */
-    private chatInputActionHandler = (cmd: string, message?: IMessage) => {
+    private chatInputActionHandler = (cmd: string, message?: IMessage) => (e: any) => {
         const {peer} = this.state;
         if (!peer) {
             return;

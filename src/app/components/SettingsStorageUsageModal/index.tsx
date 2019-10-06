@@ -105,9 +105,9 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
                         {list.map((item, key) => {
                             return (<div key={key} className="storage-item">
                                 <div className="icon-container"
-                                     onClick={this.clearByIdHandler.bind(this, item.peerId || '')}>{this.getAvatar(item)}</div>
+                                     onClick={this.clearByIdHandler(item.peerId || '')}>{this.getAvatar(item)}</div>
                                 <div className="info-container"
-                                     onClick={this.clearByIdHandler.bind(this, item.peerId || '')}>
+                                     onClick={this.clearByIdHandler(item.peerId || '')}>
                                     <div className="name-row">{this.getName(item)}</div>
                                     <div className="size-row">
                                         {getHumanReadableSize(item.totalSize)}
@@ -119,7 +119,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
                                     <Checkbox
                                         color="primary"
                                         checked={this.isDialogChecked(item.peerId)}
-                                        onChange={this.checkDialogItem.bind(this, item.peerId)}
+                                        onChange={this.checkDialogItem(item.peerId)}
                                         classes={{
                                             checked: 'checkbox-checked',
                                             root: 'checkbox',
@@ -149,7 +149,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
                                         <Checkbox
                                             color="primary"
                                             checked={this.isChecked(key)}
-                                            onChange={this.checkItem.bind(this, key)}
+                                            onChange={this.checkItem(key)}
                                             classes={{
                                                 checked: 'checkbox-checked',
                                                 root: 'checkbox',
@@ -242,7 +242,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
         this.progressThrottle(e);
     }
 
-    private clearByIdHandler = (id: string) => {
+    private clearByIdHandler = (id: string) => (e: any) => {
         const {list} = this.state;
         const index = findIndex(list, {peerId: id});
         if (index > -1) {
@@ -285,7 +285,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
         return selectedMediaTypes.hasOwnProperty(type);
     }
 
-    private checkItem = (type: number | string) => {
+    private checkItem = (type: number | string) => (e: any) => {
         const {selectedMediaTypes} = this.state;
         if (!selectedMediaTypes.hasOwnProperty(type)) {
             selectedMediaTypes[type] = true;
@@ -303,7 +303,7 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
         return selectedDialogs.hasOwnProperty(id);
     }
 
-    private checkDialogItem = (id: string) => {
+    private checkDialogItem = (id: string) => (e: any) => {
         const {selectedDialogs} = this.state;
         if (!selectedDialogs.hasOwnProperty(id)) {
             selectedDialogs[id] = true;
