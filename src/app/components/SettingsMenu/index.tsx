@@ -149,7 +149,7 @@ interface IPrivacy {
 }
 
 interface IProps {
-    onClose?: () => void;
+    onClose?: (e: any) => void;
     onAction?: (cmd: 'logout') => void;
     updateMessages?: (keep?: boolean) => void;
     onReloadDialog?: (peerIds: string[]) => void;

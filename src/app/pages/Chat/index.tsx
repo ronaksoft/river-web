@@ -524,7 +524,7 @@ class Chat extends React.Component<IProps, IState> {
                 case 'settings':
                     return (<SettingsMenu ref={this.settingsMenuRefHandler}
                                           updateMessages={this.settingUpdateMessageHandler}
-                                          onClose={this.bottomBarSelectHandler.bind(this, 'chat')}
+                                          onClose={this.bottomBarSelectHandler('chat')}
                                           onAction={this.settingActionHandler}
                                           onReloadDialog={this.settingReloadDialogHandler}/>);
                 case 'contact':
@@ -606,7 +606,7 @@ class Chat extends React.Component<IProps, IState> {
                                                 placement="bottom"
                                             >
                                                 <IconButton
-                                                    onClick={this.chatTopIconActionHandler.bind(this, item.cmd)}
+                                                    onClick={this.chatTopIconActionHandler(item.cmd)}
                                                 >{item.icon}</IconButton>
                                             </Tooltip>
                                         );
@@ -623,7 +623,7 @@ class Chat extends React.Component<IProps, IState> {
                                             } else {
                                                 return (
                                                     <MenuItem key={key}
-                                                              onClick={this.chatMoreActionHandler.bind(this, item.cmd)}
+                                                              onClick={this.chatMoreActionHandler(item.cmd)}
                                                               className="context-item"
                                                     >{item.title}</MenuItem>
                                                 );
@@ -670,7 +670,7 @@ class Chat extends React.Component<IProps, IState> {
                                             {messageMoreMenuItem.map((item, key) => {
                                                 return (
                                                     <MenuItem key={key}
-                                                              onClick={this.messageMoreActionHandler.bind(this, item.cmd)}
+                                                              onClick={this.messageMoreActionHandler(item.cmd)}
                                                               className="context-item"
                                                     >{item.title}</MenuItem>
                                                 );
@@ -709,7 +709,8 @@ class Chat extends React.Component<IProps, IState> {
                                 />
                                 {this.getMoveDown()}
                             </div>
-                            <ChatInput ref={this.chatInputRefHandler} onMessage={this.chatInputTextMessageHandler}
+                            <ChatInput key="chat-input" ref={this.chatInputRefHandler}
+                                       onMessage={this.chatInputTextMessageHandler}
                                        onTyping={this.onTyping} userId={this.connInfo.UserID}
                                        previewMessage={textInputMessage} previewMessageMode={textInputMessageMode}
                                        onPreviewMessageChange={this.chatInputPreviewMessageChangeHandler}
@@ -740,22 +741,21 @@ class Chat extends React.Component<IProps, IState> {
                         </div>}
                         <div ref={this.rightMenuRefHandler} className="column-right">
                             {(this.state.rightMenu && peer && peer.getType() === PeerType.PEERGROUP) &&
-                            <GroupInfoMenu peer={peer} onClose={this.setRightMenu.bind(this, false)}
+                            <GroupInfoMenu key="group-info" peer={peer} onClose={this.setRightMenu(false)}
                                            onAction={this.messageAttachmentActionHandler}
                                            onDeleteAndExitGroup={this.groupInfoDeleteAndExitHandler}/>}
                             {(this.state.rightMenu && peer && peer.getType() === PeerType.PEERUSER) &&
-                            <UserInfoMenu peer={peer} onClose={this.setRightMenu.bind(this, false)}
+                            <UserInfoMenu key="user-info" peer={peer} onClose={this.setRightMenu(false)}
                                           onAction={this.messageAttachmentActionHandler}/>}
                         </div>
                     </div>
-                    <NewMessage open={this.state.openNewMessage} onClose={this.onNewMessageClose}
+                    <NewMessage key="new-message" open={this.state.openNewMessage} onClose={this.onNewMessageClose}
                                 onMessage={this.onNewMessageHandler}/>
                 </div>
                 <OverlayDialog
+                    key="overlay-dialog"
                     open={confirmDialogOpen}
                     onClose={this.confirmDialogCloseHandler}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
                     className="confirm-dialog"
                 >
                     {Boolean(confirmDialogMode === 'logout') && <div>
@@ -788,16 +788,16 @@ class Chat extends React.Component<IProps, IState> {
                             <Button onClick={this.confirmDialogCloseHandler} color="secondary">
                                 {i18n.t('general.disagree')}
                             </Button>
-                            <Button onClick={this.removeMessageHandler.bind(this, 0)} color="primary"
+                            <Button onClick={this.removeMessageHandler(0)} color="primary"
                                     autoFocus={true}>
                                 {i18n.t('chat.remove_message_dialog.remove')}
                             </Button>
                             {Boolean(confirmDialogMode === 'remove_message_revoke' && selectedDialogId !== this.connInfo.UserID) &&
-                            <Button onClick={this.removeMessageHandler.bind(this, 1)} color="primary">
+                            <Button onClick={this.removeMessageHandler(1)} color="primary">
                                 {i18n.t('chat.remove_message_dialog.remove_for_all')}
                             </Button>}
                             {Boolean(confirmDialogMode === 'remove_message_pending') &&
-                            <Button onClick={this.removeMessageHandler.bind(this, 2)} color="primary">
+                            <Button onClick={this.removeMessageHandler(2)} color="primary">
                                 {i18n.t('chat.remove_message_dialog.remove_all_pending')}
                             </Button>}
                         </DialogActions>
@@ -861,11 +861,12 @@ class Chat extends React.Component<IProps, IState> {
                         </DialogActions>
                     </div>}
                 </OverlayDialog>
-                <ForwardDialog ref={this.forwardDialogRefHandler} onDone={this.forwardDialogDoneHandler}
+                <ForwardDialog key="forward-dialog" ref={this.forwardDialogRefHandler}
+                               onDone={this.forwardDialogDoneHandler}
                                onClose={this.forwardDialogCloseHandler}/>
-                <UserDialog ref={this.userDialogRefHandler}/>
-                <DocumentViewer onAction={this.messageAttachmentActionHandler}/>
-                <AboutDialog ref={this.aboutDialogRefHandler}/>
+                <UserDialog key="user-dialog" ref={this.userDialogRefHandler}/>
+                <DocumentViewer key="document-viewer" onAction={this.messageAttachmentActionHandler}/>
+                <AboutDialog key="about-dialog" ref={this.aboutDialogRefHandler}/>
             </div>
         );
     }
@@ -917,7 +918,7 @@ class Chat extends React.Component<IProps, IState> {
         this.setRightMenu();
     }
 
-    private setRightMenu = (force?: boolean) => {
+    private setRightMenu = (force?: boolean) => (e: any) => {
         this.moreInfoCloseHandler();
         let rightMenu: boolean = true;
         if (force === undefined) {
@@ -998,7 +999,7 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private chatTopIconActionHandler = (cmd: string, e: any) => {
+    private chatTopIconActionHandler = (cmd: string) => (e: any) => {
         this.chatMoreCloseHandler();
         switch (cmd) {
             case 'search':
@@ -1013,7 +1014,7 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private chatMoreActionHandler = (cmd: string) => {
+    private chatMoreActionHandler = (cmd: string | undefined) => (e: any) => {
         this.chatMoreCloseHandler();
         switch (cmd) {
             case 'new_group':
@@ -1044,7 +1045,7 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private messageMoreActionHandler = (cmd: string) => {
+    private messageMoreActionHandler = (cmd: string) => (e: any) => {
         this.messageMoreCloseHandler();
         switch (cmd) {
             case 'info':
@@ -2892,7 +2893,7 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private bottomBarSelectHandler = (item: string) => {
+    private bottomBarSelectHandler = (item: string) => (e: any): void => {
         switch (item) {
             case 'logout':
                 this.setState({
@@ -3436,7 +3437,7 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private removeMessageHandler = (mode: number) => {
+    private removeMessageHandler = (mode: number) => (e: any) => {
         const {peer, messageSelectedIds} = this.state;
         if (!peer) {
             return;

@@ -62,7 +62,7 @@ import './style.css';
 interface IProps {
     peer: InputPeer | null;
     onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
-    onClose?: () => void;
+    onClose?: (e: any) => void;
     onDeleteAndExitGroup?: () => void;
 }
 
