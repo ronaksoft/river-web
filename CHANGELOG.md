@@ -1,3 +1,6 @@
+## 0.26.1
+* Improvements
+
 ## 0.26.0
 * New base
 * LeftMenu component added

@@ -154,7 +154,6 @@ interface IState {
     iframeActive: boolean;
     leftMenuSelectedDialogId: string;
     openNewMessage: boolean;
-    rightMenu: boolean;
     rightMenuShrink: boolean;
 }
 
@@ -239,7 +238,6 @@ class Chat extends React.Component<IProps, IState> {
             iframeActive: this.iframeService.isActive(),
             leftMenuSelectedDialogId: '',
             openNewMessage: false,
-            rightMenu: false,
             rightMenuShrink: false,
         };
         this.selectedDialogId = props.match.params.id;
@@ -735,11 +733,7 @@ class Chat extends React.Component<IProps, IState> {
             this.messageRef.list.recomputeRowHeights();
             this.messageRef.list.recomputeGridSize();
             this.messageRef.animateToEnd(true);
-            if (!shrink) {
-                this.setState({
-                    rightMenu: false,
-                });
-            } else {
+            if (shrink) {
                 this.setState({
                     rightMenuShrink: true,
                 });
