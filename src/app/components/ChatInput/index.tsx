@@ -102,9 +102,6 @@ interface IProps {
     peer: InputPeer | null;
     previewMessage?: IMessage;
     previewMessageMode?: number;
-    selectable: boolean;
-    selectableDisable: boolean;
-    text?: string;
     userId?: string;
     getDialog: (id: string) => IDialog | null;
     onClearDraft?: (data: UpdateDraftMessageCleared.AsObject) => void;
@@ -124,7 +121,6 @@ interface IState {
     selectableDisable: boolean;
     textareaValue: string;
     uploadPreviewOpen: boolean;
-    userId: string;
     voiceMode: 'lock' | 'down' | 'up' | 'play';
 }
 
@@ -214,11 +210,10 @@ class ChatInput extends React.Component<IProps, IState> {
             previewMessageMode: props.previewMessageMode || C_MSG_MODE.Normal,
             rtl: this.rtl,
             selectMediaOpen: false,
-            selectable: props.selectable,
-            selectableDisable: props.selectableDisable,
+            selectable: false,
+            selectableDisable: false,
             textareaValue: '',
             uploadPreviewOpen: false,
-            userId: props.userId || '',
             voiceMode: 'up',
         };
 
@@ -252,7 +247,7 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     public componentWillReceiveProps(newProps: IProps) {
-        if ((newProps.previewMessageMode === C_MSG_MODE.Edit || newProps.previewMessageMode === C_MSG_MODE.Reply) && newProps.selectable) {
+        if ((newProps.previewMessageMode === C_MSG_MODE.Edit || newProps.previewMessageMode === C_MSG_MODE.Reply) && this.state.selectable) {
             this.setInputMode('default');
             if (this.props.onPreviewMessageChange) {
                 this.props.onPreviewMessageChange(undefined, C_MSG_MODE.Normal);
@@ -282,9 +277,6 @@ class ChatInput extends React.Component<IProps, IState> {
         this.setState({
             previewMessage: newProps.previewMessage || null,
             previewMessageMode: newProps.previewMessageMode || C_MSG_MODE.Normal,
-            selectable: newProps.selectable,
-            selectableDisable: newProps.selectableDisable,
-            userId: newProps.userId || '',
         }, () => {
             this.animatePreviewMessage();
             if (newProps.previewMessageMode === C_MSG_MODE.Edit || newProps.previewMessageMode === C_MSG_MODE.Reply) {
@@ -299,6 +291,77 @@ class ChatInput extends React.Component<IProps, IState> {
                 peer: newProps.peer,
             }, () => {
                 this.checkAuthority();
+            });
+        }
+    }
+
+    public setPeer(peer: InputPeer | null) {
+        if (peer && this.state.peer !== peer) {
+            if (this.state.voiceMode === 'lock' || this.state.voiceMode === 'down') {
+                this.voiceCancelHandler();
+            }
+            this.setState({
+                peer,
+            }, () => {
+                this.checkAuthority();
+            });
+        }
+    }
+
+    public setParams(peer: InputPeer | null, previewMessageMode?: number, previewMessage?: IMessage) {
+        if ((previewMessageMode === C_MSG_MODE.Edit || previewMessageMode === C_MSG_MODE.Reply) && this.state.selectable) {
+            this.setInputMode('default');
+            if (this.props.onPreviewMessageChange) {
+                this.props.onPreviewMessageChange(undefined, C_MSG_MODE.Normal);
+            }
+            return;
+        }
+        if (this.state.previewMessageMode === C_MSG_MODE.Edit && previewMessageMode === C_MSG_MODE.Normal) {
+            this.setState({
+                textareaValue: '',
+            }, () => {
+                this.computeLines();
+            });
+        }
+        if (previewMessageMode === C_MSG_MODE.Edit && previewMessage) {
+            const text = this.modifyBody(previewMessage.body || '', previewMessage.entitiesList);
+            this.setState({
+                textareaValue: text,
+            }, () => {
+                if (this.textarea) {
+                    this.detectRTL(this.textarea.value);
+                }
+                this.computeLines();
+            });
+        } else {
+            this.initDraft(this.state.peer, peer, this.state.previewMessageMode, this.state.previewMessage);
+        }
+        this.setState({
+            previewMessage: previewMessage || null,
+            previewMessageMode: previewMessageMode || C_MSG_MODE.Normal,
+        }, () => {
+            this.animatePreviewMessage();
+            if (previewMessageMode === C_MSG_MODE.Edit || previewMessageMode === C_MSG_MODE.Reply) {
+                this.focus();
+            }
+        });
+        if (peer && this.state.peer !== peer) {
+            if (this.state.voiceMode === 'lock' || this.state.voiceMode === 'down') {
+                this.voiceCancelHandler();
+            }
+            this.setState({
+                peer,
+            }, () => {
+                this.checkAuthority();
+            });
+        }
+    }
+
+    public setSelectable(enable: boolean, disable: boolean) {
+        if (enable !== this.state.selectable || disable !== this.state.selectableDisable) {
+            this.setState({
+                selectable: enable,
+                selectableDisable: disable,
             });
         }
     }
@@ -434,7 +497,7 @@ class ChatInput extends React.Component<IProps, IState> {
                     {Boolean(!selectable) &&
                     <div ref={this.inputsRefHandler} className={`inputs mode-${this.inputsMode}`}>
                         <div className="user">
-                            <UserAvatar id={this.state.userId} className="user-avatar"/>
+                            <UserAvatar id={this.props.userId || ''} className="user-avatar"/>
                         </div>
                         <div className={'input ' + (this.state.rtl ? 'rtl' : 'ltr')}>
                             <div className="textarea-container">
@@ -696,7 +759,7 @@ class ChatInput extends React.Component<IProps, IState> {
             e.stopPropagation();
             e.preventDefault();
         } else if (e.keyCode === 38 && this.lastMessage &&
-            this.lastMessage.senderid === this.state.userId &&
+            this.lastMessage.senderid === this.props.userId &&
             this.state.previewMessageMode !== C_MSG_MODE.Edit &&
             this.textarea.value === '') {
             const message = this.lastMessage;

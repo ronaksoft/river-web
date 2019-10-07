@@ -212,18 +212,6 @@ input {
         color: #90908F; }
       .container .column-center .start-messaging .start-messaging-footer {
         height: 50px; }
-  .container .column-right {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 120;
-    width: 0;
-    overflow: hidden;
-    transition: width 0.05s linear;
-    display: block; }
-    .container .column-right.active {
-      width: 318px; }
   .container.mobile-view {
     width: 200vw;
     transition: transform 0.05s linear;
@@ -231,23 +219,18 @@ input {
     .container.mobile-view.chat-view {
       transform: translateX(-100vw); }
     .container.mobile-view .column-center {
-      width: 100vw; }
+      width: 100vw;
+      /*&.blur {
+        .main-messages {
+          filter: none;
+        }
+      }*/ }
       .container.mobile-view .column-center.shrink {
         margin: 0; }
-      .container.mobile-view .column-center.blur .main-messages {
-        filter: none; }
       .container.mobile-view .column-center .top {
         padding-left: 40px; }
         .container.mobile-view .column-center .top .info-bar {
           padding-left: 8px; }
-    .container.mobile-view .column-right {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 120; }
-      .container.mobile-view .column-right.active {
-        width: 100vw; }
 
 html[bg="21"] .container .column-center .conversation,
 html[bg="21"] .container .column-center .start-messaging {

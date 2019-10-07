@@ -188,22 +188,6 @@
     }
   }
 
-  .column-right {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 120;
-    width: 0;
-    overflow: hidden;
-    transition: width 0.05s linear;
-    display: block;
-
-    &.active {
-      width: 318px;
-    }
-  }
-
   &.mobile-view {
     width: 200vw;
     transition: transform 0.05s linear;
@@ -220,11 +204,11 @@
         margin: 0;
       }
 
-      &.blur {
+      /*&.blur {
         .main-messages {
           filter: none;
         }
-      }
+      }*/
 
       .top {
         padding-left: 40px;
@@ -232,18 +216,6 @@
         .info-bar {
           padding-left: 8px;
         }
-      }
-    }
-
-    .column-right {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 120;
-
-      &.active {
-        width: 100vw;
       }
     }
   }

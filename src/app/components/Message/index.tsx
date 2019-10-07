@@ -47,7 +47,7 @@ import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 import './style.css';
 
 interface IProps {
-    contextMenu?: (cmd: string, id: IMessage) => void;
+    contextMenu: (cmd: string, id: IMessage) => void;
     onAttachmentAction?: (cmd: 'cancel' | 'cancel_download' | 'download' | 'view' | 'open' | 'read' | 'preview', message: IMessage) => void;
     onJumpToMessage: (id: number, e: any) => void;
     onLastMessage: (message: IMessage | null) => void;
@@ -57,11 +57,7 @@ interface IProps {
     onSelectableChange: (selectable: boolean) => void;
     onSelectedIdsChange: (selectedIds: { [key: number]: number }) => void;
     onDrop: (files: File[]) => void;
-    peer: InputPeer | null;
-    readId: number;
     rendered?: (info: any) => void;
-    selectable: boolean;
-    selectedIds: { [key: number]: number };
     showDate?: (timestamp: number | null) => void;
     showNewMessage?: (visible: boolean) => void;
 }
@@ -137,6 +133,7 @@ interface IStayInfo {
 class Message extends React.Component<IProps, IState> {
     public list: List;
     public cache: CellMeasurerCache;
+    private peer: InputPeer | null = null;
     private listCount: number;
     private topOfList: boolean = false;
     private bottomOfList: boolean = true;
@@ -214,11 +211,11 @@ class Message extends React.Component<IProps, IState> {
             moreAnchorEl: null,
             moreIndex: -1,
             readIdInit: -1,
-            selectable: props.selectable,
-            selectedIds: props.selectedIds,
+            selectable: false,
+            selectedIds: {},
         };
 
-        this.readId = props.readId;
+        this.readId = -1;
         this.riverTime = RiverTime.getInstance();
         this.cache = new CellMeasurerCache({
             fixedWidth: true,
@@ -290,15 +287,24 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
-        if (this.readId !== newProps.readId) {
-            this.readId = newProps.readId;
-            // this.list.forceUpdateGrid();
-        }
-        if (this.state.selectable !== newProps.selectable || Object.keys(this.state.selectedIds).length !== Object.keys(newProps.selectedIds).length) {
+    public setPeer(peer: InputPeer | null) {
+        this.peer = peer;
+    }
+
+    public setReadId(readId: number) {
+        if (this.readId !== readId) {
+            this.readId = readId;
             this.setState({
-                selectable: newProps.selectable,
-                selectedIds: newProps.selectedIds,
+                readIdInit: this.readId,
+            });
+        }
+    }
+
+    public setSelectable(enable: boolean, ids: { [key: number]: number }) {
+        if (this.state.selectable !== enable || Object.keys(this.state.selectedIds).length !== Object.keys(ids).length) {
+            this.setState({
+                selectable: enable,
+                selectedIds: ids,
             }, () => {
                 this.list.forceUpdateGrid();
             });
@@ -336,7 +342,6 @@ class Message extends React.Component<IProps, IState> {
                 items,
                 moreAnchorEl: null,
                 moreIndex: -1,
-                readIdInit: this.props.readId,
             }, () => {
                 clearTimeout(this.enableLoadBeforeTimeout);
                 this.enableLoadBefore = false;
@@ -631,14 +636,13 @@ class Message extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {peer} = this.props;
         const {items, moreAnchorEl, selectable, loadingOverlay} = this.state;
         return (
             <AutoSizer>
                 {({width, height}: any) => (
                     <div className="main-messages">
                         <div ref={this.messageInnerRefHandler}
-                             className={'messages-inner ' + ((peer && peer.getType() === PeerType.PEERGROUP || this.isSimplified) ? 'group' : 'user') + (selectable ? ' selectable' : '')}
+                             className={'messages-inner ' + ((this.peer && this.peer.getType() === PeerType.PEERGROUP || this.isSimplified) ? 'group' : 'user') + (selectable ? ' selectable' : '')}
                              onDragEnter={this.dragEnterHandler} onDragEnd={this.dragLeaveHandler}
                              style={{height: `${height}px`, width: `${width}px`}}
                         >
@@ -690,7 +694,6 @@ class Message extends React.Component<IProps, IState> {
     }
 
     private getHeight = (params: { index: number }) => {
-        const {peer} = this.props;
         const {items} = this.state;
         let height = this.cache.rowHeight(params);
         const message = items[params.index];
@@ -724,7 +727,7 @@ class Message extends React.Component<IProps, IState> {
                     }
                     break;
             }
-            if ((peer && peer.getType() === PeerType.PEERGROUP || this.isSimplified) && message.avatar) {
+            if ((this.peer && this.peer.getType() === PeerType.PEERGROUP || this.isSimplified) && message.avatar) {
                 height += 20;
             }
             if (message.replyto && message.replyto !== 0 && message.deleted_reply !== true) {
@@ -828,7 +831,7 @@ class Message extends React.Component<IProps, IState> {
                 rowIndex={index}
                 parent={parent}>
                 {({measure}) => {
-                    return this.messageItem(index, message, this.props.peer, this.readId, style, measure);
+                    return this.messageItem(index, message, this.peer, this.readId, style, measure);
                 }}
             </CellMeasurer>
         );
@@ -975,15 +978,13 @@ class Message extends React.Component<IProps, IState> {
 
     private moreCmdHandler = (cmd: string, index: number) => (e: any) => {
         e.stopPropagation();
-        if (this.props.contextMenu && index > -1) {
+        if (index > -1) {
             this.props.contextMenu(cmd, this.state.items[index]);
         }
         if (cmd === 'forward') {
             this.selectMessageHandler(this.state.items[index].id || 0, index, () => {
-                if (this.props.contextMenu) {
-                    this.props.contextMenu('forward_dialog', this.state.items[index]);
-                }
-            });
+                this.props.contextMenu('forward_dialog', this.state.items[index]);
+            })(undefined);
         }
         this.setState({
             moreAnchorEl: null,
@@ -993,13 +994,12 @@ class Message extends React.Component<IProps, IState> {
     private selectMessage = (index: number) => (e: any) => {
         e.stopPropagation();
         if (!this.state.selectable) {
+            this.props.onSelectableChange(true);
             this.setState({
                 selectable: true,
-            }, () => {
-                this.props.onSelectableChange(true);
             });
         }
-        this.selectMessageHandler(this.state.items[index].id || 0, index, null);
+        this.selectMessageHandler(this.state.items[index].id || 0, index, null)(undefined);
     }
 
     private onRowsRenderedHandler = (data: any) => {
@@ -1217,10 +1217,10 @@ class Message extends React.Component<IProps, IState> {
         } else {
             delete selectedIds[id];
         }
+        this.props.onSelectedIdsChange(selectedIds);
         this.setState({
             selectedIds,
         }, () => {
-            this.props.onSelectedIdsChange(selectedIds);
             this.list.forceUpdateGrid();
             if (cb) {
                 cb();
@@ -1240,10 +1240,10 @@ class Message extends React.Component<IProps, IState> {
         } else {
             delete selectedIds[id];
         }
+        this.props.onSelectedIdsChange(selectedIds);
         this.setState({
             selectedIds,
         }, () => {
-            this.props.onSelectedIdsChange(selectedIds);
             this.list.forceUpdateGrid();
         });
     }
