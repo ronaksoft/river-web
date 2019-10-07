@@ -35,7 +35,6 @@ import './style.css';
 interface IProps {
     cancelIsTyping: (id: string) => void;
     onContextMenu?: (cmd: string, dialog: IDialog) => void;
-    selectedId: string;
 }
 
 interface IState {
@@ -78,7 +77,7 @@ class Dialog extends React.Component<IProps, IState> {
             searchAddedItems: [],
             searchEnable: false,
             searchItems: [],
-            selectedId: props.selectedId,
+            selectedId: 'null',
         };
 
         this.searchRepo = SearchRepo.getInstance();
@@ -139,9 +138,9 @@ class Dialog extends React.Component<IProps, IState> {
         // this.list.scrollToRow(index);
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
+    public setSelectedId(id: string) {
         this.setState({
-            selectedId: newProps.selectedId,
+            selectedId: id,
         }, () => {
             this.filterItem();
         });

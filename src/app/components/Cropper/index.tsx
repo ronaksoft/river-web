@@ -51,10 +51,6 @@ class Cropper extends React.Component<IProps, IState> {
 
     }
 
-    public componentDidMount() {
-        //
-    }
-
     /* Open file dialog */
     public openFile(url?: string) {
         if (url) {

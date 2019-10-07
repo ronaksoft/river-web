@@ -44,14 +44,6 @@ class AvatarCropper extends React.Component<IProps, IState> {
 
     }
 
-    public componentDidMount() {
-        //
-    }
-
-    public componentWillReceiveProps(newProps: IProps) {
-        //
-    }
-
     /* Open file dialog */
     public openFile() {
         if (this.fileInputRef) {

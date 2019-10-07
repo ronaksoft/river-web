@@ -39,10 +39,6 @@ class AboutDialog extends React.Component<IProps, IState> {
 
     }
 
-    public componentDidMount() {
-        //
-    }
-
     public openDialog(version: string) {
         this.setState({
             open: true,

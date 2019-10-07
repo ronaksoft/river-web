@@ -1,0 +1,48 @@
+.info-bar {
+  height: 48px;
+  padding: 5px 29px;
+  text-align: left; }
+  .info-bar .back-to-chats {
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    height: 36px;
+    width: 36px;
+    transform: translateY(-50%); }
+    .info-bar .back-to-chats svg {
+      height: 36px;
+      width: 36px; }
+  .info-bar .buttons {
+    position: absolute;
+    top: 0;
+    right: 0;
+    float: right;
+    line-height: 0; }
+
+.container.mobile-view .info-bar {
+  padding-left: 8px; }
+
+html[direction="rtl"] .info-bar {
+  text-align: left; }
+  html[direction="rtl"] .info-bar .buttons {
+    right: auto;
+    left: 0; }
+  html[direction="rtl"] .info-bar .back-to-chats {
+    right: 5px;
+    left: auto;
+    transform: translateY(-50%) rotateY(180deg); }
+
+html[direction="rtl"] .container.mobile-view .column-center .top .info-bar {
+  padding-right: 42px;
+  padding-left: 8px; }
+
+html[theme="dark"] .info-bar .back-to-chats svg,
+html[theme="dark-blue"] .info-bar .back-to-chats svg {
+  color: var(--light); }
+
+html[theme="dark"] .info-bar span,
+html[theme="dark-blue"] .info-bar span {
+  color: var(--light); }
+  html[theme="dark"] .info-bar span .name,
+  html[theme="dark-blue"] .info-bar span .name {
+    color: var(--light); }

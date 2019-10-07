@@ -43,10 +43,6 @@ class SettingsModal extends React.Component<IProps, IState> {
 
     }
 
-    public componentDidMount() {
-        //
-    }
-
     public componentWillReceiveProps(newProps: IProps) {
         this.setState({
             open: newProps.open,

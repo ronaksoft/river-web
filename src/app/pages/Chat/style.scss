@@ -60,34 +60,6 @@
       width: 100%;
       background-color: var(--header-color);
       border-right: 1px solid rgba(0, 0, 0, 0.06);
-
-      .info-bar {
-        height: 48px;
-        padding: 5px 29px;
-        text-align: left;
-
-        .back-to-chats {
-          position: absolute;
-          top: 50%;
-          left: 5px;
-          height: 36px;
-          width: 36px;
-          transform: translateY(-50%);
-
-          svg {
-            height: 36px;
-            width: 36px;
-          }
-        }
-
-        .buttons {
-          position: absolute;
-          top: 0;
-          right: 0;
-          float: right;
-          line-height: 0;
-        }
-      }
     }
 
     .conversation {
@@ -212,10 +184,6 @@
 
       .top {
         padding-left: 40px;
-
-        .info-bar {
-          padding-left: 8px;
-        }
       }
     }
   }
@@ -530,23 +498,6 @@ html[direction="rtl"] {
     }
 
     .column-center {
-      .top {
-        .info-bar {
-          text-align: left;
-
-          .buttons {
-            right: auto;
-            left: 0;
-          }
-
-          .back-to-chats {
-            right: 5px;
-            left: auto;
-            transform: translateY(-50%) rotateY(180deg);
-          }
-        }
-      }
-
       &.shrink {
         margin-right: 0;
         margin-left: 318px;
@@ -556,11 +507,6 @@ html[direction="rtl"] {
 
   .kk-context-menu, .confirm-dialog {
     direction: rtl;
-  }
-
-  .container.mobile-view .column-center .top .info-bar {
-    padding-right: 42px;
-    padding-left: 8px;
   }
 }
 
@@ -576,22 +522,6 @@ html[theme="dark-blue"] {
     .column-center {
       .top {
         background-color: var(--dark-medium);
-
-        .info-bar {
-          .back-to-chats {
-            svg {
-              color: var(--light);
-            }
-          }
-
-          span {
-            color: var(--light);
-
-            .name {
-              color: var(--light);
-            }
-          }
-        }
       }
 
       .conversation {
@@ -681,8 +611,6 @@ html[theme="dark-blue"] {
     .column-center {
       .top {
         background-color: var(--dark-blue-medium);
-        //.info-bar {
-        //}
       }
 
       .conversation {

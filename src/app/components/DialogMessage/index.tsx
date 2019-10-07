@@ -59,10 +59,6 @@ class DialogMessage extends React.Component<IProps, IState> {
         this.userId = sdk.getInstance().getConnInfo().UserID || '';
     }
 
-    public componentDidMount() {
-        //
-    }
-
     public componentWillReceiveProps(newProps: IProps) {
         if (this.state.dialog !== newProps.dialog || this.lastUpdate !== newProps.dialog.last_update || !isEqual(this.notifySetting, newProps.dialog.notifysettings)) {
             this.setState({

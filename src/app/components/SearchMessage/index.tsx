@@ -27,7 +27,6 @@ const searchLimit: number = 10;
 interface IProps {
     onFind: (id: number, text: string) => void;
     onClose: () => void;
-    peer: InputPeer | null;
 }
 
 interface IState {
@@ -44,9 +43,9 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
     private visible: boolean = false;
     private messageRepo: MessageRepo;
     private readonly searchDebouncer: any;
-    private lastPeerId: string = '';
     private hasMore: boolean = false;
     private text: string = '';
+    private peer: InputPeer | null = null;
 
     constructor(props: IProps) {
         super(props);
@@ -61,20 +60,10 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
 
         this.messageRepo = MessageRepo.getInstance();
         this.searchDebouncer = debounce(this.search, 512);
-        if (props.peer) {
-            this.lastPeerId = props.peer.getId() || '';
-        }
     }
 
     public componentDidMount() {
         window.addEventListener('keydown', this.keyDownHandler, true);
-    }
-
-    public componentWillReceiveProps(newProps: IProps) {
-        if (newProps.peer && (newProps.peer.getId() || '') !== this.lastPeerId) {
-            this.reset();
-            this.lastPeerId = newProps.peer.getId() || '';
-        }
     }
 
     public componentWillUnmount() {
@@ -97,6 +86,10 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
                 this.searchRef.focus();
             }
         }
+    }
+
+    public setPeer(peer: InputPeer | null) {
+        this.peer = peer;
     }
 
     public render() {
@@ -211,7 +204,7 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
     }
 
     private searchChangeHandler = (e: any) => {
-        const {peer} = this.props;
+        const peer = this.peer;
         if (!peer) {
             return;
         }
@@ -222,7 +215,7 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
     }
 
     private search = (text: string) => {
-        const {peer} = this.props;
+        const peer = this.peer;
         if (!peer) {
             return;
         }
@@ -253,7 +246,7 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
     }
 
     private searchMore = (before: number) => {
-        const {peer} = this.props;
+        const peer = this.peer;
         const {items} = this.state;
         if (!peer) {
             return;

@@ -76,10 +76,6 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
         this.progressThrottle = throttle(this.displayProgress, 100);
     }
 
-    public componentDidMount() {
-        //
-    }
-
     public openDialog() {
         this.setState({
             open: true,

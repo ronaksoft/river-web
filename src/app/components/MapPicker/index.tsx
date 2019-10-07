@@ -71,10 +71,6 @@ class MapPicker extends React.Component<IProps, IState> {
         });
     }
 
-    public componentWillUnmount() {
-        //
-    }
-
     public render() {
         const {caption, dialogOpen, defPos, loading, pos, zoom} = this.state;
         return (

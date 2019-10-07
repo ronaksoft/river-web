@@ -71,10 +71,6 @@ class NewGroupMenu extends React.Component<IProps, IState> {
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
     }
 
-    public componentDidMount() {
-        //
-    }
-
     public render() {
         const {page, selectedContacts, title, uploadingPhoto, avatarMenuAnchorEl} = this.state;
         return (

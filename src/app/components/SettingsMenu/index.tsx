@@ -87,7 +87,7 @@ import {localize} from "../../services/utilities/localize";
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.25.92';
+export const C_VERSION = '0.26.0';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{
@@ -328,10 +328,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
                 riverGroupName: res.workgroupname || '',
             });
         });
-    }
-
-    public componentWillReceiveProps(newProps: IProps) {
-        //
     }
 
     public navigateToPage(pageContent: string, pageSubContent: string) {

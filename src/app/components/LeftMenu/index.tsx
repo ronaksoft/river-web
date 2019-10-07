@@ -4,7 +4,7 @@
     Maintainers:
        1.  HamidrezaKK (hamidrezakks@gmail.com)
     Auditor: HamidrezaKK
-    Copyright Ronak Software Group 2018
+    Copyright Ronak Software Group 2019
 */
 
 import * as React from 'react';
@@ -46,7 +46,6 @@ interface IState {
     chatMoreAnchorEl: any;
     leftMenu: menuItems;
     overlay: boolean;
-    selectedDialogId: string;
 }
 
 class LeftMenu extends React.Component<IProps, IState> {
@@ -64,7 +63,6 @@ class LeftMenu extends React.Component<IProps, IState> {
             chatMoreAnchorEl: null,
             leftMenu: 'chat',
             overlay: false,
-            selectedDialogId: 'null',
         };
 
         this.chatTopIcons = [{
@@ -99,18 +97,6 @@ class LeftMenu extends React.Component<IProps, IState> {
             cmd: 'logout',
             title: i18n.t('chat.log_out'),
         }];
-    }
-
-    public componentDidMount() {
-        //
-    }
-
-    public componentWillUnmount() {
-        //
-    }
-
-    public componentWillReceiveProps(newProps: IProps) {
-        //
     }
 
     public setMenu(menu: menuItems, pageContent?: string, pageSubContent?: string) {
@@ -206,11 +192,11 @@ class LeftMenu extends React.Component<IProps, IState> {
     }
 
     private leftMenuRender = () => {
-        const {leftMenu, selectedDialogId} = this.state;
+        const {leftMenu} = this.state;
         switch (leftMenu) {
             default:
             case 'chat':
-                return (<Dialog ref={this.dialogRefHandler} selectedId={selectedDialogId}
+                return (<Dialog ref={this.dialogRefHandler}
                                 cancelIsTyping={this.props.cancelIsTyping}
                                 onContextMenu={this.props.onContextMenu}/>);
             case 'settings':

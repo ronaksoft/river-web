@@ -121,26 +121,6 @@ input {
       width: 100%;
       background-color: var(--header-color);
       border-right: 1px solid rgba(0, 0, 0, 0.06); }
-      .container .column-center .top .info-bar {
-        height: 48px;
-        padding: 5px 29px;
-        text-align: left; }
-        .container .column-center .top .info-bar .back-to-chats {
-          position: absolute;
-          top: 50%;
-          left: 5px;
-          height: 36px;
-          width: 36px;
-          transform: translateY(-50%); }
-          .container .column-center .top .info-bar .back-to-chats svg {
-            height: 36px;
-            width: 36px; }
-        .container .column-center .top .info-bar .buttons {
-          position: absolute;
-          top: 0;
-          right: 0;
-          float: right;
-          line-height: 0; }
     .container .column-center .conversation {
       position: relative;
       width: 100%;
@@ -229,8 +209,6 @@ input {
         margin: 0; }
       .container.mobile-view .column-center .top {
         padding-left: 40px; }
-        .container.mobile-view .column-center .top .info-bar {
-          padding-left: 8px; }
 
 html[bg="21"] .container .column-center .conversation,
 html[bg="21"] .container .column-center .start-messaging {
@@ -438,25 +416,12 @@ html[direction="rtl"] .container {
   html[direction="rtl"] .container .column-right {
     left: 0;
     right: auto; }
-  html[direction="rtl"] .container .column-center .top .info-bar {
-    text-align: left; }
-    html[direction="rtl"] .container .column-center .top .info-bar .buttons {
-      right: auto;
-      left: 0; }
-    html[direction="rtl"] .container .column-center .top .info-bar .back-to-chats {
-      right: 5px;
-      left: auto;
-      transform: translateY(-50%) rotateY(180deg); }
   html[direction="rtl"] .container .column-center.shrink {
     margin-right: 0;
     margin-left: 318px; }
 
 html[direction="rtl"] .kk-context-menu, html[direction="rtl"] .confirm-dialog {
   direction: rtl; }
-
-html[direction="rtl"] .container.mobile-view .column-center .top .info-bar {
-  padding-right: 42px;
-  padding-left: 8px; }
 
 html[theme="dark"] .bg,
 html[theme="dark-blue"] .bg {
@@ -468,15 +433,6 @@ html[theme="dark-blue"] .container {
   html[theme="dark"] .container .column-center .top,
   html[theme="dark-blue"] .container .column-center .top {
     background-color: var(--dark-medium); }
-    html[theme="dark"] .container .column-center .top .info-bar .back-to-chats svg,
-    html[theme="dark-blue"] .container .column-center .top .info-bar .back-to-chats svg {
-      color: var(--light); }
-    html[theme="dark"] .container .column-center .top .info-bar span,
-    html[theme="dark-blue"] .container .column-center .top .info-bar span {
-      color: var(--light); }
-      html[theme="dark"] .container .column-center .top .info-bar span .name,
-      html[theme="dark-blue"] .container .column-center .top .info-bar span .name {
-        color: var(--light); }
   html[theme="dark"] .container .column-center .conversation,
   html[theme="dark-blue"] .container .column-center .conversation {
     background-color: var(--dark-low); }

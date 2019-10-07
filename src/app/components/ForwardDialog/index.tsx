@@ -36,10 +36,6 @@ class ForwardDialog extends React.Component<IProps, IState> {
         };
     }
 
-    public componentDidMount() {
-        //
-    }
-
     public openDialog() {
         this.setState({
             open: true,

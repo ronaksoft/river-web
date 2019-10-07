@@ -1,10 +1,10 @@
 /*
-    Creation Time: 2019 - Oct - 06
+    Creation Time: 2019 - Oct - 07
     Created by:  (hamidrezakk)
     Maintainers:
        1.  HamidrezaKK (hamidrezakks@gmail.com)
     Auditor: HamidrezaKK
-    Copyright Ronak Software Group 2018
+    Copyright Ronak Software Group 2019
 */
 
 import * as React from 'react';
@@ -33,16 +33,8 @@ class RightMenu extends React.Component<IProps, IState> {
 
         this.state = {
             peer: null,
-            rightMenu: true,
+            rightMenu: false,
         };
-    }
-
-    public componentDidMount() {
-        //
-    }
-
-    public componentWillUnmount() {
-        //
     }
 
     public setPeer(peer: InputPeer | null) {
@@ -51,7 +43,7 @@ class RightMenu extends React.Component<IProps, IState> {
         });
     }
 
-    public setMenu(force?: boolean) {
+    public toggleMenu(force?: boolean) {
         let shrink: boolean = false;
         if (force === undefined) {
             this.ref.classList.toggle('active');
@@ -82,11 +74,11 @@ class RightMenu extends React.Component<IProps, IState> {
         const {rightMenu, peer} = this.state;
         return (
             <div ref={this.refHandler} className="right-menu">
-                {(rightMenu && peer && peer.getType() === PeerType.PEERGROUP) &&
+                {Boolean(rightMenu && peer && peer.getType() === PeerType.PEERGROUP) &&
                 <GroupInfoMenu key="group-info" peer={peer} onClose={this.closeHandler}
                                onAction={this.props.onMessageAttachmentAction}
                                onDeleteAndExitGroup={this.props.onDeleteAndExitGroup}/>}
-                {(rightMenu && peer && peer.getType() === PeerType.PEERUSER) &&
+                {Boolean(rightMenu && peer && peer.getType() === PeerType.PEERUSER) &&
                 <UserInfoMenu key="user-info" peer={peer} onClose={this.closeHandler}
                               onAction={this.props.onMessageAttachmentAction}/>}
             </div>
@@ -98,7 +90,7 @@ class RightMenu extends React.Component<IProps, IState> {
     }
 
     private closeHandler = () => {
-        this.setMenu(false);
+        this.toggleMenu(false);
     }
 }
 

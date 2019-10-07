@@ -22,7 +22,7 @@ interface IProps {
     isConnecting: boolean;
     isOnline: boolean;
     isUpdating: boolean;
-    onAction: (cmd: string) => void;
+    onAction: (cmd: string) => (e?: any) => void;
     peer: InputPeer | null;
     selectedDialogId: string;
 }
@@ -116,7 +116,7 @@ class StatusBar extends React.Component<IProps, IState> {
             return;
         }
         this.disableClick = true;
-        this.props.onAction('info');
+        this.props.onAction('info')();
         setTimeout(() => {
             this.disableClick = false;
         }, 300);

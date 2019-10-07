@@ -89,8 +89,10 @@ const mentionize = (text: string, sortedEntities: Array<{ offset: number, length
 };
 
 interface IProps {
+    getDialog: (id: string) => IDialog | null;
     onAction: (cmd: string, message?: IMessage) => (e: any) => void;
     onBulkAction: (cmd: string) => (e: any) => void;
+    onClearDraft?: (data: UpdateDraftMessageCleared.AsObject) => void;
     onContactSelected: (users: IUser[], caption: string, {mode, message}?: any) => void;
     onMapSelected: (item: IGeoItem, {mode, message}?: any) => void;
     onMediaSelected: (items: IMediaItem[], {mode, message}?: any) => void;
@@ -103,8 +105,6 @@ interface IProps {
     previewMessage?: IMessage;
     previewMessageMode?: number;
     userId?: string;
-    getDialog: (id: string) => IDialog | null;
-    onClearDraft?: (data: UpdateDraftMessageCleared.AsObject) => void;
 }
 
 interface IState {
@@ -243,56 +243,7 @@ class ChatInput extends React.Component<IProps, IState> {
         window.addEventListener('mouseup', this.windowMouseUp);
         window.addEventListener('keyup', this.windowKeyUp);
         window.addEventListener('resize', this.windowResizeHandler);
-        this.initDraft(null, this.state.peer, 0, null);
-    }
-
-    public componentWillReceiveProps(newProps: IProps) {
-        if ((newProps.previewMessageMode === C_MSG_MODE.Edit || newProps.previewMessageMode === C_MSG_MODE.Reply) && this.state.selectable) {
-            this.setInputMode('default');
-            if (this.props.onPreviewMessageChange) {
-                this.props.onPreviewMessageChange(undefined, C_MSG_MODE.Normal);
-            }
-            return;
-        }
-        if (this.state.previewMessageMode === C_MSG_MODE.Edit && newProps.previewMessageMode === C_MSG_MODE.Normal) {
-            this.setState({
-                textareaValue: '',
-            }, () => {
-                this.computeLines();
-            });
-        }
-        if (newProps.previewMessageMode === C_MSG_MODE.Edit && newProps.previewMessage) {
-            const text = this.modifyBody(newProps.previewMessage.body || '', newProps.previewMessage.entitiesList);
-            this.setState({
-                textareaValue: text,
-            }, () => {
-                if (this.textarea) {
-                    this.detectRTL(this.textarea.value);
-                }
-                this.computeLines();
-            });
-        } else {
-            this.initDraft(this.state.peer, newProps.peer, this.state.previewMessageMode, this.state.previewMessage);
-        }
-        this.setState({
-            previewMessage: newProps.previewMessage || null,
-            previewMessageMode: newProps.previewMessageMode || C_MSG_MODE.Normal,
-        }, () => {
-            this.animatePreviewMessage();
-            if (newProps.previewMessageMode === C_MSG_MODE.Edit || newProps.previewMessageMode === C_MSG_MODE.Reply) {
-                this.focus();
-            }
-        });
-        if (this.state.peer !== newProps.peer) {
-            if (this.state.voiceMode === 'lock' || this.state.voiceMode === 'down') {
-                this.voiceCancelHandler();
-            }
-            this.setState({
-                peer: newProps.peer,
-            }, () => {
-                this.checkAuthority();
-            });
-        }
+        this.initDraft(null, this.props.peer, 0, null);
     }
 
     public setPeer(peer: InputPeer | null) {

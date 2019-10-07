@@ -1,0 +1,25 @@
+.right-menu {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 120;
+  width: 0;
+  overflow: hidden;
+  transition: width 0.05s linear;
+  display: block; }
+  .right-menu.active {
+    width: 318px; }
+
+.container.mobile-view .right-menu {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 120; }
+  .container.mobile-view .right-menu.active {
+    width: 100vw; }
+
+html[direction="rtl"] .container .right-menu {
+  left: 0;
+  right: auto; }

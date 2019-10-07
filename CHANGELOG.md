@@ -1,3 +1,13 @@
+## 0.26.0
+* New base
+* LeftMenu component added
+* RightMenu component added
+* InfoBar component added
+* MoveDown component added
+* Chat page fully reconstructed
+* Bind function modified with better performance
+* Various bug fixed
+
 ## 0.25.92
 * Insert messages on pending bug fixed
 * Double check in syncManger dialog update

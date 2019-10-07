@@ -58,10 +58,6 @@ class MessageLocation extends React.PureComponent<IProps, IState> {
         this.documentViewerService = DocumentViewerService.getInstance();
     }
 
-    public componentDidMount() {
-        //
-    }
-
     public componentWillReceiveProps(newProps: IProps) {
         if (newProps.message && this.lastId !== newProps.message.id) {
             this.lastId = newProps.message.id || 0;
@@ -69,10 +65,6 @@ class MessageLocation extends React.PureComponent<IProps, IState> {
                 message: newProps.message,
             });
         }
-    }
-
-    public componentWillUnmount() {
-        //
     }
 
     /* View downloaded document */
