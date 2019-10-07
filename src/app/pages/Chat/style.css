@@ -107,67 +107,6 @@ input {
   width: 100%;
   height: 100%;
   background-color: var(--white); }
-  .container .column-left {
-    position: relative;
-    width: 318px;
-    height: 100%;
-    flex: none;
-    border: 1px solid var(--light);
-    background-color: var(--white); }
-    .container .column-left .top-bar {
-      position: relative;
-      width: 100%;
-      height: 48px;
-      display: none;
-      align-items: center;
-      padding: 0 17px;
-      background-color: var(--header-color); }
-      .container .column-left .top-bar:after {
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        display: block;
-        width: 80%;
-        height: 1px;
-        content: '';
-        background-color: var(--light);
-        transform: translate(-50%, 0); }
-      .container .column-left .top-bar .close-btn {
-        margin-left: -12px;
-        margin-right: 6px; }
-        .container .column-left .top-bar .close-btn button {
-          padding: 6px; }
-          .container .column-left .top-bar .close-btn button svg {
-            font-size: 28px; }
-      .container .column-left .top-bar .new-message {
-        color: #60BF70;
-        cursor: pointer; }
-        .container .column-left .top-bar .new-message .river-logo {
-          margin: 0 6px 0 0; }
-      .container .column-left .top-bar .actions {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        width: 150px; }
-    .container .column-left .left-content {
-      width: 100%;
-      height: calc(100% - 51px); }
-    .container .column-left.with-top-bar .top-bar {
-      display: flex; }
-    .container .column-left.with-top-bar .left-content {
-      height: calc(100% - 99px); }
-    .container .column-left .left-overlay {
-      position: absolute;
-      top: 0;
-      left: calc(-100% - 1px);
-      bottom: 0;
-      width: 100%;
-      z-index: 100;
-      background-color: var(--white);
-      transition: left 0.2s ease-out; }
-    .container .column-left.left-overlay-enable .left-overlay {
-      left: 0; }
   .container .column-center {
     position: relative;
     width: calc(100% - 318px);
@@ -291,19 +230,14 @@ input {
     will-change: transform; }
     .container.mobile-view.chat-view {
       transform: translateX(-100vw); }
-    .container.mobile-view .column-left,
     .container.mobile-view .column-center {
       width: 100vw; }
-      .container.mobile-view .column-left.shrink,
       .container.mobile-view .column-center.shrink {
         margin: 0; }
-      .container.mobile-view .column-left.blur .main-messages,
       .container.mobile-view .column-center.blur .main-messages {
         filter: none; }
-      .container.mobile-view .column-left .top,
       .container.mobile-view .column-center .top {
         padding-left: 40px; }
-        .container.mobile-view .column-left .top .info-bar,
         .container.mobile-view .column-center .top .info-bar {
           padding-left: 8px; }
     .container.mobile-view .column-right {
@@ -518,20 +452,6 @@ html[direction="rtl"] .container {
     margin-left: -100vw; }
     html[direction="rtl"] .container.mobile-view.chat-view {
       margin-left: 0; }
-  html[direction="rtl"] .container .column-left .left-overlay {
-    left: auto;
-    right: calc(-100% - 1px);
-    transition: right 0.2s ease-out; }
-  html[direction="rtl"] .container .column-left .top-bar .actions {
-    right: auto;
-    left: 0; }
-  html[direction="rtl"] .container .column-left .top-bar .close-btn {
-    margin-left: 6px;
-    margin-right: -12px; }
-  html[direction="rtl"] .container .column-left .top-bar .new-message .river-logo {
-    margin: 0 0 0 6px; }
-  html[direction="rtl"] .container .column-left.left-overlay-enable .left-overlay {
-    right: 0; }
   html[direction="rtl"] .container .column-right {
     left: 0;
     right: auto; }
@@ -551,7 +471,6 @@ html[direction="rtl"] .container {
 html[direction="rtl"] .kk-context-menu, html[direction="rtl"] .confirm-dialog {
   direction: rtl; }
 
-html[direction="rtl"] .container.mobile-view .column-left .top .info-bar,
 html[direction="rtl"] .container.mobile-view .column-center .top .info-bar {
   padding-right: 42px;
   padding-left: 8px; }
@@ -563,28 +482,6 @@ html[theme="dark-blue"] .bg {
 html[theme="dark"] .container,
 html[theme="dark-blue"] .container {
   background-color: var(--dark-medium); }
-  html[theme="dark"] .container .column-left,
-  html[theme="dark-blue"] .container .column-left {
-    border: 1px solid transparent;
-    background-color: var(--dark-medium); }
-    html[theme="dark"] .container .column-left .top-bar,
-    html[theme="dark-blue"] .container .column-left .top-bar {
-      border-bottom: 1px solid var(--dark-low-op50); }
-      html[theme="dark"] .container .column-left .top-bar .close-btn button svg,
-      html[theme="dark-blue"] .container .column-left .top-bar .close-btn button svg {
-        color: var(--white); }
-    html[theme="dark"] .container .column-left .actions svg,
-    html[theme="dark-blue"] .container .column-left .actions svg {
-      color: var(--light); }
-    html[theme="dark"] .container .column-left .top-bar,
-    html[theme="dark-blue"] .container .column-left .top-bar {
-      background-color: var(--dark-medium); }
-      html[theme="dark"] .container .column-left .top-bar:after,
-      html[theme="dark-blue"] .container .column-left .top-bar:after {
-        background-color: var(--dark-medium); }
-    html[theme="dark"] .container .column-left .left-overlay,
-    html[theme="dark-blue"] .container .column-left .left-overlay {
-      background-color: var(--dark-medium); }
   html[theme="dark"] .container .column-center .top,
   html[theme="dark-blue"] .container .column-center .top {
     background-color: var(--dark-medium); }
@@ -661,15 +558,6 @@ html[theme="dark-blue"] .confirm-dialog div[role="document"] > div {
 
 html[theme="dark-blue"] .container {
   background-color: var(--dark-blue-medium); }
-  html[theme="dark-blue"] .container .column-left {
-    background-color: var(--dark-blue-medium); }
-    html[theme="dark-blue"] .container .column-left .top-bar {
-      background-color: var(--dark-blue-medium);
-      border-color: var(--dark-blue-low-op50); }
-      html[theme="dark-blue"] .container .column-left .top-bar:after {
-        background-color: var(--dark-blue-medium); }
-    html[theme="dark-blue"] .container .column-left .left-overlay {
-      background-color: var(--dark-blue-medium); }
   html[theme="dark-blue"] .container .column-center .top {
     background-color: var(--dark-blue-medium); }
   html[theme="dark-blue"] .container .column-center .conversation {

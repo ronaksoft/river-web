@@ -14,15 +14,10 @@ import Message, {highlightMessage, highlightMessageText} from '../../components/
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import Divider from '@material-ui/core/Divider';
 import {
-    CloseRounded,
-    EditRounded,
     ExpandMoreRounded,
     InfoOutlined,
     KeyboardArrowLeftRounded,
-    MoreVertRounded,
-    SearchRounded,
 } from '@material-ui/icons';
 import MessageRepo from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
@@ -79,17 +74,11 @@ import {
 import UserName from '../../components/UserName';
 import SyncManager, {C_SYNC_UPDATE} from '../../services/sdk/syncManager';
 import UserRepo from '../../repository/user';
-import RiverLogo from '../../components/RiverLogo';
 import MainRepo from '../../repository';
-import SettingsMenu, {C_CUSTOM_BG_ID} from '../../components/SettingsMenu';
 import {C_MSG_MODE} from '../../components/ChatInput/consts';
 import TimeUtility from '../../services/utilities/time';
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from '../../repository/message/consts';
 import PopUpDate from '../../components/PopUpDate';
-import BottomBar from '../../components/BottomBar';
-import ContactMenu from '../../components/ContactMenu';
-import Tooltip from '@material-ui/core/Tooltip';
-import NewGroupMenu from '../../components/NewGroupMenu';
 import GroupRepo from '../../repository/group';
 import GroupName from '../../components/GroupName';
 import GroupInfoMenu from '../../components/GroupInfoMenu';
@@ -148,8 +137,10 @@ import {isProd} from "../../../App";
 import {emojiLevel} from "../../services/utilities/emoji";
 import AudioPlayer, {IAudioInfo} from "../../services/audioPlayer";
 import CachedFileService from "../../services/cachedFileService";
+import LeftMenu, {menuAction} from "../../components/LeftMenu";
 
 import './style.css';
+import {C_CUSTOM_BG_ID} from "../../components/SettingsMenu";
 
 export let notifyOptions: any[] = [];
 const C_MAX_UPDATE_DIFF = 2000;
@@ -171,7 +162,6 @@ interface IState {
     isConnecting: boolean;
     isOnline: boolean;
     isUpdating: boolean;
-    leftMenu: string;
     leftMenuSelectedDialogId: string;
     leftOverlay: boolean;
     maxReadId: number;
@@ -185,7 +175,6 @@ interface IState {
     selectedDialogId: string;
     textInputMessage?: IMessage;
     textInputMessageMode: number;
-    unreadCounter: number;
 }
 
 class Chat extends React.Component<IProps, IState> {
@@ -193,12 +182,12 @@ class Chat extends React.Component<IProps, IState> {
     private containerRef: any = null;
     private isInChat: boolean = true;
     private rightMenuRef: any = null;
+    private leftMenuRef: LeftMenu;
     private dialogRef: Dialog;
     private statusBarRef: StatusBar;
     private popUpDateRef: PopUpDate;
     private popUpNewMessageRef: PopUpNewMessage;
     private messageRef: Message;
-    private settingsMenuRef: SettingsMenu;
     private messages: IMessage[] = [];
     private messageRepo: MessageRepo;
     private dialogRepo: DialogRepo;
@@ -263,7 +252,6 @@ class Chat extends React.Component<IProps, IState> {
             isConnecting: true,
             isOnline: navigator.onLine || true,
             isUpdating: false,
-            leftMenu: 'chat',
             leftMenuSelectedDialogId: '',
             leftOverlay: false,
             maxReadId: 0,
@@ -276,7 +264,6 @@ class Chat extends React.Component<IProps, IState> {
             rightMenuShrink: false,
             selectedDialogId: props.match.params.id,
             textInputMessageMode: C_MSG_MODE.Normal,
-            unreadCounter: 0,
         };
         this.riverTime = RiverTime.getInstance();
         this.fileManager = FileManager.getInstance();
@@ -477,8 +464,8 @@ class Chat extends React.Component<IProps, IState> {
             if (this.messageRef) {
                 this.messageRef.setMessages([]);
             }
+            this.setLeftMenu('chat');
             this.setState({
-                leftMenu: 'chat',
                 messageSelectable: false,
                 messageSelectedIds: {},
                 peer,
@@ -510,59 +497,9 @@ class Chat extends React.Component<IProps, IState> {
 
     public render() {
         const {
-            confirmDialogMode, confirmDialogOpen, moreInfoAnchorEl, chatMoreAnchorEl, leftMenu, rightMenuShrink,
-            /*leftMenuSub,*/ leftOverlay, textInputMessage, textInputMessageMode, peer, selectedDialogId, messageSelectable,
-            messageSelectedIds, unreadCounter, blurMessage, iframeActive,
+            confirmDialogMode, confirmDialogOpen, moreInfoAnchorEl, rightMenuShrink, textInputMessage,
+            textInputMessageMode, peer, selectedDialogId, messageSelectable, messageSelectedIds, blurMessage,
         } = this.state;
-        const leftMenuRender = () => {
-            switch (leftMenu) {
-                default:
-                case 'chat':
-                    return (<Dialog ref={this.dialogRefHandler} selectedId={selectedDialogId}
-                                    cancelIsTyping={this.cancelIsTypingHandler}
-                                    onContextMenu={this.dialogContextMenuHandler}/>);
-                case 'settings':
-                    return (<SettingsMenu ref={this.settingsMenuRefHandler}
-                                          updateMessages={this.settingUpdateMessageHandler}
-                                          onClose={this.bottomBarSelectHandler('chat')}
-                                          onAction={this.settingActionHandler}
-                                          onReloadDialog={this.settingReloadDialogHandler}/>);
-                case 'contact':
-                    return (<ContactMenu/>);
-            }
-        };
-        const chatTopIcons = [{
-            cmd: 'search',
-            icon: <SearchRounded/>,
-            tooltip: i18n.t('chat.search'),
-        }, {
-            cmd: 'new_message',
-            icon: <EditRounded/>,
-            tooltip: i18n.t('chat.new_message'),
-        }, {
-            cmd: 'more',
-            icon: <MoreVertRounded/>,
-            tooltip: i18n.t('chat.more'),
-        }];
-
-        const chatMoreMenuItem = [{
-            cmd: 'new_group',
-            title: i18n.t('chat.new_group'),
-        }, {
-            cmd: 'new_message',
-            title: i18n.t('chat.new_message'),
-        }, {
-            cmd: 'account',
-            title: i18n.t('chat.account_info'),
-        }, {
-            cmd: 'settings',
-            title: i18n.t('chat.settings'),
-        }, {
-            role: 'divider',
-        }, {
-            cmd: 'logout',
-            title: i18n.t('chat.log_out'),
-        }];
 
         const messageMoreMenuItem = [{
             cmd: 'info',
@@ -578,69 +515,16 @@ class Chat extends React.Component<IProps, IState> {
                     <div
                         ref={this.containerRefHandler}
                         className={'container' + (this.isMobileView ? ' mobile-view' : '')}>
-                        <div
-                            className={'column-left ' + (leftMenu === 'chat' ? 'with-top-bar' : '') + (leftOverlay ? ' left-overlay-enable' : '')}>
-                            <div className="top-bar">
-                                {iframeActive && <span className="close-btn">
-                                    <Tooltip
-                                        title={i18n.t('general.close')}
-                                        placement="bottom"
-                                        onClick={this.closeIframeHandler}
-                                    >
-                                        <IconButton>
-                                            <CloseRounded/>
-                                        </IconButton>
-                                    </Tooltip>
-                                </span>}
-                                <span className="new-message">
-                                    {iframeActive &&
-                                    <a href="/" target="_blank"><RiverLogo height={28} width={28}/></a>}
-                                    {!iframeActive && <RiverLogo height={28} width={28}/>}
-                                </span>
-                                <div className="actions">
-                                    {chatTopIcons.map((item, key) => {
-                                        return (
-                                            <Tooltip
-                                                key={key}
-                                                title={item.tooltip}
-                                                placement="bottom"
-                                            >
-                                                <IconButton
-                                                    onClick={this.chatTopIconActionHandler(item.cmd)}
-                                                >{item.icon}</IconButton>
-                                            </Tooltip>
-                                        );
-                                    })}
-                                    <Menu
-                                        anchorEl={chatMoreAnchorEl}
-                                        open={Boolean(chatMoreAnchorEl)}
-                                        onClose={this.chatMoreCloseHandler}
-                                        className="kk-context-menu darker"
-                                    >
-                                        {chatMoreMenuItem.map((item, key) => {
-                                            if (item.role === 'divider') {
-                                                return (<Divider key={key}/>);
-                                            } else {
-                                                return (
-                                                    <MenuItem key={key}
-                                                              onClick={this.chatMoreActionHandler(item.cmd)}
-                                                              className="context-item"
-                                                    >{item.title}</MenuItem>
-                                                );
-                                            }
-                                        })}
-                                    </Menu>
-                                </div>
-                            </div>
-                            <div className="left-content">{leftMenuRender()}</div>
-                            <BottomBar onSelect={this.bottomBarSelectHandler} selected={leftMenu}
-                                       unreadCounter={unreadCounter}/>
-                            <div className="left-overlay">
-                                {leftOverlay &&
-                                <NewGroupMenu onClose={this.leftOverlayCloseHandler}
-                                              onCreate={this.onGroupCreateHandler}/>}
-                            </div>
-                        </div>
+                        <LeftMenu ref={this.leftMenuRefHandler} dialogRef={this.dialogRefHandler}
+                                  cancelIsTyping={this.cancelIsTypingHandler}
+                                  onContextMenu={this.dialogContextMenuHandler}
+                                  onSettingsClose={this.bottomBarSelectHandler('chat')}
+                                  onSettingsAction={this.settingActionHandler}
+                                  updateMessages={this.settingUpdateMessageHandler}
+                                  onReloadDialog={this.settingReloadDialogHandler}
+                                  onAction={this.leftMenuActionHandler}
+                                  onGroupCreate={this.leftMenuGroupCreateHandler}
+                        />
                         {selectedDialogId !== 'null' &&
                         <div
                             className={'column-center' + (rightMenuShrink ? ' shrink' : '') + (blurMessage ? ' blur' : '')}>
@@ -975,18 +859,6 @@ class Chat extends React.Component<IProps, IState> {
         }, 700);
     }
 
-    private chatMoreOpenHandler = (event: any) => {
-        this.setState({
-            chatMoreAnchorEl: event.currentTarget,
-        });
-    }
-
-    private chatMoreCloseHandler = () => {
-        this.setState({
-            chatMoreAnchorEl: null,
-        });
-    }
-
     private messageMoreOpenHandler = (event: any) => {
         this.setState({
             moreInfoAnchorEl: event.currentTarget,
@@ -997,52 +869,6 @@ class Chat extends React.Component<IProps, IState> {
         this.setState({
             moreInfoAnchorEl: null,
         });
-    }
-
-    private chatTopIconActionHandler = (cmd: string) => (e: any) => {
-        this.chatMoreCloseHandler();
-        switch (cmd) {
-            case 'search':
-                this.dialogRef.toggleSearch();
-                break;
-            case 'new_message':
-                this.onNewMessageOpen();
-                break;
-            case 'more':
-                this.chatMoreOpenHandler(e);
-                break;
-        }
-    }
-
-    private chatMoreActionHandler = (cmd: string | undefined) => (e: any) => {
-        this.chatMoreCloseHandler();
-        switch (cmd) {
-            case 'new_group':
-                this.setState({
-                    leftOverlay: true,
-                });
-                break;
-            case 'new_message':
-                this.onNewMessageOpen();
-                break;
-            case 'account':
-                this.setState({
-                    leftMenu: 'settings',
-                }, () => {
-                    if (this.settingsMenuRef) {
-                        this.settingsMenuRef.navigateToPage('account', 'none');
-                    }
-                });
-                break;
-            case 'settings':
-                this.setState({
-                    leftMenu: 'settings',
-                });
-                break;
-            case 'logout':
-                this.bottomBarSelectHandler('logout');
-                break;
-        }
     }
 
     private messageMoreActionHandler = (cmd: string) => (e: any) => {
@@ -1057,6 +883,10 @@ class Chat extends React.Component<IProps, IState> {
                 }
                 break;
         }
+    }
+
+    private leftMenuRefHandler = (ref: any) => {
+        this.leftMenuRef = ref;
     }
 
     private dialogRefHandler = (ref: any) => {
@@ -1096,10 +926,6 @@ class Chat extends React.Component<IProps, IState> {
         this.messageRef = ref;
     }
 
-    private settingsMenuRefHandler = (ref: any) => {
-        this.settingsMenuRef = ref;
-    }
-
     /* Init dialogs */
     private initDialogs = () => {
         this.dialogRepo.getManyCache({}).then((res) => {
@@ -1107,9 +933,9 @@ class Chat extends React.Component<IProps, IState> {
             const selectedMessageId = this.props.match.params.mid;
             this.dialogsSort(res, () => {
                 if (selectedId !== 'null') {
+                    this.setLeftMenu('chat');
                     const peer = this.getPeerByDialogId(selectedId);
                     this.setState({
-                        leftMenu: 'chat',
                         peer,
                         selectedDialogId: selectedId,
                     }, () => {
@@ -2245,12 +2071,6 @@ class Chat extends React.Component<IProps, IState> {
         return false;
     }
 
-    private onNewMessageOpen = () => {
-        this.setState({
-            openNewMessage: true,
-        });
-    }
-
     private onNewMessageClose = () => {
         this.setState({
             openNewMessage: false,
@@ -2550,9 +2370,9 @@ class Chat extends React.Component<IProps, IState> {
             });
         }
 
-        this.setState({
-            unreadCounter,
-        });
+        if (this.leftMenuRef) {
+            this.leftMenuRef.setUnreadCounter(unreadCounter);
+        }
 
         this.iframeService.setUnreadCounter(unreadCounter);
         if (ElectronService.isElectron()) {
@@ -2901,24 +2721,15 @@ class Chat extends React.Component<IProps, IState> {
                     confirmDialogOpen: true,
                 });
                 break;
-            default:
-                this.setState({
-                    leftMenu: item,
-                });
-                if (this.settingsMenuRef && this.state.leftMenu === 'settings') {
-                    this.settingsMenuRef.navigateToPage('none', 'none');
-                }
+            case 'chat':
+            case 'settings':
+            case 'contacts':
+                this.setLeftMenu(item, 'none', 'none');
                 break;
         }
     }
 
-    private leftOverlayCloseHandler = () => {
-        this.setState({
-            leftOverlay: false,
-        });
-    }
-
-    private onGroupCreateHandler = (contacts: IUser[], title: string, fileId: string) => {
+    private leftMenuGroupCreateHandler = (contacts: IUser[], title: string, fileId: string) => {
         const users: InputUser[] = [];
         contacts.forEach((contact) => {
             const user = new InputUser();
@@ -3256,6 +3067,25 @@ class Chat extends React.Component<IProps, IState> {
             setTimeout(() => {
                 this.getMessagesByDialogId(this.state.selectedDialogId, true);
             }, 1000);
+        }
+    }
+
+    private leftMenuActionHandler = (cmd: menuAction) => {
+        switch (cmd) {
+            case "close_iframe":
+                this.iframeService.close();
+                break;
+            case "new_message":
+                this.setState({
+                    openNewMessage: true,
+                });
+                break;
+            case "logout":
+                this.setState({
+                    confirmDialogMode: 'logout',
+                    confirmDialogOpen: true,
+                });
+                break;
         }
     }
 
@@ -3622,10 +3452,10 @@ class Chat extends React.Component<IProps, IState> {
             case 'block':
                 break;
             case 'remove':
+                this.setLeftMenu('chat');
                 this.setState({
                     confirmDialogMode: (dialog.peertype === PeerType.PEERGROUP) ? 'delete_exit_group' : 'delete_user',
                     confirmDialogOpen: true,
-                    leftMenu: 'chat',
                     leftMenuSelectedDialogId: dialog.peerid || '',
                 });
                 break;
@@ -4612,10 +4442,10 @@ class Chat extends React.Component<IProps, IState> {
 
     /* GroupInfo delete and exit handler */
     private groupInfoDeleteAndExitHandler = () => {
+        this.setLeftMenu('chat');
         this.setState({
             confirmDialogMode: 'delete_exit_group',
             confirmDialogOpen: true,
-            leftMenu: 'chat',
             leftMenuSelectedDialogId: this.state.selectedDialogId,
         });
     }
@@ -4787,10 +4617,6 @@ class Chat extends React.Component<IProps, IState> {
         window.dispatchEvent(event);
     }
 
-    private closeIframeHandler = () => {
-        this.iframeService.close();
-    }
-
     private newMessageLoad = () => {
         // Force update messages
         this.messageRef.animateToEnd();
@@ -4855,6 +4681,12 @@ class Chat extends React.Component<IProps, IState> {
         this.sdk.setNotifySettings(peer, settings).then(() => {
             this.updateDialogsNotifySettings(peer.getId() || '', settings.toObject());
         });
+    }
+
+    private setLeftMenu(menu: 'chat' | 'settings' | 'contacts', pageContent?: string, pageSubContent?: string) {
+        if (this.leftMenuRef) {
+            this.leftMenuRef.setMenu(menu, pageContent, pageSubContent);
+        }
     }
 
     /*

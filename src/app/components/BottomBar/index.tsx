@@ -13,15 +13,13 @@ import Badge from '@material-ui/core/Badge';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 import i18n from '../../services/i18n';
 import {localize} from '../../services/utilities/localize';
+import {menuItems} from "../LeftMenu";
 
 import './style.css';
 
-let items: any[] = [];
-
 interface IProps {
     selected: string;
-    onSelect?: (item: string) => void;
-    unreadCounter: number;
+    onSelect: (item: menuItems) => void;
 }
 
 interface IState {
@@ -30,17 +28,19 @@ interface IState {
 }
 
 class BottomBar extends React.Component<IProps, IState> {
+    private items: Array<{badge?: boolean, icon: any, page: menuItems, title: string}>;
+
     constructor(props: IProps) {
         super(props);
 
         this.state = {
             selected: props.selected,
-            unreadCounter: props.unreadCounter,
+            unreadCounter: 0,
         };
 
-        items = [{
+        this.items = [{
             icon: <AccountCircleRounded/>,
-            page: 'contact',
+            page: 'contacts',
             title: i18n.t('general.contacts'),
         }, {
             badge: true,
@@ -57,7 +57,12 @@ class BottomBar extends React.Component<IProps, IState> {
     public componentWillReceiveProps(newProps: IProps) {
         this.setState({
             selected: newProps.selected,
-            unreadCounter: newProps.unreadCounter,
+        });
+    }
+
+    public setUnreadCounter(counter: number) {
+        this.setState({
+            unreadCounter: counter,
         });
     }
 
@@ -65,7 +70,7 @@ class BottomBar extends React.Component<IProps, IState> {
         const {selected, unreadCounter} = this.state;
         return (
             <div className="chat-bottom-bar">
-                {items.map((item, index) => {
+                {this.items.map((item, index) => {
                     return (
                         <Tooltip
                             key={index}
@@ -87,7 +92,7 @@ class BottomBar extends React.Component<IProps, IState> {
         );
     }
 
-    private onClickHandler = (item: string) => (e: any) => {
+    private onClickHandler = (item: 'chat' | 'settings' | 'contacts') => (e: any) => {
         if (this.props.onSelect) {
             this.props.onSelect(item);
         }

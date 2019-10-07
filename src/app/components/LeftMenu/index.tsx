@@ -8,41 +8,97 @@
 */
 
 import * as React from 'react';
-
 import Dialog from "../Dialog";
 import SettingsMenu from "../SettingsMenu";
 import ContactMenu from "../ContactMenu";
 import {IDialog} from "../../repository/dialog/interface";
+import BottomBar from "../BottomBar";
+import Tooltip from "@material-ui/core/Tooltip";
+import i18n from "../../services/i18n";
+import IconButton from "@material-ui/core/IconButton";
+import {CloseRounded, EditRounded, MoreVertRounded, SearchRounded} from "@material-ui/icons";
+import RiverLogo from "../RiverLogo";
+import Menu from "@material-ui/core/Menu";
+import Divider from "@material-ui/core/Divider";
+import MenuItem from "@material-ui/core/MenuItem";
+import IframeService from "../../services/iframe";
+import NewGroupMenu from "../NewGroupMenu";
+import {IUser} from "../../repository/user/interface";
+
+import './style.css';
+
+export type menuItems = 'chat' | 'settings' | 'contacts';
+export type menuAction = 'new_message' | 'close_iframe' | 'logout';
 
 interface IProps {
-    className?: string;
-    cancelIsTyping: (id: string) => void;
-    onContextMenu?: (cmd: string, dialog: IDialog) => void;
-    onSettingsClose?: (e: any) => void;
-    onSettingsAction?: (cmd: 'logout') => void;
-    updateMessages?: (keep?: boolean) => void;
-    onSettingsReloadDialog?: (peerIds: string[]) => void;
-    onSubPlaceChange?: (sub: string, subChild: string) => void;
     dialogRef: (ref: Dialog) => void;
-    settingsRef: (ref: SettingsMenu) => void;
+    cancelIsTyping: (id: string) => void;
+    onContextMenu: (cmd: string, dialog: IDialog) => void;
+    onSettingsClose: (e: any) => void;
+    onSettingsAction: (cmd: 'logout') => void;
+    updateMessages: (keep?: boolean) => void;
+    onReloadDialog: (peerIds: string[]) => void;
+    onAction: (cmd: menuAction) => void;
+    onGroupCreate: (contacts: IUser[], title: string, fileId: string) => void;
 }
 
 interface IState {
-    className: string;
-    leftMenu: string;
+    chatMoreAnchorEl: any;
+    leftMenu: menuItems;
+    overlay: boolean;
     selectedDialogId: string;
 }
 
-class LiveDate extends React.Component<IProps, IState> {
+class LeftMenu extends React.Component<IProps, IState> {
+    private bottomBarRef: BottomBar;
+    private dialogRef: Dialog;
+    private settingsMenuRef: SettingsMenu;
+    private iframeActive: boolean = IframeService.getInstance().isActive();
+    private chatTopIcons: any[];
+    private chatMoreMenuItem: any[];
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
-            className: '',
+            chatMoreAnchorEl: null,
             leftMenu: 'chat',
+            overlay: false,
             selectedDialogId: 'null',
         };
+
+        this.chatTopIcons = [{
+            cmd: 'search',
+            icon: <SearchRounded/>,
+            tooltip: i18n.t('chat.search'),
+        }, {
+            cmd: 'new_message',
+            icon: <EditRounded/>,
+            tooltip: i18n.t('chat.new_message'),
+        }, {
+            cmd: 'more',
+            icon: <MoreVertRounded/>,
+            tooltip: i18n.t('chat.more'),
+        }];
+
+        this.chatMoreMenuItem = [{
+            cmd: 'new_group',
+            title: i18n.t('chat.new_group'),
+        }, {
+            cmd: 'new_message',
+            title: i18n.t('chat.new_message'),
+        }, {
+            cmd: 'account',
+            title: i18n.t('chat.account_info'),
+        }, {
+            cmd: 'settings',
+            title: i18n.t('chat.settings'),
+        }, {
+            role: 'divider',
+        }, {
+            cmd: 'logout',
+            title: i18n.t('chat.log_out'),
+        }];
     }
 
     public componentDidMount() {
@@ -57,15 +113,95 @@ class LiveDate extends React.Component<IProps, IState> {
         //
     }
 
-    public setMenu(mene: string) {
-        this.setState({
-            leftMenu: mene,
-        });
+    public setMenu(menu: menuItems, pageContent?: string, pageSubContent?: string) {
+        const fn = () => {
+            if (this.settingsMenuRef && pageContent && pageSubContent) {
+                this.settingsMenuRef.navigateToPage(pageContent, pageSubContent);
+            }
+        };
+        if (this.state.leftMenu !== menu) {
+            this.setState({
+                leftMenu: menu,
+            }, fn);
+        } else {
+            fn();
+        }
+    }
+
+    public setUnreadCounter(counter: number) {
+        if (this.bottomBarRef) {
+            this.bottomBarRef.setUnreadCounter(counter);
+        }
     }
 
     public render() {
+        const {chatMoreAnchorEl, leftMenu, overlay} = this.state;
         return (
-            <span className={this.state.className}>{this.leftMenuRender()}</span>
+            <div
+                className={'column-left ' + (leftMenu === 'chat' ? 'with-top-bar' : '') + (overlay ? ' left-overlay-enable' : '')}>
+                <div className="top-bar">
+                    {this.iframeActive &&
+                    <span className="close-btn">
+                        <Tooltip
+                            title={i18n.t('general.close')}
+                            placement="bottom"
+                            onClick={this.chatMoreActionHandler('close_iframe')}
+                        >
+                            <IconButton>
+                                <CloseRounded/>
+                            </IconButton>
+                        </Tooltip>
+                    </span>}
+                    <span className="new-message">
+                        {this.iframeActive &&
+                        <a href="/" target="_blank"><RiverLogo height={28} width={28}/></a>}
+                        {!this.iframeActive && <RiverLogo height={28} width={28}/>}
+                    </span>
+                    <div className="actions">
+                        {this.chatTopIcons.map((item, key) => {
+                            return (
+                                <Tooltip
+                                    key={key}
+                                    title={item.tooltip}
+                                    placement="bottom"
+                                >
+                                    <IconButton
+                                        onClick={this.chatTopIconActionHandler(item.cmd)}
+                                    >{item.icon}</IconButton>
+                                </Tooltip>
+                            );
+                        })}
+                        <Menu
+                            anchorEl={chatMoreAnchorEl}
+                            open={Boolean(chatMoreAnchorEl)}
+                            onClose={this.chatMoreCloseHandler}
+                            className="kk-context-menu darker"
+                        >
+                            {this.chatMoreMenuItem.map((item, key) => {
+                                if (item.role === 'divider') {
+                                    return (<Divider key={key}/>);
+                                } else {
+                                    return (
+                                        <MenuItem key={key}
+                                                  onClick={this.chatMoreActionHandler(item.cmd)}
+                                                  className="context-item"
+                                        >{item.title}</MenuItem>
+                                    );
+                                }
+                            })}
+                        </Menu>
+                    </div>
+                </div>
+                <div className="left-content">
+                    {this.leftMenuRender()}
+                </div>
+                <BottomBar ref={this.bottomBarRefHandler} onSelect={this.bottomBarSelectHandler}
+                           selected={this.state.leftMenu}/>
+                <div className="left-overlay">
+                    {overlay && <NewGroupMenu onClose={this.overlayCloseHandler}
+                                              onCreate={this.props.onGroupCreate}/>}
+                </div>
+            </div>
         );
     }
 
@@ -82,19 +218,91 @@ class LiveDate extends React.Component<IProps, IState> {
                                       updateMessages={this.props.updateMessages}
                                       onClose={this.props.onSettingsClose}
                                       onAction={this.props.onSettingsAction}
-                                      onReloadDialog={this.props.onSettingsReloadDialog}/>);
-            case 'contact':
+                                      onReloadDialog={this.props.onReloadDialog}/>);
+            case 'contacts':
                 return (<ContactMenu/>);
         }
     }
 
     private dialogRefHandler = (ref: any) => {
+        this.dialogRef = ref;
         this.props.dialogRef(ref);
     }
 
     private settingsMenuRefHandler = (ref: any) => {
-        this.props.settingsRef(ref);
+        this.settingsMenuRef = ref;
+    }
+
+    private bottomBarRefHandler = (ref: any) => {
+        this.bottomBarRefHandler = ref;
+    }
+
+    private bottomBarSelectHandler = (item: menuItems) => {
+        this.setState({
+            leftMenu: item,
+        });
+    }
+
+    private chatMoreOpenHandler = (e: any) => {
+        this.setState({
+            chatMoreAnchorEl: e.currentTarget,
+        });
+    }
+
+    private chatMoreCloseHandler = () => {
+        if (this.state.chatMoreAnchorEl) {
+            this.setState({
+                chatMoreAnchorEl: null,
+            });
+        }
+    }
+
+    private chatTopIconActionHandler = (cmd: string) => (e: any) => {
+        this.chatMoreCloseHandler();
+        switch (cmd) {
+            case 'search':
+                this.dialogRef.toggleSearch();
+                break;
+            case 'new_message':
+                this.props.onAction('new_message');
+                break;
+            case 'more':
+                this.chatMoreOpenHandler(e);
+                break;
+        }
+    }
+
+    private chatMoreActionHandler = (cmd: string | undefined) => (e: any) => {
+        this.chatMoreCloseHandler();
+        switch (cmd) {
+            case 'new_group':
+                this.setState({
+                    overlay: true,
+                });
+                break;
+            case 'new_message':
+                this.props.onAction('new_message');
+                break;
+            case 'account':
+                this.setMenu('settings', 'account', 'none');
+                break;
+            case 'settings':
+                this.setMenu('settings');
+                break;
+            case 'logout':
+                this.props.onAction('logout');
+                break;
+            case 'close_iframe':
+                this.props.onAction('close_iframe');
+                break;
+        }
+    }
+
+    private overlayCloseHandler = () => {
+        this.setState({
+            overlay: false,
+        });
     }
 }
 
-export default LiveDate;
+export default LeftMenu;
