@@ -2892,7 +2892,7 @@ class Chat extends React.Component<IProps, IState> {
         this.setChatView(false);
         this.mobileBackTimeout = setTimeout(() => {
             this.props.history.push('/chat/null');
-        }, 1000);
+        }, 100);
     }
 
     /* SettingsMenu on update handler */

@@ -1,3 +1,6 @@
+## 0.26.2
+* Responsive bug fixed
+
 ## 0.26.1
 * Improvements
 
