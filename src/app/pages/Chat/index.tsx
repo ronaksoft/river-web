@@ -2127,8 +2127,10 @@ class Chat extends React.Component<IProps, IState> {
                 }
             }
             let shouldUpdate = false;
+            let counterAction = false;
             if (unreadCounter !== undefined) {
                 shouldUpdate = true;
+                counterAction = true;
                 if (maxInbox) {
                     if ((dialogs[index].readinboxmaxid || 0) <= maxInbox) {
                         dialogs[index].unreadcount = unreadCounter;
@@ -2148,6 +2150,7 @@ class Chat extends React.Component<IProps, IState> {
             }
             if (unreadCounterIncrease === 1) {
                 shouldUpdate = true;
+                counterAction = true;
                 if (dialogs[index].unreadcount) {
                     // @ts-ignore
                     dialogs[index].unreadcount++;
@@ -2157,6 +2160,7 @@ class Chat extends React.Component<IProps, IState> {
             }
             if (mentionCounterIncrease === 1) {
                 shouldUpdate = true;
+                counterAction = true;
                 if (dialogs[index].mentionedcount) {
                     // @ts-ignore
                     dialogs[index].mentionedcount++;
@@ -2166,6 +2170,7 @@ class Chat extends React.Component<IProps, IState> {
             }
             if (mentionCounter !== undefined) {
                 shouldUpdate = true;
+                counterAction = true;
                 dialogs[index].mentionedcount = mentionCounter;
             }
             if (scrollPos !== undefined) {
@@ -2183,6 +2188,9 @@ class Chat extends React.Component<IProps, IState> {
             }
             if (unreadCounter === 0 && this.scrollInfo) {
                 this.setEndOfMessage(this.messages.length - this.scrollInfo.stopIndex > 1);
+            }
+            if (counterAction && peerId === this.selectedDialogId && this.moveDownRef) {
+                this.moveDownRef.setDialog(dialogs[index]);
             }
             this.dialogRepo.lazyUpsert([dialogs[index]]);
             return dialogs[index];
