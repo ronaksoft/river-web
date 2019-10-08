@@ -1,3 +1,6 @@
+## 0.26.4
+* Electron and react updated
+
 ## 0.26.3
 * Bind bugs fixed
 

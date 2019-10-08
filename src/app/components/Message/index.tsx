@@ -12,6 +12,7 @@ import {AutoSizer, CellMeasurer, CellMeasurerCache, List} from 'react-virtualize
 import {IMessage} from '../../repository/message/interface';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import {
     GroupPhoto, InputFileLocation, InputPeer, MediaType, MessageEntityType, PeerType,
 } from '../../services/sdk/messages/chat.core.types_pb';
@@ -893,7 +894,7 @@ class Message extends React.Component<IProps, IState> {
                         <span className="date">{TimeUtility.dynamicDate(message.createdon || 0)}</span>}
                         {Boolean((this.state.loading || this.state.loadingPersist) && index === 0) &&
                         <div className="loading">
-                            <span className="loader"/>
+                            <CircularProgress size={16} thickness={3} color="inherit"/>
                         </div>}
                     </div>
                 );
