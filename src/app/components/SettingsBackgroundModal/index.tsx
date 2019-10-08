@@ -91,7 +91,7 @@ class SettingsBackgroundModal extends React.Component<IProps, IState> {
                     src,
                     uploadedSrc: src,
                 }, () => {
-                    this.selectBackgroundPicHandler('-21');
+                    this.selectBackgroundPicHandler('-21')();
                 });
             });
         }
@@ -196,7 +196,7 @@ class SettingsBackgroundModal extends React.Component<IProps, IState> {
         );
     }
 
-    private selectBackgroundPicHandler = (id: string) => (e: any) => {
+    private selectBackgroundPicHandler = (id: string) => (e?: any) => {
         const bg = bgPics.find((o) => o.id === id);
         const tSrc = (id === '-21') ? this.state.uploadedSrc : (bg ? bg.src : '');
         this.setState({
@@ -361,7 +361,7 @@ class SettingsBackgroundModal extends React.Component<IProps, IState> {
                 src,
                 uploadedSrc: src,
             }, () => {
-                this.selectBackgroundPicHandler('-21');
+                this.selectBackgroundPicHandler('-21')();
             });
         }
     }

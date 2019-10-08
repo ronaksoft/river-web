@@ -1292,7 +1292,7 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Electron preferences click handler */
     private electronSettingsHandler = () => {
-        this.bottomBarSelectHandler('settings');
+        this.bottomBarSelectHandler('settings')();
     }
 
     /* Electron about click handler */
@@ -1304,7 +1304,7 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Electron log out click handler */
     private electronLogoutHandler = () => {
-        this.bottomBarSelectHandler('logout');
+        this.bottomBarSelectHandler('logout')();
     }
 
     /* Electron size mode change handler */
@@ -2582,7 +2582,7 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private bottomBarSelectHandler = (item: string) => (e: any): void => {
+    private bottomBarSelectHandler = (item: string) => (e?: any): void => {
         switch (item) {
             case 'logout':
                 this.setState({
@@ -2943,7 +2943,7 @@ class Chat extends React.Component<IProps, IState> {
     private settingActionHandler = (cmd: 'logout') => {
         switch (cmd) {
             case 'logout':
-                this.bottomBarSelectHandler('logout');
+                this.bottomBarSelectHandler('logout')();
                 break;
         }
     }

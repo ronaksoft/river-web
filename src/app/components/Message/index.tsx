@@ -984,7 +984,7 @@ class Message extends React.Component<IProps, IState> {
         if (cmd === 'forward') {
             this.selectMessageHandler(this.state.items[index].id || 0, index, () => {
                 this.props.contextMenu('forward_dialog', this.state.items[index]);
-            })(undefined);
+            })();
         }
         this.setState({
             moreAnchorEl: null,
@@ -999,7 +999,7 @@ class Message extends React.Component<IProps, IState> {
                 selectable: true,
             });
         }
-        this.selectMessageHandler(this.state.items[index].id || 0, index, null)(undefined);
+        this.selectMessageHandler(this.state.items[index].id || 0, index, null)();
     }
 
     private onRowsRenderedHandler = (data: any) => {

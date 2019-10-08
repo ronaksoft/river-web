@@ -1,3 +1,6 @@
+## 0.26.3
+* Bind bugs fixed
+
 ## 0.26.2
 * Responsive bug fixed
 

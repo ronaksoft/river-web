@@ -623,7 +623,7 @@ class ChatInput extends React.Component<IProps, IState> {
                         message,
                         mode: previewMessageMode,
                     });
-                });
+                })();
             }
         }
         this.textarea.value = '';
@@ -668,7 +668,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                 message,
                                 mode: previewMessageMode,
                             });
-                        });
+                        })();
                     }
                 }
                 this.textarea.value = '';
@@ -723,7 +723,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 }
             }
         } else if (e.keyCode === 27) {
-            this.clearPreviewMessage(false);
+            this.clearPreviewMessage(false)();
         }
     }
 
@@ -763,7 +763,7 @@ class ChatInput extends React.Component<IProps, IState> {
         });
     }
 
-    private clearPreviewMessage = (removeDraft?: boolean, cb?: any) => (e: any) => {
+    private clearPreviewMessage = (removeDraft?: boolean, cb?: any) => (e?: any) => {
         this.setState({
             previewMessageHeight: 0,
         });
@@ -1104,7 +1104,7 @@ class ChatInput extends React.Component<IProps, IState> {
             this.computeLines();
         });
         if (mode === C_MSG_MODE.Normal || !msg) {
-            this.clearPreviewMessage();
+            this.clearPreviewMessage()();
         }
     }
 
@@ -1287,7 +1287,7 @@ class ChatInput extends React.Component<IProps, IState> {
         } else {
             this.stopTimer();
         }
-        this.clearPreviewMessage(true);
+        this.clearPreviewMessage(true)();
     }
 
     /* Window click handler */
@@ -1697,7 +1697,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 }
                 break;
         }
-        this.clearPreviewMessage(true);
+        this.clearPreviewMessage(true)();
     }
 
     /* Send contact handler */
@@ -1710,7 +1710,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 mode: previewMessageMode,
             });
         }
-        this.clearPreviewMessage(true);
+        this.clearPreviewMessage(true)();
     }
 
     private mapDoneDoneHandler = (data: IGeoItem) => {
@@ -1722,7 +1722,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 mode: previewMessageMode,
             });
         }
-        this.clearPreviewMessage(true);
+        this.clearPreviewMessage(true)();
     }
 
     private getThumbnail() {
