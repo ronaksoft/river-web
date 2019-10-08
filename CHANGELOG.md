@@ -1,3 +1,6 @@
+## 0.26.5
+* Scroll to bug fixed
+
 ## 0.26.4
 * Electron and react updated
 
