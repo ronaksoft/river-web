@@ -61,6 +61,7 @@ interface IProps {
     rendered?: (info: any) => void;
     showDate?: (timestamp: number | null) => void;
     showNewMessage?: (visible: boolean) => void;
+    isMobileView: boolean;
 }
 
 interface IState {
@@ -272,6 +273,10 @@ class Message extends React.Component<IProps, IState> {
             8: {
                 cmd: 'save',
                 title: i18n.t('general.save'),
+            },
+            9: {
+                cmd: 'select',
+                title: i18n.t('general.select'),
             },
         };
     }
@@ -737,9 +742,9 @@ class Message extends React.Component<IProps, IState> {
             return '';
         }
         const menuTypes = {
-            1: [1, 2, 3, 4, 7, 8],
-            2: [1, 2, 4, 7, 8],
-            3: [6, 5],
+            1: [1, 2, 3, 4, 7, 8, 9],
+            2: [1, 2, 4, 7, 8, 9],
+            3: [6, 5, 9],
         };
         const menuItems: any[] = [];
         const id = items[moreIndex].id;
@@ -826,7 +831,7 @@ class Message extends React.Component<IProps, IState> {
     }
 
     private noRowsRenderer = () => {
-        if (this.state.loading || this.state.loadingPersist) {
+        if (this.state.loading || this.state.loadingPersist || this.props.isMobileView) {
             return (<div className="chat-placeholder">
                 <Loading/>
             </div>);
@@ -973,14 +978,18 @@ class Message extends React.Component<IProps, IState> {
             this.selectMessageHandler(this.state.items[index].id || 0, index, () => {
                 this.props.contextMenu('forward_dialog', this.state.items[index]);
             })();
+        } else if (cmd === 'select') {
+            this.selectMessage(index)();
         }
         this.setState({
             moreAnchorEl: null,
         });
     }
 
-    private selectMessage = (index: number) => (e: any) => {
-        e.stopPropagation();
+    private selectMessage = (index: number) => (e?: any) => {
+        if (e) {
+            e.stopPropagation();
+        }
         if (!this.state.selectable) {
             this.props.onSelectableChange(true);
             this.setState({

@@ -52,7 +52,7 @@ import {C_MSG} from '../../services/sdk/const';
 import {
     UpdateDialogPinned,
     UpdateDraftMessage,
-    UpdateDraftMessageCleared,
+    UpdateDraftMessageCleared, UpdateGroupParticipantAdd,
     UpdateGroupPhoto,
     UpdateMessageEdited,
     UpdateMessageID,
@@ -384,6 +384,9 @@ class Chat extends React.Component<IProps, IState> {
         // Update: dialog draft message cleared
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateDraftMessageCleared, this.updateDraftMessageClearedHandler));
 
+        // Update: group participant added
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateGroupParticipantAdd, this.updateGroupParticipantAddHandler));
+
         // Sync: MessageId
         this.eventReferences.push(this.syncManager.listen(C_SYNC_UPDATE.MessageId, this.updateMessageIDHandler));
 
@@ -483,7 +486,7 @@ class Chat extends React.Component<IProps, IState> {
                     <div
                         ref={this.containerRefHandler}
                         className={'container' + (this.isMobileView ? ' mobile-view' : '')}>
-                        <LeftMenu ref={this.leftMenuRefHandler} dialogRef={this.dialogRefHandler}
+                        <LeftMenu key="left-menu" ref={this.leftMenuRefHandler} dialogRef={this.dialogRefHandler}
                                   cancelIsTyping={this.cancelIsTypingHandler}
                                   onContextMenu={this.dialogContextMenuHandler}
                                   onSettingsClose={this.bottomBarSelectHandler('chat')}
@@ -497,20 +500,21 @@ class Chat extends React.Component<IProps, IState> {
                         <div
                             className={'column-center' + (rightMenuShrink ? ' shrink' : '')}>
                             <div className="top">
-                                <InfoBar ref={this.infoBarRefHandler} onBack={this.backToChatsHandler}
+                                <InfoBar key="info-bar" ref={this.infoBarRefHandler} onBack={this.backToChatsHandler}
                                          statusBarRefHandler={this.statusBarRefHandler}
                                          isMobileView={this.isMobileView} onAction={this.messageMoreActionHandler}/>
-                                <AudioPlayerShell onVisible={this.audioPlayerVisibleHandler}
+                                <AudioPlayerShell key="audio-player-shell" onVisible={this.audioPlayerVisibleHandler}
                                                   onAction={this.messageAttachmentActionHandler}/>
                             </div>
                             <div ref={this.conversationRefHandler} className="conversation">
-                                <PopUpDate ref={this.popUpDateRefHandler}/>
-                                <PopUpNewMessage ref={this.popUpNewMessageRefHandler}
+                                <PopUpDate key="pop-up-date" ref={this.popUpDateRefHandler}/>
+                                <PopUpNewMessage key="pop-up-new-message" ref={this.popUpNewMessageRefHandler}
                                                  onClick={this.popUpNewMessageClickHandler}/>
-                                <SearchMessage ref={this.searchMessageHandler}
+                                <SearchMessage key="search-message" ref={this.searchMessageHandler}
                                                onFind={this.searchMessageFindHandler}
                                                onClose={this.searchMessageCloseHandler}/>
-                                <Message ref={this.messageRefHandler}
+                                <Message key="messages" ref={this.messageRefHandler}
+                                         isMobileView={this.isMobileView}
                                          contextMenu={this.messageContextMenuHandler}
                                          showDate={this.messageShowDateHandler}
                                          showNewMessage={this.messageShowNewMessageHandler}
@@ -525,7 +529,7 @@ class Chat extends React.Component<IProps, IState> {
                                          rendered={this.messageRenderedHandler}
                                          onDrop={this.messageDropHandler}
                                 />
-                                <MoveDown ref={this.moveDownRefHandler} onClick={this.moveDownClickHandler}/>
+                                <MoveDown key="move-down" ref={this.moveDownRefHandler} onClick={this.moveDownClickHandler}/>
                             </div>
                             <ChatInput key="chat-input" ref={this.chatInputRefHandler}
                                        onMessage={this.chatInputTextMessageHandler}
@@ -553,7 +557,7 @@ class Chat extends React.Component<IProps, IState> {
                                 <div className="start-messaging-footer"/>
                             </div>
                         </div>}
-                        <RightMenu ref={this.rightMenuRefHandler} onChange={this.rightMenuChangeHandler}
+                        <RightMenu key="right-menu" ref={this.rightMenuRefHandler} onChange={this.rightMenuChangeHandler}
                                    onMessageAttachmentAction={this.messageAttachmentActionHandler}
                                    onDeleteAndExitGroup={this.groupInfoDeleteAndExitHandler}/>
                     </div>
@@ -799,6 +803,8 @@ class Chat extends React.Component<IProps, IState> {
                 isConnecting: this.isConnecting,
                 isOnline: this.isOnline,
                 isUpdating: this.isUpdating,
+                peer: this.peer,
+                selectedDialogId: this.selectedDialogId
             });
         }
     }
@@ -3060,7 +3066,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* ChatInput action handler */
-    private chatInputActionHandler = (cmd: string, message?: IMessage) => (e: any) => {
+    private chatInputActionHandler = (cmd: string, message?: IMessage) => (e?: any) => {
         const peer = this.peer;
         if (!peer) {
             return;
@@ -4330,6 +4336,13 @@ class Chat extends React.Component<IProps, IState> {
         this.updateDialogsCounter(data.peer.id || '', {draft: {}});
         if (this.chatInputRef && this.selectedDialogId === (data.peer.id || '')) {
             this.chatInputRef.checkDraft();
+        }
+    }
+
+    /* Update group participant add */
+    private updateGroupParticipantAddHandler = (data: UpdateGroupParticipantAdd.AsObject) => {
+        if (this.isUpdating) {
+            return;
         }
     }
 

@@ -162,7 +162,7 @@
 
   &.mobile-view {
     width: 200vw;
-    transition: transform 0.05s linear;
+    transition: transform 0.1s linear;
     will-change: transform;
 
     &.chat-view {

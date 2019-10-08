@@ -145,6 +145,10 @@ export default class UserRepo {
         }
     }
 
+    public getInstant(id: string): IUser | null {
+        return this.dbService.getUser(id);
+    }
+
     public getManyCache(isContact: boolean, {keyword, limit}: any): Promise<IUser[]> {
         const reg = new RegExp(keyword || '', 'gi');
         const searchFilter = (u: IUser) => {

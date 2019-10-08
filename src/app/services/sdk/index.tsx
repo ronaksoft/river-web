@@ -82,7 +82,7 @@ import {
     GroupsUpdateAdmin,
     GroupsUploadPhoto
 } from './messages/chat.api.groups_pb';
-import {UsersGetFull, UsersMany} from './messages/chat.api.users_pb';
+import {UsersGet, UsersGetFull, UsersMany} from './messages/chat.api.users_pb';
 import {SystemGetInfo, SystemInfo, SystemGetSalts, SystemSalts} from './messages/chat.api.system_pb';
 import {parsePhoneNumberFromString} from 'libphonenumber-js';
 
@@ -483,6 +483,12 @@ export default class SDK {
         const data = new UsersGetFull();
         data.setUsersList(usersInput);
         return this.server.send(C_MSG.UsersGetFull, data.serializeBinary(), true);
+    }
+
+    public getUser(usersInput: InputUser[]): Promise<UsersMany.AsObject> {
+        const data = new UsersGet();
+        data.setUsersList(usersInput);
+        return this.server.send(C_MSG.UsersGet, data.serializeBinary(), false);
     }
 
     public setNotifySettings(peer: InputPeer, settings: PeerNotifySettings): Promise<Bool.AsObject> {

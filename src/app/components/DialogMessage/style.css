@@ -91,7 +91,8 @@
     .dialog-wrapper .preview .preview-message {
       display: block;
       width: 100%;
-      overflow: hidden; }
+      overflow: hidden;
+      text-overflow: ellipsis; }
   .dialog-wrapper.has-mention .preview {
     width: 68%; }
   .dialog-wrapper .unread {

@@ -1,3 +1,13 @@
+## 0.26.7
+* ChatInput bug fixed
+* Dialog text ellipsis
+* Responsive bug fixed
+* InfoBat init fixed
+* Translations updated
+* Select added in messages context menu
+* Sync manager users updated 
+* Update manager updated
+ 
 ## 0.26.6
 * MoveDown unreadCounter bug fixed
 

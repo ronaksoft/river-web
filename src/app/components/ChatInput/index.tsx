@@ -90,8 +90,8 @@ const mentionize = (text: string, sortedEntities: Array<{ offset: number, length
 
 interface IProps {
     getDialog: (id: string) => IDialog | null;
-    onAction: (cmd: string, message?: IMessage) => (e: any) => void;
-    onBulkAction: (cmd: string) => (e: any) => void;
+    onAction: (cmd: string, message?: IMessage) => (e?: any) => void;
+    onBulkAction: (cmd: string) => (e?: any) => void;
     onClearDraft?: (data: UpdateDraftMessageCleared.AsObject) => void;
     onContactSelected: (users: IUser[], caption: string, {mode, message}?: any) => void;
     onMapSelected: (item: IGeoItem, {mode, message}?: any) => void;
@@ -719,7 +719,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 (message.messagetype === C_MESSAGE_TYPE.Normal || (message.messagetype || 0) === 0)) {
                 e.preventDefault();
                 if (this.props.onAction) {
-                    this.props.onAction('edit', message);
+                    this.props.onAction('edit', message)();
                 }
             }
         } else if (e.keyCode === 27) {
@@ -1301,7 +1301,7 @@ class ChatInput extends React.Component<IProps, IState> {
     /* Window key up handler */
     private windowKeyUp = (e: any) => {
         if (this.state.selectable && e.keyCode === 27) {
-            this.props.onBulkAction('close');
+            this.props.onBulkAction('close')();
         }
     }
 

@@ -408,6 +408,9 @@
 .mobile-view .bubble-wrapper.you .bubble {
   margin-left: 10px; }
 
+.mobile-view .selectable .bubble-wrapper .bubble {
+  margin-left: 36px; }
+
 .messages-inner {
   position: relative;
   z-index: 2;

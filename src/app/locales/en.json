@@ -40,7 +40,8 @@
     "loading": "Loading...",
     "user_list": "User List",
     "no_message": "no message",
-    "error": "Error"
+    "error": "Error",
+    "select": "Select"
   },
   "chat": {
     "search": "Search",

@@ -69,7 +69,7 @@ class StatusBar extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {peer} = this.state;
+        const {peer, selectedDialogId} = this.state;
         if (!peer) {
             return '';
         }
@@ -77,10 +77,10 @@ class StatusBar extends React.Component<IProps, IState> {
         return (
             <span className="status-bar" onClick={this.clickHandler}>
                 {!isGroup &&
-                <UserName id={this.state.selectedDialogId} className="name" you={true}
+                <UserName id={selectedDialogId} className="name" you={true}
                           youPlaceholder={i18n.t('general.saved_messages')} noDetail={true}/>}
                 {isGroup &&
-                <GroupName id={this.state.selectedDialogId} className="name"/>}
+                <GroupName id={selectedDialogId} className="name"/>}
                 {this.getChatStatus()}
             </span>
         );

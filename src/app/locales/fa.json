@@ -39,7 +39,8 @@
     "loading": "شکیبا باشید...",
     "user_list": "لیست کاربرها",
     "no_message": "بدون پیام",
-    "error": "خطا"
+    "error": "خطا",
+    "select": "انتخاب"
   },
   "chat": {
     "search": "جستجو",

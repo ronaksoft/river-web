@@ -11,7 +11,7 @@ import {C_MSG} from '../../const';
 import {UpdateContainer, UpdateEnvelope} from '../../messages/chat.core.types_pb';
 import {
     UpdateDialogPinned,
-    UpdateDraftMessage, UpdateDraftMessageCleared,
+    UpdateDraftMessage, UpdateDraftMessageCleared, UpdateGroupParticipantAdd,
     UpdateGroupPhoto,
     UpdateMessageEdited,
     UpdateMessageID,
@@ -340,6 +340,9 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateDraftMessageCleared:
                 this.callHandlers(C_MSG.UpdateDraftMessageCleared, UpdateDraftMessageCleared.deserializeBinary(data).toObject());
+                break;
+            case C_MSG.UpdateGroupParticipantAdd:
+                this.callHandlers(C_MSG.UpdateGroupParticipantAdd, UpdateGroupParticipantAdd.deserializeBinary(data).toObject());
                 break;
             default:
                 break;

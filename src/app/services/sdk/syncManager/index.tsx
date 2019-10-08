@@ -8,7 +8,7 @@
 */
 
 import {C_MSG} from '../const';
-import {UpdateEnvelope} from '../messages/chat.core.types_pb';
+import {UpdateEnvelope, User} from '../messages/chat.core.types_pb';
 import {
     UpdateDialogPinned,
     UpdateDifference,
@@ -93,7 +93,7 @@ export default class SyncManager {
             if (lastUpdateId > 0) {
                 this.setLastUpdateId(lastUpdateId);
             }
-            this.updateMany(data.updatesList, data.groupsList, !(data.more || false));
+            this.updateMany(data.updatesList, data.groupsList, data.usersList, !(data.more || false));
             if (data.more) {
                 setTimeout(() => {
                     resolve((data.maxupdateid || 0) + 1);
@@ -120,20 +120,20 @@ export default class SyncManager {
         };
     }
 
-    private updateMany(envelopes: UpdateEnvelope.AsObject[], groups: Group.AsObject[], lastOne: boolean) {
+    private updateMany(envelopes: UpdateEnvelope.AsObject[], groups: Group.AsObject[], updateUsers: User.AsObject[], lastOne: boolean) {
         let dialogs: { [key: number]: IDialog } = {};
         const toRemoveDialogs: IRemoveDialog[] = [];
         const messages: { [key: number]: IMessage } = {};
         const toRemoveMessages: number[] = [];
         const toCheckDialogs: string[] = [];
-        let users: { [key: number]: IUser } = {};
+        let users: { [key: string]: IUser } = {};
         envelopes.forEach((envelope) => {
             // @ts-ignore
             const data: Uint8Array = envelope.update;
             switch (envelope.constructor) {
                 case C_MSG.UpdateNewMessage:
                     const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
-                    users[updateNewMessage.sender.id || 0] = updateNewMessage.sender;
+                    users[updateNewMessage.sender.id || '0'] = updateNewMessage.sender;
                     const message = MessageRepo.parseMessage(updateNewMessage.message, this.updateManager.getUserId());
                     messages[updateNewMessage.message.id || 0] = message;
                     // Message Clear History
@@ -214,8 +214,8 @@ export default class SyncManager {
                     break;
                 case C_MSG.UpdateUsername:
                     const updateUsername = UpdateUsername.deserializeBinary(data).toObject();
-                    if (users.hasOwnProperty(updateUsername.userid || 0)) {
-                        users[updateUsername.userid || 0] = kMerge(users[updateUsername.userid || 0], {
+                    if (users.hasOwnProperty(updateUsername.userid || '0')) {
+                        users[updateUsername.userid || 0] = kMerge(users[updateUsername.userid || '0'], {
                             bio: updateUsername.bio,
                             firstname: updateUsername.firstname,
                             id: updateUsername.userid,
@@ -234,8 +234,8 @@ export default class SyncManager {
                     break;
                 case C_MSG.UpdateUserPhoto:
                     const updateUserPhoto = UpdateUserPhoto.deserializeBinary(data).toObject();
-                    if (users.hasOwnProperty(updateUserPhoto.userid || 0)) {
-                        users[updateUserPhoto.userid || 0] = kMerge(users[updateUserPhoto.userid || 0], {
+                    if (users.hasOwnProperty(updateUserPhoto.userid || '0')) {
+                        users[updateUserPhoto.userid || 0] = kMerge(users[updateUserPhoto.userid || '0'], {
                             id: updateUserPhoto.userid,
                             photo: updateUserPhoto.photo,
                         });
@@ -266,7 +266,7 @@ export default class SyncManager {
                     break;
             }
         });
-        this.updateUserDB(users);
+        this.updateUserDB(users, updateUsers);
         this.updateGroupDB(groups);
         this.updateMessageDB(messages, toRemoveMessages).then(() => {
             this.updateDialogDB(dialogs, toRemoveDialogs, toCheckDialogs, lastOne);
@@ -407,7 +407,7 @@ export default class SyncManager {
         }
     }
 
-    private updateUser(users: { [key: number]: IUser }, user: IUser) {
+    private updateUser(users: { [key: string]: IUser }, user: IUser) {
         const d: IUser = users[user.id || 0];
         if (d) {
             users[user.id || 0] = kMerge(d, user);
@@ -417,9 +417,12 @@ export default class SyncManager {
         return users;
     }
 
-    private updateUserDB(users: { [key: number]: IUser }) {
+    private updateUserDB(users: { [key: string]: IUser }, updateUsers: IUser[]) {
         const data: IUser[] = [];
         const keys = Object.keys(users);
+        updateUsers.forEach((user) => {
+            users = this.updateUser(users, user);
+        });
         keys.forEach((key) => {
             data.push(users[key]);
         });

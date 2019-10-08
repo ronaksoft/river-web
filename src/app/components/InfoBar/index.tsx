@@ -61,6 +61,8 @@ class InfoBar extends React.Component<IProps, IState> {
         isConnecting?: boolean;
         isOnline?: boolean;
         isUpdating?: boolean;
+        peer?: InputPeer | null,
+        selectedDialogId?: string,
     }) {
         // @ts-ignore
         this.setState(omitBy(state, isNil));
