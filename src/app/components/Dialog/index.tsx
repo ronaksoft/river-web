@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import {List, AutoSizer} from 'react-virtualized';
+import AutoSizer from "react-virtualized-auto-sizer";
 import {Link} from 'react-router-dom';
 import {debounce, intersectionBy, clone, differenceBy} from 'lodash';
 import {IDialog} from '../../repository/dialog/interface';
@@ -29,6 +29,8 @@ import Divider from '@material-ui/core/Divider/Divider';
 import i18n from '../../services/i18n';
 import {IUser} from "../../repository/user/interface";
 import {isMuted} from "../UserInfoMenu";
+import {FixedSizeList} from "react-window";
+import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 
 import './style.css';
 
@@ -43,7 +45,6 @@ interface IState {
     items: IDialog[];
     moreAnchorEl: any;
     moreIndex: number;
-    searchEnable: boolean;
     searchAddedItems: IDialog[];
     searchItems: IDialog[];
     selectedId: string;
@@ -55,7 +56,7 @@ const listStyle: React.CSSProperties = {
 };
 
 class Dialog extends React.Component<IProps, IState> {
-    private list: List;
+    private list: FixedSizeList;
     private searchRepo: SearchRepo;
     private readonly searchDebounce: any;
     private keyword: string = '';
@@ -64,6 +65,9 @@ class Dialog extends React.Component<IProps, IState> {
     private readonly rtl: boolean = false;
     private firstTimeLoad: boolean = true;
     private firstTimeTimeout: any = null;
+    private readonly hasScrollbar: boolean = false;
+    private containerRef: any;
+    private searchEnable: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -75,7 +79,6 @@ class Dialog extends React.Component<IProps, IState> {
             moreAnchorEl: null,
             moreIndex: -1,
             searchAddedItems: [],
-            searchEnable: false,
             searchItems: [],
             selectedId: 'null',
         };
@@ -83,6 +86,7 @@ class Dialog extends React.Component<IProps, IState> {
         this.searchRepo = SearchRepo.getInstance();
         this.searchDebounce = debounce(this.search, 512);
         this.isMobile = IsMobile.isAny();
+        this.hasScrollbar = getScrollbarWidth() > 0;
 
         this.menuItem = {
             0: {
@@ -161,9 +165,6 @@ class Dialog extends React.Component<IProps, IState> {
                 this.firstTimeTimeout = setTimeout(() => {
                     this.firstTimeLoad = false;
                     this.forceUpdate();
-                    if (this.list) {
-                        this.list.forceUpdateGrid();
-                    }
                 }, 5000);
             }
         });
@@ -171,42 +172,42 @@ class Dialog extends React.Component<IProps, IState> {
 
     public forceRender() {
         this.forceUpdate();
-        if (this.list) {
-            this.list.forceUpdateGrid();
-        }
     }
 
     public setIsTypingList(isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } }) {
         this.setState({
             isTypingList,
-        }, () => {
-            this.list.forceUpdateGrid();
         });
     }
 
     public toggleSearch() {
-        this.setState({
-            searchEnable: !this.state.searchEnable,
-        }, () => {
-            if (!this.state.searchEnable) {
-                this.searchDebounce.cancel();
-                // this.keyword = '';
-                this.filterItem();
-            } else {
-                const el: any = document.querySelector('#dialog-search');
-                if (el) {
-                    // el.value = '';
-                    el.focus();
-                }
+        if (!this.containerRef) {
+            return;
+        }
+        this.searchEnable = !this.searchEnable;
+        if (this.searchEnable) {
+            this.containerRef.classList.add('open');
+        } else {
+            this.containerRef.classList.remove('open');
+        }
+        if (!this.searchEnable) {
+            this.searchDebounce.cancel();
+            // this.keyword = '';
+            this.filterItem();
+        } else {
+            const el: any = document.querySelector('#dialog-search');
+            if (el) {
+                // el.value = '';
+                el.focus();
             }
-        });
+        }
     }
 
     public render() {
-        const {searchEnable, moreAnchorEl} = this.state;
+        const {moreAnchorEl} = this.state;
         return (
             <div className="dialogs">
-                <div className={'dialog-search' + (searchEnable ? ' open' : '')}>
+                <div ref={this.containerRefHandler} className="dialog-search">
                     <FormControl fullWidth={true} className="title-edit">
                         <InputLabel htmlFor="dialog-search">{i18n.t('dialog.search')}</InputLabel>
                         <Input
@@ -245,65 +246,76 @@ class Dialog extends React.Component<IProps, IState> {
 
     private getWrapper() {
         const {searchItems, searchAddedItems} = this.state;
-        if (this.isMobile) {
-            return (
-                <AutoSizer>
-                    {({width, height}: any) => (
-                        <List
-                            ref={this.refHandler}
-                            rowHeight={64}
-                            rowRenderer={this.rowRender}
-                            rowCount={searchItems.length + searchAddedItems.length}
-                            overscanRowCount={30}
-                            width={width}
-                            height={height}
-                            className="dialog-container"
-                            noRowsRenderer={this.noRowsRenderer}
-                        />
-                    )}
-                </AutoSizer>
-            );
+        if ((searchItems.length + searchAddedItems.length) === 0) {
+            return (<div className="dialog-container">{this.noRowsRenderer()}</div>);
         } else {
-            return (
-                <AutoSizer>
-                    {({width, height}: any) => (
-                        <div className="dialogs-inner">
-                            <Scrollbars
-                                autoHide={true}
-                                style={{
-                                    height: height + 'px',
-                                    width: width + 'px',
-                                }}
-                                onScroll={this.handleScroll}
-                                hideTracksWhenNotNeeded={true}
-                                universal={true}
-                                rtl={!this.rtl}
+            if (this.isMobile || !this.hasScrollbar) {
+                return (
+                    <AutoSizer>
+                        {({width, height}: any) => {
+                            return (<FixedSizeList
+                                key="fixed-size-list"
+                                ref={this.refHandler}
+                                itemSize={64}
+                                itemCount={searchItems.length + searchAddedItems.length}
+                                overscanCount={30}
+                                width={width}
+                                height={height}
+                                className="dialog-container"
+                                direction={this.rtl ? 'ltr' : 'rtl'}
                             >
-                                <List
-                                    ref={this.refHandler}
-                                    rowHeight={64}
-                                    rowRenderer={this.rowRender}
-                                    rowCount={searchItems.length + searchAddedItems.length}
-                                    overscanRowCount={30}
-                                    width={width}
-                                    height={height}
-                                    className="dialog-container"
-                                    noRowsRenderer={this.noRowsRenderer}
-                                    style={listStyle}
-                                />
-                            </Scrollbars>
-                        </div>
-                    )}
-                </AutoSizer>
-            );
+                                {({index, style}) => {
+                                    return this.rowRender({index, style, key: index});
+                                }}
+                            </FixedSizeList>);
+                        }}
+                    </AutoSizer>
+                );
+            } else {
+                return (
+                    <AutoSizer>
+                        {({width, height}: any) => (
+                            <div key="fixed-container" className="dialogs-inner">
+                                <Scrollbars
+                                    autoHide={true}
+                                    style={{
+                                        height: height + 'px',
+                                        width: width + 'px',
+                                    }}
+                                    onScroll={this.handleScroll}
+                                    hideTracksWhenNotNeeded={true}
+                                    universal={true}
+                                    rtl={!this.rtl}
+                                >
+                                    <FixedSizeList
+                                        key="fixed-size-list"
+                                        ref={this.refHandler}
+                                        itemSize={64}
+                                        itemCount={searchItems.length + searchAddedItems.length}
+                                        overscanCount={30}
+                                        width={width}
+                                        height={height}
+                                        className="dialog-container"
+                                        style={listStyle}
+                                    >
+                                        {({index, style}) => {
+                                            return this.rowRender({index, style, key: index});
+                                        }}
+                                    </FixedSizeList>
+                                </Scrollbars>
+                            </div>
+                        )}
+                    </AutoSizer>
+                );
+            }
         }
     }
 
     /* Custom Scrollbars handler */
     private handleScroll = (e: any) => {
         const {scrollTop} = e.target;
-        if (this.list.Grid) {
-            this.list.Grid.handleScrollEvent({scrollTop});
+        if (this.list) {
+            this.list.scrollTo(scrollTop);
         }
     }
 
@@ -311,7 +323,7 @@ class Dialog extends React.Component<IProps, IState> {
         this.list = value;
     }
 
-    private rowRender = ({index, key, parent, style}: any): any => {
+    private rowRender = ({index, key, style}: any): any => {
         if (this.state.searchItems.length > index) {
             const dialog = this.state.searchItems[index];
             const isTyping = this.state.isTypingList.hasOwnProperty(dialog.peerid || '') ? this.state.isTypingList[dialog.peerid || ''] : {};
@@ -344,6 +356,7 @@ class Dialog extends React.Component<IProps, IState> {
         }
     }
 
+    /* No Rows Renderer */
     private noRowsRenderer = () => {
         if (this.firstTimeLoad) {
             return (
@@ -468,7 +481,7 @@ class Dialog extends React.Component<IProps, IState> {
 
     private searchChangeHandler = (e: any) => {
         const text = e.currentTarget.value;
-        if (!this.state.searchEnable || text.length === 0) {
+        if (!this.searchEnable || text.length === 0) {
             this.searchDebounce.cancel();
             this.keyword = '';
             this.setState({
@@ -496,7 +509,7 @@ class Dialog extends React.Component<IProps, IState> {
         const {ids, items} = this.state;
         let searchItems: IDialog[] = [];
         let searchAddedItems: IDialog[] = [];
-        if (ids.length === 0 && this.keyword.length === 0 || !this.state.searchEnable) {
+        if (ids.length === 0 && this.keyword.length === 0 || !this.searchEnable) {
             searchItems = clone(items);
         } else {
             const peerIds = ids.map((id) => {
@@ -521,15 +534,16 @@ class Dialog extends React.Component<IProps, IState> {
         this.setState({
             searchAddedItems,
             searchItems,
-        }, () => {
-            this.list.recomputeRowHeights();
-            this.list.forceUpdateGrid();
         });
     }
 
     /* Search close handler */
     private closeSearchHandler = () => {
         this.toggleSearch();
+    }
+
+    private containerRefHandler = (ref: any) => {
+        this.containerRef = ref;
     }
 }
 

@@ -34,6 +34,7 @@ class GroupName extends React.Component<IProps, IState> {
     private tryCount: number = 0;
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
+    private mounted: boolean = true;
 
     constructor(props: IProps) {
         super(props);
@@ -67,6 +68,7 @@ class GroupName extends React.Component<IProps, IState> {
     }
 
     public componentWillUnmount() {
+        this.mounted = false;
         clearTimeout(this.tryTimeout);
         this.eventReferences.forEach((canceller) => {
             if (typeof canceller === 'function') {
@@ -93,10 +95,16 @@ class GroupName extends React.Component<IProps, IState> {
         }
 
         this.groupRepo.get(this.state.id).then((group) => {
+            if (!this.mounted) {
+                return;
+            }
             this.setState({
                 group,
             });
         }).catch(() => {
+            if (!this.mounted) {
+                return;
+            }
             if (this.tryCount < 10) {
                 this.tryCount++;
                 this.tryTimeout = setTimeout(() => {

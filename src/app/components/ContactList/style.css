@@ -58,7 +58,8 @@
           border: 0;
           background-color: var(--color-hover); }
         .contact-list .contact-list-container .contact-container .contact-item a {
-          text-decoration: none; }
+          text-decoration: none;
+          direction: ltr; }
         .contact-list .contact-list-container .contact-container .contact-item .avatar {
           width: 48px;
           height: 48px;
@@ -135,6 +136,8 @@ html[direction="rtl"] .contact-list {
     text-align: right; }
   html[direction="rtl"] .contact-list .contact-list-container .contact-container .contact-item {
     text-align: right; }
+    html[direction="rtl"] .contact-list .contact-list-container .contact-container .contact-item a {
+      direction: rtl; }
     html[direction="rtl"] .contact-list .contact-list-container .contact-container .contact-item .avatar {
       float: right;
       margin-right: 0;

@@ -46,7 +46,7 @@ class DialogMessage extends React.Component<IProps, IState> {
     private lastUpdate: number | undefined;
     private notifySetting: PeerNotifySettings.AsObject | undefined;
     private isTyping: { [key: string]: any };
-    private userId: string;
+    private readonly userId: string;
 
     constructor(props: IProps) {
         super(props);

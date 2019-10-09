@@ -1,3 +1,7 @@
+## 0.26.8
+* React window implemented
+* Close on iframe added
+
 ## 0.26.7
 * ChatInput bug fixed
 * Dialog text ellipsis

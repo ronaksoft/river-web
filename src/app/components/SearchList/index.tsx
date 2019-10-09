@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import {AutoSizer, Index, List} from 'react-virtualized';
+import AutoSizer from "react-virtualized-auto-sizer";
 import {IUser} from '../../repository/user/interface';
 import {clone, debounce, differenceBy, differenceWith, findIndex} from 'lodash';
 import UserAvatar from '../UserAvatar';
@@ -29,6 +29,9 @@ import {categorizeContact} from '../ContactList';
 import Scrollbars from 'react-custom-scrollbars';
 import {C_MESSAGE_ICON} from '../Dialog/utils';
 import i18n from '../../services/i18n';
+import {VariableSizeList} from "react-window";
+import IsMobile from "../../services/isMobile";
+import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 
 import './style.css';
 
@@ -67,13 +70,15 @@ const listStyle: React.CSSProperties = {
 
 class SearchList extends React.Component<IProps, IState> {
     private inputPeerRes: IDialogWithContact = {dialogs: [], contacts: []};
-    private list: List;
+    private list: VariableSizeList;
     private searchRepo: SearchRepo;
     private defaultInputPeer: IDialogWithContact;
     private readonly searchDebounce: any;
     private readonly userId: string = '';
     private readonly searchApi: any;
     private selectedIds: string[] = [];
+    private readonly isMobile: boolean = false;
+    private readonly hasScrollbar: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -85,6 +90,9 @@ class SearchList extends React.Component<IProps, IState> {
             selectedInputPeers: [],
             title: '',
         };
+
+        this.isMobile = IsMobile.isAny();
+        this.hasScrollbar = getScrollbarWidth() > 0;
 
         this.searchRepo = SearchRepo.getInstance();
         if (props.onlyContact) {
@@ -121,7 +129,7 @@ class SearchList extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {inputPeers, scrollIndex, selectedInputPeers} = this.state;
+        const {selectedInputPeers} = this.state;
         return (
             <div className="search-list">
                 <div className="search-input-container">
@@ -137,43 +145,72 @@ class SearchList extends React.Component<IProps, IState> {
                     />
                 </div>
                 <div className="search-list-container">
-                    <AutoSizer>
-                        {({width, height}: any) => (
-                            <Scrollbars
-                                autoHide={true}
-                                style={{
-                                    height: height + 'px',
-                                    width: width + 'px',
-                                }}
-                                onScroll={this.handleScroll}
-                                universal={true}
-                            >
-                                <List
-                                    ref={this.refHandler}
-                                    rowHeight={this.getHeight}
-                                    rowRenderer={this.rowRender}
-                                    rowCount={inputPeers.length}
-                                    overscanRowCount={0}
-                                    scrollToIndex={scrollIndex}
-                                    width={width}
-                                    height={height}
-                                    className="search-container"
-                                    noRowsRenderer={this.noRowsRenderer}
-                                    style={listStyle}
-                                />
-                            </Scrollbars>
-                        )}
-                    </AutoSizer>
+                    {this.getWrapper()}
                 </div>
             </div>
         );
     }
 
+    private getWrapper() {
+        const {inputPeers} = this.state;
+        if (inputPeers.length === 0) {
+            return (<div className="search-container">{this.noRowsRenderer()}</div>);
+        } else {
+            if (this.isMobile || !this.hasScrollbar) {
+                return (
+                    <AutoSizer>
+                        {({width, height}: any) => (
+                            <VariableSizeList
+                                ref={this.refHandler}
+                                itemSize={this.getHeight}
+                                itemCount={inputPeers.length}
+                                overscanCount={10}
+                                width={width}
+                                height={height}
+                                className="search-container"
+                            >{({index, style}) => {
+                                return this.rowRender({index, style, key: index});
+                            }}
+                            </VariableSizeList>
+                        )}
+                    </AutoSizer>);
+            } else {
+                return (<AutoSizer>
+                    {({width, height}: any) => (
+                        <Scrollbars
+                            autoHide={true}
+                            style={{
+                                height: height + 'px',
+                                width: width + 'px',
+                            }}
+                            onScroll={this.handleScroll}
+                            universal={true}
+                        >
+                            <VariableSizeList
+                                ref={this.refHandler}
+                                itemSize={this.getHeight}
+                                itemCount={inputPeers.length}
+                                overscanCount={10}
+                                width={width}
+                                height={height}
+                                className="search-container"
+                                style={listStyle}
+                            >{({index, style}) => {
+                                return this.rowRender({index, style, key: index});
+                            }}
+                            </VariableSizeList>
+                        </Scrollbars>
+                    )}
+                </AutoSizer>);
+            }
+        }
+    }
+
     /* Custom Scrollbars handler */
     private handleScroll = (e: any) => {
         const {scrollTop} = e.target;
-        if (this.list.Grid) {
-            this.list.Grid.handleScrollEvent({scrollTop});
+        if (this.list) {
+            this.list.scrollTo(scrollTop);
         }
     }
 
@@ -277,9 +314,6 @@ class SearchList extends React.Component<IProps, IState> {
             this.inputPeerRes = clone(res);
             this.setState({
                 inputPeers: this.getTrimmedList([]),
-            }, () => {
-                this.list.recomputeRowHeights();
-                this.list.forceUpdateGrid();
             });
         });
     }
@@ -294,8 +328,6 @@ class SearchList extends React.Component<IProps, IState> {
             this.inputPeerRes = clone(this.defaultInputPeer);
             this.setState({
                 inputPeers: this.getTrimmedList(this.state.selectedInputPeers),
-            }, () => {
-                this.list.recomputeRowHeights();
             });
         }
     }
@@ -306,9 +338,6 @@ class SearchList extends React.Component<IProps, IState> {
             this.inputPeerRes = clone(res || []);
             this.setState({
                 inputPeers: this.getTrimmedList(this.state.selectedInputPeers),
-            }, () => {
-                this.list.recomputeRowHeights();
-                this.list.forceUpdateGrid();
             });
         });
     }
@@ -332,7 +361,6 @@ class SearchList extends React.Component<IProps, IState> {
                 selectedInputPeers,
             }, () => {
                 this.dispatchContactChange();
-                this.list.recomputeRowHeights();
             });
         }
     }
@@ -357,7 +385,6 @@ class SearchList extends React.Component<IProps, IState> {
                 selectedInputPeers,
             }, () => {
                 this.dispatchContactChange();
-                this.list.recomputeRowHeights();
             });
         }
     }
@@ -427,8 +454,8 @@ class SearchList extends React.Component<IProps, IState> {
     }
 
     /* Get dynamic height */
-    private getHeight = (param: Index): number => {
-        const inputPeer = this.state.inputPeers[param.index];
+    private getHeight = (index: number): number => {
+        const inputPeer = this.state.inputPeers[index];
         if (inputPeer.mode === 'dialog') {
             return 64;
         } else if (inputPeer.mode === 'contact' && inputPeer.contact) {

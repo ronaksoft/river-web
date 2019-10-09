@@ -31,19 +31,21 @@ export type menuItems = 'chat' | 'settings' | 'contacts';
 export type menuAction = 'new_message' | 'close_iframe' | 'logout';
 
 interface IProps {
-    dialogRef: (ref: Dialog) => void;
     cancelIsTyping: (id: string) => void;
-    onContextMenu: (cmd: string, dialog: IDialog) => void;
-    onSettingsClose: (e: any) => void;
-    onSettingsAction: (cmd: 'logout') => void;
-    updateMessages: (keep?: boolean) => void;
-    onReloadDialog: (peerIds: string[]) => void;
+    dialogRef: (ref: Dialog) => void;
+    iframeActive: boolean;
     onAction: (cmd: menuAction) => void;
+    onContextMenu: (cmd: string, dialog: IDialog) => void;
     onGroupCreate: (contacts: IUser[], title: string, fileId: string) => void;
+    onReloadDialog: (peerIds: string[]) => void;
+    onSettingsAction: (cmd: 'logout') => void;
+    onSettingsClose: (e: any) => void;
+    updateMessages: (keep?: boolean) => void;
 }
 
 interface IState {
     chatMoreAnchorEl: any;
+    iframeActive: boolean;
     leftMenu: menuItems;
     overlay: boolean;
 }
@@ -61,6 +63,7 @@ class LeftMenu extends React.Component<IProps, IState> {
 
         this.state = {
             chatMoreAnchorEl: null,
+            iframeActive: props.iframeActive,
             leftMenu: 'chat',
             overlay: false,
         };
@@ -117,6 +120,14 @@ class LeftMenu extends React.Component<IProps, IState> {
     public setUnreadCounter(counter: number) {
         if (this.bottomBarRef) {
             this.bottomBarRef.setUnreadCounter(counter);
+        }
+    }
+
+    public componentWillReceiveProps(newProps: IProps) {
+        if (this.state.iframeActive !== newProps.iframeActive) {
+            this.setState({
+                iframeActive: newProps.iframeActive,
+            });
         }
     }
 

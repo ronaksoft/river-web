@@ -32,6 +32,8 @@ class CachedPhoto extends React.Component<IProps, IState> {
     private lastFileId: string;
     private lastBlur: number;
     private retries: number = 0;
+    private tryTimeout: any = null;
+    private mounted: boolean = true;
 
     constructor(props: IProps) {
         super(props);
@@ -60,6 +62,8 @@ class CachedPhoto extends React.Component<IProps, IState> {
     }
 
     public componentWillUnmount() {
+        this.mounted = false;
+        clearTimeout(this.tryTimeout);
         this.cachedFileService.unmountCache(this.props.fileLocation.fileid || '');
     }
 
@@ -74,7 +78,11 @@ class CachedPhoto extends React.Component<IProps, IState> {
 
     /* Get file from cached storage */
     private getFile() {
+        clearTimeout(this.tryTimeout);
         this.cachedFileService.getFile(this.props.fileLocation, '', 0, 'image/jpeg', this.props.searchTemp, this.props.blur).then((src) => {
+            if (!this.mounted) {
+                return;
+            }
             if (!src || src === '') {
                 throw Error('bad src');
             } else {
@@ -83,9 +91,12 @@ class CachedPhoto extends React.Component<IProps, IState> {
                 });
             }
         }).catch(() => {
+            if (!this.mounted) {
+                return;
+            }
             if (this.retries < 10) {
                 this.retries++;
-                setTimeout(() => {
+                this.tryTimeout = setTimeout(() => {
                     this.getFile();
                 }, 500);
             }
@@ -95,6 +106,9 @@ class CachedPhoto extends React.Component<IProps, IState> {
     /* Img error handler */
     private imgErrorHandler = () => {
         this.cachedFileService.remove(this.props.fileLocation.fileid || '').then(() => {
+            if (!this.mounted) {
+                return;
+            }
             this.retries = 0;
             this.getFile();
         });

@@ -36,6 +36,7 @@ class GroupAvatar extends React.Component<IProps, IState> {
     private avatarService: AvatarService;
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
+    private mounted: boolean = true;
 
     constructor(props: IProps) {
         super(props);
@@ -70,6 +71,7 @@ class GroupAvatar extends React.Component<IProps, IState> {
     }
 
     public componentWillUnmount() {
+        this.mounted = false;
         clearTimeout(this.tryTimeout);
         this.eventReferences.forEach((canceller) => {
             if (typeof canceller === 'function') {
@@ -97,6 +99,9 @@ class GroupAvatar extends React.Component<IProps, IState> {
         }
 
         this.groupRepo.get(this.state.id).then((group) => {
+            if (!this.mounted) {
+                return;
+            }
             if (group) {
                 this.setState({
                     group,
@@ -106,6 +111,9 @@ class GroupAvatar extends React.Component<IProps, IState> {
                 throw Error('not found');
             }
         }).catch(() => {
+            if (!this.mounted) {
+                return;
+            }
             if (this.tryCount < 10) {
                 this.tryCount++;
                 this.tryTimeout = setTimeout(() => {

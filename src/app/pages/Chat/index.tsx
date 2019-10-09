@@ -495,6 +495,7 @@ class Chat extends React.Component<IProps, IState> {
                                   onReloadDialog={this.settingReloadDialogHandler}
                                   onAction={this.leftMenuActionHandler}
                                   onGroupCreate={this.leftMenuGroupCreateHandler}
+                                  iframeActive={this.state.iframeActive}
                         />
                         {this.selectedDialogId !== 'null' &&
                         <div
@@ -529,7 +530,8 @@ class Chat extends React.Component<IProps, IState> {
                                          rendered={this.messageRenderedHandler}
                                          onDrop={this.messageDropHandler}
                                 />
-                                <MoveDown key="move-down" ref={this.moveDownRefHandler} onClick={this.moveDownClickHandler}/>
+                                <MoveDown key="move-down" ref={this.moveDownRefHandler}
+                                          onClick={this.moveDownClickHandler}/>
                             </div>
                             <ChatInput key="chat-input" ref={this.chatInputRefHandler}
                                        onMessage={this.chatInputTextMessageHandler}
@@ -557,7 +559,8 @@ class Chat extends React.Component<IProps, IState> {
                                 <div className="start-messaging-footer"/>
                             </div>
                         </div>}
-                        <RightMenu key="right-menu" ref={this.rightMenuRefHandler} onChange={this.rightMenuChangeHandler}
+                        <RightMenu key="right-menu" ref={this.rightMenuRefHandler}
+                                   onChange={this.rightMenuChangeHandler}
                                    onMessageAttachmentAction={this.messageAttachmentActionHandler}
                                    onDeleteAndExitGroup={this.groupInfoDeleteAndExitHandler}/>
                     </div>

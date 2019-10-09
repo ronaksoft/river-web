@@ -141,6 +141,7 @@ class UserAvatar extends React.Component<IProps, IState> {
     private avatarService: AvatarService;
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
+    private mounted: boolean = true;
 
     constructor(props: IProps) {
         super(props);
@@ -177,6 +178,7 @@ class UserAvatar extends React.Component<IProps, IState> {
     }
 
     public componentWillUnmount() {
+        this.mounted = false;
         clearTimeout(this.tryTimeout);
         this.eventReferences.forEach((canceller) => {
             if (typeof canceller === 'function') {
@@ -217,6 +219,9 @@ class UserAvatar extends React.Component<IProps, IState> {
         }
 
         this.userRepo.get(this.state.id).then((user) => {
+            if (!this.mounted) {
+                return;
+            }
             if (user) {
                 this.setState({
                     user,
@@ -226,6 +231,9 @@ class UserAvatar extends React.Component<IProps, IState> {
                 throw Error('not found');
             }
         }).catch(() => {
+            if (!this.mounted) {
+                return;
+            }
             if (this.tryCount < 10) {
                 this.tryCount++;
                 this.tryTimeout = setTimeout(() => {

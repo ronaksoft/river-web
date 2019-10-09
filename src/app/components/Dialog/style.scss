@@ -17,7 +17,6 @@
     height: 0;
     padding: 0 12px 0;
     overflow: hidden;
-    transition: height 0.1s ease-out, padding 0.1s ease-out;
 
     &.open {
       padding-top: 6px;
@@ -39,6 +38,7 @@
       a {
         text-decoration: none;
         text-transform: none;
+        direction: ltr;
       }
 
       .dialog {
@@ -199,6 +199,11 @@ html[direction="rtl"] {
 
     .dialog-list {
       .dialog-container {
+
+        a {
+          direction: rtl;
+        }
+
         .no-result {
           .dialog-skeleton {
             .skeleton-avatar, .skeleton-name, .skeleton-preview, .skeleton-date {

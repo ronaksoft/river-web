@@ -13,8 +13,7 @@
   .dialogs .dialog-search {
     height: 0;
     padding: 0 12px 0;
-    overflow: hidden;
-    transition: height 0.1s ease-out, padding 0.1s ease-out; }
+    overflow: hidden; }
     .dialogs .dialog-search.open {
       padding-top: 6px;
       height: 64px; }
@@ -27,7 +26,8 @@
       height: 100%; }
       .dialogs .dialog-list .dialog-container a {
         text-decoration: none;
-        text-transform: none; }
+        text-transform: none;
+        direction: ltr; }
       .dialogs .dialog-list .dialog-container .dialog {
         position: relative;
         width: 100%;
@@ -144,6 +144,9 @@ html[direction="rtl"] .dialogs-inner > div {
 
 html[direction="rtl"] .dialogs .dialog-search label, html[direction="rtl"] .dialogs .dialog-search input, html[direction="rtl"] .dialogs .dialog-search svg {
   color: var(--white); }
+
+html[direction="rtl"] .dialogs .dialog-list .dialog-container a {
+  direction: rtl; }
 
 html[direction="rtl"] .dialogs .dialog-list .dialog-container .no-result .dialog-skeleton .skeleton-avatar::after, html[direction="rtl"] .dialogs .dialog-list .dialog-container .no-result .dialog-skeleton .skeleton-name::after, html[direction="rtl"] .dialogs .dialog-list .dialog-container .no-result .dialog-skeleton .skeleton-preview::after, html[direction="rtl"] .dialogs .dialog-list .dialog-container .no-result .dialog-skeleton .skeleton-date::after {
   animation-direction: reverse; }

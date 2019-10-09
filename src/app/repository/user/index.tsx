@@ -210,7 +210,12 @@ export default class UserRepo {
         });
     }
 
-    public getAllContacts(): Promise<IUser[]> {
+    public getAllContacts(cb?: (users: IUser[]) => void): Promise<IUser[]> {
+        if (cb) {
+            this.getManyCache(true, {}).then((res) => {
+                cb(res);
+            });
+        }
         return new Promise((resolve, reject) => {
             const now = Math.floor(Date.now() / 1000);
             if (now - this.lastContactTimestamp < 1800) {

@@ -1,0 +1,149 @@
+/*
+    Creation Time: 2018 - Oct - 05
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+/*
+    Creation Time: 2018 - Aug - 18
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2018
+*/
+*, *:before, *:after {
+  box-sizing: border-box; }
+
+:root {
+  --river: #27AE60;
+  --river-dark: #2E8F57;
+  --river-light: #29C16D;
+  --white: #FFF;
+  --black: #000;
+  --black-text: #323D47;
+  --bg: #F8F8F8;
+  --grey: #999;
+  --grey-low: #555;
+  --dark: #1A1A1A;
+  --light: #E6E6E6;
+  --light-alt: #f1f2f2;
+  --wrapper: 1400px;
+  --blue: #00B0FF;
+  --light-blue: rgba(54, 115, 249, 0.2);
+  --green: #DCf8C6;
+  --message-chat: #EFEFF0;
+  --color-hover: rgba(50, 61, 71, 0.07);
+  --color-hover-dark: rgba(50, 61, 71, 0.12);
+  --dark-color-hover: rgba(50, 61, 71, 0.64);
+  --color-text-hover: rgba(50, 61, 71, 0.64);
+  --header-color: #eee;
+  --light-mention: #2678b6;
+  --glass-dark-low: rgba(0, 0, 0, 0.05);
+  --glass-dark-high: rgba(0, 0, 0, 0.20);
+  --dark-low: #191919;
+  --dark-low-op50: #19191999;
+  --dark-medium: #232323;
+  --dark-medium-op50: #23232399;
+  --dark-high: #333333;
+  --dark-hover: rgba(183, 222, 255, 0.07);
+  --dark-hover-light: rgba(183, 222, 255, 0.12);
+  --dark-accent-low: #003367;
+  --dark-accent-medium: #004783;
+  --dark-accent-high: #005EAE;
+  --dark-mention: #2d9fee;
+  --dark-blue-low: #1A212E;
+  --dark-blue-low-op50: #1A212E99;
+  --dark-blue-medium: #232F40;
+  --dark-blue-medium-op50: #232F4099;
+  --dark-blue-high: #14395f;
+  --dark-blue-high-alt: #2EA2FE;
+  --dark-blue-hover: rgba(46, 162, 254, 0.5);
+  --dark-blue-hover-light: rgba(46, 162, 254, 0.3);
+  --dark-blue-accent-low: #3E6A96;
+  --dark-blue-accent-medium: #344359;
+  --dark-blue-mention: #2eadff;
+  --red: #cc0000; }
+
+body {
+  background-color: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
+  font-weight: 400;
+  background-size: cover;
+  background-repeat: no-repeat; }
+
+input {
+  font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
+  font-weight: 400; }
+
+.loading-page {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #eaeaea;
+  background-image: url("../../../asset/image/pattern.png");
+  background-size: 200px;
+  background-position: center center;
+  overflow: hidden;
+  z-index: 1; }
+  .loading-page .close-btn {
+    position: fixed;
+    top: 8px;
+    left: 8px; }
+    .loading-page .close-btn button {
+      padding: 6px; }
+      .loading-page .close-btn button svg {
+        font-size: 28px;
+        color: var(--white); }
+  .loading-page .loading-area {
+    position: relative;
+    display: flex;
+    height: 600px;
+    width: 600px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; }
+    .loading-page .loading-area .loading-text {
+      font-family: 'YekanBakh', 'OpenSans', 'Source Sans Pro', sans-serif !important;
+      font-weight: 400;
+      font-size: 20px;
+      line-height: 37px;
+      font-weight: bold;
+      color: #2E2E2E;
+      padding: 12px 0; }
+      .loading-page .loading-area .loading-text .info {
+        font-size: 24px;
+        line-height: 28px;
+        font-weight: 100;
+        white-space: nowrap; }
+    .loading-page .loading-area .loading-link {
+      padding: 72px 0 12px; }
+      .loading-page .loading-area .loading-link a {
+        text-decoration: none;
+        text-transform: none;
+        color: #fff;
+        background-color: #198D4A;
+        font-size: 16px;
+        line-height: 24px;
+        padding: 12px 24px;
+        border-radius: 24px; }
+
+@media screen and (max-width: 600px) {
+  .loading-page .loading-area {
+    height: 400px;
+    width: 300px; }
+    .loading-page .loading-area .loading-text {
+      font-size: 15px;
+      line-height: 30px; }
+      .loading-page .loading-area .loading-text .info {
+        font-size: 13px; }
+    .loading-page .loading-area .loading-link {
+      padding: 24px 0 12px; } }

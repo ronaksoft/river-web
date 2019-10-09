@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import {List, AutoSizer, Index} from 'react-virtualized';
+import AutoSizer from "react-virtualized-auto-sizer";
 import {debounce, findIndex, differenceBy, clone} from 'lodash';
 import UserAvatar from '../UserAvatar';
 import TextField from '@material-ui/core/TextField';
@@ -25,6 +25,9 @@ import {IUser} from '../../repository/user/interface';
 import UserRepo from '../../repository/user';
 import LastSeen from '../LastSeen';
 import i18n from '../../services/i18n';
+import {VariableSizeList} from "react-window";
+import IsMobile from "../../services/isMobile";
+import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 
 import './style.css';
 
@@ -93,10 +96,13 @@ export const categorizeContact = (contacts: IUser[]): IUser[] => {
 
 class ContactList extends React.Component<IProps, IState> {
     private contactsRes: IUser[] = [];
-    private list: List;
+    private list: VariableSizeList;
     private userRepo: UserRepo;
     private readonly searchDebounce: any;
     private defaultContact: IUser[];
+    private readonly isMobile: boolean = false;
+    private readonly hasScrollbar: boolean = false;
+    private readonly rtl: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -110,6 +116,10 @@ class ContactList extends React.Component<IProps, IState> {
             selectedContacts: props.contacts || [],
             title: '',
         };
+
+        this.isMobile = IsMobile.isAny();
+        this.hasScrollbar = getScrollbarWidth() > 0;
+        this.rtl = localStorage.getItem('river.lang.dir') === 'rtl';
 
         this.userRepo = UserRepo.getInstance();
         this.searchDebounce = debounce(this.search, 512);
@@ -135,7 +145,7 @@ class ContactList extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {contacts, selectedContacts, moreAnchorEl} = this.state;
+        const {selectedContacts, moreAnchorEl} = this.state;
         return (
             <div className="contact-list">
                 <div className="contact-input-container">
@@ -160,53 +170,81 @@ class ContactList extends React.Component<IProps, IState> {
                     />}
                 </div>
                 <div className="contact-list-container">
-                    <AutoSizer>
-                        {({width, height}: any) => (
-                            <React.Fragment>
-                                <Scrollbars
-                                    autoHide={true}
-                                    style={{
-                                        height: height + 'px',
-                                        width: width + 'px',
-                                    }}
-                                    onScroll={this.handleScroll}
-                                    universal={true}
-                                    rtl={true}
-                                >
-                                    <List
-                                        ref={this.refHandler}
-                                        rowHeight={this.getHeight}
-                                        rowRenderer={this.rowRender}
-                                        rowCount={contacts.length}
-                                        overscanRowCount={10}
-                                        width={width}
-                                        height={height}
-                                        className="contact-container"
-                                        noRowsRenderer={this.props.noRowsRenderer || this.noRowsRenderer}
-                                        style={listStyle}
-                                    />
-                                </Scrollbars>
-                                <Menu
-                                    anchorEl={moreAnchorEl}
-                                    open={Boolean(moreAnchorEl)}
-                                    onClose={this.moreCloseHandler}
-                                    className="kk-context-menu"
-                                >
-                                    {this.contextMenuItem()}
-                                </Menu>
-                            </React.Fragment>
-                        )}
-                    </AutoSizer>
+                    {this.getWrapper()}
                 </div>
+                <Menu
+                    anchorEl={moreAnchorEl}
+                    open={Boolean(moreAnchorEl)}
+                    onClose={this.moreCloseHandler}
+                    className="kk-context-menu"
+                >
+                    {this.contextMenuItem()}
+                </Menu>
             </div>
         );
+    }
+
+    private getWrapper() {
+        const {contacts} = this.state;
+        if (contacts.length === 0) {
+            return (<div className="contact-container">{this.noRowsRenderer()}</div>);
+        } else {
+            if (this.isMobile || !this.hasScrollbar) {
+                return (
+                    <AutoSizer>
+                        {({width, height}: any) => (
+                            <VariableSizeList
+                                ref={this.refHandler}
+                                itemSize={this.getHeight}
+                                itemCount={contacts.length}
+                                overscanCount={32}
+                                width={width}
+                                height={height}
+                                className="contact-container"
+                                direction={this.rtl ? 'ltr' : 'rtl'}
+                            >{({index, style}) => {
+                                return this.rowRender({index, style, key: index});
+                            }}
+                            </VariableSizeList>
+                        )}
+                    </AutoSizer>);
+            } else {
+                return (<AutoSizer>
+                    {({width, height}: any) => (
+                        <Scrollbars
+                            autoHide={true}
+                            style={{
+                                height: height + 'px',
+                                width: width + 'px',
+                            }}
+                            onScroll={this.handleScroll}
+                            universal={true}
+                        >
+                            <VariableSizeList
+                                ref={this.refHandler}
+                                itemSize={this.getHeight}
+                                itemCount={contacts.length}
+                                overscanCount={32}
+                                width={width}
+                                height={height}
+                                className="contact-container"
+                                style={listStyle}
+                            >{({index, style}) => {
+                                return this.rowRender({index, style, key: index});
+                            }}
+                            </VariableSizeList>
+                        </Scrollbars>
+                    )}
+                </AutoSizer>);
+            }
+        }
     }
 
     /* Custom Scrollbars handler */
     private handleScroll = (e: any) => {
         const {scrollTop} = e.target;
-        if (this.list.Grid) {
-            this.list.Grid.handleScrollEvent({scrollTop});
+        if (this.list) {
+            this.list.scrollTo(scrollTop);
         }
     }
 
@@ -279,18 +317,16 @@ class ContactList extends React.Component<IProps, IState> {
 
     /* Get all contacts */
     private getDefault(fill?: boolean) {
-        this.userRepo.getAllContacts().then((res) => {
-            this.defaultContact = res;
-            this.contactsRes = clone(res);
+        const fn = (us: IUser[]) => {
+            this.defaultContact = us;
+            this.contactsRes = clone(us);
             if (fill !== false) {
                 this.setState({
                     contacts: categorizeContact(this.getTrimmedList([])),
-                }, () => {
-                    this.list.recomputeRowHeights();
-                    this.list.forceUpdateGrid();
                 });
             }
-        });
+        };
+        this.userRepo.getAllContacts(fn).then(fn);
     }
 
     /* Searches the given string */
@@ -313,9 +349,6 @@ class ContactList extends React.Component<IProps, IState> {
             this.contactsRes = clone(res || []);
             this.setState({
                 contacts: categorizeContact(this.getTrimmedList(this.state.selectedContacts)),
-            }, () => {
-                this.list.recomputeRowHeights();
-                this.list.forceUpdateGrid();
             });
         });
     }
@@ -330,7 +363,6 @@ class ContactList extends React.Component<IProps, IState> {
                 selectedContacts,
             }, () => {
                 this.dispatchContactChange();
-                this.list.recomputeRowHeights();
             });
         }
     }
@@ -349,7 +381,6 @@ class ContactList extends React.Component<IProps, IState> {
                 selectedContacts,
             }, () => {
                 this.dispatchContactChange();
-                this.list.recomputeRowHeights();
             });
         }
     }
@@ -368,8 +399,8 @@ class ContactList extends React.Component<IProps, IState> {
     }
 
     /* Get dynamic height */
-    private getHeight = (param: Index): number => {
-        const contact = this.state.contacts[param.index];
+    private getHeight = (index: number): number => {
+        const contact = this.state.contacts[index];
         if (contact.category) {
             return 40;
         } else {

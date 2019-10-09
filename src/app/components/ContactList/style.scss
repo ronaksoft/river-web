@@ -81,6 +81,7 @@
 
         a {
           text-decoration: none;
+          direction: ltr;
         }
 
         .avatar {
@@ -192,6 +193,10 @@ html[direction="rtl"] {
 
       .contact-item {
         text-align: right;
+
+        a {
+          direction: rtl;
+        }
 
         .avatar {
           float: right;
