@@ -482,13 +482,7 @@ export default class MessageRepo {
                 resolve(this.lazyMap[id]);
                 return;
             }
-            this.db.messages.get(id).then((res: IMessage) => {
-                if (res) {
-                    resolve(res);
-                } else {
-                    throw Error('not found');
-                }
-            }).catch(() => {
+            const fn = () => {
                 if (peer) {
                     this.getBundleMessage(peer, id).then((remoteRes) => {
                         resolve(remoteRes);
@@ -498,6 +492,15 @@ export default class MessageRepo {
                 } else {
                     reject();
                 }
+            };
+            this.db.messages.get(id).then((res: IMessage) => {
+                if (res) {
+                    resolve(res);
+                } else {
+                    fn();
+                }
+            }).catch(() => {
+                fn();
             });
         });
     }

@@ -54,7 +54,6 @@ class LeftMenu extends React.Component<IProps, IState> {
     private bottomBarRef: BottomBar;
     private dialogRef: Dialog;
     private settingsMenuRef: SettingsMenu;
-    private iframeActive: boolean = IframeService.getInstance().isActive();
     private chatTopIcons: any[];
     private chatMoreMenuItem: any[];
 
@@ -132,12 +131,12 @@ class LeftMenu extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {chatMoreAnchorEl, leftMenu, overlay} = this.state;
+        const {chatMoreAnchorEl, leftMenu, overlay, iframeActive} = this.state;
         return (
             <div
                 className={'column-left ' + (leftMenu === 'chat' ? 'with-top-bar' : '') + (overlay ? ' left-overlay-enable' : '')}>
                 <div className="top-bar">
-                    {this.iframeActive &&
+                    {iframeActive &&
                     <span className="close-btn">
                         <Tooltip
                             title={i18n.t('general.close')}
@@ -150,9 +149,9 @@ class LeftMenu extends React.Component<IProps, IState> {
                         </Tooltip>
                     </span>}
                     <span className="new-message">
-                        {this.iframeActive &&
+                        {iframeActive &&
                         <a href="/" target="_blank"><RiverLogo height={28} width={28}/></a>}
-                        {!this.iframeActive && <RiverLogo height={28} width={28}/>}
+                        {!iframeActive && <RiverLogo height={28} width={28}/>}
                     </span>
                     <div className="actions">
                         {this.chatTopIcons.map((item, key) => {

@@ -1,3 +1,7 @@
+## 0.26.9
+* Preview message improvements
+* Bug fixed in InfoBar
+
 ## 0.26.8
 * React window implemented
 * Close on iframe added
