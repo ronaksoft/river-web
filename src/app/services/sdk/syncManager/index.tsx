@@ -89,16 +89,17 @@ export default class SyncManager {
 
     public applyUpdate(data: UpdateDifference.AsObject): Promise<number> {
         return new Promise((resolve, reject) => {
-            const lastUpdateId = data.more ? (data.maxupdateid || 0) : (data.currentupdateid || data.maxupdateid || 0);
+            const more = data.more || false;
+            const lastUpdateId = more ? (data.maxupdateid || 0) : (data.currentupdateid || data.maxupdateid || 0);
             if (lastUpdateId > 0) {
                 this.setLastUpdateId(lastUpdateId);
             }
-            this.updateMany(data.updatesList, data.groupsList, data.usersList, !(data.more || false));
-            if (data.more) {
-                setTimeout(() => {
-                    resolve((data.maxupdateid || 0) + 1);
-                }, 200);
-            } else {
+            this.updateMany(data.updatesList, data.groupsList, data.usersList, !more, () => {
+                if (more) {
+                    resolve(lastUpdateId + 1);
+                }
+            });
+            if (!more) {
                 reject({
                     code: -1,
                 });
@@ -120,7 +121,7 @@ export default class SyncManager {
         };
     }
 
-    private updateMany(envelopes: UpdateEnvelope.AsObject[], groups: Group.AsObject[], updateUsers: User.AsObject[], lastOne: boolean) {
+    private updateMany(envelopes: UpdateEnvelope.AsObject[], groups: Group.AsObject[], updateUsers: User.AsObject[], lastOne: boolean, doneCb: any) {
         let dialogs: { [key: number]: IDialog } = {};
         const toRemoveDialogs: IRemoveDialog[] = [];
         const messages: { [key: number]: IMessage } = {};
@@ -269,12 +270,15 @@ export default class SyncManager {
         this.updateUserDB(users, updateUsers);
         this.updateGroupDB(groups);
         this.updateMessageDB(messages, toRemoveMessages).then(() => {
-            this.updateDialogDB(dialogs, toRemoveDialogs, toCheckDialogs, lastOne);
+            this.updateDialogDB(dialogs, toRemoveDialogs, toCheckDialogs, lastOne, doneCb);
+        }).catch((err) => {
+            window.console.warn(err);
+            doneCb();
         });
     }
 
     private updateDialog(dialogs: { [key: number]: IDialog }, dialog: IDialog) {
-        const d: IDialog = dialogs[dialog.peerid || 0];
+        const d: IDialog = dialogs[dialog.peerid || '0'];
         if (d) {
             if ((d.readinboxmaxid || 0) > (dialog.readinboxmaxid || 0)) {
                 dialog.readinboxmaxid = (d.readinboxmaxid || 0);
@@ -284,20 +288,18 @@ export default class SyncManager {
             }
             if (dialog.topmessageid) {
                 if (dialog.force || dialog.topmessageid > (d.topmessageid || 0)) {
-                    dialogs[dialog.peerid || 0] = kMerge(d, dialog);
+                    dialogs[dialog.peerid || '0'] = kMerge(d, dialog);
                 }
             } else {
-                dialogs[dialog.peerid || 0] = kMerge(d, dialog);
+                dialogs[dialog.peerid || '0'] = kMerge(d, dialog);
             }
         } else {
-            // dialog.readinboxmaxid = 0;
-            // dialog.readoutboxmaxid = 0;
-            dialogs[dialog.peerid || 0] = dialog;
+            dialogs[dialog.peerid || '0'] = dialog;
         }
         return dialogs;
     }
 
-    private updateDialogDB(dialogs: { [key: number]: IDialog }, toRemoveDialogs: IRemoveDialog[], dialogCheck: string[], lastOne: boolean) {
+    private updateDialogDB(dialogs: { [key: number]: IDialog }, toRemoveDialogs: IRemoveDialog[], dialogCheck: string[], lastOne: boolean, doneCb: any) {
         toRemoveDialogs.forEach((item) => {
             if (item.remove) {
                 this.dialogRepo.remove(item.peerId);
@@ -312,11 +314,13 @@ export default class SyncManager {
             this.dialogRepo.flush().then(() => {
                 setTimeout(() => {
                     this.broadcastEvent('Dialog_Sync_Updated', {ids: keys, counters: lastOne});
-                }, 100);
+                    doneCb();
+                }, 1);
             }).catch(() => {
                 setTimeout(() => {
                     this.broadcastEvent('Dialog_Sync_Updated', {ids: keys, counters: lastOne});
-                }, 100);
+                    doneCb();
+                }, 1);
             });
         };
 
@@ -325,47 +329,44 @@ export default class SyncManager {
             const data: IDialog[] = [];
             // TODO: check
             if (dialogCheck.length > 0) {
-                setTimeout(() => {
-                    this.dialogRepo.lazyUpsert(data);
-                    this.dialogRepo.flush().then(() => {
-                        const promises: any[] = [];
-                        dialogCheck.forEach((peerId) => {
-                            promises.push(this.messageRepo.getLastMessage(peerId));
-                        });
-                        Promise.all(promises).then((arr) => {
-                            arr.forEach((msg) => {
-                                if (msg) {
-                                    const messageTitle = getMessageTitle(msg);
-                                    this.updateDialog(dialogs, {
-                                        action_code: msg.messageaction,
-                                        action_data: msg.actiondata,
-                                        force: true,
-                                        last_update: (msg.editedon || 0) > 0 ? msg.editedon : msg.createdon,
-                                        peerid: msg.peerid,
-                                        peertype: msg.peertype,
-                                        preview: messageTitle.text,
-                                        preview_icon: messageTitle.icon,
-                                        preview_me: (this.updateManager.getUserId() === msg.senderid),
-                                        preview_rtl: msg.rtl,
-                                        saved_messages: (this.updateManager.getUserId() === msg.peerid),
-                                        sender_id: msg.senderid,
-                                        topmessageid: msg.id,
-                                    });
-                                }
-                            });
-                            keys.forEach((key) => {
-                                data.push(dialogs[key]);
-                            });
-                            updateDialogs(data);
-                        }).catch(() => {
-                            updateDialogs(data);
-                        });
-                    }).catch(() => {
-                        setTimeout(() => {
-                            this.broadcastEvent('Dialog_Sync_Updated', {ids: keys, counters: lastOne});
-                        }, 100);
+                this.dialogRepo.lazyUpsert(data);
+                this.dialogRepo.flush().then(() => {
+                    const promises: any[] = [];
+                    dialogCheck.forEach((peerId) => {
+                        promises.push(this.messageRepo.getLastMessage(peerId));
                     });
-                }, 100);
+                    Promise.all(promises).then((arr) => {
+                        arr.forEach((msg) => {
+                            if (msg) {
+                                const messageTitle = getMessageTitle(msg);
+                                this.updateDialog(dialogs, {
+                                    action_code: msg.messageaction,
+                                    action_data: msg.actiondata,
+                                    force: true,
+                                    last_update: (msg.editedon || 0) > 0 ? msg.editedon : msg.createdon,
+                                    peerid: msg.peerid,
+                                    peertype: msg.peertype,
+                                    preview: messageTitle.text,
+                                    preview_icon: messageTitle.icon,
+                                    preview_me: (this.updateManager.getUserId() === msg.senderid),
+                                    preview_rtl: msg.rtl,
+                                    saved_messages: (this.updateManager.getUserId() === msg.peerid),
+                                    sender_id: msg.senderid,
+                                    topmessageid: msg.id,
+                                });
+                            }
+                        });
+                        keys.forEach((key) => {
+                            data.push(dialogs[key]);
+                        });
+                        updateDialogs(data);
+                    }).catch(() => {
+                        updateDialogs(data);
+                    });
+                }).catch(() => {
+                    this.broadcastEvent('Dialog_Sync_Updated', {ids: keys, counters: lastOne});
+                    doneCb();
+                });
             } else {
                 keys.forEach((key) => {
                     data.push(dialogs[key]);
@@ -373,9 +374,8 @@ export default class SyncManager {
                 updateDialogs(data);
             }
         } else {
-            setTimeout(() => {
-                this.updateManager.flushLastUpdateId();
-            }, 100);
+            this.updateManager.flushLastUpdateId();
+            doneCb();
         }
     }
 
@@ -398,7 +398,7 @@ export default class SyncManager {
                     ids: keys,
                     peerids: peerIds,
                 });
-            }, 1000);
+            }, 512);
         }
         if (promises.length > 0) {
             return Promise.all(promises);

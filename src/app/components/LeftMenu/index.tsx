@@ -21,7 +21,6 @@ import RiverLogo from "../RiverLogo";
 import Menu from "@material-ui/core/Menu";
 import Divider from "@material-ui/core/Divider";
 import MenuItem from "@material-ui/core/MenuItem";
-import IframeService from "../../services/iframe";
 import NewGroupMenu from "../NewGroupMenu";
 import {IUser} from "../../repository/user/interface";
 

@@ -400,7 +400,13 @@ export default class SDK {
         const data = new UpdateGetDifference();
         data.setFrom(from);
         data.setLimit(limit);
-        return this.server.send(C_MSG.UpdateGetDifference, data.serializeBinary(), true);
+        return this.server.send(C_MSG.UpdateGetDifference, data.serializeBinary(), true, {
+            retry: 3,
+            retryErrors: [{
+                code: C_ERR.ErrCodeInternal,
+                items: C_ERR_ITEM.ErrItemTimeout
+            }],
+        });
     }
 
     public logout(authId: string): Promise<Bool> {

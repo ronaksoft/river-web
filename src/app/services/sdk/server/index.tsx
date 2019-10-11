@@ -282,6 +282,7 @@ export default class Server {
         if (!item) {
             return;
         }
+        window.console.warn('sdk timeout', reqId, C_MSG_NAME[item.request.constructor]);
         if (this.checkRetry(reqId, {
             code: C_ERR.ErrCodeInternal,
             items: C_ERR_ITEM.ErrItemTimeout,

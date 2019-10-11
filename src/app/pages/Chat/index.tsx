@@ -2296,9 +2296,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private syncThemAll(lastId: number, limit: number) {
-        let tries = 0;
         this.sdk.getUpdateDifference(lastId, limit).then((res) => {
-            tries = 0;
             this.syncManager.applyUpdate(res.toObject()).then((id) => {
                 this.syncThemAll(id, limit);
             }).catch((err2) => {
@@ -2322,11 +2320,6 @@ class Chat extends React.Component<IProps, IState> {
                     });
                 }
             });
-        }).catch((err) => {
-            tries++;
-            if (err.err === 'timeout' && tries < 3) {
-                this.syncThemAll(lastId, limit);
-            }
         });
     }
 

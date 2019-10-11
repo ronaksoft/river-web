@@ -41,6 +41,7 @@ export default class DialogRepo {
     private groupRepo: GroupRepo;
     private lazyMap: { [key: number]: IDialog } = {};
     private readonly updateThrottle: any = null;
+    private insertToDbTimeout: any = null;
     private updateManager: UpdateManager;
 
     public constructor() {
@@ -51,7 +52,7 @@ export default class DialogRepo {
         this.messageRepo = MessageRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
-        this.updateThrottle = throttle(this.insertToDb, 256);
+        this.updateThrottle = throttle(this.insertToDbDebounced, 256);
         this.userId = SDK.getInstance().getConnInfo().UserID || '0';
     }
 
@@ -235,6 +236,7 @@ export default class DialogRepo {
 
     public flush() {
         this.updateThrottle.cancel();
+        clearTimeout(this.insertToDbTimeout);
         return this.insertToDb();
     }
 
@@ -246,6 +248,9 @@ export default class DialogRepo {
     }
 
     private mergeCheck(dialog: IDialog, newDialog: IDialog): IDialog {
+        if (newDialog.force !== true && dialog.topmessageid && newDialog.topmessageid && dialog.topmessageid > newDialog.topmessageid) {
+            return dialog;
+        }
         if (newDialog.readinboxmaxid !== undefined && newDialog.readinboxmaxid < (dialog.readinboxmaxid || 0)) {
             newDialog.readinboxmaxid = dialog.readinboxmaxid;
         }
@@ -280,6 +285,12 @@ export default class DialogRepo {
         } else {
             this.lazyMap[dialog.peerid || 0] = dialog;
         }
+    }
+
+    private insertToDbDebounced = () => {
+        this.insertToDbTimeout = setTimeout(() => {
+            this.insertToDb();
+        }, 128);
     }
 
     private insertToDb = () => {
