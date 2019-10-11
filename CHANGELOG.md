@@ -1,7 +1,8 @@
 ## 0.26.9
 * Preview message improvements
 * Bug fixed in InfoBar
-*
+* SyncManager updated
+* Dilaog Repo throttle updated
 
 ## 0.26.8
 * React window implemented
