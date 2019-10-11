@@ -1,3 +1,6 @@
+## 0.26.10
+* Messages init buf fixed
+
 ## 0.26.9
 * Preview message improvements
 * Bug fixed in InfoBar

@@ -294,7 +294,9 @@ class Message extends React.Component<IProps, IState> {
     }
 
     public setPeer(peer: InputPeer | null) {
-        this.peer = peer;
+        if (this.peer !== peer) {
+            this.peer = peer;
+        }
     }
 
     public setReadId(readId: number) {

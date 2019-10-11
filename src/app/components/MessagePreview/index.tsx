@@ -32,7 +32,6 @@ interface IProps {
 interface IState {
     error: boolean;
     message: IMessage;
-    peer: InputPeer | null;
     previewMessage?: IMessage | null;
 }
 
@@ -57,7 +56,6 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
         this.state = {
             error: false,
             message: props.message,
-            peer: props.peer,
             previewMessage: message,
         };
 
@@ -72,9 +70,9 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
     }
 
     public componentWillReceiveProps(newProps: IProps) {
-        if (this.lastId !== newProps.message.peertype) {
-            this.lastId = newProps.message.peertype || 0;
-            this.cachedMessageService.unmountCache(this.state.message.id || 0);
+        if (this.lastId !== newProps.message.replyto) {
+            this.lastId = newProps.message.replyto || 0;
+            this.cachedMessageService.unmountCache(this.state.message.replyto || 0);
             this.removeAllListeners();
             this.setState({
                 message: newProps.message,
@@ -179,7 +177,8 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
     }
 
     private getMessage() {
-        const {message, peer} = this.state;
+        const {peer} = this.props;
+        const {message} = this.state;
         this.messageRepo.get(message.replyto || 0, peer).then((res) => {
             if (res) {
                 this.setState({
@@ -193,7 +192,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
                     previewMessage: null,
                 });
             }
-        }).catch(() => {
+        }).catch((err) => {
             this.setState({
                 error: true,
                 previewMessage: null,

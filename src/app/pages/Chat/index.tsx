@@ -814,6 +814,9 @@ class Chat extends React.Component<IProps, IState> {
 
     private messageRefHandler = (ref: any) => {
         this.messageRef = ref;
+        if (this.messageRef) {
+            this.messageRef.setPeer(this.peer);
+        }
     }
 
     /* Init dialogs */
