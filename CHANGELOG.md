@@ -1,5 +1,7 @@
 ## 0.26.10
 * Messages init buf fixed
+* Translations updated
+* Status indicator bug fixed
 
 ## 0.26.9
 * Preview message improvements

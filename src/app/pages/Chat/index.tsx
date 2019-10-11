@@ -130,7 +130,7 @@ import {emojiLevel} from "../../services/utilities/emoji";
 import AudioPlayer, {IAudioInfo} from "../../services/audioPlayer";
 import CachedFileService from "../../services/cachedFileService";
 import LeftMenu, {menuAction} from "../../components/LeftMenu";
-import {C_CUSTOM_BG_ID} from "../../components/SettingsMenu";
+import {C_CUSTOM_BG_ID, C_VERSION} from "../../components/SettingsMenu";
 import RightMenu from "../../components/RightMenu";
 import InfoBar from "../../components/InfoBar";
 import MoveDown from "../../components/MoveDown";
@@ -274,8 +274,9 @@ class Chat extends React.Component<IProps, IState> {
         if (isProd) {
             Sentry.configureScope((scope) => {
                 scope.setUser({
+                    'app_version': C_VERSION,
                     'auth_id': this.connInfo.AuthID,
-                    'user_id': this.connInfo.UserID,
+                    'user_id': this.connInfo.UserID
                 });
             });
         }
@@ -709,9 +710,9 @@ class Chat extends React.Component<IProps, IState> {
 
     private getConnectionStatus() {
         if (this.isConnecting) {
-            return (<span>Connecting...</span>);
+            return (<span>{i18n.t('status.connecting')}</span>);
         } else if (this.isUpdating) {
-            return (<span>Updating...</span>);
+            return (<span>{i18n.t('status.updating')}</span>);
         } else {
             return '';
         }
@@ -4605,6 +4606,8 @@ class Chat extends React.Component<IProps, IState> {
                 isOnline,
                 isUpdating
             });
+        } else {
+            this.forceUpdate();
         }
     }
 
