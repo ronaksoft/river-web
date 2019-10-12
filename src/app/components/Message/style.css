@@ -242,7 +242,7 @@
       display: block;
       background-color: inherit;
       visibility: hidden;
-      z-index: 10; }
+      z-index: 30; }
       .bubble-wrapper .bubble .more svg {
         cursor: pointer;
         height: 20px;

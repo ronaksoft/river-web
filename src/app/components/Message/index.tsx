@@ -70,6 +70,7 @@ interface IState {
     loadingOverlay: boolean;
     loadingPersist: boolean;
     moreAnchorEl: any;
+    moreAnchorPos: any;
     moreIndex: number;
     readIdInit: number;
     selectable: boolean;
@@ -211,6 +212,7 @@ class Message extends React.Component<IProps, IState> {
             loadingOverlay: false,
             loadingPersist: false,
             moreAnchorEl: null,
+            moreAnchorPos: null,
             moreIndex: -1,
             readIdInit: -1,
             selectable: false,
@@ -349,6 +351,7 @@ class Message extends React.Component<IProps, IState> {
             this.setState({
                 items,
                 moreAnchorEl: null,
+                moreAnchorPos: null,
                 moreIndex: -1,
             }, () => {
                 clearTimeout(this.enableLoadBeforeTimeout);
@@ -468,7 +471,7 @@ class Message extends React.Component<IProps, IState> {
                                         this.animateToEnd(true);
                                     }
                                 });
-                                if (items.length > 40) {
+                                if (items.length > 24) {
                                     this.setEnableBefore();
                                 }
                             }
@@ -631,7 +634,7 @@ class Message extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {items, moreAnchorEl, selectable, loadingOverlay} = this.state;
+        const {items, moreAnchorEl, moreAnchorPos, selectable, loadingOverlay} = this.state;
         return (
             <AutoSizer>
                 {({width, height}: any) => (
@@ -647,7 +650,7 @@ class Message extends React.Component<IProps, IState> {
                                 rowHeight={this.getHeight}
                                 rowRenderer={this.rowRender}
                                 rowCount={items.length}
-                                overscanRowCount={this.isMac ? 32 : 48}
+                                overscanRowCount={32}
                                 width={width + (this.scrollbar.noScroll ? 0 : this.scrollbar.width)}
                                 height={height}
                                 estimatedRowSize={52}
@@ -665,7 +668,9 @@ class Message extends React.Component<IProps, IState> {
                             </div>}
                             <Menu
                                 anchorEl={moreAnchorEl}
-                                open={Boolean(moreAnchorEl)}
+                                anchorPosition={moreAnchorPos}
+                                anchorReference={moreAnchorPos ? 'anchorPosition' : 'anchorEl'}
+                                open={Boolean(moreAnchorEl || moreAnchorPos)}
                                 onClose={this.moreCloseHandler}
                                 className="kk-context-menu"
                             >
@@ -925,7 +930,8 @@ class Message extends React.Component<IProps, IState> {
                             {Boolean(message.me && message.error) &&
                             <span className="error" onClick={this.contextMenuHandler(index)}><ErrorRounded/></span>}
                             <div ref={parenElRefHandler}
-                                 className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '') + ((message.messagetype === C_MESSAGE_TYPE.Video || message.messagetype === C_MESSAGE_TYPE.Picture) ? ' media-message' : '')}>
+                                 className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '') + ((message.messagetype === C_MESSAGE_TYPE.Video || message.messagetype === C_MESSAGE_TYPE.Picture) ? ' media-message' : '')}
+                                 onContextMenu={this.messageContextMenuHandler(index)}>
                                 {Boolean((peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me) || (this.isSimplified && message.avatar)) &&
                                 <UserName className="name" uniqueColor={true} id={message.senderid || ''}
                                           hideBadge={true} noDetail={this.state.selectable}/>}
@@ -961,6 +967,7 @@ class Message extends React.Component<IProps, IState> {
         e.stopPropagation();
         this.setState({
             moreAnchorEl: e.currentTarget,
+            moreAnchorPos: null,
             moreIndex: index,
         });
     }
@@ -968,6 +975,7 @@ class Message extends React.Component<IProps, IState> {
     private moreCloseHandler = () => {
         this.setState({
             moreAnchorEl: null,
+            moreAnchorPos: null,
         });
     }
 
@@ -985,6 +993,7 @@ class Message extends React.Component<IProps, IState> {
         }
         this.setState({
             moreAnchorEl: null,
+            moreAnchorPos: null,
         });
     }
 
@@ -1035,7 +1044,7 @@ class Message extends React.Component<IProps, IState> {
                     this.bottomOfList = false;
                 }
                 if (this.enableLoadBefore && !this.hasEnd) {
-                    if (data.startIndex < 9 && this.props.onLoadMoreBefore) {
+                    if (data.startIndex < 5 && this.props.onLoadMoreBefore) {
                         this.loadMoreBeforeThrottle();
                     } else {
                         this.topOfList = false;
@@ -1082,27 +1091,33 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
-    private selectText = (e: any) => {
+    private doubleClickHandler = (e: any) => {
         e.stopPropagation();
-        const elem = e.currentTarget;
-        // @ts-ignore
-        if (document.selection) { // IE
-            // @ts-ignore
-            const range = document.body.createTextRange();
-            if (range) {
-                range.moveToElementText(elem);
-                range.select();
-            }
-        } else if (window.getSelection) {
-            const range = document.createRange();
-            range.selectNode(elem);
-            const selection = window.getSelection();
-            if (selection) {
-                selection.removeAllRanges();
-                selection.addRange(range);
-            }
-        }
     }
+
+    // private selectText = (e: any) => {
+    //     if (e.detail === 5) {
+    //         e.stopPropagation();
+    //         const elem = e.currentTarget;
+    //         // @ts-ignore
+    //         if (document.selection) { // IE
+    //             // @ts-ignore
+    //             const range = document.body.createTextRange();
+    //             if (range) {
+    //                 range.moveToElementText(elem);
+    //                 range.select();
+    //             }
+    //         } else if (window.getSelection) {
+    //             const range = document.createRange();
+    //             range.selectNode(elem);
+    //             const selection = window.getSelection();
+    //             if (selection) {
+    //                 selection.removeAllRanges();
+    //                 selection.addRange(range);
+    //             }
+    //         }
+    //     }
+    // }
 
     private keyMapperHandler = (rowIndex: number, colIndex: number) => {
         return this.getKey(rowIndex, colIndex);
@@ -1472,7 +1487,7 @@ class Message extends React.Component<IProps, IState> {
             }
             return (
                 <div className={'inner ' + (message.rtl ? 'rtl' : 'ltr') + emojiClass}
-                     onDoubleClick={this.selectText}>{this.renderBody(message, measureFn)}</div>
+                     onDoubleClick={this.doubleClickHandler}>{this.renderBody(message, measureFn)}</div>
             );
         }
     }
@@ -1755,6 +1770,22 @@ class Message extends React.Component<IProps, IState> {
             }
         }
         this.hasEnd = false;
+    }
+
+    private messageContextMenuHandler = (index: number) => (e: any) => {
+        if (index === -1) {
+            return;
+        }
+        e.stopPropagation();
+        e.preventDefault();
+        this.setState({
+            moreAnchorEl: null,
+            moreAnchorPos: {
+                left: e.pageX,
+                top: e.pageY,
+            },
+            moreIndex: index,
+        });
     }
 }
 

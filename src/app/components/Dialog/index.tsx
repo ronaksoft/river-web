@@ -43,7 +43,7 @@ interface IState {
     ids: string[];
     isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } };
     items: IDialog[];
-    moreAnchorEl: any;
+    moreAnchorPos: any;
     moreIndex: number;
     searchAddedItems: IDialog[];
     searchItems: IDialog[];
@@ -76,7 +76,7 @@ class Dialog extends React.Component<IProps, IState> {
             ids: [],
             isTypingList: {},
             items: [],
-            moreAnchorEl: null,
+            moreAnchorPos: null,
             moreIndex: -1,
             searchAddedItems: [],
             searchItems: [],
@@ -204,7 +204,7 @@ class Dialog extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {moreAnchorEl} = this.state;
+        const {moreAnchorPos} = this.state;
         return (
             <div className="dialogs">
                 <div ref={this.containerRefHandler} className="dialog-search">
@@ -233,8 +233,9 @@ class Dialog extends React.Component<IProps, IState> {
                     {this.getWrapper()}
                 </div>
                 <Menu
-                    anchorEl={moreAnchorEl}
-                    open={Boolean(moreAnchorEl)}
+                    anchorReference="anchorPosition"
+                    anchorPosition={moreAnchorPos}
+                    open={Boolean(moreAnchorPos)}
                     onClose={this.moreCloseHandler}
                     className="kk-context-menu"
                 >
@@ -386,8 +387,12 @@ class Dialog extends React.Component<IProps, IState> {
         }
         e.preventDefault();
         e.stopPropagation();
+        const rect = e.target.getBoundingClientRect();
         this.setState({
-            moreAnchorEl: e.currentTarget,
+            moreAnchorPos: {
+                left: rect.left,
+                top: rect.top,
+            },
             moreIndex: index,
         });
     }
@@ -395,7 +400,7 @@ class Dialog extends React.Component<IProps, IState> {
     /* Context menu close handler */
     private moreCloseHandler = () => {
         this.setState({
-            moreAnchorEl: null,
+            moreAnchorPos: null,
         });
     }
 
@@ -475,7 +480,7 @@ class Dialog extends React.Component<IProps, IState> {
             this.props.onContextMenu(cmd, dialog);
         }
         this.setState({
-            moreAnchorEl: null,
+            moreAnchorPos: null,
         });
     }
 

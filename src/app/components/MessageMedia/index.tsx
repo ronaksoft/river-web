@@ -209,6 +209,7 @@ interface IState {
     fileState: 'download' | 'view' | 'progress' | 'open';
     info: IMediaInfo;
     message: IMessage;
+    transition: boolean;
 }
 
 class MessageMedia extends React.PureComponent<IProps, IState> {
@@ -233,6 +234,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     private blurredImageEnable: boolean = false;
     private contentRead: boolean = false;
     private downloadManager: DownloadManager;
+    private transitionTimeout: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -255,6 +257,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
             fileState: this.getFileState(props.message),
             info,
             message: props.message,
+            transition: false,
         };
 
         if (props.message) {
@@ -332,6 +335,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
 
     public componentWillUnmount() {
         this.removeAllListeners();
+        clearTimeout(this.transitionTimeout);
     }
 
     /* View downloaded document */
@@ -347,18 +351,22 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {fileState, info, message} = this.state;
+        const {fileState, info, message, transition} = this.state;
         return (
             <div className={'message-media' + this.messageMediaClass}>
                 <div className={'media-content' + (message.messagetype === C_MESSAGE_TYPE.Video ? ' video' : '')}
-                     style={{minWidth: this.pictureContentSize.width, maxWidth: this.pictureContentSize.maxWidth}}>
+                     style={{
+                         height: this.pictureContentSize.height,
+                         maxWidth: this.pictureContentSize.maxWidth,
+                         minWidth: this.pictureContentSize.width,
+                     }}>
                     {Boolean(info.duration) &&
                     <div className="media-duration">
                         <PlayArrowRounded/><span>{this.getDuration(info.duration || 0)}</span>
                         {!message.contentread && <span className="unread-bullet"/>}
                     </div>}
-                    {Boolean(fileState !== 'view' && fileState !== 'open') &&
-                    <React.Fragment>
+                    {Boolean((fileState !== 'view' && fileState !== 'open') || transition) &&
+                    <div className="media-container">
                         <div className="media-size" ref={this.mediaSizeRefHandler}>0 KB</div>
                         <div className="media-big" style={{height: this.pictureContentSize.height}}>
                             {this.blurredImageEnable &&
@@ -381,8 +389,9 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                                 </React.Fragment>}
                             </div>
                         </div>
-                    </React.Fragment>}
-                    {Boolean(fileState === 'view' || fileState === 'open') && <React.Fragment>
+                    </div>}
+                    {Boolean((fileState === 'view' || fileState === 'open') || transition) &&
+                    <div className={'media-container downloaded-media' + (transition ? ' media-transition' : '')}>
                         <div ref={this.pictureBigRefHandler} style={{height: this.pictureContentSize.height}}
                              className="media-big"
                              onClick={this.showMediaHandler}>
@@ -397,7 +406,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                                 <PlayArrowRounded/>
                             </div>}
                         </div>
-                    </React.Fragment>}
+                    </div>}
                 </div>
                 {Boolean(info.caption.length > 0) &&
                 <div className={'media-caption ' + (message.rtl ? 'rtl' : 'ltr')}
@@ -461,7 +470,13 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
             this.setState({
                 fileState: 'view',
                 message,
+                transition: true,
             }, () => {
+                this.transitionTimeout = setTimeout(() => {
+                    this.setState({
+                        transition: true,
+                    });
+                }, 800);
                 this.forceUpdate();
             });
         }

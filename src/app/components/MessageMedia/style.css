@@ -6,6 +6,12 @@
     Auditor: HamidrezaKK
     Copyright Ronak Software Group 2019
 */
+@keyframes mediaTransition {
+  from {
+    opacity: 0; }
+  to {
+    opacity: 1; } }
+
 .message-media {
   padding: 0; }
   .message-media .media-content {
@@ -15,6 +21,20 @@
     border-radius: 6px;
     overflow: hidden;
     margin: 0 auto; }
+    .message-media .media-content .media-container {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 11; }
+      .message-media .media-content .media-container.downloaded-media {
+        z-index: 15; }
+      .message-media .media-content .media-container.media-transition {
+        opacity: 1;
+        animation-name: mediaTransition;
+        animation-duration: 0.75s;
+        animation-iteration-count: 1; }
     .message-media .media-content .media-thumb,
     .message-media .media-content .media-big {
       position: relative;
@@ -25,8 +45,7 @@
         position: relative;
         height: 100%;
         width: 100%;
-        line-height: 0;
-        z-index: 9; }
+        line-height: 0; }
         .message-media .media-content .media-thumb .picture img,
         .message-media .media-content .media-big .picture img {
           height: 100%;
@@ -42,7 +61,6 @@
         width: 36px;
         transform: translate(-50%, -50%);
         border-radius: 50%;
-        z-index: 10;
         background-color: rgba(0, 0, 0, 0.32);
         cursor: pointer; }
         .message-media .media-content .media-thumb .media-action .progress,
@@ -113,8 +131,7 @@
       padding: 0 4px 0 2px;
       border-radius: 4px;
       color: var(--white);
-      white-space: nowrap;
-      z-index: 20; }
+      white-space: nowrap; }
       .message-media .media-content .media-duration svg {
         font-size: 14px;
         color: inherit;

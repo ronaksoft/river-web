@@ -1,3 +1,10 @@
+## 0.26.11
+* ContactList more menu bug fixed
+* Dialog more menu bug fixed
+* MessageMedia download transition added
+* MoveDown visibility bug fixed
+* MobileView on back draft issue fixed
+
 ## 0.26.10
 * Messages init buf fixed
 * Translations updated
@@ -7,7 +14,7 @@
 * Preview message improvements
 * Bug fixed in InfoBar
 * SyncManager updated
-* Dilaog Repo throttle updated
+* Dialog Repo throttle updated
 
 ## 0.26.8
 * React window implemented

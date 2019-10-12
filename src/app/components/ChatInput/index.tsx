@@ -389,6 +389,12 @@ class ChatInput extends React.Component<IProps, IState> {
         }
     }
 
+    public applyDraft() {
+        if (this.state.peer) {
+            this.initOldDraft(this.state.peer, this.state.previewMessageMode, this.state.previewMessage);
+        }
+    }
+
     public render() {
         const {
             previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable,
@@ -1049,42 +1055,46 @@ class ChatInput extends React.Component<IProps, IState> {
         }
 
         if (oldPeer) {
-            const oldPeerObj = oldPeer.toObject();
-            const draftMessage: DraftMessage.AsObject = {
-                body: this.state.textareaValue,
-                date: this.riverTime.now(),
-                entitiesList: message ? message.entitiesList : undefined,
-                peerid: oldPeerObj.id || '',
-                peertype: message ? message.peertype : undefined,
-                replyto: message ? message.id : undefined,
-            };
-            if ((draftMessage.body || '').length > 0 || (mode && mode !== C_MSG_MODE.Normal)) {
-                this.sdk.saveDraft(oldPeer, draftMessage.body || '', draftMessage.replyto, draftMessage.entitiesList).then(() => {
-                    this.dialogRepo.lazyUpsert([{
-                        draft: draftMessage,
-                        peerid: oldPeerObj.id || '',
-                    }]);
-                });
-            } else {
-                const oldDialog = cloneDeep(this.props.getDialog(oldPeerObj.id || ''));
-                if (oldDialog && oldDialog.draft && oldDialog.draft.peerid) {
-                    if (this.props.onClearDraft && this.state.peer) {
-                        this.props.onClearDraft({
-                            peer: this.state.peer.toObject(),
-                            ucount: 1,
-                        });
-                    }
-                    this.sdk.clearDraft(oldPeer).then(() => {
-                        this.dialogRepo.lazyUpsert([{
-                            draft: {},
-                            peerid: oldPeerObj.id || '',
-                        }]);
-                    });
-                }
-            }
+            this.initOldDraft(oldPeer, mode, message);
         }
 
         this.checkDraft(newPeer);
+    }
+
+    private initOldDraft(oldPeer: InputPeer, mode: number, message: IMessage | null) {
+        const oldPeerObj = oldPeer.toObject();
+        const draftMessage: DraftMessage.AsObject = {
+            body: this.state.textareaValue,
+            date: this.riverTime.now(),
+            entitiesList: message ? message.entitiesList : undefined,
+            peerid: oldPeerObj.id || '',
+            peertype: message ? message.peertype : undefined,
+            replyto: message ? message.id : undefined,
+        };
+        if ((draftMessage.body || '').length > 0 || (mode && mode !== C_MSG_MODE.Normal)) {
+            this.sdk.saveDraft(oldPeer, draftMessage.body || '', draftMessage.replyto, draftMessage.entitiesList).then(() => {
+                this.dialogRepo.lazyUpsert([{
+                    draft: draftMessage,
+                    peerid: oldPeerObj.id || '',
+                }]);
+            });
+        } else {
+            const oldDialog = cloneDeep(this.props.getDialog(oldPeerObj.id || ''));
+            if (oldDialog && oldDialog.draft && oldDialog.draft.peerid) {
+                if (this.props.onClearDraft && this.state.peer) {
+                    this.props.onClearDraft({
+                        peer: this.state.peer.toObject(),
+                        ucount: 1,
+                    });
+                }
+                this.sdk.clearDraft(oldPeer).then(() => {
+                    this.dialogRepo.lazyUpsert([{
+                        draft: {},
+                        peerid: oldPeerObj.id || '',
+                    }]);
+                });
+            }
+        }
     }
 
     /* Modify textarea and preview message */

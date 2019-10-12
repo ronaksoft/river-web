@@ -8,6 +8,15 @@
 */
 @import '../../../style/mixin';
 
+@keyframes mediaTransition {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .message-media {
   padding: 0;
 
@@ -18,6 +27,26 @@
     border-radius: 6px;
     overflow: hidden;
     margin: 0 auto;
+
+    .media-container {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 11;
+
+      &.downloaded-media {
+        z-index: 15;
+      }
+
+      &.media-transition {
+        opacity: 1;
+        animation-name: mediaTransition;
+        animation-duration: 0.75s;
+        animation-iteration-count: 1;
+      }
+    }
 
     .media-thumb,
     .media-big {
@@ -30,7 +59,6 @@
         height: 100%;
         width: 100%;
         line-height: 0;
-        z-index: 9;
 
         img {
           height: 100%;
@@ -48,7 +76,6 @@
         width: 36px;
         transform: translate(-50%, -50%);
         border-radius: 50%;
-        z-index: 10;
         background-color: rgba(0, 0, 0, 0.32);
         cursor: pointer;
 
@@ -136,7 +163,6 @@
       border-radius: 4px;
       color: var(--white);
       white-space: nowrap;
-      z-index: 20;
 
       svg {
         font-size: 14px;

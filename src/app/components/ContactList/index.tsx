@@ -44,7 +44,7 @@ interface IProps {
 interface IState {
     contacts: IUser[];
     hiddenContacts: IUser[];
-    moreAnchorEl: any;
+    moreAnchorPos: any;
     moreIndex: number;
     page: string;
     selectedContacts: IUser[];
@@ -110,7 +110,7 @@ class ContactList extends React.Component<IProps, IState> {
         this.state = {
             contacts: [],
             hiddenContacts: props.hiddenContacts || [],
-            moreAnchorEl: null,
+            moreAnchorPos: null,
             moreIndex: -1,
             page: '1',
             selectedContacts: props.contacts || [],
@@ -145,7 +145,7 @@ class ContactList extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {selectedContacts, moreAnchorEl} = this.state;
+        const {selectedContacts, moreAnchorPos} = this.state;
         return (
             <div className="contact-list">
                 <div className="contact-input-container">
@@ -173,8 +173,9 @@ class ContactList extends React.Component<IProps, IState> {
                     {this.getWrapper()}
                 </div>
                 <Menu
-                    anchorEl={moreAnchorEl}
-                    open={Boolean(moreAnchorEl)}
+                    anchorReference="anchorPosition"
+                    anchorPosition={moreAnchorPos}
+                    open={Boolean(moreAnchorPos)}
                     onClose={this.moreCloseHandler}
                     className="kk-context-menu"
                 >
@@ -416,8 +417,12 @@ class ContactList extends React.Component<IProps, IState> {
         }
         e.preventDefault();
         e.stopPropagation();
+        const rect = e.target.getBoundingClientRect();
         this.setState({
-            moreAnchorEl: e.currentTarget,
+            moreAnchorPos: {
+                left: rect.left,
+                top: rect.top,
+            },
             moreIndex: index,
         });
     }
@@ -425,7 +430,7 @@ class ContactList extends React.Component<IProps, IState> {
     /* Context menu close handler */
     private moreCloseHandler = () => {
         this.setState({
-            moreAnchorEl: null,
+            moreAnchorPos: null,
         });
     }
 

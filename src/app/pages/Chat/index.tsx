@@ -216,7 +216,6 @@ class Chat extends React.Component<IProps, IState> {
     private upcomingDialogId: string = 'null';
     private cachedFileService: CachedFileService;
     /* New structure */
-    // @ts-ignore
     private selectedDialogId: string = 'null';
     private peer: InputPeer | null = null;
     private messageSelectable: boolean = false;
@@ -1372,7 +1371,7 @@ class Chat extends React.Component<IProps, IState> {
         let minId: number = 0;
         this.setChatView(true);
 
-        this.messageRepo.getMany({peer, limit: 40, before, ignoreMax: true}, (data) => {
+        this.messageRepo.getMany({peer, limit: 25, before, ignoreMax: true}, (data) => {
             // Checks peerid on transition
             if (this.selectedDialogId !== dialogId || !this.messageRef) {
                 this.setLoading(false);
@@ -2719,6 +2718,9 @@ class Chat extends React.Component<IProps, IState> {
                             mentionCounter: 0,
                             unreadCounter: 0,
                         });
+                        if (this.endOfMessage && this.moveDownRef) {
+                            this.moveDownRef.setVisible(false);
+                        }
                     }
                     return;
                 }
@@ -2737,6 +2739,9 @@ class Chat extends React.Component<IProps, IState> {
                     mentionCounter: 0,
                     unreadCounter: 0,
                 });
+                if (this.endOfMessage && this.moveDownRef) {
+                    this.moveDownRef.setVisible(false);
+                }
             }
         }
     }
@@ -2902,6 +2907,9 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Back to chat handler, for mobile view */
     private backToChatsHandler = () => {
+        if (this.chatInputRef) {
+            this.chatInputRef.applyDraft();
+        }
         clearTimeout(this.mobileBackTimeout);
         this.setChatView(false);
         this.mobileBackTimeout = setTimeout(() => {
