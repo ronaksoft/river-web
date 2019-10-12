@@ -4,6 +4,7 @@
 * MessageMedia download transition added
 * MoveDown visibility bug fixed
 * MobileView on back draft issue fixed
+* Context menu added in messages component
 
 ## 0.26.10
 * Messages init buf fixed
