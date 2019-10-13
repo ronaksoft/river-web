@@ -84,6 +84,9 @@ function registerValidSW(swUrl: string, onUpdate: any) {
                     };
                 }
             };
+            setInterval(() => {
+                registration.update();
+            }, 900000);
         })
         .catch(error => {
             console.error('Error during service worker registration:', error);

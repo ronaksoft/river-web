@@ -1,3 +1,6 @@
+## 0.26.15
+* Service worker update interval added
+
 ## 0.26.14
 * Avatar viewer for group picture updated (from system message) 
 
