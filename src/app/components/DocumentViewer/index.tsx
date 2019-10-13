@@ -38,6 +38,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
 import {hasAuthority} from "../GroupInfoMenu";
+import {findIndex} from "lodash";
 
 import './style.css';
 
@@ -190,7 +191,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         }
         switch (doc.type) {
             case 'avatar':
-                if (galleryList.length === 0 || gallerySelect === 0) {
+                if ((galleryList.length === 0 || gallerySelect === 0) && !doc.photoId) {
                     return (<div className="avatar-container">
                         {doc.items.map((item, index) => {
                             return (
@@ -634,7 +635,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 this.initPaginationHandlers();
                 this.hasAccess = false;
             } else if (doc.type === 'avatar') {
-                this.initAvatar();
+                this.initAvatar(doc.photoId);
                 this.checkAccess();
             }
         });
@@ -923,7 +924,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     /* Init Avatar */
-    private initAvatar() {
+    private initAvatar(id?: string) {
         const {doc} = this.state;
         if (!doc || !doc.peer) {
             return;
@@ -933,7 +934,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 this.initUserAvatar(doc.peer);
                 break;
             case PeerType.PEERGROUP:
-                this.initGroupAvatar(doc.peer);
+                this.initGroupAvatar(doc.peer, id);
                 break;
         }
     }
@@ -949,10 +950,15 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     /* Init group avatar */
-    private initGroupAvatar(peer: InputPeer) {
+    private initGroupAvatar(peer: InputPeer, id?: string) {
         const fn = (group: IGroup) => {
+            let index = 0;
+            if (id) {
+                index = findIndex(group.photogalleryList, {photoid: id});
+            }
             this.setState({
                 galleryList: group.photogalleryList || [],
+                gallerySelect: index === -1 ? 0 : index,
             });
         };
         this.groupRepo.getFull(peer.getId() || '', fn).then(fn);

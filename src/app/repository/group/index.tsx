@@ -107,6 +107,10 @@ export default class GroupRepo {
     }
 
     public upsert(groups: IGroup[], callerId?: number): Promise<any> {
+        groups = groups.filter(g => g.id);
+        if (groups.length === 0) {
+            return Promise.resolve();
+        }
         const ids = groups.map((group) => {
             return group.id || '';
         });

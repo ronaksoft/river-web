@@ -32,6 +32,7 @@ export interface IDocument {
     peerId?: string;
     rect?: ClientRect;
     peer?: InputPeer;
+    photoId?: string;
     type: 'avatar' | 'picture' | 'video' | 'location';
 }
 

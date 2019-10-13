@@ -1750,6 +1750,8 @@ class Message extends React.Component<IProps, IState> {
                 fileLocation: photo.photobig,
                 thumbFileLocation: photo.photosmall,
             }],
+            peer: this.peer ? this.peer : undefined,
+            photoId: photo.photoid,
             type: 'avatar',
         };
         this.documentViewerService.loadDocument(doc);
