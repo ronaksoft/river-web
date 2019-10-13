@@ -80,6 +80,11 @@
     "cancel_recording_dialog": {
       "title": "لغو ضبط؟",
       "p": "صدای ضبط شده پاک خواهد شد!"
+    },
+    "update_dialog": {
+      "title": "نسخه جدید",
+      "body": "نسخه‌ی جدید در دسترس هست",
+      "update": "بروزرسانی"
     }
   },
   "peer_info": {

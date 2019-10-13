@@ -81,6 +81,11 @@
     "cancel_recording_dialog": {
       "title": "Cancel recording?",
       "p": "Recorded voice will be lost!"
+    },
+    "update_dialog": {
+      "title": "New Version",
+      "body": "A new version is available",
+      "update": "Update"
     }
   },
   "peer_info": {

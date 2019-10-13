@@ -53,6 +53,7 @@ interface IState {
     alertOpen: boolean;
     clearingSiteData: boolean;
     errorMessage: string;
+    hasUpdate: boolean;
 }
 
 I18n.init({
@@ -79,6 +80,7 @@ class App extends React.Component<{}, IState> {
             alertOpen: false,
             clearingSiteData: false,
             errorMessage: `You are receiving "Auth Error", do you like to clear all site data?`,
+            hasUpdate: false,
         };
 
         this.mainRepo = MainRepo.getInstance();
@@ -167,39 +169,64 @@ class App extends React.Component<{}, IState> {
         }
     }
 
+    public updateDialog() {
+        this.setState({
+            hasUpdate: true,
+        });
+    }
+
     public render() {
-        const {alertOpen, clearingSiteData, errorMessage} = this.state;
+        const {alertOpen, clearingSiteData, errorMessage, hasUpdate} = this.state;
         return (
             <div className={'App' + (this.isElectron ? ' is-electron' : '')}>
                 <MuiThemeProvider theme={theme}>
                     {Routes}
+                    <Dialog
+                        open={alertOpen}
+                        onClose={this.alertCloseHandler}
+                        aria-labelledby="alert-dialog-title"
+                        aria-describedby="alert-dialog-description"
+                    >
+                        <DialogTitle>Critical Error</DialogTitle>
+                        <DialogContent>
+                            {!clearingSiteData && <DialogContentText>
+                                {errorMessage}<br/>
+                                <i>This probably fix your problem!</i>
+                            </DialogContentText>}
+                        </DialogContent>
+                        {!clearingSiteData && <DialogActions>
+                            <Button onClick={this.alertCloseHandler}
+                                    color="primary">{I18n.t('general.disagree')}</Button>
+                            <Button onClick={this.clearSiteDataHandler} color="primary"
+                                    autoFocus={true}>{I18n.t('general.agree')}</Button>
+                        </DialogActions>}
+                        {clearingSiteData &&
+                        <DialogActions style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                            <CircularProgress/>
+                        </DialogActions>}
+                    </Dialog>
+                    <Dialog
+                        key="overlay-dialog"
+                        open={hasUpdate}
+                        onClose={this.updateDialogCloseHandler}
+                        className="confirm-dialog"
+                    >
+                        <DialogTitle>{I18n.t('chat.update_dialog.title')}</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>
+                                {I18n.t('chat.update_dialog.body')}
+                            </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={this.updateDialogCloseHandler} color="secondary">
+                                {I18n.t('general.cancel')}
+                            </Button>
+                            <Button onClick={this.updateDialogAcceptHandler} color="primary" autoFocus={true}>
+                                {I18n.t('chat.update_dialog.update')}
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
                 </MuiThemeProvider>
-                <Dialog
-                    open={alertOpen}
-                    onClose={this.alertCloseHandler}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                >
-                    <DialogTitle>Critical Error</DialogTitle>
-                    <DialogContent>
-                        {!clearingSiteData && <DialogContentText>
-                            {errorMessage}<br/>
-                            <i>This probably fix your problem!</i>
-                        </DialogContentText>}
-                    </DialogContent>
-                    {!clearingSiteData && <DialogActions>
-                        <Button onClick={this.alertCloseHandler} color="primary">
-                            Disagree
-                        </Button>
-                        <Button onClick={this.clearSiteDataHandler} color="primary" autoFocus={true}>
-                            Agree
-                        </Button>
-                    </DialogActions>}
-                    {clearingSiteData &&
-                    <DialogActions style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <CircularProgress/>
-                    </DialogActions>}
-                </Dialog>
             </div>
         );
     }
@@ -288,6 +315,16 @@ class App extends React.Component<{}, IState> {
             payload,
             uuid: this.sessionId,
         });
+    }
+
+    private updateDialogCloseHandler = () => {
+        this.setState({
+            hasUpdate: false,
+        });
+    }
+
+    private updateDialogAcceptHandler = () => {
+        window.location.reload();
     }
 }
 

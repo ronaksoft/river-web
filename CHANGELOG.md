@@ -1,3 +1,6 @@
+## 0.26.13
+* Background update added
+
 ## 0.26.12
 * Document view bug fixed
 * LeftMenu keys updated

@@ -14,13 +14,24 @@ import {HashRouter} from 'react-router-dom';
 import './index.css';
 import registerServiceWorker from './registerServiceWorker';
 
+let appRef: App;
+const appRefHandler = (ref: any) => {
+    appRef = ref;
+};
+
 ReactDOM.render((
         <HashRouter>
-            <App/>
+            <App ref={appRefHandler}/>
         </HashRouter>
     ),
     document.getElementById('root') as HTMLElement
 );
 
-registerServiceWorker();
+const onUpdate = () => {
+    if (appRef) {
+        appRef.updateDialog();
+    }
+};
+
+registerServiceWorker(onUpdate);
 
