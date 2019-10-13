@@ -194,6 +194,7 @@ input {
         height: 50px; }
   .container.mobile-view {
     width: 200vw;
+    transform: translateX(0);
     transition: transform 0.1s linear;
     will-change: transform; }
     .container.mobile-view.chat-view {

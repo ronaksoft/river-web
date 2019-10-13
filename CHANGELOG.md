@@ -1,3 +1,8 @@
+## 0.26.12
+* Document view bug fixed
+* LeftMenu keys updated
+* Chat lag fixed
+
 ## 0.26.11
 * ContactList more menu bug fixed
 * Dialog more menu bug fixed

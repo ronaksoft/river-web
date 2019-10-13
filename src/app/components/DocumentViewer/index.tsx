@@ -442,29 +442,31 @@ class DocumentViewer extends React.Component<IProps, IState> {
         );
     }
 
-    private reset() {
-        this.setState({
-            doc: null,
-        });
-        this.mediaTransform = {
-            origin: {
-                x: 50,
-                y: 50,
-            },
-            pan: {
-                x: 0,
-                y: 0,
-            },
-            panStartPos: {
-                x: 0,
-                y: 0,
-            },
-            rotate: 0,
-            startPan: false,
-            zoom: 1,
-        };
-        if (!this.documentContainerRef) {
-            return;
+    private reset(classOnly?: boolean) {
+        if (classOnly !== true) {
+            this.setState({
+                doc: null,
+            });
+            this.mediaTransform = {
+                origin: {
+                    x: 50,
+                    y: 50,
+                },
+                pan: {
+                    x: 0,
+                    y: 0,
+                },
+                panStartPos: {
+                    x: 0,
+                    y: 0,
+                },
+                rotate: 0,
+                startPan: false,
+                zoom: 1,
+            };
+            if (!this.documentContainerRef) {
+                return;
+            }
         }
         this.documentContainerRef.classList.remove('prev', 'next', 'animate');
     }
@@ -682,7 +684,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         });
     }
 
-    private animateSlide(next: boolean, callback?: any) {
+    private animateSlide(next: boolean, callback?: any, classOnly?: boolean) {
         if (!this.documentContainerRef) {
             return;
         }
@@ -693,7 +695,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
             this.documentContainerRef.classList.add('prev', 'animate');
         }
         setTimeout(() => {
-            this.reset();
+            this.reset(classOnly);
             if (callback) {
                 callback();
             }
@@ -1005,9 +1007,11 @@ class DocumentViewer extends React.Component<IProps, IState> {
         if (index === gallerySelect) {
             return;
         }
-        this.setState({
-            gallerySelect: index,
-        });
+        this.animateSlide((index > gallerySelect), () => {
+            this.setState({
+                gallerySelect: index,
+            });
+        }, true);
     }
 
     /* Gallery prev gallery handler */
@@ -1016,9 +1020,11 @@ class DocumentViewer extends React.Component<IProps, IState> {
         if (gallerySelect <= 0) {
             return;
         }
-        this.setState({
-            gallerySelect: gallerySelect - 1,
-        });
+        this.animateSlide(false, () => {
+            this.setState({
+                gallerySelect: gallerySelect - 1,
+            });
+        }, true);
     }
 
     /* Gallery next gallery handler */
@@ -1027,9 +1033,11 @@ class DocumentViewer extends React.Component<IProps, IState> {
         if (gallerySelect >= (galleryList.length - 1)) {
             return;
         }
-        this.setState({
-            gallerySelect: gallerySelect + 1,
-        });
+        this.animateSlide(true, () => {
+            this.setState({
+                gallerySelect: gallerySelect + 1,
+            });
+        }, true);
     }
 
     /* Confirm dialog close handler */

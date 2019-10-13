@@ -205,17 +205,17 @@ class LeftMenu extends React.Component<IProps, IState> {
         switch (leftMenu) {
             default:
             case 'chat':
-                return (<Dialog ref={this.dialogRefHandler}
+                return (<Dialog key="dialog-menu" ref={this.dialogRefHandler}
                                 cancelIsTyping={this.props.cancelIsTyping}
                                 onContextMenu={this.props.onContextMenu}/>);
             case 'settings':
-                return (<SettingsMenu ref={this.settingsMenuRefHandler}
+                return (<SettingsMenu key="settings-menu" ref={this.settingsMenuRefHandler}
                                       updateMessages={this.props.updateMessages}
                                       onClose={this.props.onSettingsClose}
                                       onAction={this.props.onSettingsAction}
                                       onReloadDialog={this.props.onReloadDialog}/>);
             case 'contacts':
-                return (<ContactMenu/>);
+                return (<ContactMenu key="contacts-menu"/>);
         }
     }
 

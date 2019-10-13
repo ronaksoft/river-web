@@ -445,6 +445,9 @@ class Chat extends React.Component<IProps, IState> {
         if (selectedId === 'null') {
             this.setChatParams(selectedId, null);
         } else {
+            if (this.isMobileView) {
+                this.setChatView(true);
+            }
             const peer = this.getPeerByDialogId(selectedId);
             this.setLoading(true);
             if (this.messageRef) {
@@ -476,16 +479,12 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {
-            confirmDialogMode, confirmDialogOpen, rightMenuShrink,
-        } = this.state;
-
+        const {confirmDialogMode, confirmDialogOpen, rightMenuShrink} = this.state;
         return (
             <div className="bg">
                 <div className="wrapper">
-                    <div
-                        ref={this.containerRefHandler}
-                        className={'container' + (this.isMobileView ? ' mobile-view' : '')}>
+                    <div key="container" ref={this.containerRefHandler}
+                         className={'container' + (this.isMobileView ? ' mobile-view' : '')}>
                         <LeftMenu key="left-menu" ref={this.leftMenuRefHandler} dialogRef={this.dialogRefHandler}
                                   cancelIsTyping={this.cancelIsTypingHandler}
                                   onContextMenu={this.dialogContextMenuHandler}
@@ -700,9 +699,9 @@ class Chat extends React.Component<IProps, IState> {
         if (!this.containerRef) {
             return;
         }
-        if (enable) {
+        if (enable && !this.containerRef.classList.contains('chat-view')) {
             this.containerRef.classList.add('chat-view');
-        } else {
+        } else if (!enable && this.containerRef.classList.contains('chat-view')) {
             this.containerRef.classList.remove('chat-view');
         }
     }
@@ -2914,7 +2913,7 @@ class Chat extends React.Component<IProps, IState> {
         this.setChatView(false);
         this.mobileBackTimeout = setTimeout(() => {
             this.props.history.push('/chat/null');
-        }, 100);
+        }, 300);
     }
 
     /* SettingsMenu on update handler */

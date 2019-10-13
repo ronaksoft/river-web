@@ -162,6 +162,7 @@
 
   &.mobile-view {
     width: 200vw;
+    transform: translateX(0);
     transition: transform 0.1s linear;
     will-change: transform;
 
