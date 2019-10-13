@@ -255,7 +255,6 @@ class Dialog extends React.Component<IProps, IState> {
                     <AutoSizer>
                         {({width, height}: any) => {
                             return (<FixedSizeList
-                                key="fixed-size-list"
                                 ref={this.refHandler}
                                 itemSize={64}
                                 itemCount={searchItems.length + searchAddedItems.length}
@@ -276,7 +275,7 @@ class Dialog extends React.Component<IProps, IState> {
                 return (
                     <AutoSizer>
                         {({width, height}: any) => (
-                            <div key="fixed-container" className="dialogs-inner">
+                            <div className="dialogs-inner">
                                 <Scrollbars
                                     autoHide={true}
                                     style={{
@@ -289,7 +288,6 @@ class Dialog extends React.Component<IProps, IState> {
                                     rtl={!this.rtl}
                                 >
                                     <FixedSizeList
-                                        key="fixed-size-list"
                                         ref={this.refHandler}
                                         itemSize={64}
                                         itemCount={searchItems.length + searchAddedItems.length}
