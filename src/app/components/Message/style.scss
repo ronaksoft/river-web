@@ -606,6 +606,14 @@
 
     .bubble {
       margin-left: 10px;
+
+      .name {
+        margin-right: 6px;
+      }
+
+      .more {
+        visibility: visible;
+      }
     }
   }
 

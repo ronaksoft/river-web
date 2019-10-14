@@ -1,3 +1,6 @@
+## 0.26.17
+* Responsive view improvements
+
 ## 0.26.16
 * Responsive view improvements
 * Bug fixed in MessageMedia

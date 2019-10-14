@@ -407,6 +407,10 @@
 
 .mobile-view .bubble-wrapper.you .bubble {
   margin-left: 10px; }
+  .mobile-view .bubble-wrapper.you .bubble .name {
+    margin-right: 6px; }
+  .mobile-view .bubble-wrapper.you .bubble .more {
+    visibility: visible; }
 
 .mobile-view .selectable .bubble-wrapper .bubble {
   margin-left: 36px; }
