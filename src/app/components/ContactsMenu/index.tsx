@@ -37,8 +37,8 @@ interface IState {
     selectedId: string;
 }
 
-class ContactMenu extends React.Component<IProps, IState> {
-    private contactListComponent: ContactList;
+class ContactMenus extends React.Component<IProps, IState> {
+    private contactListRef: ContactList;
     private userRepo: UserRepo;
     private sdk: SDK;
     private broadcaster: Broadcaster;
@@ -61,8 +61,10 @@ class ContactMenu extends React.Component<IProps, IState> {
         this.broadcaster = Broadcaster.getInstance();
     }
 
-    public componentDidMount() {
-        // this.getContacts();
+    public scrollTop() {
+        if (this.contactListRef) {
+            this.contactListRef.scrollTop();
+        }
     }
 
     public render() {
@@ -85,8 +87,9 @@ class ContactMenu extends React.Component<IProps, IState> {
                     </span>
                 </div>
                 <div className="contact-box">
-                    <ContactList ref={this.contactListRefHandler} noRowsRenderer={this.noRowsRenderer} mode="link"
-                                 onContextMenuAction={this.contextMenuActionHandler} disableCheckSelected={true}/>
+                    <ContactList ref={this.contactListRefHandler} className="contacts-menu" mode="link"
+                                 noRowsRenderer={this.noRowsRenderer} disableCheckSelected={true}
+                                 onContextMenuAction={this.contextMenuActionHandler}/>
                 </div>
                 <SettingsModal open={newContactDialogOpen} title={i18n.t('contact.new_contact')}
                                icon={<PersonAddRounded/>}
@@ -134,7 +137,7 @@ class ContactMenu extends React.Component<IProps, IState> {
     }
 
     private contactListRefHandler = (ref: any) => {
-        this.contactListComponent = ref;
+        this.contactListRef = ref;
     }
 
     private noRowsRenderer = () => {
@@ -198,7 +201,7 @@ class ContactMenu extends React.Component<IProps, IState> {
         this.sdk.contactImport(true, contacts).then((data) => {
             data.usersList.forEach((user) => {
                 this.userRepo.importBulk(true, [user]).then(() => {
-                    this.contactListComponent.reload();
+                    this.contactListRef.reload();
                     this.broadcastEvent('User_Dialog_Open', {
                         id: user.id,
                     });
@@ -227,7 +230,7 @@ class ContactMenu extends React.Component<IProps, IState> {
                 contactIds.push(contact.id || '');
                 this.sdk.removeContact(contactIds).then(() => {
                     this.userRepo.removeContact(contact.id || '').finally(() => {
-                        this.contactListComponent.reload();
+                        this.contactListRef.reload();
                     });
                 });
                 break;
@@ -253,4 +256,4 @@ class ContactMenu extends React.Component<IProps, IState> {
     }
 }
 
-export default ContactMenu;
+export default ContactMenus;

@@ -28,10 +28,12 @@ import i18n from '../../services/i18n';
 import {VariableSizeList} from "react-window";
 import IsMobile from "../../services/isMobile";
 import getScrollbarWidth from "../../services/utilities/scrollbar_width";
+import animateScrollTo from "animated-scroll-to";
 
 import './style.css';
 
 interface IProps {
+    className?: string;
     contacts?: IUser[];
     disableCheckSelected?: boolean;
     hiddenContacts?: IUser[];
@@ -144,6 +146,34 @@ class ContactList extends React.Component<IProps, IState> {
         this.getDefault();
     }
 
+    public scrollTop() {
+        const className = this.props.className ? `.${this.props.className}` : '';
+        const el = document.querySelector((this.isMobile || !this.hasScrollbar) ? `.contact-container${className}` : `.contacts-inner${className} > div > div:first-child`);
+        if (el) {
+            const options: any = {
+                // duration of the scroll per 1000px, default 500
+                speed: 500,
+
+                // minimum duration of the scroll
+                minDuration: 128,
+
+                // maximum duration of the scroll
+                maxDuration: 256,
+
+                // @ts-ignore
+                elementToScroll: el,
+
+                // should animated scroll be canceled on user scroll/keypress
+                // if set to "false" user input will be disabled until animated scroll is complete
+                // (when set to false, "passive" will be also set to "false" to prevent Chrome errors)
+                cancelOnUserAction: true,
+            };
+            animateScrollTo(0, options).then(() => {
+                //
+            });
+        }
+    }
+
     public render() {
         const {selectedContacts, moreAnchorPos} = this.state;
         return (
@@ -201,7 +231,7 @@ class ContactList extends React.Component<IProps, IState> {
                                 overscanCount={32}
                                 width={width}
                                 height={height}
-                                className="contact-container"
+                                className={'contact-container ' + (this.props.className || '')}
                                 direction={this.rtl ? 'ltr' : 'rtl'}
                             >{({index, style}) => {
                                 return this.rowRender({index, style, key: index});
@@ -212,29 +242,34 @@ class ContactList extends React.Component<IProps, IState> {
             } else {
                 return (<AutoSizer>
                     {({width, height}: any) => (
-                        <Scrollbars
-                            autoHide={true}
-                            style={{
-                                height: height + 'px',
-                                width: width + 'px',
-                            }}
-                            onScroll={this.handleScroll}
-                            universal={true}
-                        >
-                            <VariableSizeList
-                                ref={this.refHandler}
-                                itemSize={this.getHeight}
-                                itemCount={contacts.length}
-                                overscanCount={32}
-                                width={width}
-                                height={height}
-                                className="contact-container"
-                                style={listStyle}
-                            >{({index, style}) => {
-                                return this.rowRender({index, style, key: index});
-                            }}
-                            </VariableSizeList>
-                        </Scrollbars>
+                        <div className={'contacts-inner ' + (this.props.className || '')} style={{
+                            height: height + 'px',
+                            width: width + 'px',
+                        }}>
+                            <Scrollbars
+                                autoHide={true}
+                                style={{
+                                    height: height + 'px',
+                                    width: width + 'px',
+                                }}
+                                onScroll={this.handleScroll}
+                                universal={true}
+                            >
+                                <VariableSizeList
+                                    ref={this.refHandler}
+                                    itemSize={this.getHeight}
+                                    itemCount={contacts.length}
+                                    overscanCount={32}
+                                    width={width}
+                                    height={height}
+                                    className="contact-container"
+                                    style={listStyle}
+                                >{({index, style}) => {
+                                    return this.rowRender({index, style, key: index});
+                                }}
+                                </VariableSizeList>
+                            </Scrollbars>
+                        </div>
                     )}
                 </AutoSizer>);
             }

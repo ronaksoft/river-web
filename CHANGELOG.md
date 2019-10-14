@@ -1,3 +1,6 @@
+## 0.26.18
+* Scroll to top added in dialogs and contacts
+
 ## 0.26.17
 * Responsive view improvements
 

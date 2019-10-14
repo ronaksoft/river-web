@@ -10,7 +10,7 @@
 import * as React from 'react';
 import Dialog from "../Dialog";
 import SettingsMenu from "../SettingsMenu";
-import ContactMenu from "../ContactMenu";
+import ContactsMenu from "../ContactsMenu";
 import {IDialog} from "../../repository/dialog/interface";
 import BottomBar from "../BottomBar";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -53,6 +53,8 @@ class LeftMenu extends React.Component<IProps, IState> {
     private bottomBarRef: BottomBar;
     private dialogRef: Dialog;
     private settingsMenuRef: SettingsMenu;
+    // @ts-ignore
+    private contactsMenuRef: ContactsMenu;
     private chatTopIcons: any[];
     private chatMoreMenuItem: any[];
 
@@ -111,7 +113,9 @@ class LeftMenu extends React.Component<IProps, IState> {
                 leftMenu: menu,
             }, fn);
         } else {
-            fn();
+            if (menu === 'settings') {
+                fn();
+            }
         }
     }
 
@@ -215,7 +219,7 @@ class LeftMenu extends React.Component<IProps, IState> {
                                       onAction={this.props.onSettingsAction}
                                       onReloadDialog={this.props.onReloadDialog}/>);
             case 'contacts':
-                return (<ContactMenu key="contacts-menu"/>);
+                return (<ContactsMenu key="contacts-menu" ref={this.contactsMenuRefHandler}/>);
         }
     }
 
@@ -228,14 +232,27 @@ class LeftMenu extends React.Component<IProps, IState> {
         this.settingsMenuRef = ref;
     }
 
+    private contactsMenuRefHandler = (ref: any) => {
+        this.contactsMenuRef = ref;
+    }
+
     private bottomBarRefHandler = (ref: any) => {
         this.bottomBarRefHandler = ref;
     }
 
     private bottomBarSelectHandler = (item: menuItems) => {
-        this.setState({
-            leftMenu: item,
-        });
+        if (this.state.leftMenu !== item) {
+            this.setState({
+                leftMenu: item,
+            });
+        } else {
+            if (this.dialogRef) {
+                this.dialogRef.scrollTop();
+            }
+            if (this.contactsMenuRef) {
+                this.contactsMenuRef.scrollTop();
+            }
+        }
     }
 
     private chatMoreOpenHandler = (e: any) => {

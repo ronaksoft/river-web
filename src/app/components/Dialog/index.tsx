@@ -31,6 +31,7 @@ import {IUser} from "../../repository/user/interface";
 import {isMuted} from "../UserInfoMenu";
 import {FixedSizeList} from "react-window";
 import getScrollbarWidth from "../../services/utilities/scrollbar_width";
+import animateScrollTo from "animated-scroll-to";
 
 import './style.css';
 
@@ -203,6 +204,33 @@ class Dialog extends React.Component<IProps, IState> {
         }
     }
 
+    public scrollTop() {
+        const el = document.querySelector((this.isMobile || !this.hasScrollbar) ? '.dialog-container' : '.dialogs-inner > div > div:first-child');
+        if (el) {
+            const options: any = {
+                // duration of the scroll per 1000px, default 500
+                speed: 500,
+
+                // minimum duration of the scroll
+                minDuration: 128,
+
+                // maximum duration of the scroll
+                maxDuration: 256,
+
+                // @ts-ignore
+                elementToScroll: el,
+
+                // should animated scroll be canceled on user scroll/keypress
+                // if set to "false" user input will be disabled until animated scroll is complete
+                // (when set to false, "passive" will be also set to "false" to prevent Chrome errors)
+                cancelOnUserAction: true,
+            };
+            animateScrollTo(0, options).then(() => {
+                //
+            });
+        }
+    }
+
     public render() {
         const {moreAnchorPos} = this.state;
         return (
@@ -275,7 +303,10 @@ class Dialog extends React.Component<IProps, IState> {
                 return (
                     <AutoSizer>
                         {({width, height}: any) => (
-                            <div className="dialogs-inner">
+                            <div className="dialogs-inner" style={{
+                                height: height + 'px',
+                                width: width + 'px',
+                            }}>
                                 <Scrollbars
                                     autoHide={true}
                                     style={{

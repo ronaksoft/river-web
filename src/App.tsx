@@ -210,6 +210,8 @@ class App extends React.Component<{}, IState> {
                         open={hasUpdate}
                         onClose={this.updateDialogCloseHandler}
                         className="confirm-dialog"
+                        disableBackdropClick={true}
+                        disableEscapeKeyDown={true}
                     >
                         <DialogTitle>{I18n.t('chat.update_dialog.title')}</DialogTitle>
                         <DialogContent>
