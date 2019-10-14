@@ -1,3 +1,7 @@
+## 0.26.16
+* Responsive view improvements
+* Bug fixed in MessageMedia
+
 ## 0.26.15
 * Service worker update interval added
 

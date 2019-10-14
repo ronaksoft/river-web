@@ -6,6 +6,9 @@
     Auditor: HamidrezaKK
     Copyright Ronak Software Group 2018
 */
+.user-dialog div[role="document"] > div {
+  margin: 8px; }
+
 .user-dialog .user-info-menu {
   width: 300px;
   background: var(--bg); }

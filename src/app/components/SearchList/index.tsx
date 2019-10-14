@@ -233,7 +233,7 @@ class SearchList extends React.Component<IProps, IState> {
                                                         savedMessages={this.userId === value.dialog.peerid}/>}
                           tabIndex={-1} label={<UserName id={value.dialog.peerid} noDetail={true} unsafe={true}
                                                          you={this.userId === value.dialog.peerid}
-                                                         youPlaceholder="Saved Messages"/>}
+                                                         youPlaceholder="Saved Messages" hideBadge={true}/>}
                           onDelete={this.removeItemHandler(value)} className="chip"/>);
             } else if (value.dialog.peertype === PeerType.PEERGROUP) {
                 return (<Chip key={key} avatar={<GroupAvatar id={value.dialog.peerid}/>} tabIndex={-1}

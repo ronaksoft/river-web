@@ -614,6 +614,12 @@
       .bubble {
         margin-left: 36px;
       }
+
+      &.you {
+        .arrow {
+          display: none;
+        }
+      }
     }
   }
 }

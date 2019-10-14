@@ -411,6 +411,9 @@
 .mobile-view .selectable .bubble-wrapper .bubble {
   margin-left: 36px; }
 
+.mobile-view .selectable .bubble-wrapper.you .arrow {
+  display: none; }
+
 .messages-inner {
   position: relative;
   z-index: 2;
