@@ -3473,7 +3473,7 @@ class Chat extends React.Component<IProps, IState> {
         if (this.isUpdating) {
             return;
         }
-        // this.modifyPendingMessage(data);
+        this.modifyPendingMessage(data);
     }
 
     /* Modify pending message */
@@ -3499,6 +3499,8 @@ class Chat extends React.Component<IProps, IState> {
                         this.messageRepo.remove(res.message_id);
                     }
                 });
+            } else {
+                this.messageRepo.remove(data.randomid || 0);
             }
         });
     }
@@ -3580,6 +3582,8 @@ class Chat extends React.Component<IProps, IState> {
                 } else if (message.messagetype === 0 || message.messagetype === C_MESSAGE_TYPE.Normal) {
                     this.resendTextMessage(res.id, message);
                 }
+            } else {
+                this.messageRepo.remove(message.id || 0);
             }
         });
     }

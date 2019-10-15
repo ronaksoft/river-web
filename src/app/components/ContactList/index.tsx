@@ -149,6 +149,7 @@ class ContactList extends React.Component<IProps, IState> {
     public scrollTop() {
         const className = this.props.className ? `.${this.props.className}` : '';
         const el = document.querySelector((this.isMobile || !this.hasScrollbar) ? `.contact-container${className}` : `.contacts-inner${className} > div > div:first-child`);
+        // const el = document.querySelector(`.contacts-inner${className} > div > div:first-child`);
         if (el) {
             const options: any = {
                 // duration of the scroll per 1000px, default 500
@@ -161,16 +162,25 @@ class ContactList extends React.Component<IProps, IState> {
                 maxDuration: 256,
 
                 // @ts-ignore
-                elementToScroll: el,
+                element: el,
+
+                // Additional offset value that gets added to the desiredOffset.  This is
+                // useful when passing a DOM object as the desiredOffset and wanting to adjust
+                // for an fixed nav or to add some padding.
+                offset: 0,
 
                 // should animated scroll be canceled on user scroll/keypress
                 // if set to "false" user input will be disabled until animated scroll is complete
                 // (when set to false, "passive" will be also set to "false" to prevent Chrome errors)
                 cancelOnUserAction: true,
+
+                // Set passive event Listeners to be true by default. Stops Chrome from complaining.
+                passive: true,
+
+                // Scroll horizontally rather than vertically (which is the default)
+                horizontal: false,
             };
-            animateScrollTo(0, options).then(() => {
-                //
-            });
+            animateScrollTo(0, options);
         }
     }
 

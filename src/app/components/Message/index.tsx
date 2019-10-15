@@ -492,24 +492,37 @@ class Message extends React.Component<IProps, IState> {
                         maxDuration: 300,
 
                         // @ts-ignore
-                        elementToScroll: this.scrollContainerEl,
+                        element: this.scrollContainerEl,
+
+                        // Additional offset value that gets added to the desiredOffset.  This is
+                        // useful when passing a DOM object as the desiredOffset and wanting to adjust
+                        // for an fixed nav or to add some padding.
+                        offset: 10,
 
                         // should animated scroll be canceled on user scroll/keypress
                         // if set to "false" user input will be disabled until animated scroll is complete
                         // (when set to false, "passive" will be also set to "false" to prevent Chrome errors)
                         cancelOnUserAction: true,
-                    };
-                    animateScrollTo(this.scrollContainerEl.scrollHeight + 50, options).then(() => {
-                        if (!this.isAtEnd()) {
-                            this.animateToEnd();
-                        } else {
-                            this.scrollDownTimeout = setTimeout(() => {
-                                if (!this.isAtEnd()) {
-                                    this.animateToEnd();
-                                }
-                            }, 200);
+
+                        // Set passive event Listeners to be true by default. Stops Chrome from complaining.
+                        passive: true,
+
+                        // Scroll horizontally rather than vertically (which is the default)
+                        horizontal: false,
+
+                        onComplete: () => {
+                            if (!this.isAtEnd()) {
+                                this.animateToEnd();
+                            } else {
+                                this.scrollDownTimeout = setTimeout(() => {
+                                    if (!this.isAtEnd()) {
+                                        this.animateToEnd();
+                                    }
+                                }, 200);
+                            }
                         }
-                    });
+                    };
+                    animateScrollTo(this.scrollContainerEl.scrollHeight + 50, options);
                 }
             }
         }
@@ -760,7 +773,7 @@ class Message extends React.Component<IProps, IState> {
         if (id && id < 0) {
             menuTypes[3].forEach((key) => {
                 if (key === 6) {
-                    if (items[moreIndex].error) {
+                    if (items[moreIndex].error || (this.riverTime.now() - (items[moreIndex].createdon || 0)) > 60) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else {

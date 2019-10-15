@@ -1,3 +1,7 @@
+## 0.26.20
+* Scroll to bug fixed
+* Context Menu updated
+
 ## 0.26.19
 * Dialog list render updated (temp fix)
 * Group Participant search updated
