@@ -25,7 +25,7 @@ interface IState {
     rightMenu: boolean;
 }
 
-class RightMenu extends React.Component<IProps, IState> {
+class RightMenu extends React.PureComponent<IProps, IState> {
     private ref: any;
 
     constructor(props: IProps) {

@@ -49,11 +49,10 @@ interface IState {
     overlay: boolean;
 }
 
-class LeftMenu extends React.Component<IProps, IState> {
+class LeftMenu extends React.PureComponent<IProps, IState> {
     private bottomBarRef: BottomBar;
     private dialogRef: Dialog;
     private settingsMenuRef: SettingsMenu;
-    // @ts-ignore
     private contactsMenuRef: ContactsMenu;
     private chatTopIcons: any[];
     private chatMoreMenuItem: any[];
@@ -206,20 +205,18 @@ class LeftMenu extends React.Component<IProps, IState> {
 
     private leftMenuRender = () => {
         const {leftMenu} = this.state;
-        switch (leftMenu) {
-            default:
-            case 'chat':
-                return (<Dialog key="dialog-menu" ref={this.dialogRefHandler}
-                                cancelIsTyping={this.props.cancelIsTyping}
-                                onContextMenu={this.props.onContextMenu}/>);
-            case 'settings':
-                return (<SettingsMenu key="settings-menu" ref={this.settingsMenuRefHandler}
-                                      updateMessages={this.props.updateMessages}
-                                      onClose={this.props.onSettingsClose}
-                                      onAction={this.props.onSettingsAction}
-                                      onReloadDialog={this.props.onReloadDialog}/>);
-            case 'contacts':
-                return (<ContactsMenu key="contacts-menu" ref={this.contactsMenuRefHandler}/>);
+        if (leftMenu === 'settings') {
+            return (<SettingsMenu key="settings-menu" ref={this.settingsMenuRefHandler}
+                                  updateMessages={this.props.updateMessages}
+                                  onClose={this.props.onSettingsClose}
+                                  onAction={this.props.onSettingsAction}
+                                  onReloadDialog={this.props.onReloadDialog}/>);
+        } else if (leftMenu === 'contacts') {
+            return (<ContactsMenu key="contacts-menu" ref={this.contactsMenuRefHandler}/>);
+        } else {
+            return (<Dialog key="dialog-menu" ref={this.dialogRefHandler}
+                            cancelIsTyping={this.props.cancelIsTyping}
+                            onContextMenu={this.props.onContextMenu}/>);
         }
     }
 

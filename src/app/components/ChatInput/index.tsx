@@ -964,6 +964,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 const group: IGroup = res.group;
                 group.participantList = res.participantsList;
                 group.photogalleryList = res.photogalleryList;
+                group.hasUpdate = false;
                 if (res && res.participantsList) {
                     searchParticipant(keyword, res.participantsList);
                 }
@@ -984,7 +985,7 @@ class ChatInput extends React.Component<IProps, IState> {
             });
         };
         this.groupRepo.get(peer.getId() || '').then((group) => {
-            if (group && group.participantList) {
+            if (group && group.participantList && !group.hasUpdate) {
                 searchParticipant(keyword, group.participantList);
             } else {
                 getRemoteGroupFull();

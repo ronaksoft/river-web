@@ -12,7 +12,7 @@ import {UpdateEnvelope, User} from '../messages/chat.core.types_pb';
 import {
     UpdateDialogPinned,
     UpdateDifference,
-    UpdateDraftMessage, UpdateDraftMessageCleared,
+    UpdateDraftMessage, UpdateDraftMessageCleared, UpdateGroupParticipantAdd, UpdateGroupParticipantDeleted,
     UpdateMessageEdited,
     UpdateMessageID,
     UpdateMessagesDeleted,
@@ -262,6 +262,20 @@ export default class SyncManager {
                         draft: {},
                         peerid: updateDraftMessageCleared.peer.id,
                     });
+                    break;
+                case C_MSG.UpdateGroupParticipantAdd:
+                    const updateGroupParticipantAdd = UpdateGroupParticipantAdd.deserializeBinary(data).toObject();
+                    this.groupRepo.importBulk([{
+                        hasUpdate: true,
+                        id: updateGroupParticipantAdd.groupid,
+                    }]);
+                    break;
+                case C_MSG.UpdateGroupParticipantDeleted:
+                    const updateGroupParticipantDeleted = UpdateGroupParticipantDeleted.deserializeBinary(data).toObject();
+                    this.groupRepo.importBulk([{
+                        hasUpdate: true,
+                        id: updateGroupParticipantDeleted.groupid,
+                    }]);
                     break;
                 default:
                     break;

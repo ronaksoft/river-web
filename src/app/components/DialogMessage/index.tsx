@@ -29,17 +29,20 @@ import {localize} from '../../services/utilities/localize';
 import sdk from '../../services/sdk';
 
 import './style.css';
+import {Link} from "react-router-dom";
 
 interface IProps {
     cancelIsTyping?: (id: string) => void;
     dialog: IDialog;
     isTyping: { [key: string]: { fn: any, action: TypingAction } };
     onContextMenuOpen?: (e: any) => void;
+    selectedId: string;
 }
 
 interface IState {
     dialog: IDialog;
     isTyping: { [key: string]: { fn: any, action: TypingAction } };
+    selectedId: string;
 }
 
 class DialogMessage extends React.Component<IProps, IState> {
@@ -54,9 +57,11 @@ class DialogMessage extends React.Component<IProps, IState> {
         this.state = {
             dialog: props.dialog,
             isTyping: props.isTyping,
+            selectedId: props.selectedId,
         };
 
         this.userId = sdk.getInstance().getConnInfo().UserID || '';
+        window.console.log('DialogMessage');
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -74,6 +79,11 @@ class DialogMessage extends React.Component<IProps, IState> {
             });
             this.isTyping = newProps.isTyping;
         }
+        if (this.state.selectedId !== newProps.selectedId) {
+            this.setState({
+                selectedId: newProps.selectedId,
+            });
+        }
     }
 
     public render() {
@@ -82,40 +92,46 @@ class DialogMessage extends React.Component<IProps, IState> {
         const muted = isMuted(dialog.notifysettings);
         const hasMention = (dialog.mentionedcount && dialog.mentionedcount > 0);
         return (
-            <div
-                className={'dialog-wrapper' + (muted ? ' muted' : '') + (hasMention ? ' has-mention' : '')}>
-                {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
-                <UserAvatar className="avatar" id={dialog.peerid || ''} noDetail={true}
-                            savedMessages={dialog.saved_messages}/>}
-                {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
-                <GroupAvatar className="avatar" id={dialog.peerid || ''}/>}
-                <div className="dialog-top-bar">
-                    {muted && <div className="muted-wrapper"><NotificationsOffRounded/></div>}
-                    {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
-                    <UserName className="name" id={dialog.peerid || ''} noDetail={true} you={dialog.saved_messages}
-                              youPlaceholder="Saved Messages"/>}
-                    {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
-                    <GroupName className="name" id={dialog.peerid || ''}/>}
-                    {dialog.preview_me && dialog.peerid !== this.userId && <span className="status">
-                        {this.getStatus(dialog.topmessageid || 0, dialog.readoutboxmaxid || 0)}
-                    </span>}
-                    {dialog.last_update && <LiveDate className="time" time={dialog.last_update || 0}/>}
+            <Link to={`/chat/${dialog.peerid}`}>
+                <div
+                    className={'dialog' + (dialog.peerid === this.state.selectedId ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}>
+                    <div
+                        className={'dialog-wrapper' + (muted ? ' muted' : '') + (hasMention ? ' has-mention' : '')}>
+                        {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
+                        <UserAvatar className="avatar" id={dialog.peerid || ''} noDetail={true}
+                                    savedMessages={dialog.saved_messages}/>}
+                        {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
+                        <GroupAvatar className="avatar" id={dialog.peerid || ''}/>}
+                        <div className="dialog-top-bar">
+                            {muted && <div className="muted-wrapper"><NotificationsOffRounded/></div>}
+                            {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
+                            <UserName className="name" id={dialog.peerid || ''} noDetail={true}
+                                      you={dialog.saved_messages}
+                                      youPlaceholder="Saved Messages"/>}
+                            {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
+                            <GroupName className="name" id={dialog.peerid || ''}/>}
+                            {dialog.preview_me && dialog.peerid !== this.userId && <span
+                                className="status">{this.getStatus(dialog.topmessageid || 0, dialog.readoutboxmaxid || 0)}</span>}
+                            {dialog.last_update && <LiveDate className="time" time={dialog.last_update || 0}/>}
+                        </div>
+                        {Boolean(ids.length === 0) &&
+                        <span
+                            className={'preview ' + (dialog.preview_rtl ? 'rtl' : 'ltr')}>{this.renderPreviewMessage(dialog)}</span>}
+                        {isTypingRender(isTyping, dialog.peertype || PeerType.PEERUSER)}
+                        {Boolean(dialog.unreadcount && dialog.unreadcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me) &&
+                        <span
+                            className="unread">{(dialog.unreadcount || 0) > 99 ? localize('+99') : localize(dialog.unreadcount || 0)}</span>}
+                        {Boolean(!dialog.unreadcount && dialog.pinned) &&
+                        this.getPinIcon()}
+                        {Boolean(dialog.mentionedcount && dialog.mentionedcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me) &&
+                        <span className="mention"><AlternateEmailRounded/></span>}
+                        {Boolean(dialog.only_contact !== true) &&
+                        <div className="more" onClick={this.props.onContextMenuOpen}>
+                            <MoreVert/>
+                        </div>}
+                    </div>
                 </div>
-                {Boolean(ids.length === 0) && <span className={'preview ' + (dialog.preview_rtl ? 'rtl' : 'ltr')}>
-                    {this.renderPreviewMessage(dialog)}
-                </span>}
-                {isTypingRender(isTyping, dialog.peertype || PeerType.PEERUSER)}
-                {Boolean(dialog.unreadcount && dialog.unreadcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me) &&
-                <span
-                    className="unread">{(dialog.unreadcount || 0) > 99 ? localize('+99') : localize(dialog.unreadcount || 0)}</span>}
-                {Boolean(!dialog.unreadcount && dialog.pinned) &&
-                this.getPinIcon()}
-                {Boolean(dialog.mentionedcount && dialog.mentionedcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me) &&
-                <span className="mention"><AlternateEmailRounded/></span>}
-                {Boolean(dialog.only_contact !== true) && <div className="more" onClick={this.props.onContextMenuOpen}>
-                    <MoreVert/>
-                </div>}
-            </div>
+            </Link>
         );
     }
 

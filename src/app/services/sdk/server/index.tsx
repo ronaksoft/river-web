@@ -172,7 +172,7 @@ export default class Server {
     }
 
     private sendThrottledRequest(request: IServerRequest) {
-        window.console.debug(`%c${C_MSG_NAME[request.constructor]} ${request.reqId}`, 'color: #f9d71c');
+        window.console.debug(`%c${C_MSG_NAME[request.constructor]} ${request.reqId}`, 'color: #f9d74e');
         request.timeout = setTimeout(() => {
             this.dispatchTimeout(request.reqId);
         }, request.options ? (request.options.timeout || C_TIMEOUT) : C_TIMEOUT);
@@ -222,7 +222,7 @@ export default class Server {
     private response({reqId, constructor, data}: any) {
         this.getLastActivityTime();
         if (constructor !== C_MSG.Error) {
-            window.console.debug(`%c${C_MSG_NAME[constructor]} ${reqId}`, 'color: #f9d71c');
+            window.console.debug(`%c${C_MSG_NAME[constructor]} ${reqId}`, 'color: #f967a0');
         }
         if (!this.messageListeners[reqId]) {
             return;

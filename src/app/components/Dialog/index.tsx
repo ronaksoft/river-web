@@ -56,7 +56,7 @@ const listStyle: React.CSSProperties = {
     overflowY: 'visible',
 };
 
-class Dialog extends React.Component<IProps, IState> {
+class Dialog extends React.PureComponent<IProps, IState> {
     private list: FixedSizeList;
     private searchRepo: SearchRepo;
     private readonly searchDebounce: any;
@@ -233,6 +233,7 @@ class Dialog extends React.Component<IProps, IState> {
 
     public render() {
         const {moreAnchorPos} = this.state;
+        const {searchItems, searchAddedItems} = this.state;
         return (
             <div className="dialogs">
                 <div ref={this.containerRefHandler} className="dialog-search">
@@ -258,7 +259,43 @@ class Dialog extends React.Component<IProps, IState> {
                     </FormControl>
                 </div>
                 <div className="dialog-list">
-                    {this.getWrapper()}
+                    {/*{this.getWrapper()}*/}
+                    <AutoSizer>
+                        {({width, height}: any) => (
+                            <div className="dialogs-inner" style={{
+                                height: height + 'px',
+                                width: width + 'px',
+                            }}>
+                                <Scrollbars
+                                    autoHide={true}
+                                    style={{
+                                        height: height + 'px',
+                                        width: width + 'px',
+                                    }}
+                                    hideTracksWhenNotNeeded={true}
+                                    universal={true}
+                                    rtl={!this.rtl}
+                                >
+                                    <div className="dialog-container">
+                                        {searchItems.map((dialog, index) => {
+                                            const isTyping = this.state.isTypingList.hasOwnProperty(dialog.peerid || '') ? this.state.isTypingList[dialog.peerid || ''] : {};
+                                            return (
+                                                <DialogMessage key={dialog.peerid || index} dialog={dialog}
+                                                               isTyping={isTyping} selectedId={this.state.selectedId}
+                                                               onContextMenuOpen={this.contextMenuOpenHandler(index)}/>
+                                            );
+                                        })}
+                                        {searchAddedItems.map((dialog, index) => {
+                                            return (
+                                                <DialogMessage key={dialog.peerid || index} dialog={dialog}
+                                                               isTyping={{}} selectedId={this.state.selectedId}/>
+                                            );
+                                        })}
+                                    </div>
+                                </Scrollbars>
+                            </div>
+                        )}
+                    </AutoSizer>
                 </div>
                 <Menu
                     anchorReference="anchorPosition"
@@ -273,6 +310,7 @@ class Dialog extends React.Component<IProps, IState> {
         );
     }
 
+    // @ts-ignore
     private getWrapper() {
         const {searchItems, searchAddedItems} = this.state;
         if ((searchItems.length + searchAddedItems.length) === 0) {
@@ -349,8 +387,8 @@ class Dialog extends React.Component<IProps, IState> {
         }
     }
 
-    private refHandler = (value: any) => {
-        this.list = value;
+    private refHandler = (ref: any) => {
+        this.list = ref;
     }
 
     private rowRender = ({index, key, style}: any): any => {
@@ -363,7 +401,7 @@ class Dialog extends React.Component<IProps, IState> {
                         <div
                             className={'dialog' + (dialog.peerid === this.state.selectedId ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}>
                             <DialogMessage dialog={dialog} isTyping={isTyping}
-                                           onContextMenuOpen={this.contextMenuOpenHandler(index)}/>
+                                           onContextMenuOpen={this.contextMenuOpenHandler(index)} selectedId=""/>
                         </div>
                     </Link>
                 </div>
@@ -375,7 +413,7 @@ class Dialog extends React.Component<IProps, IState> {
                     <div style={style} key={dialog.peerid || key} onClick={this.closeSearchHandler}>
                         <Link to={`/chat/${dialog.peerid}`}>
                             <div className="dialog">
-                                <DialogMessage dialog={dialog} isTyping={{}}/>
+                                <DialogMessage dialog={dialog} isTyping={{}} selectedId=""/>
                             </div>
                         </Link>
                     </div>

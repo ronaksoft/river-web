@@ -1,3 +1,9 @@
+## 0.26.19
+* Dialog list render updated (temp fix)
+* Group Participant search updated
+* UpdateManager updated
+* SyncManager updated
+
 ## 0.26.18
 * Scroll to top added in dialogs and contacts
 

@@ -387,6 +387,9 @@ class Chat extends React.Component<IProps, IState> {
         // Update: group participant added
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateGroupParticipantAdd, this.updateGroupParticipantAddHandler));
 
+        // Update: group participant deleted
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateGroupParticipantDeleted, this.updateGroupParticipantDeletedHandler));
+
         // Sync: MessageId
         this.eventReferences.push(this.syncManager.listen(C_SYNC_UPDATE.MessageId, this.updateMessageIDHandler));
 
@@ -485,7 +488,7 @@ class Chat extends React.Component<IProps, IState> {
                 <div className="wrapper">
                     <div key="container" ref={this.containerRefHandler}
                          className={'container' + (this.isMobileView ? ' mobile-view' : '')}>
-                        <LeftMenu key="left-menu" ref={this.leftMenuRefHandler} dialogRef={this.dialogRefHandler}
+                        <LeftMenu ref={this.leftMenuRefHandler} dialogRef={this.dialogRefHandler}
                                   cancelIsTyping={this.cancelIsTypingHandler}
                                   onContextMenu={this.dialogContextMenuHandler}
                                   onSettingsClose={this.bottomBarSelectHandler('chat')}
@@ -4346,11 +4349,26 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    /* Update group participant add */
+    /* Update group participant added */
     private updateGroupParticipantAddHandler = (data: UpdateGroupParticipantAdd.AsObject) => {
         if (this.isUpdating) {
             return;
         }
+        this.groupRepo.importBulk([{
+            hasUpdate: true,
+            id: data.groupid,
+        }]);
+    }
+
+    /* Update group participant deleted */
+    private updateGroupParticipantDeletedHandler = (data: UpdateGroupParticipantAdd.AsObject) => {
+        if (this.isUpdating) {
+            return;
+        }
+        this.groupRepo.importBulk([{
+            hasUpdate: true,
+            id: data.groupid,
+        }]);
     }
 
     private pinDialog(peerId: string, pinned?: boolean) {

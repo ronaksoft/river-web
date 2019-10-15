@@ -14,6 +14,7 @@ interface IGroup extends Group.AsObject {
     participantList?: GroupParticipant.AsObject[];
     delete_photo?: boolean;
     photogalleryList?: GroupPhoto.AsObject[];
+    hasUpdate?: boolean;
 }
 
 export {IGroup};
