@@ -89,7 +89,8 @@ class DialogMessage extends React.Component<IProps, IState> {
         const {dialog, isTyping} = this.state;
         const ids = Object.keys(isTyping);
         const muted = isMuted(dialog.notifysettings);
-        const hasMention = (dialog.mentionedcount && dialog.mentionedcount > 0);
+        const hasCounter = (dialog.unreadcount && dialog.unreadcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me);
+        const hasMention = (dialog.mentionedcount && dialog.mentionedcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me);
         return (
             <Link to={`/chat/${dialog.peerid}`}>
                 <div
@@ -117,13 +118,11 @@ class DialogMessage extends React.Component<IProps, IState> {
                         <span
                             className={'preview ' + (dialog.preview_rtl ? 'rtl' : 'ltr')}>{this.renderPreviewMessage(dialog)}</span>}
                         {isTypingRender(isTyping, dialog.peertype || PeerType.PEERUSER)}
-                        {Boolean(dialog.unreadcount && dialog.unreadcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me) &&
-                        <span
+                        {hasCounter && <span
                             className="unread">{(dialog.unreadcount || 0) > 99 ? localize('+99') : localize(dialog.unreadcount || 0)}</span>}
-                        {Boolean(!dialog.unreadcount && dialog.pinned) &&
+                        {Boolean(!hasCounter && dialog.pinned) &&
                         this.getPinIcon()}
-                        {Boolean(dialog.mentionedcount && dialog.mentionedcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me) &&
-                        <span className="mention"><AlternateEmailRounded/></span>}
+                        {hasMention && <span className="mention"><AlternateEmailRounded/></span>}
                         {Boolean(dialog.only_contact !== true) &&
                         <div className="more" onClick={this.props.onContextMenuOpen}>
                             <MoreVert/>

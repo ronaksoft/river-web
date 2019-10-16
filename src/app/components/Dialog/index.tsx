@@ -207,7 +207,6 @@ class Dialog extends React.PureComponent<IProps, IState> {
     public scrollTop() {
         // const el = document.querySelector((this.isMobile || !this.hasScrollbar) ? '.dialog-container' : '.dialogs-inner > div > div:first-child');
         const el = document.querySelector('.dialogs-inner > div > div:first-child');
-        window.console.log(el);
         if (el) {
             const options: any = {
                 // duration of the scroll per 1000px, default 500

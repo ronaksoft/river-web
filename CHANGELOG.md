@@ -1,3 +1,7 @@
+## 0.26.21
+* Dialog pin bug fixed
+* Pending message improvements
+
 ## 0.26.20
 * Scroll to bug fixed
 * Context Menu updated

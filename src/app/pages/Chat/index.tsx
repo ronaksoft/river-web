@@ -3499,8 +3499,6 @@ class Chat extends React.Component<IProps, IState> {
                         this.messageRepo.remove(res.message_id);
                     }
                 });
-            } else {
-                this.messageRepo.remove(data.randomid || 0);
             }
         });
     }
