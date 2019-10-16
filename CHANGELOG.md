@@ -1,3 +1,6 @@
+## 0.26.22
+* Fix
+
 ## 0.26.21
 * Dialog pin bug fixed
 * Pending message improvements

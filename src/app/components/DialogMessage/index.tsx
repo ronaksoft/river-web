@@ -89,8 +89,8 @@ class DialogMessage extends React.Component<IProps, IState> {
         const {dialog, isTyping} = this.state;
         const ids = Object.keys(isTyping);
         const muted = isMuted(dialog.notifysettings);
-        const hasCounter = (dialog.unreadcount && dialog.unreadcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me);
-        const hasMention = (dialog.mentionedcount && dialog.mentionedcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me);
+        const hasCounter = Boolean(dialog.unreadcount && dialog.unreadcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me);
+        const hasMention = Boolean(dialog.mentionedcount && dialog.mentionedcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me);
         return (
             <Link to={`/chat/${dialog.peerid}`}>
                 <div
@@ -114,8 +114,7 @@ class DialogMessage extends React.Component<IProps, IState> {
                                 className="status">{this.getStatus(dialog.topmessageid || 0, dialog.readoutboxmaxid || 0)}</span>}
                             {dialog.last_update && <LiveDate className="time" time={dialog.last_update || 0}/>}
                         </div>
-                        {Boolean(ids.length === 0) &&
-                        <span
+                        {Boolean(ids.length === 0) && <span
                             className={'preview ' + (dialog.preview_rtl ? 'rtl' : 'ltr')}>{this.renderPreviewMessage(dialog)}</span>}
                         {isTypingRender(isTyping, dialog.peertype || PeerType.PEERUSER)}
                         {hasCounter && <span
