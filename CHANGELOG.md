@@ -1,3 +1,8 @@
+## 0.26.23
+* Snackbar updated
+* Translations updated
+* Remove message UI bug fixed
+
 ## 0.26.22
 * Fix
 

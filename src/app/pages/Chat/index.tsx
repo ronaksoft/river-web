@@ -48,7 +48,7 @@ import {
 import {IConnInfo} from '../../services/sdk/interface';
 import {IDialog} from '../../repository/dialog/interface';
 import UpdateManager, {INewMessageBulkUpdate} from '../../services/sdk/server/updateManager';
-import {C_MSG} from '../../services/sdk/const';
+import {C_ERR, C_MSG} from '../../services/sdk/const';
 import {
     UpdateDialogPinned,
     UpdateDraftMessage,
@@ -134,6 +134,7 @@ import {C_CUSTOM_BG_ID, C_VERSION} from "../../components/SettingsMenu";
 import RightMenu from "../../components/RightMenu";
 import InfoBar from "../../components/InfoBar";
 import MoveDown from "../../components/MoveDown";
+import {OptionsObject, withSnackbar} from "notistack";
 
 import './style.css';
 
@@ -144,6 +145,7 @@ interface IProps {
     history?: any;
     location?: any;
     match?: any;
+    enqueueSnackbar?: (message: string | React.ReactNode, options?: OptionsObject) => OptionsObject['key'] | null;
 }
 
 interface IState {
@@ -1189,8 +1191,12 @@ class Chat extends React.Component<IProps, IState> {
                     }
                     // Update current message list if visible
                     if (updateView) {
-                        this.messageRef.list.recomputeGridSize();
-                        this.messageRef.fitList();
+                        this.messageRef.keepView();
+                        this.messageRef.forceUpdate(() => {
+                            this.messageRef.list.recomputeGridSize();
+                            this.messageRef.fitList();
+                            this.messageRef.removeSnapshot(true);
+                        });
                     }
                 }
             });
@@ -3331,6 +3337,12 @@ class Chat extends React.Component<IProps, IState> {
             case 'pin':
                 this.sdk.dialogTogglePin(peer, true).then(() => {
                     this.pinDialog(peer.getId() || '', true);
+                }).catch((err) => {
+                    if (err.code === C_ERR.ErrCodeInternal && err.items === 'max pinned dialogs reached') {
+                        if (this.props.enqueueSnackbar) {
+                            this.props.enqueueSnackbar(i18n.t('dialog.max_pin_alert'));
+                        }
+                    }
                 });
                 break;
             case 'unpin':
@@ -4644,4 +4656,4 @@ class Chat extends React.Component<IProps, IState> {
     }*/
 }
 
-export default Chat;
+export default withSnackbar<any>(Chat);

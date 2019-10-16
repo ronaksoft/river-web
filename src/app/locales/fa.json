@@ -119,7 +119,8 @@
     "remove": "حذف",
     "pin": "سنجاق",
     "unpin": "برداشتن سنجاق",
-    "compose_a_new_message": "یک پیام بفرستید : )"
+    "compose_a_new_message": "یک پیام بفرستید : )",
+    "max_pin_alert": "دیالوگ‌ها به حداکثر پین رسیده است"
   },
   "settings": {
     "settings": "تنظیمات",

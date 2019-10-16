@@ -11,7 +11,6 @@ import * as React from 'react';
 import SDK from '../../services/sdk';
 // @ts-ignore
 import IntlTelInput from 'react-intl-tel-input';
-import Snackbar from '@material-ui/core/Snackbar';
 import {CloseRounded, DoneRounded, RefreshRounded} from '@material-ui/icons';
 import {C_ERR, C_ERR_ITEM} from '../../services/sdk/const';
 import RiverLogo from '../../components/RiverLogo';
@@ -30,10 +29,12 @@ import Tooltip from "@material-ui/core/Tooltip";
 import IconButton from "@material-ui/core/IconButton";
 import IframeService, {C_IFRAME_SUBJECT} from "../../services/iframe";
 import {find} from 'lodash';
+import FileManager from "../../services/sdk/fileManager";
+import {OptionsObject, withSnackbar} from 'notistack';
 
 import './tel-input.css';
 import './style.css';
-import FileManager from "../../services/sdk/fileManager";
+
 
 const C_CLIENT = `Web:- ${window.navigator.userAgent}`;
 const codeLen = 5;
@@ -43,6 +44,7 @@ interface IProps {
     match?: any;
     location?: any;
     history?: any;
+    enqueueSnackbar?: (message: string | React.ReactNode, options?: OptionsObject) => OptionsObject['key'] | null;
 }
 
 interface IState {
@@ -59,8 +61,6 @@ interface IState {
     sendToPhone: boolean;
     qrCodeOpen: boolean;
     selectedLanguage: string;
-    snackOpen: boolean;
-    snackText: string;
     step: string;
     tries: number;
     workspace: string;
@@ -106,8 +106,6 @@ class SignUp extends React.Component<IProps, IState> {
             qrCodeOpen: false,
             selectedLanguage: localStorage.getItem('river.lang') || 'en',
             sendToPhone: false,
-            snackOpen: false,
-            snackText: '',
             step,
             tries: 0,
             workspace: '',
@@ -314,16 +312,6 @@ class SignUp extends React.Component<IProps, IState> {
                     <div className="language-container"
                          onClick={this.showLanguageDialogHandler}>{i18n.t(`sign_up.${this.state.selectedLanguage}`)}</div>
                 </div>
-                <Snackbar
-                    anchorOrigin={{vertical: 'top', horizontal: 'center'}}
-                    open={this.state.snackOpen}
-                    onClose={this.handleCloseSnack}
-                    ContentProps={{
-                        'aria-describedby': 'message-id',
-                    }}
-                    autoHideDuration={6000}
-                    message={<span id="message-id">{this.state.snackText}</span>}
-                />
                 <SettingsModal
                     open={this.state.qrCodeOpen}
                     onClose={this.qrCodeDialogCloseHandler}
@@ -542,10 +530,9 @@ class SignUp extends React.Component<IProps, IState> {
                     tries: this.state.tries + 1,
                 });
                 if (err.code === C_ERR.ErrCodeInvalid && err.items === C_ERR_ITEM.ErrItemPhoneCode) {
-                    this.setState({
-                        snackOpen: true,
-                        snackText: i18n.t('sign_up.code_is_incorrect'),
-                    });
+                    if (this.props.enqueueSnackbar) {
+                        this.props.enqueueSnackbar(i18n.t('sign_up.code_is_incorrect'));
+                    }
                     return;
                 }
                 if (err.code === C_ERR.ErrCodeUnavailable && err.items === C_ERR_ITEM.ErrItemPhone) {
@@ -621,12 +608,6 @@ class SignUp extends React.Component<IProps, IState> {
         });
     }
 
-    private handleCloseSnack = () => {
-        this.setState({
-            snackOpen: false,
-        });
-    }
-
     private fNameOnChange = (e: any) => {
         this.setState({
             fName: e.target.value,
@@ -671,16 +652,14 @@ class SignUp extends React.Component<IProps, IState> {
                 tries: this.state.tries + 1,
             });
             if (err.code === C_ERR.ErrCodeInvalid && err.items === C_ERR_ITEM.ErrItemPhoneCode) {
-                this.setState({
-                    snackOpen: true,
-                    snackText: i18n.t('sign_up.code_is_incorrect'),
-                });
+                if (this.props.enqueueSnackbar) {
+                    this.props.enqueueSnackbar(i18n.t('sign_up.code_is_incorrect'));
+                }
                 return;
             }
-            this.setState({
-                snackOpen: true,
-                snackText: `Error! Code:${err.code} Items${err.items}`,
-            });
+            if (this.props.enqueueSnackbar) {
+                this.props.enqueueSnackbar(`Error! Code:${err.code} Items${err.items}`);
+            }
         });
     }
 
@@ -875,4 +854,4 @@ class SignUp extends React.Component<IProps, IState> {
     }
 }
 
-export default SignUp;
+export default withSnackbar<any>(SignUp);

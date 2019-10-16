@@ -25,6 +25,7 @@ import IframeService, {C_IFRAME_SUBJECT} from "./app/services/iframe";
 import UniqueId from "./app/services/uniqueId";
 import {C_VERSION} from "./app/components/SettingsMenu";
 import Server from "./app/services/sdk/server";
+import {SnackbarProvider} from 'notistack';
 
 import './App.css';
 
@@ -180,7 +181,9 @@ class App extends React.Component<{}, IState> {
         return (
             <div className={'App' + (this.isElectron ? ' is-electron' : '')}>
                 <MuiThemeProvider theme={theme}>
-                    {Routes}
+                    <SnackbarProvider maxSnack={3} >
+                        {Routes}
+                    </SnackbarProvider>
                     <Dialog
                         open={alertOpen}
                         onClose={this.alertCloseHandler}

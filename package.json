@@ -61,6 +61,7 @@
     "moment": "^2.24.0",
     "moment-jalaali": "^0.8.3",
     "music-metadata-browser": "^1.2.1",
+    "notistack": "^0.9.4",
     "opus-recorder": "^6.1.1",
     "protobufjs": "^6.8.8",
     "rc-progress": "^2.4.1",

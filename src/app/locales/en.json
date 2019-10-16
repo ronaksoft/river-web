@@ -123,7 +123,8 @@
     "CHANGE": "CHANGE",
     "PROFILE": "PROFILE",
     "PHOTO": "PHOTO",
-    "compose_a_new_message": "Compose a new message : )"
+    "compose_a_new_message": "Compose a new message : )",
+    "max_pin_alert": "Max pinned dialogs reached"
   },
   "settings": {
     "settings": "Settings",
