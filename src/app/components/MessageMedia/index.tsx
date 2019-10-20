@@ -365,7 +365,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                         <PlayArrowRounded/><span>{this.getDuration(info.duration || 0)}</span>
                         {!message.contentread && <span className="unread-bullet"/>}
                     </div>}
-                    {Boolean((fileState !== 'view' && fileState !== 'open') || transition) &&
+                    {Boolean(((fileState !== 'view' && fileState !== 'open') || transition) && (message.id || 0) > 0) &&
                     <div className="media-container">
                         <div className="media-size" ref={this.mediaSizeRefHandler}>0 KB</div>
                         <div className="media-big" style={{height: this.pictureContentSize.height}}>
@@ -390,17 +390,17 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                             </div>
                         </div>
                     </div>}
-                    {Boolean((fileState === 'view' || fileState === 'open') || transition) &&
+                    {Boolean((fileState === 'view' || fileState === 'open') || transition || (message.id || 0) < 0) &&
                     <div className={'media-container downloaded-media' + (transition ? ' media-transition' : '')}>
                         <div ref={this.pictureBigRefHandler} style={{height: this.pictureContentSize.height}}
                              className="media-big"
                              onClick={this.showMediaHandler}>
                             {this.blurredImageEnable &&
                             <CachedPhoto className="blurred-picture" blur={10}
-                                         fileLocation={info.thumbFile}/>}
+                                         fileLocation={info.thumbFile} searchTemp={true}/>}
                             <CachedPhoto className="picture" style={this.pictureContentSize}
                                          fileLocation={message.messagetype === C_MESSAGE_TYPE.Picture ? info.file : info.thumbFile}
-                                         onLoad={this.cachedPhotoLoadHandler}/>
+                                         onLoad={this.cachedPhotoLoadHandler} searchTemp={true}/>
                             {Boolean(message.messagetype === C_MESSAGE_TYPE.Video) &&
                             <div className="media-action" onClick={this.viewDocument}>
                                 <PlayArrowRounded/>

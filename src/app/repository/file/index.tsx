@@ -84,7 +84,9 @@ export default class FileRepo {
                         blobs.push(temp.data);
                     });
                     const blob = new Blob(blobs, {type: mimeType});
-                    this.removeTempsById(id);
+                    setTimeout(() => {
+                        this.removeTempsById(id);
+                    }, 1000);
                     return this.createWithHash(docId, blob);
                 });
             }

@@ -68,7 +68,6 @@ interface IChunksInfo {
     size: number;
     totalParts: number;
     updates: IChunkUpdate[];
-    upload: boolean;
 }
 
 const C_FILE_SERVER_HTTP_WORKER_NUM = 1;
@@ -95,7 +94,8 @@ export default class FileManager {
     private fileSeverInitialized: boolean = false;
     private httpWorkers: Http[] = [];
     private fileRepo: FileRepo;
-    private fileTransferQueue: { [key: string]: IChunksInfo } = {};
+    private fileUploadQueue: { [key: string]: IChunksInfo } = {};
+    private fileDownloadQueue: { [key: string]: IChunksInfo } = {};
     private uploadQueue: string[] = [];
     private onWireUploads: string[] = [];
     private downloadQueue: string[] = [];
@@ -126,40 +126,43 @@ export default class FileManager {
 
     /* Send the whole file */
     public sendFile(id: string, blob: Blob, onProgress?: (e: IFileProgress) => void) {
-        const chunks = this.chunkBlob(blob);
-        const saveFileToDBPromises: any[] = [];
-        saveFileToDBPromises.push(md5FromBlob(blob));
-        chunks.forEach((chunk, index) => {
-            const temp: ITempFile = {
-                data: chunk,
-                id,
-                part: index + 1,
-            };
-            saveFileToDBPromises.push(this.fileRepo.setTemp(temp));
+        let internalResolve: any = null;
+        let internalReject: any = null;
+
+        const promise = new Promise((res, rej) => {
+            internalResolve = res;
+            internalReject = rej;
         });
 
-        return Promise.all(saveFileToDBPromises).then((arr) => {
-            let internalResolve = null;
-            let internalReject = null;
-
-            const promise = new Promise((res, rej) => {
-                internalResolve = res;
-                internalReject = rej;
+        this.chunkBlob(blob).then((chunks) => {
+            const saveFileToDBPromises: any[] = [];
+            saveFileToDBPromises.push(md5FromBlob(blob));
+            chunks.forEach((chunk, index) => {
+                const temp: ITempFile = {
+                    data: chunk,
+                    id,
+                    part: index + 1,
+                };
+                saveFileToDBPromises.push(this.fileRepo.setTemp(temp));
             });
 
-            this.prepareUploadTransfer(id, arr.length === 0 ? '' : arr[0], chunks, blob.size, internalResolve, internalReject, onProgress);
+            Promise.all(saveFileToDBPromises).then((arr) => {
+                this.prepareUploadTransfer(id, arr.length === 0 ? '' : arr[0], chunks, blob.size, internalResolve, internalReject, onProgress);
 
-            if (this.httpWorkers[0] && this.httpWorkers[0].isReady()) {
-                this.startUploadQueue();
-            }
-
-            return promise;
+                if (this.httpWorkers[0] && this.httpWorkers[0].isReady()) {
+                    this.startUploadQueue();
+                }
+            }).catch((err) => {
+                window.console.log(err);
+            });
         });
+
+        return promise;
     }
 
     /* Receive the whole file */
     public receiveFile(location: core_types_pb.InputFileLocation, md5: string, size: number, mimeType: string, onProgress?: (e: IFileProgress) => void) {
-        if (this.fileTransferQueue.hasOwnProperty(location.getFileid() || '')) {
+        if (this.fileDownloadQueue.hasOwnProperty(location.getFileid() || '')) {
             return Promise.reject({
                 code: C_FILE_ERR_CODE.ALREADY_IN_QUEUE,
                 message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.ALREADY_IN_QUEUE],
@@ -242,22 +245,31 @@ export default class FileManager {
 
     /* Cancel request */
     public cancel(id: string) {
-        if (this.fileTransferQueue.hasOwnProperty(id)) {
-            this.fileTransferQueue[id].sendChunks.forEach((chunk) => {
+        if (this.fileUploadQueue.hasOwnProperty(id)) {
+            this.fileUploadQueue[id].sendChunks.forEach((chunk) => {
                 if (chunk.cancel) {
                     chunk.cancel();
                 }
             });
-            this.fileTransferQueue[id].reject({
+            this.fileUploadQueue[id].reject({
                 code: C_FILE_ERR_CODE.REQUEST_CANCELLED,
                 message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.REQUEST_CANCELLED],
             });
-            if (this.fileTransferQueue[id].upload) {
-                this.clearUploadQueueById(id);
-            } else {
-                this.clearDownloadQueueById(id);
-            }
-            delete this.fileTransferQueue[id];
+            this.clearUploadQueueById(id);
+            delete this.fileUploadQueue[id];
+        }
+        if (this.fileDownloadQueue.hasOwnProperty(id)) {
+            this.fileDownloadQueue[id].sendChunks.forEach((chunk) => {
+                if (chunk.cancel) {
+                    chunk.cancel();
+                }
+            });
+            this.fileDownloadQueue[id].reject({
+                code: C_FILE_ERR_CODE.REQUEST_CANCELLED,
+                message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.REQUEST_CANCELLED],
+            });
+            this.clearDownloadQueueById(id);
+            delete this.fileDownloadQueue[id];
         }
     }
 
@@ -304,71 +316,74 @@ export default class FileManager {
 
     /* Start upload for selected queue */
     private startUploading(id: string) {
-        if (this.fileTransferQueue.hasOwnProperty(id)) {
-            if (this.fileTransferQueue[id].retry > C_MAX_RETRIES) {
+        if (this.fileUploadQueue.hasOwnProperty(id)) {
+            if (this.fileUploadQueue[id].retry > C_MAX_RETRIES) {
                 this.clearUploadQueueById(id);
-                this.fileTransferQueue[id].reject({
+                this.fileUploadQueue[id].reject({
                     code: C_FILE_ERR_CODE.MAX_TRY,
                     message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.MAX_TRY],
                 });
-                delete this.fileTransferQueue[id];
+                delete this.fileUploadQueue[id];
                 this.startUploadQueue();
                 return;
             }
-            const chunkInfo = this.fileTransferQueue[id];
+            const chunkInfo = this.fileUploadQueue[id];
             if (chunkInfo.sendChunks.length > 0) {
                 let chunk = chunkInfo.sendChunks.shift();
                 if (chunk) {
                     if (chunkInfo.sendChunks.length >= 1 && chunk.last) {
-                        this.fileTransferQueue[id].sendChunks.push(chunk);
-                        chunk = this.fileTransferQueue[id].sendChunks.shift();
+                        this.fileUploadQueue[id].sendChunks.push(chunk);
+                        chunk = this.fileUploadQueue[id].sendChunks.shift();
                     }
                     if (chunk) {
                         const part = chunk.part;
                         const uploadProgress = (e: any) => {
-                            if (this.fileTransferQueue.hasOwnProperty(id)) {
+                            if (this.fileUploadQueue.hasOwnProperty(id)) {
                                 const index = part - 1;
-                                this.fileTransferQueue[id].updates[index].upload = e.loaded;
-                                this.fileTransferQueue[id].updates[index].uploadSize = e.total;
+                                this.fileUploadQueue[id].updates[index].upload = e.loaded;
+                                this.fileUploadQueue[id].updates[index].uploadSize = e.total;
                             }
                         };
                         const downloadProgress = (e: any) => {
-                            if (this.fileTransferQueue.hasOwnProperty(id)) {
+                            if (this.fileUploadQueue.hasOwnProperty(id)) {
                                 const index = part - 1;
-                                this.fileTransferQueue[id].updates[index].download = e.loaded;
-                                this.fileTransferQueue[id].updates[index].downloadSize = e.total;
+                                this.fileUploadQueue[id].updates[index].download = e.loaded;
+                                this.fileUploadQueue[id].updates[index].downloadSize = e.total;
                             }
                         };
                         const cancelHandler = (fn: any) => {
-                            if (this.fileTransferQueue.hasOwnProperty(id)) {
-                                const index = findIndex(this.fileTransferQueue[id].sendChunks, {part});
+                            if (this.fileUploadQueue.hasOwnProperty(id)) {
+                                const index = findIndex(this.fileUploadQueue[id].sendChunks, {part});
                                 if (index > -1) {
-                                    this.fileTransferQueue[id].sendChunks[index].cancel = fn;
+                                    this.fileUploadQueue[id].sendChunks[index].cancel = fn;
                                 }
                             }
                         };
-                        this.fileTransferQueue[id].pipelines++;
+                        this.fileUploadQueue[id].pipelines++;
                         this.upload(id, part, chunkInfo.totalParts, cancelHandler, uploadProgress, downloadProgress).then((res) => {
-                            if (this.fileTransferQueue.hasOwnProperty(id)) {
-                                this.fileTransferQueue[id].doneParts++;
-                                this.fileTransferQueue[id].pipelines--;
+                            if (this.fileUploadQueue.hasOwnProperty(id)) {
+                                this.fileUploadQueue[id].doneParts++;
+                                this.fileUploadQueue[id].pipelines--;
                             }
                             this.startUploading(id);
+                            if (chunk) {
+                                window.console.debug(`${chunk.part}/${chunkInfo.totalParts} uploaded, res: ${res}`);
+                            }
                         }).catch((err) => {
-                            if (this.fileTransferQueue.hasOwnProperty(id)) {
-                                this.fileTransferQueue[id].pipelines--;
+                            if (this.fileUploadQueue.hasOwnProperty(id)) {
+                                this.fileUploadQueue[id].pipelines--;
 
                                 if (err.code === C_FILE_ERR_CODE.NO_WORKER) {
                                     if (chunk) {
-                                        this.fileTransferQueue[id].sendChunks.unshift(chunk);
+                                        this.fileUploadQueue[id].sendChunks.unshift(chunk);
                                     }
                                     setTimeout(() => {
                                         this.startUploading(id);
                                     }, 1000);
                                 } else if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
                                     if (chunk) {
-                                        this.fileTransferQueue[id].sendChunks.push(chunk);
-                                        this.fileTransferQueue[id].retry++;
+                                        this.fileUploadQueue[id].sendChunks.push(chunk);
+                                        this.fileUploadQueue[id].retry++;
                                         this.startUploading(id);
                                     }
                                 }
@@ -379,21 +394,21 @@ export default class FileManager {
                     }
                 }
             } else if (chunkInfo.doneParts === chunkInfo.totalParts) {
-                if (this.fileTransferQueue.hasOwnProperty(id)) {
-                    if (this.fileTransferQueue[id].completed) {
+                if (this.fileUploadQueue.hasOwnProperty(id)) {
+                    if (this.fileUploadQueue[id].completed) {
                         return;
                     }
-                    this.fileTransferQueue[id].completed = true;
+                    this.fileUploadQueue[id].completed = true;
                     this.clearUploadQueueById(id);
-                    this.dispatchProgress(id, 'complete');
-                    this.fileTransferQueue[id].resolve(this.fileTransferQueue[id].md5);
-                    delete this.fileTransferQueue[id];
+                    this.dispatchUploadProgress(id, 'complete');
+                    this.fileUploadQueue[id].resolve(this.fileUploadQueue[id].md5);
+                    delete this.fileUploadQueue[id];
                 }
                 this.startUploadQueue();
             }
         }
-        if (this.httpWorkers.length > 0 && this.httpWorkers[0].isReady() && this.fileTransferQueue.hasOwnProperty(id)) {
-            if (this.fileTransferQueue[id].sendChunks.length > 1 && this.fileTransferQueue[id].pipelines < C_MAX_UPLOAD_PIPELINE_SIZE) {
+        if (this.httpWorkers.length > 0 && this.httpWorkers[0].isReady() && this.fileUploadQueue.hasOwnProperty(id)) {
+            if (this.fileUploadQueue[id].sendChunks.length > 1 && this.fileUploadQueue[id].pipelines < C_MAX_UPLOAD_PIPELINE_SIZE) {
                 this.startUploading(id);
             }
         }
@@ -401,56 +416,56 @@ export default class FileManager {
 
     /* Start download for selected queue */
     private startDownloading(id: string) {
-        if (this.fileTransferQueue.hasOwnProperty(id)) {
-            if (this.fileTransferQueue[id].retry > C_MAX_RETRIES) {
+        if (this.fileDownloadQueue.hasOwnProperty(id)) {
+            if (this.fileDownloadQueue[id].retry > C_MAX_RETRIES) {
                 this.clearDownloadQueueById(id);
-                this.fileTransferQueue[id].reject({
+                this.fileDownloadQueue[id].reject({
                     code: C_FILE_ERR_CODE.MAX_TRY,
                     message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.MAX_TRY],
                 });
-                if (this.fileTransferQueue[id].size === 0) {
+                if (this.fileDownloadQueue[id].size === 0) {
                     this.startInstanceDownloadQueue();
                 } else {
                     this.startDownloadQueue();
                 }
                 return;
             }
-            const chunkInfo = this.fileTransferQueue[id];
+            const chunkInfo = this.fileDownloadQueue[id];
             if (chunkInfo.receiveChunks.length > 0) {
                 const chunk = chunkInfo.receiveChunks.shift();
                 if (chunk) {
                     const part = chunk.part;
                     const uploadProgress = (e: any) => {
-                        if (this.fileTransferQueue.hasOwnProperty(id) && this.fileTransferQueue[id].updates[part - 1]) {
+                        if (this.fileDownloadQueue.hasOwnProperty(id) && this.fileDownloadQueue[id].updates[part - 1]) {
                             const index = part - 1;
-                            this.fileTransferQueue[id].updates[index].upload = e.loaded;
-                            this.fileTransferQueue[id].updates[index].uploadSize = e.total;
+                            this.fileDownloadQueue[id].updates[index].upload = e.loaded;
+                            this.fileDownloadQueue[id].updates[index].uploadSize = e.total;
                         }
                     };
                     const downloadProgress = (e: any) => {
-                        if (this.fileTransferQueue.hasOwnProperty(id) && this.fileTransferQueue[id].updates[part - 1]) {
+                        if (this.fileDownloadQueue.hasOwnProperty(id) && this.fileDownloadQueue[id].updates[part - 1]) {
                             const index = part - 1;
-                            this.fileTransferQueue[id].updates[index].download = e.loaded;
-                            this.fileTransferQueue[id].updates[index].downloadSize = e.total;
+                            this.fileDownloadQueue[id].updates[index].download = e.loaded;
+                            this.fileDownloadQueue[id].updates[index].downloadSize = e.total;
                         }
                     };
                     const cancelHandler = (fn: any) => {
-                        if (this.fileTransferQueue.hasOwnProperty(id)) {
-                            const index = findIndex(this.fileTransferQueue[id].receiveChunks, {part});
+                        if (this.fileDownloadQueue.hasOwnProperty(id)) {
+                            const index = findIndex(this.fileDownloadQueue[id].receiveChunks, {part});
                             if (index > -1) {
-                                this.fileTransferQueue[id].receiveChunks[index].cancel = fn;
+                                this.fileDownloadQueue[id].receiveChunks[index].cancel = fn;
                             }
                         }
                     };
                     if (chunkInfo.fileLocation) {
-                        this.fileTransferQueue[id].pipelines++;
+                        this.fileDownloadQueue[id].pipelines++;
                         this.download(chunkInfo.fileLocation, chunk.part, chunk.offset, chunk.limit, cancelHandler, uploadProgress, downloadProgress).then((res) => {
                             if (chunk.limit !== 0 && chunk.limit !== res && chunkInfo.fileLocation && isProd) {
                                 Sentry.captureMessage(`Files' size are not match, offset: ${chunk.offset}, limit: ${chunk.limit}, size: ${res}, parts: ${chunk.part}/${chunkInfo.totalParts}, location: ${JSON.stringify(chunkInfo.fileLocation.toObject())}`, Sentry.Severity.Warning);
                             }
-                            if (this.fileTransferQueue.hasOwnProperty(id)) {
-                                this.fileTransferQueue[id].doneParts++;
-                                this.fileTransferQueue[id].pipelines--;
+                            if (this.fileDownloadQueue.hasOwnProperty(id)) {
+                                this.fileDownloadQueue[id].doneParts++;
+                                this.fileDownloadQueue[id].pipelines--;
                             }
                             this.startDownloading(id);
                             if (chunk) {
@@ -458,18 +473,18 @@ export default class FileManager {
                             }
                         }).catch((err) => {
                             window.console.log(err);
-                            if (this.fileTransferQueue.hasOwnProperty(id)) {
-                                this.fileTransferQueue[id].pipelines--;
+                            if (this.fileDownloadQueue.hasOwnProperty(id)) {
+                                this.fileDownloadQueue[id].pipelines--;
                                 if (err.code === C_FILE_ERR_CODE.NO_WORKER) {
-                                    this.fileTransferQueue[id].receiveChunks.unshift(chunk);
+                                    this.fileDownloadQueue[id].receiveChunks.unshift(chunk);
                                     setTimeout(() => {
                                         this.startDownloading(id);
                                     }, 1000);
                                 } else if (err.code === 'E00' && err.items === 'not found') {
                                     this.cancel(id);
                                 } else if (err.code !== C_FILE_ERR_CODE.REQUEST_CANCELLED) {
-                                    this.fileTransferQueue[id].receiveChunks.push(chunk);
-                                    this.fileTransferQueue[id].retry++;
+                                    this.fileDownloadQueue[id].receiveChunks.push(chunk);
+                                    this.fileDownloadQueue[id].retry++;
                                     this.startDownloading(id);
                                 }
                             } else {
@@ -479,29 +494,29 @@ export default class FileManager {
                     }
                 }
             } else if (chunkInfo.doneParts === chunkInfo.totalParts) {
-                if (this.fileTransferQueue.hasOwnProperty(id)) {
-                    if (this.fileTransferQueue[id].completed) {
+                if (this.fileDownloadQueue.hasOwnProperty(id)) {
+                    if (this.fileDownloadQueue[id].completed) {
                         return;
                     }
-                    const instant = this.fileTransferQueue[id].size === 0;
-                    this.fileTransferQueue[id].completed = true;
+                    const instant = this.fileDownloadQueue[id].size === 0;
+                    this.fileDownloadQueue[id].completed = true;
                     this.clearDownloadQueueById(id);
-                    this.dispatchProgress(id, 'complete');
-                    this.fileRepo.persistTempFiles(id, id, this.fileTransferQueue[id].mimeType || 'application/octet-stream').then((res) => {
-                        if (this.fileTransferQueue.hasOwnProperty(id)) {
-                            if (res && this.fileTransferQueue[id].md5 && this.fileTransferQueue[id].md5 !== '' && this.fileTransferQueue[id].md5 !== res.md5) {
+                    this.dispatchDownloadProgress(id, 'complete');
+                    this.fileRepo.persistTempFiles(id, id, this.fileDownloadQueue[id].mimeType || 'application/octet-stream').then((res) => {
+                        if (this.fileDownloadQueue.hasOwnProperty(id)) {
+                            if (res && this.fileDownloadQueue[id].md5 && this.fileDownloadQueue[id].md5 !== '' && this.fileDownloadQueue[id].md5 !== res.md5) {
                                 this.fileRepo.remove(id).finally(() => {
-                                    this.fileTransferQueue[id].reject('md5 hashes are not match');
+                                    this.fileDownloadQueue[id].reject('md5 hashes are not match');
                                 });
                             } else {
-                                this.fileTransferQueue[id].resolve();
+                                this.fileDownloadQueue[id].resolve();
                             }
-                            delete this.fileTransferQueue[id];
+                            delete this.fileDownloadQueue[id];
                         }
                     }).catch((err) => {
-                        if (this.fileTransferQueue.hasOwnProperty(id)) {
-                            this.fileTransferQueue[id].reject(err);
-                            delete this.fileTransferQueue[id];
+                        if (this.fileDownloadQueue.hasOwnProperty(id)) {
+                            this.fileDownloadQueue[id].reject(err);
+                            delete this.fileDownloadQueue[id];
                         }
                     });
                     if (instant) {
@@ -515,8 +530,8 @@ export default class FileManager {
                 }
             }
         }
-        if (this.httpWorkers.length > 0 && this.httpWorkers[0].isReady() && this.fileTransferQueue.hasOwnProperty(id)) {
-            if (this.fileTransferQueue[id].receiveChunks.length > 0 && this.fileTransferQueue[id].pipelines < C_MAX_DOWNLOAD_PIPELINE_SIZE) {
+        if (this.httpWorkers.length > 0 && this.httpWorkers[0].isReady() && this.fileDownloadQueue.hasOwnProperty(id)) {
+            if (this.fileDownloadQueue[id].receiveChunks.length > 0 && this.fileDownloadQueue[id].pipelines < C_MAX_DOWNLOAD_PIPELINE_SIZE) {
                 this.startDownloading(id);
             }
         }
@@ -524,7 +539,7 @@ export default class FileManager {
 
     /* Clear upload queue by id */
     private clearUploadQueueById(id: string) {
-        clearInterval(this.fileTransferQueue[id].interval);
+        clearInterval(this.fileUploadQueue[id].interval);
         const index = this.uploadQueue.indexOf(id);
         if (index > -1) {
             this.uploadQueue.splice(index, 1);
@@ -537,11 +552,11 @@ export default class FileManager {
 
     /* Clear download queue by id */
     private clearDownloadQueueById(id: string) {
-        if (!this.fileTransferQueue.hasOwnProperty(id)) {
+        if (!this.fileDownloadQueue.hasOwnProperty(id)) {
             return;
         }
-        clearInterval(this.fileTransferQueue[id].interval);
-        if (this.fileTransferQueue[id].size === 0) {
+        clearInterval(this.fileDownloadQueue[id].interval);
+        if (this.fileDownloadQueue[id].size === 0) {
             const index = this.instantDownloadQueue.indexOf(id);
             if (index > -1) {
                 this.instantDownloadQueue.splice(index, 1);
@@ -570,7 +585,10 @@ export default class FileManager {
                     return this.sendFileChunk(id, part, totalParts, u8a, cancel, onUploadProgress, onDownloadProgress);
                 });
             } else {
-                return Promise.reject();
+                return Promise.reject({
+                    code: C_FILE_ERR_CODE.NO_TEMP_FILES,
+                    message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.NO_TEMP_FILES],
+                });
             }
         });
     }
@@ -605,55 +623,73 @@ export default class FileManager {
         });
     }
 
-    /* Dispatch progress */
-    private dispatchProgress(id: string, state: 'loading' | 'complete') {
-        if (!this.fileTransferQueue.hasOwnProperty(id)) {
+    /* Dispatch upload progress */
+    private dispatchUploadProgress(id: string, state: 'loading' | 'complete') {
+        if (!this.fileUploadQueue.hasOwnProperty(id)) {
             return;
         }
-        const queue = this.fileTransferQueue[id];
+        const queue = this.fileUploadQueue[id];
         if (!queue.onProgress) {
             return;
         }
         let download = 0;
         let upload = 0;
         let totalDownload = 0;
-        let totalUpload = 0;
         queue.updates.forEach((update) => {
             upload += update.upload;
             download += update.download;
             totalDownload += update.downloadSize;
+        });
+        queue.onProgress({
+            download,
+            progress: upload / this.fileUploadQueue[id].size,
+            state,
+            totalDownload,
+            totalUpload: this.fileUploadQueue[id].size,
+            upload,
+        });
+    }
+
+    /* Dispatch download progress */
+    private dispatchDownloadProgress(id: string, state: 'loading' | 'complete') {
+        if (!this.fileDownloadQueue.hasOwnProperty(id)) {
+            return;
+        }
+        const queue = this.fileDownloadQueue[id];
+        if (!queue.onProgress) {
+            return;
+        }
+        let download = 0;
+        let upload = 0;
+        let totalUpload = 0;
+        queue.updates.forEach((update) => {
+            upload += update.upload;
+            download += update.download;
             totalUpload += update.uploadSize;
         });
-        if (queue.upload) {
-            queue.onProgress({
-                download,
-                progress: upload / this.fileTransferQueue[id].size,
-                state,
-                totalDownload,
-                totalUpload: this.fileTransferQueue[id].size,
-                upload,
-            });
-        } else {
-            queue.onProgress({
-                download,
-                progress: download / this.fileTransferQueue[id].size,
-                state,
-                totalDownload: this.fileTransferQueue[id].size,
-                totalUpload,
-                upload,
-            });
-        }
+
+        queue.onProgress({
+            download,
+            progress: download / this.fileDownloadQueue[id].size,
+            state,
+            totalDownload: this.fileDownloadQueue[id].size,
+            totalUpload,
+            upload,
+        });
     }
 
     /* Prepare upload transfer */
     private prepareUploadTransfer(id: string, md5: string, chunks: Blob[], size: number, resolve: any, reject: any, onProgress?: (e: IFileProgress) => void) {
-        if (this.fileTransferQueue.hasOwnProperty(id)) {
-            this.fileTransferQueue[id].onProgress = onProgress;
-            this.fileTransferQueue[id].reject = reject;
-            this.fileTransferQueue[id].resolve = resolve;
+        if (this.fileUploadQueue.hasOwnProperty(id)) {
+            this.fileUploadQueue[id].onProgress = onProgress;
+            this.fileUploadQueue[id].reject = reject;
+            this.fileUploadQueue[id].resolve = resolve;
+            if (this.uploadQueue.indexOf(id) === -1) {
+                this.uploadQueue.push(id);
+            }
             return;
         }
-        this.fileTransferQueue[id] = {
+        this.fileUploadQueue[id] = {
             completed: false,
             doneParts: 0,
             interval: null,
@@ -668,16 +704,15 @@ export default class FileManager {
             size,
             totalParts: chunks.length,
             updates: [],
-            upload: true,
         };
         chunks.forEach((chunk, index) => {
-            this.fileTransferQueue[id].sendChunks.push({
+            this.fileUploadQueue[id].sendChunks.push({
                 cancel: null,
                 id,
                 last: (chunks.length - 1 === index),
                 part: index + 1,
             });
-            this.fileTransferQueue[id].updates.push({
+            this.fileUploadQueue[id].updates.push({
                 download: 0,
                 downloadSize: 0,
                 upload: 0,
@@ -691,18 +726,18 @@ export default class FileManager {
         if (this.uploadQueue.indexOf(id) === -1) {
             this.uploadQueue.push(id);
         }
-        this.fileTransferQueue[id].interval = setInterval(() => {
-            this.dispatchProgress(id, 'loading');
+        this.fileUploadQueue[id].interval = setInterval(() => {
+            this.dispatchUploadProgress(id, 'loading');
         }, 500);
     }
 
     /* Prepare download transfer */
     private prepareDownloadTransfer(file: core_types_pb.InputFileLocation, md5: string, size: number, mimeType: string, resolve: any, reject: any, doneCallback: () => void, onProgress?: (e: IFileProgress) => void) {
         const id = file.getFileid() || '';
-        if (this.fileTransferQueue.hasOwnProperty(id)) {
-            this.fileTransferQueue[id].onProgress = onProgress;
-            this.fileTransferQueue[id].reject = reject;
-            this.fileTransferQueue[id].resolve = resolve;
+        if (this.fileDownloadQueue.hasOwnProperty(id)) {
+            this.fileDownloadQueue[id].onProgress = onProgress;
+            this.fileDownloadQueue[id].reject = reject;
+            this.fileDownloadQueue[id].resolve = resolve;
             return;
         }
         const totalParts = (size === 0) ? 1 : Math.ceil(size / C_DOWNLOAD_CHUNK_SIZE);
@@ -743,7 +778,7 @@ export default class FileManager {
                 });
             }
         }
-        this.fileTransferQueue[id] = {
+        this.fileDownloadQueue[id] = {
             completed: false,
             doneParts: 0,
             fileLocation: file,
@@ -760,20 +795,19 @@ export default class FileManager {
             size,
             totalParts,
             updates,
-            upload: false,
         };
         this.fileRepo.getTempsById(id).then((res) => {
             res.forEach((temp) => {
-                const index = findIndex(this.fileTransferQueue[id].receiveChunks, {part: temp.part});
+                const index = findIndex(this.fileDownloadQueue[id].receiveChunks, {part: temp.part});
                 if (index > -1) {
-                    this.fileTransferQueue[id].receiveChunks.splice(index, 1);
-                    this.fileTransferQueue[id].updates[temp.part - 1] = {
+                    this.fileDownloadQueue[id].receiveChunks.splice(index, 1);
+                    this.fileDownloadQueue[id].updates[temp.part - 1] = {
                         download: temp.data.size,
                         downloadSize: temp.data.size,
                         upload: 100,
                         uploadSize: 100,
                     };
-                    this.fileTransferQueue[id].doneParts++;
+                    this.fileDownloadQueue[id].doneParts++;
                 }
             });
             if (size === 0) {
@@ -798,8 +832,8 @@ export default class FileManager {
             }
             doneCallback();
         });
-        this.fileTransferQueue[id].interval = setInterval(() => {
-            this.dispatchProgress(id, 'loading');
+        this.fileDownloadQueue[id].interval = setInterval(() => {
+            this.dispatchDownloadProgress(id, 'loading');
         }, 500);
     }
 
@@ -835,13 +869,15 @@ export default class FileManager {
     }
 
     /* Chunk File */
-    private chunkBlob(blob: Blob): Blob[] {
-        const chunks: Blob[] = [];
-        const chunkSize = C_UPLOAD_CHUNK_SIZE;
-        for (let offset = 0; offset < blob.size; offset += chunkSize) {
-            chunks.push(blob.slice(offset, offset + chunkSize));
-        }
-        return chunks;
+    private chunkBlob(blob: Blob): Promise<Blob[]> {
+        return new Promise<Blob[]>((resolve) => {
+            const chunks: Blob[] = [];
+            const chunkSize = C_UPLOAD_CHUNK_SIZE;
+            for (let offset = 0; offset < blob.size; offset += chunkSize) {
+                chunks.push(blob.slice(offset, offset + chunkSize));
+            }
+            resolve(chunks);
+        });
     }
 
     /* Init file manager WASM worker */

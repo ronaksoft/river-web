@@ -1,3 +1,7 @@
+## 0.26.24
+* FileManager updated (+12h)
+* MessageMedia optimized
+
 ## 0.26.23
 * Snackbar updated
 * Translations updated
