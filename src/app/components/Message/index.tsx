@@ -280,6 +280,10 @@ class Message extends React.Component<IProps, IState> {
                 cmd: 'select',
                 title: i18n.t('general.select'),
             },
+            10: {
+                cmd: 'copy',
+                title: i18n.t('general.copy'),
+            },
         };
     }
 
@@ -762,10 +766,12 @@ class Message extends React.Component<IProps, IState> {
             return '';
         }
         const menuTypes = {
-            1: [1, 2, 3, 4, 7, 8, 9],
-            2: [1, 2, 4, 7, 8, 9],
-            3: [6, 5, 9],
+            1: [1, 2, 3, 4, 7, 8, 9, 10],
+            2: [1, 2, 4, 7, 8, 9, 10],
+            3: [6, 5, 9, 10],
         };
+        const selection = window.getSelection();
+        const hasCopy = Boolean(selection && selection.type === 'Range');
         const menuItems: any[] = [];
         const id = items[moreIndex].id;
         const me = items[moreIndex].me;
@@ -774,6 +780,10 @@ class Message extends React.Component<IProps, IState> {
             menuTypes[3].forEach((key) => {
                 if (key === 6) {
                     if (items[moreIndex].error || (this.riverTime.now() - (items[moreIndex].createdon || 0)) > 60) {
+                        menuItems.push(this.menuItem[key]);
+                    }
+                } else if (key === 10) {
+                    if (hasCopy) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else {
@@ -797,6 +807,10 @@ class Message extends React.Component<IProps, IState> {
                     if (items[moreIndex].downloaded && saveAndDownloadFilter.indexOf(items[moreIndex].messagetype || 0) > -1) {
                         menuItems.push(this.menuItem[key]);
                     }
+                } else if (key === 10) {
+                    if (hasCopy) {
+                        menuItems.push(this.menuItem[key]);
+                    }
                 } else {
                     menuItems.push(this.menuItem[key]);
                 }
@@ -809,6 +823,10 @@ class Message extends React.Component<IProps, IState> {
                     }
                 } else if (key === 8) {
                     if (items[moreIndex].downloaded && saveAndDownloadFilter.indexOf(items[moreIndex].messagetype || 0) > -1) {
+                        menuItems.push(this.menuItem[key]);
+                    }
+                } else if (key === 10) {
+                    if (hasCopy) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else {
@@ -1003,6 +1021,8 @@ class Message extends React.Component<IProps, IState> {
             })();
         } else if (cmd === 'select') {
             this.selectMessage(index)();
+        } else if (cmd === 'copy') {
+            this.copy();
         }
         this.setState({
             moreAnchorEl: null,
@@ -1108,29 +1128,29 @@ class Message extends React.Component<IProps, IState> {
         e.stopPropagation();
     }
 
-    // private selectText = (e: any) => {
-    //     if (e.detail === 5) {
-    //         e.stopPropagation();
-    //         const elem = e.currentTarget;
-    //         // @ts-ignore
-    //         if (document.selection) { // IE
-    //             // @ts-ignore
-    //             const range = document.body.createTextRange();
-    //             if (range) {
-    //                 range.moveToElementText(elem);
-    //                 range.select();
-    //             }
-    //         } else if (window.getSelection) {
-    //             const range = document.createRange();
-    //             range.selectNode(elem);
-    //             const selection = window.getSelection();
-    //             if (selection) {
-    //                 selection.removeAllRanges();
-    //                 selection.addRange(range);
-    //             }
-    //         }
-    //     }
-    // }
+    private selectText = (e: any) => {
+        if (e.detail === 4) {
+            e.stopPropagation();
+            const elem = e.currentTarget;
+            // @ts-ignore
+            if (document.selection) { // IE
+                // @ts-ignore
+                const range = document.body.createTextRange();
+                if (range) {
+                    range.moveToElementText(elem);
+                    range.select();
+                }
+            } else if (window.getSelection) {
+                const range = document.createRange();
+                range.selectNode(elem);
+                const selection = window.getSelection();
+                if (selection) {
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+            }
+        }
+    }
 
     private keyMapperHandler = (rowIndex: number, colIndex: number) => {
         return this.getKey(rowIndex, colIndex);
@@ -1258,6 +1278,7 @@ class Message extends React.Component<IProps, IState> {
     /* Toggle selected id in selectedIds map */
     private toggleSelectHandler = (id: number, index: number) => (e: any) => {
         if (!this.state.selectable) {
+            this.selectText(e);
             return;
         }
         e.stopPropagation();
@@ -1801,6 +1822,12 @@ class Message extends React.Component<IProps, IState> {
             },
             moreIndex: index,
         });
+    }
+
+    private copy() {
+        if (document.execCommand) {
+            document.execCommand('Copy');
+        }
     }
 }
 

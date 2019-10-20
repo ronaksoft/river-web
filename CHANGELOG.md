@@ -1,3 +1,8 @@
+## 0.26.25
+* GroupInfoMenu add member permission changed
+* Copy added in context menu
+* Translation updated
+
 ## 0.26.24
 * FileManager updated (+12h)
 * MessageMedia optimized

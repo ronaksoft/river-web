@@ -320,9 +320,10 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                             </div>
                                         );
                                     })}
+                                    {hasAuthority(group) &&
                                     <div className="add-member" onClick={this.addMemberDialogOpenHandler}>
                                         <AddRounded/> {i18n.t('peer_info.add_member')}
-                                    </div>
+                                    </div>}
                                 </div>}
                                 <div className="leave-group kk-card" onClick={this.leaveGroupHandler}>
                                     <ExitToAppRounded/> {i18n.t('peer_info.leave_the')} '{group ? group.title : ''}'

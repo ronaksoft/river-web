@@ -41,7 +41,8 @@
     "user_list": "User List",
     "no_message": "no message",
     "error": "Error",
-    "select": "Select"
+    "select": "Select",
+    "copy": "Copy"
   },
   "chat": {
     "search": "Search",

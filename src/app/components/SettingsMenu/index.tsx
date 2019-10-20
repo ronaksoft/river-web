@@ -87,7 +87,7 @@ import {localize} from "../../services/utilities/localize";
 import './style.css';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.26.24';
+export const C_VERSION = '0.26.25';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{
