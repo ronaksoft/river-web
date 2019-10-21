@@ -865,7 +865,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 this.documentContainerRef.style.transition = `none`;
             }, 200);
         }
-        this.documentContainerRef.style.transformOrigin = `${this.mediaTransform.origin.x}% ${this.mediaTransform.origin.y}%`;
+        // this.documentContainerRef.style.transformOrigin = `${this.mediaTransform.origin.x}% ${this.mediaTransform.origin.y}%`;
         this.documentContainerRef.style.transform = `translate(${this.mediaTransform.pan.x}px, ${this.mediaTransform.pan.y}px) scale(${this.mediaTransform.zoom}) rotate(${this.mediaTransform.rotate}deg)`;
     }
 

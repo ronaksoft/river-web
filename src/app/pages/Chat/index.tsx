@@ -2483,6 +2483,9 @@ class Chat extends React.Component<IProps, IState> {
             tries = messages.length - offset;
         }
         if (messages.length > 0) {
+            if (!messages[messages.length - tries]) {
+                return 0;
+            }
             // Check if it is not pending message
             after = messages[messages.length - tries].id || 0;
             if (after < 0) {
@@ -4422,7 +4425,7 @@ class Chat extends React.Component<IProps, IState> {
         const dialog = this.getDialogById(this.selectedDialogId);
         if (dialog) {
             const scrollDown = () => {
-                if ((this.messages.length > 0 && this.messages[this.messages.length - 1].id === dialog.topmessageid) || !dialog.topmessageid) {
+                if ((this.messages.length > 0 && this.messages[this.messages.length - 1] && this.messages[this.messages.length - 1].id === dialog.topmessageid) || !dialog.topmessageid) {
                     // Normal scroll down
                     this.messageRef.animateToEnd();
                 } else {
@@ -4437,7 +4440,7 @@ class Chat extends React.Component<IProps, IState> {
                 const before = Math.max((dialog.readinboxmaxid || 0), (dialog.readoutboxmaxid || 0));
                 const index = findLastIndex(this.messages, {id: before});
                 if (index > -1) {
-                    if (this.scrollInfo && (this.messages[this.scrollInfo.stopIndex].id || 0) < before) {
+                    if (this.scrollInfo && this.messages[this.scrollInfo.stopIndex] && (this.messages[this.scrollInfo.stopIndex].id || 0) < before) {
                         this.messageJumpToMessageHandler(before);
                         setTimeout(() => {
                             if (this.messageRef) {
