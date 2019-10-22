@@ -1,7 +1,9 @@
+## 0.26.27
+* Ability to run in staging server
+
 ## 0.26.26
 * DocumentViewer transform origin fixed
 * Minor bug fixed in message id
-
 
 ## 0.26.25
 * GroupInfoMenu add member permission changed

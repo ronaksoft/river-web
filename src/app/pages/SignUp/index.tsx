@@ -81,7 +81,7 @@ class SignUp extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
         let step = 'phone';
-        if (window.location.host !== 'web.river.im') {
+        if (window.location.host !== 'web.river.im' && window.location.host !== 'web.river.ronaksoftware.com') {
             if (!localStorage.getItem('river.workspace_url')) {
                 step = 'workspace';
             }
