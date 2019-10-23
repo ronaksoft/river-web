@@ -523,9 +523,9 @@ class Chat extends React.Component<IProps, IState> {
                                                onClose={this.searchMessageCloseHandler}/>
                                 <Message key="messages" ref={this.messageRefHandler}
                                          isMobileView={this.isMobileView}
-                                         contextMenu={this.messageContextMenuHandler}
                                          showDate={this.messageShowDateHandler}
                                          showNewMessage={this.messageShowNewMessageHandler}
+                                         onContextMenu={this.messageContextMenuHandler}
                                          onSelectedIdsChange={this.messageSelectedIdsChangeHandler}
                                          onSelectableChange={this.messageSelectableChangeHandler}
                                          onJumpToMessage={this.messageJumpToMessageHandler}
@@ -534,7 +534,7 @@ class Chat extends React.Component<IProps, IState> {
                                          onLoadMoreAfter={this.messageLoadMoreAfterHandler}
                                          onLoadMoreAfterGap={this.messageLoadMoreAfterGapHandler}
                                          onAttachmentAction={this.messageAttachmentActionHandler}
-                                         rendered={this.messageRenderedHandler}
+                                         onRendered={this.messageRenderedHandler}
                                          onDrop={this.messageDropHandler}
                                 />
                                 <MoveDown key="move-down" ref={this.moveDownRefHandler}

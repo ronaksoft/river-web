@@ -48,7 +48,7 @@ import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 import './style.css';
 
 interface IProps {
-    contextMenu: (cmd: string, id: IMessage) => void;
+    onContextMenu: (cmd: string, id: IMessage) => void;
     onAttachmentAction?: (cmd: 'cancel' | 'cancel_download' | 'download' | 'view' | 'open' | 'read' | 'preview', message: IMessage) => void;
     onJumpToMessage: (id: number, e: any) => void;
     onLastMessage: (message: IMessage | null) => void;
@@ -58,7 +58,7 @@ interface IProps {
     onSelectableChange: (selectable: boolean) => void;
     onSelectedIdsChange: (selectedIds: { [key: number]: number }) => void;
     onDrop: (files: File[]) => void;
-    rendered?: (info: any) => void;
+    onRendered?: (info: any) => void;
     showDate?: (timestamp: number | null) => void;
     showNewMessage?: (visible: boolean) => void;
     isMobileView: boolean;
@@ -1013,11 +1013,11 @@ class Message extends React.Component<IProps, IState> {
     private moreCmdHandler = (cmd: string, index: number) => (e: any) => {
         e.stopPropagation();
         if (index > -1) {
-            this.props.contextMenu(cmd, this.state.items[index]);
+            this.props.onContextMenu(cmd, this.state.items[index]);
         }
         if (cmd === 'forward') {
             this.selectMessageHandler(this.state.items[index].id || 0, index, () => {
-                this.props.contextMenu('forward_dialog', this.state.items[index]);
+                this.props.onContextMenu('forward_dialog', this.state.items[index]);
             })();
         } else if (cmd === 'select') {
             this.selectMessage(index)();
@@ -1098,8 +1098,8 @@ class Message extends React.Component<IProps, IState> {
 
         this.messageScroll = data;
 
-        if (this.props.rendered) {
-            this.props.rendered(data);
+        if (this.props.onRendered) {
+            this.props.onRendered(data);
         }
     }
 
@@ -1571,8 +1571,8 @@ class Message extends React.Component<IProps, IState> {
 
     private fitListComplete = () => {
         setTimeout(() => {
-            if (this.state.items && this.state.items.length > 0 && this.props.rendered) {
-                this.props.rendered({
+            if (this.state.items && this.state.items.length > 0 && this.props.onRendered) {
+                this.props.onRendered({
                     overscanStartIndex: 0,
                     overscanStopIndex: 0,
                     startIndex: 0,

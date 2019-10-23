@@ -36,6 +36,14 @@
               height: 32px;
               width: 32px;
               margin-right: 8px; }
+            .write .suggestion-list-container .mention__suggestions .mention__suggestions__list .mention__suggestions__item .inner .emoji-display {
+              height: 32px;
+              width: 32px;
+              font-size: 24px;
+              line-height: 32px;
+              margin-right: 8px;
+              text-align: center;
+              padding-top: 3px; }
             .write .suggestion-list-container .mention__suggestions .mention__suggestions__list .mention__suggestions__item .inner .info {
               flex: 1;
               display: flex;

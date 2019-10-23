@@ -1,3 +1,6 @@
+## 0.26.30
+* Inline emoji added
+
 ## 0.26.29
 * Staging version updated
 

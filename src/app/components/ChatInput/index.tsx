@@ -67,9 +67,12 @@ import i18n from '../../services/i18n';
 import {IDialog} from "../../repository/dialog/interface";
 import MessageRepo from "../../repository/message";
 import {UpdateDraftMessageCleared} from "../../services/sdk/messages/chat.api.updates_pb";
+import {emojiList} from "./emojis";
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
+
+const limit = 10;
 
 // @[@yasaman](580637822969180) hi
 const mentionize = (text: string, sortedEntities: Array<{ offset: number, length: number, val: string }>) => {
@@ -196,6 +199,8 @@ class ChatInput extends React.Component<IProps, IState> {
     private lastMessage: IMessage | null = null;
     private rtl: boolean = localStorage.getItem('river.lang') === 'fa' || false;
     private readonly isMobileView: boolean = false;
+    private preventMessageSend: boolean = false;
+    private preventMessageSendTimeout: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -328,6 +333,7 @@ class ChatInput extends React.Component<IProps, IState> {
         });
         clearInterval(this.timerInterval);
         clearTimeout(this.typingTimeout);
+        clearTimeout(this.preventMessageSendTimeout);
     }
 
     public focus() {
@@ -475,7 +481,14 @@ class ChatInput extends React.Component<IProps, IState> {
                                         type="mention"
                                         data={this.searchMention}
                                         className="mention-item"
-                                        renderSuggestion={this.renderSuggestion}
+                                        renderSuggestion={this.renderMentionSuggestion}
+                                    />
+                                    <Mention
+                                        trigger=":"
+                                        type="emoji"
+                                        data={this.searchEmoji}
+                                        renderSuggestion={this.renderEmojiSuggestion}
+                                        style={{border: 'none'}}
                                     />
                                 </MentionsInput>
                             </div>
@@ -654,8 +667,7 @@ class ChatInput extends React.Component<IProps, IState> {
         if (e.key === 'Enter' && !e.shiftKey) {
             cancelTyping = true;
             setTimeout(() => {
-                if (this.mentions.length !== this.lastMentionsCount) {
-                    this.lastMentionsCount = this.mentions.length;
+                if (this.preventMessageSend) {
                     return;
                 }
                 if (this.props.onMessage) {
@@ -884,6 +896,11 @@ class ChatInput extends React.Component<IProps, IState> {
     /* Textarea change handler */
     private handleChange = (value: any, a: any, b: any, mentions: IMentions[]) => {
         this.mentions = mentions;
+        clearTimeout(this.preventMessageSendTimeout);
+        this.preventMessageSend = true;
+        this.preventMessageSendTimeout = setTimeout(() => {
+            this.preventMessageSend = false;
+        }, 500);
         this.setState({
             textareaValue: value.target.value,
         }, () => {
@@ -995,8 +1012,8 @@ class ChatInput extends React.Component<IProps, IState> {
         });
     }
 
-    /* Suggestion renderer */
-    private renderSuggestion = (a: any, b: any, c: any, d: any, focused: any) => {
+    /* Mention suggestion renderer */
+    private renderMentionSuggestion = (a: any, b: any, c: any, d: any, focused: any) => {
         return (<div className={'inner ' + (focused ? 'focused' : '')}>
             <div className="avatar">
                 <UserAvatar id={a.id} noDetail={true}/>
@@ -1012,7 +1029,9 @@ class ChatInput extends React.Component<IProps, IState> {
     private generateEntities(): MessageEntity[] | null {
         const entities: MessageEntity[] = [];
         if (this.mentions.length > 0) {
-            this.mentions.forEach((mention) => {
+            this.mentions.filter((m) => {
+                return m.id.indexOf(':') === -1;
+            }).forEach((mention) => {
                 const entity = new MessageEntity();
                 entity.setOffset(mention.plainTextIndex);
                 entity.setLength(mention.display.length);
@@ -1759,6 +1778,43 @@ class ChatInput extends React.Component<IProps, IState> {
         if (this.props.onVoiceStateChange) {
             this.props.onVoiceStateChange(this.state.voiceMode);
         }
+    }
+
+    /* Search emoji */
+    private searchEmoji = (keyword: string, callback: any) => {
+        const emojis: any[] = [];
+        keyword = keyword.toLowerCase();
+        if (keyword && keyword !== '') {
+            for (let i = 0, cnt = 0; i < emojiList.length && cnt < limit; i++) {
+                if (emojiList[i] && emojiList[i].n.indexOf(keyword) > -1) {
+                    emojis.push({
+                        display: emojiList[i].d,
+                        id: `:${emojiList[i].n}`,
+                        index: i,
+                    });
+                    cnt++;
+                }
+            }
+        } else {
+            for (let i = 0; i < limit; i++) {
+                emojis.push({
+                    display: emojiList[i].d,
+                    id: `:${emojiList[i].n}`,
+                    index: i,
+                });
+            }
+        }
+        callback(emojis);
+    }
+
+    /* Emoji suggestion renderer */
+    private renderEmojiSuggestion = (a: any, b: any, c: any, d: any, focused: any) => {
+        return (<div className={'inner ' + (focused ? 'focused' : '')}>
+            <div className="emoji-display">{a.display}</div>
+            <div className="info">
+                <div className="name">{a.id}</div>
+            </div>
+        </div>);
     }
 
     // /* Is voice started */
