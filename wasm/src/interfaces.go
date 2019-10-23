@@ -233,6 +233,7 @@ func (r *River) createAuthKeyStep2(clientNonce, serverNonce, serverPubFP, server
 					// TODO:: Retry with new DHKey
 				case msg.InitAuthCompleted_FAIL:
 					err = ErrAuthFailed
+					fmt.Println(err)
 					return
 				}
 				r.ConnInfo.Save()
@@ -243,9 +244,11 @@ func (r *River) createAuthKeyStep2(clientNonce, serverNonce, serverPubFP, server
 				AuthProgress(100)
 			case msg.C_Error:
 				err = ServerError(res.Message)
+			    fmt.Println(err)
 				return
 			default:
 				err = ErrInvalidConstructor
+			    fmt.Println(err)
 				return
 			}
 		},

@@ -1,3 +1,6 @@
+## 0.26.29
+* Staging version updated
+
 ## 0.26.28
 * MessageMedia upload bug fixed
 * Global search message added in LeftMenu
