@@ -424,11 +424,15 @@ class Chat extends React.Component<IProps, IState> {
 
     public componentWillReceiveProps(newProps: IProps) {
         const selectedId = newProps.match.params.id;
+        const selectedMessageId = newProps.match.params.mid;
         if (selectedId === 'null') {
             if (this.isMobileView) {
                 this.setChatView(false);
             }
         } else if (selectedId === this.selectedDialogId) {
+            if (selectedMessageId && selectedMessageId !== 'null') {
+                this.messageJumpToMessageHandler(parseInt(selectedMessageId, 10));
+            }
             if (this.isMobileView) {
                 this.setChatView(true);
             }
@@ -445,7 +449,6 @@ class Chat extends React.Component<IProps, IState> {
         }
         this.cachedMessageService.clearPeerId(this.selectedDialogId);
         this.newMessageLoadThrottle.cancel();
-        const selectedMessageId = newProps.match.params.mid;
         this.updateDialogsCounter(this.selectedDialogId, {scrollPos: this.lastMessageId});
         if (selectedId === 'null') {
             this.setChatParams(selectedId, null);
@@ -1437,9 +1440,12 @@ class Chat extends React.Component<IProps, IState> {
                 this.setEndOfMessage(false);
                 this.setLoading(false);
             }
+
             this.messageRef.setMessages(dataMsg.msgs, () => {
                 if (messageId && messageId !== '0') {
-                    this.messageJumpToMessageHandler(parseInt(messageId, 10));
+                    setTimeout(() => {
+                        this.messageJumpToMessageHandler(parseInt(messageId, 10));
+                    }, 500);
                 }
                 setTimeout(() => {
                     this.setLoading(false);

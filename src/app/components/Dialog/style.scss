@@ -41,6 +41,13 @@
         direction: ltr;
       }
 
+      .search-label {
+        padding: 8px;
+        font-size: 13px;
+        text-align: left;
+        background-color: rgba(0, 0, 0, 0.1);
+      }
+
       .dialog {
         position: relative;
         width: 100%;
@@ -200,6 +207,10 @@ html[direction="rtl"] {
     .dialog-list {
       .dialog-container {
 
+        .search-label {
+          text-align: right;
+        }
+
         a {
           direction: rtl;
         }
@@ -248,6 +259,11 @@ html[theme="dark"] {
 
     .dialog-list {
       .dialog-container {
+        .search-label {
+          color: var(--message-chat);
+          background-color: var(--dark-hover-light);
+        }
+
         .dialog {
           &:after {
             background-color: var(--dark-low-op50);
@@ -302,6 +318,11 @@ html[theme="dark-blue"] {
 
     .dialog-list {
       .dialog-container {
+        .search-label {
+          color: var(--message-chat);
+          background-color: var(--dark-hover-light);
+        }
+
         .dialog {
           &:after {
             background-color: var(--dark-blue-low-op50);

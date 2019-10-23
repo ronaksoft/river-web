@@ -12,6 +12,7 @@ import DialogRepo from '../dialog';
 import UserRepo from '../user';
 import GroupRepo from '../group';
 import {IUser} from '../user/interface';
+import MessageRepo from "../message";
 
 export default class SearchRepo {
     public static getInstance() {
@@ -27,11 +28,13 @@ export default class SearchRepo {
     private dialogRepo: DialogRepo;
     private userRepo: UserRepo;
     private groupRepo: GroupRepo;
+    private messageRepo: MessageRepo;
 
     public constructor() {
         this.dialogRepo = DialogRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
+        this.messageRepo = MessageRepo.getInstance();
     }
 
     public searchIds({skip, limit, keyword}: any): Promise<string[]> {
@@ -112,5 +115,9 @@ export default class SearchRepo {
 
     public getCurrentUserId(): string {
         return this.userRepo.getCurrentUserId();
+    }
+
+    public searchAllMessages(keyword: string, params: { after?: number, limit?: number }) {
+        return this.messageRepo.searchAll(keyword, params);
     }
 }

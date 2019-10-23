@@ -376,18 +376,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                                          fileLocation={(message.id || 0) < 0 && message.messagetype === C_MESSAGE_TYPE.Picture ? info.file : info.thumbFile}
                                          style={this.pictureContentSize}
                                          onLoad={this.cachedPhotoLoadHandler} blur={10} searchTemp={true}/>
-                            <div className="media-action">
-                                {Boolean(fileState === 'download') &&
-                                <CloudDownloadRounded onClick={this.downloadFileHandler}/>}
-                                {Boolean(fileState === 'progress') && <React.Fragment>
-                                    <div className="progress">
-                                        <svg viewBox='0 0 32 32'>
-                                            <circle ref={this.progressRefHandler} r='14' cx='16' cy='16'/>
-                                        </svg>
-                                    </div>
-                                    <CloseRounded className="action" onClick={this.cancelFileHandler}/>
-                                </React.Fragment>}
-                            </div>
+                            {this.getMediaAction()}
                         </div>
                     </div>}
                     {Boolean((fileState === 'view' || fileState === 'open') || transition || (message.id || 0) < 0) &&
@@ -401,10 +390,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                             <CachedPhoto className="picture" style={this.pictureContentSize}
                                          fileLocation={message.messagetype === C_MESSAGE_TYPE.Picture ? info.file : info.thumbFile}
                                          onLoad={this.cachedPhotoLoadHandler} searchTemp={true}/>
-                            {Boolean(message.messagetype === C_MESSAGE_TYPE.Video) &&
-                            <div className="media-action" onClick={this.viewDocument}>
-                                <PlayArrowRounded/>
-                            </div>}
+                            {this.getMediaAction()}
                         </div>
                     </div>}
                 </div>
@@ -437,6 +423,32 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
             return 'view';
         } else {
             return 'open';
+        }
+    }
+
+    private getMediaAction() {
+        const {fileState, message} = this.state;
+        if ((message.id || 0) < 0) {
+            return (
+                <div className="media-action">
+                    {Boolean(fileState === 'download') &&
+                    <CloudDownloadRounded onClick={this.downloadFileHandler}/>}
+                    {Boolean(fileState === 'progress') && <React.Fragment>
+                        <div className="progress">
+                            <svg viewBox='0 0 32 32'>
+                                <circle ref={this.progressRefHandler} r='14' cx='16' cy='16'/>
+                            </svg>
+                        </div>
+                        <CloseRounded className="action" onClick={this.cancelFileHandler}/>
+                    </React.Fragment>}
+                </div>
+            );
+        } else if (message.messagetype === C_MESSAGE_TYPE.Video) {
+            return (<div className="media-action" onClick={this.viewDocument}>
+                <PlayArrowRounded/>
+            </div>);
+        } else {
+            return '';
         }
     }
 

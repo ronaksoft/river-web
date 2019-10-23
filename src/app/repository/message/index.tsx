@@ -596,6 +596,32 @@ export default class MessageRepo {
         return pipe2.limit(limit || 30).toArray();
     }
 
+    public searchAll(keyword: string, {after, limit}: {after?: number, limit?: number}) {
+        const pipe = this.db.messages;
+        let pipe2: Dexie.Collection<IMessage, number>;
+        if (after) {
+            pipe2 = pipe.where('id').below(after);
+        } else {
+            pipe2 = pipe.reverse();
+        }
+        const reg = new RegExp(keyword || '', 'i');
+        return pipe2.filter((item: IMessage) => {
+            if (item.messagetype !== C_MESSAGE_TYPE.Hole && item.messagetype !== C_MESSAGE_TYPE.End && item.temp !== true && (item.id || 0) > 0) {
+                if (item.messagetype === 0 || item.messagetype === C_MESSAGE_TYPE.Normal) {
+                    return reg.test(item.body || '');
+                } else {
+                    if (item.mediadata && item.mediadata.caption) {
+                        return reg.test(item.mediadata.caption || '');
+                    } else {
+                        return false;
+                    }
+                }
+            } else {
+                return false;
+            }
+        }).limit(limit || 32).toArray();
+    }
+
     public transform(msgs: IMessage[]) {
         return msgs.map((msg) => {
             msg.temp = false;

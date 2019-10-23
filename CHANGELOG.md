@@ -1,3 +1,7 @@
+## 0.26.28
+* MessageMedia upload bug fixed
+* Global search message added in LeftMenu
+
 ## 0.26.27
 * Ability to run in staging server
 

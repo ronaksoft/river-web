@@ -32,8 +32,10 @@ import {isMuted} from "../UserInfoMenu";
 import {FixedSizeList} from "react-window";
 import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 import animateScrollTo from "animated-scroll-to";
+import {getMessageTitle} from "./utils";
 
 import './style.css';
+import UserRepo from "../../repository/user";
 
 interface IProps {
     cancelIsTyping: (id: string) => void;
@@ -48,6 +50,7 @@ interface IState {
     moreIndex: number;
     searchAddedItems: IDialog[];
     searchItems: IDialog[];
+    searchMessageItems: IDialog[];
     selectedId: string;
 }
 
@@ -69,6 +72,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
     private readonly hasScrollbar: boolean = false;
     private containerRef: any;
     private searchEnable: boolean = false;
+    private userId: string = '';
 
     constructor(props: IProps) {
         super(props);
@@ -81,6 +85,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
             moreIndex: -1,
             searchAddedItems: [],
             searchItems: [],
+            searchMessageItems: [],
             selectedId: 'null',
         };
 
@@ -88,6 +93,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
         this.searchDebounce = debounce(this.search, 512);
         this.isMobile = IsMobile.isAny();
         this.hasScrollbar = getScrollbarWidth() > 0;
+        this.userId = UserRepo.getInstance().getCurrentUserId();
 
         this.menuItem = {
             0: {
@@ -243,7 +249,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
 
     public render() {
         const {moreAnchorPos} = this.state;
-        const {searchItems, searchAddedItems} = this.state;
+        const {searchItems, searchAddedItems, searchMessageItems} = this.state;
         return (
             <div className="dialogs">
                 <div ref={this.containerRefHandler} className="dialog-search">
@@ -299,6 +305,15 @@ class Dialog extends React.PureComponent<IProps, IState> {
                                             return (
                                                 <DialogMessage key={dialog.peerid || index} dialog={dialog}
                                                                isTyping={{}} selectedId={this.state.selectedId}/>
+                                            );
+                                        })}
+                                        {Boolean(searchMessageItems.length > 0) &&
+                                        <div className="search-label">{i18n.t('dialog.messages')}</div>}
+                                        {searchMessageItems.map((dialog, index) => {
+                                            return (
+                                                <DialogMessage key={dialog.topmessageid || dialog.peerid || index}
+                                                               dialog={dialog} isTyping={{}} selectedId=""
+                                                               messageId={dialog.topmessageid}/>
                                             );
                                         })}
                                     </div>
@@ -568,6 +583,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
             this.keyword = '';
             this.setState({
                 ids: [],
+                searchMessageItems: [],
             }, () => {
                 this.filterItem();
             });
@@ -583,6 +599,27 @@ class Dialog extends React.PureComponent<IProps, IState> {
                 ids: res.dialogs.map(o => (o.peerid || '')),
             }, () => {
                 this.filterItem(res.contacts);
+            });
+        });
+        this.searchRepo.searchAllMessages(keyword, {}).then((res) => {
+            const searchMessageItems: IDialog[] = res.map((msg) => {
+                const messageTitle = getMessageTitle(msg);
+                return {
+                    last_update: msg.createdon,
+                    only_contact: true,
+                    peerid: msg.peerid,
+                    peertype: msg.peertype,
+                    preview: messageTitle.text,
+                    preview_icon: messageTitle.icon,
+                    preview_me: msg.me,
+                    preview_rtl: msg.rtl,
+                    saved_messages: msg.peerid === this.userId,
+                    sender_id: msg.senderid,
+                    topmessageid: msg.id,
+                };
+            });
+            this.setState({
+                searchMessageItems,
             });
         });
     }
@@ -622,6 +659,10 @@ class Dialog extends React.PureComponent<IProps, IState> {
     /* Search close handler */
     private closeSearchHandler = () => {
         this.toggleSearch();
+        this.setState({
+            searchAddedItems: [],
+            searchMessageItems: [],
+        });
     }
 
     private containerRefHandler = (ref: any) => {

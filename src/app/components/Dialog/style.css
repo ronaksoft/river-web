@@ -26,6 +26,11 @@
       text-decoration: none;
       text-transform: none;
       direction: ltr; }
+    .dialogs .dialog-list .dialog-container .search-label {
+      padding: 8px;
+      font-size: 13px;
+      text-align: left;
+      background-color: rgba(0, 0, 0, 0.1); }
     .dialogs .dialog-list .dialog-container .dialog {
       position: relative;
       width: 100%;
@@ -143,6 +148,9 @@ html[direction="rtl"] .dialogs-inner > div {
 html[direction="rtl"] .dialogs .dialog-search label, html[direction="rtl"] .dialogs .dialog-search input, html[direction="rtl"] .dialogs .dialog-search svg {
   color: var(--white); }
 
+html[direction="rtl"] .dialogs .dialog-list .dialog-container .search-label {
+  text-align: right; }
+
 html[direction="rtl"] .dialogs .dialog-list .dialog-container a {
   direction: rtl; }
 
@@ -167,6 +175,10 @@ html[direction="rtl"] .dialogs .dialog-list .dialog-container .no-result .dialog
 
 html[theme="dark"] .dialogs .dialog-search label, html[theme="dark"] .dialogs .dialog-search input, html[theme="dark"] .dialogs .dialog-search svg {
   color: var(--white); }
+
+html[theme="dark"] .dialogs .dialog-list .dialog-container .search-label {
+  color: var(--message-chat);
+  background-color: var(--dark-hover-light); }
 
 html[theme="dark"] .dialogs .dialog-list .dialog-container .dialog:after {
   background-color: var(--dark-low-op50); }
@@ -193,6 +205,10 @@ html[theme="dark"] .dialogs .dialog-list .dialog-container .no-result .dialog-sk
 
 html[theme="dark-blue"] .dialogs .dialog-search label, html[theme="dark-blue"] .dialogs .dialog-search input, html[theme="dark-blue"] .dialogs .dialog-search svg {
   color: var(--white); }
+
+html[theme="dark-blue"] .dialogs .dialog-list .dialog-container .search-label {
+  color: var(--message-chat);
+  background-color: var(--dark-hover-light); }
 
 html[theme="dark-blue"] .dialogs .dialog-list .dialog-container .dialog:after {
   background-color: var(--dark-blue-low-op50); }

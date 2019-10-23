@@ -37,6 +37,7 @@ interface IProps {
     isTyping: { [key: string]: { fn: any, action: TypingAction } };
     onContextMenuOpen?: (e: any) => void;
     selectedId: string;
+    messageId?: number;
 }
 
 interface IState {
@@ -86,13 +87,14 @@ class DialogMessage extends React.Component<IProps, IState> {
     }
 
     public render() {
+        const {messageId} = this.props;
         const {dialog, isTyping} = this.state;
         const ids = Object.keys(isTyping);
         const muted = isMuted(dialog.notifysettings);
         const hasCounter = Boolean(dialog.unreadcount && dialog.unreadcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me);
         const hasMention = Boolean(dialog.mentionedcount && dialog.mentionedcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me);
         return (
-            <Link to={`/chat/${dialog.peerid}`}>
+            <Link to={messageId ? `/chat/${dialog.peerid}/${messageId}` : `/chat/${dialog.peerid}`}>
                 <div
                     className={'dialog' + (dialog.peerid === this.state.selectedId ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}>
                     <div
