@@ -1,3 +1,8 @@
+## 0.26.31
+* Bug fixed in send message
+* Emoji frequently used list added
+* Paste from clipboard added
+
 ## 0.26.30
 * Inline emoji added
 

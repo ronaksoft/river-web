@@ -10,7 +10,7 @@
 import * as React from 'react';
 import {Picker} from 'emoji-mart';
 import PopUpMenu from '../PopUpMenu';
-import {cloneDeep, throttle} from 'lodash';
+import {cloneDeep, throttle, sortBy} from 'lodash';
 import {
     AttachFileRounded,
     ClearRounded,
@@ -72,7 +72,8 @@ import {emojiList} from "./emojis";
 import 'emoji-mart/css/emoji-mart.css';
 import './style.css';
 
-const limit = 10;
+const limit = 9;
+const emojiKey = 'emoji-mart.frequently';
 
 // @[@yasaman](580637822969180) hi
 const mentionize = (text: string, sortedEntities: Array<{ offset: number, length: number, val: string }>) => {
@@ -201,6 +202,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private readonly isMobileView: boolean = false;
     private preventMessageSend: boolean = false;
     private preventMessageSendTimeout: any = null;
+    private emojiMap: { [key: string]: number } = {};
 
     constructor(props: IProps) {
         super(props);
@@ -240,6 +242,10 @@ class ChatInput extends React.Component<IProps, IState> {
         this.broadcaster = Broadcaster.getInstance();
 
         this.isMobileView = (window.innerWidth < 600);
+
+        emojiList.forEach((emoji, index) => {
+            this.emojiMap[emoji.n] = index;
+        });
     }
 
     public componentDidMount() {
@@ -248,11 +254,13 @@ class ChatInput extends React.Component<IProps, IState> {
         window.addEventListener('mouseup', this.windowMouseUp);
         window.addEventListener('keyup', this.windowKeyUp);
         window.addEventListener('resize', this.windowResizeHandler);
+        window.addEventListener('paste', this.windowPasteHandler);
         this.initDraft(null, this.props.peer, 0, null);
     }
 
     public setPeer(peer: InputPeer | null) {
         if (peer && this.state.peer !== peer) {
+            this.preventMessageSend = false;
             if (this.state.voiceMode === 'lock' || this.state.voiceMode === 'down') {
                 this.voiceCancelHandler();
             }
@@ -326,6 +334,7 @@ class ChatInput extends React.Component<IProps, IState> {
         window.removeEventListener('mouseup', this.windowMouseUp);
         window.removeEventListener('keyup', this.windowKeyUp);
         window.removeEventListener('resize', this.windowResizeHandler);
+        window.removeEventListener('paste', this.windowPasteHandler);
         this.eventReferences.forEach((canceller) => {
             if (typeof canceller === 'function') {
                 canceller();
@@ -489,6 +498,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                         data={this.searchEmoji}
                                         renderSuggestion={this.renderEmojiSuggestion}
                                         style={{border: 'none'}}
+                                        onAdd={this.emojiAddHandler}
                                     />
                                 </MentionsInput>
                             </div>
@@ -895,12 +905,14 @@ class ChatInput extends React.Component<IProps, IState> {
 
     /* Textarea change handler */
     private handleChange = (value: any, a: any, b: any, mentions: IMentions[]) => {
+        if (this.mentions.length !== mentions.length) {
+            clearTimeout(this.preventMessageSendTimeout);
+            this.preventMessageSend = true;
+            this.preventMessageSendTimeout = setTimeout(() => {
+                this.preventMessageSend = false;
+            }, 500);
+        }
         this.mentions = mentions;
-        clearTimeout(this.preventMessageSendTimeout);
-        this.preventMessageSend = true;
-        this.preventMessageSendTimeout = setTimeout(() => {
-            this.preventMessageSend = false;
-        }, 500);
         this.setState({
             textareaValue: value.target.value,
         }, () => {
@@ -1785,18 +1797,39 @@ class ChatInput extends React.Component<IProps, IState> {
         const emojis: any[] = [];
         keyword = keyword.toLowerCase();
         if (keyword && keyword !== '') {
-            for (let i = 0, cnt = 0; i < emojiList.length && cnt < limit; i++) {
+            for (let i = 0; i < emojiList.length && emojis.length < limit; i++) {
                 if (emojiList[i] && emojiList[i].n.indexOf(keyword) > -1) {
                     emojis.push({
                         display: emojiList[i].d,
                         id: `:${emojiList[i].n}`,
                         index: i,
                     });
-                    cnt++;
                 }
             }
         } else {
-            for (let i = 0; i < limit; i++) {
+            const freq = localStorage.getItem(emojiKey);
+            if (freq) {
+                const freqData = JSON.parse(freq);
+                let freqList: Array<{ cnt: number, val: string }> = [];
+                Object.keys(freqData).forEach((key) => {
+                    freqList.push({
+                        cnt: freqData[key],
+                        val: key,
+                    });
+                });
+                freqList = sortBy(freqList, 'cnt').reverse();
+                for (let i = 0; i < freqList.length && emojis.length < limit; i++) {
+                    const emoji = this.emojiMap[freqList[i].val];
+                    if (emoji) {
+                        emojis.push({
+                            display: emojiList[emoji].d,
+                            id: `:${emojiList[emoji].n}`,
+                            index: i,
+                        });
+                    }
+                }
+            }
+            for (let i = 0; i < limit && emojis.length < limit; i++) {
                 emojis.push({
                     display: emojiList[i].d,
                     id: `:${emojiList[i].n}`,
@@ -1815,6 +1848,41 @@ class ChatInput extends React.Component<IProps, IState> {
                 <div className="name">{a.id}</div>
             </div>
         </div>);
+    }
+
+    /* Window paste handler */
+    private windowPasteHandler = (e: any) => {
+        if (e.clipboardData && e.clipboardData.items) {
+            const files: any[] = [];
+            for (let i = 0; i < e.clipboardData.items.length; i++) {
+                const item = e.clipboardData.items[i];
+                if (item.kind === 'file') {
+                    files.push(item.getAsFile());
+                }
+            }
+            if (files.length > 0) {
+                this.openUploader(files);
+            }
+        }
+    }
+
+    /* Inline emoji add handler */
+    private emojiAddHandler = (d: string) => {
+        d = d.substr(1);
+        const freq = localStorage.getItem(emojiKey);
+        if (freq) {
+            const freqData = JSON.parse(freq);
+            if (freqData.hasOwnProperty(d)) {
+                freqData[d]++;
+            } else {
+                freqData[d] = 1;
+            }
+            localStorage.setItem(emojiKey, JSON.stringify(freqData));
+        } else {
+            const item: any = {};
+            item[d] = 1;
+            localStorage.setItem(emojiKey, JSON.stringify(item));
+        }
     }
 
     // /* Is voice started */
