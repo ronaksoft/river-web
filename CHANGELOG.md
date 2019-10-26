@@ -2,6 +2,7 @@
 * Bug fixed in send message
 * Emoji frequently used list added
 * Paste from clipboard added
+* MessageMedia bug fixed
 
 ## 0.26.30
 * Inline emoji added

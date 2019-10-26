@@ -428,7 +428,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
 
     private getMediaAction() {
         const {fileState, message} = this.state;
-        if ((message.id || 0) < 0) {
+        if ((message.id || 0) < 0 || fileState === 'download' || fileState === 'progress') {
             return (
                 <div className="media-action">
                     {Boolean(fileState === 'download') &&
