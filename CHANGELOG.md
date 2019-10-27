@@ -1,3 +1,8 @@
+## 0.26.32
+* RANDOM_ID error check
+* Message UI bug fixed
+* MoveDown unread counter improved
+
 ## 0.26.31
 * Bug fixed in send message
 * Emoji frequently used list added

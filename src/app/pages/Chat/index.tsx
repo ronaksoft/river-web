@@ -48,7 +48,7 @@ import {
 import {IConnInfo} from '../../services/sdk/interface';
 import {IDialog} from '../../repository/dialog/interface';
 import UpdateManager, {INewMessageBulkUpdate} from '../../services/sdk/server/updateManager';
-import {C_ERR, C_MSG} from '../../services/sdk/const';
+import {C_ERR, C_ERR_ITEM, C_MSG} from '../../services/sdk/const';
 import {
     UpdateDialogPinned,
     UpdateDraftMessage,
@@ -134,6 +134,7 @@ import {C_CUSTOM_BG_ID, C_VERSION} from "../../components/SettingsMenu";
 import RightMenu from "../../components/RightMenu";
 import InfoBar from "../../components/InfoBar";
 import MoveDown from "../../components/MoveDown";
+import {Error} from '../../services/sdk/messages/chat.core.types_pb';
 import {OptionsObject, withSnackbar} from "notistack";
 
 import './style.css';
@@ -1875,14 +1876,16 @@ class Chat extends React.Component<IProps, IState> {
                 }
                 this.newMessageLoadThrottle();
             }).catch((err) => {
-                const messages = this.messages;
-                const index = findIndex(messages, (o) => {
-                    return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
-                });
-                if (index > -1) {
-                    messages[index].error = true;
-                    this.messageRepo.importBulk([messages[index]], false);
-                    this.messageRef.list.forceUpdateGrid();
+                if (!this.resolveRandomMessageIdError(err, randomId, id)) {
+                    const messages = this.messages;
+                    const index = findIndex(messages, (o) => {
+                        return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                    });
+                    if (index > -1) {
+                        messages[index].error = true;
+                        this.messageRepo.importBulk([messages[index]], false);
+                        this.messageRef.list.forceUpdateGrid();
+                    }
                 }
             });
         }
@@ -1912,6 +1915,24 @@ class Chat extends React.Component<IProps, IState> {
         this.setScrollMode('end');
         this.messageRef.setMessages(messages);
         this.messageRepo.lazyUpsert([message]);
+    }
+
+    private resolveRandomMessageIdError(err: Error.AsObject, randomId: number, id: number) {
+        if (err && err.code === C_ERR.ErrCodeInvalid && err.items === C_ERR_ITEM.ErrItemRandomID) {
+            this.messageRepo.removePending(randomId);
+            this.messageRepo.remove(id);
+            const index = findIndex(this.messages, (o) => {
+                return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+            });
+            if (index > -1) {
+                this.messages.splice(index, 1);
+                if (this.messageRef) {
+                    this.messageRef.list.forceUpdateGrid();
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     private checkMessageOrder(msg: IMessage) {
@@ -2212,8 +2233,15 @@ class Chat extends React.Component<IProps, IState> {
                     this.dialogRef.forceRender();
                 }
             }
-            if (unreadCounter === 0 && this.scrollInfo) {
-                this.setEndOfMessage(this.messages.length - this.scrollInfo.stopIndex > 1);
+            if (this.selectedDialogId === peerId) {
+                if (unreadCounter === 0 && this.scrollInfo) {
+                    this.setEndOfMessage(this.messages.length - this.scrollInfo.stopIndex <= 1);
+                    if (this.endOfMessage && this.moveDownRef) {
+                        this.moveDownRef.setVisible(false);
+                    }
+                } else if (unreadCounter && this.endOfMessage) {
+                    this.moveDownRef.setVisible(true);
+                }
             }
             if (counterAction && peerId === this.selectedDialogId && this.moveDownRef) {
                 this.moveDownRef.setDialog(dialogs[index]);
@@ -4017,15 +4045,17 @@ class Chat extends React.Component<IProps, IState> {
                 this.newMessageLoadThrottle();
             }).catch((err) => {
                 window.console.warn(err);
-                const messages = this.messages;
-                const index = findIndex(messages, (o) => {
-                    return o.id === id && o.messagetype === messageType;
-                });
-                if (index > -1) {
-                    messages[index].error = true;
-                    this.messageRepo.importBulk([messages[index]], false);
-                    if (this.messageRef) {
-                        this.messageRef.list.forceUpdateGrid();
+                if (!this.resolveRandomMessageIdError(err, randomId, id)) {
+                    const messages = this.messages;
+                    const index = findIndex(messages, (o) => {
+                        return o.id === id && o.messagetype === messageType;
+                    });
+                    if (index > -1) {
+                        messages[index].error = true;
+                        this.messageRepo.importBulk([messages[index]], false);
+                        if (this.messageRef) {
+                            this.messageRef.list.forceUpdateGrid();
+                        }
                     }
                 }
             });
@@ -4162,15 +4192,17 @@ class Chat extends React.Component<IProps, IState> {
             }
         }).catch((err) => {
             window.console.warn(err);
-            const messages = this.messages;
-            const index = findIndex(messages, (o) => {
-                return o.id === id && o.messagetype === messageType;
-            });
-            if (index > -1) {
-                messages[index].error = true;
-                this.messageRepo.importBulk([messages[index]], false);
-                if (this.messageRef) {
-                    this.messageRef.list.forceUpdateGrid();
+            if (!this.resolveRandomMessageIdError(err, randomId, id)) {
+                const messages = this.messages;
+                const index = findIndex(messages, (o) => {
+                    return o.id === id && o.messagetype === messageType;
+                });
+                if (index > -1) {
+                    messages[index].error = true;
+                    this.messageRepo.importBulk([messages[index]], false);
+                    if (this.messageRef) {
+                        this.messageRef.list.forceUpdateGrid();
+                    }
                 }
             }
         });
