@@ -1918,7 +1918,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private resolveRandomMessageIdError(err: Error.AsObject, randomId: number, id: number) {
-        if (err && err.code === C_ERR.ErrCodeInvalid && err.items === C_ERR_ITEM.ErrItemRandomID) {
+        if (err && err.code === C_ERR.ErrCodeAlreadyExists && err.items === C_ERR_ITEM.ErrItemRandomID) {
             this.messageRepo.removePending(randomId);
             this.messageRepo.remove(id);
             const index = findIndex(this.messages, (o) => {

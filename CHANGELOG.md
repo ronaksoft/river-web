@@ -1,3 +1,6 @@
+## 0.26.33
+* Fix RandomId error check
+
 ## 0.26.32
 * RANDOM_ID error check
 * Message UI bug fixed
