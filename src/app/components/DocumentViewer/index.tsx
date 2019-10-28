@@ -435,7 +435,8 @@ class DocumentViewer extends React.Component<IProps, IState> {
             return '';
         }
         return (
-            <div className="document-viewer-caption">
+            <div className="document-viewer-caption" onMouseEnter={this.controlMouseEnterHandler}
+                 onMouseLeave={this.controlMouseLeaveHandler}>
                 <div className="caption-wrapper">
                     <div className={'caption ' + (doc.items[0].rtl ? 'rtl' : 'ltr')}>{doc.items[0].caption}</div>
                 </div>

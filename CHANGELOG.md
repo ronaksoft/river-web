@@ -1,3 +1,6 @@
+## 0.26.34
+* Document viewer's caption backdrop click bug fixed 
+
 ## 0.26.33
 * Fix RandomId error check
 
