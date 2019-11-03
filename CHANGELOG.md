@@ -1,3 +1,6 @@
+## 0.26.35
+* Fix for localhost
+
 ## 0.26.34
 * Document viewer's caption backdrop click bug fixed 
 
