@@ -1,3 +1,6 @@
+## 0.26.37
+* UI bug in status fixed
+
 ## 0.26.36
 * CachedPhoto bug fixed
 * Typing UI bug fixed
