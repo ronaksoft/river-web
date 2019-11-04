@@ -4,6 +4,7 @@
 * FileManger logs updated
 * Select removed from date
 * DocumentViewer arrow keys bug fixed
+* WASM updated
 
 ## 0.26.35
 * Fix for localhost
