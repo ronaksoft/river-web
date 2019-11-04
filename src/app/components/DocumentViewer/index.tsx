@@ -117,6 +117,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     private groupRepo: GroupRepo;
     private userId: string = '';
     private hasAccess: boolean = false;
+    private isTransitioning: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -690,6 +691,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         if (!this.documentContainerRef) {
             return;
         }
+        this.isTransitioning = true;
         this.documentContainerRef.classList.remove('prev', 'next', 'animate');
         if (next) {
             this.documentContainerRef.classList.add('next', 'animate');
@@ -701,10 +703,14 @@ class DocumentViewer extends React.Component<IProps, IState> {
             if (callback) {
                 callback();
             }
+            this.isTransitioning = false;
         }, 200);
     }
 
     private prevHandler = () => {
+        if (this.isTransitioning) {
+            return;
+        }
         this.animateSlide(false, () => {
             if (this.state.prev) {
                 this.loadMedia(this.state.prev);
@@ -713,6 +719,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     private nextHandler = () => {
+        if (this.isTransitioning) {
+            return;
+        }
         this.animateSlide(true, () => {
             if (this.state.next) {
                 this.loadMedia(this.state.next);

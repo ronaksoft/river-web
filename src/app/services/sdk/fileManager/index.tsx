@@ -504,14 +504,19 @@ export default class FileManager {
                     this.dispatchDownloadProgress(id, 'complete');
                     this.fileRepo.persistTempFiles(id, id, this.fileDownloadQueue[id].mimeType || 'application/octet-stream').then((res) => {
                         if (this.fileDownloadQueue.hasOwnProperty(id)) {
+                            let check = true;
                             if (res && this.fileDownloadQueue[id].md5 && this.fileDownloadQueue[id].md5 !== '' && this.fileDownloadQueue[id].md5 !== res.md5) {
+                                check = false;
                                 this.fileRepo.remove(id).finally(() => {
-                                    this.fileDownloadQueue[id].reject('md5 hashes are not match');
+                                    this.fileDownloadQueue[id].reject(`md5 hashes are not match. ${this.fileDownloadQueue[id].md5}, ${res.md5}`);
+                                    delete this.fileDownloadQueue[id];
                                 });
                             } else {
                                 this.fileDownloadQueue[id].resolve();
                             }
-                            delete this.fileDownloadQueue[id];
+                            if (check) {
+                                delete this.fileDownloadQueue[id];
+                            }
                         }
                     }).catch((err) => {
                         if (this.fileDownloadQueue.hasOwnProperty(id)) {

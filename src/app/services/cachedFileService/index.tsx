@@ -46,6 +46,9 @@ export default class CachedFileService {
 
     /* Get file */
     public getFile(fileLocation: InputFileLocation.AsObject, md5: string, size: number, mimeType: string, searchTemp?: boolean, blurRadius?: number): Promise<string> {
+        if (!fileLocation) {
+            return Promise.reject();
+        }
         const id = fileLocation.fileid || '';
         return new Promise((resolve, reject) => {
             if (this.files.hasOwnProperty(id)) {

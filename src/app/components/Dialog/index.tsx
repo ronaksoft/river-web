@@ -33,9 +33,9 @@ import {FixedSizeList} from "react-window";
 import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 import animateScrollTo from "animated-scroll-to";
 import {getMessageTitle} from "./utils";
+import UserRepo from "../../repository/user";
 
 import './style.css';
-import UserRepo from "../../repository/user";
 
 interface IProps {
     cancelIsTyping: (id: string) => void;
@@ -44,7 +44,6 @@ interface IProps {
 
 interface IState {
     ids: string[];
-    isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } };
     items: IDialog[];
     moreAnchorPos: any;
     moreIndex: number;
@@ -72,14 +71,14 @@ class Dialog extends React.PureComponent<IProps, IState> {
     private readonly hasScrollbar: boolean = false;
     private containerRef: any;
     private searchEnable: boolean = false;
-    private userId: string = '';
+    private isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } } = {};
+    private readonly userId: string = '';
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
             ids: [],
-            isTypingList: {},
             items: [],
             moreAnchorPos: null,
             moreIndex: -1,
@@ -182,9 +181,8 @@ class Dialog extends React.PureComponent<IProps, IState> {
     }
 
     public setIsTypingList(isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } }) {
-        this.setState({
-            isTypingList,
-        });
+        this.isTypingList = isTypingList;
+        this.forceUpdate();
     }
 
     public toggleSearch() {
@@ -294,7 +292,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
                                 >
                                     <div className="dialog-container">
                                         {searchItems.map((dialog, index) => {
-                                            const isTyping = this.state.isTypingList.hasOwnProperty(dialog.peerid || '') ? this.state.isTypingList[dialog.peerid || ''] : {};
+                                            const isTyping = this.isTypingList.hasOwnProperty(dialog.peerid || '') ? this.isTypingList[dialog.peerid || ''] : {};
                                             return (
                                                 <DialogMessage key={dialog.peerid || index} dialog={dialog}
                                                                isTyping={isTyping} selectedId={this.state.selectedId}
@@ -419,7 +417,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
     private rowRender = ({index, key, style}: any): any => {
         if (this.state.searchItems.length > index) {
             const dialog = this.state.searchItems[index];
-            const isTyping = this.state.isTypingList.hasOwnProperty(dialog.peerid || '') ? this.state.isTypingList[dialog.peerid || ''] : {};
+            const isTyping = this.isTypingList.hasOwnProperty(dialog.peerid || '') ? this.isTypingList[dialog.peerid || ''] : {};
             return (
                 <div style={style} key={dialog.peerid || key}>
                     <Link to={`/chat/${dialog.peerid}`}>

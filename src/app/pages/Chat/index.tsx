@@ -894,14 +894,14 @@ class Chat extends React.Component<IProps, IState> {
                 data.messages.reverse().forEach((message) => {
                     this.checkMessageOrder(message);
                 });
-                if (!this.endOfMessage && this.isInChat) {
+                if (this.endOfMessage && this.isInChat) {
                     this.setScrollMode('end');
                 } else {
                     this.setScrollMode('none');
                 }
                 this.messageRef.setMessages(dataMsg.msgs, () => {
                     // Scroll down if possible
-                    if (!this.endOfMessage && this.isInChat) {
+                    if (this.endOfMessage && this.isInChat) {
                         if (dataMsg.maxReadId !== -1) {
                             if (this.scrollInfo && this.scrollInfo.stopIndex && this.messages[this.scrollInfo.stopIndex]) {
                                 this.sendReadHistory(this.peer, Math.floor(this.messages[this.scrollInfo.stopIndex].id || 0), this.scrollInfo.stopIndex);
@@ -958,7 +958,7 @@ class Chat extends React.Component<IProps, IState> {
             // 1. Current Dialog is different from message peerid
             // 2. Is not at the end of conversations
             // 3. Is not focused on the River app
-            if (!message.me && (message.peerid !== this.selectedDialogId || this.endOfMessage || !this.isInChat)) {
+            if (!message.me && (message.peerid !== this.selectedDialogId || !this.endOfMessage || !this.isInChat)) {
                 this.messageRepo.exists(message.id || 0).then((exists) => {
                     if (!exists) {
                         this.updateDialogsCounter(message.peerid || '', {
@@ -2563,7 +2563,7 @@ class Chat extends React.Component<IProps, IState> {
                 if (!this.messageRef) {
                     return;
                 }
-                if (!this.endOfMessage && this.isInChat) {
+                if (this.endOfMessage && this.isInChat) {
                     this.setScrollMode('end');
                 } else {
                     this.setScrollMode('none');
@@ -2901,7 +2901,7 @@ class Chat extends React.Component<IProps, IState> {
         const messages = this.messages;
         const diff = messages.length - info.stopIndex;
         this.scrollInfo = info;
-        this.setEndOfMessage(diff > 2);
+        this.setEndOfMessage(diff <= 1);
         // if (this.isLoading) {
         //     return;
         // }
@@ -3598,7 +3598,7 @@ class Chat extends React.Component<IProps, IState> {
                                 msg.downloaded = true;
                                 if (this.messages) {
                                     const index = findIndex(this.messages, (o) => {
-                                        return o.id === msg.id && o.messagetype === msg.messagetype;
+                                        return o && o.id === msg.id && o.messagetype === msg.messagetype;
                                     });
                                     if (index > -1) {
                                         this.messages[index] = msg;

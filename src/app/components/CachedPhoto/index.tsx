@@ -44,7 +44,11 @@ class CachedPhoto extends React.Component<IProps, IState> {
 
         this.cachedFileService = CachedFileService.getInstance();
 
-        this.lastFileId = this.props.fileLocation.fileid || '';
+        if (this.props.fileLocation) {
+            this.lastFileId = this.props.fileLocation.fileid || '';
+        } else {
+            this.lastFileId = '';
+        }
         this.lastBlur = this.props.blur || 0;
     }
 

@@ -1,3 +1,10 @@
+## 0.26.36
+* CachedPhoto bug fixed
+* Typing UI bug fixed
+* FileManger logs updated
+* Select removed from date
+* DocumentViewer arrow keys bug fixed
+
 ## 0.26.35
 * Fix for localhost
 
