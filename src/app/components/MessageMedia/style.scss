@@ -162,6 +162,8 @@
       border-radius: 4px;
       color: var(--white);
       white-space: nowrap;
+      z-index: 110;
+      user-select: none;
 
       svg {
         font-size: 14px;
@@ -201,6 +203,7 @@
       color: var(--white);
       transform: translate(-50%, -50%);
       z-index: 20;
+      user-select: none;
     }
 
     &.video {

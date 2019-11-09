@@ -213,6 +213,7 @@ interface IState {
 }
 
 class MessageMedia extends React.PureComponent<IProps, IState> {
+    private ref: any;
     private messageMediaClass: string = '';
     private lastId: number = 0;
     private fileId: string = '';
@@ -224,7 +225,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     private mediaSizeRef: any = null;
     private fileSize: number = 0;
     private documentViewerService: DocumentViewerService;
-    private readonly pictureContentSize: { height: string, maxWidth: string, nHeight: number, width: string } = {
+    private pictureContentSize: { height: string, maxWidth: string, nHeight: number, width: string } = {
         height: `${C_MIN_HEIGHT}px`,
         maxWidth: `${C_MIN_WIDTH}px`,
         nHeight: 0,
@@ -350,10 +351,22 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         }
     }
 
+    /* Check blur */
+    public checkBlur = () => {
+        if (!this.blurredImageEnable && this.ref && this.ref.firstElementChild) {
+            if (this.ref.offsetWidth > this.ref.firstElementChild.offsetWidth) {
+                const info = getMediaInfo(this.props.message);
+                this.fileSize = info.size;
+                this.pictureContentSize = this.getContentSize(info, true);
+                this.forceUpdate();
+            }
+        }
+    }
+
     public render() {
         const {fileState, info, message, transition} = this.state;
         return (
-            <div className={'message-media' + this.messageMediaClass}>
+            <div ref={this.refHandler} className={'message-media' + this.messageMediaClass}>
                 <div className={'media-content' + (message.messagetype === C_MESSAGE_TYPE.Video ? ' video' : '')}
                      style={{
                          height: this.pictureContentSize.height,
@@ -401,6 +414,11 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                 >{info.caption}</div>}
             </div>
         );
+    }
+
+    /* Ref handler */
+    private refHandler = (ref: any) => {
+        this.ref = ref;
     }
 
     /* Remove all listeners */
@@ -577,7 +595,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     }
 
     /* Get content size */
-    private getContentSize(info: IMediaInfo): { height: string, maxWidth: string, nHeight: number, width: string } {
+    private getContentSize(info: IMediaInfo, force?: boolean): { height: string, maxWidth: string, nHeight: number, width: string } {
         const ratio = info.height / info.width;
         let height = info.height;
         let width = info.width;
@@ -607,7 +625,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         height = Math.max(height, C_MIN_HEIGHT);
         width = Math.max(width, C_MIN_WIDTH);
         let maxWidth = width;
-        if (info.caption.length > C_MIN_CAPTION_LEN_APPLIER || info.hasRelation) {
+        if (info.caption.length > C_MIN_CAPTION_LEN_APPLIER || info.hasRelation || force) {
             maxWidth = C_MAX_CAPTION_WIDTH;
             this.blurredImageEnable = true;
         }

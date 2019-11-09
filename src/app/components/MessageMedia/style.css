@@ -130,7 +130,9 @@
       padding: 0 4px 0 2px;
       border-radius: 4px;
       color: var(--white);
-      white-space: nowrap; }
+      white-space: nowrap;
+      z-index: 110;
+      user-select: none; }
       .message-media .media-content .media-duration svg {
         font-size: 14px;
         color: inherit;
@@ -161,7 +163,8 @@
       white-space: nowrap;
       color: var(--white);
       transform: translate(-50%, -50%);
-      z-index: 20; }
+      z-index: 20;
+      user-select: none; }
     .message-media .media-content.video .media-big {
       cursor: default; }
   .message-media.tiny-message .media-content .media-thumb .media-action {

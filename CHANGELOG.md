@@ -1,3 +1,8 @@
+## 0.26.38
+* Electron updated (0.9.6)
+* MessageMedia blur updated
+* CSS user-select added in indicator
+
 ## 0.26.37
 * UI bug in status fixed
 

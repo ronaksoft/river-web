@@ -899,6 +899,11 @@ class Message extends React.Component<IProps, IState> {
                 messageMedia.ref.viewDocument();
             }
         };
+        const userNameLoadHandler = () => {
+            if (messageMedia.ref && messageMedia.ref.checkBlur) {
+                messageMedia.ref.checkBlur();
+            }
+        };
         switch (message.messagetype) {
             case C_MESSAGE_TYPE.Hole:
             case C_MESSAGE_TYPE.End:
@@ -965,7 +970,8 @@ class Message extends React.Component<IProps, IState> {
                                  onContextMenu={this.messageContextMenuHandler(index)}>
                                 {Boolean((peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me) || (this.isSimplified && message.avatar)) &&
                                 <UserName className="name" uniqueColor={true} id={message.senderid || ''}
-                                          hideBadge={true} noDetail={this.state.selectable}/>}
+                                          hideBadge={true} noDetail={this.state.selectable}
+                                          onLoad={userNameLoadHandler}/>}
                                 {Boolean(message.replyto && message.replyto !== 0 && message.deleted_reply !== true) &&
                                 <MessagePreview message={message} peer={peer}
                                                 onDoubleClick={this.moreCmdHandler('reply', index)}
