@@ -11,7 +11,9 @@ import Dexie from 'dexie';
 import {IDialog, IDraft} from '../../../repository/dialog/interface';
 
 export class DexieDialogDB extends Dexie {
+    // @ts-ignore
     public dialogs: Dexie.Table<IDialog, string>;
+    // @ts-ignore
     public drafts: Dexie.Table<IDraft, string>;
 
     constructor() {
@@ -25,5 +27,8 @@ export class DexieDialogDB extends Dexie {
             dialogs: `peerid,last_update`,
             drafts: `peerid`,
         });
+
+        this.dialogs = this.table('dialogs');
+        this.drafts = this.table('drafts');
     }
 }

@@ -17,6 +17,7 @@ export const ping = new Uint8Array([0x50, 0x49, 0x4e, 0x47]);
 
 export const checkPong = (data: any) => {
     if (data.byteLength === 4) {
+        // @ts-ignore
         if (String.fromCharCode.apply(null, new Uint8Array(data)) === 'PONG') {
             return true;
         }
@@ -39,7 +40,7 @@ export default class Socket {
 
     private worker: Worker;
     private started: boolean = false;
-    private socket: WebSocket;
+    private socket: WebSocket | undefined;
     private connected: boolean = false;
     // @ts-ignore
     private pingCounter: number = 0;
@@ -124,7 +125,7 @@ export default class Socket {
                     }
                     break;
                 case 'wsSend':
-                    if (this.connected && this.socket.readyState === WebSocket.OPEN) {
+                    if (this.socket && this.connected && this.socket.readyState === WebSocket.OPEN) {
                         this.socket.send(base64ToU8a(d.data));
                         if (this.lastReceiveTime >= this.lastSendTime) {
                             this.lastSendTime = Date.now();
@@ -204,6 +205,7 @@ export default class Socket {
     }
 
     private initWebSocket() {
+        window.console.log('initWebSocket');
         clearTimeout(this.initTimeout);
 
         this.tryCounter++;
@@ -220,7 +222,7 @@ export default class Socket {
         // Connection opened
         this.socket.onopen = () => {
             window.console.log('WebSocket opened', new Date());
-            if (this.socket.readyState !== WebSocket.OPEN) {
+            if (this.socket && this.socket.readyState !== WebSocket.OPEN) {
                 return;
             }
             // this.socket.send(ping);

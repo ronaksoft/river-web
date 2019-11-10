@@ -16,7 +16,7 @@ import LastSeen from "../LastSeen";
 import i18n from "../../services/i18n";
 import Socket from "../../services/sdk/server/socket";
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     isConnecting: boolean;

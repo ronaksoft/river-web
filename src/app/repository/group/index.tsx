@@ -52,7 +52,7 @@ export default class GroupRepo {
         if (group) {
             return Promise.resolve(group);
         }
-        return this.db.groups.get(id).then((g: IGroup) => {
+        return this.db.groups.get(id).then((g: IGroup | undefined) => {
             if (g) {
                 this.dbService.setGroup(g);
             }

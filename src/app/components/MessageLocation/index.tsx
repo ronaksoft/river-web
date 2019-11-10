@@ -15,7 +15,7 @@ import {PlaceRounded} from '@material-ui/icons';
 import {MediaGeoLocation} from '../../services/sdk/messages/chat.core.message.medias_pb';
 // import {C_GOOGLE_MAP_KEY} from '../MapPicker';
 
-import './style.css';
+import './style.scss';
 
 const getMapLocation = (message: IMessage) => {
     const location: google.maps.LatLngLiteral = {
@@ -42,7 +42,7 @@ interface IState {
 }
 
 class MessageLocation extends React.PureComponent<IProps, IState> {
-    private lastId: number;
+    private lastId: number = 0;
     private documentViewerService: DocumentViewerService;
 
     constructor(props: IProps) {
@@ -70,8 +70,7 @@ class MessageLocation extends React.PureComponent<IProps, IState> {
     /* View downloaded document */
     public viewDocument = () => {
         return;
-        // @ts-ignore
-        this.documentViewerService.loadDocument({});
+        // this.documentViewerService.loadDocument({});
     }
     // https://maps.googleapis.com/maps/api/staticmap?center=35.76344299316406,51.37594985961914&zoom=15&size=300x300&maptype=roadmap&key=AIzaSyAxXaCNUveWAy2fxxv824mFe1n53sLUSL4
     // https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${long}&zoom=14&size=300x300&maptype=mapnik
@@ -83,7 +82,8 @@ class MessageLocation extends React.PureComponent<IProps, IState> {
             <div className="message-location">
                 <div className="location-content" onClick={this.showLocationHandler}>
                     <img
-                        src={`https://static-maps.yandex.ru/1.x/?lang=en-US&ll=${long},${lat}&z=14&l=map&size=300,300`}/>
+                        src={`https://static-maps.yandex.ru/1.x/?lang=en-US&ll=${long},${lat}&z=14&l=map&size=300,300`}
+                        alt={`location: ${long},${lat}`}/>
                     <PlaceRounded/>
                 </div>
             </div>

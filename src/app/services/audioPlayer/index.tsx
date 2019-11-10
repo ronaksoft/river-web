@@ -75,7 +75,7 @@ export default class AudioPlayer {
     private fileRepo: FileRepo;
     private lastObjectUrl: string = '';
     private playingFromPeerId: string | undefined;
-    private fastEnable: boolean;
+    private fastEnable: boolean = false;
     private backUpPeerId: string = '';
     private errFn?: (info: IAudioInfo, err: any) => void;
     private updateDurationFn?: (info: IAudioInfo, duration: number) => void;

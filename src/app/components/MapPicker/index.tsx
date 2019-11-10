@@ -14,7 +14,7 @@ import TextField from '@material-ui/core/TextField/TextField';
 import {MapComponent} from './map';
 import i18n from '../../services/i18n';
 
-import './style.css';
+import './style.scss';
 
 export const C_GOOGLE_MAP_KEY = 'AIzaSyC5e9DrKC2gHS9UD1sbHGI-H0wfzCgK58U';
 

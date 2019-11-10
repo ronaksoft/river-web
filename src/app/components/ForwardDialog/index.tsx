@@ -13,7 +13,7 @@ import {PersonAddRounded, SendRounded} from '@material-ui/icons';
 import SearchList, {IInputPeer} from '../SearchList';
 import i18n from '../../services/i18n';
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     onClose: () => void;

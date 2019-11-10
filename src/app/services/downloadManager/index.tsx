@@ -47,7 +47,7 @@ export default class DownloadManager {
     }
 
     private static instance: DownloadManager;
-    private downloadSettings: IDownloadSettings;
+    private downloadSettings: IDownloadSettings = Object.assign({}, defaultValues);
 
     private constructor() {
         this.getLocalStorageDownloadSettings();

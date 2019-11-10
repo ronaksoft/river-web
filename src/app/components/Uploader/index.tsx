@@ -26,7 +26,7 @@ import i18n from '../../services/i18n';
 import RTLDetector from "../../services/utilities/rtl_detector";
 import {throttle} from 'lodash';
 
-import './style.css';
+import './style.scss';
 
 interface IMediaThumb {
     file: Blob;
@@ -80,11 +80,11 @@ interface IState {
 }
 
 class MediaPreview extends React.Component<IProps, IState> {
-    private dropzoneRef: Dropzone;
+    private dropzoneRef: Dropzone | undefined;
     private imageRef: any;
     private imageActionRef: any;
     private previewRefs: string[][] = [];
-    private cropperRef: Cropper;
+    private cropperRef: Cropper | undefined;
     private rtl: boolean = localStorage.getItem('river.lang') === 'fa' || false;
     private rtlDetector: RTLDetector;
     private readonly rtlDetectorThrottle: any;
@@ -168,7 +168,7 @@ class MediaPreview extends React.Component<IProps, IState> {
                                         {Boolean(!isFile) && <React.Fragment>
                                             {Boolean(items[selected].mediaType === 'image') && <React.Fragment>
                                                 <img ref={this.imageRefHandler} className="front"
-                                                     src={items[selected].preview}/>
+                                                     src={items[selected].preview} alt="preview"/>
                                                 <div ref={this.imageActionRefHandler} className="image-actions">
                                                     <CropRounded
                                                         onClick={this.cropHandler(items[selected].preview)}/>
@@ -180,16 +180,16 @@ class MediaPreview extends React.Component<IProps, IState> {
                                             </video>}
                                             {Boolean(items[selected].mediaType === 'audio' && items[selected].preview) &&
                                             <img ref={this.imageRefHandler} className="front"
-                                                 src={items[selected].preview}/>}
+                                                 src={items[selected].preview} alt="preview"/>}
                                             {Boolean(items[selected].mediaType === 'audio' && !items[selected].preview) &&
                                             <div className="front audio-preview">
                                                 <MusicNoteRounded/>
                                             </div>}
                                             {Boolean(lastSelected !== selected && items[lastSelected] && items[selected].mediaType === 'image') && (
-                                                <img className="back" src={items[lastSelected].preview}/>
+                                                <img className="back" src={items[lastSelected].preview} alt="back"/>
                                             )}
                                             {Boolean(lastSelected !== selected && items[lastSelected] && items[selected].mediaType === 'audio' && items[lastSelected].preview) && (
-                                                <img className="back" src={items[lastSelected].preview}/>
+                                                <img className="back" src={items[lastSelected].preview} alt="back"/>
                                             )}
                                             {Boolean(lastSelected !== selected && items[lastSelected] && items[selected].mediaType === 'audio' && !items[lastSelected].preview) && (
                                                 <div className="back audio-preview">

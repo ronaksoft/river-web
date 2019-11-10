@@ -37,7 +37,7 @@ import {
     MessageEntity,
     MessageEntityType,
     PeerType,
-    TypingAction
+    TypingAction,
 } from '../../services/sdk/messages/chat.core.types_pb';
 import GroupRepo from '../../repository/group';
 // @ts-ignore
@@ -70,7 +70,7 @@ import {UpdateDraftMessageCleared} from "../../services/sdk/messages/chat.api.up
 import {emojiList} from "./emojis";
 
 import 'emoji-mart/css/emoji-mart.css';
-import './style.css';
+import './style.scss';
 
 const limit = 9;
 const emojiKey = 'emoji-mart.frequently';
@@ -97,13 +97,13 @@ interface IProps {
     onAction: (cmd: string, message?: IMessage) => (e?: any) => void;
     onBulkAction: (cmd: string) => (e?: any) => void;
     onClearDraft?: (data: UpdateDraftMessageCleared.AsObject) => void;
-    onContactSelected: (users: IUser[], caption: string, {mode, message}?: any) => void;
-    onMapSelected: (item: IGeoItem, {mode, message}?: any) => void;
-    onMediaSelected: (items: IMediaItem[], {mode, message}?: any) => void;
-    onMessage: (text: string, {mode, message, entities}?: any) => void;
+    onContactSelected: (users: IUser[], caption: string, {mode, message}: any | undefined) => void;
+    onMapSelected: (item: IGeoItem, {mode, message}: any | undefined) => void;
+    onMediaSelected: (items: IMediaItem[], {mode, message}: any | undefined) => void;
+    onMessage: (text: string, {mode, message, entities}: any | undefined) => void;
     onPreviewMessageChange?: (previewMessage: IMessage | undefined, previewMessageMode: number) => void;
     onTyping?: (typing: TypingAction) => void;
-    onVoiceSend: (item: IMediaItem, {mode, message}?: any) => void;
+    onVoiceSend: (item: IMediaItem, {mode, message}: any | undefined) => void;
     onVoiceStateChange?: (state: 'lock' | 'down' | 'up' | 'play') => void;
     peer: InputPeer | null;
     previewMessage?: IMessage;
@@ -187,13 +187,13 @@ class ChatInput extends React.Component<IProps, IState> {
         totalWith: 4,
         width: 0,
     };
-    private voice: Blob;
-    private voicePlayerRef: VoicePlayer;
+    private voice: Blob | undefined;
+    private voicePlayerRef: VoicePlayer | undefined;
     private voiceCanceled: boolean = false;
     private fileInputRef: any = null;
-    private mediaPreviewRef: MediaPreview;
-    private contactPickerRef: ContactPicker;
-    private mapPickerRef: MapPicker;
+    private mediaPreviewRef: MediaPreview | undefined;
+    private contactPickerRef: ContactPicker | undefined;
+    private mapPickerRef: MapPicker | undefined;
     private riverTime: RiverTime;
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
@@ -369,7 +369,9 @@ class ChatInput extends React.Component<IProps, IState> {
             this.setState({
                 mediaInputMode: media,
             }, () => {
-                this.mediaPreviewRef.openDialog(files, Boolean(media === 'file'));
+                if (this.mediaPreviewRef) {
+                    this.mediaPreviewRef.openDialog(files, Boolean(media === 'file'));
+                }
             });
         }
     }
@@ -1311,7 +1313,7 @@ class ChatInput extends React.Component<IProps, IState> {
 
     /* Send voice */
     private sendVoice() {
-        if (this.timerDuration >= 1) {
+        if (this.timerDuration >= 1 && this.voice) {
             const {previewMessage, previewMessageMode} = this.state;
             const message = cloneDeep(previewMessage);
             const item: IMediaItem = {
@@ -1430,7 +1432,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 return;
             }
             this.voice = new Blob([typedArray], {type: 'audio/ogg'});
-            if (this.state.voiceMode === 'play') {
+            if (this.state.voiceMode === 'play' && this.voicePlayerRef) {
                 this.computeFinalBars();
                 this.voicePlayerRef.setData({
                     bars: this.bars,

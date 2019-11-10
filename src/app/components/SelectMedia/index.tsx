@@ -18,7 +18,7 @@ import {makeStyles} from '@material-ui/styles';
 import {debounce} from 'lodash';
 import i18n from '../../services/i18n';
 
-import './style.css';
+import './style.scss';
 
 const tooltipClass: any = makeStyles({
     popper: {

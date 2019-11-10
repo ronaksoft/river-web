@@ -16,7 +16,7 @@ import {find} from 'lodash';
 import Broadcaster from '../../services/broadcaster';
 import icon from '../../../asset/image/icon.png';
 
-import './style.css';
+import './style.scss';
 
 const DefaultColors = [
     '#30496B',
@@ -198,13 +198,13 @@ class UserAvatar extends React.Component<IProps, IState> {
         } else if (this.state.id === '2374') {
             return (
                 <span className={'avatar-official ' + className}>
-                    <img src={icon}/>
+                    <img src={icon} alt="avatar"/>
                 </span>
             );
         } else {
             return (
                 <span className={className} onClick={this.clickHandler}>{(user && photo) ?
-                    <img className="avatar-image" src={photo}
+                    <img className="avatar-image" src={photo} alt="avatar"
                          onError={this.imgErrorHandler}/> : TextAvatar(user.firstname, user.lastname)}</span>
             );
         }

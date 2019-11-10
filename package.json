@@ -8,16 +8,11 @@
   "homepage": "./",
   "main": "public/electron.js",
   "scripts": {
-    "build-css": "node-sass-chokidar src/ -o src/",
-    "watch-css": "npm run build-css && node-sass-chokidar src/ -o src/ --watch --recursive",
-    "start-js": "react-scripts-ts start",
-    "start": "npm-run-all start-js watch-css",
-    "build-js": "PUBLIC_URL=/ GENERATE_SOURCEMAP=true NODE_OPTIONS=--max_old_space_size=4096 react-scripts-ts build",
-    "build": "npm-run-all build-css build-js",
+    "start": "react-scripts start",
+    "build": "PUBLIC_URL=/ GENERATE_SOURCEMAP=true NODE_OPTIONS=--max_old_space_size=4096 react-scripts build",
     "postinstall": "mkdir -p node_modules/@material-ui/core/node_modules/@types/jss && cp -r node_modules/@types/jss node_modules/@material-ui/core/node_modules/@types",
-    "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject",
-    "elec": "concurrently \"cross-env BROWSER=none npm run start\" \"wait-on http://localhost:3000 && electron --inspect=5858 .\"",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
     "elec2": "electron --inspect=5858 .",
     "pack": "electron-builder --dir",
     "dist": "electron-builder -mwl",
@@ -65,10 +60,10 @@
     "opus-recorder": "^6.1.1",
     "protobufjs": "^6.8.8",
     "rc-progress": "^2.4.1",
-    "react": "^16.10.2",
+    "react": "^16.11.0",
     "react-avatar-editor": "^11.0.6",
     "react-custom-scrollbars": "ronaksoft/react-custom-scrollbars",
-    "react-dom": "^16.10.2",
+    "react-dom": "^16.11.0",
     "react-dropzone": "^5.0.1",
     "react-fine-uploader": "^1.1.1",
     "react-google-maps": "^9.4.5",
@@ -97,9 +92,9 @@
     "@types/markerclustererplus": "^2.1.33",
     "@types/moment-jalaali": "^0.7.4",
     "@types/node": "^10.5.6",
-    "@types/react": "^16.9.5",
+    "@types/react": "^16.9.11",
     "@types/react-avatar-editor": "^10.3.2",
-    "@types/react-dom": "^16.9.1",
+    "@types/react-dom": "^16.9.4",
     "@types/react-dropzone": "^4.2.2",
     "@types/react-router-dom": "^4.3.1",
     "@types/react-textarea-autosize": "^4.3.3",
@@ -117,9 +112,11 @@
     "node-sass-chokidar": "^1.3.5",
     "npm-run-all": "^4.1.5",
     "react-async-script-loader": "^0.3.0",
+    "react-scripts": "^3.2.0",
     "react-scripts-ts": "^3.1.0",
     "ts-protoc-gen": "0.9.0",
-    "typescript": "^3.6.3"
+    "tslint": "^5.20.1",
+    "typescript": "^3.7.2"
   },
   "build": {
     "appId": "com.river.im",
@@ -151,5 +148,17 @@
     "nsis": {
       "deleteAppDataOnUninstall": "true"
     }
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

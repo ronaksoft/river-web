@@ -69,7 +69,7 @@ class App extends React.Component<{}, IState> {
     private mainRepo: MainRepo;
     private readonly isElectron: boolean = false;
     private iframeService: IframeService;
-    private readonly broadcastChannel: BroadcastChannel;
+    private readonly broadcastChannel: BroadcastChannel | undefined;
     private readonly sessionId: number = 0;
     private multipleSession: boolean = false;
     private sessionsIds: number[] = [];

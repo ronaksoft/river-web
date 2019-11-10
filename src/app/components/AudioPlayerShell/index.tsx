@@ -30,7 +30,7 @@ import DownloadProgress from '../DownloadProgress';
 import {findIndex} from 'lodash';
 import i18n from '../../services/i18n';
 
-import './style.css';
+import './style.scss';
 
 const C_CELL_HEIGHT = 54;
 const C_MAX_LIST_HEIGHT = 288;
@@ -56,7 +56,7 @@ interface IState {
 }
 
 class AudioPlayerShell extends React.Component<IProps, IState> {
-    private scrollbarRef: Scrollbars;
+    private scrollbarRef: Scrollbars | undefined;
     private audioPlayer: AudioPlayer;
     private eventReferences: any[] = [];
     private shellRef: any = null;
@@ -429,6 +429,9 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
         this.setState({
             playlist: this.audioPlayer.getMusicPlayList(),
         }, () => {
+            if (!this.scrollbarRef) {
+                return;
+            }
             const {playlist} = this.state;
             const currentTrack = this.audioPlayer.getCurrentTrack();
             const index = findIndex(playlist, {id: currentTrack});

@@ -25,4 +25,5 @@ interface IMedia {
     type: number;
 }
 
+// @ts-ignore
 export {IMedia, C_MEDIA_TYPE};

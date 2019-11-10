@@ -15,7 +15,7 @@ import {
 } from '@material-ui/icons';
 import Scrollbars from 'react-custom-scrollbars';
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     fit?: boolean;

@@ -24,4 +24,5 @@ interface IParticipant extends IUser {
     accesshash?: string;
 }
 
+// @ts-ignore
 export {IUser, IParticipant};

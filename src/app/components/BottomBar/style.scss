@@ -26,7 +26,7 @@
     content: '';
     background-color: var(--light);
   }
-  a {
+  .a {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -59,7 +59,7 @@ html[theme="dark"] {
     &:before {
       background-color: var(--dark-low-op50);
     }
-    a {
+    .a {
       &.active, &:hover {
         .title {
           color: var(--light);
@@ -77,7 +77,7 @@ html[theme="dark-blue"] {
     &:before {
       background-color: var(--dark-blue-low-op50);
     }
-    a {
+    .a {
       &:hover {
         .title {
           color: var(--dark-blue-hover);

@@ -84,10 +84,10 @@ import UserListDialog from "../UserListDialog";
 import {IInputPeer} from "../SearchList";
 import {localize} from "../../services/utilities/localize";
 
-import './style.css';
+import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.26.37';
+export const C_VERSION = '0.27.0';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{
@@ -209,17 +209,17 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private profileTempPhoto: string = '';
     private circleProgressRef: any = null;
     private fileId: string = '';
-    private cropperRef: AvatarCropper;
+    private cropperRef: AvatarCropper | undefined;
     private documentViewerService: DocumentViewerService;
     private versionClickTimeout: any = null;
     private versionClickCounter: number = 0;
     private broadcaster: Broadcaster;
-    private settingsBackgroundModalRef: SettingsBackgroundModal;
+    private settingsBackgroundModalRef: SettingsBackgroundModal | undefined;
     private backgroundService: BackgroundService;
     private downloadManger: DownloadManager;
-    private settingsStorageUsageModalRef: SettingsStorageUsageModal;
+    private settingsStorageUsageModalRef: SettingsStorageUsageModal | undefined;
     private electronService: ElectronService;
-    private userListDialogRef: UserListDialog;
+    private userListDialogRef: UserListDialog | undefined;
     private lastPrivacy: { [key: string]: IPrivacy } = cloneDeep(privacyDefault);
     private readonly isMac: boolean = navigator.platform.indexOf('Mac') > -1;
 
@@ -586,7 +586,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                             {Boolean(types.id === '1') && <div
                                                                 className={'item bubble-' + this.state.selectedBubble + ' theme-' + this.state.selectedTheme + ' bg-' + this.state.selectedBackground}>
                                                                 {customBackgroundSrc &&
-                                                                <img src={customBackgroundSrc}/>}
+                                                                <img src={customBackgroundSrc} alt="custom-bg"/>}
                                                             </div>}
                                                         </div>
                                                     ))}
@@ -615,7 +615,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                         <div className="avatar" onClick={this.avatarMenuAnchorOpenHandler}>
                                             {!uploadingPhoto && <UserAvatar id={user.id || ''} noDetail={true}/>}
                                             {uploadingPhoto &&
-                                            <img src={this.profileTempPhoto} className="avatar-image"/>}
+                                            <img src={this.profileTempPhoto} className="avatar-image" alt="avatar"/>}
                                             <div className={'overlay ' + (uploadingPhoto ? 'show' : '')}>
                                                 {!uploadingPhoto && <React.Fragment>
                                                     <PhotoCameraRounded/>
@@ -1313,7 +1313,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
 
     private selectBackgroundHandler = (id: string) => {
         if (id === C_CUSTOM_BG) {
-            this.settingsBackgroundModalRef.openDialog();
+            if (this.settingsBackgroundModalRef) {
+                this.settingsBackgroundModalRef.openDialog();
+            }
         } else {
             this.backgroundService.disable();
             this.setState({
@@ -1331,12 +1333,16 @@ class SettingsMenu extends React.Component<IProps, IState> {
 
     private selectBgTypeHandler = (id: string) => (e: any) => {
         if (id === '1') {
-            this.settingsBackgroundModalRef.openDialog();
+            if (this.settingsBackgroundModalRef) {
+                this.settingsBackgroundModalRef.openDialog();
+            }
         } else {
             this.backgroundService.disable();
         }
         if (id === '2') {
-            this.settingsBackgroundModalRef.openDialog(true);
+            if (this.settingsBackgroundModalRef) {
+                this.settingsBackgroundModalRef.openDialog(true);
+            }
         }
         if (id === '0') {
             this.selectBackgroundHandler('0');

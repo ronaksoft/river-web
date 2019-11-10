@@ -35,7 +35,7 @@ import animateScrollTo from "animated-scroll-to";
 import {getMessageTitle} from "./utils";
 import UserRepo from "../../repository/user";
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     cancelIsTyping: (id: string) => void;
@@ -59,7 +59,7 @@ const listStyle: React.CSSProperties = {
 };
 
 class Dialog extends React.PureComponent<IProps, IState> {
-    private list: FixedSizeList;
+    private list: FixedSizeList | undefined;
     private searchRepo: SearchRepo;
     private readonly searchDebounce: any;
     private keyword: string = '';
@@ -626,7 +626,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
         const {ids, items} = this.state;
         let searchItems: IDialog[] = [];
         let searchAddedItems: IDialog[] = [];
-        if (ids.length === 0 && this.keyword.length === 0 || !this.searchEnable) {
+        if ((ids.length === 0 && this.keyword.length === 0) || !this.searchEnable) {
             searchItems = clone(items);
         } else {
             const peerIds = ids.map((id) => {

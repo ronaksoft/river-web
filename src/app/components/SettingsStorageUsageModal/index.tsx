@@ -30,7 +30,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import i18n from "../../services/i18n";
 import {localize} from '../../services/utilities/localize';
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     onDone?: (peerIds: string[]) => void;

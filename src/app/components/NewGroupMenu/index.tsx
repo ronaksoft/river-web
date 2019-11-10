@@ -30,7 +30,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import {TextAvatar} from "../UserAvatar";
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     onClose?: () => void;
@@ -51,7 +51,7 @@ class NewGroupMenu extends React.Component<IProps, IState> {
     private circleProgressRef: any = null;
     private fileManager: FileManager;
     private fileId: string = '';
-    private cropperRef: AvatarCropper;
+    private cropperRef: AvatarCropper | undefined;
     private riverTime: RiverTime;
     private progressBroadcaster: ProgressBroadcaster;
 
@@ -107,7 +107,7 @@ class NewGroupMenu extends React.Component<IProps, IState> {
                         <div className="avatar-container">
                             <div className="avatar" onClick={this.avatarMenuAnchorOpenHandler}>
                                 {this.profileTempPhoto ?
-                                    <img src={this.profileTempPhoto} className="avatar-image"/> : TextAvatar(title)}
+                                    <img src={this.profileTempPhoto} className="avatar-image" alt="avatar"/> : TextAvatar(title)}
                                 <div className={'overlay' + (uploadingPhoto ? ' show' : '')}>
                                     {!uploadingPhoto && <React.Fragment>
                                         <PhotoCameraRounded/>

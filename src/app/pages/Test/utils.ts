@@ -3,7 +3,7 @@ import ResizeObserver from "resize-observer-polyfill";
 import {debounce} from 'lodash';
 
 export class CellMeasurer {
-    private list: List;
+    private list: List | undefined;
     private heightCache: { [key: number]: number } = {};
     private updateFn: any = null;
     private readonly keyMapperFn: any;

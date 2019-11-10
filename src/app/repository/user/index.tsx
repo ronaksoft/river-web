@@ -91,7 +91,7 @@ export default class UserRepo {
         if (user) {
             return Promise.resolve(user);
         }
-        return this.db.users.get(id).then((u: IUser) => {
+        return this.db.users.get(id).then((u: IUser | undefined) => {
             if (u) {
                 this.dbService.setUser(u);
             }
@@ -194,7 +194,7 @@ export default class UserRepo {
             updateItems.map((user: IUser) => {
                 return this.mergeUser(users, user, force);
             });
-            createItems.map((user: IUser) => {
+            createItems.forEach((user: IUser) => {
                 if (user.status === UserStatus.USERSTATUSONLINE && !user.status_last_modified) {
                     user.status_last_modified = RiverTime.getInstance().now();
                 }

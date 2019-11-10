@@ -35,7 +35,7 @@ import PeerMedia from '../PeerMedia';
 import i18n from "../../services/i18n";
 import {notifyOptions} from "../../pages/Chat";
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;

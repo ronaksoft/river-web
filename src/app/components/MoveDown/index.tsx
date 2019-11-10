@@ -12,7 +12,7 @@ import {ExpandMoreRounded} from "@material-ui/icons";
 import Badge from "@material-ui/core/Badge";
 import {IDialog} from "../../repository/dialog/interface";
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     onClick: () => void;

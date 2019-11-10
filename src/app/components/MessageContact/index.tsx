@@ -14,7 +14,7 @@ import {PersonRounded} from '@material-ui/icons';
 import {MediaContact} from '../../services/sdk/messages/chat.core.message.medias_pb';
 import {saveAs} from 'file-saver';
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     message: IMessage;

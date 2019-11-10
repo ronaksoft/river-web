@@ -13,10 +13,10 @@ import {C_MEDIA_TYPE, IMedia} from './interface';
 import {differenceBy, find, uniqBy, clone, throttle} from 'lodash';
 import {DexieMediaDB} from '../../services/db/dexie/media';
 import MessageRepo from '../message';
-import {IMessage} from '../message/interface';
 import {kMerge} from "../../services/utilities/kDash";
+import {IMessage} from "../message/interface";
 
-interface IMessageWithCount {
+interface IMediaWithCount {
     count: number;
     maxId: number;
     messages: IMessage[];
@@ -60,13 +60,13 @@ export default class MediaRepo {
     }
 
     public get(id: number): Promise<IMedia> {
-        return this.db.medias.get(id).then((g: IMedia) => {
+        return this.db.medias.get(id).then((g: IMedia | undefined) => {
             return g;
         });
     }
 
-    public getMany({limit, before, after, type}: any, peerId: string): Promise<IMessageWithCount> {
-        return new Promise<IMessageWithCount>((resolve, reject) => {
+    public getMany({limit, before, after, type}: any, peerId: string): Promise<IMediaWithCount> {
+        return new Promise<IMediaWithCount>((resolve, reject) => {
             const pipe = this.db.medias.where('[peerid+id+type]');
             let pipe2: Dexie.Collection<IMedia, number>;
             let mode = 0x0;

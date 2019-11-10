@@ -48,6 +48,7 @@ export default class DialogRepo {
         this.updateManager = UpdateManager.getInstance();
         this.dbService = DB.getInstance();
         this.db = this.dbService.getDB();
+        window.console.log(this.db);
         this.sdk = SDK.getInstance();
         this.messageRepo = MessageRepo.getInstance();
         this.userRepo = UserRepo.getInstance();
@@ -193,6 +194,9 @@ export default class DialogRepo {
     }
 
     public getManyCache({skip, limit}: any): Promise<IDialog[]> {
+        if (!this.db.dialogs) {
+            return Promise.reject();
+        }
         return this.db.dialogs
             .orderBy('last_update').reverse()
             .offset(skip || 0).limit(limit || 1000).toArray();

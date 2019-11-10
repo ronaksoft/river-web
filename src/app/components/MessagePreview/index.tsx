@@ -19,7 +19,7 @@ import CachedPhoto from '../CachedPhoto';
 import CachedMessageService, {ICachedMessageServiceBroadcastItemData} from '../../services/cachedMessageService';
 import i18n from '../../services/i18n';
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     disableClick: boolean;
@@ -37,7 +37,7 @@ interface IState {
 
 class MessagePreview extends React.PureComponent<IProps, IState> {
     private messageRepo: MessageRepo;
-    private userId: string;
+    private userId: string = '';
     private cachedMessageService: CachedMessageService;
     private eventReferences: any[] = [];
     private lastId: number = 0;

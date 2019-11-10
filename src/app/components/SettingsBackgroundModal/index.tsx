@@ -24,7 +24,7 @@ import glur from 'glur';
 import {C_CUSTOM_BG_ID} from '../SettingsMenu';
 import i18n from '../../services/i18n';
 
-import './style.css';
+import './style.scss';
 
 interface IBlur {
     blob: Blob;
@@ -127,7 +127,7 @@ class SettingsBackgroundModal extends React.Component<IProps, IState> {
                                         <div className="customize" onClick={this.customizeBackgroundHandler}>
                                             <BlurOnRounded/>
                                         </div>
-                                        <img src={pic.src}/>
+                                        <img src={pic.src} alt="sample"/>
                                     </div>
                                 </GridListTile>
                             ))}
@@ -141,7 +141,7 @@ class SettingsBackgroundModal extends React.Component<IProps, IState> {
                                     <div className="add-icon" onClick={this.uploadBackgroundHandler}>
                                         <AddRounded/>
                                     </div>
-                                    <img src={uploadedSrc}/>
+                                    <img src={uploadedSrc} alt="sample"/>
                                 </div>}
                                 {Boolean(uploadedSrc === '') && <div className="item upload-file">
                                     <div className="add-icon" onClick={this.uploadBackgroundHandler}>
@@ -156,7 +156,7 @@ class SettingsBackgroundModal extends React.Component<IProps, IState> {
                                onClose={this.customizeModalCloseHandler} icon={<BlurOnRounded/>}>
                     <div className="customize-background-container">
                         <div className="img">
-                            <img src={blurSrc || src}/>
+                            <img src={blurSrc || src} alt="blur"/>
                             <div className="blur-action">
                                 <div className="action" onClick={this.doneHandler}>
                                     <CheckRounded/>
@@ -184,8 +184,8 @@ class SettingsBackgroundModal extends React.Component<IProps, IState> {
                                     <div
                                         className={'item' + (selectedPattern === pic.id ? ' selected' : '')}
                                         onClick={this.selectPatternHandler(pic.id)}>
-                                        {this.props.dark && <img src={pic.src.l}/>}
-                                        {!this.props.dark && <img src={pic.src.d}/>}
+                                        {this.props.dark && <img src={pic.src.l} alt="light"/>}
+                                        {!this.props.dark && <img src={pic.src.d} alt="dark"/>}
                                     </div>
                                 </GridListTile>
                             ))}

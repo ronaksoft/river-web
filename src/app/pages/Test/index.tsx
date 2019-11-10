@@ -12,7 +12,7 @@ import {VariableSizeList as List} from "react-window";
 import {random, range} from 'lodash';
 import {CellMeasurer} from "./utils";
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     match?: any;
@@ -36,7 +36,7 @@ const loremIpsum = `
 const loremIpsumSplit = loremIpsum.split(" ");
 
 class Test extends React.Component<IProps, IState> {
-    private list: List;
+    private list: List | undefined;
     private cellMeasurer: CellMeasurer;
     private index: number = 0;
 
@@ -116,7 +116,7 @@ class Test extends React.Component<IProps, IState> {
 
     private scrollToEnd() {
         const {items} = this.state;
-        if (items.length > 0) {
+        if (items.length > 0 && this.list) {
             this.list.scrollToItem(items.length - 1, "end");
         }
     }

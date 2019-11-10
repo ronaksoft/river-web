@@ -32,6 +32,7 @@
 
         .mention__suggestions__item {
           font-size: 12px;
+          direction: ltr;
 
           .inner {
             display: flex;
@@ -62,7 +63,7 @@
               flex: 1;
               display: flex;
               justify-content: center;
-              align-items: end;
+              align-items: flex-start;
               flex-direction: column;
 
               .name {
@@ -291,7 +292,7 @@
 
     .input-actions {
       display: flex;
-      justify-content: end;
+      justify-content: flex-end;
       align-items: center;
       padding: 0 8px;
       width: 88px;

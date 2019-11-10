@@ -14,7 +14,7 @@ import UserName from '../UserName';
 import GroupName from '../GroupName';
 import i18n from '../../services/i18n';
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     message: IMessage;

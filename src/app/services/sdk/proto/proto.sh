@@ -13,3 +13,15 @@ protoc \
     --js_out="import_style=commonjs,binary:${OUT_DIR}" \
     --ts_out="${OUT_DIR}" \
     ${IN_DIR}
+
+for file in ../messages/*.js; do
+    sed '1i\
+/* eslint-disable */
+' "$file" >"$file.bak" && mv "$file.bak" "$file"
+done
+
+for file in ../messages/*.ts; do
+    sed '1i\
+/* tslint:disable */
+' "$file" >"$file.bak" && mv "$file.bak" "$file"
+done

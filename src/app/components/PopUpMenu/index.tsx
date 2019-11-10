@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     anchorEl: any;

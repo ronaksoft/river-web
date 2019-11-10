@@ -26,7 +26,7 @@ class I18n {
     private static instance: I18n;
     private lang: string = 'en';
     private translations: any = {};
-    private dictionaryList: { [key: string]: any };
+    private dictionaryList: { [key: string]: any } = {};
     private lastTranslations: string[] = [];
     private lastTransMap: { [key: string]: string } = {};
 

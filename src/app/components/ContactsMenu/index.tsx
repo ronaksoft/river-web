@@ -22,7 +22,7 @@ import Broadcaster from '../../services/broadcaster';
 import SettingsModal from '../SettingsModal';
 import i18n from '../../services/i18n';
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     id?: number;
@@ -38,7 +38,7 @@ interface IState {
 }
 
 class ContactMenus extends React.Component<IProps, IState> {
-    private contactListRef: ContactList;
+    private contactListRef: ContactList | undefined;
     private userRepo: UserRepo;
     private sdk: SDK;
     private broadcaster: Broadcaster;
@@ -201,7 +201,9 @@ class ContactMenus extends React.Component<IProps, IState> {
         this.sdk.contactImport(true, contacts).then((data) => {
             data.usersList.forEach((user) => {
                 this.userRepo.importBulk(true, [user]).then(() => {
-                    this.contactListRef.reload();
+                    if (this.contactListRef) {
+                        this.contactListRef.reload();
+                    }
                     this.broadcastEvent('User_Dialog_Open', {
                         id: user.id,
                     });
@@ -230,7 +232,9 @@ class ContactMenus extends React.Component<IProps, IState> {
                 contactIds.push(contact.id || '');
                 this.sdk.removeContact(contactIds).then(() => {
                     this.userRepo.removeContact(contact.id || '').finally(() => {
-                        this.contactListRef.reload();
+                        if (this.contactListRef) {
+                            this.contactListRef.reload();
+                        }
                     });
                 });
                 break;

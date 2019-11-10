@@ -18,7 +18,7 @@ import {PeerType} from '../../services/sdk/messages/chat.core.types_pb';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 import DownloadManager from '../../services/downloadManager';
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     className?: string;
@@ -43,8 +43,8 @@ export interface IVoicePlayerData {
 
 class VoicePlayer extends React.PureComponent<IProps, IState> {
     private bars: number[] = [];
-    private voice: Blob;
-    private duration: number;
+    private voice: Blob | undefined;
+    private duration: number = 0;
     private canvasConfig: { height: number, width: number, barWidth: number, barSpace: number, totalWith: number, ratio: number, maxBars: number, color: string } = {
         barSpace: 1,
         barWidth: 2,
@@ -61,7 +61,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
     private playVoiceBarImgRef: any = null;
     private playVoiceBarBaseImgRef: any = null;
     private timerRef: any = null;
-    private audio: HTMLAudioElement;
+    private audio: HTMLAudioElement | undefined;
     private playerInterval: any = null;
     private onSeek: boolean = false;
     private circleProgressRef: any = null;
@@ -235,10 +235,10 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
                 <div className="play-preview" onMouseDown={this.barMouseDownHandler}
                      onMouseMove={this.barMouseMoveHandler}>
                     <canvas className="canvas-img" ref={this.canvasRefHandler}/>
-                    <img className="base-img" ref={this.playVoiceBarBaseImgRefHandler} draggable={false}/>
+                    <img className="base-img" ref={this.playVoiceBarBaseImgRefHandler} draggable={false} alt="bar"/>
                     <div ref={this.playVoiceBarRefHandler}
                          className={'play-preview-overlay ' + ((playState === 'seek_pause' || playState === 'seek_play') ? 'no-transition' : '')}>
-                        <img className="top-img" ref={this.playVoiceBarImgRefHandler} draggable={false}/>
+                        <img className="top-img" ref={this.playVoiceBarImgRefHandler} draggable={false} alt="bar"/>
                     </div>
                 </div>
                 <div className="play-timer" ref={this.timerRefHandler}>00:00</div>

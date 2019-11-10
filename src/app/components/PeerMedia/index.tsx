@@ -34,7 +34,7 @@ import ProgressBroadcaster from '../../services/progress';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import i18n from '../../services/i18n';
 
-import './style.css';
+import './style.scss';
 
 interface IMedia {
     _modified?: boolean;
@@ -453,9 +453,11 @@ class PeerMedia extends React.Component<IProps, IState> {
                 return;
             }
             if (append) {
-                items.push.apply(items, result);
+                // @ts-ignore
+                items.push.apply(items, result.messages);
             } else {
-                items.unshift.apply(items, result);
+                // @ts-ignore
+                items.unshift.apply(items, result.messages);
             }
             if (!this.props.full) {
                 items = items.slice(0, 4);

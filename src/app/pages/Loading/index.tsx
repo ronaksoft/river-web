@@ -15,7 +15,7 @@ import {CloseRounded} from "@material-ui/icons";
 import IframeService, {C_IFRAME_SUBJECT} from "../../services/iframe";
 import {Link} from "react-router-dom";
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     match?: any;

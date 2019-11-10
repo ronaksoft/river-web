@@ -18,7 +18,7 @@ import DownloadProgress from '../DownloadProgress';
 import {getMediaInfo, IMediaInfo} from '../MessageMedia';
 import AudioPlayer, {IAudioEvent} from '../../services/audioPlayer';
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     message: IMessage;

@@ -40,7 +40,7 @@ import Button from "@material-ui/core/Button";
 import {hasAuthority} from "../GroupInfoMenu";
 import {findIndex} from "lodash";
 
-import './style.css';
+import './style.scss';
 
 const C_MAX_WIDTH = 800;
 const C_MAX_HEIGHT = 600;

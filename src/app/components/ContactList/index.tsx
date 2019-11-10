@@ -30,7 +30,7 @@ import IsMobile from "../../services/isMobile";
 import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 import animateScrollTo from "animated-scroll-to";
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     className?: string;
@@ -98,10 +98,10 @@ export const categorizeContact = (contacts: IUser[]): IUser[] => {
 
 class ContactList extends React.Component<IProps, IState> {
     private contactsRes: IUser[] = [];
-    private list: VariableSizeList;
+    private list: VariableSizeList | undefined;
     private userRepo: UserRepo;
     private readonly searchDebounce: any;
-    private defaultContact: IUser[];
+    private defaultContact: IUser[] = [];
     private readonly isMobile: boolean = false;
     private readonly hasScrollbar: boolean = false;
     private readonly rtl: boolean = false;

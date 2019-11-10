@@ -221,6 +221,7 @@ export default class MessageRepo {
     private messageBundle: { [key: string]: IMessageBundle } = {};
     // @ts-ignore
     private readonly getBundleMessageThrottle: any = null;
+    // @ts-ignore
     private readonly updateThrottle: any = null;
 
     private constructor() {
@@ -291,7 +292,7 @@ export default class MessageRepo {
     }
 
     public removeMany(ids: number[]) {
-        ids.map((id) => {
+        ids.forEach((id) => {
             delete this.lazyMap[id];
         });
         MediaRepo.getInstance().removeMany(ids).catch(() => {
@@ -493,7 +494,7 @@ export default class MessageRepo {
                     reject();
                 }
             };
-            this.db.messages.get(id).then((res: IMessage) => {
+            this.db.messages.get(id).then((res: IMessage | undefined) => {
                 if (res) {
                     resolve(res);
                 } else {
@@ -725,8 +726,8 @@ export default class MessageRepo {
     public flush() {
         return;
         // Disabling debouncer
-        this.updateThrottle.cancel();
-        this.insertToDb();
+        // this.updateThrottle.cancel();
+        // this.insertToDb();
     }
 
     public lazyUpsert(messages: IMessage[], temp?: boolean) {
@@ -741,11 +742,11 @@ export default class MessageRepo {
         return this.upsert(msgs);
         // End
         // Disabling debouncer
-        cloneDeep(messages).forEach((message) => {
-            this.updateMap(message, temp);
-        });
-        this.updateThrottle();
-        return Promise.resolve();
+        // cloneDeep(messages).forEach((message) => {
+        //     this.updateMap(message, temp);
+        // });
+        // this.updateThrottle();
+        // return Promise.resolve();
     }
 
     public insertHole(peerId: string, id: number, asc: boolean) {
@@ -778,7 +779,7 @@ export default class MessageRepo {
         return fn;
     }
 
-    private updateMap = (message: IMessage, temp?: boolean) => {
+    /*private updateMap = (message: IMessage, temp?: boolean) => {
         message.temp = (temp === true);
         if (this.lazyMap.hasOwnProperty(message.id || 0)) {
             const t = this.lazyMap[message.id || 0];
@@ -791,7 +792,7 @@ export default class MessageRepo {
         } else {
             this.lazyMap[message.id || 0] = message;
         }
-    }
+    }*/
 
     private insertToDb = () => {
         const messages: IMessage[] = [];
@@ -923,28 +924,28 @@ export default class MessageRepo {
 
     private checkBoundaries(peeId: string, limit: number, local: IMessage[], remote: IMessage[], before: boolean) {
         return;
-        if (local.length > 0) {
-            let min = local[local.length - 1].id || 0;
-            let max = local[0].id || 0;
-            min = Math.min(min, max);
-            if (remote.length > 0) {
-                min = remote[remote.length - 1].id || 0;
-                max = remote[0].id || 0;
-                min = Math.min(min, max);
-                if (before) {
-                    this.insertHole(peeId, min, true);
-                    if (remote.length < limit) {
-                        this.insertEnd(peeId, min);
-                    }
-                }
-            } else {
-                if (before && local.length < limit) {
-                    this.insertEnd(peeId, min);
-                }
-            }
-        } else if (before) {
-            this.insertEnd(peeId, 1.5);
-        }
+        // if (local.length > 0) {
+        //     let min = local[local.length - 1].id || 0;
+        //     let max = local[0].id || 0;
+        //     min = Math.min(min, max);
+        //     if (remote.length > 0) {
+        //         min = remote[remote.length - 1].id || 0;
+        //         max = remote[0].id || 0;
+        //         min = Math.min(min, max);
+        //         if (before) {
+        //             this.insertHole(peeId, min, true);
+        //             if (remote.length < limit) {
+        //                 this.insertEnd(peeId, min);
+        //             }
+        //         }
+        //     } else {
+        //         if (before && local.length < limit) {
+        //             this.insertEnd(peeId, min);
+        //         }
+        //     }
+        // } else if (before) {
+        //     this.insertEnd(peeId, 1.5);
+        // }
     }
 
     private broadcastEvent(name: string, data: any) {

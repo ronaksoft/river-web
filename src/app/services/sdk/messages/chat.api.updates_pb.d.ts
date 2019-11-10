@@ -1,3 +1,4 @@
+/* tslint:disable */
 // package: msg
 // file: chat.api.updates.proto
 

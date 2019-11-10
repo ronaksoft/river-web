@@ -27,7 +27,7 @@ import {getHumanReadableSize} from '../MessageFile';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 import DownloadManager from '../../services/downloadManager';
 
-import './style.css';
+import './style.scss';
 
 const C_MAX_HEIGHT = 256;
 const C_MIN_HEIGHT = 86;

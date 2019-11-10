@@ -43,10 +43,6 @@ export default class CachedMessageService {
     private fnIndex: number = 0;
     private listeners: { [key: string]: IBroadcastItem } = {};
 
-    public constructor() {
-        //
-    }
-
     /* Get message */
     public getMessage(peerId: string, id: number): IMessage | null {
         if (this.messages.hasOwnProperty(id)) {

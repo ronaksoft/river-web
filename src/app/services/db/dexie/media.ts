@@ -11,6 +11,7 @@ import Dexie from 'dexie';
 import {IMedia} from '../../../repository/media/interface';
 
 export class DexieMediaDB extends Dexie {
+    // @ts-ignore
     public medias: Dexie.Table<IMedia, number>;
 
     constructor() {
@@ -23,5 +24,7 @@ export class DexieMediaDB extends Dexie {
         this.version(1).stores({
             medias: `id,[peerid+id+type]`,
         });
+
+        this.medias = this.table('medias');
     }
 }

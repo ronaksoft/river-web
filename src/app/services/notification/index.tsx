@@ -19,8 +19,8 @@ export default class NotificationService {
     }
 
     private static instance: NotificationService;
-    private readonly app: firebase.app.App;
-    private readonly messaging: firebase.messaging.Messaging;
+    private readonly app: firebase.app.App | undefined;
+    private readonly messaging: firebase.messaging.Messaging | undefined;
 
     private constructor() {
         try {

@@ -12,7 +12,7 @@ import Dialog from '@material-ui/core/Dialog/Dialog';
 import {CheckRounded, RotateLeftRounded, RotateRightRounded, ZoomInRounded, ZoomOutRounded} from '@material-ui/icons';
 import AvatarEditor from 'react-avatar-editor';
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     className?: string;
@@ -30,7 +30,7 @@ interface IState {
 
 class AvatarCropper extends React.Component<IProps, IState> {
     private fileInputRef: any = null;
-    private editor: AvatarEditor;
+    private editor: AvatarEditor | undefined;
 
     constructor(props: IProps) {
         super(props);
@@ -142,7 +142,10 @@ class AvatarCropper extends React.Component<IProps, IState> {
 
     /* Crop image handler */
     private cropPictureHandler = () => {
-        this.editor.getImage().toBlob((blob: Blob) => {
+        if (!this.editor) {
+            return;
+        }
+        this.editor.getImage().toBlob((blob: Blob | null) => {
             if (!blob) {
                 this.profileCropperCloseHandler();
                 return;

@@ -13,7 +13,7 @@ import ProgressBroadcaster from '../../services/progress';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import {getHumanReadableSize} from '../MessageFile';
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     className?: string;

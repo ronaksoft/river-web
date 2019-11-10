@@ -28,7 +28,7 @@ import i18n from '../../services/i18n';
 import {localize} from '../../services/utilities/localize';
 import sdk from '../../services/sdk';
 
-import './style.css';
+import './style.scss';
 import {Link} from "react-router-dom";
 
 interface IProps {
@@ -49,7 +49,7 @@ interface IState {
 class DialogMessage extends React.Component<IProps, IState> {
     private lastUpdate: number | undefined;
     private notifySetting: PeerNotifySettings.AsObject | undefined;
-    private isTyping: { [key: string]: any };
+    private isTyping: { [key: string]: any } = {};
     private readonly userId: string;
 
     constructor(props: IProps) {

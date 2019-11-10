@@ -24,7 +24,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import NewGroupMenu from "../NewGroupMenu";
 import {IUser} from "../../repository/user/interface";
 
-import './style.css';
+import './style.scss';
 
 export type menuItems = 'chat' | 'settings' | 'contacts';
 export type menuAction = 'new_message' | 'close_iframe' | 'logout';
@@ -50,10 +50,10 @@ interface IState {
 }
 
 class LeftMenu extends React.PureComponent<IProps, IState> {
-    private bottomBarRef: BottomBar;
-    private dialogRef: Dialog;
-    private settingsMenuRef: SettingsMenu;
-    private contactsMenuRef: ContactsMenu;
+    private bottomBarRef: BottomBar | undefined;
+    private dialogRef: Dialog | undefined;
+    private settingsMenuRef: SettingsMenu | undefined;
+    private contactsMenuRef: ContactsMenu | undefined;
     private chatTopIcons: any[];
     private chatMoreMenuItem: any[];
 
@@ -270,7 +270,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         this.chatMoreCloseHandler();
         switch (cmd) {
             case 'search':
-                this.dialogRef.toggleSearch();
+                if (this.dialogRef) {
+                    this.dialogRef.toggleSearch();
+                }
                 break;
             case 'new_message':
                 this.props.onAction('new_message');

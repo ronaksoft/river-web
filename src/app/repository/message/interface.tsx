@@ -40,4 +40,5 @@ interface IMessageWithCount {
     messages: IMessage[];
 }
 
+// @ts-ignore
 export {IMessage, IPendingMessage, IMessageWithCount};

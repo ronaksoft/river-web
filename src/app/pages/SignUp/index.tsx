@@ -33,7 +33,7 @@ import FileManager from "../../services/sdk/fileManager";
 import {OptionsObject, withSnackbar} from 'notistack';
 
 import './tel-input.css';
-import './style.css';
+import './style.scss';
 
 
 const C_CLIENT = `Web:- ${window.navigator.userAgent}`;
@@ -303,11 +303,11 @@ class SignUp extends React.Component<IProps, IState> {
                 <div className="login-bottom-bar">
                     <div className="version-container">{C_VERSION}</div>
                     <div className="link-container">
-                        <a href="https://river.im" target="_blank">{i18n.t('sign_up.home')}</a>
+                        <a href="https://river.im" target="_blank" rel="noopener noreferrer">{i18n.t('sign_up.home')}</a>
                         <span className="bullet"/>
-                        <a href="https://river.im/faq" target="_blank">{i18n.t('sign_up.faq')}</a>
+                        <a href="https://river.im/faq" target="_blank" rel="noopener noreferrer">{i18n.t('sign_up.faq')}</a>
                         <span className="bullet"/>
-                        <a href="https://river.im/terms" target="_blank">{i18n.t('sign_up.term_of_services')}</a>
+                        <a href="https://river.im/terms" target="_blank" rel="noopener noreferrer">{i18n.t('sign_up.term_of_services')}</a>
                     </div>
                     <div className="language-container"
                          onClick={this.showLanguageDialogHandler}>{i18n.t(`sign_up.${this.state.selectedLanguage}`)}</div>

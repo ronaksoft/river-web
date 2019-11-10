@@ -12,7 +12,7 @@ import {InputPeer, PeerType} from "../../services/sdk/messages/chat.core.types_p
 import GroupInfoMenu from "../GroupInfoMenu";
 import UserInfoMenu from "../UserInfoMenu";
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     onChange: (shrink: boolean) => void;

@@ -1,3 +1,8 @@
+## 0.27.0
+* Code refactor
+* ReactScript added (16h+)
+* Minor UI bugs fixed
+
 ## 0.26.38
 * Electron updated (0.9.6)
 * MessageMedia blur updated

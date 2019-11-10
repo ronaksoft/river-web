@@ -62,6 +62,7 @@ export default class Server {
     private messageListeners: object = {};
     private sentQueue: number[] = [];
     private updateQueue: any[] = [];
+    // @ts-ignore
     private updateManager: UpdateManager;
     private isConnected: boolean = false;
     private requestQueue: MessageEnvelope[] = [];

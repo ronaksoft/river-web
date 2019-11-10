@@ -17,4 +17,5 @@ interface IGroup extends Group.AsObject {
     hasUpdate?: boolean;
 }
 
+// @ts-ignore
 export {IGroup};

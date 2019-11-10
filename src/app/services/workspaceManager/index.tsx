@@ -7,7 +7,6 @@
     Copyright Ronak Software Group 2019
 */
 
-import {IHttpRequest} from '../sdk/fileManager/http';
 import {MessageEnvelope, ProtoMessage} from '../sdk/messages/chat.core.types_pb';
 import {checkPong, ping} from '../sdk/server/socket';
 import Presenter from '../sdk/presenters';
@@ -39,7 +38,7 @@ export default class WorkspaceManger {
 
     private reqId: number;
     private messageListeners: { [key: number]: IMessageListener } = {};
-    private socket: WebSocket;
+    private socket: WebSocket | undefined;
     private connected: boolean = false;
     private sentQueue: number[] = [];
 
@@ -66,7 +65,7 @@ export default class WorkspaceManger {
 
             // Connection opened
             this.socket.onopen = () => {
-                if (!this.socket.OPEN || this.socket.readyState !== 1) {
+                if (!this.socket || !this.socket.OPEN || this.socket.readyState !== 1) {
                     return;
                 }
                 this.socket.send(ping);
@@ -135,7 +134,7 @@ export default class WorkspaceManger {
     }
 
     private sendRequest(request: IHttpRequest) {
-        if (!this.connected) {
+        if (!this.socket || !this.connected) {
             return;
         }
         const messageEnvelope = new MessageEnvelope();

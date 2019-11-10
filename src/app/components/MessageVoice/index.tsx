@@ -17,7 +17,7 @@ import {
 import {base64ToU8a} from '../../services/sdk/fileManager/http/utils';
 import {from4bitResolution} from '../ChatInput/utils';
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     message: IMessage;
@@ -30,7 +30,7 @@ interface IState {
 }
 
 class MessageVoice extends React.PureComponent<IProps, IState> {
-    private voicePlayerRef: VoicePlayer;
+    private voicePlayerRef: VoicePlayer | undefined;
     private lastId: number = 0;
     private voiceId: string = '';
     private downloaded: boolean = false;
@@ -76,12 +76,14 @@ class MessageVoice extends React.PureComponent<IProps, IState> {
             }
         });
         this.voiceId = messageMediaDocument.doc.id || '';
-        this.voicePlayerRef.setData({
-            bars: info.bars,
-            duration: info.duration,
-            state: this.getVoiceState(message),
-            voiceId: messageMediaDocument.doc.id,
-        });
+        if (this.voicePlayerRef) {
+            this.voicePlayerRef.setData({
+                bars: info.bars,
+                duration: info.duration,
+                state: this.getVoiceState(message),
+                voiceId: messageMediaDocument.doc.id,
+            });
+        }
     }
 
     public componentWillReceiveProps(newProps: IProps) {
@@ -91,18 +93,24 @@ class MessageVoice extends React.PureComponent<IProps, IState> {
             this.setState({
                 message: newProps.message,
             }, () => {
-                this.voicePlayerRef.setVoiceState(this.getVoiceState(message));
+                if (this.voicePlayerRef) {
+                    this.voicePlayerRef.setVoiceState(this.getVoiceState(message));
+                }
                 this.getVoiceId();
             });
         }
         const messageMediaDocument: MediaDocument.AsObject = newProps.message.mediadata;
         if (messageMediaDocument && messageMediaDocument.doc && messageMediaDocument.doc.id !== this.voiceId) {
             this.voiceId = messageMediaDocument.doc.id || '';
-            this.voicePlayerRef.setVoiceId(this.voiceId);
+            if (this.voicePlayerRef) {
+                this.voicePlayerRef.setVoiceId(this.voiceId);
+            }
         }
         if ((newProps.message.downloaded || false) !== this.downloaded) {
             this.downloaded = (newProps.message.downloaded || false);
-            this.voicePlayerRef.setVoiceState(this.getVoiceState(newProps.message));
+            if (this.voicePlayerRef) {
+                this.voicePlayerRef.setVoiceState(this.getVoiceState(newProps.message));
+            }
         }
         if ((newProps.message.contentread || false) !== this.contentRead) {
             this.contentRead = (newProps.message.contentread || false);
@@ -127,6 +135,9 @@ class MessageVoice extends React.PureComponent<IProps, IState> {
 
     /* Get voice data */
     private getVoiceId() {
+        if (!this.voicePlayerRef) {
+            return;
+        }
         const {message} = this.state;
         const messageMediaDocument: MediaDocument.AsObject = message.mediadata;
         this.voicePlayerRef.setVoiceId(messageMediaDocument.doc.id);
@@ -161,10 +172,12 @@ class MessageVoice extends React.PureComponent<IProps, IState> {
                 }
             } else {
                 this.props.onAction(cmd, this.state.message);
-                if (cmd === 'download') {
-                    this.voicePlayerRef.setVoiceState('progress');
-                } else if (cmd === 'cancel_download') {
-                    this.voicePlayerRef.setVoiceState('download');
+                if (this.voicePlayerRef) {
+                    if (cmd === 'download') {
+                        this.voicePlayerRef.setVoiceState('progress');
+                    } else if (cmd === 'cancel_download') {
+                        this.voicePlayerRef.setVoiceState('download');
+                    }
                 }
             }
         }

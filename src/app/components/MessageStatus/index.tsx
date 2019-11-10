@@ -11,7 +11,7 @@ import * as React from 'react';
 import TimeUtililty from '../../services/utilities/time';
 import {DoneRounded, DoneAllRounded, ScheduleRounded} from '@material-ui/icons';
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     editedTime: number;

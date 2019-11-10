@@ -15,7 +15,7 @@ import riverLogo from '../../../asset/image/about/river.png';
 import ronakLogo from '../../../asset/image/about/ronak.png';
 import {C_VERSION} from "../SettingsMenu";
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     height?: string;
@@ -56,14 +56,14 @@ class AboutDialog extends React.Component<IProps, IState> {
             >
                 <div className="about-dialog-content">
                     <div className="logo-container">
-                        <img src={riverLogo}/>
+                        <img src={riverLogo} alt="logo"/>
                     </div>
                     <div className="version-container">{`${C_VERSION} (${version})`}</div>
                     <div className="about-container">
                         River is free messaging app for desktop focuses on security and speed.
                     </div>
                     <div className="copyright-container">
-                        <img src={ronakLogo}/>
+                        <img src={ronakLogo} alt="ronak-logo"/>
                         <span>Copyright © 2016 - 2019 Ronak Software Group</span>
                     </div>
                 </div>

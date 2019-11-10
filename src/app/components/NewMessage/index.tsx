@@ -17,7 +17,7 @@ import TextField from '@material-ui/core/TextField';
 import {trimStart} from 'lodash';
 import i18n from '../../services/i18n';
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     onMessage?: (contacts: IUser[], text: string) => void;

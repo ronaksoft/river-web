@@ -15,7 +15,7 @@ import i18n from '../../services/i18n';
 import {localize} from '../../services/utilities/localize';
 import {menuItems} from "../LeftMenu";
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     selected: string;
@@ -78,14 +78,14 @@ class BottomBar extends React.Component<IProps, IState> {
                             placement="top"
                             enterDelay={1000}
                         >
-                            <a onClick={this.onClickHandler(item.page)}
-                               className={item.page === selected ? 'active' : ''}>
+                            <div onClick={this.onClickHandler(item.page)}
+                               className={'a ' + (item.page === selected ? 'active' : '')}>
 
                                 {Boolean(item.badge) && <Badge color="primary" badgeContent={localize(unreadCounter)}
                                                                invisible={Boolean(unreadCounter === 0)}>{item.icon}</Badge>}
                                 {!Boolean(item.badge) && <span>{item.icon}</span>}
                                 <span className="title">{item.title}</span>
-                            </a>
+                            </div>
                         </Tooltip>);
                 })}
             </div>

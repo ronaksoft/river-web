@@ -14,7 +14,7 @@ import {TextAvatar} from '../UserAvatar';
 import AvatarService from '../../services/avatarService';
 import {find} from 'lodash';
 
-import './style.css';
+import './style.scss';
 import Broadcaster from '../../services/broadcaster';
 
 interface IProps {
@@ -84,7 +84,7 @@ class GroupAvatar extends React.Component<IProps, IState> {
         const {group, photo, className} = this.state;
         return (
             <span className={className}>{(group && photo) ?
-                <img className="avatar-image" src={photo}
+                <img className="avatar-image" src={photo} alt="avatar"
                      onError={this.imgErrorHandler}/> : TextAvatar(group ? group.title : undefined)}</span>
         );
     }

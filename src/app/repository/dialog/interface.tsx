@@ -38,4 +38,5 @@ interface IDraft {
     message?: IMessage;
 }
 
+// @ts-ignore
 export {IDialog, IDialogWithUpdateId, IDraft};

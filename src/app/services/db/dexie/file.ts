@@ -11,7 +11,9 @@ import Dexie from 'dexie';
 import {IFile, ITempFile} from '../../../repository/file/interface';
 
 export class DexieFileDB extends Dexie {
+    // @ts-ignore
     public files: Dexie.Table<IFile, string>;
+    // @ts-ignore
     public temps: Dexie.Table<ITempFile, string>;
 
     constructor() {
@@ -25,5 +27,8 @@ export class DexieFileDB extends Dexie {
             files: `id,hash`,
             temps: `[id+part]`,
         });
+
+        this.files = this.table('files');
+        this.temps = this.table('temps');
     }
 }

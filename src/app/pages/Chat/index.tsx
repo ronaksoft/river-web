@@ -137,7 +137,7 @@ import MoveDown from "../../components/MoveDown";
 import {Error} from '../../services/sdk/messages/chat.core.types_pb';
 import {OptionsObject, withSnackbar} from "notistack";
 
-import './style.css';
+import './style.scss';
 
 export let notifyOptions: any[] = [];
 const C_MAX_UPDATE_DIFF = 2000;
@@ -164,15 +164,15 @@ class Chat extends React.Component<IProps, IState> {
     private conversationRef: any = null;
     private containerRef: any = null;
     private isInChat: boolean = true;
-    private rightMenuRef: RightMenu;
-    private leftMenuRef: LeftMenu;
-    private dialogRef: Dialog;
-    private statusBarRef: StatusBar;
-    private popUpDateRef: PopUpDate;
-    private popUpNewMessageRef: PopUpNewMessage;
-    private infoBarRef: InfoBar;
-    private messageRef: Message;
-    private chatInputRef: ChatInput;
+    private rightMenuRef: RightMenu | undefined;
+    private leftMenuRef: LeftMenu | undefined;
+    private dialogRef: Dialog | undefined;
+    private statusBarRef: StatusBar | undefined;
+    private popUpDateRef: PopUpDate | undefined;
+    private popUpNewMessageRef: PopUpNewMessage | undefined;
+    private infoBarRef: InfoBar | undefined;
+    private messageRef: Message | undefined;
+    private chatInputRef: ChatInput | undefined;
     private messages: IMessage[] = [];
     private messageRepo: MessageRepo;
     private dialogRepo: DialogRepo;
@@ -189,24 +189,24 @@ class Chat extends React.Component<IProps, IState> {
     private readonly dialogsSortThrottle: any = null;
     private isMobileView: boolean = false;
     private mobileBackTimeout: any = null;
-    private forwardDialogRef: ForwardDialog;
-    private userDialogComponent: UserDialog;
+    private forwardDialogRef: ForwardDialog | undefined;
+    private userDialogRef: UserDialog | undefined;
     private fileManager: FileManager;
     private electronService: ElectronService;
     private riverTime: RiverTime;
     private progressBroadcaster: ProgressBroadcaster;
     private firstTimeLoad: boolean = true;
     private rtlDetector: RTLDetector;
-    private moveDownRef: MoveDown;
+    private moveDownRef: MoveDown | undefined;
     private endOfMessage: boolean = false;
     private lastMessageId: number = -1;
     private dialogReadMap: { [key: string]: { peer: InputPeer, id: number } } = {};
     private readonly messageReadThrottle: any = null;
     private newMessageFlag: boolean = false;
     private backgroundService: BackgroundService;
-    private searchMessageRef: SearchMessage;
+    private searchMessageRef: SearchMessage | undefined;
     private downloadManager: DownloadManager;
-    private aboutDialogRef: AboutDialog;
+    private aboutDialogRef: AboutDialog | undefined;
     private dialogMap: { [key: string]: number } = {};
     private dialogs: IDialog[] = [];
     private isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } } = {};
@@ -744,6 +744,9 @@ class Chat extends React.Component<IProps, IState> {
             });
         }
         setTimeout(() => {
+            if (!this.messageRef) {
+                return;
+            }
             this.messageRef.cache.clearAll();
             this.messageRef.list.recomputeRowHeights();
             this.messageRef.list.recomputeGridSize();
@@ -1127,7 +1130,7 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Update message delete handler */
     private updateMessageDeleteHandler = (data: UpdateMessagesDeleted.AsObject) => {
-        if (this.isUpdating || !data.peer) {
+        if (this.isUpdating || !data.peer || !this.messageRef) {
             return;
         }
         const peer = data.peer;
@@ -1163,7 +1166,7 @@ class Chat extends React.Component<IProps, IState> {
                         });
                     }
                 }
-                if (peer.id === this.selectedDialogId) {
+                if (peer.id === this.selectedDialogId && this.messageRef) {
                     // Update and broadcast changes in cache
                     this.cachedMessageService.removeMessage(id);
 
@@ -1197,6 +1200,9 @@ class Chat extends React.Component<IProps, IState> {
                     if (updateView) {
                         this.messageRef.keepView();
                         this.messageRef.forceUpdate(() => {
+                            if (!this.messageRef) {
+                                return;
+                            }
                             this.messageRef.list.recomputeGridSize();
                             this.messageRef.fitList();
                             this.messageRef.removeSnapshot(true);
@@ -1252,7 +1258,7 @@ class Chat extends React.Component<IProps, IState> {
             };
         });
         this.messageRepo.lazyUpsert(msgs);
-        if (updateView) {
+        if (updateView && this.messageRef) {
             this.messageRef.list.forceUpdateGrid();
         }
     }
@@ -1357,6 +1363,9 @@ class Chat extends React.Component<IProps, IState> {
         }
 
         const updateState = () => {
+            if (!this.messageRef) {
+                return;
+            }
             this.messageRef.list.recomputeRowHeights();
             this.messageRef.list.recomputeGridSize();
         };
@@ -1430,7 +1439,7 @@ class Chat extends React.Component<IProps, IState> {
             }
 
             this.setScrollMode('end');
-            if (!beforeMsg) {
+            if (!beforeMsg && this.messageRef) {
                 this.messageRef.takeSnapshot();
             }
             const dataMsg = this.modifyMessages(this.messages, resMsgs, false);
@@ -1442,6 +1451,9 @@ class Chat extends React.Component<IProps, IState> {
                 this.setLoading(false);
             }
 
+            if (!this.messageRef) {
+                return;
+            }
             this.messageRef.setMessages(dataMsg.msgs, () => {
                 if (messageId && messageId !== '0') {
                     setTimeout(() => {
@@ -1486,7 +1498,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         const after = this.getValidAfter();
-        if ((dialog.topmessageid || 0) <= after && (dialog.unreadcount || 0) === 0 || after === 0) {
+        if (((dialog.topmessageid || 0) <= after && (dialog.unreadcount || 0) === 0) || after === 0) {
             return;
         }
 
@@ -1508,8 +1520,10 @@ class Chat extends React.Component<IProps, IState> {
             }
             this.setEndOfMessage(res.messages.length > 0);
             setTimeout(() => {
-                const dataMsg = this.modifyMessages(this.messages, res.messages, true, dialog.readinboxmaxid || 0);
-                this.messageRef.setMessages(dataMsg.msgs);
+                if (this.messageRef) {
+                    const dataMsg = this.modifyMessages(this.messages, res.messages, true, dialog.readinboxmaxid || 0);
+                    this.messageRef.setMessages(dataMsg.msgs);
+                }
                 this.setLoading(false);
             }, 1);
         }).catch(() => {
@@ -1551,10 +1565,16 @@ class Chat extends React.Component<IProps, IState> {
             this.messageRef.takeSnapshot();
             this.setScrollMode('stay');
             setTimeout(() => {
+                if (!this.messageRef) {
+                    return;
+                }
                 const messages = this.messages;
                 const messageSize = messages.length;
                 const dataMsg = this.modifyMessages(messages, data, false);
                 this.messageRef.setMessages(dataMsg.msgs, () => {
+                    if (!this.messageRef) {
+                        return;
+                    }
                     this.messageRef.enableScroll();
                     // clears the gap between each message load
                     for (let i = 0; i <= (dataMsg.msgs.length - messageSize) + 1; i++) {
@@ -1884,7 +1904,9 @@ class Chat extends React.Component<IProps, IState> {
                     if (index > -1) {
                         messages[index].error = true;
                         this.messageRepo.importBulk([messages[index]], false);
-                        this.messageRef.list.forceUpdateGrid();
+                        if (this.messageRef) {
+                            this.messageRef.list.forceUpdateGrid();
+                        }
                     }
                 }
             });
@@ -2239,7 +2261,7 @@ class Chat extends React.Component<IProps, IState> {
                     if (this.endOfMessage && this.moveDownRef) {
                         this.moveDownRef.setVisible(false);
                     }
-                } else if (unreadCounter && this.endOfMessage) {
+                } else if (unreadCounter && this.endOfMessage && this.moveDownRef) {
                     this.moveDownRef.setVisible(true);
                 }
             }
@@ -2886,13 +2908,17 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* PopUpDate show date handler */
-    private messageShowDateHandler = (timestamp: number) => {
-        this.popUpDateRef.updateDate(timestamp);
+    private messageShowDateHandler = (timestamp: number | null) => {
+        if (this.popUpDateRef) {
+            this.popUpDateRef.updateDate(timestamp);
+        }
     }
 
     /* PopUpDate show date handler */
     private messageShowNewMessageHandler = (visible: boolean) => {
-        this.popUpNewMessageRef.setVisible(visible);
+        if (this.popUpNewMessageRef) {
+            this.popUpNewMessageRef.setVisible(visible);
+        }
     }
 
     /* Message Rendered Handler
@@ -2970,7 +2996,7 @@ class Chat extends React.Component<IProps, IState> {
             this.messageRef.setScrollMode('stay');
             this.messageRef.takeSnapshot();
         }
-        if (this.selectedDialogId !== 'null') {
+        if (this.selectedDialogId !== 'null' && this.messageRef) {
             this.messageRef.cache.clearAll();
             this.messageRef.list.recomputeRowHeights();
         }
@@ -3221,7 +3247,7 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Jump to message handler */
     private messageJumpToMessageHandler = (id: number, text?: string) => {
-        if (this.isLoading) {
+        if (this.isLoading || !this.messageRef) {
             return;
         }
         const messages = this.messages;
@@ -3333,7 +3359,7 @@ class Chat extends React.Component<IProps, IState> {
 
     /* UserDialog ref handler */
     private userDialogRefHandler = (ref: any) => {
-        this.userDialogComponent = ref;
+        this.userDialogRef = ref;
     }
 
     /* ForwardDialog ref handler */
@@ -3356,7 +3382,9 @@ class Chat extends React.Component<IProps, IState> {
         peer.setAccesshash(dialog.accesshash || '0');
         switch (cmd) {
             case 'info':
-                this.userDialogComponent.openDialog(peer);
+                if (this.userDialogRef) {
+                    this.userDialogRef.openDialog(peer);
+                }
                 break;
             case 'block':
                 break;
@@ -3438,7 +3466,7 @@ class Chat extends React.Component<IProps, IState> {
             const index = findIndex(messages, (o) => {
                 return o.id === message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
             });
-            if (index > -1) {
+            if (index > -1 && this.messageRef) {
                 this.messageRef.cache.clear(index, 0);
             }
 
@@ -3448,7 +3476,9 @@ class Chat extends React.Component<IProps, IState> {
             this.updateDialogs(message, '0');
 
             // Force update messages
-            this.messageRef.list.forceUpdateGrid();
+            if (this.messageRef) {
+                this.messageRef.list.forceUpdateGrid();
+            }
         });
     }
 
@@ -3472,7 +3502,7 @@ class Chat extends React.Component<IProps, IState> {
                 const index = findIndex(messages, (o) => {
                     return o.id === message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
                 });
-                if (index > -1) {
+                if (index > -1 && this.messageRef) {
                     this.messageRef.cache.clear(index, 0);
                 }
 
@@ -3483,7 +3513,9 @@ class Chat extends React.Component<IProps, IState> {
                 this.updateDialogs(message, '0');
 
                 // Force update messages
-                this.messageRef.list.forceUpdateGrid();
+                if (this.messageRef) {
+                    this.messageRef.list.forceUpdateGrid();
+                }
             });
         };
 
@@ -3513,7 +3545,9 @@ class Chat extends React.Component<IProps, IState> {
                 if (index > -1) {
                     messages[index].error = true;
                     this.messageRepo.importBulk([messages[index]], false);
-                    this.messageRef.list.forceUpdateGrid();
+                    if (this.messageRef) {
+                        this.messageRef.list.forceUpdateGrid();
+                    }
                 }
             }
         });
@@ -3602,7 +3636,9 @@ class Chat extends React.Component<IProps, IState> {
                                     });
                                     if (index > -1) {
                                         this.messages[index] = msg;
-                                        this.messageRef.list.forceUpdateGrid();
+                                        if (this.messageRef) {
+                                            this.messageRef.list.forceUpdateGrid();
+                                        }
                                     }
                                 }
                                 this.messageRepo.lazyUpsert([msg]);
@@ -3624,7 +3660,9 @@ class Chat extends React.Component<IProps, IState> {
                 });
                 if (index > -1) {
                     messages[index].error = false;
-                    this.messageRef.list.forceUpdateGrid();
+                    if (this.messageRef) {
+                        this.messageRef.list.forceUpdateGrid();
+                    }
                 }
                 if (res.file_ids && res.file_ids.length > 0 && message.mediatype !== MediaType.MEDIATYPEEMPTY && message.messagetype !== 0 && message.messagetype !== C_MESSAGE_TYPE.Normal) {
                     this.resendMediaMessage(res.id, message, res.file_ids, res.data);
@@ -3694,9 +3732,11 @@ class Chat extends React.Component<IProps, IState> {
                         return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
                     });
                     if (index > -1) {
-                        this.messageRef.cache.clear(index, 0);
+                        if (this.messageRef) {
+                            this.messageRef.cache.clear(index, 0);
+                        }
                         messages.splice(index, 1);
-                        if (noUpdate !== true) {
+                        if (noUpdate !== true && this.messageRef) {
                             this.messageRef.list.forceUpdateGrid();
                             this.messageRef.list.recomputeGridSize();
                         }
@@ -3746,7 +3786,9 @@ class Chat extends React.Component<IProps, IState> {
                             if (index > -1) {
                                 messages[index].downloaded = true;
                                 // Force update messages
-                                this.messageRef.list.forceUpdateGrid();
+                                if (this.messageRef) {
+                                    this.messageRef.list.forceUpdateGrid();
+                                }
                             }
                         }
                         if (msg.messagetype === C_MESSAGE_TYPE.File && this.downloadManager.getDownloadSettings().auto_save_files) {
@@ -4027,7 +4069,7 @@ class Chat extends React.Component<IProps, IState> {
 
                 const messages = this.messages;
                 const index = findIndex(messages, {id: message.id, messagetype: messageType});
-                if (index > -1) {
+                if (index > -1 && this.messageRef) {
                     this.messageRef.cache.clear(index, 0);
                 }
 
@@ -4107,7 +4149,7 @@ class Chat extends React.Component<IProps, IState> {
         let messageType = C_MESSAGE_TYPE.Contact;
         let mediaData: any;
         let media: any;
-        let mediaType: InputMediaType = InputMediaType.INPUTMEDIATYPECONTACT;
+        let mediaType = InputMediaType.INPUTMEDIATYPECONTACT;
         let mediaType2: MediaType = MediaType.MEDIATYPECONTACT;
         let caption = '';
         if (type === 'contact') {
@@ -4171,7 +4213,7 @@ class Chat extends React.Component<IProps, IState> {
 
             const messages = this.messages;
             const index = findIndex(messages, {id: message.id, messagetype: messageType});
-            if (index > -1) {
+            if (index > -1 && this.messageRef) {
                 this.messageRef.cache.clear(index, 0);
             }
 
@@ -4262,7 +4304,7 @@ class Chat extends React.Component<IProps, IState> {
         this.electronService.download(objectUrl, fileInfo.name).then((res) => {
             const messages = this.messages;
             const index = findIndex(messages, {id: message.id, messagetype: C_MESSAGE_TYPE.File});
-            if (index > -1) {
+            if (index > -1 && this.messageRef) {
                 this.messageRef.cache.clear(index, 0);
             }
 
@@ -4270,7 +4312,9 @@ class Chat extends React.Component<IProps, IState> {
             message.savedPath = res.path;
             this.messageRepo.lazyUpsert([message]);
             // Force update messages
-            this.messageRef.list.forceUpdateGrid();
+            if (this.messageRef) {
+                this.messageRef.list.forceUpdateGrid();
+            }
 
             // Just to make sure subscribers will update their view
             this.broadcastEvent('File_Downloaded', {id: message.id});
@@ -4463,6 +4507,9 @@ class Chat extends React.Component<IProps, IState> {
         const dialog = this.getDialogById(this.selectedDialogId);
         if (dialog) {
             const scrollDown = () => {
+                if (!this.messageRef) {
+                    return;
+                }
                 if ((this.messages.length > 0 && this.messages[this.messages.length - 1] && this.messages[this.messages.length - 1].id === dialog.topmessageid) || !dialog.topmessageid) {
                     // Normal scroll down
                     this.messageRef.animateToEnd();
@@ -4530,7 +4577,9 @@ class Chat extends React.Component<IProps, IState> {
 
     private newMessageLoad = () => {
         // Force update messages
-        this.messageRef.animateToEnd();
+        if (this.messageRef) {
+            this.messageRef.animateToEnd();
+        }
     }
 
     private downloadThumbnail = (message: IMessage) => {
@@ -4692,11 +4741,6 @@ class Chat extends React.Component<IProps, IState> {
             this.forceUpdate();
         }
     }
-
-    /*
-    private test2Handler = () => {
-        this.messageComponent.keepView();
-    }*/
 }
 
 export default withSnackbar<any>(Chat);

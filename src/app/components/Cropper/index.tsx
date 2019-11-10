@@ -13,7 +13,7 @@ import Dialog from '@material-ui/core/Dialog/Dialog';
 import ReactCrop from 'react-image-crop';
 import {CheckRounded} from '@material-ui/icons';
 
-import './style.css';
+import './style.scss';
 
 export interface IDimension {
     height: number;
@@ -36,7 +36,7 @@ class Cropper extends React.Component<IProps, IState> {
     private fileInputRef: any = null;
     private imageRef: any = null;
     private pixelCrop: any;
-    private lastObjectURLImage: string;
+    private lastObjectURLImage: string = '';
 
     constructor(props: IProps) {
         super(props);
@@ -180,7 +180,7 @@ class Cropper extends React.Component<IProps, IState> {
             );
 
             return new Promise((resolve, reject) => {
-                canvas.toBlob((blob: Blob) => {
+                canvas.toBlob((blob: Blob | null) => {
                     if (!blob) {
                         reject();
                         return;

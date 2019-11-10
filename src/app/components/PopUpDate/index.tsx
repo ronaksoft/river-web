@@ -10,7 +10,7 @@
 import * as React from 'react';
 import TimeUtililty from '../../services/utilities/time';
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     className?: string;

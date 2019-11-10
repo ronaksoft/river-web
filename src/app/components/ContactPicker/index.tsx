@@ -15,7 +15,7 @@ import ContactList from '../ContactList';
 import {IUser} from '../../repository/user/interface';
 import i18n from '../../services/i18n';
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     onDone?: (contacts: IUser[], caption: string) => void;

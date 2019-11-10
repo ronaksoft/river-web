@@ -14,4 +14,5 @@ interface IMessageHole {
     type?: number;
 }
 
+// @ts-ignore
 export {IMessageHole};

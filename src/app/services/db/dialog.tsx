@@ -30,6 +30,7 @@ export default class DialogDB {
     public getDB() {
         return this.db;
     }
+
     //
     // private viewCleanup = () => {
     //     //

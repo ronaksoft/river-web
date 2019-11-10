@@ -45,7 +45,7 @@ import DocumentViewerService, {IDocument} from "../../services/documentViewerSer
 import {Loading} from "../Loading";
 import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     onContextMenu: (cmd: string, id: IMessage) => void;
@@ -59,7 +59,7 @@ interface IProps {
     onSelectedIdsChange: (selectedIds: { [key: number]: number }) => void;
     onDrop: (files: File[]) => void;
     onRendered?: (info: any) => void;
-    showDate?: (timestamp: number | null) => void;
+    showDate: (timestamp: number | null) => void;
     showNewMessage?: (visible: boolean) => void;
     isMobileView: boolean;
 }
@@ -134,14 +134,15 @@ interface IStayInfo {
 }
 
 class Message extends React.Component<IProps, IState> {
+    // @ts-ignore
     public list: List;
     public cache: CellMeasurerCache;
     private peer: InputPeer | null = null;
-    private listCount: number;
+    private listCount: number = 0;
     private topOfList: boolean = false;
     private bottomOfList: boolean = true;
     private loadingTimeout: any = null;
-    private scrollMode: 'none' | 'end' | 'stay';
+    private scrollMode: 'none' | 'end' | 'stay' = 'none';
     private messageScroll: {
         overscanStartIndex: number;
         overscanStopIndex: number;
@@ -657,7 +658,7 @@ class Message extends React.Component<IProps, IState> {
                 {({width, height}: any) => (
                     <div className="main-messages">
                         <div ref={this.messageInnerRefHandler}
-                             className={'messages-inner ' + ((this.peer && this.peer.getType() === PeerType.PEERGROUP || this.isSimplified) ? 'group' : 'user') + (selectable ? ' selectable' : '')}
+                             className={'messages-inner ' + (((this.peer && this.peer.getType() === PeerType.PEERGROUP) || this.isSimplified) ? 'group' : 'user') + (selectable ? ' selectable' : '')}
                              onDragEnter={this.dragEnterHandler} onDragEnd={this.dragLeaveHandler}
                              style={{height: `${height}px`, width: `${width}px`}}
                         >
@@ -744,7 +745,7 @@ class Message extends React.Component<IProps, IState> {
                     }
                     break;
             }
-            if ((this.peer && this.peer.getType() === PeerType.PEERGROUP || this.isSimplified) && message.avatar) {
+            if (((this.peer && this.peer.getType() === PeerType.PEERGROUP) || this.isSimplified) && message.avatar) {
                 height += 20;
             }
             if (message.replyto && message.replyto !== 0 && message.deleted_reply !== true) {
@@ -1371,7 +1372,7 @@ class Message extends React.Component<IProps, IState> {
                                    className="_url">{elem.str}</a>);
                         } else {
                             return (
-                                <a key={i} href={url} target="_blank"
+                                <a key={i} href={url} target="_blank" rel="noopener noreferrer"
                                    className="_url">{elem.str}</a>);
                         }
                     default:

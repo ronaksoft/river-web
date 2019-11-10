@@ -7,7 +7,7 @@
     Copyright Ronak Software Group 2018
 */
 
-import * as moment from 'moment-jalaali';
+import moment from 'moment-jalaali';
 // @ts-ignore
 import fa from "moment/locale/fa";
 // @ts-ignore

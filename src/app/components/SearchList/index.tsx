@@ -33,7 +33,7 @@ import {VariableSizeList} from "react-window";
 import IsMobile from "../../services/isMobile";
 import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 
-import './style.css';
+import './style.scss';
 
 interface ISearchItem {
     contact?: IUser;
@@ -70,9 +70,9 @@ const listStyle: React.CSSProperties = {
 
 class SearchList extends React.Component<IProps, IState> {
     private inputPeerRes: IDialogWithContact = {dialogs: [], contacts: []};
-    private list: VariableSizeList;
+    private list: VariableSizeList | undefined;
     private searchRepo: SearchRepo;
-    private defaultInputPeer: IDialogWithContact;
+    private defaultInputPeer: IDialogWithContact = {contacts: [], dialogs: []};
     private readonly searchDebounce: any;
     private readonly userId: string = '';
     private readonly searchApi: any;

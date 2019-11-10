@@ -20,7 +20,7 @@ import {IMessage} from '../../repository/message/interface';
 import {debounce} from 'lodash';
 import i18n from '../../services/i18n';
 
-import './style.css';
+import './style.scss';
 
 const searchLimit: number = 10;
 

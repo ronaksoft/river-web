@@ -17,7 +17,7 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import {omitBy, isNil} from "lodash";
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     onBack: () => void;

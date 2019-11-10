@@ -11,7 +11,7 @@ import * as React from 'react';
 import i18n from "../../services/i18n";
 import {ExpandMoreRounded} from '@material-ui/icons';
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     onClick?: () => void;

@@ -20,7 +20,7 @@ import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 import DownloadManager from '../../services/downloadManager';
 import i18n from '../../services/i18n';
 
-import './style.css';
+import './style.scss';
 
 /* Get human readable size */
 export const getHumanReadableSize = (size: number) => {

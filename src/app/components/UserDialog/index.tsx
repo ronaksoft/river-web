@@ -34,7 +34,7 @@ import Broadcaster from '../../services/broadcaster';
 import i18n from '../../services/i18n';
 import {notifyOptions} from "../../pages/Chat";
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     onClose?: () => void;

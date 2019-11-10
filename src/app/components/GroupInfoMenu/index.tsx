@@ -57,7 +57,7 @@ import Broadcaster from '../../services/broadcaster';
 import {notifyOptions} from '../../pages/Chat';
 import i18n from '../../services/i18n';
 
-import './style.css';
+import './style.scss';
 
 interface IProps {
     peer: InputPeer | null;
@@ -108,7 +108,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     private profileTempPhoto: string = '';
     private circleProgressRef: any = null;
     private fileId: string = '';
-    private cropperRef: AvatarCropper;
+    private cropperRef: AvatarCropper | undefined;
     private documentViewerService: DocumentViewerService;
     private readonly callerId: number = 0;
     private broadcaster: Broadcaster;
@@ -211,7 +211,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                 {group && <div className="info kk-card">
                                     <div className="avatar" onClick={this.avatarMenuAnchorOpenHandler}>
                                         {!uploadingPhoto && <GroupAvatar id={group.id || ''}/>}
-                                        {uploadingPhoto && <img src={this.profileTempPhoto} className="avatar-image"/>}
+                                        {uploadingPhoto && <img src={this.profileTempPhoto} className="avatar-image" alt="avatar"/>}
                                         {hasAuthority(group) &&
                                         <div className={'overlay ' + (uploadingPhoto ? 'show' : '')}>
                                             {!uploadingPhoto && <React.Fragment>

@@ -25,4 +25,5 @@ interface ITempFile {
     modifiedtime?: number;
 }
 
+// @ts-ignore
 export {IFile, ITempFile};

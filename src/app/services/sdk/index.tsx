@@ -99,7 +99,7 @@ export default class SDK {
     private server: Server;
     private connInfo: IConnInfo;
 
-    private clientId: number;
+    private clientId: number = 0;
     private systemInfoCache: any = null;
 
     public constructor() {
@@ -167,7 +167,7 @@ export default class SDK {
     }
 
     public sendCode(phone: string): Promise<AuthSentCode.AsObject> {
-        const data = new AuthSendCode;
+        const data = new AuthSendCode();
         data.setPhone(phone);
         return this.server.send(C_MSG.AuthSendCode, data.serializeBinary(), true);
     }
