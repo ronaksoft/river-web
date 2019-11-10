@@ -1,3 +1,6 @@
+## 0.27.1
+* Copy all added
+
 ## 0.27.0
 * Code refactor
 * ReactScript added (16h+)

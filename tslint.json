@@ -23,7 +23,8 @@
       "./src/app/services/sdk/messages/*.js",
       "./src/app/services/electron/*.ts",
       "bin/*.*",
-      "wasm/*"
+      "wasm/*",
+      "iframe/*"
     ]
   }
 }

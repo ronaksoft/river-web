@@ -285,6 +285,10 @@ class Message extends React.Component<IProps, IState> {
                 cmd: 'copy',
                 title: i18n.t('general.copy'),
             },
+            11: {
+                cmd: 'copy_all',
+                title: i18n.t('general.copy'),
+            },
         };
     }
 
@@ -767,9 +771,9 @@ class Message extends React.Component<IProps, IState> {
             return '';
         }
         const menuTypes = {
-            1: [1, 2, 3, 4, 7, 8, 9, 10],
-            2: [1, 2, 4, 7, 8, 9, 10],
-            3: [6, 5, 9, 10],
+            1: [1, 2, 3, 4, 7, 8, 9, 10, 11],
+            2: [1, 2, 4, 7, 8, 9, 10, 11],
+            3: [6, 5, 9, 10, 11],
         };
         const selection = window.getSelection();
         const hasCopy = Boolean(selection && selection.type === 'Range');
@@ -785,6 +789,10 @@ class Message extends React.Component<IProps, IState> {
                     }
                 } else if (key === 10) {
                     if (hasCopy) {
+                        menuItems.push(this.menuItem[key]);
+                    }
+                } else if (key === 11) {
+                    if (!hasCopy) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else {
@@ -812,6 +820,10 @@ class Message extends React.Component<IProps, IState> {
                     if (hasCopy) {
                         menuItems.push(this.menuItem[key]);
                     }
+                } else if (key === 11) {
+                    if (!hasCopy) {
+                        menuItems.push(this.menuItem[key]);
+                    }
                 } else {
                     menuItems.push(this.menuItem[key]);
                 }
@@ -828,6 +840,10 @@ class Message extends React.Component<IProps, IState> {
                     }
                 } else if (key === 10) {
                     if (hasCopy) {
+                        menuItems.push(this.menuItem[key]);
+                    }
+                } else if (key === 11) {
+                    if (!hasCopy) {
                         menuItems.push(this.menuItem[key]);
                     }
                 } else {
@@ -1030,6 +1046,9 @@ class Message extends React.Component<IProps, IState> {
             this.selectMessage(index)();
         } else if (cmd === 'copy') {
             this.copy();
+        } else if (cmd === 'copy_all' && e) {
+            this.selectAll(e);
+            this.copy();
         }
         this.setState({
             moreAnchorEl: null,
@@ -1138,23 +1157,27 @@ class Message extends React.Component<IProps, IState> {
     private selectText = (e: any) => {
         if (e.detail === 4) {
             e.stopPropagation();
-            const elem = e.currentTarget;
+            this.selectAll(e);
+        }
+    }
+
+    private selectAll(e: any) {
+        const elem = e.currentTarget;
+        // @ts-ignore
+        if (document.selection) { // IE
             // @ts-ignore
-            if (document.selection) { // IE
-                // @ts-ignore
-                const range = document.body.createTextRange();
-                if (range) {
-                    range.moveToElementText(elem);
-                    range.select();
-                }
-            } else if (window.getSelection) {
-                const range = document.createRange();
-                range.selectNode(elem);
-                const selection = window.getSelection();
-                if (selection) {
-                    selection.removeAllRanges();
-                    selection.addRange(range);
-                }
+            const range = document.body.createTextRange();
+            if (range) {
+                range.moveToElementText(elem);
+                range.select();
+            }
+        } else if (window.getSelection) {
+            const range = document.createRange();
+            range.selectNode(elem);
+            const selection = window.getSelection();
+            if (selection) {
+                selection.removeAllRanges();
+                selection.addRange(range);
             }
         }
     }
