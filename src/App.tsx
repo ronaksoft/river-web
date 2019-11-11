@@ -182,14 +182,16 @@ class App extends React.Component<{}, IState> {
                 hasUpdate: true,
                 updateContent: md().render(text),
             });
-        });
-        this.setState({
-            hasUpdate: true,
+        }).catch(() => {
+            this.setState({
+                hasUpdate: true,
+                updateContent: '',
+            });
         });
     }
 
     public onSuccess() {
-       //
+        //
     }
 
     public render() {
