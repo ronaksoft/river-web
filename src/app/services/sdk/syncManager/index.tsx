@@ -283,6 +283,7 @@ export default class SyncManager {
         });
         this.updateUserDB(users, updateUsers);
         this.updateGroupDB(groups);
+        window.console.log('toCheckDialogs', toCheckDialogs);
         this.updateMessageDB(messages, toRemoveMessages).then(() => {
             this.updateDialogDB(dialogs, toRemoveDialogs, toCheckDialogs, lastOne, doneCb);
         }).catch((err) => {
@@ -339,54 +340,56 @@ export default class SyncManager {
         };
 
         const keys = Object.keys(dialogs);
-        if (keys.length > 0) {
-            const data: IDialog[] = [];
-            // TODO: check
-            if (dialogCheck.length > 0) {
-                this.dialogRepo.lazyUpsert(data);
-                this.dialogRepo.flush().then(() => {
-                    const promises: any[] = [];
-                    dialogCheck.forEach((peerId) => {
-                        promises.push(this.messageRepo.getLastMessage(peerId));
-                    });
-                    Promise.all(promises).then((arr) => {
-                        arr.forEach((msg) => {
-                            if (msg) {
-                                const messageTitle = getMessageTitle(msg);
-                                this.updateDialog(dialogs, {
-                                    action_code: msg.messageaction,
-                                    action_data: msg.actiondata,
-                                    force: true,
-                                    last_update: (msg.editedon || 0) > 0 ? msg.editedon : msg.createdon,
-                                    peerid: msg.peerid,
-                                    peertype: msg.peertype,
-                                    preview: messageTitle.text,
-                                    preview_icon: messageTitle.icon,
-                                    preview_me: (this.updateManager.getUserId() === msg.senderid),
-                                    preview_rtl: msg.rtl,
-                                    saved_messages: (this.updateManager.getUserId() === msg.peerid),
-                                    sender_id: msg.senderid,
-                                    topmessageid: msg.id,
-                                });
+        const data: IDialog[] = [];
+        // TODO: check
+        if (dialogCheck.length > 0) {
+            this.dialogRepo.lazyUpsert(data);
+            this.dialogRepo.flush().then(() => {
+                const promises: any[] = [];
+                dialogCheck.forEach((peerId) => {
+                    promises.push(this.messageRepo.getLastMessage(peerId));
+                });
+                Promise.all(promises).then((arr) => {
+                    window.console.log('last messages', arr);
+                    arr.forEach((msg) => {
+                        if (msg) {
+                            const messageTitle = getMessageTitle(msg);
+                            this.updateDialog(dialogs, {
+                                action_code: msg.messageaction,
+                                action_data: msg.actiondata,
+                                force: true,
+                                last_update: (msg.editedon || 0) > 0 ? msg.editedon : msg.createdon,
+                                peerid: msg.peerid,
+                                peertype: msg.peertype,
+                                preview: messageTitle.text,
+                                preview_icon: messageTitle.icon,
+                                preview_me: (this.updateManager.getUserId() === msg.senderid),
+                                preview_rtl: msg.rtl,
+                                saved_messages: (this.updateManager.getUserId() === msg.peerid),
+                                sender_id: msg.senderid,
+                                topmessageid: msg.id,
+                            });
+                            if (keys.indexOf(msg.peerid) === -1) {
+                                keys.push(msg.peerid);
                             }
-                        });
-                        keys.forEach((key) => {
-                            data.push(dialogs[key]);
-                        });
-                        updateDialogs(data);
-                    }).catch(() => {
-                        updateDialogs(data);
+                        }
                     });
+                    keys.forEach((key) => {
+                        data.push(dialogs[key]);
+                    });
+                    updateDialogs(data);
                 }).catch(() => {
-                    this.broadcastEvent('Dialog_Sync_Updated', {ids: keys, counters: lastOne});
-                    doneCb();
+                    updateDialogs(data);
                 });
-            } else {
-                keys.forEach((key) => {
-                    data.push(dialogs[key]);
-                });
-                updateDialogs(data);
-            }
+            }).catch(() => {
+                this.broadcastEvent('Dialog_Sync_Updated', {ids: keys, counters: lastOne});
+                doneCb();
+            });
+        } else if (keys.length > 0) {
+            keys.forEach((key) => {
+                data.push(dialogs[key]);
+            });
+            updateDialogs(data);
         } else {
             this.updateManager.flushLastUpdateId();
             doneCb();
@@ -394,6 +397,7 @@ export default class SyncManager {
     }
 
     private updateMessageDB(messages: { [key: number]: IMessage }, toRemoveMessages: number[]): Promise<any> {
+        window.console.log('#1', messages, toRemoveMessages);
         const promises: any[] = [];
         promises.push(this.messageRepo.removeMany(toRemoveMessages));
         const data: IMessage[] = [];

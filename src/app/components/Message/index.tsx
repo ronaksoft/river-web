@@ -1046,9 +1046,12 @@ class Message extends React.Component<IProps, IState> {
             this.selectMessage(index)();
         } else if (cmd === 'copy') {
             this.copy();
-        } else if (cmd === 'copy_all' && e) {
-            this.selectAll(e);
-            this.copy();
+        } else if (cmd === 'copy_all') {
+            const el = document.querySelector(`.bubble-wrapper .bubble.b_${this.state.items[index].id || 0} .bubble-body .inner`);
+            if (el) {
+                this.selectAll(el);
+                this.copy();
+            }
         }
         this.setState({
             moreAnchorEl: null,
@@ -1157,12 +1160,11 @@ class Message extends React.Component<IProps, IState> {
     private selectText = (e: any) => {
         if (e.detail === 4) {
             e.stopPropagation();
-            this.selectAll(e);
+            this.selectAll(e.currentTarget);
         }
     }
 
-    private selectAll(e: any) {
-        const elem = e.currentTarget;
+    private selectAll(elem: any) {
         // @ts-ignore
         if (document.selection) { // IE
             // @ts-ignore

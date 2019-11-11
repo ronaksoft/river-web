@@ -2900,6 +2900,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.saveFile(message);
                 break;
             case 'copy':
+            case 'copy_all':
                 break;
             default:
                 window.console.debug(cmd, message);

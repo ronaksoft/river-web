@@ -1,3 +1,7 @@
+## 0.27.2
+* A bug fixed in remove message in sync process
+* Copy all bug fixed
+
 ## 0.27.1
 * Copy all added
 
