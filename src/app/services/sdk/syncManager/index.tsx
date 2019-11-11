@@ -369,6 +369,7 @@ export default class SyncManager {
                                 sender_id: msg.senderid,
                                 topmessageid: msg.id,
                             });
+                            // Add new dialogs if omitted
                             if (keys.indexOf(msg.peerid) === -1) {
                                 keys.push(msg.peerid);
                             }
