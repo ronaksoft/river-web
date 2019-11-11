@@ -2,6 +2,7 @@
 * WebWorker bug fixed
 * VoicePlayer bug fixed
 * New changelog for update dialog
+* Debug mode updated
 
 ## 0.27.3
 * Service worker updated
