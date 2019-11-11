@@ -1,3 +1,8 @@
+## 0.27.4
+* WebWorker bug fixed
+* VoicePlayer bug fixed
+* New changelog for update dialog
+
 ## 0.27.3
 * Service worker updated
 * Changelog dialog added

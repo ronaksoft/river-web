@@ -175,13 +175,7 @@ class App extends React.Component<{}, IState> {
     }
 
     public updateDialog() {
-        this.setState({
-            hasUpdate: true,
-        });
-    }
-
-    public onSuccess() {
-        fetch(`/changelog.md${Date.now()}`).then((res) => {
+        fetch(`/changelog.md?${Date.now()}`).then((res) => {
             return res.text();
         }).then((text) => {
             this.setState({
@@ -189,6 +183,13 @@ class App extends React.Component<{}, IState> {
                 updateContent: md().render(text),
             });
         });
+        this.setState({
+            hasUpdate: true,
+        });
+    }
+
+    public onSuccess() {
+       //
     }
 
     public render() {
@@ -231,11 +232,11 @@ class App extends React.Component<{}, IState> {
                         disableBackdropClick={true}
                         disableEscapeKeyDown={true}
                     >
-                        <DialogTitle>{updateContent === '' ? I18n.t('chat.update_dialog.title') : I18n.t('chat.update_dialog.changelog')}</DialogTitle>
+                        <DialogTitle>{I18n.t('chat.update_dialog.title')}</DialogTitle>
                         <DialogContent>
-                            {Boolean(updateContent === '') && <DialogContentText>
+                            <DialogContentText>
                                 {I18n.t('chat.update_dialog.body')}
-                            </DialogContentText>}
+                            </DialogContentText>
                             {Boolean(updateContent !== '') && <DialogContentText>
                                 <div className="markdown-body" dangerouslySetInnerHTML={{__html: updateContent}}/>
                             </DialogContentText>}
@@ -244,10 +245,9 @@ class App extends React.Component<{}, IState> {
                             <Button onClick={this.updateDialogCloseHandler} color="secondary">
                                 {I18n.t('general.cancel')}
                             </Button>
-                            {Boolean(updateContent === '') &&
                             <Button onClick={this.updateDialogAcceptHandler} color="primary" autoFocus={true}>
                                 {I18n.t('chat.update_dialog.update')}
-                            </Button>}
+                            </Button>
                         </DialogActions>
                     </Dialog>
                 </MuiThemeProvider>

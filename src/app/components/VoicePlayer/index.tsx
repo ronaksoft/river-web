@@ -235,10 +235,10 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
                 <div className="play-preview" onMouseDown={this.barMouseDownHandler}
                      onMouseMove={this.barMouseMoveHandler}>
                     <canvas className="canvas-img" ref={this.canvasRefHandler}/>
-                    <img className="base-img" ref={this.playVoiceBarBaseImgRefHandler} draggable={false} alt="bar"/>
+                    <img className="base-img" ref={this.playVoiceBarBaseImgRefHandler} draggable={false} alt=""/>
                     <div ref={this.playVoiceBarRefHandler}
                          className={'play-preview-overlay ' + ((playState === 'seek_pause' || playState === 'seek_play') ? 'no-transition' : '')}>
-                        <img className="top-img" ref={this.playVoiceBarImgRefHandler} draggable={false} alt="bar"/>
+                        <img className="top-img" ref={this.playVoiceBarImgRefHandler} draggable={false} alt=""/>
                     </div>
                 </div>
                 <div className="play-timer" ref={this.timerRefHandler}>00:00</div>
