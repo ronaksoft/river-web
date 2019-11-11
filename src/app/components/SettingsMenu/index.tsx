@@ -164,6 +164,7 @@ interface IState {
     customBackgroundSrc?: string;
     debugModeOpen: boolean;
     debugModeUrl: string;
+    debugModeFileUrl: string;
     debugThrottleInterval: number;
     editProfile: boolean;
     editUsername: boolean;
@@ -234,6 +235,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             bio: '',
             confirmDialogOpen: false,
             confirmDialogSelectedId: '',
+            debugModeFileUrl: localStorage.getItem('river.workspace_url_file') || 'file.river.im',
             debugModeOpen: false,
             debugModeUrl: localStorage.getItem('river.workspace_url') || 'cyrus.river.im',
             debugThrottleInterval: parseInt(localStorage.getItem('river.debug.throttle_interval') || '200', 10),
@@ -1044,6 +1046,15 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                 <TextField
                                     autoFocus={true}
                                     margin="dense"
+                                    label={i18n.t('settings.test_file_url')}
+                                    type="text"
+                                    fullWidth={true}
+                                    value={this.state.debugModeFileUrl}
+                                    onChange={this.debugModeFileUrlChange}
+                                />
+                                <TextField
+                                    autoFocus={true}
+                                    margin="dense"
                                     label={i18n.t('settings.throttle_interval')}
                                     type="text"
                                     fullWidth={true}
@@ -1652,6 +1663,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     /* Debug mode apply handler */
     private debugModeApplyHandler = () => {
         localStorage.setItem('river.workspace_url', this.state.debugModeUrl);
+        localStorage.setItem('river.workspace_url_file', this.state.debugModeFileUrl);
         localStorage.setItem('river.debug.throttle_interval', String(this.state.debugThrottleInterval));
         window.location.reload();
     }
@@ -1660,6 +1672,13 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private debugModeUrlChange = (e: any) => {
         this.setState({
             debugModeUrl: e.currentTarget.value,
+        });
+    }
+
+    /* Debug mode file url change handler */
+    private debugModeFileUrlChange = (e: any) => {
+        this.setState({
+            debugModeFileUrl: e.currentTarget.value,
         });
     }
 
