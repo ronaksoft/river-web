@@ -48,7 +48,6 @@ export default class DialogRepo {
         this.updateManager = UpdateManager.getInstance();
         this.dbService = DB.getInstance();
         this.db = this.dbService.getDB();
-        window.console.log(this.db);
         this.sdk = SDK.getInstance();
         this.messageRepo = MessageRepo.getInstance();
         this.userRepo = UserRepo.getInstance();

@@ -51,6 +51,7 @@
     "jsqr": "^1.2.0",
     "libphonenumber-js": "^1.7.22",
     "lodash": "^4.17.15",
+    "markdown-it": "^10.0.0",
     "material-ui-chip-input": "1.0.0-beta.17",
     "md5-webworker": "^0.0.5",
     "moment": "^2.24.0",

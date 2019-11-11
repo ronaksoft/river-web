@@ -26,8 +26,10 @@ import UniqueId from "./app/services/uniqueId";
 import {C_VERSION} from "./app/components/SettingsMenu";
 import Server from "./app/services/sdk/server";
 import {SnackbarProvider} from 'notistack';
+// @ts-ignore
+import md from 'markdown-it';
 
-import './App.css';
+import './App.scss';
 
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
 if (isProd) {
@@ -55,6 +57,7 @@ interface IState {
     clearingSiteData: boolean;
     errorMessage: string;
     hasUpdate: boolean;
+    updateContent: string;
 }
 
 I18n.init({
@@ -82,6 +85,7 @@ class App extends React.Component<{}, IState> {
             clearingSiteData: false,
             errorMessage: `You are receiving "Auth Error", do you like to clear all site data?`,
             hasUpdate: false,
+            updateContent: '',
         };
 
         this.mainRepo = MainRepo.getInstance();
@@ -176,12 +180,23 @@ class App extends React.Component<{}, IState> {
         });
     }
 
+    public onSuccess() {
+        fetch(`/changelog.md${Date.now()}`).then((res) => {
+            return res.text();
+        }).then((text) => {
+            this.setState({
+                hasUpdate: true,
+                updateContent: md().render(text),
+            });
+        });
+    }
+
     public render() {
-        const {alertOpen, clearingSiteData, errorMessage, hasUpdate} = this.state;
+        const {alertOpen, clearingSiteData, errorMessage, hasUpdate, updateContent} = this.state;
         return (
             <div className={'App' + (this.isElectron ? ' is-electron' : '')}>
                 <MuiThemeProvider theme={theme}>
-                    <SnackbarProvider maxSnack={3} >
+                    <SnackbarProvider maxSnack={3}>
                         {Routes}
                     </SnackbarProvider>
                     <Dialog
@@ -216,19 +231,23 @@ class App extends React.Component<{}, IState> {
                         disableBackdropClick={true}
                         disableEscapeKeyDown={true}
                     >
-                        <DialogTitle>{I18n.t('chat.update_dialog.title')}</DialogTitle>
+                        <DialogTitle>{updateContent === '' ? I18n.t('chat.update_dialog.title') : I18n.t('chat.update_dialog.changelog')}</DialogTitle>
                         <DialogContent>
-                            <DialogContentText>
+                            {Boolean(updateContent === '') && <DialogContentText>
                                 {I18n.t('chat.update_dialog.body')}
-                            </DialogContentText>
+                            </DialogContentText>}
+                            {Boolean(updateContent !== '') && <DialogContentText>
+                                <div className="markdown-body" dangerouslySetInnerHTML={{__html: updateContent}}/>
+                            </DialogContentText>}
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={this.updateDialogCloseHandler} color="secondary">
                                 {I18n.t('general.cancel')}
                             </Button>
+                            {Boolean(updateContent === '') &&
                             <Button onClick={this.updateDialogAcceptHandler} color="primary" autoFocus={true}>
                                 {I18n.t('chat.update_dialog.update')}
-                            </Button>
+                            </Button>}
                         </DialogActions>
                     </Dialog>
                 </MuiThemeProvider>

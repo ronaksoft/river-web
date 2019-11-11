@@ -11,8 +11,10 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import App from './App';
 import {HashRouter} from 'react-router-dom';
+import {unregister} from './registerServiceWorker';
+import * as serviceWorker from "./serviceWorker";
+
 import './index.css';
-import registerServiceWorker from './registerServiceWorker';
 
 let appRef: App;
 const appRefHandler = (ref: any) => {
@@ -33,5 +35,15 @@ const onUpdate = () => {
     }
 };
 
-registerServiceWorker(onUpdate);
+const onSuccess = () => {
+    if (appRef) {
+        appRef.onSuccess();
+    }
+};
+
+unregister();
+serviceWorker.register({
+    onSuccess,
+    onUpdate,
+});
 

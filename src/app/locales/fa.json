@@ -85,7 +85,8 @@
     "update_dialog": {
       "title": "نسخه جدید",
       "body": "نسخه‌ی جدید در دسترس هست",
-      "update": "بروزرسانی"
+      "update": "بروزرسانی",
+      "changelog": "تغییرات"
     }
   },
   "peer_info": {

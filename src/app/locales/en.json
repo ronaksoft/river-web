@@ -86,7 +86,8 @@
     "update_dialog": {
       "title": "New Version",
       "body": "A new version is available",
-      "update": "Update"
+      "update": "Update",
+      "changelog": "Changelog"
     }
   },
   "peer_info": {

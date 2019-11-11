@@ -1,3 +1,7 @@
+## 0.27.3
+* Service worker updated
+* Changelog dialog added
+
 ## 0.27.2
 * A bug fixed in remove message in sync process
 * Copy all bug fixed
