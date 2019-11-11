@@ -17,8 +17,8 @@ http {
     map ${DOLLAR}sent_http_content_type ${DOLLAR}expires {
         default                    off;
         text/html                  epoch;
-        text/css                   max;
-        application/javascript     max;
+        text/css                   epoch;
+        application/javascript     epoch;
         ~image/                    max;
     }
 
