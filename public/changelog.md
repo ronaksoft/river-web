@@ -1,3 +1,6 @@
+## 0.27.6
+* Auto Update bug fixed
+
 ## 0.27.5
 * SKIP_WAITING added in update dialog
 

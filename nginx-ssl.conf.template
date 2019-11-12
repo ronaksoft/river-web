@@ -18,7 +18,7 @@ http {
         default                    off;
         text/html                  epoch;
         text/css                   1M;
-        application/javascript     1M;
+        application/javascript     epoch;
         ~image/                    max;
     }
 

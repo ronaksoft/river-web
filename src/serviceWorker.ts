@@ -102,9 +102,7 @@ function registerValidSW(swUrl: string, config?: IConfig) {
         };
       };
       setInterval(() => {
-        if (config && config.onUpdate) {
-          config.onUpdate(registration);
-        }
+        registration.update();
       }, 900000);
     })
     .catch(error => {
