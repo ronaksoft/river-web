@@ -29,7 +29,10 @@ ReactDOM.render((
     document.getElementById('root') as HTMLElement
 );
 
-const onUpdate = () => {
+const onUpdate = (registration: ServiceWorkerRegistration) => {
+    if (registration.waiting) {
+        registration.waiting.postMessage({type: 'SKIP_WAITING'});
+    }
     if (appRef) {
         appRef.updateDialog();
     }

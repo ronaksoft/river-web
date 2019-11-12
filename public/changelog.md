@@ -1,3 +1,6 @@
+## 0.27.5
+* SKIP_WAITING added in update dialog
+
 ## 0.27.4
 * WebWorker bug fixed
 * VoicePlayer bug fixed
