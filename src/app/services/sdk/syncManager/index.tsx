@@ -283,7 +283,6 @@ export default class SyncManager {
         });
         this.updateUserDB(users, updateUsers);
         this.updateGroupDB(groups);
-        window.console.log('toCheckDialogs', toCheckDialogs);
         this.updateMessageDB(messages, toRemoveMessages).then(() => {
             this.updateDialogDB(dialogs, toRemoveDialogs, toCheckDialogs, lastOne, doneCb);
         }).catch((err) => {
@@ -350,7 +349,6 @@ export default class SyncManager {
                     promises.push(this.messageRepo.getLastMessage(peerId));
                 });
                 Promise.all(promises).then((arr) => {
-                    window.console.log('last messages', arr);
                     arr.forEach((msg) => {
                         if (msg) {
                             const messageTitle = getMessageTitle(msg);
@@ -398,7 +396,6 @@ export default class SyncManager {
     }
 
     private updateMessageDB(messages: { [key: number]: IMessage }, toRemoveMessages: number[]): Promise<any> {
-        window.console.log('#1', messages, toRemoveMessages);
         const promises: any[] = [];
         promises.push(this.messageRepo.removeMany(toRemoveMessages));
         const data: IMessage[] = [];
