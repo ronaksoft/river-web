@@ -39,6 +39,8 @@ import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
 import {hasAuthority} from "../GroupInfoMenu";
 import {findIndex} from "lodash";
+import UserName from "../UserName";
+import TimeUtility from "../../services/utilities/time";
 
 import './style.scss';
 
@@ -432,14 +434,19 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
     private initCaption() {
         const {doc} = this.state;
-        if (!doc || doc.items.length === 0 || (doc.items[0].caption || '').length === 0) {
+        if (!doc || doc.items.length === 0 || ((doc.items[0].caption || '').length === 0 && !doc.items[0].userId)) {
             return '';
         }
         return (
             <div className="document-viewer-caption" onMouseEnter={this.controlMouseEnterHandler}
                  onMouseLeave={this.controlMouseLeaveHandler}>
                 <div className="caption-wrapper">
-                    <div className={'caption ' + (doc.items[0].rtl ? 'rtl' : 'ltr')}>{doc.items[0].caption}</div>
+                    {Boolean((doc.items[0].caption || '').length !== 0) &&
+                    <div className={'caption ' + (doc.items[0].rtl ? 'rtl' : 'ltr')}>{doc.items[0].caption}</div>}
+                    {Boolean(doc.items[0].userId) && <div className="sender-container">
+                        <UserName className="caption-user" id={doc.items[0].userId || ''}/>
+                        <div className="caption-date">{TimeUtility.dynamicDate(doc.items[0].createdon || 0)}</div>
+                    </div>}
                 </div>
             </div>
         );
@@ -759,6 +766,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
             anchor: this.lastAnchorType,
             items: [{
                 caption: info.caption,
+                createdon: message.createdon,
                 downloaded: message.downloaded || false,
                 fileLocation: info.file,
                 fileSize: info.size,
@@ -767,6 +775,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 md5: info.md5,
                 mimeType: info.mimeType,
                 thumbFileLocation: info.thumbFile,
+                userId: message.senderid || '',
                 width: info.width,
             }],
             peerId: message.peerid || '',

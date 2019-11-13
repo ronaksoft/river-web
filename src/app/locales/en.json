@@ -42,7 +42,8 @@
     "no_message": "no message",
     "error": "Error",
     "select": "Select",
-    "copy": "Copy"
+    "copy": "Copy",
+    "from": "From"
   },
   "chat": {
     "search": "Search",

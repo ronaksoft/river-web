@@ -208,12 +208,35 @@
     justify-content: center;
     background: rgba(0, 0, 0, 0.64);
     border-radius: 5px;
-    padding: 16px;
+    padding: 8px;
 
     .caption-wrapper {
       max-width: 100%;
       //min-width: 640px;
       min-height: 20px;
+
+      .sender-container {
+        display: flex;
+        align-content: center;
+        justify-content: center;
+        flex-direction: column;
+        line-height: 1.2em;
+        margin: 0 -2px -3px;
+        font-size: 13px;
+
+        .caption-user {
+          color: var(--white);
+          font-weight: bold;
+          text-align: center;
+        }
+
+        .caption-date {
+          color: var(--white);
+          font-weight: 100;
+          text-align: center;
+          margin-top: 2px;
+        }
+      }
 
       .caption {
         font-size: 14px;
@@ -221,6 +244,7 @@
         color: var(--white);
         white-space: pre-wrap;
         word-break: break-word;
+        margin-bottom: 4px;
 
         &.rtl {
           direction: rtl;

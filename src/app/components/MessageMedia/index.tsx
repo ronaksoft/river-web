@@ -658,6 +658,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
             anchor: 'message',
             items: [{
                 caption: info.caption,
+                createdon: message.createdon,
                 downloaded: message.downloaded || false,
                 fileLocation: info.file,
                 fileSize: info.size,
@@ -667,6 +668,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                 mimeType: info.mimeType,
                 rtl: message.rtl,
                 thumbFileLocation: message.messagetype !== C_MESSAGE_TYPE.Picture ? info.thumbFile : undefined,
+                userId: message.senderid || '',
                 width: info.width,
             }],
             peerId: message.peerid || '',

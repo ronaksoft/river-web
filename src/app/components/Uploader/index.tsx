@@ -567,6 +567,7 @@ class MediaPreview extends React.Component<IProps, IState> {
             case 'image/png':
             case 'image/jpeg':
             case 'image/jpg':
+            case 'image/webp':
                 return 'image';
             case 'video/webm':
             case 'video/mp4':

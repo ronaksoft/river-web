@@ -38,6 +38,7 @@ import './style.scss';
 
 interface IMedia {
     _modified?: boolean;
+    createdon?: number;
     download: boolean;
     id: number;
     info: IMediaInfo;
@@ -327,6 +328,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                 anchor: this.props.full ? 'shared_media_full' : 'shared_media',
                 items: [{
                     caption: item.info.caption,
+                    createdon: 0,
                     downloaded: item.download,
                     fileLocation: item.info.file,
                     fileSize: item.info.size,
@@ -335,6 +337,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                     md5: item.info.md5,
                     mimeType: item.info.mimeType,
                     thumbFileLocation: item.info.thumbFile,
+                    userId: item.userId || '',
                     width: item.info.width,
                 }],
                 peerId: item.peerId || '',
@@ -483,6 +486,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                 item = item as IMessage;
                 items.push({
                     _modified: true,
+                    createdon: item.createdon,
                     download: item.downloaded || false,
                     id: item.id || 0,
                     info: getMediaInfo(item),

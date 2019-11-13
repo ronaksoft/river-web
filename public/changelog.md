@@ -1,3 +1,9 @@
+## 0.27.7
+* Sender and date added in document viewer
+* Uploader: `image/webp` is now supported
+* Typo in utility fixed
+* Translations updated
+
 ## 0.27.6
 * Auto Update bug fixed
 

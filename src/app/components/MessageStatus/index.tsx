@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import TimeUtililty from '../../services/utilities/time';
+import TimeUtility from '../../services/utilities/time';
 import {DoneRounded, DoneAllRounded, ScheduleRounded} from '@material-ui/icons';
 
 import './style.scss';
@@ -61,7 +61,7 @@ class MessageStatus extends React.Component<IProps, IState> {
         return (
             <div className={'message-status'} onClick={this.onClickHandler} onDoubleClick={this.onDoubleClickHandler}>
                 {editedTime > 0 && <span className="edited">edited</span>}
-                <span className="time">{TimeUtililty.TimeParse(time)}</span>
+                <span className="time">{TimeUtility.TimeParse(time)}</span>
                 {this.getStatus(id, readId, status)}
             </div>
         );

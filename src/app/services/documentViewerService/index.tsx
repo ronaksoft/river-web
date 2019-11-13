@@ -24,6 +24,8 @@ interface IDocumentItem {
     rtl?: boolean;
     thumbFileLocation?: InputFileLocation.AsObject;
     width?: number;
+    userId?: string;
+    createdon?: number;
 }
 
 export interface IDocument {

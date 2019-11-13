@@ -1698,7 +1698,7 @@ class ChatInput extends React.Component<IProps, IState> {
         const {mediaInputMode} = this.state;
         switch (mediaInputMode) {
             case 'media':
-                return 'image/png,image/jpeg,image/jpg,image/gif,video/webm,video/mp4';
+                return 'image/png,image/jpeg,image/jpg,image/gif,image/webp,video/webm,video/mp4';
             case 'music':
                 return "audio/mp4,audio/ogg,audio/mp3";
             case 'file':
@@ -1713,6 +1713,7 @@ class ChatInput extends React.Component<IProps, IState> {
             case 'image/jpeg':
             case 'image/jpg':
             case 'image/gif':
+            case 'image/webp':
             case 'video/webm':
             case 'video/mp4':
                 return 'media';

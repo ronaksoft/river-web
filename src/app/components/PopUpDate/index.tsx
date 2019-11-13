@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import TimeUtililty from '../../services/utilities/time';
+import TimeUtility from '../../services/utilities/time';
 
 import './style.scss';
 
@@ -57,7 +57,7 @@ class PopUpDate extends React.PureComponent<IProps, IState> {
         return (
             <div className="pop-up-date-container">
                 <span className={'pop-up-date ' + className + (timestamp ? ' down' : '')}>
-                    {timestamp ? TimeUtililty.dynamicDate(timestamp) : TimeUtililty.dynamicDate(this.lastTimestamp || 0)}
+                    {timestamp ? TimeUtility.dynamicDate(timestamp) : TimeUtility.dynamicDate(this.lastTimestamp || 0)}
                 </span>
             </div>
         );
