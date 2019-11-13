@@ -1368,6 +1368,58 @@ html[theme="dark-blue"] {
   }
 }
 
+html[theme="dark-night"] {
+  .setting-menu {
+    .menu-header {
+      background-color: var(--dark-night-medium);
+      border-color: var(--dark-night-low-op50);
+    }
+
+    .sub-page-header, .sub-page-header-alt {
+      border-color: var(--dark-night-low-op50);
+    }
+
+    .theme-container {
+      .item {
+        background-color: var(--dark-night-low);
+
+        &:after {
+          background: var(--dark-night-accent-medium);
+        }
+
+        &:before {
+          background: var(--dark-night-accent-low);
+        }
+      }
+    }
+
+    .menu-content {
+      .settings-btn {
+        border-color: var(--dark-night-low-op50);
+        color: var(--white);
+      }
+    }
+
+    .info.language-list {
+      .language-item {
+        border-color: var(--dark-night-low-op50);
+      }
+    }
+
+    .kk-card {
+      background-color: var(--dark-night-medium);
+    }
+
+    .session-item {
+      border-color: var(--dark-night-low-op50);
+
+      &.terminate-all {
+        background-color: var(--dark-night-low);
+      }
+    }
+  }
+}
+
 html[theme="dark-blue"] {
   .setting-menu {
     .menu-header {
