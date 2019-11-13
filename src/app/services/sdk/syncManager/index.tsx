@@ -205,9 +205,8 @@ export default class SyncManager {
                     updateMessagesDeleted.messageidsList.forEach((id) => {
                         if (messages.hasOwnProperty(id)) {
                             delete messages[id || 0];
-                        } else {
-                            toRemoveMessages.push(id);
                         }
+                        toRemoveMessages.push(id);
                     });
                     if (updateMessagesDeleted.peer && toCheckDialogs.indexOf(updateMessagesDeleted.peer.id || '') === -1) {
                         toCheckDialogs.push(updateMessagesDeleted.peer.id || '');
