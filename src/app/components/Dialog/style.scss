@@ -249,7 +249,8 @@ html[direction="rtl"] {
   }
 }
 
-html[theme="dark"] {
+html[theme="dark"],
+html[theme="dark-night"]{
   .dialogs {
     .dialog-search {
       label, input, svg {

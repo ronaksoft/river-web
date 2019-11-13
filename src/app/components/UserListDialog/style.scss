@@ -58,7 +58,8 @@
   }
 }
 
-html[theme="dark"] {
+html[theme="dark"],
+html[theme="dark-night"] {
   .user-list-dialog {
     .actions-bar {
       background-color: var(--dark-medium);

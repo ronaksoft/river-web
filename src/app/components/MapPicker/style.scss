@@ -93,7 +93,8 @@
   }
 }
 
-html[theme="dark"] {
+html[theme="dark"],
+html[theme="dark-night"] {
   .map-picker-container {
     background-color: var(--dark-medium);
     .map-picker-details-container {

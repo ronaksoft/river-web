@@ -727,6 +727,7 @@ html[direction="rtl"] {
 }
 
 html[theme="dark"],
+html[theme="dark-night"],
 html[theme="dark-blue"] {
   .chat {
     border-color: var(--dark-low);
@@ -821,6 +822,62 @@ html[theme="dark-blue"] {
 
   .messages-overlay-loading {
     background-color: var(--dark-medium);
+  }
+}
+
+html[theme="dark-night"] {
+  .chat {
+    border-color: var(--dark-night-low);
+  }
+
+  .bubble-wrapper {
+    .bubble {
+      .inner {
+        ._mention, ._hashtag, _url {
+          color: var(--dark-night-mention);
+        }
+      }
+    }
+
+    &.me {
+      .bubble {
+        background-color: var(--dark-night-accent-low);
+      }
+
+      .arrow {
+        &:after {
+          background-color: var(--dark-night-accent-low);
+        }
+      }
+    }
+
+    &.you {
+      .bubble {
+        background-color: var(--dark-night-accent-medium);
+      }
+
+      .arrow {
+        &:after {
+          background-color: var(--dark-night-accent-medium);
+        }
+      }
+    }
+
+    > .date {
+      background-color: rgba(52, 67, 89, 0.5);
+      color: #D1D1D3;
+    }
+  }
+
+  .messages-dropzone {
+    .dropzone {
+      background-color: var(--dark-night-low);
+      color: var(--white);
+    }
+  }
+
+  .messages-overlay-loading {
+    background-color: var(--dark-night-medium);
   }
 }
 

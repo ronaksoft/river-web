@@ -65,7 +65,8 @@
   }
 }
 
-html[theme="dark"] {
+html[theme="dark"],
+html[theme="dark-night"] {
   .about-dialog {
     div[role="document"] {
       > div {

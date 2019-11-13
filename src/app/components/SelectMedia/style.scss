@@ -111,7 +111,8 @@
   }
 }
 
-html[theme="dark"] {
+html[theme="dark"],
+html[theme="dark-night"] {
   .select-media .media-input-frame .media-input-container .media-item {
     background-color: var(--dark-high);
   }

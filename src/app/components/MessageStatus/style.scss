@@ -91,7 +91,8 @@
   }
 }
 
-html[theme="dark"] {
+html[theme="dark"],
+html[theme="dark-night"] {
   .message-status {
     color: var(--grey);
   }

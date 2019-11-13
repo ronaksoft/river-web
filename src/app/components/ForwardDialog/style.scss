@@ -58,7 +58,8 @@
   }
 }
 
-html[theme="dark"] {
+html[theme="dark"],
+html[theme="dark-night"] {
   .forward-dialog {
     .actions-bar {
       background-color: var(--dark-medium);

@@ -386,7 +386,8 @@
   }
 }
 
-html[theme="dark"] {
+html[theme="dark"],
+html[theme="dark-night"] {
   .audio-player-shell {
     background-color: var(--dark-medium);
     &.open {

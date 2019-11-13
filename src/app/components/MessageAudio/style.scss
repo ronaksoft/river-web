@@ -95,7 +95,8 @@
   }
 }
 
-html[theme="dark"] {
+html[theme="dark"],
+html[theme="dark-night"] {
   .message-audio {
     .audio-main {
       .audio-action-wrapper .audio-item-action {

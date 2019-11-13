@@ -54,7 +54,8 @@
   }
 }
 
-html[theme="dark"] {
+html[theme="dark"],
+html[theme="dark-night"] {
   .chat-bottom-bar {
     &:before {
       background-color: var(--dark-low-op50);

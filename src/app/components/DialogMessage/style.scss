@@ -284,7 +284,8 @@ html[direction="rtl"] {
   }
 }
 
-html[theme="dark"] {
+html[theme="dark"],
+html[theme="dark-night"] {
   .dialog-wrapper {
     .name {
       color: var(--light);

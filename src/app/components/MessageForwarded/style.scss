@@ -78,7 +78,8 @@ html[direction="rtl"] {
   }
 }
 
-html[theme="dark"] {
+html[theme="dark"],
+html[theme="dark-night"] {
   .message-forwarded {
     .forwarded-container {
       .forwarded-message-wrapper {

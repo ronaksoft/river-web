@@ -209,7 +209,8 @@ html[direction="rtl"] {
   }
 }
 
-html[theme="dark"] {
+html[theme="dark"],
+html[theme="dark-night"] {
   .storage-usage .storage-item,
   .dialog-info-container .info-item {
     border-color: var(--dark-low-op50);

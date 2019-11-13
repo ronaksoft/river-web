@@ -74,7 +74,8 @@
   }
 }
 
-html[theme="dark"] {
+html[theme="dark"],
+html[theme="dark-night"] {
   .settings-modal {
     div[role="document"] {
       > div {

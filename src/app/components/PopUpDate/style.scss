@@ -53,7 +53,8 @@ html[direction="rtl"] {
   }
 }
 
-html[theme="dark"] {
+html[theme="dark"],
+html[theme="dark-night"] {
   .pop-up-date-container {
     .pop-up-date {
       background-color: rgba(24, 24, 24, 0.5);

@@ -68,7 +68,8 @@
   }
 }
 
-html[theme="dark"] {
+html[theme="dark"],
+html[theme="dark-night"] {
   .pop-up-new-message-container {
     .pop-up-new-message {
       background-color: var(--dark-high);

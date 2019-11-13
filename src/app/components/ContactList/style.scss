@@ -222,7 +222,8 @@ html[direction="rtl"] {
   }
 }
 
-html[theme="dark"] {
+html[theme="dark"],
+html[theme="dark-night"] {
   .contact-list {
     .contact-input-container {
       color: var(--white);

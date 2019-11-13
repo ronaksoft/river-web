@@ -63,7 +63,8 @@
   }
 }
 
-html[theme="dark"] {
+html[theme="dark"],
+html[theme="dark-night"] {
   .search-message {
     background-color: var(--dark-medium);
     .search-box {

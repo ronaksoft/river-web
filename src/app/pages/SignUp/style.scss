@@ -500,7 +500,8 @@ html[direction="rtl"] {
   }
 }
 
-html[theme="dark"] {
+html[theme="dark"],
+html[theme="dark-night"] {
   .login-page-container {
     background-color: var(--dark-low);
 

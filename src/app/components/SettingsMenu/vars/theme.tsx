@@ -178,6 +178,9 @@ export const themes = [{
     id: 'light',
     title: 'settings.light'
 }, {
+    id: 'dark-night',
+    title: 'settings.dark_night'
+}, {
     id: 'dark',
     title: 'settings.dark'
 }, {

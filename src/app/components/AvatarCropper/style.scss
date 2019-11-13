@@ -81,7 +81,8 @@
   }
 }
 
-html[theme="dark"]{
+html[theme="dark"],
+html[theme="dark-night"] {
   .avatar-cropper-dialog {
     .avatar-cropper-footer {
       background-color: var(--dark-medium);

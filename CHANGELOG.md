@@ -1,3 +1,6 @@
+## 0.27.8
+* Dark Night theme added
+
 ## 0.27.7
 * Sender and date added in document viewer
 * Uploader: `image/webp` is now supported
