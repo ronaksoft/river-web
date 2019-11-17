@@ -1,16 +1,22 @@
-import {VariableSizeList as List} from "react-window";
 import ResizeObserver from "resize-observer-polyfill";
 import {debounce} from 'lodash';
 
+interface IFragment {
+    height: number;
+    ref: any;
+}
+
 export class CellMeasurer {
-    private list: List | undefined;
-    private heightCache: { [key: number]: number } = {};
+    private fragmentList: { [key: string]: IFragment } = {};
+    private newList: { [key: string]: boolean } = {};
+    private offsetList: number[] = [];
     private updateFn: any = null;
+    private rowCount: number = 0;
     private readonly keyMapperFn: any;
     private readonly updateList: any;
     private readonly estimatedItemSize: number = 40;
 
-    public constructor({estimatedItemSize, keyMapper}: { estimatedItemSize: number, keyMapper: (index: number) => string }) {
+    public constructor({estimatedItemSize, rowCount, defaultHeight, keyMapper}: { estimatedItemSize: number, rowCount: number, defaultHeight?: number, keyMapper: (index: number) => string }) {
         this.updateList = debounce(this.updateListHandler, 1);
         if (keyMapper) {
             this.keyMapperFn = keyMapper;
@@ -20,23 +26,28 @@ export class CellMeasurer {
         if (estimatedItemSize) {
             this.estimatedItemSize = estimatedItemSize;
         }
+        if (rowCount) {
+            this.rowCount = rowCount;
+        }
     }
 
     public setUpdateFn(fn: any) {
         this.updateFn = fn;
     }
 
-    public setRef = (ref: List) => {
-        this.list = ref;
-    }
-
     public cellRefHandler = (index: number) => (ref: any) => {
-        if (this.heightCache.hasOwnProperty(index)) {
+        // window.console.log(index);
+        if (this.fragmentList.hasOwnProperty(this.keyMapperFn(index))) {
             return;
         }
         if (!ref) {
             return;
         }
+        if (!ref.firstElementChild) {
+            return;
+        }
+        this.newList[this.keyMapperFn(index)] = true;
+        let resizeObserver: ResizeObserver;
         const handleResize = () => {
             if (!ref) {
                 return;
@@ -45,40 +56,73 @@ export class CellMeasurer {
                 return;
             }
             const rect = ref.firstElementChild.getBoundingClientRect();
-            this.heightCache[this.keyMapperFn(index)] = rect.height;
-            resizeObserver.disconnect();
+            this.fragmentList[this.keyMapperFn(index)] = {
+                height: rect.height,
+                ref,
+            };
+            ref.style.height = `${rect.height}px`;
             this.updateList();
+            setTimeout(() => {
+                if (resizeObserver) {
+                    resizeObserver.disconnect();
+                }
+            }, 1000);
         };
-        const resizeObserver = new ResizeObserver(handleResize);
-        resizeObserver.observe(ref);
+        resizeObserver = new ResizeObserver(handleResize);
+        resizeObserver.observe(ref.firstElementChild);
         return;
     }
 
     public getHeight = (index: number) => {
-        const height = this.heightCache[this.keyMapperFn(index)];
-        if (height) {
-            return height;
+        const fragment = this.fragmentList[this.keyMapperFn(index)];
+        if (fragment) {
+            return fragment.height;
         }
         return this.estimatedItemSize;
     }
 
     public clear(index: number) {
-        delete this.heightCache[this.keyMapperFn(index)];
-        if (this.list) {
-            this.list.resetAfterIndex(0, true);
-        }
+        delete this.fragmentList[this.keyMapperFn(index)];
     }
 
     public clearAll() {
-        this.heightCache = {};
-        if (this.list) {
-            this.list.resetAfterIndex(0, true);
+        this.fragmentList = {};
+    }
+
+    public getAllHeight() {
+        return this.fragmentList;
+    }
+
+    public getAllOffset() {
+        return this.offsetList;
+    }
+
+    public setRowCount(count: number) {
+        this.rowCount = count;
+    }
+
+    public hasCache(index: number) {
+        return this.fragmentList.hasOwnProperty(this.keyMapperFn(index));
+    }
+
+    public isNew(index: number) {
+        const key = this.keyMapperFn(index);
+        const is = this.newList.hasOwnProperty(key);
+        if (is) {
+            delete this.newList[key];
         }
+        return is;
     }
 
     private updateListHandler = () => {
-        if (this.list) {
-            this.list.resetAfterIndex(0, true);
+        for (let i = 0; i < this.rowCount; i++) {
+            const fragment = this.fragmentList[this.keyMapperFn(i)];
+            const height = fragment ? fragment.height : this.estimatedItemSize;
+            if (i === 0) {
+                this.offsetList[i] = height;
+            } else {
+                this.offsetList[i] = this.offsetList[i - 1] + height;
+            }
         }
         if (this.updateFn) {
             this.updateFn();

@@ -34,6 +34,7 @@ import {OptionsObject, withSnackbar} from 'notistack';
 
 import './tel-input.css';
 import './style.scss';
+import ElectronService from "../../services/electron";
 
 
 const C_CLIENT = `Web:- ${window.navigator.userAgent}`;
@@ -87,7 +88,7 @@ class SignUp extends React.Component<IProps, IState> {
             }
         }
 
-        if (props.match.params.mode === 'workspace') {
+        if (props.match.params.mode === 'workspace' && ElectronService.isElectron()) {
             step = 'workspace';
         }
 
@@ -108,7 +109,7 @@ class SignUp extends React.Component<IProps, IState> {
             sendToPhone: false,
             step,
             tries: 0,
-            workspace: '',
+            workspace: 'cyrus.river.im',
             workspaceError: '',
             workspaceInfo: {},
         };
@@ -214,7 +215,7 @@ class SignUp extends React.Component<IProps, IState> {
                                               autoHideDialCode={false} onPhoneNumberChange={this.handleOnChange}
                                               onKeyDown={this.sendCodeKeyDown} nationalMode={false}
                                               fieldId="input-phone"/>
-                                {step === 'phone' &&
+                                {Boolean(step === 'phone' && ElectronService.isElectron() && false) &&
                                 <div className="grey-link">
                                     <span
                                         onClick={this.changeWorkspaceHandler}>{i18n.t('sign_up.change_workspace')}</span>

@@ -1,103 +1,21 @@
-/*
-    Creation Time: 2018 - Oct - 05
-    Created by:  (hamidrezakk)
-    Maintainers:
-       1.  HamidrezaKK (hamidrezakks@gmail.com)
-    Auditor: HamidrezaKK
-    Copyright Ronak Software Group 2018
-*/
-@import '../../../style/mixin';
-@import '../../../style/common';
-
-.loading-page {
-  position: relative;
-  height: 100vh;
-  width: 100vw;
+.fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  z-index: 100;
+  background-color: #ff9e30;
   display: flex;
-  justify-content: center;
   align-items: center;
-  background-color: #eaeaea;
-  background-image: url('../../../asset/image/pattern.png');
-  background-size: 200px;
-  background-position: center center;
-  overflow: hidden;
-  z-index: 1;
-
-  .close-btn {
-    position: fixed;
-    top: 8px;
-    left: 8px;
-
-    button {
-      padding: 6px;
-
-      svg {
-        font-size: 28px;
-        color: var(--white);
-      }
-    }
-  }
-
-  .loading-area {
-    position: relative;
-    display: flex;
-    height: 600px;
-    width: 600px;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    .loading-text {
-      @include font;
-      font-size: 20px;
-      line-height: 37px;
-      font-weight: bold;
-      color: #2E2E2E;
-      padding: 12px 0;
-
-      .info {
-        font-size: 24px;
-        line-height: 28px;
-        font-weight: 100;
-        white-space: nowrap;
-      }
-    }
-
-    .loading-link {
-      padding: 72px 0 12px;
-
-      a {
-        text-decoration: none;
-        text-transform: none;
-        color: #fff;
-        background-color: #198D4A;
-        font-size: 16px;
-        line-height: 24px;
-        padding: 12px 24px;
-        border-radius: 24px;
-      }
-    }
-  }
+  justify-content: center;
 }
 
-@media screen and (max-width: 600px) {
-  .loading-page {
-    .loading-area {
-      height: 400px;
-      width: 300px;
+.chat-container {
+  width: 100%;
+  height: 100vh;
 
-      .loading-text {
-        font-size: 15px;
-        line-height: 30px;
-
-        .info {
-          font-size: 13px;
-        }
-      }
-
-      .loading-link {
-        padding: 24px 0 12px;
-      }
-    }
+  .scroll-view {
+    overflow: scroll;
   }
 }

@@ -1,3 +1,6 @@
+## 0.27.9
+* Workspace removed from river.im
+
 ## 0.27.8
 * Dark Night theme added
 

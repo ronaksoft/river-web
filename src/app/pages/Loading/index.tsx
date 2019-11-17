@@ -14,6 +14,7 @@ import IconButton from "@material-ui/core/IconButton";
 import {CloseRounded} from "@material-ui/icons";
 import IframeService, {C_IFRAME_SUBJECT} from "../../services/iframe";
 import {Link} from "react-router-dom";
+import ElectronService from "../../services/electron";
 
 import './style.scss';
 
@@ -134,9 +135,9 @@ class Loading extends React.Component<IProps, IState> {
                         {msg === '' && <span className="info">It might take up to 60 seconds!</span>}
                         {msg !== '' && <span className="info">{msg}</span>}
                     </div>
-                    <div className="loading-link">
+                    {Boolean(ElectronService.isElectron() && false) && <div className="loading-link">
                         <Link to={'/signup/workspace'}>Change Workspace</Link>
-                    </div>
+                    </div>}
                 </div>
             </div>
         );
