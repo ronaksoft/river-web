@@ -1,3 +1,6 @@
+## 0.27.11
+* Pre-Cache optimized
+
 ## 0.27.10
 * Dialog duplicate fixed
 

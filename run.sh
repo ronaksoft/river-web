@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+node manifest-aid.js
 chown -R nginx:nginx /ronak/app
 chown -R nginx:nginx /var/lib/nginx
 

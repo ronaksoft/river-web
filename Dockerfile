@@ -11,6 +11,7 @@ EXPOSE 80
 EXPOSE 443
 
 COPY ./run.sh .
+COPY ./manifest-aid.js .
 RUN chmod +x run.sh
 CMD  /bin/sh run.sh
 

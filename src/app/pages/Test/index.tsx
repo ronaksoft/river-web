@@ -10,11 +10,12 @@
 import * as React from 'react';
 import {random, range} from 'lodash';
 import {CellMeasurer} from "./utils";
+import Fragment from "./fragment";
+import AutoSizer from "react-virtualized-auto-sizer";
 // @ts-ignore
 import pic from "../../../asset/image/about/river.png";
 
 import './style.scss';
-import AutoSizer from "react-virtualized-auto-sizer";
 
 interface IProps {
     match?: any;
@@ -45,10 +46,7 @@ const loremIpsumSplit = loremIpsum.split(" ");
 class Test extends React.Component<IProps, IState> {
     private cellMeasurer: CellMeasurer;
     private index: number = 0;
-    private start: number = 0;
-    private end: number = 50;
-    private lastStart: number = 0;
-    private lastEnd: number = 50;
+    private containerRef: any = undefined;
 
     constructor(props: IProps) {
         super(props);
@@ -90,14 +88,12 @@ class Test extends React.Component<IProps, IState> {
                 <div className="chat-container">
                     <AutoSizer>
                         {({width, height}: any) => (
-                            <div className="scroll-view" style={{width: `${width}px`, height: `${height}px`}}
+                            <div ref={this.containerRefHandler} className="scroll-view"
+                                 style={{width: `${width}px`, height: `${height}px`}}
                                  onScroll={this.scrollHandler(height)}>
                                 {items.map((item, index) => {
-                                    return (<div key={item.id} ref={this.cellMeasurer.cellRefHandler(index)}
-                                    >
-                                        <div>
-                                            {this.isActive(index) && <div>{item.body}</div>}
-                                        </div>
+                                    return (<div key={item.id} ref={this.cellMeasurer.cellRefHandler(index)}>
+                                        <Fragment visFn={this.cellMeasurer.visibleHandler(index)} body={item.body}/>
                                     </div>);
                                 })}
                             </div>
@@ -161,42 +157,18 @@ class Test extends React.Component<IProps, IState> {
     }
 
     private updateFnHandler = () => {
-        //
+        if (this.containerRef) {
+            window.console.log(this.containerRef.scrollHeight, this.containerRef.clientHeight);
+            this.containerRef.scrollTop = this.containerRef.scrollHeight - this.containerRef.clientHeight;
+        }
     }
 
     private scrollHandler = (height: number) => (e: any) => {
-        const offsets = this.cellMeasurer.getAllOffset();
-        let start = 0;
-        let end = offsets.length - 1;
-        for (let i = 0; i < offsets.length; i++) {
-            if (offsets[i] > e.target.scrollTop) {
-                start = i;
-                break;
-            }
-        }
-        for (let i = start; i < offsets.length; i++) {
-            if (offsets[i] > e.target.scrollTop + height) {
-                end = i;
-                break;
-            }
-        }
-        this.start = start;
-        this.end = end;
-        if (Math.abs(this.start - this.lastStart) > 7 || Math.abs(this.end - this.lastEnd) > 7) {
-            this.lastStart = this.start;
-            this.lastEnd = this.end;
-            this.forceUpdate();
-        }
-        window.console.log(start, end);
+        this.cellMeasurer.scrollHandler(height, e.target.scrollTop);
     }
 
-    private isActive(index: number) {
-        if (!this.cellMeasurer.isNew(index)) {
-            return true;
-        }
-        const offset = 10;
-        const active = (this.start - offset <= index && index <= this.end + offset);
-        return active;
+    private containerRefHandler = (ref: any) => {
+        this.containerRef = ref;
     }
 }
 

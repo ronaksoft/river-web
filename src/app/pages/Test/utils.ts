@@ -3,7 +3,8 @@ import {debounce} from 'lodash';
 
 interface IFragment {
     height: number;
-    ref: any;
+    visible: boolean;
+    setVisible?: (visible: boolean) => void;
 }
 
 export class CellMeasurer {
@@ -12,6 +13,12 @@ export class CellMeasurer {
     private offsetList: number[] = [];
     private updateFn: any = null;
     private rowCount: number = 0;
+    private start: number = 0;
+    private end: number = 50;
+    private lastStart: number = 0;
+    private lastEnd: number = 50;
+    private offset: number = 10;
+    private updateHysteresis: number = 3;
     private readonly keyMapperFn: any;
     private readonly updateList: any;
     private readonly estimatedItemSize: number = 40;
@@ -36,8 +43,8 @@ export class CellMeasurer {
     }
 
     public cellRefHandler = (index: number) => (ref: any) => {
-        // window.console.log(index);
-        if (this.fragmentList.hasOwnProperty(this.keyMapperFn(index))) {
+        const key = this.keyMapperFn(index);
+        if (this.fragmentList.hasOwnProperty(key) && this.fragmentList[key].height !== -1) {
             return;
         }
         if (!ref) {
@@ -46,7 +53,7 @@ export class CellMeasurer {
         if (!ref.firstElementChild) {
             return;
         }
-        this.newList[this.keyMapperFn(index)] = true;
+        this.newList[key] = true;
         let resizeObserver: ResizeObserver;
         const handleResize = () => {
             if (!ref) {
@@ -56,10 +63,16 @@ export class CellMeasurer {
                 return;
             }
             const rect = ref.firstElementChild.getBoundingClientRect();
-            this.fragmentList[this.keyMapperFn(index)] = {
-                height: rect.height,
-                ref,
-            };
+            if (!this.fragmentList.hasOwnProperty(key)) {
+                this.fragmentList[key] = {
+                    height: rect.height,
+                    setVisible: undefined,
+                    visible: true,
+                };
+            } else {
+                this.fragmentList[key].height = rect.height;
+                this.fragmentList[key].visible = true;
+            }
             ref.style.height = `${rect.height}px`;
             this.updateList();
             setTimeout(() => {
@@ -114,6 +127,57 @@ export class CellMeasurer {
         return is;
     }
 
+    public visibleHandler = (index: number) => (setVisible: any) => {
+        const key = this.keyMapperFn(index);
+        if (this.fragmentList.hasOwnProperty(key)) {
+            this.fragmentList[key].setVisible = setVisible;
+        } else {
+            this.fragmentList[key] = {
+                height: -1,
+                setVisible,
+                visible: false,
+            };
+        }
+    }
+
+    public scrollHandler = (height: number, scrollTop: number) => {
+        let start = 0;
+        let end = this.offsetList.length - 1;
+        for (let i = 0; i < this.offsetList.length; i++) {
+            if (this.offsetList[i] > scrollTop) {
+                start = i;
+                break;
+            }
+        }
+        for (let i = start; i < this.offsetList.length; i++) {
+            if (this.offsetList[i] > scrollTop + height) {
+                end = i;
+                break;
+            }
+        }
+        this.start = start;
+        this.end = end;
+        this.setVisibleList();
+    }
+
+    private setVisibleList() {
+        if (Math.abs(this.start - this.lastStart) > this.updateHysteresis || Math.abs(this.end - this.lastEnd) > this.updateHysteresis) {
+            this.lastStart = this.start;
+            this.lastEnd = this.end;
+            for (let i = 0; i < this.offsetList.length; i++) {
+                const key = this.keyMapperFn(i);
+                if (this.fragmentList.hasOwnProperty(key)) {
+                    const visible = (this.start - this.offset <= i && i <= this.end + this.offset);
+                    this.fragmentList[key].visible = visible;
+                    if (this.fragmentList[key].setVisible) {
+                        // @ts-ignore
+                        this.fragmentList[key].setVisible(visible);
+                    }
+                }
+            }
+        }
+    }
+
     private updateListHandler = () => {
         for (let i = 0; i < this.rowCount; i++) {
             const fragment = this.fragmentList[this.keyMapperFn(i)];
@@ -124,6 +188,7 @@ export class CellMeasurer {
                 this.offsetList[i] = this.offsetList[i - 1] + height;
             }
         }
+        this.setVisibleList();
         if (this.updateFn) {
             this.updateFn();
         }

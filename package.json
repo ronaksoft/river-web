@@ -107,6 +107,7 @@
     "electron": "^7.1.1",
     "electron-builder": "^21.2.0",
     "electron-devtools-installer": "^2.2.4",
+    "glob": "^7.1.6",
     "grpc": "^1.12.4",
     "node-gyp": "^4.0.0",
     "node-pre-gyp": "^0.13.0",
