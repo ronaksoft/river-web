@@ -2,8 +2,9 @@ const glob = require('glob');
 const fs = require('fs');
 const crypto = require('crypto');
 
-const buildDir = '/ronak/app';
-glob(`${buildDir}/precache-manifest.*.js`, {}, function (er, files) {
+const buildDir = process.argv[2];
+
+glob(`${buildDir}precache-manifest.*.js`, {}, function (er, files) {
     if (files.length === 1) {
         const file = files[0];
         fs.readFile(file, 'utf8', function (err, data) {
@@ -13,7 +14,7 @@ glob(`${buildDir}/precache-manifest.*.js`, {}, function (er, files) {
                 const last = splits.pop();
                 const json = `[${splits.join('')}]`;
                 const manifestList = JSON.parse(json);
-                const dirList = [`${buildDir}/bin/*.*`, `${buildDir}/recorder/*.*`];
+                const dirList = [`${buildDir}bin/*.*`, `${buildDir}recorder/*.*`];
                 const maniList = [];
                 dirList.forEach((list) => {
                     glob(list, {}, function (innerErr, innerFiles) {
