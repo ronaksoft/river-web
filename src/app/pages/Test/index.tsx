@@ -113,7 +113,7 @@ class Test extends React.Component<IProps, IState> {
                     {loremIpsumSplit.slice(0, rand).join(" ")}
                     {range(random(4)).map((tt) => {
                         const rnd = random(loremIpsumSplit.length);
-                        return (<img key={tt} src={pic} height={rnd}/>);
+                        return (<img key={tt} src={pic} height={rnd} alt=""/>);
                     })}
                 </div>,
                 id: this.index,
