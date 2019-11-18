@@ -109,6 +109,7 @@ export default class DialogRepo {
             // @ts-ignore
             this.getManyForSnapshot({skip, limit}).then((remoteRes) => {
                 dialogs.push.apply(dialogs, remoteRes.dialogs);
+                dialogs = uniqBy(dialogs, 'peerid');
                 if (remoteRes.dialogs.length === limit) {
                     skip += limit;
                     return getDialogs({limit, skip, resolve, reject, dialogs});

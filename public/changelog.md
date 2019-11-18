@@ -1,3 +1,6 @@
+## 0.27.10
+* Dialog duplicate fixed
+
 ## 0.27.9
 * Workspace removed from river.im
 
