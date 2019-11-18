@@ -20,10 +20,10 @@ glob(`${buildDir}precache-manifest.*.js`, {}, function (er, files) {
                     glob(list, {}, function (innerErr, innerFiles) {
                         if (!innerErr) {
                             innerFiles.forEach((innerFile) => {
-                                const d = innerFile.replace('/builds', '');
+                                const d = innerFile.replace(buildDir, '');
                                 maniList.push({
                                     'revision': crypto.createHash('sha').update(fs.readFileSync(innerFile, 'utf8')).digest('hex'),
-                                    'url': d
+                                    'url': `/${d}`
                                 });
                             });
                             dirList.shift();
