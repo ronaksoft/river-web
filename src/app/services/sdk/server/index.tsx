@@ -238,7 +238,11 @@ export default class Server {
                 const resData = res.toObject();
                 if (this.checkRetry(reqId, resData)) {
                     if (this.messageListeners[reqId].reject) {
-                        if (resData.code === C_ERR.ErrCodeInternal && resData.items === C_ERR_ITEM.ErrItemUserID) {
+                        let isLogout = false;
+                        if (this.messageListeners[reqId] && this.messageListeners[reqId].request && this.messageListeners[reqId].request.constructor !== C_MSG.AuthLogout) {
+                            isLogout = true;
+                        }
+                        if (resData.code === C_ERR.ErrCodeUnavailable && resData.items === C_ERR_ITEM.ErrItemUserID && !isLogout) {
                             this.updateManager.forceLogOut();
                         } else {
                             this.messageListeners[reqId].reject(resData);

@@ -1,5 +1,5 @@
 // create a ref to get the `div` element the `VariableSizeList` uses
-import {useState} from "react";
+import React, {useState} from "react";
 
 export default function Fragment({body, visFn}: { body: any, visFn: any }) {
     const [visible, setVisible] = useState<boolean>(true);
@@ -15,8 +15,8 @@ export default function Fragment({body, visFn}: { body: any, visFn: any }) {
     }
 
     if (visible) {
-        return (body);
+        return (<div>{body}</div>);
     } else {
-        return '';
+        return <></>;
     }
 }

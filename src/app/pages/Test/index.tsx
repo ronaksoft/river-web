@@ -9,13 +9,13 @@
 
 import * as React from 'react';
 import {random, range} from 'lodash';
-import {CellMeasurer} from "./utils";
-import Fragment from "./fragment";
 import AutoSizer from "react-virtualized-auto-sizer";
 // @ts-ignore
 import pic from "../../../asset/image/about/river.png";
 
 import './style.scss';
+import KKWindow from "../../services/kkwindow/kkwindow";
+import {scrollFunc} from "../../services/kkwindow/utils";
 
 interface IProps {
     match?: any;
@@ -44,9 +44,9 @@ const loremIpsum = `
 const loremIpsumSplit = loremIpsum.split(" ");
 
 class Test extends React.Component<IProps, IState> {
-    private cellMeasurer: CellMeasurer;
     private index: number = 0;
-    private containerRef: any = undefined;
+    private kkWindowRef: KKWindow | undefined;
+    private containerRef: any | undefined;
 
     constructor(props: IProps) {
         super(props);
@@ -55,14 +55,6 @@ class Test extends React.Component<IProps, IState> {
             items: [],
             test: true,
         };
-
-        this.cellMeasurer = new CellMeasurer({
-            estimatedItemSize: 41,
-            keyMapper: this.keyMapper,
-            rowCount: 50,
-        });
-
-        this.cellMeasurer.setUpdateFn(this.updateFnHandler);
     }
 
     public componentDidMount() {
@@ -88,14 +80,19 @@ class Test extends React.Component<IProps, IState> {
                 <div className="chat-container">
                     <AutoSizer>
                         {({width, height}: any) => (
-                            <div ref={this.containerRefHandler} className="scroll-view"
-                                 style={{width: `${width}px`, height: `${height}px`}}
-                                 onScroll={this.scrollHandler(height)}>
-                                {items.map((item, index) => {
-                                    return (<div key={item.id} ref={this.cellMeasurer.cellRefHandler(index)}>
-                                        <Fragment visFn={this.cellMeasurer.visibleHandler(index)} body={item.body}/>
-                                    </div>);
-                                })}
+                            <div style={{width: `${width}px`}}>
+                                <KKWindow
+                                    ref={this.kkWindowRefHandler}
+                                    height={height}
+                                    width={width}
+                                    count={items.length}
+                                    renderer={this.renderer}
+                                    onUpdate={this.updateFnHandler}
+                                    onScrollPos={this.scrollPosHandler}
+                                    onScrollUpdatePos={this.scrollPosUpdateHandler}
+                                    keyMapper={this.keyMapper}
+                                    containerRef={this.containerRefHandler}
+                                />
                             </div>
                         )}
                     </AutoSizer>
@@ -109,7 +106,7 @@ class Test extends React.Component<IProps, IState> {
             const rand = random(loremIpsumSplit.length);
             this.index++;
             return ({
-                body: <div key={key} style={{border: '1px solid #333'}}>
+                body: <div key={key} style={{border: '1px solid #333'}} onClick={this.clickHandler(this.index - 1)}>
                     {loremIpsumSplit.slice(0, rand).join(" ")}
                     {range(random(4)).map((tt) => {
                         const rnd = random(loremIpsumSplit.length);
@@ -121,11 +118,14 @@ class Test extends React.Component<IProps, IState> {
         });
     }
 
+    private renderer = (index: number) => {
+        const {items} = this.state;
+        return items[index].body;
+    }
+
     private prependHandler = () => {
         const {items} = this.state;
         items.unshift.apply(items, this.getItems(30));
-        this.cellMeasurer.setRowCount(items.length);
-        window.console.log(items);
         this.setState({
             items,
         });
@@ -134,7 +134,6 @@ class Test extends React.Component<IProps, IState> {
     private appendHandler = () => {
         const {items} = this.state;
         items.push.apply(items, this.getItems(30));
-        this.cellMeasurer.setRowCount(items.length);
         this.setState({
             items,
         });
@@ -144,7 +143,9 @@ class Test extends React.Component<IProps, IState> {
         const {items} = this.state;
         if (items.length > 0) {
             items[items.length - 1].body = '43344';
-            this.cellMeasurer.clear(items.length - 1);
+            if (this.kkWindowRef) {
+                this.kkWindowRef.cellMeasurer.clear(items.length - 1);
+            }
             this.setState({
                 items,
             });
@@ -158,17 +159,43 @@ class Test extends React.Component<IProps, IState> {
 
     private updateFnHandler = () => {
         if (this.containerRef) {
-            window.console.log(this.containerRef.scrollHeight, this.containerRef.clientHeight);
-            this.containerRef.scrollTop = this.containerRef.scrollHeight - this.containerRef.clientHeight;
+            window.console.log('updateFnHandler');
+        }
+        if (this.kkWindowRef) {
+            this.kkWindowRef.setScrollMode('none');
         }
     }
 
-    private scrollHandler = (height: number) => (e: any) => {
-        this.cellMeasurer.scrollHandler(height, e.target.scrollTop);
+    private kkWindowRefHandler = (ref: any) => {
+        this.kkWindowRef = ref;
     }
 
     private containerRefHandler = (ref: any) => {
         this.containerRef = ref;
+    }
+
+    private clickHandler = (index: number) => (e: any) => {
+        const {items} = this.state;
+        if (items.length > 0) {
+            // items[index].body = '43344';
+            // if (this.kkWindowRef) {
+            //     this.kkWindowRef.cellMeasurer.clear(index);
+            // }
+            // this.setState({
+            //     items,
+            // });
+            if (this.kkWindowRef) {
+                this.kkWindowRef.scrollToItem(index);
+            }
+        }
+    }
+
+    private scrollPosHandler: scrollFunc = ({start, end, overscanStart, overscanEnd}) => {
+        window.console.log(overscanStart, start, end, overscanEnd);
+    }
+
+    private scrollPosUpdateHandler: scrollFunc = ({start, end, overscanStart, overscanEnd}) => {
+        window.console.warn(overscanStart, start, end, overscanEnd);
     }
 }
 
