@@ -58,7 +58,7 @@ class Test extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        const items = this.getItems(50);
+        const items = this.getItems(2);
         this.setState({
             items,
         });
@@ -73,40 +73,44 @@ class Test extends React.Component<IProps, IState> {
         return (
             <div>
                 <div className="fixed">
-                    <button onClick={this.prependHandler}>prepend</button>
+                    <button onClick={this.prependHandler(true)}>prepend</button>
                     <button onClick={this.appendHandler}>append</button>
-                    <button onClick={this.updateHandler}>update</button>
+                    <button onClick={this.checkHandler}>check</button>
                 </div>
                 <div className="chat-container">
-                    <AutoSizer>
-                        {({width, height}: any) => (
-                            <div style={{width: `${width}px`}}>
-                                <KKWindow
-                                    ref={this.kkWindowRefHandler}
-                                    height={height}
-                                    width={width}
-                                    count={items.length}
-                                    renderer={this.renderer}
-                                    onUpdate={this.updateFnHandler}
-                                    onScrollPos={this.scrollPosHandler}
-                                    onScrollUpdatePos={this.scrollPosUpdateHandler}
-                                    keyMapper={this.keyMapper}
-                                    containerRef={this.containerRefHandler}
-                                />
-                            </div>
-                        )}
-                    </AutoSizer>
+                    <div className="chat-inner">
+                        <AutoSizer>
+                            {({width, height}: any) => (
+                                <div style={{width: `${width}px`}}>
+                                    <KKWindow
+                                        ref={this.kkWindowRefHandler}
+                                        height={height}
+                                        width={width}
+                                        count={items.length}
+                                        renderer={this.renderer}
+                                        onUpdate={this.updateFnHandler}
+                                        onScrollPos={this.scrollPosHandler}
+                                        onScrollUpdatePos={this.scrollPosUpdateHandler}
+                                        keyMapper={this.keyMapper}
+                                        containerRef={this.containerRefHandler}
+                                        onLoadBefore={this.loadBeforeHandler}
+                                        onLoadAfter={this.loadAfterHandler}
+                                    />
+                                </div>
+                            )}
+                        </AutoSizer>
+                    </div>
                 </div>
             </div>
         );
     }
 
-    private getItems(count: number) {
+    private getItems = (count: number) => {
         return range(count).map((key) => {
             const rand = random(loremIpsumSplit.length);
             this.index++;
             return ({
-                body: <div key={key} style={{border: '1px solid #333'}} onClick={this.clickHandler(this.index - 1)}>
+                body: <div key={key} onClick={this.clickHandler(this.index)}>
                     {loremIpsumSplit.slice(0, rand).join(" ")}
                     {range(random(4)).map((tt) => {
                         const rnd = random(loremIpsumSplit.length);
@@ -123,7 +127,10 @@ class Test extends React.Component<IProps, IState> {
         return items[index].body;
     }
 
-    private prependHandler = () => {
+    private prependHandler = (end: boolean) => (e?: any) => {
+        if (this.kkWindowRef) {
+            this.kkWindowRef.setScrollMode(end ? 'end' : 'none');
+        }
         const {items} = this.state;
         items.unshift.apply(items, this.getItems(30));
         this.setState({
@@ -132,6 +139,9 @@ class Test extends React.Component<IProps, IState> {
     }
 
     private appendHandler = () => {
+        if (this.kkWindowRef) {
+            this.kkWindowRef.setScrollMode('none');
+        }
         const {items} = this.state;
         items.push.apply(items, this.getItems(30));
         this.setState({
@@ -139,16 +149,12 @@ class Test extends React.Component<IProps, IState> {
         });
     }
 
-    private updateHandler = () => {
-        const {items} = this.state;
-        if (items.length > 0) {
-            items[items.length - 1].body = '43344';
-            // if (this.kkWindowRef) {
-            //     this.kkWindowRef.cellMeasurer.clear(items.length - 1);
-            // }
-            this.setState({
-                items,
-            });
+    private checkHandler = () => {
+        if (this.kkWindowRef) {
+            this.kkWindowRef.takeSnapshot();
+            //     const offset = this.kkWindowRef.getCellOffset(this.start);
+            //     this.kkWindowRef.scrollToItem(this.start, offset);
+            //     window.console.log(this.start, offset);
         }
     }
 
@@ -159,10 +165,7 @@ class Test extends React.Component<IProps, IState> {
 
     private updateFnHandler = () => {
         if (this.containerRef) {
-            window.console.log('updateFnHandler');
-        }
-        if (this.kkWindowRef) {
-            this.kkWindowRef.setScrollMode('none');
+            // window.console.log('updateFnHandler');
         }
     }
 
@@ -174,13 +177,13 @@ class Test extends React.Component<IProps, IState> {
         this.containerRef = ref;
     }
 
-    private clickHandler = (index: number) => (e: any) => {
+    private clickHandler = (id: number) => (e: any) => {
         const {items} = this.state;
-        if (items.length > 0) {
+        const index = items.findIndex(o => {
+            return o.id === id;
+        });
+        if (items.length > 0 && index > -1) {
             items[index].body = '43344';
-            if (this.kkWindowRef) {
-                this.kkWindowRef.cellMeasurer.clear(index);
-            }
             this.setState({
                 items,
             }, () => {
@@ -197,6 +200,16 @@ class Test extends React.Component<IProps, IState> {
 
     private scrollPosUpdateHandler: scrollFunc = ({start, end, overscanStart, overscanEnd}) => {
         window.console.warn(overscanStart, start, end, overscanEnd);
+    }
+
+    private loadBeforeHandler = (start: number, end: number) => {
+        window.console.log('loadBefore', start, end);
+        this.prependHandler(false)();
+    }
+
+    private loadAfterHandler = (start: number, end: number) => {
+        window.console.log('loadAfter', start, end);
+        this.appendHandler();
     }
 }
 

@@ -16,6 +16,10 @@ interface IProps {
     onScrollUpdatePos?: scrollFunc;
     scrollMode?: 'end' | 'stay' | 'none';
     cellPrefix?: string;
+    loadBeforeLimit?: number;
+    onLoadBefore?: (start: number, end: number) => void;
+    loadAfterLimit?: number;
+    onLoadAfter?: (start: number, end: number) => void;
 }
 
 interface IState {
@@ -23,15 +27,28 @@ interface IState {
 }
 
 const containerStyle: any = {
+    display: 'block',
     overflow: 'hidden',
     position: 'relative',
     width: '100%',
     zIndex: '2',
 };
 
+const snapshotStyle: any = {
+    bottom: '0',
+    display: 'none',
+    left: '0',
+    overflow: 'hidden',
+    position: 'absolute',
+    right: '0',
+    top: '0',
+    zIndex: '100',
+};
+
 const scrollbarStyle: any = {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     bottom: '0',
+    display: 'block',
     position: 'absolute',
     right: '0',
     top: '0',
@@ -60,7 +77,9 @@ class KKWindow extends React.Component<IProps, IState> {
 
     public cellMeasurer: CellMeasurer;
     private containerRef: any | undefined;
+    private scrollRef: any = null;
     private scrollThumbRef: any = null;
+    private snapshotRef: any | undefined;
     private scrollbar: {
         clickPos: number,
         clickScrollTop: number,
@@ -79,7 +98,12 @@ class KKWindow extends React.Component<IProps, IState> {
         width: 0,
     };
     private scrollMode: 'end' | 'stay' | 'none' = 'end';
-    private cellPrefix: string = 'cell';
+    private readonly cellPrefix: string = 'cell';
+    private loadMoreReady: boolean = false;
+    private loadBeforeTriggered: boolean = false;
+    private readonly loadBeforeLimit: number = 5;
+    private loadAfterTriggered: boolean = false;
+    private readonly loadAfterLimit: number = 5;
 
     constructor(props: IProps) {
         super(props);
@@ -92,18 +116,24 @@ class KKWindow extends React.Component<IProps, IState> {
             this.cellPrefix = props.cellPrefix;
         }
 
+        if (props.loadBeforeLimit) {
+            this.loadBeforeLimit = props.loadBeforeLimit;
+        }
+
+        if (props.loadAfterLimit) {
+            this.loadAfterLimit = props.loadAfterLimit;
+        }
+
         this.cellMeasurer = new CellMeasurer({
             cellPrefix: this.cellPrefix,
             estimatedItemSize: 41,
             keyMapper: this.props.keyMapper,
-            rowCount: 50,
+            rowCount: props.count,
         });
 
         this.cellMeasurer.setUpdateFn(this.updateHandler);
 
-        if (this.props.onScrollPos) {
-            this.cellMeasurer.setScrollPositionFn(this.props.onScrollPos);
-        }
+        this.cellMeasurer.setScrollPositionFn(this.scrollPosHandler);
 
         if (this.props.onScrollUpdatePos) {
             this.cellMeasurer.setScrollUpdatePositionFn(this.props.onScrollUpdatePos);
@@ -129,6 +159,10 @@ class KKWindow extends React.Component<IProps, IState> {
     }
 
     public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>) {
+        if (!this.loadMoreReady) {
+            this.takeSnapshot();
+        }
+        this.loadMoreReady = false;
         this.cellMeasurer.setRowCount(this.props.count);
     }
 
@@ -151,34 +185,69 @@ class KKWindow extends React.Component<IProps, IState> {
         this.cellMeasurer.updateItem(index);
     }
 
+    public getCellOffset(index: number) {
+        return this.cellMeasurer.getCellOffset(index);
+    }
+
+    public takeSnapshot() {
+        if (this.snapshotRef && this.containerRef) {
+            this.snapshotRef.innerHTML = this.containerRef.innerHTML;
+            if (this.scrollbar.enable) {
+                this.snapshotRef.style.right = `-1px`;
+            } else {
+                this.snapshotRef.style.right = '0';
+            }
+            this.snapshotRef.style.display = 'block';
+            this.snapshotRef.style.paddingTop = this.containerRef.style.paddingTop;
+            this.containerRef.style.opacity = '0';
+            this.snapshotRef.scrollTop = this.containerRef.scrollTop;
+
+            setTimeout(() => {
+                this.revertSnapshot();
+            }, 100);
+        }
+    }
+
+    public revertSnapshot() {
+        if (this.snapshotRef && this.containerRef) {
+            this.snapshotRef.style.display = 'none';
+            this.containerRef.style.opacity = '1';
+        }
+    }
+
     public render() {
         const {width, height} = this.props;
         const {items} = this.state;
         return (
             <div style={containerStyle}>
+                <div ref={this.snapshotRefHandler} style={snapshotStyle} className="snappshot"/>
                 <div ref={this.containerRefHandler}
                      style={{
                          height: `${height}px`,
                          overflowY: 'scroll',
-                         width: `${width + (this.scrollbar.noScroll ? 0 : this.scrollbar.width)}px`
+                         width: `${width + (this.scrollbar.enable ? this.scrollbar.width : 0)}px`
                      }}
                      onScroll={this.scrollHandler} onWheel={this.wheelHandler}>
                     {items.map((item, index) => {
                         const key = this.props.keyMapper(index);
-                        return (<div key={key} id={`${this.cellPrefix}_${key}`} ref={this.cellMeasurer.cellRefHandler(index)}>
+                        return (<div key={key} id={`${this.cellPrefix}_${key}`}
+                                     ref={this.cellMeasurer.cellRefHandler(index)}>
                             <Fragment visFn={this.cellMeasurer.visibleHandler(index)}
                                       body={this.props.renderer(index)}/>
                         </div>);
                     })}
                 </div>
                 {this.scrollbar.enable &&
-                <div style={scrollbarStyle} onMouseDown={this.scrollbarTrackDownHandler}
-                     hidden={this.scrollbar.noScroll}>
+                <div ref={this.scrollbarRefHandler} style={scrollbarStyle} onMouseDown={this.scrollbarTrackDownHandler}>
                     <div ref={this.scrollbarThumbRefHandler} style={scrollbarThumbStyle}
                          onMouseDown={this.scrollbarThumbDownHandler}/>
                 </div>}
             </div>
         );
+    }
+
+    private snapshotRefHandler = (ref: any) => {
+        this.snapshotRef = ref;
     }
 
     private containerRefHandler = (ref: any) => {
@@ -189,7 +258,14 @@ class KKWindow extends React.Component<IProps, IState> {
     }
 
     private scrollHandler = (e: any) => {
+        if (this.scrollbar.noScroll) {
+            return;
+        }
         this.cellMeasurer.scrollHandler(this.props.height, e.target.scrollTop);
+    }
+
+    private scrollbarRefHandler = (ref: any) => {
+        this.scrollRef = ref;
     }
 
     private scrollbarThumbRefHandler = (ref: any) => {
@@ -197,20 +273,16 @@ class KKWindow extends React.Component<IProps, IState> {
     }
 
     private wheelHandler = (e: any) => {
-        if (this.scrollbar.enable && !this.scrollbar.dragged) {
+        if (this.scrollbar.enable && !this.scrollbar.noScroll && !this.scrollbar.dragged) {
             this.modifyScrollThumb();
         }
-        // if (this.disableScrolling) {
-        //     e.preventDefault();
-        //     e.stopPropagation();
-        // }
     }
 
     private modifyScrollThumb = () => {
         if (!this.scrollThumbRef || !this.containerRef) {
             return;
         }
-        this.scrollbar.noScroll = (this.containerRef.clientHeight > this.containerRef.scrollHeight);
+        this.scrollbar.noScroll = (this.containerRef.clientHeight >= this.cellMeasurer.getTotalHeight());
         if (!this.scrollbar.noScroll) {
             let top = (this.containerRef.scrollTop / this.containerRef.scrollHeight) * 100;
             const height = (this.containerRef.clientHeight / this.containerRef.scrollHeight) * 100;
@@ -220,9 +292,19 @@ class KKWindow extends React.Component<IProps, IState> {
             this.scrollThumbRef.style.top = `${top}%`;
             this.scrollThumbRef.style.height = `${height}%`;
         }
-        // if (this.scrollbar.noScroll) {
-        //     this.forceUpdate();
-        // }
+        this.scrollActivate(!this.scrollbar.noScroll);
+        window.console.log('noScroll', this.scrollbar.noScroll);
+    }
+
+    private scrollActivate(active: boolean) {
+        if (this.scrollRef) {
+            const display = this.scrollRef.style.display;
+            if (display === 'none' && active) {
+                this.scrollRef.style.display = 'block';
+            } else if (display === 'block' && !active) {
+                this.scrollRef.style.display = 'none';
+            }
+        }
     }
 
     private scrollbarTrackDownHandler = (e: any) => {
@@ -231,15 +313,17 @@ class KKWindow extends React.Component<IProps, IState> {
         }
         const rect = this.scrollThumbRef.getBoundingClientRect();
         const top = rect.top + rect.height / 2;
-        const diff = Math.min(Math.max(Math.abs(top - e.pageY), 100), 400);
+        const diff = Math.min(Math.max(Math.abs(top - e.pageY), 100), this.props.height - 20);
         if (top > e.pageY) {
             this.containerRef.scrollTop = this.containerRef.scrollTop - diff;
         } else {
             this.containerRef.scrollTop = this.containerRef.scrollTop + diff;
         }
-        setTimeout(() => {
-            this.modifyScrollThumb();
-        }, 10);
+        if (this.scrollbar.enable) {
+            setTimeout(() => {
+                this.modifyScrollThumb();
+            }, 10);
+        }
     }
 
     private scrollbarThumbDownHandler = (e: any) => {
@@ -299,17 +383,64 @@ class KKWindow extends React.Component<IProps, IState> {
     }
 
     private updateHandler = () => {
-        this.modifyScrollThumb();
+        if (this.props.onUpdate) {
+            this.props.onUpdate();
+        }
         if (this.containerRef) {
-            this.cellMeasurer.scrollHandler(this.props.height, this.containerRef.scrollTop, true);
+            if (this.cellMeasurer.getTotalHeight() > this.containerRef.clientHeight) {
+                this.containerRef.style.paddingTop = '0';
+                setTimeout(() => {
+                    this.loadMoreReady = true;
+                }, 50);
+            }
+        }
+        this.fitList();
+        if (this.containerRef) {
             if (this.scrollMode === 'end') {
+                this.cellMeasurer.scrollHandler(this.props.height, this.containerRef.scrollTop, true);
+                this.loadAfterTriggered = true;
                 this.containerRef.scrollTop = this.containerRef.scrollHeight - this.containerRef.clientHeight;
             } else if (this.scrollMode === 'stay') {
                 //
             }
         }
-        if (this.props.onUpdate) {
-            this.props.onUpdate();
+        this.modifyScrollThumb();
+    }
+
+    private fitList() {
+        if (this.containerRef) {
+            const gap = this.containerRef.scrollHeight - this.cellMeasurer.getTotalHeight();
+            this.containerRef.style.paddingTop = `${gap}px`;
+            if (gap > 0) {
+                this.containerRef.style.paddingTop = `${gap}px`;
+            } else {
+                this.containerRef.style.paddingTop = '0';
+            }
+        }
+    }
+
+    private scrollPosHandler: scrollFunc = ({start, end, overscanStart, overscanEnd}) => {
+        if (this.props.onScrollPos) {
+            this.props.onScrollPos({start, end, overscanStart, overscanEnd});
+        }
+        if (this.loadMoreReady) {
+            if (start <= this.loadBeforeLimit && !this.loadBeforeTriggered) {
+                if (this.props.onLoadBefore) {
+                    this.props.onLoadBefore(start, end);
+                }
+                this.loadBeforeTriggered = true;
+            } else if (start > this.loadBeforeLimit + 4) {
+                this.loadBeforeTriggered = false;
+            }
+            const toEnd = this.props.count - (end + 1);
+            if (toEnd <= this.loadAfterLimit && !this.loadAfterTriggered) {
+                if (this.props.onLoadAfter) {
+                    this.props.onLoadAfter(start, end);
+                }
+                this.loadAfterTriggered = true;
+            } else if (toEnd > this.loadAfterLimit + 4) {
+                this.loadAfterTriggered = false;
+            }
         }
     }
 }

@@ -17,16 +17,19 @@ export class CellMeasurer {
     private scrollPosFn: scrollFunc | undefined;
     private scrollUpdatePosFn: scrollFunc | undefined;
     private rowCount: number = 0;
+    private lastRowCount: number = 0;
     private start: number = 0;
     private end: number = 50;
     private lastStart: number = 0;
     private lastEnd: number = 50;
     private offset: number = 10;
     private updateHysteresis: number = 3;
+    private scrollTop: number = 0;
     private readonly keyMapperFn: any;
     private readonly updateList: any;
     private readonly estimatedItemSize: number = 40;
     private readonly cellPrefix: string;
+    private totalHeight: number = 0;
 
     public constructor({cellPrefix, estimatedItemSize, rowCount, defaultHeight, keyMapper}: { cellPrefix: string, estimatedItemSize: number, rowCount: number, defaultHeight?: number, keyMapper?: (index: number) => string }) {
         this.updateList = debounce(this.updateListHandler, 1);
@@ -41,6 +44,7 @@ export class CellMeasurer {
         }
         if (rowCount) {
             this.rowCount = rowCount;
+            this.lastRowCount = rowCount;
         }
     }
 
@@ -163,7 +167,23 @@ export class CellMeasurer {
         }
     }
 
+    public getCellOffset(index: number) {
+        const key = this.keyMapperFn(index);
+        if (this.fragmentList.hasOwnProperty(key)) {
+            const offset = this.offsetList[index - 1];
+            if (offset) {
+                return this.scrollTop - offset;
+            }
+        }
+        return 0;
+    }
+
+    public getTotalHeight() {
+        return this.totalHeight;
+    }
+
     public scrollHandler = (height: number, scrollTop: number, force?: boolean) => {
+        this.scrollTop = scrollTop;
         let start = 0;
         let end = this.offsetList.length - 1;
         for (let i = 0; i < this.offsetList.length; i++) {
@@ -202,6 +222,10 @@ export class CellMeasurer {
             if (fromT < 0) {
                 fromT = 0;
             }
+            if (this.lastRowCount !== this.rowCount) {
+                fromT = 0;
+                toT = this.offsetList.length - 1;
+            }
             if (this.scrollUpdatePosFn) {
                 this.dispatchFn(this.scrollUpdatePosFn);
             }
@@ -239,6 +263,7 @@ export class CellMeasurer {
     }
 
     private updateListHandler = () => {
+        this.totalHeight = 0;
         for (let i = 0; i < this.rowCount; i++) {
             const fragment = this.fragmentList[this.keyMapperFn(i)];
             const height = fragment ? fragment.height : this.estimatedItemSize;
@@ -247,6 +272,7 @@ export class CellMeasurer {
             } else {
                 this.offsetList[i] = this.offsetList[i - 1] + height;
             }
+            this.totalHeight += height;
         }
         this.setVisibleList();
         if (this.updateFn) {
