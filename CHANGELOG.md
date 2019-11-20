@@ -1,3 +1,6 @@
+## 0.27.12
+* Terminate session bug fixed
+
 ## 0.27.11
 * Pre-Cache optimized
 

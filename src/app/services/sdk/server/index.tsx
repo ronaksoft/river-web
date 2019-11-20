@@ -239,7 +239,7 @@ export default class Server {
                 if (this.checkRetry(reqId, resData)) {
                     if (this.messageListeners[reqId].reject) {
                         let isLogout = false;
-                        if (this.messageListeners[reqId] && this.messageListeners[reqId].request && this.messageListeners[reqId].request.constructor !== C_MSG.AuthLogout) {
+                        if (this.messageListeners[reqId] && this.messageListeners[reqId].request && this.messageListeners[reqId].request.constructor === C_MSG.AuthLogout) {
                             isLogout = true;
                         }
                         if (resData.code === C_ERR.ErrCodeUnavailable && resData.items === C_ERR_ITEM.ErrItemUserID && !isLogout) {
