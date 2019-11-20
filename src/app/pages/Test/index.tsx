@@ -143,9 +143,9 @@ class Test extends React.Component<IProps, IState> {
         const {items} = this.state;
         if (items.length > 0) {
             items[items.length - 1].body = '43344';
-            if (this.kkWindowRef) {
-                this.kkWindowRef.cellMeasurer.clear(items.length - 1);
-            }
+            // if (this.kkWindowRef) {
+            //     this.kkWindowRef.cellMeasurer.clear(items.length - 1);
+            // }
             this.setState({
                 items,
             });
@@ -177,16 +177,17 @@ class Test extends React.Component<IProps, IState> {
     private clickHandler = (index: number) => (e: any) => {
         const {items} = this.state;
         if (items.length > 0) {
-            // items[index].body = '43344';
-            // if (this.kkWindowRef) {
-            //     this.kkWindowRef.cellMeasurer.clear(index);
-            // }
-            // this.setState({
-            //     items,
-            // });
+            items[index].body = '43344';
             if (this.kkWindowRef) {
-                this.kkWindowRef.scrollToItem(index);
+                this.kkWindowRef.cellMeasurer.clear(index);
             }
+            this.setState({
+                items,
+            }, () => {
+                if (this.kkWindowRef) {
+                    this.kkWindowRef.recomputeItem(index);
+                }
+            });
         }
     }
 

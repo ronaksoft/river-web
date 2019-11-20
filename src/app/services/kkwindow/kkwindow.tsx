@@ -15,6 +15,7 @@ interface IProps {
     onScrollPos?: scrollFunc;
     onScrollUpdatePos?: scrollFunc;
     scrollMode?: 'end' | 'stay' | 'none';
+    cellPrefix?: string;
 }
 
 interface IState {
@@ -78,6 +79,7 @@ class KKWindow extends React.Component<IProps, IState> {
         width: 0,
     };
     private scrollMode: 'end' | 'stay' | 'none' = 'end';
+    private cellPrefix: string = 'cell';
 
     constructor(props: IProps) {
         super(props);
@@ -86,7 +88,12 @@ class KKWindow extends React.Component<IProps, IState> {
             items: range(props.count),
         };
 
+        if (props.cellPrefix) {
+            this.cellPrefix = props.cellPrefix;
+        }
+
         this.cellMeasurer = new CellMeasurer({
+            cellPrefix: this.cellPrefix,
             estimatedItemSize: 41,
             keyMapper: this.props.keyMapper,
             rowCount: 50,
@@ -141,7 +148,6 @@ class KKWindow extends React.Component<IProps, IState> {
     }
 
     public recomputeItem(index: number) {
-        this.cellMeasurer.clear(index);
         this.cellMeasurer.updateItem(index);
     }
 
@@ -159,7 +165,7 @@ class KKWindow extends React.Component<IProps, IState> {
                      onScroll={this.scrollHandler} onWheel={this.wheelHandler}>
                     {items.map((item, index) => {
                         const key = this.props.keyMapper(index);
-                        return (<div key={key} id={`cell_${key}`} ref={this.cellMeasurer.cellRefHandler(index)}>
+                        return (<div key={key} id={`${this.cellPrefix}_${key}`} ref={this.cellMeasurer.cellRefHandler(index)}>
                             <Fragment visFn={this.cellMeasurer.visibleHandler(index)}
                                       body={this.props.renderer(index)}/>
                         </div>);
