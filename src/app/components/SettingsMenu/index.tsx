@@ -81,10 +81,10 @@ import ElectronService from "../../services/electron";
 import UserListDialog from "../UserListDialog";
 import {IInputPeer} from "../SearchList";
 import {localize} from "../../services/utilities/localize";
+import DevTools from "../DevTools";
 
 import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
-import DevTools from "../DevTools";
 
 export const C_VERSION = '0.27.13';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
