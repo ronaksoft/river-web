@@ -78,6 +78,16 @@
       }
     }
   }
+
+  .version-container {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    color: #333;
+    user-select: none;
+    z-index: 100;
+    font-size: 12px;
+  }
 }
 
 @media screen and (max-width: 600px) {
