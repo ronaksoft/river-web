@@ -31,11 +31,11 @@ import IframeService, {C_IFRAME_SUBJECT} from "../../services/iframe";
 import {find} from 'lodash';
 import FileManager from "../../services/sdk/fileManager";
 import {OptionsObject, withSnackbar} from 'notistack';
+import ElectronService from "../../services/electron";
+import DevTools from "../../components/DevTools";
 
 import './tel-input.css';
 import './style.scss';
-import ElectronService from "../../services/electron";
-import DevTools from "../../components/DevTools";
 
 
 const C_CLIENT = `Web:- ${window.navigator.userAgent}`;
