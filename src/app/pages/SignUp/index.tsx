@@ -35,6 +35,7 @@ import {OptionsObject, withSnackbar} from 'notistack';
 import './tel-input.css';
 import './style.scss';
 import ElectronService from "../../services/electron";
+import DevTools from "../../components/DevTools";
 
 
 const C_CLIENT = `Web:- ${window.navigator.userAgent}`;
@@ -77,6 +78,9 @@ class SignUp extends React.Component<IProps, IState> {
     private qrCanvasRef: any = null;
     private qrStart: boolean = false;
     private iframeService: IframeService;
+    private versionClickTimeout: any = null;
+    private versionClickCounter: number = 0;
+    private devToolsRef: DevTools | undefined;
     private eventReferences: any[] = [];
 
     constructor(props: IProps) {
@@ -163,6 +167,7 @@ class SignUp extends React.Component<IProps, IState> {
         const {step, countdown, workspaceInfo, iframeActive, sendToPhone} = this.state;
         return (
             <div className="login-page">
+                <DevTools ref={this.devToolsRefHandler}/>
                 <div className="login-page-container">
                     {iframeActive && <span className="close-btn">
                                     <Tooltip
@@ -302,13 +307,16 @@ class SignUp extends React.Component<IProps, IState> {
                     </div>
                 </div>
                 <div className="login-bottom-bar">
-                    <div className="version-container">{C_VERSION}</div>
+                    <div className="version-container" onClick={this.versionClickHandler}>{C_VERSION}</div>
                     <div className="link-container">
-                        <a href="https://river.im" target="_blank" rel="noopener noreferrer">{i18n.t('sign_up.home')}</a>
+                        <a href="https://river.im" target="_blank"
+                           rel="noopener noreferrer">{i18n.t('sign_up.home')}</a>
                         <span className="bullet"/>
-                        <a href="https://river.im/faq" target="_blank" rel="noopener noreferrer">{i18n.t('sign_up.faq')}</a>
+                        <a href="https://river.im/faq" target="_blank"
+                           rel="noopener noreferrer">{i18n.t('sign_up.faq')}</a>
                         <span className="bullet"/>
-                        <a href="https://river.im/terms" target="_blank" rel="noopener noreferrer">{i18n.t('sign_up.term_of_services')}</a>
+                        <a href="https://river.im/terms" target="_blank"
+                           rel="noopener noreferrer">{i18n.t('sign_up.term_of_services')}</a>
                     </div>
                     <div className="language-container"
                          onClick={this.showLanguageDialogHandler}>{i18n.t(`sign_up.${this.state.selectedLanguage}`)}</div>
@@ -852,6 +860,31 @@ class SignUp extends React.Component<IProps, IState> {
         this.setState({
             languageDialogOpen: false,
         });
+    }
+
+    /* DevTools ref handler */
+    private devToolsRefHandler = (ref: any) => {
+        this.devToolsRef = ref;
+    }
+
+    /* Version click handler */
+    private versionClickHandler = () => {
+        if (!this.versionClickTimeout) {
+            this.versionClickTimeout = setTimeout(() => {
+                clearTimeout(this.versionClickTimeout);
+                this.versionClickTimeout = null;
+                this.versionClickCounter = 0;
+            }, 6000);
+        }
+        this.versionClickCounter++;
+        if (this.versionClickCounter >= 10) {
+            clearTimeout(this.versionClickTimeout);
+            this.versionClickTimeout = null;
+            this.versionClickCounter = 0;
+            if (this.devToolsRef) {
+                this.devToolsRef.open();
+            }
+        }
     }
 }
 

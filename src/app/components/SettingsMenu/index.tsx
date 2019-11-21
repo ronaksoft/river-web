@@ -60,8 +60,6 @@ import Menu from '@material-ui/core/Menu/Menu';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';
 import AvatarCropper from '../AvatarCropper';
 import DialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions/DialogActions';
 import OverlayDialog from '@material-ui/core/Dialog/Dialog';
 import RadioGroup from '@material-ui/core/RadioGroup/RadioGroup';
@@ -86,8 +84,9 @@ import {localize} from "../../services/utilities/localize";
 
 import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
+import DevTools from "../DevTools";
 
-export const C_VERSION = '0.27.11';
+export const C_VERSION = '0.27.13';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{
@@ -162,10 +161,6 @@ interface IState {
     confirmDialogOpen: boolean;
     confirmDialogSelectedId: string;
     customBackgroundSrc?: string;
-    debugModeOpen: boolean;
-    debugModeUrl: string;
-    debugModeFileUrl: string;
-    debugThrottleInterval: number;
     editProfile: boolean;
     editUsername: boolean;
     firstname: string;
@@ -219,6 +214,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private backgroundService: BackgroundService;
     private downloadManger: DownloadManager;
     private settingsStorageUsageModalRef: SettingsStorageUsageModal | undefined;
+    private devToolsRef: DevTools | undefined;
     private electronService: ElectronService;
     private userListDialogRef: UserListDialog | undefined;
     private lastPrivacy: { [key: string]: IPrivacy } = cloneDeep(privacyDefault);
@@ -235,10 +231,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
             bio: '',
             confirmDialogOpen: false,
             confirmDialogSelectedId: '',
-            debugModeFileUrl: localStorage.getItem('river.workspace_url_file') || 'file.river.im',
-            debugModeOpen: false,
-            debugModeUrl: localStorage.getItem('river.workspace_url') || 'cyrus.river.im',
-            debugThrottleInterval: parseInt(localStorage.getItem('river.debug.throttle_interval') || '200', 10),
             editProfile: false,
             editUsername: false,
             firstname: '',
@@ -354,11 +346,12 @@ class SettingsMenu extends React.Component<IProps, IState> {
     public render() {
         const {
             avatarMenuAnchorEl, page, pageContent, pageSubContent, user, editProfile, editUsername, bio, firstname,
-            lastname, phone, username, usernameAvailable, usernameValid, uploadingPhoto, debugModeOpen, sessions,
+            lastname, phone, username, usernameAvailable, usernameValid, uploadingPhoto, sessions,
             confirmDialogOpen, customBackgroundSrc, loading, privacy,
         } = this.state;
         return (
             <div className="setting-menu">
+                <DevTools ref={this.devToolsRefHandler}/>
                 <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={640}/>
                 <SettingsBackgroundModal ref={this.settingsBackgroundModalRefHandler}
                                          dark={Boolean(this.state.selectedTheme !== 'light')}
@@ -1024,58 +1017,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
                     {this.avatarContextMenuItem()}
                 </Menu>
                 <OverlayDialog
-                    open={debugModeOpen}
-                    onClose={this.debugModeCloseHandler}
-                    className="confirm-dialog"
-                    disableBackdropClick={true}
-                >
-                    <div>
-                        <DialogTitle>{i18n.t('settings.debug_mode')}</DialogTitle>
-                        <DialogContent>
-                            <div style={{width: '300px'}}>
-                                <DialogContentText>{i18n.t('settings.set_test_url')}</DialogContentText>
-                                <TextField
-                                    autoFocus={true}
-                                    margin="dense"
-                                    label={i18n.t('settings.test_url')}
-                                    type="text"
-                                    fullWidth={true}
-                                    value={this.state.debugModeUrl}
-                                    onChange={this.debugModeUrlChange}
-                                />
-                                <TextField
-                                    autoFocus={true}
-                                    margin="dense"
-                                    label={i18n.t('settings.test_file_url')}
-                                    type="text"
-                                    fullWidth={true}
-                                    value={this.state.debugModeFileUrl}
-                                    onChange={this.debugModeFileUrlChange}
-                                />
-                                <TextField
-                                    autoFocus={true}
-                                    margin="dense"
-                                    label={i18n.t('settings.throttle_interval')}
-                                    type="text"
-                                    fullWidth={true}
-                                    value={this.state.debugThrottleInterval}
-                                    onChange={this.debugModeThrottleIntervalChange}
-                                />
-                                <Button onClick={this.debugModeClearAllDataHandler} variant="raised" color="secondary"
-                                        fullWidth={true}>{i18n.t('settings.clear_all_data')}</Button>
-                            </div>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={this.debugModeCloseHandler} color="secondary">
-                                {i18n.t('general.cancel')}
-                            </Button>
-                            <Button onClick={this.debugModeApplyHandler} color="primary" autoFocus={true}>
-                                {i18n.t('general.apply')}
-                            </Button>
-                        </DialogActions>
-                    </div>
-                </OverlayDialog>
-                <OverlayDialog
                     open={confirmDialogOpen}
                     onClose={this.confirmDialogCloseHandler}
                     className="confirm-dialog"
@@ -1473,6 +1414,11 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.cropperRef = ref;
     }
 
+    /* DevTools ref handler */
+    private devToolsRefHandler = (ref: any) => {
+        this.devToolsRef = ref;
+    }
+
     /* Open file dialog */
     private openFileDialog = () => {
         if (this.cropperRef) {
@@ -1642,51 +1588,10 @@ class SettingsMenu extends React.Component<IProps, IState> {
             clearTimeout(this.versionClickTimeout);
             this.versionClickTimeout = null;
             this.versionClickCounter = 0;
-            this.setState({
-                debugModeOpen: true,
-            });
+            if (this.devToolsRef) {
+                this.devToolsRef.open();
+            }
         }
-    }
-
-    private debugModeClearAllDataHandler = () => {
-        const authErrorEvent = new CustomEvent('authErrorEvent', {});
-        window.dispatchEvent(authErrorEvent);
-    }
-
-    /* Debug mode close handler */
-    private debugModeCloseHandler = () => {
-        this.setState({
-            debugModeOpen: false,
-        });
-    }
-
-    /* Debug mode apply handler */
-    private debugModeApplyHandler = () => {
-        localStorage.setItem('river.workspace_url', this.state.debugModeUrl);
-        localStorage.setItem('river.workspace_url_file', this.state.debugModeFileUrl);
-        localStorage.setItem('river.debug.throttle_interval', String(this.state.debugThrottleInterval));
-        window.location.reload();
-    }
-
-    /* Debug mode url change handler */
-    private debugModeUrlChange = (e: any) => {
-        this.setState({
-            debugModeUrl: e.currentTarget.value,
-        });
-    }
-
-    /* Debug mode file url change handler */
-    private debugModeFileUrlChange = (e: any) => {
-        this.setState({
-            debugModeFileUrl: e.currentTarget.value,
-        });
-    }
-
-    /* Debug mode Throttle Interval change handler */
-    private debugModeThrottleIntervalChange = (e: any) => {
-        this.setState({
-            debugThrottleInterval: e.currentTarget.value,
-        });
     }
 
     /* Logout handler */
