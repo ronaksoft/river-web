@@ -1,3 +1,6 @@
+## 0.27.13
+* DevTools updated
+
 ## 0.27.12
 * Terminate session bug fixed
 
