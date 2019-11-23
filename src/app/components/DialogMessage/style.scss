@@ -104,8 +104,16 @@
       color: var(--red);
     }
 
+    .sender {
+      font-weight: bold;
+    }
+
     &.ltr {
       direction: ltr;
+
+      .sender {
+        direction: ltr;
+      }
 
       .preview-inner {
         direction: ltr;
@@ -114,6 +122,10 @@
 
     &.rtl {
       direction: rtl;
+
+      .sender {
+        direction: rtl;
+      }
 
       .preview-inner {
         direction: rtl;
@@ -125,10 +137,6 @@
       font-size: 14px;
       margin: 0 4px 3px 0;
       vertical-align: bottom;
-    }
-
-    .sender {
-      font-weight: bold;
     }
 
     .preview-message {

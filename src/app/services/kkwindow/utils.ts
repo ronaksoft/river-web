@@ -4,7 +4,7 @@ import {debounce} from 'lodash';
 interface IFragment {
     height: number;
     visible: boolean;
-    setVisible?: (visible: boolean) => void;
+    setVisible?: (visible: boolean, force?: boolean) => void;
 }
 
 export type scrollFunc = ({overscanStart, start, end, overscanEnd}: { overscanStart: number, start: number, end: number, overscanEnd: number }) => void;
@@ -17,12 +17,13 @@ export class CellMeasurer {
     private scrollPosFn: scrollFunc | undefined;
     private scrollUpdatePosFn: scrollFunc | undefined;
     private rowCount: number = 0;
+    // @ts-ignore
     private lastRowCount: number = 0;
     private start: number = 0;
-    private end: number = 50;
+    private end: number = 0;
     private lastStart: number = 0;
-    private lastEnd: number = 50;
-    private offset: number = 10;
+    private lastEnd: number = 0;
+    private overscan: number = 10;
     private updateHysteresis: number = 3;
     private scrollTop: number = 0;
     private readonly keyMapperFn: any;
@@ -31,7 +32,8 @@ export class CellMeasurer {
     private readonly cellPrefix: string;
     private totalHeight: number = 0;
 
-    public constructor({cellPrefix, estimatedItemSize, rowCount, defaultHeight, keyMapper}: { cellPrefix: string, estimatedItemSize: number, rowCount: number, defaultHeight?: number, keyMapper?: (index: number) => string }) {
+    public constructor({cellPrefix, estimatedItemSize, rowCount, defaultHeight, overscan, keyMapper}: { cellPrefix: string, estimatedItemSize: number, rowCount: number, defaultHeight?: number, overscan?: number, keyMapper?: (index: number) => string }) {
+        this.overscan = overscan || 10;
         this.updateList = debounce(this.updateListHandler, 1);
         this.cellPrefix = cellPrefix;
         if (keyMapper) {
@@ -46,6 +48,8 @@ export class CellMeasurer {
             this.rowCount = rowCount;
             this.lastRowCount = rowCount;
         }
+        this.end = rowCount;
+        this.lastEnd = rowCount;
     }
 
     public setUpdateFn(fn: any) {
@@ -75,6 +79,9 @@ export class CellMeasurer {
                 return;
             }
             const rect = (e && e[0] && e[0].contentRect) ? e[0].contentRect : ref.firstElementChild.getBoundingClientRect();
+            if (force) {
+                window.console.log('force', rect);
+            }
             if (!this.fragmentList.hasOwnProperty(key)) {
                 this.fragmentList[key] = {
                     height: rect.height,
@@ -110,14 +117,35 @@ export class CellMeasurer {
 
     public clearAll() {
         this.fragmentList = {};
+        this.offsetList = [];
     }
 
-    public updateItem(index: number) {
+    public recomputeItemHeight(index: number) {
         const key = this.keyMapperFn(index);
         if (this.fragmentList.hasOwnProperty(key)) {
             const el = document.getElementById(`${this.cellPrefix}_${key}`);
             if (el) {
+                window.console.log(el);
                 this.cellRefHandler(index, true)(el);
+            }
+        }
+    }
+
+    public updateItem(index: number) {
+        this.updateItemByKey(this.keyMapperFn(index));
+    }
+
+    public updateItemByKey(key: string) {
+        if (this.fragmentList.hasOwnProperty(key)) {
+            if (this.fragmentList[key].setVisible) {
+                window.console.log('updateItemByKey', key);
+                // @ts-ignore
+                this.fragmentList[key].setVisible(true, true);
+                // setTimeout(() => {
+                //     window.console.log(this.fragmentList[key].setVisible);
+                //     // @ts-ignore
+                //     this.fragmentList[key].setVisible(true, true);
+                // }, 1000);
             }
         }
     }
@@ -214,25 +242,28 @@ export class CellMeasurer {
             let toT = this.lastEnd;
             this.lastStart = this.start;
             this.lastEnd = this.end;
-            if (fromT > this.start || toT > this.end) {
-                fromT = this.start - this.offset;
-            } else {
-                toT = this.end + this.offset;
-            }
-            if (fromT < 0) {
-                fromT = 0;
-            }
-            if (this.lastRowCount !== this.rowCount) {
-                fromT = 0;
-                toT = this.offsetList.length - 1;
-            }
+            fromT = 0;
+            toT = this.offsetList.length;
+            // if (fromT > this.start || toT > this.end) {
+            //     fromT = this.start - this.overscan;
+            // } else {
+            //     toT = this.end + this.overscan;
+            // }
+            // if (fromT < 0) {
+            //     fromT = 0;
+            // }
+            // if (this.lastRowCount !== this.rowCount) {
+            //     fromT = 0;
+            //     toT = this.offsetList.length - 1;
+            //     this.lastRowCount = this.rowCount;
+            // }
             if (this.scrollUpdatePosFn) {
                 this.dispatchFn(this.scrollUpdatePosFn);
             }
             for (let i = fromT; i < this.offsetList.length && i <= toT; i++) {
                 const key = this.keyMapperFn(i);
                 if (this.fragmentList.hasOwnProperty(key)) {
-                    const visible = (this.start - this.offset <= i && i <= this.end + this.offset);
+                    const visible = (this.start - this.overscan <= i && i <= this.end + this.overscan);
                     this.fragmentList[key].visible = visible;
                     if (this.fragmentList[key].setVisible) {
                         // @ts-ignore
@@ -245,11 +276,11 @@ export class CellMeasurer {
 
     private dispatchFn(fn: any) {
         if (fn) {
-            let overscanStart: number = this.start - this.offset;
+            let overscanStart: number = this.start - this.overscan;
             if (overscanStart < 0) {
                 overscanStart = 0;
             }
-            let overscanEnd: number = this.end + this.offset;
+            let overscanEnd: number = this.end + this.overscan;
             if (overscanEnd >= this.offsetList.length) {
                 overscanEnd = this.offsetList.length - 1;
             }

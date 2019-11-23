@@ -4,7 +4,7 @@ import React, {useState} from "react";
 export default function Fragment({body, visFn}: { body: any, visFn: any }) {
     const [visible, setVisible] = useState<boolean>(true);
 
-    const setVis = (vis: boolean) => {
+    const setVis = (vis: boolean, force?: boolean) => {
         if (visible !== vis) {
             setVisible(vis);
         }

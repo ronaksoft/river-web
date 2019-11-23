@@ -5,12 +5,15 @@ import {range} from 'lodash';
 import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 
 interface IProps {
+    className?: string;
     height: number;
     width: number;
     count: number;
     renderer: (index: number) => any;
     containerRef?: (ref: any) => void;
     keyMapper: (index: number) => string;
+    overscan?: number;
+    fitList?: boolean;
     onUpdate?: () => void;
     onScrollPos?: scrollFunc;
     onScrollUpdatePos?: scrollFunc;
@@ -70,6 +73,9 @@ const scrollbarThumbStyle: any = {
 
 class KKWindow extends React.Component<IProps, IState> {
     public static getDerivedStateFromProps(props: IProps, state: IState) {
+        if (props.count === state.items.length) {
+            return;
+        }
         return {
             items: range(props.count),
         };
@@ -98,6 +104,7 @@ class KKWindow extends React.Component<IProps, IState> {
         width: 0,
     };
     private scrollMode: 'end' | 'stay' | 'none' = 'end';
+    private fitList: boolean = true;
     private readonly cellPrefix: string = 'cell';
     private loadMoreReady: boolean = false;
     private loadBeforeTriggered: boolean = false;
@@ -128,6 +135,7 @@ class KKWindow extends React.Component<IProps, IState> {
             cellPrefix: this.cellPrefix,
             estimatedItemSize: 41,
             keyMapper: this.props.keyMapper,
+            overscan: props.overscan,
             rowCount: props.count,
         });
 
@@ -152,6 +160,8 @@ class KKWindow extends React.Component<IProps, IState> {
         if (props.scrollMode) {
             this.scrollMode = props.scrollMode;
         }
+
+        this.fitList = props.fitList || true;
     }
 
     public componentDidMount() {
@@ -159,12 +169,26 @@ class KKWindow extends React.Component<IProps, IState> {
     }
 
     public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>) {
-        if (!this.loadMoreReady) {
-            this.takeSnapshot();
+        if (prevProps.count !== this.props.count) {
+            if (!this.loadMoreReady) {
+                this.takeSnapshot();
+            }
+            this.loadMoreReady = false;
+            this.cellMeasurer.setRowCount(this.props.count);
         }
-        this.loadMoreReady = false;
-        this.cellMeasurer.setRowCount(this.props.count);
     }
+
+    // public shouldComponentUpdate(nextProps: Readonly<IProps>, nextState: Readonly<IState>, context: any): boolean {
+    //     if (this.props.count === nextProps.count) {
+    //         return false;
+    //     }
+    //     if (!this.loadMoreReady) {
+    //         this.takeSnapshot();
+    //     }
+    //     this.loadMoreReady = false;
+    //     this.cellMeasurer.setRowCount(this.props.count);
+    //     return true;
+    // }
 
     public componentWillUnmount() {
         //
@@ -177,12 +201,8 @@ class KKWindow extends React.Component<IProps, IState> {
         }
     }
 
-    public setScrollMode(mode: 'end' | 'stay' | 'none' = 'end') {
+    public setScrollMode(mode: 'end' | 'stay' | 'none') {
         this.scrollMode = mode;
-    }
-
-    public recomputeItem(index: number) {
-        this.cellMeasurer.updateItem(index);
     }
 
     public getCellOffset(index: number) {
@@ -198,7 +218,7 @@ class KKWindow extends React.Component<IProps, IState> {
                 this.snapshotRef.style.right = '0';
             }
             this.snapshotRef.style.display = 'block';
-            this.snapshotRef.style.paddingTop = this.containerRef.style.paddingTop;
+            this.snapshotRef.style.padding = this.containerRef.style.padding;
             this.containerRef.style.opacity = '0';
             this.snapshotRef.scrollTop = this.containerRef.scrollTop;
 
@@ -215,6 +235,16 @@ class KKWindow extends React.Component<IProps, IState> {
         }
     }
 
+    public setFitList(fitList: boolean) {
+        this.fitList = fitList;
+    }
+
+    public clearAll() {
+        if (this.cellMeasurer) {
+            this.cellMeasurer.clearAll();
+        }
+    }
+
     public render() {
         const {width, height} = this.props;
         const {items} = this.state;
@@ -222,6 +252,7 @@ class KKWindow extends React.Component<IProps, IState> {
             <div style={containerStyle}>
                 <div ref={this.snapshotRefHandler} style={snapshotStyle} className="snappshot"/>
                 <div ref={this.containerRefHandler}
+                     className={this.props.className}
                      style={{
                          height: `${height}px`,
                          overflowY: 'scroll',
@@ -282,10 +313,9 @@ class KKWindow extends React.Component<IProps, IState> {
         if (!this.scrollThumbRef || !this.containerRef) {
             return;
         }
-        this.scrollbar.noScroll = (this.containerRef.clientHeight >= this.cellMeasurer.getTotalHeight());
         if (!this.scrollbar.noScroll) {
             let top = (this.containerRef.scrollTop / this.containerRef.scrollHeight) * 100;
-            const height = (this.containerRef.clientHeight / this.containerRef.scrollHeight) * 100;
+            const height = (this.props.height / this.containerRef.scrollHeight) * 100;
             if (top + height > 100) {
                 top = 100 - height;
             }
@@ -293,7 +323,6 @@ class KKWindow extends React.Component<IProps, IState> {
             this.scrollThumbRef.style.height = `${height}%`;
         }
         this.scrollActivate(!this.scrollbar.noScroll);
-        window.console.log('noScroll', this.scrollbar.noScroll);
     }
 
     private scrollActivate(active: boolean) {
@@ -335,7 +364,7 @@ class KKWindow extends React.Component<IProps, IState> {
 
         this.scrollbar.dragged = true;
         this.scrollbar.clickPos = e.pageY;
-        this.scrollbar.clickTop = (this.containerRef.scrollTop / this.containerRef.scrollHeight) * this.containerRef.clientHeight;
+        this.scrollbar.clickTop = (this.containerRef.scrollTop / this.containerRef.scrollHeight) * this.props.height;
         this.scrollbar.clickScrollTop = this.containerRef.scrollTop;
         this.setupDragging();
     }
@@ -345,14 +374,14 @@ class KKWindow extends React.Component<IProps, IState> {
             return;
         }
         const offset = e.pageY - this.scrollbar.clickPos;
-        const scrollTop = this.scrollbar.clickScrollTop + offset * (this.containerRef.scrollHeight / this.containerRef.clientHeight);
+        const scrollTop = this.scrollbar.clickScrollTop + offset * (this.containerRef.scrollHeight / this.props.height);
         this.containerRef.scrollTop = scrollTop;
         let top = this.scrollbar.clickTop + offset;
         if (top < 0) {
             top = 0;
         }
-        if (top > (this.containerRef.clientHeight - this.scrollThumbRef.clientHeight)) {
-            top = this.containerRef.clientHeight - this.scrollThumbRef.clientHeight;
+        if (top > (this.props.height - this.scrollThumbRef.clientHeight)) {
+            top = this.props.height - this.scrollThumbRef.clientHeight;
         }
         this.scrollThumbRef.style.top = `${top}px`;
     }
@@ -387,35 +416,48 @@ class KKWindow extends React.Component<IProps, IState> {
             this.props.onUpdate();
         }
         if (this.containerRef) {
-            if (this.cellMeasurer.getTotalHeight() > this.containerRef.clientHeight) {
+            this.scrollbar.noScroll = (this.props.height >= this.cellMeasurer.getTotalHeight());
+            if (!this.scrollbar.noScroll) {
                 this.containerRef.style.paddingTop = '0';
                 setTimeout(() => {
                     this.loadMoreReady = true;
                 }, 50);
             }
         }
-        this.fitList();
+        if (this.fitList) {
+            this.fitListToBottom();
+            // this.setNativeScroll(!this.scrollbar.noScroll);
+        }
         if (this.containerRef) {
             if (this.scrollMode === 'end') {
                 this.cellMeasurer.scrollHandler(this.props.height, this.containerRef.scrollTop, true);
                 this.loadAfterTriggered = true;
-                this.containerRef.scrollTop = this.containerRef.scrollHeight - this.containerRef.clientHeight;
+                this.containerRef.scrollTop = this.containerRef.scrollHeight - this.props.height;
             } else if (this.scrollMode === 'stay') {
                 //
             }
         }
-        this.modifyScrollThumb();
+        if (this.scrollbar.enable) {
+            this.modifyScrollThumb();
+        }
     }
 
-    private fitList() {
+    private fitListToBottom() {
         if (this.containerRef) {
-            const gap = this.containerRef.scrollHeight - this.cellMeasurer.getTotalHeight();
-            this.containerRef.style.paddingTop = `${gap}px`;
+            const gap = this.props.height - this.cellMeasurer.getTotalHeight();
             if (gap > 0) {
                 this.containerRef.style.paddingTop = `${gap}px`;
             } else {
                 this.containerRef.style.paddingTop = '0';
             }
+        }
+    }
+
+    // @ts-ignore
+    private setNativeScroll(enable: boolean) {
+        if (this.containerRef) {
+            this.containerRef.overflowY = enable ? 'scroll' : 'hidden';
+            this.containerRef.setAttribute('kk', enable ? 'check' : 'uncheck');
         }
     }
 

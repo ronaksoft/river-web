@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import {AutoSizer, CellMeasurer, CellMeasurerCache, List} from 'react-virtualized';
+import AutoSizer from "react-virtualized-auto-sizer";
 import {IMessage} from '../../repository/message/interface';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -16,7 +16,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import {
     GroupPhoto, InputFileLocation, InputPeer, MediaType, MessageEntityType, PeerType,
 } from '../../services/sdk/messages/chat.core.types_pb';
-import {clone, throttle, findIndex, findLastIndex} from 'lodash';
+import {clone, findLastIndex} from 'lodash';
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from '../../repository/message/consts';
 import TimeUtility from '../../services/utilities/time';
 import UserAvatar from '../UserAvatar';
@@ -38,12 +38,14 @@ import MessageLocation from '../MessageLocation';
 import Broadcaster from '../../services/broadcaster';
 import UserRepo from '../../repository/user';
 import MessageAudio from '../MessageAudio';
-import animateScrollTo from 'animated-scroll-to';
+// import animateScrollTo from 'animated-scroll-to';
 import ElectronService from '../../services/electron';
 import i18n from '../../services/i18n';
 import DocumentViewerService, {IDocument} from "../../services/documentViewerService";
 import {Loading} from "../Loading";
-import getScrollbarWidth from "../../services/utilities/scrollbar_width";
+import KKWindow from "../../services/kkwindow/kkwindow";
+import {scrollFunc} from "../../services/kkwindow/utils";
+import animateScrollTo from "animated-scroll-to";
 
 import './style.scss';
 
@@ -52,13 +54,13 @@ interface IProps {
     onAttachmentAction?: (cmd: 'cancel' | 'cancel_download' | 'download' | 'view' | 'open' | 'read' | 'preview', message: IMessage) => void;
     onJumpToMessage: (id: number, e: any) => void;
     onLastMessage: (message: IMessage | null) => void;
-    onLoadMoreAfter?: () => any;
+    onLoadMoreAfter?: (start: number, end: number) => any;
     onLoadMoreAfterGap?: (id: number) => any;
-    onLoadMoreBefore?: () => any;
+    onLoadMoreBefore?: (start: number, end: number) => any;
     onSelectableChange: (selectable: boolean) => void;
     onSelectedIdsChange: (selectedIds: { [key: number]: number }) => void;
     onDrop: (files: File[]) => void;
-    onRendered?: (info: any) => void;
+    onRendered?: scrollFunc;
     showDate: (timestamp: number | null) => void;
     showNewMessage?: (visible: boolean) => void;
     isMobileView: boolean;
@@ -76,6 +78,10 @@ interface IState {
     selectable: boolean;
     selectedIds: { [key: number]: number };
 }
+
+export const messageKey = (id: number, type: number) => {
+    return `${id}_${type}`;
+};
 
 export const highlightMessage = (id: number) => {
     const el = document.querySelector(`.bubble-wrapper .bubble.b_${id}`);
@@ -128,81 +134,40 @@ export const highlightMessageText = (id: number, text: string) => {
     }
 };
 
-interface IStayInfo {
-    id: number;
-    offset: number;
-}
-
 class Message extends React.Component<IProps, IState> {
-    // @ts-ignore
-    public list: List;
-    public cache: CellMeasurerCache;
+    public list: KKWindow | undefined;
+    private containerRef: any = null;
     private peer: InputPeer | null = null;
     private listCount: number = 0;
-    private topOfList: boolean = false;
-    private bottomOfList: boolean = true;
     private loadingTimeout: any = null;
-    private scrollMode: 'none' | 'end' | 'stay' = 'none';
+    // @ts-ignore
     private messageScroll: {
-        overscanStartIndex: number;
-        overscanStopIndex: number;
-        startIndex: number;
-        stopIndex: number;
+        end: number;
+        overscanEnd: number;
+        overscanStart: number;
+        start: number;
     } = {
-        overscanStartIndex: 0,
-        overscanStopIndex: 0,
-        startIndex: 0,
-        stopIndex: 0,
+        end: 0,
+        overscanEnd: 0,
+        overscanStart: 0,
+        start: 0,
     };
     private riverTime: RiverTime;
     private isSimplified: boolean = false;
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
-    private readonly loadMoreAfterThrottle: any = null;
-    private readonly loadMoreBeforeThrottle: any = null;
-    private readonly fitListCompleteThrottle: any = null;
-    private enableLoadBefore: boolean = false;
-    private messageInnerRef: any = null;
-    private messageSnapshotRef: any = null;
-    private removeSnapshotTimeout: any = null;
     private dropZoneRef: any = null;
     private readId: number = 0;
-    private firstTimeLoadAfter: boolean = true;
-    private stayInfo: IStayInfo = {
-        id: -1,
-        offset: 0,
-    };
+    private scrollDownTimeout: any = null;
     // @ts-ignore
     private topMessageId: number = 0;
-    private disableScrolling: boolean = false;
-    private scrollToIndex?: number;
-    private scrollDownTimeout: any = null;
     private isElectron: boolean = ElectronService.isElectron();
     private readonly menuItem: any = {};
     private documentViewerService: DocumentViewerService;
-    private enableLoadBeforeTimeout: any = null;
-    private hasEnd: boolean = false;
-    private scrollContainerEl: any;
-    private readonly isMac: boolean = navigator.platform.indexOf('Mac') > -1;
-    private scrollThumbRef: any = null;
-    private scrollbar: {
-        clickPos: number,
-        clickScrollTop: number,
-        clickTop: number,
-        dragged: boolean,
-        enable: boolean,
-        noScroll: boolean,
-        width: number,
-    } = {
-        clickPos: 0,
-        clickScrollTop: 0,
-        clickTop: 0,
-        dragged: false,
-        enable: false,
-        noScroll: false,
-        width: 0,
-    };
+    // private readonly isMac: boolean = navigator.platform.indexOf('Mac') > -1;
     private newMessageIndex: number = -1;
+    // @ts-ignore
+    private hasEnd: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -222,27 +187,9 @@ class Message extends React.Component<IProps, IState> {
 
         this.readId = -1;
         this.riverTime = RiverTime.getInstance();
-        this.cache = new CellMeasurerCache({
-            fixedWidth: true,
-            keyMapper: this.keyMapperHandler,
-            minHeight: 41,
-        });
         this.broadcaster = Broadcaster.getInstance();
         this.isSimplified = UserRepo.getInstance().getBubbleMode() === '5';
-        this.loadMoreAfterThrottle = throttle(this.loadMoreAfter, 50);
-        this.loadMoreBeforeThrottle = throttle(this.loadMoreBefore, 50);
-        this.fitListCompleteThrottle = throttle(this.fitListComplete, 250);
         this.documentViewerService = DocumentViewerService.getInstance();
-
-        this.scrollbar.width = getScrollbarWidth();
-        if (this.scrollbar.width > 0) {
-            this.scrollbar.width++;
-        }
-
-        if (this.scrollbar.width > 0) {
-            this.scrollbar.enable = true;
-            this.modifyScrollThumb();
-        }
 
         this.menuItem = {
             1: {
@@ -293,15 +240,9 @@ class Message extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        this.topOfList = false;
         this.eventReferences.push(this.broadcaster.listen('Theme_Changed', this.themeChangeHandler));
         window.addEventListener('mouseup', this.dragLeaveHandler, true);
         window.addEventListener('resize', this.windowResizeHandler);
-
-        this.scrollContainerEl = document.querySelector('.messages-inner .chat.active-chat');
-        if (this.scrollContainerEl) {
-            this.scrollContainerEl.addEventListener('mousewheel', this.scrollHandler, true);
-        }
     }
 
     public setPeer(peer: InputPeer | null) {
@@ -325,7 +266,7 @@ class Message extends React.Component<IProps, IState> {
                 selectable: enable,
                 selectedIds: ids,
             }, () => {
-                this.list.forceUpdateGrid();
+                // this.list.forceUpdateGrid();
             });
         }
     }
@@ -341,39 +282,18 @@ class Message extends React.Component<IProps, IState> {
 
         if (this.state.items !== items) {
             fn();
-            this.hasEnd = false;
             this.checkEnd(items);
-            this.loadMoreAfterThrottle.cancel();
-            this.fitListCompleteThrottle.cancel();
-            // this.cache.clearAll();
-            this.bottomOfList = true;
-            this.topOfList = true;
-            this.firstTimeLoadAfter = true;
-            this.scrollToIndex = items.length - 1;
-            this.scrollbar.noScroll = false;
-            setTimeout(() => {
-                this.scrollToIndex = undefined;
-            }, 300);
-            if (!noRemoveSnapshot) {
-                this.removeSnapshot();
-            }
             this.setState({
                 items,
                 moreAnchorEl: null,
                 moreAnchorPos: null,
                 moreIndex: -1,
             }, () => {
-                clearTimeout(this.enableLoadBeforeTimeout);
-                this.enableLoadBefore = false;
-                if (!noRemoveSnapshot) {
-                    this.modifyScroll(items);
-                }
                 if (this.state.items.length > 0) {
                     this.props.onLastMessage(this.state.items[this.state.items.length - 1]);
                 } else {
                     this.props.onLastMessage(null);
                 }
-                this.fitList();
                 if (callback) {
                     callback();
                 }
@@ -382,17 +302,13 @@ class Message extends React.Component<IProps, IState> {
         } else if (this.state.items === items && this.listCount !== items.length) {
             fn();
             this.checkEnd(items);
-            requestAnimationFrame(() => {
-                this.fitList(true);
-            });
-            this.modifyScroll(items);
             this.listCount = items.length;
             if (this.state.items.length > 0) {
                 this.props.onLastMessage(this.state.items[this.state.items.length - 1]);
             } else {
                 this.props.onLastMessage(null);
             }
-            this.list.forceUpdateGrid();
+            // this.list.forceUpdateGrid();
             this.forceUpdate();
             if (callback) {
                 callback();
@@ -412,9 +328,6 @@ class Message extends React.Component<IProps, IState> {
         });
         window.removeEventListener('mouseup', this.dragLeaveHandler, true);
         window.removeEventListener('resize', this.windowResizeHandler);
-        if (this.scrollContainerEl) {
-            this.scrollContainerEl.addEventListener('mousewheel', this.scrollHandler, true);
-        }
     }
 
     public setLoading(loading: boolean, overlay?: boolean) {
@@ -439,210 +352,79 @@ class Message extends React.Component<IProps, IState> {
                         this.setState({
                             loadingPersist: false,
                         }, () => {
-                            this.list.forceUpdateGrid();
+                            // this.list.forceUpdateGrid();
                         });
                     }, 500);
                 }
-                this.list.forceUpdateGrid();
+                // this.list.forceUpdateGrid();
             });
         }
     }
 
-    public animateToEnd(instant?: boolean) {
+    public animateToEnd() {
         const {items} = this.state;
         if (!items) {
             return;
         }
-        let jump = false;
-        if (items.length <= this.messageScroll.stopIndex) {
-            jump = true;
-        } else {
-            for (let i = this.messageScroll.startIndex; i < items.length; i++) {
-                if (items[i] && items[i].messagetype === C_MESSAGE_TYPE.Gap) {
-                    jump = true;
-                    break;
-                }
-            }
-        }
-        if (this.list && jump) {
-            this.list.scrollToRow(items.length);
-        } else {
-            if (instant) {
-                if (this.list) {
-                    this.list.scrollToRow(items.length);
-                    if (this.list) {
-                        if (this.scrollContainerEl) {
-                            const elDiv = this.scrollContainerEl.firstElementChild;
-                            if (elDiv) {
-                                this.list.scrollToPosition((elDiv.scrollHeight - this.scrollContainerEl.clientHeight) + 10);
-                                requestAnimationFrame(() => {
-                                    if (!this.isAtEnd()) {
-                                        this.animateToEnd(true);
-                                    }
-                                });
-                                if (items.length > 24) {
-                                    this.setEnableBefore();
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                clearTimeout(this.scrollDownTimeout);
-                if (this.scrollContainerEl) {
-                    const options: any = {
-                        // duration of the scroll per 1000px, default 500
-                        speed: 500,
+        clearTimeout(this.scrollDownTimeout);
+        if (this.containerRef) {
+            const options: any = {
+                // duration of the scroll per 1000px, default 500
+                speed: 1000,
 
-                        // minimum duration of the scroll
-                        minDuration: 250,
+                // minimum duration of the scroll
+                minDuration: 96,
 
-                        // maximum duration of the scroll
-                        maxDuration: 300,
+                // maximum duration of the scroll
+                maxDuration: 196,
 
-                        // @ts-ignore
-                        element: this.scrollContainerEl,
+                // @ts-ignore
+                element: this.containerRef,
 
-                        // Additional offset value that gets added to the desiredOffset.  This is
-                        // useful when passing a DOM object as the desiredOffset and wanting to adjust
-                        // for an fixed nav or to add some padding.
-                        offset: 0,
+                // Additional offset value that gets added to the desiredOffset.  This is
+                // useful when passing a DOM object as the desiredOffset and wanting to adjust
+                // for an fixed nav or to add some padding.
+                offset: 0,
 
-                        // should animated scroll be canceled on user scroll/keypress
-                        // if set to "false" user input will be disabled until animated scroll is complete
-                        // (when set to false, "passive" will be also set to "false" to prevent Chrome errors)
-                        cancelOnUserAction: true,
+                // should animated scroll be canceled on user scroll/keypress
+                // if set to "false" user input will be disabled until animated scroll is complete
+                // (when set to false, "passive" will be also set to "false" to prevent Chrome errors)
+                cancelOnUserAction: true,
 
-                        // Set passive event Listeners to be true by default. Stops Chrome from complaining.
-                        passive: true,
+                // Set passive event Listeners to be true by default. Stops Chrome from complaining.
+                passive: true,
 
-                        // Scroll horizontally rather than vertically (which is the default)
-                        horizontal: false,
+                // Scroll horizontally rather than vertically (which is the default)
+                horizontal: false,
 
-                        onComplete: () => {
+                onComplete: () => {
+                    if (!this.isAtEnd()) {
+                        this.animateToEnd();
+                    } else {
+                        this.scrollDownTimeout = setTimeout(() => {
                             if (!this.isAtEnd()) {
                                 this.animateToEnd();
-                            } else {
-                                this.scrollDownTimeout = setTimeout(() => {
-                                    if (!this.isAtEnd()) {
-                                        this.animateToEnd();
-                                    }
-                                }, 200);
                             }
-                        }
-                    };
-                    animateScrollTo(this.scrollContainerEl.scrollHeight + 50, options);
+                        }, 100);
+                    }
                 }
-            }
+            };
+            animateScrollTo(this.containerRef.scrollHeight + 10, options);
         }
     }
 
     public setScrollMode(mode: 'none' | 'end' | 'stay') {
-        if (mode === 'stay') {
-            this.getTopMessageOffset();
+        if (this.list) {
+            this.list.setScrollMode(mode);
         }
-        this.scrollMode = mode;
-    }
-
-    public keepView() {
-        this.modifyScroll(this.state.items);
-    }
-
-    public fitList(instant?: boolean) {
-        requestAnimationFrame(() => {
-            if (!this.scrollContainerEl || !this.scrollContainerEl.style || !this.props) {
-                return;
-            }
-            if (this.state.items.length === 0) {
-                this.scrollContainerEl.style.paddingTop = '0px';
-                if (this.props.onLoadMoreAfter) {
-                    this.props.onLoadMoreAfter();
-                }
-                return;
-            }
-            const list = this.scrollContainerEl.firstElementChild;
-            if (list) {
-                const diff = (this.list.props.height - 12) - list.clientHeight;
-                if (diff > 0) {
-                    this.scrollContainerEl.style.paddingTop = diff + 'px';
-                    this.loadMoreAfterThrottle();
-                    this.fitListCompleteThrottle();
-                    if (diff > 8 && !instant) {
-                        requestAnimationFrame(() => {
-                            this.fitList(true);
-                        });
-                    }
-                    this.modifyScrollThumb();
-                    return;
-                }
-            }
-            this.scrollContainerEl.style.paddingTop = '0px';
-            this.modifyScrollThumb();
-        });
     }
 
     public takeSnapshot(noRemove?: boolean) {
-        clearTimeout(this.removeSnapshotTimeout);
-        if (!this.messageInnerRef || !this.messageSnapshotRef) {
-            return;
-        }
-        let className: string = '';
-        if (this.messageInnerRef.classList.contains('group')) {
-            className = 'group';
-        } else if (this.messageInnerRef.classList.contains('user')) {
-            className = 'user';
-        }
-        this.messageSnapshotRef.classList.remove('group', 'user', 'hidden');
-        this.messageSnapshotRef.classList.add(className);
-        this.messageInnerRef.classList.add('hidden');
-        this.messageSnapshotRef.innerHTML = this.messageInnerRef.innerHTML;
-        const scrollEl = this.messageSnapshotRef.querySelector(' div > div');
-        const scrollTop = this.getScrollTop();
-        if (scrollEl && scrollTop !== null) {
-            scrollEl.scrollTop = scrollTop;
-        }
-        if (!noRemove) {
-            this.removeSnapshotTimeout = setTimeout(() => {
-                this.removeSnapshot();
-            }, 1500);
-        }
+        //
     }
 
     public removeSnapshot(instant?: boolean | number) {
-        this.enableScroll();
-        const fn = () => {
-            clearTimeout(this.removeSnapshotTimeout);
-            if (!this.messageInnerRef || !this.messageSnapshotRef) {
-                return;
-            }
-            this.messageInnerRef.classList.remove('hidden');
-            this.messageSnapshotRef.classList.remove('group', 'user');
-            this.messageSnapshotRef.classList.add('hidden');
-            this.messageSnapshotRef.innerHTML = '';
-        };
-        if (typeof instant === 'boolean') {
-            requestAnimationFrame(fn);
-        } else {
-            setTimeout(fn, instant ? instant : 10);
-        }
-    }
-
-    public disableScroll() {
-        this.disableScrolling = true;
-        if (this.isMac && this.scrollContainerEl) {
-            this.scrollContainerEl.style.overflow = 'hidden';
-        }
-    }
-
-    public enableScroll() {
-        this.disableScrolling = false;
-        if (this.isMac && this.scrollContainerEl) {
-            this.scrollContainerEl.style.overflow = 'hidden auto';
-        }
-    }
-
-    public tryLoadBefore() {
-        this.loadMoreBeforeThrottle(true);
+        //
     }
 
     public focusOnNewMessage() {
@@ -650,8 +432,39 @@ class Message extends React.Component<IProps, IState> {
         if (items) {
             const index = findLastIndex(items, {messagetype: C_MESSAGE_TYPE.NewMessage});
             if (index > -1 && this.list) {
-                this.list.scrollToRow(index);
+                // this.list.scrollToRow(index);
             }
+        }
+    }
+
+    public clearAll() {
+        if (this.list) {
+            this.list.clearAll();
+        }
+    }
+
+    public clear(index: number) {
+        if (this.list) {
+            this.list.cellMeasurer.clear(index);
+        }
+    }
+
+    public recomputeItemHeight(index: number) {
+        if (this.list) {
+            this.list.forceUpdate();
+            this.list.cellMeasurer.recomputeItemHeight(index);
+        }
+    }
+
+    public updateItem(index: number) {
+        if (this.list) {
+            this.list.cellMeasurer.updateItem(index);
+        }
+    }
+
+    public updateList(callback?: any) {
+        if (this.list) {
+            this.list.forceUpdate(callback);
         }
     }
 
@@ -661,33 +474,25 @@ class Message extends React.Component<IProps, IState> {
             <AutoSizer>
                 {({width, height}: any) => (
                     <div className="main-messages">
-                        <div ref={this.messageInnerRefHandler}
-                             className={'messages-inner ' + (((this.peer && this.peer.getType() === PeerType.PEERGROUP) || this.isSimplified) ? 'group' : 'user') + (selectable ? ' selectable' : '')}
-                             onDragEnter={this.dragEnterHandler} onDragEnd={this.dragLeaveHandler}
-                             style={{height: `${height}px`, width: `${width}px`}}
+                        <div
+                            className={'messages-inner ' + (((this.peer && this.peer.getType() === PeerType.PEERGROUP) || this.isSimplified) ? 'group' : 'user') + (selectable ? ' selectable' : '')}
+                            onDragEnter={this.dragEnterHandler} onDragEnd={this.dragLeaveHandler}
+                            style={{height: `${height}px`, width: `${width}px`}}
                         >
-                            <List
+                            <KKWindow
                                 ref={this.refHandler}
-                                deferredMeasurementCache={this.cache}
-                                rowHeight={this.getHeight}
-                                rowRenderer={this.rowRender}
-                                rowCount={items.length}
-                                overscanRowCount={32}
-                                width={width + (this.scrollbar.noScroll ? 0 : this.scrollbar.width)}
-                                height={height}
-                                estimatedRowSize={52}
-                                onRowsRendered={this.onRowsRenderedHandler}
-                                noRowsRenderer={this.noRowsRenderer}
-                                scrollToAlignment={(this.scrollToIndex || -1) > -1 ? 'end' : 'start'}
+                                containerRef={this.containerRefHandler}
                                 className="chat active-chat"
-                                scrollToIndex={this.scrollToIndex}
+                                height={height}
+                                width={width}
+                                count={items.length}
+                                overscan={10}
+                                renderer={this.rowRenderHandler}
+                                keyMapper={this.keyMapperHandler}
+                                onLoadBefore={this.props.onLoadMoreBefore}
+                                onLoadAfter={this.props.onLoadMoreAfter}
+                                onScrollPos={this.scrollPosHandler}
                             />
-                            {this.scrollbar.enable &&
-                            <div className="kk-scrollbar-track" onMouseDown={this.scrollbarTrackDownHandler}
-                                 hidden={this.scrollbar.noScroll}>
-                                <div ref={this.scrollbarThumbRefHandler} className="kk-scrollbar-thumb"
-                                     onMouseDown={this.scrollbarThumbDownHandler}/>
-                            </div>}
                             <Menu
                                 anchorEl={moreAnchorEl}
                                 anchorPosition={moreAnchorPos}
@@ -699,7 +504,6 @@ class Message extends React.Component<IProps, IState> {
                                 {this.contextMenuItem()}
                             </Menu>
                         </div>
-                        <div ref={this.messageSnapshotRefHandler} className="messages-snapshot hidden"/>
                         <div ref={this.dropZoneRefHandler} className="messages-dropzone hidden"
                              onDrop={this.dragLeaveHandler}>
                             <div className="dropzone" onDrop={this.dropHandler}>
@@ -715,10 +519,11 @@ class Message extends React.Component<IProps, IState> {
         );
     }
 
-    private getHeight = (params: { index: number }) => {
+    // @ts-ignore
+    private getHeight = (index: number) => {
         const {items} = this.state;
-        let height = this.cache.rowHeight(params);
-        const message = items[params.index];
+        let height = 20;
+        const message = items[index];
         if (!message) {
             return height;
         }
@@ -861,30 +666,20 @@ class Message extends React.Component<IProps, IState> {
         this.list = value;
     }
 
+    private containerRefHandler = (ref: any) => {
+        this.containerRef = ref;
+    }
+
+    // @ts-ignore
     private isAtEnd() {
-        if (this.scrollContainerEl) {
-            return (this.scrollContainerEl.clientHeight + this.scrollContainerEl.scrollTop + 2 >= this.scrollContainerEl.scrollHeight);
+        if (this.containerRef) {
+            return (this.containerRef.clientHeight + this.containerRef.scrollTop + 2 >= this.containerRef.scrollHeight);
         } else {
             return true;
         }
     }
 
-    private rowRender = ({index, key, parent, style}: any): any => {
-        const message = this.state.items[index];
-        return (
-            <CellMeasurer
-                cache={this.cache}
-                columnIndex={0}
-                key={key}
-                rowIndex={index}
-                parent={parent}>
-                {({measure}) => {
-                    return this.messageItem(index, message, this.peer, this.readId, style, measure);
-                }}
-            </CellMeasurer>
-        );
-    }
-
+    // @ts-ignore
     private noRowsRenderer = () => {
         if (this.state.loading || this.state.loadingPersist || this.props.isMobileView) {
             return (<div className="chat-placeholder">
@@ -897,10 +692,16 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
-    private messageItem(index: number, message: IMessage, peer: InputPeer | null, readId: number, style: any, measureFn?: any) {
+    private rowRenderHandler = (index: number) => {
+        const message = this.state.items[index];
         if (!message) {
             return '';
         }
+        const peer = this.peer;
+        const readId = this.readId;
+        const measureFn = () => {
+            window.console.log('measureFn');
+        };
         const messageMedia: any = {
             ref: null,
         };
@@ -926,7 +727,7 @@ class Message extends React.Component<IProps, IState> {
             case C_MESSAGE_TYPE.End:
                 return '';
             case C_MESSAGE_TYPE.Gap:
-                return (<div style={style} className="bubble-gap">
+                return (<div className="bubble-gap">
                     <div className="gap">
                         {Boolean(this.state.loading || this.state.loadingPersist) && <div className="loading">
                             <span className="loader"/>
@@ -935,13 +736,13 @@ class Message extends React.Component<IProps, IState> {
                 </div>);
             case C_MESSAGE_TYPE.NewMessage:
                 return (
-                    <div style={style} className="bubble-wrapper">
+                    <div className="bubble-wrapper">
                         <span className="system-message divider">{i18n.t('message.unread_messages')}</span>
                     </div>
                 );
             case C_MESSAGE_TYPE.Date:
                 return (
-                    <div style={style} className="bubble-wrapper date-padding">
+                    <div className="bubble-wrapper date-padding">
                         {!Boolean((this.state.loading || this.state.loadingPersist) && index === 0) &&
                         <span className="date">{TimeUtility.dynamicDate(message.createdon || 0)}</span>}
                         {Boolean((this.state.loading || this.state.loadingPersist) && index === 0) &&
@@ -954,10 +755,10 @@ class Message extends React.Component<IProps, IState> {
             default:
                 if (message.messageaction !== C_MESSAGE_ACTION.MessageActionNope && message.messageaction !== undefined) {
                     return (
-                        <div style={style}
-                             className={'bubble-wrapper' + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '')}
-                             onClick={this.toggleSelectHandler(message.id || 0, index)}
-                             onDoubleClick={this.selectMessage(index)}>
+                        <div
+                            className={'bubble-wrapper' + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '')}
+                            onClick={this.toggleSelectHandler(message.id || 0, index)}
+                            onDoubleClick={this.selectMessage(index)}>
                             {this.state.selectable && <Checkbox
                                 className={'checkbox ' + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? 'checked' : '')}
                                 color="primary" checked={this.state.selectedIds.hasOwnProperty(message.id || 0)}
@@ -967,10 +768,10 @@ class Message extends React.Component<IProps, IState> {
                     );
                 } else {
                     return (
-                        <div style={style}
-                             className={'bubble-wrapper _bubble' + (message.me && !this.isSimplified ? ' me' : ' you') + (message.avatar ? ' avatar' : '') + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '') + this.getMessageType(message) + ((message.me && message.error) ? ' has-error' : '')}
-                             onClick={this.toggleSelectHandler(message.id || 0, index)}
-                             onDoubleClick={this.selectMessage(index)}
+                        <div
+                            className={'bubble-wrapper _bubble' + (message.me && !this.isSimplified ? ' me' : ' you') + (message.avatar ? ' avatar' : '') + (this.state.selectedIds.hasOwnProperty(message.id || 0) ? ' selected' : '') + this.getMessageType(message) + ((message.me && message.error) ? ' has-error' : '')}
+                            onClick={this.toggleSelectHandler(message.id || 0, index)}
+                            onDoubleClick={this.selectMessage(index)}
                         >
                             {(!this.state.selectable && message.avatar && message.senderid) && (
                                 <UserAvatar id={message.senderid} className="avatar"/>
@@ -1072,84 +873,32 @@ class Message extends React.Component<IProps, IState> {
         this.selectMessageHandler(this.state.items[index].id || 0, index, null)();
     }
 
-    private onRowsRenderedHandler = (data: any) => {
+    private scrollPosHandler: scrollFunc = ({start, end, overscanStart, overscanEnd}) => {
         const {items} = this.state;
-        if (items.length > 0 && data.startIndex > -1 && items[data.startIndex]) {
+        if (items.length > 0 && start > -1 && items[start]) {
             // Show/Hide date
             if (this.props.showDate) {
-                if ((items[data.startIndex] && items[data.startIndex].messagetype === C_MESSAGE_TYPE.Date) ||
-                    ((items[data.startIndex + 1] && items[data.startIndex + 1].messagetype === C_MESSAGE_TYPE.Date))) {
+                if ((items[start] && items[start].messagetype === C_MESSAGE_TYPE.Date) ||
+                    ((items[start + 1] && items[start + 1].messagetype === C_MESSAGE_TYPE.Date))) {
                     this.props.showDate(null);
                 } else {
-                    this.props.showDate(items[data.startIndex].createdon || 0);
+                    this.props.showDate(items[start].createdon || 0);
                 }
             }
 
             if (this.props.showNewMessage && this.newMessageIndex > -1) {
-                // if ((items[data.stopIndex] && items[data.stopIndex].messagetype === C_MESSAGE_TYPE.NewMessage) ||
-                //     ((items[data.stopIndex + 1] && items[data.stopIndex + 1].messagetype === C_MESSAGE_TYPE.NewMessage))) {
-                //     this.props.showNewMessage(true);
-                // } else {
-                //     this.props.showNewMessage(false);
-                // }
-                if (items[data.stopIndex] && data.stopIndex <= this.newMessageIndex) {
+                if (items[end] && end <= this.newMessageIndex) {
                     this.props.showNewMessage(true);
                 } else {
                     this.props.showNewMessage(false);
                 }
             }
-
-            // On load more after or before
-            if (data.stopIndex > -1 && items[data.stopIndex]) {
-                let check = false;
-                if (data.startIndex < 3) {
-                    this.bottomOfList = false;
-                }
-                if (this.enableLoadBefore && !this.hasEnd) {
-                    if (data.startIndex < 5 && this.props.onLoadMoreBefore) {
-                        this.loadMoreBeforeThrottle();
-                    } else {
-                        this.topOfList = false;
-                    }
-                }
-                if (Math.abs(items.length - data.stopIndex) < 4 && items[data.stopIndex].id && this.props.onLoadMoreAfter) {
-                    this.loadMoreAfterThrottle();
-                    this.topOfList = false;
-                    check = true;
-                } else {
-                    this.bottomOfList = false;
-                }
-                if (!check && items[data.stopIndex].messagetype === C_MESSAGE_TYPE.Gap && items[data.stopIndex].id && this.props.onLoadMoreAfterGap) {
-                    this.props.onLoadMoreAfterGap(items[data.stopIndex].id || 0);
-                }
-            }
         }
 
-        this.messageScroll = data;
+        this.messageScroll = {start, end, overscanStart, overscanEnd};
 
         if (this.props.onRendered) {
-            this.props.onRendered(data);
-        }
-    }
-
-    private loadMoreAfter = () => {
-        if (!this.bottomOfList && this.props.onLoadMoreAfter) {
-            setTimeout(() => {
-                if (this.props.onLoadMoreAfter) {
-                    this.props.onLoadMoreAfter();
-                    this.firstTimeLoadAfter = false;
-                }
-            }, this.firstTimeLoadAfter ? 250 : 0);
-            this.bottomOfList = true;
-        }
-    }
-
-    private loadMoreBefore = (force?: boolean) => {
-        if ((!this.topOfList || force) && this.props.onLoadMoreBefore) {
-            this.props.onLoadMoreBefore();
-            this.enableLoadBefore = false;
-            this.topOfList = true;
-            this.setEnableBefore();
+            this.props.onRendered({start, end, overscanStart, overscanEnd});
         }
     }
 
@@ -1184,16 +933,12 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
-    private keyMapperHandler = (rowIndex: number, colIndex: number) => {
-        return this.getKey(rowIndex, colIndex);
-    }
-
-    private getKey = (rowIndex: number, colIndex: number) => {
+    private keyMapperHandler = (index: number) => {
         const {items} = this.state;
-        if (!items[rowIndex]) {
-            return 'null';
+        if (!items[index]) {
+            return `null_${index}`;
         }
-        return `${items[rowIndex].id || 0}-${colIndex}-${items[rowIndex].messagetype || 0}`;
+        return messageKey(items[index].id || 0, items[index].messagetype || 0);
     }
 
     private renderSystemMessage(message: IMessage) {
@@ -1300,7 +1045,7 @@ class Message extends React.Component<IProps, IState> {
         this.setState({
             selectedIds,
         }, () => {
-            this.list.forceUpdateGrid();
+            // this.list.forceUpdateGrid();
             if (cb) {
                 cb();
             }
@@ -1324,7 +1069,7 @@ class Message extends React.Component<IProps, IState> {
         this.setState({
             selectedIds,
         }, () => {
-            this.list.forceUpdateGrid();
+            // this.list.forceUpdateGrid();
         });
     }
 
@@ -1417,107 +1162,6 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
-    /* Modify scroll position based on scroll mode */
-    private modifyScroll(items: IMessage[]) {
-        switch (this.scrollMode) {
-            case 'stay':
-                const index = findIndex(items, {id: this.stayInfo.id});
-                if (index > -1) {
-                    if (!(this.messageScroll.overscanStartIndex <= index + 1 && this.messageScroll.overscanStopIndex >= index)) {
-                        this.list.scrollToRow(index);
-                    }
-                    requestAnimationFrame(() => {
-                        this.checkScroll(this.stayInfo.id, index);
-                    });
-                } else {
-                    this.removeSnapshot(true);
-                    this.setEnableBefore();
-                }
-                return;
-            case 'end':
-                this.animateToEnd(true);
-                return;
-            default:
-                break;
-        }
-    }
-
-    private getCellElem(id: number) {
-        return document.querySelector(`.messages-inner .bubble-wrapper .bubble.b_${id}`);
-    }
-
-    private getCellTop(id: number) {
-        const el = this.getCellElem(id);
-        if (el && el.parentElement) {
-            return parseInt(window.getComputedStyle(el.parentElement).getPropertyValue('top').replace(/^\D+/g, ''), 10);
-        }
-        return null;
-    }
-
-    private getScrollTop() {
-        if (this.scrollContainerEl) {
-            return this.scrollContainerEl.scrollTop;
-        }
-        return null;
-    }
-
-    private getTopMessageOffset() {
-        const {items} = this.state;
-        let index;
-        for (index = this.messageScroll.startIndex; index < this.messageScroll.startIndex + 3; index++) {
-            if (items[index].messagetype !== C_MESSAGE_TYPE.Date && items[index].messagetype !== C_MESSAGE_TYPE.NewMessage) {
-                break;
-            }
-        }
-        const cellTop = this.getCellTop(Math.floor(items[index].id || 0));
-        const scrollTop = this.getScrollTop();
-        if (cellTop !== null && scrollTop !== null) {
-            this.stayInfo = {
-                id: items[index].id || 0,
-                offset: cellTop - scrollTop,
-            };
-        }
-    }
-
-    /* Try to find correct position */
-    private checkScroll(id: number, index: number, tries?: number) {
-        const fn = (t?: number) => {
-            if (!t) {
-                t = 1;
-            } else {
-                t++;
-            }
-            if (t <= 10) {
-                window.requestAnimationFrame(() => {
-                    if (this.list) {
-                        if (!(this.messageScroll.overscanStartIndex <= index && this.messageScroll.overscanStopIndex >= index)) {
-                            this.list.scrollToRow(index);
-                        }
-                        this.checkScroll(id, index, t);
-                    }
-                });
-            } else {
-                this.removeSnapshot();
-                this.setEnableBefore();
-            }
-        };
-        const cellTop = this.getCellTop(Math.floor(id));
-        if (cellTop) {
-            this.list.scrollToPosition(cellTop - this.stayInfo.offset);
-            requestAnimationFrame(() => {
-                const cellTopCheck = this.getCellTop(Math.floor(id));
-                if (cellTopCheck === cellTop) {
-                    this.setEnableBefore();
-                    this.removeSnapshot();
-                } else {
-                    fn(tries);
-                }
-            });
-        } else {
-            fn(tries);
-        }
-    }
-
     /* Message body renderer */
     private renderMessageBody(message: IMessage, peer: InputPeer | null, messageMedia: any, parentEl: any, measureFn?: any) {
         const refBindHandler = (ref: any) => {
@@ -1601,36 +1245,15 @@ class Message extends React.Component<IProps, IState> {
         this.isSimplified = UserRepo.getInstance().getBubbleMode() === '5';
     }
 
-    private fitListComplete = () => {
-        setTimeout(() => {
-            if (this.state.items && this.state.items.length > 0 && this.props.onRendered) {
-                this.props.onRendered({
-                    overscanStartIndex: 0,
-                    overscanStopIndex: 0,
-                    startIndex: 0,
-                    stopIndex: this.state.items.length - 1,
-                });
-            }
-        }, 200);
-    }
-
-    private messageInnerRefHandler = (ref: any) => {
-        this.messageInnerRef = ref;
-    }
-
-    private messageSnapshotRefHandler = (ref: any) => {
-        this.messageSnapshotRef = ref;
-    }
-
     private dropZoneRefHandler = (ref: any) => {
         this.dropZoneRef = ref;
     }
 
     private windowResizeHandler = () => {
-        if (this.scrollbar.enable) {
-            this.modifyScrollThumb();
-        }
-        this.fitList(true);
+        // if (this.scrollbar.enable) {
+        //     this.modifyScrollThumb();
+        // }
+        // this.fitList(true);
     }
 
     private dragEnterHandler = (e: any) => {
@@ -1672,138 +1295,6 @@ class Message extends React.Component<IProps, IState> {
         this.props.onDrop(files);
     }
 
-    private scrollbarThumbRefHandler = (ref: any) => {
-        this.scrollThumbRef = ref;
-    }
-
-    private scrollHandler = (e: any) => {
-        if (!this.scrollbar.dragged && this.scrollbar.enable) {
-            this.modifyScrollThumb();
-        }
-        if (this.disableScrolling) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-    }
-
-    private modifyScrollThumb = () => {
-        if (!this.scrollThumbRef) {
-            return;
-        }
-        const eldiv = this.scrollContainerEl.firstElementChild;
-        if (!eldiv) {
-            return;
-        }
-        this.scrollbar.noScroll = (this.scrollContainerEl.clientHeight > eldiv.scrollHeight);
-        if (!this.scrollbar.noScroll) {
-            let top = (this.scrollContainerEl.scrollTop / eldiv.scrollHeight) * 100;
-            const height = (this.scrollContainerEl.clientHeight / eldiv.scrollHeight) * 100;
-            if (top + height > 100) {
-                top = 100 - height;
-            }
-            this.scrollThumbRef.style.top = `${top}%`;
-            this.scrollThumbRef.style.height = `${height}%`;
-        }
-        if (this.scrollbar.noScroll) {
-            this.forceUpdate();
-        }
-    }
-
-    private scrollbarTrackDownHandler = (e: any) => {
-        if (!this.scrollThumbRef || !this.scrollContainerEl) {
-            return;
-        }
-        const rect = this.scrollThumbRef.getBoundingClientRect();
-        const top = rect.top + rect.height / 2;
-        const diff = Math.min(Math.max(Math.abs(top - e.pageY), 100), 400);
-        if (top > e.pageY) {
-            this.scrollToPosition(this.scrollContainerEl.scrollTop - diff);
-        } else {
-            this.scrollToPosition(this.scrollContainerEl.scrollTop + diff);
-        }
-        setTimeout(() => {
-            this.modifyScrollThumb();
-        }, 10);
-    }
-
-    private scrollbarThumbDownHandler = (e: any) => {
-        if (!this.scrollContainerEl) {
-            return;
-        }
-        e.stopPropagation();
-        e.preventDefault();
-        const eldiv = this.scrollContainerEl.firstElementChild;
-        if (eldiv) {
-            this.scrollbar.dragged = true;
-            this.scrollbar.clickPos = e.pageY;
-            this.scrollbar.clickTop = (this.scrollContainerEl.scrollTop / eldiv.scrollHeight) * this.scrollContainerEl.clientHeight;
-            this.scrollbar.clickScrollTop = this.scrollContainerEl.scrollTop;
-            this.setupDragging();
-        }
-    }
-
-    private scrollbarThumbMoveHandler = (e: any) => {
-        if (!this.scrollThumbRef || !this.scrollContainerEl || !this.scrollbar.dragged) {
-            return;
-        }
-        const eldiv = this.scrollContainerEl.firstElementChild;
-        if (!eldiv) {
-            return;
-        }
-        const offset = e.pageY - this.scrollbar.clickPos;
-        const scrollTop = this.scrollbar.clickScrollTop + offset * (eldiv.scrollHeight / this.scrollContainerEl.clientHeight);
-        this.scrollToPosition(scrollTop);
-        let top = this.scrollbar.clickTop + offset;
-        if (top < 0) {
-            top = 0;
-        }
-        if (top > (this.scrollContainerEl.clientHeight - this.scrollThumbRef.clientHeight)) {
-            top = this.scrollContainerEl.clientHeight - this.scrollThumbRef.clientHeight;
-        }
-        this.scrollThumbRef.style.top = `${top}px`;
-    }
-
-    private scrollbarThumbUpHandler = () => {
-        this.scrollbar.dragged = false;
-        this.teardownDragging();
-    }
-
-    private setupDragging() {
-        if (!this.scrollContainerEl) {
-            return;
-        }
-        this.scrollContainerEl.style.userSelect = 'none';
-        document.addEventListener('mousemove', this.scrollbarThumbMoveHandler);
-        document.addEventListener('mouseup', this.scrollbarThumbUpHandler);
-        document.addEventListener('mousedown', this.teardownDragging);
-    }
-
-    private teardownDragging = () => {
-        if (!this.scrollContainerEl) {
-            return;
-        }
-        this.scrollContainerEl.style.userSelect = 'auto';
-        document.removeEventListener('mousemove', this.scrollbarThumbMoveHandler);
-        document.removeEventListener('mouseup', this.scrollbarThumbUpHandler);
-        document.removeEventListener('mousedown', this.teardownDragging);
-    }
-
-    private scrollToPosition(pos: number) {
-        if (pos < 0) {
-            pos = 0;
-        }
-        if (this.scrollContainerEl) {
-            const eldiv = this.scrollContainerEl.firstElementChild;
-            if (!eldiv) {
-                const lim = eldiv.scrollHeight - this.scrollContainerEl.clientHeight;
-                if (pos > lim) {
-                    pos = lim;
-                }
-            }
-        }
-        this.list.scrollToPosition(pos);
-    }
-
     private openExternalLink = (url: string) => (e: any) => {
         e.preventDefault();
         ElectronService.openExternal(url);
@@ -1823,12 +1314,6 @@ class Message extends React.Component<IProps, IState> {
         this.documentViewerService.loadDocument(doc);
     }
 
-    private setEnableBefore() {
-        clearTimeout(this.enableLoadBeforeTimeout);
-        this.enableLoadBeforeTimeout = setTimeout(() => {
-            this.enableLoadBefore = true;
-        }, 500);
-    }
 
     private checkEnd(items: IMessage[]) {
         for (let i = 0; i < 5 || i < items.length; i++) {

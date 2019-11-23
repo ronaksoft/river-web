@@ -151,10 +151,11 @@ class Test extends React.Component<IProps, IState> {
 
     private checkHandler = () => {
         if (this.kkWindowRef) {
-            this.kkWindowRef.takeSnapshot();
+            // this.kkWindowRef.takeSnapshot();
             //     const offset = this.kkWindowRef.getCellOffset(this.start);
             //     this.kkWindowRef.scrollToItem(this.start, offset);
             //     window.console.log(this.start, offset);
+            window.console.log(this.kkWindowRef.cellMeasurer.getAllHeight());
         }
     }
 
@@ -188,7 +189,7 @@ class Test extends React.Component<IProps, IState> {
                 items,
             }, () => {
                 if (this.kkWindowRef) {
-                    this.kkWindowRef.recomputeItem(index);
+                    this.kkWindowRef.cellMeasurer.recomputeItemHeight(index);
                 }
             });
         }

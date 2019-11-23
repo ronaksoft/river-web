@@ -247,7 +247,6 @@ class Dialog extends React.PureComponent<IProps, IState> {
 
     public render() {
         const {moreAnchorPos} = this.state;
-        const {searchItems, searchAddedItems, searchMessageItems} = this.state;
         return (
             <div className="dialogs">
                 <div ref={this.containerRefHandler} className="dialog-search">
@@ -291,29 +290,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
                                     rtl={!this.rtl}
                                 >
                                     <div className="dialog-container">
-                                        {searchItems.map((dialog, index) => {
-                                            const isTyping = this.isTypingList.hasOwnProperty(dialog.peerid || '') ? this.isTypingList[dialog.peerid || ''] : {};
-                                            return (
-                                                <DialogMessage key={dialog.peerid || index} dialog={dialog}
-                                                               isTyping={isTyping} selectedId={this.state.selectedId}
-                                                               onContextMenuOpen={this.contextMenuOpenHandler(index)}/>
-                                            );
-                                        })}
-                                        {searchAddedItems.map((dialog, index) => {
-                                            return (
-                                                <DialogMessage key={dialog.peerid || index} dialog={dialog}
-                                                               isTyping={{}} selectedId={this.state.selectedId}/>
-                                            );
-                                        })}
-                                        {Boolean(searchMessageItems.length > 0) &&
-                                        <div className="search-label">{i18n.t('dialog.messages')}</div>}
-                                        {searchMessageItems.map((dialog, index) => {
-                                            return (
-                                                <DialogMessage key={dialog.topmessageid || dialog.peerid || index}
-                                                               dialog={dialog} isTyping={{}} selectedId=""
-                                                               messageId={dialog.topmessageid}/>
-                                            );
-                                        })}
+                                        {this.getContent()}
                                     </div>
                                 </Scrollbars>
                             </div>
@@ -331,6 +308,39 @@ class Dialog extends React.PureComponent<IProps, IState> {
                 </Menu>
             </div>
         );
+    }
+
+    private getContent() {
+        const {searchItems, searchAddedItems, searchMessageItems} = this.state;
+        if ((searchItems.length + searchAddedItems.length + searchMessageItems.length) === 0) {
+            return this.noRowsRenderer();
+        } else {
+            return (<>
+                {searchItems.map((dialog, index) => {
+                    const isTyping = this.isTypingList.hasOwnProperty(dialog.peerid || '') ? this.isTypingList[dialog.peerid || ''] : {};
+                    return (
+                        <DialogMessage key={dialog.peerid || index} dialog={dialog}
+                                       isTyping={isTyping} selectedId={this.state.selectedId}
+                                       onContextMenuOpen={this.contextMenuOpenHandler(index)}/>
+                    );
+                })}
+                {searchAddedItems.map((dialog, index) => {
+                    return (
+                        <DialogMessage key={dialog.peerid || index} dialog={dialog}
+                                       isTyping={{}} selectedId={this.state.selectedId}/>
+                    );
+                })}
+                {Boolean(searchMessageItems.length > 0) &&
+                <div className="search-label">{i18n.t('dialog.messages')}</div>}
+                {searchMessageItems.map((dialog, index) => {
+                    return (
+                        <DialogMessage key={dialog.topmessageid || dialog.peerid || index}
+                                       dialog={dialog} isTyping={{}} selectedId=""
+                                       messageId={dialog.topmessageid}/>
+                    );
+                })}
+            </>);
+        }
     }
 
     // @ts-ignore

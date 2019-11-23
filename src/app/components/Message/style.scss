@@ -103,9 +103,10 @@
 
 .bubble-wrapper {
   position: relative;
-  display: inline-block;
+  display: flex;
   width: 100%;
   padding-bottom: 2px;
+  justify-content: center;
 
   &.date-padding {
     padding-bottom: 6px;
@@ -114,7 +115,7 @@
   }
 
   &.voice {
-    height: 44px;
+    //height: 44px;
 
     .bubble {
       padding: 3px !important;
@@ -389,8 +390,9 @@
       padding-top: 6px;
     }
 
+    justify-content: flex-start;
+
     .bubble {
-      float: left;
       color: var(--black-text);
       background-color: var(--message-chat);
       align-self: flex-start;
@@ -413,8 +415,9 @@
       visibility: hidden;
     }
 
+    justify-content: flex-end;
+
     .bubble {
-      float: right;
       color: var(--black-text);
       background-color: var(--green);
       align-self: flex-end;
@@ -667,11 +670,6 @@
 
   &.hidden {
     display: none;
-  }
-
-  .ReactVirtualized__List.chat {
-    overflow: hidden !important;
-    width: 100% !important;
   }
 }
 
@@ -1190,11 +1188,11 @@ html[bubble="5"] {
       display: none;
     }
 
+    align-items: flex-start;
     .bubble {
       background-color: transparent !important;
       box-shadow: none;
       margin-left: 44px !important;
-      float: left;
 
       .inner {
         &.emoji_1, &.emoji_2 {
