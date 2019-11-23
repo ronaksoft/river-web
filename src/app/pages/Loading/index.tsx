@@ -15,6 +15,8 @@ import {CloseRounded} from "@material-ui/icons";
 import IframeService, {C_IFRAME_SUBJECT} from "../../services/iframe";
 import {Link} from "react-router-dom";
 import ElectronService from "../../services/electron";
+import {C_VERSION} from "../../components/SettingsMenu";
+import DevTools from "../../components/DevTools";
 
 import './style.scss';
 
@@ -35,6 +37,9 @@ class Loading extends React.Component<IProps, IState> {
     private sdk: SDK;
     private tm: any = null;
     private iframeService: IframeService;
+    private versionClickTimeout: any = null;
+    private versionClickCounter: number = 0;
+    private devToolsRef: DevTools | undefined;
     private eventReferences: any[] = [];
 
     constructor(props: IProps) {
@@ -85,6 +90,7 @@ class Loading extends React.Component<IProps, IState> {
         const {percent, msg, iframeActive} = this.state;
         return (
             <div className="loading-page">
+                <DevTools ref={this.devToolsRefHandler}/>
                 {iframeActive && <span className="close-btn">
                                     <Tooltip
                                         title="close"
@@ -139,6 +145,7 @@ class Loading extends React.Component<IProps, IState> {
                         <Link to={'/signup/workspace'}>Change Workspace</Link>
                     </div>}
                 </div>
+                <div className="version-container" onClick={this.versionClickHandler}>{C_VERSION}</div>
             </div>
         );
     }
@@ -191,6 +198,31 @@ class Loading extends React.Component<IProps, IState> {
 
     private closeIframeHandler = () => {
         this.iframeService.close();
+    }
+
+    /* DevTools ref handler */
+    private devToolsRefHandler = (ref: any) => {
+        this.devToolsRef = ref;
+    }
+
+    /* Version click handler */
+    private versionClickHandler = () => {
+        if (!this.versionClickTimeout) {
+            this.versionClickTimeout = setTimeout(() => {
+                clearTimeout(this.versionClickTimeout);
+                this.versionClickTimeout = null;
+                this.versionClickCounter = 0;
+            }, 6000);
+        }
+        this.versionClickCounter++;
+        if (this.versionClickCounter >= 10) {
+            clearTimeout(this.versionClickTimeout);
+            this.versionClickTimeout = null;
+            this.versionClickCounter = 0;
+            if (this.devToolsRef) {
+                this.devToolsRef.open();
+            }
+        }
     }
 }
 

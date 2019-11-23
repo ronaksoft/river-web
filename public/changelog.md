@@ -1,3 +1,6 @@
+## 0.27.14
+* DevTools updated
+
 ## 0.27.13
 * DevTools updated
 
@@ -49,30 +52,3 @@
 * Code refactor
 * ReactScript added
 * Minor UI bugs fixed
-
-## 0.26.38~27
-* Electron updated (0.9.6)
-* MessageMedia blur updated
-* CSS user-select added in indicator
-* UI bug in status fixed
-* CachedPhoto bug fixed
-* Typing UI bug fixed
-* FileManger logs updated
-* Select removed from date
-* DocumentViewer arrow keys bug fixed
-* WASM updated
-* Fix for localhost
-* Document viewer's caption backdrop click bug fixed 
-* Fix RandomId error check
-* RANDOM_ID error check
-* Message UI bug fixed
-* MoveDown unread counter improved
-* Bug fixed in send message
-* Emoji frequently used list added
-* Paste from clipboard added
-* MessageMedia bug fixed
-* Inline emoji added
-* Staging version updated
-* MessageMedia upload bug fixed
-* Global search message added in LeftMenu
-* Ability to run in staging server

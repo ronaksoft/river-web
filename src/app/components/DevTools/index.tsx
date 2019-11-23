@@ -17,6 +17,7 @@ import Button from "@material-ui/core/Button";
 import DialogActions from "@material-ui/core/DialogActions";
 import i18n from "../../services/i18n";
 import ElectronService from "../../services/electron";
+import {serverKeys} from "../../services/sdk/server";
 
 import './style.scss';
 
@@ -25,10 +26,11 @@ interface IProps {
 }
 
 interface IState {
-    open: boolean;
-    url: string;
+    debugServerKeys: string;
     fileUrl: string;
+    open: boolean;
     throttleInterval: number;
+    url: string;
 }
 
 class DevTools extends React.Component<IProps, IState> {
@@ -38,10 +40,11 @@ class DevTools extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
+            debugServerKeys: localStorage.getItem('river.server_keys') || serverKeys,
             fileUrl: localStorage.getItem('river.workspace_url_file') || 'file.river.im',
             open: false,
             throttleInterval: parseInt(localStorage.getItem('river.debug.throttle_interval') || '200', 10),
-            url: localStorage.getItem('river.workspace_url') || 'cyrus.river.im',
+            url: localStorage.getItem('river.workspace_url') || 'cyrus.river.im'
         };
 
         this.electronService = ElectronService.getInstance();
@@ -55,7 +58,7 @@ class DevTools extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {open, url, fileUrl, throttleInterval} = this.state;
+        const {open, url, fileUrl, throttleInterval, debugServerKeys} = this.state;
         return (
             <Dialog
                 open={open}
@@ -85,6 +88,15 @@ class DevTools extends React.Component<IProps, IState> {
                                 fullWidth={true}
                                 value={fileUrl}
                                 onChange={this.debugModeFileUrlChange}
+                            />
+                            <TextField
+                                autoFocus={true}
+                                margin="dense"
+                                label="Server Keys"
+                                type="text"
+                                fullWidth={true}
+                                value={debugServerKeys}
+                                onChange={this.debugServerKeysChange}
                             />
                             <TextField
                                 autoFocus={true}
@@ -132,7 +144,12 @@ class DevTools extends React.Component<IProps, IState> {
     private debugModeApplyHandler = () => {
         localStorage.setItem('river.workspace_url', this.state.url);
         localStorage.setItem('river.workspace_url_file', this.state.fileUrl);
+        localStorage.setItem('river.server_keys', this.state.debugServerKeys);
         localStorage.setItem('river.debug.throttle_interval', String(this.state.throttleInterval));
+        if (serverKeys !== this.state.debugServerKeys) {
+            const authErrorEvent = new CustomEvent('authErrorEvent', {});
+            window.dispatchEvent(authErrorEvent);
+        }
         window.location.reload();
     }
 
@@ -147,6 +164,13 @@ class DevTools extends React.Component<IProps, IState> {
     private debugModeFileUrlChange = (e: any) => {
         this.setState({
             fileUrl: e.currentTarget.value,
+        });
+    }
+
+    /* Debug mode server keys change handler */
+    private debugServerKeysChange = (e: any) => {
+        this.setState({
+            debugServerKeys: e.currentTarget.value,
         });
     }
 
