@@ -10,14 +10,17 @@ interface IProps {
     width: number;
     count: number;
     renderer: (index: number) => any;
+    noRowsRenderer?: any;
     containerRef?: (ref: any) => void;
     keyMapper: (index: number) => string;
+    estimatedItemSize?: number;
+    estimatedItemSizeFunc?: (index: number) => number;
     overscan?: number;
     fitList?: boolean;
     onUpdate?: () => void;
     onScrollPos?: scrollFunc;
     onScrollUpdatePos?: scrollFunc;
-    scrollMode?: 'end' | 'stay' | 'none';
+    scrollMode?: 'end' | 'stay' | 'top' | 'none';
     cellPrefix?: string;
     loadBeforeLimit?: number;
     onLoadBefore?: (start: number, end: number) => void;
@@ -103,7 +106,7 @@ class KKWindow extends React.Component<IProps, IState> {
         noScroll: false,
         width: 0,
     };
-    private scrollMode: 'end' | 'stay' | 'none' = 'end';
+    private scrollMode: 'end' | 'stay' | 'top' | 'none' = 'end';
     private fitList: boolean = true;
     private readonly cellPrefix: string = 'cell';
     private loadMoreReady: boolean = false;
@@ -133,7 +136,8 @@ class KKWindow extends React.Component<IProps, IState> {
 
         this.cellMeasurer = new CellMeasurer({
             cellPrefix: this.cellPrefix,
-            estimatedItemSize: 41,
+            estimatedItemSize: props.estimatedItemSize || 41,
+            estimatedItemSizeFunc: props.estimatedItemSizeFunc,
             keyMapper: this.props.keyMapper,
             overscan: props.overscan,
             rowCount: props.count,
@@ -183,7 +187,7 @@ class KKWindow extends React.Component<IProps, IState> {
 
     public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>) {
         if (prevProps.count !== this.props.count) {
-            if (!this.loadMoreReady) {
+            if (!this.loadMoreReady && this.props.count < (this.props.overscan || 10)) {
                 this.takeSnapshot();
             }
             this.loadMoreReady = false;
@@ -214,7 +218,7 @@ class KKWindow extends React.Component<IProps, IState> {
         }
     }
 
-    public setScrollMode(mode: 'end' | 'stay' | 'none') {
+    public setScrollMode(mode: 'end' | 'stay' | 'top' | 'none') {
         this.scrollMode = mode;
     }
 
@@ -240,6 +244,7 @@ class KKWindow extends React.Component<IProps, IState> {
                     this.revertSnapshot();
                 }, 100);
             }
+            window.console.log('takeSnapshot');
         }
     }
 
@@ -266,7 +271,6 @@ class KKWindow extends React.Component<IProps, IState> {
 
     public render() {
         const {width, height} = this.props;
-        const {items} = this.state;
         return (
             <div style={containerStyle}>
                 <div ref={this.snapshotRefHandler} style={snapshotStyle} className="snappshot"/>
@@ -278,16 +282,7 @@ class KKWindow extends React.Component<IProps, IState> {
                          width: `${width + (this.scrollbar.enable ? this.scrollbar.width : 0)}px`
                      }}
                      onScroll={this.scrollHandler} onWheel={this.wheelHandler}>
-                    {items.map((item, index) => {
-                        const key = this.props.keyMapper(index);
-                        const id = `${this.cellPrefix}_${key}`;
-                        return (<div key={key} id={id}
-                                     ref={this.cellMeasurer.cellRefHandler(index, id)}>
-                            <Fragment visFn={this.cellMeasurer.visibleHandler(index)}
-                                      defaultVisible={this.cellMeasurer.isVisible(index)}
-                                      body={this.props.renderer(index)}/>
-                        </div>);
-                    })}
+                    {this.getContent()}
                 </div>
                 {this.scrollbar.enable &&
                 <div ref={this.scrollbarRefHandler} style={scrollbarStyle} onMouseDown={this.scrollbarTrackDownHandler}>
@@ -296,6 +291,26 @@ class KKWindow extends React.Component<IProps, IState> {
                 </div>}
             </div>
         );
+    }
+
+    private getContent() {
+        const {items} = this.state;
+        if (items.length > 0) {
+            return items.map((item, index) => {
+                const key = this.props.keyMapper(index);
+                const id = `${this.cellPrefix}_${key}`;
+                return (<div key={key} id={id}
+                             ref={this.cellMeasurer.cellRefHandler(index, id)}>
+                    <Fragment visFn={this.cellMeasurer.visibleHandler(index)}
+                              defaultVisible={this.cellMeasurer.isVisible(index)}
+                              body={this.props.renderer(index)}/>
+                </div>);
+            });
+        } else {
+            if (this.props.noRowsRenderer) {
+                return this.props.noRowsRenderer();
+            }
+        }
     }
 
     private snapshotRefHandler = (ref: any) => {
@@ -456,6 +471,8 @@ class KKWindow extends React.Component<IProps, IState> {
                 this.containerRef.scrollTop = this.containerRef.scrollHeight - this.props.height;
             } else if (this.scrollMode === 'stay') {
                 //
+            } else if (this.scrollMode === 'top') {
+                this.containerRef.scrollTop = 10;
             }
         }
         if (this.scrollbar.enable) {

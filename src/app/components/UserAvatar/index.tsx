@@ -17,6 +17,8 @@ import Broadcaster from '../../services/broadcaster';
 import icon from '../../../asset/image/icon.png';
 
 import './style.scss';
+import {UserStatus} from "../../services/sdk/messages/chat.core.types_pb";
+import RiverTime from "../../services/utilities/river_time";
 
 const DefaultColors = [
     '#30496B',
@@ -125,6 +127,7 @@ interface IProps {
     id: string;
     noDetail?: boolean;
     savedMessages?: boolean;
+    onlineIndicator?: boolean;
 }
 
 interface IState {
@@ -142,6 +145,8 @@ class UserAvatar extends React.Component<IProps, IState> {
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
     private mounted: boolean = true;
+    private riverTime: RiverTime;
+    private timeout: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -155,6 +160,7 @@ class UserAvatar extends React.Component<IProps, IState> {
         this.userRepo = UserRepo.getInstance();
         this.avatarService = AvatarService.getInstance();
         this.broadcaster = Broadcaster.getInstance();
+        this.riverTime = RiverTime.getInstance();
     }
 
     public componentDidMount() {
@@ -169,6 +175,7 @@ class UserAvatar extends React.Component<IProps, IState> {
         if (!this.props.savedMessages && this.state.id !== newProps.id) {
             this.tryTimeout = 0;
             clearTimeout(this.tryTimeout);
+            clearTimeout(this.timeout);
             this.setState({
                 id: newProps.id,
             }, () => {
@@ -180,6 +187,7 @@ class UserAvatar extends React.Component<IProps, IState> {
     public componentWillUnmount() {
         this.mounted = false;
         clearTimeout(this.tryTimeout);
+        clearTimeout(this.timeout);
         this.eventReferences.forEach((canceller) => {
             if (typeof canceller === 'function') {
                 canceller();
@@ -203,9 +211,12 @@ class UserAvatar extends React.Component<IProps, IState> {
             );
         } else {
             return (
+                <>
                 <span className={className} onClick={this.clickHandler}>{(user && photo) ?
                     <img className="avatar-image" src={photo} alt="avatar"
                          onError={this.imgErrorHandler}/> : TextAvatar(user.firstname, user.lastname)}</span>
+                    {this.getOnlineIndicator()}
+                </>
             );
         }
     }
@@ -315,6 +326,22 @@ class UserAvatar extends React.Component<IProps, IState> {
                 this.getAvatar(user.id || '', fileId);
             });
         }
+    }
+
+    /* Online indicator content */
+    private getOnlineIndicator() {
+        if (!this.props.onlineIndicator) {
+            return;
+        }
+        const {user} = this.state;
+        if (this.riverTime.now() - (user.status_last_modified || 0) < 60 && user.status === UserStatus.USERSTATUSONLINE) {
+            clearTimeout(this.timeout);
+            this.timeout = setTimeout(() => {
+                this.forceUpdate();
+            }, 15000);
+            return <div className="online-indicator"/>;
+        }
+        return;
     }
 }
 

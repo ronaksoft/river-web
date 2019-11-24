@@ -55,7 +55,6 @@ interface IProps {
     onJumpToMessage: (id: number, e: any) => void;
     onLastMessage: (message: IMessage | null) => void;
     onLoadMoreAfter?: (start: number, end: number) => any;
-    onLoadMoreAfterGap?: (id: number) => any;
     onLoadMoreBefore?: (start: number, end: number) => any;
     onSelectableChange: (selectable: boolean) => void;
     onSelectedIdsChange: (selectedIds: { [key: number]: number }) => void;
@@ -413,7 +412,7 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
-    public setScrollMode(mode: 'none' | 'end' | 'stay') {
+    public setScrollMode(mode: 'none' | 'end' | 'top' | 'stay') {
         if (this.list) {
             this.list.setScrollMode(mode);
         }
@@ -468,6 +467,12 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
+    public setFitList(fit: boolean) {
+        if (this.list) {
+            this.list.setFitList(fit);
+        }
+    }
+
     public render() {
         const {items, moreAnchorEl, moreAnchorPos, selectable, loadingOverlay} = this.state;
         return (
@@ -488,7 +493,10 @@ class Message extends React.Component<IProps, IState> {
                                 count={items.length}
                                 overscan={10}
                                 renderer={this.rowRenderHandler}
+                                noRowsRenderer={this.noRowsRendererHandler}
                                 keyMapper={this.keyMapperHandler}
+                                estimatedItemSize={41}
+                                estimatedItemSizeFunc={this.getHeight}
                                 loadBeforeLimit={10}
                                 onLoadBefore={this.props.onLoadMoreBefore}
                                 onLoadAfter={this.props.onLoadMoreAfter}
@@ -523,50 +531,48 @@ class Message extends React.Component<IProps, IState> {
     // @ts-ignore
     private getHeight = (index: number) => {
         const {items} = this.state;
-        let height = 20;
+        let height = 41;
         const message = items[index];
         if (!message) {
             return height;
         }
-        if (height === 52) {
-            switch (message.messagetype) {
-                case C_MESSAGE_TYPE.Date:
-                    return 33;
-                case C_MESSAGE_TYPE.Picture:
-                case C_MESSAGE_TYPE.Video:
-                    const info = getContentSize(message);
-                    if (info) {
-                        height = info.height + 10;
+        switch (message.messagetype) {
+            case C_MESSAGE_TYPE.Date:
+                return 33;
+            case C_MESSAGE_TYPE.Picture:
+            case C_MESSAGE_TYPE.Video:
+                const info = getContentSize(message);
+                if (info) {
+                    height = info.height + 10;
+                }
+                break;
+            case C_MESSAGE_TYPE.Voice:
+                height = 42;
+                break;
+            case C_MESSAGE_TYPE.System:
+                return 41;
+            case C_MESSAGE_TYPE.Normal:
+            case undefined:
+                if (message.em_le) {
+                    if (message.em_le === 1) {
+                        height = 74;
+                    } else {
+                        height = 62;
                     }
-                    break;
-                case C_MESSAGE_TYPE.Voice:
-                    height = 42;
-                    break;
-                case C_MESSAGE_TYPE.System:
-                    return 41;
-                case C_MESSAGE_TYPE.Normal:
-                case undefined:
-                    if (message.em_le) {
-                        if (message.em_le === 1) {
-                            height = 74;
-                        } else {
-                            height = 62;
-                        }
-                    }
-                    break;
-            }
-            if (((this.peer && this.peer.getType() === PeerType.PEERGROUP) || this.isSimplified) && message.avatar) {
-                height += 20;
-            }
-            if (message.replyto && message.replyto !== 0 && message.deleted_reply !== true) {
-                height += 41;
-            }
-            if (message.fwdsenderid && message.fwdsenderid !== '0') {
-                height += 25;
-            }
-            if (message.avatar) {
-                height += 6;
-            }
+                }
+                break;
+        }
+        if (((this.peer && this.peer.getType() === PeerType.PEERGROUP) || this.isSimplified) && message.avatar) {
+            height += 20;
+        }
+        if (message.replyto && message.replyto !== 0 && message.deleted_reply !== true) {
+            height += 41;
+        }
+        if (message.fwdsenderid && message.fwdsenderid !== '0') {
+            height += 25;
+        }
+        if (message.avatar) {
+            height += 6;
         }
         return height;
     }
@@ -680,8 +686,7 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
-    // @ts-ignore
-    private noRowsRenderer = () => {
+    private noRowsRendererHandler = () => {
         if (this.state.loading || this.state.loadingPersist || this.props.isMobileView) {
             return (<div className="chat-placeholder">
                 <Loading/>
@@ -701,7 +706,9 @@ class Message extends React.Component<IProps, IState> {
         const peer = this.peer;
         const readId = this.readId;
         const measureFn = () => {
-            window.console.log('measureFn');
+            if (this.list) {
+                this.list.cellMeasurer.recomputeItemHeight(index);
+            }
         };
         const messageMedia: any = {
             ref: null,

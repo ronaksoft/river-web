@@ -57,7 +57,7 @@ class CachedPhoto extends React.Component<IProps, IState> {
     }
 
     public componentWillReceiveProps(newProps: IProps) {
-        if (this.lastFileId !== newProps.fileLocation.fileid || (newProps.blur || 0) !== this.lastBlur) {
+        if (newProps.fileLocation && (this.lastFileId !== newProps.fileLocation.fileid || (newProps.blur || 0) !== this.lastBlur)) {
             this.lastFileId = newProps.fileLocation.fileid || '';
             this.lastBlur = newProps.blur || 0;
             this.retries = 0;
@@ -68,7 +68,9 @@ class CachedPhoto extends React.Component<IProps, IState> {
     public componentWillUnmount() {
         this.mounted = false;
         clearTimeout(this.tryTimeout);
-        this.cachedFileService.unmountCache(this.props.fileLocation.fileid || '');
+        if (this.props.fileLocation) {
+            this.cachedFileService.unmountCache(this.props.fileLocation.fileid || '');
+        }
     }
 
     public render() {

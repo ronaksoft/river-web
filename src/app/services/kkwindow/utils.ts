@@ -29,10 +29,11 @@ export class CellMeasurer {
     private readonly keyMapperFn: any;
     private readonly updateList: any;
     private readonly estimatedItemSize: number = 40;
+    private estimatedItemSizeFunc: ((index: number) => number) | undefined;
     private readonly cellPrefix: string;
     private totalHeight: number = 0;
 
-    public constructor({cellPrefix, estimatedItemSize, rowCount, defaultHeight, overscan, keyMapper}: { cellPrefix: string, estimatedItemSize: number, rowCount: number, defaultHeight?: number, overscan?: number, keyMapper?: (index: number) => string }) {
+    public constructor({cellPrefix, estimatedItemSize, estimatedItemSizeFunc, rowCount, defaultHeight, overscan, keyMapper}: { cellPrefix: string, estimatedItemSize: number, estimatedItemSizeFunc?: (index: number) => number, rowCount: number, defaultHeight?: number, overscan?: number, keyMapper?: (index: number) => string }) {
         this.overscan = overscan || 10;
         this.updateList = debounce(this.updateListHandler, 1);
         this.cellPrefix = cellPrefix;
@@ -43,6 +44,9 @@ export class CellMeasurer {
         }
         if (estimatedItemSize) {
             this.estimatedItemSize = estimatedItemSize;
+        }
+        if (estimatedItemSizeFunc) {
+            this.estimatedItemSizeFunc = estimatedItemSizeFunc;
         }
         if (rowCount) {
             this.rowCount = rowCount;
@@ -304,9 +308,9 @@ export class CellMeasurer {
         this.totalHeight = 0;
         for (let i = 0; i < this.rowCount; i++) {
             const fragment = this.fragmentList[this.keyMapperFn(i)];
-            let height = fragment ? fragment.height : this.estimatedItemSize;
+            let height = fragment ? fragment.height : (this.estimatedItemSizeFunc ? this.estimatedItemSizeFunc(i) : this.estimatedItemSize);
             if (height < 0) {
-                height = this.estimatedItemSize;
+                height = (this.estimatedItemSizeFunc ? this.estimatedItemSizeFunc(i) :this.estimatedItemSize);
             }
             if (i === 0) {
                 this.offsetList[i] = height;

@@ -571,8 +571,9 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     }
 
     /* Cancel file download/upload */
-    private cancelFileHandler = () => {
+    private cancelFileHandler = (e: any) => {
         if (this.props.onAction) {
+            e.stopPropagation();
             if (this.props.message && (this.props.message.id || 0) < 0) {
                 this.props.onAction('cancel', this.state.message);
             } else {

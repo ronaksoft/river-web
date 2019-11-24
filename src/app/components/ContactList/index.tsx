@@ -364,6 +364,7 @@ class ContactList extends React.Component<IProps, IState> {
     /* Get all contacts */
     private getDefault(fill?: boolean) {
         const fn = (us: IUser[]) => {
+            window.console.log(us);
             this.defaultContact = us;
             this.contactsRes = clone(us);
             if (fill !== false) {

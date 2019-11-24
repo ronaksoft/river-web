@@ -101,7 +101,7 @@ class DialogMessage extends React.Component<IProps, IState> {
                         className={'dialog-wrapper' + (muted ? ' muted' : '') + (hasMention ? ' has-mention' : '')}>
                         {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
                         <UserAvatar className="avatar" id={dialog.peerid || ''} noDetail={true}
-                                    savedMessages={dialog.saved_messages}/>}
+                                    savedMessages={dialog.saved_messages} onlineIndicator={true}/>}
                         {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
                         <GroupAvatar className="avatar" id={dialog.peerid || ''}/>}
                         <div className="dialog-top-bar">

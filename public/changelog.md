@@ -1,3 +1,10 @@
+## 0.28.0
+* 🎉 New list rendering with `KKWindow`
+* Online indicator in avatar
+* Smooth scroll down
+* Cancel uploading bug fixed
+* Various bugs fixed
+
 ## 0.27.14
 * DevTools updated
 
