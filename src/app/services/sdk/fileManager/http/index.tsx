@@ -14,7 +14,7 @@ import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from '../const/const';
 import {C_MSG} from '../../const';
 import ElectronService from '../../../electron';
 import {serverKeys} from "../../server";
-import {serverTime} from '../../server/socket';
+import Socket, {serverTime} from '../../server/socket';
 
 export interface IHttpRequest {
     constructor: number;
@@ -41,9 +41,12 @@ export default class Http {
     private workerId: number = 0;
     private isWorkerReady: boolean = false;
     private readyHandler: any = null;
+    private readonly shareWorker: any = null;
+    private socket: Socket | undefined;
 
-    public constructor(bytes: any, id: number) {
+    public constructor(shareWorker: boolean, id: number) {
         const fileUrl = localStorage.getItem('river.workspace_url_file') || '';
+        this.shareWorker = shareWorker;
 
         this.reqId = 0;
         this.worker = new Worker('/bin/worker.js?v18');
@@ -58,9 +61,13 @@ export default class Http {
         }
 
         const fn = () => {
-            window.removeEventListener('wsOpen', fn);
-            this.workerMessage('init', {});
-            this.initWorkerEvent();
+            if (shareWorker) {
+                this.initShareWorker();
+            } else {
+                window.removeEventListener('wsOpen', fn);
+                this.workerMessage('init', {});
+                this.initWorkerEvent();
+            }
         };
 
         if (serverTime === 0) {
@@ -168,6 +175,16 @@ export default class Http {
         };
     }
 
+    private initShareWorker() {
+        this.socket = Socket.getInstance();
+        this.socket.setResolveEncryptFn(this.resolveEncrypt);
+        this.socket.setResolveDecryptFn(this.resolveDecrypt);
+        if (this.readyHandler) {
+            this.readyHandler();
+        }
+        this.isWorkerReady = true;
+    }
+
     /* Send http request */
     private sendRequest(request: IHttpRequest) {
         this.workerMessage('fnEncrypt', {
@@ -177,7 +194,7 @@ export default class Http {
         });
     }
 
-    private resolveEncrypt(reqId: number, base64: string) {
+    private resolveEncrypt = (reqId: number, base64: string) => {
         if (!this.messageListeners.hasOwnProperty(reqId)) {
             return;
         }
@@ -210,7 +227,7 @@ export default class Http {
         });
     }
 
-    private resolveDecrypt(reqId: number, constructor: number, base64: string) {
+    private resolveDecrypt = (reqId: number, constructor: number, base64: string) => {
         if (!this.messageListeners.hasOwnProperty(reqId)) {
             return;
         }
@@ -229,9 +246,13 @@ export default class Http {
 
     /* Post message to worker */
     private workerMessage = (cmd: string, data: any) => {
-        this.worker.postMessage({
-            cmd,
-            data,
-        });
+        if (this.socket && this.shareWorker) {
+            this.socket.sendWorkerMessage(cmd, data);
+        } else {
+            this.worker.postMessage({
+                cmd,
+                data,
+            });
+        }
     }
 }

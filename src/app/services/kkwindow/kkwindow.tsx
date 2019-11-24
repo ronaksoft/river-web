@@ -168,6 +168,19 @@ class KKWindow extends React.Component<IProps, IState> {
         //
     }
 
+    public shouldComponentUpdate(nextProps: Readonly<IProps>, nextState: Readonly<IState>, nextContext: any): boolean {
+        if (nextProps.count !== this.props.count && this.loadBeforeTriggered) {
+            if (this.containerRef && this.containerRef.scrollTop < 5) {
+                this.scrollToItem(1);
+                // this.takeSnapshot(true);
+            }
+            if (this.cellMeasurer && nextProps.count > this.props.count) {
+                this.cellMeasurer.clear((nextProps.count - this.props.count) + 1);
+            }
+        }
+        return true;
+    }
+
     public componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>) {
         if (prevProps.count !== this.props.count) {
             if (!this.loadMoreReady) {
@@ -209,9 +222,10 @@ class KKWindow extends React.Component<IProps, IState> {
         return this.cellMeasurer.getCellOffset(index);
     }
 
-    public takeSnapshot() {
+    public takeSnapshot(noRemove?: boolean) {
         if (this.snapshotRef && this.containerRef) {
-            this.snapshotRef.innerHTML = this.containerRef.innerHTML;
+            const html = this.containerRef.innerHTML;
+            this.snapshotRef.innerHTML = html.replace(/id="/g, 'sid="');
             if (this.scrollbar.enable) {
                 this.snapshotRef.style.right = `-1px`;
             } else {
@@ -221,10 +235,11 @@ class KKWindow extends React.Component<IProps, IState> {
             this.snapshotRef.style.padding = this.containerRef.style.padding;
             this.containerRef.style.opacity = '0';
             this.snapshotRef.scrollTop = this.containerRef.scrollTop;
-
-            setTimeout(() => {
-                this.revertSnapshot();
-            }, 100);
+            if (noRemove !== true) {
+                setTimeout(() => {
+                    this.revertSnapshot();
+                }, 100);
+            }
         }
     }
 
@@ -232,6 +247,7 @@ class KKWindow extends React.Component<IProps, IState> {
         if (this.snapshotRef && this.containerRef) {
             this.snapshotRef.style.display = 'none';
             this.containerRef.style.opacity = '1';
+            this.snapshotRef.innerHTML = '';
         }
     }
 
@@ -240,6 +256,9 @@ class KKWindow extends React.Component<IProps, IState> {
     }
 
     public clearAll() {
+        this.loadMoreReady = false;
+        this.loadBeforeTriggered = false;
+        this.loadAfterTriggered = false;
         if (this.cellMeasurer) {
             this.cellMeasurer.clearAll();
         }
@@ -261,9 +280,11 @@ class KKWindow extends React.Component<IProps, IState> {
                      onScroll={this.scrollHandler} onWheel={this.wheelHandler}>
                     {items.map((item, index) => {
                         const key = this.props.keyMapper(index);
-                        return (<div key={key} id={`${this.cellPrefix}_${key}`}
-                                     ref={this.cellMeasurer.cellRefHandler(index)}>
+                        const id = `${this.cellPrefix}_${key}`;
+                        return (<div key={key} id={id}
+                                     ref={this.cellMeasurer.cellRefHandler(index, id)}>
                             <Fragment visFn={this.cellMeasurer.visibleHandler(index)}
+                                      defaultVisible={this.cellMeasurer.isVisible(index)}
                                       body={this.props.renderer(index)}/>
                         </div>);
                     })}

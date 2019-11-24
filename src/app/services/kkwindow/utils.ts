@@ -64,9 +64,12 @@ export class CellMeasurer {
         this.scrollUpdatePosFn = fn;
     }
 
-    public cellRefHandler = (index: number, force?: boolean) => (ref: any) => {
+    public cellRefHandler = (index: number, id: string, force?: boolean) => (ref: any) => {
         const key = this.keyMapperFn(index);
         if (this.fragmentList.hasOwnProperty(key) && this.fragmentList[key].height !== -1 && force !== true) {
+            if (ref && this.fragmentList[key].height > 0) {
+                ref.style.height = `${this.fragmentList[key].height}px`;
+            }
             return;
         }
         if (!ref || !ref.firstElementChild) {
@@ -79,8 +82,8 @@ export class CellMeasurer {
                 return;
             }
             const rect = (e && e[0] && e[0].contentRect) ? e[0].contentRect : ref.firstElementChild.getBoundingClientRect();
-            if (force) {
-                window.console.log('force', rect);
+            if (rect.height === 0) {
+                return;
             }
             if (!this.fragmentList.hasOwnProperty(key)) {
                 this.fragmentList[key] = {
@@ -125,8 +128,7 @@ export class CellMeasurer {
         if (this.fragmentList.hasOwnProperty(key)) {
             const el = document.getElementById(`${this.cellPrefix}_${key}`);
             if (el) {
-                window.console.log(el);
-                this.cellRefHandler(index, true)(el);
+                this.cellRefHandler(index, '', true)(el);
             }
         }
     }
@@ -138,14 +140,8 @@ export class CellMeasurer {
     public updateItemByKey(key: string) {
         if (this.fragmentList.hasOwnProperty(key)) {
             if (this.fragmentList[key].setVisible) {
-                window.console.log('updateItemByKey', key);
                 // @ts-ignore
                 this.fragmentList[key].setVisible(true, true);
-                // setTimeout(() => {
-                //     window.console.log(this.fragmentList[key].setVisible);
-                //     // @ts-ignore
-                //     this.fragmentList[key].setVisible(true, true);
-                // }, 1000);
             }
         }
     }
@@ -190,9 +186,17 @@ export class CellMeasurer {
             this.fragmentList[key] = {
                 height: -1,
                 setVisible,
-                visible: false,
+                visible: true,
             };
         }
+    }
+
+    public isVisible = (index: number) => {
+        const key = this.keyMapperFn(index);
+        if (this.fragmentList.hasOwnProperty(key)) {
+            return this.fragmentList[key].visible;
+        }
+        return true;
     }
 
     public getCellOffset(index: number) {
@@ -263,7 +267,10 @@ export class CellMeasurer {
             for (let i = fromT; i < this.offsetList.length && i <= toT; i++) {
                 const key = this.keyMapperFn(i);
                 if (this.fragmentList.hasOwnProperty(key)) {
-                    const visible = (this.start - this.overscan <= i && i <= this.end + this.overscan);
+                    let visible = (this.start - this.overscan <= i && i <= this.end + this.overscan);
+                    if (this.isNew(i)) {
+                        visible = true;
+                    }
                     this.fragmentList[key].visible = visible;
                     if (this.fragmentList[key].setVisible) {
                         // @ts-ignore
@@ -297,7 +304,10 @@ export class CellMeasurer {
         this.totalHeight = 0;
         for (let i = 0; i < this.rowCount; i++) {
             const fragment = this.fragmentList[this.keyMapperFn(i)];
-            const height = fragment ? fragment.height : this.estimatedItemSize;
+            let height = fragment ? fragment.height : this.estimatedItemSize;
+            if (height < 0) {
+                height = this.estimatedItemSize;
+            }
             if (i === 0) {
                 this.offsetList[i] = height;
             } else {

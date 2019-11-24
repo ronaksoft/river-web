@@ -70,6 +70,10 @@ interface IChunksInfo {
     updates: IChunkUpdate[];
 }
 
+export const isMobile = () => {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+};
+
 const C_FILE_SERVER_HTTP_WORKER_NUM = 1;
 const C_MAX_UPLOAD_QUEUE_SIZE = 2;
 const C_MAX_UPLOAD_PIPELINE_SIZE = 8;
@@ -889,14 +893,24 @@ export default class FileManager {
     private initFileServer() {
         this.fileSeverInitialized = true;
         setTimeout(() => {
-            for (let i = 0; i < C_FILE_SERVER_HTTP_WORKER_NUM; i++) {
-                this.httpWorkers[i] = new Http('', i + 1);
-                this.httpWorkers[i].ready(() => {
+            if (isMobile()) {
+                this.httpWorkers[0] = new Http(true, 1);
+                this.httpWorkers[0].ready(() => {
                     this.startDownloadQueue();
                     this.startInstanceDownloadQueue();
                     this.startUploadQueue();
-                    window.console.log(`Http WASM worker ${i} is ready`);
+                    window.console.log(`Http shared worker is attached`);
                 });
+            } else {
+                for (let i = 0; i < C_FILE_SERVER_HTTP_WORKER_NUM; i++) {
+                    this.httpWorkers[i] = new Http(false, i + 1);
+                    this.httpWorkers[i].ready(() => {
+                        this.startDownloadQueue();
+                        this.startInstanceDownloadQueue();
+                        this.startUploadQueue();
+                        window.console.log(`Http WASM worker ${i} is ready`);
+                    });
+                }
             }
         }, 110);
     }

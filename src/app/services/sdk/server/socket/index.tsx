@@ -53,6 +53,8 @@ export default class Socket {
     private lastSendTime: number = 0;
     private lastReceiveTime: number = 0;
     private online: boolean = navigator.onLine || true;
+    private resolveEncryptFn: any | undefined;
+    private resolveDecryptFn: any | undefined;
 
     public constructor() {
         this.testUrl = localStorage.getItem('river.workspace_url') || '';
@@ -155,10 +157,32 @@ export default class Socket {
                 case 'fnDecryptError':
                     this.dispatchEvent('fnDecryptError', null);
                     break;
+                case 'fnEncryptCallback':
+                    if (this.resolveEncryptFn) {
+                        this.resolveEncryptFn(d.data.reqId, d.data.data);
+                    }
+                    break;
+                case 'fnDecryptCallback':
+                    if (this.resolveDecryptFn) {
+                        this.resolveDecryptFn(d.data.reqId, d.data.constructor, d.data.data);
+                    }
+                    break;
             }
         };
 
         this.checkNetwork();
+    }
+
+    public setResolveEncryptFn(fn: any) {
+        this.resolveEncryptFn = fn;
+    }
+
+    public setResolveDecryptFn(fn: any) {
+        this.resolveDecryptFn = fn;
+    }
+
+    public sendWorkerMessage(cmd: string, data: any) {
+        this.workerMessage(cmd, data);
     }
 
     public isOnline() {

@@ -367,7 +367,7 @@ class Message extends React.Component<IProps, IState> {
             return;
         }
         clearTimeout(this.scrollDownTimeout);
-        if (this.containerRef) {
+        if (this.containerRef && !this.isAtEnd()) {
             const options: any = {
                 // duration of the scroll per 1000px, default 500
                 speed: 1000,
@@ -409,7 +409,7 @@ class Message extends React.Component<IProps, IState> {
                     }
                 }
             };
-            animateScrollTo(this.containerRef.scrollHeight + 10, options);
+            animateScrollTo((this.containerRef.scrollHeight - this.containerRef.clientHeight) + 1, options);
         }
     }
 
@@ -489,6 +489,7 @@ class Message extends React.Component<IProps, IState> {
                                 overscan={10}
                                 renderer={this.rowRenderHandler}
                                 keyMapper={this.keyMapperHandler}
+                                loadBeforeLimit={10}
                                 onLoadBefore={this.props.onLoadMoreBefore}
                                 onLoadAfter={this.props.onLoadMoreAfter}
                                 onScrollPos={this.scrollPosHandler}

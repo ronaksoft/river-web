@@ -138,6 +138,7 @@ import {Error} from '../../services/sdk/messages/chat.core.types_pb';
 import {OptionsObject, withSnackbar} from "notistack";
 
 import './style.scss';
+import {scrollFunc} from "../../services/kkwindow/utils";
 
 export let notifyOptions: any[] = [];
 const C_MAX_UPDATE_DIFF = 2000;
@@ -212,7 +213,17 @@ class Chat extends React.Component<IProps, IState> {
     private isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } } = {};
     private iframeService: IframeService;
     private readonly newMessageLoadThrottle: any = null;
-    private scrollInfo: any = null;
+    private scrollInfo: {
+        end: number;
+        overscanEnd: number;
+        overscanStart: number;
+        start: number;
+    } = {
+        end: 0,
+        overscanEnd: 0,
+        overscanStart: 0,
+        start: 0,
+    };
     private cachedMessageService: CachedMessageService;
     private updateReadInboxTimeout: any = {};
     private isRecording: boolean = false;
@@ -748,7 +759,7 @@ class Chat extends React.Component<IProps, IState> {
                 return;
             }
             this.messageRef.clearAll();
-            this.messageRef.animateToEnd();
+            // this.messageRef.animateToEnd();
             if (shrink) {
                 this.setState({
                     rightMenuShrink: true,
@@ -904,8 +915,8 @@ class Chat extends React.Component<IProps, IState> {
                     // Scroll down if possible
                     if (this.endOfMessage && this.isInChat) {
                         if (dataMsg.maxReadId !== -1) {
-                            if (this.scrollInfo && this.scrollInfo.stopIndex && this.messages[this.scrollInfo.stopIndex]) {
-                                this.sendReadHistory(this.peer, Math.floor(this.messages[this.scrollInfo.stopIndex].id || 0), this.scrollInfo.stopIndex);
+                            if (this.scrollInfo && this.scrollInfo.end && this.messages[this.scrollInfo.end]) {
+                                this.sendReadHistory(this.peer, Math.floor(this.messages[this.scrollInfo.end].id || 0), this.scrollInfo.end);
                             } else {
                                 this.sendReadHistory(this.peer, dataMsg.maxReadId);
                             }
@@ -2232,7 +2243,7 @@ class Chat extends React.Component<IProps, IState> {
             }
             if (this.selectedDialogId === peerId) {
                 if (unreadCounter === 0 && this.scrollInfo) {
-                    this.setEndOfMessage(this.messages.length - this.scrollInfo.stopIndex <= 1);
+                    this.setEndOfMessage(this.messages.length - this.scrollInfo.end <= 1);
                     if (this.endOfMessage && this.moveDownRef) {
                         this.moveDownRef.setVisible(false);
                     }
@@ -2713,8 +2724,8 @@ class Chat extends React.Component<IProps, IState> {
         //     this.sendReadHistory(peer, this.readHistoryMaxId);
         // }
         if (this.selectedDialogId !== 'null' && this.messages.length > 0) {
-            if (this.scrollInfo && this.scrollInfo.stopIndex && this.messages[this.scrollInfo.stopIndex]) {
-                this.sendReadHistory(this.peer, Math.floor(this.messages[this.scrollInfo.stopIndex].id || 0), this.scrollInfo.stopIndex);
+            if (this.scrollInfo && this.scrollInfo.end && this.messages[this.scrollInfo.end]) {
+                this.sendReadHistory(this.peer, Math.floor(this.messages[this.scrollInfo.end].id || 0), this.scrollInfo.end);
             } else if (this.messages[this.messages.length - 1]) {
                 this.sendReadHistory(this.peer, Math.floor(this.messages[this.messages.length - 1].id || 0));
             }
@@ -2899,23 +2910,23 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Message Rendered Handler
      * We use it for scroll event in message list */
-    private messageRenderedHandler = (info: any) => {
+    private messageRenderedHandler: scrollFunc = ({start, end, overscanStart, overscanEnd}) => {
         const messages = this.messages;
-        const diff = messages.length - info.stopIndex;
-        this.scrollInfo = info;
+        const diff = messages.length - end;
+        this.scrollInfo = {start, end, overscanStart, overscanEnd};
         this.setEndOfMessage(diff <= 1);
         // if (this.isLoading) {
         //     return;
         // }
-        if (messages && messages[info.stopIndex]) {
+        if (messages && messages[end]) {
             if (diff <= 2) {
                 this.lastMessageId = -1;
             } else {
-                this.lastMessageId = messages[info.stopIndex].id || -1;
+                this.lastMessageId = messages[end].id || -1;
             }
-            if (messages[info.stopIndex].id !== -1) {
+            if (messages[end].id !== -1) {
                 // Update unread counter in dialog
-                this.sendReadHistory(this.peer, Math.floor(messages[info.stopIndex].id || 0), info.stopIndex, diff > 1);
+                this.sendReadHistory(this.peer, Math.floor(messages[end].id || 0), end, diff > 1);
             }
         }
     }
@@ -4465,7 +4476,7 @@ class Chat extends React.Component<IProps, IState> {
                 const before = Math.max((dialog.readinboxmaxid || 0), (dialog.readoutboxmaxid || 0));
                 const index = findLastIndex(this.messages, {id: before});
                 if (index > -1) {
-                    if (this.scrollInfo && this.messages[this.scrollInfo.stopIndex] && (this.messages[this.scrollInfo.stopIndex].id || 0) < before) {
+                    if (this.scrollInfo && this.messages[this.scrollInfo.end] && (this.messages[this.scrollInfo.end].id || 0) < before) {
                         this.messageJumpToMessageHandler(before);
                         setTimeout(() => {
                             if (this.messageRef) {

@@ -557,6 +557,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         this.floatPictureRef.style.left = `50%`;
         this.floatPictureRef.style.transform = `translate(-50%, -50%)`;
         this.floatPictureRef.style.borderRadius = `0`;
+        this.floatPictureRef.style.opacity = '1';
         setTimeout(() => {
             showMedia();
         }, 300);
@@ -578,7 +579,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 break;
             default:
             case 'message':
-                el = document.querySelector(`.bubble-wrapper .bubble.b_${doc.items[0].id} .message-media .media-big .picture`);
+                el = document.querySelector(`.chat .bubble-wrapper .bubble.b_${doc.items[0].id} .message-media .media-big .picture`);
                 break;
         }
         if (!el) {
@@ -596,6 +597,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         this.floatPictureRef.style.width = `${rect.width}px`;
         this.floatPictureRef.style.top = `${rect.top}px`;
         this.floatPictureRef.style.left = `${rect.left}px`;
+        this.floatPictureRef.style.opacity = '0.2';
         this.floatPictureRef.style.transform = ``;
         this.floatPictureRef.style.borderRadius = ``;
         setTimeout(() => {
