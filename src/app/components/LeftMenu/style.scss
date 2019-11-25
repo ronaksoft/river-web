@@ -299,8 +299,6 @@ html[theme="dark-blue"] {
 
 html[theme="dark"] {
   .column-left {
-    background-color: var(--dark-blue-medium);
-
     &.shrunk-menu .left-content .dialog-wrapper {
       .unread, .mention {
         box-shadow: 0 0 0 1.5px var(--dark-low-op50);

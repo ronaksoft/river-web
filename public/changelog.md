@@ -1,3 +1,6 @@
+## 0.28.1
+* Theme bug fixed
+
 ## 0.28.0
 * 🎉 New list rendering with `KKWindow`
 * Online indicator in avatar

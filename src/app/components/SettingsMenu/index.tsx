@@ -86,7 +86,7 @@ import DevTools from "../DevTools";
 import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.28.0';
+export const C_VERSION = '0.28.1';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 
 export const languageList = [{
