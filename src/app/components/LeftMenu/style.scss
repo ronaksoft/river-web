@@ -245,7 +245,7 @@ html[theme="dark-blue"] {
     .top-bar {
       border-bottom: 1px solid var(--dark-low-op50);
 
-      .close-btn, .menu-btn{
+      .close-btn, .menu-btn {
         button {
           svg {
             color: var(--white);
@@ -293,6 +293,38 @@ html[theme="dark-blue"] {
 
     .left-overlay {
       background-color: var(--dark-blue-medium);
+    }
+  }
+}
+
+html[theme="dark"] {
+  .column-left {
+    background-color: var(--dark-blue-medium);
+
+    &.shrunk-menu .left-content .dialog-wrapper {
+      .unread, .mention {
+        box-shadow: 0 0 0 1.5px var(--dark-low-op50);
+      }
+    }
+  }
+}
+
+html[theme="dark-night"] {
+  .column-left {
+    &.shrunk-menu .left-content .dialog-wrapper {
+      .unread, .mention {
+        box-shadow: 0 0 0 1.5px var(--dark-night-low-op50);
+      }
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .column-left {
+    &.shrunk-menu .left-content .dialog-wrapper {
+      .unread, .mention {
+        box-shadow: 0 0 0 1.5px var(--dark-blue-low-op50);
+      }
     }
   }
 }
