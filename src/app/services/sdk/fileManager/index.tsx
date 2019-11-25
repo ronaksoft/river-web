@@ -18,6 +18,7 @@ import {findIndex} from 'lodash';
 import * as core_types_pb from '../messages/chat.core.types_pb';
 import * as Sentry from '@sentry/browser';
 import {isProd} from "../../../../App";
+import IframeService from "../../iframe";
 
 export interface IFileProgress {
     active?: boolean;
@@ -893,7 +894,7 @@ export default class FileManager {
     private initFileServer() {
         this.fileSeverInitialized = true;
         setTimeout(() => {
-            if (isMobile()) {
+            if (isMobile() && IframeService.getInstance().isActive()) {
                 this.httpWorkers[0] = new Http(true, 1);
                 this.httpWorkers[0].ready(() => {
                     this.startDownloadQueue();

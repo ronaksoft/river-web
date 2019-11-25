@@ -19,6 +19,10 @@ enum DocumentAttributeType {
     AttributeTypePhoto = 3;
     AttributeTypeFile = 4;
     AttributeAnimated = 5;
+    AttributeReserved1 = 6;
+    AttributeReserved2 = 7;
+    AttributeReserved3 = 8;
+    AttributeReserved4 = 9;
 }
 
 // DocumentAttributeAudio
@@ -63,6 +67,10 @@ enum DocumentType {
     DocumentTypeVoice = 2;
     DocumentTypeVideo = 3;
     DocumentTypeWebPage = 4;
+    DocumentTypeReserved1 = 5;
+    DocumentTypeReserved2 = 6;
+    DocumentTypeReserved3 = 7;
+    DocumentTypeReserved4 = 8;
 }
 
 // Document

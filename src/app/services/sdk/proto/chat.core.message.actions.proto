@@ -47,3 +47,9 @@ message MessageActionContactRegistered {
 
 }
 
+// MessageActionScreenShotTaken
+message MessageActionScreenShotTaken {
+    optional int64 MinID = 1;
+    optional int64 MaxID = 2;
+}
+

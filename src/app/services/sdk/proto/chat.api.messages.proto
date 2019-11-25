@@ -177,6 +177,17 @@ message MessagesReorderPinnedDialogs {
     repeated InputPeer Peers = 1;
 }
 
+// MessagesSendScreenShotNotification
+// @Function
+// @Returns: Bool
+message MessagesSendScreenShotNotification {
+    required InputPeer Peer = 1;
+    required int64 RandomID = 2;
+    optional int64 ReplyTo = 3;
+    optional int64 MinID = 4;
+    optional int64 MaxID = 5;
+}
+
 // MessagesDialogs
 message MessagesDialogs {
     repeated Dialog Dialogs = 1;

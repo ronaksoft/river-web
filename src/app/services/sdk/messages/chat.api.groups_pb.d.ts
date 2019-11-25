@@ -269,6 +269,11 @@ export class GroupsUpdatePhoto extends jspb.Message {
   getPhotoid(): string | undefined;
   setPhotoid(value: string): void;
 
+  hasGroupid(): boolean;
+  clearGroupid(): void;
+  getGroupid(): string | undefined;
+  setGroupid(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GroupsUpdatePhoto.AsObject;
   static toObject(includeInstance: boolean, msg: GroupsUpdatePhoto): GroupsUpdatePhoto.AsObject;
@@ -282,6 +287,7 @@ export class GroupsUpdatePhoto extends jspb.Message {
 export namespace GroupsUpdatePhoto {
   export type AsObject = {
     photoid?: string,
+    groupid?: string,
   }
 }
 

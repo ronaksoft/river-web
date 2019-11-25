@@ -165,3 +165,31 @@ export namespace MessageActionContactRegistered {
   }
 }
 
+export class MessageActionScreenShotTaken extends jspb.Message {
+  hasMinid(): boolean;
+  clearMinid(): void;
+  getMinid(): number | undefined;
+  setMinid(value: number): void;
+
+  hasMaxid(): boolean;
+  clearMaxid(): void;
+  getMaxid(): number | undefined;
+  setMaxid(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessageActionScreenShotTaken.AsObject;
+  static toObject(includeInstance: boolean, msg: MessageActionScreenShotTaken): MessageActionScreenShotTaken.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessageActionScreenShotTaken, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessageActionScreenShotTaken;
+  static deserializeBinaryFromReader(message: MessageActionScreenShotTaken, reader: jspb.BinaryReader): MessageActionScreenShotTaken;
+}
+
+export namespace MessageActionScreenShotTaken {
+  export type AsObject = {
+    minid?: number,
+    maxid?: number,
+  }
+}
+

@@ -1912,7 +1912,8 @@ proto.msg.GroupsUpdatePhoto.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.GroupsUpdatePhoto.toObject = function(includeInstance, msg) {
   var f, obj = {
-    photoid: jspb.Message.getField(msg, 1)
+    photoid: jspb.Message.getField(msg, 1),
+    groupid: jspb.Message.getField(msg, 2)
   };
 
   if (includeInstance) {
@@ -1953,6 +1954,10 @@ proto.msg.GroupsUpdatePhoto.deserializeBinaryFromReader = function(msg, reader) 
       var value = /** @type {string} */ (reader.readInt64String());
       msg.setPhotoid(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setGroupid(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1989,6 +1994,13 @@ proto.msg.GroupsUpdatePhoto.serializeBinaryToWriter = function(message, writer) 
       f
     );
   }
+  f = /** @type {string} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeInt64String(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -2018,6 +2030,35 @@ proto.msg.GroupsUpdatePhoto.prototype.clearPhotoid = function() {
  */
 proto.msg.GroupsUpdatePhoto.prototype.hasPhotoid = function() {
   return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * required int64 GroupID = 2;
+ * @return {string}
+ */
+proto.msg.GroupsUpdatePhoto.prototype.getGroupid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, "0"));
+};
+
+
+/** @param {string} value */
+proto.msg.GroupsUpdatePhoto.prototype.setGroupid = function(value) {
+  jspb.Message.setField(this, 2, value);
+};
+
+
+proto.msg.GroupsUpdatePhoto.prototype.clearGroupid = function() {
+  jspb.Message.setField(this, 2, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.GroupsUpdatePhoto.prototype.hasGroupid = function() {
+  return jspb.Message.getField(this, 2) != null;
 };
 
 

@@ -15,7 +15,7 @@ import LiveDate from '../LiveDate';
 import {
     AlternateEmailRounded, DoneAllRounded, DoneRounded, InsertDriveFileOutlined, LocationOnOutlined, MoreVert,
     MusicNoteOutlined, NotificationsOffRounded, PeopleOutlined, PhotoOutlined, RecordVoiceOverOutlined, ScheduleRounded,
-    VideocamOutlined,
+    VideocamOutlined, ForwardOutlined, ReplyOutlined,
 } from '@material-ui/icons';
 import {PeerNotifySettings, PeerType, TypingAction} from '../../services/sdk/messages/chat.core.types_pb';
 import GroupAvatar from '../GroupAvatar';
@@ -27,9 +27,9 @@ import {C_MESSAGE_ICON} from '../Dialog/utils';
 import i18n from '../../services/i18n';
 import {localize} from '../../services/utilities/localize';
 import sdk from '../../services/sdk';
+import {Link} from "react-router-dom";
 
 import './style.scss';
-import {Link} from "react-router-dom";
 
 interface IProps {
     cancelIsTyping?: (id: string) => void;
@@ -88,7 +88,7 @@ class DialogMessage extends React.Component<IProps, IState> {
 
     public render() {
         const {messageId} = this.props;
-        const {dialog, isTyping} = this.state;
+        const {dialog, isTyping, selectedId} = this.state;
         const ids = Object.keys(isTyping);
         const muted = isMuted(dialog.notifysettings);
         const hasCounter = Boolean(dialog.unreadcount && dialog.unreadcount > 0 && dialog.readinboxmaxid !== dialog.topmessageid && !dialog.preview_me);
@@ -96,12 +96,12 @@ class DialogMessage extends React.Component<IProps, IState> {
         return (
             <Link to={messageId ? `/chat/${dialog.peerid}/${messageId}` : `/chat/${dialog.peerid}`}>
                 <div
-                    className={'dialog' + (dialog.peerid === this.state.selectedId ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}>
+                    className={'dialog' + (dialog.peerid === selectedId ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}>
                     <div
                         className={'dialog-wrapper' + (muted ? ' muted' : '') + (hasMention ? ' has-mention' : '')}>
                         {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
                         <UserAvatar className="avatar" id={dialog.peerid || ''} noDetail={true}
-                                    savedMessages={dialog.saved_messages} onlineIndicator={true}/>}
+                                    savedMessages={dialog.saved_messages} onlineIndicator={selectedId !== ''}/>}
                         {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
                         <GroupAvatar className="avatar" id={dialog.peerid || ''}/>}
                         <div className="dialog-top-bar">
@@ -172,6 +172,10 @@ class DialogMessage extends React.Component<IProps, IState> {
                 return (<PhotoOutlined className="preview-icon"/>);
             case C_MESSAGE_ICON.Audio:
                 return (<MusicNoteOutlined className="preview-icon"/>);
+            case C_MESSAGE_ICON.Forwarded:
+                return (<ForwardOutlined className="preview-icon"/>);
+            case C_MESSAGE_ICON.Reply:
+                return (<ReplyOutlined className="preview-icon"/>);
             default:
                 return '';
         }

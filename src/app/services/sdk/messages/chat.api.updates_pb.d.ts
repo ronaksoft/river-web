@@ -532,6 +532,11 @@ export class UpdateUserPhoto extends jspb.Message {
   getPhoto(): chat_core_types_pb.UserPhoto | undefined;
   setPhoto(value?: chat_core_types_pb.UserPhoto): void;
 
+  hasPhotoid(): boolean;
+  clearPhotoid(): void;
+  getPhotoid(): string | undefined;
+  setPhotoid(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateUserPhoto.AsObject;
   static toObject(includeInstance: boolean, msg: UpdateUserPhoto): UpdateUserPhoto.AsObject;
@@ -548,6 +553,7 @@ export namespace UpdateUserPhoto {
     updateid?: number,
     userid?: string,
     photo?: chat_core_types_pb.UserPhoto.AsObject,
+    photoid?: string,
   }
 }
 
@@ -796,6 +802,11 @@ export class UpdateGroupPhoto extends jspb.Message {
   getPhoto(): chat_core_types_pb.GroupPhoto | undefined;
   setPhoto(value?: chat_core_types_pb.GroupPhoto): void;
 
+  hasPhotoid(): boolean;
+  clearPhotoid(): void;
+  getPhotoid(): string | undefined;
+  setPhotoid(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateGroupPhoto.AsObject;
   static toObject(includeInstance: boolean, msg: UpdateGroupPhoto): UpdateGroupPhoto.AsObject;
@@ -812,6 +823,7 @@ export namespace UpdateGroupPhoto {
     updateid?: number,
     groupid?: string,
     photo?: chat_core_types_pb.GroupPhoto.AsObject,
+    photoid?: string,
   }
 }
 
@@ -1086,6 +1098,110 @@ export namespace UpdateAccountPrivacy {
     profilephotoList: Array<chat_core_types_pb.PrivacyRule.AsObject>,
     forwardedmessageList: Array<chat_core_types_pb.PrivacyRule.AsObject>,
     callList: Array<chat_core_types_pb.PrivacyRule.AsObject>,
+  }
+}
+
+export class UpdateLabelAdded extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  hasPeertype(): boolean;
+  clearPeertype(): void;
+  getPeertype(): number | undefined;
+  setPeertype(value: number): void;
+
+  hasPeerid(): boolean;
+  clearPeerid(): void;
+  getPeerid(): number | undefined;
+  setPeerid(value: number): void;
+
+  clearMessageidsList(): void;
+  getMessageidsList(): Array<number>;
+  setMessageidsList(value: Array<number>): void;
+  addMessageids(value: number, index?: number): number;
+
+  clearLabelidsList(): void;
+  getLabelidsList(): Array<number>;
+  setLabelidsList(value: Array<number>): void;
+  addLabelids(value: number, index?: number): number;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateLabelAdded.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateLabelAdded): UpdateLabelAdded.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateLabelAdded, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateLabelAdded;
+  static deserializeBinaryFromReader(message: UpdateLabelAdded, reader: jspb.BinaryReader): UpdateLabelAdded;
+}
+
+export namespace UpdateLabelAdded {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+    peertype?: number,
+    peerid?: number,
+    messageidsList: Array<number>,
+    labelidsList: Array<number>,
+  }
+}
+
+export class UpdateLabelRemoved extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  hasPeertype(): boolean;
+  clearPeertype(): void;
+  getPeertype(): number | undefined;
+  setPeertype(value: number): void;
+
+  hasPeerid(): boolean;
+  clearPeerid(): void;
+  getPeerid(): number | undefined;
+  setPeerid(value: number): void;
+
+  clearMessageidsList(): void;
+  getMessageidsList(): Array<number>;
+  setMessageidsList(value: Array<number>): void;
+  addMessageids(value: number, index?: number): number;
+
+  clearLabelidsList(): void;
+  getLabelidsList(): Array<number>;
+  setLabelidsList(value: Array<number>): void;
+  addLabelids(value: number, index?: number): number;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateLabelRemoved.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateLabelRemoved): UpdateLabelRemoved.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateLabelRemoved, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateLabelRemoved;
+  static deserializeBinaryFromReader(message: UpdateLabelRemoved, reader: jspb.BinaryReader): UpdateLabelRemoved;
+}
+
+export namespace UpdateLabelRemoved {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+    peertype?: number,
+    peerid?: number,
+    messageidsList: Array<number>,
+    labelidsList: Array<number>,
   }
 }
 

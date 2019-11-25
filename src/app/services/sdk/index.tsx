@@ -185,13 +185,14 @@ export default class SDK {
         return this.server.send(C_MSG.AuthCheckPhone, data.serializeBinary(), true);
     }
 
-    public register(phone: string, phoneCode: string, phoneCodeHash: string, fName: string, lName: string): Promise<any> {
+    public register(phone: string, phoneCode: string, phoneCodeHash: string, fName: string, lName: string, lang: string): Promise<any> {
         const data = new AuthRegister();
         data.setPhone(phone);
         data.setPhonecode(phoneCode);
         data.setPhonecodehash(phoneCodeHash);
         data.setFirstname(fName);
         data.setLastname(lName);
+        data.setLangcode(lang);
         return this.server.send(C_MSG.AuthRegister, data.serializeBinary(), true);
     }
 
@@ -361,7 +362,13 @@ export default class SDK {
         data.setLimit(limit || 0);
         data.setMinid(Math.floor(minId || 0));
         data.setMaxid(Math.floor(maxId || 0));
-        return this.server.send(C_MSG.MessagesGetHistory, data.serializeBinary(), true);
+        return this.server.send(C_MSG.MessagesGetHistory, data.serializeBinary(), true, {
+            retry: 7,
+            retryErrors: [{
+                code: C_ERR.ErrCodeInternal,
+                items: C_ERR_ITEM.ErrItemServer,
+            }],
+        });
     }
 
     public getManyMessage(peer: InputPeer, ids: number[]): Promise<MessagesMany.AsObject> {

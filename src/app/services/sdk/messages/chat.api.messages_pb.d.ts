@@ -613,6 +613,52 @@ export namespace MessagesReorderPinnedDialogs {
   }
 }
 
+export class MessagesSendScreenShotNotification extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): chat_core_types_pb.InputPeer;
+  setPeer(value?: chat_core_types_pb.InputPeer): void;
+
+  hasRandomid(): boolean;
+  clearRandomid(): void;
+  getRandomid(): number | undefined;
+  setRandomid(value: number): void;
+
+  hasReplyto(): boolean;
+  clearReplyto(): void;
+  getReplyto(): number | undefined;
+  setReplyto(value: number): void;
+
+  hasMinid(): boolean;
+  clearMinid(): void;
+  getMinid(): number | undefined;
+  setMinid(value: number): void;
+
+  hasMaxid(): boolean;
+  clearMaxid(): void;
+  getMaxid(): number | undefined;
+  setMaxid(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessagesSendScreenShotNotification.AsObject;
+  static toObject(includeInstance: boolean, msg: MessagesSendScreenShotNotification): MessagesSendScreenShotNotification.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessagesSendScreenShotNotification, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessagesSendScreenShotNotification;
+  static deserializeBinaryFromReader(message: MessagesSendScreenShotNotification, reader: jspb.BinaryReader): MessagesSendScreenShotNotification;
+}
+
+export namespace MessagesSendScreenShotNotification {
+  export type AsObject = {
+    peer: chat_core_types_pb.InputPeer.AsObject,
+    randomid?: number,
+    replyto?: number,
+    minid?: number,
+    maxid?: number,
+  }
+}
+
 export class MessagesDialogs extends jspb.Message {
   clearDialogsList(): void;
   getDialogsList(): Array<chat_core_types_pb.Dialog>;

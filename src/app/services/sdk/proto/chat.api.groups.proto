@@ -80,4 +80,5 @@ message GroupsRemovePhoto {
 // @Return: Bool
 message GroupsUpdatePhoto {
     required int64 PhotoID = 1 [jstype = JS_STRING];
+    required int64 GroupID = 2 [jstype = JS_STRING];
 }

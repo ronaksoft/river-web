@@ -9,11 +9,12 @@
 @import '../../../style/mixin';
 
 .status-bar {
-  padding: 3px 0 5px;
   display: flex;
   flex-direction: column;
   color: var(--grey);
   font-size: 12px;
+  justify-content: space-evenly;
+  height: 100%;
   user-select: none;
 
   .name {

@@ -665,6 +665,11 @@ export class User extends jspb.Message {
   setPhotogalleryList(value: Array<UserPhoto>): void;
   addPhotogallery(value?: UserPhoto, index?: number): UserPhoto;
 
+  hasIsbot(): boolean;
+  clearIsbot(): void;
+  getIsbot(): boolean | undefined;
+  setIsbot(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): User.AsObject;
   static toObject(includeInstance: boolean, msg: User): User.AsObject;
@@ -689,6 +694,7 @@ export namespace User {
     phone?: string,
     lastseen?: number,
     photogalleryList?: Array<UserPhoto.AsObject>,
+    isbot?: boolean,
   }
 }
 
@@ -861,6 +867,18 @@ export class UserMessage extends jspb.Message {
   getMedia_asB64(): string;
   setMedia(value: Uint8Array | string): void;
 
+  hasReplymarkup(): boolean;
+  clearReplymarkup(): void;
+  getReplymarkup(): number | undefined;
+  setReplymarkup(value: number): void;
+
+  hasReplymarkupdata(): boolean;
+  clearReplymarkupdata(): void;
+  getReplymarkupdata(): Uint8Array | string;
+  getReplymarkupdata_asU8(): Uint8Array;
+  getReplymarkupdata_asB64(): string;
+  setReplymarkupdata(value: Uint8Array | string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UserMessage.AsObject;
   static toObject(includeInstance: boolean, msg: UserMessage): UserMessage.AsObject;
@@ -893,6 +911,8 @@ export namespace UserMessage {
     entitiesList?: Array<MessageEntity.AsObject>,
     mediatype?: MediaType,
     media?: Uint8Array | string,
+    replymarkup?: number,
+    replymarkupdata?: Uint8Array | string,
   }
 }
 
@@ -1473,6 +1493,14 @@ export enum MessageEntityType {
   MESSAGEENTITYTYPEURL = 3,
   MESSAGEENTITYTYPEEMAIL = 4,
   MESSAGEENTITYTYPEHASHTAG = 5,
+  MESSAGEENTITYTYPERESERVED1 = 6,
+  MESSAGEENTITYTYPERESERVED2 = 7,
+  MESSAGEENTITYTYPERESERVED3 = 8,
+  MESSAGEENTITYTYPERESERVED4 = 9,
+  MESSAGEENTITYTYPERESERVED5 = 10,
+  MESSAGEENTITYTYPERESERVED6 = 11,
+  MESSAGEENTITYTYPERESERVED7 = 12,
+  MESSAGEENTITYTYPERESERVED8 = 13,
 }
 
 export enum GroupFlags {
@@ -1504,6 +1532,12 @@ export enum PrivacyKey {
   PRIVACYKEYPROFILEPHOTO = 4,
   PRIVACYKEYFORWARDEDMESSAGE = 5,
   PRIVACYKEYCALL = 6,
+  PRIVACYKEYRESERVED1 = 7,
+  PRIVACYKEYRESERVED2 = 8,
+  PRIVACYKEYRESERVED3 = 9,
+  PRIVACYKEYRESERVED4 = 10,
+  PRIVACYKEYRESERVED5 = 11,
+  PRIVACYKEYRESERVED6 = 12,
 }
 
 export enum PrivacyType {

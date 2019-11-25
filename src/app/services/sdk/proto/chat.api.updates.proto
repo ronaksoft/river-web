@@ -116,6 +116,7 @@ message UpdateUserPhoto {
     required int64 UpdateID = 101;
     required int64 UserID = 1 [jstype = JS_STRING];
     optional UserPhoto Photo = 2;
+    optional int64 PhotoID = 3 [jstype = JS_STRING];
 }
 
 // UpdateNotifySettings
@@ -168,6 +169,7 @@ message UpdateGroupPhoto {
     required int64 UpdateID = 101;
     required int64 GroupID = 1 [jstype = JS_STRING];
     optional GroupPhoto Photo = 2;
+    optional int64 PhotoID = 3 [jstype = JS_STRING];
 }
 
 // UpdateReadMessagesContents
@@ -223,4 +225,24 @@ message UpdateAccountPrivacy {
     repeated PrivacyRule ProfilePhoto = 4;
     repeated PrivacyRule ForwardedMessage = 5;
     repeated PrivacyRule Call = 6;
+}
+
+// UpdateLabelAdded
+message UpdateLabelAdded {
+    required int32 UCount = 100;
+    required int64 UpdateID = 101;
+    required int32 PeerType = 1;
+    required int64 PeerID = 2;
+    repeated int64 MessageIDs = 3;
+    repeated int32 LabelIDs = 4;
+}
+
+// UpdateLabelRemoved
+message UpdateLabelRemoved {
+    required int32 UCount = 100;
+    required int64 UpdateID = 101;
+    required int32 PeerType = 1;
+    required int64 PeerID = 2;
+    repeated int64 MessageIDs = 3;
+    repeated int32 LabelIDs = 4;
 }

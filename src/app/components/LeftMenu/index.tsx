@@ -16,13 +16,21 @@ import BottomBar from "../BottomBar";
 import Tooltip from "@material-ui/core/Tooltip";
 import i18n from "../../services/i18n";
 import IconButton from "@material-ui/core/IconButton";
-import {CloseRounded, EditRounded, MoreVertRounded, SearchRounded} from "@material-ui/icons";
+import {
+    CloseRounded,
+    EditRounded,
+    MoreVertRounded,
+    SearchRounded,
+    MenuRounded,
+    MenuOpenRounded
+} from "@material-ui/icons";
 import RiverLogo from "../RiverLogo";
 import Menu from "@material-ui/core/Menu";
 import Divider from "@material-ui/core/Divider";
 import MenuItem from "@material-ui/core/MenuItem";
 import NewGroupMenu from "../NewGroupMenu";
 import {IUser} from "../../repository/user/interface";
+import {omitBy, isNil} from "lodash";
 
 import './style.scss';
 
@@ -33,6 +41,7 @@ interface IProps {
     cancelIsTyping: (id: string) => void;
     dialogRef: (ref: Dialog) => void;
     iframeActive: boolean;
+    mobileView: boolean;
     onAction: (cmd: menuAction) => void;
     onContextMenu: (cmd: string, dialog: IDialog) => void;
     onGroupCreate: (contacts: IUser[], title: string, fileId: string) => void;
@@ -40,31 +49,55 @@ interface IProps {
     onSettingsAction: (cmd: 'logout') => void;
     onSettingsClose: (e: any) => void;
     updateMessages: (keep?: boolean) => void;
+    onMenuShrunk: (shrunk: boolean) => void;
 }
 
 interface IState {
     chatMoreAnchorEl: any;
+    connectionStatus: boolean;
+    connectionStatusHide: boolean;
     iframeActive: boolean;
+    isConnecting: boolean;
+    isOnline: boolean;
+    isUpdating: boolean;
     leftMenu: menuItems;
     overlay: boolean;
+    shrunkMenu: boolean;
 }
 
 class LeftMenu extends React.PureComponent<IProps, IState> {
+    public static getDerivedStateFromProps(props: IProps, state: IState) {
+        if (props.iframeActive === state.iframeActive) {
+            return;
+        }
+        return {
+            iframeActive: props.iframeActive,
+        };
+    }
+
     private bottomBarRef: BottomBar | undefined;
     private dialogRef: Dialog | undefined;
     private settingsMenuRef: SettingsMenu | undefined;
     private contactsMenuRef: ContactsMenu | undefined;
     private chatTopIcons: any[];
     private chatMoreMenuItem: any[];
+    private timeout: any = null;
+    private unreadCounter: number = 0;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
             chatMoreAnchorEl: null,
+            connectionStatus: false,
+            connectionStatusHide: false,
             iframeActive: props.iframeActive,
+            isConnecting: false,
+            isOnline: false,
+            isUpdating: false,
             leftMenu: 'chat',
             overlay: false,
+            shrunkMenu: false,
         };
 
         this.chatTopIcons = [{
@@ -101,6 +134,15 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         }];
     }
 
+    public componentDidMount(): void {
+        if (!this.props.mobileView && !this.props.iframeActive && localStorage.getItem('river.shrunk_menu') === 'true') {
+            this.props.onMenuShrunk(true);
+            this.setState({
+                shrunkMenu: true,
+            });
+        }
+    }
+
     public setMenu(menu: menuItems, pageContent?: string, pageSubContent?: string) {
         const fn = () => {
             if (this.settingsMenuRef && pageContent && pageSubContent) {
@@ -119,25 +161,47 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     }
 
     public setUnreadCounter(counter: number) {
+        this.unreadCounter = counter;
         if (this.bottomBarRef) {
             this.bottomBarRef.setUnreadCounter(counter);
         }
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
-        if (this.state.iframeActive !== newProps.iframeActive) {
-            this.setState({
-                iframeActive: newProps.iframeActive,
-            });
+    public setStatus(state: {
+        isConnecting?: boolean;
+        isOnline?: boolean;
+        isUpdating?: boolean;
+    }) {
+        // @ts-ignore
+        this.setState(omitBy(state, isNil));
+        if (state.isConnecting === false && state.isOnline === true && state.isUpdating === false) {
+            if (this.state.connectionStatus) {
+                this.setState({
+                    connectionStatusHide: true,
+                });
+                this.timeout = setTimeout(() => {
+                    this.setState({
+                        connectionStatus: false,
+                    });
+                }, 200);
+            }
+        } else {
+            if (!this.state.connectionStatus) {
+                clearTimeout(this.timeout);
+                this.setState({
+                    connectionStatus: true,
+                    connectionStatusHide: false,
+                });
+            }
         }
     }
 
     public render() {
-        const {chatMoreAnchorEl, leftMenu, overlay, iframeActive} = this.state;
+        const {chatMoreAnchorEl, leftMenu, overlay, iframeActive, shrunkMenu} = this.state;
         return (
             <div
-                className={'column-left ' + (leftMenu === 'chat' ? 'with-top-bar' : '') + (overlay ? ' left-overlay-enable' : '')}>
-                <div className="top-bar">
+                className={'column-left ' + (leftMenu === 'chat' ? 'with-top-bar' : '') + (overlay ? ' left-overlay-enable' : '') + (shrunkMenu? ' shrunk-menu': '')}>
+                {!shrunkMenu && <div className="top-bar">
                     {iframeActive &&
                     <span className="close-btn">
                         <Tooltip
@@ -147,6 +211,18 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                         >
                             <IconButton>
                                 <CloseRounded/>
+                            </IconButton>
+                        </Tooltip>
+                    </span>}
+                    {Boolean(!iframeActive && !this.props.mobileView) &&
+                    <span className="menu-btn">
+                        <Tooltip
+                            title={i18n.t('general.close')}
+                            placement="bottom"
+                            onClick={this.toggleMenuHandler}
+                        >
+                            <IconButton>
+                                 <MenuOpenRounded/>
                             </IconButton>
                         </Tooltip>
                     </span>}
@@ -189,12 +265,26 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                             })}
                         </Menu>
                     </div>
-                </div>
+                </div>}
+                {shrunkMenu && <div className="top-bar">
+                    <span className="menu-btn">
+                        <Tooltip
+                            title={i18n.t('general.close')}
+                            placement="bottom"
+                            onClick={this.toggleMenuHandler}
+                        >
+                            <IconButton>
+                                 <MenuRounded/>
+                            </IconButton>
+                        </Tooltip>
+                    </span>
+                </div>}
                 <div className="left-content">
+                    {this.connectionStatus()}
                     {this.leftMenuRender()}
                 </div>
-                <BottomBar ref={this.bottomBarRefHandler} onSelect={this.bottomBarSelectHandler}
-                           selected={this.state.leftMenu}/>
+                {!shrunkMenu && <BottomBar ref={this.bottomBarRefHandler} onSelect={this.bottomBarSelectHandler}
+                           selected={this.state.leftMenu}/>}
                 <div className="left-overlay">
                     {overlay && <NewGroupMenu onClose={this.overlayCloseHandler}
                                               onCreate={this.props.onGroupCreate}/>}
@@ -234,7 +324,10 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     }
 
     private bottomBarRefHandler = (ref: any) => {
-        this.bottomBarRefHandler = ref;
+        this.bottomBarRef = ref;
+        if (this.bottomBarRef) {
+            this.bottomBarRef.setUnreadCounter(this.unreadCounter);
+        }
     }
 
     private bottomBarSelectHandler = (item: menuItems) => {
@@ -312,6 +405,34 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     private overlayCloseHandler = () => {
         this.setState({
             overlay: false,
+        });
+    }
+
+    private connectionStatus() {
+        if (!this.props.mobileView || !this.state.connectionStatus) {
+            return;
+        }
+        let body: any = '';
+        if (!this.state.isOnline) {
+            body = <span>{i18n.t('status.waiting_for_network')}</span>;
+        } else if (this.state.isConnecting) {
+            body = <span>{i18n.t('status.connecting')}</span>;
+        } else if (this.state.isUpdating) {
+            body = <span>{i18n.t('status.updating')}</span>;
+        }
+        if (body === '') {
+            return;
+        } else {
+            return (<div className={'status-alert' + (this.state.connectionStatusHide ? ' hide' : '')}>{body}</div>);
+        }
+    }
+
+    private toggleMenuHandler = () => {
+        this.setState({
+            shrunkMenu: !this.state.shrunkMenu,
+        }, () => {
+            this.props.onMenuShrunk(this.state.shrunkMenu);
+            localStorage.setItem('river.shrunk_menu', this.state.shrunkMenu? 'true' : 'false');
         });
     }
 }

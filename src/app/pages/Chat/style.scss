@@ -160,6 +160,12 @@
     }
   }
 
+  &.shrunk {
+    .column-center {
+      width: calc(100% - 68px);
+    }
+  }
+
   &.mobile-view {
     width: 200vw;
     transform: translateX(0);
@@ -501,10 +507,10 @@ html[direction="rtl"] {
     direction: rtl;
 
     &.mobile-view {
-      margin-left: -100vw;
+      transform: translateX(-100vw);
 
       &.chat-view {
-        margin-left: 0;
+        transform: translateX(0);
       }
     }
 

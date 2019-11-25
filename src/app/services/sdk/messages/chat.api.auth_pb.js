@@ -77,7 +77,8 @@ proto.msg.AuthRegister.toObject = function(includeInstance, msg) {
     firstname: jspb.Message.getField(msg, 2),
     lastname: jspb.Message.getField(msg, 3),
     phonecode: jspb.Message.getField(msg, 4),
-    phonecodehash: jspb.Message.getField(msg, 5)
+    phonecodehash: jspb.Message.getField(msg, 5),
+    langcode: jspb.Message.getField(msg, 6)
   };
 
   if (includeInstance) {
@@ -133,6 +134,10 @@ proto.msg.AuthRegister.deserializeBinaryFromReader = function(msg, reader) {
     case 5:
       var value = /** @type {string} */ (reader.readString());
       msg.setPhonecodehash(value);
+      break;
+    case 6:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setLangcode(value);
       break;
     default:
       reader.skipField();
@@ -195,6 +200,13 @@ proto.msg.AuthRegister.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeString(
       5,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 6));
+  if (f != null) {
+    writer.writeString(
+      6,
       f
     );
   }
@@ -343,6 +355,35 @@ proto.msg.AuthRegister.prototype.clearPhonecodehash = function() {
  */
 proto.msg.AuthRegister.prototype.hasPhonecodehash = function() {
   return jspb.Message.getField(this, 5) != null;
+};
+
+
+/**
+ * optional string LangCode = 6;
+ * @return {string}
+ */
+proto.msg.AuthRegister.prototype.getLangcode = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/** @param {string} value */
+proto.msg.AuthRegister.prototype.setLangcode = function(value) {
+  jspb.Message.setField(this, 6, value);
+};
+
+
+proto.msg.AuthRegister.prototype.clearLangcode = function() {
+  jspb.Message.setField(this, 6, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.AuthRegister.prototype.hasLangcode = function() {
+  return jspb.Message.getField(this, 6) != null;
 };
 
 

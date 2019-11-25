@@ -31,6 +31,11 @@ export class AuthRegister extends jspb.Message {
   getPhonecodehash(): string | undefined;
   setPhonecodehash(value: string): void;
 
+  hasLangcode(): boolean;
+  clearLangcode(): void;
+  getLangcode(): string | undefined;
+  setLangcode(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AuthRegister.AsObject;
   static toObject(includeInstance: boolean, msg: AuthRegister): AuthRegister.AsObject;
@@ -48,6 +53,7 @@ export namespace AuthRegister {
     lastname?: string,
     phonecode?: string,
     phonecodehash?: string,
+    langcode?: string,
   }
 }
 

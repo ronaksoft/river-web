@@ -303,7 +303,8 @@
     "unsupported_message": "پیام مبهم",
     "unread_messages": "پیام‌های جدید",
     "draft": "پیش‌نویس:",
-    "replied_message": "پیام پاسخ داده شده"
+    "replied_message": "پیام پاسخ داده شده",
+    "took_a_screenshot": "از صفحه عکس گرفت"
   },
   "uploader": {
     "converting": "درحال تبدیل کردن...",

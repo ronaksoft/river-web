@@ -637,7 +637,8 @@ class SignUp extends React.Component<IProps, IState> {
         this.setState({
             loading: true,
         });
-        this.sdk.register(phone, code, phoneHash, fName, lName).then((res) => {
+        const lang = localStorage.getItem('river.lang') || 'en';
+        this.sdk.register(phone, code, phoneHash, fName, lName, lang).then((res) => {
             const info = this.sdk.loadConnInfo();
             info.UserID = res.user.id;
             info.FirstName = res.user.firstname;

@@ -11,31 +11,15 @@ import * as React from 'react';
 
 import './style.scss';
 
-interface IProps {
-    height: number | string;
-    width: number | string;
-}
-
-interface IState {
-    height?: number;
-    width?: number;
-}
-
-class RiverLogo extends React.Component<IProps, IState> {
-    constructor(props: IProps) {
-        super(props);
-
-        this.state = {};
-    }
-
-    public render() {
-        return (
-            <span className="river-logo">
-                <svg width={this.props.width} height={this.props.height} viewBox="0 0 48 48" fill="none"
+export default function RiverLogo({height, width}: { height: number, width: number }) {
+    const rnd = Math.floor(Math.random() * 10000);
+    return (
+        <span className="river-logo">
+                <svg width={height} height={width} viewBox="0 0 48 48" fill="none"
                      xmlns="http://www.w3.org/2000/svg">
                     <path
                         d="M0 24C0 10.7452 10.7452 0 24 0C37.2548 0 48 10.7452 48 24C48 37.2548 37.2548 48 24 48H5.07489C2.27211 48 0 45.7279 0 42.9251V24Z"
-                        fill="url(#paint0_linear)"/>
+                        fill={`url(#paint${rnd}_linear)`}/>
                     <path
                         d="M13.2413 16.003V11.3497H25.3754C27.4219 11.3497 30.193 12.8258 31.7879 14.9252C33.9735 17.8022 33.9406 21.484 31.268 25.175L27.4969 22.4466C28.9895 20.3853 28.595 18.4995 28.0804 17.7393C27.4034 16.739 26.2965 16.003 25.3754 16.003H13.2413Z"
                         fill="white"/>
@@ -49,7 +33,7 @@ class RiverLogo extends React.Component<IProps, IState> {
                           d="M32.6487 31.0311C31.8877 29.8195 30.9495 28.6171 29.8817 27.528C26.6593 24.241 22.5127 22.0958 17.6854 21.5939C17.4913 21.5683 17.2621 21.5463 16.9978 21.5279C16.7385 21.5098 16.0392 21.4775 14.8992 21.4775C14.1237 21.4775 13.2413 22.2236 13.2413 23.1117V36.8867H17.8966V27.528C17.8966 26.2844 18.3257 26.3745 18.5668 26.4251L18.6005 26.432C19.1093 26.5321 19.6066 26.6568 20.0919 26.805C23.6356 27.1625 30.3773 28.3338 32.6487 31.0311Z"
                           fill="white"/>
                     <defs>
-                        <linearGradient id="paint0_linear" x1="40.4335" y1="4.61084" x2="4.13793" y2="45.0443"
+                        <linearGradient id={`paint${rnd}_linear`} x1="40.4335" y1="4.61084" x2="4.13793" y2="45.0443"
                                         gradientUnits="userSpaceOnUse">
                             <stop stopColor="#27AE60"/>
                             <stop offset="1" stopColor="#158243"/>
@@ -57,8 +41,5 @@ class RiverLogo extends React.Component<IProps, IState> {
                     </defs>
                 </svg>
             </span>
-        );
-    }
+    );
 }
-
-export default RiverLogo;

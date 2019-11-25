@@ -52,7 +52,7 @@ export default class Socket {
     private readonly testUrl: string = '';
     private lastSendTime: number = 0;
     private lastReceiveTime: number = 0;
-    private online: boolean = navigator.onLine || true;
+    private online: boolean = navigator.onLine === undefined ? true : navigator.onLine;
     private resolveEncryptFn: any | undefined;
     private resolveDecryptFn: any | undefined;
 

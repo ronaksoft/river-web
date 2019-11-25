@@ -10,7 +10,7 @@
 import * as React from 'react';
 import {InputPeer, PeerType} from "../../services/sdk/messages/chat.core.types_pb";
 import i18n from "../../services/i18n";
-import {InfoOutlined, KeyboardArrowLeftRounded} from "@material-ui/icons";
+import {InfoOutlined, KeyboardArrowLeftRounded, CloseRounded} from "@material-ui/icons";
 import StatusBar from "../StatusBar";
 import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
@@ -21,6 +21,7 @@ import './style.scss';
 
 interface IProps {
     onBack: () => void;
+    onClose?: () => void;
     statusBarRefHandler: (ref: StatusBar) => void;
     isMobileView: boolean;
     onAction: (cmd: string) => (e: any) => void;
@@ -79,10 +80,16 @@ class InfoBar extends React.Component<IProps, IState> {
         }];
         return (
             <div className="info-bar">
-                {this.props.isMobileView &&
-                <div className="back-to-chats" onClick={this.props.onBack}>
-                    <KeyboardArrowLeftRounded/>
-                </div>}
+                {this.props.isMobileView ?
+                    <div className="back-to-chats" onClick={this.props.onBack}>
+                        <KeyboardArrowLeftRounded/>
+                    </div> :
+                    <div className="back-to-chats close-button">
+                        <IconButton onClick={this.props.onClose}>
+                            <CloseRounded/>
+                        </IconButton>
+                    </div>
+                }
                 <StatusBar ref={this.props.statusBarRefHandler} isConnecting={isConnecting}
                            isOnline={isOnline}
                            isUpdating={isUpdating}

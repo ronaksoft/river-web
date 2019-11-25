@@ -139,6 +139,7 @@ import {OptionsObject, withSnackbar} from "notistack";
 import {scrollFunc} from "../../services/kkwindow/utils";
 
 import './style.scss';
+import Landscape from "../../components/SVG";
 
 export let notifyOptions: any[] = [];
 const C_MAX_UPDATE_DIFF = 2000;
@@ -235,8 +236,9 @@ class Chat extends React.Component<IProps, IState> {
     private messageSelectable: boolean = false;
     private messageSelectedIds: { [key: number]: number } = {};
     private isConnecting: boolean = false;
-    private isOnline: boolean = navigator.onLine || true;
+    private isOnline: boolean = navigator.onLine === undefined ? true : navigator.onLine;
     private isUpdating: boolean = false;
+    private shrunk: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -514,15 +516,18 @@ class Chat extends React.Component<IProps, IState> {
                                   onReloadDialog={this.settingReloadDialogHandler}
                                   onAction={this.leftMenuActionHandler}
                                   onGroupCreate={this.leftMenuGroupCreateHandler}
+                                  onMenuShrunk={this.leftMenuMenuShrunkHandler}
                                   iframeActive={this.state.iframeActive}
+                                  mobileView={this.isMobileView}
                         />
                         {this.selectedDialogId !== 'null' &&
                         <div
                             className={'column-center' + (rightMenuShrink ? ' shrink' : '')}>
                             <div className="top">
                                 <InfoBar key="info-bar" ref={this.infoBarRefHandler} onBack={this.backToChatsHandler}
+                                         onClose={this.closePeerHandler} onAction={this.messageMoreActionHandler}
                                          statusBarRefHandler={this.statusBarRefHandler}
-                                         isMobileView={this.isMobileView} onAction={this.messageMoreActionHandler}/>
+                                         isMobileView={this.isMobileView}/>
                                 <AudioPlayerShell key="audio-player-shell" onVisible={this.audioPlayerVisibleHandler}
                                                   onAction={this.messageAttachmentActionHandler}/>
                             </div>
@@ -571,7 +576,7 @@ class Chat extends React.Component<IProps, IState> {
                                     {this.getConnectionStatus()}
                                 </div>
                                 <div className="start-messaging-img">
-                                    <div className="image"/>
+                                    <Landscape/>
                                 </div>
                                 <div className="start-messaging-title">{i18n.t('chat.chat_placeholder')}</div>
                                 <div className="start-messaging-footer"/>
@@ -706,6 +711,9 @@ class Chat extends React.Component<IProps, IState> {
 
     private containerRefHandler = (ref: any) => {
         this.containerRef = ref;
+        if (this.shrunk) {
+            this.leftMenuMenuShrunkHandler(true);
+        }
     }
 
     private chatInputRefHandler = (ref: any) => {
@@ -782,6 +790,13 @@ class Chat extends React.Component<IProps, IState> {
 
     private leftMenuRefHandler = (ref: any) => {
         this.leftMenuRef = ref;
+        if (this.leftMenuRef && this.isMobileView) {
+            this.leftMenuRef.setStatus({
+                isConnecting: this.isConnecting,
+                isOnline: this.isOnline,
+                isUpdating: this.isUpdating,
+            });
+        }
     }
 
     private dialogRefHandler = (ref: any) => {
@@ -2652,6 +2667,17 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
+    private leftMenuMenuShrunkHandler = (shrunk: boolean) => {
+        this.shrunk = shrunk;
+        if (this.containerRef) {
+            if (shrunk) {
+                this.containerRef.classList.add('shrunk');
+            } else {
+                this.containerRef.classList.remove('shrunk');
+            }
+        }
+    }
+
     private logOutHandler() {
         const wipe = () => {
             this.sdk.stopNetWork();
@@ -2929,6 +2955,11 @@ class Chat extends React.Component<IProps, IState> {
         this.mobileBackTimeout = setTimeout(() => {
             this.props.history.push('/chat/null');
         }, 300);
+    }
+
+    /* Close peer handler */
+    private closePeerHandler = () => {
+        this.props.history.push('/chat/null');
     }
 
     /* SettingsMenu on update handler */
@@ -4604,6 +4635,13 @@ class Chat extends React.Component<IProps, IState> {
             });
         } else {
             this.forceUpdate();
+        }
+        if (this.leftMenuRef && this.isMobileView) {
+            this.leftMenuRef.setStatus({
+                isConnecting: this.isConnecting,
+                isOnline: this.isOnline,
+                isUpdating: this.isUpdating,
+            });
         }
     }
 }

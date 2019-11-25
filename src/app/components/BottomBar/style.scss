@@ -10,12 +10,11 @@
 
 .chat-bottom-bar {
   position: relative;
-  width: calc(100% - 12px);
   height: 50px;
-  padding-left: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
+
   &:before {
     position: absolute;
     top: 0;
@@ -26,6 +25,7 @@
     content: '';
     background-color: var(--light);
   }
+
   .a {
     flex: 1;
     display: flex;
@@ -34,19 +34,23 @@
     align-items: center;
     cursor: pointer;
     transform: translateY(2px);
+
     .title {
       font-size: 12px;
       color: var(--grey);
     }
+
     svg {
       cursor: pointer;
       fill: var(--grey);
       font-size: 24px;
     }
+
     &.active, &:hover {
       .title {
         color: var(--dark);
       }
+
       svg {
         fill: var(--dark);
       }
@@ -60,11 +64,13 @@ html[theme="dark-night"] {
     &:before {
       background-color: var(--dark-low-op50);
     }
+
     .a {
       &.active, &:hover {
         .title {
           color: var(--light);
         }
+
         svg {
           fill: var(--light);
         }
@@ -78,19 +84,23 @@ html[theme="dark-blue"] {
     &:before {
       background-color: var(--dark-blue-low-op50);
     }
+
     .a {
       &:hover {
         .title {
           color: var(--dark-blue-hover);
         }
+
         svg {
           fill: var(--dark-blue-hover);
         }
       }
+
       &.active {
         .title {
           color: var(--dark-blue-high-alt);
         }
+
         svg {
           fill: var(--dark-blue-high-alt);
         }

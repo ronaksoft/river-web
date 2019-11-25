@@ -27,6 +27,8 @@ goog.exportSymbol('proto.msg.UpdateGroupParticipantAdd', null, global);
 goog.exportSymbol('proto.msg.UpdateGroupParticipantAdmin', null, global);
 goog.exportSymbol('proto.msg.UpdateGroupParticipantDeleted', null, global);
 goog.exportSymbol('proto.msg.UpdateGroupPhoto', null, global);
+goog.exportSymbol('proto.msg.UpdateLabelAdded', null, global);
+goog.exportSymbol('proto.msg.UpdateLabelRemoved', null, global);
 goog.exportSymbol('proto.msg.UpdateMessageEdited', null, global);
 goog.exportSymbol('proto.msg.UpdateMessageID', null, global);
 goog.exportSymbol('proto.msg.UpdateMessagesDeleted', null, global);
@@ -3679,7 +3681,8 @@ proto.msg.UpdateUserPhoto.toObject = function(includeInstance, msg) {
     ucount: jspb.Message.getField(msg, 100),
     updateid: jspb.Message.getField(msg, 101),
     userid: jspb.Message.getField(msg, 1),
-    photo: (f = msg.getPhoto()) && chat_core_types_pb.UserPhoto.toObject(includeInstance, f)
+    photo: (f = msg.getPhoto()) && chat_core_types_pb.UserPhoto.toObject(includeInstance, f),
+    photoid: jspb.Message.getField(msg, 3)
   };
 
   if (includeInstance) {
@@ -3732,6 +3735,10 @@ proto.msg.UpdateUserPhoto.deserializeBinaryFromReader = function(msg, reader) {
       var value = new chat_core_types_pb.UserPhoto;
       reader.readMessage(value,chat_core_types_pb.UserPhoto.deserializeBinaryFromReader);
       msg.setPhoto(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setPhotoid(value);
       break;
     default:
       reader.skipField();
@@ -3789,6 +3796,13 @@ proto.msg.UpdateUserPhoto.serializeBinaryToWriter = function(message, writer) {
       2,
       f,
       chat_core_types_pb.UserPhoto.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeInt64String(
+      3,
+      f
     );
   }
 };
@@ -3908,6 +3922,35 @@ proto.msg.UpdateUserPhoto.prototype.clearPhoto = function() {
  */
 proto.msg.UpdateUserPhoto.prototype.hasPhoto = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional int64 PhotoID = 3;
+ * @return {string}
+ */
+proto.msg.UpdateUserPhoto.prototype.getPhotoid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, "0"));
+};
+
+
+/** @param {string} value */
+proto.msg.UpdateUserPhoto.prototype.setPhotoid = function(value) {
+  jspb.Message.setField(this, 3, value);
+};
+
+
+proto.msg.UpdateUserPhoto.prototype.clearPhotoid = function() {
+  jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateUserPhoto.prototype.hasPhotoid = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 
@@ -5530,7 +5573,8 @@ proto.msg.UpdateGroupPhoto.toObject = function(includeInstance, msg) {
     ucount: jspb.Message.getField(msg, 100),
     updateid: jspb.Message.getField(msg, 101),
     groupid: jspb.Message.getField(msg, 1),
-    photo: (f = msg.getPhoto()) && chat_core_types_pb.GroupPhoto.toObject(includeInstance, f)
+    photo: (f = msg.getPhoto()) && chat_core_types_pb.GroupPhoto.toObject(includeInstance, f),
+    photoid: jspb.Message.getField(msg, 3)
   };
 
   if (includeInstance) {
@@ -5583,6 +5627,10 @@ proto.msg.UpdateGroupPhoto.deserializeBinaryFromReader = function(msg, reader) {
       var value = new chat_core_types_pb.GroupPhoto;
       reader.readMessage(value,chat_core_types_pb.GroupPhoto.deserializeBinaryFromReader);
       msg.setPhoto(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readInt64String());
+      msg.setPhotoid(value);
       break;
     default:
       reader.skipField();
@@ -5640,6 +5688,13 @@ proto.msg.UpdateGroupPhoto.serializeBinaryToWriter = function(message, writer) {
       2,
       f,
       chat_core_types_pb.GroupPhoto.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeInt64String(
+      3,
+      f
     );
   }
 };
@@ -5759,6 +5814,35 @@ proto.msg.UpdateGroupPhoto.prototype.clearPhoto = function() {
  */
 proto.msg.UpdateGroupPhoto.prototype.hasPhoto = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional int64 PhotoID = 3;
+ * @return {string}
+ */
+proto.msg.UpdateGroupPhoto.prototype.getPhotoid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, "0"));
+};
+
+
+/** @param {string} value */
+proto.msg.UpdateGroupPhoto.prototype.setPhotoid = function(value) {
+  jspb.Message.setField(this, 3, value);
+};
+
+
+proto.msg.UpdateGroupPhoto.prototype.clearPhotoid = function() {
+  jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateGroupPhoto.prototype.hasPhotoid = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 
@@ -7741,6 +7825,742 @@ proto.msg.UpdateAccountPrivacy.prototype.addCall = function(opt_value, opt_index
 
 proto.msg.UpdateAccountPrivacy.prototype.clearCallList = function() {
   this.setCallList([]);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.msg.UpdateLabelAdded = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.msg.UpdateLabelAdded.repeatedFields_, null);
+};
+goog.inherits(proto.msg.UpdateLabelAdded, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.msg.UpdateLabelAdded.displayName = 'proto.msg.UpdateLabelAdded';
+}
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.msg.UpdateLabelAdded.repeatedFields_ = [3,4];
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.msg.UpdateLabelAdded.prototype.toObject = function(opt_includeInstance) {
+  return proto.msg.UpdateLabelAdded.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.msg.UpdateLabelAdded} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.UpdateLabelAdded.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    ucount: jspb.Message.getField(msg, 100),
+    updateid: jspb.Message.getField(msg, 101),
+    peertype: jspb.Message.getField(msg, 1),
+    peerid: jspb.Message.getField(msg, 2),
+    messageidsList: jspb.Message.getRepeatedField(msg, 3),
+    labelidsList: jspb.Message.getRepeatedField(msg, 4)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.msg.UpdateLabelAdded}
+ */
+proto.msg.UpdateLabelAdded.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.msg.UpdateLabelAdded;
+  return proto.msg.UpdateLabelAdded.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.msg.UpdateLabelAdded} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.msg.UpdateLabelAdded}
+ */
+proto.msg.UpdateLabelAdded.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 100:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setUcount(value);
+      break;
+    case 101:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setUpdateid(value);
+      break;
+    case 1:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setPeertype(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setPeerid(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.addMessageids(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.addLabelids(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.msg.UpdateLabelAdded.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.msg.UpdateLabelAdded.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.msg.UpdateLabelAdded} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.UpdateLabelAdded.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = /** @type {number} */ (jspb.Message.getField(message, 100));
+  if (f != null) {
+    writer.writeInt32(
+      100,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 101));
+  if (f != null) {
+    writer.writeInt64(
+      101,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  if (f != null) {
+    writer.writeInt32(
+      1,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeInt64(
+      2,
+      f
+    );
+  }
+  f = message.getMessageidsList();
+  if (f.length > 0) {
+    writer.writeRepeatedInt64(
+      3,
+      f
+    );
+  }
+  f = message.getLabelidsList();
+  if (f.length > 0) {
+    writer.writeRepeatedInt32(
+      4,
+      f
+    );
+  }
+};
+
+
+/**
+ * required int32 UCount = 100;
+ * @return {number}
+ */
+proto.msg.UpdateLabelAdded.prototype.getUcount = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 100, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.UpdateLabelAdded.prototype.setUcount = function(value) {
+  jspb.Message.setField(this, 100, value);
+};
+
+
+proto.msg.UpdateLabelAdded.prototype.clearUcount = function() {
+  jspb.Message.setField(this, 100, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateLabelAdded.prototype.hasUcount = function() {
+  return jspb.Message.getField(this, 100) != null;
+};
+
+
+/**
+ * required int64 UpdateID = 101;
+ * @return {number}
+ */
+proto.msg.UpdateLabelAdded.prototype.getUpdateid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 101, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.UpdateLabelAdded.prototype.setUpdateid = function(value) {
+  jspb.Message.setField(this, 101, value);
+};
+
+
+proto.msg.UpdateLabelAdded.prototype.clearUpdateid = function() {
+  jspb.Message.setField(this, 101, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateLabelAdded.prototype.hasUpdateid = function() {
+  return jspb.Message.getField(this, 101) != null;
+};
+
+
+/**
+ * required int32 PeerType = 1;
+ * @return {number}
+ */
+proto.msg.UpdateLabelAdded.prototype.getPeertype = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.UpdateLabelAdded.prototype.setPeertype = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+proto.msg.UpdateLabelAdded.prototype.clearPeertype = function() {
+  jspb.Message.setField(this, 1, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateLabelAdded.prototype.hasPeertype = function() {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * required int64 PeerID = 2;
+ * @return {number}
+ */
+proto.msg.UpdateLabelAdded.prototype.getPeerid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.UpdateLabelAdded.prototype.setPeerid = function(value) {
+  jspb.Message.setField(this, 2, value);
+};
+
+
+proto.msg.UpdateLabelAdded.prototype.clearPeerid = function() {
+  jspb.Message.setField(this, 2, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateLabelAdded.prototype.hasPeerid = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * repeated int64 MessageIDs = 3;
+ * @return {!Array.<number>}
+ */
+proto.msg.UpdateLabelAdded.prototype.getMessageidsList = function() {
+  return /** @type {!Array.<number>} */ (jspb.Message.getRepeatedField(this, 3));
+};
+
+
+/** @param {!Array.<number>} value */
+proto.msg.UpdateLabelAdded.prototype.setMessageidsList = function(value) {
+  jspb.Message.setField(this, 3, value || []);
+};
+
+
+/**
+ * @param {!number} value
+ * @param {number=} opt_index
+ */
+proto.msg.UpdateLabelAdded.prototype.addMessageids = function(value, opt_index) {
+  jspb.Message.addToRepeatedField(this, 3, value, opt_index);
+};
+
+
+proto.msg.UpdateLabelAdded.prototype.clearMessageidsList = function() {
+  this.setMessageidsList([]);
+};
+
+
+/**
+ * repeated int32 LabelIDs = 4;
+ * @return {!Array.<number>}
+ */
+proto.msg.UpdateLabelAdded.prototype.getLabelidsList = function() {
+  return /** @type {!Array.<number>} */ (jspb.Message.getRepeatedField(this, 4));
+};
+
+
+/** @param {!Array.<number>} value */
+proto.msg.UpdateLabelAdded.prototype.setLabelidsList = function(value) {
+  jspb.Message.setField(this, 4, value || []);
+};
+
+
+/**
+ * @param {!number} value
+ * @param {number=} opt_index
+ */
+proto.msg.UpdateLabelAdded.prototype.addLabelids = function(value, opt_index) {
+  jspb.Message.addToRepeatedField(this, 4, value, opt_index);
+};
+
+
+proto.msg.UpdateLabelAdded.prototype.clearLabelidsList = function() {
+  this.setLabelidsList([]);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.msg.UpdateLabelRemoved = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.msg.UpdateLabelRemoved.repeatedFields_, null);
+};
+goog.inherits(proto.msg.UpdateLabelRemoved, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.msg.UpdateLabelRemoved.displayName = 'proto.msg.UpdateLabelRemoved';
+}
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.msg.UpdateLabelRemoved.repeatedFields_ = [3,4];
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.msg.UpdateLabelRemoved.prototype.toObject = function(opt_includeInstance) {
+  return proto.msg.UpdateLabelRemoved.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.msg.UpdateLabelRemoved} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.UpdateLabelRemoved.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    ucount: jspb.Message.getField(msg, 100),
+    updateid: jspb.Message.getField(msg, 101),
+    peertype: jspb.Message.getField(msg, 1),
+    peerid: jspb.Message.getField(msg, 2),
+    messageidsList: jspb.Message.getRepeatedField(msg, 3),
+    labelidsList: jspb.Message.getRepeatedField(msg, 4)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.msg.UpdateLabelRemoved}
+ */
+proto.msg.UpdateLabelRemoved.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.msg.UpdateLabelRemoved;
+  return proto.msg.UpdateLabelRemoved.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.msg.UpdateLabelRemoved} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.msg.UpdateLabelRemoved}
+ */
+proto.msg.UpdateLabelRemoved.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 100:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setUcount(value);
+      break;
+    case 101:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setUpdateid(value);
+      break;
+    case 1:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setPeertype(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setPeerid(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.addMessageids(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.addLabelids(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.msg.UpdateLabelRemoved.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.msg.UpdateLabelRemoved.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.msg.UpdateLabelRemoved} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.msg.UpdateLabelRemoved.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = /** @type {number} */ (jspb.Message.getField(message, 100));
+  if (f != null) {
+    writer.writeInt32(
+      100,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 101));
+  if (f != null) {
+    writer.writeInt64(
+      101,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  if (f != null) {
+    writer.writeInt32(
+      1,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeInt64(
+      2,
+      f
+    );
+  }
+  f = message.getMessageidsList();
+  if (f.length > 0) {
+    writer.writeRepeatedInt64(
+      3,
+      f
+    );
+  }
+  f = message.getLabelidsList();
+  if (f.length > 0) {
+    writer.writeRepeatedInt32(
+      4,
+      f
+    );
+  }
+};
+
+
+/**
+ * required int32 UCount = 100;
+ * @return {number}
+ */
+proto.msg.UpdateLabelRemoved.prototype.getUcount = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 100, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.UpdateLabelRemoved.prototype.setUcount = function(value) {
+  jspb.Message.setField(this, 100, value);
+};
+
+
+proto.msg.UpdateLabelRemoved.prototype.clearUcount = function() {
+  jspb.Message.setField(this, 100, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateLabelRemoved.prototype.hasUcount = function() {
+  return jspb.Message.getField(this, 100) != null;
+};
+
+
+/**
+ * required int64 UpdateID = 101;
+ * @return {number}
+ */
+proto.msg.UpdateLabelRemoved.prototype.getUpdateid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 101, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.UpdateLabelRemoved.prototype.setUpdateid = function(value) {
+  jspb.Message.setField(this, 101, value);
+};
+
+
+proto.msg.UpdateLabelRemoved.prototype.clearUpdateid = function() {
+  jspb.Message.setField(this, 101, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateLabelRemoved.prototype.hasUpdateid = function() {
+  return jspb.Message.getField(this, 101) != null;
+};
+
+
+/**
+ * required int32 PeerType = 1;
+ * @return {number}
+ */
+proto.msg.UpdateLabelRemoved.prototype.getPeertype = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.UpdateLabelRemoved.prototype.setPeertype = function(value) {
+  jspb.Message.setField(this, 1, value);
+};
+
+
+proto.msg.UpdateLabelRemoved.prototype.clearPeertype = function() {
+  jspb.Message.setField(this, 1, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateLabelRemoved.prototype.hasPeertype = function() {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * required int64 PeerID = 2;
+ * @return {number}
+ */
+proto.msg.UpdateLabelRemoved.prototype.getPeerid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.UpdateLabelRemoved.prototype.setPeerid = function(value) {
+  jspb.Message.setField(this, 2, value);
+};
+
+
+proto.msg.UpdateLabelRemoved.prototype.clearPeerid = function() {
+  jspb.Message.setField(this, 2, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UpdateLabelRemoved.prototype.hasPeerid = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * repeated int64 MessageIDs = 3;
+ * @return {!Array.<number>}
+ */
+proto.msg.UpdateLabelRemoved.prototype.getMessageidsList = function() {
+  return /** @type {!Array.<number>} */ (jspb.Message.getRepeatedField(this, 3));
+};
+
+
+/** @param {!Array.<number>} value */
+proto.msg.UpdateLabelRemoved.prototype.setMessageidsList = function(value) {
+  jspb.Message.setField(this, 3, value || []);
+};
+
+
+/**
+ * @param {!number} value
+ * @param {number=} opt_index
+ */
+proto.msg.UpdateLabelRemoved.prototype.addMessageids = function(value, opt_index) {
+  jspb.Message.addToRepeatedField(this, 3, value, opt_index);
+};
+
+
+proto.msg.UpdateLabelRemoved.prototype.clearMessageidsList = function() {
+  this.setMessageidsList([]);
+};
+
+
+/**
+ * repeated int32 LabelIDs = 4;
+ * @return {!Array.<number>}
+ */
+proto.msg.UpdateLabelRemoved.prototype.getLabelidsList = function() {
+  return /** @type {!Array.<number>} */ (jspb.Message.getRepeatedField(this, 4));
+};
+
+
+/** @param {!Array.<number>} value */
+proto.msg.UpdateLabelRemoved.prototype.setLabelidsList = function(value) {
+  jspb.Message.setField(this, 4, value || []);
+};
+
+
+/**
+ * @param {!number} value
+ * @param {number=} opt_index
+ */
+proto.msg.UpdateLabelRemoved.prototype.addLabelids = function(value, opt_index) {
+  jspb.Message.addToRepeatedField(this, 4, value, opt_index);
+};
+
+
+proto.msg.UpdateLabelRemoved.prototype.clearLabelidsList = function() {
+  this.setLabelidsList([]);
 };
 
 

@@ -1,0 +1,73 @@
+syntax = "proto2";
+package msg;
+import "chat.core.types.proto";
+
+// LabelsSet
+// @Function
+// @Returns: Bool
+message LabelsSet {
+    required int32 LabelID = 1;
+    required string Name = 2;
+}
+
+// LabelsDelete
+// @Function
+// @Returns: Bool
+message LabelsDelete {
+    repeated int32 LabelIDs = 1;
+}
+
+// LabelsGet
+// @Function
+// @Returns: LabelsMany
+message LabelsGet {
+}
+
+// LabelsAddToDialog
+// @Function
+// @Returns: Dialog
+message LabelsAddToDialog {
+    required int32 PeerType = 1;
+    required int64 PeerID = 2;
+    repeated int32 LabelIDs = 3;
+}
+
+// LabelsRemoveFromDialog
+// @Function
+// @Returns: Dialog
+message LabelsRemoveFromDialog {
+    required int32 PeerType = 1;
+    required int64 PeerID = 2;
+    repeated int32 LabelIDs = 3;
+}
+
+// LabelsAddToMessage
+// @Function
+// @Returns: Bool
+message LabelsAddToMessage {
+    required int32 PeerType = 1;
+    required int64 PeerID = 2;
+    repeated int32 LabelIDs = 3;
+    repeated int64 MessageIDs = 4;
+}
+
+// LabelsRemoveFromMessage
+// @Function
+// @Returns: Bool
+message LabelsRemoveFromMessage {
+    required int32 PeerType = 1;
+    required int64 PeerID = 2;
+    repeated int32 LabelIDs = 3;
+    repeated int64 MessageIDs = 4;
+}
+
+// Label
+message Label {
+    required int32 ID = 1;
+    required string Name = 2;
+}
+
+// LabelsMany
+message LabelsMany {
+    repeated Label Labels = 1;
+}

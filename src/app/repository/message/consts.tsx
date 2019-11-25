@@ -33,4 +33,5 @@ export const C_MESSAGE_ACTION = {
     MessageActionGroupPhotoChanged: 0x08,
     MessageActionGroupTitleChanged: 0x06,
     MessageActionNope: 0x00,
+    MessageActionScreenShot: 0x09,
 };

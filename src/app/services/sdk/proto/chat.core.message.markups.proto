@@ -1,0 +1,84 @@
+syntax = "proto2";
+package msg;
+import "chat.core.types.proto";
+
+/*
+    Creation Time: 2018 - Nov - 28
+    Created by:  (ehsan)
+    Maintainers:
+       1.  Ehsan N. Moosa (E2)
+    Auditor: Ehsan N. Moosa (E2)
+    Copyright Ronak Software Group 2018
+*/
+
+message ReplyKeyboardForceReply {
+    optional bool SingleUse = 1;
+    optional bool Selective = 2;
+}
+
+message ReplyKeyboardMarkup {
+    optional bool SingleUse = 1;
+    optional bool Selective = 2;
+    optional bool Resize = 3;
+    repeated KeyboardButtonRow Rows = 4;
+}
+
+message ReplyInlineMarkup {
+
+}
+
+message KeyboardButtonRow {
+    repeated KeyboardButtonEnvelope Buttons = 1;
+}
+
+message KeyboardButtonEnvelope {
+    required int64 Constructor = 1;
+    optional bytes Data = 2;
+}
+
+message Button {
+    required string Text = 1;
+}
+
+message ButtonUrl {
+    required string Text = 1;
+    required string Url = 2;
+}
+
+message ButtonCallback {
+    required string Text = 1;
+    optional bytes Data = 2;
+}
+
+message ButtonRequestPhone {
+    required string Text = 1;
+}
+
+message ButtonRequestGeoLocation {
+    required string Text = 1;
+}
+
+message ButtonSwitchInline {
+    required string Text = 1;
+    required string Query = 2;
+    optional bool SamePeer = 3;
+}
+
+message ButtonBuy {
+    required string Text = 1;
+}
+
+message ButtonUrlAuth {
+    required string Text = 1;
+    optional string FwdText = 2;
+    required string Url =3;
+    required int32 ButtonID = 4;
+}
+
+message InputButtonUrlAuth {
+    required string Text = 1;
+    optional string FwdText = 2;
+    required string Url =3;
+    optional bool RequestWriteAccess = 4;
+    required InputUser Bot = 5;
+}

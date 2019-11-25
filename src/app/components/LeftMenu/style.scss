@@ -12,7 +12,7 @@
     height: 48px;
     display: none;
     align-items: center;
-    padding: 0 17px;
+    padding: 0 17px 0 11px;
     background-color: var(--header-color);
 
     &:after {
@@ -27,10 +27,7 @@
       transform: translate(-50%, 0);
     }
 
-    .close-btn {
-      margin-left: -12px;
-      margin-right: 6px;
-
+    .close-btn, .menu-btn {
       button {
         padding: 6px;
 
@@ -40,12 +37,17 @@
       }
     }
 
+    .close-btn {
+      margin-left: -4px;
+      margin-right: 6px;
+    }
+
     .new-message {
       color: #60BF70;
       cursor: pointer;
 
       .river-logo {
-        margin: 0 6px 0 0;
+        margin: 0 6px;
       }
     }
 
@@ -59,9 +61,29 @@
   }
 
   .left-content {
-    //border-right: 1px solid var(--light);
+    position: relative;
     width: 100%;
     height: calc(100% - 51px);
+
+    .status-alert {
+      position: absolute;
+      top: 56px;
+      left: 8px;
+      right: 8px;
+      background-color: #ffe142;
+      border: 1px solid #e2c01e;
+      color: #8a6d3b;
+      padding: .25rem 1.25rem;
+      font-size: 14px;
+      border-radius: .25rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+      z-index: 200;
+      transition: 0.2s opacity;
+
+      &.hide {
+        opacity: 0;
+      }
+    }
   }
 
   &.with-top-bar {
@@ -71,6 +93,47 @@
 
     .left-content {
       height: calc(100% - 99px);
+
+      .status-alert {
+        top: 8px;
+      }
+    }
+  }
+
+  &.shrunk-menu {
+    width: 68px;
+
+    .left-content {
+      height: 100%;
+
+      .dialog-top-bar, .preview, .pin {
+        display: none !important;
+      }
+
+      .dialog-wrapper .unread {
+        bottom: auto;
+        top: 0;
+        right: auto;
+        left: 0;
+        box-shadow: 0 0 0 1.5px var(--white);
+      }
+
+      .dialog-wrapper:not(.muted) .unread {
+        background-color: #DA0027;
+      }
+
+      .dialog-wrapper .mention {
+        top: auto;
+        bottom: 0;
+        right: auto;
+        left: 0;
+        box-shadow: 0 0 0 1.5px var(--white);
+      }
+
+      .more {
+        top: -6px;
+        right: -6px;
+      }
     }
   }
 
@@ -125,6 +188,8 @@ html[direction="rtl"] {
     }
 
     .top-bar {
+      padding: 0 11px 0 17px;
+
       .actions {
         right: auto;
         left: 0;
@@ -132,13 +197,28 @@ html[direction="rtl"] {
 
       .close-btn {
         margin-left: 6px;
-        margin-right: -12px;
+        margin-right: -4px;
       }
 
-      .new-message {
-        .river-logo {
-          margin: 0 0 0 6px;
-        }
+      .menu-btn button svg {
+        transform: rotateY(-180deg);
+      }
+    }
+
+    &.shrunk-menu {
+      .dialog-wrapper .unread {
+        right: 0;
+        left: auto;
+      }
+
+      .dialog-wrapper .mention {
+        right: 0;
+        left: auto;
+      }
+
+      .more {
+        left: -6px;
+        right: auto;
       }
     }
 
@@ -165,7 +245,7 @@ html[theme="dark-blue"] {
     .top-bar {
       border-bottom: 1px solid var(--dark-low-op50);
 
-      .close-btn {
+      .close-btn, .menu-btn{
         button {
           svg {
             color: var(--white);

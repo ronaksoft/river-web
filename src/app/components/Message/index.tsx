@@ -48,6 +48,7 @@ import {scrollFunc} from "../../services/kkwindow/utils";
 import animateScrollTo from "animated-scroll-to";
 
 import './style.scss';
+import Landscape from "../SVG";
 
 interface IProps {
     onContextMenu: (cmd: string, id: IMessage) => void;
@@ -693,7 +694,8 @@ class Message extends React.Component<IProps, IState> {
             </div>);
         } else {
             return (<div className="chat-placeholder">
-                <div className="placeholder"/>
+                <Landscape/>
+                <div className="placeholder-label">{i18n.t('general.no_message')}</div>
             </div>);
         }
     }
@@ -1036,6 +1038,9 @@ class Message extends React.Component<IProps, IState> {
                         );
                     }
                 }
+            case C_MESSAGE_ACTION.MessageActionScreenShot:
+                return (<span className="system-message"><UserName className="sender" id={message.senderid || ''}
+                                                                   you={true}/> {i18n.t('message.took_a_screenshot')}</span>);
             default:
                 return (<span className="system-message">{i18n.t('message.unsupported_message')}</span>);
         }

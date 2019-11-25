@@ -4412,7 +4412,8 @@ proto.msg.User.toObject = function(includeInstance, msg) {
     phone: jspb.Message.getField(msg, 10),
     lastseen: jspb.Message.getField(msg, 11),
     photogalleryList: jspb.Message.toObjectList(msg.getPhotogalleryList(),
-    proto.msg.UserPhoto.toObject, includeInstance)
+    proto.msg.UserPhoto.toObject, includeInstance),
+    isbot: jspb.Message.getField(msg, 13)
   };
 
   if (includeInstance) {
@@ -4498,6 +4499,10 @@ proto.msg.User.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.msg.UserPhoto;
       reader.readMessage(value,proto.msg.UserPhoto.deserializeBinaryFromReader);
       msg.addPhotogallery(value);
+      break;
+    case 13:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setIsbot(value);
       break;
     default:
       reader.skipField();
@@ -4612,6 +4617,13 @@ proto.msg.User.serializeBinaryToWriter = function(message, writer) {
       12,
       f,
       proto.msg.UserPhoto.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 13));
+  if (f != null) {
+    writer.writeBool(
+      13,
+      f
     );
   }
 };
@@ -4967,6 +4979,37 @@ proto.msg.User.prototype.addPhotogallery = function(opt_value, opt_index) {
 
 proto.msg.User.prototype.clearPhotogalleryList = function() {
   this.setPhotogalleryList([]);
+};
+
+
+/**
+ * optional bool IsBot = 13;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.msg.User.prototype.getIsbot = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 13, false));
+};
+
+
+/** @param {boolean} value */
+proto.msg.User.prototype.setIsbot = function(value) {
+  jspb.Message.setField(this, 13, value);
+};
+
+
+proto.msg.User.prototype.clearIsbot = function() {
+  jspb.Message.setField(this, 13, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.User.prototype.hasIsbot = function() {
+  return jspb.Message.getField(this, 13) != null;
 };
 
 
@@ -5490,7 +5533,9 @@ proto.msg.UserMessage.toObject = function(includeInstance, msg) {
     entitiesList: jspb.Message.toObjectList(msg.getEntitiesList(),
     proto.msg.MessageEntity.toObject, includeInstance),
     mediatype: jspb.Message.getField(msg, 19),
-    media: msg.getMedia_asB64()
+    media: msg.getMedia_asB64(),
+    replymarkup: jspb.Message.getField(msg, 21),
+    replymarkupdata: msg.getReplymarkupdata_asB64()
   };
 
   if (includeInstance) {
@@ -5607,6 +5652,14 @@ proto.msg.UserMessage.deserializeBinaryFromReader = function(msg, reader) {
     case 20:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setMedia(value);
+      break;
+    case 21:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setReplymarkup(value);
+      break;
+    case 22:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setReplymarkupdata(value);
       break;
     default:
       reader.skipField();
@@ -5775,6 +5828,20 @@ proto.msg.UserMessage.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeBytes(
       20,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 21));
+  if (f != null) {
+    writer.writeInt64(
+      21,
+      f
+    );
+  }
+  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 22));
+  if (f != null) {
+    writer.writeBytes(
+      22,
       f
     );
   }
@@ -6412,6 +6479,88 @@ proto.msg.UserMessage.prototype.clearMedia = function() {
  */
 proto.msg.UserMessage.prototype.hasMedia = function() {
   return jspb.Message.getField(this, 20) != null;
+};
+
+
+/**
+ * optional int64 ReplyMarkup = 21;
+ * @return {number}
+ */
+proto.msg.UserMessage.prototype.getReplymarkup = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 21, 0));
+};
+
+
+/** @param {number} value */
+proto.msg.UserMessage.prototype.setReplymarkup = function(value) {
+  jspb.Message.setField(this, 21, value);
+};
+
+
+proto.msg.UserMessage.prototype.clearReplymarkup = function() {
+  jspb.Message.setField(this, 21, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UserMessage.prototype.hasReplymarkup = function() {
+  return jspb.Message.getField(this, 21) != null;
+};
+
+
+/**
+ * optional bytes ReplyMarkupData = 22;
+ * @return {!(string|Uint8Array)}
+ */
+proto.msg.UserMessage.prototype.getReplymarkupdata = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 22, ""));
+};
+
+
+/**
+ * optional bytes ReplyMarkupData = 22;
+ * This is a type-conversion wrapper around `getReplymarkupdata()`
+ * @return {string}
+ */
+proto.msg.UserMessage.prototype.getReplymarkupdata_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getReplymarkupdata()));
+};
+
+
+/**
+ * optional bytes ReplyMarkupData = 22;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getReplymarkupdata()`
+ * @return {!Uint8Array}
+ */
+proto.msg.UserMessage.prototype.getReplymarkupdata_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getReplymarkupdata()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.msg.UserMessage.prototype.setReplymarkupdata = function(value) {
+  jspb.Message.setField(this, 22, value);
+};
+
+
+proto.msg.UserMessage.prototype.clearReplymarkupdata = function() {
+  jspb.Message.setField(this, 22, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.msg.UserMessage.prototype.hasReplymarkupdata = function() {
+  return jspb.Message.getField(this, 22) != null;
 };
 
 
@@ -10284,7 +10433,15 @@ proto.msg.MessageEntityType = {
   MESSAGEENTITYTYPEMENTION: 2,
   MESSAGEENTITYTYPEURL: 3,
   MESSAGEENTITYTYPEEMAIL: 4,
-  MESSAGEENTITYTYPEHASHTAG: 5
+  MESSAGEENTITYTYPEHASHTAG: 5,
+  MESSAGEENTITYTYPERESERVED1: 6,
+  MESSAGEENTITYTYPERESERVED2: 7,
+  MESSAGEENTITYTYPERESERVED3: 8,
+  MESSAGEENTITYTYPERESERVED4: 9,
+  MESSAGEENTITYTYPERESERVED5: 10,
+  MESSAGEENTITYTYPERESERVED6: 11,
+  MESSAGEENTITYTYPERESERVED7: 12,
+  MESSAGEENTITYTYPERESERVED8: 13
 };
 
 /**
@@ -10327,7 +10484,13 @@ proto.msg.PrivacyKey = {
   PRIVACYKEYPHONENUMBER: 3,
   PRIVACYKEYPROFILEPHOTO: 4,
   PRIVACYKEYFORWARDEDMESSAGE: 5,
-  PRIVACYKEYCALL: 6
+  PRIVACYKEYCALL: 6,
+  PRIVACYKEYRESERVED1: 7,
+  PRIVACYKEYRESERVED2: 8,
+  PRIVACYKEYRESERVED3: 9,
+  PRIVACYKEYRESERVED4: 10,
+  PRIVACYKEYRESERVED5: 11,
+  PRIVACYKEYRESERVED6: 12
 };
 
 /**

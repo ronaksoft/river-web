@@ -1,12 +1,12 @@
 .info-bar {
   height: 48px;
-  padding: 5px 29px;
+  padding: 5px 29px 5px 45px;
   text-align: left;
 
   .back-to-chats {
     position: absolute;
     top: 50%;
-    left: 5px;
+    left: 3px;
     height: 36px;
     width: 36px;
     transform: translateY(-50%);
@@ -14,6 +14,22 @@
     svg {
       height: 36px;
       width: 36px;
+    }
+
+    &.close-button {
+      height: 36px;
+      width: 36px;
+
+      button {
+        height: 36px;
+        width: 36px;
+        padding: 4px;
+      }
+
+      svg {
+        height: 30px;
+        width: 30px;
+      }
     }
   }
 
@@ -35,6 +51,7 @@
 html[direction="rtl"] {
   .info-bar {
     text-align: left;
+    padding: 5px 45px 5px 29px;
 
     .buttons {
       right: auto;

@@ -2,8 +2,13 @@
 * 🎉 New list rendering with `KKWindow`
 * Online indicator in avatar
 * Smooth scroll down
+* 🎉 Shared WASM Worker for mobile view (File is now working on low end mobile phones)
+* Connection status in mobile view
+* 🎉 Shrunk view added
+* Screenshot alert added
+* Unread counter bug fixed
 * Cancel uploading bug fixed
-* Various bugs fixed
+* Various bugs fixed and improvements
 
 ## 0.27.14
 * DevTools updated

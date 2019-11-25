@@ -9,10 +9,12 @@ export const C_MESSAGE_ICON = {
     Audio: 2,
     Contact: 6,
     File: 5,
+    Forwarded: 20,
     GIF: 7,
     Location: 9,
     None: 0,
     Photo: 4,
+    Reply: 21,
     Sticker: 8,
     Video: 1,
     Voice: 3,
@@ -59,6 +61,11 @@ export const getMessageTitle = (message: IMessage): { text: string, icon: number
             default:
             case MediaType.MEDIATYPEEMPTY:
                 messageIcon.text = (message.body || '').substr(0, 64);
+                if (message.fwdsenderid && message.fwdsenderid !== "") {
+                    messageIcon.icon = C_MESSAGE_ICON.Forwarded;
+                } else if (message.replyto !== 0) {
+                    messageIcon.icon = C_MESSAGE_ICON.Reply;
+                }
                 break;
             case MediaType.MEDIATYPEDOCUMENT:
                 const messageMediaDocument: MediaDocument.AsObject = message.mediadata;

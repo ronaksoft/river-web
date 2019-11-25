@@ -35,13 +35,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
 
-    .placeholder {
-      height: 400px;
-      width: 400px;
-      background-size: 100% 100%;
-      background-repeat: no-repeat;
-      background-image: url(../../../asset/image/chat-placeholder.svg);
+    .placeholder-label {
+      margin: 24px 0 0;
+      font-size: 15px;
+      font-weight: bold;
+      color: var(--dark);
     }
   }
 }
@@ -599,6 +599,10 @@
     padding-left: 7px;
   }
 
+  .bubble-wrapper .bubble {
+    transition: margin-left 0.1s;
+  }
+
   .bubble-wrapper.you {
     .avatar {
       display: none;
@@ -729,6 +733,10 @@ html[theme="dark-night"],
 html[theme="dark-blue"] {
   .chat {
     border-color: var(--dark-low);
+
+    .chat-placeholder .placeholder-label {
+      color: var(--white);
+    }
   }
 
   .bubble-wrapper {

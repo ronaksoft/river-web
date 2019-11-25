@@ -831,6 +831,18 @@
         }
       }
 
+      &.theme-dark-night {
+        background-color: var(--dark-night-low) !important;
+
+        &:after {
+          background: var(--dark-night-accent-medium) !important;
+        }
+
+        &:before {
+          background: var(--dark-night-accent-low) !important;
+        }
+      }
+
       &.theme-dark {
         background-color: var(--dark) !important;
 
