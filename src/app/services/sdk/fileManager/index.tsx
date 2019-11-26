@@ -19,6 +19,7 @@ import * as core_types_pb from '../messages/chat.core.types_pb';
 import * as Sentry from '@sentry/browser';
 import {isProd} from "../../../../App";
 import IframeService from "../../iframe";
+import {isMobile} from "../../utilities/localize";
 
 export interface IFileProgress {
     active?: boolean;
@@ -70,10 +71,6 @@ interface IChunksInfo {
     totalParts: number;
     updates: IChunkUpdate[];
 }
-
-export const isMobile = () => {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-};
 
 const C_FILE_SERVER_HTTP_WORKER_NUM = 1;
 const C_MAX_UPLOAD_QUEUE_SIZE = 2;

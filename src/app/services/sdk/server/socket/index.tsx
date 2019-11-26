@@ -229,7 +229,6 @@ export default class Socket {
     }
 
     private initWebSocket() {
-        window.console.log('initWebSocket');
         clearTimeout(this.initTimeout);
 
         this.tryCounter++;

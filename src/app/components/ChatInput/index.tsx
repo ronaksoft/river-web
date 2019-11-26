@@ -68,6 +68,7 @@ import {IDialog} from "../../repository/dialog/interface";
 import MessageRepo from "../../repository/message";
 import {UpdateDraftMessageCleared} from "../../services/sdk/messages/chat.api.updates_pb";
 import {emojiList} from "./emojis";
+import {isMobile} from "../../services/utilities/localize";
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.scss';
@@ -109,6 +110,7 @@ interface IProps {
     previewMessage?: IMessage;
     previewMessageMode?: number;
     userId?: string;
+    onFocus?: () => void;
 }
 
 interface IState {
@@ -203,6 +205,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private preventMessageSend: boolean = false;
     private preventMessageSendTimeout: any = null;
     private emojiMap: { [key: string]: number } = {};
+    private isMobileBrowser = isMobile();
 
     constructor(props: IProps) {
         super(props);
@@ -486,6 +489,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                                style={defaultMentionInputStyle}
                                                suggestionsPortalHost={this.mentionContainer}
                                                spellCheck={true}
+                                               onFocus={this.props.onFocus}
                                 >
                                     <Mention
                                         trigger="@"
@@ -645,6 +649,7 @@ class ChatInput extends React.Component<IProps, IState> {
                     this.props.onMessage(text, {
                         entities,
                     });
+                    this.checkFocus();
                 });
             } else {
                 this.clearPreviewMessage(true, () => {
@@ -654,6 +659,7 @@ class ChatInput extends React.Component<IProps, IState> {
                         message,
                         mode: previewMessageMode,
                     });
+                    this.checkFocus();
                 })();
             }
         }
@@ -689,6 +695,7 @@ class ChatInput extends React.Component<IProps, IState> {
                             this.props.onMessage(text, {
                                 entities,
                             });
+                            this.checkFocus();
                         });
                     } else if (previewMessageMode !== C_MSG_MODE.Normal) {
                         this.clearPreviewMessage(true, () => {
@@ -698,6 +705,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                 message,
                                 mode: previewMessageMode,
                             });
+                            this.checkFocus();
                         })();
                     }
                 }
@@ -1885,6 +1893,12 @@ class ChatInput extends React.Component<IProps, IState> {
             const item: any = {};
             item[d] = 1;
             localStorage.setItem(emojiKey, JSON.stringify(item));
+        }
+    }
+
+    private checkFocus() {
+        if (this.textarea && this.isMobileBrowser) {
+            this.textarea.focus();
         }
     }
 

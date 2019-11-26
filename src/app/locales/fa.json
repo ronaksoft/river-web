@@ -42,7 +42,9 @@
     "error": "خطا",
     "select": "انتخاب",
     "copy": "رونوشت",
-    "from": "از"
+    "from": "از",
+    "expand": "باز کردن",
+    "collapse": "بستن"
   },
   "chat": {
     "search": "جستجو",

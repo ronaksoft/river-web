@@ -61,9 +61,9 @@ export const getMessageTitle = (message: IMessage): { text: string, icon: number
             default:
             case MediaType.MEDIATYPEEMPTY:
                 messageIcon.text = (message.body || '').substr(0, 64);
-                if (message.fwdsenderid && message.fwdsenderid !== "") {
+                if (message.fwdsenderid && message.fwdsenderid !== "" && message.fwdsenderid !== "0") {
                     messageIcon.icon = C_MESSAGE_ICON.Forwarded;
-                } else if (message.replyto !== 0) {
+                } else if (message.replyto) {
                     messageIcon.icon = C_MESSAGE_ICON.Reply;
                 }
                 break;

@@ -43,7 +43,9 @@
     "error": "Error",
     "select": "Select",
     "copy": "Copy",
-    "from": "From"
+    "from": "From",
+    "expand": "Expand",
+    "collapse": "Collapse"
   },
   "chat": {
     "search": "Search",

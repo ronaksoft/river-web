@@ -474,6 +474,14 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
+    public scrollDownIfPossible() {
+        if (this.isAtEnd(30)) {
+            setTimeout(() => {
+                this.animateToEnd();
+            }, 300);
+        }
+    }
+
     public render() {
         const {items, moreAnchorEl, moreAnchorPos, selectable, loadingOverlay} = this.state;
         return (
@@ -492,13 +500,13 @@ class Message extends React.Component<IProps, IState> {
                                 height={height}
                                 width={width}
                                 count={items.length}
-                                overscan={10}
+                                overscan={30}
                                 renderer={this.rowRenderHandler}
                                 noRowsRenderer={this.noRowsRendererHandler}
                                 keyMapper={this.keyMapperHandler}
                                 estimatedItemSize={41}
                                 estimatedItemSizeFunc={this.getHeight}
-                                loadBeforeLimit={10}
+                                loadBeforeLimit={15}
                                 onLoadBefore={this.props.onLoadMoreBefore}
                                 onLoadAfter={this.props.onLoadMoreAfter}
                                 onScrollPos={this.scrollPosHandler}
@@ -679,9 +687,9 @@ class Message extends React.Component<IProps, IState> {
     }
 
     // @ts-ignore
-    private isAtEnd() {
+    private isAtEnd(offset?: number) {
         if (this.containerRef) {
-            return (this.containerRef.clientHeight + this.containerRef.scrollTop + 2 >= this.containerRef.scrollHeight);
+            return (this.containerRef.clientHeight + this.containerRef.scrollTop + (offset || 2) >= this.containerRef.scrollHeight);
         } else {
             return true;
         }

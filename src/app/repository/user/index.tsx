@@ -19,8 +19,7 @@ import CRC from 'js-crc/build/crc.min';
 import {InputUser, UserStatus} from '../../services/sdk/messages/chat.core.types_pb';
 import RiverTime from '../../services/utilities/river_time';
 import Broadcaster from '../../services/broadcaster';
-import {kMerge, kUserValid} from "../../services/utilities/kDash";
-import {pickBy} from "lodash";
+import {kMerge} from "../../services/utilities/kDash";
 
 export const getContactsCrc = (users: IUser[]) => {
     const ids = users.map((user) => {
@@ -184,7 +183,6 @@ export default class UserRepo {
     public upsert(isContact: boolean, users: IUser[], force?: boolean): Promise<any> {
         const ids = users.map((user) => {
             user.is_contact = isContact ? 1 : 0;
-            user = pickBy(user, kUserValid);
             return user.id || '';
         });
         if (users.length === 0) {
@@ -194,7 +192,7 @@ export default class UserRepo {
             const createItems: IUser[] = differenceBy(users, result, 'id');
             const updateItems: IUser[] = result;
             updateItems.map((user: IUser) => {
-                return this.mergeUser(users, pickBy(user, kUserValid), force);
+                return this.mergeUser(users, user, force);
             });
             createItems.forEach((user: IUser) => {
                 if (user.status === UserStatus.USERSTATUSONLINE && !user.status_last_modified) {

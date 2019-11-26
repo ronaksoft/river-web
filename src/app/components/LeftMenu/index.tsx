@@ -67,6 +67,11 @@ interface IState {
 
 class LeftMenu extends React.PureComponent<IProps, IState> {
     public static getDerivedStateFromProps(props: IProps, state: IState) {
+        if (props.mobileView && state.shrunkMenu) {
+            return {
+                shrunkMenu: false,
+            };
+        }
         if (props.iframeActive === state.iframeActive) {
             return;
         }
@@ -140,6 +145,10 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             this.setState({
                 shrunkMenu: true,
             });
+        } else if (this.state.shrunkMenu) {
+            this.setState({
+                shrunkMenu: false,
+            });
         }
     }
 
@@ -200,7 +209,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         const {chatMoreAnchorEl, leftMenu, overlay, iframeActive, shrunkMenu} = this.state;
         return (
             <div
-                className={'column-left ' + (leftMenu === 'chat' ? 'with-top-bar' : '') + (overlay ? ' left-overlay-enable' : '') + (shrunkMenu? ' shrunk-menu': '')}>
+                className={'column-left ' + (leftMenu === 'chat' ? 'with-top-bar' : '') + (overlay ? ' left-overlay-enable' : '') + (shrunkMenu ? ' shrunk-menu' : '')}>
                 {!shrunkMenu && <div className="top-bar">
                     {iframeActive &&
                     <span className="close-btn">
@@ -217,7 +226,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                     {Boolean(!iframeActive && !this.props.mobileView) &&
                     <span className="menu-btn">
                         <Tooltip
-                            title={i18n.t('general.close')}
+                            title={i18n.t('general.collapse')}
                             placement="bottom"
                             onClick={this.toggleMenuHandler}
                         >
@@ -269,7 +278,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                 {shrunkMenu && <div className="top-bar">
                     <span className="menu-btn">
                         <Tooltip
-                            title={i18n.t('general.close')}
+                            title={i18n.t('general.expand')}
                             placement="bottom"
                             onClick={this.toggleMenuHandler}
                         >
@@ -284,7 +293,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                     {this.leftMenuRender()}
                 </div>
                 {!shrunkMenu && <BottomBar ref={this.bottomBarRefHandler} onSelect={this.bottomBarSelectHandler}
-                           selected={this.state.leftMenu}/>}
+                                           selected={this.state.leftMenu}/>}
                 <div className="left-overlay">
                     {overlay && <NewGroupMenu onClose={this.overlayCloseHandler}
                                               onCreate={this.props.onGroupCreate}/>}
@@ -432,7 +441,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             shrunkMenu: !this.state.shrunkMenu,
         }, () => {
             this.props.onMenuShrunk(this.state.shrunkMenu);
-            localStorage.setItem('river.shrunk_menu', this.state.shrunkMenu? 'true' : 'false');
+            localStorage.setItem('river.shrunk_menu', this.state.shrunkMenu ? 'true' : 'false');
         });
     }
 }

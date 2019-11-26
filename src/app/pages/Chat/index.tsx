@@ -137,9 +137,10 @@ import MoveDown from "../../components/MoveDown";
 import {Error} from '../../services/sdk/messages/chat.core.types_pb';
 import {OptionsObject, withSnackbar} from "notistack";
 import {scrollFunc} from "../../services/kkwindow/utils";
+import Landscape from "../../components/SVG";
+import {isMobile} from "../../services/utilities/localize";
 
 import './style.scss';
-import Landscape from "../../components/SVG";
 
 export let notifyOptions: any[] = [];
 const C_MAX_UPDATE_DIFF = 2000;
@@ -230,7 +231,6 @@ class Chat extends React.Component<IProps, IState> {
     private isRecording: boolean = false;
     private upcomingDialogId: string = 'null';
     private cachedFileService: CachedFileService;
-    /* New structure */
     private selectedDialogId: string = 'null';
     private peer: InputPeer | null = null;
     private messageSelectable: boolean = false;
@@ -239,6 +239,7 @@ class Chat extends React.Component<IProps, IState> {
     private isOnline: boolean = navigator.onLine === undefined ? true : navigator.onLine;
     private isUpdating: boolean = false;
     private shrunk: boolean = false;
+    private isMobileBrowser = isMobile();
 
     constructor(props: IProps) {
         super(props);
@@ -568,6 +569,7 @@ class Chat extends React.Component<IProps, IState> {
                                        onVoiceStateChange={this.chatInputVoiceStateChangeHandler}
                                        getDialog={this.chatInputGetDialogHandler}
                                        onClearDraft={this.updateDraftMessageClearedHandler}
+                                       onFocus={this.chatInputFocusHandler}
                             />
                         </div>}
                         {this.selectedDialogId === 'null' && <div className="column-center">
@@ -1439,7 +1441,7 @@ class Chat extends React.Component<IProps, IState> {
                 return;
             }
 
-            if (this.chatInputRef) {
+            if (this.chatInputRef && !this.isMobileBrowser) {
                 this.chatInputRef.focus();
             }
 
@@ -1563,7 +1565,7 @@ class Chat extends React.Component<IProps, IState> {
 
         this.messageRepo.getMany({
             before: this.messages[0].id,
-            limit: 25,
+            limit: 45,
             peer,
         }).then((data) => {
             // Checks peerid on transition
@@ -2710,7 +2712,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.sendReadHistory(this.peer, Math.floor(this.messages[this.messages.length - 1].id || 0));
             }
         }
-        if (this.chatInputRef) {
+        if (this.chatInputRef && !this.isMobileBrowser) {
             this.chatInputRef.focus();
         }
     }
@@ -4163,23 +4165,28 @@ class Chat extends React.Component<IProps, IState> {
         return this.getDialogById(id);
     }
 
+    /* ChatInput focus handler */
+    private chatInputFocusHandler = () => {
+        if (this.isMobileBrowser && this.messageRef) {
+            this.messageRef.scrollDownIfPossible();
+        }
+    }
+
     /* Save file by type */
     private saveFile(msg: IMessage) {
-        switch (msg.mediatype) {
-            case MediaType.MEDIATYPEDOCUMENT:
-                const mediaDocument: MediaDocument.AsObject = msg.mediadata;
-                if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
-                    this.fileRepo.get(mediaDocument.doc.id).then((res) => {
-                        if (res) {
-                            if (ElectronService.isElectron()) {
-                                this.downloadWithElectron(res.data, msg);
-                            } else {
-                                saveAs(res.data, this.getFileName(msg));
-                            }
+        if (msg.mediatype === MediaType.MEDIATYPEDOCUMENT) {
+            const mediaDocument: MediaDocument.AsObject = msg.mediadata;
+            if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
+                this.fileRepo.get(mediaDocument.doc.id).then((res) => {
+                    if (res) {
+                        if (ElectronService.isElectron()) {
+                            this.downloadWithElectron(res.data, msg);
+                        } else {
+                            saveAs(res.data, this.getFileName(msg));
                         }
-                    });
-                }
-                break;
+                    }
+                });
+            }
         }
     }
 

@@ -37,3 +37,6 @@ export const localize = (str: string | number) => {
     return str;
 };
 
+export const isMobile = () => {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+};

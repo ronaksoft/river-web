@@ -74,6 +74,8 @@ const scrollbarThumbStyle: any = {
     transformOrigin: 'center center',
 };
 
+const C_TRY_SCROLL_TOP = 20;
+
 class KKWindow extends React.Component<IProps, IState> {
     public static getDerivedStateFromProps(props: IProps, state: IState) {
         if (props.count === state.items.length) {
@@ -110,10 +112,11 @@ class KKWindow extends React.Component<IProps, IState> {
     private fitList: boolean = true;
     private readonly cellPrefix: string = 'cell';
     private loadMoreReady: boolean = false;
-    private loadBeforeTriggered: boolean = false;
+    private loadBeforeTriggered: number = 0;
     private readonly loadBeforeLimit: number = 5;
     private loadAfterTriggered: boolean = false;
     private readonly loadAfterLimit: number = 5;
+    private loadBeforeTimeout: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -262,8 +265,10 @@ class KKWindow extends React.Component<IProps, IState> {
 
     public clearAll() {
         this.loadMoreReady = false;
-        this.loadBeforeTriggered = false;
+        this.loadBeforeTriggered = 0;
         this.loadAfterTriggered = false;
+        clearTimeout(this.loadBeforeTimeout);
+        this.loadBeforeTimeout = null;
         if (this.cellMeasurer) {
             this.cellMeasurer.clearAll();
         }
@@ -328,7 +333,13 @@ class KKWindow extends React.Component<IProps, IState> {
         if (this.scrollbar.noScroll) {
             return;
         }
-        this.cellMeasurer.scrollHandler(this.props.height, e.target.scrollTop);
+        const scrollTop = e.target.scrollTop;
+        this.cellMeasurer.scrollHandler(this.props.height, scrollTop);
+        if (this.loadBeforeTriggered >= 1 && this.loadBeforeTriggered <= 3 && scrollTop < C_TRY_SCROLL_TOP) {
+            this.loadBeforeTimeout = setTimeout(() => {
+                this.tryLoadBefore();
+            }, 500);
+        }
     }
 
     private scrollbarRefHandler = (ref: any) => {
@@ -504,13 +515,17 @@ class KKWindow extends React.Component<IProps, IState> {
             this.props.onScrollPos({start, end, overscanStart, overscanEnd});
         }
         if (this.loadMoreReady) {
-            if (start <= this.loadBeforeLimit && !this.loadBeforeTriggered) {
+            if (start <= this.loadBeforeLimit && this.loadBeforeTriggered < 5) {
                 if (this.props.onLoadBefore) {
+                    if (this.loadBeforeTimeout) {
+                        clearTimeout(this.loadBeforeTimeout);
+                        this.loadBeforeTimeout = null;
+                    }
                     this.props.onLoadBefore(start, end);
                 }
-                this.loadBeforeTriggered = true;
+                this.loadBeforeTriggered++;
             } else if (start > this.loadBeforeLimit + 4) {
-                this.loadBeforeTriggered = false;
+                this.loadBeforeTriggered = 0;
             }
             const toEnd = this.props.count - (end + 1);
             if (toEnd <= this.loadAfterLimit && !this.loadAfterTriggered) {
@@ -520,6 +535,14 @@ class KKWindow extends React.Component<IProps, IState> {
                 this.loadAfterTriggered = true;
             } else if (toEnd > this.loadAfterLimit + 4) {
                 this.loadAfterTriggered = false;
+            }
+        }
+    }
+
+    private tryLoadBefore() {
+        if (this.containerRef && this.containerRef.scrollTop < C_TRY_SCROLL_TOP) {
+            if (this.props.onLoadBefore) {
+                this.props.onLoadBefore(0, 10);
             }
         }
     }

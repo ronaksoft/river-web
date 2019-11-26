@@ -23,13 +23,13 @@ export class CellMeasurer {
     private end: number = 0;
     private lastStart: number = 0;
     private lastEnd: number = 0;
-    private overscan: number = 10;
-    private updateHysteresis: number = 3;
+    private readonly overscan: number = 10;
+    private updateHysteresis: number = 5;
     private scrollTop: number = 0;
     private readonly keyMapperFn: any;
     private readonly updateList: any;
     private readonly estimatedItemSize: number = 40;
-    private estimatedItemSizeFunc: ((index: number) => number) | undefined;
+    private readonly estimatedItemSizeFunc: ((index: number) => number) | undefined;
     private readonly cellPrefix: string;
     private totalHeight: number = 0;
 
