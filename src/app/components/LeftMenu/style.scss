@@ -70,7 +70,7 @@
       top: 0;
       right: 0;
       bottom: 0;
-      width: 150px;
+      width: 100px;
     }
   }
 
@@ -119,6 +119,10 @@
 
     .left-content {
       height: 100%;
+
+      .dialogs {
+        height: calc(100% - 47px);
+      }
 
       .dialog-top-bar, .preview, .pin {
         display: none !important;

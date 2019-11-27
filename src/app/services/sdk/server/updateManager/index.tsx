@@ -176,6 +176,19 @@ export default class UpdateManager {
             }
             return 0;
         });
+        // Check Gap in Update List
+        for (let i = 0; i < updates.length; i++) {
+            if (updates[i] && updates[i].updateid !== 0 && i < (updates.length - 1)) {
+                if (updates[i].updateid !== updates[i + 1].updateid) {
+                    this.updateList = [];
+                    this.outOfSync = false;
+                    this.outOfSyncTimeout = null;
+                    window.console.debug('%c gapInUpdate', 'color: #ff3d00;');
+                    this.callHandlers(C_MSG.OutOfSync, {});
+                    return;
+                }
+            }
+        }
         updates.forEach((update) => {
             try {
                 this.responseUpdateMessageID(update);

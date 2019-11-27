@@ -18,7 +18,7 @@ import i18n from "../../services/i18n";
 import IconButton from "@material-ui/core/IconButton";
 import {
     CloseRounded,
-    EditRounded,
+    /*EditRounded,*/
     MoreVertRounded,
     SearchRounded,
     MenuRounded,
@@ -109,11 +109,11 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             cmd: 'search',
             icon: <SearchRounded/>,
             tooltip: i18n.t('chat.search'),
-        }, {
+        }, /*{
             cmd: 'new_message',
             icon: <EditRounded/>,
             tooltip: i18n.t('chat.new_message'),
-        }, {
+        }, */{
             cmd: 'more',
             icon: <MoreVertRounded/>,
             tooltip: i18n.t('chat.more'),

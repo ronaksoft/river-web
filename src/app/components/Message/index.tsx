@@ -508,6 +508,7 @@ class Message extends React.Component<IProps, IState> {
                                 estimatedItemSizeFunc={this.getHeight}
                                 loadBeforeLimit={15}
                                 onLoadBefore={this.props.onLoadMoreBefore}
+                                loadAfterLimit={7}
                                 onLoadAfter={this.props.onLoadMoreAfter}
                                 onScrollPos={this.scrollPosHandler}
                             />

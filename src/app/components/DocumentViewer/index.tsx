@@ -402,9 +402,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     <div className="item" onClick={this.transformHandler('reset')}>
                         <CropFreeRounded/>
                     </div>
-                    <div className="item" onClick={this.openMessageHandler}>
+                    {Boolean(doc.type !== 'avatar') && <div className="item" onClick={this.openMessageHandler}>
                         <EmailOutlined/>
-                    </div>
+                    </div>}
                 </div>
                 <Menu
                     anchorEl={contextMenuAnchorEl}

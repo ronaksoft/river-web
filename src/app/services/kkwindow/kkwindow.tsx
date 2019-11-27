@@ -247,7 +247,6 @@ class KKWindow extends React.Component<IProps, IState> {
                     this.revertSnapshot();
                 }, 100);
             }
-            window.console.log('takeSnapshot');
         }
     }
 
