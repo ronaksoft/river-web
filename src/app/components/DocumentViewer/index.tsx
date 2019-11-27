@@ -41,12 +41,21 @@ import {hasAuthority} from "../GroupInfoMenu";
 import {findIndex} from "lodash";
 import UserName from "../UserName";
 import TimeUtility from "../../services/utilities/time";
+import {Swipeable, EventData} from "react-swipeable";
 
 import './style.scss';
 
 const C_MAX_WIDTH = 800;
 const C_MAX_HEIGHT = 600;
-const C_CONTAINER_RATIO = C_MAX_HEIGHT / C_MAX_WIDTH;
+const swipeConfig = {
+    delta: 10,                             // min distance(px) before a swipe starts
+    preventDefaultTouchmoveEvent: false,   // preventDefault on touchmove, *See Details*
+    rotationAngle: 0,                      // set a rotation angle
+    trackMouse: false,                     // track mouse input
+    trackTouch: true,                      // track touch input
+};
+
+// const C_CONTAINER_RATIO = C_MAX_HEIGHT / C_MAX_WIDTH;
 
 interface IXY {
     x: number;
@@ -171,7 +180,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     <div ref={this.documentContainerRefHandler} className="document-container"
                          onMouseDown={this.mediaDocumentMouseDownHandler}
                          onWheelCapture={this.mediaDocumentWheelHandler}>
-                        {this.getContent()}
+                        <Swipeable onSwiped={this.swipeEventHandler} {...swipeConfig} >
+                            {this.getContent()}
+                        </Swipeable>
                         {this.initPagination()}
                     </div>
                 </ClickAwayListener>
@@ -664,15 +675,19 @@ class DocumentViewer extends React.Component<IProps, IState> {
         let height = (doc.items[0].height || 1);
         let width = (doc.items[0].width || 1);
         const ratio = height / width;
-        if (ratio > C_CONTAINER_RATIO) {
-            if (height > C_MAX_HEIGHT) {
-                height = C_MAX_HEIGHT;
-                width = C_MAX_HEIGHT / ratio;
+        const screenHeight = window.innerHeight - 200;
+        const screenRation = screenHeight / window.innerWidth;
+        const maxWidth = window.innerWidth < C_MAX_WIDTH ? window.innerWidth : C_MAX_WIDTH;
+        const maxHeight = screenHeight < C_MAX_HEIGHT ? screenHeight : C_MAX_HEIGHT;
+        if (ratio > screenRation) {
+            if (height > maxHeight) {
+                height = maxHeight;
+                width = maxHeight / ratio;
             }
         } else {
-            if (width > C_MAX_WIDTH) {
-                width = C_MAX_WIDTH;
-                height = C_MAX_WIDTH * ratio;
+            if (width > maxWidth) {
+                width = maxWidth;
+                height = maxWidth * ratio;
             }
         }
         this.setState({
@@ -1151,6 +1166,32 @@ class DocumentViewer extends React.Component<IProps, IState> {
             }).catch(() => {
                 this.hasAccess = false;
             });
+        }
+    }
+
+    private swipeEventHandler = (eventData: EventData) => {
+        const {doc} = this.state;
+        if (!doc) {
+            return;
+        }
+        if (eventData.dir === 'Left') {
+            if (doc.type === 'avatar') {
+                this.nextGalleryHandler();
+            } else {
+                if (this.state.next) {
+                    this.nextHandler();
+                }
+            }
+        } else if (eventData.dir === 'Right') {
+            if (doc.type === 'avatar') {
+                this.prevGalleryHandler();
+            } else {
+                if (this.state.prev) {
+                    this.prevHandler();
+                }
+            }
+        } else if (eventData.dir === 'Down') {
+            this.dialogCloseHandler();
         }
     }
 }

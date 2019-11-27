@@ -1,3 +1,6 @@
+## 0.28.2
+* 🎉 Document viewer optimized for mobile users
+
 ## 0.28.1
 * Theme bug fixed
 * Reply/Forward bug fixed
