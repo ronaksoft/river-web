@@ -275,7 +275,7 @@ class Message extends React.Component<IProps, IState> {
         this.topMessageId = topMessageId;
     }
 
-    public setMessages(items: IMessage[], callback?: () => void, noRemoveSnapshot?: boolean) {
+    public setMessages(items: IMessage[], callback?: () => void, noForceUpdate?: boolean) {
         const fn = () => {
             this.newMessageIndex = findLastIndex(this.state.items, {messagetype: C_MESSAGE_TYPE.NewMessage});
         };
@@ -309,7 +309,9 @@ class Message extends React.Component<IProps, IState> {
                 this.props.onLastMessage(null);
             }
             // this.list.forceUpdateGrid();
-            this.forceUpdate();
+            if (this.list && noForceUpdate !== true) {
+                this.list.forceUpdate();
+            }
             if (callback) {
                 callback();
             }
@@ -506,7 +508,7 @@ class Message extends React.Component<IProps, IState> {
                                 keyMapper={this.keyMapperHandler}
                                 estimatedItemSize={41}
                                 estimatedItemSizeFunc={this.getHeight}
-                                loadBeforeLimit={15}
+                                loadBeforeLimit={7}
                                 onLoadBefore={this.props.onLoadMoreBefore}
                                 loadAfterLimit={7}
                                 onLoadAfter={this.props.onLoadMoreAfter}

@@ -891,7 +891,7 @@ export default class FileManager {
     private initFileServer() {
         this.fileSeverInitialized = true;
         setTimeout(() => {
-            if (isMobile() && IframeService.getInstance().isActive()) {
+            if ((isMobile() && IframeService.getInstance().isActive()) || !navigator.userAgent.search("Chrome")) {
                 this.httpWorkers[0] = new Http(true, 1);
                 this.httpWorkers[0].ready(() => {
                     this.startDownloadQueue();

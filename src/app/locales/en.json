@@ -70,6 +70,7 @@
       "content": "Remove {0} message(s)",
       "remove": "Remove",
       "remove_for_all": "Remove (for all)",
+      "remove_for": "Remove for ",
       "remove_all_pending": "Remove all Pendings"
     },
     "exit_group_dialog": {
