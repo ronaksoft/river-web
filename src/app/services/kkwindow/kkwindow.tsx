@@ -334,7 +334,7 @@ class KKWindow extends React.Component<IProps, IState> {
         }
         const scrollTop = e.target.scrollTop;
         this.cellMeasurer.scrollHandler(this.props.height, scrollTop);
-        if (this.loadBeforeTriggered >= 1 && this.loadBeforeTriggered <= 3 && scrollTop < C_TRY_SCROLL_TOP) {
+        if (this.loadMoreReady && this.loadBeforeTriggered >= 1 && this.loadBeforeTriggered <= 3 && scrollTop < C_TRY_SCROLL_TOP) {
             this.loadBeforeTimeout = setTimeout(() => {
                 this.tryLoadBefore();
             }, 500);
@@ -467,7 +467,7 @@ class KKWindow extends React.Component<IProps, IState> {
                 this.containerRef.style.paddingTop = '0';
                 setTimeout(() => {
                     this.loadMoreReady = true;
-                }, 50);
+                }, 100);
             }
         }
         if (this.fitList) {
@@ -539,7 +539,8 @@ class KKWindow extends React.Component<IProps, IState> {
     }
 
     private tryLoadBefore() {
-        if (this.containerRef && this.containerRef.scrollTop < C_TRY_SCROLL_TOP) {
+        if (this.containerRef && this.loadMoreReady && this.containerRef.scrollTop < C_TRY_SCROLL_TOP) {
+            window.console.log('tryLoadBefore');
             if (this.props.onLoadBefore) {
                 this.props.onLoadBefore(0, 10);
             }

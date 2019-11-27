@@ -308,9 +308,9 @@ class Message extends React.Component<IProps, IState> {
             } else {
                 this.props.onLastMessage(null);
             }
-            // this.list.forceUpdateGrid();
+            this.forceUpdate();
             if (this.list && noForceUpdate !== true) {
-                this.list.forceUpdate();
+                // this.list.forceUpdate();
             }
             if (callback) {
                 callback();
@@ -421,20 +421,12 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
-    public takeSnapshot(noRemove?: boolean) {
-        //
-    }
-
-    public removeSnapshot(instant?: boolean | number) {
-        //
-    }
-
     public focusOnNewMessage() {
         const {items} = this.state;
         if (items) {
             const index = findLastIndex(items, {messagetype: C_MESSAGE_TYPE.NewMessage});
             if (index > -1 && this.list) {
-                // this.list.scrollToRow(index);
+                this.list.scrollToItem(index);
             }
         }
     }
@@ -510,7 +502,6 @@ class Message extends React.Component<IProps, IState> {
                                 estimatedItemSizeFunc={this.getHeight}
                                 loadBeforeLimit={7}
                                 onLoadBefore={this.props.onLoadMoreBefore}
-                                loadAfterLimit={7}
                                 onLoadAfter={this.props.onLoadMoreAfter}
                                 onScrollPos={this.scrollPosHandler}
                             />
@@ -1051,7 +1042,7 @@ class Message extends React.Component<IProps, IState> {
                 }
             case C_MESSAGE_ACTION.MessageActionScreenShot:
                 return (<span className="system-message"><UserName className="sender" id={message.senderid || ''}
-                                                                   you={true}/> {i18n.t('message.took_a_screenshot')}</span>);
+                                                                   you={true}/> {i18n.t('message.took_an_screenshot')}</span>);
             default:
                 return (<span className="system-message">{i18n.t('message.unsupported_message')}</span>);
         }

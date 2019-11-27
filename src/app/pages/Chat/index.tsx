@@ -1410,7 +1410,7 @@ class Chat extends React.Component<IProps, IState> {
         let minId: number = 0;
         this.setChatView(true);
 
-        this.messageRepo.getMany({peer, limit: 25, before, ignoreMax: true}, (data) => {
+        this.messageRepo.getMany({peer, limit: 40, before, ignoreMax: true}, (data) => {
             // Checks peerid on transition
             if (this.selectedDialogId !== dialogId || !this.messageRef) {
                 this.setLoading(false);
@@ -1457,9 +1457,6 @@ class Chat extends React.Component<IProps, IState> {
             }
 
             this.setScrollMode('end');
-            if (!beforeMsg && this.messageRef) {
-                this.messageRef.takeSnapshot();
-            }
             const dataMsg = this.modifyMessages(this.messages, resMsgs, false);
             if (this.messages.length === 0) {
                 if (this.moveDownRef) {
@@ -1484,12 +1481,9 @@ class Chat extends React.Component<IProps, IState> {
                         // this.messageRef.keepView();
                     }
                 }, 100);
-                if (this.messageRef) {
-                    this.messageRef.removeSnapshot(300);
-                    setTimeout(() => {
-                        this.messageLoadMoreAfterHandler(0, 0);
-                    }, 250);
-                }
+                setTimeout(() => {
+                    this.messageLoadMoreAfterHandler(0, 0);
+                }, 250);
             });
         }).catch(() => {
             this.setChatView(true);
@@ -1579,7 +1573,6 @@ class Chat extends React.Component<IProps, IState> {
                 this.setLoading(false);
                 return;
             }
-            this.messageRef.takeSnapshot();
             this.setScrollMode('stay');
             setTimeout(() => {
                 if (!this.messageRef) {
@@ -1781,7 +1774,6 @@ class Chat extends React.Component<IProps, IState> {
             this.sdk.editMessage(randomId, message.id || 0, text, peer, entities).then(() => {
                 if (this.messageRef) {
                     this.messageRef.setScrollMode('stay');
-                    this.messageRef.takeSnapshot();
                 }
                 const index = findIndex(messages, (o) => {
                     return o.id === message.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
@@ -1790,7 +1782,6 @@ class Chat extends React.Component<IProps, IState> {
                     messages[index] = message;
                     if (this.messageRef) {
                         this.messageRef.updateList();
-                        this.messageRef.removeSnapshot(20);
                     }
                     if (this.chatInputRef && index + 1 === this.messages.length) {
                         this.chatInputRef.setLastMessage(message);
@@ -2911,8 +2902,6 @@ class Chat extends React.Component<IProps, IState> {
                 // Update unread counter in dialog
                 this.sendReadHistory(this.peer, Math.floor(messages[end].id || 0), end, diff > 1);
             }
-        } else if (this.moveDownRef) {
-            this.moveDownRef.setVisible(diff > 1);
         }
     }
 
@@ -2971,14 +2960,9 @@ class Chat extends React.Component<IProps, IState> {
     private settingUpdateMessageHandler = (keep?: boolean) => {
         if (keep && this.messageRef) {
             this.messageRef.setScrollMode('stay');
-            this.messageRef.takeSnapshot();
         }
         if (this.selectedDialogId !== 'null' && this.messageRef) {
             this.messageRef.clearAll();
-        }
-        if (keep && this.messageRef) {
-            // this.messageRef.keepView();
-            this.messageRef.removeSnapshot(50);
         }
     }
 
@@ -4422,7 +4406,6 @@ class Chat extends React.Component<IProps, IState> {
                     this.messageRef.animateToEnd();
                 } else {
                     // Load to the end
-                    this.messageRef.takeSnapshot(true);
                     this.messageRef.setLoading(true, true);
                     this.getMessagesByDialogId(this.selectedDialogId, true, undefined, dialog.topmessageid + 1);
                 }
@@ -4444,7 +4427,6 @@ class Chat extends React.Component<IProps, IState> {
                     }
                 } else {
                     // Load until new message
-                    this.messageRef.takeSnapshot(true);
                     this.messageRef.setLoading(true, true);
                     this.getMessagesByDialogId(this.selectedDialogId, true, undefined, before);
                 }

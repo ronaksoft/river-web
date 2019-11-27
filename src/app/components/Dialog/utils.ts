@@ -34,7 +34,7 @@ const getSystemMessageTitle = (message: IMessage) => {
             if (!message.actiondata || message.actiondata.useridsList.indexOf(message.senderid) === -1) {
                 return `${name} ${i18n.t('message.removed_a_user')}`;
             } else {
-                return `${name} {i18n.t('message.left')}`;
+                return `${name} ${i18n.t('message.left')}`;
             }
         case C_MESSAGE_ACTION.MessageActionGroupTitleChanged:
             return `${name} ${i18n.t('message.changed_the_title')}`;
@@ -46,6 +46,8 @@ const getSystemMessageTitle = (message: IMessage) => {
             } else {
                 return `${name} ${i18n.t('message.changed_the_group_photo')}`;
             }
+        case C_MESSAGE_ACTION.MessageActionScreenShot:
+            return `${name} ${i18n.t('message.took_an_screenshot')}`;
         default:
             return i18n.t('message.unsupported_message');
     }
