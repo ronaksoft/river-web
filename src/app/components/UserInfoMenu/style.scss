@@ -56,6 +56,18 @@
     label {
       padding: 10px 10px 10px 0;
     }
+
+    button {
+      svg {
+        opacity: 0.3;
+      }
+
+      &:hover {
+        svg {
+          opacity: 1;
+        }
+      }
+    }
   }
 
   .info {

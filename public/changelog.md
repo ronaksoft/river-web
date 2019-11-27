@@ -1,3 +1,6 @@
+## 0.28.3
+* Fixes and Improvements
+
 ## 0.28.2
 * 🎉 Document viewer optimized for mobile users
 

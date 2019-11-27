@@ -705,7 +705,7 @@ class Chat extends React.Component<IProps, IState> {
                                onDone={this.forwardDialogDoneHandler}
                                onClose={this.forwardDialogCloseHandler}/>
                 <UserDialog key="user-dialog" ref={this.userDialogRefHandler}/>
-                <DocumentViewer key="document-viewer" onAction={this.messageAttachmentActionHandler}/>
+                <DocumentViewer key="document-viewer" onAction={this.messageAttachmentActionHandler} onJumpOnMessage={this.documentViewerJumpOnMessageHandler}/>
                 <AboutDialog key="about-dialog" ref={this.aboutDialogRefHandler}/>
             </div>
         );
@@ -4650,6 +4650,11 @@ class Chat extends React.Component<IProps, IState> {
                 isUpdating: this.isUpdating,
             });
         }
+    }
+
+    /* Document jump on message handler */
+    private documentViewerJumpOnMessageHandler = (id: number) => {
+        this.messageJumpToMessageHandler(id);
     }
 }
 

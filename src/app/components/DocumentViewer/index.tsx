@@ -10,7 +10,7 @@
 import * as React from 'react';
 import {
     KeyboardArrowLeftRounded, KeyboardArrowRightRounded, MoreVertRounded, RotateLeftRounded, RotateRightRounded,
-    ZoomInRounded, ZoomOutRounded, CropFreeRounded,
+    ZoomInRounded, ZoomOutRounded, CropFreeRounded, EmailOutlined,
 } from '@material-ui/icons';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import DocumentViewService, {IDocument} from '../../services/documentViewerService';
@@ -79,6 +79,7 @@ interface ISize {
 interface IProps {
     className?: string;
     onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'save_as', messageId: number, fileId?: string) => void;
+    onJumpOnMessage?: (id: number) => void;
 }
 
 interface IState {
@@ -172,11 +173,12 @@ class DocumentViewer extends React.Component<IProps, IState> {
         return (
             <Dialog
                 open={dialogOpen}
-                onClose={this.dialogCloseHandler}
+                onClose={this.dialogCloseHandler()}
                 className={'document-viewer-dialog ' + className}
                 disableBackdropClick={true}
+                disableEscapeKeyDown={true}
             >
-                <ClickAwayListener onClickAway={this.dialogCloseHandler}>
+                <ClickAwayListener onClickAway={this.dialogCloseHandler()}>
                     <div ref={this.documentContainerRefHandler} className="document-container"
                          onMouseDown={this.mediaDocumentMouseDownHandler}
                          onWheelCapture={this.mediaDocumentWheelHandler}>
@@ -400,6 +402,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     <div className="item" onClick={this.transformHandler('reset')}>
                         <CropFreeRounded/>
                     </div>
+                    <div className="item" onClick={this.openMessageHandler}>
+                        <EmailOutlined/>
+                    </div>
                 </div>
                 <Menu
                     anchorEl={contextMenuAnchorEl}
@@ -616,8 +621,8 @@ class DocumentViewer extends React.Component<IProps, IState> {
         }, 300);
     }
 
-    private dialogCloseHandler = () => {
-        if (this.inControls) {
+    private dialogCloseHandler = (force?: boolean) => (e?: any) => {
+        if (this.inControls && force !== true) {
             return;
         }
         const closeDialog = () => {
@@ -774,6 +779,8 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     this.prevHandler();
                 }
             }
+        } else if (e.keyCode === 27) {
+            this.dialogCloseHandler(true)();
         }
     }
 
@@ -1169,12 +1176,13 @@ class DocumentViewer extends React.Component<IProps, IState> {
         }
     }
 
-    private swipeEventHandler = (eventData: EventData) => {
+    /* Swipe event handler */
+    private swipeEventHandler = (e: EventData) => {
         const {doc} = this.state;
         if (!doc) {
             return;
         }
-        if (eventData.dir === 'Left') {
+        if (e.dir === 'Left') {
             if (doc.type === 'avatar') {
                 this.nextGalleryHandler();
             } else {
@@ -1182,7 +1190,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     this.nextHandler();
                 }
             }
-        } else if (eventData.dir === 'Right') {
+        } else if (e.dir === 'Right') {
             if (doc.type === 'avatar') {
                 this.prevGalleryHandler();
             } else {
@@ -1190,8 +1198,19 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     this.prevHandler();
                 }
             }
-        } else if (eventData.dir === 'Down') {
-            this.dialogCloseHandler();
+        } else if (e.dir === 'Down') {
+            this.dialogCloseHandler()();
+        } else if (e.dir === 'Up') {
+            this.openMessageHandler();
+        }
+    }
+
+    /* Open message handler */
+    private openMessageHandler = () => {
+        const {doc} = this.state;
+        if (this.props.onJumpOnMessage && doc && doc.type !== 'avatar' && doc.items.length > 0) {
+            this.props.onJumpOnMessage(doc.items[0].id || 0);
+            this.dialogCloseHandler(true)();
         }
     }
 }

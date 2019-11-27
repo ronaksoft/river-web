@@ -37,6 +37,20 @@
       }
     }
 
+    .close-btn, .menu-btn, .actions {
+      button {
+        svg {
+          opacity: 0.3;
+        }
+
+        &:hover {
+          svg {
+            opacity: 1;
+          }
+        }
+      }
+    }
+
     .close-btn {
       margin-left: -4px;
       margin-right: 6px;
