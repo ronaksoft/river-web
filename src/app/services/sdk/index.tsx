@@ -201,7 +201,12 @@ export default class SDK {
         data.setPhone(phone);
         data.setPhonecode(phoneCode);
         data.setPhonecodehash(phoneCodeHash);
-        return this.server.send(C_MSG.AuthLogin, data.serializeBinary(), true);
+        return this.server.send(C_MSG.AuthLogin, data.serializeBinary(), true)/*.catch((err) => {
+            if (err.code === C_ERR.ErrCodeAlreadyExists && err.items === C_ERR_ITEM.ErrItemBindUser) {
+                return this.logout('');
+            }
+            return err;
+        })*/;
     }
 
     public authRecall(): Promise<AuthRecalled.AsObject> {
@@ -418,7 +423,7 @@ export default class SDK {
 
     public logout(authId: string): Promise<Bool> {
         const data = new AuthLogout();
-        data.setAuthidsList([authId]);
+        data.setAuthidsList([]);
         return this.server.send(C_MSG.AuthLogout, data.serializeBinary(), true, {timeout: 5000});
     }
 

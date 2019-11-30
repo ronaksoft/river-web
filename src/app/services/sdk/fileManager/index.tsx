@@ -888,6 +888,7 @@ export default class FileManager {
         }
     }
 
+    /* Receive bundle chunk over http */
     private receiveBundleFileChunk(file: FileGet) {
         let internalResolve = null;
         let internalReject = null;
@@ -910,6 +911,7 @@ export default class FileManager {
         return promise;
     }
 
+    /* Download many files */
     private downloadMany = () => {
         if (this.fileBundle.length === 0) {
             return;
@@ -933,7 +935,6 @@ export default class FileManager {
         fileGetMany.setFilegetmanyList(tempInputs);
 
         this.httpWorkers[0].send(C_MSG.FileGetMany, fileGetMany.serializeBinary()).then((fileMany: FileMany) => {
-            window.console.log(fileMany);
             fileMany.getFilemanyList().forEach((file, index) => {
                 if (promises[index] && promises[index].resolve) {
                     promises[index].resolve(file);

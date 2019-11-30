@@ -217,8 +217,8 @@ class App extends React.Component<{}, IState> {
                         </DialogContent>
                         {!clearingSiteData && <DialogActions>
                             <Button onClick={this.alertCloseHandler}
-                                    color="primary">{I18n.t('general.disagree')}</Button>
-                            <Button onClick={this.clearSiteDataHandler} color="secondary"
+                                    color="secondary">{I18n.t('general.disagree')}</Button>
+                            <Button onClick={this.clearSiteDataHandler} color="primary"
                                     autoFocus={true}>{I18n.t('general.agree')}</Button>
                         </DialogActions>}
                         {clearingSiteData &&
