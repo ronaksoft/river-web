@@ -12,7 +12,6 @@ var jspb = require('google-protobuf');
 var goog = jspb;
 var global = Function('return this')();
 
-var chat_core_types_pb = require('./chat.core.types_pb.js');
 goog.exportSymbol('proto.msg.Label', null, global);
 goog.exportSymbol('proto.msg.LabelsAddToDialog', null, global);
 goog.exportSymbol('proto.msg.LabelsAddToMessage', null, global);

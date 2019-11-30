@@ -57,6 +57,34 @@ export namespace AuthRegister {
   }
 }
 
+export class AuthBotRegister extends jspb.Message {
+  hasName(): boolean;
+  clearName(): void;
+  getName(): string | undefined;
+  setName(value: string): void;
+
+  hasUsername(): boolean;
+  clearUsername(): void;
+  getUsername(): string | undefined;
+  setUsername(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AuthBotRegister.AsObject;
+  static toObject(includeInstance: boolean, msg: AuthBotRegister): AuthBotRegister.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AuthBotRegister, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AuthBotRegister;
+  static deserializeBinaryFromReader(message: AuthBotRegister, reader: jspb.BinaryReader): AuthBotRegister;
+}
+
+export namespace AuthBotRegister {
+  export type AsObject = {
+    name?: string,
+    username?: string,
+  }
+}
+
 export class AuthLogin extends jspb.Message {
   hasPhone(): boolean;
   clearPhone(): void;
@@ -370,6 +398,42 @@ export namespace AuthAuthorization {
   export type AsObject = {
     expired?: number,
     user: chat_core_types_pb.User.AsObject,
+  }
+}
+
+export class AuthBotAuthorization extends jspb.Message {
+  hasAuthid(): boolean;
+  clearAuthid(): void;
+  getAuthid(): number | undefined;
+  setAuthid(value: number): void;
+
+  hasAuthkey(): boolean;
+  clearAuthkey(): void;
+  getAuthkey(): Uint8Array | string;
+  getAuthkey_asU8(): Uint8Array;
+  getAuthkey_asB64(): string;
+  setAuthkey(value: Uint8Array | string): void;
+
+  hasBot(): boolean;
+  clearBot(): void;
+  getBot(): chat_core_types_pb.Bot;
+  setBot(value?: chat_core_types_pb.Bot): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AuthBotAuthorization.AsObject;
+  static toObject(includeInstance: boolean, msg: AuthBotAuthorization): AuthBotAuthorization.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AuthBotAuthorization, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AuthBotAuthorization;
+  static deserializeBinaryFromReader(message: AuthBotAuthorization, reader: jspb.BinaryReader): AuthBotAuthorization;
+}
+
+export namespace AuthBotAuthorization {
+  export type AsObject = {
+    authid?: number,
+    authkey: Uint8Array | string,
+    bot: chat_core_types_pb.Bot.AsObject,
   }
 }
 

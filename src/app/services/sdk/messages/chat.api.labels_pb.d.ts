@@ -3,7 +3,6 @@
 // file: chat.api.labels.proto
 
 import * as jspb from "google-protobuf";
-import * as chat_core_types_pb from "./chat.core.types_pb";
 
 export class LabelsSet extends jspb.Message {
   hasLabelid(): boolean;

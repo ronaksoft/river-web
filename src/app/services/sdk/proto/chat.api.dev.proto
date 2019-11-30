@@ -1,0 +1,18 @@
+syntax = "proto2";
+package msg;
+
+// EchoWithDelay
+message EchoWithDelay {
+    required int32 DelayInSeconds = 1;
+}
+
+
+message TestRequest {
+    required bytes Payload = 1;
+    required bytes Hash = 2;
+}
+
+message TestResponse {
+    required int32 Length = 1;
+    required bytes Hash = 2;
+}

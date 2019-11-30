@@ -9,12 +9,12 @@
 
 import Http from './http';
 import {C_MSG} from '../const';
-import {File, FileGet, FileSavePart} from '../messages/chat.api.files_pb';
+import {File, FileGet, FileGetMany, FileMany, FileSavePart} from '../messages/chat.api.files_pb';
 import {Bool} from '../messages/chat.core.types_pb';
 import FileRepo, {md5FromBlob} from '../../../repository/file';
 import {ITempFile} from '../../../repository/file/interface';
 import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from './const/const';
-import {findIndex} from 'lodash';
+import {findIndex, throttle} from 'lodash';
 import * as core_types_pb from '../messages/chat.core.types_pb';
 import * as Sentry from '@sentry/browser';
 import {isProd} from "../../../../App";
@@ -72,12 +72,18 @@ interface IChunksInfo {
     updates: IChunkUpdate[];
 }
 
+interface IFileBundle {
+    reject: any;
+    resolve: any;
+    req: FileGet;
+}
+
 const C_FILE_SERVER_HTTP_WORKER_NUM = 1;
 const C_MAX_UPLOAD_QUEUE_SIZE = 2;
 const C_MAX_UPLOAD_PIPELINE_SIZE = 8;
 const C_UPLOAD_CHUNK_SIZE = 256 * 1024;
 const C_MAX_DOWNLOAD_QUEUE_SIZE = 4;
-const C_MAX_INSTANT_DOWNLOAD_QUEUE_SIZE = 12;
+const C_MAX_INSTANT_DOWNLOAD_QUEUE_SIZE = 20;
 const C_MAX_DOWNLOAD_PIPELINE_SIZE = 8;
 const C_DOWNLOAD_CHUNK_SIZE = 256 * 1024;
 const C_MAX_RETRIES = 10;
@@ -104,6 +110,8 @@ export default class FileManager {
     private instantDownloadQueue: string[] = [];
     private onWireDownloads: string[] = [];
     private onWireInstantDownloads: string[] = [];
+    private fileBundle: IFileBundle[] = [];
+    private fileGetManyThrottle: any = null;
 
     public constructor() {
         if (localStorage.getItem('river.conn.info')) {
@@ -118,6 +126,7 @@ export default class FileManager {
             }
         }
         this.fileRepo = FileRepo.getInstance();
+        this.fileGetManyThrottle = throttle(this.downloadMany, 100);
     }
 
     public setUrl(url: string) {
@@ -872,7 +881,71 @@ export default class FileManager {
         data.setOffset(offset);
         data.setLimit(limit);
         data.setLocation(location);
-        return this.httpWorkers[0].send(C_MSG.FileGet, data.serializeBinary(), cancel, onUploadProgress, onDownloadProgress);
+        if (offset === 0 && limit === 0) {
+            return this.receiveBundleFileChunk(data);
+        } else {
+            return this.httpWorkers[0].send(C_MSG.FileGet, data.serializeBinary(), cancel, onUploadProgress, onDownloadProgress);
+        }
+    }
+
+    private receiveBundleFileChunk(file: FileGet) {
+        let internalResolve = null;
+        let internalReject = null;
+
+        const promise = new Promise<any>((res, rej) => {
+            internalResolve = res;
+            internalReject = rej;
+
+            this.fileBundle.push({
+                reject: internalReject,
+                req: file,
+                resolve: internalResolve,
+            });
+
+            setTimeout(() => {
+                this.fileGetManyThrottle();
+            }, 50);
+        });
+
+        return promise;
+    }
+
+    private downloadMany = () => {
+        if (this.fileBundle.length === 0) {
+            return;
+        }
+        const tempInputs: any[] = [];
+        const promises: any[] = [];
+        while (this.fileBundle.length && tempInputs.length < C_MAX_INSTANT_DOWNLOAD_QUEUE_SIZE) {
+            const file = this.fileBundle.shift();
+            if (file) {
+                tempInputs.push(file.req);
+                promises.push({
+                    reject: file.reject,
+                    resolve: file.resolve,
+                });
+            } else {
+                break;
+            }
+        }
+
+        const fileGetMany = new FileGetMany();
+        fileGetMany.setFilegetmanyList(tempInputs);
+
+        this.httpWorkers[0].send(C_MSG.FileGetMany, fileGetMany.serializeBinary()).then((fileMany: FileMany) => {
+            window.console.log(fileMany);
+            fileMany.getFilemanyList().forEach((file, index) => {
+                if (promises[index] && promises[index].resolve) {
+                    promises[index].resolve(file);
+                }
+            });
+        }).catch((err) => {
+            promises.forEach((promise) => {
+                if (promise.reject) {
+                    promise.reject(err);
+                }
+            });
+        });
     }
 
     /* Chunk File */

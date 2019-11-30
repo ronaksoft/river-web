@@ -698,6 +698,40 @@ export namespace User {
   }
 }
 
+export class Bot extends jspb.Message {
+  hasId(): boolean;
+  clearId(): void;
+  getId(): string | undefined;
+  setId(value: string): void;
+
+  hasName(): boolean;
+  clearName(): void;
+  getName(): string | undefined;
+  setName(value: string): void;
+
+  hasUsername(): boolean;
+  clearUsername(): void;
+  getUsername(): string | undefined;
+  setUsername(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Bot.AsObject;
+  static toObject(includeInstance: boolean, msg: Bot): Bot.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Bot, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Bot;
+  static deserializeBinaryFromReader(message: Bot, reader: jspb.BinaryReader): Bot;
+}
+
+export namespace Bot {
+  export type AsObject = {
+    id?: string,
+    name?: string,
+    username?: string,
+  }
+}
+
 export class ContactUser extends jspb.Message {
   hasId(): boolean;
   clearId(): void;

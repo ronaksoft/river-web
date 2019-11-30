@@ -1,6 +1,5 @@
 syntax = "proto2";
 package msg;
-import "chat.core.types.proto";
 
 // LabelsSet
 // @Function

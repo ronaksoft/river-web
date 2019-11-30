@@ -169,6 +169,12 @@ message User {
     optional bool IsBot = 13;
 }
 
+message Bot {
+    required int64 ID = 1 [jstype = JS_STRING];
+    required string Name = 2;
+    required string Username = 3;
+}
+
 // ContactUser
 message ContactUser {
     required int64 ID = 1 [jstype = JS_STRING];

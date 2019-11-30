@@ -57,6 +57,50 @@ export namespace MessagesSend {
   }
 }
 
+export class MessagesBroadcast extends jspb.Message {
+  hasBody(): boolean;
+  clearBody(): void;
+  getBody(): string | undefined;
+  setBody(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessagesBroadcast.AsObject;
+  static toObject(includeInstance: boolean, msg: MessagesBroadcast): MessagesBroadcast.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessagesBroadcast, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessagesBroadcast;
+  static deserializeBinaryFromReader(message: MessagesBroadcast, reader: jspb.BinaryReader): MessagesBroadcast;
+}
+
+export namespace MessagesBroadcast {
+  export type AsObject = {
+    body?: string,
+  }
+}
+
+export class MessagesBroadcastProgress extends jspb.Message {
+  hasPercentage(): boolean;
+  clearPercentage(): void;
+  getPercentage(): number | undefined;
+  setPercentage(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessagesBroadcastProgress.AsObject;
+  static toObject(includeInstance: boolean, msg: MessagesBroadcastProgress): MessagesBroadcastProgress.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessagesBroadcastProgress, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessagesBroadcastProgress;
+  static deserializeBinaryFromReader(message: MessagesBroadcastProgress, reader: jspb.BinaryReader): MessagesBroadcastProgress;
+}
+
+export namespace MessagesBroadcastProgress {
+  export type AsObject = {
+    percentage?: number,
+  }
+}
+
 export class MessagesSendMedia extends jspb.Message {
   hasRandomid(): boolean;
   clearRandomid(): void;

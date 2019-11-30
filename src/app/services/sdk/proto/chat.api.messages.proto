@@ -14,6 +14,14 @@ message MessagesSend {
     repeated MessageEntity Entities = 8;
 }
 
+message MessagesBroadcast {
+    required string Body = 1;
+}
+
+message MessagesBroadcastProgress {
+    required float Percentage = 1;
+}
+
 enum InputMediaType {
     InputMediaTypeEmpty = 0;
     InputMediaTypeUploadedPhoto = 1;

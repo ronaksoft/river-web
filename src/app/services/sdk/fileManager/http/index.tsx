@@ -94,7 +94,7 @@ export default class Http {
     }
 
     /* Send WS Message */
-    public send(constructor: number, data: Uint8Array, cancel: (fnCancel: any) => void, onUploadProgress?: (e: any) => void, onDownloadProgress?: (e: any) => void) {
+    public send(constructor: number, data: Uint8Array, cancel?: (fnCancel: any) => void, onUploadProgress?: (e: any) => void, onDownloadProgress?: (e: any) => void) {
         let internalResolve = null;
         let internalReject = null;
 
@@ -123,9 +123,11 @@ export default class Http {
             resolve: internalResolve,
         };
 
-        cancel(() => {
-            this.cancelRequest(reqId);
-        });
+        if (cancel) {
+            cancel(() => {
+                this.cancelRequest(reqId);
+            });
+        }
 
         this.sentQueue.push(reqId);
 

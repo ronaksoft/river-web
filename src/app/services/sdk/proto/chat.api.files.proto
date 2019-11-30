@@ -33,7 +33,7 @@ message File {
     required bytes Bytes = 4;
     optional string MD5Hash = 5;
 }
-message FileMany{
+message FileMany {
     repeated File FileMany = 1;
 }
 
