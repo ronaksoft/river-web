@@ -218,6 +218,10 @@ export class CellMeasurer {
         return this.totalHeight;
     }
 
+    public recomputeListHeight() {
+        this.updateListHandler();
+    }
+
     public scrollHandler = (height: number, scrollTop: number, force?: boolean) => {
         this.scrollTop = scrollTop;
         let start = 0;

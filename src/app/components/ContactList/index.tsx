@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import AutoSizer from "react-virtualized-auto-sizer";
-import {debounce, findIndex, differenceBy, clone} from 'lodash';
+import {debounce, findIndex, differenceBy, clone, uniqBy} from 'lodash';
 import UserAvatar from '../UserAvatar';
 import TextField from '@material-ui/core/TextField';
 import ChipInput from 'material-ui-chip-input';
@@ -111,7 +111,10 @@ class ContactList extends React.Component<IProps, IState> {
 
         this.state = {
             contacts: [],
-            hiddenContacts: props.hiddenContacts || [],
+            hiddenContacts: (props.hiddenContacts || []).map((o) => {
+                // @ts-ignore
+                return {...o, id: o.userid};
+            }),
             moreAnchorPos: null,
             moreIndex: -1,
             page: '1',
@@ -134,7 +137,10 @@ class ContactList extends React.Component<IProps, IState> {
 
     public componentWillReceiveProps(newProps: IProps) {
         this.setState({
-            hiddenContacts: newProps.hiddenContacts || [],
+            hiddenContacts: (newProps.hiddenContacts || []).map((o) => {
+                // @ts-ignore
+                return {...o, id: o.userid};
+            }),
         }, () => {
             if (this.state.selectedContacts.length === 0 && !this.props.disableCheckSelected) {
                 this.getDefault();
@@ -367,6 +373,9 @@ class ContactList extends React.Component<IProps, IState> {
             this.defaultContact = us;
             this.contactsRes = clone(us);
             if (fill !== false) {
+                if (this.list) {
+                    this.list.resetAfterIndex(0, false);
+                }
                 this.setState({
                     contacts: categorizeContact(this.getTrimmedList([])),
                 });
@@ -383,6 +392,9 @@ class ContactList extends React.Component<IProps, IState> {
         } else {
             this.searchDebounce.cancel();
             this.contactsRes = clone(this.defaultContact);
+            if (this.list) {
+                this.list.resetAfterIndex(0, false);
+            }
             this.setState({
                 contacts: categorizeContact(this.getTrimmedList(this.state.selectedContacts)),
             });
@@ -393,6 +405,9 @@ class ContactList extends React.Component<IProps, IState> {
     private search = (text: string) => {
         this.userRepo.getManyCache(true, {keyword: text, limit: 12}).then((res) => {
             this.contactsRes = clone(res || []);
+            if (this.list) {
+                this.list.resetAfterIndex(0, false);
+            }
             this.setState({
                 contacts: categorizeContact(this.getTrimmedList(this.state.selectedContacts)),
             });
@@ -404,6 +419,9 @@ class ContactList extends React.Component<IProps, IState> {
         const {selectedContacts} = this.state;
         if (findIndex(selectedContacts, {id: contact.id || ''}) === -1) {
             selectedContacts.push(contact);
+            if (this.list) {
+                this.list.resetAfterIndex(0, false);
+            }
             this.setState({
                 contacts: categorizeContact(this.getTrimmedList(selectedContacts)),
                 selectedContacts,
@@ -422,6 +440,9 @@ class ContactList extends React.Component<IProps, IState> {
         const index = findIndex(selectedContacts, {id: contact.id || ''});
         if (index > -1) {
             selectedContacts.splice(index, 1);
+            if (this.list) {
+                this.list.resetAfterIndex(0, false);
+            }
             this.setState({
                 contacts: categorizeContact(this.getTrimmedList(selectedContacts)),
                 selectedContacts,
@@ -433,7 +454,7 @@ class ContactList extends React.Component<IProps, IState> {
 
     /* Removes the selected users from the list */
     private getTrimmedList(selectedContacts: IUser[]) {
-        return differenceBy(this.contactsRes, [...selectedContacts, ...this.state.hiddenContacts], 'id');
+        return differenceBy(this.contactsRes, uniqBy([...selectedContacts, ...this.state.hiddenContacts], 'id'), 'id');
     }
 
     /* Dispatch any changes on edit */

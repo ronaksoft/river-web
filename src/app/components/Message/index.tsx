@@ -369,6 +369,9 @@ class Message extends React.Component<IProps, IState> {
             return;
         }
         clearTimeout(this.scrollDownTimeout);
+        if (this.list && this.list.isSmallerThanContainer()) {
+            return;
+        }
         if (this.containerRef && !this.isAtEnd()) {
             const options: any = {
                 // duration of the scroll per 1000px, default 500

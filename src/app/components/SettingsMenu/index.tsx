@@ -86,8 +86,9 @@ import DevTools from "../DevTools";
 import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.28.4';
+export const C_VERSION = '0.28.5';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
+export const C_AVATAR_SIZE = 640;
 
 export const languageList = [{
     dir: 'rtl',
@@ -245,7 +246,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             profileCropperOpen: false,
             profilePictureCrop: {
                 aspect: 1,
-                width: 640,
+                width: C_AVATAR_SIZE,
                 x: 0,
                 y: 0,
             },
@@ -352,7 +353,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         return (
             <div className="setting-menu">
                 <DevTools ref={this.devToolsRefHandler}/>
-                <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={640}/>
+                <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={C_AVATAR_SIZE}/>
                 <SettingsBackgroundModal ref={this.settingsBackgroundModalRefHandler}
                                          dark={Boolean(this.state.selectedTheme !== 'light')}
                                          defId={this.state.selectedCustomBackground}

@@ -157,7 +157,7 @@ export default class UserRepo {
                     return true;
                 }
             }
-            return (reg.test(u.phone || '') || reg.test(u.username || '') || reg.test(u.firstname || '') || reg.test(u.lastname || ''));
+            return (reg.test(u.phone || '') || reg.test(u.username || '') || reg.test(`${u.firstname} ${u.lastname}`));
         };
         if (isContact) {
             if (!keyword) {

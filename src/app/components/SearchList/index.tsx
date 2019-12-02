@@ -312,6 +312,9 @@ class SearchList extends React.Component<IProps, IState> {
         this.searchApi({}).then((res: IDialogWithContact) => {
             this.defaultInputPeer = res;
             this.inputPeerRes = clone(res);
+            if (this.list) {
+                this.list.resetAfterIndex(0, false);
+            }
             this.setState({
                 inputPeers: this.getTrimmedList([]),
             });
@@ -326,6 +329,9 @@ class SearchList extends React.Component<IProps, IState> {
         } else {
             this.searchDebounce.cancel();
             this.inputPeerRes = clone(this.defaultInputPeer);
+            if (this.list) {
+                this.list.resetAfterIndex(0, false);
+            }
             this.setState({
                 inputPeers: this.getTrimmedList(this.state.selectedInputPeers),
             });
@@ -336,6 +342,9 @@ class SearchList extends React.Component<IProps, IState> {
     private search = (text: string) => {
         this.searchApi({keyword: text, limit: 12}).then((res: IDialogWithContact) => {
             this.inputPeerRes = clone(res || []);
+            if (this.list) {
+                this.list.resetAfterIndex(0, false);
+            }
             this.setState({
                 inputPeers: this.getTrimmedList(this.state.selectedInputPeers),
             });
@@ -356,6 +365,9 @@ class SearchList extends React.Component<IProps, IState> {
         }
         if (findIndex(selectedInputPeers, {id}) === -1) {
             selectedInputPeers.push(inputPeer);
+            if (this.list) {
+                this.list.resetAfterIndex(0, false);
+            }
             this.setState({
                 inputPeers: this.getTrimmedList(selectedInputPeers),
                 selectedInputPeers,
@@ -380,6 +392,9 @@ class SearchList extends React.Component<IProps, IState> {
         const index = findIndex(selectedInputPeers, {id});
         if (index > -1) {
             selectedInputPeers.splice(index, 1);
+            if (this.list) {
+                this.list.resetAfterIndex(0, false);
+            }
             this.setState({
                 inputPeers: this.getTrimmedList(selectedInputPeers),
                 selectedInputPeers,

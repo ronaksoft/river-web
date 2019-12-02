@@ -87,6 +87,7 @@ const C_MAX_INSTANT_DOWNLOAD_QUEUE_SIZE = 20;
 const C_MAX_DOWNLOAD_PIPELINE_SIZE = 8;
 const C_DOWNLOAD_CHUNK_SIZE = 256 * 1024;
 const C_MAX_RETRIES = 10;
+const C_USER_THROTTLE = false;
 
 export default class FileManager {
     public static getInstance() {
@@ -881,7 +882,7 @@ export default class FileManager {
         data.setOffset(offset);
         data.setLimit(limit);
         data.setLocation(location);
-        if (offset === 0 && limit === 0) {
+        if (C_USER_THROTTLE && offset === 0 && limit === 0) {
             return this.receiveBundleFileChunk(data);
         } else {
             return this.httpWorkers[0].send(C_MSG.FileGet, data.serializeBinary(), cancel, onUploadProgress, onDownloadProgress);

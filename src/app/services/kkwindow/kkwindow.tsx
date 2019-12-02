@@ -117,6 +117,8 @@ class KKWindow extends React.Component<IProps, IState> {
     private loadAfterTriggered: boolean = false;
     private readonly loadAfterLimit: number = 5;
     private loadBeforeTimeout: any = null;
+    private paddingTop: string = '0';
+    private smallerThanContainer: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -195,6 +197,9 @@ class KKWindow extends React.Component<IProps, IState> {
             }
             this.loadMoreReady = false;
             this.cellMeasurer.setRowCount(this.props.count);
+            if (this.smallerThanContainer && this.fitList) {
+                this.cellMeasurer.recomputeListHeight();
+            }
         }
     }
 
@@ -239,7 +244,10 @@ class KKWindow extends React.Component<IProps, IState> {
                 this.snapshotRef.style.right = '0';
             }
             this.snapshotRef.style.display = 'block';
-            this.snapshotRef.style.padding = this.containerRef.style.padding;
+            const styles = window.getComputedStyle(this.containerRef);
+            if (styles) {
+                this.snapshotRef.style.padding = styles.padding;
+            }
             this.containerRef.style.opacity = '0';
             this.snapshotRef.scrollTop = this.containerRef.scrollTop;
             if (noRemove !== true) {
@@ -273,6 +281,10 @@ class KKWindow extends React.Component<IProps, IState> {
         }
     }
 
+    public isSmallerThanContainer() {
+        return this.smallerThanContainer;
+    }
+
     public render() {
         const {width, height} = this.props;
         return (
@@ -283,6 +295,7 @@ class KKWindow extends React.Component<IProps, IState> {
                      style={{
                          height: `${height}px`,
                          overflowY: 'scroll',
+                         paddingTop: this.paddingTop,
                          width: `${width + (this.scrollbar.enable ? this.scrollbar.width : 0)}px`
                      }}
                      onScroll={this.scrollHandler} onWheel={this.wheelHandler}>
@@ -493,11 +506,13 @@ class KKWindow extends React.Component<IProps, IState> {
     private fitListToBottom() {
         if (this.containerRef) {
             const gap = this.props.height - this.cellMeasurer.getTotalHeight();
+            this.smallerThanContainer = gap > 0;
             if (gap > 0) {
-                this.containerRef.style.paddingTop = `${gap}px`;
+                this.paddingTop = `${gap}px`;
             } else {
-                this.containerRef.style.paddingTop = '0';
+                this.paddingTop = '0';
             }
+            this.containerRef.style.paddingTop = this.paddingTop;
         }
     }
 

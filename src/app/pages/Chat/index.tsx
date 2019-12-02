@@ -635,8 +635,9 @@ class Chat extends React.Component<IProps, IState> {
                             {Boolean(confirmDialogMode === 'remove_message_revoke' && this.selectedDialogId !== this.connInfo.UserID) &&
                             <Button onClick={this.removeMessageHandler(1)} color="primary">
                                 {(this.peer && this.peer.getType() === PeerType.PEERUSER) ?
-                                    <>{i18n.t('chat.remove_message_dialog.remove_for')}&nbsp;<UserName
-                                        id={this.selectedDialogId}/></> : i18n.t('chat.remove_message_dialog.remove_for_all')}
+                                    <>{i18n.t('chat.remove_message_dialog.remove_for')}&nbsp;
+                                        <UserName noDetail={true}
+                                                  id={this.selectedDialogId}/></> : i18n.t('chat.remove_message_dialog.remove_for_all')}
                             </Button>}
                             {Boolean(confirmDialogMode === 'remove_message_pending') &&
                             <Button onClick={this.removeMessageHandler(2)} color="primary">
@@ -1017,6 +1018,9 @@ class Chat extends React.Component<IProps, IState> {
             this.checkPendingMessage(message.id || 0);
             this.updateDialogs(message, data.accessHashes[index] || '0');
         });
+        if (this.messageRef) {
+            this.messageRef.updateList();
+        }
     }
 
     /* Update message edit */
@@ -1225,7 +1229,11 @@ class Chat extends React.Component<IProps, IState> {
                     }
                     // Update current message list if visible
                     if (this.messageRef && updateView) {
-                        this.messageRef.forceUpdate();
+                        this.messageRef.forceUpdate(() => {
+                            if (this.messageRef) {
+                                this.messageRef.updateList();
+                            }
+                        });
                     }
                 }
             });
@@ -1911,7 +1919,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private checkMessageOrder(msg: IMessage) {
-        if (!this.messageRef) {
+        if (!this.messageRef || (msg.id || 0) < 0) {
             return;
         }
         const swap = (i1: number, i2: number) => {
@@ -1924,7 +1932,6 @@ class Chat extends React.Component<IProps, IState> {
             if (this.messageRef) {
                 this.messageRef.clear(i1);
                 this.messageRef.clear(i2);
-                this.messageRef.updateList();
             }
         };
         const index = findLastIndex(this.messages, {id: msg.id});
@@ -1938,8 +1945,8 @@ class Chat extends React.Component<IProps, IState> {
                 return position;
             }
 
-            while (position === 0) {
-                if ((message.id || 0) < (this.messages[position].id || 0)) {
+            while (position > 0) {
+                if ((message.id || 0) < (this.messages[position].id || 0) || (this.messages[position].id || 0) < 0) {
                     position--;
                     continue;
                 }
@@ -2544,7 +2551,11 @@ class Chat extends React.Component<IProps, IState> {
                     this.downloadThumbnail(msg);
                     this.checkMessageOrder(msg);
                 });
-                this.messageRef.setMessages(modifiedMsgs.msgs);
+                this.messageRef.setMessages(modifiedMsgs.msgs, () => {
+                    if (this.messageRef) {
+                        this.messageRef.updateList();
+                    }
+                });
             });
         }
     }

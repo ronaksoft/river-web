@@ -56,6 +56,7 @@ import PeerMedia from '../PeerMedia';
 import Broadcaster from '../../services/broadcaster';
 import {notifyOptions} from '../../pages/Chat';
 import i18n from '../../services/i18n';
+import {C_AVATAR_SIZE} from "../SettingsMenu";
 
 import './style.scss';
 
@@ -191,7 +192,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         } = this.state;
         return (
             <div className="group-info-menu">
-                <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={640}/>
+                <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={C_AVATAR_SIZE}/>
                 <div className={'page-container page-' + page}>
                     <div className="page page-1">
                         <div className="menu-header">

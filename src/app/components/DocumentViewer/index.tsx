@@ -42,6 +42,7 @@ import {findIndex} from "lodash";
 import UserName from "../UserName";
 import TimeUtility from "../../services/utilities/time";
 import {Swipeable, EventData} from "react-swipeable";
+import {C_AVATAR_SIZE} from "../SettingsMenu";
 
 import './style.scss';
 
@@ -208,7 +209,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         switch (doc.type) {
             case 'avatar':
                 if ((galleryList.length === 0 || gallerySelect === 0) && !doc.photoId) {
-                    return (<div className="avatar-container">
+                    return (<div className="avatar-container" style={size ? size : {}}>
                         {doc.items.map((item, index) => {
                             return (
                                 <React.Fragment key={item.fileLocation ? (item.fileLocation.fileid || index) : index}>
@@ -227,7 +228,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     const picture = galleryList[gallerySelect];
                     if (picture) {
                         return (
-                            <div className="avatar-container">
+                            <div className="avatar-container" style={size ? size : {}}>
                                 {picture.photosmall && <div className="thumbnail">
                                     <CachedPhoto className="thumb-picture" fileLocation={picture.photosmall}/>
                                     <Loading/>
@@ -662,6 +663,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 this.initPaginationHandlers();
                 this.hasAccess = false;
             } else if (doc.type === 'avatar') {
+                this.calculateImageSize();
                 this.initAvatar(doc.photoId);
                 this.checkAccess();
             }
@@ -677,8 +679,8 @@ class DocumentViewer extends React.Component<IProps, IState> {
         if (!doc || doc.items.length === 0) {
             return;
         }
-        let height = (doc.items[0].height || 1);
-        let width = (doc.items[0].width || 1);
+        let height = (doc.items[0].height || C_AVATAR_SIZE);
+        let width = (doc.items[0].width || C_AVATAR_SIZE);
         const ratio = height / width;
         const screenHeight = window.innerHeight - 200;
         const screenRation = screenHeight / window.innerWidth;

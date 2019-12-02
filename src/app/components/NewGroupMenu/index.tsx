@@ -29,6 +29,7 @@ import ProgressBroadcaster from "../../services/progress";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import {TextAvatar} from "../UserAvatar";
+import {C_AVATAR_SIZE} from "../SettingsMenu";
 
 import './style.scss';
 
@@ -75,7 +76,7 @@ class NewGroupMenu extends React.Component<IProps, IState> {
         const {page, selectedContacts, title, uploadingPhoto, avatarMenuAnchorEl} = this.state;
         return (
             <div className="new-group-menu">
-                <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={640}/>
+                <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={C_AVATAR_SIZE}/>
                 <div className={'page-container page-' + page}>
                     <div className="page page-1">
                         <div className="menu-header">

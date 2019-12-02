@@ -1,3 +1,6 @@
+## 0.28.5
+* Bug fixes and improvements
+
 ## 0.28.4
 * File get many implemented on thumbnails
 
