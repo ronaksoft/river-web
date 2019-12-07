@@ -9,8 +9,8 @@
 
 import Http from './http';
 import {C_MSG} from '../const';
-import {File, FileGet, FileGetMany, FileMany, FileSavePart} from '../messages/chat.api.files_pb';
-import {Bool} from '../messages/chat.core.types_pb';
+import {File, FileGet, FileSavePart} from '../messages/chat.api.files_pb';
+import {Bool, MessageContainer, MessageEnvelope} from '../messages/chat.core.types_pb';
 import FileRepo, {md5FromBlob} from '../../../repository/file';
 import {ITempFile} from '../../../repository/file/interface';
 import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from './const/const';
@@ -20,6 +20,7 @@ import * as Sentry from '@sentry/browser';
 import {isProd} from "../../../../App";
 import IframeService from "../../iframe";
 import {isMobile} from "../../utilities/localize";
+import Presenter from "../presenters";
 
 export interface IFileProgress {
     active?: boolean;
@@ -72,10 +73,18 @@ interface IChunksInfo {
     updates: IChunkUpdate[];
 }
 
+interface ITempReq {
+    req: FileGet;
+    reqId: number;
+    reject: any;
+    resolve: any;
+}
+
 interface IFileBundle {
     reject: any;
     resolve: any;
     req: FileGet;
+    reqId: number;
 }
 
 const C_FILE_SERVER_HTTP_WORKER_NUM = 1;
@@ -87,7 +96,7 @@ const C_MAX_INSTANT_DOWNLOAD_QUEUE_SIZE = 20;
 const C_MAX_DOWNLOAD_PIPELINE_SIZE = 8;
 const C_DOWNLOAD_CHUNK_SIZE = 256 * 1024;
 const C_MAX_RETRIES = 10;
-const C_USER_THROTTLE = false;
+const C_USER_THROTTLE = true;
 
 export default class FileManager {
     public static getInstance() {
@@ -112,7 +121,8 @@ export default class FileManager {
     private onWireDownloads: string[] = [];
     private onWireInstantDownloads: string[] = [];
     private fileBundle: IFileBundle[] = [];
-    private fileGetManyThrottle: any = null;
+    private reqId: number = 0;
+    private readonly fileGetManyThrottle: any = null;
 
     public constructor() {
         if (localStorage.getItem('river.conn.info')) {
@@ -898,9 +908,11 @@ export default class FileManager {
             internalResolve = res;
             internalReject = rej;
 
+            this.reqId++;
             this.fileBundle.push({
                 reject: internalReject,
                 req: file,
+                reqId: this.reqId,
                 resolve: internalResolve,
             });
 
@@ -917,36 +929,58 @@ export default class FileManager {
         if (this.fileBundle.length === 0) {
             return;
         }
-        const tempInputs: any[] = [];
-        const promises: any[] = [];
-        while (this.fileBundle.length && tempInputs.length < C_MAX_INSTANT_DOWNLOAD_QUEUE_SIZE) {
+        const tempInputs: { [key: number]: ITempReq } = {};
+        const limits: boolean[] = [];
+        while (this.fileBundle.length && limits.length < C_MAX_INSTANT_DOWNLOAD_QUEUE_SIZE) {
             const file = this.fileBundle.shift();
             if (file) {
-                tempInputs.push(file.req);
-                promises.push({
+                tempInputs[file.reqId] = {
                     reject: file.reject,
+                    req: file.req,
+                    reqId: file.reqId,
                     resolve: file.resolve,
-                });
+                };
+                limits.push(true);
             } else {
                 break;
             }
         }
 
-        const fileGetMany = new FileGetMany();
-        fileGetMany.setFilegetmanyList(tempInputs);
+        const data = new MessageContainer();
+        // tslint:disable-next-line:forin
+        for (const key in tempInputs) {
+            const t = tempInputs[key];
+            const me = new MessageEnvelope();
+            me.setConstructor(C_MSG.FileGet);
+            me.setMessage(t.req.serializeBinary());
+            me.setRequestid(t.reqId);
 
-        this.httpWorkers[0].send(C_MSG.FileGetMany, fileGetMany.serializeBinary()).then((fileMany: FileMany) => {
-            fileMany.getFilemanyList().forEach((file, index) => {
-                if (promises[index] && promises[index].resolve) {
-                    promises[index].resolve(file);
+            data.addEnvelopes(me);
+        }
+        data.setLength(limits.length);
+
+        this.httpWorkers[0].send(C_MSG.MessageContainer, data.serializeBinary()).then((msgContainer: MessageContainer) => {
+            msgContainer.getEnvelopesList().forEach((msgEnv) => {
+                const c = msgEnv.getConstructor() || 0;
+                const ri = msgEnv.getRequestid() || 0;
+                const res = Presenter.getMessage(c, msgEnv.getMessage_asU8());
+                if (c === C_MSG.File) {
+                    if (tempInputs[ri] && tempInputs[ri].resolve) {
+                        tempInputs[ri].resolve(res);
+                    }
+                } else if (c === C_MSG.Error) {
+                    if (tempInputs[ri] && tempInputs[ri].reject) {
+                        tempInputs[ri].reject(res.toObject());
+                    }
                 }
             });
         }).catch((err) => {
-            promises.forEach((promise) => {
-                if (promise.reject) {
-                    promise.reject(err);
+            // tslint:disable-next-line:forin
+            for (const key in tempInputs) {
+                if (tempInputs[key].reject) {
+                    tempInputs[key].reject(err);
                 }
-            });
+            }
         });
     }
 

@@ -93,7 +93,7 @@ export default class Http {
         return this.isWorkerReady;
     }
 
-    /* Send WS Message */
+    /* Send HTTP Message */
     public send(constructor: number, data: Uint8Array, cancel?: (fnCancel: any) => void, onUploadProgress?: (e: any) => void, onDownloadProgress?: (e: any) => void) {
         let internalResolve = null;
         let internalReject = null;
@@ -234,6 +234,7 @@ export default class Http {
             return;
         }
         const res = Presenter.getMessage(constructor, base64ToU8a(base64));
+
         if (constructor === C_MSG.Error) {
             this.messageListeners[reqId].reject(res.toObject());
         } else {

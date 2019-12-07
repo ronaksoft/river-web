@@ -394,23 +394,23 @@ func (r *River) messageHandler(m *msg.MessageEnvelope) {
 }
 
 func (r *River) decryptHandler(m *msg.MessageEnvelope) {
-	switch m.Constructor {
-	case msg.C_MessageContainer:
-		x := new(msg.MessageContainer)
-		ee := x.Unmarshal(m.Message)
-		if ee != nil {
-			fmt.Println("Error", ee.Error())
-		}
-		for _, envelope := range x.Envelopes {
-			r.decryptHandler(envelope)
-		}
-	case msg.C_UpdateContainer:
-		x := new(msg.UpdateContainer)
-		x.Unmarshal(m.Message)
+// 	switch m.Constructor {
+// 	case msg.C_MessageContainer:
+// 		x := new(msg.MessageContainer)
+// 		ee := x.Unmarshal(m.Message)
+// 		if ee != nil {
+// 			fmt.Println("Error", ee.Error())
+// 		}
+// 		for _, envelope := range x.Envelopes {
+// 			r.decryptHandler(envelope)
+// 		}
+// 	case msg.C_UpdateContainer:
+// 		x := new(msg.UpdateContainer)
+// 		x.Unmarshal(m.Message)
+// 		js.Global().Call("fnDecryptCallback", m.RequestID, m.Constructor, base64.StdEncoding.EncodeToString(m.Message))
+// 	default:
 		js.Global().Call("fnDecryptCallback", m.RequestID, m.Constructor, base64.StdEncoding.EncodeToString(m.Message))
-	default:
-		js.Global().Call("fnDecryptCallback", m.RequestID, m.Constructor, base64.StdEncoding.EncodeToString(m.Message))
-	}
+// 	}
 }
 
 func (r *River) RetryLast() {

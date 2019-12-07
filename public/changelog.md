@@ -1,3 +1,6 @@
+## 0.28.6
+* MessageContainer added in http
+
 ## 0.28.5
 * Bug fixes and improvements
 

@@ -10,7 +10,7 @@
 import {C_MSG} from '../const';
 import {AuthSentCode, AuthCheckedPhone, AuthAuthorization, AuthRecalled} from '../messages/chat.api.auth_pb';
 import {ContactsImported, ContactsMany} from '../messages/chat.api.contacts_pb';
-import {Bool, Error} from '../messages/chat.core.types_pb';
+import {Bool, Error, MessageContainer} from '../messages/chat.core.types_pb';
 import {MessagesDialogs, MessagesMany, MessagesSent} from '../messages/chat.api.messages_pb';
 import {Dialog, Group, GroupFull, PeerNotifySettings, User} from '../messages/chat.core.types_pb';
 import {
@@ -76,6 +76,8 @@ export default class UniqueId {
                 return SystemSalts.deserializeBinary(data);
             case C_MSG.AccountPrivacyRules:
                 return AccountPrivacyRules.deserializeBinary(data);
+            case C_MSG.MessageContainer:
+                return MessageContainer.deserializeBinary(data);
             default:
                 return null;
         }
