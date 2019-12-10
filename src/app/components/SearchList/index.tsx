@@ -416,10 +416,10 @@ class SearchList extends React.Component<IProps, IState> {
         differenceWith(this.inputPeerRes.dialogs, selectedInputPeers, (i1, i2) => {
             return i1.peerid === i2.id;
         }).sort((i1, i2) => {
-            if (!i1.last_update || !i2.last_update) {
+            if (!i1.topmessageid || !i2.topmessageid) {
                 return 0;
             }
-            return i2.last_update - i1.last_update;
+            return i2.topmessageid - i1.topmessageid;
         });
         this.inputPeerRes.dialogs.forEach((item) => {
             items.push({

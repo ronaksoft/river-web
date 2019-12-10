@@ -2246,10 +2246,10 @@ class Chat extends React.Component<IProps, IState> {
                     if (p1 > p2) {
                         return -1;
                     }
-                    if (!i1.last_update || !i2.last_update) {
+                    if (!i1.topmessageid || !i2.topmessageid) {
                         return 0;
                     }
-                    return (i2.last_update || 0) - (i1.last_update || 0);
+                    return (i2.topmessageid || 0) - (i1.topmessageid || 0);
                 });
             }
 
