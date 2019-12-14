@@ -1,3 +1,8 @@
+## 0.28.9
+* Scroll bug fixed
+* Small dialogs bug fixed
+* Thumbnail slider add in `DocumentViewer`
+
 ## 0.28.8
 * Critical bug in message gap fixed
 * Jump message bug fixed

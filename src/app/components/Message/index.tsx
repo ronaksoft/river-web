@@ -353,12 +353,9 @@ class Message extends React.Component<IProps, IState> {
                     this.loadingTimeout = setTimeout(() => {
                         this.setState({
                             loadingPersist: false,
-                        }, () => {
-                            // this.list.forceUpdateGrid();
                         });
                     }, 500);
                 }
-                // this.list.forceUpdateGrid();
             });
         }
     }

@@ -1488,9 +1488,7 @@ class Chat extends React.Component<IProps, IState> {
                 }
                 setTimeout(() => {
                     this.setLoading(false);
-                    if (this.messageRef) {
-                        // this.messageRef.keepView();
-                    }
+                    this.setScrollMode('none');
                 }, 100);
                 setTimeout(() => {
                     this.messageLoadMoreAfterHandler(0, 0);

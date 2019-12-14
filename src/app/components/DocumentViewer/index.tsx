@@ -43,6 +43,7 @@ import UserName from "../UserName";
 import TimeUtility from "../../services/utilities/time";
 import {Swipeable, EventData} from "react-swipeable";
 import {C_AVATAR_SIZE} from "../SettingsMenu";
+import Scrollbars from "react-custom-scrollbars";
 
 import './style.scss';
 
@@ -1023,30 +1024,51 @@ class DocumentViewer extends React.Component<IProps, IState> {
         if (galleryList.length === 0) {
             return '';
         }
+        const totalWith = galleryList.length * 54;
+        let maxWidth = totalWith;
+        if (maxWidth > window.innerWidth) {
+            maxWidth = window.innerWidth;
+        }
+        if (maxWidth > 800) {
+            maxWidth = 800;
+        }
         return (
-            <div className="document-viewer-slide-show" onMouseEnter={this.controlMouseEnterHandler}
+            <div className="document-viewer-slide-show" style={{width: `${maxWidth}px`}}
+                 onMouseEnter={this.controlMouseEnterHandler}
                  onMouseLeave={this.controlMouseLeaveHandler}>
-                {galleryList.map((gallery, key) => {
-                    if (this.hasAccess) {
-                        return (
-                            <Tooltip key={gallery.photoid || key} interactive={true} enterDelay={500} leaveDelay={200}
-                                     title={<span className="document-viewer-slide-show-remove"
-                                                  onClick={this.confirmRemovePhotoHandler(key)}>{i18n.t('general.remove')}</span>}>
-                                <div className={'slide' + (gallerySelect === key ? ' selected' : '')}
-                                     onClick={this.selectGalleryIndexHandler(key)}>
+                <Scrollbars
+                    autoHide={true}
+                    hideTracksWhenNotNeeded={true}
+                    universal={true}
+                    style={{
+                        width: `${maxWidth - 9}px`,
+                    }}
+                >
+                    <div className="slider" style={{width: `${totalWith}px`}}>
+                        {galleryList.map((gallery, key) => {
+                            if (this.hasAccess) {
+                                return (
+                                    <Tooltip key={gallery.photoid || key} interactive={true} enterDelay={500}
+                                             leaveDelay={200}
+                                             title={<span className="document-viewer-slide-show-remove"
+                                                          onClick={this.confirmRemovePhotoHandler(key)}>{i18n.t('general.remove')}</span>}>
+                                        <div className={'slide' + (gallerySelect === key ? ' selected' : '')}
+                                             onClick={this.selectGalleryIndexHandler(key)}>
+
+                                            <CachedPhoto className="thumbnail" fileLocation={gallery.photosmall}/>
+                                        </div>
+                                    </Tooltip>);
+                            } else {
+                                return (<div key={gallery.photoid || key}
+                                             className={'slide' + (gallerySelect === key ? ' selected' : '')}
+                                             onClick={this.selectGalleryIndexHandler(key)}>
 
                                     <CachedPhoto className="thumbnail" fileLocation={gallery.photosmall}/>
-                                </div>
-                            </Tooltip>);
-                    } else {
-                        return (<div key={gallery.photoid || key}
-                                     className={'slide' + (gallerySelect === key ? ' selected' : '')}
-                                     onClick={this.selectGalleryIndexHandler(key)}>
-
-                            <CachedPhoto className="thumbnail" fileLocation={gallery.photosmall}/>
-                        </div>);
-                    }
-                })}
+                                </div>);
+                            }
+                        })}
+                    </div>
+                </Scrollbars>
             </div>
         );
     }
