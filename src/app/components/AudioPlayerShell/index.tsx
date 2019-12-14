@@ -20,11 +20,10 @@ import {
 } from '@material-ui/icons';
 import UserName from '../UserName';
 import {Link} from 'react-router-dom';
-import {IMediaInfo} from '../MessageMedia';
+import {getDuration, IMediaInfo} from '../MessageMedia';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener/ClickAwayListener';
 import Scrollbars from 'react-custom-scrollbars';
 import CachedPhoto from '../CachedPhoto';
-import {getDuration} from '../PeerMedia';
 import Slider from '@material-ui/lab/Slider';
 import DownloadProgress from '../DownloadProgress';
 import {findIndex} from 'lodash';

@@ -56,7 +56,7 @@ interface IProps {
     onJumpToMessage: (id: number, e: any) => void;
     onLastMessage: (message: IMessage | null) => void;
     onLoadMoreAfter?: (start: number, end: number) => any;
-    onLoadMoreBefore?: (start: number, end: number) => any;
+    onLoadMoreBefore?: () => any;
     onSelectableChange: (selectable: boolean) => void;
     onSelectedIdsChange: (selectedIds: { [key: number]: number }) => void;
     onDrop: (files: File[]) => void;
@@ -504,7 +504,7 @@ class Message extends React.Component<IProps, IState> {
                                 estimatedItemSize={41}
                                 estimatedItemSizeFunc={this.getHeight}
                                 loadBeforeLimit={7}
-                                onLoadBefore={this.props.onLoadMoreBefore}
+                                onLoadBefore={this.kkWindowBeforeHandler}
                                 onLoadAfter={this.props.onLoadMoreAfter}
                                 onScrollPos={this.scrollPosHandler}
                             />
@@ -532,6 +532,12 @@ class Message extends React.Component<IProps, IState> {
                 )}
             </AutoSizer>
         );
+    }
+
+    private kkWindowBeforeHandler = () => {
+        if (this.props.onLoadMoreBefore) {
+            this.props.onLoadMoreBefore();
+        }
     }
 
     // @ts-ignore

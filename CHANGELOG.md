@@ -1,3 +1,11 @@
+## 0.28.8
+* Critical bug in message gap fixed
+* Jump message bug fixed
+* Duration indicator added in `DocumentViewer`
+* Http batch request
+* Force retry on `E00 Server` error
+* Performance improvements
+
 ## 0.28.7
 * Server Related bugs fixed
 

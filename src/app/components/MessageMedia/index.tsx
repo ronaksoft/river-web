@@ -197,6 +197,15 @@ export const getContentSize = (message: IMessage): null | { height: number, widt
     };
 };
 
+/* Get duration with time format */
+export const getDuration = (duration: number) => {
+    let sec = String(duration % 60);
+    if (sec.length === 1) {
+        sec = '0' + sec;
+    }
+    return `${Math.floor(duration / 60)}:${sec}`;
+};
+
 interface IProps {
     measureFn: any;
     message: IMessage;
@@ -375,7 +384,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                      }}>
                     {Boolean(info.duration) &&
                     <div className="media-duration">
-                        <PlayArrowRounded/><span>{this.getDuration(info.duration || 0)}</span>
+                        <PlayArrowRounded/><span>{getDuration(info.duration || 0)}</span>
                         {!message.contentread && <span className="unread-bullet"/>}
                     </div>}
                     {Boolean(((fileState !== 'view' && fileState !== 'open') || transition) && (message.id || 0) > 0) &&
@@ -661,6 +670,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                 caption: info.caption,
                 createdon: message.createdon,
                 downloaded: message.downloaded || false,
+                duration: info.duration,
                 fileLocation: info.file,
                 fileSize: info.size,
                 height: info.height,
@@ -694,15 +704,6 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
         } else {
             this.mediaSizeRef.innerText = `${getHumanReadableSize(loaded)} / ${getHumanReadableSize(this.fileSize)}`;
         }
-    }
-
-    /* Get duration with time format */
-    private getDuration(duration: number) {
-        let sec = String(duration % 60);
-        if (sec.length === 1) {
-            sec = '0' + sec;
-        }
-        return `${Math.floor(duration / 60)}:${sec}`;
     }
 
     private captionClickHandler = (e: any) => {

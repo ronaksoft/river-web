@@ -10,7 +10,7 @@
 import * as React from 'react';
 import MediaRepo from '../../repository/media';
 import {InputPeer} from '../../services/sdk/messages/chat.core.types_pb';
-import {getMediaInfo, IMediaInfo} from '../MessageMedia';
+import {getDuration, getMediaInfo, IMediaInfo} from '../MessageMedia';
 import CachedPhoto from '../CachedPhoto';
 import {
     PlayCircleFilledRounded,
@@ -63,15 +63,6 @@ interface IState {
     loading: boolean;
     tab: number;
 }
-
-/* Get duration with time format */
-export const getDuration = (duration: number) => {
-    let sec = String(duration % 60);
-    if (sec.length === 1) {
-        sec = '0' + sec;
-    }
-    return `${Math.floor(duration / 60)}:${sec}`;
-};
 
 class PeerMedia extends React.Component<IProps, IState> {
     private eventReferences: any[] = [];
@@ -330,6 +321,7 @@ class PeerMedia extends React.Component<IProps, IState> {
                     caption: item.info.caption,
                     createdon: 0,
                     downloaded: item.download,
+                    duration: item.info.duration,
                     fileLocation: item.info.file,
                     fileSize: item.info.size,
                     height: item.info.height,

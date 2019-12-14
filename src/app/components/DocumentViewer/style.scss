@@ -139,6 +139,37 @@
           display: none;
         }
 
+        .media-duration {
+          position: absolute;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          top: 8px;
+          left: 8px;
+          height: 16px;
+          font-size: 12px;
+          line-height: 12px;
+          background-color: rgba(0, 0, 0, 0.32);
+          padding: 0 4px 0 2px;
+          border-radius: 4px;
+          color: var(--white);
+          white-space: nowrap;
+          z-index: 1000;
+          user-select: none;
+
+          svg {
+            font-size: 14px;
+            color: inherit;
+            display: inline-block;
+            margin: 0 2px 0 0;
+          }
+
+          span {
+            padding-top: 2px;
+            line-height: 12px;
+          }
+        }
+
         .thumbnail {
           position: absolute;
           top: 0;

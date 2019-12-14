@@ -177,13 +177,13 @@ export default class UpdateManager {
             return 0;
         });
         // Check Gap in Update List
-        for (let i = 0; i < updates.length; i++) {
-            if (updates[i] && updates[i].updateid !== 0 && i < (updates.length - 1)) {
-                if (updates[i].updateid !== updates[i + 1].updateid) {
+        for (let i = 0; i < (updates.length - 1) && updates.length > 1; i++) {
+            if (updates[i] && updates[i].updateid !== 0 && updates[i + 1].updateid !== 0) {
+                if (((updates[i].updateid || 0) + 1) !== updates[i + 1].updateid) {
                     this.updateList = [];
                     this.outOfSync = false;
                     this.outOfSyncTimeout = null;
-                    window.console.debug('%c gapInUpdate', 'color: #ff3d00;');
+                    window.console.debug(`%c gapInUpdate ${updates[i].updateid}, ${updates[i + 1].updateid}`, 'color: #ff3d00;');
                     this.callHandlers(C_MSG.OutOfSync, {});
                     return;
                 }
@@ -436,9 +436,9 @@ export default class UpdateManager {
         keys.forEach((key) => {
             const batchUpdate: INewMessageBulkUpdate = {
                 accessHashes: [],
-                maxMessageId: 1000000000,
+                maxMessageId: 0,
                 messages: [],
-                minMessageId: 0,
+                minMessageId: 1000000000,
                 peerid: '',
                 peertype: undefined,
                 senderIds: [],
@@ -465,7 +465,7 @@ export default class UpdateManager {
                 }
             }
             if (batchUpdate.messages.length > 0) {
-                /*const swap = (obj: any, a: number, b: number) => {
+                const swap = (obj: any, a: number, b: number) => {
                     const hold = obj[a];
                     obj[a] = obj[b];
                     obj[b] = hold;
@@ -479,7 +479,7 @@ export default class UpdateManager {
                             swap(batchUpdate.senders, i, j);
                         }
                     }
-                }*/
+                }
                 this.callHandlers(eventConstructor, batchUpdate);
             }
         });

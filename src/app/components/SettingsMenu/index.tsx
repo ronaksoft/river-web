@@ -86,7 +86,7 @@ import DevTools from "../DevTools";
 import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.28.7';
+export const C_VERSION = '0.28.8';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 export const C_AVATAR_SIZE = 640;
 
@@ -353,7 +353,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
         return (
             <div className="setting-menu">
                 <DevTools ref={this.devToolsRefHandler}/>
-                <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={C_AVATAR_SIZE}/>
+                <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler}
+                               width={C_AVATAR_SIZE}/>
                 <SettingsBackgroundModal ref={this.settingsBackgroundModalRefHandler}
                                          dark={Boolean(this.state.selectedTheme !== 'light')}
                                          defId={this.state.selectedCustomBackground}
@@ -470,7 +471,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                             </div>
                                             <div className="page-content-inner">
                                                 <div className="font-size-container">
-                                                    <Button size="small" onClick={this.handleNext}
+                                                    <Button size="small" onClick={this.increaseFontSizeHandler}
                                                             disabled={this.state.fontSize === 5}>
                                                         <KeyboardArrowRight/>
                                                     </Button>
@@ -482,7 +483,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                         onChange={this.fontSizeChangeHandler}
                                                         className="slider"
                                                     />
-                                                    <Button size="small" onClick={this.handleBack}
+                                                    <Button size="small" onClick={this.decreaseFontSizeHandler}
                                                             disabled={this.state.fontSize === 0}>
                                                         <KeyboardArrowLeft/>
                                                     </Button>
@@ -1079,7 +1080,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.broadcastEvent('Theme_Changed', null);
     }
 
-    private handleNext = () => {
+    /* Increase font size handler */
+    private increaseFontSizeHandler = () => {
         this.setState(state => ({
             fontSize: state.fontSize + 1,
         }), () => {
@@ -1087,7 +1089,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
         });
     }
 
-    private handleBack = () => {
+    /* Decrease font size handler */
+    private decreaseFontSizeHandler = () => {
         this.setState(state => ({
             fontSize: state.fontSize - 1,
         }), () => {
@@ -1095,9 +1098,12 @@ class SettingsMenu extends React.Component<IProps, IState> {
         });
     }
 
+    /* Font size change handler */
     private fontSizeChangeHandler = (e: any, value: number) => {
         this.setState({
             fontSize: value,
+        }, () => {
+            this.changeFontSize();
         });
     }
 

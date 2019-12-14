@@ -10,7 +10,7 @@
 import * as React from 'react';
 import {
     KeyboardArrowLeftRounded, KeyboardArrowRightRounded, MoreVertRounded, RotateLeftRounded, RotateRightRounded,
-    ZoomInRounded, ZoomOutRounded, CropFreeRounded, EmailOutlined,
+    ZoomInRounded, ZoomOutRounded, CropFreeRounded, EmailOutlined, PlayArrowRounded,
 } from '@material-ui/icons';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import DocumentViewService, {IDocument} from '../../services/documentViewerService';
@@ -18,7 +18,7 @@ import CachedPhoto from '../CachedPhoto';
 import CachedVideo from '../CachedVideo';
 import {IMessage} from '../../repository/message/interface';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
-import {getMediaInfo} from '../MessageMedia';
+import {getDuration, getMediaInfo} from '../MessageMedia';
 import DownloadProgress from '../DownloadProgress';
 import {C_GOOGLE_MAP_KEY} from '../MapPicker';
 import {MapComponent} from '../MapPicker/map';
@@ -271,6 +271,10 @@ class DocumentViewer extends React.Component<IProps, IState> {
                                     {item.thumbFileLocation && <div className="thumbnail">
                                         <CachedPhoto className="thumb-picture" fileLocation={item.thumbFileLocation}
                                                      blur={item.downloaded === false ? 10 : 0}/>
+                                    </div>}
+                                    {Boolean(!item.downloaded && item.duration) &&
+                                    <div className="media-duration">
+                                        <PlayArrowRounded/><span>{getDuration(item.duration || 0)}</span>
                                     </div>}
                                     {this.getDownloadAction()}
                                     {Boolean(item.downloaded !== false) &&
@@ -794,6 +798,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 caption: info.caption,
                 createdon: message.createdon,
                 downloaded: message.downloaded || false,
+                duration: info.duration,
                 fileLocation: info.file,
                 fileSize: info.size,
                 height: info.height,

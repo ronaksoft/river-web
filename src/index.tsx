@@ -11,7 +11,6 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import App from './App';
 import {HashRouter} from 'react-router-dom';
-import {unregister} from './registerServiceWorker';
 import * as serviceWorker from "./serviceWorker";
 
 import './index.css';
@@ -44,7 +43,6 @@ const onSuccess = () => {
     }
 };
 
-unregister();
 serviceWorker.register({
     onSuccess,
     onUpdate,

@@ -122,6 +122,25 @@ export default class Server {
         let internalReject = null;
 
         const reqId = ++this.reqId;
+        // retry on E00 Server error
+        if (!options) {
+            options = {
+                retry: 3,
+                retryErrors: [{
+                    code: C_ERR.ErrCodeInternal,
+                    items: C_ERR_ITEM.ErrItemServer,
+                }],
+            };
+        } else {
+            if (options.retryErrors) {
+                if (!options.retryErrors.find(o => o.code === C_ERR.ErrCodeInternal && o.items === C_ERR_ITEM.ErrItemServer)) {
+                    options.retryErrors.push({
+                        code: C_ERR.ErrCodeInternal,
+                        items: C_ERR_ITEM.ErrItemServer,
+                    });
+                }
+            }
+        }
         const request: IServerRequest = {
             constructor,
             data,

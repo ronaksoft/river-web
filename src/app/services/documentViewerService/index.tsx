@@ -14,6 +14,7 @@ import {C_MEDIA_TYPE} from '../../repository/media/interface';
 interface IDocumentItem {
     caption: string;
     downloaded?: boolean;
+    duration?: number;
     fileLocation: InputFileLocation.AsObject;
     fileSize?: number;
     geo?: google.maps.LatLngLiteral;
