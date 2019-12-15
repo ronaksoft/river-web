@@ -12,7 +12,11 @@ import {UpdateEnvelope, User} from '../messages/chat.core.types_pb';
 import {
     UpdateDialogPinned,
     UpdateDifference,
-    UpdateDraftMessage, UpdateDraftMessageCleared, UpdateGroupParticipantAdd, UpdateGroupParticipantDeleted,
+    UpdateDraftMessage,
+    UpdateDraftMessageCleared,
+    UpdateGroupParticipantAdd,
+    UpdateGroupParticipantDeleted, UpdateLabelDeleted, UpdateLabelItemsAdded, UpdateLabelItemsRemoved,
+    UpdateLabelSet,
     UpdateMessageEdited,
     UpdateMessageID,
     UpdateMessagesDeleted,
@@ -37,6 +41,8 @@ import {Group} from '../messages/chat.core.types_pb';
 import {C_MESSAGE_ACTION} from '../../../repository/message/consts';
 import {getMessageTitle} from '../../../components/Dialog/utils';
 import {kMerge} from "../../utilities/kDash";
+import LabelRepo from "../../../repository/label";
+import {uniq} from "lodash";
 
 export interface IRemoveDialog {
     maxId: number;
@@ -67,6 +73,7 @@ export default class SyncManager {
     private messageRepo: MessageRepo;
     private userRepo: UserRepo;
     private groupRepo: GroupRepo;
+    private labelRepo: LabelRepo;
     private fnIndex: number = 0;
     private fnQueue: any = {};
 
@@ -77,6 +84,7 @@ export default class SyncManager {
         this.groupRepo = GroupRepo.getInstance();
         this.dialogRepo = DialogRepo.getInstance();
         this.messageRepo = MessageRepo.getInstance();
+        this.labelRepo = LabelRepo.getInstance();
     }
 
     public getLastUpdateId(): number {
@@ -275,6 +283,40 @@ export default class SyncManager {
                         hasUpdate: true,
                         id: updateGroupParticipantDeleted.groupid,
                     }]);
+                    break;
+                case C_MSG.UpdateLabelSet:
+                    const updateLabelSet = UpdateLabelSet.deserializeBinary(data).toObject();
+                    this.labelRepo.importBulk(updateLabelSet.labelsList);
+                    break;
+                case C_MSG.UpdateLabelDeleted:
+                    const updateLabelDeleted = UpdateLabelDeleted.deserializeBinary(data).toObject();
+                    this.labelRepo.removeMany(updateLabelDeleted.labelidsList);
+                    break;
+                case C_MSG.UpdateLabelItemsAdded:
+                    const updateLabelItemsAdded = UpdateLabelItemsAdded.deserializeBinary(data).toObject();
+                    updateLabelItemsAdded.messageidsList.forEach((id) => {
+                        if (messages.hasOwnProperty(id || 0)) {
+                            messages[id || 0].added_labels = uniq([...(messages[id || 0].labelidsList || []), ...updateLabelItemsAdded.labelidsList]);
+                        } else {
+                            messages[id || 0] = {
+                                added_labels: uniq([...(messages[id || 0].labelidsList || []), ...updateLabelItemsAdded.labelidsList]),
+                                id,
+                            };
+                        }
+                    });
+                    break;
+                case C_MSG.UpdateLabelItemsRemoved:
+                    const updateLabelItemsRemoved = UpdateLabelItemsRemoved.deserializeBinary(data).toObject();
+                    updateLabelItemsRemoved.messageidsList.forEach((id) => {
+                        if (messages.hasOwnProperty(id || 0)) {
+                            messages[id || 0].removed_labels = uniq([...(messages[id || 0].labelidsList || []), ...updateLabelItemsRemoved.labelidsList]);
+                        } else {
+                            messages[id || 0] = {
+                                id,
+                                removed_labels: uniq([...(messages[id || 0].labelidsList || []), ...updateLabelItemsRemoved.labelidsList]),
+                            };
+                        }
+                    });
                     break;
                 default:
                     break;

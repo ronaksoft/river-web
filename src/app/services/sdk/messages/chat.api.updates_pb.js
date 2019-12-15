@@ -8875,8 +8875,7 @@ proto.msg.UpdateLabelItemsAdded.toObject = function(includeInstance, msg) {
   var f, obj = {
     ucount: (f = jspb.Message.getField(msg, 100)) == null ? undefined : f,
     updateid: (f = jspb.Message.getField(msg, 101)) == null ? undefined : f,
-    peertype: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    peerid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+    peer: (f = msg.getPeer()) && chat_core_types_pb.Peer.toObject(includeInstance, f),
     messageidsList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f,
     labelidsList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f
   };
@@ -8924,12 +8923,9 @@ proto.msg.UpdateLabelItemsAdded.deserializeBinaryFromReader = function(msg, read
       msg.setUpdateid(value);
       break;
     case 1:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setPeertype(value);
-      break;
-    case 2:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setPeerid(value);
+      var value = new chat_core_types_pb.Peer;
+      reader.readMessage(value,chat_core_types_pb.Peer.deserializeBinaryFromReader);
+      msg.setPeer(value);
       break;
     case 3:
       var value = /** @type {number} */ (reader.readInt64());
@@ -8982,18 +8978,12 @@ proto.msg.UpdateLabelItemsAdded.serializeBinaryToWriter = function(message, writ
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  f = message.getPeer();
   if (f != null) {
-    writer.writeInt32(
+    writer.writeMessage(
       1,
-      f
-    );
-  }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
-    writer.writeInt64(
-      2,
-      f
+      f,
+      chat_core_types_pb.Peer.serializeBinaryToWriter
     );
   }
   f = message.getMessageidsList();
@@ -9086,20 +9076,21 @@ proto.msg.UpdateLabelItemsAdded.prototype.hasUpdateid = function() {
 
 
 /**
- * required int32 PeerType = 1;
- * @return {number}
+ * required Peer Peer = 1;
+ * @return {!proto.msg.Peer}
  */
-proto.msg.UpdateLabelItemsAdded.prototype.getPeertype = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+proto.msg.UpdateLabelItemsAdded.prototype.getPeer = function() {
+  return /** @type{!proto.msg.Peer} */ (
+    jspb.Message.getWrapperField(this, chat_core_types_pb.Peer, 1, 1));
 };
 
 
 /**
- * @param {number} value
+ * @param {!proto.msg.Peer} value
  * @return {!proto.msg.UpdateLabelItemsAdded} returns this
- */
-proto.msg.UpdateLabelItemsAdded.prototype.setPeertype = function(value) {
-  return jspb.Message.setField(this, 1, value);
+*/
+proto.msg.UpdateLabelItemsAdded.prototype.setPeer = function(value) {
+  return jspb.Message.setWrapperField(this, 1, value);
 };
 
 
@@ -9107,7 +9098,7 @@ proto.msg.UpdateLabelItemsAdded.prototype.setPeertype = function(value) {
  * Clears the field making it undefined.
  * @return {!proto.msg.UpdateLabelItemsAdded} returns this
  */
-proto.msg.UpdateLabelItemsAdded.prototype.clearPeertype = function() {
+proto.msg.UpdateLabelItemsAdded.prototype.clearPeer = function() {
   return jspb.Message.setField(this, 1, undefined);
 };
 
@@ -9116,44 +9107,8 @@ proto.msg.UpdateLabelItemsAdded.prototype.clearPeertype = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.msg.UpdateLabelItemsAdded.prototype.hasPeertype = function() {
+proto.msg.UpdateLabelItemsAdded.prototype.hasPeer = function() {
   return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int64 PeerID = 2;
- * @return {number}
- */
-proto.msg.UpdateLabelItemsAdded.prototype.getPeerid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.msg.UpdateLabelItemsAdded} returns this
- */
-proto.msg.UpdateLabelItemsAdded.prototype.setPeerid = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.UpdateLabelItemsAdded} returns this
- */
-proto.msg.UpdateLabelItemsAdded.prototype.clearPeerid = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.UpdateLabelItemsAdded.prototype.hasPeerid = function() {
-  return jspb.Message.getField(this, 2) != null;
 };
 
 
@@ -9272,8 +9227,7 @@ proto.msg.UpdateLabelItemsRemoved.toObject = function(includeInstance, msg) {
   var f, obj = {
     ucount: (f = jspb.Message.getField(msg, 100)) == null ? undefined : f,
     updateid: (f = jspb.Message.getField(msg, 101)) == null ? undefined : f,
-    peertype: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    peerid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+    peer: (f = msg.getPeer()) && chat_core_types_pb.Peer.toObject(includeInstance, f),
     messageidsList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f,
     labelidsList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f
   };
@@ -9321,12 +9275,9 @@ proto.msg.UpdateLabelItemsRemoved.deserializeBinaryFromReader = function(msg, re
       msg.setUpdateid(value);
       break;
     case 1:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setPeertype(value);
-      break;
-    case 2:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setPeerid(value);
+      var value = new chat_core_types_pb.Peer;
+      reader.readMessage(value,chat_core_types_pb.Peer.deserializeBinaryFromReader);
+      msg.setPeer(value);
       break;
     case 3:
       var value = /** @type {number} */ (reader.readInt64());
@@ -9379,18 +9330,12 @@ proto.msg.UpdateLabelItemsRemoved.serializeBinaryToWriter = function(message, wr
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  f = message.getPeer();
   if (f != null) {
-    writer.writeInt32(
+    writer.writeMessage(
       1,
-      f
-    );
-  }
-  f = /** @type {number} */ (jspb.Message.getField(message, 2));
-  if (f != null) {
-    writer.writeInt64(
-      2,
-      f
+      f,
+      chat_core_types_pb.Peer.serializeBinaryToWriter
     );
   }
   f = message.getMessageidsList();
@@ -9483,20 +9428,21 @@ proto.msg.UpdateLabelItemsRemoved.prototype.hasUpdateid = function() {
 
 
 /**
- * required int32 PeerType = 1;
- * @return {number}
+ * required Peer Peer = 1;
+ * @return {!proto.msg.Peer}
  */
-proto.msg.UpdateLabelItemsRemoved.prototype.getPeertype = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+proto.msg.UpdateLabelItemsRemoved.prototype.getPeer = function() {
+  return /** @type{!proto.msg.Peer} */ (
+    jspb.Message.getWrapperField(this, chat_core_types_pb.Peer, 1, 1));
 };
 
 
 /**
- * @param {number} value
+ * @param {!proto.msg.Peer} value
  * @return {!proto.msg.UpdateLabelItemsRemoved} returns this
- */
-proto.msg.UpdateLabelItemsRemoved.prototype.setPeertype = function(value) {
-  return jspb.Message.setField(this, 1, value);
+*/
+proto.msg.UpdateLabelItemsRemoved.prototype.setPeer = function(value) {
+  return jspb.Message.setWrapperField(this, 1, value);
 };
 
 
@@ -9504,7 +9450,7 @@ proto.msg.UpdateLabelItemsRemoved.prototype.setPeertype = function(value) {
  * Clears the field making it undefined.
  * @return {!proto.msg.UpdateLabelItemsRemoved} returns this
  */
-proto.msg.UpdateLabelItemsRemoved.prototype.clearPeertype = function() {
+proto.msg.UpdateLabelItemsRemoved.prototype.clearPeer = function() {
   return jspb.Message.setField(this, 1, undefined);
 };
 
@@ -9513,44 +9459,8 @@ proto.msg.UpdateLabelItemsRemoved.prototype.clearPeertype = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.msg.UpdateLabelItemsRemoved.prototype.hasPeertype = function() {
+proto.msg.UpdateLabelItemsRemoved.prototype.hasPeer = function() {
   return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * required int64 PeerID = 2;
- * @return {number}
- */
-proto.msg.UpdateLabelItemsRemoved.prototype.getPeerid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.msg.UpdateLabelItemsRemoved} returns this
- */
-proto.msg.UpdateLabelItemsRemoved.prototype.setPeerid = function(value) {
-  return jspb.Message.setField(this, 2, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.msg.UpdateLabelItemsRemoved} returns this
- */
-proto.msg.UpdateLabelItemsRemoved.prototype.clearPeerid = function() {
-  return jspb.Message.setField(this, 2, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.msg.UpdateLabelItemsRemoved.prototype.hasPeerid = function() {
-  return jspb.Message.getField(this, 2) != null;
 };
 
 

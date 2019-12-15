@@ -52,6 +52,7 @@
     "more": "More",
     "new_group": "New Group",
     "new_message": "New Message",
+    "labels": "Labels",
     "account_info": "Account Info",
     "settings": "Settings",
     "log_out": "Log Out",
@@ -321,5 +322,15 @@
     "write_a_caption": "Write a Caption...",
     "map_caption": "Write a caption (would be sent as a reply)",
     "share_location": "Share Location"
+  },
+  "label": {
+    "labels": "Labels",
+    "create_a_new_label": "Create a new Label",
+    "label_title": "Label name",
+    "label_count": "{0} item",
+    "label_counts": "{0} items",
+    "no_label": "No Label",
+    "label_placeholder": "Create a new Label!",
+    "no_result": "No Result!"
   }
 }

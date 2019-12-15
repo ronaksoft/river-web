@@ -85,7 +85,15 @@ import {
 import {UsersGet, UsersGetFull, UsersMany} from './messages/chat.api.users_pb';
 import {SystemGetInfo, SystemInfo, SystemGetSalts, SystemSalts} from './messages/chat.api.system_pb';
 import {parsePhoneNumberFromString} from 'libphonenumber-js';
-import {LabelsAddToMessage, LabelsCreate, LabelsDelete, LabelsEdit, LabelsGet} from "./messages/chat.api.labels_pb";
+import {
+    LabelItems,
+    LabelsAddToDialog,
+    LabelsAddToMessage,
+    LabelsCreate,
+    LabelsDelete,
+    LabelsEdit,
+    LabelsGet, LabelsListItems, LabelsRemoveFromDialog, LabelsRemoveFromMessage
+} from "./messages/chat.api.labels_pb";
 
 export default class SDK {
     public static getInstance() {
@@ -685,13 +693,43 @@ export default class SDK {
         return this.server.send(C_MSG.LabelsGet, data.serializeBinary(), true);
     }
 
-    public labelAddToMessage(peer: InputPeer, msgIds: number[], labelIds: number[]): Promise<LabelsMany.AsObject> {
+    public labelAddToMessage(peer: InputPeer, labelIds: number[], msgIds: number[]): Promise<Bool.AsObject> {
         const data = new LabelsAddToMessage();
-        data.setPeerid(peer.getId() || '');
-        data.setPeertype(peer.getType() || 0);
-        data.setLabelidsList()
-        data.set
-        return this.server.send(C_MSG.LabelsGet, data.serializeBinary(), true);
+        data.setPeer(peer);
+        data.setLabelidsList(labelIds);
+        data.setMessageidsList(msgIds);
+        return this.server.send(C_MSG.LabelsAddToMessage, data.serializeBinary(), true);
+    }
+
+    public labelRemoveFromMessage(peer: InputPeer, labelIds: number[], msgIds: number[]): Promise<Bool.AsObject> {
+        const data = new LabelsRemoveFromMessage();
+        data.setPeer(peer);
+        data.setLabelidsList(labelIds);
+        data.setMessageidsList(msgIds);
+        return this.server.send(C_MSG.LabelsRemoveFromMessage, data.serializeBinary(), true);
+    }
+
+    public labelAddToDialog(peer: InputPeer, labelIds: number[]): Promise<Bool.AsObject> {
+        const data = new LabelsAddToDialog();
+        data.setPeer(peer);
+        data.setLabelidsList(labelIds);
+        return this.server.send(C_MSG.LabelsAddToDialog, data.serializeBinary(), true);
+    }
+
+    public labelFromDialog(peer: InputPeer, labelIds: number[]): Promise<Bool.AsObject> {
+        const data = new LabelsRemoveFromDialog();
+        data.setPeer(peer);
+        data.setLabelidsList(labelIds);
+        return this.server.send(C_MSG.LabelsRemoveFromDialog, data.serializeBinary(), true);
+    }
+
+    public labelList(id: number, min: number, max: number, limit: number): Promise<LabelItems.AsObject> {
+        const data = new LabelsListItems();
+        data.setLabelid(id);
+        data.setLimit(limit);
+        data.setMinid(min);
+        data.setMaxid(max);
+        return this.server.send(C_MSG.LabelsListItems, data.serializeBinary(), true);
     }
 
     public getServerSalts(): Promise<SystemSalts.AsObject> {

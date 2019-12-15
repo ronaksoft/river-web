@@ -53,7 +53,7 @@ import {
     UpdateDialogPinned,
     UpdateDraftMessage,
     UpdateDraftMessageCleared, UpdateGroupParticipantAdd,
-    UpdateGroupPhoto,
+    UpdateGroupPhoto, UpdateLabelDeleted, UpdateLabelItemsAdded, UpdateLabelItemsRemoved, UpdateLabelSet,
     UpdateMessageEdited,
     UpdateMessageID,
     UpdateMessagesDeleted,
@@ -139,6 +139,7 @@ import {OptionsObject, withSnackbar} from "notistack";
 import {scrollFunc} from "../../services/kkwindow/utils";
 import Landscape from "../../components/SVG";
 import {isMobile} from "../../services/utilities/localize";
+import LabelRepo from "../../repository/label";
 
 import './style.scss';
 
@@ -183,6 +184,7 @@ class Chat extends React.Component<IProps, IState> {
     private groupRepo: GroupRepo;
     private fileRepo: FileRepo;
     private mainRepo: MainRepo;
+    private labelRepo: LabelRepo;
     private isLoading: boolean = false;
     private sdk: SDK;
     private updateManager: UpdateManager;
@@ -268,6 +270,7 @@ class Chat extends React.Component<IProps, IState> {
         this.dialogRepo = DialogRepo.getInstance();
         this.fileRepo = FileRepo.getInstance();
         this.mainRepo = MainRepo.getInstance();
+        this.labelRepo = LabelRepo.getInstance();
         this.updateManager = UpdateManager.getInstance();
         this.syncManager = SyncManager.getInstance();
         this.dialogsSortThrottle = throttle(this.dialogsSort, 256);
@@ -406,6 +409,18 @@ class Chat extends React.Component<IProps, IState> {
 
         // Update: group participant deleted
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateGroupParticipantDeleted, this.updateGroupParticipantDeletedHandler));
+
+        // Update: label set
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateLabelSet, this.updateLabelSetHandler));
+
+        // Update: label deleted
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateLabelDeleted, this.updateLabelDeletedHandler));
+
+        // Update: label items added
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateLabelItemsAdded, this.updateLabelItemsAddedHandler));
+
+        // Update: label items removed
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateLabelItemsRemoved, this.updateLabelItemsRemovedHandler));
 
         // Sync: MessageId
         this.eventReferences.push(this.syncManager.listen(C_SYNC_UPDATE.MessageId, this.updateMessageIDHandler));
@@ -885,7 +900,7 @@ class Chat extends React.Component<IProps, IState> {
         if (this.isUpdating) {
             return;
         }
-        window.console.debug('snapshot!');
+        window.console.debug('getDifference!');
         this.canSync().then(() => {
             this.updateManager.disable();
             this.setAppStatus({
@@ -2409,6 +2424,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private snapshot() {
+        window.console.log('snapshot!');
         // this.messageRepo.truncate();
         if (this.isUpdating) {
             return;
@@ -2456,6 +2472,7 @@ class Chat extends React.Component<IProps, IState> {
                 });
             });
         });
+        this.labelRepo.getLabels();
     }
 
     private wsCloseHandler = () => {
@@ -4400,6 +4417,40 @@ class Chat extends React.Component<IProps, IState> {
             hasUpdate: true,
             id: data.groupid,
         }]);
+    }
+
+    /* Update label set */
+    private updateLabelSetHandler = (data: UpdateLabelSet.AsObject) => {
+        this.labelRepo.upsert(data.labelsList);
+    }
+
+    /* Update label deleted */
+    private updateLabelDeletedHandler = (data: UpdateLabelDeleted.AsObject) => {
+        this.labelRepo.removeMany(data.labelidsList);
+    }
+
+    /* Update label items added */
+    private updateLabelItemsAddedHandler = (data: UpdateLabelItemsAdded.AsObject) => {
+        const messageList: IMessage[] = [];
+        data.messageidsList.forEach((msgId) => {
+            messageList.push({
+                added_labels: data.labelidsList,
+                id: msgId,
+            });
+        });
+        this.messageRepo.lazyUpsert([]);
+    }
+
+    /* Update label items removed */
+    private updateLabelItemsRemovedHandler = (data: UpdateLabelItemsRemoved.AsObject) => {
+        const messageList: IMessage[] = [];
+        data.messageidsList.forEach((msgId) => {
+            messageList.push({
+                id: msgId,
+                removed_labels: data.labelidsList,
+            });
+        });
+        this.messageRepo.lazyUpsert([]);
     }
 
     private pinDialog(peerId: string, pinned?: boolean) {

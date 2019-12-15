@@ -1,0 +1,343 @@
+/*
+    Creation Time: 2019 - Dec - 15
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2019
+*/
+@import '../../../style/mixin';
+
+.label-menu {
+  height: 100%;
+
+  .page-container {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+
+    .page {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      transition: left 0.2s ease-out;
+
+      &.page-1 {
+        left: 0;
+      }
+
+      &.page-2 {
+        left: 100%;
+      }
+    }
+
+    &.page-2 {
+      .page-1 {
+        left: -100%;
+      }
+
+      .page-2 {
+        left: 0;
+      }
+    }
+  }
+
+  .menu-header {
+    display: flex;
+    text-align: left;
+    height: 47px;
+    background-color: var(--header-color);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    align-items: center;
+    justify-content: center;
+
+    label {
+      flex: 1;
+      padding: 10px 10px 10px 0;
+    }
+  }
+
+  .input-container {
+    display: flex;
+    min-height: 48px;
+    padding: 10px;
+    align-items: center;
+    justify-content: center;
+
+    .label-icon-holder {
+      height: 40px;
+      width: 40px;
+      border-radius: 50%;
+      background-color: rgba(0, 0, 0, 0.11);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 16px 0 0;
+
+      svg {
+        color: #fff;
+        font-size: 30px;
+      }
+    }
+
+    .label-title-input {
+      flex: 1;
+    }
+  }
+
+  .label-search {
+    padding: 6px;
+  }
+
+  .label-container {
+    flex: 1;
+
+    &.label-placeholder {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+      font-size: 30px;
+      font-weight: 100;
+      color: var(--grey);
+
+      svg {
+        margin: 0 0 32px;
+        color: inherit;
+        font-size: 75px;
+      }
+    }
+
+    .label-item {
+      display: flex;
+      height: 56px;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 6px;
+
+      .label-icon,
+      .label-action {
+        width: 52px;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .label-icon {
+        padding: 6px 12px 6px 0;
+
+        svg {
+          font-size: 32px;
+        }
+      }
+
+      .label-info {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-evenly;
+        flex-direction: column;
+        flex: 1;
+        height: 100%;
+
+        .label-name {
+          font-size: 14px;
+          color: var(--dark);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .label-counter {
+          font-size: 14px;
+          color: #A1A1A1;
+        }
+      }
+
+      .label-action {
+        svg {
+          opacity: 0.05;
+        }
+      }
+
+      &:hover {
+        .label-action {
+          svg {
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+
+  .label-color-container {
+    display: flex;
+    flex-wrap: wrap;
+    text-align: center;
+    justify-content: center;
+    padding: 8px 0;
+
+    .label-color-item {
+      height: 40px;
+      width: 40px;
+      border-radius: 50%;
+      margin: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+
+      svg {
+        color: #fff;
+        font-size: 30px;
+      }
+    }
+  }
+
+  .actions-bar {
+    height: 86px;
+    padding: 18px 0 22px;
+    text-align: center;
+    background-color: var(--message-chat);
+
+    &.no-bg {
+      background-color: transparent;
+      border: none !important;
+    }
+
+    &.cancel {
+      padding: 0;
+      color: var(--grey);
+      height: auto;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .add-action {
+      display: inline-flex;
+      height: 46px;
+      width: 46px;
+      border-radius: 50%;
+      background: var(--river);
+      color: var(--white);
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+      transition: all 0.2s;
+
+      svg {
+        font-size: 40px;
+      }
+
+      &:hover {
+        background: var(--river-dark);
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+      }
+    }
+  }
+}
+
+html[direction="rtl"] {
+  .label-menu {
+    .menu-header {
+      direction: ltr;
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
+      justify-content: flex-start;
+
+      label {
+        text-align: right;
+      }
+
+      > button {
+        transform: rotateY(180deg);
+      }
+    }
+
+    .label-container {
+      .label-item {
+        .label-icon {
+          padding: 6px 0 6px 12px;
+        }
+      }
+    }
+
+    .input-container {
+      display: flex;
+      min-height: 48px;
+      padding: 10px;
+      align-items: center;
+      justify-content: center;
+
+      .label-icon-holder {
+        margin: 0 0 0 16px;
+      }
+    }
+  }
+}
+
+html[theme="dark"],
+html[theme="dark-night"],
+html[theme="dark-blue"] {
+  .label-menu {
+    .menu-header {
+      background-color: var(--dark-medium);
+      color: var(--white);
+      border-color: var(--dark-low-op50);
+
+      svg {
+        color: var(--white);
+      }
+    }
+
+    .label-search, .label-title-input {
+      label, input, svg {
+        color: var(--white);
+      }
+    }
+
+    .label-container {
+      .label-item {
+        .label-info {
+          .label-name {
+            color: var(--white);
+          }
+        }
+
+        .label-action {
+          svg {
+            color: var(--white);
+          }
+        }
+      }
+    }
+
+    .actions-bar {
+      background-color: var(--dark-medium);
+      border-top: 1px solid var(--dark-low-op50);
+
+      &.no-bg {
+        background-color: transparent;
+      }
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .label-menu {
+    .menu-header {
+      background-color: var(--dark-blue-medium);
+      border-color: var(--dark-blue-low-op50);
+    }
+
+    .actions-bar {
+      border-top: 1px solid var(--dark-blue-low-op50);
+      background-color: var(--dark-blue-medium);
+    }
+  }
+}

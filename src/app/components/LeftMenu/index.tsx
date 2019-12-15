@@ -33,6 +33,7 @@ import {IUser} from "../../repository/user/interface";
 import {omitBy, isNil} from "lodash";
 
 import './style.scss';
+import LabelMenu from "../LabelMenu";
 
 export type menuItems = 'chat' | 'settings' | 'contacts';
 export type menuAction = 'new_message' | 'close_iframe' | 'logout';
@@ -61,7 +62,7 @@ interface IState {
     isOnline: boolean;
     isUpdating: boolean;
     leftMenu: menuItems;
-    overlay: boolean;
+    overlayMode: number;
     shrunkMenu: boolean;
 }
 
@@ -101,7 +102,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             isOnline: false,
             isUpdating: false,
             leftMenu: 'chat',
-            overlay: false,
+            overlayMode: 0,
             shrunkMenu: false,
         };
 
@@ -125,6 +126,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         }, {
             cmd: 'new_message',
             title: i18n.t('chat.new_message'),
+        }, {
+            cmd: 'labels',
+            title: i18n.t('chat.labels'),
         }, {
             cmd: 'account',
             title: i18n.t('chat.account_info'),
@@ -206,10 +210,10 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {chatMoreAnchorEl, leftMenu, overlay, iframeActive, shrunkMenu} = this.state;
+        const {chatMoreAnchorEl, leftMenu, overlayMode, iframeActive, shrunkMenu} = this.state;
         return (
             <div
-                className={'column-left ' + (leftMenu === 'chat' ? 'with-top-bar' : '') + (overlay ? ' left-overlay-enable' : '') + (shrunkMenu ? ' shrunk-menu' : '')}>
+                className={'column-left ' + (leftMenu === 'chat' ? 'with-top-bar' : '') + (overlayMode ? ' left-overlay-enable' : '') + (shrunkMenu ? ' shrunk-menu' : '')}>
                 {!shrunkMenu && <div className="top-bar">
                     {iframeActive &&
                     <span className="close-btn">
@@ -295,8 +299,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                 {!shrunkMenu && <BottomBar ref={this.bottomBarRefHandler} onSelect={this.bottomBarSelectHandler}
                                            selected={this.state.leftMenu}/>}
                 <div className="left-overlay">
-                    {overlay && <NewGroupMenu onClose={this.overlayCloseHandler}
-                                              onCreate={this.props.onGroupCreate}/>}
+                    {Boolean(overlayMode === 1) && <NewGroupMenu onClose={this.overlayCloseHandler}
+                                                                 onCreate={this.props.onGroupCreate}/>}
+                    {Boolean(overlayMode === 2) && <LabelMenu onClose={this.overlayCloseHandler}/>}
                 </div>
             </div>
         );
@@ -390,7 +395,12 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         switch (cmd) {
             case 'new_group':
                 this.setState({
-                    overlay: true,
+                    overlayMode: 1,
+                });
+                break;
+            case 'labels':
+                this.setState({
+                    overlayMode: 2,
                 });
                 break;
             case 'new_message':
@@ -413,7 +423,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
 
     private overlayCloseHandler = () => {
         this.setState({
-            overlay: false,
+            overlayMode: 0,
         });
     }
 

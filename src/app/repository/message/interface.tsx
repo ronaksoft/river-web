@@ -25,6 +25,8 @@ interface IMessage extends UserMessage.AsObject {
     temp?: boolean;
     deleted_reply?: boolean;
     em_le?: number;
+    added_labels?: number[];
+    removed_labels?: number[];
 }
 
 interface IPendingMessage {

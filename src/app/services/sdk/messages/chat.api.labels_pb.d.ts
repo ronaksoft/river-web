@@ -106,15 +106,10 @@ export namespace LabelsGet {
 }
 
 export class LabelsAddToDialog extends jspb.Message {
-  hasPeertype(): boolean;
-  clearPeertype(): void;
-  getPeertype(): number | undefined;
-  setPeertype(value: number): void;
-
-  hasPeerid(): boolean;
-  clearPeerid(): void;
-  getPeerid(): string | undefined;
-  setPeerid(value: string): void;
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): chat_core_types_pb.InputPeer;
+  setPeer(value?: chat_core_types_pb.InputPeer): void;
 
   clearLabelidsList(): void;
   getLabelidsList(): Array<number>;
@@ -133,22 +128,16 @@ export class LabelsAddToDialog extends jspb.Message {
 
 export namespace LabelsAddToDialog {
   export type AsObject = {
-    peertype?: number,
-    peerid?: string,
+    peer: chat_core_types_pb.InputPeer.AsObject,
     labelidsList: Array<number>,
   }
 }
 
 export class LabelsRemoveFromDialog extends jspb.Message {
-  hasPeertype(): boolean;
-  clearPeertype(): void;
-  getPeertype(): number | undefined;
-  setPeertype(value: number): void;
-
-  hasPeerid(): boolean;
-  clearPeerid(): void;
-  getPeerid(): string | undefined;
-  setPeerid(value: string): void;
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): chat_core_types_pb.InputPeer;
+  setPeer(value?: chat_core_types_pb.InputPeer): void;
 
   clearLabelidsList(): void;
   getLabelidsList(): Array<number>;
@@ -167,22 +156,16 @@ export class LabelsRemoveFromDialog extends jspb.Message {
 
 export namespace LabelsRemoveFromDialog {
   export type AsObject = {
-    peertype?: number,
-    peerid?: string,
+    peer: chat_core_types_pb.InputPeer.AsObject,
     labelidsList: Array<number>,
   }
 }
 
 export class LabelsAddToMessage extends jspb.Message {
-  hasPeertype(): boolean;
-  clearPeertype(): void;
-  getPeertype(): number | undefined;
-  setPeertype(value: number): void;
-
-  hasPeerid(): boolean;
-  clearPeerid(): void;
-  getPeerid(): string | undefined;
-  setPeerid(value: string): void;
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): chat_core_types_pb.InputPeer;
+  setPeer(value?: chat_core_types_pb.InputPeer): void;
 
   clearLabelidsList(): void;
   getLabelidsList(): Array<number>;
@@ -206,23 +189,17 @@ export class LabelsAddToMessage extends jspb.Message {
 
 export namespace LabelsAddToMessage {
   export type AsObject = {
-    peertype?: number,
-    peerid?: string,
+    peer: chat_core_types_pb.InputPeer.AsObject,
     labelidsList: Array<number>,
     messageidsList: Array<number>,
   }
 }
 
 export class LabelsRemoveFromMessage extends jspb.Message {
-  hasPeertype(): boolean;
-  clearPeertype(): void;
-  getPeertype(): number | undefined;
-  setPeertype(value: number): void;
-
-  hasPeerid(): boolean;
-  clearPeerid(): void;
-  getPeerid(): string | undefined;
-  setPeerid(value: string): void;
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): chat_core_types_pb.InputPeer;
+  setPeer(value?: chat_core_types_pb.InputPeer): void;
 
   clearLabelidsList(): void;
   getLabelidsList(): Array<number>;
@@ -246,8 +223,7 @@ export class LabelsRemoveFromMessage extends jspb.Message {
 
 export namespace LabelsRemoveFromMessage {
   export type AsObject = {
-    peertype?: number,
-    peerid?: string,
+    peer: chat_core_types_pb.InputPeer.AsObject,
     labelidsList: Array<number>,
     messageidsList: Array<number>,
   }

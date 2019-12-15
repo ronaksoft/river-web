@@ -36,8 +36,7 @@ message LabelsGet {
 // @Function
 // @Returns: Dialog
 message LabelsAddToDialog {
-    required int32 PeerType = 1;
-    required int64 PeerID = 2 [jstype = JS_STRING];
+    required InputPeer Peer = 1;
     repeated int32 LabelIDs = 3;
 }
 
@@ -45,8 +44,7 @@ message LabelsAddToDialog {
 // @Function
 // @Returns: Dialog
 message LabelsRemoveFromDialog {
-    required int32 PeerType = 1;
-    required int64 PeerID = 2 [jstype = JS_STRING];
+    required InputPeer Peer = 1;
     repeated int32 LabelIDs = 3;
 }
 
@@ -54,8 +52,7 @@ message LabelsRemoveFromDialog {
 // @Function
 // @Returns: Bool
 message LabelsAddToMessage {
-    required int32 PeerType = 1;
-    required int64 PeerID = 2 [jstype = JS_STRING];
+    required InputPeer Peer = 1;
     repeated int32 LabelIDs = 3;
     repeated int64 MessageIDs = 4;
 }
@@ -64,8 +61,7 @@ message LabelsAddToMessage {
 // @Function
 // @Returns: Bool
 message LabelsRemoveFromMessage {
-    required int32 PeerType = 1;
-    required int64 PeerID = 2 [jstype = JS_STRING];
+    required InputPeer Peer = 1;
     repeated int32 LabelIDs = 3;
     repeated int64 MessageIDs = 4;
 }

@@ -51,6 +51,7 @@
     "more": "بیشتر",
     "new_group": "گروه جدید",
     "new_message": "پیام جدید",
+    "labels": "برچسب‌ها",
     "account_info": "اطلاعات حساب",
     "settings": "تنظمیات",
     "log_out": "خروج",
@@ -317,5 +318,14 @@
     "write_a_caption": "عنوانی بنویسید...",
     "map_caption": "عنوانی بنویسید (به عنوان پاسخ ارسال خواهد شد)",
     "share_location": "اشتراک نقشه"
+  },
+  "label": {
+    "labels": "برچسب‌ها",
+    "create_a_new_label": "برچسب جدید",
+    "label_title": "عنوان برچسب",
+    "label_count": "{0} آیتم",
+    "label_counts": "{0} آیتم",
+    "label_placeholder": "یک چسب بسازید",
+    "no_result": "نتیجه‌ای یافت نشد!"
   }
 }

@@ -133,6 +133,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        padding: 12px;
 
         .image {
           width: 100%;
@@ -568,8 +569,6 @@ html[theme="dark-blue"] {
         }
 
         .start-messaging-img {
-          width: 100%;
-          height: calc(100% - 150px);
           background-position: center center;
           background-size: contain;
           background-repeat: no-repeat;

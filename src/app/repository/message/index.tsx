@@ -9,7 +9,7 @@
 
 import MessageDB from '../../services/db/message';
 import {IMessage, IMessageWithCount, IPendingMessage} from './interface';
-import {cloneDeep, differenceBy, find, throttle, findIndex} from 'lodash';
+import {cloneDeep, differenceBy, find, throttle, findIndex, uniq, difference} from 'lodash';
 import SDK from '../../services/sdk';
 import UserRepo from '../user';
 import RTLDetector from '../../services/utilities/rtl_detector';
@@ -597,7 +597,7 @@ export default class MessageRepo {
         return pipe2.limit(limit || 30).toArray();
     }
 
-    public searchAll(keyword: string, {after, limit}: {after?: number, limit?: number}) {
+    public searchAll(keyword: string, {after, limit}: { after?: number, limit?: number }) {
         const pipe = this.db.messages;
         let pipe2: Dexie.Collection<IMessage, number>;
         if (after) {
@@ -868,6 +868,14 @@ export default class MessageRepo {
             newMessage.contentread = true;
         }
         message.entitiesList = newMessage.entitiesList;
+        if (newMessage.added_labels) {
+            message.labelidsList = uniq([...(message.labelidsList || []), ...newMessage.added_labels]);
+            delete newMessage.added_labels;
+        }
+        if (newMessage.removed_labels) {
+            message.labelidsList = difference(message.labelidsList || [], newMessage.removed_labels);
+            delete newMessage.removed_labels;
+        }
         const d = kMerge(message, newMessage);
         return d;
     }

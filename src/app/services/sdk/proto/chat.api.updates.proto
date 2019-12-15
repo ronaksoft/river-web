@@ -231,8 +231,7 @@ message UpdateAccountPrivacy {
 message UpdateLabelItemsAdded {
     required int32 UCount = 100;
     required int64 UpdateID = 101;
-    required int32 PeerType = 1;
-    required int64 PeerID = 2;
+    required Peer Peer = 1;
     repeated int64 MessageIDs = 3;
     repeated int32 LabelIDs = 4;
 }
@@ -241,8 +240,7 @@ message UpdateLabelItemsAdded {
 message UpdateLabelItemsRemoved {
     required int32 UCount = 100;
     required int64 UpdateID = 101;
-    required int32 PeerType = 1;
-    required int64 PeerID = 2;
+    required Peer Peer = 1;
     repeated int64 MessageIDs = 3;
     repeated int32 LabelIDs = 4;
 }

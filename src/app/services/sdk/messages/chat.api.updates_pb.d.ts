@@ -1112,15 +1112,10 @@ export class UpdateLabelItemsAdded extends jspb.Message {
   getUpdateid(): number | undefined;
   setUpdateid(value: number): void;
 
-  hasPeertype(): boolean;
-  clearPeertype(): void;
-  getPeertype(): number | undefined;
-  setPeertype(value: number): void;
-
-  hasPeerid(): boolean;
-  clearPeerid(): void;
-  getPeerid(): number | undefined;
-  setPeerid(value: number): void;
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): chat_core_types_pb.Peer;
+  setPeer(value?: chat_core_types_pb.Peer): void;
 
   clearMessageidsList(): void;
   getMessageidsList(): Array<number>;
@@ -1146,8 +1141,7 @@ export namespace UpdateLabelItemsAdded {
   export type AsObject = {
     ucount?: number,
     updateid?: number,
-    peertype?: number,
-    peerid?: number,
+    peer: chat_core_types_pb.Peer.AsObject,
     messageidsList: Array<number>,
     labelidsList: Array<number>,
   }
@@ -1164,15 +1158,10 @@ export class UpdateLabelItemsRemoved extends jspb.Message {
   getUpdateid(): number | undefined;
   setUpdateid(value: number): void;
 
-  hasPeertype(): boolean;
-  clearPeertype(): void;
-  getPeertype(): number | undefined;
-  setPeertype(value: number): void;
-
-  hasPeerid(): boolean;
-  clearPeerid(): void;
-  getPeerid(): number | undefined;
-  setPeerid(value: number): void;
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): chat_core_types_pb.Peer;
+  setPeer(value?: chat_core_types_pb.Peer): void;
 
   clearMessageidsList(): void;
   getMessageidsList(): Array<number>;
@@ -1198,8 +1187,7 @@ export namespace UpdateLabelItemsRemoved {
   export type AsObject = {
     ucount?: number,
     updateid?: number,
-    peertype?: number,
-    peerid?: number,
+    peer: chat_core_types_pb.Peer.AsObject,
     messageidsList: Array<number>,
     labelidsList: Array<number>,
   }

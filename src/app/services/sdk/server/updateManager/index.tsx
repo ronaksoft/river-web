@@ -12,7 +12,7 @@ import {UpdateContainer, UpdateEnvelope} from '../../messages/chat.core.types_pb
 import {
     UpdateDialogPinned,
     UpdateDraftMessage, UpdateDraftMessageCleared, UpdateGroupParticipantAdd, UpdateGroupParticipantDeleted,
-    UpdateGroupPhoto,
+    UpdateGroupPhoto, UpdateLabelDeleted, UpdateLabelItemsAdded, UpdateLabelItemsRemoved, UpdateLabelSet,
     UpdateMessageEdited,
     UpdateMessageID,
     UpdateMessagesDeleted,
@@ -359,6 +359,18 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateGroupParticipantDeleted:
                 this.callHandlers(C_MSG.UpdateGroupParticipantDeleted, UpdateGroupParticipantDeleted.deserializeBinary(data).toObject());
+                break;
+            case C_MSG.UpdateLabelSet:
+                this.callHandlers(C_MSG.UpdateLabelSet, UpdateLabelSet.deserializeBinary(data).toObject());
+                break;
+            case C_MSG.UpdateLabelDeleted:
+                this.callHandlers(C_MSG.UpdateLabelDeleted, UpdateLabelDeleted.deserializeBinary(data).toObject());
+                break;
+            case C_MSG.UpdateLabelItemsAdded:
+                this.callHandlers(C_MSG.UpdateLabelItemsAdded, UpdateLabelItemsAdded.deserializeBinary(data).toObject());
+                break;
+            case C_MSG.UpdateLabelItemsRemoved:
+                this.callHandlers(C_MSG.UpdateLabelItemsRemoved, UpdateLabelItemsRemoved.deserializeBinary(data).toObject());
                 break;
             default:
                 break;

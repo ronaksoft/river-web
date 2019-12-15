@@ -10,16 +10,17 @@
 import {C_MSG} from '../const';
 import {AuthSentCode, AuthCheckedPhone, AuthAuthorization, AuthRecalled} from '../messages/chat.api.auth_pb';
 import {ContactsImported, ContactsMany} from '../messages/chat.api.contacts_pb';
-import {Bool, Error, MessageContainer} from '../messages/chat.core.types_pb';
+import {Bool, Error, LabelsMany, MessageContainer} from '../messages/chat.core.types_pb';
 import {MessagesDialogs, MessagesMany, MessagesSent} from '../messages/chat.api.messages_pb';
 import {Dialog, Group, GroupFull, PeerNotifySettings, User} from '../messages/chat.core.types_pb';
 import {
     UpdateDifference, UpdateNewMessage, UpdateReadHistoryInbox, UpdateReadHistoryOutbox, UpdateState, UpdateUserTyping,
 } from '../messages/chat.api.updates_pb';
-import {File, FileMany} from '../messages/chat.api.files_pb';
+import {File} from '../messages/chat.api.files_pb';
 import {AccountAuthorizations, AccountPrivacyRules} from '../messages/chat.api.accounts_pb';
 import {SystemInfo, SystemSalts, SystemServerTime} from '../messages/chat.api.system_pb';
 import {UsersMany} from '../messages/chat.api.users_pb';
+import {LabelItems} from "../messages/chat.api.labels_pb";
 
 export default class UniqueId {
     public static getMessage(constructor: number, data: Uint8Array): any {
@@ -62,8 +63,6 @@ export default class UniqueId {
                 return PeerNotifySettings.deserializeBinary(data);
             case C_MSG.File:
                 return File.deserializeBinary(data);
-            case C_MSG.FileMany:
-                return FileMany.deserializeBinary(data);
             case C_MSG.AccountAuthorizations:
                 return AccountAuthorizations.deserializeBinary(data);
             case C_MSG.SystemInfo:
@@ -78,6 +77,10 @@ export default class UniqueId {
                 return AccountPrivacyRules.deserializeBinary(data);
             case C_MSG.MessageContainer:
                 return MessageContainer.deserializeBinary(data);
+            case C_MSG.LabelsMany:
+                return LabelsMany.deserializeBinary(data);
+            case C_MSG.LabelItems:
+                return LabelItems.deserializeBinary(data);
             default:
                 return null;
         }
