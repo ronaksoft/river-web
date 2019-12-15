@@ -374,6 +374,11 @@ export class Dialog extends jspb.Message {
   getDraft(): DraftMessage | undefined;
   setDraft(value?: DraftMessage): void;
 
+  clearLabelidsList(): void;
+  getLabelidsList(): Array<number>;
+  setLabelidsList(value: Array<number>): void;
+  addLabelids(value: number, index?: number): number;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Dialog.AsObject;
   static toObject(includeInstance: boolean, msg: Dialog): Dialog.AsObject;
@@ -397,6 +402,7 @@ export namespace Dialog {
     mentionedcount?: number,
     pinned?: boolean,
     draft?: DraftMessage.AsObject,
+    labelidsList?: Array<number>,
   }
 }
 
@@ -913,6 +919,11 @@ export class UserMessage extends jspb.Message {
   getReplymarkupdata_asB64(): string;
   setReplymarkupdata(value: Uint8Array | string): void;
 
+  clearLabelidsList(): void;
+  getLabelidsList(): Array<number>;
+  setLabelidsList(value: Array<number>): void;
+  addLabelids(value: number, index?: number): number;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UserMessage.AsObject;
   static toObject(includeInstance: boolean, msg: UserMessage): UserMessage.AsObject;
@@ -941,12 +952,13 @@ export namespace UserMessage {
     inbox?: boolean,
     replyto?: number,
     messageaction?: number,
-    messageactiondata?: Uint8Array | string,
-    entitiesList?: Array<MessageEntity.AsObject>,
+    messageactiondata: Uint8Array | string,
+    entitiesList: Array<MessageEntity.AsObject>,
     mediatype?: MediaType,
     media?: Uint8Array | string,
     replymarkup?: number,
     replymarkupdata?: Uint8Array | string,
+    labelidsList?: Array<number>,
   }
 }
 
@@ -1485,6 +1497,62 @@ export namespace PrivacyRule {
   export type AsObject = {
     privacytype?: PrivacyType,
     useridsList: Array<string>,
+  }
+}
+
+export class Label extends jspb.Message {
+  hasId(): boolean;
+  clearId(): void;
+  getId(): number | undefined;
+  setId(value: number): void;
+
+  hasName(): boolean;
+  clearName(): void;
+  getName(): string | undefined;
+  setName(value: string): void;
+
+  hasColour(): boolean;
+  clearColour(): void;
+  getColour(): string | undefined;
+  setColour(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Label.AsObject;
+  static toObject(includeInstance: boolean, msg: Label): Label.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: Label, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Label;
+  static deserializeBinaryFromReader(message: Label, reader: jspb.BinaryReader): Label;
+}
+
+export namespace Label {
+  export type AsObject = {
+    id?: number,
+    name?: string,
+    colour?: string,
+  }
+}
+
+export class LabelsMany extends jspb.Message {
+  clearLabelsList(): void;
+  getLabelsList(): Array<Label>;
+  setLabelsList(value: Array<Label>): void;
+  addLabels(value?: Label, index?: number): Label;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): LabelsMany.AsObject;
+  static toObject(includeInstance: boolean, msg: LabelsMany): LabelsMany.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: LabelsMany, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): LabelsMany;
+  static deserializeBinaryFromReader(message: LabelsMany, reader: jspb.BinaryReader): LabelsMany;
+}
+
+export namespace LabelsMany {
+  export type AsObject = {
+    labelsList: Array<Label.AsObject>,
   }
 }
 

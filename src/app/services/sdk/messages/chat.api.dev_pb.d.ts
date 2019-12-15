@@ -59,11 +59,6 @@ export namespace TestRequest {
 }
 
 export class TestResponse extends jspb.Message {
-  hasLength(): boolean;
-  clearLength(): void;
-  getLength(): number | undefined;
-  setLength(value: number): void;
-
   hasHash(): boolean;
   clearHash(): void;
   getHash(): Uint8Array | string;
@@ -83,7 +78,58 @@ export class TestResponse extends jspb.Message {
 
 export namespace TestResponse {
   export type AsObject = {
-    length?: number,
+    hash: Uint8Array | string,
+  }
+}
+
+export class TestRequestWithString extends jspb.Message {
+  hasPayload(): boolean;
+  clearPayload(): void;
+  getPayload(): string | undefined;
+  setPayload(value: string): void;
+
+  hasHash(): boolean;
+  clearHash(): void;
+  getHash(): string | undefined;
+  setHash(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): TestRequestWithString.AsObject;
+  static toObject(includeInstance: boolean, msg: TestRequestWithString): TestRequestWithString.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: TestRequestWithString, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): TestRequestWithString;
+  static deserializeBinaryFromReader(message: TestRequestWithString, reader: jspb.BinaryReader): TestRequestWithString;
+}
+
+export namespace TestRequestWithString {
+  export type AsObject = {
+    payload?: string,
+    hash?: string,
+  }
+}
+
+export class TestResponseWithString extends jspb.Message {
+  hasHash(): boolean;
+  clearHash(): void;
+  getHash(): Uint8Array | string;
+  getHash_asU8(): Uint8Array;
+  getHash_asB64(): string;
+  setHash(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): TestResponseWithString.AsObject;
+  static toObject(includeInstance: boolean, msg: TestResponseWithString): TestResponseWithString.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: TestResponseWithString, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): TestResponseWithString;
+  static deserializeBinaryFromReader(message: TestResponseWithString, reader: jspb.BinaryReader): TestResponseWithString;
+}
+
+export namespace TestResponseWithString {
+  export type AsObject = {
     hash: Uint8Array | string,
   }
 }

@@ -90,6 +90,7 @@ message Dialog {
     optional int32 MentionedCount = 9;
     required bool Pinned = 10;
     optional DraftMessage Draft = 11;
+    repeated int32 LabelIDs = 12;
 }
 
 // Peer
@@ -169,6 +170,7 @@ message User {
     optional bool IsBot = 13;
 }
 
+// Bot
 message Bot {
     required int64 ID = 1 [jstype = JS_STRING];
     required string Name = 2;
@@ -220,6 +222,7 @@ message UserMessage {
     optional bytes Media = 20;
     optional int64 ReplyMarkup = 21;
     optional bytes ReplyMarkupData = 22;
+    repeated int32 LabelIDs = 23;
 }
 
 // DraftMessage
@@ -396,4 +399,16 @@ enum PrivacyType {
 message PrivacyRule {
     required PrivacyType PrivacyType = 1;
     repeated int64 UserIDs = 2 [jstype = JS_STRING];
+}
+
+// Label
+message Label {
+    required int32 ID = 1;
+    required string Name = 2;
+    required string Colour = 3;
+}
+
+// LabelsMany
+message LabelsMany {
+    repeated Label Labels = 1;
 }

@@ -81,28 +81,6 @@ export namespace FileGet {
   }
 }
 
-export class FileGetMany extends jspb.Message {
-  clearFilegetmanyList(): void;
-  getFilegetmanyList(): Array<FileGet>;
-  setFilegetmanyList(value: Array<FileGet>): void;
-  addFilegetmany(value?: FileGet, index?: number): FileGet;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): FileGetMany.AsObject;
-  static toObject(includeInstance: boolean, msg: FileGetMany): FileGetMany.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: FileGetMany, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): FileGetMany;
-  static deserializeBinaryFromReader(message: FileGetMany, reader: jspb.BinaryReader): FileGetMany;
-}
-
-export namespace FileGetMany {
-  export type AsObject = {
-    filegetmanyList: Array<FileGet.AsObject>,
-  }
-}
-
 export class File extends jspb.Message {
   hasType(): boolean;
   clearType(): void;
@@ -142,28 +120,6 @@ export namespace File {
     modifiedtime?: number,
     bytes: Uint8Array | string,
     md5hash?: string,
-  }
-}
-
-export class FileMany extends jspb.Message {
-  clearFilemanyList(): void;
-  getFilemanyList(): Array<File>;
-  setFilemanyList(value: Array<File>): void;
-  addFilemany(value?: File, index?: number): File;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): FileMany.AsObject;
-  static toObject(includeInstance: boolean, msg: FileMany): FileMany.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: FileMany, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): FileMany;
-  static deserializeBinaryFromReader(message: FileMany, reader: jspb.BinaryReader): FileMany;
-}
-
-export namespace FileMany {
-  export type AsObject = {
-    filemanyList: Array<File.AsObject>,
   }
 }
 

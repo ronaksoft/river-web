@@ -13,6 +13,14 @@ message TestRequest {
 }
 
 message TestResponse {
-    required int32 Length = 1;
     required bytes Hash = 2;
+}
+
+message TestRequestWithString {
+    required string Payload = 1;
+    required string Hash = 2;
+}
+
+message TestResponseWithString {
+    required bytes Hash = 1;
 }

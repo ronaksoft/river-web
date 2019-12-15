@@ -35,7 +35,7 @@ import {
     GroupFull,
     InputFile,
     InputPeer,
-    InputUser,
+    InputUser, LabelsMany,
     MessageEntity,
     PeerNotifySettings,
     PhoneContact, PrivacyKey, PrivacyRule,
@@ -85,6 +85,7 @@ import {
 import {UsersGet, UsersGetFull, UsersMany} from './messages/chat.api.users_pb';
 import {SystemGetInfo, SystemInfo, SystemGetSalts, SystemSalts} from './messages/chat.api.system_pb';
 import {parsePhoneNumberFromString} from 'libphonenumber-js';
+import {LabelsAddToMessage, LabelsCreate, LabelsDelete, LabelsEdit, LabelsGet} from "./messages/chat.api.labels_pb";
 
 export default class SDK {
     public static getInstance() {
@@ -656,6 +657,41 @@ export default class SDK {
         const data = new AccountSetLang();
         data.setLangcode(langCode);
         return this.server.send(C_MSG.AccountSetLang, data.serializeBinary(), true, {timeout: 3000});
+    }
+
+    public labelCreate(name: string, color: string,): Promise<Bool.AsObject> {
+        const data = new LabelsCreate();
+        data.setName(name);
+        data.setColour(color);
+        return this.server.send(C_MSG.LabelsCreate, data.serializeBinary(), true);
+    }
+
+    public labelEdit(id: number, name: string, color: string): Promise<Bool.AsObject> {
+        const data = new LabelsEdit();
+        data.setLabelid(id);
+        data.setName(name);
+        data.setColour(color);
+        return this.server.send(C_MSG.LabelsEdit, data.serializeBinary(), true);
+    }
+
+    public labelDelete(ids: number[]): Promise<Bool.AsObject> {
+        const data = new LabelsDelete();
+        data.setLabelidsList(ids);
+        return this.server.send(C_MSG.LabelsDelete, data.serializeBinary(), true);
+    }
+
+    public labelGet(): Promise<LabelsMany.AsObject> {
+        const data = new LabelsGet();
+        return this.server.send(C_MSG.LabelsGet, data.serializeBinary(), true);
+    }
+
+    public labelAddToMessage(peer: InputPeer, msgIds: number[], labelIds: number[]): Promise<LabelsMany.AsObject> {
+        const data = new LabelsAddToMessage();
+        data.setPeerid(peer.getId() || '');
+        data.setPeertype(peer.getType() || 0);
+        data.setLabelidsList()
+        data.set
+        return this.server.send(C_MSG.LabelsGet, data.serializeBinary(), true);
     }
 
     public getServerSalts(): Promise<SystemSalts.AsObject> {

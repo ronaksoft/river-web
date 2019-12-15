@@ -1101,7 +1101,7 @@ export namespace UpdateAccountPrivacy {
   }
 }
 
-export class UpdateLabelAdded extends jspb.Message {
+export class UpdateLabelItemsAdded extends jspb.Message {
   hasUcount(): boolean;
   clearUcount(): void;
   getUcount(): number | undefined;
@@ -1133,16 +1133,16 @@ export class UpdateLabelAdded extends jspb.Message {
   addLabelids(value: number, index?: number): number;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): UpdateLabelAdded.AsObject;
-  static toObject(includeInstance: boolean, msg: UpdateLabelAdded): UpdateLabelAdded.AsObject;
+  toObject(includeInstance?: boolean): UpdateLabelItemsAdded.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateLabelItemsAdded): UpdateLabelItemsAdded.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: UpdateLabelAdded, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): UpdateLabelAdded;
-  static deserializeBinaryFromReader(message: UpdateLabelAdded, reader: jspb.BinaryReader): UpdateLabelAdded;
+  static serializeBinaryToWriter(message: UpdateLabelItemsAdded, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateLabelItemsAdded;
+  static deserializeBinaryFromReader(message: UpdateLabelItemsAdded, reader: jspb.BinaryReader): UpdateLabelItemsAdded;
 }
 
-export namespace UpdateLabelAdded {
+export namespace UpdateLabelItemsAdded {
   export type AsObject = {
     ucount?: number,
     updateid?: number,
@@ -1153,7 +1153,7 @@ export namespace UpdateLabelAdded {
   }
 }
 
-export class UpdateLabelRemoved extends jspb.Message {
+export class UpdateLabelItemsRemoved extends jspb.Message {
   hasUcount(): boolean;
   clearUcount(): void;
   getUcount(): number | undefined;
@@ -1185,22 +1185,90 @@ export class UpdateLabelRemoved extends jspb.Message {
   addLabelids(value: number, index?: number): number;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): UpdateLabelRemoved.AsObject;
-  static toObject(includeInstance: boolean, msg: UpdateLabelRemoved): UpdateLabelRemoved.AsObject;
+  toObject(includeInstance?: boolean): UpdateLabelItemsRemoved.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateLabelItemsRemoved): UpdateLabelItemsRemoved.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: UpdateLabelRemoved, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): UpdateLabelRemoved;
-  static deserializeBinaryFromReader(message: UpdateLabelRemoved, reader: jspb.BinaryReader): UpdateLabelRemoved;
+  static serializeBinaryToWriter(message: UpdateLabelItemsRemoved, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateLabelItemsRemoved;
+  static deserializeBinaryFromReader(message: UpdateLabelItemsRemoved, reader: jspb.BinaryReader): UpdateLabelItemsRemoved;
 }
 
-export namespace UpdateLabelRemoved {
+export namespace UpdateLabelItemsRemoved {
   export type AsObject = {
     ucount?: number,
     updateid?: number,
     peertype?: number,
     peerid?: number,
     messageidsList: Array<number>,
+    labelidsList: Array<number>,
+  }
+}
+
+export class UpdateLabelSet extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  clearLabelsList(): void;
+  getLabelsList(): Array<chat_core_types_pb.Label>;
+  setLabelsList(value: Array<chat_core_types_pb.Label>): void;
+  addLabels(value?: chat_core_types_pb.Label, index?: number): chat_core_types_pb.Label;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateLabelSet.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateLabelSet): UpdateLabelSet.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateLabelSet, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateLabelSet;
+  static deserializeBinaryFromReader(message: UpdateLabelSet, reader: jspb.BinaryReader): UpdateLabelSet;
+}
+
+export namespace UpdateLabelSet {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+    labelsList: Array<chat_core_types_pb.Label.AsObject>,
+  }
+}
+
+export class UpdateLabelDeleted extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  clearLabelidsList(): void;
+  getLabelidsList(): Array<number>;
+  setLabelidsList(value: Array<number>): void;
+  addLabelids(value: number, index?: number): number;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateLabelDeleted.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateLabelDeleted): UpdateLabelDeleted.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateLabelDeleted, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateLabelDeleted;
+  static deserializeBinaryFromReader(message: UpdateLabelDeleted, reader: jspb.BinaryReader): UpdateLabelDeleted;
+}
+
+export namespace UpdateLabelDeleted {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
     labelidsList: Array<number>,
   }
 }

@@ -21,20 +21,12 @@ message FileGet {
     required int32 Limit =3;
 }
 
-// FileGetMany
-message FileGetMany {
-    repeated FileGet FileGetMany = 1;
-}
-
 // File
 message File {
     required FileType Type = 1;
     required int64 ModifiedTime = 2;
     required bytes Bytes = 4;
     optional string MD5Hash = 5;
-}
-message FileMany {
-    repeated File FileMany = 1;
 }
 
 // FileType

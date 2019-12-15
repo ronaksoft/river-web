@@ -227,8 +227,8 @@ message UpdateAccountPrivacy {
     repeated PrivacyRule Call = 6;
 }
 
-// UpdateLabelAdded
-message UpdateLabelAdded {
+// UpdateLabelItemAdded
+message UpdateLabelItemsAdded {
     required int32 UCount = 100;
     required int64 UpdateID = 101;
     required int32 PeerType = 1;
@@ -237,12 +237,26 @@ message UpdateLabelAdded {
     repeated int32 LabelIDs = 4;
 }
 
-// UpdateLabelRemoved
-message UpdateLabelRemoved {
+// UpdateLabelItemsRemoved
+message UpdateLabelItemsRemoved {
     required int32 UCount = 100;
     required int64 UpdateID = 101;
     required int32 PeerType = 1;
     required int64 PeerID = 2;
     repeated int64 MessageIDs = 3;
     repeated int32 LabelIDs = 4;
+}
+
+// UpdateLabelSet
+message UpdateLabelSet {
+    required int32 UCount = 100;
+    required int64 UpdateID = 101;
+    repeated Label Labels = 1;
+}
+
+// UpdateLabelDeleted
+message UpdateLabelDeleted {
+    required int32 UCount = 100;
+    required int64 UpdateID = 101;
+    repeated int32 LabelIDs = 1;
 }

@@ -1,12 +1,22 @@
 syntax = "proto2";
 package msg;
+import "chat.core.types.proto";
 
-// LabelsSet
+// LabelsCreate
+// @Function
+// @Returns Bool
+message LabelsCreate {
+    required string Name = 2;
+    required string Colour = 3;
+}
+
+// LabelsEdit
 // @Function
 // @Returns: Bool
-message LabelsSet {
+message LabelsEdit {
     required int32 LabelID = 1;
     required string Name = 2;
+    required string Colour = 3;
 }
 
 // LabelsDelete
@@ -27,7 +37,7 @@ message LabelsGet {
 // @Returns: Dialog
 message LabelsAddToDialog {
     required int32 PeerType = 1;
-    required int64 PeerID = 2;
+    required int64 PeerID = 2 [jstype = JS_STRING];
     repeated int32 LabelIDs = 3;
 }
 
@@ -36,7 +46,7 @@ message LabelsAddToDialog {
 // @Returns: Dialog
 message LabelsRemoveFromDialog {
     required int32 PeerType = 1;
-    required int64 PeerID = 2;
+    required int64 PeerID = 2 [jstype = JS_STRING];
     repeated int32 LabelIDs = 3;
 }
 
@@ -45,7 +55,7 @@ message LabelsRemoveFromDialog {
 // @Returns: Bool
 message LabelsAddToMessage {
     required int32 PeerType = 1;
-    required int64 PeerID = 2;
+    required int64 PeerID = 2 [jstype = JS_STRING];
     repeated int32 LabelIDs = 3;
     repeated int64 MessageIDs = 4;
 }
@@ -55,18 +65,24 @@ message LabelsAddToMessage {
 // @Returns: Bool
 message LabelsRemoveFromMessage {
     required int32 PeerType = 1;
-    required int64 PeerID = 2;
+    required int64 PeerID = 2 [jstype = JS_STRING];
     repeated int32 LabelIDs = 3;
     repeated int64 MessageIDs = 4;
 }
 
-// Label
-message Label {
-    required int32 ID = 1;
-    required string Name = 2;
+// LabelsListItems
+// @Function
+// @Returns: LabelItems
+message LabelsListItems {
+    required int32 LabelID = 1;
+    optional int64 MinID = 2;
+    optional int64 MaxID = 3;
+    optional int32 Limit = 4;
 }
 
-// LabelsMany
-message LabelsMany {
-    repeated Label Labels = 1;
+// LabelItems
+message LabelItems {
+    required int32 LabelID = 1;
+    repeated UserMessage Messages = 2;
+    repeated Dialog Dialogs = 3;
 }

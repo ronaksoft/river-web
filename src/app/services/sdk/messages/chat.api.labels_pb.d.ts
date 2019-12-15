@@ -3,8 +3,37 @@
 // file: chat.api.labels.proto
 
 import * as jspb from "google-protobuf";
+import * as chat_core_types_pb from "./chat.core.types_pb";
 
-export class LabelsSet extends jspb.Message {
+export class LabelsCreate extends jspb.Message {
+  hasName(): boolean;
+  clearName(): void;
+  getName(): string | undefined;
+  setName(value: string): void;
+
+  hasColour(): boolean;
+  clearColour(): void;
+  getColour(): string | undefined;
+  setColour(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): LabelsCreate.AsObject;
+  static toObject(includeInstance: boolean, msg: LabelsCreate): LabelsCreate.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: LabelsCreate, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): LabelsCreate;
+  static deserializeBinaryFromReader(message: LabelsCreate, reader: jspb.BinaryReader): LabelsCreate;
+}
+
+export namespace LabelsCreate {
+  export type AsObject = {
+    name?: string,
+    colour?: string,
+  }
+}
+
+export class LabelsEdit extends jspb.Message {
   hasLabelid(): boolean;
   clearLabelid(): void;
   getLabelid(): number | undefined;
@@ -15,20 +44,26 @@ export class LabelsSet extends jspb.Message {
   getName(): string | undefined;
   setName(value: string): void;
 
+  hasColour(): boolean;
+  clearColour(): void;
+  getColour(): string | undefined;
+  setColour(value: string): void;
+
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): LabelsSet.AsObject;
-  static toObject(includeInstance: boolean, msg: LabelsSet): LabelsSet.AsObject;
+  toObject(includeInstance?: boolean): LabelsEdit.AsObject;
+  static toObject(includeInstance: boolean, msg: LabelsEdit): LabelsEdit.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: LabelsSet, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): LabelsSet;
-  static deserializeBinaryFromReader(message: LabelsSet, reader: jspb.BinaryReader): LabelsSet;
+  static serializeBinaryToWriter(message: LabelsEdit, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): LabelsEdit;
+  static deserializeBinaryFromReader(message: LabelsEdit, reader: jspb.BinaryReader): LabelsEdit;
 }
 
-export namespace LabelsSet {
+export namespace LabelsEdit {
   export type AsObject = {
     labelid?: number,
     name?: string,
+    colour?: string,
   }
 }
 
@@ -78,8 +113,8 @@ export class LabelsAddToDialog extends jspb.Message {
 
   hasPeerid(): boolean;
   clearPeerid(): void;
-  getPeerid(): number | undefined;
-  setPeerid(value: number): void;
+  getPeerid(): string | undefined;
+  setPeerid(value: string): void;
 
   clearLabelidsList(): void;
   getLabelidsList(): Array<number>;
@@ -99,7 +134,7 @@ export class LabelsAddToDialog extends jspb.Message {
 export namespace LabelsAddToDialog {
   export type AsObject = {
     peertype?: number,
-    peerid?: number,
+    peerid?: string,
     labelidsList: Array<number>,
   }
 }
@@ -112,8 +147,8 @@ export class LabelsRemoveFromDialog extends jspb.Message {
 
   hasPeerid(): boolean;
   clearPeerid(): void;
-  getPeerid(): number | undefined;
-  setPeerid(value: number): void;
+  getPeerid(): string | undefined;
+  setPeerid(value: string): void;
 
   clearLabelidsList(): void;
   getLabelidsList(): Array<number>;
@@ -133,7 +168,7 @@ export class LabelsRemoveFromDialog extends jspb.Message {
 export namespace LabelsRemoveFromDialog {
   export type AsObject = {
     peertype?: number,
-    peerid?: number,
+    peerid?: string,
     labelidsList: Array<number>,
   }
 }
@@ -146,8 +181,8 @@ export class LabelsAddToMessage extends jspb.Message {
 
   hasPeerid(): boolean;
   clearPeerid(): void;
-  getPeerid(): number | undefined;
-  setPeerid(value: number): void;
+  getPeerid(): string | undefined;
+  setPeerid(value: string): void;
 
   clearLabelidsList(): void;
   getLabelidsList(): Array<number>;
@@ -172,7 +207,7 @@ export class LabelsAddToMessage extends jspb.Message {
 export namespace LabelsAddToMessage {
   export type AsObject = {
     peertype?: number,
-    peerid?: number,
+    peerid?: string,
     labelidsList: Array<number>,
     messageidsList: Array<number>,
   }
@@ -186,8 +221,8 @@ export class LabelsRemoveFromMessage extends jspb.Message {
 
   hasPeerid(): boolean;
   clearPeerid(): void;
-  getPeerid(): number | undefined;
-  setPeerid(value: number): void;
+  getPeerid(): string | undefined;
+  setPeerid(value: string): void;
 
   clearLabelidsList(): void;
   getLabelidsList(): Array<number>;
@@ -212,59 +247,83 @@ export class LabelsRemoveFromMessage extends jspb.Message {
 export namespace LabelsRemoveFromMessage {
   export type AsObject = {
     peertype?: number,
-    peerid?: number,
+    peerid?: string,
     labelidsList: Array<number>,
     messageidsList: Array<number>,
   }
 }
 
-export class Label extends jspb.Message {
-  hasId(): boolean;
-  clearId(): void;
-  getId(): number | undefined;
-  setId(value: number): void;
+export class LabelsListItems extends jspb.Message {
+  hasLabelid(): boolean;
+  clearLabelid(): void;
+  getLabelid(): number | undefined;
+  setLabelid(value: number): void;
 
-  hasName(): boolean;
-  clearName(): void;
-  getName(): string | undefined;
-  setName(value: string): void;
+  hasMinid(): boolean;
+  clearMinid(): void;
+  getMinid(): number | undefined;
+  setMinid(value: number): void;
+
+  hasMaxid(): boolean;
+  clearMaxid(): void;
+  getMaxid(): number | undefined;
+  setMaxid(value: number): void;
+
+  hasLimit(): boolean;
+  clearLimit(): void;
+  getLimit(): number | undefined;
+  setLimit(value: number): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): Label.AsObject;
-  static toObject(includeInstance: boolean, msg: Label): Label.AsObject;
+  toObject(includeInstance?: boolean): LabelsListItems.AsObject;
+  static toObject(includeInstance: boolean, msg: LabelsListItems): LabelsListItems.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: Label, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): Label;
-  static deserializeBinaryFromReader(message: Label, reader: jspb.BinaryReader): Label;
+  static serializeBinaryToWriter(message: LabelsListItems, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): LabelsListItems;
+  static deserializeBinaryFromReader(message: LabelsListItems, reader: jspb.BinaryReader): LabelsListItems;
 }
 
-export namespace Label {
+export namespace LabelsListItems {
   export type AsObject = {
-    id?: number,
-    name?: string,
+    labelid?: number,
+    minid?: number,
+    maxid?: number,
+    limit?: number,
   }
 }
 
-export class LabelsMany extends jspb.Message {
-  clearLabelsList(): void;
-  getLabelsList(): Array<Label>;
-  setLabelsList(value: Array<Label>): void;
-  addLabels(value?: Label, index?: number): Label;
+export class LabelItems extends jspb.Message {
+  hasLabelid(): boolean;
+  clearLabelid(): void;
+  getLabelid(): number | undefined;
+  setLabelid(value: number): void;
+
+  clearMessagesList(): void;
+  getMessagesList(): Array<chat_core_types_pb.UserMessage>;
+  setMessagesList(value: Array<chat_core_types_pb.UserMessage>): void;
+  addMessages(value?: chat_core_types_pb.UserMessage, index?: number): chat_core_types_pb.UserMessage;
+
+  clearDialogsList(): void;
+  getDialogsList(): Array<chat_core_types_pb.Dialog>;
+  setDialogsList(value: Array<chat_core_types_pb.Dialog>): void;
+  addDialogs(value?: chat_core_types_pb.Dialog, index?: number): chat_core_types_pb.Dialog;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): LabelsMany.AsObject;
-  static toObject(includeInstance: boolean, msg: LabelsMany): LabelsMany.AsObject;
+  toObject(includeInstance?: boolean): LabelItems.AsObject;
+  static toObject(includeInstance: boolean, msg: LabelItems): LabelItems.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: LabelsMany, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): LabelsMany;
-  static deserializeBinaryFromReader(message: LabelsMany, reader: jspb.BinaryReader): LabelsMany;
+  static serializeBinaryToWriter(message: LabelItems, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): LabelItems;
+  static deserializeBinaryFromReader(message: LabelItems, reader: jspb.BinaryReader): LabelItems;
 }
 
-export namespace LabelsMany {
+export namespace LabelItems {
   export type AsObject = {
-    labelsList: Array<Label.AsObject>,
+    labelid?: number,
+    messagesList: Array<chat_core_types_pb.UserMessage.AsObject>,
+    dialogsList: Array<chat_core_types_pb.Dialog.AsObject>,
   }
 }
 

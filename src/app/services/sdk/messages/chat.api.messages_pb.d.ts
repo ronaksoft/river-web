@@ -63,6 +63,11 @@ export class MessagesBroadcast extends jspb.Message {
   getBody(): string | undefined;
   setBody(value: string): void;
 
+  clearReceiveridsList(): void;
+  getReceiveridsList(): Array<number>;
+  setReceiveridsList(value: Array<number>): void;
+  addReceiverids(value: number, index?: number): number;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesBroadcast.AsObject;
   static toObject(includeInstance: boolean, msg: MessagesBroadcast): MessagesBroadcast.AsObject;
@@ -76,28 +81,7 @@ export class MessagesBroadcast extends jspb.Message {
 export namespace MessagesBroadcast {
   export type AsObject = {
     body?: string,
-  }
-}
-
-export class MessagesBroadcastProgress extends jspb.Message {
-  hasPercentage(): boolean;
-  clearPercentage(): void;
-  getPercentage(): number | undefined;
-  setPercentage(value: number): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): MessagesBroadcastProgress.AsObject;
-  static toObject(includeInstance: boolean, msg: MessagesBroadcastProgress): MessagesBroadcastProgress.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: MessagesBroadcastProgress, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): MessagesBroadcastProgress;
-  static deserializeBinaryFromReader(message: MessagesBroadcastProgress, reader: jspb.BinaryReader): MessagesBroadcastProgress;
-}
-
-export namespace MessagesBroadcastProgress {
-  export type AsObject = {
-    percentage?: number,
+    receiveridsList: Array<number>,
   }
 }
 
