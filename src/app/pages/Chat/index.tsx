@@ -25,6 +25,8 @@ import {
     intersectionBy,
     throttle,
     trimStart,
+    difference,
+    uniq,
 } from 'lodash';
 import SDK from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
@@ -140,6 +142,7 @@ import {scrollFunc} from "../../services/kkwindow/utils";
 import Landscape from "../../components/SVG";
 import {isMobile} from "../../services/utilities/localize";
 import LabelRepo from "../../repository/label";
+import LabelDialog from "../../components/LabelDialog";
 
 import './style.scss';
 
@@ -212,6 +215,7 @@ class Chat extends React.Component<IProps, IState> {
     private searchMessageRef: SearchMessage | undefined;
     private downloadManager: DownloadManager;
     private aboutDialogRef: AboutDialog | undefined;
+    private labelDialogRef: LabelDialog | undefined;
     private dialogMap: { [key: string]: number } = {};
     private dialogs: IDialog[] = [];
     private isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } } = {};
@@ -726,6 +730,7 @@ class Chat extends React.Component<IProps, IState> {
                 <DocumentViewer key="document-viewer" onAction={this.messageAttachmentActionHandler}
                                 onJumpOnMessage={this.documentViewerJumpOnMessageHandler}/>
                 <AboutDialog key="about-dialog" ref={this.aboutDialogRefHandler}/>
+                <LabelDialog key="label-dialog" ref={this.labelDialogRefHandler} onDone={this.labelDialogDoneHandler}/>
             </div>
         );
     }
@@ -1392,9 +1397,6 @@ class Chat extends React.Component<IProps, IState> {
         // if (this.isLoading) {
         //     return;
         // }
-        if (!this.messageRef) {
-            return;
-        }
 
         this.newMessageFlag = false;
 
@@ -1451,7 +1453,9 @@ class Chat extends React.Component<IProps, IState> {
             }
         };
 
-        this.messageRef.clearAll();
+        if (this.messageRef) {
+            this.messageRef.clearAll();
+        }
         this.messageRepo.getMany({peer, limit: 40, before, ignoreMax: true}, (data) => {
             // Checks peerid on transition
             if (this.selectedDialogId !== dialogId || !this.messageRef) {
@@ -1505,12 +1509,11 @@ class Chat extends React.Component<IProps, IState> {
                 return;
             }
 
-            if (!this.messageRef) {
-                return;
+            if (this.messageRef) {
+                this.messageRef.setMessages(dataMsg.msgs, () => {
+                    deferFn();
+                });
             }
-            this.messageRef.setMessages(dataMsg.msgs, () => {
-                deferFn();
-            });
         }).catch(() => {
             this.setChatView(true);
             clearTimeout(this.mobileBackTimeout);
@@ -2920,6 +2923,11 @@ class Chat extends React.Component<IProps, IState> {
             case 'copy':
             case 'copy_all':
                 break;
+            case 'labels':
+                if (this.labelDialogRef) {
+                    this.labelDialogRef.openDialog([message.id || 0], [message.labelidsList || []]);
+                }
+                break;
             default:
                 window.console.debug(cmd, message);
                 break;
@@ -3349,6 +3357,11 @@ class Chat extends React.Component<IProps, IState> {
     /* AboutDialog ref handler */
     private aboutDialogRefHandler = (ref: any) => {
         this.aboutDialogRef = ref;
+    }
+
+    /* LabelDialog ref handler */
+    private labelDialogRefHandler = (ref: any) => {
+        this.labelDialogRef = ref;
     }
 
     /* Context menu handler */
@@ -4440,7 +4453,21 @@ class Chat extends React.Component<IProps, IState> {
                 id: msgId,
             });
         });
-        this.messageRepo.lazyUpsert([]);
+        this.messageRepo.lazyUpsert(messageList);
+        if (data.peer.id === this.selectedDialogId) {
+            data.messageidsList.forEach((id) => {
+                const index = findLastIndex(this.messages, {id});
+                if (index > -1) {
+                    this.messages[index].labelidsList = uniq([...(this.messages[index].labelidsList || []), ...data.labelidsList]);
+                    if (this.messageRef) {
+                        this.messageRef.clear(index);
+                    }
+                }
+            });
+            if (this.messageRef) {
+                this.messageRef.updateList();
+            }
+        }
     }
 
     /* Update label items removed */
@@ -4452,7 +4479,21 @@ class Chat extends React.Component<IProps, IState> {
                 removed_labels: data.labelidsList,
             });
         });
-        this.messageRepo.lazyUpsert([]);
+        this.messageRepo.lazyUpsert(messageList);
+        if (data.peer.id === this.selectedDialogId) {
+            data.messageidsList.forEach((id) => {
+                const index = findLastIndex(this.messages, {id});
+                if (index > -1) {
+                    this.messages[index].labelidsList = difference(this.messages[index].labelidsList || [], data.labelidsList);
+                    if (this.messageRef) {
+                        this.messageRef.clear(index);
+                    }
+                }
+            });
+            if (this.messageRef) {
+                this.messageRef.updateList();
+            }
+        }
     }
 
     private pinDialog(peerId: string, pinned?: boolean) {
@@ -4732,6 +4773,39 @@ class Chat extends React.Component<IProps, IState> {
     /* Document jump on message handler */
     private documentViewerJumpOnMessageHandler = (id: number) => {
         this.messageJumpToMessageHandler(id);
+    }
+
+    /* LabelDialog done handler */
+    private labelDialogDoneHandler = (ids: number[], addIds: number[], removeIds: number[]) => {
+        if (!this.peer) {
+            return;
+        }
+        const promises: any[] = [];
+        if (addIds.length > 0) {
+            promises.push(this.sdk.labelAddToMessage(this.peer, addIds, ids));
+        }
+        if (removeIds.length > 0) {
+            promises.push(this.sdk.labelRemoveFromMessage(this.peer, removeIds, ids));
+        }
+        Promise.all(promises).then((res) => {
+            ids.forEach((id) => {
+                const index = findLastIndex(this.messages, {id});
+                if (index > -1) {
+                    if (addIds.length > 0) {
+                        this.messages[index].labelidsList = uniq([...(this.messages[index].labelidsList || []), ...addIds]);
+                    }
+                    if (removeIds.length > 0) {
+                        this.messages[index].labelidsList = difference(this.messages[index].labelidsList || [], removeIds);
+                    }
+                    if (this.messageRef) {
+                        this.messageRef.clear(index);
+                    }
+                }
+            });
+            if (this.messageRef) {
+                this.messageRef.updateList();
+            }
+        });
     }
 }
 

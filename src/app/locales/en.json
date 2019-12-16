@@ -331,6 +331,7 @@
     "label_counts": "{0} items",
     "no_label": "No Label",
     "label_placeholder": "Create a new Label!",
-    "no_result": "No Result!"
+    "no_result": "No Result!",
+    "label_list": "Label List"
   }
 }

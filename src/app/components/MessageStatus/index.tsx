@@ -9,13 +9,14 @@
 
 import * as React from 'react';
 import TimeUtility from '../../services/utilities/time';
-import {DoneRounded, DoneAllRounded, ScheduleRounded} from '@material-ui/icons';
+import {DoneRounded, DoneAllRounded, ScheduleRounded, LabelRounded} from '@material-ui/icons';
 
 import './style.scss';
 
 interface IProps {
     editedTime: number;
     id?: number;
+    labelIds?: number[];
     onDoubleClick?: (e: any) => void;
     readId?: number;
     status: boolean;
@@ -25,18 +26,30 @@ interface IProps {
 interface IState {
     editedTime: number;
     id: number;
+    labelIds: number[];
     readId: number;
     status: boolean;
     time: number;
 }
 
 class MessageStatus extends React.Component<IProps, IState> {
+    public static getDerivedStateFromProps(newProps: IProps, state: IState) {
+        return {
+            editedTime: newProps.editedTime || 0,
+            id: newProps.id || 0,
+            labelIds: newProps.labelIds || [],
+            readId: newProps.readId || 0,
+            status: newProps.status,
+        };
+    }
+
     constructor(props: IProps) {
         super(props);
 
         this.state = {
             editedTime: props.editedTime,
             id: props.id || 0,
+            labelIds: props.labelIds || [],
             readId: props.readId || 0,
             status: props.status,
             time: props.time,
@@ -46,15 +59,6 @@ class MessageStatus extends React.Component<IProps, IState> {
     // public componentDidMount() {
     // }
 
-    public componentWillReceiveProps(newProps: IProps) {
-        this.setState({
-            editedTime: newProps.editedTime || 0,
-            id: newProps.id || 0,
-            readId: newProps.readId || 0,
-            status: newProps.status,
-        });
-    }
-
     public render() {
         const {id, readId, status, time, editedTime} = this.state;
 
@@ -63,6 +67,7 @@ class MessageStatus extends React.Component<IProps, IState> {
                 {editedTime > 0 && <span className="edited">edited</span>}
                 <span className="time">{TimeUtility.TimeParse(time)}</span>
                 {this.getStatus(id, readId, status)}
+                {this.getLabels()}
             </div>
         );
     }
@@ -81,6 +86,17 @@ class MessageStatus extends React.Component<IProps, IState> {
         } else {
             return '';
         }
+    }
+
+    private getLabels() {
+        const {labelIds} = this.state;
+        return (
+            <div className="message-label">
+                {labelIds.slice(0, 2).map((id, key) => {
+                    return (<LabelRounded key={id} className={`label-${key}`}/>);
+                })}
+            </div>
+        );
     }
 
     private onDoubleClickHandler = (e: any) => {

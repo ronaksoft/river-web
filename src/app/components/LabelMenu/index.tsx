@@ -225,8 +225,14 @@ class LabelMenu extends React.Component<IProps, IState> {
     private searchChangeHandler = (e: any) => {
         this.setState({
             search: e.currentTarget.value,
+        }, () => {
+            if (this.state.search.length === 0) {
+                this.searchThrottle.cancel();
+                this.searchIt();
+            } else {
+                this.searchThrottle();
+            }
         });
-        this.searchThrottle();
     }
 
     private changeLabelColorHandler = (c: string) => (e?: any) => {
@@ -302,6 +308,9 @@ class LabelMenu extends React.Component<IProps, IState> {
     private searchLabels(keyword?: string) {
         if (this.state.loading) {
             return;
+        }
+        if (keyword && keyword.length === 0) {
+            keyword = undefined;
         }
         this.setState({
             loading: true,

@@ -1,0 +1,119 @@
+/*
+    Creation Time: 2019 - Dec - 16
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2019
+*/
+
+.label-dialog {
+  width: 300px;
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+
+  .label-search {
+    padding: 6px;
+  }
+
+  .label-container {
+    flex: 1;
+    line-height: 1.2em;
+
+    &.label-placeholder {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+      font-size: 30px;
+      font-weight: 100;
+      color: var(--grey);
+
+      svg {
+        margin: 0 0 32px;
+        color: inherit;
+        font-size: 75px;
+      }
+    }
+
+    .label-item {
+      display: flex;
+      height: 56px;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 6px;
+
+      .label-icon {
+        display: flex;
+        border-radius: 50%;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        margin: 0 12px 0 0;
+
+        svg {
+          font-size: 28px;
+          color: var(--white);
+        }
+      }
+
+      .label-action {
+        width: 52px;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .label-info {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-evenly;
+        flex-direction: column;
+        flex: 1;
+        height: 100%;
+
+        .label-name {
+          font-size: 14px;
+          color: var(--dark);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .label-counter {
+          font-size: 14px;
+          color: #A1A1A1;
+        }
+      }
+    }
+  }
+}
+
+html[theme="dark"],
+html[theme="dark-night"],
+html[theme="dark-blue"] {
+  .label-dialog {
+    .checkbox {
+      &:not(.checked) {
+        color: var(--white);
+      }
+    }
+
+    .label-container {
+      .label-item {
+        .label-info {
+          .label-name {
+            color: var(--white);
+          }
+        }
+      }
+    }
+
+    .label-search {
+      label, input, svg {
+        color: var(--white);
+      }
+    }
+  }
+}

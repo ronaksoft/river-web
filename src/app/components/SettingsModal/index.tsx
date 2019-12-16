@@ -23,6 +23,7 @@ interface IProps {
     icon?: any;
     noScrollbar?: boolean;
     onClose?: () => void;
+    onDone?: () => void;
     open: boolean;
     title: any;
 }
@@ -33,7 +34,6 @@ interface IState {
 }
 
 class SettingsModal extends React.Component<IProps, IState> {
-
     constructor(props: IProps) {
         super(props);
 
@@ -60,7 +60,7 @@ class SettingsModal extends React.Component<IProps, IState> {
             >
                 <React.Fragment>
                     <div className="settings-modal-header">
-                        <div className="modal-icon">
+                        <div className="modal-icon" onClick={this.props.onDone}>
                             {icon || <AppsRounded/>}
                         </div>
                         <div className="modal-title">{title}</div>

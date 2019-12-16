@@ -79,7 +79,7 @@ const C_TRY_SCROLL_TOP = 20;
 class KKWindow extends React.Component<IProps, IState> {
     public static getDerivedStateFromProps(props: IProps, state: IState) {
         if (props.count === state.items.length) {
-            return;
+            return null;
         }
         return {
             items: range(props.count),

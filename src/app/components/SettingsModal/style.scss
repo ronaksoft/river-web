@@ -24,6 +24,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: row-reverse;
     border-bottom: 1px solid #E0E0E0;
 
     .modal-icon,
@@ -32,6 +33,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      cursor: pointer;
 
       svg {
         font-size: 20px;

@@ -153,6 +153,13 @@ export default class DialogRepo {
             this.loadConnInfo();
         }
         return this.sdk.getDialogs(skip || 0, limit || 30).then((remoteRes) => {
+            // cloneDeep(remoteRes.dialogsList).forEach((d)=> {
+            //     if (d.peertype === PeerType.PEERGROUP) {
+            //         window.console.log('group', remoteRes.groupsList.find(o=> o.id === d.peerid));
+            //     } else if (d.peertype === PeerType.PEERUSER) {
+            //         window.console.log('user', remoteRes.usersList.find(o=> o.id === d.peerid));
+            //     }
+            // });
             remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userId);
             this.messageRepo.importBulk(remoteRes.messagesList);
             const messageMap: { [key: number]: IMessage } = {};

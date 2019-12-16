@@ -326,6 +326,7 @@
     "label_count": "{0} آیتم",
     "label_counts": "{0} آیتم",
     "label_placeholder": "یک چسب بسازید",
-    "no_result": "نتیجه‌ای یافت نشد!"
+    "no_result": "نتیجه‌ای یافت نشد!",
+    "label_list": "لیست برچسب‌ها"
   }
 }
