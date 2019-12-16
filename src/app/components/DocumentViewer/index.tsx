@@ -219,7 +219,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                                         <Loading/>
                                     </div>}
                                     <div className="photo">
-                                        <CachedPhoto fileLocation={item.fileLocation}/>
+                                        <CachedPhoto key="avatar-photo" fileLocation={item.fileLocation}/>
                                     </div>
                                 </React.Fragment>
                             );
@@ -235,7 +235,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                                     <Loading/>
                                 </div>}
                                 <div className="photo" key={picture.photoid}>
-                                    <CachedPhoto fileLocation={picture.photobig}/>
+                                    <CachedPhoto key="avatar-photo" fileLocation={picture.photobig}/>
                                 </div>
                             </div>
                         );
@@ -1025,7 +1025,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
             return '';
         }
         const totalWith = galleryList.length * 54;
-        let maxWidth = totalWith;
+        let maxWidth = totalWith + 6;
         if (maxWidth > window.innerWidth) {
             maxWidth = window.innerWidth;
         }

@@ -1392,6 +1392,9 @@ class Chat extends React.Component<IProps, IState> {
         // if (this.isLoading) {
         //     return;
         // }
+        if (!this.messageRef) {
+            return;
+        }
 
         this.newMessageFlag = false;
 
@@ -1406,13 +1409,6 @@ class Chat extends React.Component<IProps, IState> {
         if (this.chatInputRef) {
             this.chatInputRef.setLastMessage(null);
         }
-
-        const updateState = () => {
-            if (!this.messageRef) {
-                return;
-            }
-            // this.messageRef.list.recomputeGridSize();
-        };
 
         const dialog = this.getDialogById(dialogId);
 
@@ -1436,6 +1432,26 @@ class Chat extends React.Component<IProps, IState> {
         let minId: number = 0;
         this.setChatView(true);
 
+        const readyList = [null, null];
+        const deferFn = () => {
+            readyList.pop();
+            if (readyList.length === 0) {
+                this.setEndOfMessage(false);
+                setTimeout(() => {
+                    this.setLoading(false);
+                    this.messageLoadMoreAfterHandler(0, 0);
+                }, 100);
+
+                setTimeout(() => {
+                    this.setScrollMode('none');
+                    if (messageId && messageId !== '0') {
+                        this.messageJumpToMessageHandler(parseInt(messageId, 10));
+                    }
+                }, 500);
+            }
+        };
+
+        this.messageRef.clearAll();
         this.messageRepo.getMany({peer, limit: 40, before, ignoreMax: true}, (data) => {
             // Checks peerid on transition
             if (this.selectedDialogId !== dialogId || !this.messageRef) {
@@ -1459,12 +1475,9 @@ class Chat extends React.Component<IProps, IState> {
             if (dialog) {
                 this.messageRef.setTopMessage(dialog.topmessageid || 0);
             }
-            this.messageRef.clearAll();
             this.messageRef.setMessages(dataMsg.msgs, () => {
-                if (force === true) {
-                    updateState();
-                }
                 clearTimeout(this.mobileBackTimeout);
+                deferFn();
             });
         }).then((resMsgs) => {
             // Checks peerid on transition
@@ -1488,26 +1501,14 @@ class Chat extends React.Component<IProps, IState> {
                 if (this.moveDownRef) {
                     this.moveDownRef.setVisible(false);
                 }
-                this.setLoading(false);
+                deferFn();
             }
-            this.setEndOfMessage(false);
 
             if (!this.messageRef) {
                 return;
             }
             this.messageRef.setMessages(dataMsg.msgs, () => {
-                if (messageId && messageId !== '0') {
-                    setTimeout(() => {
-                        this.messageJumpToMessageHandler(parseInt(messageId, 10));
-                    }, 500);
-                }
-                setTimeout(() => {
-                    this.setLoading(false);
-                    this.setScrollMode('none');
-                }, 100);
-                setTimeout(() => {
-                    this.messageLoadMoreAfterHandler(0, 0);
-                }, 250);
+                deferFn();
             });
         }).catch(() => {
             this.setChatView(true);

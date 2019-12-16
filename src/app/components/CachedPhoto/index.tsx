@@ -77,13 +77,13 @@ class CachedPhoto extends React.Component<IProps, IState> {
         const {className, src} = this.state;
         return (
             <div className={className} style={this.props.style} onClick={this.props.onClick}>
-                {src && <img src={src} alt="avatar" onLoad={this.props.onLoad} onError={this.imgErrorHandler}/>}
+                {Boolean(src) && <img src={src} alt="avatar" onLoad={this.props.onLoad} onError={this.imgErrorHandler}/>}
             </div>
         );
     }
 
     /* Get file from cached storage */
-    private getFile() {
+    private getFile = () => {
         clearTimeout(this.tryTimeout);
         this.cachedFileService.getFile(this.props.fileLocation, '', 0, 'image/jpeg', this.props.searchTemp, this.props.blur).then((src) => {
             if (!this.mounted) {
@@ -96,7 +96,7 @@ class CachedPhoto extends React.Component<IProps, IState> {
                     src,
                 });
             }
-        }).catch(() => {
+        }).catch((err) => {
             if (!this.mounted) {
                 return;
             }
@@ -105,6 +105,10 @@ class CachedPhoto extends React.Component<IProps, IState> {
                 this.tryTimeout = setTimeout(() => {
                     this.getFile();
                 }, 500);
+            } else {
+                this.setState({
+                    src: undefined,
+                });
             }
         });
     }

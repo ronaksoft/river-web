@@ -1,5 +1,5 @@
 import ResizeObserver from "resize-observer-polyfill";
-import {debounce} from 'lodash';
+import {throttle} from 'lodash';
 
 interface IFragment {
     height: number;
@@ -35,7 +35,7 @@ export class CellMeasurer {
 
     public constructor({cellPrefix, estimatedItemSize, estimatedItemSizeFunc, rowCount, defaultHeight, overscan, keyMapper}: { cellPrefix: string, estimatedItemSize: number, estimatedItemSizeFunc?: (index: number) => number, rowCount: number, defaultHeight?: number, overscan?: number, keyMapper?: (index: number) => string }) {
         this.overscan = overscan || 10;
-        this.updateList = debounce(this.updateListHandler, 1);
+        this.updateList = throttle(this.updateListHandler, 20);
         this.cellPrefix = cellPrefix;
         if (keyMapper) {
             this.keyMapperFn = keyMapper;

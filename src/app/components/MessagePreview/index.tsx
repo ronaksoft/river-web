@@ -226,7 +226,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
                 const info = getMediaInfo(previewMessage);
                 return (
                     <div className="preview-thumbnail">
-                        <CachedPhoto className="thumbnail" fileLocation={info.thumbFile}/>
+                        <CachedPhoto key="reply-thumbnail" className="thumbnail" fileLocation={info.thumbFile}/>
                     </div>
                 );
             default:
