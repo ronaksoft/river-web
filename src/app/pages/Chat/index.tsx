@@ -1439,11 +1439,11 @@ class Chat extends React.Component<IProps, IState> {
                 this.setEndOfMessage(false);
                 setTimeout(() => {
                     this.setLoading(false);
+                    this.messageLoadMoreAfterHandler(0, 0);
                 }, 100);
 
                 setTimeout(() => {
                     this.setScrollMode('none');
-                    this.messageLoadMoreAfterHandler(0, 0);
                     if (messageId && messageId !== '0') {
                         this.messageJumpToMessageHandler(parseInt(messageId, 10));
                     }
