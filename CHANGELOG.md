@@ -1,3 +1,6 @@
+## 0.28.10
+* Bug fixes and performance improvements
+
 ## 0.28.9
 * Scroll bug fixed
 * Small dialogs bug fixed

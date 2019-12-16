@@ -126,10 +126,10 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         }, {
             cmd: 'new_message',
             title: i18n.t('chat.new_message'),
-        }, {
+        }/*, {
             cmd: 'labels',
             title: i18n.t('chat.labels'),
-        }, {
+        }*/, {
             cmd: 'account',
             title: i18n.t('chat.account_info'),
         }, {
