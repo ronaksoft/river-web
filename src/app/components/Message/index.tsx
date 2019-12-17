@@ -825,6 +825,7 @@ class Message extends React.Component<IProps, IState> {
                                     {this.renderMessageBody(message, peer, messageMedia, parentEl, measureFn)}
                                     <MessageStatus status={message.me || false} id={message.id} readId={readId}
                                                    time={message.createdon || 0} editedTime={message.editedon || 0}
+                                                   labelIds={message.labelidsList}
                                                    onDoubleClick={this.moreCmdHandler('reply', index)}/>
                                 </div>
                                 <div className="more" onClick={bubbleClickHandler}>

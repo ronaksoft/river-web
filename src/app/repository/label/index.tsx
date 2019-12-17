@@ -16,6 +16,8 @@ import {kMerge} from "../../services/utilities/kDash";
 import SDK from "../../services/sdk";
 
 export default class LabelRepo {
+    public static labelColors: { [key: number]: string } = {};
+
     public static getInstance() {
         if (!this.instance) {
             this.instance = new LabelRepo();
@@ -36,6 +38,11 @@ export default class LabelRepo {
         this.db = this.dbService.getDB();
         this.broadcaster = Broadcaster.getInstance();
         this.sdk = SDK.getInstance();
+        this.db.labels.toArray().then((items) => {
+            items.forEach((item) => {
+                LabelRepo.labelColors[item.id || 0] = item.colour || '';
+            });
+        });
     }
 
     public create(label: ILabel) {
@@ -51,11 +58,12 @@ export default class LabelRepo {
         if (label) {
             return Promise.resolve(label);
         }
-        return this.db.labels.get(id).then((g: ILabel | undefined) => {
-            if (g) {
-                this.dbService.setLabel(g);
+        return this.db.labels.get(id).then((l: ILabel | undefined) => {
+            if (l) {
+                this.dbService.setLabel(l);
+                LabelRepo.labelColors[l.id || 0] = l.colour || '';
             }
-            return g;
+            return l;
         });
     }
 
@@ -66,7 +74,7 @@ export default class LabelRepo {
         });
     }
 
-    public getManyLabel({keyword, limit}: { keyword?: string, limit?: number }): Promise<ILabel[]> {
+    public search({keyword, limit}: { keyword?: string, limit?: number }): Promise<ILabel[]> {
         if (!keyword) {
             return this.db.labels.limit(limit || 100).toArray();
         }
@@ -115,6 +123,7 @@ export default class LabelRepo {
             const list = [...createItems, ...updateItems];
             list.forEach((item) => {
                 this.dbService.setLabel(item);
+                LabelRepo.labelColors[item.id || 0] = item.colour || '';
             });
             return this.createMany(list);
         }).then((res) => {

@@ -41,12 +41,57 @@
   }
 
   .edited {
-    padding: 0 3px 0 5px;
+    padding: 0 2px 0 0;
+  }
+
+  .message-label {
+    display: flex;
+    flex-direction: row-reverse;
+    padding: 0 2px 0 0;
+    align-items: center;
+    justify-content: center;
+
+    .circle-label {
+      height: 10px;
+      width: 10px;
+      border-radius: 50%;
+      border: 1px solid transparent;
+
+      &:first-child {
+        z-index: 1003;
+      }
+
+      &:nth-child(2) {
+        transform: translateX(60%);
+        z-index: 1002;
+      }
+
+      &:nth-child(3) {
+        transform: translateX(120%);
+        z-index: 1001;
+      }
+    }
   }
 }
 
 .me .bubble .message-status {
   color: var(--grey-low);
+}
+
+.me .bubble .message-status {
+  .message-label {
+    .circle-label {
+      border-color: var(--green);
+    }
+  }
+}
+
+.you .bubble .message-status {
+  .message-label {
+    .circle-label {
+      border-color: var(--message-chat);
+    }
+  }
 }
 
 .voice .bubble .message-status {
@@ -102,6 +147,42 @@ html[theme="dark-night"] {
   }
 }
 
+html[theme="dark"] {
+  .me .bubble .message-status {
+    .message-label {
+      .circle-label {
+        border-color: var(--dark-accent-low);
+      }
+    }
+  }
+
+  .you .bubble .message-status {
+    .message-label {
+      .circle-label {
+        border-color: var(--dark-accent-medium);
+      }
+    }
+  }
+}
+
+html[theme="dark-night"] {
+  .me .bubble .message-status {
+    .message-label {
+      .circle-label {
+        border-color: var(--dark-night-accent-low);
+      }
+    }
+  }
+
+  .you .bubble .message-status {
+    .message-label {
+      .circle-label {
+        border-color: var(--dark-night-accent-medium);
+      }
+    }
+  }
+}
+
 html[theme="dark-blue"] {
   .message-status {
     color: rgba(255, 255, 255, 0.5);
@@ -109,6 +190,22 @@ html[theme="dark-blue"] {
 
   .me .bubble .message-status {
     color: rgba(255, 255, 255, 0.5);
+  }
+
+  .me .bubble .message-status {
+    .message-label {
+      .circle-label {
+        border-color: var(--dark-blue-accent-low);
+      }
+    }
+  }
+
+  .you .bubble .message-status {
+    .message-label {
+      .circle-label {
+        border-color: var(--dark-blue-accent-medium);
+      }
+    }
   }
 }
 

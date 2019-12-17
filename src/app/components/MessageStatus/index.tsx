@@ -9,7 +9,9 @@
 
 import * as React from 'react';
 import TimeUtility from '../../services/utilities/time';
-import {DoneRounded, DoneAllRounded, ScheduleRounded, LabelRounded} from '@material-ui/icons';
+import {DoneRounded, DoneAllRounded, ScheduleRounded} from '@material-ui/icons';
+import LabelRepo from "../../repository/label";
+import i18n from "../../services/i18n";
 
 import './style.scss';
 
@@ -43,6 +45,8 @@ class MessageStatus extends React.Component<IProps, IState> {
         };
     }
 
+    private labelColors = LabelRepo.labelColors;
+
     constructor(props: IProps) {
         super(props);
 
@@ -56,18 +60,14 @@ class MessageStatus extends React.Component<IProps, IState> {
         };
     }
 
-    // public componentDidMount() {
-    // }
-
     public render() {
         const {id, readId, status, time, editedTime} = this.state;
-
         return (
             <div className={'message-status'} onClick={this.onClickHandler} onDoubleClick={this.onDoubleClickHandler}>
-                {editedTime > 0 && <span className="edited">edited</span>}
+                {this.getLabels()}
+                {editedTime > 0 && <span className="edited">{i18n.t("general.edited")}</span>}
                 <span className="time">{TimeUtility.TimeParse(time)}</span>
                 {this.getStatus(id, readId, status)}
-                {this.getLabels()}
             </div>
         );
     }
@@ -90,10 +90,13 @@ class MessageStatus extends React.Component<IProps, IState> {
 
     private getLabels() {
         const {labelIds} = this.state;
+        if (labelIds.length === 0) {
+            return;
+        }
         return (
-            <div className="message-label">
-                {labelIds.slice(0, 2).map((id, key) => {
-                    return (<LabelRounded key={id} className={`label-${key}`}/>);
+            <div className={'message-label ' + (labelIds.length > 1 ? 'single-label' : 'many-label')}>
+                {labelIds.slice(0, 3).map((id, key) => {
+                    return (<div key={id} className={`circle-label label-${key}`} style={{backgroundColor: this.labelColors[id]}}/>);
                 })}
             </div>
         );

@@ -14,7 +14,7 @@
   flex-direction: column;
 
   .label-search {
-    padding: 6px;
+    padding: 6px 12px;
   }
 
   .label-container {
@@ -51,7 +51,7 @@
         justify-content: center;
         width: 40px;
         height: 40px;
-        margin: 0 12px 0 0;
+        margin: 0 12px 0 6px;
 
         svg {
           font-size: 28px;
@@ -88,6 +88,41 @@
       }
     }
   }
+
+  .actions-bar {
+    height: 86px;
+    padding: 18px 0 22px;
+    text-align: center;
+    background-color: var(--message-chat);
+
+    &.no-bg {
+      background-color: transparent;
+      border: none !important;
+    }
+
+    .add-action {
+      display: inline-flex;
+      height: 46px;
+      width: 46px;
+      border-radius: 50%;
+      background: var(--river);
+      color: var(--white);
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+      transition: all 0.2s;
+
+      svg {
+        font-size: 40px;
+      }
+
+      &:hover {
+        background: var(--river-dark);
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+      }
+    }
+  }
 }
 
 html[theme="dark"],
@@ -114,6 +149,25 @@ html[theme="dark-blue"] {
       label, input, svg {
         color: var(--white);
       }
+    }
+
+    .actions-bar {
+      background-color: var(--dark-medium);
+      border-top: 1px solid var(--dark-low-op50);
+
+      &.no-bg {
+        background-color: transparent;
+      }
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .label-dialog {
+
+    .actions-bar {
+      border-top: 1px solid var(--dark-blue-low-op50);
+      background-color: var(--dark-blue-medium);
     }
   }
 }

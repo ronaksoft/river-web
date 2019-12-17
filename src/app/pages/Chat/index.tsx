@@ -3167,6 +3167,17 @@ class Chat extends React.Component<IProps, IState> {
             case 'close':
                 this.resetSelectedMessages();
                 break;
+            case 'labels':
+                if (this.labelDialogRef) {
+                    const ids = Object.keys(this.messageSelectedIds).map(o => parseInt(o, 10));
+                    this.messageRepo.getIn(ids, true).then((res) => {
+                        const selectedIds = res.map(o => o.labelidsList || []);
+                        if (this.labelDialogRef) {
+                            this.labelDialogRef.openDialog(ids, selectedIds);
+                        }
+                    });
+                }
+                break;
             default:
                 break;
         }

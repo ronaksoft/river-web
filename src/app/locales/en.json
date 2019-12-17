@@ -45,7 +45,8 @@
     "copy": "Copy",
     "from": "From",
     "expand": "Expand",
-    "collapse": "Collapse"
+    "collapse": "Collapse",
+    "edited": "edited"
   },
   "chat": {
     "search": "Search",

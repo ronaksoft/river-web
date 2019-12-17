@@ -315,7 +315,7 @@ class LabelMenu extends React.Component<IProps, IState> {
         this.setState({
             loading: true,
         });
-        this.labelRepo.getManyLabel({keyword}).then((res) => {
+        this.labelRepo.search({keyword}).then((res) => {
             this.setState({
                 list: res,
             });

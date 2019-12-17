@@ -11,14 +11,22 @@ import * as React from 'react';
 import {InputPeer} from '../../services/sdk/messages/chat.core.types_pb';
 import {
     ExpandMoreRounded,
-    ExpandLessRounded, CloseRounded,
+    ExpandLessRounded,
+    CloseRounded,
+    LabelOutlined,
+    LabelRounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import TextField from '@material-ui/core/TextField/TextField';
 import MessageRepo from '../../repository/message';
 import {IMessage} from '../../repository/message/interface';
-import {debounce} from 'lodash';
+import {debounce, clone, isEqual} from 'lodash';
 import i18n from '../../services/i18n';
+import Popover from '@material-ui/core/Popover';
+import Button from '@material-ui/core/Button';
+import LabelRepo from "../../repository/label";
+import {ILabel} from "../../repository/label/interface";
+import Scrollbars from "react-custom-scrollbars";
 
 import './style.scss';
 
@@ -30,11 +38,15 @@ interface IProps {
 }
 
 interface IState {
+    appliedSelectedLabelIds: number[];
     currentId: number;
     focus: boolean;
     items: IMessage[];
+    labelAnchorEl: any;
+    labelList: ILabel[];
     next: boolean;
     prev: boolean;
+    selectedLabelIds: number[];
 }
 
 class SearchMessage extends React.PureComponent<IProps, IState> {
@@ -46,24 +58,31 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
     private hasMore: boolean = false;
     private text: string = '';
     private peer: InputPeer | null = null;
+    private labelRepo: LabelRepo;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
+            appliedSelectedLabelIds: [],
             currentId: -1,
             focus: false,
             items: [],
+            labelAnchorEl: null,
+            labelList: [],
             next: false,
             prev: false,
+            selectedLabelIds: [],
         };
 
         this.messageRepo = MessageRepo.getInstance();
         this.searchDebouncer = debounce(this.search, 512);
+        this.labelRepo = LabelRepo.getInstance();
     }
 
     public componentDidMount() {
         window.addEventListener('keydown', this.keyDownHandler, true);
+        this.getLabelList();
     }
 
     public componentWillUnmount() {
@@ -93,7 +112,7 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {focus, next, prev} = this.state;
+        const {focus, next, prev, labelAnchorEl, labelList, appliedSelectedLabelIds} = this.state;
         return (
             <div ref={this.refHandler} className="search-message">
                 <div className="search-box">
@@ -116,7 +135,7 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
                     <div className="search-input">
                         <TextField
                             inputRef={this.searchRefHandler}
-                            label={i18n.t('chat.search_messages')}
+                            placeholder={i18n.t('chat.search_messages')}
                             margin="none"
                             className={'input' + (focus ? ' focus' : '')}
                             fullWidth={true}
@@ -128,7 +147,15 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
                             onBlur={this.searchBlurHandler}
                             onChange={this.searchChangeHandler}
                             onKeyUp={this.searchKeyUpHandler}
+                            variant="outlined"
                         />
+                    </div>
+                    <div className="search-label">
+                        <IconButton
+                            onClick={this.labelOpenHandler}
+                        >
+                            {appliedSelectedLabelIds.length === 0 ? <LabelOutlined/> : <LabelRounded/>}
+                        </IconButton>
                     </div>
                     <div className="search-action">
                         <IconButton
@@ -138,6 +165,44 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
                         </IconButton>
                     </div>
                 </div>
+                <Popover anchorEl={labelAnchorEl}
+                         open={Boolean(labelAnchorEl)}
+                         onClose={this.labelCloseHandler}
+                         anchorOrigin={{
+                             horizontal: "center",
+                             vertical: "bottom",
+                         }}
+                         className="search-label-popover"
+                >
+                    <div className="search-label-container">
+                        <div className="search-label-list" style={{height: this.getLabelListHeight()}}>
+                            <Scrollbars
+                                autoHide={true}
+                                hideTracksWhenNotNeeded={true}
+                                universal={true}
+                                autoHeight={true}
+                            >
+                                {labelList.map((label) => {
+                                    return (<div key={label.id}
+                                                 className={'label-item' + (this.isLabelSelected(label.id || 0) ? ' selected' : '')}
+                                                 onClick={this.toggleLabelHandler(label.id || 0)}>
+                                        <div className="label-icon">
+                                            <LabelRounded style={{color: label.colour}}/>
+                                        </div>
+                                        <div className="label-name">{label.name}</div>
+                                    </div>);
+                                })}
+                            </Scrollbars>
+                        </div>
+                        <div className="search-label">
+                            <Button fullWidth={true}
+                                    variant="outlined" color="secondary" size="small"
+                                    onClick={this.labelApplyHandler}
+                                    disabled={isEqual(appliedSelectedLabelIds, this.state.selectedLabelIds)}
+                            >{i18n.t('general.apply')}</Button>
+                        </div>
+                    </div>
+                </Popover>
             </div>
         );
     }
@@ -165,10 +230,12 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
         this.text = '';
         this.hasMore = false;
         this.setState({
+            appliedSelectedLabelIds: [],
             currentId: -1,
             items: [],
             next: false,
             prev: false,
+            selectedLabelIds: [],
         });
     }
 
@@ -219,11 +286,15 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
         if (!peer) {
             return;
         }
-        if (text.length === 0) {
+        if (text.length === 0 && this.state.appliedSelectedLabelIds.length === 0) {
             this.reset();
             return;
         }
-        this.messageRepo.search(peer.getId() || '', {keyword: text, limit: searchLimit}).then((res) => {
+        this.messageRepo.search(peer.getId() || '', {
+            keyword: text,
+            labelIds: this.state.appliedSelectedLabelIds,
+            limit: searchLimit
+        }).then((res) => {
             if (res.length > 0) {
                 this.props.onFind(res[0].id || 0, this.text);
                 this.setState({
@@ -303,6 +374,64 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
 
     private closeSearchHandler = () => {
         this.toggleVisible();
+    }
+
+    private labelOpenHandler = (e: any) => {
+        this.setState({
+            labelAnchorEl: e.currentTarget,
+            selectedLabelIds: clone(this.state.appliedSelectedLabelIds),
+        });
+    }
+
+    private labelCloseHandler = () => {
+        this.setState({
+            labelAnchorEl: null,
+            selectedLabelIds: clone(this.state.appliedSelectedLabelIds),
+        });
+    }
+
+    private getLabelListHeight() {
+        let height = this.state.labelList.length * 28;
+        if (height > 150) {
+            height = 150;
+        }
+        return `${height}px`;
+    }
+
+    private getLabelList() {
+        this.labelRepo.search({}).then((res) => {
+            this.setState({
+                labelList: res,
+            });
+        });
+    }
+
+    private toggleLabelHandler = (id: number) => (e: any) => {
+        const {selectedLabelIds} = this.state;
+        const index = selectedLabelIds.indexOf(id);
+        if (index > -1) {
+            selectedLabelIds.splice(index, 1);
+        } else {
+            selectedLabelIds.push(id);
+        }
+        this.setState({
+            selectedLabelIds,
+        }, () => {
+            this.forceUpdate();
+        });
+    }
+
+    private isLabelSelected(id: number) {
+        return this.state.selectedLabelIds.indexOf(id) > -1;
+    }
+
+    private labelApplyHandler = () => {
+        this.setState({
+            appliedSelectedLabelIds: clone(this.state.selectedLabelIds),
+        }, () => {
+            this.search(this.text);
+        });
+        this.labelCloseHandler();
     }
 }
 

@@ -16,9 +16,11 @@
   right: 0;
   display: none;
   z-index: 100;
+
   &.visible {
     display: block;
   }
+
   .search-box {
     height: 40px;
     display: flex;
@@ -26,39 +28,118 @@
     justify-content: center;
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     border-top: 1px solid rgba(0, 0, 0, 0.06);
+
     .search-action {
       width: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
+
       button {
         padding: 3px;
       }
     }
+
+    .search-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 6px;
+
+      button {
+        padding: 3px;
+      }
+    }
+
     .search-input {
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 0 6px;
+
       .input {
         label {
           font-size: 14px;
-          line-height: 14px;
+          line-height: 16px;
           transform: translate(0, 12px) scale(1);
         }
+
         &.focus {
           label {
             transform: translate(0, 0) scale(0.8);
           }
         }
+
         > div {
-          margin-top: 10px;
+          margin: 0;
+
           input {
-            padding: 1px 0;
+            padding: 4px 10px;
+            background-color: rgba(250, 250, 250, 0.1);
+            border-radius: 3px;
+
+            &::placeholder {
+              font-size: 14px;
+            }
           }
         }
       }
+    }
+  }
+}
+
+.search-label-popover {
+  div[role="document"] {
+    background-color: var(--header-color);
+  }
+
+  .search-label-container {
+    display: flex;
+    padding: 5px;
+    min-width: 150px;
+    flex-direction: column;
+
+    .search-label-list {
+      max-height: 150px;
+      width: 100%;
+
+      .label-item {
+        display: flex;
+        height: 28px;
+        cursor: pointer;
+        opacity: 0.5;
+
+        &:hover {
+          background-color: var(--dark-hover-light);
+        }
+
+        &.selected {
+          opacity: 1;
+        }
+
+        .label-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 28px;
+          width: 28px;
+          margin: 0 6px 0 0;
+        }
+
+        .label-name {
+          display: flex;
+          flex: 1;
+          align-items: center;
+          justify-content: flex-start;
+          height: 100%;
+          font-size: 13px;
+        }
+      }
+    }
+
+    .search-label {
+      padding: 6px 0 0;
     }
   }
 }
@@ -67,24 +148,52 @@ html[theme="dark"],
 html[theme="dark-night"] {
   .search-message {
     background-color: var(--dark-medium);
+
     .search-box {
       border-color: var(--dark-low-op50);
-      .search-action {
+
+      .search-action, .search-label {
         button svg {
           color: var(--light);
         }
+
         button[disabled] svg {
           color: var(--grey);
         }
       }
+
       .search-input {
         label {
           color: var(--white);
         }
+
         .input {
           input {
             color: var(--white);
           }
+        }
+      }
+    }
+  }
+
+  .search-label-popover {
+    div[role="document"] {
+      background-color: var(--dark-low);
+    }
+
+    .search-label-container {
+      .search-label-list {
+        .label-item {
+          .label-name {
+            color: var(--white);
+          }
+        }
+      }
+
+      .search-label {
+        button[disabled] {
+          border-color: var(--dark-hover-light);
+          color: var(--dark-hover-light);
         }
       }
     }
@@ -94,24 +203,52 @@ html[theme="dark-night"] {
 html[theme="dark-blue"] {
   .search-message {
     background-color: var(--dark-blue-medium);
+
     .search-box {
       border-color: var(--dark-blue-low-op50);
-      .search-action {
+
+      .search-action, .search-label {
         button svg {
           color: var(--dark-blue-mention);
         }
+
         button[disabled] svg {
           color: var(--dark);
         }
       }
+
       .search-input {
         label {
           color: var(--white);
         }
+
         .input {
           input {
             color: var(--white);
           }
+        }
+      }
+    }
+  }
+
+  .search-label-popover {
+    div[role="document"] {
+      background-color: var(--dark-blue-low);
+    }
+
+    .search-label-container {
+      .search-label-list {
+        .label-item {
+          .label-name {
+            color: var(--white);
+          }
+        }
+      }
+
+      .search-label {
+        button[disabled] {
+          border-color: var(--dark-hover-light);
+          color: var(--dark-hover-light);
         }
       }
     }

@@ -17,7 +17,7 @@ import InputLabel from "@material-ui/core/InputLabel/InputLabel";
 import Input from "@material-ui/core/Input/Input";
 import LabelRepo from "../../repository/label";
 import Broadcaster from "../../services/broadcaster";
-import {throttle, difference, intersection, clone} from "lodash";
+import {throttle, difference, intersection, clone, isEqual} from "lodash";
 import Scrollbars from "react-custom-scrollbars";
 import {localize} from "../../services/utilities/localize";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -87,9 +87,8 @@ class LabelDialog extends React.Component<IProps, IState> {
         const {loading, list, open, search, selectedIds} = this.state;
         return (
             <SettingsModal open={open} title={i18n.t('label.label_list')}
-                           icon={<CheckRounded/>}
+                           icon={<LabelOutlined/>}
                            onClose={this.modalCloseHandler}
-                           onDone={this.doneHandler}
                            height="400px"
                            noScrollbar={true}
             >
@@ -143,6 +142,11 @@ class LabelDialog extends React.Component<IProps, IState> {
                         <LabelRounded/>
                         {search.length === 0 ? i18n.t('label.label_placeholder') : i18n.t('label.no_result')}
                     </div>}
+                    {!isEqual(this.selectedIds, selectedIds) && <div className="actions-bar no-bg">
+                        <div className="add-action" onClick={this.doneHandler}>
+                            <CheckRounded/>
+                        </div>
+                    </div>}
                 </div>
             </SettingsModal>
         );
@@ -151,6 +155,7 @@ class LabelDialog extends React.Component<IProps, IState> {
     private modalCloseHandler = () => {
         this.setState({
             open: false,
+            selectedIds: [],
         });
         if (this.props.onClose) {
             this.props.onClose();
@@ -184,7 +189,7 @@ class LabelDialog extends React.Component<IProps, IState> {
         this.setState({
             loading: true,
         });
-        this.labelRepo.getManyLabel({keyword}).then((res) => {
+        this.labelRepo.search({keyword}).then((res) => {
             this.setState({
                 list: res,
             });
@@ -206,7 +211,14 @@ class LabelDialog extends React.Component<IProps, IState> {
             return;
         }
         this.props.onDone(this.msgIds, addIds, removeIds);
-        this.modalCloseHandler();
+        // if (this.msgIds.length === 1) {
+            this.modalCloseHandler();
+        // } else {
+        //     this.selectedIds = addIds;
+        //     this.setState({
+        //         selectedIds: clone(this.selectedIds),
+        //     });
+        // }
     }
 
     private checkDialogItem = (id: number) => (e: any) => {

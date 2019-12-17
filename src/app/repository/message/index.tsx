@@ -546,7 +546,7 @@ export default class MessageRepo {
     }
 
     // Search message bodies
-    public search(peerId: string, {keyword, before, after, limit}: { keyword: string, before?: number, after?: number, limit?: number }) {
+    public search(peerId: string, {keyword, labelIds, before, after, limit}: { keyword: string, labelIds?: number[], before?: number, after?: number, limit?: number }) {
         let mode = 0x0;
         if (before !== null && before !== undefined) {
             mode = mode | 0x1;
@@ -578,22 +578,29 @@ export default class MessageRepo {
         if (mode !== 0x2) {
             pipe2 = pipe2.reverse();
         }
-        const reg = new RegExp(keyword || '', 'i');
-        pipe2 = pipe2.filter((item: IMessage) => {
-            if (item.messagetype !== C_MESSAGE_TYPE.Hole && item.messagetype !== C_MESSAGE_TYPE.End && item.temp !== true && (item.id || 0) > 0) {
-                if (item.messagetype === 0 || item.messagetype === C_MESSAGE_TYPE.Normal) {
-                    return reg.test(item.body || '');
-                } else {
-                    if (item.mediadata && item.mediadata.caption) {
-                        return reg.test(item.mediadata.caption || '');
-                    } else {
-                        return false;
+        if (keyword.length > 0 || (labelIds && labelIds.length > 0)) {
+            const reg = new RegExp(keyword || '', 'i');
+            pipe2 = pipe2.filter((item: IMessage) => {
+                if (item.messagetype !== C_MESSAGE_TYPE.Hole && item.messagetype !== C_MESSAGE_TYPE.End && item.temp !== true && (item.id || 0) > 0) {
+                    let isMatched = false;
+                    if (labelIds && labelIds.length && item.labelidsList && item.labelidsList.length && difference(labelIds, item.labelidsList).length === 0) {
+                        isMatched = true;
                     }
+                    if (keyword.length > 0) {
+                        if (item.messagetype === 0 || item.messagetype === C_MESSAGE_TYPE.Normal) {
+                            isMatched = reg.test(item.body || '');
+                        } else {
+                            if (item.mediadata && item.mediadata.caption) {
+                                isMatched = reg.test(item.mediadata.caption || '');
+                            }
+                        }
+                    }
+                    return isMatched;
+                } else {
+                    return false;
                 }
-            } else {
-                return false;
-            }
-        });
+            });
+        }
         return pipe2.limit(limit || 30).toArray();
     }
 
