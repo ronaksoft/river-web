@@ -105,62 +105,6 @@ export namespace LabelsGet {
   }
 }
 
-export class LabelsAddToDialog extends jspb.Message {
-  hasPeer(): boolean;
-  clearPeer(): void;
-  getPeer(): chat_core_types_pb.InputPeer;
-  setPeer(value?: chat_core_types_pb.InputPeer): void;
-
-  clearLabelidsList(): void;
-  getLabelidsList(): Array<number>;
-  setLabelidsList(value: Array<number>): void;
-  addLabelids(value: number, index?: number): number;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): LabelsAddToDialog.AsObject;
-  static toObject(includeInstance: boolean, msg: LabelsAddToDialog): LabelsAddToDialog.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: LabelsAddToDialog, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): LabelsAddToDialog;
-  static deserializeBinaryFromReader(message: LabelsAddToDialog, reader: jspb.BinaryReader): LabelsAddToDialog;
-}
-
-export namespace LabelsAddToDialog {
-  export type AsObject = {
-    peer: chat_core_types_pb.InputPeer.AsObject,
-    labelidsList: Array<number>,
-  }
-}
-
-export class LabelsRemoveFromDialog extends jspb.Message {
-  hasPeer(): boolean;
-  clearPeer(): void;
-  getPeer(): chat_core_types_pb.InputPeer;
-  setPeer(value?: chat_core_types_pb.InputPeer): void;
-
-  clearLabelidsList(): void;
-  getLabelidsList(): Array<number>;
-  setLabelidsList(value: Array<number>): void;
-  addLabelids(value: number, index?: number): number;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): LabelsRemoveFromDialog.AsObject;
-  static toObject(includeInstance: boolean, msg: LabelsRemoveFromDialog): LabelsRemoveFromDialog.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: LabelsRemoveFromDialog, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): LabelsRemoveFromDialog;
-  static deserializeBinaryFromReader(message: LabelsRemoveFromDialog, reader: jspb.BinaryReader): LabelsRemoveFromDialog;
-}
-
-export namespace LabelsRemoveFromDialog {
-  export type AsObject = {
-    peer: chat_core_types_pb.InputPeer.AsObject,
-    labelidsList: Array<number>,
-  }
-}
-
 export class LabelsAddToMessage extends jspb.Message {
   hasPeer(): boolean;
   clearPeer(): void;
@@ -285,6 +229,16 @@ export class LabelItems extends jspb.Message {
   setDialogsList(value: Array<chat_core_types_pb.Dialog>): void;
   addDialogs(value?: chat_core_types_pb.Dialog, index?: number): chat_core_types_pb.Dialog;
 
+  clearUsersList(): void;
+  getUsersList(): Array<chat_core_types_pb.User>;
+  setUsersList(value: Array<chat_core_types_pb.User>): void;
+  addUsers(value?: chat_core_types_pb.User, index?: number): chat_core_types_pb.User;
+
+  clearGroupsList(): void;
+  getGroupsList(): Array<chat_core_types_pb.Group>;
+  setGroupsList(value: Array<chat_core_types_pb.Group>): void;
+  addGroups(value?: chat_core_types_pb.Group, index?: number): chat_core_types_pb.Group;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): LabelItems.AsObject;
   static toObject(includeInstance: boolean, msg: LabelItems): LabelItems.AsObject;
@@ -300,6 +254,8 @@ export namespace LabelItems {
     labelid?: number,
     messagesList: Array<chat_core_types_pb.UserMessage.AsObject>,
     dialogsList: Array<chat_core_types_pb.Dialog.AsObject>,
+    usersList: Array<chat_core_types_pb.User.AsObject>,
+    groupsList: Array<chat_core_types_pb.Group.AsObject>,
   }
 }
 

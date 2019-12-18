@@ -1127,6 +1127,11 @@ export class UpdateLabelItemsAdded extends jspb.Message {
   setLabelidsList(value: Array<number>): void;
   addLabelids(value: number, index?: number): number;
 
+  clearLabelsList(): void;
+  getLabelsList(): Array<chat_core_types_pb.Label>;
+  setLabelsList(value: Array<chat_core_types_pb.Label>): void;
+  addLabels(value?: chat_core_types_pb.Label, index?: number): chat_core_types_pb.Label;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateLabelItemsAdded.AsObject;
   static toObject(includeInstance: boolean, msg: UpdateLabelItemsAdded): UpdateLabelItemsAdded.AsObject;
@@ -1144,6 +1149,7 @@ export namespace UpdateLabelItemsAdded {
     peer: chat_core_types_pb.Peer.AsObject,
     messageidsList: Array<number>,
     labelidsList: Array<number>,
+    labelsList: Array<chat_core_types_pb.Label.AsObject>,
   }
 }
 
@@ -1173,6 +1179,11 @@ export class UpdateLabelItemsRemoved extends jspb.Message {
   setLabelidsList(value: Array<number>): void;
   addLabelids(value: number, index?: number): number;
 
+  clearLabelsList(): void;
+  getLabelsList(): Array<chat_core_types_pb.Label>;
+  setLabelsList(value: Array<chat_core_types_pb.Label>): void;
+  addLabels(value?: chat_core_types_pb.Label, index?: number): chat_core_types_pb.Label;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateLabelItemsRemoved.AsObject;
   static toObject(includeInstance: boolean, msg: UpdateLabelItemsRemoved): UpdateLabelItemsRemoved.AsObject;
@@ -1190,6 +1201,7 @@ export namespace UpdateLabelItemsRemoved {
     peer: chat_core_types_pb.Peer.AsObject,
     messageidsList: Array<number>,
     labelidsList: Array<number>,
+    labelsList: Array<chat_core_types_pb.Label.AsObject>,
   }
 }
 

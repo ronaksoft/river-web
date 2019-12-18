@@ -8840,7 +8840,7 @@ proto.msg.UpdateAccountPrivacy.prototype.clearCallList = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.msg.UpdateLabelItemsAdded.repeatedFields_ = [3,4];
+proto.msg.UpdateLabelItemsAdded.repeatedFields_ = [3,4,5];
 
 
 
@@ -8877,7 +8877,9 @@ proto.msg.UpdateLabelItemsAdded.toObject = function(includeInstance, msg) {
     updateid: (f = jspb.Message.getField(msg, 101)) == null ? undefined : f,
     peer: (f = msg.getPeer()) && chat_core_types_pb.Peer.toObject(includeInstance, f),
     messageidsList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f,
-    labelidsList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f
+    labelidsList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f,
+    labelsList: jspb.Message.toObjectList(msg.getLabelsList(),
+    chat_core_types_pb.Label.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -8934,6 +8936,11 @@ proto.msg.UpdateLabelItemsAdded.deserializeBinaryFromReader = function(msg, read
     case 4:
       var value = /** @type {number} */ (reader.readInt32());
       msg.addLabelids(value);
+      break;
+    case 5:
+      var value = new chat_core_types_pb.Label;
+      reader.readMessage(value,chat_core_types_pb.Label.deserializeBinaryFromReader);
+      msg.addLabels(value);
       break;
     default:
       reader.skipField();
@@ -8998,6 +9005,14 @@ proto.msg.UpdateLabelItemsAdded.serializeBinaryToWriter = function(message, writ
     writer.writeRepeatedInt32(
       4,
       f
+    );
+  }
+  f = message.getLabelsList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      5,
+      f,
+      chat_core_types_pb.Label.serializeBinaryToWriter
     );
   }
 };
@@ -9186,13 +9201,51 @@ proto.msg.UpdateLabelItemsAdded.prototype.clearLabelidsList = function() {
 };
 
 
+/**
+ * repeated Label Labels = 5;
+ * @return {!Array<!proto.msg.Label>}
+ */
+proto.msg.UpdateLabelItemsAdded.prototype.getLabelsList = function() {
+  return /** @type{!Array<!proto.msg.Label>} */ (
+    jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.Label, 5));
+};
+
+
+/**
+ * @param {!Array<!proto.msg.Label>} value
+ * @return {!proto.msg.UpdateLabelItemsAdded} returns this
+*/
+proto.msg.UpdateLabelItemsAdded.prototype.setLabelsList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 5, value);
+};
+
+
+/**
+ * @param {!proto.msg.Label=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.msg.Label}
+ */
+proto.msg.UpdateLabelItemsAdded.prototype.addLabels = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 5, opt_value, proto.msg.Label, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.msg.UpdateLabelItemsAdded} returns this
+ */
+proto.msg.UpdateLabelItemsAdded.prototype.clearLabelsList = function() {
+  return this.setLabelsList([]);
+};
+
+
 
 /**
  * List of repeated fields within this message type.
  * @private {!Array<number>}
  * @const
  */
-proto.msg.UpdateLabelItemsRemoved.repeatedFields_ = [3,4];
+proto.msg.UpdateLabelItemsRemoved.repeatedFields_ = [3,4,5];
 
 
 
@@ -9229,7 +9282,9 @@ proto.msg.UpdateLabelItemsRemoved.toObject = function(includeInstance, msg) {
     updateid: (f = jspb.Message.getField(msg, 101)) == null ? undefined : f,
     peer: (f = msg.getPeer()) && chat_core_types_pb.Peer.toObject(includeInstance, f),
     messageidsList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f,
-    labelidsList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f
+    labelidsList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f,
+    labelsList: jspb.Message.toObjectList(msg.getLabelsList(),
+    chat_core_types_pb.Label.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -9286,6 +9341,11 @@ proto.msg.UpdateLabelItemsRemoved.deserializeBinaryFromReader = function(msg, re
     case 4:
       var value = /** @type {number} */ (reader.readInt32());
       msg.addLabelids(value);
+      break;
+    case 5:
+      var value = new chat_core_types_pb.Label;
+      reader.readMessage(value,chat_core_types_pb.Label.deserializeBinaryFromReader);
+      msg.addLabels(value);
       break;
     default:
       reader.skipField();
@@ -9350,6 +9410,14 @@ proto.msg.UpdateLabelItemsRemoved.serializeBinaryToWriter = function(message, wr
     writer.writeRepeatedInt32(
       4,
       f
+    );
+  }
+  f = message.getLabelsList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      5,
+      f,
+      chat_core_types_pb.Label.serializeBinaryToWriter
     );
   }
 };
@@ -9535,6 +9603,44 @@ proto.msg.UpdateLabelItemsRemoved.prototype.addLabelids = function(value, opt_in
  */
 proto.msg.UpdateLabelItemsRemoved.prototype.clearLabelidsList = function() {
   return this.setLabelidsList([]);
+};
+
+
+/**
+ * repeated Label Labels = 5;
+ * @return {!Array<!proto.msg.Label>}
+ */
+proto.msg.UpdateLabelItemsRemoved.prototype.getLabelsList = function() {
+  return /** @type{!Array<!proto.msg.Label>} */ (
+    jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.Label, 5));
+};
+
+
+/**
+ * @param {!Array<!proto.msg.Label>} value
+ * @return {!proto.msg.UpdateLabelItemsRemoved} returns this
+*/
+proto.msg.UpdateLabelItemsRemoved.prototype.setLabelsList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 5, value);
+};
+
+
+/**
+ * @param {!proto.msg.Label=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.msg.Label}
+ */
+proto.msg.UpdateLabelItemsRemoved.prototype.addLabels = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 5, opt_value, proto.msg.Label, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.msg.UpdateLabelItemsRemoved} returns this
+ */
+proto.msg.UpdateLabelItemsRemoved.prototype.clearLabelsList = function() {
+  return this.setLabelsList([]);
 };
 
 

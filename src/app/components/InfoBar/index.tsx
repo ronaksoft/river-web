@@ -10,7 +10,7 @@
 import * as React from 'react';
 import {InputPeer, PeerType} from "../../services/sdk/messages/chat.core.types_pb";
 import i18n from "../../services/i18n";
-import {InfoOutlined, KeyboardArrowLeftRounded, CloseRounded} from "@material-ui/icons";
+import {InfoOutlined, KeyboardArrowLeftRounded, CancelOutlined} from "@material-ui/icons";
 import StatusBar from "../StatusBar";
 import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
@@ -37,7 +37,6 @@ interface IState {
 }
 
 class InfoBar extends React.Component<IProps, IState> {
-
     constructor(props: IProps) {
         super(props);
 
@@ -86,7 +85,7 @@ class InfoBar extends React.Component<IProps, IState> {
                     </div> :
                     <div className="back-to-chats close-button">
                         <IconButton onClick={this.props.onClose}>
-                            <CloseRounded/>
+                            <CancelOutlined/>
                         </IconButton>
                     </div>
                 }

@@ -1,6 +1,6 @@
 .info-bar {
   height: 48px;
-  padding: 5px 29px 5px 45px;
+  padding: 5px 45px 5px 50px;
   text-align: left;
 
   .back-to-chats {
@@ -18,7 +18,10 @@
 
     &.close-button {
       height: 36px;
-      width: 36px;
+      width: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
       button {
         height: 36px;
@@ -70,7 +73,7 @@
 html[direction="rtl"] {
   .info-bar {
     text-align: left;
-    padding: 5px 45px 5px 29px;
+    padding: 5px 50px 5px 45px;
 
     .buttons {
       right: auto;

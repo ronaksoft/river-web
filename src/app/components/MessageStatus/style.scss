@@ -59,6 +59,17 @@
 
       &:first-child {
         z-index: 1003;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+
+        div {
+          height: 4px;
+          width: 4px;
+          border-radius: 50%;
+          background-color: var(--white);
+        }
       }
 
       &:nth-child(2) {

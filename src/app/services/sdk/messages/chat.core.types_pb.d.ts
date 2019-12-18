@@ -374,11 +374,6 @@ export class Dialog extends jspb.Message {
   getDraft(): DraftMessage | undefined;
   setDraft(value?: DraftMessage): void;
 
-  clearLabelidsList(): void;
-  getLabelidsList(): Array<number>;
-  setLabelidsList(value: Array<number>): void;
-  addLabelids(value: number, index?: number): number;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Dialog.AsObject;
   static toObject(includeInstance: boolean, msg: Dialog): Dialog.AsObject;
@@ -402,7 +397,6 @@ export namespace Dialog {
     mentionedcount?: number,
     pinned?: boolean,
     draft?: DraftMessage.AsObject,
-    labelidsList?: Array<number>,
   }
 }
 
@@ -1516,6 +1510,11 @@ export class Label extends jspb.Message {
   getColour(): string | undefined;
   setColour(value: string): void;
 
+  hasCount(): boolean;
+  clearCount(): void;
+  getCount(): number | undefined;
+  setCount(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Label.AsObject;
   static toObject(includeInstance: boolean, msg: Label): Label.AsObject;
@@ -1531,6 +1530,7 @@ export namespace Label {
     id?: number,
     name?: string,
     colour?: string,
+    count?: number,
   }
 }
 

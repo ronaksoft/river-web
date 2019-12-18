@@ -49,7 +49,7 @@ interface IProps {
     onReloadDialog: (peerIds: string[]) => void;
     onSettingsAction: (cmd: 'logout') => void;
     onSettingsClose: (e: any) => void;
-    updateMessages: (keep?: boolean) => void;
+    onUpdateMessages: (keep?: boolean) => void;
     onMenuShrunk: (shrunk: boolean) => void;
 }
 
@@ -301,7 +301,8 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                 <div className="left-overlay">
                     {Boolean(overlayMode === 1) && <NewGroupMenu onClose={this.overlayCloseHandler}
                                                                  onCreate={this.props.onGroupCreate}/>}
-                    {Boolean(overlayMode === 2) && <LabelMenu onClose={this.overlayCloseHandler}/>}
+                    {Boolean(overlayMode === 2) &&
+                    <LabelMenu onClose={this.overlayCloseHandler}/>}
                 </div>
             </div>
         );
@@ -311,7 +312,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         const {leftMenu} = this.state;
         if (leftMenu === 'settings') {
             return (<SettingsMenu key="settings-menu" ref={this.settingsMenuRefHandler}
-                                  updateMessages={this.props.updateMessages}
+                                  onUpdateMessages={this.props.onUpdateMessages}
                                   onClose={this.props.onSettingsClose}
                                   onAction={this.props.onSettingsAction}
                                   onReloadDialog={this.props.onReloadDialog}/>);

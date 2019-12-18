@@ -35,7 +35,7 @@ import {
     GroupFull,
     InputFile,
     InputPeer,
-    InputUser, LabelsMany,
+    InputUser, Label, LabelsMany,
     MessageEntity,
     PeerNotifySettings,
     PhoneContact, PrivacyKey, PrivacyRule,
@@ -87,12 +87,11 @@ import {SystemGetInfo, SystemInfo, SystemGetSalts, SystemSalts} from './messages
 import {parsePhoneNumberFromString} from 'libphonenumber-js';
 import {
     LabelItems,
-    LabelsAddToDialog,
     LabelsAddToMessage,
     LabelsCreate,
     LabelsDelete,
     LabelsEdit,
-    LabelsGet, LabelsListItems, LabelsRemoveFromDialog, LabelsRemoveFromMessage
+    LabelsGet, LabelsListItems, LabelsRemoveFromMessage
 } from "./messages/chat.api.labels_pb";
 
 export default class SDK {
@@ -667,7 +666,7 @@ export default class SDK {
         return this.server.send(C_MSG.AccountSetLang, data.serializeBinary(), true, {timeout: 3000});
     }
 
-    public labelCreate(name: string, color: string,): Promise<Bool.AsObject> {
+    public labelCreate(name: string, color: string,): Promise<Label.AsObject> {
         const data = new LabelsCreate();
         data.setName(name);
         data.setColour(color);
@@ -707,20 +706,6 @@ export default class SDK {
         data.setLabelidsList(labelIds);
         data.setMessageidsList(msgIds);
         return this.server.send(C_MSG.LabelsRemoveFromMessage, data.serializeBinary(), true);
-    }
-
-    public labelAddToDialog(peer: InputPeer, labelIds: number[]): Promise<Bool.AsObject> {
-        const data = new LabelsAddToDialog();
-        data.setPeer(peer);
-        data.setLabelidsList(labelIds);
-        return this.server.send(C_MSG.LabelsAddToDialog, data.serializeBinary(), true);
-    }
-
-    public labelFromDialog(peer: InputPeer, labelIds: number[]): Promise<Bool.AsObject> {
-        const data = new LabelsRemoveFromDialog();
-        data.setPeer(peer);
-        data.setLabelidsList(labelIds);
-        return this.server.send(C_MSG.LabelsRemoveFromDialog, data.serializeBinary(), true);
     }
 
     public labelList(id: number, min: number, max: number, limit: number): Promise<LabelItems.AsObject> {

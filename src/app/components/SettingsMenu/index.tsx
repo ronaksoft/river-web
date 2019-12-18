@@ -151,7 +151,7 @@ interface IPrivacy {
 interface IProps {
     onClose?: (e: any) => void;
     onAction?: (cmd: 'logout') => void;
-    updateMessages?: (keep?: boolean) => void;
+    onUpdateMessages?: (keep?: boolean) => void;
     onReloadDialog?: (peerIds: string[]) => void;
     onSubPlaceChange?: (sub: string, subChild: string) => void;
 }
@@ -1108,8 +1108,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
     }
 
     private changeFontSize() {
-        if (this.props.updateMessages) {
-            this.props.updateMessages(true);
+        if (this.props.onUpdateMessages) {
+            this.props.onUpdateMessages(true);
         }
         const el = document.querySelector('html');
         if (!el) {
@@ -1117,9 +1117,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
         }
         localStorage.setItem('river.theme.font', String(this.state.fontSize));
         el.setAttribute('font', String(this.state.fontSize));
-        if (this.props.updateMessages) {
-            this.props.updateMessages();
-        }
     }
 
     private onPrevHandler = () => {
@@ -1312,9 +1309,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
     }
 
     private selectBubbleHandler = (id: string) => (e: any) => {
-        if (this.props.updateMessages) {
-            this.props.updateMessages(true);
-        }
         this.setState({
             selectedBubble: id,
         }, () => {
@@ -1324,8 +1318,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
             }
             localStorage.setItem('river.theme.bubble', id);
             el.setAttribute('bubble', id);
-            if (this.props.updateMessages) {
-                this.props.updateMessages();
+            if (this.props.onUpdateMessages) {
+                this.props.onUpdateMessages();
             }
             this.userRepo.setBubbleMode(id);
             this.broadcastEvent('Theme_Changed', null);

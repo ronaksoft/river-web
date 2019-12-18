@@ -492,12 +492,20 @@ class Chat extends React.Component<IProps, IState> {
             }
             const peer = this.getPeerByDialogId(selectedId);
             this.setLoading(true);
+            const tempSelectedDialogId = this.selectedDialogId;
+            this.setChatParams(selectedId, peer, false, {});
             if (this.messageRef) {
                 this.messageRef.setMessages([]);
             }
-            this.setLeftMenu('chat');
-            this.setChatParams(selectedId, peer, false, {});
-            this.getMessagesByDialogId(selectedId, true, selectedMessageId);
+            const fn = () => {
+                this.setLeftMenu('chat');
+                this.getMessagesByDialogId(selectedId, true, selectedMessageId);
+            };
+            if (tempSelectedDialogId === 'null') {
+                setTimeout(fn, 5);
+            } else {
+                fn();
+            }
         }
     }
 
@@ -532,7 +540,7 @@ class Chat extends React.Component<IProps, IState> {
                                   onContextMenu={this.dialogContextMenuHandler}
                                   onSettingsClose={this.bottomBarSelectHandler('chat')}
                                   onSettingsAction={this.settingActionHandler}
-                                  updateMessages={this.settingUpdateMessageHandler}
+                                  onUpdateMessages={this.settingUpdateMessageHandler}
                                   onReloadDialog={this.settingReloadDialogHandler}
                                   onAction={this.leftMenuActionHandler}
                                   onGroupCreate={this.leftMenuGroupCreateHandler}
@@ -730,7 +738,8 @@ class Chat extends React.Component<IProps, IState> {
                 <DocumentViewer key="document-viewer" onAction={this.messageAttachmentActionHandler}
                                 onJumpOnMessage={this.documentViewerJumpOnMessageHandler}/>
                 <AboutDialog key="about-dialog" ref={this.aboutDialogRefHandler}/>
-                <LabelDialog key="label-dialog" ref={this.labelDialogRefHandler} onDone={this.labelDialogDoneHandler}/>
+                <LabelDialog key="label-dialog" ref={this.labelDialogRefHandler} onDone={this.labelDialogDoneHandler}
+                             onClose={this.forwardDialogCloseHandler}/>
             </div>
         );
     }
@@ -3029,6 +3038,7 @@ class Chat extends React.Component<IProps, IState> {
         }
         if (this.selectedDialogId !== 'null' && this.messageRef) {
             this.messageRef.clearAll();
+            this.messageRef.forceUpdate();
         }
     }
 
@@ -4447,12 +4457,20 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Update label set */
     private updateLabelSetHandler = (data: UpdateLabelSet.AsObject) => {
-        this.labelRepo.upsert(data.labelsList);
+        this.labelRepo.importBulk(data.labelsList).then(() => {
+            if (this.messageRef) {
+                this.messageRef.updateList();
+            }
+        });
     }
 
     /* Update label deleted */
     private updateLabelDeletedHandler = (data: UpdateLabelDeleted.AsObject) => {
-        this.labelRepo.removeMany(data.labelidsList);
+        this.labelRepo.removeMany(data.labelidsList).then(() => {
+            if (this.messageRef) {
+                this.messageRef.updateList();
+            }
+        });
     }
 
     /* Update label items added */

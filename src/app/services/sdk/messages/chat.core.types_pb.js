@@ -258,7 +258,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.msg.Dialog = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.msg.Dialog.repeatedFields_, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.msg.Dialog, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -3131,13 +3131,6 @@ proto.msg.Bool.prototype.hasResult = function() {
 
 
 
-/**
- * List of repeated fields within this message type.
- * @private {!Array<number>}
- * @const
- */
-proto.msg.Dialog.repeatedFields_ = [12];
-
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -3179,8 +3172,7 @@ proto.msg.Dialog.toObject = function(includeInstance, msg) {
     notifysettings: (f = msg.getNotifysettings()) && proto.msg.PeerNotifySettings.toObject(includeInstance, f),
     mentionedcount: (f = jspb.Message.getField(msg, 9)) == null ? undefined : f,
     pinned: (f = jspb.Message.getBooleanField(msg, 10)) == null ? undefined : f,
-    draft: (f = msg.getDraft()) && proto.msg.DraftMessage.toObject(includeInstance, f),
-    labelidsList: (f = jspb.Message.getRepeatedField(msg, 12)) == null ? undefined : f
+    draft: (f = msg.getDraft()) && proto.msg.DraftMessage.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -3262,10 +3254,6 @@ proto.msg.Dialog.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.msg.DraftMessage;
       reader.readMessage(value,proto.msg.DraftMessage.deserializeBinaryFromReader);
       msg.setDraft(value);
-      break;
-    case 12:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.addLabelids(value);
       break;
     default:
       reader.skipField();
@@ -3373,13 +3361,6 @@ proto.msg.Dialog.serializeBinaryToWriter = function(message, writer) {
       11,
       f,
       proto.msg.DraftMessage.serializeBinaryToWriter
-    );
-  }
-  f = message.getLabelidsList();
-  if (f.length > 0) {
-    writer.writeRepeatedInt32(
-      12,
-      f
     );
   }
 };
@@ -3780,43 +3761,6 @@ proto.msg.Dialog.prototype.clearDraft = function() {
  */
 proto.msg.Dialog.prototype.hasDraft = function() {
   return jspb.Message.getField(this, 11) != null;
-};
-
-
-/**
- * repeated int32 LabelIDs = 12;
- * @return {!Array<number>}
- */
-proto.msg.Dialog.prototype.getLabelidsList = function() {
-  return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 12));
-};
-
-
-/**
- * @param {!Array<number>} value
- * @return {!proto.msg.Dialog} returns this
- */
-proto.msg.Dialog.prototype.setLabelidsList = function(value) {
-  return jspb.Message.setField(this, 12, value || []);
-};
-
-
-/**
- * @param {number} value
- * @param {number=} opt_index
- * @return {!proto.msg.Dialog} returns this
- */
-proto.msg.Dialog.prototype.addLabelids = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 12, value, opt_index);
-};
-
-
-/**
- * Clears the list making it empty but non-null.
- * @return {!proto.msg.Dialog} returns this
- */
-proto.msg.Dialog.prototype.clearLabelidsList = function() {
-  return this.setLabelidsList([]);
 };
 
 
@@ -12091,7 +12035,8 @@ proto.msg.Label.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
     name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    colour: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
+    colour: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
+    count: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -12140,6 +12085,10 @@ proto.msg.Label.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setColour(value);
       break;
+    case 4:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setCount(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -12187,6 +12136,13 @@ proto.msg.Label.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeString(
       3,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 4));
+  if (f != null) {
+    writer.writeInt32(
+      4,
       f
     );
   }
@@ -12298,6 +12254,42 @@ proto.msg.Label.prototype.clearColour = function() {
  */
 proto.msg.Label.prototype.hasColour = function() {
   return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional int32 Count = 4;
+ * @return {number}
+ */
+proto.msg.Label.prototype.getCount = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.msg.Label} returns this
+ */
+proto.msg.Label.prototype.setCount = function(value) {
+  return jspb.Message.setField(this, 4, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.Label} returns this
+ */
+proto.msg.Label.prototype.clearCount = function() {
+  return jspb.Message.setField(this, 4, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.Label.prototype.hasCount = function() {
+  return jspb.Message.getField(this, 4) != null;
 };
 
 

@@ -93,10 +93,17 @@ class MessageStatus extends React.Component<IProps, IState> {
         if (labelIds.length === 0) {
             return;
         }
+        let cnt = 0;
         return (
             <div className={'message-label ' + (labelIds.length > 1 ? 'single-label' : 'many-label')}>
                 {labelIds.slice(0, 3).map((id, key) => {
-                    return (<div key={id} className={`circle-label label-${key}`} style={{backgroundColor: this.labelColors[id]}}/>);
+                    if (this.labelColors.hasOwnProperty(id)) {
+                        return (<div key={id} className={`circle-label label-${cnt++}`}
+                                     style={{backgroundColor: this.labelColors[id]}}>
+                            {key === 0 && labelIds.length > 3 ? <div/> : ''}
+                        </div>);
+                    }
+                    return '';
                 })}
             </div>
         );

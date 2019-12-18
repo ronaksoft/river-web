@@ -134,7 +134,7 @@ class LabelMenu extends React.Component<IProps, IState> {
                                         <div className="label-info">
                                             <div className="label-name">{label.name}</div>
                                             <div className="label-counter">
-                                                {i18n.tf('label.label_count', String(localize(1)))}</div>
+                                                {i18n.tf(label.count === 1 ? 'label.label_count' : 'label.label_counts', String(localize(label.count || 0)))}</div>
                                         </div>
                                         <div className="label-action">
                                             <IconButton onClick={this.editLabelHandler(label.id || 0)}>
@@ -252,12 +252,13 @@ class LabelMenu extends React.Component<IProps, IState> {
     private createLabelHandler = () => {
         const {selectedId} = this.state;
         if (selectedId === 0) {
-            this.sdk.labelCreate(this.state.name, this.state.color).then(() => {
+            this.sdk.labelCreate(this.state.name, this.state.color).then((res) => {
                 const {list} = this.state;
                 list.push({
-                    colour: this.state.color,
-                    id: Date.now(),
-                    name: this.state.name,
+                    colour: res.colour || '',
+                    count: res.count || 0,
+                    id: res.id || 0,
+                    name: res.name || '',
                 });
                 this.setState({
                     color: '',

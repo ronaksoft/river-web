@@ -32,22 +32,6 @@ message LabelsDelete {
 message LabelsGet {
 }
 
-// LabelsAddToDialog
-// @Function
-// @Returns: Dialog
-message LabelsAddToDialog {
-    required InputPeer Peer = 1;
-    repeated int32 LabelIDs = 3;
-}
-
-// LabelsRemoveFromDialog
-// @Function
-// @Returns: Dialog
-message LabelsRemoveFromDialog {
-    required InputPeer Peer = 1;
-    repeated int32 LabelIDs = 3;
-}
-
 // LabelsAddToMessage
 // @Function
 // @Returns: Bool
@@ -81,4 +65,6 @@ message LabelItems {
     required int32 LabelID = 1;
     repeated UserMessage Messages = 2;
     repeated Dialog Dialogs = 3;
+    repeated User Users = 4;
+    repeated Group Groups = 5;
 }

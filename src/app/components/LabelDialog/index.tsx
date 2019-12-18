@@ -17,7 +17,7 @@ import InputLabel from "@material-ui/core/InputLabel/InputLabel";
 import Input from "@material-ui/core/Input/Input";
 import LabelRepo from "../../repository/label";
 import Broadcaster from "../../services/broadcaster";
-import {throttle, difference, intersection, clone, isEqual} from "lodash";
+import {throttle, difference, intersection, clone, isEqual, union} from "lodash";
 import Scrollbars from "react-custom-scrollbars";
 import {localize} from "../../services/utilities/localize";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -30,6 +30,7 @@ interface IProps {
 }
 
 interface IState {
+    indeterminateIds: number[];
     list: ILabel[];
     loading: boolean;
     open: boolean;
@@ -43,12 +44,14 @@ class LabelDialog extends React.Component<IProps, IState> {
     private readonly searchThrottle: any;
     private eventReferences: any[] = [];
     private selectedIds: number[] = [];
+    private indeterminateIds: number[] = [];
     private msgIds: number[] = [];
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
+            indeterminateIds: [],
             list: [],
             loading: false,
             open: false,
@@ -64,7 +67,13 @@ class LabelDialog extends React.Component<IProps, IState> {
     public openDialog(msgIds: number[], selectedIds: number[][]) {
         this.msgIds = msgIds;
         this.selectedIds = intersection(...selectedIds);
+        this.indeterminateIds = [];
+        if (selectedIds.length > 0) {
+            this.indeterminateIds = union(...selectedIds);
+            this.indeterminateIds = difference(this.indeterminateIds, this.selectedIds);
+        }
         this.setState({
+            indeterminateIds: clone(this.indeterminateIds),
             open: true,
             selectedIds: clone(this.selectedIds),
         });
@@ -84,7 +93,7 @@ class LabelDialog extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {loading, list, open, search, selectedIds} = this.state;
+        const {loading, list, open, search, selectedIds, indeterminateIds} = this.state;
         return (
             <SettingsModal open={open} title={i18n.t('label.label_list')}
                            icon={<LabelOutlined/>}
@@ -121,12 +130,13 @@ class LabelDialog extends React.Component<IProps, IState> {
                                     <div className="label-info">
                                         <div className="label-name">{label.name}</div>
                                         <div className="label-counter">
-                                            {i18n.tf('label.label_count', String(localize(1)))}</div>
+                                            {i18n.tf(label.count === 1 ? 'label.label_count' : 'label.label_counts', String(localize(label.count || 0)))}</div>
                                     </div>
                                     <div className="label-action">
                                         <Checkbox
                                             color="primary"
                                             checked={selectedIds.indexOf(label.id || 0) > -1}
+                                            indeterminate={selectedIds.indexOf(label.id || 0) === -1 && indeterminateIds.indexOf(label.id || 0) > -1}
                                             onChange={this.checkDialogItem(label.id || 0)}
                                             classes={{
                                                 checked: 'checkbox-checked',
@@ -142,7 +152,8 @@ class LabelDialog extends React.Component<IProps, IState> {
                         <LabelRounded/>
                         {search.length === 0 ? i18n.t('label.label_placeholder') : i18n.t('label.no_result')}
                     </div>}
-                    {!isEqual(this.selectedIds, selectedIds) && <div className="actions-bar no-bg">
+                    {Boolean(!isEqual(this.selectedIds, selectedIds) || !isEqual(this.indeterminateIds, indeterminateIds)) &&
+                    <div className="actions-bar no-bg">
                         <div className="add-action" onClick={this.doneHandler}>
                             <CheckRounded/>
                         </div>
@@ -204,32 +215,31 @@ class LabelDialog extends React.Component<IProps, IState> {
         if (!this.props.onDone) {
             return;
         }
-        const {selectedIds} = this.state;
+        const {selectedIds, indeterminateIds} = this.state;
         const addIds = difference(selectedIds, this.selectedIds);
-        const removeIds = difference(this.selectedIds, selectedIds);
+        let removeIds = this.indeterminateIds.length > 0 ? difference(this.indeterminateIds, indeterminateIds) : difference(this.selectedIds, selectedIds);
+        removeIds = difference(removeIds, addIds);
         if (addIds.length === 0 && removeIds.length === 0) {
             return;
         }
         this.props.onDone(this.msgIds, addIds, removeIds);
-        // if (this.msgIds.length === 1) {
-            this.modalCloseHandler();
-        // } else {
-        //     this.selectedIds = addIds;
-        //     this.setState({
-        //         selectedIds: clone(this.selectedIds),
-        //     });
-        // }
+        this.modalCloseHandler();
     }
 
     private checkDialogItem = (id: number) => (e: any) => {
-        const {selectedIds} = this.state;
+        const {selectedIds, indeterminateIds} = this.state;
         const index = selectedIds.indexOf(id);
         if (index > -1) {
             selectedIds.splice(index, 1);
         } else {
             selectedIds.push(id);
         }
+        const indIndex = indeterminateIds.indexOf(id);
+        if (indIndex > -1 && index > -1) {
+            indeterminateIds.splice(indIndex, 1);
+        }
         this.setState({
+            indeterminateIds,
             selectedIds,
         });
     }

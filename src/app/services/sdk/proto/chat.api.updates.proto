@@ -234,6 +234,7 @@ message UpdateLabelItemsAdded {
     required Peer Peer = 1;
     repeated int64 MessageIDs = 3;
     repeated int32 LabelIDs = 4;
+    repeated Label Labels = 5;
 }
 
 // UpdateLabelItemsRemoved
@@ -243,6 +244,7 @@ message UpdateLabelItemsRemoved {
     required Peer Peer = 1;
     repeated int64 MessageIDs = 3;
     repeated int32 LabelIDs = 4;
+    repeated Label Labels = 5;
 }
 
 // UpdateLabelSet
