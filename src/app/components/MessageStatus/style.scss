@@ -64,11 +64,9 @@
         justify-content: center;
         color: var(--white);
 
-        div {
-          height: 4px;
-          width: 4px;
-          border-radius: 50%;
-          background-color: var(--white);
+        svg {
+          font-size: 12px;
+          color: var(--white);
         }
       }
 

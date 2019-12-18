@@ -77,10 +77,6 @@
   }
 }
 
-.ReactVirtualized__Grid__innerScrollContainer {
-  width: 100% !important;
-}
-
 .bubble-gap, .bubble-wrapper {
   .gap {
     height: 1000px;
@@ -112,6 +108,34 @@
     padding-bottom: 6px;
     padding-top: 8px;
     height: 40px;
+  }
+
+  &.highlight {
+    &:before {
+      position: absolute;
+      content: '';
+      top: -2px;
+      right: -8px;
+      bottom: 0;
+      left: -8px;
+      z-index: 100;
+      animation-name: bubbleHighlight;
+      animation-duration: 1s;
+      animation-iteration-count: 1;
+      animation-timing-function: ease-in;
+    }
+
+    &.avatar.me {
+      &:before {
+        top: 0;
+      }
+    }
+
+    &.avatar.you {
+      &:before {
+        top: -4px;
+      }
+    }
   }
 
   &.voice {
@@ -365,23 +389,6 @@
 
     .more:active {
       visibility: visible !important;
-    }
-
-    &.highlight {
-      &:before {
-        position: absolute;
-        content: '';
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        z-index: 100;
-        border-radius: 5px;
-        animation-name: bubbleHighlight;
-        animation-duration: 1s;
-        animation-iteration-count: 1;
-        animation-timing-function: ease-in;
-      }
     }
   }
 
@@ -1068,12 +1075,6 @@ html[bubble="2"] {
         right: 3px;
         border-radius: 18px 18px 0 0 !important;
       }
-
-      &.highlight {
-        &:before {
-          border-radius: 20px;
-        }
-      }
     }
 
     &.me {
@@ -1151,12 +1152,6 @@ html[bubble="5"] {
 
       .name {
         padding: 4px 12px 0 8px;
-      }
-
-      &.highlight {
-        &:before {
-          border-radius: 10px;
-        }
       }
     }
 

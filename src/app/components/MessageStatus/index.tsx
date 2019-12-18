@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import TimeUtility from '../../services/utilities/time';
-import {DoneRounded, DoneAllRounded, ScheduleRounded} from '@material-ui/icons';
+import {DoneRounded, DoneAllRounded, ScheduleRounded, AddRounded} from '@material-ui/icons';
 import LabelRepo from "../../repository/label";
 import i18n from "../../services/i18n";
 
@@ -100,7 +100,7 @@ class MessageStatus extends React.Component<IProps, IState> {
                     if (this.labelColors.hasOwnProperty(id)) {
                         return (<div key={id} className={`circle-label label-${cnt++}`}
                                      style={{backgroundColor: this.labelColors[id]}}>
-                            {key === 0 && labelIds.length > 3 ? <div/> : ''}
+                            {key === 0 && labelIds.length > 3 ? <AddRounded/> : ''}
                         </div>);
                     }
                     return '';

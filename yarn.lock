@@ -10363,10 +10363,10 @@ matcher@^2.0.0:
   dependencies:
     escape-string-regexp "^2.0.0"
 
-material-ui-chip-input@1.0.0-beta.17:
-  version "1.0.0-beta.17"
-  resolved "https://registry.yarnpkg.com/material-ui-chip-input/-/material-ui-chip-input-1.0.0-beta.17.tgz#a6d31c89e495a3d5f608f6d155670d682e08f744"
-  integrity sha512-P/1mofZ9JtuCepxn1E2o3DH+Jf/dwqi/trQ4KsWZkXxk8KFQsDg7GZTmx/mX+4mbllnpyRz5la+8WIBeKuvU4Q==
+material-ui-chip-input@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/material-ui-chip-input/-/material-ui-chip-input-1.1.0.tgz#46550074da358fcfe075350181c315c9a405dc7d"
+  integrity sha512-95JsxYtzBFUyvzLC0Ae8qo1h8heu9wcSgnGjF/Sy9QQ9pL/ufLVUyjS8uFULW4kEyeNZbZurux3KZKC3FLnoqg==
   dependencies:
     classnames "^2.2.5"
     prop-types "^15.6.1"

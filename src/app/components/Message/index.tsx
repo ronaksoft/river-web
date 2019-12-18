@@ -86,12 +86,15 @@ export const messageKey = (id: number, type: number) => {
 export const highlightMessage = (id: number) => {
     const el = document.querySelector(`.bubble-wrapper .bubble.b_${id}`);
     if (el) {
-        el.classList.add('highlight');
-        setTimeout(() => {
-            if (el) {
-                el.classList.remove('highlight');
-            }
-        }, 1050);
+        const parentEl = el.parentElement;
+        if (parentEl) {
+            parentEl.classList.add('highlight');
+            setTimeout(() => {
+                if (parentEl) {
+                    parentEl.classList.remove('highlight');
+                }
+            }, 1050);
+        }
     }
 };
 

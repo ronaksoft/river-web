@@ -17,7 +17,6 @@ import {
     LabelRounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
-import TextField from '@material-ui/core/TextField/TextField';
 import MessageRepo from '../../repository/message';
 import {IMessage} from '../../repository/message/interface';
 import {debounce, clone, isEqual} from 'lodash';
@@ -27,8 +26,11 @@ import Button from '@material-ui/core/Button';
 import LabelRepo from "../../repository/label";
 import {ILabel} from "../../repository/label/interface";
 import Scrollbars from "react-custom-scrollbars";
+import Chip from "@material-ui/core/Chip";
+import ChipInput from "material-ui-chip-input";
 
 import './style.scss';
+import Broadcaster from "../../services/broadcaster";
 
 const searchLimit: number = 10;
 
@@ -59,6 +61,9 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
     private text: string = '';
     private peer: InputPeer | null = null;
     private labelRepo: LabelRepo;
+    private labelMap: { [key: number]: number } = {};
+    private broadcaster: Broadcaster;
+    private eventReferences: any[] = [];
 
     constructor(props: IProps) {
         super(props);
@@ -78,15 +83,22 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
         this.messageRepo = MessageRepo.getInstance();
         this.searchDebouncer = debounce(this.search, 512);
         this.labelRepo = LabelRepo.getInstance();
+        this.broadcaster = Broadcaster.getInstance();
     }
 
     public componentDidMount() {
         window.addEventListener('keydown', this.keyDownHandler, true);
         this.getLabelList();
+        this.eventReferences.push(this.broadcaster.listen('Label_DB_Updated', this.getLabelList));
     }
 
     public componentWillUnmount() {
         window.removeEventListener('keydown', this.keyDownHandler, true);
+        this.eventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
+        });
     }
 
     public toggleVisible() {
@@ -112,7 +124,7 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {focus, next, prev, labelAnchorEl, labelList, appliedSelectedLabelIds} = this.state;
+        const {next, prev, labelAnchorEl, labelList, appliedSelectedLabelIds} = this.state;
         return (
             <div ref={this.refHandler} className="search-message">
                 <div className="search-box">
@@ -133,19 +145,22 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
                         </IconButton>
                     </div>
                     <div className="search-input">
-                        <TextField
-                            inputRef={this.searchRefHandler}
+                        <ChipInput
                             placeholder={i18n.t('chat.search_messages')}
-                            margin="none"
-                            className={'input' + (focus ? ' focus' : '')}
+                            className="search-chip-input"
+                            value={appliedSelectedLabelIds}
+                            chipRenderer={this.chipRenderer}
                             fullWidth={true}
-                            rowsMax={2}
-                            inputProps={{
-                                maxLength: 32,
+                            onUpdateInput={this.searchChangeHandler}
+                            onDelete={this.removeItemHandler}
+                            classes={{
+                                'chip': 'chip-chip',
+                                'chipContainer': 'chip-container',
+                                'input': 'chip-input',
+                                'inputRoot': 'chip-input-root',
+                                'label': 'chip-label',
+                                'root': 'chip-root',
                             }}
-                            onFocus={this.searchFocusHandler}
-                            onBlur={this.searchBlurHandler}
-                            onChange={this.searchChangeHandler}
                             onKeyUp={this.searchKeyUpHandler}
                             variant="outlined"
                         />
@@ -211,9 +226,9 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
         this.ref = ref;
     }
 
-    private searchRefHandler = (ref: any) => {
-        this.searchRef = ref;
-    }
+    // private searchRefHandler = (ref: any) => {
+    //     this.searchRef = ref;
+    // }
 
     private keyDownHandler = (e: any) => {
         if (e.ctrlKey || e.metaKey) {
@@ -336,20 +351,6 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
         });
     }
 
-    private searchFocusHandler = () => {
-        this.setState({
-            focus: true,
-        });
-    }
-
-    private searchBlurHandler = (e: any) => {
-        if (e.currentTarget.value.length === 0) {
-            this.setState({
-                focus: false,
-            });
-        }
-    }
-
     private searchKeyUpHandler = (e: any) => {
         switch (e.which) {
             case 38:
@@ -398,8 +399,11 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
         return `${height}px`;
     }
 
-    private getLabelList() {
+    private getLabelList = () => {
         this.labelRepo.search({}).then((res) => {
+            res.forEach((item, key) => {
+                this.labelMap[item.id || 0] = key;
+            });
             this.setState({
                 labelList: res,
             });
@@ -432,6 +436,30 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
             this.search(this.text);
         });
         this.labelCloseHandler();
+    }
+
+    private chipRenderer = ({value, text}: any, key: any): React.ReactNode => {
+        if (this.labelMap.hasOwnProperty(value)) {
+            const index = this.labelMap[value];
+            const label = this.state.labelList[index];
+            return (
+                <Chip key={key} avatar={<LabelRounded style={{color: label.colour}}/>} tabIndex={-1} label={label.name}
+                      onDelete={this.removeItemHandler(value)} className="chip"/>);
+        }
+        return (<span/>);
+    }
+
+    private removeItemHandler = (id: number) => (e: any) => {
+        const {appliedSelectedLabelIds} = this.state;
+        const index = appliedSelectedLabelIds.indexOf(id);
+        if (index > -1) {
+            appliedSelectedLabelIds.splice(index, 1);
+            this.setState({
+                appliedSelectedLabelIds,
+            }, () => {
+                this.search(this.text);
+            });
+        }
     }
 }
 

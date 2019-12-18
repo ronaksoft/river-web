@@ -25,14 +25,19 @@ import InputLabel from "@material-ui/core/InputLabel/InputLabel";
 import Input from "@material-ui/core/Input/Input";
 import {localize} from "../../services/utilities/localize";
 import Scrollbars from "react-custom-scrollbars";
-import {throttle} from "lodash";
+import {throttle, findIndex} from "lodash";
 import {labelColors} from "./vars";
 import SDK from "../../services/sdk";
 import {ILabel} from "../../repository/label/interface";
 import LabelRepo from "../../repository/label";
+import Broadcaster from "../../services/broadcaster";
+import Checkbox from "@material-ui/core/Checkbox";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogActions from "@material-ui/core/DialogActions";
+import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog/Dialog";
 
 import './style.scss';
-import Broadcaster from "../../services/broadcaster";
 
 interface IProps {
     onClose?: () => void;
@@ -40,12 +45,14 @@ interface IProps {
 
 interface IState {
     color: string;
+    confirmOpen: boolean;
     list: ILabel[];
     loading: boolean;
     name: string;
     page: string;
     search: string;
     selectedId: number;
+    selectedIds: number[];
 }
 
 class LabelMenu extends React.Component<IProps, IState> {
@@ -60,12 +67,14 @@ class LabelMenu extends React.Component<IProps, IState> {
 
         this.state = {
             color: '',
+            confirmOpen: false,
             list: [],
             loading: false,
             name: '',
             page: '1',
             search: '',
             selectedId: 0,
+            selectedIds: [],
         };
 
         this.sdk = SDK.getInstance();
@@ -88,7 +97,7 @@ class LabelMenu extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {page, color, name, search, list, loading} = this.state;
+        const {page, color, confirmOpen, name, search, list, loading, selectedIds} = this.state;
         return (
             <div className="label-menu">
                 <div className={'page-container page-' + page}>
@@ -102,6 +111,7 @@ class LabelMenu extends React.Component<IProps, IState> {
                             <label>{i18n.t('label.labels')}</label>
                             <IconButton
                                 onClick={this.addLabelPageHandler}
+                                className={'add-remove-icon' + (selectedIds.length > 0 ? ' remove-mode' : '')}
                             >
                                 <ControlPointRounded/>
                             </IconButton>
@@ -120,7 +130,8 @@ class LabelMenu extends React.Component<IProps, IState> {
                                 />
                             </FormControl>
                         </div>
-                        {Boolean(list.length > 0) && <div className="label-container">
+                        {Boolean(list.length > 0) &&
+                        <div className={'label-container' + (selectedIds.length > 0 ? ' selectable-mode' : '')}>
                             <Scrollbars
                                 autoHide={true}
                                 hideTracksWhenNotNeeded={true}
@@ -128,8 +139,18 @@ class LabelMenu extends React.Component<IProps, IState> {
                             >
                                 {list.map((label, key) => {
                                     return (<div key={key} className="label-item">
-                                        <div className="label-icon">
-                                            <LabelRounded style={{color: label.colour}}/>
+                                        <div className="label-icon" style={{color: label.colour}}>
+                                            <LabelRounded className="svg-icon"/>
+                                            <Checkbox
+                                                color="primary"
+                                                checked={selectedIds.indexOf(label.id || 0) > -1}
+                                                onChange={this.selectLabelHandler(label.id || 0)}
+                                                classes={{
+                                                    checked: 'checkbox-checked',
+                                                    root: 'checkbox',
+                                                }}
+                                                className="checkbox-icon"
+                                            />
                                         </div>
                                         <div className="label-info">
                                             <div className="label-name">{label.name}</div>
@@ -200,6 +221,17 @@ class LabelMenu extends React.Component<IProps, IState> {
                         </div>
                     </div>
                 </div>
+                <Dialog
+                    open={confirmOpen}
+                    onClose={this.confirmCloseHandler}
+                    className="kk-context-menu"
+                >
+                    <DialogTitle>{i18n.t('general.are_you_sure')}</DialogTitle>
+                    <DialogActions>
+                        <Button onClick={this.confirmCloseHandler} color="secondary">{i18n.t('general.cancel')}</Button>
+                        <Button onClick={this.confirmAcceptHandler} color="primary" autoFocus={true}>{i18n.t('general.yes')}</Button>
+                    </DialogActions>
+                </Dialog>
             </div>
         );
     }
@@ -217,9 +249,16 @@ class LabelMenu extends React.Component<IProps, IState> {
     }
 
     private addLabelPageHandler = () => {
-        this.setState({
-            page: '2',
-        });
+        const {selectedIds} = this.state;
+        if (selectedIds.length === 0) {
+            this.setState({
+                page: '2',
+            });
+        } else {
+            this.setState({
+                confirmOpen: true,
+            });
+        }
     }
 
     private searchChangeHandler = (e: any) => {
@@ -329,6 +368,43 @@ class LabelMenu extends React.Component<IProps, IState> {
 
     private searchIt = () => {
         this.searchLabels(this.state.search);
+    }
+
+    private selectLabelHandler = (id: number) => (e: any, checked: boolean) => {
+        const {selectedIds} = this.state;
+        const index = selectedIds.indexOf(id);
+        if (index > -1 && !checked) {
+            selectedIds.splice(index, 1);
+        } else if (index === -1 && checked) {
+            selectedIds.push(id);
+        }
+        this.setState({
+            selectedIds,
+        });
+    }
+
+    private confirmCloseHandler = () => {
+        this.setState({
+            confirmOpen: false,
+        });
+    }
+
+    private confirmAcceptHandler = () => {
+        const {selectedIds} = this.state;
+        this.sdk.labelDelete(selectedIds).then(() => {
+            const {list} = this.state;
+            selectedIds.forEach((id) => {
+                const index = findIndex(list, {id});
+                if (index > -1) {
+                    list.splice(index, 1);
+                }
+            });
+            this.setState({
+                confirmOpen: false,
+                list,
+                selectedIds: [],
+            });
+        });
     }
 }
 

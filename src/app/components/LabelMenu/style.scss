@@ -60,6 +60,14 @@
       flex: 1;
       padding: 10px 10px 10px 0;
     }
+
+    .add-remove-icon {
+      transition: transform 0.2s;
+
+      &.remove-mode {
+        transform: rotate(45deg);
+      }
+    }
   }
 
   .input-container {
@@ -128,10 +136,23 @@
       }
 
       .label-icon {
+        position: relative;
         padding: 6px 12px 6px 0;
 
-        svg {
+        .svg-icon {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
           font-size: 32px;
+          color: inherit;
+          transition: opacity 0.1s;
+        }
+
+        .checkbox-icon {
+          opacity: 0;
+          transition: opacity 0.1s;
+          color: inherit;
         }
       }
 
@@ -170,6 +191,22 @@
           }
         }
       }
+    }
+
+    .label-item:hover, &.selectable-mode .label-item {
+      .label-icon {
+        .svg-icon {
+          opacity: 0;
+        }
+      }
+
+      .checkbox-icon {
+        opacity: 1;
+      }
+    }
+
+    &.selectable-mode .label-item .label-action {
+      display: none;
     }
   }
 

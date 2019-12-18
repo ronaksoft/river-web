@@ -866,6 +866,9 @@ class Chat extends React.Component<IProps, IState> {
 
     private searchMessageHandler = (ref: any) => {
         this.searchMessageRef = ref;
+        if (this.searchMessageRef && this.peer) {
+            this.searchMessageRef.setPeer(this.peer);
+        }
     }
 
     private infoBarRefHandler = (ref: any) => {
@@ -3306,7 +3309,7 @@ class Chat extends React.Component<IProps, IState> {
         });
         if (index > 0) {
             if (this.messageRef.list) {
-                this.messageRef.list.scrollToItem(index);
+                this.messageRef.list.scrollToItem(index, -1);
                 setTimeout(() => {
                     highlightMessage(id);
                     if (typeof text === 'string' && text !== '') {

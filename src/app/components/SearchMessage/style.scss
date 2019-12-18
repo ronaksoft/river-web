@@ -44,7 +44,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0 6px;
+      padding: 6px;
 
       button {
         padding: 3px;
@@ -58,25 +58,54 @@
       justify-content: center;
       padding: 0 6px;
 
-      .input {
-        label {
-          font-size: 14px;
-          line-height: 16px;
-          transform: translate(0, 12px) scale(1);
-        }
-
-        &.focus {
-          label {
-            transform: translate(0, 0) scale(0.8);
-          }
-        }
-
-        > div {
+      .chip-root {
+        .chip-container {
           margin: 0;
+          padding: 6px 0;
+        }
+      }
+
+      .search-chip-input {
+        .chip-input-root {
+          padding: 0;
+          border: 1px solid rgba(0, 0, 0, 0.23);
+          background-color: rgba(250, 250, 250, 0.1);
+          border-radius: 4px;
+
+          fieldset {
+            display: none;
+          }
+
+          .chip {
+            height: 20px;
+            border-radius: 3px;
+            padding: 0 3px;
+            margin: 0 0 0 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            svg {
+              height: 15px;
+              width: 15px;
+              font-size: 15px;
+              margin: 0;
+            }
+
+            span {
+              display: inline;
+              font-size: 10px;
+              padding: 2px 2px 0;
+              max-width: 45px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+          }
 
           input {
+            margin: 0;
             padding: 4px 10px;
-            background-color: rgba(250, 250, 250, 0.1);
             border-radius: 3px;
 
             &::placeholder {
@@ -162,14 +191,17 @@ html[theme="dark-night"] {
         }
       }
 
-      .search-input {
-        label {
+      .search-chip-input {
+        input {
           color: var(--white);
         }
 
-        .input {
-          input {
-            color: var(--white);
+        .chip {
+          background-color: var(--dark-high);
+          color: var(--white);
+
+          svg {
+            color: var(--dark-night-accent-high);
           }
         }
       }
@@ -217,14 +249,17 @@ html[theme="dark-blue"] {
         }
       }
 
-      .search-input {
-        label {
+      .search-chip-input {
+        input {
           color: var(--white);
         }
 
-        .input {
-          input {
-            color: var(--white);
+        .chip {
+          background-color: var(--dark-blue-high);
+          color: var(--white);
+
+          svg {
+            color: var(--dark-blue-accent-low);
           }
         }
       }

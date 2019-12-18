@@ -220,10 +220,18 @@ class KKWindow extends React.Component<IProps, IState> {
     }
 
     public scrollToItem(index: number, offset?: number) {
-        window.console.log('scrollToItem');
+        if (!this.containerRef) {
+            return;
+        }
         const scrollTop = this.cellMeasurer.getOffset(index - 1);
         if (scrollTop !== -1) {
-            this.containerRef.scrollTop = scrollTop + (offset || 0);
+            if (offset === -1) {
+                offset = -(this.props.height - this.cellMeasurer.getHeight(index)) / 2;
+            }
+            this.containerRef.scrollTo({
+                behavior: 'smooth',
+                top: scrollTop + (offset || 0),
+            });
         }
     }
 
@@ -511,7 +519,12 @@ class KKWindow extends React.Component<IProps, IState> {
             if (gap > 0) {
                 this.paddingTop = `${gap}px`;
                 if (this.props.onScrollPos && this.props.count > 0) {
-                    this.props.onScrollPos({start: 0, end: this.props.count - 1, overscanStart: 0, overscanEnd: this.props.count - 1});
+                    this.props.onScrollPos({
+                        start: 0,
+                        end: this.props.count - 1,
+                        overscanStart: 0,
+                        overscanEnd: this.props.count - 1
+                    });
                 }
             } else {
                 this.paddingTop = '0';

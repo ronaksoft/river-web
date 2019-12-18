@@ -249,9 +249,7 @@ export default class UpdateManager {
     private responseUpdateMessageID(update: UpdateEnvelope.AsObject) {
         // @ts-ignore
         const data: Uint8Array = update.update;
-        if (this.checkIncrementalUpdateId(update.updateid || 0)) {
-            return;
-        }
+        this.setLastUpdateId(update.updateid || 0);
         switch (update.constructor) {
             case C_MSG.UpdateMessageID:
                 const updateMessageId = UpdateMessageID.deserializeBinary(data).toObject();
@@ -262,10 +260,10 @@ export default class UpdateManager {
     }
 
     private response(update: UpdateEnvelope.AsObject) {
-        let flushUpdateId = false;
+        let flushUpdateId = true;
         // @ts-ignore
         const data: Uint8Array = update.update;
-        this.checkIncrementalUpdateId(update.updateid || 0);
+        this.setLastUpdateId(update.updateid || 0);
         switch (update.constructor) {
             case C_MSG.UpdateNewMessage:
                 const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
@@ -275,15 +273,19 @@ export default class UpdateManager {
                     this.throttledNewMessageDrop(updateNewMessage);
                     delete this.rndMsgMap[updateNewMessage.message.id || 0];
                 }
+                flushUpdateId = false;
                 break;
             case C_MSG.UpdateReadHistoryInbox:
                 this.callHandlers(C_MSG.UpdateReadHistoryInbox, UpdateReadHistoryInbox.deserializeBinary(data).toObject());
+                flushUpdateId = false;
                 break;
             case C_MSG.UpdateReadHistoryOutbox:
                 this.callHandlers(C_MSG.UpdateReadHistoryOutbox, UpdateReadHistoryOutbox.deserializeBinary(data).toObject());
+                flushUpdateId = false;
                 break;
             case C_MSG.UpdateUserTyping:
                 this.callHandlers(C_MSG.UpdateUserTyping, UpdateUserTyping.deserializeBinary(data).toObject());
+                flushUpdateId = false;
                 break;
             case C_MSG.UpdateMessageEdited:
                 const updateMessageEdited = UpdateMessageEdited.deserializeBinary(data).toObject();
@@ -300,7 +302,6 @@ export default class UpdateManager {
                 } else {
                     this.callHandlers(C_MSG.UpdateMessageEdited, updateMessageEdited);
                 }
-                flushUpdateId = true;
                 break;
             case C_MSG.UpdateMessagesDeleted:
                 const updateMessagesDeleted = UpdateMessagesDeleted.deserializeBinary(data).toObject();
@@ -317,36 +318,32 @@ export default class UpdateManager {
                     });
                 }
                 this.callHandlers(C_MSG.UpdateMessagesDeleted, updateMessagesDeleted);
-                flushUpdateId = true;
                 break;
             case C_MSG.UpdateUsername:
                 this.callHandlers(C_MSG.UpdateUsername, UpdateUsername.deserializeBinary(data).toObject());
-                flushUpdateId = true;
                 break;
             case C_MSG.UpdateNotifySettings:
                 this.callHandlers(C_MSG.UpdateNotifySettings, UpdateNotifySettings.deserializeBinary(data).toObject());
-                flushUpdateId = true;
                 break;
             case C_MSG.UpdateUserPhoto:
                 this.callHandlers(C_MSG.UpdateUserPhoto, UpdateUserPhoto.deserializeBinary(data).toObject());
-                flushUpdateId = true;
                 break;
             case C_MSG.UpdateGroupPhoto:
                 this.callHandlers(C_MSG.UpdateGroupPhoto, UpdateGroupPhoto.deserializeBinary(data).toObject());
-                flushUpdateId = true;
                 break;
             case C_MSG.UpdateReadMessagesContents:
                 this.callHandlers(C_MSG.UpdateReadMessagesContents, UpdateReadMessagesContents.deserializeBinary(data).toObject());
-                flushUpdateId = true;
                 break;
             case C_MSG.UpdateTooLong:
                 this.callHandlers(C_MSG.OutOfSync, {});
                 break;
             case C_MSG.UpdateAuthorizationReset:
                 this.callHandlers(C_MSG.UpdateAuthorizationReset, {});
+                flushUpdateId = false;
                 break;
             case C_MSG.UpdateDialogPinned:
                 this.callHandlers(C_MSG.UpdateDialogPinned, UpdateDialogPinned.deserializeBinary(data).toObject());
+                flushUpdateId = false;
                 break;
             case C_MSG.UpdateDraftMessage:
                 this.callHandlers(C_MSG.UpdateDraftMessage, UpdateDraftMessage.deserializeBinary(data).toObject());
@@ -378,19 +375,6 @@ export default class UpdateManager {
         if (flushUpdateId) {
             this.flushUpdateIdThrottle();
         }
-    }
-
-    private checkIncrementalUpdateId(updateId: number) {
-        if (updateId === 0) {
-            return false;
-        }
-        // if (updateId !== this.lastUpdateId + 1) {
-        //     this.callHandlers(C_MSG.OutOfSync, {});
-        //     return true;
-        // } else {
-        this.setLastUpdateId(updateId);
-        // }
-        return false;
     }
 
     private callHandlers(eventConstructor: number, payload: any) {
