@@ -19,18 +19,16 @@ import {
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import MessageRepo from '../../repository/message';
 import {IMessage} from '../../repository/message/interface';
-import {debounce, clone, isEqual} from 'lodash';
+import {debounce, clone} from 'lodash';
 import i18n from '../../services/i18n';
-import Popover from '@material-ui/core/Popover';
-import Button from '@material-ui/core/Button';
 import LabelRepo from "../../repository/label";
 import {ILabel} from "../../repository/label/interface";
-import Scrollbars from "react-custom-scrollbars";
 import Chip from "@material-ui/core/Chip";
 import ChipInput from "material-ui-chip-input";
+import Broadcaster from "../../services/broadcaster";
+import LabelPopover from "../LabelPopover";
 
 import './style.scss';
-import Broadcaster from "../../services/broadcaster";
 
 const searchLimit: number = 10;
 
@@ -48,12 +46,12 @@ interface IState {
     labelList: ILabel[];
     next: boolean;
     prev: boolean;
-    selectedLabelIds: number[];
 }
 
 class SearchMessage extends React.PureComponent<IProps, IState> {
     private ref: any = null;
     private searchRef: any = null;
+    private labelPopoverRef: LabelPopover | undefined;
     private visible: boolean = false;
     private messageRepo: MessageRepo;
     private readonly searchDebouncer: any;
@@ -77,7 +75,6 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
             labelList: [],
             next: false,
             prev: false,
-            selectedLabelIds: [],
         };
 
         this.messageRepo = MessageRepo.getInstance();
@@ -124,7 +121,7 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {next, prev, labelAnchorEl, labelList, appliedSelectedLabelIds} = this.state;
+        const {next, prev, appliedSelectedLabelIds} = this.state;
         return (
             <div ref={this.refHandler} className="search-message">
                 <div className="search-box">
@@ -180,44 +177,8 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
                         </IconButton>
                     </div>
                 </div>
-                <Popover anchorEl={labelAnchorEl}
-                         open={Boolean(labelAnchorEl)}
-                         onClose={this.labelCloseHandler}
-                         anchorOrigin={{
-                             horizontal: "center",
-                             vertical: "bottom",
-                         }}
-                         className="search-label-popover"
-                >
-                    <div className="search-label-container">
-                        <div className="search-label-list" style={{height: this.getLabelListHeight()}}>
-                            <Scrollbars
-                                autoHide={true}
-                                hideTracksWhenNotNeeded={true}
-                                universal={true}
-                                autoHeight={true}
-                            >
-                                {labelList.map((label) => {
-                                    return (<div key={label.id}
-                                                 className={'label-item' + (this.isLabelSelected(label.id || 0) ? ' selected' : '')}
-                                                 onClick={this.toggleLabelHandler(label.id || 0)}>
-                                        <div className="label-icon">
-                                            <LabelRounded style={{color: label.colour}}/>
-                                        </div>
-                                        <div className="label-name">{label.name}</div>
-                                    </div>);
-                                })}
-                            </Scrollbars>
-                        </div>
-                        <div className="search-label">
-                            <Button fullWidth={true}
-                                    variant="outlined" color="secondary" size="small"
-                                    onClick={this.labelApplyHandler}
-                                    disabled={isEqual(appliedSelectedLabelIds, this.state.selectedLabelIds)}
-                            >{i18n.t('general.apply')}</Button>
-                        </div>
-                    </div>
-                </Popover>
+                <LabelPopover ref={this.labelPopoverRefHandler} labelList={this.state.labelList}
+                              onApply={this.labelPopoverApplyHandler}/>
             </div>
         );
     }
@@ -226,9 +187,9 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
         this.ref = ref;
     }
 
-    // private searchRefHandler = (ref: any) => {
-    //     this.searchRef = ref;
-    // }
+    private labelPopoverRefHandler = (ref: any) => {
+        this.labelPopoverRef = ref;
+    }
 
     private keyDownHandler = (e: any) => {
         if (e.ctrlKey || e.metaKey) {
@@ -250,7 +211,6 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
             items: [],
             next: false,
             prev: false,
-            selectedLabelIds: [],
         });
     }
 
@@ -378,25 +338,14 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
     }
 
     private labelOpenHandler = (e: any) => {
-        this.setState({
-            labelAnchorEl: e.currentTarget,
-            selectedLabelIds: clone(this.state.appliedSelectedLabelIds),
-        });
-    }
-
-    private labelCloseHandler = () => {
-        this.setState({
-            labelAnchorEl: null,
-            selectedLabelIds: clone(this.state.appliedSelectedLabelIds),
-        });
-    }
-
-    private getLabelListHeight() {
-        let height = this.state.labelList.length * 28;
-        if (height > 150) {
-            height = 150;
+        if (!this.labelPopoverRef) {
+            return;
         }
-        return `${height}px`;
+        const rect = e.target.getBoundingClientRect();
+        this.labelPopoverRef.open({
+            left: rect.left - 126,
+            top: rect.top + 30,
+        }, clone(this.state.appliedSelectedLabelIds));
     }
 
     private getLabelList = () => {
@@ -410,33 +359,6 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
         });
     }
 
-    private toggleLabelHandler = (id: number) => (e: any) => {
-        const {selectedLabelIds} = this.state;
-        const index = selectedLabelIds.indexOf(id);
-        if (index > -1) {
-            selectedLabelIds.splice(index, 1);
-        } else {
-            selectedLabelIds.push(id);
-        }
-        this.setState({
-            selectedLabelIds,
-        }, () => {
-            this.forceUpdate();
-        });
-    }
-
-    private isLabelSelected(id: number) {
-        return this.state.selectedLabelIds.indexOf(id) > -1;
-    }
-
-    private labelApplyHandler = () => {
-        this.setState({
-            appliedSelectedLabelIds: clone(this.state.selectedLabelIds),
-        }, () => {
-            this.search(this.text);
-        });
-        this.labelCloseHandler();
-    }
 
     private chipRenderer = ({value, text}: any, key: any): React.ReactNode => {
         if (this.labelMap.hasOwnProperty(value)) {
@@ -460,6 +382,14 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
                 this.search(this.text);
             });
         }
+    }
+
+    private labelPopoverApplyHandler = (ids: number[]) => {
+        this.setState({
+            appliedSelectedLabelIds: ids,
+        }, () => {
+            this.search(this.text);
+        });
     }
 }
 

@@ -13,17 +13,12 @@ import {Link} from 'react-router-dom';
 import {debounce, intersectionBy, clone, differenceBy} from 'lodash';
 import {IDialog} from '../../repository/dialog/interface';
 import DialogMessage from '../DialogMessage';
-import {CloseRounded, MessageRounded} from '@material-ui/icons';
+import {LabelOutlined, LabelRounded, MessageRounded} from '@material-ui/icons';
 import Menu from '@material-ui/core/Menu/Menu';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';
 import {PeerType, TypingAction} from '../../services/sdk/messages/chat.core.types_pb';
 import Scrollbars from 'react-custom-scrollbars';
 import SearchRepo from '../../repository/search';
-import InputLabel from '@material-ui/core/InputLabel/InputLabel';
-import Input from '@material-ui/core/Input/Input';
-import InputAdornment from '@material-ui/core/InputAdornment/InputAdornment';
-import IconButton from '@material-ui/core/IconButton/IconButton';
-import FormControl from '@material-ui/core/FormControl/FormControl';
 import IsMobile from '../../services/isMobile';
 import Divider from '@material-ui/core/Divider/Divider';
 import i18n from '../../services/i18n';
@@ -34,6 +29,13 @@ import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 import animateScrollTo from "animated-scroll-to";
 import {getMessageTitle} from "./utils";
 import UserRepo from "../../repository/user";
+import ChipInput from "material-ui-chip-input";
+import Chip from "@material-ui/core/Chip";
+import LabelRepo from "../../repository/label";
+import Broadcaster from "../../services/broadcaster";
+import {ILabel} from "../../repository/label/interface";
+import IconButton from "@material-ui/core/IconButton/IconButton";
+import LabelPopover from "../LabelPopover";
 
 import './style.scss';
 
@@ -43,8 +45,10 @@ interface IProps {
 }
 
 interface IState {
+    appliedSelectedLabelIds: number[];
     ids: string[];
     items: IDialog[];
+    labelList: ILabel[];
     moreAnchorPos: any;
     moreIndex: number;
     searchAddedItems: IDialog[];
@@ -73,13 +77,20 @@ class Dialog extends React.PureComponent<IProps, IState> {
     private searchEnable: boolean = false;
     private isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } } = {};
     private readonly userId: string = '';
+    private labelRepo: LabelRepo;
+    private labelMap: { [key: number]: number } = {};
+    private broadcaster: Broadcaster;
+    private eventReferences: any[] = [];
+    private labelPopoverRef: LabelPopover | undefined;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
+            appliedSelectedLabelIds: [],
             ids: [],
             items: [],
+            labelList: [],
             moreAnchorPos: null,
             moreIndex: -1,
             searchAddedItems: [],
@@ -93,6 +104,9 @@ class Dialog extends React.PureComponent<IProps, IState> {
         this.isMobile = IsMobile.isAny();
         this.hasScrollbar = getScrollbarWidth() > 0;
         this.userId = UserRepo.getInstance().getCurrentUserId();
+        this.labelRepo = LabelRepo.getInstance();
+        this.broadcaster = Broadcaster.getInstance();
+
 
         this.menuItem = {
             0: {
@@ -146,7 +160,18 @@ class Dialog extends React.PureComponent<IProps, IState> {
     public componentDidMount() {
         // const index = findIndex(this.state.items, {peerid: this.state.selectedId});
         // this.list.scrollToRow(index);
+        this.getLabelList();
+        this.eventReferences.push(this.broadcaster.listen('Label_DB_Updated', this.getLabelList));
     }
+
+    public componentWillUnmount() {
+        this.eventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
+        });
+    }
+
 
     public setSelectedId(id: string) {
         this.setState({
@@ -198,6 +223,9 @@ class Dialog extends React.PureComponent<IProps, IState> {
         if (!this.searchEnable) {
             this.searchDebounce.cancel();
             // this.keyword = '';
+            this.setState({
+                appliedSelectedLabelIds: [],
+            });
             this.filterItem();
         } else {
             const el: any = document.querySelector('#dialog-search');
@@ -246,30 +274,36 @@ class Dialog extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {moreAnchorPos} = this.state;
+        const {moreAnchorPos, appliedSelectedLabelIds} = this.state;
         return (
             <div className="dialogs">
                 <div ref={this.containerRefHandler} className="dialog-search">
-                    <FormControl fullWidth={true} className="title-edit">
-                        <InputLabel htmlFor="dialog-search">{i18n.t('dialog.search')}</InputLabel>
-                        <Input
-                            id="dialog-search"
-                            type="text"
-                            inputProps={{
-                                maxLength: 32,
-                            }}
-                            onChange={this.searchChangeHandler}
-                            endAdornment={
-                                <InputAdornment position="end" className="adornment">
-                                    <IconButton
-                                        onClick={this.closeSearchHandler}
-                                    >
-                                        <CloseRounded/>
-                                    </IconButton>
-                                </InputAdornment>
-                            }
-                        />
-                    </FormControl>
+                    <ChipInput
+                        placeholder={i18n.t('dialog.search')}
+                        className="search-chip-input"
+                        id="dialog-search"
+                        value={appliedSelectedLabelIds}
+                        chipRenderer={this.chipRenderer}
+                        fullWidth={true}
+                        onUpdateInput={this.searchChangeHandler}
+                        onDelete={this.removeItemHandler}
+                        classes={{
+                            'chip': 'chip-chip',
+                            'chipContainer': 'chip-container',
+                            'input': 'chip-input',
+                            'inputRoot': 'chip-input-root',
+                            'label': 'chip-label',
+                            'root': 'chip-root',
+                        }}
+                        variant="outlined"
+                    />
+                    <div className="search-label">
+                        <IconButton
+                            onClick={this.labelOpenHandler}
+                        >
+                            {appliedSelectedLabelIds.length === 0 ? <LabelOutlined/> : <LabelRounded/>}
+                        </IconButton>
+                    </div>
                 </div>
                 <div className="dialog-list">
                     {/*{this.getWrapper()}*/}
@@ -306,8 +340,14 @@ class Dialog extends React.PureComponent<IProps, IState> {
                 >
                     {this.contextMenuItem()}
                 </Menu>
+                <LabelPopover ref={this.labelPopoverRefHandler} labelList={this.state.labelList}
+                              onApply={this.labelPopoverApplyHandler}/>
             </div>
         );
+    }
+
+    private labelPopoverRefHandler = (ref: any) => {
+        this.labelPopoverRef = ref;
     }
 
     private getContent() {
@@ -681,6 +721,60 @@ class Dialog extends React.PureComponent<IProps, IState> {
 
     private containerRefHandler = (ref: any) => {
         this.containerRef = ref;
+    }
+
+    private getLabelList = () => {
+        this.labelRepo.search({}).then((res) => {
+            res.forEach((item, key) => {
+                this.labelMap[item.id || 0] = key;
+            });
+            this.setState({
+                labelList: res,
+            });
+        });
+    }
+
+    private chipRenderer = ({value, text}: any, key: any): React.ReactNode => {
+        if (this.labelMap.hasOwnProperty(value)) {
+            const index = this.labelMap[value];
+            const label = this.state.labelList[index];
+            return (
+                <Chip key={key} avatar={<LabelRounded style={{color: label.colour}}/>} tabIndex={-1} label={label.name}
+                      onDelete={this.removeItemHandler(value)} className="chip"/>);
+        }
+        return (<span/>);
+    }
+
+    private removeItemHandler = (id: number) => (e: any) => {
+        const {appliedSelectedLabelIds} = this.state;
+        const index = appliedSelectedLabelIds.indexOf(id);
+        if (index > -1) {
+            appliedSelectedLabelIds.splice(index, 1);
+            this.setState({
+                appliedSelectedLabelIds,
+            }, () => {
+                this.search('');
+            });
+        }
+    }
+
+    private labelOpenHandler = (e: any) => {
+        if (!this.labelPopoverRef) {
+            return;
+        }
+        const rect = e.target.getBoundingClientRect();
+        this.labelPopoverRef.open({
+            left: rect.left - 126,
+            top: rect.top + 30,
+        }, clone(this.state.appliedSelectedLabelIds));
+    }
+
+    private labelPopoverApplyHandler = (ids: number[]) => {
+        this.setState({
+            appliedSelectedLabelIds: ids,
+        }, () => {
+            this.search(this.keyword);
+        });
     }
 }
 

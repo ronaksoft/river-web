@@ -1,0 +1,115 @@
+/*
+    Creation Time: 2019 - Dec - 2019
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2019
+*/
+@import '../../../style/mixin';
+
+.search-label-popover {
+  div[role="document"] {
+    background-color: var(--header-color);
+  }
+
+  .search-label-container {
+    display: flex;
+    padding: 5px;
+    min-width: 150px;
+    flex-direction: column;
+
+    .search-label-list {
+      max-height: 150px;
+      width: 100%;
+
+      .label-item {
+        display: flex;
+        height: 28px;
+        cursor: pointer;
+        opacity: 0.5;
+
+        &:hover {
+          background-color: var(--dark-hover-light);
+        }
+
+        &.selected {
+          opacity: 1;
+        }
+
+        .label-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 28px;
+          width: 28px;
+          margin: 0 6px 0 0;
+        }
+
+        .label-name {
+          display: flex;
+          flex: 1;
+          align-items: center;
+          justify-content: flex-start;
+          height: 100%;
+          font-size: 13px;
+        }
+      }
+    }
+
+    .search-label {
+      padding: 6px 0 0;
+    }
+  }
+}
+
+html[theme="dark"],
+html[theme="dark-night"] {
+  .search-label-popover {
+    div[role="document"] {
+      background-color: var(--dark-low);
+    }
+
+    .search-label-container {
+      .search-label-list {
+        .label-item {
+          .label-name {
+            color: var(--white);
+          }
+        }
+      }
+
+      .search-label {
+        button[disabled] {
+          border-color: var(--dark-hover-light);
+          color: var(--dark-hover-light);
+        }
+      }
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .search-label-popover {
+    div[role="document"] {
+      background-color: var(--dark-blue-low);
+    }
+
+    .search-label-container {
+      .search-label-list {
+        .label-item {
+          .label-name {
+            color: var(--white);
+          }
+        }
+      }
+
+      .search-label {
+        button[disabled] {
+          border-color: var(--dark-hover-light);
+          color: var(--dark-hover-light);
+        }
+      }
+    }
+  }
+}
