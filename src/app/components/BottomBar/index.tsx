@@ -28,6 +28,12 @@ interface IState {
 }
 
 class BottomBar extends React.Component<IProps, IState> {
+    public static getDerivedStateFromProps(props: IProps, state: IState) {
+        return {
+            selected: props.selected,
+        };
+    }
+
     private items: Array<{badge?: boolean, icon: any, page: menuItems, title: string}>;
 
     constructor(props: IProps) {
@@ -52,12 +58,6 @@ class BottomBar extends React.Component<IProps, IState> {
             page: 'settings',
             title: i18n.t('general.settings'),
         }];
-    }
-
-    public componentWillReceiveProps(newProps: IProps) {
-        this.setState({
-            selected: newProps.selected,
-        });
     }
 
     public setUnreadCounter(counter: number) {

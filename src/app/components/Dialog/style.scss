@@ -267,6 +267,12 @@ html[direction="rtl"] {
   }
 
   .dialogs {
+    .search-label {
+      padding: 0 3px 0 0;
+    }
+  }
+
+  .dialogs {
     .dialog-list {
       .dialog-container {
 
@@ -318,6 +324,21 @@ html[theme="dark-night"] {
     .dialog-search {
       label, input, svg {
         color: var(--white);
+      }
+
+      .search-chip-input {
+        input {
+          color: var(--white);
+        }
+
+        .chip {
+          background-color: var(--dark-high);
+          color: var(--white);
+
+          svg {
+            color: var(--dark-night-accent-high);
+          }
+        }
       }
     }
 
@@ -377,6 +398,27 @@ html[theme="dark-blue"] {
     .dialog-search {
       label, input, svg {
         color: var(--white);
+      }
+
+      .search-chip-input {
+        input {
+          color: var(--white);
+        }
+
+        .chip {
+          background-color: var(--dark-blue-high);
+          color: var(--white);
+
+          svg {
+            color: var(--dark-blue-accent-low);
+          }
+        }
+      }
+
+      .search-label {
+        svg {
+          color: var(--dark-blue-mention);
+        }
       }
     }
 

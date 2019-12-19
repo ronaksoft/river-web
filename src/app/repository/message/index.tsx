@@ -601,10 +601,10 @@ export default class MessageRepo {
                 }
             });
         }
-        return pipe2.limit(limit || 30).toArray();
+        return pipe2.limit(limit || 32).toArray();
     }
 
-    public searchAll(keyword: string, {after, limit}: { after?: number, limit?: number }) {
+    public searchAll({keyword, labelIds}: {keyword?: string, labelIds?: number[]}, {after, limit}: { after?: number, limit?: number }) {
         const pipe = this.db.messages;
         let pipe2: Dexie.Collection<IMessage, number>;
         if (after) {
@@ -612,22 +612,31 @@ export default class MessageRepo {
         } else {
             pipe2 = pipe.reverse();
         }
-        const reg = new RegExp(keyword || '', 'i');
-        return pipe2.filter((item: IMessage) => {
-            if (item.messagetype !== C_MESSAGE_TYPE.Hole && item.messagetype !== C_MESSAGE_TYPE.End && item.temp !== true && (item.id || 0) > 0) {
-                if (item.messagetype === 0 || item.messagetype === C_MESSAGE_TYPE.Normal) {
-                    return reg.test(item.body || '');
-                } else {
-                    if (item.mediadata && item.mediadata.caption) {
-                        return reg.test(item.mediadata.caption || '');
-                    } else {
-                        return false;
+        const term = keyword || '';
+        if (term.length > 0 || (labelIds && labelIds.length > 0)) {
+            const reg = new RegExp(term, 'i');
+            pipe2 = pipe2.filter((item: IMessage) => {
+                if (item.messagetype !== C_MESSAGE_TYPE.Hole && item.messagetype !== C_MESSAGE_TYPE.End && item.temp !== true && (item.id || 0) > 0) {
+                    let isMatched = false;
+                    if (labelIds && labelIds.length && item.labelidsList && item.labelidsList.length && difference(labelIds, item.labelidsList).length === 0) {
+                        isMatched = true;
                     }
+                    if (term.length > 0) {
+                        if (item.messagetype === 0 || item.messagetype === C_MESSAGE_TYPE.Normal) {
+                            isMatched = reg.test(item.body || '');
+                        } else {
+                            if (item.mediadata && item.mediadata.caption) {
+                                isMatched = reg.test(item.mediadata.caption || '');
+                            }
+                        }
+                    }
+                    return isMatched;
+                } else {
+                    return false;
                 }
-            } else {
-                return false;
-            }
-        }).limit(limit || 32).toArray();
+            });
+        }
+        return pipe2.limit(limit || 32).toArray();
     }
 
     public transform(msgs: IMessage[]) {

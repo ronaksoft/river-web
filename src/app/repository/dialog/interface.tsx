@@ -24,6 +24,7 @@ interface IDialog extends Dialog.AsObject {
     scroll_pos?: number;
     sender_id?: string;
     only_contact?: boolean;
+    label_ids?: number[];
 }
 
 interface IDialogWithUpdateId {

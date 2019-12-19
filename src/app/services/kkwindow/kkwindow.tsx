@@ -173,10 +173,6 @@ class KKWindow extends React.Component<IProps, IState> {
         this.fitList = props.fitList || true;
     }
 
-    public componentDidMount() {
-        //
-    }
-
     public shouldComponentUpdate(nextProps: Readonly<IProps>, nextState: Readonly<IState>, nextContext: any): boolean {
         if (nextProps.count !== this.props.count && this.loadBeforeTriggered) {
             if (this.containerRef && this.containerRef.scrollTop < 5) {
@@ -201,22 +197,6 @@ class KKWindow extends React.Component<IProps, IState> {
                 this.cellMeasurer.recomputeListHeight();
             }
         }
-    }
-
-    // public shouldComponentUpdate(nextProps: Readonly<IProps>, nextState: Readonly<IState>, context: any): boolean {
-    //     if (this.props.count === nextProps.count) {
-    //         return false;
-    //     }
-    //     if (!this.loadMoreReady) {
-    //         this.takeSnapshot();
-    //     }
-    //     this.loadMoreReady = false;
-    //     this.cellMeasurer.setRowCount(this.props.count);
-    //     return true;
-    // }
-
-    public componentWillUnmount() {
-        //
     }
 
     public scrollToItem(index: number, offset?: number) {

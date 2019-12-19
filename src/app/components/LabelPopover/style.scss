@@ -63,6 +63,26 @@
   }
 }
 
+html[direction="rtl"] {
+  .search-label-popover {
+    .search-label-container {
+      .search-label-list {
+        .label-item {
+          flex-direction: row-reverse;
+
+          .label-icon {
+            padding: 0 0 0 6px;
+          }
+
+          .label-name {
+            justify-content: flex-end;
+          }
+        }
+      }
+    }
+  }
+}
+
 html[theme="dark"],
 html[theme="dark-night"] {
   .search-label-popover {

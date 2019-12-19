@@ -52,6 +52,7 @@ interface IState {
     moreAnchorPos: any;
     moreIndex: number;
     searchAddedItems: IDialog[];
+    searchEnable: boolean;
     searchItems: IDialog[];
     searchMessageItems: IDialog[];
     selectedId: string;
@@ -74,7 +75,6 @@ class Dialog extends React.PureComponent<IProps, IState> {
     private firstTimeTimeout: any = null;
     private readonly hasScrollbar: boolean = false;
     private containerRef: any;
-    private searchEnable: boolean = false;
     private isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } } = {};
     private readonly userId: string = '';
     private labelRepo: LabelRepo;
@@ -94,6 +94,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
             moreAnchorPos: null,
             moreIndex: -1,
             searchAddedItems: [],
+            searchEnable: false,
             searchItems: [],
             searchMessageItems: [],
             selectedId: 'null',
@@ -211,29 +212,24 @@ class Dialog extends React.PureComponent<IProps, IState> {
     }
 
     public toggleSearch() {
-        if (!this.containerRef) {
-            return;
-        }
-        this.searchEnable = !this.searchEnable;
-        if (this.searchEnable) {
-            this.containerRef.classList.add('open');
-        } else {
-            this.containerRef.classList.remove('open');
-        }
-        if (!this.searchEnable) {
-            this.searchDebounce.cancel();
-            // this.keyword = '';
-            this.setState({
-                appliedSelectedLabelIds: [],
-            });
-            this.filterItem();
-        } else {
-            const el: any = document.querySelector('#dialog-search');
-            if (el) {
-                // el.value = '';
-                el.focus();
+        this.setState({
+            searchEnable: !this.state.searchEnable,
+        }, () => {
+            if (this.state.searchEnable) {
+                this.searchDebounce.cancel();
+                // this.keyword = '';
+                this.setState({
+                    appliedSelectedLabelIds: [],
+                });
+                this.filterItem();
+            } else {
+                const el: any = document.querySelector('#dialog-search');
+                if (el) {
+                    // el.value = '';
+                    el.focus();
+                }
             }
-        }
+        });
     }
 
     public scrollTop() {
@@ -274,10 +270,10 @@ class Dialog extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {moreAnchorPos, appliedSelectedLabelIds} = this.state;
+        const {moreAnchorPos, appliedSelectedLabelIds, searchEnable} = this.state;
         return (
             <div className="dialogs">
-                <div ref={this.containerRefHandler} className="dialog-search">
+                <div ref={this.containerRefHandler} className={'dialog-search' + (searchEnable ? ' open' : '')}>
                     <ChipInput
                         placeholder={i18n.t('dialog.search')}
                         className="search-chip-input"
@@ -340,8 +336,8 @@ class Dialog extends React.PureComponent<IProps, IState> {
                 >
                     {this.contextMenuItem()}
                 </Menu>
-                <LabelPopover ref={this.labelPopoverRefHandler} labelList={this.state.labelList}
-                              onApply={this.labelPopoverApplyHandler}/>
+                {searchEnable && <LabelPopover ref={this.labelPopoverRefHandler} labelList={this.state.labelList}
+                                               onApply={this.labelPopoverApplyHandler}/>}
             </div>
         );
     }
@@ -351,25 +347,27 @@ class Dialog extends React.PureComponent<IProps, IState> {
     }
 
     private getContent() {
-        const {searchItems, searchAddedItems, searchMessageItems} = this.state;
+        const {searchItems, searchAddedItems, searchMessageItems, appliedSelectedLabelIds} = this.state;
         if ((searchItems.length + searchAddedItems.length + searchMessageItems.length) === 0) {
             return this.noRowsRenderer();
         } else {
             return (<>
-                {searchItems.map((dialog, index) => {
-                    const isTyping = this.isTypingList.hasOwnProperty(dialog.peerid || '') ? this.isTypingList[dialog.peerid || ''] : {};
-                    return (
-                        <DialogMessage key={dialog.peerid || index} dialog={dialog}
-                                       isTyping={isTyping} selectedId={this.state.selectedId}
-                                       onContextMenuOpen={this.contextMenuOpenHandler(index)}/>
-                    );
-                })}
-                {searchAddedItems.map((dialog, index) => {
-                    return (
-                        <DialogMessage key={dialog.peerid || index} dialog={dialog}
-                                       isTyping={{}} selectedId={this.state.selectedId}/>
-                    );
-                })}
+                {Boolean(appliedSelectedLabelIds.length === 0) && <>
+                    {searchItems.map((dialog, index) => {
+                        const isTyping = this.isTypingList.hasOwnProperty(dialog.peerid || '') ? this.isTypingList[dialog.peerid || ''] : {};
+                        return (
+                            <DialogMessage key={dialog.peerid || index} dialog={dialog}
+                                           isTyping={isTyping} selectedId={this.state.selectedId}
+                                           onContextMenuOpen={this.contextMenuOpenHandler(index)}/>
+                        );
+                    })}
+                    {searchAddedItems.map((dialog, index) => {
+                        return (
+                            <DialogMessage key={dialog.peerid || index} dialog={dialog}
+                                           isTyping={{}} selectedId={this.state.selectedId}/>
+                        );
+                    })}
+                </>}
                 {Boolean(searchMessageItems.length > 0) &&
                 <div className="search-label">{i18n.t('dialog.messages')}</div>}
                 {searchMessageItems.map((dialog, index) => {
@@ -626,7 +624,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
 
     private searchChangeHandler = (e: any) => {
         const text = e.currentTarget.value;
-        if (!this.searchEnable || text.length === 0) {
+        if (!this.state.searchEnable || text.length === 0) {
             this.searchDebounce.cancel();
             this.keyword = '';
             this.setState({
@@ -642,17 +640,21 @@ class Dialog extends React.PureComponent<IProps, IState> {
 
     private search = (keyword: string) => {
         this.keyword = keyword;
-        this.searchRepo.search({keyword, limit: 100}).then((res) => {
-            this.setState({
-                ids: res.dialogs.map(o => (o.peerid || '')),
-            }, () => {
-                this.filterItem(res.contacts);
+        const {appliedSelectedLabelIds} = this.state;
+        if (appliedSelectedLabelIds.length === 0) {
+            this.searchRepo.search({keyword, limit: 100}).then((res) => {
+                this.setState({
+                    ids: res.dialogs.map(o => (o.peerid || '')),
+                }, () => {
+                    this.filterItem(res.contacts);
+                });
             });
-        });
-        this.searchRepo.searchAllMessages(keyword, {}).then((res) => {
+        }
+        this.searchRepo.searchAllMessages({keyword, labelIds: appliedSelectedLabelIds}, {}).then((res) => {
             const searchMessageItems: IDialog[] = res.map((msg) => {
                 const messageTitle = getMessageTitle(msg);
                 return {
+                    label_ids: msg.labelidsList,
                     last_update: msg.createdon,
                     only_contact: true,
                     peerid: msg.peerid,
@@ -676,7 +678,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
         const {ids, items} = this.state;
         let searchItems: IDialog[] = [];
         let searchAddedItems: IDialog[] = [];
-        if ((ids.length === 0 && this.keyword.length === 0) || !this.searchEnable) {
+        if ((ids.length === 0 && this.keyword.length === 0) || !this.state.searchEnable) {
             searchItems = clone(items);
         } else {
             const peerIds = ids.map((id) => {
