@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import {SettingsRounded, ChatRounded, AccountCircleRounded} from "@material-ui/icons";
+import {SettingsOutlined, ChatOutlined, AccountCircleOutlined} from "@material-ui/icons";
 import Badge from '@material-ui/core/Badge';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 import i18n from '../../services/i18n';
@@ -45,16 +45,16 @@ class BottomBar extends React.Component<IProps, IState> {
         };
 
         this.items = [{
-            icon: <AccountCircleRounded/>,
+            icon: <AccountCircleOutlined/>,
             page: 'contacts',
             title: i18n.t('general.contacts'),
         }, {
             badge: true,
-            icon: <ChatRounded/>,
+            icon: <ChatOutlined/>,
             page: 'chat',
             title: i18n.t('general.chats'),
         }, {
-            icon: <SettingsRounded/>,
+            icon: <SettingsOutlined/>,
             page: 'settings',
             title: i18n.t('general.settings'),
         }];
