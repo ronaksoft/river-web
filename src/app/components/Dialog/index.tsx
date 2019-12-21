@@ -13,7 +13,7 @@ import {Link} from 'react-router-dom';
 import {debounce, intersectionBy, clone, differenceBy} from 'lodash';
 import {IDialog} from '../../repository/dialog/interface';
 import DialogMessage from '../DialogMessage';
-import {LabelOutlined, LabelRounded, MessageRounded} from '@material-ui/icons';
+import {/*LabelOutlined,*/ LabelRounded, MessageRounded} from '@material-ui/icons';
 import Menu from '@material-ui/core/Menu/Menu';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';
 import {PeerType, TypingAction} from '../../services/sdk/messages/chat.core.types_pb';
@@ -34,7 +34,7 @@ import Chip from "@material-ui/core/Chip";
 import LabelRepo from "../../repository/label";
 import Broadcaster from "../../services/broadcaster";
 import {ILabel} from "../../repository/label/interface";
-import IconButton from "@material-ui/core/IconButton/IconButton";
+// import IconButton from "@material-ui/core/IconButton/IconButton";
 import LabelPopover from "../LabelPopover";
 
 import './style.scss';
@@ -293,13 +293,13 @@ class Dialog extends React.PureComponent<IProps, IState> {
                         }}
                         variant="outlined"
                     />
-                    <div className="search-label">
+                    {/*<div className="search-label">
                         <IconButton
                             onClick={this.labelOpenHandler}
                         >
                             {appliedSelectedLabelIds.length === 0 ? <LabelOutlined/> : <LabelRounded/>}
                         </IconButton>
-                    </div>
+                    </div>*/}
                 </div>
                 <div className="dialog-list">
                     {/*{this.getWrapper()}*/}
@@ -760,6 +760,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
         }
     }
 
+    // @ts-ignore
     private labelOpenHandler = (e: any) => {
         if (!this.labelPopoverRef) {
             return;

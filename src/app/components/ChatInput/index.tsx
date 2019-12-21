@@ -21,7 +21,7 @@ import {
     SendRounded,
     SentimentSatisfiedRounded,
     StopRounded,
-    LabelRounded,
+    // LabelRounded,
 } from '@material-ui/icons';
 import {IconButton} from '@material-ui/core';
 import UserAvatar from '../UserAvatar';
@@ -568,7 +568,7 @@ class ChatInput extends React.Component<IProps, IState> {
                             </Tooltip>
                         </div>
                         <div className="right-action">
-                            <Tooltip
+                            {/*<Tooltip
                                 title={i18n.t('chat.labels')}
                                 placement="top"
                             >
@@ -576,7 +576,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                             disabled={selectableDisable}>
                                     <LabelRounded/>
                                 </IconButton>
-                            </Tooltip>
+                            </Tooltip>*/}
                             <Tooltip
                                 title={i18n.t('input.remove')}
                                 placement="top"

@@ -1,3 +1,6 @@
+## 0.28.12
+* Minor bugs fixed
+
 ## 0.28.11
 * Duplicate message bug fixed
 
