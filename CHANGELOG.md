@@ -1,3 +1,6 @@
+## 0.28.13
+* Critical bug fixed in updating
+
 ## 0.28.12
 * Minor bugs fixed
 

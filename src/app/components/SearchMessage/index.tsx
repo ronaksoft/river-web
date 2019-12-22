@@ -13,7 +13,7 @@ import {
     ExpandMoreRounded,
     ExpandLessRounded,
     CloseRounded,
-    LabelOutlined,
+    // LabelOutlined,
     LabelRounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
@@ -162,13 +162,13 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
                             variant="outlined"
                         />
                     </div>
-                    <div className="search-label">
+                    {/*<div className="search-label">
                         <IconButton
                             onClick={this.labelOpenHandler}
                         >
                             {appliedSelectedLabelIds.length === 0 ? <LabelOutlined/> : <LabelRounded/>}
                         </IconButton>
-                    </div>
+                    </div>*/}
                     <div className="search-action">
                         <IconButton
                             onClick={this.closeSearchHandler}
@@ -337,6 +337,7 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
         this.toggleVisible();
     }
 
+    // @ts-ignore
     private labelOpenHandler = (e: any) => {
         if (!this.labelPopoverRef) {
             return;
