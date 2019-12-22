@@ -57,6 +57,7 @@ class LabelPopover extends React.Component<IProps, IState> {
 
     public render() {
         const {labelList, appliedSelectedLabelIds, anchorPos} = this.state;
+        const height = this.getLabelListHeight();
         return (
             <Popover
                 anchorPosition={anchorPos}
@@ -70,12 +71,12 @@ class LabelPopover extends React.Component<IProps, IState> {
                 className="search-label-popover"
             >
                 <div className="search-label-container">
-                    <div className="search-label-list" style={{height: this.getLabelListHeight()}}>
+                    <div className="search-label-list" style={{height}}>
                         <Scrollbars
                             autoHide={true}
                             hideTracksWhenNotNeeded={true}
                             universal={true}
-                            autoHeight={true}
+                            style={{height}}
                         >
                             {labelList.map((label) => {
                                 return (<div key={label.id}
