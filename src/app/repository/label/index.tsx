@@ -137,6 +137,9 @@ export default class LabelRepo {
     }
 
     private mergeCheck(label: ILabel, newLabel: ILabel): ILabel {
+        if (newLabel.increase_counter) {
+            newLabel.count = (label.count || 0) + newLabel.increase_counter;
+        }
         const d = kMerge(label, newLabel);
         return d;
     }

@@ -145,6 +145,7 @@ import LabelRepo from "../../repository/label";
 import LabelDialog from "../../components/LabelDialog";
 
 import './style.scss';
+import {ILabel} from "../../repository/label/interface";
 
 export let notifyOptions: any[] = [];
 const C_MAX_UPDATE_DIFF = 2000;
@@ -4500,6 +4501,14 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageRef.updateList();
             }
         }
+        const labelList: ILabel[] = [];
+        data.labelidsList.forEach((id) => {
+            labelList.push({
+                id,
+                increase_counter: data.messageidsList.length,
+            });
+        });
+        this.labelRepo.upsert(labelList);
     }
 
     /* Update label items removed */
@@ -4526,6 +4535,14 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageRef.updateList();
             }
         }
+        const labelList: ILabel[] = [];
+        data.labelidsList.forEach((id) => {
+            labelList.push({
+                id,
+                increase_counter: -data.messageidsList.length,
+            });
+        });
+        this.labelRepo.upsert(labelList);
     }
 
     private pinDialog(peerId: string, pinned?: boolean) {

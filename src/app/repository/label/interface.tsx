@@ -10,6 +10,7 @@
 import {Label} from '../../services/sdk/messages/chat.core.types_pb';
 
 interface ILabel extends Label.AsObject {
+    increase_counter?: number;
 }
 
 // @ts-ignore
