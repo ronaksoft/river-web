@@ -48,6 +48,7 @@ interface IState {
     appliedSelectedLabelIds: number[];
     ids: string[];
     items: IDialog[];
+    labelActive: boolean;
     labelList: ILabel[];
     moreAnchorPos: any;
     moreIndex: number;
@@ -90,6 +91,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
             appliedSelectedLabelIds: [],
             ids: [],
             items: [],
+            labelActive: false,
             labelList: [],
             moreAnchorPos: null,
             moreIndex: -1,
@@ -221,13 +223,13 @@ class Dialog extends React.PureComponent<IProps, IState> {
                 this.setState({
                     appliedSelectedLabelIds: [],
                 });
-                this.filterItem();
             } else {
                 const el: any = document.querySelector('#dialog-search');
                 if (el) {
                     // el.value = '';
                     el.focus();
                 }
+                this.filterItem();
             }
         });
     }
@@ -270,7 +272,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {moreAnchorPos, appliedSelectedLabelIds, searchEnable} = this.state;
+        const {moreAnchorPos, appliedSelectedLabelIds, searchEnable, labelActive} = this.state;
         return (
             <div className="dialogs">
                 <div ref={this.containerRefHandler} className={'dialog-search' + (searchEnable ? ' open' : '')}>
@@ -297,9 +299,12 @@ class Dialog extends React.PureComponent<IProps, IState> {
                         <IconButton
                             onClick={this.labelOpenHandler}
                         >
-                            {appliedSelectedLabelIds.length === 0 ? <LabelOutlined/> : <LabelRounded/>}
+                            {labelActive ? <LabelRounded/> : <LabelOutlined/>}
                         </IconButton>
                     </div>
+                    {searchEnable && <LabelPopover ref={this.labelPopoverRefHandler} labelList={this.state.labelList}
+                                                   onApply={this.labelPopoverApplyHandler}
+                                                   onCancel={this.labelPopoverCancelHandler}/>}
                 </div>
                 <div className="dialog-list">
                     {/*{this.getWrapper()}*/}
@@ -336,8 +341,6 @@ class Dialog extends React.PureComponent<IProps, IState> {
                 >
                     {this.contextMenuItem()}
                 </Menu>
-                {searchEnable && <LabelPopover ref={this.labelPopoverRefHandler} labelList={this.state.labelList}
-                                               onApply={this.labelPopoverApplyHandler}/>}
             </div>
         );
     }
@@ -769,6 +772,9 @@ class Dialog extends React.PureComponent<IProps, IState> {
             left: rect.left - 126,
             top: rect.top + 30,
         }, clone(this.state.appliedSelectedLabelIds));
+        this.setState({
+            labelActive: true,
+        });
     }
 
     private labelPopoverApplyHandler = (ids: number[]) => {
@@ -776,6 +782,12 @@ class Dialog extends React.PureComponent<IProps, IState> {
             appliedSelectedLabelIds: ids,
         }, () => {
             this.search(this.keyword);
+        });
+    }
+
+    private labelPopoverCancelHandler = () => {
+        this.setState({
+            labelActive: false,
         });
     }
 }

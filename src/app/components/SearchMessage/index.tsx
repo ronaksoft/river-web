@@ -42,6 +42,7 @@ interface IState {
     currentId: number;
     focus: boolean;
     items: IMessage[];
+    labelActive: boolean;
     labelAnchorEl: any;
     labelList: ILabel[];
     next: boolean;
@@ -71,6 +72,7 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
             currentId: -1,
             focus: false,
             items: [],
+            labelActive: false,
             labelAnchorEl: null,
             labelList: [],
             next: false,
@@ -121,7 +123,7 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {next, prev, appliedSelectedLabelIds} = this.state;
+        const {next, prev, appliedSelectedLabelIds, labelActive} = this.state;
         return (
             <div ref={this.refHandler} className="search-message">
                 <div className="search-box">
@@ -161,13 +163,15 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
                             onKeyUp={this.searchKeyUpHandler}
                             variant="outlined"
                         />
-                    </div>
-                    <div className="search-label">
-                        <IconButton
-                            onClick={this.labelOpenHandler}
-                        >
-                            {appliedSelectedLabelIds.length === 0 ? <LabelOutlined/> : <LabelRounded/>}
-                        </IconButton>
+                        <div className="search-label">
+                            <IconButton
+                                onClick={this.labelOpenHandler}
+                            >
+                                {labelActive ? <LabelRounded/> : <LabelOutlined/>}
+                            </IconButton>
+                        </div>
+                        <LabelPopover ref={this.labelPopoverRefHandler} labelList={this.state.labelList}
+                                      onApply={this.labelPopoverApplyHandler} onCancel={this.labelPopoverCancelHandler}/>
                     </div>
                     <div className="search-action">
                         <IconButton
@@ -177,8 +181,6 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
                         </IconButton>
                     </div>
                 </div>
-                <LabelPopover ref={this.labelPopoverRefHandler} labelList={this.state.labelList}
-                              onApply={this.labelPopoverApplyHandler}/>
             </div>
         );
     }
@@ -346,6 +348,9 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
             left: rect.left - 126,
             top: rect.top + 30,
         }, clone(this.state.appliedSelectedLabelIds));
+        this.setState({
+            labelActive: true,
+        });
     }
 
     private getLabelList = () => {
@@ -389,6 +394,12 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
             appliedSelectedLabelIds: ids,
         }, () => {
             this.search(this.text);
+        });
+    }
+
+    private labelPopoverCancelHandler = () => {
+        this.setState({
+            labelActive: false,
         });
     }
 }

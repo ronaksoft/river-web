@@ -41,10 +41,10 @@
     }
 
     .search-label {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 6px;
+      position: absolute;
+      top: 50%;
+      right: 8px;
+      transform: translateY(-50%);
 
       button {
         padding: 3px;
@@ -52,6 +52,7 @@
     }
 
     .search-input {
+      position: relative;
       flex: 1;
       display: flex;
       align-items: center;
