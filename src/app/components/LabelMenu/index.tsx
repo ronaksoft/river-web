@@ -14,6 +14,7 @@ import {
     CheckRounded,
     ControlPointRounded,
     LabelRounded,
+    LabelOutlined,
     EditRounded,
     ColorLensRounded,
 } from '@material-ui/icons';
@@ -38,6 +39,10 @@ import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog/Dialog";
 
 import './style.scss';
+import {IDialog} from "../../repository/dialog/interface";
+import {getMessageTitle} from "../Dialog/utils";
+import UserRepo from "../../repository/user";
+import DialogMessage from "../DialogMessage";
 
 interface IProps {
     onClose?: () => void;
@@ -46,10 +51,13 @@ interface IProps {
 interface IState {
     color: string;
     confirmOpen: boolean;
+    label?: ILabel;
+    labelList: IDialog[];
     list: ILabel[];
     loading: boolean;
     name: string;
     page: string;
+    page2Mode: 'create' | 'label';
     search: string;
     selectedId: number;
     selectedIds: number[];
@@ -61,6 +69,7 @@ class LabelMenu extends React.Component<IProps, IState> {
     private broadcaster: Broadcaster;
     private readonly searchThrottle: any;
     private eventReferences: any[] = [];
+    private userId: string = UserRepo.getInstance().getCurrentUserId();
 
     constructor(props: IProps) {
         super(props);
@@ -68,10 +77,12 @@ class LabelMenu extends React.Component<IProps, IState> {
         this.state = {
             color: '',
             confirmOpen: false,
+            labelList: [],
             list: [],
             loading: false,
             name: '',
             page: '1',
+            page2Mode: 'create',
             search: '',
             selectedId: 0,
             selectedIds: [],
@@ -97,7 +108,7 @@ class LabelMenu extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {page, color, confirmOpen, name, search, list, loading, selectedIds} = this.state;
+        const {page, color, confirmOpen, name, search, list, loading, selectedIds, page2Mode, label, labelList} = this.state;
         return (
             <div className="label-menu">
                 <div className={'page-container page-' + page}>
@@ -137,14 +148,16 @@ class LabelMenu extends React.Component<IProps, IState> {
                                 hideTracksWhenNotNeeded={true}
                                 universal={true}
                             >
-                                {list.map((label, key) => {
+                                {list.map((lbl, key) => {
                                     return (<div key={key} className="label-item">
-                                        <div className="label-icon" style={{color: label.colour}}>
-                                            <LabelRounded className="svg-icon"/>
+                                        <div className="label-icon" style={{color: lbl.colour}}>
+                                            <div className="label-circle" style={{backgroundColor: lbl.colour}}>
+                                                <LabelOutlined className="svg-icon"/>
+                                            </div>
                                             <Checkbox
                                                 color="primary"
-                                                checked={selectedIds.indexOf(label.id || 0) > -1}
-                                                onChange={this.selectLabelHandler(label.id || 0)}
+                                                checked={selectedIds.indexOf(lbl.id || 0) > -1}
+                                                onChange={this.selectLabelHandler(lbl.id || 0)}
                                                 classes={{
                                                     checked: 'checkbox-checked',
                                                     root: 'checkbox',
@@ -152,13 +165,13 @@ class LabelMenu extends React.Component<IProps, IState> {
                                                 className="checkbox-icon"
                                             />
                                         </div>
-                                        <div className="label-info">
-                                            <div className="label-name">{label.name}</div>
+                                        <div className="label-info" onClick={this.listLabelHandler(lbl)}>
+                                            <div className="label-name">{lbl.name}</div>
                                             <div className="label-counter">
-                                                {i18n.tf(label.count === 1 ? 'label.label_count' : 'label.label_counts', String(localize(label.count || 0)))}</div>
+                                                {i18n.tf(lbl.count === 1 ? 'label.label_count' : 'label.label_counts', String(localize(lbl.count || 0)))}</div>
                                         </div>
                                         <div className="label-action">
-                                            <IconButton onClick={this.editLabelHandler(label.id || 0)}>
+                                            <IconButton onClick={this.editLabelHandler(lbl.id || 0)}>
                                                 <EditRounded/>
                                             </IconButton>
                                         </div>
@@ -171,7 +184,7 @@ class LabelMenu extends React.Component<IProps, IState> {
                             {search.length === 0 ? i18n.t('label.label_placeholder') : i18n.t('label.no_result')}
                         </div>}
                     </div>
-                    <div className="page page-2">
+                    {Boolean(page2Mode === 'create') && <div className="page page-2">
                         <div className="menu-header">
                             <IconButton
                                 onClick={this.prevPageHandler}
@@ -219,7 +232,43 @@ class LabelMenu extends React.Component<IProps, IState> {
                         <div className="actions-bar no-bg cancel" onClick={this.cancelHandler}>
                             {i18n.t('general.cancel')}
                         </div>
-                    </div>
+                    </div>}
+                    {Boolean(page2Mode === 'label') && <div className="page page-2">
+                        <div className="menu-header">
+                            <IconButton
+                                onClick={this.prevPageHandler}
+                            >
+                                <KeyboardBackspaceRounded/>
+                            </IconButton>
+                            {label && <>
+                                <div className="header-label-icon">
+                                    <div className="label-circle" style={{backgroundColor: label.colour}}>
+                                        <LabelOutlined/>
+                                    </div>
+                                </div>
+                                <div className="header-label-info" onClick={this.listLabelHandler(label)}>
+                                    <div className="label-name">{label.name}</div>
+                                    <div className="label-counter">
+                                        {i18n.tf(label.count === 1 ? 'label.label_count' : 'label.label_counts', String(localize(label.count || 0)))}</div>
+                                </div>
+                            </>}
+                        </div>
+                        <div className="label-container">
+                            <Scrollbars
+                                autoHide={true}
+                                hideTracksWhenNotNeeded={true}
+                                universal={true}
+                            >
+                                {labelList.map((dialog, index) => {
+                                    return (
+                                        <DialogMessage key={dialog.topmessageid || dialog.peerid || index}
+                                                       dialog={dialog} isTyping={{}} selectedId=""
+                                                       messageId={dialog.topmessageid}/>
+                                    );
+                                })}
+                            </Scrollbars>
+                        </div>
+                    </div>}
                 </div>
                 <Dialog
                     open={confirmOpen}
@@ -229,7 +278,8 @@ class LabelMenu extends React.Component<IProps, IState> {
                     <DialogTitle>{i18n.t('general.are_you_sure')}</DialogTitle>
                     <DialogActions>
                         <Button onClick={this.confirmCloseHandler} color="secondary">{i18n.t('general.cancel')}</Button>
-                        <Button onClick={this.confirmAcceptHandler} color="primary" autoFocus={true}>{i18n.t('general.yes')}</Button>
+                        <Button onClick={this.confirmAcceptHandler} color="primary"
+                                autoFocus={true}>{i18n.t('general.yes')}</Button>
                     </DialogActions>
                 </Dialog>
             </div>
@@ -252,7 +302,10 @@ class LabelMenu extends React.Component<IProps, IState> {
         const {selectedIds} = this.state;
         if (selectedIds.length === 0) {
             this.setState({
+                color: '',
+                name: '',
                 page: '2',
+                page2Mode: 'create',
             });
         } else {
             this.setState({
@@ -340,6 +393,7 @@ class LabelMenu extends React.Component<IProps, IState> {
                 color: label.colour || '',
                 name: label.name || '',
                 page: '2',
+                page2Mode: 'create',
                 selectedId: id,
             });
         }
@@ -403,6 +457,48 @@ class LabelMenu extends React.Component<IProps, IState> {
                 confirmOpen: false,
                 list,
                 selectedIds: [],
+            });
+        });
+    }
+
+    private listLabelHandler = (label?: ILabel) => (e: any) => {
+        if (!label) {
+            return;
+        }
+        this.setState({
+            label,
+            page: '2',
+            page2Mode: 'label',
+        }, () => {
+            this.getLabelList();
+        });
+    }
+
+    private getLabelList() {
+        const {label} = this.state;
+        if (!label) {
+            return;
+        }
+        this.labelRepo.getMessageByItem(label.id || 0, {max: 0, limit: 40}).then((res) => {
+            const labelList: IDialog[] = res.map((msg) => {
+                const messageTitle = getMessageTitle(msg);
+                return {
+                    label_ids: msg.labelidsList,
+                    last_update: msg.createdon,
+                    only_contact: true,
+                    peerid: msg.peerid,
+                    peertype: msg.peertype,
+                    preview: messageTitle.text,
+                    preview_icon: messageTitle.icon,
+                    preview_me: msg.me,
+                    preview_rtl: msg.rtl,
+                    saved_messages: msg.peerid === this.userId,
+                    sender_id: msg.senderid,
+                    topmessageid: msg.id,
+                };
+            });
+            this.setState({
+                labelList,
             });
         });
     }

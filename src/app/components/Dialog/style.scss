@@ -100,62 +100,11 @@
     .dialog-container {
       height: 100%;
 
-      a {
-        text-decoration: none;
-        text-transform: none;
-        direction: ltr;
-      }
-
       .search-label {
         padding: 8px;
         font-size: 13px;
         text-align: left;
         background-color: rgba(0, 0, 0, 0.1);
-      }
-
-      .dialog {
-        position: relative;
-        width: 100%;
-        height: 64px;
-        padding: 8px;
-        cursor: pointer;
-        text-align: left;
-
-        &:after {
-          position: absolute;
-          bottom: 0;
-          left: 50%;
-          display: block;
-          width: 100%;
-          height: 1px;
-          content: '';
-          background-color: var(--light);
-          transform: translate(-50%, 0);
-        }
-
-        &.pinned {
-          background-color: var(--header-color);
-        }
-
-        &:hover {
-          border: 0;
-          background-color: var(--color-hover);
-
-          > span {
-            color: var(--color-text-hover);
-            background: transparent;
-          }
-        }
-
-        &.active {
-          border: 0;
-          background-color: var(--color-hover-dark);
-
-          > span {
-            color: var(--color-text-hover);
-            background: transparent;
-          }
-        }
       }
 
       .no-result {
@@ -282,10 +231,6 @@ html[direction="rtl"] {
           text-align: right;
         }
 
-        a {
-          direction: rtl;
-        }
-
         .no-result {
           .dialog-skeleton {
             .skeleton-avatar, .skeleton-name, .skeleton-preview, .skeleton-date {
@@ -351,32 +296,6 @@ html[theme="dark-night"] {
           background-color: var(--dark-hover-light);
         }
 
-        .dialog {
-          &:after {
-            background-color: var(--dark-low-op50);
-          }
-
-          &.pinned {
-            background-color: var(--dark-low);
-          }
-
-          &:hover {
-            background-color: var(--dark-hover);
-
-            > span {
-              color: var(--color-text-hover);
-            }
-          }
-
-          &.active {
-            background-color: var(--dark-hover-light);
-
-            > span {
-              color: var(--color-text-hover);
-            }
-          }
-        }
-
         .no-result {
           .dialog-skeleton {
             border-color: #333;
@@ -429,32 +348,6 @@ html[theme="dark-blue"] {
         .search-label {
           color: var(--message-chat);
           background-color: var(--dark-hover-light);
-        }
-
-        .dialog {
-          &:after {
-            background-color: var(--dark-blue-low-op50);
-          }
-
-          &.pinned {
-            background-color: var(--dark-blue-low);
-          }
-
-          &:hover {
-            background-color: var(--dark-blue-hover-light);
-
-            > span {
-              color: var(--color-text-hover);
-            }
-          }
-
-          &.active {
-            background-color: var(--dark-blue-hover);
-
-            > span {
-              color: var(--color-text-hover);
-            }
-          }
         }
 
         .no-result {

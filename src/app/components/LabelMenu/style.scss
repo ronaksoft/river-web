@@ -68,6 +68,49 @@
         transform: rotate(45deg);
       }
     }
+
+    .header-label-icon {
+      position: relative;
+      padding: 6px 6px 6px 0;
+
+      .label-circle {
+        display: flex;
+        border-radius: 50%;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        transition: opacity 0.1s;
+
+        svg {
+          font-size: 24px;
+          color: var(--white);
+        }
+      }
+    }
+
+    .header-label-info {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-evenly;
+      flex-direction: column;
+      flex: 1;
+      height: 100%;
+      padding: 2px 0;
+
+      .label-name {
+        font-size: 14px;
+        color: var(--dark);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .label-counter {
+        font-size: 14px;
+        color: #A1A1A1;
+      }
+    }
   }
 
   .input-container {
@@ -137,16 +180,25 @@
 
       .label-icon {
         position: relative;
-        padding: 6px 12px 6px 0;
+        padding: 6px 0;
 
-        .svg-icon {
+        .label-circle {
           position: absolute;
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
-          font-size: 32px;
-          color: inherit;
+          display: flex;
+          border-radius: 50%;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
           transition: opacity 0.1s;
+
+          .svg-icon {
+            font-size: 28px;
+            color: var(--white);
+          }
         }
 
         .checkbox-icon {
@@ -163,6 +215,7 @@
         flex-direction: column;
         flex: 1;
         height: 100%;
+        cursor: pointer;
 
         .label-name {
           font-size: 14px;
@@ -195,13 +248,25 @@
 
     .label-item:hover, &.selectable-mode .label-item {
       .label-icon {
-        .svg-icon {
-          opacity: 0;
+        .label-circle {
+          opacity: 0.2;
+
+          .svg-icon {
+            opacity: 0;
+          }
         }
       }
 
       .checkbox-icon {
         opacity: 1;
+      }
+    }
+
+    &.selectable-mode .label-item {
+      .label-icon {
+        .label-circle {
+          opacity: 0;
+        }
       }
     }
 
@@ -296,14 +361,6 @@ html[direction="rtl"] {
       }
     }
 
-    .label-container {
-      .label-item {
-        .label-icon {
-          padding: 6px 0 6px 12px;
-        }
-      }
-    }
-
     .input-container {
       display: flex;
       min-height: 48px;
@@ -329,6 +386,12 @@ html[theme="dark-blue"] {
 
       svg {
         color: var(--white);
+      }
+
+      .header-label-info {
+        .label-name {
+          color: var(--white);
+        }
       }
     }
 

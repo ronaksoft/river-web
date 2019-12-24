@@ -98,7 +98,7 @@ class DialogMessage extends React.Component<IProps, IState> {
         const labelIds = dialog.label_ids || [];
         let labelCnt = 0;
         return (
-            <Link to={messageId ? `/chat/${dialog.peerid}/${messageId}` : `/chat/${dialog.peerid}`}>
+            <Link className="dialog-a" to={messageId ? `/chat/${dialog.peerid}/${messageId}` : `/chat/${dialog.peerid}`}>
                 <div
                     className={'dialog' + (dialog.peerid === selectedId ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}>
                     <div
