@@ -119,7 +119,7 @@ export default class LabelRepo {
                 if (cacheRes.length < lim) {
                     lim = lim - cacheRes.length;
                     if (cacheRes.length > 0) {
-                        max = cacheRes[cacheRes.length - 1].id || 0;
+                        max = (cacheRes[cacheRes.length - 1].id || 0) - 1;
                     }
                     this.sdk.labelList(id, 0, max || 0, lim).then((remoteRes) => {
                         this.insertManyLabelItem(id, remoteRes.messagesList);
