@@ -123,7 +123,7 @@ createWindow = (forceShow) => {
     });
 };
 
-generateMenu = () => {
+const generateMenu = () => {
     const template = [
         {
             label: 'File',

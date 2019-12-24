@@ -94,9 +94,6 @@ export default class UpdateManager {
     }
 
     public setLastUpdateId(id: number) {
-        if (!id) {
-            return;
-        }
         this.lastUpdateId = id;
     }
 
@@ -168,13 +165,10 @@ export default class UpdateManager {
 
     private applyUpdates(data: UpdateContainer.AsObject) {
         const updates = data.updatesList.sort((a, b) => {
-            if (!a.updateid || !b.updateid) {
-                return 0;
-            }
-            if (a.updateid < b.updateid) {
+            if ((a.updateid || 0) < (b.updateid || 0)) {
                 return -1;
             }
-            if (a.updateid > b.updateid) {
+            if ((a.updateid || 0) > (b.updateid || 0)) {
                 return 1;
             }
             return 0;
@@ -206,6 +200,9 @@ export default class UpdateManager {
                 this.callHandlers(C_MSG.OutOfSync, {});
             }
         });
+        if (this.active && data.maxupdateid) {
+            this.setLastUpdateId(data.maxupdateid);
+        }
         if (data.usersList && data.usersList.length > 0) {
             this.callHandlers(C_MSG.UpdateUsers, data.usersList);
         }
@@ -252,7 +249,6 @@ export default class UpdateManager {
     private responseUpdateMessageID(update: UpdateEnvelope.AsObject) {
         // @ts-ignore
         const data: Uint8Array = update.update;
-        this.setLastUpdateId(update.updateid || 0);
         switch (update.constructor) {
             case C_MSG.UpdateMessageID:
                 const updateMessageId = UpdateMessageID.deserializeBinary(data).toObject();
@@ -266,7 +262,6 @@ export default class UpdateManager {
         let flushUpdateId = true;
         // @ts-ignore
         const data: Uint8Array = update.update;
-        this.setLastUpdateId(update.updateid || 0);
         switch (update.constructor) {
             case C_MSG.UpdateNewMessage:
                 const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();

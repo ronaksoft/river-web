@@ -918,7 +918,7 @@ class Chat extends React.Component<IProps, IState> {
         if (this.isUpdating) {
             return;
         }
-        window.console.debug('getDifference!');
+        window.console.debug('%c getDifference!', 'color: pink');
         this.canSync().then(() => {
             this.updateManager.disable();
             this.setAppStatus({
@@ -2755,6 +2755,8 @@ class Chat extends React.Component<IProps, IState> {
                 this.updateManager.flushLastUpdateId();
                 window.location.href = '/';
                 // window.location.reload();
+            }).catch((err) => {
+                window.console.log(err);
             });
         };
         this.updateManager.disable();
