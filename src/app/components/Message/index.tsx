@@ -46,9 +46,10 @@ import {Loading} from "../Loading";
 import KKWindow from "../../services/kkwindow/kkwindow";
 import {scrollFunc} from "../../services/kkwindow/utils";
 import animateScrollTo from "animated-scroll-to";
+import Landscape from "../SVG";
 
 import './style.scss';
-import Landscape from "../SVG";
+
 
 interface IProps {
     onContextMenu: (cmd: string, id: IMessage) => void;
@@ -599,8 +600,8 @@ class Message extends React.Component<IProps, IState> {
             return '';
         }
         const menuTypes = {
-            1: [1, 2, 3, 4, 7/*, 12*/, 8, 9, 10, 11],
-            2: [1, 2, 4, 7/*, 12*/, 8, 9, 10, 11],
+            1: [1, 2, 3, 4, 7, 12, 8, 9, 10, 11],
+            2: [1, 2, 4, 7, 12, 8, 9, 10, 11],
             3: [6, 5, 9, 10, 11],
         };
         const selection = window.getSelection();
