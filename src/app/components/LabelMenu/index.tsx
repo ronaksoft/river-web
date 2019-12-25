@@ -46,10 +46,11 @@ import {FixedSizeList, ListOnItemsRenderedProps} from "react-window";
 import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 import IsMobile from "../../services/isMobile";
 import DialogSkeleton from "../DialogSkeleton";
-
-import './style.scss';
 import {IMessage} from "../../repository/message/interface";
 import CircularProgress from "@material-ui/core/CircularProgress";
+
+import './style.scss';
+
 
 interface IProps {
     onClose?: () => void;

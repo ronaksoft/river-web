@@ -31,9 +31,9 @@ import MenuItem from "@material-ui/core/MenuItem";
 import NewGroupMenu from "../NewGroupMenu";
 import {IUser} from "../../repository/user/interface";
 import {omitBy, isNil} from "lodash";
-
-import './style.scss';
 import LabelMenu from "../LabelMenu";
+import './style.scss';
+
 
 export type menuItems = 'chat' | 'settings' | 'contacts';
 export type menuAction = 'new_message' | 'close_iframe' | 'logout';
@@ -126,10 +126,10 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         }, {
             cmd: 'new_message',
             title: i18n.t('chat.new_message'),
-        }/*, {
+        }, {
             cmd: 'labels',
             title: i18n.t('chat.labels'),
-        }*/, {
+        }, {
             cmd: 'account',
             title: i18n.t('chat.account_info'),
         }, {

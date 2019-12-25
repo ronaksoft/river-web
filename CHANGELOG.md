@@ -1,3 +1,6 @@
+## 0.29.1
+* Minor bug fixed
+
 ## 0.29.0
 * 🎉 Brand New Label Feature 🎉
 
