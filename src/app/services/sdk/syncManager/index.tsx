@@ -304,6 +304,9 @@ export default class SyncManager {
                             };
                         }
                     });
+                    updateLabelItemsAdded.labelidsList.forEach((id) => {
+                        this.labelRepo.insertInRange(id, updateLabelItemsAdded.peer.id || '', updateLabelItemsAdded.peer.type || 0, updateLabelItemsAdded.messageidsList)
+                    });
                     break;
                 case C_MSG.UpdateLabelItemsRemoved:
                     const updateLabelItemsRemoved = UpdateLabelItemsRemoved.deserializeBinary(data).toObject();
@@ -316,6 +319,9 @@ export default class SyncManager {
                                 removed_labels: uniq([...(messages[id || 0].labelidsList || []), ...updateLabelItemsRemoved.labelidsList]),
                             };
                         }
+                    });
+                    updateLabelItemsRemoved.labelidsList.forEach((id) => {
+                        this.labelRepo.removeFromRange(id, updateLabelItemsAdded.messageidsList)
                     });
                     break;
                 default:

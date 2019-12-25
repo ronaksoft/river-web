@@ -13,7 +13,7 @@ import {Link} from 'react-router-dom';
 import {debounce, intersectionBy, clone, differenceBy} from 'lodash';
 import {IDialog} from '../../repository/dialog/interface';
 import DialogMessage from '../DialogMessage';
-import {/*LabelOutlined,*/ LabelRounded, MessageRounded} from '@material-ui/icons';
+import {LabelOutlined, LabelRounded, MessageRounded} from '@material-ui/icons';
 import Menu from '@material-ui/core/Menu/Menu';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';
 import {PeerType, TypingAction} from '../../services/sdk/messages/chat.core.types_pb';
@@ -34,8 +34,9 @@ import Chip from "@material-ui/core/Chip";
 import LabelRepo from "../../repository/label";
 import Broadcaster from "../../services/broadcaster";
 import {ILabel} from "../../repository/label/interface";
-// import IconButton from "@material-ui/core/IconButton/IconButton";
+import IconButton from "@material-ui/core/IconButton/IconButton";
 import LabelPopover from "../LabelPopover";
+import DialogSkeleton from "../DialogSkeleton";
 
 import './style.scss';
 
@@ -48,6 +49,7 @@ interface IState {
     appliedSelectedLabelIds: number[];
     ids: string[];
     items: IDialog[];
+    labelActive: boolean;
     labelList: ILabel[];
     moreAnchorPos: any;
     moreIndex: number;
@@ -90,6 +92,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
             appliedSelectedLabelIds: [],
             ids: [],
             items: [],
+            labelActive: false,
             labelList: [],
             moreAnchorPos: null,
             moreIndex: -1,
@@ -221,13 +224,13 @@ class Dialog extends React.PureComponent<IProps, IState> {
                 this.setState({
                     appliedSelectedLabelIds: [],
                 });
-                this.filterItem();
             } else {
                 const el: any = document.querySelector('#dialog-search');
                 if (el) {
                     // el.value = '';
                     el.focus();
                 }
+                this.filterItem();
             }
         });
     }
@@ -270,7 +273,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {moreAnchorPos, appliedSelectedLabelIds, searchEnable} = this.state;
+        const {moreAnchorPos, appliedSelectedLabelIds, searchEnable, labelActive} = this.state;
         return (
             <div className="dialogs">
                 <div ref={this.containerRefHandler} className={'dialog-search' + (searchEnable ? ' open' : '')}>
@@ -293,13 +296,16 @@ class Dialog extends React.PureComponent<IProps, IState> {
                         }}
                         variant="outlined"
                     />
-                    {/*<div className="search-label">
+                    <div className="search-label">
                         <IconButton
                             onClick={this.labelOpenHandler}
                         >
-                            {appliedSelectedLabelIds.length === 0 ? <LabelOutlined/> : <LabelRounded/>}
+                            {labelActive ? <LabelRounded/> : <LabelOutlined/>}
                         </IconButton>
-                    </div>*/}
+                    </div>
+                    {searchEnable && <LabelPopover ref={this.labelPopoverRefHandler} labelList={this.state.labelList}
+                                                   onApply={this.labelPopoverApplyHandler}
+                                                   onCancel={this.labelPopoverCancelHandler}/>}
                 </div>
                 <div className="dialog-list">
                     {/*{this.getWrapper()}*/}
@@ -336,8 +342,6 @@ class Dialog extends React.PureComponent<IProps, IState> {
                 >
                     {this.contextMenuItem()}
                 </Menu>
-                {searchEnable && <LabelPopover ref={this.labelPopoverRefHandler} labelList={this.state.labelList}
-                                               onApply={this.labelPopoverApplyHandler}/>}
             </div>
         );
     }
@@ -498,17 +502,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
     /* No Rows Renderer */
     private noRowsRenderer = () => {
         if (this.firstTimeLoad) {
-            return (
-                <div className="no-result skeleton-wrapper">
-                    {[0, 0, 0, 0, 0, 0, 0].map((i, key) => (
-                        <div key={key} className="dialog-skeleton">
-                            <div className="skeleton-avatar"/>
-                            <div className="skeleton-name"/>
-                            <div className="skeleton-preview"/>
-                            <div className="skeleton-date"/>
-                        </div>)
-                    )}
-                </div>);
+            return DialogSkeleton();
         }
         return (
             <div className="no-result">
@@ -760,7 +754,6 @@ class Dialog extends React.PureComponent<IProps, IState> {
         }
     }
 
-    // @ts-ignore
     private labelOpenHandler = (e: any) => {
         if (!this.labelPopoverRef) {
             return;
@@ -770,6 +763,9 @@ class Dialog extends React.PureComponent<IProps, IState> {
             left: rect.left - 126,
             top: rect.top + 30,
         }, clone(this.state.appliedSelectedLabelIds));
+        this.setState({
+            labelActive: true,
+        });
     }
 
     private labelPopoverApplyHandler = (ids: number[]) => {
@@ -777,6 +773,12 @@ class Dialog extends React.PureComponent<IProps, IState> {
             appliedSelectedLabelIds: ids,
         }, () => {
             this.search(this.keyword);
+        });
+    }
+
+    private labelPopoverCancelHandler = () => {
+        this.setState({
+            labelActive: false,
         });
     }
 }

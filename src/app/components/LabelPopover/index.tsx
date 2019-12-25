@@ -10,10 +10,7 @@
 import * as React from 'react';
 import Scrollbars from "react-custom-scrollbars";
 import {LabelRounded} from "@material-ui/icons";
-import Button from "@material-ui/core/Button";
-import {clone, isEqual} from "lodash";
-import i18n from "../../services/i18n";
-import Popover from "@material-ui/core/Popover";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import {ILabel} from "../../repository/label/interface";
 import {PopoverPosition} from "@material-ui/core/Popover/Popover";
 
@@ -21,13 +18,13 @@ import './style.scss';
 
 interface IProps {
     onApply: (ids: number[]) => void;
+    onCancel?: () => void;
     labelList: ILabel[];
 }
 
 interface IState {
-    anchorPos?: PopoverPosition;
-    appliedSelectedLabelIds: number[];
     labelList: ILabel[];
+    open: boolean;
     selectedLabelIds: number[];
 }
 
@@ -42,75 +39,70 @@ class LabelPopover extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
-            appliedSelectedLabelIds: [],
             labelList: [],
+            open: false,
             selectedLabelIds: [],
         };
     }
 
     public open(pos: PopoverPosition, selectedIds: number[]) {
         this.setState({
-            anchorPos: pos,
-            appliedSelectedLabelIds: selectedIds,
+            open: true,
+            selectedLabelIds: selectedIds,
         });
     }
 
     public render() {
-        const {labelList, appliedSelectedLabelIds, anchorPos} = this.state;
+        const {labelList, open} = this.state;
+        const height = this.getLabelListHeight();
         return (
-            <Popover
-                anchorPosition={anchorPos}
-                anchorReference="anchorPosition"
-                open={Boolean(anchorPos)}
-                onClose={this.labelCloseHandler}
-                anchorOrigin={{
-                    horizontal: "center",
-                    vertical: "bottom",
-                }}
-                className="search-label-popover"
-            >
-                <div className="search-label-container">
-                    <div className="search-label-list" style={{height: this.getLabelListHeight()}}>
-                        <Scrollbars
-                            autoHide={true}
-                            hideTracksWhenNotNeeded={true}
-                            universal={true}
-                            autoHeight={true}
-                        >
-                            {labelList.map((label) => {
-                                return (<div key={label.id}
-                                             className={'label-item' + (this.isLabelSelected(label.id || 0) ? ' selected' : '')}
-                                             onClick={this.toggleLabelHandler(label.id || 0)}>
-                                    <div className="label-icon">
-                                        <LabelRounded style={{color: label.colour}}/>
-                                    </div>
-                                    <div className="label-name">{label.name}</div>
-                                </div>);
-                            })}
-                        </Scrollbars>
+            <div className="search-label-popover">
+                {open && <ClickAwayListener
+                    onClickAway={this.labelCloseHandler}
+                >
+                    <div className="search-label-container">
+                        <div className="search-label-list" style={{height}}>
+                            <Scrollbars
+                                autoHide={true}
+                                hideTracksWhenNotNeeded={true}
+                                universal={true}
+                                style={{height}}
+                            >
+                                {labelList.map((label) => {
+                                    if (!this.isLabelSelected(label.id || 0)) {
+                                        return (<div key={label.id}
+                                                     className="label-item"
+                                                     onClick={this.toggleLabelHandler(label.id || 0)}>
+                                            <div className="label-icon">
+                                                <LabelRounded style={{color: label.colour}}/>
+                                            </div>
+                                            <div className="label-name">{label.name}</div>
+                                        </div>);
+                                    } else {
+                                        return '';
+                                    }
+                                })}
+                            </Scrollbars>
+                        </div>
                     </div>
-                    <div className="search-label">
-                        <Button fullWidth={true}
-                                variant="outlined" color="secondary" size="small"
-                                onClick={this.labelApplyHandler}
-                                disabled={isEqual(appliedSelectedLabelIds, this.state.selectedLabelIds)}
-                        >{i18n.t('general.apply')}</Button>
-                    </div>
-                </div>
-            </Popover>
+                </ClickAwayListener>}
+            </div>
         );
     }
 
     private labelCloseHandler = () => {
         this.setState({
-            anchorPos: undefined,
+            open: false,
         });
+        if (this.props.onCancel) {
+            this.props.onCancel();
+        }
     }
 
     private getLabelListHeight() {
         let height = this.state.labelList.length * 28;
-        if (height > 150) {
-            height = 150;
+        if (height > 100) {
+            height = 100;
         }
         return `${height}px`;
     }
@@ -126,7 +118,7 @@ class LabelPopover extends React.Component<IProps, IState> {
         this.setState({
             selectedLabelIds,
         }, () => {
-            this.forceUpdate();
+            this.labelApplyHandler();
         });
     }
 
@@ -135,14 +127,10 @@ class LabelPopover extends React.Component<IProps, IState> {
     }
 
     private labelApplyHandler = () => {
-        this.setState({
-            appliedSelectedLabelIds: clone(this.state.selectedLabelIds),
-        }, () => {
-            if (this.props.onApply) {
-                this.props.onApply(this.state.appliedSelectedLabelIds);
-            }
-        });
-        this.labelCloseHandler();
+        if (this.props.onApply) {
+            this.props.onApply(this.state.selectedLabelIds);
+        }
+        // this.labelCloseHandler();
     }
 }
 

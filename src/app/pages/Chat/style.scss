@@ -587,7 +587,14 @@ html[theme="dark-blue"] {
 
   .kk-context-menu {
     > div[role="document"] {
-      background-color: var(--dark-medium);
+      > div {
+        background-color: var(--dark-medium);
+      }
+      color: var(--light);
+    }
+
+    h2 {
+      color: var(--light);
     }
 
     ul {
@@ -655,7 +662,13 @@ html[theme="dark-blue"] {
 
   .kk-context-menu {
     > div[role="document"] {
-      background-color: var(--dark-blue-medium);
+      > div {
+        background-color: var(--dark-blue-medium);
+      }
+    }
+
+    h2 {
+      color: var(--light);
     }
 
     ul {

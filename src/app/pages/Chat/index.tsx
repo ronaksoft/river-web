@@ -143,6 +143,7 @@ import Landscape from "../../components/SVG";
 import {isMobile} from "../../services/utilities/localize";
 import LabelRepo from "../../repository/label";
 import LabelDialog from "../../components/LabelDialog";
+import {ILabel} from "../../repository/label/interface";
 
 import './style.scss';
 
@@ -917,7 +918,7 @@ class Chat extends React.Component<IProps, IState> {
         if (this.isUpdating) {
             return;
         }
-        window.console.debug('getDifference!');
+        window.console.debug('%c getDifference!', 'color: pink');
         this.canSync().then(() => {
             this.updateManager.disable();
             this.setAppStatus({
@@ -953,7 +954,7 @@ class Chat extends React.Component<IProps, IState> {
         if (data.peerid === this.selectedDialogId && this.messageRef) {
             // Check if Top Message exits
             const dialog = this.getDialogById(this.selectedDialogId);
-            if (dialog && ((data.messages.length > 0 && (dialog.topmessageid || 0) <= data.minMessageId) || ((this.messages[this.messages.length - 1].id || 0) < 0))) {
+            if (dialog) {
                 if (this.messages.length === 0 || (this.messages.length > 0 && (this.messages[this.messages.length - 1].id === dialog.topmessageid || (this.messages[this.messages.length - 1].id || 0) < 0))) {
                     const dataMsg = this.modifyMessages(this.messages, data.messages.reverse(), true);
                     data.messages.reverse().forEach((message) => {
@@ -2754,6 +2755,8 @@ class Chat extends React.Component<IProps, IState> {
                 this.updateManager.flushLastUpdateId();
                 window.location.href = '/';
                 // window.location.reload();
+            }).catch((err) => {
+                window.console.log(err);
             });
         };
         this.updateManager.disable();
@@ -4500,6 +4503,15 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageRef.updateList();
             }
         }
+        const labelList: ILabel[] = [];
+        data.labelidsList.forEach((id) => {
+            labelList.push({
+                id,
+                increase_counter: data.messageidsList.length,
+            });
+            this.labelRepo.insertInRange(id, data.peer.id || '', data.peer.type || 0, data.messageidsList);
+        });
+        this.labelRepo.upsert(labelList);
     }
 
     /* Update label items removed */
@@ -4526,6 +4538,15 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageRef.updateList();
             }
         }
+        const labelList: ILabel[] = [];
+        data.labelidsList.forEach((id) => {
+            labelList.push({
+                id,
+                increase_counter: -data.messageidsList.length,
+            });
+            this.labelRepo.removeFromRange(id, data.messageidsList);
+        });
+        this.labelRepo.upsert(labelList);
     }
 
     private pinDialog(peerId: string, pinned?: boolean) {
