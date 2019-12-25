@@ -94,9 +94,6 @@ export default class UpdateManager {
     }
 
     public setLastUpdateId(id: number) {
-        if (!id) {
-            return;
-        }
         this.lastUpdateId = id;
     }
 
