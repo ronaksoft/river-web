@@ -8,7 +8,7 @@
 */
 
 import DB from '../../services/db/label';
-import {ILabel, ILabelItem} from './interface';
+import {ILabel, ILabelItem, ILabelItemList} from './interface';
 import {differenceBy, find, uniqBy} from 'lodash';
 import {DexieLabelDB} from '../../services/db/dexie/label';
 import Broadcaster from '../../services/broadcaster';
@@ -112,21 +112,23 @@ export default class LabelRepo {
         return Promise.all(promises);
     }
 
-    public getMessageByItem(id: number, {max, limit}: { min?: number, max?: number, limit?: number }): Promise<IMessage[]> {
+    public getMessageByItem(id: number, {max, limit}: { min?: number, max?: number, limit?: number }, cacheCallback?: (cacheList: IMessage[]) => void): Promise<ILabelItemList> {
         let lim = limit || 1000;
         return new Promise((resolve, reject) => {
             this.getCachedMessageByItem(id, {max, limit: lim}).then((cacheRes) => {
-                if (cacheRes.length < lim) {
-                    lim = lim - cacheRes.length;
-                    if (cacheRes.length > 0) {
-                        max = (cacheRes[cacheRes.length - 1].id || 0) - 1;
+                if (cacheRes.labelCount < lim) {
+                    if (cacheCallback) {
+                        cacheCallback(cacheRes.messageList);
                     }
-                    this.sdk.labelList(id, 0, max || 0, lim).then((remoteRes) => {
-                        this.insertManyLabelItem(id, remoteRes.messagesList);
-                        this.messageRepo.lazyUpsert(remoteRes.messagesList, true);
-                        this.userRepo.importBulk(false, remoteRes.usersList);
-                        this.groupRepo.importBulk(remoteRes.groupsList);
-                        resolve([...cacheRes, ...MessageRepo.parseMessageMany(remoteRes.messagesList, this.userRepo.getCurrentUserId())]);
+                    lim = lim - cacheRes.labelCount;
+                    if (cacheRes.messageList.length > 0) {
+                        max = (cacheRes.messageList[cacheRes.messageList.length - 1].id || 0) - 1;
+                    }
+                    this.getRemoteMessageByItem(id, {max: max || 0, limit: lim}).then((remoteRes) => {
+                        resolve({
+                            labelCount: cacheRes.labelCount + remoteRes.length,
+                            messageList: [...cacheRes.messageList, ...MessageRepo.parseMessageMany(remoteRes, this.userRepo.getCurrentUserId())]
+                        });
                     }).catch((remoteErr) => {
                         reject(remoteErr);
                     });
@@ -139,7 +141,7 @@ export default class LabelRepo {
         });
     }
 
-    public getCachedMessageByItem(id: number, {max, limit}: { min?: number, max?: number, limit?: number }): Promise<IMessage[]> {
+    public getCachedMessageByItem(id: number, {max, limit}: { min?: number, max?: number, limit?: number }): Promise<ILabelItemList> {
         const pipe = this.db.labelItems.where('[lid+mid]');
         let pipe2: Dexie.Collection<ILabelItem, number>;
         if (max) {
@@ -147,11 +149,26 @@ export default class LabelRepo {
         } else {
             pipe2 = pipe.between([id, Dexie.minKey], [id, Dexie.maxKey], true, true);
         }
-        return pipe2.reverse().toArray().then((res) => {
+        return pipe2.limit(limit || 100).reverse().toArray().then((res) => {
             const ids = res.map((item) => {
                 return item.mid || 0;
             });
-            return this.messageRepo.getIn(ids, false);
+            return this.messageRepo.getIn(ids, false).then((msgList) => {
+                return {
+                    labelCount: ids.length,
+                    messageList: msgList,
+                };
+            });
+        });
+    }
+
+    public getRemoteMessageByItem(id: number, {min, max, limit}: { min?: number, max?: number, limit?: number }): Promise<IMessage[]> {
+        return this.sdk.labelList(id, min || 0, max || 0, limit || 0).then((remoteRes) => {
+            this.insertManyLabelItem(id, remoteRes.messagesList);
+            this.messageRepo.lazyUpsert(remoteRes.messagesList, true);
+            this.userRepo.importBulk(false, remoteRes.usersList);
+            this.groupRepo.importBulk(remoteRes.groupsList);
+            return remoteRes.messagesList;
         });
     }
 
@@ -186,7 +203,74 @@ export default class LabelRepo {
         });
     }
 
+    public insertInRange(labelId: number, peerid: string, peertype: number, msgIds: number[]) {
+        const label = this.dbService.getLabel(labelId);
+        if (!label) {
+            return;
+        }
+        const labelItems: ILabelItem[] = [];
+        msgIds.forEach((id) => {
+            if ((label.min || 0) <= id && id <= (label.max || 0)) {
+                labelItems.push({
+                    lid: labelId,
+                    mid: id,
+                    peerid,
+                    peertype,
+                });
+            }
+        });
+        if (labelItems.length > 0) {
+            return this.db.labelItems.bulkPut(labelItems);
+        }
+        return Promise.reject();
+    }
+
+    public removeFromRange(labelId: number, msgIds: number[]) {
+        const label = this.dbService.getLabel(labelId);
+        if (!label) {
+            return;
+        }
+        const labelItems: any[] = [];
+        msgIds.forEach((id) => {
+            if ((label.min || 0) <= id && id <= (label.max || 0)) {
+                labelItems.push({
+                    lid: labelId,
+                    mid: id,
+                });
+            }
+        });
+        if (labelItems.length > 0) {
+            return this.db.labelItems.where('lid+mid').anyOf(labelItems).delete();
+        }
+        return Promise.reject();
+    }
+
     private insertManyLabelItem(labelId: number, messageList: IMessage[]) {
+        if (messageList.length > 0) {
+            this.db.labels.get(labelId).then((label) => {
+                if (!label) {
+                    return;
+                }
+                let min = messageList[0].id || 0;
+                let max = messageList[messageList.length - 1].id || 0;
+                const labelMin = label.min || 0;
+                const labelMax = label.max || 0;
+                if (min > max) {
+                    const hold = max;
+                    max = min;
+                    min = hold;
+                }
+                min = Math.min(min, labelMin);
+                max = Math.max(max, labelMax);
+                if (min !== 0 && max !== 0) {
+                    this.upsert([{
+                        id: labelId,
+                        max,
+                        min,
+                    }]);
+                }
+            });
+        }
         return this.db.labelItems.bulkPut(messageList.map((message) => {
             return {
                 lid: labelId,

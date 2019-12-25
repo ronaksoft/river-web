@@ -113,6 +113,32 @@
     }
   }
 
+  .label-list-container {
+
+    &.no-result {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 30px;
+      font-weight: 100;
+      color: var(--grey);
+
+      svg {
+        margin: 0 0 32px;
+        color: inherit;
+        font-size: 75px;
+      }
+    }
+
+    .label-item-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
   .input-container {
     display: flex;
     min-height: 48px;

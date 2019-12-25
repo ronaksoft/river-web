@@ -8,6 +8,7 @@
 */
 
 import {Label} from '../../services/sdk/messages/chat.core.types_pb';
+import {IMessage} from "../message/interface";
 
 interface ILabel extends Label.AsObject {
     increase_counter?: number;
@@ -23,5 +24,10 @@ interface ILabelItem {
     peerid?: string;
 }
 
+interface ILabelItemList {
+    labelCount: number;
+    messageList: IMessage[];
+}
+
 // @ts-ignore
-export {ILabel, ILabelItem};
+export {ILabel, ILabelItem, ILabelItemList};

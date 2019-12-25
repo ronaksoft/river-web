@@ -37,12 +37,19 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog/Dialog";
-
-import './style.scss';
 import {IDialog} from "../../repository/dialog/interface";
 import {getMessageTitle} from "../Dialog/utils";
 import UserRepo from "../../repository/user";
 import DialogMessage from "../DialogMessage";
+import AutoSizer from "react-virtualized-auto-sizer";
+import {FixedSizeList, ListOnItemsRenderedProps} from "react-window";
+import getScrollbarWidth from "../../services/utilities/scrollbar_width";
+import IsMobile from "../../services/isMobile";
+import DialogSkeleton from "../DialogSkeleton";
+
+import './style.scss';
+import {IMessage} from "../../repository/message/interface";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 interface IProps {
     onClose?: () => void;
@@ -53,6 +60,7 @@ interface IState {
     confirmOpen: boolean;
     label?: ILabel;
     labelList: IDialog[];
+    labelLoading: boolean;
     list: ILabel[];
     loading: boolean;
     name: string;
@@ -63,13 +71,25 @@ interface IState {
     selectedIds: number[];
 }
 
+const listStyle: React.CSSProperties = {
+    overflowX: 'visible',
+    overflowY: 'visible',
+};
+
+const C_LABEL_LIST_LIMIT = 20;
+
 class LabelMenu extends React.Component<IProps, IState> {
+    private list: FixedSizeList | undefined;
     private sdk: SDK;
     private labelRepo: LabelRepo;
     private broadcaster: Broadcaster;
     private readonly searchThrottle: any;
     private eventReferences: any[] = [];
     private userId: string = UserRepo.getInstance().getCurrentUserId();
+    private readonly rtl: boolean = false;
+    private readonly hasScrollbar: boolean = false;
+    private readonly isMobile: boolean = false;
+    private labelHasMore: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -78,6 +98,7 @@ class LabelMenu extends React.Component<IProps, IState> {
             color: '',
             confirmOpen: false,
             labelList: [],
+            labelLoading: false,
             list: [],
             loading: false,
             name: '',
@@ -92,6 +113,10 @@ class LabelMenu extends React.Component<IProps, IState> {
         this.labelRepo = LabelRepo.getInstance();
         this.broadcaster = Broadcaster.getInstance();
         this.searchThrottle = throttle(this.searchIt, 512);
+
+        this.hasScrollbar = getScrollbarWidth() > 0;
+        this.rtl = localStorage.getItem('river.lang.dir') === 'rtl';
+        this.isMobile = this.isMobile = IsMobile.isAny();
     }
 
     public componentDidMount() {
@@ -108,7 +133,7 @@ class LabelMenu extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {page, color, confirmOpen, name, search, list, loading, selectedIds, page2Mode, label, labelList} = this.state;
+        const {page, color, confirmOpen, name, search, list, loading, selectedIds, page2Mode, label} = this.state;
         return (
             <div className="label-menu">
                 <div className={'page-container page-' + page}>
@@ -129,9 +154,9 @@ class LabelMenu extends React.Component<IProps, IState> {
                         </div>
                         <div className="label-search">
                             <FormControl fullWidth={true} className="title-edit">
-                                <InputLabel htmlFor="label-search">{i18n.t('dialog.search')}</InputLabel>
+                                <InputLabel htmlFor="label-search-2">{i18n.t('dialog.search')}</InputLabel>
                                 <Input
-                                    id="label-search"
+                                    id="label-search-2"
                                     type="text"
                                     inputProps={{
                                         maxLength: 32,
@@ -254,19 +279,7 @@ class LabelMenu extends React.Component<IProps, IState> {
                             </>}
                         </div>
                         <div className="label-container">
-                            <Scrollbars
-                                autoHide={true}
-                                hideTracksWhenNotNeeded={true}
-                                universal={true}
-                            >
-                                {labelList.map((dialog, index) => {
-                                    return (
-                                        <DialogMessage key={dialog.topmessageid || dialog.peerid || index}
-                                                       dialog={dialog} isTyping={{}} selectedId=""
-                                                       messageId={dialog.topmessageid}/>
-                                    );
-                                })}
-                            </Scrollbars>
+                            {this.getLabelWrapper()}
                         </div>
                     </div>}
                 </div>
@@ -467,6 +480,7 @@ class LabelMenu extends React.Component<IProps, IState> {
         }
         this.setState({
             label,
+            labelList: [],
             page: '2',
             page2Mode: 'label',
         }, () => {
@@ -474,33 +488,208 @@ class LabelMenu extends React.Component<IProps, IState> {
         });
     }
 
-    private getLabelList() {
-        const {label} = this.state;
-        if (!label) {
+    private getLabelWrapper() {
+        const {labelList, labelLoading} = this.state;
+        if (labelList.length === 0) {
+            if (labelLoading) {
+                return (<div className="label-list-container">
+                    {DialogSkeleton()}
+                </div>);
+            } else {
+                return (
+                    <div className="label-list-container no-result">
+                        <LabelRounded/>
+                        {i18n.t('label.no_result')}
+                    </div>
+                );
+            }
+        } else {
+            if (this.isMobile || !this.hasScrollbar) {
+                return (
+                    <AutoSizer>
+                        {({width, height}: any) => {
+                            return (<FixedSizeList
+                                ref={this.refHandler}
+                                itemSize={64}
+                                itemCount={labelLoading ? labelList.length + 1 : labelList.length}
+                                overscanCount={10}
+                                width={width}
+                                height={height}
+                                className="label-list-container"
+                                direction={this.rtl ? 'ltr' : 'rtl'}
+                                onItemsRendered={this.labelItemRendered}
+                            >
+                                {({index, style}) => {
+                                    return this.rowRender({index, style, key: index});
+                                }}
+                            </FixedSizeList>);
+                        }}
+                    </AutoSizer>
+                );
+            } else {
+                return (
+                    <AutoSizer>
+                        {({width, height}: any) => (
+                            <div className="label-list-inner" style={{
+                                height: height + 'px',
+                                width: width + 'px',
+                            }}>
+                                <Scrollbars
+                                    autoHide={true}
+                                    style={{
+                                        height: height + 'px',
+                                        width: width + 'px',
+                                    }}
+                                    onScroll={this.handleScroll}
+                                    hideTracksWhenNotNeeded={true}
+                                    universal={true}
+                                    rtl={!this.rtl}
+                                >
+                                    <FixedSizeList
+                                        ref={this.refHandler}
+                                        itemSize={64}
+                                        itemCount={labelLoading ? labelList.length + 1 : labelList.length}
+                                        overscanCount={10}
+                                        width={width}
+                                        height={height}
+                                        className="label-list-container"
+                                        style={listStyle}
+                                        onItemsRendered={this.labelItemRendered}
+                                    >
+                                        {({index, style}) => {
+                                            return this.rowRender({index, style, key: index});
+                                        }}
+                                    </FixedSizeList>
+                                </Scrollbars>
+                            </div>
+                        )}
+                    </AutoSizer>
+                );
+            }
+        }
+    }
+
+    /* Custom Scrollbars handler */
+    private handleScroll = (e: any) => {
+        const {scrollTop} = e.target;
+        if (this.list) {
+            this.list.scrollTo(scrollTop);
+        }
+    }
+
+    private refHandler = (ref: any) => {
+        this.list = ref;
+    }
+
+    private rowRender = ({index, key, style}: any): any => {
+        const dialog = this.state.labelList[index];
+        if (dialog) {
+            return (
+                <div style={style} key={dialog.topmessageid || dialog.peerid || index}>
+                    <DialogMessage dialog={dialog} isTyping={{}} selectedId=""
+                                   messageId={dialog.topmessageid}/>
+                </div>
+            );
+        } else {
+            return (<div style={style} key="label-item-loading" className="label-item-loading">
+                <CircularProgress size={32} thickness={3} color="inherit"/>
+            </div>);
+        }
+    }
+
+    private transformMessage(res: IMessage[]): IDialog[] {
+        return res.map((msg) => {
+            const messageTitle = getMessageTitle(msg);
+            return {
+                label_ids: msg.labelidsList,
+                last_update: msg.createdon,
+                only_contact: true,
+                peerid: msg.peerid,
+                peertype: msg.peertype,
+                preview: messageTitle.text,
+                preview_icon: messageTitle.icon,
+                preview_me: msg.me,
+                preview_rtl: msg.rtl,
+                saved_messages: msg.peerid === this.userId,
+                sender_id: msg.senderid,
+                topmessageid: msg.id,
+            };
+        });
+    }
+
+    private getLabelList(after?: number) {
+        const {label, labelLoading} = this.state;
+        if (!label || labelLoading) {
             return;
         }
-        this.labelRepo.getMessageByItem(label.id || 0, {max: 0, limit: 40}).then((res) => {
-            const labelList: IDialog[] = res.map((msg) => {
-                const messageTitle = getMessageTitle(msg);
-                return {
-                    label_ids: msg.labelidsList,
-                    last_update: msg.createdon,
-                    only_contact: true,
-                    peerid: msg.peerid,
-                    peertype: msg.peertype,
-                    preview: messageTitle.text,
-                    preview_icon: messageTitle.icon,
-                    preview_me: msg.me,
-                    preview_rtl: msg.rtl,
-                    saved_messages: msg.peerid === this.userId,
-                    sender_id: msg.senderid,
-                    topmessageid: msg.id,
-                };
-            });
+        this.setState({
+            labelLoading: true,
+        });
+
+        let loadOnce = false;
+        this.labelRepo.getMessageByItem(label.id || 0, {max: after || 0, limit: C_LABEL_LIST_LIMIT}, (cacheMsg) => {
+            window.console.log('getMessageByItem', after);
+            if (after) {
+                return;
+            }
+            setTimeout(() => {
+                this.setState({
+                    labelList: this.transformMessage(cacheMsg),
+                }, () => {
+                    if (!loadOnce) {
+                        loadOnce = true;
+                        this.loadLabelBefore();
+                    }
+                });
+            }, 110);
+        }).then((res) => {
+            const labelItems: IDialog[] = this.transformMessage(res.messageList);
+            this.labelHasMore = res.labelCount === C_LABEL_LIST_LIMIT;
+            if (!after) {
+                setTimeout(() => {
+                    this.setState({
+                        labelList: labelItems,
+                        labelLoading: false,
+                    }, () => {
+                        if (!loadOnce) {
+                            loadOnce = true;
+                            this.loadLabelBefore();
+                        }
+                    });
+                }, after ? 0 : 110);
+            } else {
+                const {labelList} = this.state;
+                labelList.push.apply(labelList, labelItems);
+                this.setState({
+                    labelList,
+                    labelLoading: false,
+                });
+            }
+        });
+    }
+
+    private loadLabelBefore() {
+        const {label, labelList} = this.state;
+        if (!label || !labelList.length) {
+            return;
+        }
+        const before = labelList[0].topmessageid || 0;
+        this.labelRepo.getRemoteMessageByItem(label.id || 0, {min: before + 1, limit: 200}).then((res) => {
+            labelList.unshift.apply(labelList,  this.transformMessage(res.reverse()));
             this.setState({
                 labelList,
             });
         });
+    }
+
+    private labelItemRendered = (props: ListOnItemsRenderedProps) => {
+        if (!this.labelHasMore || this.state.labelLoading) {
+            return;
+        }
+        const {labelList} = this.state;
+        if ((labelList.length - 5) < props.visibleStopIndex) {
+            this.getLabelList(labelList[labelList.length - 1].topmessageid);
+        }
     }
 }
 

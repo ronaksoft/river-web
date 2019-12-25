@@ -143,9 +143,9 @@ import Landscape from "../../components/SVG";
 import {isMobile} from "../../services/utilities/localize";
 import LabelRepo from "../../repository/label";
 import LabelDialog from "../../components/LabelDialog";
+import {ILabel} from "../../repository/label/interface";
 
 import './style.scss';
-import {ILabel} from "../../repository/label/interface";
 
 export let notifyOptions: any[] = [];
 const C_MAX_UPDATE_DIFF = 2000;
@@ -954,7 +954,7 @@ class Chat extends React.Component<IProps, IState> {
         if (data.peerid === this.selectedDialogId && this.messageRef) {
             // Check if Top Message exits
             const dialog = this.getDialogById(this.selectedDialogId);
-            if (dialog && ((data.messages.length > 0 && (dialog.topmessageid || 0) <= data.minMessageId) || ((this.messages[this.messages.length - 1].id || 0) < 0))) {
+            if (dialog) {
                 if (this.messages.length === 0 || (this.messages.length > 0 && (this.messages[this.messages.length - 1].id === dialog.topmessageid || (this.messages[this.messages.length - 1].id || 0) < 0))) {
                     const dataMsg = this.modifyMessages(this.messages, data.messages.reverse(), true);
                     data.messages.reverse().forEach((message) => {
@@ -4509,6 +4509,7 @@ class Chat extends React.Component<IProps, IState> {
                 id,
                 increase_counter: data.messageidsList.length,
             });
+            this.labelRepo.insertInRange(id, data.peer.id || '', data.peer.type || 0, data.messageidsList);
         });
         this.labelRepo.upsert(labelList);
     }
@@ -4543,6 +4544,7 @@ class Chat extends React.Component<IProps, IState> {
                 id,
                 increase_counter: -data.messageidsList.length,
             });
+            this.labelRepo.removeFromRange(id, data.messageidsList);
         });
         this.labelRepo.upsert(labelList);
     }

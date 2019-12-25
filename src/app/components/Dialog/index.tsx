@@ -36,6 +36,7 @@ import Broadcaster from "../../services/broadcaster";
 import {ILabel} from "../../repository/label/interface";
 import IconButton from "@material-ui/core/IconButton/IconButton";
 import LabelPopover from "../LabelPopover";
+import DialogSkeleton from "../DialogSkeleton";
 
 import './style.scss';
 
@@ -501,17 +502,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
     /* No Rows Renderer */
     private noRowsRenderer = () => {
         if (this.firstTimeLoad) {
-            return (
-                <div className="no-result skeleton-wrapper">
-                    {[0, 0, 0, 0, 0, 0, 0].map((i, key) => (
-                        <div key={key} className="dialog-skeleton">
-                            <div className="skeleton-avatar"/>
-                            <div className="skeleton-name"/>
-                            <div className="skeleton-preview"/>
-                            <div className="skeleton-date"/>
-                        </div>)
-                    )}
-                </div>);
+            return DialogSkeleton();
         }
         return (
             <div className="no-result">
