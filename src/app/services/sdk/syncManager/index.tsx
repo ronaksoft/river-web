@@ -43,6 +43,7 @@ import {getMessageTitle} from '../../../components/Dialog/utils';
 import {kMerge} from "../../utilities/kDash";
 import LabelRepo from "../../../repository/label";
 import {uniq} from "lodash";
+import {ILabel} from "../../../repository/label/interface";
 
 export interface IRemoveDialog {
     maxId: number;
@@ -305,8 +306,17 @@ export default class SyncManager {
                         }
                     });
                     updateLabelItemsAdded.labelidsList.forEach((id) => {
-                        this.labelRepo.insertInRange(id, updateLabelItemsAdded.peer.id || '', updateLabelItemsAdded.peer.type || 0, updateLabelItemsAdded.messageidsList)
+                        this.labelRepo.insertInRange(id, updateLabelItemsAdded.peer.id || '', updateLabelItemsAdded.peer.type || 0, updateLabelItemsAdded.messageidsList);
                     });
+                    const addLabelList: ILabel[] = [];
+                    updateLabelItemsAdded.labelidsList.forEach((id) => {
+                        addLabelList.push({
+                            id,
+                            increase_counter: updateLabelItemsAdded.messageidsList.length,
+                        });
+                        this.labelRepo.insertInRange(id, updateLabelItemsAdded.peer.id || '', updateLabelItemsAdded.peer.type || 0, updateLabelItemsAdded.messageidsList);
+                    });
+                    this.labelRepo.upsert(addLabelList);
                     break;
                 case C_MSG.UpdateLabelItemsRemoved:
                     const updateLabelItemsRemoved = UpdateLabelItemsRemoved.deserializeBinary(data).toObject();
@@ -321,8 +331,17 @@ export default class SyncManager {
                         }
                     });
                     updateLabelItemsRemoved.labelidsList.forEach((id) => {
-                        this.labelRepo.removeFromRange(id, updateLabelItemsAdded.messageidsList)
+                        this.labelRepo.removeFromRange(id, updateLabelItemsAdded.messageidsList);
                     });
+                    const removeLabelList: ILabel[] = [];
+                    updateLabelItemsRemoved.labelidsList.forEach((id) => {
+                        removeLabelList.push({
+                            id,
+                            increase_counter: -updateLabelItemsRemoved.messageidsList.length,
+                        });
+                        this.labelRepo.removeFromRange(id, updateLabelItemsRemoved.messageidsList);
+                    });
+                    this.labelRepo.upsert(removeLabelList);
                     break;
                 default:
                     break;

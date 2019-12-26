@@ -1,3 +1,6 @@
+## 0.29.2
+* Sync manager updated
+
 ## 0.29.1
 * Minor bug fixed
 
