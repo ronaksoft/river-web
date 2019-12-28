@@ -467,10 +467,21 @@ export default class SyncManager {
         const data: IMessage[] = [];
         const keys = Object.keys(messages);
         const peerIds: number[] = [];
+        const minIdPerPeer: { [key: string]: number } = {};
         keys.forEach((key) => {
             data.push(messages[key]);
             if (!peerIds[messages[key].peerid]) {
                 peerIds.push(messages[key].peerid);
+            }
+            const message = messages[key];
+            if (message && message.id) {
+                if (minIdPerPeer.hasOwnProperty(message.peerid)) {
+                    minIdPerPeer[message.peerid || ''] = message.id;
+                } else {
+                    if (minIdPerPeer[message.peerid || ''] > message.id) {
+                        minIdPerPeer[message.peerid || ''] = message.id;
+                    }
+                }
             }
         });
         if (data.length > 0) {
@@ -478,6 +489,7 @@ export default class SyncManager {
             setTimeout(() => {
                 this.broadcastEvent('Message_Sync_Updated', {
                     ids: keys,
+                    minids: minIdPerPeer,
                     peerids: peerIds,
                 });
             }, 512);

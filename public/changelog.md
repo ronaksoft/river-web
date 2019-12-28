@@ -1,5 +1,6 @@
 ## 0.29.3
 * Themes updated
+* Minor bugs fixed
 
 ## 0.29.2
 * Sync manager updated

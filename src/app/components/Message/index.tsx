@@ -545,7 +545,6 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
-    // @ts-ignore
     private getHeight = (index: number) => {
         const {items} = this.state;
         let height = 41;

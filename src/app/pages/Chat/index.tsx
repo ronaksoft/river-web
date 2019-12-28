@@ -2575,7 +2575,7 @@ class Chat extends React.Component<IProps, IState> {
     private getMaxId() {
         let maxId: number = 0;
         for (let i = 0; i < this.messages.length; i++) {
-            if (this.messages[i].id && maxId > (this.messages[i].id || 0)) {
+            if (this.messages[i].id && maxId < (this.messages[i].id || 0)) {
                 maxId = this.messages[i].id || 0;
             }
         }
@@ -2599,7 +2599,8 @@ class Chat extends React.Component<IProps, IState> {
         }
         if (data.peerids && data.peerids.indexOf(this.selectedDialogId) > -1) {
             // this.getMessagesByDialogId(this.selectedDialogId);
-            const after = this.getMaxId();
+            let after = data.minids[this.selectedDialogId] || this.getMaxId();
+            after--;
             this.messageRepo.getManyCache({after, limit: 100, ignoreMax: true}, peer).then((res) => {
                 if (!this.messageRef) {
                     return;
