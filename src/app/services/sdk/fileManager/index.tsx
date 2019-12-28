@@ -353,7 +353,7 @@ export default class FileManager {
             if (chunkInfo.sendChunks.length > 0) {
                 let chunk = chunkInfo.sendChunks.shift();
                 if (chunk) {
-                    if (chunkInfo.sendChunks.length >= 1 && chunk.last) {
+                    if (chunkInfo.sendChunks.length >= 1 && (chunkInfo.doneParts + 1) === chunkInfo.totalParts && chunk.last) {
                         this.fileUploadQueue[id].sendChunks.push(chunk);
                         chunk = this.fileUploadQueue[id].sendChunks.shift();
                     }
