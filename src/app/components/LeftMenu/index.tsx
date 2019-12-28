@@ -315,7 +315,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                                   onUpdateMessages={this.props.onUpdateMessages}
                                   onClose={this.props.onSettingsClose}
                                   onAction={this.props.onSettingsAction}
-                                  onReloadDialog={this.props.onReloadDialog}/>);
+                                  onReloadDialog={this.props.onReloadDialog}
+                                  onSubPlaceChange={this.settingsSubPlaceChangeHandler}
+            />);
         } else if (leftMenu === 'contacts') {
             return (<ContactsMenu key="contacts-menu" ref={this.contactsMenuRefHandler}/>);
         } else {
@@ -391,7 +393,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
         }
     }
 
-    private chatMoreActionHandler = (cmd: string | undefined) => (e: any) => {
+    private chatMoreActionHandler = (cmd: string | undefined) => (e?: any) => {
         this.chatMoreCloseHandler();
         switch (cmd) {
             case 'new_group':
@@ -454,6 +456,16 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             this.props.onMenuShrunk(this.state.shrunkMenu);
             localStorage.setItem('river.shrunk_menu', this.state.shrunkMenu ? 'true' : 'false');
         });
+    }
+
+    private settingsSubPlaceChangeHandler = (place: string, subPlace: string) => {
+        if (place === 'label') {
+            this.setState({
+                leftMenu: "chat",
+            }, () => {
+                this.chatMoreActionHandler('labels')();
+            });
+        }
     }
 }
 

@@ -31,6 +31,7 @@ import {
     MaximizeRounded,
     PaletteRounded,
     PhotoCameraRounded,
+    LabelRounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import UserAvatar from '../UserAvatar';
@@ -86,20 +87,20 @@ import DevTools from "../DevTools";
 import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.29.2';
+export const C_VERSION = '0.29.3';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 export const C_AVATAR_SIZE = 640;
 
 export const languageList = [{
-    dir: 'rtl',
-    label: 'Farsi',
-    lang: 'fa',
-    title: 'فارسی'
-}, {
     dir: 'ltr',
     label: 'English',
     lang: 'en',
     title: 'English'
+}, {
+    dir: 'rtl',
+    label: 'Farsi',
+    lang: 'fa',
+    title: 'فارسی'
 }];
 
 const privacyDefault: { [key: string]: IPrivacy } = {
@@ -411,6 +412,12 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                             <LockRounded/>
                                         </div>
                                         <div className="anchor-label">{i18n.t('settings.privacy_and_security')}</div>
+                                    </div>
+                                    <div className="page-anchor" onClick={this.selectPageHandler('label')}>
+                                        <div className="icon color-label">
+                                            <LabelRounded/>
+                                        </div>
+                                        <div className="anchor-label">{i18n.t('settings.label')}</div>
                                     </div>
                                     <div className="page-anchor" onClick={this.selectPageHandler('theme')}>
                                         <div className="icon color-theme">
@@ -1143,6 +1150,12 @@ class SettingsMenu extends React.Component<IProps, IState> {
     }
 
     private selectPageHandler = (target: string) => (e: any) => {
+        if (target === 'label') {
+            if (this.props.onSubPlaceChange) {
+                this.props.onSubPlaceChange('label', '');
+            }
+            return;
+        }
         this.setState({
             page: '2',
             pageContent: target,

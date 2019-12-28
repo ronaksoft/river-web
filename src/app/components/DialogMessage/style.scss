@@ -82,7 +82,7 @@ a.dialog-a {
         border: 1px solid var(--white);
 
         &:first-child {
-          z-index: 1003;
+          z-index: 3;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -96,12 +96,12 @@ a.dialog-a {
 
         &:nth-child(2) {
           transform: translateX(60%);
-          z-index: 1002;
+          z-index: 2;
         }
 
         &:nth-child(3) {
           transform: translateX(120%);
-          z-index: 1001;
+          z-index: 1;
         }
       }
     }

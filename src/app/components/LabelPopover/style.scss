@@ -18,7 +18,7 @@
 
   .search-label-container {
     display: flex;
-    padding: 5px 0 0;
+    padding: 2px 0 2px;
     min-width: 100px;
     flex-direction: column;
     background-color: var(--header-color);
@@ -38,6 +38,10 @@
 
         &:hover {
           background-color: var(--dark-hover-light);
+        }
+
+        &:last-child {
+          border-bottom-color: transparent;
         }
 
         &.selected {
@@ -75,14 +79,12 @@ html[direction="rtl"] {
     .search-label-container {
       .search-label-list {
         .label-item {
-          flex-direction: row-reverse;
-
           .label-icon {
-            padding: 0 0 0 6px;
+            margin: 0 0 0 6px;
           }
 
           .label-name {
-            justify-content: flex-end;
+            justify-content: flex-start;
           }
         }
       }

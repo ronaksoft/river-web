@@ -1,3 +1,6 @@
+## 0.29.3
+* Themes updated
+
 ## 0.29.2
 * Sync manager updated
 

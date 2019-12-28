@@ -3,7 +3,8 @@
   width: 318px;
   height: 100%;
   flex: none;
-  border: 1px solid var(--light);
+  border-top: 1px solid var(--light);
+  border-bottom: 1px solid var(--light);
   background-color: var(--white);
 
   .top-bar {

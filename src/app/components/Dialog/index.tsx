@@ -13,7 +13,7 @@ import {Link} from 'react-router-dom';
 import {debounce, intersectionBy, clone, differenceBy} from 'lodash';
 import {IDialog} from '../../repository/dialog/interface';
 import DialogMessage from '../DialogMessage';
-import {LabelOutlined, LabelRounded, MessageRounded} from '@material-ui/icons';
+import {LabelOutlined, LabelRounded, MessageRounded, ClearRounded} from '@material-ui/icons';
 import Menu from '@material-ui/core/Menu/Menu';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';
 import {PeerType, TypingAction} from '../../services/sdk/messages/chat.core.types_pb';
@@ -303,6 +303,9 @@ class Dialog extends React.PureComponent<IProps, IState> {
                             {labelActive ? <LabelRounded/> : <LabelOutlined/>}
                         </IconButton>
                     </div>
+                    <div className="search-close" onClick={this.closeSearchHandler}>
+                        <ClearRounded/>
+                    </div>
                     {searchEnable && <LabelPopover ref={this.labelPopoverRefHandler} labelList={this.state.labelList}
                                                    onApply={this.labelPopoverApplyHandler}
                                                    onCancel={this.labelPopoverCancelHandler}/>}
@@ -381,6 +384,10 @@ class Dialog extends React.PureComponent<IProps, IState> {
                                        messageId={dialog.topmessageid}/>
                     );
                 })}
+                {Boolean(searchMessageItems.length === 0 && appliedSelectedLabelIds.length > 0) && <div className="no-result">
+                    <MessageRounded/>
+                    {i18n.t('label.no_result')}
+                </div>}
             </>);
         }
     }

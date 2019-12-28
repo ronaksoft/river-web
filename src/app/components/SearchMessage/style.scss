@@ -43,7 +43,7 @@
     .search-label {
       position: absolute;
       top: 50%;
-      right: 8px;
+      right: 4px;
       transform: translateY(-50%);
 
       button {
@@ -57,7 +57,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0 6px;
+      padding: 0 0 0 6px;
 
       .chip-root {
         .chip-container {
@@ -111,6 +111,33 @@
 
             &::placeholder {
               font-size: 14px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+html[direction="rtl"] {
+  .search-message {
+    .search-box {
+      flex-direction: row-reverse;
+
+      .search-input {
+        flex-direction: row-reverse;
+        padding: 0 6px 0 0;
+        direction: rtl;
+
+        .search-label {
+          right: auto;
+          left: 4px;
+        }
+
+        .search-chip-input {
+          .chip-input-root {
+            .chip {
+              margin: 0 3px 0 0;
             }
           }
         }

@@ -100,7 +100,7 @@ class LabelPopover extends React.Component<IProps, IState> {
     }
 
     private getLabelListHeight() {
-        let height = this.state.labelList.length * 28;
+        let height = (this.state.labelList.length - this.state.selectedLabelIds.length) * 28;
         if (height > 100) {
             height = 100;
         }

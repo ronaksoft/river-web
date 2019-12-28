@@ -36,11 +36,33 @@
     .search-label {
       position: absolute;
       top: 50%;
-      right: 8px;
+      right: 30px;
       transform: translateY(-50%);
 
       button {
         padding: 3px;
+      }
+
+      svg {
+        font-size: 20px;
+      }
+    }
+
+    .search-close {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      right: 8px;
+      border-left: 1px solid rgba(0, 0, 0, 0.23);
+      top: 7px;
+      bottom: 7px;
+      width: 22px;
+      cursor: pointer;
+
+      svg {
+        color: rgba(0, 0, 0, 0.54);
+        font-size: 17px;
       }
     }
 
@@ -116,6 +138,7 @@
         font-size: 30px;
         font-weight: 100;
         color: var(--grey);
+        direction: ltr;
 
         svg {
           margin: 0 0 32px;
@@ -140,12 +163,36 @@ html[direction="rtl"] {
     }
   }
 
+  .dialog-search {
+    .search-label {
+      right: auto;
+      left: 30px;
+    }
+
+    .search-close {
+      right: auto;
+      left: 8px;
+      border-left: none;
+      border-right: 1px solid rgba(0, 0, 0, 0.23);;
+    }
+
+    .chip-input-root {
+      .chip {
+        margin: 0 3px 0 0;
+      }
+    }
+  }
+
   .dialogs {
     .dialog-list {
       .dialog-container {
 
         .search-label {
           text-align: right;
+        }
+
+        .no-result {
+          direction: rtl;
         }
       }
     }
@@ -209,7 +256,8 @@ html[theme="dark-blue"] {
         }
       }
 
-      .search-label {
+      .search-label,
+      .search-close {
         svg {
           color: var(--dark-blue-mention);
         }
