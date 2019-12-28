@@ -1551,7 +1551,7 @@ class Chat extends React.Component<IProps, IState> {
         if (!dialog) {
             return;
         }
-        const after = this.getValidAfter();
+        const after = this.getMaxId();
         if (((dialog.topmessageid || 0) <= after && (dialog.unreadcount || 0) === 0) || after === 0) {
             return;
         }
@@ -1917,7 +1917,7 @@ class Chat extends React.Component<IProps, IState> {
         const dialog = this.getDialogById(this.selectedDialogId);
         let gapNumber = 0;
         if (dialog && this.messages.length > 0) {
-            const lastValid = this.getValidAfter();
+            const lastValid = this.getMaxId();
             if (lastValid !== dialog.topmessageid) {
                 this.messageRef.clearAll();
                 this.messages = [];
@@ -2574,10 +2574,13 @@ class Chat extends React.Component<IProps, IState> {
 
     private getMaxId() {
         let maxId: number = 0;
-        for (let i = 0; i < this.messages.length; i++) {
+        for (let i = this.messages.length - 1, cnt = 0; i >= 0 && cnt < 100; i--, cnt++) {
             if (this.messages[i].id && maxId < (this.messages[i].id || 0)) {
                 maxId = this.messages[i].id || 0;
             }
+        }
+        if (maxId < 0) {
+            maxId = this.getValidAfter();
         }
         return maxId;
     }
