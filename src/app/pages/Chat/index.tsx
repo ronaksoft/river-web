@@ -1646,6 +1646,9 @@ class Chat extends React.Component<IProps, IState> {
         let minId = Infinity;
         let maxReadId = -1;
         let addition = 0;
+        if (!push) {
+            messages = messages.reverse();
+        }
         messages.forEach((msg, key) => {
             if (!msg) {
                 return;
@@ -1659,77 +1662,61 @@ class Chat extends React.Component<IProps, IState> {
             if (msg.id && msg.id < minId && msg.id > 0) {
                 minId = msg.id;
             }
-            if (push) {
-                // avatar breakpoint
-                msg.avatar =
-                    (key === 0 && (defaultMessages.length === 0 || (defaultMessages.length > 0 && msg.senderid !== defaultMessages[defaultMessages.length - 1].senderid))) ||
-                    (key > 0 && msg.senderid !== messages[key - 1].senderid) ||
-                    (key > 0 && messages[key - 1].messageaction !== C_MESSAGE_ACTION.MessageActionNope);
 
-                // date breakpoint
-                if (msg.messagetype !== C_MESSAGE_TYPE.End && ((key === 0 && (defaultMessages.length === 0 || (defaultMessages.length > 0 && !TimeUtility.isInSameDay(msg.createdon, defaultMessages[defaultMessages.length - 1].createdon))))
-                    || (key > 0 && !TimeUtility.isInSameDay(msg.createdon, messages[key - 1].createdon)))) {
+            // date breakpoint
+            if (msg.messagetype !== C_MESSAGE_TYPE.End && ((key === 0 && (defaultMessages.length === 0 || (defaultMessages.length > 0 && !TimeUtility.isInSameDay(msg.createdon, defaultMessages[defaultMessages.length - 1].createdon))))
+                || (key > 0 && !TimeUtility.isInSameDay(msg.createdon, messages[key - 1].createdon)))) {
+                if (push) {
                     defaultMessages.push({
                         createdon: msg.createdon,
                         id: msg.id,
                         messagetype: C_MESSAGE_TYPE.Date,
                         senderid: msg.senderid,
                     });
-                    addition++;
-                    msg.avatar = true;
-                }
-
-                if (messageReadId !== undefined && !this.newMessageFlag && (msg.id || 0) > messageReadId && !msg.me) {
-                    defaultMessages.push({
+                } else {
+                    defaultMessages.splice(addition, 0, {
                         createdon: msg.createdon,
-                        id: (msg.id || 0) + 0.5,
-                        messagetype: C_MESSAGE_TYPE.NewMessage,
+                        id: msg.id,
+                        messagetype: C_MESSAGE_TYPE.Date,
+                        senderid: msg.senderid,
                     });
-                    addition++;
-                    this.newMessageFlag = true;
-                    msg.avatar = true;
                 }
-
-                defaultMessages.push(msg);
                 addition++;
+                msg.avatar = true;
             }
 
-            if (!push) {
-                if (defaultMessages.length > 0 && defaultMessages[0]) {
-                    if (key === 0 && defaultMessages[0] && defaultMessages[0].messagetype === C_MESSAGE_TYPE.Date) {
-                        if (TimeUtility.isInSameDay(msg.createdon, defaultMessages[0].createdon)) {
-                            defaultMessages.splice(0, 1);
-                        }
-                    }
-
-                    if (key === 0 && defaultMessages.length > 1 && defaultMessages[0].messagetype === C_MESSAGE_TYPE.Normal && defaultMessages[1].senderid === msg.senderid) {
-                        defaultMessages[0].avatar = false;
-                    }
-
-                    // avatar breakpoint
-                    defaultMessages[0].avatar = (msg.senderid !== defaultMessages[0].senderid || (defaultMessages[0].messageaction || 0) !== C_MESSAGE_ACTION.MessageActionNope);
-                    msg.avatar = (messages.length - 1 === key);
-                    // end of avatar breakpoint
-                }
-
-                defaultMessages.unshift(msg);
+            if (push && messageReadId !== undefined && !this.newMessageFlag && (msg.id || 0) > messageReadId && !msg.me) {
+                defaultMessages.push({
+                    createdon: msg.createdon,
+                    id: (msg.id || 0) + 0.5,
+                    messagetype: C_MESSAGE_TYPE.NewMessage,
+                });
                 addition++;
-                // date breakpoint
-                if (msg.messagetype !== C_MESSAGE_TYPE.End && (messages.length - 1 === key // End of message list
-                    || (defaultMessages.length > 1 && !TimeUtility.isInSameDay(msg.createdon, defaultMessages[1].createdon)))) {
-                    defaultMessages.unshift({
-                        createdon: msg.createdon,
-                        id: msg.id,
-                        messagetype: C_MESSAGE_TYPE.Date,
-                        senderid: msg.senderid,
-                    });
-                    addition++;
-                    if (defaultMessages.length > 1) {
-                        defaultMessages[1].avatar = true;
-                    }
+                this.newMessageFlag = true;
+                msg.avatar = true;
+            }
+
+            if (push) {
+                defaultMessages.push(msg);
+            } else {
+                defaultMessages.splice(addition, 0, msg);
+            }
+
+            let len = defaultMessages.length;
+            if (len > 0 && !msg.avatar) {
+                len--;
+                defaultMessages[len].avatar = this.isAvatar(len);
+            }
+            addition++;
+            if (!push && messages.length === key + 1) {
+                if (defaultMessages[addition - 1] && defaultMessages[addition] && defaultMessages[addition].messagetype === C_MESSAGE_TYPE.Date && TimeUtility.isInSameDay(defaultMessages[addition - 1].createdon, defaultMessages[addition].createdon)) {
+                    defaultMessages.splice(addition, 1);
+                    addition--;
                 }
+                defaultMessages[addition + 1].avatar = this.isAvatar(addition + 1);
             }
         });
+
         return {
             addition,
             maxId,
@@ -1917,8 +1904,8 @@ class Chat extends React.Component<IProps, IState> {
         const dialog = this.getDialogById(this.selectedDialogId);
         let gapNumber = 0;
         if (dialog && this.messages.length > 0) {
-            const lastValid = this.getMaxId();
-            if (lastValid !== dialog.topmessageid) {
+            const lastValid = this.getValidAfter();
+            if (lastValid !== dialog.topmessageid && findLastIndex(this.messages, {id: dialog.topmessageid || 0}) === -1) {
                 this.messageRef.clearAll();
                 this.messages = [];
                 gapNumber = dialog.topmessageid || 0;
@@ -1969,6 +1956,26 @@ class Chat extends React.Component<IProps, IState> {
         return false;
     }
 
+    private isAvatar(index: number) {
+        if (index === 0) {
+            return true;
+        }
+        const beforeIndex = index - 1;
+        if (!this.messages[beforeIndex]) {
+            return true;
+        }
+        if (!this.messages[index]) {
+            return true;
+        }
+        if (this.messages[beforeIndex].senderid !== this.messages[index].senderid) {
+            return true;
+        }
+        if (this.messages[beforeIndex].messagetype === C_MESSAGE_TYPE.Date || this.messages[beforeIndex].messagetype === C_MESSAGE_TYPE.System) {
+            return true;
+        }
+        return false;
+    }
+
     private checkMessageOrder(msg: IMessage) {
         if (!this.messageRef || (msg.id || 0) < 0) {
             return;
@@ -1980,6 +1987,12 @@ class Chat extends React.Component<IProps, IState> {
             const hold = this.messages[i1];
             this.messages[i1] = this.messages[i2];
             this.messages[i2] = hold;
+            if (this.messages[i1]) {
+                this.messages[i1].avatar = this.isAvatar(i1);
+            }
+            if (this.messages[i2]) {
+                this.messages[i2].avatar = this.isAvatar(i2);
+            }
             if (this.messageRef) {
                 this.messageRef.clear(i1);
                 this.messageRef.clear(i2);
@@ -2602,8 +2615,7 @@ class Chat extends React.Component<IProps, IState> {
         }
         if (data.peerids && data.peerids.indexOf(this.selectedDialogId) > -1) {
             // this.getMessagesByDialogId(this.selectedDialogId);
-            let after = data.minids[this.selectedDialogId] || this.getMaxId();
-            after--;
+            const after = data.minids[this.selectedDialogId] || this.getMaxId();
             this.messageRepo.getManyCache({after, limit: 100, ignoreMax: true}, peer).then((res) => {
                 if (!this.messageRef) {
                     return;
