@@ -20,6 +20,7 @@ interface IProps {
     onApply: (ids: number[]) => void;
     onCancel?: () => void;
     labelList: ILabel[];
+    closeAfterSelect?: boolean;
 }
 
 interface IState {
@@ -130,7 +131,9 @@ class LabelPopover extends React.Component<IProps, IState> {
         if (this.props.onApply) {
             this.props.onApply(this.state.selectedLabelIds);
         }
-        // this.labelCloseHandler();
+        if (this.props.closeAfterSelect) {
+            this.labelCloseHandler();
+        }
     }
 }
 

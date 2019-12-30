@@ -13,7 +13,7 @@ import {Route, Switch, Redirect} from 'react-router-dom';
 import Chat from '../pages/Chat';
 import SignUp from './../pages/SignUp';
 import Loading from './../pages/Loading';
-import Test from './../pages/Test';
+import Test from './../pages/Test2';
 
 export default (
     <Switch>

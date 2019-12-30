@@ -1,3 +1,8 @@
+## 0.29.5
+* Search updated
+* LabelPopover updated
+* Dialog Scroll to peer added
+
 ## 0.29.4
 * Bug fixes and performance improvements
 

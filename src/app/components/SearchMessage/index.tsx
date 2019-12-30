@@ -145,6 +145,7 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
                     </div>
                     <div className="search-input">
                         <ChipInput
+                            id="message-search"
                             placeholder={i18n.t('chat.search_messages')}
                             className="search-chip-input"
                             value={appliedSelectedLabelIds}
@@ -162,6 +163,7 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
                             }}
                             onKeyUp={this.searchKeyUpHandler}
                             variant="outlined"
+                            inputRef={this.searchRefHandler}
                         />
                         <div className="search-label">
                             <IconButton
@@ -171,7 +173,8 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
                             </IconButton>
                         </div>
                         <LabelPopover ref={this.labelPopoverRefHandler} labelList={this.state.labelList}
-                                      onApply={this.labelPopoverApplyHandler} onCancel={this.labelPopoverCancelHandler}/>
+                                      onApply={this.labelPopoverApplyHandler}
+                                      onCancel={this.labelPopoverCancelHandler}/>
                     </div>
                     <div className="search-action">
                         <IconButton
@@ -401,6 +404,10 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
         this.setState({
             labelActive: false,
         });
+    }
+
+    private searchRefHandler = (ref: any) => {
+        this.searchRef = ref;
     }
 }
 

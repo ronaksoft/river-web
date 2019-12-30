@@ -10,7 +10,7 @@
 import * as React from 'react';
 import AutoSizer from "react-virtualized-auto-sizer";
 import {Link} from 'react-router-dom';
-import {debounce, intersectionBy, clone, differenceBy} from 'lodash';
+import {debounce, intersectionBy, clone, differenceBy, findIndex} from 'lodash';
 import {IDialog} from '../../repository/dialog/interface';
 import DialogMessage from '../DialogMessage';
 import {LabelOutlined, LabelRounded, MessageRounded, ClearRounded} from '@material-ui/icons';
@@ -84,6 +84,8 @@ class Dialog extends React.PureComponent<IProps, IState> {
     private broadcaster: Broadcaster;
     private eventReferences: any[] = [];
     private labelPopoverRef: LabelPopover | undefined;
+    private scrollbarsRef: Scrollbars | undefined;
+    private firstTimeInit: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -110,7 +112,6 @@ class Dialog extends React.PureComponent<IProps, IState> {
         this.userId = UserRepo.getInstance().getCurrentUserId();
         this.labelRepo = LabelRepo.getInstance();
         this.broadcaster = Broadcaster.getInstance();
-
 
         this.menuItem = {
             0: {
@@ -162,10 +163,9 @@ class Dialog extends React.PureComponent<IProps, IState> {
     }
 
     public componentDidMount() {
-        // const index = findIndex(this.state.items, {peerid: this.state.selectedId});
-        // this.list.scrollToRow(index);
         this.getLabelList();
         this.eventReferences.push(this.broadcaster.listen('Label_DB_Updated', this.getLabelList));
+        this.firstTimeInit = true;
     }
 
     public componentWillUnmount() {
@@ -175,7 +175,6 @@ class Dialog extends React.PureComponent<IProps, IState> {
             }
         });
     }
-
 
     public setSelectedId(id: string) {
         this.setState({
@@ -202,6 +201,9 @@ class Dialog extends React.PureComponent<IProps, IState> {
                     this.forceUpdate();
                 }, 5000);
             }
+            if (this.firstTimeInit && dialogs.length > 0) {
+                this.initScrollPos();
+            }
         });
     }
 
@@ -224,13 +226,12 @@ class Dialog extends React.PureComponent<IProps, IState> {
                 this.setState({
                     appliedSelectedLabelIds: [],
                 });
-            } else {
                 const el: any = document.querySelector('#dialog-search');
                 if (el) {
-                    // el.value = '';
                     el.focus();
                 }
-                this.filterItem();
+            } else {
+                this.closeSearchHandler();
             }
         });
     }
@@ -307,7 +308,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
                         <ClearRounded/>
                     </div>
                     {searchEnable && <LabelPopover ref={this.labelPopoverRefHandler} labelList={this.state.labelList}
-                                                   onApply={this.labelPopoverApplyHandler}
+                                                   onApply={this.labelPopoverApplyHandler} closeAfterSelect={true}
                                                    onCancel={this.labelPopoverCancelHandler}/>}
                 </div>
                 <div className="dialog-list">
@@ -327,6 +328,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
                                     hideTracksWhenNotNeeded={true}
                                     universal={true}
                                     rtl={!this.rtl}
+                                    ref={this.scrollbarsRefHandler}
                                 >
                                     <div className="dialog-container">
                                         {this.getContent()}
@@ -384,7 +386,8 @@ class Dialog extends React.PureComponent<IProps, IState> {
                                        messageId={dialog.topmessageid}/>
                     );
                 })}
-                {Boolean(searchMessageItems.length === 0 && appliedSelectedLabelIds.length > 0) && <div className="no-result">
+                {Boolean(searchMessageItems.length === 0 && appliedSelectedLabelIds.length > 0) &&
+                <div className="no-result">
                     <MessageRounded/>
                     {i18n.t('label.no_result')}
                 </div>}
@@ -709,9 +712,10 @@ class Dialog extends React.PureComponent<IProps, IState> {
 
     /* Search close handler */
     private closeSearchHandler = () => {
-        this.toggleSearch();
         this.setState({
+            appliedSelectedLabelIds: [],
             searchAddedItems: [],
+            searchEnable: false,
             searchMessageItems: [],
         });
         if (this.containerRef) {
@@ -787,6 +791,28 @@ class Dialog extends React.PureComponent<IProps, IState> {
         this.setState({
             labelActive: false,
         });
+    }
+
+    private scrollbarsRefHandler = (ref: any) => {
+        this.scrollbarsRef = ref;
+    }
+
+    private initScrollPos() {
+        setTimeout(() => {
+            const index = findIndex(this.state.items, {peerid: this.state.selectedId});
+            if (this.scrollbarsRef && index > -1) {
+                const scrollTop = index * 64;
+                const containerHeight = this.scrollbarsRef.getClientHeight();
+                if (containerHeight < scrollTop) {
+                    // @ts-ignore
+                    this.scrollbarsRef.view.scrollTo({
+                        behavior: 'smooth',
+                        top: (index + 1) * 64 - containerHeight,
+                    });
+                }
+            }
+        }, 500);
+        this.firstTimeInit = false;
     }
 }
 

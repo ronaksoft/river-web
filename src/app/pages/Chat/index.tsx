@@ -329,6 +329,8 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
+        this.updateManager.enable();
+
         // Global event listeners
         window.addEventListener('focus', this.windowFocusHandler);
         window.addEventListener('blur', this.windowBlurHandler);
@@ -516,6 +518,8 @@ class Chat extends React.Component<IProps, IState> {
                 canceller();
             }
         });
+
+        this.updateManager.disable();
 
         window.removeEventListener('focus', this.windowFocusHandler);
         window.removeEventListener('blur', this.windowBlurHandler);
