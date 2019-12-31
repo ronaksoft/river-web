@@ -188,6 +188,8 @@
     "debug_mode": "Debug Mode",
     "set_test_url": "Set test URL",
     "test_url": "Test URL",
+    "test_file_url": "Test File URL",
+    "electron_load_url": "Electron Load URL",
     "throttle_interval": "Throttle Interval",
     "clear_all_data": "Clear all data",
     "clear_cache_confirm_text": "All media will stay in River cloud and can be re-downloaded,",

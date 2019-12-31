@@ -3,6 +3,12 @@ const {app, BrowserWindow, shell, ipcMain, Menu, systemPreferences, nativeTheme}
 const isDev = require('electron-is-dev');
 const {download} = require('electron-dl');
 const contextMenu = require('electron-context-menu');
+const fs = require('fs');
+const Store = require('electron-store');
+const store = new Store();
+
+const C_LOAD_URL = 'https://web.river.im';
+const C_LOAD_URL_KEY = 'load_url';
 
 let mainWindow;
 let sizeMode = 'desktop';
@@ -66,7 +72,7 @@ createWindow = (forceShow) => {
     mainWindow.loadURL(
         isDev
             ? 'http://localhost:3000'
-            : `https://web.river.im`,
+            : store.get(C_LOAD_URL_KEY, C_LOAD_URL),
     );
 
     if (isDev) {
@@ -214,9 +220,12 @@ ipcMain.on('fnCall', (e, arg) => {
     switch (arg.cmd) {
         case 'download':
             try {
+                const savePath = `${app.getPath('downloads')}/${arg.data.fileName}`;
+                console.log(savePath);
                 download(BrowserWindow.getFocusedWindow(), arg.data.url, {
                     filename: arg.data.fileName,
                     openFolderWhenDone: true,
+                    saveAs: fs.existsSync(savePath),
                 })
                     .then((dl) => {
                         callReact('fnCallback', {
@@ -230,7 +239,7 @@ ipcMain.on('fnCall', (e, arg) => {
                     .catch((err) => {
                         console.error(err);
                     });
-            } catch (e) {
+            } catch (err) {
                 console.error(err);
             }
             break;
@@ -255,7 +264,7 @@ ipcMain.on('fnCall', (e, arg) => {
             });
             break;
         case 'setBadgeCounter':
-            app.setBadgeCount(arg.data.counter);
+            app.badgeCount = arg.data.counter;
             callReact('fnCallback', {
                 cmd: 'bool',
                 reqId: arg.reqId,
@@ -273,6 +282,28 @@ ipcMain.on('fnCall', (e, arg) => {
                     bool: mainWindow.isMenuBarVisible(),
                 },
             });
+            break;
+        case 'getLoadUrl':
+            callReact('fnCallback', {
+                cmd: 'loadUrl',
+                reqId: arg.reqId,
+                data: {
+                    url: store.get(C_LOAD_URL_KEY, C_LOAD_URL),
+                },
+            });
+            break;
+        case 'setLoadUrl':
+            store.set(C_LOAD_URL_KEY, arg.data.url);
+            callReact('fnCallback', {
+                cmd: 'bool',
+                reqId: arg.reqId,
+                data: {
+                    bool: true,
+                },
+            });
+            setTimeout(() => {
+                app.relaunch();
+            }, 500);
             break;
     }
 });

@@ -184,6 +184,8 @@
     "debug_mode": "حالت دیباگ",
     "set_test_url": "Set test url",
     "test_url": "Test URL",
+    "test_file_url": "Test File URL",
+    "electron_load_url": "Electron Load URL",
     "throttle_interval": "Throttle Interval",
     "clear_all_data": "خذف تمام اطلاعات",
     "clear_cache_confirm_text": "تمام رسانه ها در River باقی خواهند ماند و می توانند دوباره دانلود شوند،",

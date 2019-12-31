@@ -27,6 +27,7 @@ interface IProps {
 
 interface IState {
     debugServerKeys: string;
+    electronLoadUrl: string;
     fileUrl: string;
     open: boolean;
     throttleInterval: number;
@@ -35,12 +36,14 @@ interface IState {
 
 class DevTools extends React.Component<IProps, IState> {
     private electronService: ElectronService;
+    private electronLoadUrl: string = '';
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
             debugServerKeys: localStorage.getItem('river.server_keys') || serverKeys,
+            electronLoadUrl: '',
             fileUrl: localStorage.getItem('river.workspace_url_file') || 'file.river.im',
             open: false,
             throttleInterval: parseInt(localStorage.getItem('river.debug.throttle_interval') || '200', 10),
@@ -48,6 +51,17 @@ class DevTools extends React.Component<IProps, IState> {
         };
 
         this.electronService = ElectronService.getInstance();
+    }
+
+    public componentDidMount() {
+        if (ElectronService.isElectron()) {
+            this.electronService.getLoadUrl().then((res) => {
+                this.setState({
+                    electronLoadUrl: res.url,
+                });
+                this.electronLoadUrl = res.url;
+            });
+        }
     }
 
     /* Open dialog */
@@ -58,7 +72,7 @@ class DevTools extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {open, url, fileUrl, throttleInterval, debugServerKeys} = this.state;
+        const {open, url, fileUrl, throttleInterval, debugServerKeys, electronLoadUrl} = this.state;
         return (
             <Dialog
                 open={open}
@@ -72,7 +86,6 @@ class DevTools extends React.Component<IProps, IState> {
                         <div style={{width: '300px'}}>
                             <DialogContentText>{i18n.t('settings.set_test_url')}</DialogContentText>
                             <TextField
-                                autoFocus={true}
                                 margin="dense"
                                 label={i18n.t('settings.test_url')}
                                 type="text"
@@ -81,7 +94,6 @@ class DevTools extends React.Component<IProps, IState> {
                                 onChange={this.debugModeUrlChange}
                             />
                             <TextField
-                                autoFocus={true}
                                 margin="dense"
                                 label={i18n.t('settings.test_file_url')}
                                 type="text"
@@ -89,8 +101,15 @@ class DevTools extends React.Component<IProps, IState> {
                                 value={fileUrl}
                                 onChange={this.debugModeFileUrlChange}
                             />
+                            {ElectronService.isElectron() && <TextField
+                                margin="dense"
+                                label={i18n.t('settings.electron_load_url')}
+                                type="text"
+                                fullWidth={true}
+                                value={electronLoadUrl}
+                                onChange={this.debugModeElectronLoadUrlChange}
+                            />}
                             <TextField
-                                autoFocus={true}
                                 margin="dense"
                                 label="Server Keys"
                                 type="text"
@@ -99,7 +118,6 @@ class DevTools extends React.Component<IProps, IState> {
                                 onChange={this.debugServerKeysChange}
                             />
                             <TextField
-                                autoFocus={true}
                                 margin="dense"
                                 label={i18n.t('settings.throttle_interval')}
                                 type="text"
@@ -146,11 +164,17 @@ class DevTools extends React.Component<IProps, IState> {
         localStorage.setItem('river.workspace_url_file', this.state.fileUrl);
         localStorage.setItem('river.server_keys', this.state.debugServerKeys);
         localStorage.setItem('river.debug.throttle_interval', String(this.state.throttleInterval));
+        if (ElectronService.isElectron() && this.state.electronLoadUrl !== this.electronLoadUrl) {
+            this.electronService.setLoadUrl(this.state.electronLoadUrl);
+        }
         if (serverKeys !== this.state.debugServerKeys) {
             const authErrorEvent = new CustomEvent('authErrorEvent', {});
             window.dispatchEvent(authErrorEvent);
+        } else {
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
         }
-        window.location.reload();
     }
 
     /* Debug mode url change handler */
@@ -181,8 +205,15 @@ class DevTools extends React.Component<IProps, IState> {
         });
     }
 
+    /* Debug mode Electron Load URL change handler */
+    private debugModeElectronLoadUrlChange = (e: any) => {
+        this.setState({
+            electronLoadUrl: e.currentTarget.value,
+        });
+    }
+
+    /* Debug mode toggle menu bar handler */
     private toggleMenuBarHandler = () => {
-        //
         this.electronService.toggleMenuBar();
     }
 }

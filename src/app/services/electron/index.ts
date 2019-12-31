@@ -21,9 +21,11 @@ export const C_ELECTRON_SUBJECT = {
 export const C_ELECTRON_CMD = {
     Download: 'download',
     Error: 'error',
+    GetLoadUrl: 'getLoadUrl',
     PreviewFile: 'previewFile',
     RevealFile: 'revealFile',
     SetBadgeCounter: 'setBadgeCounter',
+    SetLoadUrl: 'setLoadUrl',
     ToggleMenuBar: 'toggleMenuBar',
 };
 
@@ -131,6 +133,18 @@ export default class ElectronService {
     /* Toggle menu bar */
     public toggleMenuBar() {
         return this.send(C_ELECTRON_CMD.ToggleMenuBar, {});
+    }
+
+    /* Get Load URL */
+    public getLoadUrl() {
+        return this.send(C_ELECTRON_CMD.GetLoadUrl, {});
+    }
+
+    /* Set Load URL */
+    public setLoadUrl(url: string) {
+        return this.send(C_ELECTRON_CMD.SetLoadUrl, {
+            url,
+        });
     }
 
     /* Call queue handler */
