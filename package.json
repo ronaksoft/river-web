@@ -1,19 +1,19 @@
 {
   "name": "river",
-  "version": "0.9.6",
+  "version": "0.10.0",
   "private": true,
   "description": "River chat",
   "author": "Hamidreza KK <hamidrezakks@gmail.com>",
   "license": "Ronak",
-  "homepage": "./",
-  "main": ".",
+  "homepage": "",
+  "main": "public/electron.js",
   "scripts": {
     "start": "react-scripts start",
     "build": "PUBLIC_URL=/ GENERATE_SOURCEMAP=true NODE_OPTIONS=--max_old_space_size=4096 react-scripts build",
     "postinstall": "mkdir -p node_modules/@material-ui/core/node_modules/@types/jss && cp -r node_modules/@types/jss node_modules/@material-ui/core/node_modules/@types",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "elec2": "electron --inspect=5858 public/electron.js",
+    "elec2": "electron --inspect=5858 .",
     "pack": "electron-builder --dir",
     "dist": "electron-builder -mwl",
     "elec-dist": "npx build --x64 --macos --win --linux --c.mac.identity=null --c.extraMetadata.main=public/electron.js -p always",
@@ -107,7 +107,7 @@
     "@types/shortid": "^0.0.29",
     "@types/xregexp": "^3.0.29",
     "electron": "^7.1.7",
-    "electron-builder": "^21.2.0",
+    "electron-builder": "^22.2.0",
     "electron-devtools-installer": "^2.2.4",
     "glob": "^7.1.6",
     "grpc": "^1.12.4",
@@ -132,10 +132,14 @@
     },
     "mac": {
       "icon": "assets/icon.png",
+      "artifactName": "${name}-mac-${version}.${ext}",
+      "category": "public.app-category.social-networking",
+      "darkModeSupport": true,
+      "hardenedRuntime": true,
+      "entitlements": "./build/entitlements.mac.plist",
       "target": [
         "dmg"
-      ],
-      "category": "messaging"
+      ]
     },
     "win": {
       "target": "nsis",
