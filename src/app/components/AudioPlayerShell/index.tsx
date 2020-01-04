@@ -93,6 +93,7 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
             // @ts-ignore
             navigator.mediaSession.setActionHandler('nexttrack', this.nextTrackHandler);
         }
+        window.addEventListener('Message_DB_Removed', this.messageRemoveHandler);
     }
 
     public componentWillUnmount() {
@@ -108,6 +109,7 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
             // @ts-ignore
             navigator.mediaSession.setActionHandler('nexttrack', null);
         }
+        window.removeEventListener('Message_DB_Removed', this.messageRemoveHandler);
     }
 
     public render() {
@@ -484,6 +486,18 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
     /* Next track handler */
     private nextTrackHandler = () => {
         this.audioPlayer.next(true);
+    }
+
+    /* Message remove handler */
+    private messageRemoveHandler = (e: any) => {
+        const data = e.detail;
+        if (!this.audioPlayer) {
+            return;
+        }
+        if (data && data.ids.indexOf(this.audioPlayer.getCurrentTrack()) > -1) {
+            this.cancelHandler();
+            this.audioPlayer.remove(this.audioPlayer.getCurrentTrack());
+        }
     }
 }
 

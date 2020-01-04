@@ -1,3 +1,10 @@
+## 0.29.6
+* App Sign added
+* AudioPlayer bug fixed
+* Placeholders updated
+* New Artworks added
+* Bug fixes and improvements
+
 ## 0.29.5
 * Search updated
 * LabelPopover updated

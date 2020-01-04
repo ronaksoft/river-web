@@ -103,13 +103,16 @@ export default class LabelRepo {
         return this.upsert(tempLabels, callerId);
     }
 
-    public removeMany(ids: number[]): Promise<any> {
+    public removeMany(ids: number[], callerId?: number): Promise<any> {
         const promises: any[] = [];
         ids.forEach((id) => {
             this.dbService.removeLabel(id);
             promises.push(this.db.labels.delete(id));
         });
-        return Promise.all(promises);
+        return Promise.all(promises).then((res) => {
+            this.broadcastEvent('Label_DB_Updated', {ids, callerId});
+            return res;
+        });
     }
 
     public getMessageByItem(id: number, {max, limit}: { min?: number, max?: number, limit?: number }, cacheCallback?: (cacheList: IMessage[]) => void): Promise<ILabelItemList> {

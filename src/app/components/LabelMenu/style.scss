@@ -357,6 +357,10 @@
       cursor: pointer;
       transition: all 0.2s;
 
+      &.disabled {
+        color: var(--grey);
+      }
+
       svg {
         font-size: 40px;
       }

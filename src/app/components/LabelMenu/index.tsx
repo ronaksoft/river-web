@@ -17,6 +17,7 @@ import {
     LabelOutlined,
     EditRounded,
     ColorLensRounded,
+    DeleteRounded,
 } from '@material-ui/icons';
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton/IconButton';
@@ -48,6 +49,7 @@ import IsMobile from "../../services/isMobile";
 import DialogSkeleton from "../DialogSkeleton";
 import {IMessage} from "../../repository/message/interface";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 
 import './style.scss';
 
@@ -148,9 +150,12 @@ class LabelMenu extends React.Component<IProps, IState> {
                             <label>{i18n.t('label.labels')}</label>
                             <IconButton
                                 onClick={this.addLabelPageHandler}
-                                className={'add-remove-icon' + (selectedIds.length > 0 ? ' remove-mode' : '')}
+                                className="add-remove-icon"
                             >
-                                <ControlPointRounded/>
+                                <Tooltip
+                                    title={i18n.t(selectedIds.length > 0 ? 'general.remove' : 'label.create_a_new_label')}>
+                                    {Boolean(selectedIds.length > 0) ? <DeleteRounded/> : <ControlPointRounded/>}
+                                </Tooltip>
                             </IconButton>
                         </div>
                         <div className="label-search">
@@ -250,7 +255,8 @@ class LabelMenu extends React.Component<IProps, IState> {
                                 }
                             })}
                         </div>
-                        {Boolean(name.length > 0 && color.length > 0) && <div className="actions-bar no-bg">
+                        {Boolean(name.length > 0 && color.length > 0) &&
+                        <div className={'actions-bar no-bg' + (loading ? 'disabled' : '')}>
                             <div className="add-action" onClick={this.createLabelHandler}>
                                 <CheckRounded/>
                             </div>
@@ -356,7 +362,13 @@ class LabelMenu extends React.Component<IProps, IState> {
     }
 
     private createLabelHandler = () => {
-        const {selectedId} = this.state;
+        const {selectedId, loading} = this.state;
+        if (loading) {
+            return;
+        }
+        this.setState({
+            loading: true,
+        });
         if (selectedId === 0) {
             this.sdk.labelCreate(this.state.name, this.state.color).then((res) => {
                 const {list} = this.state;
@@ -369,11 +381,15 @@ class LabelMenu extends React.Component<IProps, IState> {
                 this.setState({
                     color: '',
                     list,
+                    loading: false,
                     name: '',
                     page: '1',
                 });
             }).catch(() => {
                 this.cancelHandler();
+                this.setState({
+                    loading: false,
+                });
             });
         } else {
             this.sdk.labelEdit(selectedId, this.state.name, this.state.color).then(() => {
@@ -385,6 +401,7 @@ class LabelMenu extends React.Component<IProps, IState> {
                     this.setState({
                         color: '',
                         list,
+                        loading: false,
                         name: '',
                         page: '1',
                     });
@@ -393,6 +410,9 @@ class LabelMenu extends React.Component<IProps, IState> {
                 }
             }).catch(() => {
                 this.cancelHandler();
+                this.setState({
+                    loading: false,
+                });
             });
         }
     }
@@ -676,7 +696,7 @@ class LabelMenu extends React.Component<IProps, IState> {
         }
         const before = labelList[0].topmessageid || 0;
         this.labelRepo.getRemoteMessageByItem(label.id || 0, {min: before + 1, limit: 200}).then((res) => {
-            labelList.unshift.apply(labelList,  this.transformMessage(res.reverse()));
+            labelList.unshift.apply(labelList, this.transformMessage(res.reverse()));
             this.setState({
                 labelList,
             });

@@ -1717,7 +1717,11 @@ class Chat extends React.Component<IProps, IState> {
                     defaultMessages.splice(addition, 1);
                     addition--;
                 }
-                defaultMessages[addition + 1].avatar = this.isAvatar(addition + 1);
+                if (defaultMessages[addition + 1]) {
+                    defaultMessages[addition + 1].avatar = this.isAvatar(addition + 1);
+                } else if (defaultMessages[addition]) {
+                    defaultMessages[addition].avatar = this.isAvatar(addition + 1);
+                }
             }
         });
 

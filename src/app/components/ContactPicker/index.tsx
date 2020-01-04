@@ -18,7 +18,7 @@ import i18n from '../../services/i18n';
 import './style.scss';
 
 interface IProps {
-    onDone?: (contacts: IUser[], caption: string) => void;
+    onDone: (contacts: IUser[], caption: string) => void;
 }
 
 interface IState {

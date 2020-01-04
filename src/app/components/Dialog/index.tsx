@@ -718,12 +718,14 @@ class Dialog extends React.PureComponent<IProps, IState> {
             searchEnable: false,
             searchMessageItems: [],
         });
+        this.keyword = '';
         if (this.containerRef) {
             const el = this.containerRef.querySelector('input');
             if (el) {
                 el.value = '';
             }
         }
+        this.filterItem();
     }
 
     private containerRefHandler = (ref: any) => {

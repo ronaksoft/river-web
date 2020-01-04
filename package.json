@@ -137,16 +137,20 @@
       "darkModeSupport": true,
       "hardenedRuntime": true,
       "entitlements": "./build/entitlements.mac.plist",
+      "cscLink": "./build/certificates-river-mac.p12",
+      "cscKeyPassword": "k1 is not internet",
       "target": [
         "dmg"
       ]
     },
     "win": {
       "target": "nsis",
-      "icon": "assets/icon.png"
+      "icon": "assets/icon.png",
+      "artifactName": "${name}-win-${version}.${ext}"
     },
     "linux": {
       "icon": "assets/icon.png",
+      "artifactName": "${name}-linux-${version}.${ext}",
       "target": [
         "deb"
       ],

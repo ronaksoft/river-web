@@ -17,19 +17,25 @@
   }
 }
 
-.chat {
-  padding: 0 8px 10px 8px;
-  border-width: 1px 1px 0 0;
-  border-style: solid;
-  border-color: var(--light);
-  height: calc(100% - 48px);
-  //transition: padding-top 1s;
-  &.no-transition {
-    transition: none;
+.main-messages {
+  position: relative;
+
+  .chat {
+    padding: 0 8px 10px 8px;
+    border-width: 1px 1px 0 0;
+    border-style: solid;
+    border-color: var(--light);
+    height: calc(100% - 48px);
+    //transition: padding-top 1s;
+    &.no-transition {
+      transition: none;
+    }
   }
 
   .chat-placeholder {
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
     height: 100%;
     width: 100%;
     display: flex;
@@ -1079,13 +1085,13 @@ html[bubble="2"] {
 
     &.me {
       .bubble.edited {
-        min-width: 115px;
+        min-width: 120px;
       }
     }
 
     &.you {
       .bubble.edited {
-        min-width: 95px;
+        min-width: 100px;
       }
     }
 
@@ -1157,7 +1163,7 @@ html[bubble="5"] {
 
     &.me {
       .bubble.edited {
-        min-width: 115px;
+        min-width: 120px;
       }
 
       &.has-error .arrow {
@@ -1167,7 +1173,7 @@ html[bubble="5"] {
 
     &.you {
       .bubble.edited {
-        min-width: 95px;
+        min-width: 100px;
       }
     }
   }
@@ -1192,6 +1198,7 @@ html[bubble="5"] {
     }
 
     align-items: flex-start;
+
     .bubble {
       background-color: transparent !important;
       box-shadow: none;

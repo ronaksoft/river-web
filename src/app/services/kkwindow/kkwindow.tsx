@@ -290,6 +290,7 @@ class KKWindow extends React.Component<IProps, IState> {
                      onScroll={this.scrollHandler} onWheel={this.wheelHandler}>
                     {this.getContent()}
                 </div>
+                {this.getNoContent()}
                 {this.scrollbar.enable &&
                 <div ref={this.scrollbarRefHandler} style={scrollbarStyle} onMouseDown={this.scrollbarTrackDownHandler}>
                     <div ref={this.scrollbarThumbRefHandler} style={scrollbarThumbStyle}
@@ -312,11 +313,18 @@ class KKWindow extends React.Component<IProps, IState> {
                               body={this.props.renderer(index)}/>
                 </div>);
             });
-        } else {
+        }
+        return;
+    }
+
+    private getNoContent() {
+        const {items} = this.state;
+        if (items.length === 0) {
             if (this.props.noRowsRenderer) {
                 return this.props.noRowsRenderer();
             }
         }
+        return;
     }
 
     private snapshotRefHandler = (ref: any) => {

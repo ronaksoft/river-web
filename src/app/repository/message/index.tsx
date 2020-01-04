@@ -291,14 +291,17 @@ export default class MessageRepo {
         });
     }
 
-    public removeMany(ids: number[]) {
+    public removeMany(ids: number[], callerId?: number) {
         ids.forEach((id) => {
             delete this.lazyMap[id];
         });
         MediaRepo.getInstance().removeMany(ids).catch(() => {
             //
         });
-        return this.db.messages.bulkDelete(ids);
+        return this.db.messages.bulkDelete(ids).then((res) => {
+            this.broadcastEvent('Message_DB_Removed', {ids, callerId});
+            return res;
+        });
     }
 
     public getMany({peer, limit, before, after, ignoreMax}: any, callback?: (resMsgs: IMessage[]) => void): Promise<IMessage[]> {
@@ -694,12 +697,15 @@ export default class MessageRepo {
         });
     }
 
-    public remove(id: number): Promise<any> {
+    public remove(id: number, callerId?: number): Promise<any> {
         if (this.lazyMap.hasOwnProperty(id)) {
             delete this.lazyMap[id];
             // return Promise.resolve();
         }
-        return this.db.messages.delete(id);
+        return this.db.messages.delete(id).then((res) => {
+            this.broadcastEvent('Message_DB_Removed', {ids: [id], callerId});
+            return res;
+        });
     }
 
     public getUnreadCount(peerId: string, minId: number, topMessageId: number): Promise<{ message: number, mention: number }> {

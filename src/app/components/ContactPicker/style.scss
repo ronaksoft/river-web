@@ -12,11 +12,13 @@
   .dialog-content {
     width: 300px;
     height: 500px;
+
     .page-container {
       position: relative;
       height: 100%;
       width: 100%;
       overflow: hidden;
+
       .page {
         position: absolute;
         top: 0;
@@ -24,28 +26,34 @@
         height: 100%;
         width: 100%;
         transition: left 0.2s ease-out;
+
         &.page-1 {
           left: 0;
         }
+
         &.page-2 {
           left: 100%;
         }
       }
+
       &.page-2 {
         .page-1 {
           left: -100%;
         }
+
         .page-2 {
           left: 0;
         }
       }
     }
   }
+
   .page-content {
     width: 300px;
     height: 500px;
     display: flex;
     flex-direction: column;
+
     .dialog-header {
       position: relative;
       display: flex;
@@ -55,6 +63,7 @@
       background-color: var(--river);
       color: var(--white);
       text-transform: uppercase;
+
       .action {
         position: absolute;
         top: 0;
@@ -63,20 +72,24 @@
         width: 40px;
         margin: 0 5px;
         padding: 8px;
+
         svg {
           color: var(--white);
         }
       }
     }
+
     .contact-list {
       flex: 1;
       height: auto;
     }
+
     .actions-bar {
       height: 86px;
       padding: 18px 0 22px;
       text-align: center;
       background-color: var(--message-chat);
+
       .add-action {
         display: inline-flex;
         height: 46px;
@@ -89,19 +102,23 @@
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
         cursor: pointer;
         transition: all 0.2s;
+
         svg {
           font-size: 40px;
         }
+
         &:hover {
           background: var(--river-dark);
           box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
         }
+
         &.send {
           svg {
             font-size: 30px;
             margin-left: 2px;
             transition: transform 0.2s ease-out;
           }
+
           &:hover {
             svg {
               transform: rotate(-30deg);
@@ -109,6 +126,7 @@
           }
         }
       }
+
       &.no-bg {
         background-color: transparent;
       }
@@ -122,8 +140,10 @@ html[theme="dark-blue"] {
   .contact-picker {
     .dialog-content {
       background-color: var(--dark);
+
       .actions-bar {
         background-color: var(--dark-medium);
+
         &.no-bg {
           background-color: transparent;
         }
@@ -136,6 +156,7 @@ html[theme="dark-blue"] {
   .contact-picker {
     .dialog-content {
       background-color: var(--dark-blue-low);
+
       .actions-bar {
         background-color: var(--dark-blue-medium);
       }

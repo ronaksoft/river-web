@@ -61,7 +61,7 @@ export default class AudioPlayer {
 
     private static instance: AudioPlayer;
 
-    private audio: HTMLAudioElement;
+    private audio: HTMLAudioElement | undefined;
     private fnIndex: number = 0;
     private tracks: { [key: number]: IAudioItem } = {};
     private tracksPeerId: string = '';
@@ -270,6 +270,9 @@ export default class AudioPlayer {
                 return false;
             }
             this.audio.play().then(() => {
+                if (!this.audio) {
+                    return;
+                }
                 clearTimeout(this.playTimeout);
                 this.playTimeout = null;
                 if (this.fastEnable) {
@@ -468,7 +471,7 @@ export default class AudioPlayer {
                 return this.prepareTrack(messageId);
             }
         }
-        if (!this.tracks.hasOwnProperty(messageId)) {
+        if (!this.tracks.hasOwnProperty(messageId) || !this.audio) {
             return Promise.reject('not found');
         }
         return new Promise((resolve, reject) => {
@@ -476,10 +479,13 @@ export default class AudioPlayer {
             const fileId = track.fileId;
             this.fileRepo.get(fileId).then((res) => {
                 if (res) {
+                    if (!this.audio) {
+                        return;
+                    }
                     this.audio.src = URL.createObjectURL(res.data);
                     this.lastObjectUrl = this.audio.src;
                     this.audio.onloadedmetadata = (e) => {
-                        if (this.tracks.hasOwnProperty(messageId)) {
+                        if (this.tracks.hasOwnProperty(messageId) && this.audio) {
                             if (this.tracks[messageId].duration === 0 && this.audio.duration > 0 && this.updateDurationFn) {
                                 this.updateDurationFn({
                                     fast: false,
@@ -542,9 +548,12 @@ export default class AudioPlayer {
 
     /* Prepare instant audio */
     private prepareInstantAudio(blob: Blob, callback?: any) {
+        if (!this.audio) {
+            return;
+        }
         this.audio.src = URL.createObjectURL(blob);
         this.audio.onloadedmetadata = () => {
-            if (this.tracks.hasOwnProperty(C_INSTANT_AUDIO)) {
+            if (this.tracks.hasOwnProperty(C_INSTANT_AUDIO) && this.audio) {
                 this.tracks[C_INSTANT_AUDIO].duration = this.audio.duration;
             }
         };
