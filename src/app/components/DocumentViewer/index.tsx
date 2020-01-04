@@ -219,7 +219,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                                         <Loading/>
                                     </div>}
                                     <div className="photo">
-                                        <CachedPhoto key="avatar-photo" fileLocation={item.fileLocation}/>
+                                        <CachedPhoto fileLocation={item.fileLocation}/>
                                     </div>
                                 </React.Fragment>
                             );
@@ -235,7 +235,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                                     <Loading/>
                                 </div>}
                                 <div className="photo" key={picture.photoid}>
-                                    <CachedPhoto key="avatar-photo" fileLocation={picture.photobig}/>
+                                    <CachedPhoto fileLocation={picture.photobig}/>
                                 </div>
                             </div>
                         );

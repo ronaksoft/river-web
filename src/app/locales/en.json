@@ -98,9 +98,9 @@
   },
   "peer_info": {
     "notify_settings": "Notify Settings",
+    "disable_for_1_hour": "Disable for an hour",
     "disable_for_8_hours": "Disable for 8 hours",
-    "disable_for_2_days": "Disable for 2 days",
-    "disable_for_1_week": "Disable for 1 week",
+    "disable_for_1_day": "Disable for a day",
     "add_as_contact": "Add as contact",
     "mute": "Mute",
     "unmute": "Unmute",

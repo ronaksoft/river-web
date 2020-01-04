@@ -85,10 +85,14 @@ class CachedPhoto extends React.Component<IProps, IState> {
     /* Get file from cached storage */
     private getFile = () => {
         clearTimeout(this.tryTimeout);
+        const timeout = setTimeout(() => {
+            this.getFile();
+        }, 1000);
         this.cachedFileService.getFile(this.props.fileLocation, '', 0, 'image/jpeg', this.props.searchTemp, this.props.blur).then((src) => {
             if (!this.mounted) {
                 return;
             }
+            clearTimeout(timeout);
             if (!src || src === '') {
                 throw Error('bad src');
             } else {
@@ -100,6 +104,7 @@ class CachedPhoto extends React.Component<IProps, IState> {
             if (!this.mounted) {
                 return;
             }
+            clearTimeout(timeout);
             if (this.retries < 10) {
                 this.retries++;
                 this.tryTimeout = setTimeout(() => {

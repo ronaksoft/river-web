@@ -228,10 +228,12 @@ export default class UserRepo {
                 const crc32 = this.getContactsCrc();
                 this.sdk.getContacts(crc32 + 1).then((remoteRes) => {
                     if (remoteRes.modified) {
-                        this.importBulk(true, remoteRes.usersList);
-                        this.storeContactsCrc(remoteRes.usersList);
+                        this.importBulk(true, remoteRes.contactusersList).then(() => {
+                            this.importBulk(false, remoteRes.usersList);
+                        });
+                        this.storeContactsCrc(remoteRes.contactusersList);
                         this.lastContactTimestamp = now;
-                        resolve(remoteRes.usersList);
+                        resolve(remoteRes.contactusersList);
                     } else {
                         this.lastContactTimestamp = now;
                         this.getManyCache(true, {}).then((res) => {

@@ -97,9 +97,9 @@
   },
   "peer_info": {
     "notify_settings": "تنظیمات اعلان‌ها",
+    "disable_for_1_hours": "بی‌صدا برای یک ساعت",
     "disable_for_8_hours": "بی‌صدا برای ۸ ساعت",
-    "disable_for_2_days": "بی‌صدا برای ۲ روز",
-    "disable_for_1_week": "بی‌صدا برای یک هفته",
+    "disable_for_1_day": "بی‌صدا برای یک روز",
     "add_as_contact": "افزودن به مخاطب‌ها",
     "mute": "بی‌ صدا",
     "unmute": "با صدا",

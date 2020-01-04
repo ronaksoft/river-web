@@ -306,20 +306,20 @@ class Chat extends React.Component<IProps, IState> {
         }
 
         notifyOptions = [{
-            title: i18n.t('general.disable'),
-            val: '-2',
-        }, {
             title: i18n.t('general.enable'),
             val: '-1',
+        }, {
+            title: i18n.t('peer_info.disable_for_1_hour'),
+            val: '60',
         }, {
             title: i18n.t('peer_info.disable_for_8_hours'),
             val: '480',
         }, {
-            title: i18n.t('peer_info.disable_for_2_days'),
-            val: '2880',
+            title: i18n.t('peer_info.disable_for_1_day'),
+            val: '1440',
         }, {
-            title: i18n.t('peer_info.disable_for_1_week'),
-            val: '10080',
+            title: i18n.t('general.disable'),
+            val: '-2',
         }];
     }
 
