@@ -273,6 +273,9 @@ class ChatInput extends React.Component<IProps, IState> {
             }, () => {
                 this.checkAuthority();
             });
+            if (this.state.selectable) {
+                this.props.onBulkAction('close')();
+            }
         }
     }
 
@@ -322,6 +325,9 @@ class ChatInput extends React.Component<IProps, IState> {
             }, () => {
                 this.checkAuthority();
             });
+            if (this.state.selectable) {
+                this.props.onBulkAction('close')();
+            }
         }
     }
 

@@ -53,7 +53,6 @@ import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 
 import './style.scss';
 
-
 interface IProps {
     onClose?: () => void;
 }
@@ -649,7 +648,6 @@ class LabelMenu extends React.Component<IProps, IState> {
 
         let loadOnce = false;
         this.labelRepo.getMessageByItem(label.id || 0, {max: after || 0, limit: C_LABEL_LIST_LIMIT}, (cacheMsg) => {
-            window.console.log('getMessageByItem', after);
             if (after) {
                 return;
             }

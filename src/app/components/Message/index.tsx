@@ -508,7 +508,7 @@ class Message extends React.Component<IProps, IState> {
                                 keyMapper={this.keyMapperHandler}
                                 estimatedItemSize={41}
                                 estimatedItemSizeFunc={this.getHeight}
-                                loadBeforeLimit={7}
+                                loadBeforeLimit={10}
                                 onLoadBefore={this.kkWindowBeforeHandler}
                                 onLoadAfter={this.props.onLoadMoreAfter}
                                 onScrollPos={this.scrollPosHandler}

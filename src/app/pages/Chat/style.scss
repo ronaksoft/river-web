@@ -576,10 +576,12 @@ html[theme="dark-blue"] {
 
   .kk-context-menu {
     > div[role="document"] {
+      background-color: var(--dark-medium);
+      color: var(--light);
+
       > div {
         background-color: var(--dark-medium);
       }
-      color: var(--light);
     }
 
     h2 {
@@ -651,6 +653,8 @@ html[theme="dark-blue"] {
 
   .kk-context-menu {
     > div[role="document"] {
+      background-color: var(--dark-blue-medium);
+
       > div {
         background-color: var(--dark-blue-medium);
       }

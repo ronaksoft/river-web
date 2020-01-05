@@ -1,3 +1,7 @@
+## 0.29.8
+* LoadBefore bug fixed
+* Label List bug fixed
+
 ## 0.29.7
 * Fixed a bug in search
 * Now search has a better result

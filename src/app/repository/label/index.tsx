@@ -167,6 +167,7 @@ export default class LabelRepo {
 
     public getRemoteMessageByItem(id: number, {min, max, limit}: { min?: number, max?: number, limit?: number }): Promise<IMessage[]> {
         return this.sdk.labelList(id, min || 0, max || 0, limit || 0).then((remoteRes) => {
+            remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userRepo.getCurrentUserId());
             this.insertManyLabelItem(id, remoteRes.messagesList);
             this.messageRepo.lazyUpsert(remoteRes.messagesList, true);
             this.userRepo.importBulk(false, remoteRes.usersList);

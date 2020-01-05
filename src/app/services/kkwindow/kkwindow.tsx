@@ -176,8 +176,7 @@ class KKWindow extends React.Component<IProps, IState> {
     public shouldComponentUpdate(nextProps: Readonly<IProps>, nextState: Readonly<IState>, nextContext: any): boolean {
         if (nextProps.count !== this.props.count && this.loadBeforeTriggered) {
             if (this.containerRef && this.containerRef.scrollTop < 5) {
-                this.scrollToItem(1);
-                // this.takeSnapshot(true);
+                this.containerRef.scrollTop = 5;
             }
             if (this.cellMeasurer && nextProps.count > this.props.count) {
                 this.cellMeasurer.clear((nextProps.count - this.props.count) + 1);
@@ -508,10 +507,10 @@ class KKWindow extends React.Component<IProps, IState> {
                 this.paddingTop = `${gap}px`;
                 if (this.props.onScrollPos && this.props.count > 0) {
                     this.props.onScrollPos({
-                        start: 0,
                         end: this.props.count - 1,
+                        overscanEnd: this.props.count - 1,
                         overscanStart: 0,
-                        overscanEnd: this.props.count - 1
+                        start: 0
                     });
                 }
             } else {
