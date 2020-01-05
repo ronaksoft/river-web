@@ -4,6 +4,7 @@
 * Saved Messages status indicator removed
 * SVG artworks updated
 * `PreviewMessage` bug fixed
+* `DropDown` bug fixed
 * And some other bugs fixed
 
 ## 0.29.6
