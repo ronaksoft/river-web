@@ -34,19 +34,18 @@ interface IState {
 }
 
 class SettingsModal extends React.Component<IProps, IState> {
+    public static getDerivedStateFromProps(props: IProps, state: IState) {
+        return {
+            open: props.open,
+        };
+    }
+
     constructor(props: IProps) {
         super(props);
 
         this.state = {
             open: props.open,
         };
-
-    }
-
-    public componentWillReceiveProps(newProps: IProps) {
-        this.setState({
-            open: newProps.open,
-        });
     }
 
     public render() {

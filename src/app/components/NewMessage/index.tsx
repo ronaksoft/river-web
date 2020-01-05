@@ -34,6 +34,12 @@ interface IState {
 }
 
 class NewMessage extends React.Component<IProps, IState> {
+    public static getDerivedStateFromProps(props: IProps, state: IState) {
+        return {
+            open: props.open,
+        };
+    }
+
     constructor(props: IProps) {
         super(props);
 
@@ -44,12 +50,6 @@ class NewMessage extends React.Component<IProps, IState> {
             recipients: [],
             text: '',
         };
-    }
-
-    public componentWillReceiveProps(newProps: IProps) {
-        this.setState({
-            open: newProps.open,
-        });
     }
 
     public render() {

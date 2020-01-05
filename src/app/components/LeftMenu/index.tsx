@@ -74,7 +74,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
             };
         }
         if (props.iframeActive === state.iframeActive) {
-            return;
+            return null;
         }
         return {
             iframeActive: props.iframeActive,

@@ -1,3 +1,11 @@
+## 0.29.7
+* Fixed a bug in search
+* Now search has a better result
+* Saved Messages status indicator removed
+* SVG artworks updated
+* `PreviewMessage` bug fixed
+* And some other bugs fixed
+
 ## 0.29.6
 * App Sign added
 * AudioPlayer bug fixed

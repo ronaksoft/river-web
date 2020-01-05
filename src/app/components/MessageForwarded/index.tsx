@@ -29,6 +29,15 @@ interface IState {
 }
 
 class MessageForwarded extends React.PureComponent<IProps, IState> {
+    public static getDerivedStateFromProps(props: IProps, state: IState) {
+        if (state.message === props.message) {
+            return null;
+        }
+        return {
+            message: props.message,
+        };
+    }
+
     constructor(props: IProps) {
         super(props);
 
@@ -38,14 +47,6 @@ class MessageForwarded extends React.PureComponent<IProps, IState> {
             mode: (id.indexOf('-') === -1 ? 'user' : 'group'),
             peer: props.peer,
         };
-    }
-
-    public componentWillReceiveProps(newProps: IProps) {
-        if (this.state.message !== newProps.message) {
-            this.setState({
-                message: newProps.message,
-            });
-        }
     }
 
     public render() {

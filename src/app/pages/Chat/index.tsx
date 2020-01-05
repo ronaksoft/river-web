@@ -1599,7 +1599,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
-        if (this.messages[0].id === 1 && !before) {
+        if ((!this.messages[0] || this.messages[0].id === 1) && !before) {
             return;
         }
 
@@ -1702,15 +1702,18 @@ class Chat extends React.Component<IProps, IState> {
 
             if (push) {
                 defaultMessages.push(msg);
+                let len = defaultMessages.length;
+                if (len > 0 && !msg.avatar) {
+                    len--;
+                    defaultMessages[len].avatar = this.isAvatar(len);
+                }
             } else {
                 defaultMessages.splice(addition, 0, msg);
+                if (addition > 0 && !msg.avatar) {
+                    defaultMessages[addition].avatar = this.isAvatar(addition);
+                }
             }
 
-            let len = defaultMessages.length;
-            if (len > 0 && !msg.avatar) {
-                len--;
-                defaultMessages[len].avatar = this.isAvatar(len);
-            }
             addition++;
             if (!push && messages.length === key + 1) {
                 if (defaultMessages[addition - 1] && defaultMessages[addition] && defaultMessages[addition].messagetype === C_MESSAGE_TYPE.Date && TimeUtility.isInSameDay(defaultMessages[addition - 1].createdon, defaultMessages[addition].createdon)) {
@@ -2742,7 +2745,7 @@ class Chat extends React.Component<IProps, IState> {
                 last_update: res.createdon,
                 peerid: res.id,
                 peertype: PeerType.PEERGROUP,
-                preview: 'Group created',
+                preview: `${i18n.t('general.you')}: ${i18n.t('message.created_the_group')}`,
                 sender_id: this.connInfo.UserID,
             };
             this.dialogs.push(dialog);

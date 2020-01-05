@@ -117,7 +117,7 @@ export default class SearchRepo {
         return this.userRepo.getCurrentUserId();
     }
 
-    public searchAllMessages({keyword, labelIds}: {keyword: string, labelIds: number[]}, params: { after?: number, limit?: number }) {
+    public searchAllMessages({keyword, labelIds}: {keyword: string, labelIds: number[]}, params: { after?: number, limit?: number, includeTemp?: boolean }) {
         return this.messageRepo.searchAll({keyword, labelIds}, params);
     }
 }

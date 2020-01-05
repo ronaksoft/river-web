@@ -37,6 +37,12 @@
     }
   }
 
+  &.saved-messages {
+    .name {
+      margin: 0;
+    }
+  }
+
   .online {
     color: var(--river) !important;
   }

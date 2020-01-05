@@ -607,7 +607,7 @@ export default class MessageRepo {
         return pipe2.limit(limit || 32).toArray();
     }
 
-    public searchAll({keyword, labelIds}: {keyword?: string, labelIds?: number[]}, {after, limit}: { after?: number, limit?: number }) {
+    public searchAll({keyword, labelIds}: { keyword?: string, labelIds?: number[] }, {after, limit, includeTemp}: { after?: number, limit?: number, includeTemp?: boolean }) {
         const pipe = this.db.messages;
         let pipe2: Dexie.Collection<IMessage, number>;
         if (after) {
@@ -619,7 +619,7 @@ export default class MessageRepo {
         if (term.length > 0 || (labelIds && labelIds.length > 0)) {
             const reg = new RegExp(term, 'i');
             pipe2 = pipe2.filter((item: IMessage) => {
-                if (item.messagetype !== C_MESSAGE_TYPE.Hole && item.messagetype !== C_MESSAGE_TYPE.End && item.temp !== true && (item.id || 0) > 0) {
+                if (item.messagetype !== C_MESSAGE_TYPE.Hole && item.messagetype !== C_MESSAGE_TYPE.End && ((item.temp !== true && !includeTemp) || includeTemp) && (item.id || 0) > 0) {
                     let isMatched = false;
                     if (labelIds && labelIds.length && item.labelidsList && item.labelidsList.length && difference(labelIds, item.labelidsList).length === 0) {
                         isMatched = true;

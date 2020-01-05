@@ -29,8 +29,8 @@ interface IProps {
 }
 
 interface IState {
-    firstname: string;
-    lastname: string;
+    firstName: string;
+    lastName: string;
     newContactDialogOpen: boolean;
     phone: string;
     scrollIndex: number;
@@ -47,8 +47,8 @@ class ContactMenus extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
-            firstname: '',
-            lastname: '',
+            firstName: '',
+            lastName: '',
             newContactDialogOpen: false,
             phone: '',
             scrollIndex: -1,
@@ -68,7 +68,7 @@ class ContactMenus extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {firstname, lastname, phone, newContactDialogOpen} = this.state;
+        const {firstName, lastName, phone, newContactDialogOpen} = this.state;
         return (
             <div className="contacts">
                 <div className="menu-header">
@@ -103,16 +103,17 @@ class ContactMenus extends React.Component<IProps, IState> {
                             fullWidth={true}
                             label={i18n.t('general.first_name')}
                             margin="dense"
-                            onChange={this.firstnameHandleChange}
-                            value={firstname}
+                            onChange={this.firstNameHandleChange}
+                            value={firstName}
                             onKeyDown={this.confirmKeyDown}
+                            error={firstName.length <= 0}
                         />
                         <TextField
                             fullWidth={true}
                             label={i18n.t('general.last_name')}
                             margin="dense"
-                            onChange={this.lastnameHandleChange}
-                            value={lastname}
+                            onChange={this.lastNameHandleChange}
+                            value={lastName}
                             onKeyDown={this.confirmKeyDown}
                         />
                         <TextField
@@ -125,7 +126,7 @@ class ContactMenus extends React.Component<IProps, IState> {
                         />
                         <div className="actions-bar">
                             <div
-                                className={'add-action' + (((firstname.length > 0 || lastname.length > 0) && phone.length > 5) ? '' : ' disabled')}
+                                className={'add-action' + (((firstName.length > 0 || lastName.length > 0) && phone.length > 5) ? '' : ' disabled')}
                                 onClick={this.createContactHandler}>
                                 <CheckRounded/>
                             </div>
@@ -160,15 +161,15 @@ class ContactMenus extends React.Component<IProps, IState> {
         });
     }
 
-    private firstnameHandleChange = (e: any) => {
+    private firstNameHandleChange = (e: any) => {
         this.setState({
-            firstname: e.currentTarget.value,
+            firstName: e.currentTarget.value,
         });
     }
 
-    private lastnameHandleChange = (e: any) => {
+    private lastNameHandleChange = (e: any) => {
         this.setState({
-            lastname: e.currentTarget.value,
+            lastName: e.currentTarget.value,
         });
     }
 
@@ -179,23 +180,23 @@ class ContactMenus extends React.Component<IProps, IState> {
     }
 
     private createContactHandler = () => {
-        let {firstname, lastname} = this.state;
+        let {firstName, lastName} = this.state;
         const {phone} = this.state;
-        if (!((firstname.length > 0 || lastname.length > 0) && phone.length > 5)) {
+        if (!(firstName.length > 0 && phone.length > 5)) {
             return;
         }
         this.newContactCloseHandler();
         const contacts: PhoneContact.AsObject[] = [];
-        if (firstname.length === 0) {
-            firstname = ' ';
+        if (firstName.length === 0) {
+            firstName = ' ';
         }
-        if (lastname.length === 0) {
-            lastname = ' ';
+        if (lastName.length === 0) {
+            lastName = ' ';
         }
         contacts.push({
             clientid: String(UniqueId.getRandomId()),
-            firstname,
-            lastname,
+            firstname: firstName,
+            lastname: lastName,
             phone,
         });
         this.sdk.contactImport(true, contacts).then((data) => {
@@ -210,15 +211,15 @@ class ContactMenus extends React.Component<IProps, IState> {
                 });
             });
             this.setState({
-                firstname: '',
-                lastname: '',
+                firstName: '',
+                lastName: '',
                 newContactDialogOpen: false,
                 phone: '',
             });
         }).catch(() => {
             this.setState({
-                firstname: '',
-                lastname: '',
+                firstName: '',
+                lastName: '',
                 phone: '',
             });
         });
@@ -246,8 +247,8 @@ class ContactMenus extends React.Component<IProps, IState> {
     /* Confirm key down */
     private confirmKeyDown = (e: any) => {
         if (e.key === 'Enter') {
-            const {firstname, lastname, phone} = this.state;
-            if (firstname.length > 0 && lastname.length > 0 && phone.length > 5) {
+            const {firstName, lastName, phone} = this.state;
+            if (firstName.length > 0 && lastName.length > 0 && phone.length > 5) {
                 this.createContactHandler();
             }
             this.newContactCloseHandler();

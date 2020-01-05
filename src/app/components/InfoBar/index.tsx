@@ -18,6 +18,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import {omitBy, isNil} from "lodash";
 
 import './style.scss';
+import UserRepo from "../../repository/user";
 
 interface IProps {
     onBack: () => void;
@@ -37,6 +38,8 @@ interface IState {
 }
 
 class InfoBar extends React.Component<IProps, IState> {
+    private currentUserId: string = UserRepo.getInstance().getCurrentUserId();
+
     constructor(props: IProps) {
         super(props);
 
@@ -93,7 +96,9 @@ class InfoBar extends React.Component<IProps, IState> {
                            isOnline={isOnline}
                            isUpdating={isUpdating}
                            onAction={this.props.onAction}
-                           peer={peer} selectedDialogId={selectedDialogId}/>
+                           peer={peer} selectedDialogId={selectedDialogId}
+                           currentUserId={this.currentUserId}
+                />
                 <div className="buttons">
                     <IconButton
                         onClick={this.messageMoreOpenHandler}

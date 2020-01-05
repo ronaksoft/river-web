@@ -41,6 +41,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
     private cachedMessageService: CachedMessageService;
     private eventReferences: any[] = [];
     private lastId: number = 0;
+    private mounted: boolean = true;
 
     constructor(props: IProps) {
         super(props);
@@ -94,6 +95,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
     }
 
     public componentWillUnmount() {
+        this.mounted = false;
         if (this.state.message) {
             this.cachedMessageService.unmountCache(this.state.message.replyto || 0);
         }
@@ -180,6 +182,9 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
         const {peer} = this.props;
         const {message} = this.state;
         this.messageRepo.get(message.replyto || 0, peer).then((res) => {
+            if (!this.mounted) {
+                return;
+            }
             if (res) {
                 this.setState({
                     error: false,

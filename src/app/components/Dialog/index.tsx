@@ -654,7 +654,10 @@ class Dialog extends React.PureComponent<IProps, IState> {
                 });
             });
         }
-        this.searchRepo.searchAllMessages({keyword, labelIds: appliedSelectedLabelIds}, {}).then((res) => {
+        this.searchRepo.searchAllMessages({
+            keyword,
+            labelIds: appliedSelectedLabelIds
+        }, {includeTemp: true}).then((res) => {
             const searchMessageItems: IDialog[] = res.map((msg) => {
                 const messageTitle = getMessageTitle(msg);
                 return {
@@ -714,18 +717,20 @@ class Dialog extends React.PureComponent<IProps, IState> {
     private closeSearchHandler = () => {
         this.setState({
             appliedSelectedLabelIds: [],
+            ids: [],
             searchAddedItems: [],
             searchEnable: false,
             searchMessageItems: [],
+        }, () => {
+            this.filterItem();
         });
-        this.keyword = '';
         if (this.containerRef) {
             const el = this.containerRef.querySelector('input');
             if (el) {
                 el.value = '';
             }
         }
-        this.filterItem();
+        this.keyword = '';
     }
 
     private containerRefHandler = (ref: any) => {

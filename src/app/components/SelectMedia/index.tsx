@@ -45,6 +45,12 @@ interface IState {
 }
 
 class SelectMedia extends React.Component<IProps, IState> {
+    public static getDerivedStateFromProps(props: IProps, state: IState) {
+        return {
+            open: props.open,
+        };
+    }
+
     private readonly leaveDebounce: any;
 
     constructor(props: IProps) {
@@ -84,12 +90,6 @@ class SelectMedia extends React.Component<IProps, IState> {
                 title: i18n.t('media.file'),
             },
         ];
-    }
-
-    public componentWillReceiveProps(newProps: IProps) {
-        this.setState({
-            open: newProps.open,
-        });
     }
 
     public render() {

@@ -19,6 +19,7 @@ import Socket from "../../services/sdk/server/socket";
 import './style.scss';
 
 interface IProps {
+    currentUserId: string;
     isConnecting: boolean;
     isOnline: boolean;
     isUpdating: boolean;
@@ -37,6 +38,16 @@ interface IState {
 }
 
 class StatusBar extends React.Component<IProps, IState> {
+    public static getDerivedStateFromProps(props: IProps, state: IState) {
+        return {
+            isConnecting: props.isConnecting,
+            isOnline: props.isOnline,
+            isUpdating: props.isUpdating,
+            peer: props.peer,
+            selectedDialogId: props.selectedDialogId,
+        };
+    }
+
     private disableClick: boolean = false;
 
     constructor(props: IProps) {
@@ -52,16 +63,6 @@ class StatusBar extends React.Component<IProps, IState> {
         };
     }
 
-    public componentWillReceiveProps(newProps: IProps) {
-        this.setState({
-            isConnecting: newProps.isConnecting,
-            isOnline: newProps.isOnline,
-            isUpdating: newProps.isUpdating,
-            peer: newProps.peer,
-            selectedDialogId: newProps.selectedDialogId,
-        });
-    }
-
     public setIsTypingList(isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } }) {
         this.setState({
             isTypingList,
@@ -74,14 +75,15 @@ class StatusBar extends React.Component<IProps, IState> {
             return '';
         }
         const isGroup = peer.getType() === PeerType.PEERGROUP;
+        const savedMessages = (this.props.currentUserId === selectedDialogId);
         return (
-            <span className="status-bar" onClick={this.clickHandler}>
+            <span className={'status-bar' + (savedMessages ? ' saved-messages' : '')} onClick={this.clickHandler}>
                 {!isGroup &&
                 <UserName id={selectedDialogId} className="name" you={true}
                           youPlaceholder={i18n.t('general.saved_messages')} noDetail={true}/>}
                 {isGroup &&
                 <GroupName id={selectedDialogId} className="name"/>}
-                {this.getChatStatus()}
+                {!savedMessages && this.getChatStatus()}
             </span>
         );
     }
