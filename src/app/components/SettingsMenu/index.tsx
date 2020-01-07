@@ -716,7 +716,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                 multiline={true}
                                                 rowsMax={3}
                                                 className="input-edit"
-                                                onChange={this.onBioChangeHandler}
+                                                onChange={this.bioChangeHandler}
                                             />}
                                         </div>
                                         <div className="line">
@@ -740,7 +740,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                 }}
                                                 value={username}
                                                 className="input-edit"
-                                                onChange={this.onUsernameChangeHandler}
+                                                onChange={this.usernameChangeHandler}
                                                 error={!usernameAvailable || !usernameValid}
                                                 helperText={!usernameAvailable ? 'Username is not available' : (!usernameValid ? 'Username is not valid' : '')}
                                             />}
@@ -1235,13 +1235,13 @@ class SettingsMenu extends React.Component<IProps, IState> {
         });
     }
 
-    private onBioChangeHandler = (e: any) => {
+    private bioChangeHandler = (e: any) => {
         this.setState({
             bio: e.currentTarget.value,
         });
     }
 
-    private onUsernameChangeHandler = (e: any) => {
+    private usernameChangeHandler = (e: any) => {
         const username = e.currentTarget.value;
         if (username.length === 0) {
             this.setState({
@@ -1251,7 +1251,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             });
             return;
         }
-        const reg = /^(?=.{2,32}$)[a-zA-Z0-9._]/;
+        const reg = /^(?=.{5,32}$)[a-zA-Z0-9._]/;
         this.setState({
             usernameValid: reg.test(username),
         }, () => {
