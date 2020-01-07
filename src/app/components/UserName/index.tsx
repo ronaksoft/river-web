@@ -23,6 +23,7 @@ interface IProps {
     noDetail?: boolean;
     onlyFirstName?: boolean;
     prefix?: string;
+    postfix?: string;
     uniqueColor?: boolean;
     unsafe?: boolean;
     username?: boolean;
@@ -35,7 +36,6 @@ interface IState {
     className: string;
     id: string;
     forceColor: boolean;
-    prefix: string;
     user: IUser;
 }
 
@@ -56,7 +56,6 @@ class UserName extends React.Component<IProps, IState> {
             className: props.className || '',
             forceColor: this.userRepo.getBubbleMode() === '5',
             id: props.id,
-            prefix: props.prefix || '',
             user: {},
         };
 
@@ -93,7 +92,10 @@ class UserName extends React.Component<IProps, IState> {
 
     public render() {
         const {onlyFirstName, defaultString} = this.props;
-        const {user, className, prefix} = this.state;
+        let {postfix, prefix} = this.props;
+        prefix = prefix || '';
+        postfix = postfix || '';
+        const {user, className} = this.state;
         const style = {
             color: 'auto',
             cursor: 'pointer',
@@ -106,19 +108,19 @@ class UserName extends React.Component<IProps, IState> {
                 <span className={className}
                       style={style}
                       onClick={this.clickHandler}>{Boolean(this.props.hideBadge !== true) && <VerifiedUserRounded
-                    style={{color: '#27AE60'}}/>}{(user && user.id) ? (onlyFirstName ? prefix + user.firstname : `${prefix}${user.firstname} ${user.lastname}`) : (defaultString || '')}</span>
+                    style={{color: '#27AE60'}}/>}{(user && user.id) ? (onlyFirstName ? prefix + user.firstname + postfix : `${prefix}${user.firstname} ${user.lastname}${postfix}`) : (defaultString || '')}</span>
             );
         } else if (this.props.username === true) {
             return (
                 <span className={className}
                       style={style}
-                      onClick={this.clickHandler}>{(user && user.id && user.username && user.username.length > 0) ? `${prefix}${user.username}` : (defaultString || '')}</span>
+                      onClick={this.clickHandler}>{(user && user.id && user.username && user.username.length > 0) ? `${prefix}${user.username}${postfix}` : (defaultString || '')}</span>
             );
         } else {
             return (
                 <span className={className}
                       style={style}
-                      onClick={this.clickHandler}>{(user && user.id) ? (onlyFirstName ? prefix + user.firstname : `${prefix}${user.firstname} ${user.lastname}`) : (defaultString || '')}</span>
+                      onClick={this.clickHandler}>{(user && user.id) ? (onlyFirstName ? prefix + user.firstname : `${prefix}${user.firstname} ${user.lastname}${postfix}`) : (defaultString || '')}</span>
             );
         }
     }
@@ -134,7 +136,7 @@ class UserName extends React.Component<IProps, IState> {
         if (this.props.you && this.userRepo.getCurrentUserId() === this.state.id) {
             this.setState({
                 user: {
-                    firstname: this.props.youPlaceholder || i18n.t('general.you'),
+                    firstname: this.props.youPlaceholder || (i18n.t('general.you') + (this.props.postfix || '')),
                     id: this.userRepo.getCurrentUserId(),
                     lastname: '',
                 },

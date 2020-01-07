@@ -98,7 +98,8 @@ class DialogMessage extends React.Component<IProps, IState> {
         const labelIds = dialog.label_ids || [];
         let labelCnt = 0;
         return (
-            <Link className="dialog-a" to={messageId ? `/chat/${dialog.peerid}/${messageId}` : `/chat/${dialog.peerid}`}>
+            <Link className="dialog-a"
+                  to={messageId ? `/chat/${dialog.peerid}/${messageId}` : `/chat/${dialog.peerid}`}>
                 <div
                     className={'dialog' + (dialog.peerid === selectedId ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}>
                     <div
@@ -210,7 +211,7 @@ class DialogMessage extends React.Component<IProps, IState> {
             return (
                 <span className="preview-message">
                     {Boolean(dialog.peertype === PeerType.PEERGROUP && dialog.sender_id) && <span className="sender">
-                    <UserName id={dialog.sender_id || ''} onlyFirstName={true} you={true} noDetail={true}/>: </span>}
+                    <UserName id={dialog.sender_id || ''} onlyFirstName={true} you={true} noDetail={true} postfix=":"/>&nbsp;</span>}
                     {this.getIcon(dialog.preview_icon)}<span
                     className="preview-inner">{dialog.preview}</span>
                 </span>

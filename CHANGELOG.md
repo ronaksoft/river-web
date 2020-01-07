@@ -1,3 +1,7 @@
+## 0.29.9
+* Dialog Message bug fixed
+* Migration (v2) (clears all data)
+
 ## 0.29.8
 * LoadBefore bug fixed
 * Label List bug fixed

@@ -14,6 +14,7 @@ import {Error as RiverError, MessageContainer, MessageEnvelope} from '../message
 import {throttle, cloneDeep} from 'lodash';
 import Socket from './socket';
 import {base64ToU8a} from '../fileManager/http/utils';
+import MainRepo from "../../../repository";
 
 const C_IDLE_TIME = 300;
 const C_TIMEOUT = 20000;
@@ -66,8 +67,7 @@ export default class Server {
     private messageListeners: object = {};
     private sentQueue: number[] = [];
     private updateQueue: any[] = [];
-    // @ts-ignore
-    private updateManager: UpdateManager;
+    private readonly updateManager: UpdateManager | undefined;
     private isConnected: boolean = false;
     private requestQueue: MessageEnvelope[] = [];
     private readonly executeSendThrottledRequestThrottle: any;
@@ -78,7 +78,7 @@ export default class Server {
         this.reqId = 0;
         this.getLastActivityTime();
         this.startIdleCheck();
-        const version = this.shouldMigrate(localStorage.getItem('river.version'));
+        const version = this.shouldMigrate();
         if (version !== false) {
             this.migrate(version);
             return;
@@ -266,7 +266,9 @@ export default class Server {
                             isLogout = true;
                         }
                         if (resData.code === C_ERR.ErrCodeUnavailable && resData.items === C_ERR_ITEM.ErrItemUserID && !isLogout) {
-                            this.updateManager.forceLogOut();
+                            if (this.updateManager) {
+                                this.updateManager.forceLogOut();
+                            }
                         } else {
                             this.messageListeners[reqId].reject(resData);
                         }
@@ -349,14 +351,15 @@ export default class Server {
     }
 
     private dispatchUpdate() {
-        if (this.updateQueue.length > 0) {
+        if (this.updateQueue.length > 0 && this.updateManager) {
             this.updateManager.parseUpdate(this.updateQueue.shift());
         }
     }
 
-    private shouldMigrate(v: string | null) {
+    private shouldMigrate() {
+        const v = localStorage.getItem('river.version');
         if (v === null) {
-            return 0;
+            return 1;
         }
         const pv = JSON.parse(v);
         switch (pv.v) {
@@ -364,6 +367,8 @@ export default class Server {
             case 0:
                 return pv.v;
             case 1:
+                return pv.v;
+            case 2:
                 return false;
         }
     }
@@ -373,6 +378,9 @@ export default class Server {
             default:
             case 0:
                 this.migrate1();
+                return;
+            case 1:
+                this.migrate2();
                 return;
         }
     }
@@ -391,8 +399,26 @@ export default class Server {
         localStorage.setItem('river.version', JSON.stringify({
             v: 1,
         }));
+
         setTimeout(() => {
-            window.location.reload();
+            this.migrate(1);
+        }, 1000);
+    }
+
+    private migrate2() {
+        if (this.updateManager) {
+            this.updateManager.disable();
+        }
+        setTimeout(() => {
+            MainRepo.getInstance().destroyDB().then(() => {
+                localStorage.removeItem('river.last_update_id');
+                localStorage.setItem('river.version', JSON.stringify({
+                    v: 2,
+                }));
+                setTimeout(() => {
+                    window.location.reload();
+                }, 100);
+            });
         }, 1000);
     }
 
@@ -408,7 +434,9 @@ export default class Server {
             const now = this.getTime();
             if (now - this.lastActivityTime > C_IDLE_TIME) {
                 this.lastActivityTime = now;
-                this.updateManager.idleHandler();
+                if (this.updateManager) {
+                    this.updateManager.idleHandler();
+                }
             }
         }, 10000);
     }
