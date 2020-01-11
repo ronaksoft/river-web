@@ -1,3 +1,6 @@
+## 0.29.10
+* Bug fixes and performance improvements
+
 ## 0.29.9
 * Dialog Message bug fixed
 * Migration (v2) (clears all data)

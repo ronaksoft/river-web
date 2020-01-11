@@ -299,6 +299,7 @@ export const C_ERR_ITEM = {
     ErrItemInput: "INPUT",
     ErrItemInputFile: "INPUT_FILE",
     ErrItemJobWorker: "JOB_WORKER",
+    ErrItemLabel: "LABEL",
     ErrItemLastAdmin: "LAST_ADMIN",
     ErrItemMedia: "MEDIA",
     ErrItemMessage: "MESSAGE",

@@ -108,6 +108,7 @@ export default class DialogRepo {
             dialogs = dialogs || [];
             // @ts-ignore
             this.getManyForSnapshot({skip, limit}).then((remoteRes) => {
+                // window.console.log('intersectionBy', intersectionBy(cloneDeep(remoteRes.dialogs), dialogs, 'peerid'));
                 dialogs.push.apply(dialogs, remoteRes.dialogs);
                 dialogs = uniqBy(dialogs, 'peerid');
                 if (remoteRes.dialogs.length === limit) {
@@ -153,6 +154,7 @@ export default class DialogRepo {
             this.loadConnInfo();
         }
         return this.sdk.getDialogs(skip || 0, limit || 30).then((remoteRes) => {
+            // window.console.log('remoteRes.dialogsList', remoteRes.dialogsList.length);
             // cloneDeep(remoteRes.dialogsList).forEach((d)=> {
             //     if (d.peertype === PeerType.PEERGROUP) {
             //         window.console.log('group', remoteRes.groupsList.find(o=> o.id === d.peerid));

@@ -952,8 +952,12 @@ class DocumentViewer extends React.Component<IProps, IState> {
         const {doc} = this.state;
         switch (cmd) {
             case 'download':
-                if (this.props.onAction && doc && doc.items && doc.items.length > 0 && doc.items[0].downloaded) {
-                    this.props.onAction('save_as', doc.items[0].id || 0, doc.items[0].fileLocation.fileid);
+                if (this.props.onAction && doc && doc.items && doc.items.length > 0) {
+                    if (doc.items[0].downloaded) {
+                        this.props.onAction('save_as', doc.items[0].id || 0, doc.items[0].fileLocation.fileid);
+                    } else {
+                        this.props.onAction('save_as', 0, doc.items[0].fileLocation.fileid);
+                    }
                 }
                 break;
             case 'remove_photo':

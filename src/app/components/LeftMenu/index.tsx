@@ -51,6 +51,7 @@ interface IProps {
     onSettingsClose: (e: any) => void;
     onUpdateMessages: (keep?: boolean) => void;
     onMenuShrunk: (shrunk: boolean) => void;
+    onError?: (text: string) => void;
 }
 
 interface IState {
@@ -302,7 +303,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                     {Boolean(overlayMode === 1) && <NewGroupMenu onClose={this.overlayCloseHandler}
                                                                  onCreate={this.props.onGroupCreate}/>}
                     {Boolean(overlayMode === 2) &&
-                    <LabelMenu onClose={this.overlayCloseHandler}/>}
+                    <LabelMenu onClose={this.overlayCloseHandler} onError={this.props.onError}/>}
                 </div>
             </div>
         );
@@ -319,7 +320,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                                   onSubPlaceChange={this.settingsSubPlaceChangeHandler}
             />);
         } else if (leftMenu === 'contacts') {
-            return (<ContactsMenu key="contacts-menu" ref={this.contactsMenuRefHandler}/>);
+            return (<ContactsMenu key="contacts-menu" ref={this.contactsMenuRefHandler} onError={this.props.onError}/>);
         } else {
             return (<Dialog key="dialog-menu" ref={this.dialogRefHandler}
                             cancelIsTyping={this.props.cancelIsTyping}

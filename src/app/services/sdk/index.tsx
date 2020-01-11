@@ -286,6 +286,7 @@ export default class SDK {
     }
 
     public getDialogs(skip: number, limit: number): Promise<MessagesDialogs.AsObject> {
+        window.console.log('getDialogs', skip, limit);
         const data = new MessagesGetDialogs();
         data.setOffset(skip || 0);
         data.setLimit(limit || 0);

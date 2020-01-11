@@ -87,7 +87,7 @@ import DevTools from "../DevTools";
 import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.29.9';
+export const C_VERSION = '0.29.10';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 export const C_AVATAR_SIZE = 640;
 
@@ -710,7 +710,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                 label={i18n.t('general.bio')}
                                                 fullWidth={true}
                                                 inputProps={{
-                                                    maxLength: 32,
+                                                    maxLength: 70,
                                                 }}
                                                 value={bio}
                                                 multiline={true}

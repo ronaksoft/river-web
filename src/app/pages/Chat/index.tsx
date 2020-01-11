@@ -550,6 +550,7 @@ class Chat extends React.Component<IProps, IState> {
                                   onAction={this.leftMenuActionHandler}
                                   onGroupCreate={this.leftMenuGroupCreateHandler}
                                   onMenuShrunk={this.leftMenuMenuShrunkHandler}
+                                  onError={this.leftMenuErrorHandler}
                                   iframeActive={this.state.iframeActive}
                                   mobileView={this.isMobileView}
                         />
@@ -1981,7 +1982,7 @@ class Chat extends React.Component<IProps, IState> {
         if (this.messages[beforeIndex].senderid !== this.messages[index].senderid) {
             return true;
         }
-        if (this.messages[beforeIndex].messagetype === C_MESSAGE_TYPE.Date || this.messages[beforeIndex].messagetype === C_MESSAGE_TYPE.System) {
+        if (this.messages[beforeIndex].messagetype === C_MESSAGE_TYPE.Date || this.messages[beforeIndex].messagetype === C_MESSAGE_TYPE.System || (this.messages[beforeIndex].messageaction && this.messages[beforeIndex].messageaction !== C_MESSAGE_ACTION.MessageActionNope)) {
             return true;
         }
         return false;
@@ -2770,6 +2771,12 @@ class Chat extends React.Component<IProps, IState> {
             } else {
                 this.containerRef.classList.remove('shrunk');
             }
+        }
+    }
+
+    private leftMenuErrorHandler = (text: string) => {
+        if (this.props.enqueueSnackbar) {
+            this.props.enqueueSnackbar(text);
         }
     }
 
@@ -3742,11 +3749,15 @@ class Chat extends React.Component<IProps, IState> {
             }
         };
         if (typeof message === 'number') {
-            this.messageRepo.get(message).then((msg) => {
-                if (msg) {
-                    execute(msg);
-                }
-            });
+            if (message === 0 && (cmd === 'save_as')) {
+                execute({});
+            } else {
+                this.messageRepo.get(message).then((msg) => {
+                    if (msg) {
+                        execute(msg);
+                    }
+                });
+            }
         } else {
             execute(message);
         }

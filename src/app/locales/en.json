@@ -228,7 +228,8 @@
     "no_phone": "no phone",
     "create_a_new_group": "Create a New Group",
     "group_settings": "Group Settings",
-    "group_title": "Group title"
+    "group_title": "Group title",
+    "is_not_on_river_yet": "{0} is not on River yet!"
   },
   "media": {
     "photo_video": "Photo & Video",
@@ -336,6 +337,7 @@
     "no_label": "No Label",
     "label_placeholder": "Create a new Label!",
     "no_result": "No Result!",
-    "label_list": "Label List"
+    "label_list": "Label List",
+    "max_label_warning": "You can't add more than 20 labels"
   }
 }

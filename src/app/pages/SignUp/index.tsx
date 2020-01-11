@@ -37,8 +37,20 @@ import DevTools from "../../components/DevTools";
 import './tel-input.css';
 import './style.scss';
 
+function getChromeVersion() {
+    const raw = window.navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./);
+    return raw ? parseInt(raw[2], 10) : false;
+}
 
-const C_CLIENT = `Web:- ${window.navigator.userAgent}`;
+let C_CLIENT = `Web:- ${window.navigator.userAgent}`;
+if (window.navigator.userAgent.indexOf(' electron/') > -1) {
+    const ver = getChromeVersion();
+    if (ver) {
+        C_CLIENT = `Desktop:- Chrome-${ver}`;
+    } else {
+        C_CLIENT = `Desktop:- ${window.navigator.userAgent}`;
+    }
+}
 const codeLen = 5;
 const codePlaceholder = [...new Array(codeLen)].map(o => '_').join('');
 
@@ -150,6 +162,10 @@ class SignUp extends React.Component<IProps, IState> {
                 workspace: e.data.workspace,
             });
         }));
+
+        if (this.state.step === 'phone') {
+            this.focus('f-phone');
+        }
     }
 
     public componentWillUnmount() {
@@ -683,6 +699,7 @@ class SignUp extends React.Component<IProps, IState> {
         const elem: any = document.querySelector(`.${className} input`);
         if (elem) {
             elem.focus();
+            elem.setSelectionRange(elem.value.length, elem.value.length);
         }
     }
 
@@ -708,7 +725,6 @@ class SignUp extends React.Component<IProps, IState> {
                 window.console.warn(err);
             });
         }
-        this.focus('f-phone');
         if (this.state.step === 'phone') {
             this.sdk.systemGetInfo().then((res) => {
                 this.setState({

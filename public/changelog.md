@@ -1,3 +1,6 @@
+## 0.29.10
+* Bug fixes and performance improvements
+
 ## 0.29.9
 * Bug fixes and improvements
 

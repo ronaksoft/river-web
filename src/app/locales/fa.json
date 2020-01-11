@@ -224,7 +224,8 @@
     "no_phone": "بدون تلفن",
     "create_a_new_group": "گروه جدید",
     "group_settings": "تنظیمات گروه",
-    "group_title": "عنوان گروه"
+    "group_title": "عنوان گروه",
+    "is_not_on_river_yet": "{1}هنوز عضو ریور نشده است!"
   },
   "media": {
     "photo_video": "تصویر و ویدو",
@@ -331,6 +332,7 @@
     "label_counts": "{0} آیتم",
     "label_placeholder": "یک چسب بسازید",
     "no_result": "نتیجه‌ای یافت نشد!",
-    "label_list": "لیست برچسب‌ها"
+    "label_list": "لیست برچسب‌ها",
+    "max_label_warning": "شما نمی‌توانید بیش از ۲۰ برچسب ایجاد نمایید"
   }
 }

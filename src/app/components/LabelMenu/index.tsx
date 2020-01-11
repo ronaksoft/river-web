@@ -50,11 +50,13 @@ import DialogSkeleton from "../DialogSkeleton";
 import {IMessage} from "../../repository/message/interface";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
+import {C_ERR, C_ERR_ITEM} from "../../services/sdk/const";
 
 import './style.scss';
 
 interface IProps {
     onClose?: () => void;
+    onError?: (text: string) => void;
 }
 
 interface IState {
@@ -384,11 +386,14 @@ class LabelMenu extends React.Component<IProps, IState> {
                     name: '',
                     page: '1',
                 });
-            }).catch(() => {
+            }).catch((err) => {
                 this.cancelHandler();
                 this.setState({
                     loading: false,
                 });
+                if (this.props.onError && err.code === C_ERR.ErrCodeTooMany && err.items === C_ERR_ITEM.ErrItemLabel) {
+                    this.props.onError(i18n.t('label.max_label_warning'));
+                }
             });
         } else {
             this.sdk.labelEdit(selectedId, this.state.name, this.state.color).then(() => {
