@@ -1,15 +1,15 @@
 package main
 
 import (
-	"git.ronaksoftware.com/river/msg/ext"
-	"syscall/js"
-	"fmt"
-	"math/big"
-	"github.com/monnand/dhkx"
 	"crypto/rand"
 	"crypto/rsa"
-	"encoding/binary"
 	"encoding/base64"
+	"encoding/binary"
+	"fmt"
+	"git.ronaksoftware.com/river/msg/chat"
+	"github.com/monnand/dhkx"
+	"math/big"
+	"syscall/js"
 )
 
 var (
@@ -100,7 +100,7 @@ func (r *River) CreateAuthKey(callback Callback) (err error) {
 				x := new(msg.InitResponse)
 				err = x.Unmarshal(res.Message)
 				if err != nil {
-					fmt.Println(err.Error(), _LK_DESC, "InitResponse Unmarshal")
+					fmt.Println(err.Error(), "InitResponse Unmarshal")
 				}
 				AuthProgress(15)
 				clientNonce = x.ClientNonce
@@ -244,11 +244,11 @@ func (r *River) createAuthKeyStep2(clientNonce, serverNonce, serverPubFP, server
 				AuthProgress(100)
 			case msg.C_Error:
 				err = ServerError(res.Message)
-			    fmt.Println(err)
+				fmt.Println(err)
 				return
 			default:
 				err = ErrInvalidConstructor
-			    fmt.Println(err)
+				fmt.Println(err)
 				return
 			}
 		},
@@ -394,23 +394,23 @@ func (r *River) messageHandler(m *msg.MessageEnvelope) {
 }
 
 func (r *River) decryptHandler(m *msg.MessageEnvelope) {
-// 	switch m.Constructor {
-// 	case msg.C_MessageContainer:
-// 		x := new(msg.MessageContainer)
-// 		ee := x.Unmarshal(m.Message)
-// 		if ee != nil {
-// 			fmt.Println("Error", ee.Error())
-// 		}
-// 		for _, envelope := range x.Envelopes {
-// 			r.decryptHandler(envelope)
-// 		}
-// 	case msg.C_UpdateContainer:
-// 		x := new(msg.UpdateContainer)
-// 		x.Unmarshal(m.Message)
-// 		js.Global().Call("fnDecryptCallback", m.RequestID, m.Constructor, base64.StdEncoding.EncodeToString(m.Message))
-// 	default:
-		js.Global().Call("fnDecryptCallback", m.RequestID, m.Constructor, base64.StdEncoding.EncodeToString(m.Message))
-// 	}
+	// 	switch m.Constructor {
+	// 	case msg.C_MessageContainer:
+	// 		x := new(msg.MessageContainer)
+	// 		ee := x.Unmarshal(m.Message)
+	// 		if ee != nil {
+	// 			fmt.Println("Error", ee.Error())
+	// 		}
+	// 		for _, envelope := range x.Envelopes {
+	// 			r.decryptHandler(envelope)
+	// 		}
+	// 	case msg.C_UpdateContainer:
+	// 		x := new(msg.UpdateContainer)
+	// 		x.Unmarshal(m.Message)
+	// 		js.Global().Call("fnDecryptCallback", m.RequestID, m.Constructor, base64.StdEncoding.EncodeToString(m.Message))
+	// 	default:
+	js.Global().Call("fnDecryptCallback", m.RequestID, m.Constructor, base64.StdEncoding.EncodeToString(m.Message))
+	// 	}
 }
 
 func (r *River) RetryLast() {
@@ -447,4 +447,66 @@ func (r *River) SetServerTime(callback Callback) (err error) {
 	)
 
 	return
+}
+
+// GenSrpHash generates a hash to be used in AuthCheckPassword and other related apis
+func (r *River) GenSrpHash(password []byte, algorithm int64, algorithmData []byte) []byte {
+	switch algorithm {
+	case msg.C_PasswordAlgorithmVer6A:
+		algo := &msg.PasswordAlgorithmVer6A{}
+		err := algo.Unmarshal(algorithmData)
+
+		if err != nil {
+			fmt.Println("Error On Unmarshal Algorithm", err.Error())
+			return nil
+		}
+
+		p := big.NewInt(0).SetBytes(algo.P)
+
+		x := big.NewInt(0).SetBytes(PH2(password, algo.Salt1, algo.Salt2))
+		v := big.NewInt(0).Exp(big.NewInt(int64(algo.G)), x, p)
+
+		return v.Bytes()
+	default:
+		return nil
+	}
+}
+
+// GenInputPassword  accepts AccountPassword marshaled as argument and return InputPassword marshaled
+func (r *River) GenInputPassword(password []byte, accountPasswordBytes []byte) []byte {
+	ap := &msg.AccountPassword{}
+	err := ap.Unmarshal(accountPasswordBytes)
+
+	algo := &msg.PasswordAlgorithmVer6A{}
+	err = algo.Unmarshal(ap.AlgorithmData)
+	if err != nil {
+		fmt.Println("Error On GenInputPassword", err)
+		return nil
+	}
+
+	p := big.NewInt(0).SetBytes(algo.P)
+	g := big.NewInt(0).SetInt64(int64(algo.G))
+	k := big.NewInt(0).SetBytes(K(p, g))
+
+	x := big.NewInt(0).SetBytes(PH2(password, algo.Salt1, algo.Salt2))
+	v := big.NewInt(0).Exp(g, x, p)
+	a := big.NewInt(0).SetBytes(ap.RandomData)
+	ga := big.NewInt(0).Exp(g, a, p)
+	gb := big.NewInt(0).SetBytes(ap.SrpB)
+	u := big.NewInt(0).SetBytes(U(ga, gb))
+	kv := big.NewInt(0).Mod(big.NewInt(0).Mul(k, v), p)
+	t := big.NewInt(0).Mod(big.NewInt(0).Sub(gb, kv), p)
+	if t.Sign() < 0 {
+		t.Add(t, p)
+	}
+	sa := big.NewInt(0).Exp(t, big.NewInt(0).Add(a, big.NewInt(0).Mul(u, x)), p)
+	m1 := M(p, g, algo.Salt1, algo.Salt2, ga, gb, sa)
+
+	inputPassword := &msg.InputPassword{
+		SrpID: r.ConnInfo.UserID,
+		A:     Pad(ga),
+		M1:    m1,
+	}
+	res, _ := inputPassword.Marshal()
+	return res
 }

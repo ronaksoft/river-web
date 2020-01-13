@@ -6,6 +6,8 @@ let loadConnInfo = null;
 let fnCall = null;
 let fnEncrypt = null;
 let fnDecrypt = null;
+let fnGenSrpHash = null;
+let fnGenInputPassword = null;
 let receive = null;
 let wsOpen = null;
 
@@ -35,7 +37,7 @@ self.onmessage = function (e) {
     switch (d.cmd) {
         case 'init':
             console.time('init');
-            fetch('river.wasm?v23').then((response) => {
+            fetch('river.wasm?v24').then((response) => {
                 WebAssembly.instantiateStreaming(response, go.importObject).then((res) => {
                     console.timeEnd('init');
                     run = go.run(res.instance);
@@ -78,6 +80,16 @@ self.onmessage = function (e) {
         case 'fnDecrypt':
             if (fnDecrypt) {
                 fnDecrypt(d.data);
+            }
+            break;
+        case 'fnGenSrpHash':
+            if (fnGenSrpHash) {
+                fnGenSrpHash(d.data.reqId, d.data.pass, d.data.algorithm, d.data.algorithmData);
+            }
+            break;
+        case 'fnGenInputPassword':
+            if (fnGenInputPassword) {
+                fnGenInputPassword(d.data.reqId, d.data.algorithm, d.data.accountPass);
             }
             break;
         case 'loadConnInfo':
@@ -163,6 +175,28 @@ fnDecryptCallback = (reqId, constructor, data) => {
     workerMessage('fnDecryptCallback', {
         reqId,
         constructor,
+        data,
+    });
+};
+
+setFnGenSrpHash = (callback) => {
+    fnGenSrpHash = callback;
+};
+
+fnGenSrpHashCallback = (reqId, data) => {
+    workerMessage('fnGenSrpHashCallback', {
+        reqId,
+        data,
+    });
+};
+
+setFnGenInputPassword = (callback) => {
+    fnGenInputPassword = callback;
+};
+
+fnGenInputPasswordCallback = (reqId, data) => {
+    workerMessage('fnDecryptCallback', {
+        reqId,
         data,
     });
 };

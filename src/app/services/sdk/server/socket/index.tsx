@@ -59,7 +59,7 @@ export default class Socket {
     public constructor() {
         this.testUrl = localStorage.getItem('river.workspace_url') || '';
 
-        this.worker = new Worker('/bin/worker.js?v18');
+        this.worker = new Worker('/bin/worker.js?v19');
 
         setTimeout(() => {
             this.workerMessage('init', {});

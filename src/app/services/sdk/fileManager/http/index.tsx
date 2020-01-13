@@ -49,7 +49,7 @@ export default class Http {
         this.shareWorker = shareWorker;
 
         this.reqId = 0;
-        this.worker = new Worker('/bin/worker.js?v18');
+        this.worker = new Worker('/bin/worker.js?v19');
         this.workerId = id;
 
         if (fileUrl && fileUrl.length > 0 && (ElectronService.isElectron() || window.location.host.indexOf('localhost') === 0)) {

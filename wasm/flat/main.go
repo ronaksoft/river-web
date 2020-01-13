@@ -1,6 +1,7 @@
 package main
 
 import (
+	msg "git.ronaksoftware.com/river/msg/chat"
 	"time"
 	"fmt"
 	"errors"
@@ -172,7 +173,7 @@ func (r *River) CreateAuthKey(callback Callback) (err error) {
 				x := new(msg.InitResponse)
 				err = x.Unmarshal(res.Message)
 				if err != nil {
-					fmt.Println(err.Error(), _LK_DESC, "InitResponse Unmarshal")
+					fmt.Println(err.Error(), "InitResponse Unmarshal")
 				}
 				AuthProgress(15)
 				clientNonce = x.ClientNonce
@@ -608,7 +609,7 @@ func (v *RiverConnection) Save() {
 		UserID:    strconv.FormatInt(v.UserID, 10),
 	}
 	if bytes, err := json.Marshal(vv); err != nil {
-		fmt.Println(err.Error(), _LK_FUNC_NAME, "RiverConnection::Save")
+		fmt.Println(err.Error(), "RiverConnection::Save")
 	} else {
 		js.Global().Call("saveConnInfo", string(bytes))
 	}
@@ -618,7 +619,7 @@ func (v *RiverConnection) Save() {
 func (v *RiverConnection) Load(connInfo string) error {
 	var vv = RiverConnectionJS{}
 	if err := json.Unmarshal([]byte(connInfo), &vv); err != nil {
-		fmt.Println(err.Error(), _LK_FUNC_NAME, "RiverConnection::Load")
+		fmt.Println(err.Error(), "RiverConnection::Load")
 		return err
 	}
 	v.AuthKey = vv.AuthKey

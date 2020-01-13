@@ -1,10 +1,10 @@
 package main
 
 import (
-	"syscall/js"
-	"fmt"
 	"encoding/base64"
+	"fmt"
 	"math/rand"
+	"syscall/js"
 	"time"
 )
 
@@ -54,6 +54,14 @@ func main() {
 	defer fnDecryptCB.Release()
 	js.Global().Get("setFnDecrypt").Invoke(fnDecryptCB)
 
+	fnGenSrpHashCB := js.FuncOf(fnGenSrpHash)
+	defer fnGenSrpHashCB.Release()
+	js.Global().Get("setFnGenSrpHash").Invoke(fnGenSrpHashCB)
+
+	fnGenInputPasswordCB := js.FuncOf(fnGenInputPassword)
+	defer fnGenInputPasswordCB.Release()
+	js.Global().Get("setFnGenInputPassword").Invoke(fnGenInputPasswordCB)
+
 	<-beforeUnloadCh
 	fmt.Println("Bye Wasm !")
 }
@@ -71,7 +79,7 @@ func initSDK(this js.Value, args []js.Value) interface{} {
 			river.SetServerTime(startCb)
 		} else {
 			if timeInput != 1 {
-			    river.ConnInfo.SetServerTime(int64(timeInput))
+				river.ConnInfo.SetServerTime(int64(timeInput))
 			}
 			js.Global().Call("fnStarted", duration, timeInput)
 		}
@@ -124,6 +132,33 @@ func fnDecrypt(this js.Value, inps []js.Value) interface{} {
 		enc, err := base64.StdEncoding.DecodeString(args[0].String())
 		if err == nil {
 			river.receive(&enc, false)
+		}
+	}(inps)
+	return nil
+}
+
+func fnGenSrpHash(this js.Value, inps []js.Value) interface{} {
+	go func(args []js.Value) {
+		id := args[0].String()
+		pass, err := base64.StdEncoding.DecodeString(args[1].String())
+		algorithm := args[2].Int()
+		algorithmData, err2 := base64.StdEncoding.DecodeString(args[3].String())
+		if err == nil && err2 == nil {
+			res := river.GenSrpHash(pass, int64(algorithm), algorithmData)
+			js.Global().Call("fnGenSrpHashCallback", id, base64.StdEncoding.EncodeToString(res))
+		}
+	}(inps)
+	return nil
+}
+
+func fnGenInputPassword(this js.Value, inps []js.Value) interface{} {
+	go func(args []js.Value) {
+		id := args[0].String()
+		pass, err := base64.StdEncoding.DecodeString(args[1].String())
+		accountPass, err2 := base64.StdEncoding.DecodeString(args[3].String())
+		if err == nil && err2 == nil {
+			res := river.GenInputPassword(pass, accountPass)
+			js.Global().Call("fnGenInputPasswordCallback", id, base64.StdEncoding.EncodeToString(res))
 		}
 	}(inps)
 	return nil

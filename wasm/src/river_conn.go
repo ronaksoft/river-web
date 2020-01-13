@@ -1,10 +1,10 @@
 package main
 
 import (
-	"syscall/js"
-	"strconv"
-	"time"
 	"fmt"
+	"strconv"
+	"syscall/js"
+	"time"
 )
 
 // easyjson:json
@@ -98,7 +98,7 @@ func (v *RiverConnection) Save() {
 	}
 
 	if bytes, err := vv.MarshalJSON(); err != nil {
-		fmt.Println(err.Error(), _LK_FUNC_NAME, "RiverConnection::Save")
+		fmt.Println(err.Error(), "RiverConnection::Save")
 	} else {
 		js.Global().Call("saveConnInfo", string(bytes))
 	}
@@ -108,7 +108,7 @@ func (v *RiverConnection) Save() {
 func (v *RiverConnection) Load(connInfo string) error {
 	var vv = RiverConnectionJS{}
 	if err := vv.UnmarshalJSON([]byte(connInfo)); err != nil {
-		fmt.Println(err.Error(), _LK_FUNC_NAME, "RiverConnection::Load")
+		fmt.Println(err.Error(), "RiverConnection::Load")
 		return err
 	}
 	v.AuthKey = vv.AuthKey
