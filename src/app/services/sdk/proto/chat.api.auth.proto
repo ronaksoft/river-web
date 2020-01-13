@@ -2,6 +2,7 @@ syntax = "proto2";
 package msg;
 import "chat.core.types.proto";
 
+
 // AuthRegister
 // @Function
 // @Return: AuthAuthorization
@@ -30,6 +31,25 @@ message AuthLogin {
     required string PhoneCodeHash = 2;
     required string PhoneCode = 3;
 }
+
+// AuthCheckPassword
+// @Function
+// @Return: AuthAuthorization
+message AuthCheckPassword {
+    required InputPassword Password = 1;
+}
+
+// AuthRecoverPassword
+// @Function
+// @Returns AuthAuthorization
+message AuthRecoverPassword {
+    required string Code = 1;
+}
+
+// AuthRequestPasswordRecovery
+// @Function
+// @Returns: AuthPasswordRecovery
+message AuthRequestPasswordRecovery {}
 
 // AuthLogout
 // @Function
@@ -86,6 +106,11 @@ message AuthRecall {
 // @Function
 // @Return: Bool
 message AuthDestroyKey {
+}
+
+// AuthPasswordRecovery
+message AuthPasswordRecovery {
+    required string EmailPattern = 1;
 }
 
 // AuthRecalled

@@ -119,6 +119,66 @@ export namespace AuthLogin {
   }
 }
 
+export class AuthCheckPassword extends jspb.Message {
+  hasPassword(): boolean;
+  clearPassword(): void;
+  getPassword(): chat_core_types_pb.InputPassword;
+  setPassword(value?: chat_core_types_pb.InputPassword): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AuthCheckPassword.AsObject;
+  static toObject(includeInstance: boolean, msg: AuthCheckPassword): AuthCheckPassword.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AuthCheckPassword, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AuthCheckPassword;
+  static deserializeBinaryFromReader(message: AuthCheckPassword, reader: jspb.BinaryReader): AuthCheckPassword;
+}
+
+export namespace AuthCheckPassword {
+  export type AsObject = {
+    password: chat_core_types_pb.InputPassword.AsObject,
+  }
+}
+
+export class AuthRecoverPassword extends jspb.Message {
+  hasCode(): boolean;
+  clearCode(): void;
+  getCode(): string | undefined;
+  setCode(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AuthRecoverPassword.AsObject;
+  static toObject(includeInstance: boolean, msg: AuthRecoverPassword): AuthRecoverPassword.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AuthRecoverPassword, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AuthRecoverPassword;
+  static deserializeBinaryFromReader(message: AuthRecoverPassword, reader: jspb.BinaryReader): AuthRecoverPassword;
+}
+
+export namespace AuthRecoverPassword {
+  export type AsObject = {
+    code?: string,
+  }
+}
+
+export class AuthRequestPasswordRecovery extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AuthRequestPasswordRecovery.AsObject;
+  static toObject(includeInstance: boolean, msg: AuthRequestPasswordRecovery): AuthRequestPasswordRecovery.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AuthRequestPasswordRecovery, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AuthRequestPasswordRecovery;
+  static deserializeBinaryFromReader(message: AuthRequestPasswordRecovery, reader: jspb.BinaryReader): AuthRequestPasswordRecovery;
+}
+
+export namespace AuthRequestPasswordRecovery {
+  export type AsObject = {
+  }
+}
+
 export class AuthLogout extends jspb.Message {
   clearAuthidsList(): void;
   getAuthidsList(): Array<string>;
@@ -318,6 +378,28 @@ export class AuthDestroyKey extends jspb.Message {
 
 export namespace AuthDestroyKey {
   export type AsObject = {
+  }
+}
+
+export class AuthPasswordRecovery extends jspb.Message {
+  hasEmailpattern(): boolean;
+  clearEmailpattern(): void;
+  getEmailpattern(): string | undefined;
+  setEmailpattern(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AuthPasswordRecovery.AsObject;
+  static toObject(includeInstance: boolean, msg: AuthPasswordRecovery): AuthPasswordRecovery.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AuthPasswordRecovery, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AuthPasswordRecovery;
+  static deserializeBinaryFromReader(message: AuthPasswordRecovery, reader: jspb.BinaryReader): AuthPasswordRecovery;
+}
+
+export namespace AuthPasswordRecovery {
+  export type AsObject = {
+    emailpattern?: string,
   }
 }
 

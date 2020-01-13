@@ -496,6 +496,44 @@ export namespace InputUser {
   }
 }
 
+export class InputPassword extends jspb.Message {
+  hasSrpid(): boolean;
+  clearSrpid(): void;
+  getSrpid(): number | undefined;
+  setSrpid(value: number): void;
+
+  hasA(): boolean;
+  clearA(): void;
+  getA(): Uint8Array | string;
+  getA_asU8(): Uint8Array;
+  getA_asB64(): string;
+  setA(value: Uint8Array | string): void;
+
+  hasM1(): boolean;
+  clearM1(): void;
+  getM1(): Uint8Array | string;
+  getM1_asU8(): Uint8Array;
+  getM1_asB64(): string;
+  setM1(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): InputPassword.AsObject;
+  static toObject(includeInstance: boolean, msg: InputPassword): InputPassword.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: InputPassword, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): InputPassword;
+  static deserializeBinaryFromReader(message: InputPassword, reader: jspb.BinaryReader): InputPassword;
+}
+
+export namespace InputPassword {
+  export type AsObject = {
+    srpid?: number,
+    a: Uint8Array | string,
+    m1: Uint8Array | string,
+  }
+}
+
 export class InputFileLocation extends jspb.Message {
   hasClusterid(): boolean;
   clearClusterid(): void;
@@ -670,6 +708,16 @@ export class User extends jspb.Message {
   getIsbot(): boolean | undefined;
   setIsbot(value: boolean): void;
 
+  hasDeleted(): boolean;
+  clearDeleted(): void;
+  getDeleted(): boolean | undefined;
+  setDeleted(value: boolean): void;
+
+  hasBlocked(): boolean;
+  clearBlocked(): void;
+  getBlocked(): boolean | undefined;
+  setBlocked(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): User.AsObject;
   static toObject(includeInstance: boolean, msg: User): User.AsObject;
@@ -695,6 +743,8 @@ export namespace User {
     lastseen?: number,
     photogalleryList?: Array<UserPhoto.AsObject>,
     isbot?: boolean,
+    deleted?: boolean,
+    blocked?: boolean,
   }
 }
 

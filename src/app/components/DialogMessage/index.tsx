@@ -37,6 +37,7 @@ interface IProps {
     dialog: IDialog;
     isTyping: { [key: string]: { fn: any, action: TypingAction } };
     onContextMenuOpen?: (e: any) => void;
+    onClick?: (e: any) => void;
     selectedId: string;
     messageId?: number;
 }
@@ -98,7 +99,7 @@ class DialogMessage extends React.Component<IProps, IState> {
         const labelIds = dialog.label_ids || [];
         let labelCnt = 0;
         return (
-            <Link className="dialog-a"
+            <Link className="dialog-a" onClick={this.props.onClick}
                   to={messageId ? `/chat/${dialog.peerid}/${messageId}` : `/chat/${dialog.peerid}`}>
                 <div
                     className={'dialog' + (dialog.peerid === selectedId ? ' active' : '') + (dialog.pinned ? ' pinned' : '')}>

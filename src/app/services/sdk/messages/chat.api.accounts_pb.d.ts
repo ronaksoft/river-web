@@ -291,6 +291,28 @@ export namespace AccountRemovePhoto {
   }
 }
 
+export class AccountSendChangePhoneCode extends jspb.Message {
+  hasPhone(): boolean;
+  clearPhone(): void;
+  getPhone(): string | undefined;
+  setPhone(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountSendChangePhoneCode.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountSendChangePhoneCode): AccountSendChangePhoneCode.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountSendChangePhoneCode, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountSendChangePhoneCode;
+  static deserializeBinaryFromReader(message: AccountSendChangePhoneCode, reader: jspb.BinaryReader): AccountSendChangePhoneCode;
+}
+
+export namespace AccountSendChangePhoneCode {
+  export type AsObject = {
+    phone?: string,
+  }
+}
+
 export class AccountChangePhone extends jspb.Message {
   hasPhone(): boolean;
   clearPhone(): void;
@@ -307,6 +329,11 @@ export class AccountChangePhone extends jspb.Message {
   getPhonecode(): string | undefined;
   setPhonecode(value: string): void;
 
+  hasPassword(): boolean;
+  clearPassword(): void;
+  getPassword(): chat_core_types_pb.InputPassword | undefined;
+  setPassword(value?: chat_core_types_pb.InputPassword): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountChangePhone.AsObject;
   static toObject(includeInstance: boolean, msg: AccountChangePhone): AccountChangePhone.AsObject;
@@ -322,6 +349,7 @@ export namespace AccountChangePhone {
     phone?: string,
     phonecodehash?: string,
     phonecode?: string,
+    password?: chat_core_types_pb.InputPassword.AsObject,
   }
 }
 
@@ -459,6 +487,218 @@ export namespace AccountUpdateStatus {
   }
 }
 
+export class AccountSetLang extends jspb.Message {
+  hasLangcode(): boolean;
+  clearLangcode(): void;
+  getLangcode(): string | undefined;
+  setLangcode(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountSetLang.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountSetLang): AccountSetLang.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountSetLang, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountSetLang;
+  static deserializeBinaryFromReader(message: AccountSetLang, reader: jspb.BinaryReader): AccountSetLang;
+}
+
+export namespace AccountSetLang {
+  export type AsObject = {
+    langcode?: string,
+  }
+}
+
+export class AccountGetPassword extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountGetPassword.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountGetPassword): AccountGetPassword.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountGetPassword, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountGetPassword;
+  static deserializeBinaryFromReader(message: AccountGetPassword, reader: jspb.BinaryReader): AccountGetPassword;
+}
+
+export namespace AccountGetPassword {
+  export type AsObject = {
+  }
+}
+
+export class AccountGetPasswordSettings extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountGetPasswordSettings.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountGetPasswordSettings): AccountGetPasswordSettings.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountGetPasswordSettings, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountGetPasswordSettings;
+  static deserializeBinaryFromReader(message: AccountGetPasswordSettings, reader: jspb.BinaryReader): AccountGetPasswordSettings;
+}
+
+export namespace AccountGetPasswordSettings {
+  export type AsObject = {
+  }
+}
+
+export class AccountUpdatePasswordSettings extends jspb.Message {
+  hasPassword(): boolean;
+  clearPassword(): void;
+  getPassword(): chat_core_types_pb.InputPassword | undefined;
+  setPassword(value?: chat_core_types_pb.InputPassword): void;
+
+  hasPasswordhash(): boolean;
+  clearPasswordhash(): void;
+  getPasswordhash(): Uint8Array | string;
+  getPasswordhash_asU8(): Uint8Array;
+  getPasswordhash_asB64(): string;
+  setPasswordhash(value: Uint8Array | string): void;
+
+  hasAlgorithm(): boolean;
+  clearAlgorithm(): void;
+  getAlgorithm(): number | undefined;
+  setAlgorithm(value: number): void;
+
+  hasAlgorithmdata(): boolean;
+  clearAlgorithmdata(): void;
+  getAlgorithmdata(): Uint8Array | string;
+  getAlgorithmdata_asU8(): Uint8Array;
+  getAlgorithmdata_asB64(): string;
+  setAlgorithmdata(value: Uint8Array | string): void;
+
+  hasEmail(): boolean;
+  clearEmail(): void;
+  getEmail(): Uint8Array | string;
+  getEmail_asU8(): Uint8Array;
+  getEmail_asB64(): string;
+  setEmail(value: Uint8Array | string): void;
+
+  hasHint(): boolean;
+  clearHint(): void;
+  getHint(): Uint8Array | string;
+  getHint_asU8(): Uint8Array;
+  getHint_asB64(): string;
+  setHint(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountUpdatePasswordSettings.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountUpdatePasswordSettings): AccountUpdatePasswordSettings.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountUpdatePasswordSettings, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountUpdatePasswordSettings;
+  static deserializeBinaryFromReader(message: AccountUpdatePasswordSettings, reader: jspb.BinaryReader): AccountUpdatePasswordSettings;
+}
+
+export namespace AccountUpdatePasswordSettings {
+  export type AsObject = {
+    password?: chat_core_types_pb.InputPassword.AsObject,
+    passwordhash: Uint8Array | string,
+    algorithm?: number,
+    algorithmdata: Uint8Array | string,
+    email: Uint8Array | string,
+    hint: Uint8Array | string,
+  }
+}
+
+export class AccountPasswordSettings extends jspb.Message {
+  hasEmail(): boolean;
+  clearEmail(): void;
+  getEmail(): Uint8Array | string;
+  getEmail_asU8(): Uint8Array;
+  getEmail_asB64(): string;
+  setEmail(value: Uint8Array | string): void;
+
+  hasHint(): boolean;
+  clearHint(): void;
+  getHint(): Uint8Array | string;
+  getHint_asU8(): Uint8Array;
+  getHint_asB64(): string;
+  setHint(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountPasswordSettings.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountPasswordSettings): AccountPasswordSettings.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountPasswordSettings, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountPasswordSettings;
+  static deserializeBinaryFromReader(message: AccountPasswordSettings, reader: jspb.BinaryReader): AccountPasswordSettings;
+}
+
+export namespace AccountPasswordSettings {
+  export type AsObject = {
+    email: Uint8Array | string,
+    hint: Uint8Array | string,
+  }
+}
+
+export class AccountPassword extends jspb.Message {
+  hasHaspassword(): boolean;
+  clearHaspassword(): void;
+  getHaspassword(): boolean | undefined;
+  setHaspassword(value: boolean): void;
+
+  hasHint(): boolean;
+  clearHint(): void;
+  getHint(): Uint8Array | string;
+  getHint_asU8(): Uint8Array;
+  getHint_asB64(): string;
+  setHint(value: Uint8Array | string): void;
+
+  hasAlgorithm(): boolean;
+  clearAlgorithm(): void;
+  getAlgorithm(): number | undefined;
+  setAlgorithm(value: number): void;
+
+  hasAlgorithmdata(): boolean;
+  clearAlgorithmdata(): void;
+  getAlgorithmdata(): Uint8Array | string;
+  getAlgorithmdata_asU8(): Uint8Array;
+  getAlgorithmdata_asB64(): string;
+  setAlgorithmdata(value: Uint8Array | string): void;
+
+  hasSrpb(): boolean;
+  clearSrpb(): void;
+  getSrpb(): Uint8Array | string;
+  getSrpb_asU8(): Uint8Array;
+  getSrpb_asB64(): string;
+  setSrpb(value: Uint8Array | string): void;
+
+  hasRandomdata(): boolean;
+  clearRandomdata(): void;
+  getRandomdata(): Uint8Array | string;
+  getRandomdata_asU8(): Uint8Array;
+  getRandomdata_asB64(): string;
+  setRandomdata(value: Uint8Array | string): void;
+
+  hasSrpid(): boolean;
+  clearSrpid(): void;
+  getSrpid(): number | undefined;
+  setSrpid(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountPassword.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountPassword): AccountPassword.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountPassword, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountPassword;
+  static deserializeBinaryFromReader(message: AccountPassword, reader: jspb.BinaryReader): AccountPassword;
+}
+
+export namespace AccountPassword {
+  export type AsObject = {
+    haspassword?: boolean,
+    hint: Uint8Array | string,
+    algorithm?: number,
+    algorithmdata: Uint8Array | string,
+    srpb: Uint8Array | string,
+    randomdata: Uint8Array | string,
+    srpid?: number,
+  }
+}
+
 export class AccountAuthorizations extends jspb.Message {
   clearAuthorizationsList(): void;
   getAuthorizationsList(): Array<AccountAuthorization>;
@@ -570,28 +810,6 @@ export class AccountPrivacyRules extends jspb.Message {
 export namespace AccountPrivacyRules {
   export type AsObject = {
     rulesList: Array<chat_core_types_pb.PrivacyRule.AsObject>,
-  }
-}
-
-export class AccountSetLang extends jspb.Message {
-  hasLangcode(): boolean;
-  clearLangcode(): void;
-  getLangcode(): string | undefined;
-  setLangcode(value: string): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): AccountSetLang.AsObject;
-  static toObject(includeInstance: boolean, msg: AccountSetLang): AccountSetLang.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: AccountSetLang, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): AccountSetLang;
-  static deserializeBinaryFromReader(message: AccountSetLang, reader: jspb.BinaryReader): AccountSetLang;
-}
-
-export namespace AccountSetLang {
-  export type AsObject = {
-    langcode?: string,
   }
 }
 

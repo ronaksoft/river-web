@@ -121,6 +121,13 @@ message InputUser {
     required fixed64 AccessHash = 2 [jstype = JS_STRING];
 }
 
+// InputPassword
+message InputPassword {
+    required int64 SrpID = 1;
+    required bytes A = 2;
+    required bytes M1 = 3;
+}
+
 // UserStatus
 enum UserStatus {
     UserStatusOffline = 0;
@@ -167,6 +174,8 @@ message User {
     optional int64 LastSeen = 11;
     repeated UserPhoto PhotoGallery = 12;
     optional bool IsBot = 13;
+    optional bool Deleted = 14;
+    optional bool Blocked = 15;
 }
 
 // Bot

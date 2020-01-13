@@ -11,7 +11,13 @@ import * as React from 'react';
 import {IUser} from '../../repository/user/interface';
 import {CloseRounded, CheckRounded, EditRounded, AddRounded, KeyboardBackspaceRounded} from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
-import {InputPeer, PeerNotifySettings, PeerType, PhoneContact} from '../../services/sdk/messages/chat.core.types_pb';
+import {
+    InputPeer,
+    InputUser,
+    PeerNotifySettings,
+    PeerType,
+    PhoneContact
+} from '../../services/sdk/messages/chat.core.types_pb';
 import SDK from '../../services/sdk';
 import UserAvatar from '../UserAvatar';
 import TextField from '@material-ui/core/TextField/TextField';
@@ -362,31 +368,55 @@ class UserInfoMenu extends React.Component<IProps, IState> {
         if (!user) {
             return;
         }
-        const contacts: PhoneContact.AsObject[] = [];
-        contacts.push({
-            clientid: isInContact ? user.clientid : String(UniqueId.getRandomId()),
-            firstname,
-            lastname,
-            phone: isInContact ? user.phone : phone,
-        });
-        this.sdk.contactImport(true, contacts).then((data) => {
-            data.usersList.forEach((item) => {
-                this.userRepo.importBulk(true, [item]);
+        if ((user.username || '') !== '' && phone === '') {
+            const inputUser = new InputUser();
+            inputUser.setAccesshash(user.accesshash || '');
+            inputUser.setUserid(user.id || '');
+            this.sdk.contactAdd(inputUser, firstname, lastname, phone).then(() => {
+                this.userRepo.importBulk(true, [user]);
+                user.lastname = lastname;
+                user.firstname = firstname;
+                this.setState({
+                    edit: false,
+                    isInContact: true,
+                    user,
+                });
+            }).catch((err) => {
+                this.setState({
+                    edit: false,
+                    firstname: user.firstname || '',
+                    lastname: user.lastname || '',
+                });
             });
-            user.lastname = lastname;
-            user.firstname = firstname;
-            this.setState({
-                edit: false,
-                isInContact: true,
-                user,
+        } else {
+            const contacts: PhoneContact.AsObject[] = [];
+            contacts.push({
+                clientid: isInContact ? user.clientid : String(UniqueId.getRandomId()),
+                firstname,
+                lastname,
+                phone: isInContact ? user.phone : phone,
             });
-        }).catch((err) => {
-            this.setState({
-                edit: false,
-                firstname: user.firstname || '',
-                lastname: user.lastname || '',
+            this.sdk.contactImport(true, contacts).then((data) => {
+                const items: any[] = [];
+                data.usersList.forEach((item) => {
+                    items.push(item);
+                });
+                this.userRepo.importBulk(true, items);
+                user.lastname = lastname;
+                user.firstname = firstname;
+                this.setState({
+                    edit: false,
+                    isInContact: true,
+                    user,
+                });
+            }).catch((err) => {
+                this.setState({
+                    edit: false,
+                    firstname: user.firstname || '',
+                    lastname: user.lastname || '',
+                });
             });
-        });
+        }
     }
 
     private addAsContactHandler = () => {

@@ -117,6 +117,7 @@ message UpdateUserPhoto {
     required int64 UserID = 1 [jstype = JS_STRING];
     optional UserPhoto Photo = 2;
     optional int64 PhotoID = 3 [jstype = JS_STRING];
+    repeated int64 DeletedPhotoIDs = 4 [jstype = JS_STRING];
 }
 
 // UpdateNotifySettings
@@ -259,4 +260,12 @@ message UpdateLabelDeleted {
     required int32 UCount = 100;
     required int64 UpdateID = 101;
     repeated int32 LabelIDs = 1;
+}
+
+// UpdateUserBlocked
+message UpdateUserBlocked {
+    required int32 UCount = 100;
+    required int64 UpdateID = 101;
+    required int64 UserID = 1;
+    required bool Blocked = 2;
 }

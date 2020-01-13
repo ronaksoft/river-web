@@ -1,3 +1,7 @@
+## 0.29.11
+* Search by username implemented
+* Add contact by username implemented
+
 ## 0.29.10
 * Bug fixes and performance improvements
 

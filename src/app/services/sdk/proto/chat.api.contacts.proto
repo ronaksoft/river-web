@@ -10,6 +10,16 @@ message ContactsImport {
     required bool Replace = 2;
 }
 
+// ContactsAdd
+// @Function
+// @Return: Bool
+message ContactsAdd {
+    required InputUser User = 1;
+    required bytes FirstName = 2;
+    optional bytes LastName = 3;
+    optional bytes Phone = 4;
+}
+
 // ContactsGet
 // @Function
 // @Return: ContactsMany
@@ -23,6 +33,47 @@ message ContactsGet {
 // @Return: Bool
 message ContactsDelete {
     repeated int64 UserIDs = 1 [jstype = JS_STRING];
+}
+
+// ContactsBlock
+// @Function
+// @Return: Bool
+message ContactsBlock {
+    required InputUser User = 1;
+}
+
+// ContactsUnblock
+// @Function
+// @Return: Bool
+message ContactsUnblock {
+    required InputUser User = 2;
+}
+
+// ContactsGetBlocked
+// @Function
+// @Returns: BlockedContacts
+message ContactsGetBlocked {
+    required int32 Offset = 1;
+    required int32 Limit = 2;
+}
+
+// ContactsSearch
+// @Function
+// @Returns: UsersMany
+message ContactsSearch {
+    required bytes Q = 1;
+}
+
+// BlockedContactsMany
+message BlockedContactsMany {
+    repeated BlockedContact Contacts = 1;
+    repeated User Users = 2;
+}
+
+// BlockedContact
+message BlockedContact {
+    required int64 UserID = 1;
+    required int64 Date = 2;
 }
 
 // ContactsImported

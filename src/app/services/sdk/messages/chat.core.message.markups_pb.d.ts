@@ -74,6 +74,11 @@ export namespace ReplyKeyboardMarkup {
 }
 
 export class ReplyInlineMarkup extends jspb.Message {
+  clearRowsList(): void;
+  getRowsList(): Array<KeyboardButtonRow>;
+  setRowsList(value: Array<KeyboardButtonRow>): void;
+  addRows(value?: KeyboardButtonRow, index?: number): KeyboardButtonRow;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ReplyInlineMarkup.AsObject;
   static toObject(includeInstance: boolean, msg: ReplyInlineMarkup): ReplyInlineMarkup.AsObject;
@@ -86,6 +91,7 @@ export class ReplyInlineMarkup extends jspb.Message {
 
 export namespace ReplyInlineMarkup {
   export type AsObject = {
+    rowsList: Array<KeyboardButtonRow.AsObject>,
   }
 }
 

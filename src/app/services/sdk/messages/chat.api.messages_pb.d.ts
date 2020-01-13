@@ -68,6 +68,11 @@ export class MessagesBroadcast extends jspb.Message {
   setReceiveridsList(value: Array<number>): void;
   addReceiverids(value: number, index?: number): number;
 
+  clearEntitiesList(): void;
+  getEntitiesList(): Array<chat_core_types_pb.MessageEntity>;
+  setEntitiesList(value: Array<chat_core_types_pb.MessageEntity>): void;
+  addEntities(value?: chat_core_types_pb.MessageEntity, index?: number): chat_core_types_pb.MessageEntity;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessagesBroadcast.AsObject;
   static toObject(includeInstance: boolean, msg: MessagesBroadcast): MessagesBroadcast.AsObject;
@@ -82,6 +87,7 @@ export namespace MessagesBroadcast {
   export type AsObject = {
     body?: string,
     receiveridsList: Array<number>,
+    entitiesList: Array<chat_core_types_pb.MessageEntity.AsObject>,
   }
 }
 

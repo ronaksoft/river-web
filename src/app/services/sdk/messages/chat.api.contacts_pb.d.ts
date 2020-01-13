@@ -33,6 +33,52 @@ export namespace ContactsImport {
   }
 }
 
+export class ContactsAdd extends jspb.Message {
+  hasUser(): boolean;
+  clearUser(): void;
+  getUser(): chat_core_types_pb.InputUser;
+  setUser(value?: chat_core_types_pb.InputUser): void;
+
+  hasFirstname(): boolean;
+  clearFirstname(): void;
+  getFirstname(): Uint8Array | string;
+  getFirstname_asU8(): Uint8Array;
+  getFirstname_asB64(): string;
+  setFirstname(value: Uint8Array | string): void;
+
+  hasLastname(): boolean;
+  clearLastname(): void;
+  getLastname(): Uint8Array | string;
+  getLastname_asU8(): Uint8Array;
+  getLastname_asB64(): string;
+  setLastname(value: Uint8Array | string): void;
+
+  hasPhone(): boolean;
+  clearPhone(): void;
+  getPhone(): Uint8Array | string;
+  getPhone_asU8(): Uint8Array;
+  getPhone_asB64(): string;
+  setPhone(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ContactsAdd.AsObject;
+  static toObject(includeInstance: boolean, msg: ContactsAdd): ContactsAdd.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ContactsAdd, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ContactsAdd;
+  static deserializeBinaryFromReader(message: ContactsAdd, reader: jspb.BinaryReader): ContactsAdd;
+}
+
+export namespace ContactsAdd {
+  export type AsObject = {
+    user: chat_core_types_pb.InputUser.AsObject,
+    firstname: Uint8Array | string,
+    lastname: Uint8Array | string,
+    phone: Uint8Array | string,
+  }
+}
+
 export class ContactsGet extends jspb.Message {
   hasCrc32hash(): boolean;
   clearCrc32hash(): void;
@@ -74,6 +120,158 @@ export class ContactsDelete extends jspb.Message {
 export namespace ContactsDelete {
   export type AsObject = {
     useridsList: Array<string>,
+  }
+}
+
+export class ContactsBlock extends jspb.Message {
+  hasUser(): boolean;
+  clearUser(): void;
+  getUser(): chat_core_types_pb.InputUser;
+  setUser(value?: chat_core_types_pb.InputUser): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ContactsBlock.AsObject;
+  static toObject(includeInstance: boolean, msg: ContactsBlock): ContactsBlock.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ContactsBlock, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ContactsBlock;
+  static deserializeBinaryFromReader(message: ContactsBlock, reader: jspb.BinaryReader): ContactsBlock;
+}
+
+export namespace ContactsBlock {
+  export type AsObject = {
+    user: chat_core_types_pb.InputUser.AsObject,
+  }
+}
+
+export class ContactsUnblock extends jspb.Message {
+  hasUser(): boolean;
+  clearUser(): void;
+  getUser(): chat_core_types_pb.InputUser;
+  setUser(value?: chat_core_types_pb.InputUser): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ContactsUnblock.AsObject;
+  static toObject(includeInstance: boolean, msg: ContactsUnblock): ContactsUnblock.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ContactsUnblock, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ContactsUnblock;
+  static deserializeBinaryFromReader(message: ContactsUnblock, reader: jspb.BinaryReader): ContactsUnblock;
+}
+
+export namespace ContactsUnblock {
+  export type AsObject = {
+    user: chat_core_types_pb.InputUser.AsObject,
+  }
+}
+
+export class ContactsGetBlocked extends jspb.Message {
+  hasOffset(): boolean;
+  clearOffset(): void;
+  getOffset(): number | undefined;
+  setOffset(value: number): void;
+
+  hasLimit(): boolean;
+  clearLimit(): void;
+  getLimit(): number | undefined;
+  setLimit(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ContactsGetBlocked.AsObject;
+  static toObject(includeInstance: boolean, msg: ContactsGetBlocked): ContactsGetBlocked.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ContactsGetBlocked, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ContactsGetBlocked;
+  static deserializeBinaryFromReader(message: ContactsGetBlocked, reader: jspb.BinaryReader): ContactsGetBlocked;
+}
+
+export namespace ContactsGetBlocked {
+  export type AsObject = {
+    offset?: number,
+    limit?: number,
+  }
+}
+
+export class ContactsSearch extends jspb.Message {
+  hasQ(): boolean;
+  clearQ(): void;
+  getQ(): Uint8Array | string;
+  getQ_asU8(): Uint8Array;
+  getQ_asB64(): string;
+  setQ(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ContactsSearch.AsObject;
+  static toObject(includeInstance: boolean, msg: ContactsSearch): ContactsSearch.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ContactsSearch, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ContactsSearch;
+  static deserializeBinaryFromReader(message: ContactsSearch, reader: jspb.BinaryReader): ContactsSearch;
+}
+
+export namespace ContactsSearch {
+  export type AsObject = {
+    q: Uint8Array | string,
+  }
+}
+
+export class BlockedContactsMany extends jspb.Message {
+  clearContactsList(): void;
+  getContactsList(): Array<BlockedContact>;
+  setContactsList(value: Array<BlockedContact>): void;
+  addContacts(value?: BlockedContact, index?: number): BlockedContact;
+
+  clearUsersList(): void;
+  getUsersList(): Array<chat_core_types_pb.User>;
+  setUsersList(value: Array<chat_core_types_pb.User>): void;
+  addUsers(value?: chat_core_types_pb.User, index?: number): chat_core_types_pb.User;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BlockedContactsMany.AsObject;
+  static toObject(includeInstance: boolean, msg: BlockedContactsMany): BlockedContactsMany.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BlockedContactsMany, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BlockedContactsMany;
+  static deserializeBinaryFromReader(message: BlockedContactsMany, reader: jspb.BinaryReader): BlockedContactsMany;
+}
+
+export namespace BlockedContactsMany {
+  export type AsObject = {
+    contactsList: Array<BlockedContact.AsObject>,
+    usersList: Array<chat_core_types_pb.User.AsObject>,
+  }
+}
+
+export class BlockedContact extends jspb.Message {
+  hasUserid(): boolean;
+  clearUserid(): void;
+  getUserid(): number | undefined;
+  setUserid(value: number): void;
+
+  hasDate(): boolean;
+  clearDate(): void;
+  getDate(): number | undefined;
+  setDate(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BlockedContact.AsObject;
+  static toObject(includeInstance: boolean, msg: BlockedContact): BlockedContact.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BlockedContact, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BlockedContact;
+  static deserializeBinaryFromReader(message: BlockedContact, reader: jspb.BinaryReader): BlockedContact;
+}
+
+export namespace BlockedContact {
+  export type AsObject = {
+    userid?: number,
+    date?: number,
   }
 }
 

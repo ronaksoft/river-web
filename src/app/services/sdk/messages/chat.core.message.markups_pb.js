@@ -82,7 +82,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.msg.ReplyInlineMarkup = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.msg.ReplyInlineMarkup.repeatedFields_, null);
 };
 goog.inherits(proto.msg.ReplyInlineMarkup, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -824,6 +824,13 @@ proto.msg.ReplyKeyboardMarkup.prototype.clearRowsList = function() {
 
 
 
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.msg.ReplyInlineMarkup.repeatedFields_ = [1];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -855,7 +862,8 @@ proto.msg.ReplyInlineMarkup.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.ReplyInlineMarkup.toObject = function(includeInstance, msg) {
   var f, obj = {
-
+    rowsList: jspb.Message.toObjectList(msg.getRowsList(),
+    proto.msg.KeyboardButtonRow.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -892,6 +900,11 @@ proto.msg.ReplyInlineMarkup.deserializeBinaryFromReader = function(msg, reader) 
     }
     var field = reader.getFieldNumber();
     switch (field) {
+    case 1:
+      var value = new proto.msg.KeyboardButtonRow;
+      reader.readMessage(value,proto.msg.KeyboardButtonRow.deserializeBinaryFromReader);
+      msg.addRows(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -921,6 +934,52 @@ proto.msg.ReplyInlineMarkup.prototype.serializeBinary = function() {
  */
 proto.msg.ReplyInlineMarkup.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = message.getRowsList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      1,
+      f,
+      proto.msg.KeyboardButtonRow.serializeBinaryToWriter
+    );
+  }
+};
+
+
+/**
+ * repeated KeyboardButtonRow Rows = 1;
+ * @return {!Array<!proto.msg.KeyboardButtonRow>}
+ */
+proto.msg.ReplyInlineMarkup.prototype.getRowsList = function() {
+  return /** @type{!Array<!proto.msg.KeyboardButtonRow>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.msg.KeyboardButtonRow, 1));
+};
+
+
+/**
+ * @param {!Array<!proto.msg.KeyboardButtonRow>} value
+ * @return {!proto.msg.ReplyInlineMarkup} returns this
+*/
+proto.msg.ReplyInlineMarkup.prototype.setRowsList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 1, value);
+};
+
+
+/**
+ * @param {!proto.msg.KeyboardButtonRow=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.msg.KeyboardButtonRow}
+ */
+proto.msg.ReplyInlineMarkup.prototype.addRows = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.msg.KeyboardButtonRow, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.msg.ReplyInlineMarkup} returns this
+ */
+proto.msg.ReplyInlineMarkup.prototype.clearRowsList = function() {
+  return this.setRowsList([]);
 };
 
 

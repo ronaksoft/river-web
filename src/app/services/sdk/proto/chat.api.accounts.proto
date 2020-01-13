@@ -83,6 +83,13 @@ message AccountRemovePhoto {
     optional int64 PhotoID = 1 [jstype = JS_STRING];
 }
 
+// AccountSendChangePhoneCode
+// @Function
+// @Return: User
+message AccountSendChangePhoneCode {
+    required string Phone = 1;
+}
+
 // AccountChangePhone
 // @Function
 // @Return: User
@@ -90,6 +97,7 @@ message AccountChangePhone {
     required string Phone = 1;
     required string PhoneCodeHash = 2;
     required string PhoneCode = 3;
+    optional InputPassword Password = 4;
 }
 
 // AccountSetPrivacy
@@ -131,6 +139,58 @@ message AccountUpdateStatus {
     required bool Online = 1;
 }
 
+// AccountSetLang
+// @Function
+// @Returns: Bool
+message AccountSetLang {
+    required string LangCode = 1;
+}
+
+// AccountGetPassword
+// @Function
+// @Returns: AccountPassword
+// Obtain configuration for two-factor authorization with password
+message AccountGetPassword {
+}
+
+// AccountGetPasswordSettings
+// @Function
+// @Returns: AccountPasswordSettings
+// Get private info associated to the password info (recovery email & so on)
+message AccountGetPasswordSettings {
+}
+
+// AccountUpdatePassword
+// @Function
+// @Returns: Bool
+message AccountUpdatePasswordSettings {
+    optional InputPassword Password = 1;
+    optional bytes PasswordHash = 2;
+    required int64 Algorithm = 3;
+    required bytes AlgorithmData = 4;
+    optional bytes Email = 5;
+    optional bytes Hint = 6;
+}
+
+// AccountPasswordSettings
+// Private info associated to the password info (recovery email and so on)
+message AccountPasswordSettings {
+    required bytes Email = 1;
+    required bytes Hint = 2;
+}
+
+// AccountPassword
+// Configuration for two-factor authorization
+message AccountPassword {
+    required bool HasPassword = 1;
+    optional bytes Hint = 2;
+    required int64 Algorithm = 3;
+    required bytes AlgorithmData = 4;
+    optional bytes SrpB = 5;
+    optional bytes RandomData = 6;
+    optional int64 SrpID = 7;
+}
+
 // AccountAuthorizations
 message AccountAuthorizations {
     repeated AccountAuthorization Authorizations = 1;
@@ -154,9 +214,3 @@ message AccountPrivacyRules {
     repeated PrivacyRule Rules = 1;
 }
 
-// AccountSetLang
-// @Function
-// @Returns: Bool
-message AccountSetLang {
-    required string LangCode = 1;
-}

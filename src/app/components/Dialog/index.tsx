@@ -10,7 +10,7 @@
 import * as React from 'react';
 import AutoSizer from "react-virtualized-auto-sizer";
 import {Link} from 'react-router-dom';
-import {debounce, intersectionBy, clone, differenceBy, findIndex} from 'lodash';
+import {debounce, intersectionBy, clone, differenceBy, findIndex, uniq, uniqBy} from 'lodash';
 import {IDialog} from '../../repository/dialog/interface';
 import DialogMessage from '../DialogMessage';
 import {LabelOutlined, LabelRounded, MessageRounded, ClearRounded} from '@material-ui/icons';
@@ -373,7 +373,8 @@ class Dialog extends React.PureComponent<IProps, IState> {
                     {searchAddedItems.map((dialog, index) => {
                         return (
                             <DialogMessage key={dialog.peerid || index} dialog={dialog}
-                                           isTyping={{}} selectedId={this.state.selectedId}/>
+                                           isTyping={{}} selectedId={this.state.selectedId}
+                                           onClick={this.closeSearchHandler}/>
                         );
                     })}
                 </>}
@@ -646,11 +647,30 @@ class Dialog extends React.PureComponent<IProps, IState> {
         this.keyword = keyword;
         const {appliedSelectedLabelIds} = this.state;
         if (appliedSelectedLabelIds.length === 0) {
+            let ids: string[] = [];
+            let contacts: IUser[] = [];
+            // Search local db
             this.searchRepo.search({keyword, limit: 100}).then((res) => {
+                ids.push(...res.dialogs.map(o => (o.peerid || '')));
+                ids = uniq(ids);
+                contacts.push(...res.contacts);
+                contacts = uniqBy(contacts, 'id');
                 this.setState({
-                    ids: res.dialogs.map(o => (o.peerid || '')),
+                    ids,
                 }, () => {
-                    this.filterItem(res.contacts);
+                    this.filterItem(contacts);
+                });
+            });
+            // Search remote server
+            this.searchRepo.searchUsername(keyword).then((res) => {
+                ids.push(...res.map((o: any) => (o.id || '')));
+                ids = uniq(ids);
+                contacts.push(...res);
+                contacts = uniqBy(contacts, 'id');
+                this.setState({
+                    ids,
+                }, () => {
+                    this.filterItem(contacts);
                 });
             });
         }

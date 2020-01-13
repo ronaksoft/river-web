@@ -327,7 +327,8 @@ class ContactList extends React.Component<IProps, IState> {
                         <UserAvatar id={contact.id || ''}/>
                     </span>
                         <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>
-                        <span className="phone">{contact.phone ? contact.phone : i18n.t('contact.no_phone')}</span>
+                        <span
+                            className="phone">{contact.phone ? contact.phone : ((contact.username !== '') ? contact.username : i18n.t('contact.no_phone'))}</span>
                         {Boolean(this.props.onContextMenuAction) &&
                         <div className="more" onClick={this.contextMenuOpenHandler(index)}>
                             <MoreVert/>
@@ -345,7 +346,8 @@ class ContactList extends React.Component<IProps, IState> {
                                 <span className="inner">{`${contact.firstname} ${contact.lastname}`}</span>
                                 <LastSeen className="last-seen" id={contact.id || ''}/>
                             </span>
-                            <span className="phone">{contact.phone ? contact.phone : i18n.t('contact.no_phone')}</span>
+                            <span
+                                className="phone">{contact.phone ? contact.phone : ((contact.username !== '') ? contact.username : i18n.t('contact.no_phone'))}</span>
                             {Boolean(this.props.onContextMenuAction) &&
                             <div className="more" onClick={this.contextMenuOpenHandler(index)}>
                                 <MoreVert/>

@@ -1,0 +1,70 @@
+syntax = "proto2";
+package msg;
+import "chat.core.types.proto";
+
+// PhoneAcceptCall
+// @Function
+// @Return: PhoneCall
+message PhoneAcceptCall {
+    required InputUser Peer = 1;
+    required bytes AnswerSDP = 2;
+}
+
+// PhoneRequestCall
+// @Function
+// @Return: PhoneCall
+message PhoneRequestCall {
+    required InputUser Peer = 1;
+    required bytes OfferSDP = 2;
+    required bool Video = 3;
+    required int64 RandomID = 4;
+}
+
+enum DiscardReason {
+    DiscardReasonUnknown = 0;
+    DiscardReasonMissed = 1;
+    DiscardReasonBusy = 2;
+    DiscardReasonHangup = 3;
+    DiscardReasonDisconnect = 4;
+}
+
+// PhoneDiscardCall
+// @Function
+message PhoneDiscardCall {
+    required InputUser Peer = 1;
+    required int32 Duration = 2;
+    required bool Video = 3;
+    required DiscardReason Reason = 4;
+}
+
+// PhoneReceivedCall
+// @Function
+message PhoneReceivedCall {
+    required InputUser Peer = 1;
+}
+
+// PhoneSetCallRating
+// @Function
+message PhoneSetCallRating {
+    required InputUser Peer = 1;
+    required bool Initiator = 2;
+    required int32 Rate = 3;
+    optional string Comment = 4;
+}
+
+enum PhoneCallAction {
+    PhoneCallEmpty = 0;
+    PhoneCallAccepted = 1;
+    PhoneCallRequested = 2;
+    PhoneCallCallWaiting = 3;
+    PhoneCallDiscarded = 4;
+}
+
+// PhoneCall
+message PhoneCall {
+    required int64 UserID = 1;
+    required int64 AccessHash = 2;
+    required bool Video = 3;
+    required int64 Date = 4;
+    repeated string StunServers = 5;
+}

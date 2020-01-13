@@ -19,6 +19,7 @@ message MessagesSend {
 message MessagesBroadcast {
     required string Body = 1;
     repeated int64 ReceiverIDs = 2;
+    repeated MessageEntity Entities = 3;
 }
 
 enum InputMediaType {

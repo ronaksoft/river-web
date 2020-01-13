@@ -16,10 +16,11 @@ import Dexie from 'dexie';
 import {Int64BE} from 'int64-buffer';
 // @ts-ignore
 import CRC from 'js-crc/build/crc.min';
-import {InputUser, UserStatus} from '../../services/sdk/messages/chat.core.types_pb';
+import {InputUser, User, UserStatus} from '../../services/sdk/messages/chat.core.types_pb';
 import RiverTime from '../../services/utilities/river_time';
 import Broadcaster from '../../services/broadcaster';
 import {kMerge} from "../../services/utilities/kDash";
+import {C_ERR, C_ERR_ITEM} from "../../services/sdk/const";
 
 export const getContactsCrc = (users: IUser[]) => {
     const ids = users.map((user) => {
@@ -251,6 +252,19 @@ export default class UserRepo {
                 user.is_contact = 0;
                 this.dbService.setUser(user);
                 this.createMany([user]);
+            }
+        });
+    }
+
+    public contactSearch(query: string) {
+        return this.sdk.contactSearch(query).then((res) => {
+            this.importBulk(false, res.usersList);
+            return res.usersList;
+        }).catch((err) => {
+            if (err.code === C_ERR.ErrCodeUnavailable && err.items === C_ERR_ITEM.ErrItemUsername) {
+                return [] as User.AsObject[];
+            } else {
+                return err;
             }
         });
     }

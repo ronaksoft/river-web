@@ -537,6 +537,11 @@ export class UpdateUserPhoto extends jspb.Message {
   getPhotoid(): string | undefined;
   setPhotoid(value: string): void;
 
+  clearDeletedphotoidsList(): void;
+  getDeletedphotoidsList(): Array<string>;
+  setDeletedphotoidsList(value: Array<string>): void;
+  addDeletedphotoids(value: string, index?: number): string;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateUserPhoto.AsObject;
   static toObject(includeInstance: boolean, msg: UpdateUserPhoto): UpdateUserPhoto.AsObject;
@@ -554,6 +559,7 @@ export namespace UpdateUserPhoto {
     userid?: string,
     photo?: chat_core_types_pb.UserPhoto.AsObject,
     photoid?: string,
+    deletedphotoidsList: Array<string>,
   }
 }
 
@@ -1270,6 +1276,46 @@ export namespace UpdateLabelDeleted {
     ucount?: number,
     updateid?: number,
     labelidsList: Array<number>,
+  }
+}
+
+export class UpdateUserBlocked extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  hasUserid(): boolean;
+  clearUserid(): void;
+  getUserid(): number | undefined;
+  setUserid(value: number): void;
+
+  hasBlocked(): boolean;
+  clearBlocked(): void;
+  getBlocked(): boolean | undefined;
+  setBlocked(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateUserBlocked.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateUserBlocked): UpdateUserBlocked.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateUserBlocked, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateUserBlocked;
+  static deserializeBinaryFromReader(message: UpdateUserBlocked, reader: jspb.BinaryReader): UpdateUserBlocked;
+}
+
+export namespace UpdateUserBlocked {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+    userid?: number,
+    blocked?: boolean,
   }
 }
 

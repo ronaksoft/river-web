@@ -23,11 +23,12 @@ import Server from './server';
 import {C_ERR, C_ERR_ITEM, C_MSG} from './const';
 import {IConnInfo} from './interface';
 import {
+    ContactsAdd,
     ContactsDelete,
     ContactsGet,
     ContactsImport,
     ContactsImported,
-    ContactsMany
+    ContactsMany, ContactsSearch
 } from './messages/chat.api.contacts_pb';
 import {
     Bool, Dialog,
@@ -715,6 +716,25 @@ export default class SDK {
         data.setMinid(min);
         data.setMaxid(max);
         return this.server.send(C_MSG.LabelsListItems, data.serializeBinary(), true);
+    }
+
+    public contactSearch(query: string): Promise<UsersMany.AsObject> {
+        const data = new ContactsSearch();
+        // @ts-ignore
+        const encoder = new TextEncoder("utf-8");
+        data.setQ(encoder.encode(query));
+        return this.server.send(C_MSG.ContactsSearch, data.serializeBinary(), true);
+    }
+
+    public contactAdd(inputUser: InputUser, firstName: string, lastName: string, phone: string): Promise<any> {
+        const data = new ContactsAdd();
+        // @ts-ignore
+        const encoder = new TextEncoder("utf-8");
+        data.setFirstname(encoder.encode(firstName));
+        data.setLastname(encoder.encode(lastName));
+        data.setPhone(encoder.encode(phone));
+        data.setUser(inputUser);
+        return this.server.send(C_MSG.ContactsAdd, data.serializeBinary(), true);
     }
 
     public getServerSalts(): Promise<SystemSalts.AsObject> {
