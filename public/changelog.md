@@ -1,3 +1,6 @@
+## 0.29.12
+* Start bot implemented
+
 ## 0.29.11
 * Search by username implemented
 * Add contact by username implemented

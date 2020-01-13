@@ -94,6 +94,7 @@ import {
     LabelsEdit,
     LabelsGet, LabelsListItems, LabelsRemoveFromMessage
 } from "./messages/chat.api.labels_pb";
+import {StartBot} from "./messages/bot.api_pb";
 
 export default class SDK {
     public static getInstance() {
@@ -735,6 +736,14 @@ export default class SDK {
         data.setPhone(encoder.encode(phone));
         data.setUser(inputUser);
         return this.server.send(C_MSG.ContactsAdd, data.serializeBinary(), true);
+    }
+
+    public botStart(inputPeer: InputPeer, randomId: number): Promise<Bool.AsObject> {
+        const data = new StartBot();
+        data.setBot(inputPeer);
+        data.setRandomid(randomId);
+        data.setStartparam("");
+        return this.server.send(C_MSG.StartBot, data.serializeBinary(), true);
     }
 
     public getServerSalts(): Promise<SystemSalts.AsObject> {

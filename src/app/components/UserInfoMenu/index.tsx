@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import {IUser} from '../../repository/user/interface';
-import {CloseRounded, CheckRounded, EditRounded, AddRounded, KeyboardBackspaceRounded} from '@material-ui/icons';
+import {AddRounded, CheckRounded, CloseRounded, EditRounded, KeyboardBackspaceRounded} from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import {
     InputPeer,
@@ -239,6 +239,10 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                             <div className="inner">{user.bio}</div>
                                         </div>
                                     </div>}
+                                    {Boolean(!edit && user && user.isbot && !user.is_bot_started) &&
+                                    <Button color="secondary" variant="outlined"
+                                            fullWidth={true}
+                                            onClick={this.startBotHandler}>{i18n.t('bot.start_bot')}</Button>}
                                     {Boolean(edit && user && ((user.firstname !== firstname || user.lastname !== lastname) || !isInContact)) &&
                                     <div className="actions-bar">
                                         <div className="add-action" onClick={this.confirmChangesHandler}>
@@ -534,6 +538,26 @@ class UserInfoMenu extends React.Component<IProps, IState> {
         this.setState({
             page: '1',
             shareMediaEnabled: false,
+        });
+    }
+
+    /* Start bot handler */
+    private startBotHandler = () => {
+        const {user} = this.state;
+        if (!user) {
+            return;
+        }
+        const randomId = UniqueId.getRandomId();
+        const inputPeer = new InputPeer();
+        inputPeer.setAccesshash(user.accesshash || '');
+        inputPeer.setId(user.id || '');
+        inputPeer.setType(PeerType.PEERUSER);
+        this.sdk.botStart(inputPeer, randomId).then(() => {
+            user.is_bot_started = true;
+            this.userRepo.importBulk(false, [user]);
+            this.setState({
+                user,
+            });
         });
     }
 }

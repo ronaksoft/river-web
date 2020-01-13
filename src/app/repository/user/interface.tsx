@@ -16,6 +16,7 @@ interface IUser extends User.AsObject {
     is_contact?: number;
     phone?: string;
     status_last_modified?: number;
+    is_bot_started?: boolean;
 }
 
 interface IParticipant extends IUser {
