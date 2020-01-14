@@ -22,7 +22,7 @@ import {SystemInfo, SystemSalts, SystemServerTime} from '../messages/chat.api.sy
 import {UsersMany} from '../messages/chat.api.users_pb';
 import {LabelItems} from "../messages/chat.api.labels_pb";
 
-export default class UniqueId {
+export default class Presenter {
     public static getMessage(constructor: number, data: Uint8Array): any {
         switch (constructor) {
             case C_MSG.AuthSentCode:

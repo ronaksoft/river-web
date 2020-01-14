@@ -202,9 +202,12 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
     }
 
     private getAccountPassword() {
-        this.sdk.passwordGet().then((res) => {
+        this.sdk.accountGetPassword().then((res) => {
             this.setState({
-                accountPassword: res,
+                accountPassword: res.toObject(),
+            });
+            this.sdk.genInputPassword("yes2", res).then((test) => {
+                window.console.log(test);
             });
         });
     }

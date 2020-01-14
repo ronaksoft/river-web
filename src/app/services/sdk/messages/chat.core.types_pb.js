@@ -4542,7 +4542,7 @@ proto.msg.InputPassword.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setSrpid(value);
       break;
     case 2:
@@ -4582,9 +4582,9 @@ proto.msg.InputPassword.prototype.serializeBinary = function() {
  */
 proto.msg.InputPassword.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       1,
       f
     );
@@ -4608,15 +4608,15 @@ proto.msg.InputPassword.serializeBinaryToWriter = function(message, writer) {
 
 /**
  * required int64 SrpID = 1;
- * @return {number}
+ * @return {string}
  */
 proto.msg.InputPassword.prototype.getSrpid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.msg.InputPassword} returns this
  */
 proto.msg.InputPassword.prototype.setSrpid = function(value) {

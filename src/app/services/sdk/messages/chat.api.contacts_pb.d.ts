@@ -230,6 +230,11 @@ export class BlockedContactsMany extends jspb.Message {
   setUsersList(value: Array<chat_core_types_pb.User>): void;
   addUsers(value?: chat_core_types_pb.User, index?: number): chat_core_types_pb.User;
 
+  hasTotal(): boolean;
+  clearTotal(): void;
+  getTotal(): number | undefined;
+  setTotal(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): BlockedContactsMany.AsObject;
   static toObject(includeInstance: boolean, msg: BlockedContactsMany): BlockedContactsMany.AsObject;
@@ -244,6 +249,7 @@ export namespace BlockedContactsMany {
   export type AsObject = {
     contactsList: Array<BlockedContact.AsObject>,
     usersList: Array<chat_core_types_pb.User.AsObject>,
+    total?: number,
   }
 }
 

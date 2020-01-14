@@ -297,6 +297,11 @@ export class AccountSendChangePhoneCode extends jspb.Message {
   getPhone(): string | undefined;
   setPhone(value: string): void;
 
+  hasApphash(): boolean;
+  clearApphash(): void;
+  getApphash(): string | undefined;
+  setApphash(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountSendChangePhoneCode.AsObject;
   static toObject(includeInstance: boolean, msg: AccountSendChangePhoneCode): AccountSendChangePhoneCode.AsObject;
@@ -310,6 +315,35 @@ export class AccountSendChangePhoneCode extends jspb.Message {
 export namespace AccountSendChangePhoneCode {
   export type AsObject = {
     phone?: string,
+    apphash?: string,
+  }
+}
+
+export class AccountResendChangePhoneCode extends jspb.Message {
+  hasPhone(): boolean;
+  clearPhone(): void;
+  getPhone(): string | undefined;
+  setPhone(value: string): void;
+
+  hasPhonecodehash(): boolean;
+  clearPhonecodehash(): void;
+  getPhonecodehash(): string | undefined;
+  setPhonecodehash(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountResendChangePhoneCode.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountResendChangePhoneCode): AccountResendChangePhoneCode.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountResendChangePhoneCode, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountResendChangePhoneCode;
+  static deserializeBinaryFromReader(message: AccountResendChangePhoneCode, reader: jspb.BinaryReader): AccountResendChangePhoneCode;
+}
+
+export namespace AccountResendChangePhoneCode {
+  export type AsObject = {
+    phone?: string,
+    phonecodehash?: string,
   }
 }
 
@@ -526,6 +560,11 @@ export namespace AccountGetPassword {
 }
 
 export class AccountGetPasswordSettings extends jspb.Message {
+  hasPassword(): boolean;
+  clearPassword(): void;
+  getPassword(): chat_core_types_pb.InputPassword | undefined;
+  setPassword(value?: chat_core_types_pb.InputPassword): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountGetPasswordSettings.AsObject;
   static toObject(includeInstance: boolean, msg: AccountGetPasswordSettings): AccountGetPasswordSettings.AsObject;
@@ -538,6 +577,7 @@ export class AccountGetPasswordSettings extends jspb.Message {
 
 export namespace AccountGetPasswordSettings {
   export type AsObject = {
+    password?: chat_core_types_pb.InputPassword.AsObject,
   }
 }
 
@@ -566,13 +606,6 @@ export class AccountUpdatePasswordSettings extends jspb.Message {
   getAlgorithmdata_asB64(): string;
   setAlgorithmdata(value: Uint8Array | string): void;
 
-  hasEmail(): boolean;
-  clearEmail(): void;
-  getEmail(): Uint8Array | string;
-  getEmail_asU8(): Uint8Array;
-  getEmail_asB64(): string;
-  setEmail(value: Uint8Array | string): void;
-
   hasHint(): boolean;
   clearHint(): void;
   getHint(): Uint8Array | string;
@@ -596,19 +629,11 @@ export namespace AccountUpdatePasswordSettings {
     passwordhash: Uint8Array | string,
     algorithm?: number,
     algorithmdata: Uint8Array | string,
-    email: Uint8Array | string,
     hint: Uint8Array | string,
   }
 }
 
 export class AccountPasswordSettings extends jspb.Message {
-  hasEmail(): boolean;
-  clearEmail(): void;
-  getEmail(): Uint8Array | string;
-  getEmail_asU8(): Uint8Array;
-  getEmail_asB64(): string;
-  setEmail(value: Uint8Array | string): void;
-
   hasHint(): boolean;
   clearHint(): void;
   getHint(): Uint8Array | string;
@@ -628,7 +653,6 @@ export class AccountPasswordSettings extends jspb.Message {
 
 export namespace AccountPasswordSettings {
   export type AsObject = {
-    email: Uint8Array | string,
     hint: Uint8Array | string,
   }
 }
@@ -674,8 +698,8 @@ export class AccountPassword extends jspb.Message {
 
   hasSrpid(): boolean;
   clearSrpid(): void;
-  getSrpid(): number | undefined;
-  setSrpid(value: number): void;
+  getSrpid(): string | undefined;
+  setSrpid(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountPassword.AsObject;
@@ -695,7 +719,7 @@ export namespace AccountPassword {
     algorithmdata: Uint8Array | string,
     srpb: Uint8Array | string,
     randomdata: Uint8Array | string,
-    srpid?: number,
+    srpid?: string,
   }
 }
 

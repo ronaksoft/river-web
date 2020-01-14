@@ -123,7 +123,7 @@ message InputUser {
 
 // InputPassword
 message InputPassword {
-    required int64 SrpID = 1;
+    required int64 SrpID = 1 [jstype = JS_STRING];
     required bytes A = 2;
     required bytes M1 = 3;
 }

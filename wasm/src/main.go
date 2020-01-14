@@ -139,7 +139,7 @@ func fnDecrypt(this js.Value, inps []js.Value) interface{} {
 
 func fnGenSrpHash(this js.Value, inps []js.Value) interface{} {
 	go func(args []js.Value) {
-		id := args[0].String()
+		id := args[0].Int()
 		pass, err := base64.StdEncoding.DecodeString(args[1].String())
 		algorithm := args[2].Int()
 		algorithmData, err2 := base64.StdEncoding.DecodeString(args[3].String())
@@ -153,9 +153,9 @@ func fnGenSrpHash(this js.Value, inps []js.Value) interface{} {
 
 func fnGenInputPassword(this js.Value, inps []js.Value) interface{} {
 	go func(args []js.Value) {
-		id := args[0].String()
+		id := args[0].Int()
 		pass, err := base64.StdEncoding.DecodeString(args[1].String())
-		accountPass, err2 := base64.StdEncoding.DecodeString(args[3].String())
+		accountPass, err2 := base64.StdEncoding.DecodeString(args[2].String())
 		if err == nil && err2 == nil {
 			res := river.GenInputPassword(pass, accountPass)
 			js.Global().Call("fnGenInputPasswordCallback", id, base64.StdEncoding.EncodeToString(res))

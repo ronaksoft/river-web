@@ -499,8 +499,8 @@ export namespace InputUser {
 export class InputPassword extends jspb.Message {
   hasSrpid(): boolean;
   clearSrpid(): void;
-  getSrpid(): number | undefined;
-  setSrpid(value: number): void;
+  getSrpid(): string | undefined;
+  setSrpid(value: string): void;
 
   hasA(): boolean;
   clearA(): void;
@@ -528,7 +528,7 @@ export class InputPassword extends jspb.Message {
 
 export namespace InputPassword {
   export type AsObject = {
-    srpid?: number,
+    srpid?: string,
     a: Uint8Array | string,
     m1: Uint8Array | string,
   }

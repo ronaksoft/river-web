@@ -68,6 +68,7 @@ message ContactsSearch {
 message BlockedContactsMany {
     repeated BlockedContact Contacts = 1;
     repeated User Users = 2;
+    optional int32 Total = 3;
 }
 
 // BlockedContact

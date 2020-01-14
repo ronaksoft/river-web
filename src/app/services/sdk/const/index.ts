@@ -27,6 +27,7 @@ export const C_MSG = {
     AccountPrivacyRules: 3802018092,
     AccountRegisterDevice: 946059841,
     AccountRemovePhoto: 3728692172,
+    AccountResendChangePhoneCode: 4200771569,
     AccountResetAuthorization: 1045069116,
     AccountSendChangePhoneCode: 1389121902,
     AccountSetLang: 2015777242,

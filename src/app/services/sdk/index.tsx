@@ -761,9 +761,17 @@ export default class SDK {
         return this.server.send(C_MSG.AccountSendChangePhoneCode, data.serializeBinary(), true);
     }
 
-    public passwordGet(): Promise<AccountPassword.AsObject> {
+    public accountGetPassword(): Promise<AccountPassword> {
         const data = new AccountGetPassword();
         return this.server.send(C_MSG.AccountGetPassword, data.serializeBinary(), true);
+    }
+
+    public genSrpHash(password: string, algorithm: number, algorithmData: string): Promise<Uint8Array> {
+        return this.server.genSrpHash(password, algorithm, algorithmData);
+    }
+
+    public genInputPassword(password: string, accountPassword: AccountPassword): Promise<InputPassword.AsObject> {
+        return this.server.genInputPassword(password, accountPassword.serializeBinary());
     }
 
     public getServerSalts(): Promise<SystemSalts.AsObject> {

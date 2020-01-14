@@ -89,7 +89,7 @@ self.onmessage = function (e) {
             break;
         case 'fnGenInputPassword':
             if (fnGenInputPassword) {
-                fnGenInputPassword(d.data.reqId, d.data.algorithm, d.data.accountPass);
+                fnGenInputPassword(d.data.reqId, d.data.pass, d.data.accountPass);
             }
             break;
         case 'loadConnInfo':
@@ -195,7 +195,7 @@ setFnGenInputPassword = (callback) => {
 };
 
 fnGenInputPasswordCallback = (reqId, data) => {
-    workerMessage('fnDecryptCallback', {
+    workerMessage('fnGenInputPasswordCallback', {
         reqId,
         data,
     });

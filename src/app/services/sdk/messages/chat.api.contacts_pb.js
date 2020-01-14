@@ -1870,7 +1870,8 @@ proto.msg.BlockedContactsMany.toObject = function(includeInstance, msg) {
     contactsList: jspb.Message.toObjectList(msg.getContactsList(),
     proto.msg.BlockedContact.toObject, includeInstance),
     usersList: jspb.Message.toObjectList(msg.getUsersList(),
-    chat_core_types_pb.User.toObject, includeInstance)
+    chat_core_types_pb.User.toObject, includeInstance),
+    total: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -1917,6 +1918,10 @@ proto.msg.BlockedContactsMany.deserializeBinaryFromReader = function(msg, reader
       reader.readMessage(value,chat_core_types_pb.User.deserializeBinaryFromReader);
       msg.addUsers(value);
       break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setTotal(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1960,6 +1965,13 @@ proto.msg.BlockedContactsMany.serializeBinaryToWriter = function(message, writer
       2,
       f,
       chat_core_types_pb.User.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeInt32(
+      3,
+      f
     );
   }
 };
@@ -2038,6 +2050,42 @@ proto.msg.BlockedContactsMany.prototype.addUsers = function(opt_value, opt_index
  */
 proto.msg.BlockedContactsMany.prototype.clearUsersList = function() {
   return this.setUsersList([]);
+};
+
+
+/**
+ * optional int32 Total = 3;
+ * @return {number}
+ */
+proto.msg.BlockedContactsMany.prototype.getTotal = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.msg.BlockedContactsMany} returns this
+ */
+proto.msg.BlockedContactsMany.prototype.setTotal = function(value) {
+  return jspb.Message.setField(this, 3, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.BlockedContactsMany} returns this
+ */
+proto.msg.BlockedContactsMany.prototype.clearTotal = function() {
+  return jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.BlockedContactsMany.prototype.hasTotal = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 

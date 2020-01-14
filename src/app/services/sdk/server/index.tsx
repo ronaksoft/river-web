@@ -10,10 +10,10 @@
 import {C_ERR, C_ERR_ITEM, C_MSG, C_MSG_NAME} from '../const';
 import Presenter from '../presenters';
 import UpdateManager from './updateManager';
-import {Error as RiverError, MessageContainer, MessageEnvelope} from '../messages/chat.core.types_pb';
+import {Error as RiverError, InputPassword, MessageContainer, MessageEnvelope} from '../messages/chat.core.types_pb';
 import {throttle, cloneDeep} from 'lodash';
 import Socket from './socket';
-import {base64ToU8a} from '../fileManager/http/utils';
+import {base64ToU8a, uint8ToBase64} from '../fileManager/http/utils';
 import MainRepo from "../../../repository";
 
 const C_IDLE_TIME = 300;
@@ -65,6 +65,7 @@ export default class Server {
     private socket: Socket;
     private reqId: number;
     private messageListeners: object = {};
+    private serviceMessagesListeners: object = {};
     private sentQueue: number[] = [];
     private updateQueue: any[] = [];
     private readonly updateManager: UpdateManager | undefined;
@@ -94,6 +95,10 @@ export default class Server {
             this.socket.setError((data: any) => {
                 this.error(data);
             });
+
+            this.socket.setResolveGenSrpHashFn(this.genSrpHashResolve);
+
+            this.socket.setResolveGenInputPasswordFn(this.genInputPasswordResolve);
 
             window.addEventListener('wsOpen', () => {
                 this.isConnected = true;
@@ -171,6 +176,63 @@ export default class Server {
         };
 
         this.sentQueue.push(reqId);
+
+        return promise;
+    }
+
+    public genSrpHash(password: string, algorithm: number, algorithmData: string) {
+        let internalResolve = null;
+        let internalReject = null;
+
+        const reqId = ++this.reqId;
+
+        const promise = new Promise<Uint8Array>((res, rej) => {
+            internalResolve = res;
+            internalReject = rej;
+        });
+
+        this.serviceMessagesListeners[reqId] = {
+            reject: internalReject,
+            resolve: internalResolve,
+        };
+
+        // @ts-ignore
+        const encoder = new TextEncoder("utf-8");
+
+        this.socket.fnGenSrpHash({
+            algorithm,
+            algorithmData: uint8ToBase64(encoder.encode(algorithmData)),
+            pass: uint8ToBase64(encoder.encode(password)),
+            reqId,
+        });
+
+        return promise;
+    }
+
+    public genInputPassword(password: string, accountPass: Uint8Array) {
+        let internalResolve = null;
+        let internalReject = null;
+
+        const reqId = ++this.reqId;
+
+        const promise = new Promise<InputPassword.AsObject>((res, rej) => {
+            internalResolve = res;
+            internalReject = rej;
+        });
+
+        this.serviceMessagesListeners[reqId] = {
+            reject: internalReject,
+            resolve: internalResolve,
+        };
+
+        // @ts-ignore
+        const encoder = new TextEncoder("utf-8");
+
+        this.socket.fnGenInputPassword({
+            accountPass: uint8ToBase64(accountPass),
+            pass: uint8ToBase64(encoder.encode(password)),
+            reqId,
+        });
 
         return promise;
     }
@@ -280,7 +342,11 @@ export default class Server {
                 }
             } else {
                 if (this.messageListeners[reqId].resolve) {
-                    this.messageListeners[reqId].resolve(res.toObject());
+                    if (constructor === C_MSG.AccountPassword) {
+                        this.messageListeners[reqId].resolve(res);
+                    } else {
+                        this.messageListeners[reqId].resolve(res.toObject());
+                    }
                 }
             }
             clearTimeout(this.messageListeners[reqId].request.timeout);
@@ -490,5 +556,25 @@ export default class Server {
         this.sentQueue.push(reqId);
 
         return false;
+    }
+
+    private genSrpHashResolve = (reqId: number, data: string) => {
+        if (!this.serviceMessagesListeners[reqId]) {
+            return;
+        }
+        const req = this.serviceMessagesListeners[reqId];
+        if (req && req.resolve) {
+            req.resolve(base64ToU8a(data));
+        }
+    }
+
+    private genInputPasswordResolve = (reqId: number, data: string) => {
+        if (!this.serviceMessagesListeners[reqId]) {
+            return;
+        }
+        const req = this.serviceMessagesListeners[reqId];
+        if (req && req.resolve) {
+            req.resolve(InputPassword.deserializeBinary(base64ToU8a(data)).toObject());
+        }
     }
 }

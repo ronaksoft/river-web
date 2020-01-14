@@ -55,6 +55,8 @@ export default class Socket {
     private online: boolean = navigator.onLine === undefined ? true : navigator.onLine;
     private resolveEncryptFn: any | undefined;
     private resolveDecryptFn: any | undefined;
+    private resolveGenSrpHashFn: any | undefined;
+    private resolveGenInputPasswordFn: any | undefined;
 
     public constructor() {
         this.testUrl = localStorage.getItem('river.workspace_url') || '';
@@ -167,6 +169,16 @@ export default class Socket {
                         this.resolveDecryptFn(d.data.reqId, d.data.constructor, d.data.data);
                     }
                     break;
+                case 'fnGenSrpHashCallback':
+                    if (this.resolveGenSrpHashFn) {
+                        this.resolveGenSrpHashFn(d.data.reqId, d.data.data);
+                    }
+                    break;
+                case 'fnGenInputPasswordCallback':
+                    if (this.resolveGenInputPasswordFn) {
+                        this.resolveGenInputPasswordFn(d.data.reqId, d.data.data);
+                    }
+                    break;
             }
         };
 
@@ -181,12 +193,28 @@ export default class Socket {
         this.resolveDecryptFn = fn;
     }
 
+    public setResolveGenSrpHashFn(fn: any) {
+        this.resolveGenSrpHashFn = fn;
+    }
+
+    public setResolveGenInputPasswordFn(fn: any) {
+        this.resolveGenInputPasswordFn = fn;
+    }
+
     public sendWorkerMessage(cmd: string, data: any) {
         this.workerMessage(cmd, data);
     }
 
     public isOnline() {
         return this.online;
+    }
+
+    public fnGenSrpHash(data: { reqId: number, pass: string, algorithm: number, algorithmData: string }) {
+        this.workerMessage('fnGenSrpHash', data);
+    }
+
+    public fnGenInputPassword(data: { reqId: number, pass: string, accountPass: string }) {
+        this.workerMessage('fnGenInputPassword', data);
     }
 
     public send(data: IServerRequest) {
