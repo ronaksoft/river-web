@@ -83,6 +83,7 @@ import UserListDialog from "../UserListDialog";
 import {IInputPeer} from "../SearchList";
 import {localize} from "../../services/utilities/localize";
 import DevTools from "../DevTools";
+import ChangePhoneModal from "../ChangePhoneModal";
 
 import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -152,6 +153,7 @@ interface IPrivacy {
 interface IProps {
     onClose?: (e: any) => void;
     onAction?: (cmd: 'logout') => void;
+    onError?: (message: string) => void;
     onUpdateMessages?: (keep?: boolean) => void;
     onReloadDialog?: (peerIds: string[]) => void;
     onSubPlaceChange?: (sub: string, subChild: string) => void;
@@ -216,6 +218,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private backgroundService: BackgroundService;
     private downloadManger: DownloadManager;
     private settingsStorageUsageModalRef: SettingsStorageUsageModal | undefined;
+    private changePhoneModalRef: ChangePhoneModal | undefined;
     private devToolsRef: DevTools | undefined;
     private electronService: ElectronService;
     private userListDialogRef: UserListDialog | undefined;
@@ -364,6 +367,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                          onPatternSelected={this.selectBackgroundHandler}/>
                 <SettingsStorageUsageModal ref={this.settingsStorageUsageModalRefHandler}
                                            onDone={this.props.onReloadDialog}/>
+                <ChangePhoneModal ref={this.changePhoneModalRefHandler} onError={this.props.onError}
+                                  onDone={this.changePhoneModalDoneHandler}/>
                 <UserListDialog ref={this.userListDialogRefHandler} onDone={this.userListDialogDoneHandler}/>
                 <div className={'page-container page-' + page}>
                     <div className="page page-1">
@@ -651,7 +656,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                 <div className="action">
                                                     {!editUsername && <IconButton
                                                         aria-label="Edit firstname"
-                                                        onClick={this.onEditProfileHandler}
+                                                        onClick={this.editProfileHandler}
                                                     >
                                                         <EditRounded/>
                                                     </IconButton>}
@@ -675,7 +680,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                 <div className="inner">{user.lastname}</div>
                                                 <div className="action">
                                                     {!editUsername && <IconButton
-                                                        onClick={this.onEditProfileHandler}
+                                                        onClick={this.editProfileHandler}
                                                     >
                                                         <EditRounded/>
                                                     </IconButton>}
@@ -690,7 +695,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                 }}
                                                 value={lastname}
                                                 className="input-edit"
-                                                onChange={this.onLastnameChangeHandler}
+                                                onChange={this.lastnameChangeHandler}
                                             />}
                                         </div>
                                         <div className="line">
@@ -699,7 +704,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                 <div className="inner">{user.bio}</div>
                                                 <div className="action">
                                                     {!editUsername && <IconButton
-                                                        onClick={this.onEditProfileHandler}
+                                                        onClick={this.editProfileHandler}
                                                     >
                                                         <EditRounded/>
                                                     </IconButton>}
@@ -725,7 +730,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                 <div className="inner">{user.username}</div>
                                                 <div className="action">
                                                     {!editProfile && <IconButton
-                                                        onClick={this.onEditUsernameHandler}
+                                                        onClick={this.editUsernameHandler}
                                                     >
                                                         <EditRounded/>
                                                     </IconButton>}
@@ -749,6 +754,13 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                             <div className="form-control pad">
                                                 <label>{i18n.t('general.phone')}</label>
                                                 <div className="inner">{phone}</div>
+                                                <div className="action">
+                                                    <IconButton
+                                                        onClick={this.editPhoneHandler}
+                                                    >
+                                                        <EditRounded/>
+                                                    </IconButton>
+                                                </div>
                                             </div>
                                         </div>
                                         {Boolean(editProfile && user && (user.firstname !== firstname || user.lastname !== lastname || user.bio !== bio)) &&
@@ -1209,13 +1221,13 @@ class SettingsMenu extends React.Component<IProps, IState> {
         });
     }
 
-    private onEditProfileHandler = () => {
+    private editProfileHandler = () => {
         this.setState({
             editProfile: true,
         });
     }
 
-    private onEditUsernameHandler = () => {
+    private editUsernameHandler = () => {
         this.setState({
             editUsername: true,
             usernameAvailable: false,
@@ -1229,7 +1241,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         });
     }
 
-    private onLastnameChangeHandler = (e: any) => {
+    private lastnameChangeHandler = (e: any) => {
         this.setState({
             lastname: e.currentTarget.value,
         });
@@ -1997,6 +2009,23 @@ class SettingsMenu extends React.Component<IProps, IState> {
                 });
             });
         }
+    }
+
+    private changePhoneModalRefHandler = (ref: any) => {
+        this.changePhoneModalRef = ref;
+    }
+
+    private editPhoneHandler = () => {
+        if (!this.changePhoneModalRef) {
+            return;
+        }
+        this.changePhoneModalRef.openDialog();
+    }
+
+    private changePhoneModalDoneHandler = () => {
+        this.setState({
+            phone: this.sdk.getConnInfo().Phone || '',
+        });
     }
 }
 

@@ -15,7 +15,6 @@ import SettingsModal from '../SettingsModal';
 import {
     AddRounded, BlurOnRounded, CheckRounded,
 } from '@material-ui/icons';
-
 import Slider from '@material-ui/lab/Slider/Slider';
 import {throttle} from 'lodash';
 import BackgroundService from '../../services/backgroundService';

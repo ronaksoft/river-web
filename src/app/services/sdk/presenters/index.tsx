@@ -17,7 +17,7 @@ import {
     UpdateDifference, UpdateNewMessage, UpdateReadHistoryInbox, UpdateReadHistoryOutbox, UpdateState, UpdateUserTyping,
 } from '../messages/chat.api.updates_pb';
 import {File} from '../messages/chat.api.files_pb';
-import {AccountAuthorizations, AccountPrivacyRules} from '../messages/chat.api.accounts_pb';
+import {AccountAuthorizations, AccountPassword, AccountPrivacyRules} from '../messages/chat.api.accounts_pb';
 import {SystemInfo, SystemSalts, SystemServerTime} from '../messages/chat.api.system_pb';
 import {UsersMany} from '../messages/chat.api.users_pb';
 import {LabelItems} from "../messages/chat.api.labels_pb";
@@ -83,6 +83,8 @@ export default class UniqueId {
                 return LabelItems.deserializeBinary(data);
             case C_MSG.Label:
                 return Label.deserializeBinary(data);
+            case C_MSG.AccountPassword:
+                return AccountPassword.deserializeBinary(data);
             default:
                 return null;
         }

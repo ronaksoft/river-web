@@ -49,7 +49,7 @@ import {
 } from '../../services/sdk/messages/chat.core.types_pb';
 import {IConnInfo} from '../../services/sdk/interface';
 import {IDialog} from '../../repository/dialog/interface';
-import UpdateManager, {INewMessageBulkUpdate} from '../../services/sdk/server/updateManager';
+import UpdateManager from '../../services/sdk/server/updateManager';
 import {C_ERR, C_ERR_ITEM, C_MSG} from '../../services/sdk/const';
 import {
     UpdateDialogPinned,
@@ -58,7 +58,7 @@ import {
     UpdateGroupPhoto, UpdateLabelDeleted, UpdateLabelItemsAdded, UpdateLabelItemsRemoved, UpdateLabelSet,
     UpdateMessageEdited,
     UpdateMessageID,
-    UpdateMessagesDeleted,
+    UpdateMessagesDeleted, UpdateNewMessage,
     UpdateNotifySettings,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox,
@@ -940,31 +940,27 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Update new message handler */
-    private updateNewMessageHandler = (data: INewMessageBulkUpdate) => {
+    private updateNewMessageHandler = (data: UpdateNewMessage.AsObject) => {
         if (this.isUpdating) {
             return;
         }
-        this.messageRepo.lazyUpsert(data.messages);
-        this.userRepo.importBulk(false, data.senders.map((o, index) => {
-            if (data.messages[index] && o.id && data.messages[index].senderid === o.id) {
+        const message: IMessage = data.message;
+        this.messageRepo.lazyUpsert([data.message]);
+        this.userRepo.importBulk(false, [data.sender].map((o: IUser) => {
+            if (data.message && o.id && data.message.senderid === o.id) {
                 o.status = UserStatus.USERSTATUSONLINE;
-                if (data.messages.length > 0) {
-                    // @ts-ignore
-                    o.status_last_modified = data.messages[0].createdon || 0;
-                }
+                o.status_last_modified = message.createdon || 0;
             }
             return o;
         }));
         let force = false;
-        if (data.peerid === this.selectedDialogId && this.messageRef) {
+        if (data.message.peerid === this.selectedDialogId && this.messageRef) {
             // Check if Top Message exits
             const dialog = this.getDialogById(this.selectedDialogId);
             if (dialog) {
                 if (this.messages.length === 0 || (this.messages.length > 0 && (this.messages[this.messages.length - 1].id === dialog.topmessageid || (this.messages[this.messages.length - 1].id || 0) < 0))) {
-                    const dataMsg = this.modifyMessages(this.messages, data.messages.reverse(), true);
-                    data.messages.reverse().forEach((message) => {
-                        this.checkMessageOrder(message);
-                    });
+                    const dataMsg = this.modifyMessages(this.messages, [data.message], true);
+                    this.checkMessageOrder(data.message);
                     if (this.endOfMessage && this.isInChat) {
                         this.setScrollMode('end');
                     } else {
@@ -992,11 +988,9 @@ class Chat extends React.Component<IProps, IState> {
         }
 
         // Update dialogs
-        data.messages.forEach((message, index) => {
-            if (data.accessHashes[index]) {
-                this.updateDialogs(message, data.accessHashes[index] || '0');
-            }
-        });
+        if (data.accesshash) {
+            this.updateDialogs(message, data.accesshash);
+        }
 
         // Notify user if possible
         this.notifyMessage(data);
@@ -1004,61 +998,56 @@ class Chat extends React.Component<IProps, IState> {
          * In this section we check clear history and pending messages
          * Also counters will be increased here
          */
-        data.messages.forEach((message) => {
-            if (!message || !message.id) {
-                return;
-            }
-            this.checkPendingMessage(message.id || 0);
-            this.downloadThumbnail(message);
-            // Clear the message history
-            if (message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
-                this.messageRepo.clearHistory(message.peerid || '', message.actiondata.maxid).then(() => {
-                    if (message.peerid === this.selectedDialogId && this.messages.length > 1 && this.messageRef) {
-                        this.messageRef.clearAll();
-                        this.messages.splice(0, this.messages.length - 1);
-                    }
+        if (!message || !message.id) {
+            return;
+        }
+        this.checkPendingMessage(message.id || 0);
+        this.downloadThumbnail(message);
+        // Clear the message history
+        if (message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
+            this.messageRepo.clearHistory(message.peerid || '', message.actiondata.maxid).then(() => {
+                if (message.peerid === this.selectedDialogId && this.messages.length > 1 && this.messageRef) {
+                    this.messageRef.clearAll();
+                    this.messages.splice(0, this.messages.length - 1);
+                }
+                this.updateDialogsCounter(message.peerid || '', {
+                    mentionCounter: 0,
+                    scrollPos: -1,
+                    unreadCounter: 0,
+                });
+                if (message.actiondata.pb_delete) {
+                    // Remove dialog
+                    this.dialogRemove(message.peerid || '');
+                }
+            });
+        } else
+            // Increase counter when
+            // 1. Current Dialog is different from message peerid
+            // 2. Is not at the end of conversations
+            // 3. Is not focused on the River app
+        if (!message.me && (message.peerid !== this.selectedDialogId || force || !this.endOfMessage || !this.isInChat)) {
+            this.messageRepo.exists(message.id || 0).then((exists) => {
+                if (!exists) {
                     this.updateDialogsCounter(message.peerid || '', {
-                        mentionCounter: 0,
-                        scrollPos: -1,
-                        unreadCounter: 0,
+                        mentionCounterIncrease: (message.mention_me ? 1 : 0),
+                        unreadCounterIncrease: 1,
                     });
-                    if (message.actiondata.pb_delete) {
-                        // Remove dialog
-                        this.dialogRemove(message.peerid || '');
-                    }
-                });
-            } else
-                // Increase counter when
-                // 1. Current Dialog is different from message peerid
-                // 2. Is not at the end of conversations
-                // 3. Is not focused on the River app
-            if (!message.me && (message.peerid !== this.selectedDialogId || force || !this.endOfMessage || !this.isInChat)) {
-                this.messageRepo.exists(message.id || 0).then((exists) => {
-                    if (!exists) {
-                        this.updateDialogsCounter(message.peerid || '', {
-                            mentionCounterIncrease: (message.mention_me ? 1 : 0),
-                            unreadCounterIncrease: 1,
-                        });
-                    }
-                });
-            }
-        });
+                }
+            });
+        }
     }
 
     /* Update drop message */
-    private updateMessageDropHandler = (data: INewMessageBulkUpdate) => {
+    private updateMessageDropHandler = (data: UpdateNewMessage.AsObject) => {
         if (this.isUpdating) {
             return;
         }
-        this.messageRepo.lazyUpsert(data.messages);
-        this.userRepo.importBulk(false, data.senders);
-        data.messages.forEach((message, index) => {
-            if (!message) {
-                return;
-            }
-            this.checkPendingMessage(message.id || 0);
-            this.updateDialogs(message, data.accessHashes[index] || '0');
-        });
+        this.messageRepo.lazyUpsert([data.message]);
+        this.userRepo.importBulk(false, [data.sender]);
+        if (data.message) {
+            this.checkPendingMessage(data.message.id || 0);
+            this.updateDialogs(data.message, data.accesshash || '0');
+        }
         if (this.messageRef) {
             this.messageRef.updateList();
         }
@@ -2657,43 +2646,43 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Notify on new message received */
-    private notifyMessage(data: INewMessageBulkUpdate) {
-        if (!(!this.isInChat && data.senderIds.indexOf(this.connInfo.UserID || '') === -1 && data.messages.length > 0 && this.canNotify(data.messages[0].peerid || '')) && (data.messages.length === 1 && data.messages[0].mention_me !== true)) {
+    private notifyMessage(data: UpdateNewMessage.AsObject) {
+        const message: IMessage = data.message;
+        if (!(!this.isInChat && data.sender.id !== (this.connInfo.UserID || '') && this.canNotify(message.peerid || '')) && (message.mention_me !== true)) {
             return;
         }
-        if (data.peertype === PeerType.PEERGROUP) {
-            this.groupRepo.get(data.peerid).then((group) => {
+        if (message.peertype === PeerType.PEERGROUP) {
+            this.groupRepo.get(message.peerid || '').then((group) => {
                 let groupTitle = 'Group';
                 if (group) {
                     groupTitle = group.title || 'Group';
                 }
-                if (data.messages.length === 1) {
-                    const messageTitle = getMessageTitle(data.messages[0]);
-                    if (data.messages[0].mention_me === true) {
-                        this.notify(
-                            `${data.senders[0].firstname} ${data.senders[0].lastname} mentioned you in ${groupTitle}`,
-                            messageTitle.text, data.messages[0].peerid || 'null');
-                    } else if (!data.messages[0].me) {
-                        this.notify(
-                            `New message from ${data.senders[0].firstname} ${data.senders[0].lastname} in ${groupTitle}`,
-                            messageTitle.text, data.messages[0].peerid || 'null');
-                    }
-                } else {
+                // if (data.messages.length === 1) {
+                const messageTitle = getMessageTitle(message);
+                if (message.mention_me === true) {
                     this.notify(
-                        `${data.messages.length} new messages in ${groupTitle}`, '', data.messages[0].peerid || 'null');
+                        `${data.sender.firstname} ${data.sender.lastname} mentioned you in ${groupTitle}`,
+                        messageTitle.text, message.peerid || 'null');
+                } else if (!message.me) {
+                    this.notify(
+                        `New message from ${data.sender.firstname} ${data.sender.lastname} in ${groupTitle}`,
+                        messageTitle.text, message.peerid || 'null');
                 }
+                // } else {
+                //     this.notify(
+                //         `${data.messages.length} new messages in ${groupTitle}`, '', data.messages[0].peerid || 'null');
+                // }
             });
         } else {
-            if (data.messages.length > 0 && !data.messages[0].me) {
-                if (data.messages.length === 1) {
-                    const messageTitle = getMessageTitle(data.messages[0]);
-                    this.notify(
-                        `New message from ${data.senders[0].firstname} ${data.senders[0].lastname}`,
-                        messageTitle.text, data.messages[0].peerid || 'null');
-                } else {
-                    this.notify(
-                        `${data.messages.length} new messages from ${data.senders[0].firstname} ${data.senders[0].lastname}`, '', data.messages[0].peerid || 'null');
-                }
+            if (!message.me) {
+                const messageTitle = getMessageTitle(message);
+                this.notify(
+                    `New message from ${data.sender.firstname} ${data.sender.lastname}`,
+                    messageTitle.text, message.peerid || 'null');
+                // } else {
+                //     this.notify(
+                //         `${data.messages.length} new messages from ${data.senders[0].firstname} ${data.senders[0].lastname}`, '', data.messages[0].peerid || 'null');
+                // }
             }
         }
     }

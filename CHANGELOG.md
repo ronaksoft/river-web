@@ -1,3 +1,7 @@
+## 0.29.13
+* UpdateManager improved
+* ChangePhone implemented
+
 ## 0.29.12
 * Start bot implemented
 

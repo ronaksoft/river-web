@@ -6,6 +6,9 @@
     "enable": "Enable",
     "apply": "Apply",
     "cancel": "Cancel",
+    "change": "Change",
+    "next": "Next",
+    "submit": "Submit",
     "saved_messages": "Saved Messages",
     "first_name": "First Name",
     "last_name": "Last Name",
@@ -215,7 +218,19 @@
     "privacy_my_contacts": "My Contacts",
     "privacy_no_one": "Nobody",
     "privacy_always_share_with": "Always share with",
-    "privacy_never_share_with": "Never share with"
+    "privacy_never_share_with": "Never share with",
+    "change_phone_number": {
+      "title": "Change phone number",
+      "text": "You can change your River number here. Your Account and all your cloud data - messages, media, contacts etc. will be moved to the new number.",
+      "important": "Important: ",
+      "note": "all your River contacts will get your new number added to their address book, provided they had your old number and you haven’t blocked them in River.",
+      "enter_new_number": "Enter new number",
+      "note_2": "We will send an SMS  with a confirmation code to your new number.",
+      "enter_password": "Enter 2FA password",
+      "note_2fa": "2 Factor Authentication Password",
+      "phone_number_changed": "Your number changed to {0}",
+      "phone_already_exists": "Phone already exists!"
+    }
   },
   "contact": {
     "contacts": "Contacts",

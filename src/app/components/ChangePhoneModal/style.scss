@@ -1,0 +1,115 @@
+/*
+    Creation Time: 2020 - Jan - 14
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2020
+*/
+
+.change-phone-dialog {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .change-phone-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 0 8px;
+  }
+
+  .change-phone-text,
+  .change-phone-success {
+    line-height: 1.2em;
+    max-width: 300px;
+    padding: 6px 12px;
+    font-size: 14px;
+    text-align: justify;
+
+    b {
+      font-weight: bold;
+    }
+  }
+
+  .change-phone-success {
+    text-align: center;
+    font-size: 16px;
+    padding: 12px;
+  }
+
+  .change-phone-input {
+    padding: 10px 12px;
+
+    &.phone-number {
+      display: flex;
+      padding: 12px 12px 6px;
+
+      .intl-tel-input {
+        display: flex;
+        flex-direction: row-reverse;
+        border-radius: 3px;
+        border: 1px solid #c4c4c4;
+        flex: 1;
+        padding: 10px 6px;
+
+        .flag-container {
+          .selected-flag {
+            padding: 0;
+
+            .iti-arrow {
+              right: 12px;
+            }
+          }
+        }
+
+        .country-list .country {
+          line-height: 1em;
+        }
+
+        input {
+          flex: 1;
+          direction: ltr;
+          font-size: 14px;
+        }
+      }
+    }
+
+    .code {
+      input {
+        text-align: center;
+        letter-spacing: 30px;
+      }
+    }
+  }
+
+  .change-phone-gap {
+    flex: 1;
+  }
+}
+
+html[direction="rtl"] {
+  .change-phone-dialog {
+    .change-phone-text {
+      direction: rtl;
+    }
+
+    .change-phone-input {
+      input {
+        direction: rtl;
+      }
+    }
+  }
+}
+
+
+html[theme="dark"],
+html[theme="dark-night"] {
+  .change-phone-dialog {
+  }
+}
+
+html[theme="dark-blue"] {
+  .change-phone-dialog {
+  }
+}

@@ -33,6 +33,7 @@ import FileManager from "../../services/sdk/fileManager";
 import {OptionsObject, withSnackbar} from 'notistack';
 import ElectronService from "../../services/electron";
 import DevTools from "../../components/DevTools";
+import {modifyCode} from "./utils";
 
 import './tel-input.css';
 import './style.scss';
@@ -51,8 +52,8 @@ if (window.navigator.userAgent.indexOf(' electron/') > -1) {
         C_CLIENT = `Desktop:- ${window.navigator.userAgent}`;
     }
 }
-const codeLen = 5;
-const codePlaceholder = [...new Array(codeLen)].map(o => '_').join('');
+export const codeLen = 5;
+export const codePlaceholder = [...new Array(codeLen)].map(o => '_').join('');
 
 interface IProps {
     match?: any;
@@ -477,25 +478,8 @@ class SignUp extends React.Component<IProps, IState> {
         }
     }
 
-    private modifyCode(str: string, remove?: boolean): { code: string, len: number } {
-        const s = codePlaceholder.split('');
-        let nums = str.match(/\d+/g);
-        const len = nums ? nums.join('').length : 0;
-        if (nums) {
-            nums = nums.join('').split('').slice(0, codeLen);
-            nums.forEach((val, key) => {
-                if (remove && nums && nums.length > 0 && nums.length - 1 === key) {
-                    s[key] = '_';
-                } else {
-                    s[key] = val;
-                }
-            });
-        }
-        return {code: s.join(''), len};
-    }
-
     private codeOnChange = (e: any) => {
-        const data = this.modifyCode(e.target.value);
+        const data = modifyCode(e.target.value);
         this.setState({
             code: data.code,
         }, () => {
@@ -610,7 +594,7 @@ class SignUp extends React.Component<IProps, IState> {
         if (e.key === 'Backspace') {
             e.stopPropagation();
             e.preventDefault();
-            const data = this.modifyCode(this.state.code, true);
+            const data = modifyCode(this.state.code, true);
             this.setState({
                 code: data.code,
             });

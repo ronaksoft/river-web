@@ -316,6 +316,7 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
                                   onUpdateMessages={this.props.onUpdateMessages}
                                   onClose={this.props.onSettingsClose}
                                   onAction={this.props.onSettingsAction}
+                                  onError={this.props.onError}
                                   onReloadDialog={this.props.onReloadDialog}
                                   onSubPlaceChange={this.settingsSubPlaceChangeHandler}
             />);

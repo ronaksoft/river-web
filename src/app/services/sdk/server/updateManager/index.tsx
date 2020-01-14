@@ -25,22 +25,9 @@ import {
     UpdateUserPhoto,
     UpdateUserTyping,
 } from '../../messages/chat.api.updates_pb';
-import {throttle, findIndex} from 'lodash';
-import {User} from '../../messages/chat.core.types_pb';
-import {IMessage} from '../../../../repository/message/interface';
+import {throttle, cloneDeep} from 'lodash';
 import MessageRepo from '../../../../repository/message';
 import {base64ToU8a} from '../../fileManager/http/utils';
-
-export interface INewMessageBulkUpdate {
-    accessHashes: string[];
-    maxMessageId: number;
-    messages: IMessage[];
-    minMessageId: number;
-    peerid: string;
-    peertype?: number;
-    senderIds: string[];
-    senders: User.AsObject[];
-}
 
 export default class UpdateManager {
     public static getInstance() {
@@ -57,10 +44,6 @@ export default class UpdateManager {
     private fnQueue: any = {};
     private fnIndex: number = 0;
     private rndMsgMap: { [key: number]: boolean } = {};
-    private messageList: { [key: string]: UpdateNewMessage.AsObject[] } = {};
-    private messageDropList: { [key: string]: UpdateNewMessage.AsObject[] } = {};
-    private readonly newMessageThrottle: any;
-    private readonly newMessageDropThrottle: any;
     private readonly flushUpdateIdThrottle: any;
     private active: boolean = true;
     private userId: string = '';
@@ -71,8 +54,6 @@ export default class UpdateManager {
     public constructor() {
         window.console.debug('Update manager started');
         this.lastUpdateId = this.loadLastUpdateId();
-        this.newMessageThrottle = throttle(this.executeNewMessageThrottle, 128);
-        this.newMessageDropThrottle = throttle(this.executeNewMessageDropThrottle, 128);
         this.flushUpdateIdThrottle = throttle(this.flushLastUpdateId, 128);
     }
 
@@ -116,11 +97,13 @@ export default class UpdateManager {
         if (!this.active) {
             return;
         }
-        const currentUpdateId = this.lastUpdateId;
         const minId = data.minupdateid || 0;
         const maxId = data.maxupdateid || 0;
-        window.console.debug('on update, current:', currentUpdateId, 'min:', minId, 'max:', maxId);
-        if ((this.outOfSync || currentUpdateId + 1 !== minId) && !(minId === 0 && maxId === 0)) {
+        window.console.debug('on update, current:', this.lastUpdateId, 'min:', minId, 'max:', maxId);
+        if (!(minId === 0 && maxId === 0) && this.lastUpdateId > minId) {
+            return;
+        }
+        if ((this.outOfSync || this.lastUpdateId + 1 !== minId) && !(minId === 0 && maxId === 0)) {
             this.outOfSyncCheck(data);
             return;
         }
@@ -128,7 +111,7 @@ export default class UpdateManager {
     }
 
     public idleHandler() {
-        this.callHandlers(C_MSG.OutOfSync, {});
+        this.callOutOfSync();
     }
 
     public listen(eventConstructor: number, fn: any): (() => void) | null {
@@ -181,7 +164,7 @@ export default class UpdateManager {
                     this.outOfSync = false;
                     this.outOfSyncTimeout = null;
                     window.console.debug(`%c gapInUpdate ${updates[i].updateid}, ${updates[i + 1].updateid}`, 'color: #ff3d00;');
-                    this.callHandlers(C_MSG.OutOfSync, {});
+                    this.callOutOfSync();
                     return;
                 }
             }
@@ -190,14 +173,16 @@ export default class UpdateManager {
             try {
                 this.responseUpdateMessageID(update);
             } catch (e) {
-                this.callHandlers(C_MSG.OutOfSync, {});
+                // this.callHandlers(C_MSG.OutOfSync, {});
             }
         });
         updates.forEach((update) => {
             try {
                 this.response(update);
             } catch (e) {
-                this.callHandlers(C_MSG.OutOfSync, {});
+                window.console.error(e);
+                this.callOutOfSync();
+                this.active = false;
             }
         });
         if (this.active && data.maxupdateid) {
@@ -221,6 +206,7 @@ export default class UpdateManager {
             });
             this.outOfSync = true;
         }
+        window.console.log(cloneDeep(this.updateList));
         if (this.updateList.length === 0) {
             this.outOfSync = false;
             return;
@@ -229,6 +215,7 @@ export default class UpdateManager {
             clearTimeout(this.outOfSyncTimeout);
             this.outOfSyncTimeout = null;
             const update = this.updateList.shift();
+            window.console.log(cloneDeep(this.updateList));
             if (update) {
                 this.applyUpdates(update);
             }
@@ -236,14 +223,18 @@ export default class UpdateManager {
         } else {
             if (this.outOfSyncTimeout === null) {
                 this.outOfSyncTimeout = setTimeout(() => {
-                    this.updateList = [];
-                    this.outOfSync = false;
-                    this.outOfSyncTimeout = null;
-                    this.callHandlers(C_MSG.OutOfSync, {});
+                    this.callOutOfSync();
                     // this.disable();
                 }, 500);
             }
         }
+    }
+
+    private callOutOfSync() {
+        this.updateList = [];
+        this.outOfSync = false;
+        this.outOfSyncTimeout = null;
+        this.callHandlers(C_MSG.OutOfSync, {});
     }
 
     private responseUpdateMessageID(update: UpdateEnvelope.AsObject) {
@@ -265,10 +256,11 @@ export default class UpdateManager {
         switch (update.constructor) {
             case C_MSG.UpdateNewMessage:
                 const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
+                updateNewMessage.message = MessageRepo.parseMessage(updateNewMessage.message, this.userId);
                 if (!this.rndMsgMap[updateNewMessage.message.id || 0]) {
-                    this.throttledNewMessage(updateNewMessage);
+                    this.callHandlers(C_MSG.UpdateNewMessage, updateNewMessage);
                 } else {
-                    this.throttledNewMessageDrop(updateNewMessage);
+                    this.callHandlers(C_MSG.UpdateNewMessageDrop, updateNewMessage);
                     delete this.rndMsgMap[updateNewMessage.message.id || 0];
                 }
                 flushUpdateId = false;
@@ -288,33 +280,10 @@ export default class UpdateManager {
             case C_MSG.UpdateMessageEdited:
                 const updateMessageEdited = UpdateMessageEdited.deserializeBinary(data).toObject();
                 updateMessageEdited.message = MessageRepo.parseMessage(updateMessageEdited.message, this.userId);
-                if (updateMessageEdited.message && this.messageList.hasOwnProperty(updateMessageEdited.message.peerid || '')) {
-                    const index = findIndex(this.messageList[updateMessageEdited.message.peerid || ''], (item) => {
-                        return item.message.id === updateMessageEdited.message.id;
-                    });
-                    if (index > -1) {
-                        this.messageList[updateMessageEdited.message.peerid || ''][index].message = updateMessageEdited.message;
-                    } else {
-                        this.callHandlers(C_MSG.UpdateMessageEdited, updateMessageEdited);
-                    }
-                } else {
-                    this.callHandlers(C_MSG.UpdateMessageEdited, updateMessageEdited);
-                }
+                this.callHandlers(C_MSG.UpdateMessageEdited, updateMessageEdited);
                 break;
             case C_MSG.UpdateMessagesDeleted:
                 const updateMessagesDeleted = UpdateMessagesDeleted.deserializeBinary(data).toObject();
-                if (updateMessagesDeleted.peer) {
-                    updateMessagesDeleted.messageidsList.forEach((id) => {
-                        if (updateMessagesDeleted.peer && this.messageList.hasOwnProperty(updateMessagesDeleted.peer.id || '')) {
-                            const index = findIndex(this.messageList[updateMessagesDeleted.peer.id || ''], (item) => {
-                                return item.message.id === id;
-                            });
-                            if (index > -1) {
-                                this.messageList[updateMessagesDeleted.peer.id || ''].splice(index, 1);
-                            }
-                        }
-                    });
-                }
                 this.callHandlers(C_MSG.UpdateMessagesDeleted, updateMessagesDeleted);
                 break;
             case C_MSG.UpdateUsername:
@@ -333,7 +302,7 @@ export default class UpdateManager {
                 this.callHandlers(C_MSG.UpdateReadMessagesContents, UpdateReadMessagesContents.deserializeBinary(data).toObject());
                 break;
             case C_MSG.UpdateTooLong:
-                this.callHandlers(C_MSG.OutOfSync, {});
+                this.callOutOfSync();
                 break;
             case C_MSG.UpdateAuthorizationReset:
                 this.callHandlers(C_MSG.UpdateAuthorizationReset, {});
@@ -384,97 +353,6 @@ export default class UpdateManager {
             const fn = this.fnQueue[eventConstructor][key];
             if (fn) {
                 fn(payload);
-            }
-        });
-    }
-
-    private throttledNewMessage(data: UpdateNewMessage.AsObject) {
-        if (!data.message.peerid) {
-            return;
-        }
-        if (!this.messageList.hasOwnProperty(data.message.peerid)) {
-            this.messageList[data.message.peerid] = [data];
-        } else {
-            this.messageList[data.message.peerid].push(data);
-        }
-        this.newMessageThrottle();
-    }
-
-    private executeNewMessageThrottle = () => {
-        setTimeout(() => {
-            this.prepareBulkUpdate(C_MSG.UpdateNewMessage, this.messageList);
-        }, 100);
-    }
-
-    private throttledNewMessageDrop(data: UpdateNewMessage.AsObject) {
-        if (!data.message.peerid) {
-            return;
-        }
-        if (!this.messageDropList.hasOwnProperty(data.message.peerid)) {
-            this.messageDropList[data.message.peerid] = [data];
-        } else {
-            this.messageDropList[data.message.peerid].push(data);
-        }
-        this.newMessageDropThrottle();
-    }
-
-    private executeNewMessageDropThrottle = () => {
-        this.prepareBulkUpdate(C_MSG.UpdateNewMessageDrop, this.messageDropList);
-    }
-
-    private prepareBulkUpdate(eventConstructor: number, list: { [key: string]: UpdateNewMessage.AsObject[] }) {
-        const keys = Object.keys(list);
-        if (keys.length === 0) {
-            return;
-        }
-        keys.forEach((key) => {
-            const batchUpdate: INewMessageBulkUpdate = {
-                accessHashes: [],
-                maxMessageId: 0,
-                messages: [],
-                minMessageId: 1000000000,
-                peerid: '',
-                peertype: undefined,
-                senderIds: [],
-                senders: [],
-            };
-            while (list[key].length > 0) {
-                const data = list[key].pop();
-                if (data) {
-                    batchUpdate.accessHashes.push(data.accesshash || '');
-                    batchUpdate.messages.push(MessageRepo.parseMessage(data.message, this.userId));
-                    batchUpdate.senderIds.push(data.sender.id || '');
-                    batchUpdate.senders.push(data.sender);
-                    batchUpdate.peerid = data.message.peerid || '';
-                    batchUpdate.peertype = data.message.peertype;
-                    if (batchUpdate.maxMessageId < (data.message.id || 0)) {
-                        batchUpdate.maxMessageId = (data.message.id || 0);
-                    }
-                    if (batchUpdate.minMessageId > (data.message.id || 0)) {
-                        batchUpdate.minMessageId = (data.message.id || 0);
-                    }
-                }
-                if (batchUpdate.messages.length >= 50) {
-                    break;
-                }
-            }
-            if (batchUpdate.messages.length > 0) {
-                const swap = (obj: any, a: number, b: number) => {
-                    const hold = obj[a];
-                    obj[a] = obj[b];
-                    obj[b] = hold;
-                };
-                for (let i = 0; i < batchUpdate.messages.length; i++) {
-                    for (let j = 0; j < i; j++) {
-                        if ((batchUpdate.messages[i].id || 0) < (batchUpdate.messages[j].id || 0)) {
-                            swap(batchUpdate.messages, i, j);
-                            swap(batchUpdate.accessHashes, i, j);
-                            swap(batchUpdate.senderIds, i, j);
-                            swap(batchUpdate.senders, i, j);
-                        }
-                    }
-                }
-                this.callHandlers(eventConstructor, batchUpdate);
             }
         });
     }

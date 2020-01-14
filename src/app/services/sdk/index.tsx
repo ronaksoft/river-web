@@ -34,7 +34,7 @@ import {
     Bool, Dialog,
     Group,
     GroupFull,
-    InputFile,
+    InputFile, InputPassword,
     InputPeer,
     InputUser, Label, LabelsMany,
     MessageEntity,
@@ -63,11 +63,11 @@ import {
 } from './messages/chat.api.messages_pb';
 import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from './messages/chat.api.updates_pb';
 import {
-    AccountAuthorizations,
+    AccountAuthorizations, AccountChangePhone,
     AccountCheckUsername, AccountGetAuthorizations,
-    AccountGetNotifySettings, AccountGetPrivacy, AccountPrivacyRules,
+    AccountGetNotifySettings, AccountGetPassword, AccountGetPrivacy, AccountPassword, AccountPrivacyRules,
     AccountRegisterDevice,
-    AccountRemovePhoto, AccountResetAuthorization, AccountSetLang,
+    AccountRemovePhoto, AccountResetAuthorization, AccountSendChangePhoneCode, AccountSetLang,
     AccountSetNotifySettings, AccountSetPrivacy,
     AccountUpdateProfile,
     AccountUpdateUsername,
@@ -744,6 +744,26 @@ export default class SDK {
         data.setRandomid(randomId);
         data.setStartparam("");
         return this.server.send(C_MSG.StartBot, data.serializeBinary(), true);
+    }
+
+    public accountChangeNumber(phone: string, phoneCode: string, phoneHash: string, inputPassword?: InputPassword): Promise<User.AsObject> {
+        const data = new AccountChangePhone();
+        data.setPhone(phone);
+        data.setPhonecode(phoneCode);
+        data.setPhonecodehash(phoneHash);
+        data.setPassword(inputPassword);
+        return this.server.send(C_MSG.AccountChangePhone, data.serializeBinary(), true);
+    }
+
+    public accountSendChangePhoneCode(phone: string): Promise<AuthSentCode.AsObject> {
+        const data = new AccountSendChangePhoneCode();
+        data.setPhone(phone);
+        return this.server.send(C_MSG.AccountSendChangePhoneCode, data.serializeBinary(), true);
+    }
+
+    public passwordGet(): Promise<AccountPassword.AsObject> {
+        const data = new AccountGetPassword();
+        return this.server.send(C_MSG.AccountGetPassword, data.serializeBinary(), true);
     }
 
     public getServerSalts(): Promise<SystemSalts.AsObject> {
