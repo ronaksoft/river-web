@@ -9,7 +9,7 @@
 
 import {
     AuthAuthorization,
-    AuthCheckedPhone,
+    AuthCheckedPhone, AuthCheckPassword,
     AuthCheckPhone,
     AuthLogin,
     AuthLogout,
@@ -68,7 +68,7 @@ import {
     AccountGetNotifySettings, AccountGetPassword, AccountGetPrivacy, AccountPassword, AccountPrivacyRules,
     AccountRegisterDevice,
     AccountRemovePhoto, AccountResetAuthorization, AccountSendChangePhoneCode, AccountSetLang,
-    AccountSetNotifySettings, AccountSetPrivacy,
+    AccountSetNotifySettings, AccountSetPrivacy, AccountUpdatePasswordSettings,
     AccountUpdateProfile,
     AccountUpdateUsername,
     AccountUploadPhoto
@@ -206,17 +206,18 @@ export default class SDK {
         return this.server.send(C_MSG.AuthRegister, data.serializeBinary(), true);
     }
 
-    public login(phone: string, phoneCode: string, phoneCodeHash: string): Promise<AuthAuthorization.AsObject> {
+    public login(phone: string, phoneCode: string, phoneCodeHash: string): Promise<AuthAuthorization.AsObject | AccountPassword> {
         const data = new AuthLogin();
         data.setPhone(phone);
         data.setPhonecode(phoneCode);
         data.setPhonecodehash(phoneCodeHash);
-        return this.server.send(C_MSG.AuthLogin, data.serializeBinary(), true)/*.catch((err) => {
-            if (err.code === C_ERR.ErrCodeAlreadyExists && err.items === C_ERR_ITEM.ErrItemBindUser) {
-                return this.logout('');
-            }
-            return err;
-        })*/;
+        return this.server.send(C_MSG.AuthLogin, data.serializeBinary(), true);
+    }
+
+    public loginByPassword(inputPassword: InputPassword): Promise<AuthAuthorization.AsObject> {
+        const data = new AuthCheckPassword();
+        data.setPassword(inputPassword);
+        return this.server.send(C_MSG.AuthCheckPassword, data.serializeBinary(), true);
     }
 
     public authRecall(): Promise<AuthRecalled.AsObject> {
@@ -721,19 +722,15 @@ export default class SDK {
 
     public contactSearch(query: string): Promise<UsersMany.AsObject> {
         const data = new ContactsSearch();
-        // @ts-ignore
-        const encoder = new TextEncoder("utf-8");
-        data.setQ(encoder.encode(query));
+        data.setQ(query);
         return this.server.send(C_MSG.ContactsSearch, data.serializeBinary(), true);
     }
 
     public contactAdd(inputUser: InputUser, firstName: string, lastName: string, phone: string): Promise<any> {
         const data = new ContactsAdd();
-        // @ts-ignore
-        const encoder = new TextEncoder("utf-8");
-        data.setFirstname(encoder.encode(firstName));
-        data.setLastname(encoder.encode(lastName));
-        data.setPhone(encoder.encode(phone));
+        data.setFirstname(firstName);
+        data.setLastname(lastName);
+        data.setPhone(phone);
         data.setUser(inputUser);
         return this.server.send(C_MSG.ContactsAdd, data.serializeBinary(), true);
     }
@@ -766,11 +763,21 @@ export default class SDK {
         return this.server.send(C_MSG.AccountGetPassword, data.serializeBinary(), true);
     }
 
-    public genSrpHash(password: string, algorithm: number, algorithmData: string): Promise<Uint8Array> {
+    public accountSetPassword(algorithm: number, algorithmData: Uint8Array, passwordHash: Uint8Array | undefined, hint: string, passwordInput?: InputPassword): Promise<Bool.AsObject> {
+        const data = new AccountUpdatePasswordSettings();
+        data.setAlgorithm(algorithm);
+        data.setAlgorithmdata(algorithmData);
+        data.setPasswordhash(passwordHash ? passwordHash : new Uint8Array(0));
+        data.setHint(hint);
+        data.setPassword(passwordInput);
+        return this.server.send(C_MSG.AccountUpdatePasswordSettings, data.serializeBinary(), true);
+    }
+
+    public genSrpHash(password: string, algorithm: number, algorithmData: Uint8Array): Promise<Uint8Array> {
         return this.server.genSrpHash(password, algorithm, algorithmData);
     }
 
-    public genInputPassword(password: string, accountPassword: AccountPassword): Promise<InputPassword.AsObject> {
+    public genInputPassword(password: string, accountPassword: AccountPassword): Promise<InputPassword> {
         return this.server.genInputPassword(password, accountPassword.serializeBinary());
     }
 

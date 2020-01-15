@@ -520,9 +520,9 @@ proto.msg.ContactsAdd.prototype.toObject = function(opt_includeInstance) {
 proto.msg.ContactsAdd.toObject = function(includeInstance, msg) {
   var f, obj = {
     user: (f = msg.getUser()) && chat_core_types_pb.InputUser.toObject(includeInstance, f),
-    firstname: msg.getFirstname_asB64(),
-    lastname: msg.getLastname_asB64(),
-    phone: msg.getPhone_asB64()
+    firstname: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+    lastname: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
+    phone: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -565,15 +565,15 @@ proto.msg.ContactsAdd.deserializeBinaryFromReader = function(msg, reader) {
       msg.setUser(value);
       break;
     case 2:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      var value = /** @type {string} */ (reader.readString());
       msg.setFirstname(value);
       break;
     case 3:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      var value = /** @type {string} */ (reader.readString());
       msg.setLastname(value);
       break;
     case 4:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      var value = /** @type {string} */ (reader.readString());
       msg.setPhone(value);
       break;
     default:
@@ -613,23 +613,23 @@ proto.msg.ContactsAdd.serializeBinaryToWriter = function(message, writer) {
       chat_core_types_pb.InputUser.serializeBinaryToWriter
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 2));
+  f = /** @type {string} */ (jspb.Message.getField(message, 2));
   if (f != null) {
-    writer.writeBytes(
+    writer.writeString(
       2,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 3));
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
   if (f != null) {
-    writer.writeBytes(
+    writer.writeString(
       3,
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 4));
+  f = /** @type {string} */ (jspb.Message.getField(message, 4));
   if (f != null) {
-    writer.writeBytes(
+    writer.writeString(
       4,
       f
     );
@@ -675,40 +675,16 @@ proto.msg.ContactsAdd.prototype.hasUser = function() {
 
 
 /**
- * required bytes FirstName = 2;
- * @return {!(string|Uint8Array)}
- */
-proto.msg.ContactsAdd.prototype.getFirstname = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * required bytes FirstName = 2;
- * This is a type-conversion wrapper around `getFirstname()`
+ * required string FirstName = 2;
  * @return {string}
  */
-proto.msg.ContactsAdd.prototype.getFirstname_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getFirstname()));
+proto.msg.ContactsAdd.prototype.getFirstname = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
- * required bytes FirstName = 2;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getFirstname()`
- * @return {!Uint8Array}
- */
-proto.msg.ContactsAdd.prototype.getFirstname_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getFirstname()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
+ * @param {string} value
  * @return {!proto.msg.ContactsAdd} returns this
  */
 proto.msg.ContactsAdd.prototype.setFirstname = function(value) {
@@ -735,40 +711,16 @@ proto.msg.ContactsAdd.prototype.hasFirstname = function() {
 
 
 /**
- * optional bytes LastName = 3;
- * @return {!(string|Uint8Array)}
- */
-proto.msg.ContactsAdd.prototype.getLastname = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * optional bytes LastName = 3;
- * This is a type-conversion wrapper around `getLastname()`
+ * optional string LastName = 3;
  * @return {string}
  */
-proto.msg.ContactsAdd.prototype.getLastname_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getLastname()));
+proto.msg.ContactsAdd.prototype.getLastname = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /**
- * optional bytes LastName = 3;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getLastname()`
- * @return {!Uint8Array}
- */
-proto.msg.ContactsAdd.prototype.getLastname_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getLastname()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
+ * @param {string} value
  * @return {!proto.msg.ContactsAdd} returns this
  */
 proto.msg.ContactsAdd.prototype.setLastname = function(value) {
@@ -795,40 +747,16 @@ proto.msg.ContactsAdd.prototype.hasLastname = function() {
 
 
 /**
- * optional bytes Phone = 4;
- * @return {!(string|Uint8Array)}
- */
-proto.msg.ContactsAdd.prototype.getPhone = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * optional bytes Phone = 4;
- * This is a type-conversion wrapper around `getPhone()`
+ * optional string Phone = 4;
  * @return {string}
  */
-proto.msg.ContactsAdd.prototype.getPhone_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getPhone()));
+proto.msg.ContactsAdd.prototype.getPhone = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
 /**
- * optional bytes Phone = 4;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getPhone()`
- * @return {!Uint8Array}
- */
-proto.msg.ContactsAdd.prototype.getPhone_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getPhone()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
+ * @param {string} value
  * @return {!proto.msg.ContactsAdd} returns this
  */
 proto.msg.ContactsAdd.prototype.setPhone = function(value) {
@@ -1688,7 +1616,7 @@ proto.msg.ContactsSearch.prototype.toObject = function(opt_includeInstance) {
  */
 proto.msg.ContactsSearch.toObject = function(includeInstance, msg) {
   var f, obj = {
-    q: msg.getQ_asB64()
+    q: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -1726,7 +1654,7 @@ proto.msg.ContactsSearch.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      var value = /** @type {string} */ (reader.readString());
       msg.setQ(value);
       break;
     default:
@@ -1758,9 +1686,9 @@ proto.msg.ContactsSearch.prototype.serializeBinary = function() {
  */
 proto.msg.ContactsSearch.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 1));
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeBytes(
+    writer.writeString(
       1,
       f
     );
@@ -1769,40 +1697,16 @@ proto.msg.ContactsSearch.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * required bytes Q = 1;
- * @return {!(string|Uint8Array)}
- */
-proto.msg.ContactsSearch.prototype.getQ = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * required bytes Q = 1;
- * This is a type-conversion wrapper around `getQ()`
+ * required string Q = 1;
  * @return {string}
  */
-proto.msg.ContactsSearch.prototype.getQ_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getQ()));
+proto.msg.ContactsSearch.prototype.getQ = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * required bytes Q = 1;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getQ()`
- * @return {!Uint8Array}
- */
-proto.msg.ContactsSearch.prototype.getQ_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getQ()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
+ * @param {string} value
  * @return {!proto.msg.ContactsSearch} returns this
  */
 proto.msg.ContactsSearch.prototype.setQ = function(value) {

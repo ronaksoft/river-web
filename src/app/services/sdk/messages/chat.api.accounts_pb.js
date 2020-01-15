@@ -4722,7 +4722,7 @@ proto.msg.AccountUpdatePasswordSettings.toObject = function(includeInstance, msg
     passwordhash: msg.getPasswordhash_asB64(),
     algorithm: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
     algorithmdata: msg.getAlgorithmdata_asB64(),
-    hint: msg.getHint_asB64()
+    hint: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -4777,7 +4777,7 @@ proto.msg.AccountUpdatePasswordSettings.deserializeBinaryFromReader = function(m
       msg.setAlgorithmdata(value);
       break;
     case 6:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      var value = /** @type {string} */ (reader.readString());
       msg.setHint(value);
       break;
     default:
@@ -4838,9 +4838,9 @@ proto.msg.AccountUpdatePasswordSettings.serializeBinaryToWriter = function(messa
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 6));
+  f = /** @type {string} */ (jspb.Message.getField(message, 6));
   if (f != null) {
-    writer.writeBytes(
+    writer.writeString(
       6,
       f
     );
@@ -5042,40 +5042,16 @@ proto.msg.AccountUpdatePasswordSettings.prototype.hasAlgorithmdata = function() 
 
 
 /**
- * optional bytes Hint = 6;
- * @return {!(string|Uint8Array)}
- */
-proto.msg.AccountUpdatePasswordSettings.prototype.getHint = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
-};
-
-
-/**
- * optional bytes Hint = 6;
- * This is a type-conversion wrapper around `getHint()`
+ * optional string Hint = 6;
  * @return {string}
  */
-proto.msg.AccountUpdatePasswordSettings.prototype.getHint_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getHint()));
+proto.msg.AccountUpdatePasswordSettings.prototype.getHint = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
 };
 
 
 /**
- * optional bytes Hint = 6;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getHint()`
- * @return {!Uint8Array}
- */
-proto.msg.AccountUpdatePasswordSettings.prototype.getHint_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getHint()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
+ * @param {string} value
  * @return {!proto.msg.AccountUpdatePasswordSettings} returns this
  */
 proto.msg.AccountUpdatePasswordSettings.prototype.setHint = function(value) {
@@ -5133,7 +5109,7 @@ proto.msg.AccountPasswordSettings.prototype.toObject = function(opt_includeInsta
  */
 proto.msg.AccountPasswordSettings.toObject = function(includeInstance, msg) {
   var f, obj = {
-    hint: msg.getHint_asB64()
+    hint: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -5171,7 +5147,7 @@ proto.msg.AccountPasswordSettings.deserializeBinaryFromReader = function(msg, re
     var field = reader.getFieldNumber();
     switch (field) {
     case 2:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      var value = /** @type {string} */ (reader.readString());
       msg.setHint(value);
       break;
     default:
@@ -5203,9 +5179,9 @@ proto.msg.AccountPasswordSettings.prototype.serializeBinary = function() {
  */
 proto.msg.AccountPasswordSettings.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 2));
+  f = /** @type {string} */ (jspb.Message.getField(message, 2));
   if (f != null) {
-    writer.writeBytes(
+    writer.writeString(
       2,
       f
     );
@@ -5214,40 +5190,16 @@ proto.msg.AccountPasswordSettings.serializeBinaryToWriter = function(message, wr
 
 
 /**
- * required bytes Hint = 2;
- * @return {!(string|Uint8Array)}
- */
-proto.msg.AccountPasswordSettings.prototype.getHint = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * required bytes Hint = 2;
- * This is a type-conversion wrapper around `getHint()`
+ * required string Hint = 2;
  * @return {string}
  */
-proto.msg.AccountPasswordSettings.prototype.getHint_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getHint()));
+proto.msg.AccountPasswordSettings.prototype.getHint = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
- * required bytes Hint = 2;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getHint()`
- * @return {!Uint8Array}
- */
-proto.msg.AccountPasswordSettings.prototype.getHint_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getHint()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
+ * @param {string} value
  * @return {!proto.msg.AccountPasswordSettings} returns this
  */
 proto.msg.AccountPasswordSettings.prototype.setHint = function(value) {
@@ -5306,7 +5258,7 @@ proto.msg.AccountPassword.prototype.toObject = function(opt_includeInstance) {
 proto.msg.AccountPassword.toObject = function(includeInstance, msg) {
   var f, obj = {
     haspassword: (f = jspb.Message.getBooleanField(msg, 1)) == null ? undefined : f,
-    hint: msg.getHint_asB64(),
+    hint: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
     algorithm: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
     algorithmdata: msg.getAlgorithmdata_asB64(),
     srpb: msg.getSrpb_asB64(),
@@ -5353,7 +5305,7 @@ proto.msg.AccountPassword.deserializeBinaryFromReader = function(msg, reader) {
       msg.setHaspassword(value);
       break;
     case 2:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      var value = /** @type {string} */ (reader.readString());
       msg.setHint(value);
       break;
     case 3:
@@ -5412,9 +5364,9 @@ proto.msg.AccountPassword.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {!(string|Uint8Array)} */ (jspb.Message.getField(message, 2));
+  f = /** @type {string} */ (jspb.Message.getField(message, 2));
   if (f != null) {
-    writer.writeBytes(
+    writer.writeString(
       2,
       f
     );
@@ -5494,40 +5446,16 @@ proto.msg.AccountPassword.prototype.hasHaspassword = function() {
 
 
 /**
- * optional bytes Hint = 2;
- * @return {!(string|Uint8Array)}
- */
-proto.msg.AccountPassword.prototype.getHint = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * optional bytes Hint = 2;
- * This is a type-conversion wrapper around `getHint()`
+ * optional string Hint = 2;
  * @return {string}
  */
-proto.msg.AccountPassword.prototype.getHint_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getHint()));
+proto.msg.AccountPassword.prototype.getHint = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
- * optional bytes Hint = 2;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getHint()`
- * @return {!Uint8Array}
- */
-proto.msg.AccountPassword.prototype.getHint_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getHint()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
+ * @param {string} value
  * @return {!proto.msg.AccountPassword} returns this
  */
 proto.msg.AccountPassword.prototype.setHint = function(value) {

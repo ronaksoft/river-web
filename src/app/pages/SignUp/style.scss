@@ -496,9 +496,10 @@ input {
 }
 
 html[direction="rtl"] {
-  .login-page-container .login-wrapper .input-wrapper .qr-link {
+  .login-page-container .login-wrapper .input-wrapper .qr-link, .login-page-container .login-wrapper .f-password.text-input {
     direction: rtl;
   }
+
 }
 
 html[theme="dark"],

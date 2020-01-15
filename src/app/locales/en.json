@@ -49,7 +49,11 @@
     "from": "From",
     "expand": "Expand",
     "collapse": "Collapse",
-    "edited": "edited"
+    "edited": "edited",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "deactivate_change": "Change/Deactivate",
+    "password": "Password"
   },
   "chat": {
     "search": "Search",
@@ -143,6 +147,7 @@
     "account_phone": "Account ({0})",
     "data_and_storage": "Data and Storage",
     "active_sessions": "Active Sessions",
+    "two_step_verification": "Two-Step Verification",
     "privacy_and_security": "Privacy and Security",
     "label": "Label",
     "theme": "Theme",
@@ -226,10 +231,22 @@
       "note": "all your River contacts will get your new number added to their address book, provided they had your old number and you haven’t blocked them in River.",
       "enter_new_number": "Enter new number",
       "note_2": "We will send an SMS  with a confirmation code to your new number.",
-      "enter_password": "Enter 2FA password",
-      "note_2fa": "2 Factor Authentication Password",
+      "enter_password": "Enter password",
+      "note_2fa": "Two Step Verification Password",
       "phone_number_changed": "Your number changed to {0}",
       "phone_already_exists": "Phone already exists!"
+    },
+    "2fa": {
+      "note": "You can set a password that will be required when you log in on a new device in addition to the code you get in the SMS.",
+      "old_password": "Old Password",
+      "password": "Password",
+      "password_hint": "Min 6 characters, shouldn't be in Hint",
+      "confirm_password": "Confirm Password",
+      "hint": "Hint",
+      "has_password_note": "Two Step Verification is activated on your account, You can change your pass phrase or deactivated it anytime.",
+      "pass_is_incorrect": "Password is incorrect",
+      "password_successfully_changed": "Password successfully changed",
+      "password_successfully_removed": "Password successfully removed"
     }
   },
   "contact": {

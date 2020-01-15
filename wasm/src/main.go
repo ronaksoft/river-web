@@ -156,6 +156,12 @@ func fnGenInputPassword(this js.Value, inps []js.Value) interface{} {
 		id := args[0].Int()
 		pass, err := base64.StdEncoding.DecodeString(args[1].String())
 		accountPass, err2 := base64.StdEncoding.DecodeString(args[2].String())
+		if err != nil {
+			fmt.Println(err)
+		}
+		if err2 != nil {
+			fmt.Println(err2)
+		}
 		if err == nil && err2 == nil {
 			res := river.GenInputPassword(pass, accountPass)
 			js.Global().Call("fnGenInputPasswordCallback", id, base64.StdEncoding.EncodeToString(res))

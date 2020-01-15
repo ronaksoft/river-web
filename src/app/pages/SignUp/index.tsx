@@ -37,6 +37,8 @@ import {modifyCode} from "./utils";
 
 import './tel-input.css';
 import './style.scss';
+import {AuthAuthorization} from "../../services/sdk/messages/chat.api.auth_pb";
+import {AccountPassword} from "../../services/sdk/messages/chat.api.accounts_pb";
 
 function getChromeVersion() {
     const raw = window.navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./);
@@ -63,6 +65,7 @@ interface IProps {
 }
 
 interface IState {
+    accountPassword?: AccountPassword;
     anchorEl: any;
     code: string;
     countdown: number;
@@ -71,6 +74,7 @@ interface IState {
     lName: string;
     languageDialogOpen: boolean;
     loading: boolean;
+    password: string;
     phone?: string;
     phoneHash?: string;
     sendToPhone: boolean;
@@ -119,6 +123,7 @@ class SignUp extends React.Component<IProps, IState> {
             lName: '',
             languageDialogOpen: false,
             loading: false,
+            password: '',
             phone: '',
             phoneHash: '',
             qrCodeOpen: false,
@@ -231,11 +236,12 @@ class SignUp extends React.Component<IProps, IState> {
                                 <div className="qr-link"
                                      onClick={this.qrCodeDialogOpenHandler}>{i18n.t('sign_up.scan_qr_code')}</div>
                             </div>}
-                            {step !== 'workspace' && <React.Fragment>
+                            {Boolean(step !== 'workspace') && <React.Fragment>
                                 <IntlTelInput preferredCountries={[]} defaultCountry={'ir'} value={this.state.phone}
-                                              inputClassName="f-phone" disabled={this.state.loading || step === 'code'}
+                                              inputClassName="f-phone"
+                                              disabled={this.state.loading || step === 'code' || step === 'password'}
                                               autoHideDialCode={false} onPhoneNumberChange={this.handleOnChange}
-                                              onKeyDown={this.sendCodeKeyDown} nationalMode={false}
+                                              onKeyDown={this.sendCodeKeyDownHandler} nationalMode={false}
                                               fieldId="input-phone"/>
                                 {Boolean(step === 'phone' && ElectronService.isElectron() && false) &&
                                 <div className="grey-link">
@@ -243,7 +249,7 @@ class SignUp extends React.Component<IProps, IState> {
                                         onClick={this.changeWorkspaceHandler}>{i18n.t('sign_up.change_workspace')}</span>
                                 </div>}
                                 {Boolean((this.state.tries > 0 && (step === 'code' || step === 'register')) || (countdown < 45)) &&
-                                <div className="try-another-phone" onClick={this.tryAnotherPhone}>
+                                <div className="try-another-phone" onClick={this.tryAnotherPhoneHandler}>
                                     <RefreshRounded/>
                                     <label>
                                         {i18n.t('sign_up.try_another_phone')}
@@ -258,8 +264,8 @@ class SignUp extends React.Component<IProps, IState> {
                                         className="code f-code text-input"
                                         type="text"
                                         fullWidth={true}
-                                        value={this.state.code} onChange={this.codeOnChange}
-                                        onKeyDown={this.confirmKeyDown}
+                                        value={this.state.code} onChange={this.codeChangeHandler}
+                                        onKeyDown={this.confirmKeyDownHandler}
                                     />
                                     <div className="countdown">
                                         <TimerRounded/><span
@@ -267,11 +273,24 @@ class SignUp extends React.Component<IProps, IState> {
                                     </div>
                                     {sendToPhone &&
                                     <div className={'grey-link ' + (countdown >= 45 ? 'disabled' : '')}>
-                                        <span onClick={this.resendCode}>{i18n.t('sign_up.resend_code')}</span>
+                                        <span onClick={this.resendCodeHandler}>{i18n.t('sign_up.resend_code')}</span>
                                     </div>}
                                     {!sendToPhone && <div className="grey-link">
-                                        <span onClick={this.resendCode}>{i18n.t('sign_up.send_as_sms')}</span>
+                                        <span onClick={this.resendCodeHandler}>{i18n.t('sign_up.send_as_sms')}</span>
                                     </div>}
+                                </div>}
+                                {step === 'password' &&
+                                <div className="input-wrapper validate-input">
+                                    <TextField className="f-password text-input" type="password"
+                                               label={i18n.t('general.password')}
+                                               margin="none" variant="outlined" autoComplete="off"
+                                               fullWidth={true}
+                                               value={this.state.password}
+                                               onKeyDown={this.passwordKeyDownHandler}
+                                               onChange={this.passwordChangeHandler}
+                                               helperText={this.state.accountPassword ? this.state.accountPassword.getHint() : ''}
+                                    />
+                                    <span className="focus-input"/>
                                 </div>}
                                 {step === 'register' &&
                                 <div className="input-wrapper validate-input">
@@ -280,8 +299,8 @@ class SignUp extends React.Component<IProps, IState> {
                                                margin="none" variant="outlined" autoComplete="off"
                                                fullWidth={true}
                                                value={this.state.fName}
-                                               onKeyDown={this.registerKeyDown}
-                                               onChange={this.fNameOnChange}/>
+                                               onKeyDown={this.registerKeyDownHandler}
+                                               onChange={this.firstNameChangeHandler}/>
                                     <span className="focus-input"/>
                                 </div>}
                                 {step === 'register' &&
@@ -291,8 +310,8 @@ class SignUp extends React.Component<IProps, IState> {
                                                margin="none" variant="outlined" autoComplete="off"
                                                fullWidth={true}
                                                value={this.state.lName}
-                                               onKeyDown={this.registerKeyDown}
-                                               onChange={this.lNameOnChange}/>
+                                               onKeyDown={this.registerKeyDownHandler}
+                                               onChange={this.lastNameChangeHandler}/>
                                     <span className="focus-input"/>
                                 </div>}
                             </React.Fragment>}
@@ -304,19 +323,25 @@ class SignUp extends React.Component<IProps, IState> {
                                 </div>}
                                 {step === 'phone' && <React.Fragment>
                                     <div className={'login-form-btn' + (this.state.loading ? ' disabled' : '')}
-                                         onClick={this.sendCode}>
+                                         onClick={this.sendCodeHandler}>
                                         <ArrowForwardRounded/>
                                     </div>
                                 </React.Fragment>}
                                 {step === 'code' && <React.Fragment>
                                     <div className={'login-form-btn' + (this.state.loading ? ' disabled' : '')}
-                                         onClick={this.confirmCode}>
+                                         onClick={this.confirmCodeHandler}>
+                                        <ArrowForwardRounded/>
+                                    </div>
+                                </React.Fragment>}
+                                {step === 'password' && <React.Fragment>
+                                    <div className={'login-form-btn' + (this.state.loading ? ' disabled' : '')}
+                                         onClick={this.submitPasswordHandler}>
                                         <ArrowForwardRounded/>
                                     </div>
                                 </React.Fragment>}
                                 {step === 'register' &&
                                 <div className={'login-form-btn' + (this.state.loading ? ' disabled' : '')}
-                                     onClick={this.register}>
+                                     onClick={this.registerHandler}>
                                     <ArrowForwardRounded/>
                                 </div>}
                             </div>
@@ -447,7 +472,7 @@ class SignUp extends React.Component<IProps, IState> {
         });
     }
 
-    private sendCode = () => {
+    private sendCodeHandler = () => {
         if (!this.state.phone) {
             return;
         }
@@ -472,24 +497,24 @@ class SignUp extends React.Component<IProps, IState> {
         });
     }
 
-    private sendCodeKeyDown = (e: any) => {
+    private sendCodeKeyDownHandler = (e: any) => {
         if (e.key === 'Enter') {
-            this.sendCode();
+            this.sendCodeHandler();
         }
     }
 
-    private codeOnChange = (e: any) => {
+    private codeChangeHandler = (e: any) => {
         const data = modifyCode(e.target.value);
         this.setState({
             code: data.code,
         }, () => {
             if (data.len === codeLen) {
-                this.confirmCode();
+                this.confirmCodeHandler();
             }
         });
     }
 
-    private confirmCode = () => {
+    private confirmCodeHandler = () => {
         if (this.state.loading) {
             return;
         }
@@ -514,24 +539,19 @@ class SignUp extends React.Component<IProps, IState> {
             });
         } else {
             this.sdk.login(phone.slice(1), code, phoneHash).then((res) => {
-                const info = this.sdk.loadConnInfo();
-                info.UserID = res.user.id;
-                info.FirstName = res.user.firstname;
-                info.LastName = res.user.lastname;
-                info.Phone = this.state.phone;
-                this.sdk.setConnInfo(info);
-                UserRepo.getInstance().importBulk(false, [res.user]);
-                this.setState({
-                    loading: false,
-                    tries: this.state.tries + 1,
-                });
-                this.props.history.push('/chat/null');
-                this.dispatchWSOpenEvent();
-                this.notification.initToken().then((token) => {
-                    this.sdk.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
-                }).catch(() => {
-                    this.sdk.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1');
-                });
+                // @ts-ignore
+                if (res.user) {
+                    this.login(res as AuthAuthorization.AsObject);
+                } else {
+                    this.setState({
+                        accountPassword: res as AccountPassword,
+                        loading: false,
+                        step: 'password',
+                    }, () => {
+                        this.stopCountdown();
+                        this.focus('f-password');
+                    });
+                }
             }).catch((err) => {
                 window.console.debug(err);
                 this.setState({
@@ -566,7 +586,28 @@ class SignUp extends React.Component<IProps, IState> {
         }
     }
 
-    private resendCode = () => {
+    private login(res: AuthAuthorization.AsObject) {
+        const info = this.sdk.loadConnInfo();
+        info.UserID = res.user.id;
+        info.FirstName = res.user.firstname;
+        info.LastName = res.user.lastname;
+        info.Phone = this.state.phone;
+        this.sdk.setConnInfo(info);
+        UserRepo.getInstance().importBulk(false, [res.user]);
+        this.setState({
+            loading: false,
+            tries: this.state.tries + 1,
+        });
+        this.props.history.push('/chat/null');
+        this.dispatchWSOpenEvent();
+        this.notification.initToken().then((token) => {
+            this.sdk.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
+        }).catch(() => {
+            this.sdk.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1');
+        });
+    }
+
+    private resendCodeHandler = () => {
         if (this.state.loading) {
             return;
         }
@@ -590,7 +631,7 @@ class SignUp extends React.Component<IProps, IState> {
         });
     }
 
-    private confirmKeyDown = (e: any) => {
+    private confirmKeyDownHandler = (e: any) => {
         if (e.key === 'Backspace') {
             e.stopPropagation();
             e.preventDefault();
@@ -599,11 +640,11 @@ class SignUp extends React.Component<IProps, IState> {
                 code: data.code,
             });
         } else if (e.key === 'Enter') {
-            this.confirmCode();
+            this.confirmCodeHandler();
         }
     }
 
-    private tryAnotherPhone = () => {
+    private tryAnotherPhoneHandler = () => {
         this.setState({
             code: codePlaceholder,
             phone: '+98',
@@ -617,19 +658,25 @@ class SignUp extends React.Component<IProps, IState> {
         });
     }
 
-    private fNameOnChange = (e: any) => {
+    private firstNameChangeHandler = (e: any) => {
         this.setState({
             fName: e.target.value,
         });
     }
 
-    private lNameOnChange = (e: any) => {
+    private lastNameChangeHandler = (e: any) => {
         this.setState({
             lName: e.target.value,
         });
     }
 
-    private register = () => {
+    private passwordChangeHandler = (e: any) => {
+        this.setState({
+            password: e.target.value,
+        });
+    }
+
+    private registerHandler = () => {
         const {phone, phoneHash, code, fName, lName} = this.state;
         if (!phone || !phoneHash || code.length < codeLen) {
             return;
@@ -673,9 +720,15 @@ class SignUp extends React.Component<IProps, IState> {
         });
     }
 
-    private registerKeyDown = (e: any) => {
+    private registerKeyDownHandler = (e: any) => {
         if (e.key === 'Enter') {
-            this.register();
+            this.registerHandler();
+        }
+    }
+
+    private passwordKeyDownHandler = (e: any) => {
+        if (e.key === 'Enter') {
+            this.submitPasswordHandler();
         }
     }
 
@@ -749,7 +802,7 @@ class SignUp extends React.Component<IProps, IState> {
     private initPhoneInput() {
         const el = document.getElementById('input-phone');
         if (el) {
-            el.onkeydown = this.sendCodeKeyDown;
+            el.onkeydown = this.sendCodeKeyDownHandler;
         }
     }
 
@@ -886,6 +939,20 @@ class SignUp extends React.Component<IProps, IState> {
                 this.devToolsRef.open();
             }
         }
+    }
+
+    private submitPasswordHandler = () => {
+        const {password, accountPassword} = this.state;
+        if (password.length === 0 || !accountPassword) {
+            return;
+        }
+        const srpId = accountPassword.getSrpid() || '';
+        this.sdk.genInputPassword(password, accountPassword).then((inputPassword) => {
+            inputPassword.setSrpid(srpId);
+            this.sdk.loginByPassword(inputPassword).then((res) => {
+                this.login(res);
+            });
+        });
     }
 }
 

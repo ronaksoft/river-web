@@ -17,11 +17,16 @@
     align-items: center;
     justify-content: center;
     padding: 12px 0 8px;
+
+    svg {
+      font-size: 100px;
+      color: var(--river);
+    }
   }
 
   .change-phone-text,
   .change-phone-success {
-    line-height: 1.2em;
+    line-height: 1.3em;
     max-width: 300px;
     padding: 6px 12px;
     font-size: 14px;
@@ -90,13 +95,17 @@
 
 html[direction="rtl"] {
   .change-phone-dialog {
+    direction: rtl;
+
     .change-phone-text {
       direction: rtl;
     }
 
     .change-phone-input {
-      input {
+      input[type=tel] {
         direction: rtl;
+        padding-left: 6px;
+        padding-right: 52px;
       }
     }
   }
@@ -106,10 +115,28 @@ html[direction="rtl"] {
 html[theme="dark"],
 html[theme="dark-night"] {
   .change-phone-dialog {
+    .change-phone-input {
+      input, label, p {
+        color: var(--white);
+      }
+    }
+
+    .change-phone-header, .change-phone-text, .change-phone-success {
+      color: var(--white);
+    }
   }
 }
 
 html[theme="dark-blue"] {
   .change-phone-dialog {
+    .change-phone-input {
+      input, label, p {
+        color: var(--white);
+      }
+    }
+
+    .change-phone-header, .change-phone-text, .change-phone-success {
+      color: var(--white);
+    }
   }
 }

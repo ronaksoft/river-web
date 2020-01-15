@@ -97,6 +97,18 @@
       padding: 16px;
       cursor: pointer;
     }
+
+    .menu-note {
+      padding: 16px;
+      color: #ACB0B4;
+      text-align: justify;
+      font-size: 13px;
+      line-height: 1.2em;
+    }
+
+    .menu-button-wrapper {
+      padding: 16px;
+    }
   }
 
   .version {
@@ -177,8 +189,16 @@
         background-color: #56CCF2;
       }
 
-      &.color-session {
+      &.color-privacy {
         background-color: #F2C94C;
+      }
+
+      &.color-session {
+        background-color: #27AE60;
+      }
+
+      &.color-2fa {
+        background-color: #007AFF;
       }
 
       &.color-label {

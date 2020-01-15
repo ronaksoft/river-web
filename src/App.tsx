@@ -39,6 +39,7 @@ if (isProd) {
 }
 
 const theme = createMuiTheme({
+    direction: localStorage.getItem('river.lang.dir') === 'rtl'? 'rtl' : 'ltr',
     palette: {
         primary: {
             contrastText: '#FFF',

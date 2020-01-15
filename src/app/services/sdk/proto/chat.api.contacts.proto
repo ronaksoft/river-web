@@ -15,9 +15,9 @@ message ContactsImport {
 // @Return: Bool
 message ContactsAdd {
     required InputUser User = 1;
-    required bytes FirstName = 2;
-    optional bytes LastName = 3;
-    optional bytes Phone = 4;
+    required string FirstName = 2;
+    optional string LastName = 3;
+    optional string Phone = 4;
 }
 
 // ContactsGet
@@ -61,7 +61,7 @@ message ContactsGetBlocked {
 // @Function
 // @Returns: UsersMany
 message ContactsSearch {
-    required bytes Q = 1;
+    required string Q = 1;
 }
 
 // BlockedContactsMany

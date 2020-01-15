@@ -1,0 +1,103 @@
+/*
+    Creation Time: 2020 - Jan - 15
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2020
+*/
+
+.tsv-dialog {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .tsv-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 0 8px;
+
+    svg {
+      font-size: 100px;
+      color: var(--river);
+    }
+  }
+
+  .tsv-text,
+  .tsv-success {
+    line-height: 1.3em;
+    max-width: 300px;
+    padding: 6px 12px;
+    font-size: 14px;
+    text-align: justify;
+
+    b {
+      font-weight: bold;
+    }
+  }
+
+  .tsv-success {
+    text-align: center;
+    font-size: 16px;
+    padding: 12px;
+  }
+
+  .tsv-input {
+    padding: 6px 12px 0;
+
+    &.bottom-gap {
+      padding: 6px 12px 12px;
+    }
+  }
+
+  .tsv-gap {
+    flex: 1;
+  }
+}
+
+html[direction="rtl"] {
+  .tsv-dialog {
+    direction: rtl;
+
+    .tsv-text {
+      direction: rtl;
+    }
+
+    .tsv-input {
+      input {
+        direction: rtl;
+      }
+    }
+  }
+}
+
+
+html[theme="dark"],
+html[theme="dark-night"] {
+  .tsv-dialog {
+    .tsv-input {
+      input, label, p {
+        color: var(--white);
+      }
+    }
+
+    .tsv-header, .tsv-text, .tsv-success {
+      color: var(--white);
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .tsv-dialog {
+    .tsv-input {
+      input, label, p {
+        color: var(--white);
+      }
+    }
+
+    .tsv-header, .tsv-text, .tsv-success {
+      color: var(--white);
+    }
+  }
+}

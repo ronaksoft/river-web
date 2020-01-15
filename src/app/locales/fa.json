@@ -48,7 +48,11 @@
     "from": "از",
     "expand": "باز کردن",
     "collapse": "بستن",
-    "edited": "ویرایش"
+    "edited": "ویرایش",
+    "activate": "فعال سازی",
+    "deactivate": "غیر فعال سازی",
+    "deactivate_change": "تغییر/غیر فعال سازی",
+    "password": "رمز"
   },
   "chat": {
     "search": "جستجو",
@@ -139,6 +143,7 @@
     "account_phone": "حساب ({0})",
     "data_and_storage": "داده‌ها و ذخیره‌سازی",
     "active_sessions": "نشست‌های فعال",
+    "two_step_verification": "تایید دومرحله‌ای",
     "privacy_and_security": "حریم خصوصی و امنیت",
     "label": "برچسب",
     "theme": "پوسته",
@@ -226,6 +231,18 @@
       "note_2fa": "پسورد دو مرحله‌ای",
       "phone_number_changed": "شماره شما به {0} تغییر کرد یافت",
       "phone_already_exists": "این شماره در River وجود دارد!"
+    },
+    "2fa": {
+      "note": "پس از ورود به یک دستگاه جدید، علاوه بر کدی که در پیامک دریافت می کنید می توانید رمز عبوری را نیز تعیین کنید.",
+      "old_password": "رمز قدیمی",
+      "password": "رمز",
+      "password_hint": "حداقل ۶ حرف، رمز در \"راهنما\" وجود نداشته باشد",
+      "confirm_password": "تکرار زمر",
+      "hint": "راهنما",
+      "has_password_note": "تایید دومرحله\u200Cای روی حساب شما فعال شده است، شما می‌توانید رمز خود را عوض کنید یا به کلی غیر فعال نمایید.",
+      "pass_is_incorrect": "رمز اشتباه است",
+      "password_successfully_changed": "رمز با موفقیت تغییر کرد",
+      "password_successfully_removed": "رمز با موفقیت حذف شد"
     }
   },
   "contact": {
@@ -312,7 +329,7 @@
     "forwarded_message_from": "پیام هدایت شده از ",
     "forwarded_message": "پیام هدایت شده",
     "joined_river": "به River ملحق شد",
-    "created_the_group": "گروه را ساخت",
+    "created_the_group": "گروه را ساختید",
     "added_a_user": "کاربری را افزود",
     "removed_a_user": "کاربر را حذف کرد",
     "left": "گروه را ترک کرد",

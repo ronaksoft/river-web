@@ -32,6 +32,7 @@ import {
     PaletteRounded,
     PhotoCameraRounded,
     LabelRounded,
+    VerifiedUserRounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import UserAvatar from '../UserAvatar';
@@ -84,11 +85,12 @@ import {IInputPeer} from "../SearchList";
 import {localize} from "../../services/utilities/localize";
 import DevTools from "../DevTools";
 import ChangePhoneModal from "../ChangePhoneModal";
+import TwoStepVerificationModal from "../TwoStepVerificationModal";
 
 import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
 
-export const C_VERSION = '0.29.12';
+export const C_VERSION = '0.29.13';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 export const C_AVATAR_SIZE = 640;
 
@@ -194,6 +196,7 @@ interface IState {
     username: string;
     usernameAvailable: boolean;
     usernameValid: boolean;
+    passwordMode: number;
 }
 
 class SettingsMenu extends React.Component<IProps, IState> {
@@ -219,6 +222,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private downloadManger: DownloadManager;
     private settingsStorageUsageModalRef: SettingsStorageUsageModal | undefined;
     private changePhoneModalRef: ChangePhoneModal | undefined;
+    private twoStepVerificationModalRef: TwoStepVerificationModal | undefined;
     private devToolsRef: DevTools | undefined;
     private electronService: ElectronService;
     private userListDialogRef: UserListDialog | undefined;
@@ -245,6 +249,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             page: '1',
             pageContent: 'none',
             pageSubContent: 'none',
+            passwordMode: 0,
             phone: this.sdk.getConnInfo().Phone || '',
             privacy: cloneDeep(privacyDefault),
             profileCropperOpen: false,
@@ -352,7 +357,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         const {
             avatarMenuAnchorEl, page, pageContent, pageSubContent, user, editProfile, editUsername, bio, firstname,
             lastname, phone, username, usernameAvailable, usernameValid, uploadingPhoto, sessions,
-            confirmDialogOpen, customBackgroundSrc, loading, privacy,
+            confirmDialogOpen, customBackgroundSrc, loading, privacy, passwordMode,
         } = this.state;
         return (
             <div className="setting-menu">
@@ -369,6 +374,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                            onDone={this.props.onReloadDialog}/>
                 <ChangePhoneModal ref={this.changePhoneModalRefHandler} onError={this.props.onError}
                                   onDone={this.changePhoneModalDoneHandler}/>
+                <TwoStepVerificationModal ref={this.twoStepVerificationModalRefHandler} onError={this.props.onError}
+                                          onDone={this.twoStepVerificationModalDoneHandler}/>
                 <UserListDialog ref={this.userListDialogRefHandler} onDone={this.userListDialogDoneHandler}/>
                 <div className={'page-container page-' + page}>
                     <div className="page page-1">
@@ -413,7 +420,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                         <div className="anchor-label">{i18n.t('settings.data_and_storage')}</div>
                                     </div>
                                     <div className="page-anchor" onClick={this.selectPageHandler('privacy')}>
-                                        <div className="icon color-session">
+                                        <div className="icon color-privacy">
                                             <LockRounded/>
                                         </div>
                                         <div className="anchor-label">{i18n.t('settings.privacy_and_security')}</div>
@@ -810,6 +817,14 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                             </div>
                                             <div className="anchor-label">{i18n.t('settings.active_sessions')}</div>
                                         </div>
+                                        <div className="page-anchor anchor-padding-side"
+                                             onClick={this.selectSubPageHandler('2fa')}>
+                                            <div className="icon color-2fa">
+                                                <VerifiedUserRounded/>
+                                            </div>
+                                            <div
+                                                className="anchor-label">{i18n.t('settings.two_step_verification')}</div>
+                                        </div>
                                         <div
                                             className="sub-page-header-alt">{i18n.t('settings.privacy')}</div>
                                         {privacyItems.map((item) => {
@@ -971,7 +986,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                             </div>}
                             {loading && <Loading/>}
                         </React.Fragment>}
-                        {privacyItems.filter(o => o.id === pageSubContent).map((item) => {
+                        {pageSubContent.indexOf('privacy_') > -1 && privacyItems.filter(o => o.id === pageSubContent).map((item) => {
                             return (
                                 <React.Fragment key={item.id}>
                                     <div className="menu-header">
@@ -1027,6 +1042,27 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                 </React.Fragment>
                             );
                         })}
+                        {Boolean(pageSubContent === '2fa') && <React.Fragment>
+                            <div className="menu-header">
+                                <IconButton
+                                    onClick={this.onSubPrevHandler}
+                                >
+                                    <KeyboardBackspaceRounded/>
+                                </IconButton>
+                                <label>{i18n.t('settings.two_step_verification')}</label>
+                            </div>
+                            <div className="menu-content">
+                                <div className="menu-note">{i18n.t('settings.2fa.note')}</div>
+                                <div className="menu-button-wrapper">
+                                    <Button color="secondary" fullWidth={true} disabled={passwordMode === 0}
+                                            onClick={this.twoStepVerificationModalOpenHandler}>
+                                        {Boolean(passwordMode === 0) && i18n.t('general.loading')}
+                                        {Boolean(passwordMode === 1) && i18n.t('general.activate')}
+                                        {Boolean(passwordMode === 2) && i18n.t('general.deactivate_change')}
+                                    </Button>
+                                </div>
+                            </div>
+                        </React.Fragment>}
                     </div>
                 </div>
                 <Menu
@@ -1153,6 +1189,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.setState({
             page: '2',
             pageSubContent: 'none',
+            passwordMode: 0,
         }, () => {
             this.dispatchSubPlaceChange();
         });
@@ -1190,6 +1227,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
         });
         if (target === 'session') {
             this.getSessions();
+        }
+        if (target === '2fa') {
+            this.getPasswordSettings();
         }
     }
 
@@ -2025,6 +2065,29 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private changePhoneModalDoneHandler = () => {
         this.setState({
             phone: this.sdk.getConnInfo().Phone || '',
+        });
+    }
+
+    private twoStepVerificationModalRefHandler = (ref: any) => {
+        this.twoStepVerificationModalRef = ref;
+    }
+
+    private twoStepVerificationModalOpenHandler = () => {
+        if (!this.twoStepVerificationModalRef) {
+            return;
+        }
+        this.twoStepVerificationModalRef.openDialog(this.state.passwordMode === 2);
+    }
+
+    private twoStepVerificationModalDoneHandler = () => {
+        this.getPasswordSettings();
+    }
+
+    private getPasswordSettings() {
+        this.sdk.accountGetPassword().then((res) => {
+            this.setState({
+                passwordMode: res.getHaspassword() ? 2 : 1,
+            });
         });
     }
 }

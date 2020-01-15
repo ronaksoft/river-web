@@ -1,3 +1,9 @@
+## 0.29.13
+* UpdateManager improved
+* ChangePhone implemented
+* Two Step Verification implemented
+* Login page with password implemented
+
 ## 0.29.12
 * Start bot implemented
 

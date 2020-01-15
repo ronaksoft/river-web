@@ -608,10 +608,8 @@ export class AccountUpdatePasswordSettings extends jspb.Message {
 
   hasHint(): boolean;
   clearHint(): void;
-  getHint(): Uint8Array | string;
-  getHint_asU8(): Uint8Array;
-  getHint_asB64(): string;
-  setHint(value: Uint8Array | string): void;
+  getHint(): string | undefined;
+  setHint(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountUpdatePasswordSettings.AsObject;
@@ -629,17 +627,15 @@ export namespace AccountUpdatePasswordSettings {
     passwordhash: Uint8Array | string,
     algorithm?: number,
     algorithmdata: Uint8Array | string,
-    hint: Uint8Array | string,
+    hint?: string,
   }
 }
 
 export class AccountPasswordSettings extends jspb.Message {
   hasHint(): boolean;
   clearHint(): void;
-  getHint(): Uint8Array | string;
-  getHint_asU8(): Uint8Array;
-  getHint_asB64(): string;
-  setHint(value: Uint8Array | string): void;
+  getHint(): string | undefined;
+  setHint(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountPasswordSettings.AsObject;
@@ -653,7 +649,7 @@ export class AccountPasswordSettings extends jspb.Message {
 
 export namespace AccountPasswordSettings {
   export type AsObject = {
-    hint: Uint8Array | string,
+    hint?: string,
   }
 }
 
@@ -665,10 +661,8 @@ export class AccountPassword extends jspb.Message {
 
   hasHint(): boolean;
   clearHint(): void;
-  getHint(): Uint8Array | string;
-  getHint_asU8(): Uint8Array;
-  getHint_asB64(): string;
-  setHint(value: Uint8Array | string): void;
+  getHint(): string | undefined;
+  setHint(value: string): void;
 
   hasAlgorithm(): boolean;
   clearAlgorithm(): void;
@@ -714,7 +708,7 @@ export class AccountPassword extends jspb.Message {
 export namespace AccountPassword {
   export type AsObject = {
     haspassword?: boolean,
-    hint: Uint8Array | string,
+    hint?: string,
     algorithm?: number,
     algorithmdata: Uint8Array | string,
     srpb: Uint8Array | string,

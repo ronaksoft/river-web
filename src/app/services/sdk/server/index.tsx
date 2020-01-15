@@ -180,7 +180,7 @@ export default class Server {
         return promise;
     }
 
-    public genSrpHash(password: string, algorithm: number, algorithmData: string) {
+    public genSrpHash(password: string, algorithm: number, algorithmData: Uint8Array) {
         let internalResolve = null;
         let internalReject = null;
 
@@ -201,7 +201,7 @@ export default class Server {
 
         this.socket.fnGenSrpHash({
             algorithm,
-            algorithmData: uint8ToBase64(encoder.encode(algorithmData)),
+            algorithmData: uint8ToBase64(algorithmData),
             pass: uint8ToBase64(encoder.encode(password)),
             reqId,
         });
@@ -215,7 +215,7 @@ export default class Server {
 
         const reqId = ++this.reqId;
 
-        const promise = new Promise<InputPassword.AsObject>((res, rej) => {
+        const promise = new Promise<InputPassword>((res, rej) => {
             internalResolve = res;
             internalReject = rej;
         });
@@ -574,7 +574,7 @@ export default class Server {
         }
         const req = this.serviceMessagesListeners[reqId];
         if (req && req.resolve) {
-            req.resolve(InputPassword.deserializeBinary(base64ToU8a(data)).toObject());
+            req.resolve(InputPassword.deserializeBinary(base64ToU8a(data)));
         }
     }
 }

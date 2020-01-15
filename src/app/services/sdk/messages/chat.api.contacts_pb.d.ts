@@ -41,24 +41,18 @@ export class ContactsAdd extends jspb.Message {
 
   hasFirstname(): boolean;
   clearFirstname(): void;
-  getFirstname(): Uint8Array | string;
-  getFirstname_asU8(): Uint8Array;
-  getFirstname_asB64(): string;
-  setFirstname(value: Uint8Array | string): void;
+  getFirstname(): string | undefined;
+  setFirstname(value: string): void;
 
   hasLastname(): boolean;
   clearLastname(): void;
-  getLastname(): Uint8Array | string;
-  getLastname_asU8(): Uint8Array;
-  getLastname_asB64(): string;
-  setLastname(value: Uint8Array | string): void;
+  getLastname(): string | undefined;
+  setLastname(value: string): void;
 
   hasPhone(): boolean;
   clearPhone(): void;
-  getPhone(): Uint8Array | string;
-  getPhone_asU8(): Uint8Array;
-  getPhone_asB64(): string;
-  setPhone(value: Uint8Array | string): void;
+  getPhone(): string | undefined;
+  setPhone(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ContactsAdd.AsObject;
@@ -73,9 +67,9 @@ export class ContactsAdd extends jspb.Message {
 export namespace ContactsAdd {
   export type AsObject = {
     user: chat_core_types_pb.InputUser.AsObject,
-    firstname: Uint8Array | string,
-    lastname: Uint8Array | string,
-    phone: Uint8Array | string,
+    firstname?: string,
+    lastname?: string,
+    phone?: string,
   }
 }
 
@@ -198,10 +192,8 @@ export namespace ContactsGetBlocked {
 export class ContactsSearch extends jspb.Message {
   hasQ(): boolean;
   clearQ(): void;
-  getQ(): Uint8Array | string;
-  getQ_asU8(): Uint8Array;
-  getQ_asB64(): string;
-  setQ(value: Uint8Array | string): void;
+  getQ(): string | undefined;
+  setQ(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ContactsSearch.AsObject;
@@ -215,7 +207,7 @@ export class ContactsSearch extends jspb.Message {
 
 export namespace ContactsSearch {
   export type AsObject = {
-    q: Uint8Array | string,
+    q?: string,
   }
 }
 
