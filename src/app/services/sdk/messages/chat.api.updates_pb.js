@@ -10311,7 +10311,7 @@ proto.msg.UpdateUserBlocked.deserializeBinaryFromReader = function(msg, reader) 
       msg.setUpdateid(value);
       break;
     case 1:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setUserid(value);
       break;
     case 2:
@@ -10361,9 +10361,9 @@ proto.msg.UpdateUserBlocked.serializeBinaryToWriter = function(message, writer) 
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 1));
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       1,
       f
     );
@@ -10452,15 +10452,15 @@ proto.msg.UpdateUserBlocked.prototype.hasUpdateid = function() {
 
 /**
  * required int64 UserID = 1;
- * @return {number}
+ * @return {string}
  */
 proto.msg.UpdateUserBlocked.prototype.getUserid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.msg.UpdateUserBlocked} returns this
  */
 proto.msg.UpdateUserBlocked.prototype.setUserid = function(value) {

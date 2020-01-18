@@ -24,7 +24,7 @@ import {
     UpdateNotifySettings,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox,
-    UpdateReadMessagesContents,
+    UpdateReadMessagesContents, UpdateUserBlocked,
     UpdateUsername,
     UpdateUserPhoto,
 } from '../messages/chat.api.updates_pb';
@@ -342,6 +342,20 @@ export default class SyncManager {
                         this.labelRepo.removeFromRange(id, updateLabelItemsRemoved.messageidsList);
                     });
                     this.labelRepo.upsert(removeLabelList);
+                    break;
+                case C_MSG.UpdateUserBlocked:
+                    const updateUserBlocked = UpdateUserBlocked.deserializeBinary(data).toObject();
+                    if (users.hasOwnProperty(updateUserBlocked.userid || '0')) {
+                        users[updateUserBlocked.userid || 0] = kMerge(users[updateUserBlocked.userid || '0'], {
+                            blocked: updateUserBlocked.blocked,
+                            id: updateUserBlocked.userid,
+                        });
+                    } else {
+                        users[updateUserBlocked.userid || 0] = {
+                            blocked: updateUserBlocked.blocked,
+                            id: updateUserBlocked.userid,
+                        };
+                    }
                     break;
                 default:
                     break;

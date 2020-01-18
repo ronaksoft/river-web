@@ -43,9 +43,18 @@
 
     .placeholder-label {
       margin: 24px 0 0;
-      font-size: 15px;
-      font-weight: bold;
-      color: var(--dark);
+      background-color: rgba(0, 0, 0, 0.21);
+      border-radius: 7.5px;
+      padding: 1px 10px 2px 10px;
+      text-align: center;
+      box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.1);
+      font-weight: 400;
+      box-sizing: border-box;
+      color: var(--white);
+      display: inline-block;
+      flex: none;
+      font-size: 12.5px;
+      line-height: 21px;
     }
   }
 }

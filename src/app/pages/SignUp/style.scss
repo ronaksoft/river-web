@@ -299,6 +299,14 @@ input {
     margin-bottom: 44px;
   }
 
+  .sign-up-note {
+    color: var(--grey);
+    line-height: 24px;
+    text-align: justify;
+    padding: 12px 6px 12px;
+    font-size: 16px;
+  }
+
   .river-form {
     .intl-tel-input {
       margin-bottom: 16px;
@@ -524,7 +532,7 @@ html[theme="dark-night"] {
     }
 
     .text-input {
-      label {
+      label, p {
         color: var(--white);
       }
 
@@ -597,7 +605,7 @@ html[theme="dark-blue"] {
     }
 
     .text-input {
-      label {
+      label, p {
         color: var(--white);
       }
 

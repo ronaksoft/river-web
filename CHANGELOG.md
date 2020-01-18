@@ -3,6 +3,8 @@
 * ChangePhone implemented
 * Two Step Verification implemented
 * Login page with password implemented
+* Blocked implemented
+* Known bugs fixed
 
 ## 0.29.12
 * Start bot implemented

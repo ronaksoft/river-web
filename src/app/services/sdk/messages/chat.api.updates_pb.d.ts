@@ -1292,8 +1292,8 @@ export class UpdateUserBlocked extends jspb.Message {
 
   hasUserid(): boolean;
   clearUserid(): void;
-  getUserid(): number | undefined;
-  setUserid(value: number): void;
+  getUserid(): string | undefined;
+  setUserid(value: string): void;
 
   hasBlocked(): boolean;
   clearBlocked(): void;
@@ -1314,7 +1314,7 @@ export namespace UpdateUserBlocked {
   export type AsObject = {
     ucount?: number,
     updateid?: number,
-    userid?: number,
+    userid?: string,
     blocked?: boolean,
   }
 }

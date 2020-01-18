@@ -23,12 +23,13 @@ import Server from './server';
 import {C_ERR, C_ERR_ITEM, C_MSG} from './const';
 import {IConnInfo} from './interface';
 import {
-    ContactsAdd,
+    BlockedContactsMany,
+    ContactsAdd, ContactsBlock,
     ContactsDelete,
-    ContactsGet,
+    ContactsGet, ContactsGetBlocked,
     ContactsImport,
     ContactsImported,
-    ContactsMany, ContactsSearch
+    ContactsMany, ContactsSearch, ContactsUnblock
 } from './messages/chat.api.contacts_pb';
 import {
     Bool, Dialog,
@@ -771,6 +772,25 @@ export default class SDK {
         data.setHint(hint);
         data.setPassword(passwordInput);
         return this.server.send(C_MSG.AccountUpdatePasswordSettings, data.serializeBinary(), true);
+    }
+
+    public accountGetBlockedUser(skip: number, limit: number): Promise<BlockedContactsMany.AsObject> {
+        const data = new ContactsGetBlocked();
+        data.setOffset(skip);
+        data.setLimit(limit);
+        return this.server.send(C_MSG.ContactsGetBlocked, data.serializeBinary(), true);
+    }
+
+    public accountBlock(inputUser: InputUser): Promise<any> {
+        const data = new ContactsBlock();
+        data.setUser(inputUser);
+        return this.server.send(C_MSG.ContactsBlock, data.serializeBinary(), true);
+    }
+
+    public accountUnblock(inputUser: InputUser): Promise<any> {
+        const data = new ContactsUnblock();
+        data.setUser(inputUser);
+        return this.server.send(C_MSG.ContactsUnblock, data.serializeBinary(), true);
     }
 
     public genSrpHash(password: string, algorithm: number, algorithmData: Uint8Array): Promise<Uint8Array> {

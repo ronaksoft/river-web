@@ -15,7 +15,7 @@ import TextField from '@material-ui/core/TextField';
 import ChipInput from 'material-ui-chip-input';
 import Chip from '@material-ui/core/Chip';
 import UserName from '../UserName';
-import {MoreVert, NotInterestedRounded} from '@material-ui/icons';
+import {MoreVert, PersonRounded} from '@material-ui/icons';
 import XRegExp from 'xregexp';
 import Menu from '@material-ui/core/Menu/Menu';
 import MenuItem from '@material-ui/core/MenuItem/MenuItem';
@@ -29,6 +29,7 @@ import {VariableSizeList} from "react-window";
 import IsMobile from "../../services/isMobile";
 import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 import animateScrollTo from "animated-scroll-to";
+import {Loading} from '../Loading';
 
 import './style.scss';
 
@@ -46,6 +47,7 @@ interface IProps {
 interface IState {
     contacts: IUser[];
     hiddenContacts: IUser[];
+    loading: boolean;
     moreAnchorPos: any;
     moreIndex: number;
     page: string;
@@ -115,6 +117,7 @@ class ContactList extends React.Component<IProps, IState> {
                 // @ts-ignore
                 return {...o, id: o.userid};
             }),
+            loading: false,
             moreAnchorPos: null,
             moreIndex: -1,
             page: '1',
@@ -232,9 +235,15 @@ class ContactList extends React.Component<IProps, IState> {
     }
 
     private getWrapper() {
-        const {contacts} = this.state;
+        const {contacts, loading} = this.state;
         if (contacts.length === 0) {
-            return (<div className="contact-container">{this.noRowsRenderer()}</div>);
+            if (loading) {
+                return (<div className="contact-container">
+                    <Loading/>
+                </div>);
+            } else {
+                return (<div className="contact-container">{this.noRowsRenderer()}</div>);
+            }
         } else {
             if (this.isMobile || !this.hasScrollbar) {
                 return (
@@ -363,7 +372,7 @@ class ContactList extends React.Component<IProps, IState> {
     private noRowsRenderer = () => {
         return (
             <div className="no-result">
-                <NotInterestedRounded/>
+                <PersonRounded/>
                 {i18n.t('contact.no_result')}
             </div>
         );
@@ -371,6 +380,13 @@ class ContactList extends React.Component<IProps, IState> {
 
     /* Get all contacts */
     private getDefault(fill?: boolean) {
+        const {loading} = this.state;
+        if (loading) {
+            return;
+        }
+        this.setState({
+            loading: true,
+        });
         const fn = (us: IUser[]) => {
             this.defaultContact = us;
             this.contactsRes = clone(us);
@@ -380,6 +396,7 @@ class ContactList extends React.Component<IProps, IState> {
                 }
                 this.setState({
                     contacts: categorizeContact(this.getTrimmedList([])),
+                    loading: false,
                 });
             }
         };

@@ -40,6 +40,7 @@ import DocumentViewerService, {IDocument} from '../../services/documentViewerSer
 import PeerMedia from '../PeerMedia';
 import i18n from "../../services/i18n";
 import {notifyOptions} from "../../pages/Chat";
+import Broadcaster from "../../services/broadcaster";
 
 import './style.scss';
 
@@ -84,6 +85,9 @@ class UserInfoMenu extends React.Component<IProps, IState> {
     private sdk: SDK;
     private riverTime: RiverTime;
     private documentViewerService: DocumentViewerService;
+    private broadcaster: Broadcaster;
+    private eventReferences: any[] = [];
+    private callerId: number = UniqueId.getRandomId();
 
     constructor(props: IProps) {
         super(props);
@@ -110,12 +114,15 @@ class UserInfoMenu extends React.Component<IProps, IState> {
         this.dialogRepo = DialogRepo.getInstance();
         // SDK singleton
         this.sdk = SDK.getInstance();
-        // DocumentViewerService singleton */
+        // DocumentViewerService singleton
         this.documentViewerService = DocumentViewerService.getInstance();
+        // Broadcaster singleton
+        this.broadcaster = Broadcaster.getInstance();
     }
 
     public componentDidMount() {
         this.getUser();
+        this.eventReferences.push(this.broadcaster.listen('User_DB_Updated', this.getUser));
         //
         // this.sdk.getServerSalts().then((res) => {
         //     window.console.log(res);
@@ -132,6 +139,14 @@ class UserInfoMenu extends React.Component<IProps, IState> {
             peer: newProps.peer,
         }, () => {
             this.getUser();
+        });
+    }
+
+    public componentWillUnmount() {
+        this.eventReferences.forEach((canceller) => {
+            if (typeof canceller === 'function') {
+                canceller();
+            }
         });
     }
 
@@ -243,6 +258,9 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                     <Button color="secondary" variant="outlined"
                                             fullWidth={true}
                                             onClick={this.startBotHandler}>{i18n.t('bot.start_bot')}</Button>}
+                                    {Boolean(!edit && user) && <Button key="block" color="secondary" fullWidth={true}
+                                                                       onClick={this.blockUserHandler(user)}>
+                                        {(user && user.blocked) ? i18n.t('general.unblock') : i18n.t('general.block')}</Button>}
                                     {Boolean(edit && user && ((user.firstname !== firstname || user.lastname !== lastname) || !isInContact)) &&
                                     <div className="actions-bar">
                                         <div className="add-action" onClick={this.confirmChangesHandler}>
@@ -317,9 +335,13 @@ class UserInfoMenu extends React.Component<IProps, IState> {
     }
 
     /* Gets the user from repository */
-    private getUser() {
+    private getUser = (data?: any) => {
         const {peer} = this.state;
         if (!peer) {
+            return;
+        }
+
+        if (data && this.state.user && (data.callerId === this.callerId || data.ids.indexOf(this.state.user.id || '') === -1)) {
             return;
         }
 
@@ -332,9 +354,15 @@ class UserInfoMenu extends React.Component<IProps, IState> {
             });
         };
 
-        this.userRepo.getFull(peer.getId() || '', fn).then((res) => {
-            fn(res);
-        });
+        if (data) {
+            this.userRepo.get(peer.getId() || '').then((res) => {
+                fn(res);
+            });
+        } else {
+            this.userRepo.getFull(peer.getId() || '', fn, this.callerId).then((res) => {
+                fn(res);
+            });
+        }
 
         this.dialogRepo.get(peer.getId() || '').then((dialog) => {
             this.setState({
@@ -377,7 +405,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
             inputUser.setAccesshash(user.accesshash || '');
             inputUser.setUserid(user.id || '');
             this.sdk.contactAdd(inputUser, firstname, lastname, phone).then(() => {
-                this.userRepo.importBulk(true, [user]);
+                this.userRepo.importBulk(true, [user],false, this.callerId);
                 user.lastname = lastname;
                 user.firstname = firstname;
                 this.setState({
@@ -405,7 +433,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                 data.usersList.forEach((item) => {
                     items.push(item);
                 });
-                this.userRepo.importBulk(true, items);
+                this.userRepo.importBulk(true, items, false, this.callerId);
                 user.lastname = lastname;
                 user.firstname = firstname;
                 this.setState({
@@ -554,11 +582,44 @@ class UserInfoMenu extends React.Component<IProps, IState> {
         inputPeer.setType(PeerType.PEERUSER);
         this.sdk.botStart(inputPeer, randomId).then(() => {
             user.is_bot_started = true;
-            this.userRepo.importBulk(false, [user]);
+            this.userRepo.importBulk(false, [user], false, this.callerId);
             this.setState({
                 user,
             });
         });
+    }
+
+    /* Block user handler */
+    private blockUserHandler = (user: IUser) => () => {
+        if (!user) {
+            return;
+        }
+        const inputUser = new InputUser();
+        inputUser.setUserid(user.id || '');
+        inputUser.setAccesshash(user.accesshash || '');
+        if (user.blocked) {
+            this.sdk.accountUnblock(inputUser).then(() => {
+                this.userRepo.importBulk(false, [{
+                    blocked: false,
+                    id: user.id || '',
+                }], false, this.callerId);
+                user.blocked = false;
+                this.setState({
+                    user,
+                });
+            });
+        } else {
+            this.sdk.accountBlock(inputUser).then(() => {
+                this.userRepo.importBulk(false, [{
+                    blocked: true,
+                    id: user.id || '',
+                }], false, this.callerId);
+                user.blocked = true;
+                this.setState({
+                    user,
+                });
+            });
+        }
     }
 }
 

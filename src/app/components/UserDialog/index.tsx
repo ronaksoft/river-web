@@ -226,9 +226,11 @@ class UserDialog extends React.Component<IProps, IState> {
                             </div>
                         </div>}
                         {Boolean(!edit && user && user.isbot && !user.is_bot_started) &&
-                        <Button color="secondary" variant="outlined"
-                                fullWidth={true}
+                        <Button key="start" color="secondary" fullWidth={true}
                                 onClick={this.startBotHandler}>{i18n.t('bot.start_bot')}</Button>}
+                        {Boolean(!edit && user) && <Button key="block" color="secondary" fullWidth={true}
+                                                           onClick={this.blockUserHandler(user)}>
+                            {(user && user.blocked) ? i18n.t('general.unblock') : i18n.t('general.block')}</Button>}
                         {Boolean(edit && user && ((user.firstname !== firstname || user.lastname !== lastname) || !isInContact)) &&
                         <div className="actions-bar">
                             <div className="add-action" onClick={this.confirmChangesHandler}>
@@ -557,6 +559,39 @@ class UserDialog extends React.Component<IProps, IState> {
                 user,
             });
         });
+    }
+
+    /* Block user handler */
+    private blockUserHandler = (user: IUser) => () => {
+        if (!user) {
+            return;
+        }
+        const inputUser = new InputUser();
+        inputUser.setUserid(user.id || '');
+        inputUser.setAccesshash(user.accesshash || '');
+        if (user.blocked) {
+            this.sdk.accountUnblock(inputUser).then(() => {
+                this.userRepo.importBulk(false, [{
+                    blocked: false,
+                    id: user.id || '',
+                }]);
+                user.blocked = false;
+                this.setState({
+                    user,
+                });
+            });
+        } else {
+            this.sdk.accountBlock(inputUser).then(() => {
+                this.userRepo.importBulk(false, [{
+                    blocked: true,
+                    id: user.id || '',
+                }]);
+                user.blocked = true;
+                this.setState({
+                    user,
+                });
+            });
+        }
     }
 }
 

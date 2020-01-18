@@ -62,7 +62,7 @@ import {
     UpdateNotifySettings,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox,
-    UpdateReadMessagesContents,
+    UpdateReadMessagesContents, UpdateUserBlocked,
     UpdateUsername,
     UpdateUserPhoto,
     UpdateUserTyping,
@@ -428,6 +428,9 @@ class Chat extends React.Component<IProps, IState> {
 
         // Update: label items removed
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateLabelItemsRemoved, this.updateLabelItemsRemovedHandler));
+
+        // Update: label items removed
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUserBlocked, this.updateUserBlockedHandler));
 
         // Sync: MessageId
         this.eventReferences.push(this.syncManager.listen(C_SYNC_UPDATE.MessageId, this.updateMessageIDHandler));
@@ -4574,6 +4577,14 @@ class Chat extends React.Component<IProps, IState> {
             this.labelRepo.removeFromRange(id, data.messageidsList);
         });
         this.labelRepo.upsert(labelList);
+    }
+
+    /* Update user blocked handler */
+    private updateUserBlockedHandler = (data: UpdateUserBlocked.AsObject) => {
+        this.userRepo.importBulk(false, [{
+            blocked: data.blocked,
+            id: data.userid,
+        }]);
     }
 
     private pinDialog(peerId: string, pinned?: boolean) {

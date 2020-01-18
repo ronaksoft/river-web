@@ -20,7 +20,7 @@ import {
     UpdateNotifySettings,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox,
-    UpdateReadMessagesContents,
+    UpdateReadMessagesContents, UpdateUserBlocked,
     UpdateUsername,
     UpdateUserPhoto,
     UpdateUserTyping,
@@ -335,6 +335,9 @@ export default class UpdateManager {
                 break;
             case C_MSG.UpdateLabelItemsRemoved:
                 this.callHandlers(C_MSG.UpdateLabelItemsRemoved, UpdateLabelItemsRemoved.deserializeBinary(data).toObject());
+                break;
+            case C_MSG.UpdateUserBlocked:
+                this.callHandlers(C_MSG.UpdateUserBlocked, UpdateUserBlocked.deserializeBinary(data).toObject());
                 break;
             default:
                 break;

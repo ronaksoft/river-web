@@ -52,7 +52,9 @@
     "activate": "فعال سازی",
     "deactivate": "غیر فعال سازی",
     "deactivate_change": "تغییر/غیر فعال سازی",
-    "password": "رمز"
+    "password": "رمز",
+    "block": "مسدود کردن",
+    "unblock": "رفع انسداد"
   },
   "chat": {
     "search": "جستجو",
@@ -144,6 +146,7 @@
     "data_and_storage": "داده‌ها و ذخیره‌سازی",
     "active_sessions": "نشست‌های فعال",
     "two_step_verification": "تایید دومرحله‌ای",
+    "blocked_users": "کاربرهای مسدود شده",
     "privacy_and_security": "حریم خصوصی و امنیت",
     "label": "برچسب",
     "theme": "پوسته",
@@ -301,7 +304,8 @@
     "faq": "سوالات متداول",
     "term_of_services": "شرایط استفاده",
     "en": "en",
-    "fa": "فا"
+    "fa": "فا",
+    "password_note": "شما تأیید دو مرحله ای را فعال کرده اید، بنابراین حساب شما با یک رمز عبور محافظت می شود."
   },
   "status": {
     "members": "{0} عضو",

@@ -53,7 +53,9 @@
     "activate": "Activate",
     "deactivate": "Deactivate",
     "deactivate_change": "Change/Deactivate",
-    "password": "Password"
+    "password": "Password",
+    "block": "Block",
+    "unblock": "Unblock"
   },
   "chat": {
     "search": "Search",
@@ -148,6 +150,7 @@
     "data_and_storage": "Data and Storage",
     "active_sessions": "Active Sessions",
     "two_step_verification": "Two-Step Verification",
+    "blocked_users": "Blocked Users",
     "privacy_and_security": "Privacy and Security",
     "label": "Label",
     "theme": "Theme",
@@ -305,7 +308,8 @@
     "faq": "FAQ",
     "term_of_services": "Term of Services",
     "en": "en",
-    "fa": "fa"
+    "fa": "fa",
+    "password_note": "You have enabled Two-Step Verification, so your account is protected with an additional password."
   },
   "status": {
     "members": "{0} members",

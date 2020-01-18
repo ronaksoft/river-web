@@ -237,12 +237,13 @@ class SignUp extends React.Component<IProps, IState> {
                                      onClick={this.qrCodeDialogOpenHandler}>{i18n.t('sign_up.scan_qr_code')}</div>
                             </div>}
                             {Boolean(step !== 'workspace') && <React.Fragment>
-                                <IntlTelInput preferredCountries={[]} defaultCountry={'ir'} value={this.state.phone}
+                                {step !== 'password' && <IntlTelInput preferredCountries={[]} defaultCountry={'ir'} value={this.state.phone}
                                               inputClassName="f-phone"
                                               disabled={this.state.loading || step === 'code' || step === 'password'}
                                               autoHideDialCode={false} onPhoneNumberChange={this.handleOnChange}
                                               onKeyDown={this.sendCodeKeyDownHandler} nationalMode={false}
-                                              fieldId="input-phone"/>
+                                              fieldId="input-phone"/>}
+                                {step === 'password' && <div className="sign-up-note">{i18n.t('sign_up.password_note')}</div>}
                                 {Boolean(step === 'phone' && ElectronService.isElectron() && false) &&
                                 <div className="grey-link">
                                     <span

@@ -104,7 +104,7 @@ export default class UserRepo {
         return this.db.users.where('id').anyOf(ids).offset(skip || 0).limit(limit).toArray();
     }
 
-    public getFull(id: string, cacheCB?: (us: IUser) => void): Promise<IUser> {
+    public getFull(id: string, cacheCB?: (us: IUser) => void, callerId?: number): Promise<IUser> {
         return new Promise<IUser>((resolve, reject) => {
             this.get(id).then((user) => {
                 if (user) {
@@ -115,7 +115,7 @@ export default class UserRepo {
                     input.setUserid(user.id || '');
                     input.setAccesshash(user.accesshash || '');
                     this.sdk.getUserFull([input]).then((res) => {
-                        this.upsert(false, res.usersList);
+                        this.upsert(false, res.usersList, false, callerId);
                         const u = find(res.usersList, {id});
                         if (u) {
                             // @ts-ignore
@@ -173,15 +173,15 @@ export default class UserRepo {
         }
     }
 
-    public importBulk(isContact: boolean, users: IUser[], force?: boolean): Promise<any> {
+    public importBulk(isContact: boolean, users: IUser[], force?: boolean, callerId?: number): Promise<any> {
         if (!users || users.length === 0) {
             return Promise.resolve();
         }
         const tempUsers = uniqBy(users, 'id');
-        return this.upsert(isContact, tempUsers, force);
+        return this.upsert(isContact, tempUsers, force, callerId);
     }
 
-    public upsert(isContact: boolean, users: IUser[], force?: boolean): Promise<any> {
+    public upsert(isContact: boolean, users: IUser[], force?: boolean, callerId?: number): Promise<any> {
         const ids = users.map((user) => {
             user.is_contact = isContact ? 1 : 0;
             return user.id || '';
@@ -206,7 +206,7 @@ export default class UserRepo {
             });
             return this.createMany(list);
         }).then((res) => {
-            this.broadcastEvent('User_DB_Updated', {ids});
+            this.broadcastEvent('User_DB_Updated', {ids, callerId});
             return res;
         });
     }

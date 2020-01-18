@@ -33,6 +33,8 @@ import {
     PhotoCameraRounded,
     LabelRounded,
     VerifiedUserRounded,
+    BlockRounded,
+    DeleteRounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import UserAvatar from '../UserAvatar';
@@ -86,9 +88,22 @@ import {localize} from "../../services/utilities/localize";
 import DevTools from "../DevTools";
 import ChangePhoneModal from "../ChangePhoneModal";
 import TwoStepVerificationModal from "../TwoStepVerificationModal";
+import DialogSkeleton from "../DialogSkeleton";
+import AutoSizer from "react-virtualized-auto-sizer";
+import {FixedSizeList, ListOnItemsRenderedProps} from "react-window";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import getScrollbarWidth from "../../services/utilities/scrollbar_width";
+import IsMobile from "../../services/isMobile";
 
 import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
+
+const C_BLOCKED_USER_LIST_LIMIT = 50;
+
+const listStyle: React.CSSProperties = {
+    overflowX: 'visible',
+    overflowY: 'visible',
+};
 
 export const C_VERSION = '0.29.13';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
@@ -166,6 +181,7 @@ interface IState {
     bio: string;
     confirmDialogOpen: boolean;
     confirmDialogSelectedId: string;
+    contactList: IUser[];
     customBackgroundSrc?: string;
     editProfile: boolean;
     editUsername: boolean;
@@ -228,6 +244,11 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private userListDialogRef: UserListDialog | undefined;
     private lastPrivacy: { [key: string]: IPrivacy } = cloneDeep(privacyDefault);
     private readonly isMac: boolean = navigator.platform.indexOf('Mac') > -1;
+    private blockUserListRef: FixedSizeList | undefined;
+    private readonly rtl: boolean = false;
+    private readonly hasScrollbar: boolean = false;
+    private readonly isMobile: boolean = false;
+    private contactHasMore: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -240,6 +261,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             bio: '',
             confirmDialogOpen: false,
             confirmDialogSelectedId: '',
+            contactList: [],
             editProfile: false,
             editUsername: false,
             firstname: '',
@@ -300,6 +322,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.currentAuthID = this.sdk.getConnInfo().AuthID;
 
         this.electronService = ElectronService.getInstance();
+        this.hasScrollbar = getScrollbarWidth() > 0;
+        this.rtl = localStorage.getItem('river.lang.dir') === 'rtl';
+        this.isMobile = this.isMobile = IsMobile.isAny();
     }
 
     public componentDidMount() {
@@ -827,6 +852,14 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                         </div>
                                         <div
                                             className="sub-page-header-alt">{i18n.t('settings.privacy')}</div>
+                                        <div className="page-anchor anchor-padding-side"
+                                             onClick={this.selectSubPageHandler('block')}>
+                                            <div className="icon color-blocked">
+                                                <BlockRounded/>
+                                            </div>
+                                            <div
+                                                className="anchor-label">{i18n.t('settings.blocked_users')}</div>
+                                        </div>
                                         {privacyItems.map((item) => {
                                             return (
                                                 <div key={item.id} className="page-anchor anchor-padding-side"
@@ -1063,6 +1096,19 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                 </div>
                             </div>
                         </React.Fragment>}
+                        {Boolean(pageSubContent === 'block') && <React.Fragment>
+                            <div className="menu-header">
+                                <IconButton
+                                    onClick={this.onSubPrevHandler}
+                                >
+                                    <KeyboardBackspaceRounded/>
+                                </IconButton>
+                                <label>{i18n.t('settings.blocked_users')}</label>
+                            </div>
+                            <div className="menu-content">
+                                {this.getBlockedUserWrapper()}
+                            </div>
+                        </React.Fragment>}
                     </div>
                 </div>
                 <Menu
@@ -1227,9 +1273,10 @@ class SettingsMenu extends React.Component<IProps, IState> {
         });
         if (target === 'session') {
             this.getSessions();
-        }
-        if (target === '2fa') {
+        } else if (target === '2fa') {
             this.getPasswordSettings();
+        } else if (target === 'block') {
+            this.getBlockedUsers();
         }
     }
 
@@ -2087,6 +2134,180 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.sdk.accountGetPassword().then((res) => {
             this.setState({
                 passwordMode: res.getHaspassword() ? 2 : 1,
+            });
+        });
+    }
+
+    private getBlockedUserWrapper() {
+        const {contactList, loading} = this.state;
+        if (contactList.length === 0) {
+            if (loading) {
+                return (<div className="block-list">
+                    {DialogSkeleton()}
+                </div>);
+            } else {
+                return (
+                    <div className="block-list no-result">
+                        <BlockRounded/>
+                        {i18n.t('contact.no_result')}
+                    </div>
+                );
+            }
+        } else {
+            if (this.isMobile || !this.hasScrollbar) {
+                return (
+                    <AutoSizer>
+                        {({width, height}: any) => {
+                            return (<FixedSizeList
+                                ref={this.blockUserListRefHandler}
+                                itemSize={64}
+                                itemCount={loading ? contactList.length + 1 : contactList.length}
+                                overscanCount={10}
+                                width={width}
+                                height={height}
+                                className="block-list"
+                                direction={this.rtl ? 'ltr' : 'rtl'}
+                                onItemsRendered={this.blockUserItemRendered}
+                            >
+                                {({index, style}) => {
+                                    return this.rowRender({index, style, key: index});
+                                }}
+                            </FixedSizeList>);
+                        }}
+                    </AutoSizer>
+                );
+            } else {
+                return (
+                    <AutoSizer>
+                        {({width, height}: any) => (
+                            <div className="blocked-user-list-inner" style={{
+                                height: height + 'px',
+                                width: width + 'px',
+                            }}>
+                                <Scrollbars
+                                    autoHide={true}
+                                    style={{
+                                        height: height + 'px',
+                                        width: width + 'px',
+                                    }}
+                                    onScroll={this.handleScroll}
+                                    hideTracksWhenNotNeeded={true}
+                                    universal={true}
+                                    rtl={!this.rtl}
+                                >
+                                    <FixedSizeList
+                                        ref={this.blockUserListRefHandler}
+                                        itemSize={64}
+                                        itemCount={loading ? contactList.length + 1 : contactList.length}
+                                        overscanCount={10}
+                                        width={width}
+                                        height={height}
+                                        className="block-list"
+                                        style={listStyle}
+                                        onItemsRendered={this.blockUserItemRendered}
+                                    >
+                                        {({index, style}) => {
+                                            return this.rowRender({index, style, key: index});
+                                        }}
+                                    </FixedSizeList>
+                                </Scrollbars>
+                            </div>
+                        )}
+                    </AutoSizer>
+                );
+            }
+        }
+    }
+
+    private blockUserListRefHandler = (ref: any) => {
+        this.blockUserListRef = ref;
+    }
+
+    /* Custom Scrollbars handler */
+    private handleScroll = (e: any) => {
+        const {scrollTop} = e.target;
+        if (this.blockUserListRef) {
+            this.blockUserListRef.scrollTo(scrollTop);
+        }
+    }
+
+    private blockUserItemRendered = (props: ListOnItemsRenderedProps) => {
+        if (!this.contactHasMore || this.state.loading) {
+            return;
+        }
+        const {contactList} = this.state;
+        if ((contactList.length - 5) < props.visibleStopIndex) {
+            this.getBlockedUsers(contactList.length);
+        }
+    }
+
+    private rowRender = ({index, key, style}: any): any => {
+        const contact = this.state.contactList[index];
+        if (contact) {
+            return (
+                <div key={contact.id || key || ''} style={style} className="contact-item">
+                    <div className="avatar">
+                        <UserAvatar id={contact.id || ''}/>
+                    </div>
+                    <div
+                        className="name">{`${contact.firstname} ${contact.lastname}`}</div>
+                    <div
+                        className="phone">{contact.phone ? contact.phone : ((contact.username !== '') ? contact.username : i18n.t('contact.no_phone'))}</div>
+                    <div className="more" onClick={this.unblockUserHandler(contact)}>
+                        <DeleteRounded/>
+                    </div>
+                </div>
+            );
+        } else {
+            return (<div style={style} key="contact-item-loading" className="contact-item-loading">
+                <CircularProgress size={32} thickness={3} color="inherit"/>
+            </div>);
+        }
+    }
+
+    private unblockUserHandler = (user?: IUser) => () => {
+        const {contactList} = this.state;
+        if (!user) {
+            return;
+        }
+
+        const inputUser = new InputUser();
+        inputUser.setUserid(user.id || '');
+        inputUser.setAccesshash(user.accesshash || '');
+        this.sdk.accountUnblock(inputUser).then(() => {
+            const index = findIndex(contactList, {id: user.id});
+            if (index > -1) {
+                contactList.splice(index, 1);
+                this.setState({
+                    contactList,
+                });
+            }
+        });
+    }
+
+    private getBlockedUsers(skip?: number) {
+        const {loading, contactList} = this.state;
+        if (loading) {
+            return;
+        }
+        this.setState({
+            loading: true,
+        });
+        this.sdk.accountGetBlockedUser(skip || 0, C_BLOCKED_USER_LIST_LIMIT).then((res) => {
+            this.contactHasMore = res.usersList.length === C_BLOCKED_USER_LIST_LIMIT;
+            if (!skip) {
+                this.setState({
+                    contactList: res.usersList,
+                });
+            } else {
+                contactList.push.apply(contactList, res.usersList);
+                this.setState({
+                    contactList,
+                });
+            }
+        }).finally(() => {
+            this.setState({
+                loading: false,
             });
         });
     }

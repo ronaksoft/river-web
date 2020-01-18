@@ -34,7 +34,7 @@ import {
     DraftMessage,
     GroupFlags,
     GroupParticipant,
-    InputPeer,
+    InputPeer, InputUser,
     MessageEntity,
     MessageEntityType,
     PeerType,
@@ -73,6 +73,7 @@ import {isMobile} from "../../services/utilities/localize";
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.scss';
+import UniqueId from "../../services/uniqueId";
 
 const limit = 9;
 const emojiKey = 'emoji-mart.frequently';
@@ -128,6 +129,7 @@ interface IState {
     selectableDisable: boolean;
     textareaValue: string;
     uploadPreviewOpen: boolean;
+    user: IUser | null;
     voiceMode: 'lock' | 'down' | 'up' | 'play';
 }
 
@@ -207,9 +209,12 @@ class ChatInput extends React.Component<IProps, IState> {
     private preventMessageSendTimeout: any = null;
     private emojiMap: { [key: string]: number } = {};
     private isMobileBrowser = isMobile();
+    private callerId: number = UniqueId.getRandomId();
 
     constructor(props: IProps) {
         super(props);
+
+        this.userRepo = UserRepo.getInstance();
 
         this.state = {
             disableAuthority: 0x0,
@@ -225,6 +230,7 @@ class ChatInput extends React.Component<IProps, IState> {
             selectableDisable: false,
             textareaValue: '',
             uploadPreviewOpen: false,
+            user: props.peer ? this.userRepo.getInstant(props.peer.getId() || '') : null,
             voiceMode: 'up',
         };
 
@@ -232,7 +238,6 @@ class ChatInput extends React.Component<IProps, IState> {
         this.rtlDetectorThrottle = throttle(this.detectRTL, 250);
 
         this.groupRepo = GroupRepo.getInstance();
-        this.userRepo = UserRepo.getInstance();
         this.dialogRepo = DialogRepo.getInstance();
         this.messageRepo = MessageRepo.getInstance();
         this.sdk = SDK.getInstance();
@@ -255,6 +260,7 @@ class ChatInput extends React.Component<IProps, IState> {
     public componentDidMount() {
         this.eventReferences.push(this.broadcaster.listen('Group_DB_Updated', this.checkAuthority));
         this.eventReferences.push(this.broadcaster.listen('Theme_Changed', this.windowResizeHandler));
+        this.eventReferences.push(this.broadcaster.listen('User_DB_Updated', this.getUser));
         window.addEventListener('mouseup', this.windowMouseUp);
         window.addEventListener('keyup', this.windowKeyUp);
         window.addEventListener('resize', this.windowResizeHandler);
@@ -268,11 +274,20 @@ class ChatInput extends React.Component<IProps, IState> {
             if (this.state.voiceMode === 'lock' || this.state.voiceMode === 'down') {
                 this.voiceCancelHandler();
             }
+            const user = this.userRepo.getInstant(peer.getId() || '');
             this.setState({
                 peer,
+                user,
             }, () => {
                 this.checkAuthority();
             });
+            if (!user) {
+                this.userRepo.get(peer.getId() || '').then((res) => {
+                    this.setState({
+                        user: res,
+                    });
+                });
+            }
             if (this.state.selectable) {
                 this.props.onBulkAction('close')();
             }
@@ -320,11 +335,20 @@ class ChatInput extends React.Component<IProps, IState> {
             if (this.state.voiceMode === 'lock' || this.state.voiceMode === 'down') {
                 this.voiceCancelHandler();
             }
+            const user = this.userRepo.getInstant(peer.getId() || '');
             this.setState({
                 peer,
+                user,
             }, () => {
                 this.checkAuthority();
             });
+            if (!user) {
+                this.userRepo.get(peer.getId() || '').then((res) => {
+                    this.setState({
+                        user: res,
+                    });
+                });
+            }
             if (this.state.selectable) {
                 this.props.onBulkAction('close')();
             }
@@ -425,7 +449,7 @@ class ChatInput extends React.Component<IProps, IState> {
     public render() {
         const {
             previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable,
-            disableAuthority, textareaValue, voiceMode, selectMediaOpen
+            disableAuthority, textareaValue, voiceMode, selectMediaOpen, user
         } = this.state;
 
         if (!selectable && disableAuthority !== 0x0) {
@@ -440,6 +464,9 @@ class ChatInput extends React.Component<IProps, IState> {
             } else {
                 return '';
             }
+        } else if (!selectable && user && user.blocked) {
+            return (<div className="input-placeholder" onClick={this.unblockHandler}>
+                <span className="btn">{i18n.t('general.unblock')}</span></div>);
         } else {
             return (
                 <div className="write">
@@ -1916,6 +1943,34 @@ class ChatInput extends React.Component<IProps, IState> {
         if (this.textarea && this.isMobileBrowser) {
             this.textarea.focus();
         }
+    }
+
+    private unblockHandler = () => {
+        const {user} = this.state;
+        if (!user) {
+            return;
+        }
+        const inputUser = new InputUser();
+        inputUser.setUserid(user.id || '');
+        inputUser.setAccesshash(user.accesshash || '');
+        this.sdk.accountUnblock(inputUser).then(() => {
+            user.blocked = false;
+            this.setState({
+                user,
+            });
+        });
+    }
+
+    private getUser = (data?: any) => {
+        const {user} = this.state;
+        if ((data && user && (data.callerId === this.callerId || data.ids.indexOf(user.id || '') === -1)) || !user) {
+            return;
+        }
+        this.userRepo.get(user.id || '').then((res) => {
+            this.setState({
+                user: res,
+            });
+        });
     }
 
     // /* Is voice started */
