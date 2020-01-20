@@ -1,3 +1,12 @@
+/*
+    Creation Time: 2020 - Jan - 20
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2020
+*/
+
 import {merge, pickBy} from 'lodash';
 
 export const kValid = (arg: any) => {

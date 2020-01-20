@@ -1,3 +1,12 @@
+/*
+    Creation Time: 2020 - Jan - 20
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2020
+*/
+
 export const enToFa = (str: string | number) => {
     if (str === null || str === undefined) {
         return '';
@@ -39,4 +48,8 @@ export const localize = (str: string | number) => {
 
 export const isMobile = () => {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+};
+
+export const extractPhoneNumber = (str: string) => {
+    return str.replace(/(\D)(?<!^\+)/g, '');
 };

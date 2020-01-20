@@ -24,6 +24,7 @@ import {modifyCode} from "../../pages/SignUp/utils";
 import UserRepo from "../../repository/user";
 import {C_ERR, C_ERR_ITEM} from "../../services/sdk/const";
 import {InputPassword} from "../../services/sdk/messages/chat.core.types_pb";
+import {extractPhoneNumber, faToEn} from "../../services/utilities/localize";
 
 import './style.scss';
 
@@ -39,6 +40,7 @@ interface IState {
     open: boolean;
     step: number;
     phone: string;
+    phoneError: boolean;
     phoneHash: string;
     password: string;
 }
@@ -56,6 +58,7 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
             open: false,
             password: '',
             phone: '',
+            phoneError: false,
             phoneHash: '',
             step: 1,
         };
@@ -101,7 +104,7 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
                     </DialogActions>
                 </div>}
                 {Boolean(step === 2) && <div className="change-phone-dialog">
-                    <div className="change-phone-input phone-number">
+                    <div className={`change-phone-input phone-number ${this.state.phoneError ? 'has-error' : ''}`}>
                         <IntlTelInput preferredCountries={[]}
                                       defaultCountry={'ir'}
                                       value={phone}
@@ -214,8 +217,13 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
     }
 
     private phoneChangeHandler = (e: any, value: any) => {
+        let phone = faToEn(value);
+        if (phone.indexOf('09') === 0) {
+            phone = phone.replace('09', `+989`);
+        }
         this.setState({
-            phone: value,
+            phone: extractPhoneNumber(phone),
+            phoneError: false,
         });
     }
 
@@ -226,7 +234,7 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
     }
 
     private codeChangeHandler = (e: any) => {
-        const data = modifyCode(e.target.value);
+        const data = modifyCode(faToEn(e.target.value));
         this.setState({
             code: data.code,
         });
@@ -256,6 +264,15 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
                 phoneHash: res.phonecodehash || '',
                 step: step + 1,
             });
+        }).catch((err) => {
+            if (err.code === C_ERR.ErrCodeAlreadyExists && err.items === C_ERR_ITEM.ErrItemPhone) {
+                if (this.props.onError) {
+                    this.props.onError(i18n.t('settings.change_phone_number.phone_already_exists'));
+                }
+            }
+            this.setState({
+                phoneError: true,
+            });
         });
     }
 
@@ -283,15 +300,18 @@ class ChangePhoneModal extends React.Component<IProps, IState> {
                     this.props.onDone();
                 }
             }).catch((err) => {
-                if (!this.props.onError) {
-                    return;
-                }
                 if (err.code === C_ERR.ErrCodeInvalid && err.items === C_ERR_ITEM.ErrItemPhoneCode) {
-                    this.props.onError(i18n.t('sign_up.code_is_incorrect'));
+                    if (this.props.onError) {
+                        this.props.onError(i18n.t('sign_up.code_is_incorrect'));
+                    }
                 } else if (err.code === C_ERR.ErrCodeInvalid && err.items === C_ERR_ITEM.ErrItemPasswordHash) {
-                    this.props.onError(i18n.t('settings.2fa.pass_is_incorrect'));
+                    if (this.props.onError) {
+                        this.props.onError(i18n.t('settings.2fa.pass_is_incorrect'));
+                    }
                 } else if (err.code === C_ERR.ErrCodeAlreadyExists && err.items === C_ERR_ITEM.ErrItemPhone) {
-                    this.props.onError(i18n.t('settings.change_phone_number.phone_already_exists'));
+                    if (this.props.onError) {
+                        this.props.onError(i18n.t('settings.change_phone_number.phone_already_exists'));
+                    }
                     this.setState({
                         accountPassword: undefined,
                         code: codePlaceholder,

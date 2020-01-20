@@ -78,6 +78,12 @@
           font-size: 14px;
         }
       }
+
+      &.has-error {
+        .intl-tel-input {
+          border-color: var(--red);
+        }
+      }
     }
 
     .code {
@@ -119,6 +125,14 @@ html[theme="dark-night"] {
       input, label, p {
         color: var(--white);
       }
+
+      .intl-tel-input {
+        border-color: var(--dark-low);
+
+        .flag-container, input {
+          background-color: transparent;
+        }
+      }
     }
 
     .change-phone-header, .change-phone-text, .change-phone-success {
@@ -132,6 +146,14 @@ html[theme="dark-blue"] {
     .change-phone-input {
       input, label, p {
         color: var(--white);
+      }
+
+      .intl-tel-input {
+        border-color: var(--dark-blue-low);
+
+        .flag-container, input {
+          background-color: transparent;
+        }
       }
     }
 

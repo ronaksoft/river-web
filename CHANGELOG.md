@@ -1,3 +1,6 @@
+## 0.29.14
+* Bug fixes and improvements
+
 ## 0.29.13
 * UpdateManager improved
 * ChangePhone implemented

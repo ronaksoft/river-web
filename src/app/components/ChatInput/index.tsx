@@ -10,18 +10,18 @@
 import * as React from 'react';
 import {Picker} from 'emoji-mart';
 import PopUpMenu from '../PopUpMenu';
-import {cloneDeep, throttle, sortBy} from 'lodash';
+import {cloneDeep, sortBy, throttle} from 'lodash';
 import {
     AttachFileRounded,
     ClearRounded,
     DeleteRounded,
     ForwardRounded,
     KeyboardVoiceRounded,
+    LabelRounded,
     LockRounded,
     SendRounded,
     SentimentSatisfiedRounded,
     StopRounded,
-    LabelRounded,
 } from '@material-ui/icons';
 import {IconButton} from '@material-ui/core';
 import UserAvatar from '../UserAvatar';
@@ -34,7 +34,8 @@ import {
     DraftMessage,
     GroupFlags,
     GroupParticipant,
-    InputPeer, InputUser,
+    InputPeer,
+    InputUser,
     MessageEntity,
     MessageEntityType,
     PeerType,
@@ -230,7 +231,7 @@ class ChatInput extends React.Component<IProps, IState> {
             selectableDisable: false,
             textareaValue: '',
             uploadPreviewOpen: false,
-            user: props.peer ? this.userRepo.getInstant(props.peer.getId() || '') : null,
+            user: props.peer && props.peer.getType() === PeerType.PEERUSER ? this.userRepo.getInstant(props.peer.getId() || '') : null,
             voiceMode: 'up',
         };
 
@@ -274,14 +275,14 @@ class ChatInput extends React.Component<IProps, IState> {
             if (this.state.voiceMode === 'lock' || this.state.voiceMode === 'down') {
                 this.voiceCancelHandler();
             }
-            const user = this.userRepo.getInstant(peer.getId() || '');
+            const user = peer.getType() === PeerType.PEERUSER ? this.userRepo.getInstant(peer.getId() || '') : null;
             this.setState({
                 peer,
                 user,
             }, () => {
                 this.checkAuthority();
             });
-            if (!user) {
+            if (peer.getType() === PeerType.PEERUSER && !user) {
                 this.userRepo.get(peer.getId() || '').then((res) => {
                     this.setState({
                         user: res,
@@ -335,14 +336,14 @@ class ChatInput extends React.Component<IProps, IState> {
             if (this.state.voiceMode === 'lock' || this.state.voiceMode === 'down') {
                 this.voiceCancelHandler();
             }
-            const user = this.userRepo.getInstant(peer.getId() || '');
+            const user = peer.getType() === PeerType.PEERUSER ? this.userRepo.getInstant(peer.getId() || '') : null;
             this.setState({
                 peer,
                 user,
             }, () => {
                 this.checkAuthority();
             });
-            if (!user) {
+            if (peer.getType() === PeerType.PEERUSER && !user) {
                 this.userRepo.get(peer.getId() || '').then((res) => {
                     this.setState({
                         user: res,

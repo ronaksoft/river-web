@@ -105,6 +105,7 @@ export default class UserRepo {
     }
 
     public getFull(id: string, cacheCB?: (us: IUser) => void, callerId?: number): Promise<IUser> {
+        window.console.trace();
         return new Promise<IUser>((resolve, reject) => {
             this.get(id).then((user) => {
                 if (user) {

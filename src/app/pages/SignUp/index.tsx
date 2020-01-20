@@ -34,11 +34,12 @@ import {OptionsObject, withSnackbar} from 'notistack';
 import ElectronService from "../../services/electron";
 import DevTools from "../../components/DevTools";
 import {modifyCode} from "./utils";
+import {AuthAuthorization} from "../../services/sdk/messages/chat.api.auth_pb";
+import {AccountPassword} from "../../services/sdk/messages/chat.api.accounts_pb";
+import {extractPhoneNumber, faToEn} from "../../services/utilities/localize";
 
 import './tel-input.css';
 import './style.scss';
-import {AuthAuthorization} from "../../services/sdk/messages/chat.api.auth_pb";
-import {AccountPassword} from "../../services/sdk/messages/chat.api.accounts_pb";
 
 function getChromeVersion() {
     const raw = window.navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./);
@@ -417,8 +418,18 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     private handleOnChange = (e: any, value: any) => {
+        let phone = faToEn(value);
+        let focus = false;
+        if (phone.indexOf('09') === 0) {
+            phone = phone.replace('09', `+989`);
+            focus = true;
+        }
         this.setState({
-            phone: value,
+            phone: extractPhoneNumber(phone),
+        }, () => {
+            if (focus) {
+                this.focus('f-phone');
+            }
         });
     }
 
@@ -505,7 +516,7 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     private codeChangeHandler = (e: any) => {
-        const data = modifyCode(e.target.value);
+        const data = modifyCode(faToEn(e.target.value));
         this.setState({
             code: data.code,
         }, () => {
@@ -734,10 +745,14 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     private focus(className: string) {
-        const elem: any = document.querySelector(`.${className} input`);
+        const elem: any = document.querySelector(`.${className} input, input.${className}`);
         if (elem) {
             elem.focus();
-            elem.setSelectionRange(elem.value.length, elem.value.length);
+            setTimeout(() => {
+                if (elem) {
+                    elem.setSelectionRange(elem.value.length, elem.value.length);
+                }
+            }, 10);
         }
     }
 
