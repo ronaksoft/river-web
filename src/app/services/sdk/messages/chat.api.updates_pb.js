@@ -4049,7 +4049,8 @@ proto.msg.UpdateUsername.toObject = function(includeInstance, msg) {
     username: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
     firstname: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
     lastname: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
-    bio: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f
+    bio: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f,
+    phone: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -4113,6 +4114,10 @@ proto.msg.UpdateUsername.deserializeBinaryFromReader = function(msg, reader) {
     case 5:
       var value = /** @type {string} */ (reader.readString());
       msg.setBio(value);
+      break;
+    case 6:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPhone(value);
       break;
     default:
       reader.skipField();
@@ -4189,6 +4194,13 @@ proto.msg.UpdateUsername.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeString(
       5,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 6));
+  if (f != null) {
+    writer.writeString(
+      6,
       f
     );
   }
@@ -4444,6 +4456,42 @@ proto.msg.UpdateUsername.prototype.clearBio = function() {
  */
 proto.msg.UpdateUsername.prototype.hasBio = function() {
   return jspb.Message.getField(this, 5) != null;
+};
+
+
+/**
+ * optional string Phone = 6;
+ * @return {string}
+ */
+proto.msg.UpdateUsername.prototype.getPhone = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.msg.UpdateUsername} returns this
+ */
+proto.msg.UpdateUsername.prototype.setPhone = function(value) {
+  return jspb.Message.setField(this, 6, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.UpdateUsername} returns this
+ */
+proto.msg.UpdateUsername.prototype.clearPhone = function() {
+  return jspb.Message.setField(this, 6, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.UpdateUsername.prototype.hasPhone = function() {
+  return jspb.Message.getField(this, 6) != null;
 };
 
 

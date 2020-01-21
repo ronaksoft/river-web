@@ -108,6 +108,7 @@ message UpdateUsername {
     required string FirstName = 3;
     required string LastName = 4;
     required string Bio = 5;
+    optional string Phone = 6;
 }
 
 // UpdateUserPhoto

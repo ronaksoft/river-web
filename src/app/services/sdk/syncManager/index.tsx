@@ -44,6 +44,7 @@ import {kMerge} from "../../utilities/kDash";
 import LabelRepo from "../../../repository/label";
 import {uniq} from "lodash";
 import {ILabel} from "../../../repository/label/interface";
+import SDK from "../index";
 
 export interface IRemoveDialog {
     maxId: number;
@@ -229,9 +230,22 @@ export default class SyncManager {
                             firstname: updateUsername.firstname,
                             id: updateUsername.userid,
                             lastname: updateUsername.lastname,
+                            phone: updateUsername.phone,
                             username: updateUsername.username,
                         });
+                    } else {
+                        users[updateUsername.userid || 0] = {
+                            bio: updateUsername.bio,
+                            firstname: updateUsername.firstname,
+                            id: updateUsername.userid,
+                            lastname: updateUsername.lastname,
+                            phone: updateUsername.phone,
+                            username: updateUsername.username,
+                        };
                     }
+                    const connInfo = SDK.getInstance().getConnInfo();
+                    connInfo.Phone = updateUsername.phone;
+                    SDK.getInstance().setConnInfo(connInfo);
                     break;
                 case C_MSG.UpdateNotifySettings:
                     const updateNotifySettings = UpdateNotifySettings.deserializeBinary(data).toObject();

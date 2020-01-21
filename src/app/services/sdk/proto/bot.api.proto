@@ -14,3 +14,10 @@ message StartBot {
     required string StartParam = 3;
 }
 
+// BotIsStarted
+// @Function
+// @Return: Bool
+message BotIsStarted {
+    required InputPeer Bot = 1;
+    required int64 RandomID = 2;
+}

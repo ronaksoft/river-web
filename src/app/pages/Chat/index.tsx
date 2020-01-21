@@ -1283,8 +1283,12 @@ class Chat extends React.Component<IProps, IState> {
             firstname: data.firstname,
             id: data.userid,
             lastname: data.lastname,
+            phone: data.phone,
             username: data.username,
         }], true);
+        const connInfo = this.sdk.getConnInfo();
+        connInfo.Phone = data.phone;
+        this.sdk.setConnInfo(connInfo);
     }
 
     /* Update notify settings handler */

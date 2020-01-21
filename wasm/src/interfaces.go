@@ -462,7 +462,6 @@ func (r *River) GenSrpHash(password []byte, algorithm int64, algorithmData []byt
 		}
 
 		p := big.NewInt(0).SetBytes(algo.P)
-
 		x := big.NewInt(0).SetBytes(PH2(password, algo.Salt1, algo.Salt2))
 		v := big.NewInt(0).Exp(big.NewInt(int64(algo.G)), x, p)
 
@@ -503,7 +502,7 @@ func (r *River) GenInputPassword(password []byte, accountPasswordBytes []byte) [
 	m1 := M(p, g, algo.Salt1, algo.Salt2, ga, gb, sa)
 
 	inputPassword := &msg.InputPassword{
-		SrpID: r.ConnInfo.UserID,
+		SrpID: ap.SrpID,
 		A:     Pad(ga),
 		M1:    m1,
 	}

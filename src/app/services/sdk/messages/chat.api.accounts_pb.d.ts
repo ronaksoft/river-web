@@ -611,6 +611,11 @@ export class AccountUpdatePasswordSettings extends jspb.Message {
   getHint(): string | undefined;
   setHint(value: string): void;
 
+  clearQuestionsList(): void;
+  getQuestionsList(): Array<SecurityQuestion>;
+  setQuestionsList(value: Array<SecurityQuestion>): void;
+  addQuestions(value?: SecurityQuestion, index?: number): SecurityQuestion;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountUpdatePasswordSettings.AsObject;
   static toObject(includeInstance: boolean, msg: AccountUpdatePasswordSettings): AccountUpdatePasswordSettings.AsObject;
@@ -628,6 +633,49 @@ export namespace AccountUpdatePasswordSettings {
     algorithm?: number,
     algorithmdata: Uint8Array | string,
     hint?: string,
+    questionsList: Array<SecurityQuestion.AsObject>,
+  }
+}
+
+export class AccountRecoverPassword extends jspb.Message {
+  clearAnswersList(): void;
+  getAnswersList(): Array<SecurityAnswer>;
+  setAnswersList(value: Array<SecurityAnswer>): void;
+  addAnswers(value?: SecurityAnswer, index?: number): SecurityAnswer;
+
+  hasAlgorithm(): boolean;
+  clearAlgorithm(): void;
+  getAlgorithm(): number | undefined;
+  setAlgorithm(value: number): void;
+
+  hasAlgorithmdata(): boolean;
+  clearAlgorithmdata(): void;
+  getAlgorithmdata(): Uint8Array | string;
+  getAlgorithmdata_asU8(): Uint8Array;
+  getAlgorithmdata_asB64(): string;
+  setAlgorithmdata(value: Uint8Array | string): void;
+
+  hasSrpid(): boolean;
+  clearSrpid(): void;
+  getSrpid(): number | undefined;
+  setSrpid(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AccountRecoverPassword.AsObject;
+  static toObject(includeInstance: boolean, msg: AccountRecoverPassword): AccountRecoverPassword.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AccountRecoverPassword, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AccountRecoverPassword;
+  static deserializeBinaryFromReader(message: AccountRecoverPassword, reader: jspb.BinaryReader): AccountRecoverPassword;
+}
+
+export namespace AccountRecoverPassword {
+  export type AsObject = {
+    answersList: Array<SecurityAnswer.AsObject>,
+    algorithm?: number,
+    algorithmdata: Uint8Array | string,
+    srpid?: number,
   }
 }
 
@@ -636,6 +684,11 @@ export class AccountPasswordSettings extends jspb.Message {
   clearHint(): void;
   getHint(): string | undefined;
   setHint(value: string): void;
+
+  clearQuestionsList(): void;
+  getQuestionsList(): Array<RecoveryQuestion>;
+  setQuestionsList(value: Array<RecoveryQuestion>): void;
+  addQuestions(value?: RecoveryQuestion, index?: number): RecoveryQuestion;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountPasswordSettings.AsObject;
@@ -650,6 +703,119 @@ export class AccountPasswordSettings extends jspb.Message {
 export namespace AccountPasswordSettings {
   export type AsObject = {
     hint?: string,
+    questionsList: Array<RecoveryQuestion.AsObject>,
+  }
+}
+
+export class SecurityQuestions extends jspb.Message {
+  clearQuestionsList(): void;
+  getQuestionsList(): Array<SecurityQuestion>;
+  setQuestionsList(value: Array<SecurityQuestion>): void;
+  addQuestions(value?: SecurityQuestion, index?: number): SecurityQuestion;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SecurityQuestions.AsObject;
+  static toObject(includeInstance: boolean, msg: SecurityQuestions): SecurityQuestions.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: SecurityQuestions, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SecurityQuestions;
+  static deserializeBinaryFromReader(message: SecurityQuestions, reader: jspb.BinaryReader): SecurityQuestions;
+}
+
+export namespace SecurityQuestions {
+  export type AsObject = {
+    questionsList: Array<SecurityQuestion.AsObject>,
+  }
+}
+
+export class RecoveryQuestion extends jspb.Message {
+  hasId(): boolean;
+  clearId(): void;
+  getId(): number | undefined;
+  setId(value: number): void;
+
+  hasText(): boolean;
+  clearText(): void;
+  getText(): string | undefined;
+  setText(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): RecoveryQuestion.AsObject;
+  static toObject(includeInstance: boolean, msg: RecoveryQuestion): RecoveryQuestion.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: RecoveryQuestion, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): RecoveryQuestion;
+  static deserializeBinaryFromReader(message: RecoveryQuestion, reader: jspb.BinaryReader): RecoveryQuestion;
+}
+
+export namespace RecoveryQuestion {
+  export type AsObject = {
+    id?: number,
+    text?: string,
+  }
+}
+
+export class SecurityQuestion extends jspb.Message {
+  hasId(): boolean;
+  clearId(): void;
+  getId(): number | undefined;
+  setId(value: number): void;
+
+  hasText(): boolean;
+  clearText(): void;
+  getText(): string | undefined;
+  setText(value: string): void;
+
+  hasAnswer(): boolean;
+  clearAnswer(): void;
+  getAnswer(): string | undefined;
+  setAnswer(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SecurityQuestion.AsObject;
+  static toObject(includeInstance: boolean, msg: SecurityQuestion): SecurityQuestion.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: SecurityQuestion, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SecurityQuestion;
+  static deserializeBinaryFromReader(message: SecurityQuestion, reader: jspb.BinaryReader): SecurityQuestion;
+}
+
+export namespace SecurityQuestion {
+  export type AsObject = {
+    id?: number,
+    text?: string,
+    answer?: string,
+  }
+}
+
+export class SecurityAnswer extends jspb.Message {
+  hasQuestionid(): boolean;
+  clearQuestionid(): void;
+  getQuestionid(): number | undefined;
+  setQuestionid(value: number): void;
+
+  hasAnswer(): boolean;
+  clearAnswer(): void;
+  getAnswer(): string | undefined;
+  setAnswer(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SecurityAnswer.AsObject;
+  static toObject(includeInstance: boolean, msg: SecurityAnswer): SecurityAnswer.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: SecurityAnswer, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SecurityAnswer;
+  static deserializeBinaryFromReader(message: SecurityAnswer, reader: jspb.BinaryReader): SecurityAnswer;
+}
+
+export namespace SecurityAnswer {
+  export type AsObject = {
+    questionid?: number,
+    answer?: string,
   }
 }
 
@@ -695,6 +861,11 @@ export class AccountPassword extends jspb.Message {
   getSrpid(): string | undefined;
   setSrpid(value: string): void;
 
+  clearQuestionsList(): void;
+  getQuestionsList(): Array<RecoveryQuestion>;
+  setQuestionsList(value: Array<RecoveryQuestion>): void;
+  addQuestions(value?: RecoveryQuestion, index?: number): RecoveryQuestion;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountPassword.AsObject;
   static toObject(includeInstance: boolean, msg: AccountPassword): AccountPassword.AsObject;
@@ -714,6 +885,7 @@ export namespace AccountPassword {
     srpb: Uint8Array | string,
     randomdata: Uint8Array | string,
     srpid?: string,
+    questionsList: Array<RecoveryQuestion.AsObject>,
   }
 }
 

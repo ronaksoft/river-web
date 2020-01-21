@@ -179,12 +179,48 @@ message AccountUpdatePasswordSettings {
     required int64 Algorithm = 3;
     required bytes AlgorithmData = 4;
     optional string Hint = 6;
+    repeated SecurityQuestion Questions = 7;
+}
+
+// AccountRecoverPassword
+// @Function
+// @Returns: AccountPassword, AuthAuthorization
+message AccountRecoverPassword {
+    repeated SecurityAnswer Answers = 1;
+    required int64 Algorithm = 2;
+    required bytes AlgorithmData = 3;
+    required int64 SrpID = 4;
 }
 
 // AccountPasswordSettings
 // Private info associated to the password info (recovery email and so on)
 message AccountPasswordSettings {
     required string Hint = 2;
+    repeated RecoveryQuestion Questions = 3;
+}
+
+// SecurityQuestions
+message SecurityQuestions {
+    repeated SecurityQuestion Questions = 1;
+}
+
+// RecoverQuestion
+message RecoveryQuestion {
+    required int32 ID = 1;
+    required string Text = 2;
+}
+
+// SecurityQuestion
+message SecurityQuestion {
+    required int32 ID = 1;
+    required string Text = 2;
+    required string Answer = 3;
+}
+
+// SecurityAnswer
+message SecurityAnswer {
+    required int32 QuestionID = 1;
+    required string Answer = 2;
 }
 
 // AccountPassword
@@ -197,6 +233,7 @@ message AccountPassword {
     optional bytes SrpB = 5;
     optional bytes RandomData = 6;
     optional int64 SrpID = 7 [jstype = JS_STRING];
+    repeated RecoveryQuestion Questions = 8;
 }
 
 // AccountAuthorizations
