@@ -1350,7 +1350,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             });
             return;
         }
-        const reg = /^(?=.{5,32}$)[a-zA-Z0-9._]/;
+        const reg = /^[a-zA-Z][\da-zA-Z]{4,31}$/;
         this.setState({
             usernameValid: reg.test(username),
         }, () => {
