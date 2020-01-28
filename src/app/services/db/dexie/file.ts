@@ -8,13 +8,15 @@
 */
 
 import Dexie from 'dexie';
-import {IFile, ITempFile} from '../../../repository/file/interface';
+import {IFile, IFileMap, ITempFile} from '../../../repository/file/interface';
 
 export class DexieFileDB extends Dexie {
     // @ts-ignore
     public files: Dexie.Table<IFile, string>;
     // @ts-ignore
     public temps: Dexie.Table<ITempFile, string>;
+    // @ts-ignore
+    public fileMap: Dexie.Table<IFileMap, string>;
 
     constructor() {
         super('file_db');
@@ -24,11 +26,13 @@ export class DexieFileDB extends Dexie {
         // (Here's where the implicit table props are dynamically created)
         //
         this.version(1).stores({
+            fileMap: `[id+clusterid],*msg_ids`,
             files: `id,hash`,
             temps: `[id+part]`,
         });
 
         this.files = this.table('files');
         this.temps = this.table('temps');
+        this.fileMap = this.table('fileMap');
     }
 }

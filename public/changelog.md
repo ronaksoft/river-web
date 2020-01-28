@@ -1,3 +1,10 @@
+## 0.29.15
+* Cancel request improved
+* FileMap db updated
+* Label Sever bug fixed
+* SignUp messages updated
+* Known bugs fixed
+
 ## 0.29.14
 * Bug fixes and improvements
 

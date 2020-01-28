@@ -244,7 +244,7 @@ export default class LabelRepo {
             }
         });
         if (labelItems.length > 0) {
-            return this.db.labelItems.where('lid+mid').anyOf(labelItems).delete();
+            return this.db.labelItems.where('[lid+mid]').anyOf(labelItems).delete();
         }
         return Promise.reject();
     }

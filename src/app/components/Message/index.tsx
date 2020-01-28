@@ -38,7 +38,6 @@ import MessageLocation from '../MessageLocation';
 import Broadcaster from '../../services/broadcaster';
 import UserRepo from '../../repository/user';
 import MessageAudio from '../MessageAudio';
-// import animateScrollTo from 'animated-scroll-to';
 import ElectronService from '../../services/electron';
 import i18n from '../../services/i18n';
 import DocumentViewerService, {IDocument} from "../../services/documentViewerService";
@@ -273,8 +272,6 @@ class Message extends React.Component<IProps, IState> {
             this.setState({
                 selectable: enable,
                 selectedIds: ids,
-            }, () => {
-                // this.list.forceUpdateGrid();
             });
         }
     }
@@ -693,7 +690,6 @@ class Message extends React.Component<IProps, IState> {
         this.containerRef = ref;
     }
 
-    // @ts-ignore
     private isAtEnd(offset?: number) {
         if (this.containerRef) {
             return (this.containerRef.clientHeight + this.containerRef.scrollTop + (offset || 2) >= this.containerRef.scrollHeight);
@@ -1321,7 +1317,9 @@ class Message extends React.Component<IProps, IState> {
                 files.push(e.dataTransfer.files[i]);
             }
         }
-        this.props.onDrop(files);
+        if (files.length > 0) {
+            this.props.onDrop(files);
+        }
     }
 
     private openExternalLink = (url: string) => (e: any) => {

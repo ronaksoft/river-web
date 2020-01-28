@@ -301,7 +301,10 @@ export default class SyncManager {
                     break;
                 case C_MSG.UpdateLabelSet:
                     const updateLabelSet = UpdateLabelSet.deserializeBinary(data).toObject();
-                    this.labelRepo.importBulk(updateLabelSet.labelsList);
+                    this.labelRepo.importBulk(updateLabelSet.labelsList.map(o => {
+                        delete o.count;
+                        return o;
+                    }));
                     break;
                 case C_MSG.UpdateLabelDeleted:
                     const updateLabelDeleted = UpdateLabelDeleted.deserializeBinary(data).toObject();

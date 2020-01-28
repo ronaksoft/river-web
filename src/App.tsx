@@ -270,8 +270,14 @@ class App extends React.Component<{}, IState> {
         });
         this.mainRepo.destroyDB().then(() => {
             const testUrl = localStorage.getItem('river.workspace_url') || '';
+            const testFileUrl = localStorage.getItem('river.workspace_url_file') || '';
+            const serverKeys = localStorage.getItem('river.server_keys') || '';
             localStorage.clear();
             localStorage.setItem('river.workspace_url', testUrl);
+            localStorage.setItem('river.workspace_url_file', testFileUrl);
+            if (serverKeys) {
+                localStorage.setItem('river.server_keys', serverKeys);
+            }
             this.setState({
                 alertOpen: false,
             }, () => {

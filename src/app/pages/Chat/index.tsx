@@ -11,7 +11,7 @@ import * as React from 'react';
 import Dialog from '../../components/Dialog/index';
 import {IMessage} from '../../repository/message/interface';
 import Message, {highlightMessage, highlightMessageText} from '../../components/Message/index';
-import MessageRepo from '../../repository/message/index';
+import MessageRepo, {getMediaDocument} from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
 import ChatInput, {C_TYPING_INTERVAL} from '../../components/ChatInput/index';
@@ -103,7 +103,7 @@ import {
     MediaDocument,
 } from '../../services/sdk/messages/chat.core.message.medias_pb';
 import RiverTime from '../../services/utilities/river_time';
-import FileRepo from '../../repository/file';
+import FileRepo, {getFileLocation} from '../../repository/file';
 import ProgressBroadcaster from '../../services/progress';
 import {C_FILE_ERR_CODE} from '../../services/sdk/fileManager/const/const';
 import {getMessageTitle} from '../../components/Dialog/utils';
@@ -1194,7 +1194,7 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Update message delete handler */
     private updateMessageDeleteHandler = (data: UpdateMessagesDeleted.AsObject) => {
-        if (this.isUpdating || !data.peer || !this.messageRef) {
+        if (this.isUpdating || !data.peer) {
             return;
         }
         const peer = data.peer;
@@ -1868,14 +1868,17 @@ class Chat extends React.Component<IProps, IState> {
                 entities = param.entities;
             }
 
-            const index = this.pushMessage(message);
+            let index = -1;
 
             this.messageRepo.addPending({
                 id: randomId,
                 message_id: id,
             });
 
-            this.sdk.sendMessage(randomId, text, peer, replyTo, entities).then((res) => {
+            this.sdk.sendMessage(randomId, text, peer, replyTo, entities, (reqId: number) => {
+                message.req_id = reqId;
+                index = this.pushMessage(message);
+            }).then((res) => {
                 // For double checking update message id
                 this.updateManager.setMessageId(res.messageid || 0);
                 this.modifyPendingMessage({
@@ -3642,44 +3645,48 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Modify temp chunks */
     private modifyTempFiles(ids: string[], message: IMessage) {
-        switch (message.mediatype) {
-            case MediaType.MEDIATYPEDOCUMENT:
-                const mediaDocument: MediaDocument.AsObject = message.mediadata;
-                if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
-                    const persistFilePromises: any[] = [];
-                    persistFilePromises.push(this.fileRepo.persistTempFiles(ids[0], mediaDocument.doc.id, mediaDocument.doc.mimetype || 'application/octet-stream'));
-                    this.cachedFileService.swap(ids[0], {
-                        accesshash: mediaDocument.doc.accesshash,
-                        clusterid: mediaDocument.doc.clusterid,
-                        fileid: mediaDocument.doc.id,
-                        version: 0,
-                    });
-                    // Check thumbnail
-                    if (ids.length > 1 && mediaDocument.doc.thumbnail) {
-                        persistFilePromises.push(this.fileRepo.persistTempFiles(ids[1], mediaDocument.doc.thumbnail.fileid || '', 'image/jpeg'));
-                        this.cachedFileService.swap(ids[0], mediaDocument.doc.thumbnail);
-                    }
-                    Promise.all(persistFilePromises).then(() => {
-                        this.messageRepo.get(message.id || 0).then((msg) => {
-                            if (msg) {
-                                msg.downloaded = true;
-                                if (this.messages) {
-                                    const index = findIndex(this.messages, (o) => {
-                                        return o && o.id === msg.id && o.messagetype === msg.messagetype;
-                                    });
-                                    if (index > -1) {
-                                        this.messages[index] = msg;
-                                        if (this.messageRef) {
-                                            this.messageRef.updateList();
-                                        }
-                                    }
+        const mediaDocument = getMediaDocument(message);
+        if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
+            const persistFilePromises: any[] = [];
+            persistFilePromises.push(this.fileRepo.persistTempFiles(ids[0], mediaDocument.doc.id, mediaDocument.doc.mimetype || 'application/octet-stream'));
+            this.cachedFileService.swap(ids[0], {
+                accesshash: mediaDocument.doc.accesshash,
+                clusterid: mediaDocument.doc.clusterid,
+                fileid: mediaDocument.doc.id,
+                version: 0,
+            });
+            // Check thumbnail
+            if (ids.length > 1 && mediaDocument.doc.thumbnail) {
+                persistFilePromises.push(this.fileRepo.persistTempFiles(ids[1], mediaDocument.doc.thumbnail.fileid || '', 'image/jpeg'));
+                this.cachedFileService.swap(ids[0], mediaDocument.doc.thumbnail);
+            }
+            Promise.all(persistFilePromises).then(() => {
+                this.messageRepo.get(message.id || 0).then((msg) => {
+                    if (msg) {
+                        msg.downloaded = true;
+                        if (this.messages) {
+                            const index = findIndex(this.messages, (o) => {
+                                return o && o.id === msg.id && o.messagetype === msg.messagetype;
+                            });
+                            if (index > -1) {
+                                this.messages[index] = msg;
+                                if (this.messageRef) {
+                                    this.messageRef.updateList();
                                 }
-                                this.messageRepo.lazyUpsert([msg]);
                             }
-                        });
-                    });
-                }
-                break;
+                        }
+                        this.messageRepo.lazyUpsert([msg]);
+                        const mediaDoc: MediaDocument.AsObject = msg.mediadata;
+                        if (mediaDoc && mediaDoc.doc && mediaDoc.doc.id) {
+                            this.fileRepo.upsertFileMap([{
+                                clusterid: mediaDoc.doc.clusterid || 0,
+                                id: mediaDoc.doc.id || '',
+                                msg_ids: [msg.id || 0],
+                            }]);
+                        }
+                    }
+                });
+            });
         }
     }
 
@@ -3762,24 +3769,29 @@ class Chat extends React.Component<IProps, IState> {
     /* Cancel sending message */
     private cancelSend(id: number, noUpdate?: boolean) {
         const removeMessage = () => {
-            this.messageRepo.remove(id).then(() => {
-                const messages = this.messages;
-                if (messages) {
-                    const index = findIndex(messages, (o) => {
-                        return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
-                    });
-                    if (index > -1) {
-                        if (this.messageRef) {
-                            this.messageRef.clear(index);
-                        }
-                        messages.splice(index, 1);
-                        if (noUpdate !== true && this.messageRef) {
-                            this.messageRef.updateList();
+            this.messageRepo.get(id).then((msg) => {
+                if (msg && msg.req_id) {
+                    this.sdk.cancelRequest(msg.req_id);
+                }
+                this.messageRepo.remove(id).then(() => {
+                    const messages = this.messages;
+                    if (messages) {
+                        const index = findIndex(messages, (o) => {
+                            return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                        });
+                        if (index > -1) {
+                            if (this.messageRef) {
+                                this.messageRef.clear(index);
+                            }
+                            messages.splice(index, 1);
+                            if (noUpdate !== true && this.messageRef) {
+                                this.messageRef.updateList();
+                            }
                         }
                     }
-                }
-            }).catch((err) => {
-                window.console.debug(err);
+                }).catch((err) => {
+                    window.console.debug(err);
+                });
             });
         };
         this.messageRepo.getPendingByMessageId(id).then((res) => {
@@ -3800,57 +3812,57 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Download file */
     private downloadFile(msg: IMessage) {
-        switch (msg.mediatype) {
-            case MediaType.MEDIATYPEDOCUMENT:
-                const mediaDocument: MediaDocument.AsObject = msg.mediadata;
-                if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
-                    const fileLocation = new InputFileLocation();
-                    fileLocation.setAccesshash(mediaDocument.doc.accesshash || '');
-                    fileLocation.setClusterid(mediaDocument.doc.clusterid || 1);
-                    fileLocation.setFileid(mediaDocument.doc.id);
-                    fileLocation.setVersion(mediaDocument.doc.version || 0);
-                    this.fileManager.receiveFile(fileLocation, mediaDocument.doc.md5checksum || '', mediaDocument.doc.filesize || 0, mediaDocument.doc.mimetype || 'application/octet-stream', (progress) => {
-                        this.progressBroadcaster.publish(msg.id || 0, progress);
-                    }).then(() => {
-                        this.broadcastEvent('File_Downloaded', {id: msg.id});
-                        this.progressBroadcaster.remove(msg.id || 0);
-                        msg.downloaded = true;
-                        this.messageRepo.lazyUpsert([msg]);
-                        if (this.selectedDialogId === msg.peerid) {
-                            const messages = this.messages;
-                            const index = findIndex(messages, {id: msg.id, messagetype: msg.messagetype});
-                            if (index > -1) {
-                                messages[index].downloaded = true;
-                                // Force update messages
-                                if (this.messageRef) {
-                                    this.messageRef.updateList();
-                                }
-                            }
-                        }
-                        if (msg.messagetype === C_MESSAGE_TYPE.File && this.downloadManager.getDownloadSettings().auto_save_files) {
-                            this.saveFile(msg);
-                        }
-                    }).catch((err) => {
-                        window.console.debug(err);
-                        if (err.code !== C_FILE_ERR_CODE.ALREADY_IN_QUEUE) {
-                            this.progressBroadcaster.failed(msg.id || 0);
-                            this.progressBroadcaster.remove(msg.id || 0);
-                        }
-                    });
+        const mediaDocument = getMediaDocument(msg);
+        if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
+            const fileLocation = new InputFileLocation();
+            fileLocation.setAccesshash(mediaDocument.doc.accesshash || '');
+            fileLocation.setClusterid(mediaDocument.doc.clusterid || 1);
+            fileLocation.setFileid(mediaDocument.doc.id);
+            fileLocation.setVersion(mediaDocument.doc.version || 0);
+            this.fileManager.receiveFile(fileLocation, mediaDocument.doc.md5checksum || '', mediaDocument.doc.filesize || 0, mediaDocument.doc.mimetype || 'application/octet-stream', (progress) => {
+                this.progressBroadcaster.publish(msg.id || 0, progress);
+            }).then(() => {
+                this.broadcastEvent('File_Downloaded', {id: msg.id});
+                this.progressBroadcaster.remove(msg.id || 0);
+                msg.downloaded = true;
+                this.messageRepo.lazyUpsert([msg]);
+                if (fileLocation) {
+                    const fileLocationObject = fileLocation.toObject();
+                    this.fileRepo.upsertFileMap([{
+                        clusterid: fileLocationObject.clusterid || 0,
+                        id: fileLocationObject.fileid || '',
+                        msg_ids: [msg.id || 0],
+                    }]);
                 }
-                break;
+                if (this.selectedDialogId === msg.peerid) {
+                    const messages = this.messages;
+                    const index = findIndex(messages, {id: msg.id, messagetype: msg.messagetype});
+                    if (index > -1) {
+                        messages[index].downloaded = true;
+                        // Force update messages
+                        if (this.messageRef) {
+                            this.messageRef.updateList();
+                        }
+                    }
+                }
+                if (msg.messagetype === C_MESSAGE_TYPE.File && this.downloadManager.getDownloadSettings().auto_save_files) {
+                    this.saveFile(msg);
+                }
+            }).catch((err) => {
+                window.console.debug(err);
+                if (err.code !== C_FILE_ERR_CODE.ALREADY_IN_QUEUE) {
+                    this.progressBroadcaster.failed(msg.id || 0);
+                    this.progressBroadcaster.remove(msg.id || 0);
+                }
+            });
         }
     }
 
     /* Cancel download file */
     private cancelDownloadFile(msg: IMessage) {
-        switch (msg.mediatype) {
-            case MediaType.MEDIATYPEDOCUMENT:
-                const mediaDocument: MediaDocument.AsObject = msg.mediadata;
-                if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
-                    this.fileManager.cancel(mediaDocument.doc.id);
-                }
-                break;
+        const mediaDocument = getMediaDocument(msg);
+        if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
+            this.fileManager.cancel(mediaDocument.doc.id);
         }
     }
 
@@ -4293,19 +4305,17 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Save file by type */
     private saveFile(msg: IMessage) {
-        if (msg.mediatype === MediaType.MEDIATYPEDOCUMENT) {
-            const mediaDocument: MediaDocument.AsObject = msg.mediadata;
-            if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
-                this.fileRepo.get(mediaDocument.doc.id).then((res) => {
-                    if (res) {
-                        if (ElectronService.isElectron()) {
-                            this.downloadWithElectron(res.data, msg);
-                        } else {
-                            saveAs(res.data, this.getFileName(msg));
-                        }
+        const mediaDocument = getMediaDocument(msg);
+        if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
+            this.fileRepo.get(mediaDocument.doc.id).then((res) => {
+                if (res) {
+                    if (ElectronService.isElectron()) {
+                        this.downloadWithElectron(res.data, msg);
+                    } else {
+                        saveAs(res.data, this.getFileName(msg));
                     }
-                });
-            }
+                }
+            });
         }
     }
 
@@ -4332,8 +4342,18 @@ class Chat extends React.Component<IProps, IState> {
         const objectUrl = URL.createObjectURL(blob);
         this.electronService.download(objectUrl, fileInfo.name).then((res) => {
             message.saved = true;
-            message.savedPath = res.path;
+            message.saved_path = res.path;
             this.messageRepo.lazyUpsert([message]);
+            const fileLocation = getFileLocation(message);
+            if (fileLocation) {
+                const fileLocationObject = fileLocation.toObject();
+                this.fileRepo.upsertFileMap([{
+                    clusterid: fileLocationObject.clusterid || 0,
+                    id: fileLocationObject.fileid || '',
+                    saved: true,
+                    saved_path: res.path,
+                }]);
+            }
             // Force update messages
             if (this.messageRef) {
                 this.messageRef.updateList();
@@ -4348,15 +4368,15 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Open file and focus on folder */
     private openFile(message: IMessage) {
-        if (message && message.savedPath) {
-            this.electronService.revealFile(message.savedPath);
+        if (message && message.saved_path) {
+            this.electronService.revealFile(message.saved_path);
         }
     }
 
     /* Preview file */
     private previewFile(message: IMessage) {
-        if (message && message.savedPath) {
-            this.electronService.previewFile(message.savedPath);
+        if (message && message.saved_path) {
+            this.electronService.previewFile(message.saved_path);
         }
     }
 
@@ -4497,7 +4517,10 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Update label set */
     private updateLabelSetHandler = (data: UpdateLabelSet.AsObject) => {
-        this.labelRepo.importBulk(data.labelsList).then(() => {
+        this.labelRepo.importBulk(data.labelsList.map(o => {
+            delete o.count;
+            return o;
+        })).then(() => {
             if (this.messageRef) {
                 this.messageRef.updateList();
             }

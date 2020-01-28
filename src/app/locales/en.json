@@ -309,7 +309,8 @@
     "term_of_services": "Term of Services",
     "en": "en",
     "fa": "fa",
-    "password_note": "You have enabled Two-Step Verification, so your account is protected with an additional password."
+    "password_note": "You have enabled Two-Step Verification, so your account is protected with an additional password.",
+    "timeout": "Internet Timeout"
   },
   "status": {
     "members": "{0} members",

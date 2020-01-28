@@ -157,7 +157,7 @@ export default class Socket {
                     this.dispatchEvent('fnStarted', d.data);
                     break;
                 case 'fnDecryptError':
-                    this.dispatchEvent('fnDecryptError', null);
+                    // this.dispatchEvent('fnDecryptError', null);
                     break;
                 case 'fnEncryptCallback':
                     if (this.resolveEncryptFn) {

@@ -30,6 +30,7 @@ import MediaRepo from '../media';
 import {C_MEDIA_TYPE} from '../media/interface';
 import {kMerge} from "../../services/utilities/kDash";
 import {emojiLevel} from "../../services/utilities/emoji";
+import FileRepo from "../file";
 
 interface IMessageBundlePromise {
     reject: any;
@@ -45,6 +46,14 @@ interface IMessageBundle {
     peer: InputPeer;
     reqs: { [key: string]: IMessageBundleReq };
 }
+
+export const getMediaDocument = (msg: IMessage) => {
+    let mediaDocument: MediaDocument.AsObject | undefined;
+    if (msg.mediatype === MediaType.MEDIATYPEDOCUMENT) {
+        mediaDocument = msg.mediadata;
+    }
+    return mediaDocument;
+};
 
 export default class MessageRepo {
     public static parseAttributes(attrs: DocumentAttribute.AsObject[], flags: { type: number }) {
@@ -110,6 +119,27 @@ export default class MessageRepo {
                         const flags: { type: number } = {type: C_MESSAGE_TYPE.Normal};
                         out.attributes = this.parseAttributes(out.mediadata.doc.attributesList, flags);
                         out.messagetype = flags.type;
+                    }
+                    const mediaDocument: MediaDocument.AsObject = out.mediadata;
+                    // Check downloaded documents
+                    if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
+                        FileRepo.getInstance().getFileMapByMediaDocument(mediaDocument).then((res) => {
+                            if (res) {
+                                setTimeout(() => {
+                                    MessageRepo.getInstance().importBulk([{
+                                        downloaded: true,
+                                        id: msg.id,
+                                        saved: res.saved,
+                                        saved_path: res.saved_path,
+                                    }]);
+                                }, 1000);
+                                FileRepo.getInstance().upsertFileMap([{
+                                    clusterid: res.clusterid,
+                                    id: res.id,
+                                    msg_ids: [msg.id || 0],
+                                }]);
+                            }
+                        });
                     }
                     break;
                 case MediaType.MEDIATYPECONTACT:

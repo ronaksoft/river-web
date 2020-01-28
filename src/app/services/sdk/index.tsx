@@ -303,7 +303,7 @@ export default class SDK {
         });
     }
 
-    public sendMessage(randomId: number, body: string, peer: InputPeer, replyTo?: number, entities?: MessageEntity[]): Promise<MessagesSent.AsObject> {
+    public sendMessage(randomId: number, body: string, peer: InputPeer, replyTo?: number, entities?: MessageEntity[], reqIdFn?: (rId: number) => void): Promise<MessagesSent.AsObject> {
         const data = new MessagesSend();
         data.setRandomid(randomId);
         data.setBody(body);
@@ -322,7 +322,7 @@ export default class SDK {
                 items: C_ERR_ITEM.ErrItemTimeout
             }],
             timeout: 5000,
-        });
+        }, reqIdFn);
     }
 
     public editMessage(randomId: number, id: number, body: string, peer: InputPeer, entities?: MessageEntity[]): Promise<MessagesSent.AsObject> {
@@ -808,6 +808,10 @@ export default class SDK {
 
     public startNetWork() {
         this.server.startNetwork();
+    }
+
+    public cancelRequest(reqId: number) {
+        this.server.cancelReqId(reqId);
     }
 
     public stopNetWork() {

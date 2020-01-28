@@ -25,7 +25,7 @@ import {
     UpdateUserPhoto,
     UpdateUserTyping,
 } from '../../messages/chat.api.updates_pb';
-import {throttle, cloneDeep} from 'lodash';
+import {throttle} from 'lodash';
 import MessageRepo from '../../../../repository/message';
 import {base64ToU8a} from '../../fileManager/http/utils';
 
@@ -206,7 +206,6 @@ export default class UpdateManager {
             });
             this.outOfSync = true;
         }
-        window.console.log(cloneDeep(this.updateList));
         if (this.updateList.length === 0) {
             this.outOfSync = false;
             return;
@@ -215,7 +214,6 @@ export default class UpdateManager {
             clearTimeout(this.outOfSyncTimeout);
             this.outOfSyncTimeout = null;
             const update = this.updateList.shift();
-            window.console.log(cloneDeep(this.updateList));
             if (update) {
                 this.applyUpdates(update);
             }

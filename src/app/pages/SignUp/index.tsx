@@ -502,10 +502,13 @@ class SignUp extends React.Component<IProps, IState> {
                 this.focus('f-code');
                 this.startCountdown();
             });
-        }).catch(() => {
+        }).catch((err) => {
             this.setState({
                 loading: false,
             });
+            if (this.props.enqueueSnackbar && err.code === C_ERR.ErrCodeInternal && err.items === C_ERR_ITEM.ErrItemTimeout) {
+                this.props.enqueueSnackbar(i18n.t('sign_up.timeout'));
+            }
         });
     }
 

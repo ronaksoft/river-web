@@ -88,9 +88,9 @@ interface IState {
 }
 
 /* hasAuthority checks user permission for group actions */
-export const hasAuthority = (group: IGroup) => {
+export const hasAuthority = (group: IGroup, checkAllAdmin: boolean) => {
     if (group.flagsList) {
-        return group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMIN) > -1 || group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMINSENABLED) === -1;
+        return group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMIN) > -1 || (checkAllAdmin && group.flagsList.indexOf(GroupFlags.GROUPFLAGSADMINSENABLED) === -1);
     } else {
         return false;
     }
@@ -190,9 +190,12 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             peer, participants, title, titleEdit, moreAnchorEl,
             dialog, notifySettingDialogOpen, notifyValue, uploadingPhoto, shareMediaEnabled
         } = this.state;
+        const isAdmin = group ? hasAuthority(group, false) : false;
+        const hasAccess = group ? hasAuthority(group, true) : false;
         return (
             <div className="group-info-menu">
-                <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler} width={C_AVATAR_SIZE}/>
+                <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler}
+                               width={C_AVATAR_SIZE}/>
                 <div className={'page-container page-' + page}>
                     <div className="page page-1">
                         <div className="menu-header">
@@ -212,8 +215,9 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                 {group && <div className="info kk-card">
                                     <div className="avatar" onClick={this.avatarMenuAnchorOpenHandler}>
                                         {!uploadingPhoto && <GroupAvatar id={group.id || ''}/>}
-                                        {uploadingPhoto && <img src={this.profileTempPhoto} className="avatar-image" alt="avatar"/>}
-                                        {hasAuthority(group) &&
+                                        {uploadingPhoto &&
+                                        <img src={this.profileTempPhoto} className="avatar-image" alt="avatar"/>}
+                                        {hasAccess &&
                                         <div className={'overlay ' + (uploadingPhoto ? 'show' : '')}>
                                             {!uploadingPhoto && <React.Fragment>
                                                 <PhotoCameraRounded/>
@@ -239,7 +243,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                     <div className="title">
                                         {!titleEdit && <div className="form-control">
                                             <div className="inner">{group.title}</div>
-                                            {hasAuthority(group) && <div className="action">
+                                            {hasAccess && <div className="action">
                                                 <IconButton
                                                     onClick={this.onTitleEditHandler}
                                                 >
@@ -284,7 +288,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                     </div>
                                 </div>}
                                 {group && <React.Fragment>
-                                    {hasAuthority(group) && <div className="kk-card notify-settings">
+                                    {isAdmin && <div className="kk-card notify-settings">
                                         <div className="label">{i18n.t('peer_info.all_member_admin')}</div>
                                         <div className="value switch">
                                             <Switch
@@ -314,14 +318,14 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                                       onClick={this.participantClickHandler(participant.userid, participant.accesshash)}>{`${participant.firstname} ${participant.lastname}`}{this.userId === participant.userid ? ' (you)' : ''}</span>
                                                 <span
                                                     className="username">{participant.username ? participant.username : i18n.t('general.no_username')}</span>
-                                                <div className="more"
+                                                {isAdmin && <div className="more"
                                                      onClick={this.moreOpenHandler(participant)}>
                                                     <MoreVert/>
-                                                </div>
+                                                </div>}
                                             </div>
                                         );
                                     })}
-                                    {hasAuthority(group) &&
+                                    {hasAccess &&
                                     <div className="add-member" onClick={this.addMemberDialogOpenHandler}>
                                         <AddRounded/> {i18n.t('peer_info.add_member')}
                                     </div>}
@@ -523,26 +527,24 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             return;
         }
         const menuItems = [];
-        if (hasAuthority(group)) {
+        if (hasAuthority(group, false)) {
             if (currentUser.userid !== this.userId) {
                 menuItems.push({
                     cmd: 'remove',
                     title: 'Remove',
                 });
             }
-            if (hasAuthority(group)) {
-                if (currentUser.type === ParticipantType.PARTICIPANTTYPEMEMBER) {
-                    menuItems.push({
-                        cmd: 'promote',
-                        title: 'Promote',
-                    });
-                }
-                if (currentUser.type === ParticipantType.PARTICIPANTTYPEADMIN) {
-                    menuItems.push({
-                        cmd: 'demote',
-                        title: 'Demote',
-                    });
-                }
+            if (currentUser.type === ParticipantType.PARTICIPANTTYPEMEMBER) {
+                menuItems.push({
+                    cmd: 'promote',
+                    title: 'Promote',
+                });
+            }
+            if (currentUser.type === ParticipantType.PARTICIPANTTYPEADMIN) {
+                menuItems.push({
+                    cmd: 'demote',
+                    title: 'Demote',
+                });
             }
         } else {
             return (<span>You have no authority!</span>);
@@ -903,7 +905,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
         if (!group) {
             return;
         }
-        if (hasAuthority(group)) {
+        if (hasAuthority(group, true)) {
             this.setState({
                 avatarMenuAnchorEl: e.currentTarget,
             });

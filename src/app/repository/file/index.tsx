@@ -8,18 +8,37 @@
 */
 
 import DB from '../../services/db/file';
-import {IFile, ITempFile} from './interface';
+import {IFile, IFileMap, ITempFile} from './interface';
 import {DexieFileDB} from '../../services/db/dexie/file';
 import Dexie from 'dexie';
 import {arrayBufferToBase64} from '../../services/sdk/fileManager/http/utils';
 import {sha256} from 'js-sha256';
 import md5 from "md5-webworker";
+import {InputFileLocation} from "../../services/sdk/messages/chat.core.types_pb";
+import {find, differenceWith, uniq} from "lodash";
+import {kMerge} from "../../services/utilities/kDash";
+import {IMessage} from "../message/interface";
+import {getMediaDocument} from "../message";
+import {MediaDocument} from "../../services/sdk/messages/chat.core.message.medias_pb";
 
 export const md5FromBlob = (theBlob: Blob): Promise<string> => {
     const b: any = theBlob;
     b.lastModifiedDate = new Date();
     b.name = 'tempfile';
     return md5(theBlob as File);
+};
+
+export const getFileLocation = (msg: IMessage) => {
+    let fileLocation: InputFileLocation | undefined;
+    const mediaDocument = getMediaDocument(msg);
+    if (mediaDocument && mediaDocument.doc && mediaDocument.doc.id) {
+        fileLocation = new InputFileLocation();
+        fileLocation.setAccesshash(mediaDocument.doc.accesshash || '');
+        fileLocation.setClusterid(mediaDocument.doc.clusterid || 0);
+        fileLocation.setFileid(mediaDocument.doc.id);
+        fileLocation.setVersion(mediaDocument.doc.version || 0);
+    }
+    return fileLocation;
 };
 
 export default class FileRepo {
@@ -138,6 +157,47 @@ export default class FileRepo {
 
     public get(id: string) {
         return this.db.files.get(id);
+    }
+
+    public upsertFileMap(fileMaps: IFileMap[]) {
+        const indexList: any[] = fileMaps.map((f) => {
+            return [f.id, f.clusterid];
+        });
+        return this.db.fileMap.where('[id+clusterid]').anyOf(indexList).toArray().then((result) => {
+            const createItems: IFileMap[] = differenceWith(fileMaps, result, (i1, i2) => i1.id === i2.id && i1.clusterid === i2.clusterid);
+            const updateItems: IFileMap[] = result;
+            updateItems.map((fileMap: IFileMap) => {
+                const t = find(fileMaps, {id: fileMap.id, clusterid: fileMap.clusterid});
+                if (t) {
+                    if (t.msg_ids && fileMap.msg_ids) {
+                        t.msg_ids = uniq([...t.msg_ids, ...fileMap.msg_ids]);
+                    }
+                    return kMerge(fileMap, t);
+                } else {
+                    return fileMap;
+                }
+            });
+            return this.db.fileMap.bulkPut([...createItems, ...updateItems]);
+        }).catch((err: any) => {
+            window.console.debug('fileMap upsert', err);
+        });
+    }
+
+    public getFileMapByMediaDocument(mediaDocument: MediaDocument.AsObject): Promise<IFileMap | undefined> {
+        return this.getFileMap({
+            clusterid: mediaDocument.doc.clusterid,
+            fileid: mediaDocument.doc.id,
+        });
+    }
+
+    public getFileMap(inputFile: InputFileLocation.AsObject): Promise<IFileMap | undefined> {
+        return this.db.fileMap.where('[id+clusterid]').equals([inputFile.fileid || '', inputFile.clusterid || 0]).toArray().then((res) => {
+            if (res.length > 0) {
+                return res[0];
+            } else {
+                return undefined;
+            }
+        });
     }
 
     private createSha256(blob: Blob): Promise<string> {

@@ -73,6 +73,7 @@ export default class Server {
     private requestQueue: MessageEnvelope[] = [];
     private readonly executeSendThrottledRequestThrottle: any;
     private lastActivityTime: number = 0;
+    private cancelList: number[] = [];
 
     public constructor() {
         this.socket = Socket.getInstance();
@@ -122,11 +123,14 @@ export default class Server {
     }
 
     /* Send a request to WASM worker over CustomEvent in window object */
-    public send(constructor: number, data: Uint8Array, instant: boolean, options?: IRequestOptions): Promise<any> {
+    public send(constructor: number, data: Uint8Array, instant: boolean, options?: IRequestOptions, reqIdFn?: (rId: number) => void): Promise<any> {
         let internalResolve = null;
         let internalReject = null;
 
         const reqId = ++this.reqId;
+        if (reqIdFn) {
+            reqIdFn(reqId);
+        }
         // retry on E00 Server error
         if (!options) {
             options = {
@@ -249,8 +253,35 @@ export default class Server {
         return this.socket.isStarted();
     }
 
+    public cancelReqId(id: number) {
+        if (this.cancelList.indexOf(id) === -1) {
+            this.cancelList.push(id);
+        }
+    }
+
+    private cancelRequestByEnvelope(envelope: MessageEnvelope) {
+        // @ts-ignore
+        this.cancelRequest({constructor: envelope.getConstructor() || 0, reqId: envelope.getRequestid() || 0});
+    }
+
+    private cancelRequest(request: IServerRequest) {
+        const index = this.cancelList.indexOf(request.reqId);
+        if (index > -1) {
+            this.cancelList.splice(index, 1);
+            delete this.messageListeners[request.reqId];
+            window.console.debug(`%c${C_MSG_NAME[request.constructor]} ${request.reqId} cancelled`, 'color: #cc0000');
+            return true;
+        }
+        return false;
+    }
+
     /* Generate string from request and send to the api */
     private sendRequest(request: IServerRequest) {
+        if (this.cancelList.length > 0) {
+            if (this.cancelRequest(request)) {
+                return;
+            }
+        }
         window.console.debug(`%c${C_MSG_NAME[request.constructor]} ${request.reqId}`, 'color: #f9d71c');
         request.timeout = setTimeout(() => {
             this.dispatchTimeout(request.reqId);
@@ -296,7 +327,11 @@ export default class Server {
         while (this.requestQueue.length > 0) {
             const envelope = this.requestQueue.shift();
             if (envelope) {
-                envelopes.push(envelope);
+                if (this.cancelList.length > 0) {
+                    this.cancelRequestByEnvelope(envelope);
+                } else {
+                    envelopes.push(envelope);
+                }
             }
             if (envelopes.length >= 50) {
                 execute(envelopes);
@@ -435,6 +470,8 @@ export default class Server {
             case 1:
                 return pv.v;
             case 2:
+                return pv.v;
+            case 3:
                 return false;
         }
     }
@@ -446,6 +483,7 @@ export default class Server {
                 this.migrate1();
                 return;
             case 1:
+            case 2:
                 this.migrate2();
                 return;
         }
@@ -479,7 +517,7 @@ export default class Server {
             MainRepo.getInstance().destroyDB().then(() => {
                 localStorage.removeItem('river.last_update_id');
                 localStorage.setItem('river.version', JSON.stringify({
-                    v: 2,
+                    v: 3,
                 }));
                 setTimeout(() => {
                     window.location.reload();

@@ -21,12 +21,13 @@ interface IMessage extends UserMessage.AsObject {
     pmodified?: boolean;
     rtl?: boolean;
     saved?: boolean;
-    savedPath?: string;
+    saved_path?: string;
     temp?: boolean;
     deleted_reply?: boolean;
     em_le?: number;
     added_labels?: number[];
     removed_labels?: number[];
+    req_id?: number;
 }
 
 interface IPendingMessage {

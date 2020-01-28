@@ -25,5 +25,13 @@ interface ITempFile {
     modifiedtime?: number;
 }
 
+interface IFileMap {
+    id: string;
+    clusterid: number;
+    saved?: boolean;
+    saved_path?: string;
+    msg_ids?: number[];
+}
+
 // @ts-ignore
-export {IFile, ITempFile};
+export {IFile, ITempFile, IFileMap};
