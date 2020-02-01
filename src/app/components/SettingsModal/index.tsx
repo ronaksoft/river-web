@@ -56,6 +56,9 @@ class SettingsModal extends React.Component<IProps, IState> {
                 open={open}
                 onClose={this.props.onClose}
                 className={'settings-modal' + (fit ? ' fit' : '')}
+                classes={{
+                    paper: 'settings-modal-paper'
+                }}
             >
                 <React.Fragment>
                     <div className="settings-modal-header">

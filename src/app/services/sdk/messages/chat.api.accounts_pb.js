@@ -5341,7 +5341,7 @@ proto.msg.AccountRecoverPassword.deserializeBinaryFromReader = function(msg, rea
       msg.setAlgorithmdata(value);
       break;
     case 4:
-      var value = /** @type {number} */ (reader.readInt64());
+      var value = /** @type {string} */ (reader.readInt64String());
       msg.setSrpid(value);
       break;
     default:
@@ -5395,9 +5395,9 @@ proto.msg.AccountRecoverPassword.serializeBinaryToWriter = function(message, wri
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 4));
+  f = /** @type {string} */ (jspb.Message.getField(message, 4));
   if (f != null) {
-    writer.writeInt64(
+    writer.writeInt64String(
       4,
       f
     );
@@ -5541,15 +5541,15 @@ proto.msg.AccountRecoverPassword.prototype.hasAlgorithmdata = function() {
 
 /**
  * required int64 SrpID = 4;
- * @return {number}
+ * @return {string}
  */
 proto.msg.AccountRecoverPassword.prototype.getSrpid = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, "0"));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.msg.AccountRecoverPassword} returns this
  */
 proto.msg.AccountRecoverPassword.prototype.setSrpid = function(value) {

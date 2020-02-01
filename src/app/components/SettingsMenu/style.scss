@@ -999,9 +999,17 @@
     color: var(--grey);
   }
 
-  .setting-switch.checked {
-    span {
-      color: var(--river) !important;
+  .setting-switch {
+    .setting-switch-base {
+      padding: 9px;
+    }
+    .setting-switch-thumb {
+      color: var(--light);
+    }
+    .setting-switch-checked {
+      .setting-switch-thumb {
+        color: var(--river-light);
+      }
     }
   }
 
@@ -1330,6 +1338,17 @@ html[theme="dark"],
 html[theme="dark-night"],
 html[theme="dark-blue"] {
   .setting-menu {
+    .setting-switch {
+      .setting-switch-thumb {
+        color: var(--grey);
+      }
+      .setting-switch-checked {
+        .setting-switch-thumb {
+          color: var(--river);
+        }
+      }
+    }
+
     .menu-header {
       background-color: var(--dark-medium);
       color: var(--white);
@@ -1373,12 +1392,6 @@ html[theme="dark-blue"] {
     .setting-switch-label {
       > span {
         color: var(--light);
-      }
-    }
-
-    .setting-switch.blue {
-      span {
-        color: var(--dark-accent-medium) !important;
       }
     }
 

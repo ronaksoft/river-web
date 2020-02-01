@@ -138,6 +138,9 @@ class MediaPreview extends React.Component<IProps, IState> {
                 onClose={this.dialogCloseHandler}
                 className="uploader-dialog"
                 disableBackdropClick={loading}
+                classes={{
+                    paper: 'uploader-dialog-paper',
+                }}
             >
                 {Boolean(items.length > 0 && items[selected].mediaType === 'image') &&
                 <Cropper ref={this.cropperRefHandler} onImageReady={this.cropperImageReadyHandler}/>}

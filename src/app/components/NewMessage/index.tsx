@@ -59,6 +59,9 @@ class NewMessage extends React.Component<IProps, IState> {
                 className="compose-new-message"
                 open={this.state.open}
                 onClose={this.handleClose}
+                classes={{
+                    paper: 'compose-new-message-paper'
+                }}
             >
                 <div className="dialog-content">
                     <div className={'page-container page-' + page}>

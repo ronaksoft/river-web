@@ -179,6 +179,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
                 className={'document-viewer-dialog ' + className}
                 disableBackdropClick={true}
                 disableEscapeKeyDown={true}
+                classes={{
+                    paper: 'document-viewer-dialog-paper'
+                }}
             >
                 <ClickAwayListener onClickAway={this.dialogCloseHandler()}>
                     <div ref={this.documentContainerRefHandler} className="document-container"
@@ -431,6 +434,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     open={this.state.confirmDialogOpen}
                     onClose={this.confirmDialogCloseHandler}
                     className="confirm-dialog"
+                    classes={{
+                        paper: 'confirm-dialog'
+                    }}
                 >
                     <DialogTitle>{i18n.t('settings.remove_photo')}</DialogTitle>
                     <DialogActions>

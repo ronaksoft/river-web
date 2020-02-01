@@ -175,6 +175,9 @@ class SettingsStorageUsageModal extends React.Component<IProps, IState> {
                     className="confirm-dialog"
                     disableEscapeKeyDown={Boolean(loadingProgress)}
                     disableBackdropClick={Boolean(loadingProgress)}
+                    classes={{
+                        paper: 'confirm-dialog-paper'
+                    }}
                 >
                     <DialogTitle>{i18n.t('general.are_you_sure')}</DialogTitle>
                     <DialogContent className="cache-dialog-content">

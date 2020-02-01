@@ -55,7 +55,9 @@
     "deactivate_change": "Change/Deactivate",
     "password": "Password",
     "block": "Block",
-    "unblock": "Unblock"
+    "unblock": "Unblock",
+    "none": "None",
+    "recover": "Recover"
   },
   "chat": {
     "search": "Search",
@@ -249,7 +251,31 @@
       "has_password_note": "Two Step Verification is activated on your account, You can change your pass phrase or deactivated it anytime.",
       "pass_is_incorrect": "Password is incorrect",
       "password_successfully_changed": "Password successfully changed",
-      "password_successfully_removed": "Password successfully removed"
+      "password_successfully_removed": "Password successfully removed",
+      "enable_recovery": "Enable Recovery",
+      "disable_recovery": "Disable Recovery",
+      "recover_password": "Recover Password",
+      "security_answer_are_wrong": "Security answer(s) are wrong"
+    },
+    "recovery": {
+      "recovery_options": "Recovery Options",
+      "security_questions": "Security Questions",
+      "security_questions_text": "Please select 3 questions and answer theme. If you forgot your password, these questions help establish that you own your account.",
+      "first_question": "First Question",
+      "second_question": "Second Question",
+      "third_question": "Third Question",
+      "select_a_question": "Select a question",
+      "your_answer": "Your answer",
+      "q1": "What was the name of your favorite pet?",
+      "q2": "What was the first company that you worked for?",
+      "q3": "In what city or town did your mother and father meet?",
+      "q4": "What is your favorite sports team/movie/celebrity?",
+      "q5": "What was the first car you owned?",
+      "q6": "What is the color of your [father/mother’s] eyes?",
+      "q7": "Who was your childhood hero?",
+      "q8": "What was your dream job as a child?",
+      "q9": "What time of the day were you born?",
+      "q10": "What is your dream country/city you want to live after retirement?"
     }
   },
   "contact": {

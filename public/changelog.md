@@ -1,3 +1,8 @@
+## 0.29.16
+* Recover password added
+* UI Kit updated
+* Known bugs fixed
+
 ## 0.29.15
 * Cancel request improved
 * FileMap db updated

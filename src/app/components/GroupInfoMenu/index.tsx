@@ -363,6 +363,9 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                     open={addMemberDialogEnable}
                     onClose={this.addMemberDialogCloseHandler}
                     className="add-member-dialog"
+                    classes={{
+                        paper: 'add-member-dialog-paper'
+                    }}
                 >
                     {addMemberDialogEnable && <div className="dialog-content">
                         <div className="dialog-header">
@@ -381,6 +384,9 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                     onClose={this.notifySettingDialogCloseHandler}
                     maxWidth="xs"
                     className="notify-setting-dialog"
+                    classes={{
+                        paper: 'notify-setting-dialog-paper'
+                    }}
                 >
                     <DialogTitle>{i18n.t('peer_info.notify_settings')}</DialogTitle>
                     <DialogContent className="dialog-content">

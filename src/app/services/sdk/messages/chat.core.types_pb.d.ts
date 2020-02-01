@@ -782,6 +782,74 @@ export namespace Bot {
   }
 }
 
+export class BotCommands extends jspb.Message {
+  hasCommand(): boolean;
+  clearCommand(): void;
+  getCommand(): string | undefined;
+  setCommand(value: string): void;
+
+  hasDescription(): boolean;
+  clearDescription(): void;
+  getDescription(): string | undefined;
+  setDescription(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BotCommands.AsObject;
+  static toObject(includeInstance: boolean, msg: BotCommands): BotCommands.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BotCommands, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BotCommands;
+  static deserializeBinaryFromReader(message: BotCommands, reader: jspb.BinaryReader): BotCommands;
+}
+
+export namespace BotCommands {
+  export type AsObject = {
+    command?: string,
+    description?: string,
+  }
+}
+
+export class BotInfo extends jspb.Message {
+  hasBot(): boolean;
+  clearBot(): void;
+  getBot(): Bot;
+  setBot(value?: Bot): void;
+
+  hasUserid(): boolean;
+  clearUserid(): void;
+  getUserid(): number | undefined;
+  setUserid(value: number): void;
+
+  hasDescription(): boolean;
+  clearDescription(): void;
+  getDescription(): string | undefined;
+  setDescription(value: string): void;
+
+  clearBotcommandsList(): void;
+  getBotcommandsList(): Array<BotCommands>;
+  setBotcommandsList(value: Array<BotCommands>): void;
+  addBotcommands(value?: BotCommands, index?: number): BotCommands;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BotInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: BotInfo): BotInfo.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BotInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BotInfo;
+  static deserializeBinaryFromReader(message: BotInfo, reader: jspb.BinaryReader): BotInfo;
+}
+
+export namespace BotInfo {
+  export type AsObject = {
+    bot: Bot.AsObject,
+    userid?: number,
+    description?: string,
+    botcommandsList: Array<BotCommands.AsObject>,
+  }
+}
+
 export class ContactUser extends jspb.Message {
   hasId(): boolean;
   clearId(): void;

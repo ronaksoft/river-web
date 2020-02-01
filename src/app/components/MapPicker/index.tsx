@@ -79,6 +79,9 @@ class MapPicker extends React.Component<IProps, IState> {
                 onClose={this.dialogCloseHandler}
                 className="map-picker-dialog"
                 disableBackdropClick={loading}
+                classes={{
+                    paper: 'map-picker-dialog-paper'
+                }}
             >
                 <div className="map-picker-container">
                     {loading && <div className="map-picker-loader">

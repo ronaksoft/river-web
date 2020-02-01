@@ -62,6 +62,9 @@ class AvatarCropper extends React.Component<IProps, IState> {
                     open={profileCropperOpen}
                     onClose={this.profileCropperCloseHandler}
                     className="avatar-cropper-dialog"
+                    classes={{
+                        paper: 'avatar-cropper-dialog-paper'
+                    }}
                 >
                     <div className="avatar-cropper-header">
                         <span>Crop Picture</span>

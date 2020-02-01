@@ -105,7 +105,7 @@ const listStyle: React.CSSProperties = {
     overflowY: 'visible',
 };
 
-export const C_VERSION = '0.29.15';
+export const C_VERSION = '0.29.16';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 export const C_AVATAR_SIZE = 640;
 
@@ -249,6 +249,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private readonly hasScrollbar: boolean = false;
     private readonly isMobile: boolean = false;
     private contactHasMore: boolean = false;
+    private switchClasses: any = {};
 
     constructor(props: IProps) {
         super(props);
@@ -325,6 +326,14 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.hasScrollbar = getScrollbarWidth() > 0;
         this.rtl = localStorage.getItem('river.lang.dir') === 'rtl';
         this.isMobile = this.isMobile = IsMobile.isAny();
+
+        this.switchClasses = {
+            checked: 'setting-switch-checked',
+            root: 'setting-switch',
+            switchBase: 'setting-switch-base',
+            thumb: 'setting-switch-thumb',
+            track: 'setting-switch-track',
+        };
     }
 
     public componentDidMount() {
@@ -477,9 +486,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                         <div className="setting-switch-label">
                                             <Switch
                                                 checked={Boolean(this.state.selectedTheme !== 'light')}
-                                                className={'setting-switch' + (Boolean(this.state.selectedTheme !== 'light') ? ' checked' : '')}
                                                 color="default"
                                                 onChange={this.nightModeHandler}
+                                                classes={this.switchClasses}
                                             />
                                         </div>
                                     </div>
@@ -903,9 +912,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                         <div className="switch">
                                                             <Switch
                                                                 checked={Boolean(this.state.storageValues[item.id] || false)}
-                                                                className={'setting-switch' + (this.state.storageValues[item.id] ? ' checked' : '')}
                                                                 color="default"
                                                                 onChange={this.storageToggleHandler(item.id)}
+                                                                classes={this.switchClasses}
                                                             />
                                                         </div>
                                                     </div>
@@ -1123,6 +1132,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
                     open={confirmDialogOpen}
                     onClose={this.confirmDialogCloseHandler}
                     className="confirm-dialog"
+                    classes={{
+                        paper: 'confirm-dialog-paper'
+                    }}
                 >
                     <DialogTitle>{this.state.confirmDialogSelectedId === '0' ? i18n.t('settings.terminate_all_other_sessions') : i18n.t('settings.terminate_session')}</DialogTitle>
                     <DialogActions>

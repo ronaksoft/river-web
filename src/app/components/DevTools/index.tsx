@@ -79,6 +79,9 @@ class DevTools extends React.Component<IProps, IState> {
                 onClose={this.debugModeCloseHandler}
                 className="confirm-dialog dev-tools-dialog"
                 disableBackdropClick={true}
+                classes={{
+                    paper: 'confirm-dialog-paper'
+                }}
             >
                 <div>
                     <DialogTitle>{i18n.t('settings.debug_mode')}</DialogTitle>

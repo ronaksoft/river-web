@@ -9,13 +9,11 @@
 @import '../../../style/mixin';
 
 .settings-modal {
-  div[role="document"] {
-    > div {
-      line-height: 0;
-      max-width: 720px;
-      overflow: hidden;
-      margin: 8px;
-    }
+  .settings-modal-paper {
+    line-height: 0;
+    max-width: 720px;
+    overflow: hidden;
+    margin: 8px;
   }
 
   .settings-modal-header {
@@ -79,10 +77,8 @@
 html[theme="dark"],
 html[theme="dark-night"] {
   .settings-modal {
-    div[role="document"] {
-      > div {
-        background-color: var(--dark-medium);
-      }
+    .settings-modal-paper {
+      background-color: var(--dark-medium);
     }
 
     .settings-modal-header {
@@ -94,10 +90,8 @@ html[theme="dark-night"] {
 
 html[theme="dark-blue"] {
   .settings-modal {
-    div[role="document"] {
-      > div {
-        background-color: var(--dark-blue-medium);
-      }
+    .settings-modal-paper {
+      background-color: var(--dark-blue-medium);
     }
 
     .settings-modal-header {

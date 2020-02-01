@@ -8,14 +8,12 @@
 */
 
 .about-dialog {
-  div[role="document"] {
-    > div {
-      line-height: 0;
-      width: 300px;
-      overflow: hidden;
-      margin: 12px;
-      border-radius: 8px;
-    }
+  .about-dialog-paper {
+    line-height: 0;
+    width: 300px;
+    overflow: hidden;
+    margin: 12px;
+    border-radius: 8px;
   }
 
   .about-dialog-content {
@@ -55,6 +53,7 @@
       justify-content: center;
       color: #8A8D90;
       font-size: 10px;
+
       img {
         display: inline-block;
         height: 14px;
@@ -68,10 +67,8 @@
 html[theme="dark"],
 html[theme="dark-night"] {
   .about-dialog {
-    div[role="document"] {
-      > div {
-        background-color: var(--dark-medium);
-      }
+    .about-dialog-paper {
+      background-color: var(--dark-medium);
     }
 
     .about-dialog-content {
@@ -84,10 +81,8 @@ html[theme="dark-night"] {
 
 html[theme="dark-blue"] {
   .about-dialog {
-    div[role="document"] {
-      > div {
-        background-color: var(--dark-blue-medium);
-      }
+    .about-dialog-paper {
+      background-color: var(--dark-blue-medium);
     }
 
     .about-dialog-content {

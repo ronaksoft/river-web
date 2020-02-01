@@ -163,22 +163,6 @@ export namespace AuthRecoverPassword {
   }
 }
 
-export class AuthRequestPasswordRecovery extends jspb.Message {
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): AuthRequestPasswordRecovery.AsObject;
-  static toObject(includeInstance: boolean, msg: AuthRequestPasswordRecovery): AuthRequestPasswordRecovery.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: AuthRequestPasswordRecovery, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): AuthRequestPasswordRecovery;
-  static deserializeBinaryFromReader(message: AuthRequestPasswordRecovery, reader: jspb.BinaryReader): AuthRequestPasswordRecovery;
-}
-
-export namespace AuthRequestPasswordRecovery {
-  export type AsObject = {
-  }
-}
-
 export class AuthLogout extends jspb.Message {
   clearAuthidsList(): void;
   getAuthidsList(): Array<string>;

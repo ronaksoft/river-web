@@ -21,3 +21,15 @@ message BotIsStarted {
     required InputPeer Bot = 1;
     required int64 RandomID = 2;
 }
+
+// BotSetInfo
+// @Function
+// @Return: Bool
+message BotSetInfo {
+    required int64       BotID       = 1;
+    required int64       RandomID    = 2;
+    required int64       Owner       = 3;
+    repeated BotCommands BotCommands = 4;
+    required string      Description = 5;
+}
+

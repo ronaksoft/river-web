@@ -71,10 +71,10 @@ import MessageRepo from "../../repository/message";
 import {UpdateDraftMessageCleared} from "../../services/sdk/messages/chat.api.updates_pb";
 import {emojiList} from "./emojis";
 import {isMobile} from "../../services/utilities/localize";
+import UniqueId from "../../services/uniqueId";
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.scss';
-import UniqueId from "../../services/uniqueId";
 
 const limit = 9;
 const emojiKey = 'emoji-mart.frequently';
@@ -125,7 +125,6 @@ interface IState {
     previewMessageHeight: number;
     previewMessageMode: number;
     rtl: boolean;
-    selectMediaOpen: boolean;
     selectable: boolean;
     selectableDisable: boolean;
     textareaValue: string;
@@ -211,6 +210,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private emojiMap: { [key: string]: number } = {};
     private isMobileBrowser = isMobile();
     private callerId: number = UniqueId.getRandomId();
+    private selectMediaRef: SelectMedia | undefined;
 
     constructor(props: IProps) {
         super(props);
@@ -226,7 +226,6 @@ class ChatInput extends React.Component<IProps, IState> {
             previewMessageHeight: 0,
             previewMessageMode: props.previewMessageMode || C_MSG_MODE.Normal,
             rtl: this.rtl,
-            selectMediaOpen: false,
             selectable: false,
             selectableDisable: false,
             textareaValue: '',
@@ -450,7 +449,7 @@ class ChatInput extends React.Component<IProps, IState> {
     public render() {
         const {
             previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable,
-            disableAuthority, textareaValue, voiceMode, selectMediaOpen, user
+            disableAuthority, textareaValue, voiceMode, user
         } = this.state;
 
         if (!selectable && disableAuthority !== 0x0) {
@@ -582,7 +581,7 @@ class ChatInput extends React.Component<IProps, IState> {
                             </div>
                             <div className="icon attachment" onClick={this.openSelectMediaHandler}>
                                 <AttachFileRounded/>
-                                <SelectMedia open={selectMediaOpen} onClose={this.selectMediaCloseHandler}
+                                <SelectMedia ref={this.selectMediaRefHandler} onClose={this.selectMediaCloseHandler}
                                              onAction={this.selectMediaActionHandler}/>
                             </div>
                             <div className="icon send" onClick={this.submitMessage}>
@@ -1697,17 +1696,16 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     /* Open SelectMedia handler */
-    private openSelectMediaHandler = () => {
-        this.setState({
-            selectMediaOpen: !this.state.selectMediaOpen,
-        });
+    private openSelectMediaHandler = (e: any) => {
+        e.stopPropagation();
+        if (this.selectMediaRef) {
+            this.selectMediaRef.toggle();
+        }
     }
 
     /* SelectMedia close handler */
     private selectMediaCloseHandler = () => {
-        this.setState({
-            selectMediaOpen: false,
-        });
+        //
     }
 
     private selectMediaActionHandler = (mode: 'media' | 'music' | 'file' | 'contact' | 'location') => (e: any) => {
@@ -1972,6 +1970,10 @@ class ChatInput extends React.Component<IProps, IState> {
                 user: res,
             });
         });
+    }
+
+    private selectMediaRefHandler = (ref: any) => {
+        this.selectMediaRef = ref;
     }
 
     // /* Is voice started */

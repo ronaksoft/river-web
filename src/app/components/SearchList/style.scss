@@ -22,6 +22,10 @@
     .chip {
       margin: 0 3px 3px 0;
 
+      .MuiChip-label {
+        line-height: 1em;
+      }
+
       .group-name {
         display: inline-flex;
         align-items: center;

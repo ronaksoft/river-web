@@ -53,6 +53,9 @@ class AboutDialog extends React.Component<IProps, IState> {
                 open={open}
                 onClose={this.closeHandler}
                 className="about-dialog"
+                classes={{
+                    paper: 'about-dialog-paper'
+                }}
             >
                 <div className="about-dialog-content">
                     <div className="logo-container">

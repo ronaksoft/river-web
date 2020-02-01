@@ -185,6 +185,20 @@ message Bot {
     required string Username = 3;
 }
 
+// BotCommands
+message BotCommands {
+    required string Command = 1;
+    optional string Description = 2;
+}
+
+// BotInfo
+message BotInfo {
+    required Bot Bot = 1;
+    required int64 UserID = 2;
+    optional string Description = 3;
+    repeated BotCommands BotCommands = 4;
+}
+
 // ContactUser
 message ContactUser {
     required int64 ID = 1 [jstype = JS_STRING];

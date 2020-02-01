@@ -12,9 +12,7 @@ import SettingsModal from '../SettingsModal';
 import {CheckRounded, LabelOutlined, LabelRounded} from '@material-ui/icons';
 import i18n from '../../services/i18n';
 import {ILabel} from "../../repository/label/interface";
-import FormControl from "@material-ui/core/FormControl/FormControl";
-import InputLabel from "@material-ui/core/InputLabel/InputLabel";
-import Input from "@material-ui/core/Input/Input";
+import TextField from "@material-ui/core/TextField/TextField";
 import LabelRepo from "../../repository/label";
 import Broadcaster from "../../services/broadcaster";
 import {throttle, difference, intersection, clone, isEqual, union} from "lodash";
@@ -103,18 +101,15 @@ class LabelDialog extends React.Component<IProps, IState> {
             >
                 <div className="label-dialog">
                     <div className="label-search">
-                        <FormControl fullWidth={true} className="title-edit">
-                            <InputLabel htmlFor="label-search">{i18n.t('dialog.search')}</InputLabel>
-                            <Input
-                                id="label-search"
-                                type="text"
-                                inputProps={{
-                                    maxLength: 32,
-                                }}
-                                value={search}
-                                onChange={this.searchChangeHandler}
-                            />
-                        </FormControl>
+                        <TextField
+                            label={i18n.t('dialog.search')}
+                            fullWidth={true}
+                            inputProps={{
+                                maxLength: 32,
+                            }}
+                            value={search}
+                            onChange={this.searchChangeHandler}
+                        />
                     </div>
                     {Boolean(list.length > 0) && <div className="label-container">
                         <Scrollbars

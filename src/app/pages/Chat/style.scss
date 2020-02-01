@@ -575,13 +575,9 @@ html[theme="dark-blue"] {
   }
 
   .kk-context-menu {
-    > div[role="document"] {
+    .MuiMenu-paper {
       background-color: var(--dark-medium);
       color: var(--light);
-
-      > div {
-        background-color: var(--dark-medium);
-      }
     }
 
     h2 {
@@ -597,7 +593,7 @@ html[theme="dark-blue"] {
     }
 
     &.darker {
-      > div[role="document"], ul {
+      .MuiMenu-paper, ul {
         background-color: var(--dark-low);
       }
     }
@@ -608,17 +604,15 @@ html[theme="dark-blue"] {
   }
 
   .confirm-dialog {
-    div[role="document"] {
-      > div {
-        background-color: var(--dark);
+    .confirm-dialog-paper {
+      background-color: var(--dark);
 
-        h2, p, input {
-          color: var(--white);
-        }
+      h2, p, input {
+        color: var(--white);
+      }
 
-        label {
-          color: var(--river);
-        }
+      label {
+        color: var(--river);
       }
     }
   }
@@ -652,12 +646,8 @@ html[theme="dark-blue"] {
   }
 
   .kk-context-menu {
-    > div[role="document"] {
+    .MuiMenu-paper {
       background-color: var(--dark-blue-medium);
-
-      > div {
-        background-color: var(--dark-blue-medium);
-      }
     }
 
     h2 {
@@ -669,7 +659,7 @@ html[theme="dark-blue"] {
     }
 
     &.darker {
-      > div[role="document"], ul {
+      .MuiMenu-paper, ul {
         background-color: var(--dark-blue-low);
       }
     }
@@ -680,10 +670,8 @@ html[theme="dark-blue"] {
   }
 
   .confirm-dialog {
-    div[role="document"] {
-      > div {
-        background-color: var(--dark-blue-low);
-      }
+    .confirm-dialog-paper {
+      background-color: var(--dark-blue-low);
     }
   }
 }

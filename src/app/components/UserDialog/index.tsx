@@ -142,6 +142,9 @@ class UserDialog extends React.Component<IProps, IState> {
                 onClose={this.userDialogCloseHandler}
                 maxWidth="xs"
                 className="user-dialog"
+                classes={{
+                    paper: 'user-dialog-paper'
+                }}
             >
                 <div className="user-info-menu">
                     {user && <div className="info kk-card">
@@ -265,6 +268,9 @@ class UserDialog extends React.Component<IProps, IState> {
                         onClose={this.notifySettingDialogCloseHandler}
                         maxWidth="xs"
                         className="notify-setting-dialog"
+                        classes={{
+                            paper: 'notify-setting-dialog-paper'
+                        }}
                     >
                         <DialogTitle>{i18n.t('peer_info.notify_settings')}</DialogTitle>
                         <DialogContent className="dialog-content">

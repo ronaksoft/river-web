@@ -49,6 +49,11 @@
     &.bottom-gap {
       padding: 6px 12px 12px;
     }
+
+    .recover-password {
+      color: var(--red);
+      cursor: pointer;
+    }
   }
 
   .tsv-gap {

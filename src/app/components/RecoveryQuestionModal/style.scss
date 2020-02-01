@@ -1,5 +1,5 @@
 /*
-    Creation Time: 2020 - Jan - 15
+    Creation Time: 2020 - Feb - 01
     Created by:  (hamidrezakk)
     Maintainers:
        1.  HamidrezaKK (hamidrezakks@gmail.com)
@@ -7,16 +7,17 @@
     Copyright Ronak Software Group 2020
 */
 
-.tsv-dialog {
+.recovery-dialog {
   display: flex;
   flex-direction: column;
   height: 100%;
 
-  .tsv-header {
+  .recovery-header {
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 12px 0 8px;
+    justify-content: flex-start;
+    padding: 10px 16px 4px;
+    line-height: 1em;
 
     svg {
       font-size: 100px;
@@ -24,8 +25,8 @@
     }
   }
 
-  .tsv-text,
-  .tsv-success {
+  .recovery-text,
+  .recovery-success {
     line-height: 1.3em;
     max-width: 300px;
     padding: 6px 12px;
@@ -37,34 +38,40 @@
     }
   }
 
-  .tsv-success {
+  .recovery-success {
     text-align: center;
     font-size: 16px;
     padding: 12px;
   }
 
-  .tsv-input {
+  .recovery-input {
     padding: 6px 12px 0;
 
     &.bottom-gap {
       padding: 6px 12px 12px;
     }
+
+    .recovery-input-select {
+      width: 225px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 
-  .tsv-gap {
+  .recovery-gap {
     flex: 1;
   }
 }
 
 html[direction="rtl"] {
-  .tsv-dialog {
+  .recovery-dialog {
     direction: rtl;
 
-    .tsv-text {
+    .recovery-text {
       direction: rtl;
     }
 
-    .tsv-input {
+    .recovery-input {
       input {
         direction: rtl;
       }
@@ -75,29 +82,45 @@ html[direction="rtl"] {
 
 html[theme="dark"],
 html[theme="dark-night"] {
-  .tsv-dialog {
-    .tsv-input {
+  .recovery-dialog {
+    .recovery-input {
       input, label, p {
+        color: var(--white);
+      }
+
+      .recovery-input-select {
         color: var(--white);
       }
     }
 
-    .tsv-header, .tsv-text, .tsv-success {
+    .recovery-header, .recovery-success {
       color: var(--white);
+    }
+
+    .recovery-text {
+      color: var(--grey);
     }
   }
 }
 
 html[theme="dark-blue"] {
-  .tsv-dialog {
-    .tsv-input {
+  .recovery-dialog {
+    .recovery-input {
       input, label, p {
+        color: var(--white);
+      }
+
+      .recovery-input-select {
         color: var(--white);
       }
     }
 
-    .tsv-header, .tsv-text, .tsv-success {
+    .recovery-header, .recovery-success {
       color: var(--white);
+    }
+
+    .recovery-text {
+      color: var(--grey);
     }
   }
 }

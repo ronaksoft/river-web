@@ -56,13 +56,14 @@ interface IState {
 
 class AudioPlayerShell extends React.Component<IProps, IState> {
     private scrollbarRef: Scrollbars | undefined;
-    private audioPlayer: AudioPlayer;
+    private readonly audioPlayer: AudioPlayer;
     private eventReferences: any[] = [];
     private shellRef: any = null;
     private messageId: number = 0;
     private open: boolean = false;
-    // @ts-ignore
     private progressRef: any = null;
+    private canClose: boolean = true;
+    private timeout: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -110,6 +111,9 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
             navigator.mediaSession.setActionHandler('nexttrack', null);
         }
         window.removeEventListener('Message_DB_Removed', this.messageRemoveHandler);
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
     }
 
     public render() {
@@ -184,7 +188,6 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
         }
     }
 
-    // @ts-ignore
     private getPlaylistRenderer() {
         const {openPlaylist, mediaInfo, playlist, seekProgress, playState} = this.state;
         return (
@@ -417,6 +420,17 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
     }
 
     private openPlaylistHandler = () => {
+        if (this.state.openPlaylist) {
+            return;
+        }
+        this.canClose = false;
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
+        this.timeout = setTimeout(() => {
+            this.canClose = true;
+            this.timeout = false;
+        }, 200);
         this.setState({
             openPlaylist: true,
         }, () => {
@@ -447,9 +461,11 @@ class AudioPlayerShell extends React.Component<IProps, IState> {
     }
 
     private clickAwayHandler = () => {
-        this.setState({
-            openPlaylist: false,
-        });
+        if (this.state.openPlaylist && this.canClose) {
+            this.setState({
+                openPlaylist: false,
+            });
+        }
     }
 
     private playHandlerById = (id: number) => (e: any) => {

@@ -46,11 +46,6 @@ message AuthRecoverPassword {
     required string Code = 1;
 }
 
-// AuthRequestPasswordRecovery
-// @Function
-// @Returns: AuthPasswordRecovery
-message AuthRequestPasswordRecovery {}
-
 // AuthLogout
 // @Function
 // @Return: Bool

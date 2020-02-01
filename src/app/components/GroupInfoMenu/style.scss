@@ -619,13 +619,11 @@ html[theme="dark-blue"] {
   }
 
   .notify-setting-dialog {
-    div[role="document"] {
-      > div {
-        background-color: var(--dark);
+    .notify-setting-dialog-paper {
+      background-color: var(--dark);
 
-        h2, p, .dialog-content span {
-          color: var(--white);
-        }
+      h2, p, .dialog-content span {
+        color: var(--white);
       }
     }
   }
@@ -661,10 +659,8 @@ html[theme="dark-blue"] {
   }
 
   .notify-setting-dialog {
-    div[role="document"] {
-      > div {
-        background-color: var(--dark-blue-low);
-      }
+    .notify-setting-dialog-paper {
+      background-color: var(--dark-blue-low);
     }
   }
 }

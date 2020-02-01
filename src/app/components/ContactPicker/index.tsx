@@ -55,6 +55,9 @@ class ContactPicker extends React.Component<IProps, IState> {
                 className="contact-picker"
                 open={this.state.open}
                 onClose={this.handleClose}
+                classes={{
+                    paper: 'contact-picker-paper'
+                }}
             >
                 {open && <div className="dialog-content">
                     <div className={'page-container page-' + page}>

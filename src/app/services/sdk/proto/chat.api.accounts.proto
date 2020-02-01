@@ -189,7 +189,7 @@ message AccountRecoverPassword {
     repeated SecurityAnswer Answers = 1;
     required int64 Algorithm = 2;
     required bytes AlgorithmData = 3;
-    required int64 SrpID = 4;
+    required int64 SrpID = 4 [jstype = JS_STRING];
 }
 
 // AccountPasswordSettings

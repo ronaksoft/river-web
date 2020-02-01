@@ -206,8 +206,6 @@ class App extends React.Component<{}, IState> {
                     <Dialog
                         open={alertOpen}
                         onClose={this.alertCloseHandler}
-                        aria-labelledby="alert-dialog-title"
-                        aria-describedby="alert-dialog-description"
                     >
                         <DialogTitle>Critical Error</DialogTitle>
                         <DialogContent>
@@ -234,6 +232,9 @@ class App extends React.Component<{}, IState> {
                         className="confirm-dialog"
                         disableBackdropClick={true}
                         disableEscapeKeyDown={true}
+                        classes={{
+                            paper: 'confirm-dialog-paper'
+                        }}
                     >
                         <DialogTitle>{I18n.t('chat.update_dialog.title')}</DialogTitle>
                         <DialogContent>

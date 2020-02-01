@@ -12,7 +12,7 @@ import SDK from '../../services/sdk';
 // @ts-ignore
 import IntlTelInput from 'react-intl-tel-input';
 import {CloseRounded, DoneRounded, RefreshRounded} from '@material-ui/icons';
-import {C_ERR, C_ERR_ITEM} from '../../services/sdk/const';
+import {C_ERR, C_ERR_ITEM, C_MSG} from '../../services/sdk/const';
 import RiverLogo from '../../components/RiverLogo';
 import NotificationService from '../../services/notification';
 import {C_VERSION, languageList} from '../../components/SettingsMenu';
@@ -26,6 +26,7 @@ import {defaultGateway} from '../../services/sdk/server/socket';
 import UserRepo from '../../repository/user';
 import i18n from '../../services/i18n';
 import Tooltip from "@material-ui/core/Tooltip";
+import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import IframeService, {C_IFRAME_SUBJECT} from "../../services/iframe";
 import {find} from 'lodash';
@@ -35,11 +36,12 @@ import ElectronService from "../../services/electron";
 import DevTools from "../../components/DevTools";
 import {modifyCode} from "./utils";
 import {AuthAuthorization} from "../../services/sdk/messages/chat.api.auth_pb";
-import {AccountPassword} from "../../services/sdk/messages/chat.api.accounts_pb";
+import {AccountPassword, SecurityQuestion} from "../../services/sdk/messages/chat.api.accounts_pb";
 import {extractPhoneNumber, faToEn} from "../../services/utilities/localize";
 
 import './tel-input.css';
 import './style.scss';
+import RecoveryQuestionModal from "../../components/RecoveryQuestionModal";
 
 function getChromeVersion() {
     const raw = window.navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./);
@@ -100,6 +102,7 @@ class SignUp extends React.Component<IProps, IState> {
     private versionClickCounter: number = 0;
     private devToolsRef: DevTools | undefined;
     private eventReferences: any[] = [];
+    private recoveryQuestionModalRef: RecoveryQuestionModal | undefined;
 
     constructor(props: IProps) {
         super(props);
@@ -187,10 +190,12 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {step, countdown, workspaceInfo, iframeActive, sendToPhone} = this.state;
+        const {step, countdown, workspaceInfo, iframeActive, sendToPhone, accountPassword} = this.state;
         return (
             <div className="login-page">
                 <DevTools ref={this.devToolsRefHandler}/>
+                <RecoveryQuestionModal ref={this.recoveryQuestionModalRefHandler}
+                                       onDone={this.recoveryQuestionModalDoneHandler}/>
                 <div className="login-page-container">
                     {iframeActive && <span className="close-btn">
                                     <Tooltip
@@ -238,13 +243,15 @@ class SignUp extends React.Component<IProps, IState> {
                                      onClick={this.qrCodeDialogOpenHandler}>{i18n.t('sign_up.scan_qr_code')}</div>
                             </div>}
                             {Boolean(step !== 'workspace') && <React.Fragment>
-                                {step !== 'password' && <IntlTelInput preferredCountries={[]} defaultCountry={'ir'} value={this.state.phone}
+                                {step !== 'password' &&
+                                <IntlTelInput preferredCountries={[]} defaultCountry={'ir'} value={this.state.phone}
                                               inputClassName="f-phone"
                                               disabled={this.state.loading || step === 'code' || step === 'password'}
                                               autoHideDialCode={false} onPhoneNumberChange={this.handleOnChange}
                                               onKeyDown={this.sendCodeKeyDownHandler} nationalMode={false}
                                               fieldId="input-phone"/>}
-                                {step === 'password' && <div className="sign-up-note">{i18n.t('sign_up.password_note')}</div>}
+                                {step === 'password' &&
+                                <div className="sign-up-note">{i18n.t('sign_up.password_note')}</div>}
                                 {Boolean(step === 'phone' && ElectronService.isElectron() && false) &&
                                 <div className="grey-link">
                                     <span
@@ -281,19 +288,24 @@ class SignUp extends React.Component<IProps, IState> {
                                         <span onClick={this.resendCodeHandler}>{i18n.t('sign_up.send_as_sms')}</span>
                                     </div>}
                                 </div>}
-                                {step === 'password' &&
-                                <div className="input-wrapper validate-input">
-                                    <TextField className="f-password text-input" type="password"
-                                               label={i18n.t('general.password')}
-                                               margin="none" variant="outlined" autoComplete="off"
-                                               fullWidth={true}
-                                               value={this.state.password}
-                                               onKeyDown={this.passwordKeyDownHandler}
-                                               onChange={this.passwordChangeHandler}
-                                               helperText={this.state.accountPassword ? this.state.accountPassword.getHint() : ''}
-                                    />
-                                    <span className="focus-input"/>
-                                </div>}
+                                {step === 'password' && <>
+                                    <div className="input-wrapper validate-input">
+                                        <TextField className="f-password text-input" type="password"
+                                                   label={i18n.t('general.password')}
+                                                   margin="none" variant="outlined" autoComplete="off"
+                                                   fullWidth={true}
+                                                   value={this.state.password}
+                                                   onKeyDown={this.passwordKeyDownHandler}
+                                                   onChange={this.passwordChangeHandler}
+                                                   helperText={accountPassword ? accountPassword.getHint() : ''}
+                                        />
+                                        <span className="focus-input"/>
+                                    </div>
+                                    {Boolean(accountPassword && accountPassword.getQuestionsList().length > 0) && <div className="input-wrapper">
+                                        <Button color="secondary" fullWidth={true} onClick={this.recoverPasswordHandler}
+                                        >{i18n.t('settings.2fa.recover_password')}</Button>
+                                    </div>}
+                                </>}
                                 {step === 'register' &&
                                 <div className="input-wrapper validate-input">
                                     <TextField className="f-fname text-input" type="text"
@@ -689,6 +701,49 @@ class SignUp extends React.Component<IProps, IState> {
         this.setState({
             password: e.target.value,
         });
+    }
+
+    private recoverPasswordHandler = () => {
+        const {accountPassword} = this.state;
+        if (accountPassword && this.recoveryQuestionModalRef) {
+            window.console.log(accountPassword.toObject());
+            this.recoveryQuestionModalRef.openDialog(accountPassword.toObject().questionsList.map(o => {
+                    return {
+                        answer: '',
+                        id: o.id,
+                        text: o.text,
+                    };
+                }
+            ), true);
+        }
+    }
+
+    private recoveryQuestionModalRefHandler = (ref: any) => {
+        this.recoveryQuestionModalRef = ref;
+    }
+
+    private recoveryQuestionModalDoneHandler = (list: SecurityQuestion.AsObject[]) => {
+        const {accountPassword} = this.state;
+        if (accountPassword) {
+            this.sdk.accountRecover(accountPassword.getAlgorithm() || C_MSG.PasswordAlgorithmVer6A, accountPassword.getAlgorithmdata_asU8(), accountPassword.getSrpid() || '', list.map(o => {
+                return {
+                    answer: o.answer || '',
+                    questionid: o.id || 0,
+                };
+            })).then((res) => {
+                // @ts-ignore
+                if (res.user) {
+                    this.login(res as AuthAuthorization.AsObject);
+                }
+            }).catch((err: any) => {
+                if (!this.props.enqueueSnackbar) {
+                    return;
+                }
+                if (err.code === C_ERR.ErrCodeInvalid && (err.items === C_ERR_ITEM.ErrItemSecurityAnswer || err.items === C_ERR_ITEM.ErrItemSecurityQuestion)) {
+                    this.props.enqueueSnackbar(i18n.t('settings.2fa.security_answer_are_wrong'));
+                }
+            });
+        }
     }
 
     private registerHandler = () => {

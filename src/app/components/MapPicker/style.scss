@@ -9,19 +9,19 @@
 @import '../../../style/mixin';
 
 .map-picker-dialog {
-  div[role="document"] {
-    > div {
-      line-height: 0;
-      max-width: 640px;
-      background: transparent;
-      overflow: hidden;
-    }
+  .map-picker-dialog-paper {
+    line-height: 0;
+    max-width: 640px;
+    background: transparent;
+    overflow: hidden;
   }
+
   .map-picker-container {
     position: relative;
     height: 640px;
     width: 640px;
     background: #ddd;
+
     .map-picker-loader {
       position: absolute;
       top: 0;
@@ -36,6 +36,7 @@
       font-size: 20px;
       color: var(--light);
     }
+
     .map-picker-header {
       background-color: var(--river);
       color: var(--white);
@@ -45,12 +46,15 @@
       align-items: center;
       justify-content: flex-start;
     }
+
     .map-picker-preview-container {
       height: calc(100% - 40px);
       display: flex;
       flex-direction: column;
+
       .map-picker-canvas {
         flex: 1;
+
         .map-marker {
           svg {
             font-size: 48px;
@@ -59,6 +63,7 @@
           }
         }
       }
+
       .map-picker-details-container {
         position: relative;
         padding: 4px 96px 4px 32px;
@@ -66,9 +71,11 @@
         display: flex;
         align-items: center;
         justify-content: center;
+
         .caption-input {
 
         }
+
         .map-picker-action {
           position: absolute;
           height: 48px;
@@ -83,6 +90,7 @@
           justify-content: center;
           cursor: pointer;
           z-index: 220;
+
           svg {
             color: var(--light);
             font-size: 30px;
@@ -97,6 +105,7 @@ html[theme="dark"],
 html[theme="dark-night"] {
   .map-picker-container {
     background-color: var(--dark-medium);
+
     .map-picker-details-container {
       .caption-input {
         label, textarea, svg {
@@ -110,6 +119,7 @@ html[theme="dark-night"] {
 html[theme="dark-blue"] {
   .map-picker-container {
     background-color: var(--dark-blue-medium);
+
     .map-picker-details-container {
       .caption-input {
         label, textarea, svg {

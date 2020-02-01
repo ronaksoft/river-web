@@ -657,8 +657,8 @@ export class AccountRecoverPassword extends jspb.Message {
 
   hasSrpid(): boolean;
   clearSrpid(): void;
-  getSrpid(): number | undefined;
-  setSrpid(value: number): void;
+  getSrpid(): string | undefined;
+  setSrpid(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AccountRecoverPassword.AsObject;
@@ -675,7 +675,7 @@ export namespace AccountRecoverPassword {
     answersList: Array<SecurityAnswer.AsObject>,
     algorithm?: number,
     algorithmdata: Uint8Array | string,
-    srpid?: number,
+    srpid?: string,
   }
 }
 

@@ -73,6 +73,9 @@ class Cropper extends React.Component<IProps, IState> {
                     open={profileCropperOpen}
                     onClose={this.profileCropperCloseHandler}
                     className="picture-crop-dialog"
+                    classes={{
+                        paper: 'picture-crop-dialog-paper'
+                    }}
                 >
                     <div className="picture-crop-header">
                         Crop Picture

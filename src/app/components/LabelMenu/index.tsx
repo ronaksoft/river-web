@@ -22,9 +22,6 @@ import {
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import i18n from '../../services/i18n';
-import FormControl from "@material-ui/core/FormControl/FormControl";
-import InputLabel from "@material-ui/core/InputLabel/InputLabel";
-import Input from "@material-ui/core/Input/Input";
 import {localize} from "../../services/utilities/localize";
 import Scrollbars from "react-custom-scrollbars";
 import {throttle, findIndex} from "lodash";
@@ -160,18 +157,14 @@ class LabelMenu extends React.Component<IProps, IState> {
                             </IconButton>
                         </div>
                         <div className="label-search">
-                            <FormControl fullWidth={true} className="title-edit">
-                                <InputLabel htmlFor="label-search-2">{i18n.t('dialog.search')}</InputLabel>
-                                <Input
-                                    id="label-search-2"
-                                    type="text"
-                                    inputProps={{
-                                        maxLength: 32,
-                                    }}
-                                    value={search}
-                                    onChange={this.searchChangeHandler}
-                                />
-                            </FormControl>
+                            <TextField fullWidth={true}
+                                       className="title-edit"
+                                       type="text"
+                                       inputProps={{
+                                           maxLength: 32,
+                                       }}
+                                       value={search}
+                                       onChange={this.searchChangeHandler}/>
                         </div>
                         {Boolean(list.length > 0) &&
                         <div className={'label-container' + (selectedIds.length > 0 ? ' selectable-mode' : '')}>
@@ -295,6 +288,9 @@ class LabelMenu extends React.Component<IProps, IState> {
                     open={confirmOpen}
                     onClose={this.confirmCloseHandler}
                     className="kk-context-menu"
+                    classes={{
+                        paper: 'kk-context-menu-paper'
+                    }}
                 >
                     <DialogTitle>{i18n.t('general.are_you_sure')}</DialogTitle>
                     <DialogActions>

@@ -48,15 +48,13 @@
     background-color: rgba(0, 0, 0, 0.7);
   }
 
-  div[role="document"] {
-    > div {
+  .document-viewer-dialog-paper {
       position: relative;
       line-height: 0;
       max-width: none;
       background: transparent;
       overflow: visible;
       box-shadow: none;
-    }
   }
 
   .document-container {

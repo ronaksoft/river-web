@@ -15,9 +15,10 @@ import Button from '@material-ui/core/Button';
 import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import TextField from "@material-ui/core/TextField/TextField";
 import SDK from "../../services/sdk";
-import {AccountPassword} from "../../services/sdk/messages/chat.api.accounts_pb";
+import {AccountPassword, SecurityQuestion} from "../../services/sdk/messages/chat.api.accounts_pb";
 import {C_ERR, C_ERR_ITEM, C_MSG} from "../../services/sdk/const";
 import {InputPassword} from "../../services/sdk/messages/chat.core.types_pb";
+import RecoveryQuestionModal from "../RecoveryQuestionModal";
 
 import './style.scss';
 
@@ -30,29 +31,34 @@ interface IProps {
 interface IState {
     accountPassword?: AccountPassword;
     hint: string;
+    incorrectPassword: boolean;
     mode: string;
     oldPassword: string;
     open: boolean;
     password: string;
     passwordConfirm: string;
+    securityQuestions: SecurityQuestion.AsObject[];
     step: number;
 }
 
 class TwoStepVerificationModal extends React.Component<IProps, IState> {
     private sdk: SDK;
     private timeout: any = null;
+    private recoveryQuestionModalRef: RecoveryQuestionModal | undefined;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
             hint: '',
+            incorrectPassword: false,
             mode: 'change',
             oldPassword: '',
             open: false,
             password: '',
             passwordConfirm: '',
-            step: 2,
+            securityQuestions: [],
+            step: 2
         };
 
         this.sdk = SDK.getInstance();
@@ -72,104 +78,115 @@ class TwoStepVerificationModal extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {open, step, accountPassword, oldPassword, password, passwordConfirm, hint, mode} = this.state;
+        const {open, step, accountPassword, oldPassword, password, passwordConfirm, hint, mode, securityQuestions, incorrectPassword} = this.state;
         return (
-            <SettingsModal open={open} title={i18n.t('settings.two_step_verification')}
-                           icon={<VerifiedUserRounded/>}
-                           onClose={this.modalCloseHandler}
-                           height="370px"
-                           noScrollbar={true}
-            >
-                {Boolean(step === 1) && <div className="tsv-dialog">
-                    <div className="tsv-header">
-                        <VerifiedUserOutlined/>
-                    </div>
-                    <div className="tsv-text">
-                        {i18n.t('settings.2fa.has_password_note')}
-                    </div>
-                    <div className="tsv-gap"/>
-                    <DialogActions>
-                        <Button color="secondary" fullWidth={true} onClick={this.nextPageHandler('change')}>
-                            {i18n.t('general.change')}
-                        </Button>
-                    </DialogActions>
-                    <DialogActions>
-                        <Button color="secondary" fullWidth={true} onClick={this.nextPageHandler('remove')}>
-                            {i18n.t('general.deactivate')}
-                        </Button>
-                    </DialogActions>
-                </div>}
-                {Boolean(step === 2) && <div className="tsv-dialog">
-                    {Boolean(accountPassword && accountPassword.getHaspassword()) &&
-                    <div className="tsv-input bottom-gap">
-                        <TextField
-                            fullWidth={true}
-                            value={oldPassword}
-                            label={i18n.t('settings.2fa.old_password')}
-                            margin="dense"
-                            variant="outlined"
-                            type="password"
-                            helperText={accountPassword ? (accountPassword.getHint() || '') : ''}
-                            onChange={this.oldPasswordChangeHandler}
-                        />
+            <>
+                <SettingsModal open={open} title={i18n.t('settings.two_step_verification')}
+                               icon={<VerifiedUserRounded/>}
+                               onClose={this.modalCloseHandler}
+                               height="370px"
+                               noScrollbar={true}
+                >
+                    {Boolean(step === 1) && <div className="tsv-dialog">
+                        <div className="tsv-header">
+                            <VerifiedUserOutlined/>
+                        </div>
+                        <div className="tsv-text">
+                            {i18n.t('settings.2fa.has_password_note')}
+                        </div>
+                        <div className="tsv-gap"/>
+                        <DialogActions>
+                            <Button color="secondary" fullWidth={true} onClick={this.nextPageHandler('change')}>
+                                {i18n.t('general.change')}
+                            </Button>
+                        </DialogActions>
+                        <DialogActions>
+                            <Button color="secondary" fullWidth={true} onClick={this.nextPageHandler('remove')}>
+                                {i18n.t('general.deactivate')}
+                            </Button>
+                        </DialogActions>
                     </div>}
-                    {mode === 'change' && <>
-                        <div className="tsv-input">
+                    {Boolean(step === 2) && <div className="tsv-dialog">
+                        {Boolean(accountPassword && accountPassword.getHaspassword()) &&
+                        <div className="tsv-input bottom-gap">
                             <TextField
                                 fullWidth={true}
-                                value={password}
-                                label={i18n.t('settings.2fa.password')}
+                                value={oldPassword}
+                                label={i18n.t('settings.2fa.old_password')}
                                 margin="dense"
                                 variant="outlined"
                                 type="password"
-                                helperText={i18n.t('settings.2fa.password_hint')}
-                                onChange={this.passwordChangeHandler}
-                                error={this.checkPassword()}
+                                helperText={
+                                    incorrectPassword ?
+                                        <span className="recover-password"
+                                              onClick={this.recoverPasswordHandler}>{i18n.t('settings.2fa.recover_password')}</span> : (accountPassword ? (accountPassword.getHint() || '') : '')}
+                                onChange={this.oldPasswordChangeHandler}
                             />
+                        </div>}
+                        {mode === 'change' && <>
+                            <div className="tsv-input">
+                                <TextField
+                                    fullWidth={true}
+                                    value={password}
+                                    label={i18n.t('settings.2fa.password')}
+                                    margin="dense"
+                                    variant="outlined"
+                                    type="password"
+                                    helperText={i18n.t('settings.2fa.password_hint')}
+                                    onChange={this.passwordChangeHandler}
+                                    error={this.checkPassword()}
+                                />
+                            </div>
+                            <div className="tsv-input">
+                                <TextField
+                                    fullWidth={true}
+                                    value={passwordConfirm}
+                                    label={i18n.t('settings.2fa.confirm_password')}
+                                    margin="dense"
+                                    variant="outlined"
+                                    type="password"
+                                    onChange={this.passwordConfirmChangeHandler}
+                                    error={passwordConfirm !== password}
+                                />
+                            </div>
+                            <div className="tsv-input">
+                                <TextField
+                                    fullWidth={true}
+                                    value={hint}
+                                    label={i18n.t('settings.2fa.hint')}
+                                    margin="dense"
+                                    variant="outlined"
+                                    onChange={this.hintChangeHandler}
+                                />
+                            </div>
+                            <div className="tsv-input">
+                                <Button color="primary" fullWidth={true}
+                                        onClick={this.enableRecoveryHandler}>{i18n.t(securityQuestions.length === 3 ? 'settings.2fa.disable_recovery' : 'settings.2fa.enable_recovery')}</Button>
+                            </div>
+                        </>}
+                        <div className="tsv-gap"/>
+                        <DialogActions>
+                            <Button color="primary" onClick={this.modalCloseHandler}>
+                                {i18n.t('general.cancel')}
+                            </Button>
+                            <Button color="secondary" autoFocus={true} onClick={this.submitHandler}>
+                                {mode === 'change' ? i18n.t('general.submit') : i18n.t('general.deactivate')}
+                            </Button>
+                        </DialogActions>
+                    </div>}
+                    {Boolean(step === 3) && <div className="tsv-dialog">
+                        <div className="tsv-header">
+                            <CheckCircleOutlineRounded/>
                         </div>
-                        <div className="tsv-input">
-                            <TextField
-                                fullWidth={true}
-                                value={passwordConfirm}
-                                label={i18n.t('settings.2fa.confirm_password')}
-                                margin="dense"
-                                variant="outlined"
-                                type="password"
-                                onChange={this.passwordConfirmChangeHandler}
-                                error={passwordConfirm !== password}
-                            />
+                        <div className="tsv-success">
+                            {mode === 'change' ? i18n.t('settings.2fa.password_successfully_changed') : i18n.t('settings.2fa.password_successfully_removed')}
                         </div>
-                        <div className="tsv-input">
-                            <TextField
-                                fullWidth={true}
-                                value={hint}
-                                label={i18n.t('settings.2fa.hint')}
-                                margin="dense"
-                                variant="outlined"
-                                onChange={this.hintChangeHandler}
-                            />
-                        </div>
-                    </>}
-                    <div className="tsv-gap"/>
-                    <DialogActions>
-                        <Button color="primary" onClick={this.modalCloseHandler}>
-                            {i18n.t('general.cancel')}
-                        </Button>
-                        <Button color="secondary" autoFocus={true} onClick={this.submitHandler}>
-                            {mode === 'change' ? i18n.t('general.submit') : i18n.t('general.deactivate')}
-                        </Button>
-                    </DialogActions>
-                </div>}
-                {Boolean(step === 3) && <div className="tsv-dialog">
-                    <div className="tsv-header">
-                        <CheckCircleOutlineRounded/>
-                    </div>
-                    <div className="tsv-success">
-                        {mode === 'change' ? i18n.t('settings.2fa.password_successfully_changed') : i18n.t('settings.2fa.password_successfully_removed')}
-                    </div>
-                    <div className="tsv-gap"/>
-                </div>}
-            </SettingsModal>
+                        <div className="tsv-gap"/>
+                    </div>}
+                </SettingsModal>
+                <RecoveryQuestionModal ref={this.recoveryQuestionModalRefHandler}
+                                       onDone={this.recoveryQuestionModalDoneHandler}/>
+            </>
         );
     }
 
@@ -239,7 +256,7 @@ class TwoStepVerificationModal extends React.Component<IProps, IState> {
     }
 
     private submitHandler = () => {
-        const {password, passwordConfirm, oldPassword, hint, accountPassword, mode} = this.state;
+        const {password, passwordConfirm, oldPassword, hint, accountPassword, mode, securityQuestions} = this.state;
         if (!accountPassword) {
             return;
         }
@@ -254,12 +271,13 @@ class TwoStepVerificationModal extends React.Component<IProps, IState> {
         }
 
         const setPassword = (passHash: Uint8Array | undefined, inputPass?: InputPassword) => {
-            this.sdk.accountSetPassword(accountPassword.getAlgorithm() || C_MSG.PasswordAlgorithmVer6A, accountPassword.getAlgorithmdata_asU8(), passHash, hint, inputPass).then(() => {
+            this.sdk.accountSetPassword(accountPassword.getAlgorithm() || C_MSG.PasswordAlgorithmVer6A, accountPassword.getAlgorithmdata_asU8(), passHash, hint, securityQuestions, inputPass).then(() => {
                 this.setState({
                     hint: '',
                     oldPassword: '',
                     password: '',
                     passwordConfirm: '',
+                    securityQuestions: [],
                     step: 3,
                 });
                 if (this.props.onDone) {
@@ -274,6 +292,9 @@ class TwoStepVerificationModal extends React.Component<IProps, IState> {
                 }
                 if (err.code === C_ERR.ErrCodeInvalid && err.items === C_ERR_ITEM.ErrItemPasswordHash) {
                     this.props.onError(i18n.t('settings.2fa.pass_is_incorrect'));
+                    this.setState({
+                        incorrectPassword: true,
+                    });
                 }
             });
         };
@@ -294,6 +315,78 @@ class TwoStepVerificationModal extends React.Component<IProps, IState> {
             });
         } else {
             changePassword();
+        }
+    }
+
+    private recoveryQuestionModalRefHandler = (ref: any) => {
+        this.recoveryQuestionModalRef = ref;
+    }
+
+    private enableRecoveryHandler = () => {
+        const {securityQuestions} = this.state;
+        if (securityQuestions.length === 3) {
+            this.setState({
+                securityQuestions: [],
+            });
+            return;
+        }
+        if (!this.recoveryQuestionModalRef) {
+            return;
+        }
+        this.recoveryQuestionModalRef.openDialog(securityQuestions);
+    }
+
+    private recoveryQuestionModalDoneHandler = (list: SecurityQuestion.AsObject[]) => {
+        this.setState({
+            securityQuestions: list,
+        }, () => {
+            const {mode, accountPassword} = this.state;
+            if (mode === 'recover' && accountPassword) {
+                this.sdk.accountRecover(accountPassword.getAlgorithm() || C_MSG.PasswordAlgorithmVer6A, accountPassword.getAlgorithmdata_asU8(), accountPassword.getSrpid() || '', list.map(o => {
+                    return {
+                        answer: o.answer || '',
+                        questionid: o.id || 0,
+                    };
+                })).then(() => {
+                    this.setState({
+                        hint: '',
+                        oldPassword: '',
+                        password: '',
+                        passwordConfirm: '',
+                        securityQuestions: [],
+                        step: 3,
+                    });
+                    if (this.props.onDone) {
+                        this.props.onDone();
+                    }
+                    this.timeout = setTimeout(() => {
+                        this.modalCloseHandler();
+                    }, 4000);
+                }).catch((err: any) => {
+                    if (!this.props.onError) {
+                        return;
+                    }
+                    if (err.code === C_ERR.ErrCodeInvalid && (err.items === C_ERR_ITEM.ErrItemSecurityAnswer || err.items === C_ERR_ITEM.ErrItemSecurityQuestion)) {
+                        this.props.onError(i18n.t('settings.2fa.security_answer_are_wrong'));
+                    }
+                });
+            }
+        });
+    }
+
+    private recoverPasswordHandler = () => {
+        if (this.state.accountPassword && this.recoveryQuestionModalRef) {
+            this.recoveryQuestionModalRef.openDialog(this.state.accountPassword.toObject().questionsList.map(o => {
+                    return {
+                        answer: '',
+                        id: o.id,
+                        text: o.text,
+                    };
+                }
+            ), true);
+            this.setState({
+                mode: 'recover',
+            });
         }
     }
 }

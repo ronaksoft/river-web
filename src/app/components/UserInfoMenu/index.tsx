@@ -307,6 +307,9 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                     onClose={this.notifySettingDialogCloseHandler}
                     maxWidth="xs"
                     className="notify-setting-dialog"
+                    classes={{
+                        paper: 'notify-setting-dialog-paper'
+                    }}
                 >
                     <DialogTitle>{i18n.t('peer_info.notify_settings')}</DialogTitle>
                     <DialogContent className="dialog-content">

@@ -64,15 +64,28 @@ import {
 } from './messages/chat.api.messages_pb';
 import {UpdateDifference, UpdateGetDifference, UpdateGetState, UpdateState} from './messages/chat.api.updates_pb';
 import {
-    AccountAuthorizations, AccountChangePhone,
-    AccountCheckUsername, AccountGetAuthorizations,
-    AccountGetNotifySettings, AccountGetPassword, AccountGetPrivacy, AccountPassword, AccountPrivacyRules,
+    AccountAuthorizations,
+    AccountChangePhone,
+    AccountCheckUsername,
+    AccountGetAuthorizations,
+    AccountGetNotifySettings,
+    AccountGetPassword,
+    AccountGetPrivacy,
+    AccountPassword,
+    AccountPrivacyRules,
+    AccountRecoverPassword,
     AccountRegisterDevice,
-    AccountRemovePhoto, AccountResetAuthorization, AccountSendChangePhoneCode, AccountSetLang,
-    AccountSetNotifySettings, AccountSetPrivacy, AccountUpdatePasswordSettings,
+    AccountRemovePhoto,
+    AccountResetAuthorization,
+    AccountSendChangePhoneCode,
+    AccountSetLang,
+    AccountSetNotifySettings,
+    AccountSetPrivacy,
+    AccountUpdatePasswordSettings,
     AccountUpdateProfile,
     AccountUpdateUsername,
-    AccountUploadPhoto
+    AccountUploadPhoto, SecurityAnswer,
+    SecurityQuestion
 } from './messages/chat.api.accounts_pb';
 import {
     GroupsAddUser,
@@ -764,14 +777,35 @@ export default class SDK {
         return this.server.send(C_MSG.AccountGetPassword, data.serializeBinary(), true);
     }
 
-    public accountSetPassword(algorithm: number, algorithmData: Uint8Array, passwordHash: Uint8Array | undefined, hint: string, passwordInput?: InputPassword): Promise<Bool.AsObject> {
+    public accountSetPassword(algorithm: number, algorithmData: Uint8Array, passwordHash: Uint8Array | undefined, hint: string, questionList: SecurityQuestion.AsObject[], passwordInput?: InputPassword): Promise<Bool.AsObject> {
         const data = new AccountUpdatePasswordSettings();
         data.setAlgorithm(algorithm);
         data.setAlgorithmdata(algorithmData);
         data.setPasswordhash(passwordHash ? passwordHash : new Uint8Array(0));
         data.setHint(hint);
         data.setPassword(passwordInput);
+        questionList.forEach((question) => {
+            const securityQuestion = new SecurityQuestion();
+            securityQuestion.setAnswer(question.answer || '');
+            securityQuestion.setText(question.text || '');
+            securityQuestion.setId(question.id || 0);
+            data.addQuestions(securityQuestion);
+        });
         return this.server.send(C_MSG.AccountUpdatePasswordSettings, data.serializeBinary(), true);
+    }
+
+    public accountRecover(algorithm: number, algorithmData: Uint8Array, srpId: string, answerList: SecurityAnswer.AsObject[]) {
+        const data = new AccountRecoverPassword();
+        data.setAlgorithm(algorithm);
+        data.setAlgorithmdata(algorithmData);
+        data.setSrpid(srpId);
+        answerList.forEach((answer) => {
+            const securityAnswer = new SecurityAnswer();
+            securityAnswer.setAnswer(answer.answer || '');
+            securityAnswer.setQuestionid(answer.questionid || 0);
+            data.addAnswers(securityAnswer);
+        });
+        return this.server.send(C_MSG.AccountRecoverPassword, data.serializeBinary(), true);
     }
 
     public accountGetBlockedUser(skip: number, limit: number): Promise<BlockedContactsMany.AsObject> {

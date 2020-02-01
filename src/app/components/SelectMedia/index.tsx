@@ -36,7 +36,6 @@ let items: any[] = [];
 interface IProps {
     onAction: (cmd: 'media' | 'music' | 'contact' | 'location' | 'file') => (e: any) => void;
     onClose?: () => void;
-    open: boolean;
 }
 
 interface IState {
@@ -45,20 +44,16 @@ interface IState {
 }
 
 class SelectMedia extends React.Component<IProps, IState> {
-    public static getDerivedStateFromProps(props: IProps, state: IState) {
-        return {
-            open: props.open,
-        };
-    }
-
     private readonly leaveDebounce: any;
+    private canClose: boolean = true;
+    private timeout: any = null;
 
     constructor(props: IProps) {
         super(props);
 
         this.state = {
             currentCmd: 'none',
-            open: props.open,
+            open: false,
         };
 
         this.leaveDebounce = debounce(this.leaveHandler, 256);
@@ -92,10 +87,34 @@ class SelectMedia extends React.Component<IProps, IState> {
         ];
     }
 
+    public toggle() {
+        if (this.state.open) {
+            this.clickAwayHandler();
+            return;
+        }
+        this.setState({
+            open: true,
+        });
+        this.canClose = false;
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
+        this.timeout = setTimeout(() => {
+            this.canClose = true;
+            this.timeout = false;
+        }, 200);
+    }
+
+    public componentWillUnmount() {
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
+    }
+
     public render() {
         const {open, currentCmd} = this.state;
         return (
-            <ClickAwayListener onClickAway={this.onClickAwayHandler}>
+            <ClickAwayListener onClickAway={this.clickAwayHandler}>
                 <div className={'select-media ' + (open ? 'open' : '')}>
                     <div className="media-input-frame">
                         <div className={'media-input-container ' + currentCmd}>
@@ -122,9 +141,12 @@ class SelectMedia extends React.Component<IProps, IState> {
     }
 
     /* Click away handler */
-    private onClickAwayHandler = () => {
+    private clickAwayHandler = () => {
         const {open} = this.state;
-        if (open) {
+        if (open && this.canClose) {
+            this.setState({
+                open: false,
+            });
             if (this.props.onClose) {
                 this.props.onClose();
             }
