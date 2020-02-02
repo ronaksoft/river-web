@@ -351,6 +351,9 @@ class LeftMenu extends React.PureComponent<IProps, IState> {
 
     private bottomBarSelectHandler = (item: menuItems) => {
         if (this.state.leftMenu !== item) {
+            if (this.state.leftMenu === 'settings' && this.settingsMenuRef) {
+                this.settingsMenuRef.applyChanges();
+            }
             this.setState({
                 leftMenu: item,
             });

@@ -452,8 +452,17 @@
   .radio-item {
     padding: 0 12px;
 
-    .pr-radio {
-      padding: 8px 12px;
+    .pr-radio-wrapper {
+      display: flex;
+      align-items: center;
+
+      .pr-radio {
+        padding: 8px 12px;
+      }
+
+      .pr-radio-label {
+        cursor: pointer;
+      }
     }
   }
 
@@ -1003,9 +1012,11 @@
     .setting-switch-base {
       padding: 9px;
     }
+
     .setting-switch-thumb {
       color: var(--light);
     }
+
     .setting-switch-checked {
       .setting-switch-thumb {
         color: var(--river-light);
@@ -1322,15 +1333,6 @@ html[direction="rtl"] {
         text-align: right;
       }
     }
-
-    .radio-item {
-      div[role="radiogroup"] {
-        label {
-          margin-left: 16px;
-          margin-right: -14px;
-        }
-      }
-    }
   }
 }
 
@@ -1342,6 +1344,7 @@ html[theme="dark-blue"] {
       .setting-switch-thumb {
         color: var(--grey);
       }
+
       .setting-switch-checked {
         .setting-switch-thumb {
           color: var(--river);
@@ -1445,14 +1448,14 @@ html[theme="dark-blue"] {
     }
 
     .radio-item {
-      label {
-        span:nth-child(2) {
+      .pr-radio-wrapper {
+        .pr-radio-label {
           color: var(--white);
         }
-      }
 
-      .pr-radio:not(.pr-radio-checked) {
-        color: var(--white);
+        .pr-radio:not(.pr-radio-checked) {
+          color: var(--white);
+        }
       }
     }
 

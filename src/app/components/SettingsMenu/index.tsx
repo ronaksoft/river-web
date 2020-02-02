@@ -66,8 +66,6 @@ import AvatarCropper from '../AvatarCropper';
 import DialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
 import DialogActions from '@material-ui/core/DialogActions/DialogActions';
 import OverlayDialog from '@material-ui/core/Dialog/Dialog';
-import RadioGroup from '@material-ui/core/RadioGroup/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel/FormControlLabel';
 import Broadcaster from '../../services/broadcaster';
 import {AccountAuthorization, AccountPrivacyRules} from '../../services/sdk/messages/chat.api.accounts_pb';
 import TimeUtility from '../../services/utilities/time';
@@ -105,7 +103,7 @@ const listStyle: React.CSSProperties = {
     overflowY: 'visible',
 };
 
-export const C_VERSION = '0.29.16';
+export const C_VERSION = '0.29.17';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 export const C_AVATAR_SIZE = 640;
 
@@ -382,6 +380,12 @@ class SettingsMenu extends React.Component<IProps, IState> {
         if (pageSubContent === 'session') {
             this.getSessions();
         }
+        if (this.state.pageSubContent.indexOf('privacy_') > -1) {
+            this.checkPrivacyDiff();
+        }
+    }
+
+    public applyChanges() {
         if (this.state.pageSubContent.indexOf('privacy_') > -1) {
             this.checkPrivacyDiff();
         }
@@ -1045,23 +1049,26 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                         <div className="header-hint">{i18n.t(item.hint)}</div>
                                     </div>
                                     <div className="radio-item">
-                                        <RadioGroup name="position"
-                                                    value={privacy[item.id].mode}
-                                                    onChange={this.privacyRuleChangeHandler(item.id)}
-                                        >
-                                            {privacyRuleItems.map((prItem) => {
-                                                return (
-                                                    <FormControlLabel
-                                                        key={prItem.id}
+                                        {privacyRuleItems.map((prItem) => {
+                                            return (
+                                                <div
+                                                    key={prItem.id}
+                                                    className="pr-radio-wrapper"
+                                                >
+                                                    <Radio
+                                                        checked={prItem.id === privacy[item.id].mode}
                                                         value={prItem.id}
-                                                        control={<Radio color="primary" className="pr-radio" classes={{
+                                                        color="primary"
+                                                        className="pr-radio"
+                                                        classes={{
                                                             checked: 'pr-radio-checked',
-                                                        }}/>}
-                                                        label={i18n.t(prItem.title)}
-                                                        labelPlacement="end"
-                                                    />);
-                                            })}
-                                        </RadioGroup>
+                                                        }}
+                                                        onChange={this.privacyRuleChangeHandler(item.id)}
+                                                    />
+                                                    <div className="pr-radio-label"
+                                                         onClick={this.privacyRuleChangeHandler(item.id, prItem.id)}>{i18n.t(prItem.title)}</div>
+                                                </div>);
+                                        })}
                                     </div>
                                     {privacy[item.id].mode !== 'no_one' &&
                                     <div className="sub-page-header-alt"
@@ -1971,12 +1978,17 @@ class SettingsMenu extends React.Component<IProps, IState> {
         return privacy;
     }
 
-    private privacyRuleChangeHandler = (id: string) => (e: any) => {
+    private privacyRuleChangeHandler = (id: string, value?: string) => (e: any) => {
         const {privacy} = this.state;
         if (!privacy.hasOwnProperty(id)) {
             return;
         }
-        privacy[id].mode = e.target.value;
+        if (value) {
+            // @ts-ignore
+            privacy[id].mode = value;
+        } else {
+            privacy[id].mode = e.target.value;
+        }
         this.setState({
             privacy
         });

@@ -1,3 +1,6 @@
+## 0.29.17
+* Privacy settings improvements
+
 ## 0.29.16
 * Recover password added
 * UI Kit updated
