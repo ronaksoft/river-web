@@ -1,3 +1,6 @@
+## 0.29.18
+* Scroll track bug fixed
+
 ## 0.29.17
 * Privacy settings improvements
 

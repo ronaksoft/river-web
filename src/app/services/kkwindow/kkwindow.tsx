@@ -429,8 +429,7 @@ class KKWindow extends React.Component<IProps, IState> {
             return;
         }
         const offset = e.pageY - this.scrollbar.clickPos;
-        const scrollTop = this.scrollbar.clickScrollTop + offset * (this.containerRef.scrollHeight / this.props.height);
-        this.containerRef.scrollTop = scrollTop;
+        this.containerRef.scrollTop = this.scrollbar.clickScrollTop + offset * (this.containerRef.scrollHeight / this.props.height);
         let top = this.scrollbar.clickTop + offset;
         if (top < 0) {
             top = 0;
@@ -533,7 +532,7 @@ class KKWindow extends React.Component<IProps, IState> {
             this.props.onScrollPos({start, end, overscanStart, overscanEnd});
         }
         if (this.loadMoreReady) {
-            if (start <= this.loadBeforeLimit && this.loadBeforeTriggered < 5) {
+            if (start <= this.loadBeforeLimit && this.loadBeforeTriggered < 15) {
                 if (this.props.onLoadBefore) {
                     if (this.loadBeforeTimeout) {
                         clearTimeout(this.loadBeforeTimeout);
@@ -561,6 +560,14 @@ class KKWindow extends React.Component<IProps, IState> {
         if (this.containerRef && this.loadMoreReady && this.containerRef.scrollTop < C_TRY_SCROLL_TOP) {
             if (this.props.onLoadBefore) {
                 this.props.onLoadBefore(0, 10);
+            }
+            this.loadBeforeTriggered++;
+            if (this.loadMoreReady && this.loadBeforeTriggered >= 1 && this.loadBeforeTriggered <= 3) {
+                this.loadBeforeTimeout = setTimeout(() => {
+                    if (this.containerRef && this.containerRef.scrollTop < C_TRY_SCROLL_TOP) {
+                        this.tryLoadBefore();
+                    }
+                }, 500);
             }
         }
     }
