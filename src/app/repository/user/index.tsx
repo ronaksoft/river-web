@@ -202,6 +202,9 @@ export default class UserRepo {
                 if (user.status === UserStatus.USERSTATUSONLINE && !user.status_last_modified) {
                     user.status_last_modified = RiverTime.getInstance().now();
                 }
+                if (user.remove_photo) {
+                    delete user.remove_photo;
+                }
             });
             const list = [...createItems, ...updateItems];
             list.forEach((item) => {
