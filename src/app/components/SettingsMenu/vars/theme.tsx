@@ -37,6 +37,7 @@ import lbg13 from '../../../../asset/image/bgl/tic-tac-toe.svg';
 import dbg13 from '../../../../asset/image/bgd/tic-tac-toe.svg';
 import lbg14 from '../../../../asset/image/bgl/topography.svg';
 import dbg14 from '../../../../asset/image/bgd/topography.svg';
+import riverbg from '../../../../asset/image/pattern.png';
 
 import {
     /*CallRounded,*/
@@ -61,6 +62,13 @@ export const bgTypes = [{
 }];
 
 export const backgrounds = [{
+    id: '15',
+    src: {
+        d: riverbg,
+        l: riverbg,
+    },
+    title: 'River',
+}, {
     id: '1',
     src: {
         d: dbg1,

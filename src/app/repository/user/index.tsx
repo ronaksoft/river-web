@@ -9,7 +9,7 @@
 
 import DB from '../../services/db/user';
 import {IUser} from './interface';
-import {differenceBy, find, uniqBy} from 'lodash';
+import {differenceBy, find, uniqBy, uniq, throttle} from 'lodash';
 import SDK from "../../services/sdk";
 import {DexieUserDB} from '../../services/db/dexie/user';
 import Dexie from 'dexie';
@@ -59,12 +59,15 @@ export default class UserRepo {
     private lastContactTimestamp: number = 0;
     private broadcaster: Broadcaster;
     private bubbleMode: string = localStorage.getItem('river.theme.bubble') || '4';
+    private throttleBroadcastList: string[] = [];
+    private readonly throttleBroadcastExecute: any = undefined;
 
     private constructor() {
         this.dbService = DB.getInstance();
         this.db = this.dbService.getDB();
         this.sdk = SDK.getInstance();
         this.broadcaster = Broadcaster.getInstance();
+        this.throttleBroadcastExecute = throttle(this.broadcastThrottledList, 255);
     }
 
     public getBubbleMode() {
@@ -105,7 +108,6 @@ export default class UserRepo {
     }
 
     public getFull(id: string, cacheCB?: (us: IUser) => void, callerId?: number): Promise<IUser> {
-        window.console.trace();
         return new Promise<IUser>((resolve, reject) => {
             this.get(id).then((user) => {
                 if (user) {
@@ -207,7 +209,11 @@ export default class UserRepo {
             });
             return this.createMany(list);
         }).then((res) => {
-            this.broadcastEvent('User_DB_Updated', {ids, callerId});
+            if (callerId) {
+                this.broadcastEvent('User_DB_Updated', {ids, callerId});
+            } else {
+                this.throttleBroadcast(ids);
+            }
             return res;
         });
     }
@@ -272,6 +278,14 @@ export default class UserRepo {
 
     private mergeUser(users: IUser[], user: IUser, force?: boolean) {
         const t = find(users, {id: user.id});
+        if (user.remove_photo) {
+            if (t) {
+                delete t.remove_photo;
+                t.photo = undefined;
+            }
+            delete user.remove_photo;
+            user.photo = undefined;
+        }
         const modifyUser = (u1: IUser, u2: IUser): IUser => {
             if (u2.status === UserStatus.USERSTATUSONLINE && !u2.status_last_modified) {
                 u2.status_last_modified = RiverTime.getInstance().now();
@@ -317,6 +331,24 @@ export default class UserRepo {
     private storeContactsCrc(users: IUser[]) {
         const crc32 = getContactsCrc(users);
         localStorage.setItem('river.contacts.hash', String(crc32));
+    }
+
+    private throttleBroadcast(ids: string[]) {
+        if (ids.length > 0) {
+            this.throttleBroadcastList.push(...ids);
+            this.throttleBroadcastList = uniq(this.throttleBroadcastList);
+        }
+        setTimeout(() => {
+            this.throttleBroadcastExecute();
+        }, 50);
+    }
+
+    private broadcastThrottledList = () => {
+        if (this.throttleBroadcastList.length === 0) {
+            return;
+        }
+        this.broadcastEvent('User_DB_Updated', {ids: this.throttleBroadcastList});
+        this.throttleBroadcastList = [];
     }
 
     private broadcastEvent(name: string, data: any) {

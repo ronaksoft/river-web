@@ -39,7 +39,7 @@
       left: 8px;
       height: 48px;
       width: 48px;
-      border-radius: 50%;
+      border-radius: 50% !important;
       transform: translateY(-50%);
     }
 
@@ -48,7 +48,7 @@
       left: 68px;
       width: 100px;
       height: 14px;
-      border-radius: 3px;
+      border-radius: 3px !important;
     }
 
     .skeleton-preview {
@@ -56,7 +56,7 @@
       left: 68px;
       right: 8px;
       height: 14px;
-      border-radius: 3px;
+      border-radius: 3px !important;
     }
 
     .skeleton-date {
@@ -64,7 +64,7 @@
       right: 8px;
       width: 50px;
       height: 12px;
-      border-radius: 3px;
+      border-radius: 3px !important;
     }
   }
 }

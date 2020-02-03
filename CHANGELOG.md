@@ -1,3 +1,9 @@
+## 0.29.19
+* Connecting status indicator improved
+* UserRepo performance improvements
+* PeerMedia tab UI bug fixed
+* Known bugs fixed
+
 ## 0.29.18
 * Scroll track bug fixed
 

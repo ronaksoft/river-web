@@ -15,10 +15,10 @@ import AvatarService from '../../services/avatarService';
 import {find} from 'lodash';
 import Broadcaster from '../../services/broadcaster';
 import icon from '../../../asset/image/icon.png';
-
-import './style.scss';
 import {UserStatus} from "../../services/sdk/messages/chat.core.types_pb";
 import RiverTime from "../../services/utilities/river_time";
+
+import './style.scss';
 
 const DefaultColors = [
     '#30496B',

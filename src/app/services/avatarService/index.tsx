@@ -13,6 +13,7 @@ import {InputFileLocation} from '../sdk/messages/chat.core.types_pb';
 import FileRepo from '../../repository/file/index';
 import GroupRepo from '../../repository/group';
 import Broadcaster from '../broadcaster';
+import {throttle, uniqWith} from "lodash";
 
 interface IAvatar {
     fileId: string;
@@ -36,8 +37,10 @@ export default class AvatarService {
     private fileRepo: FileRepo;
     private userRepo: UserRepo;
     private groupRepo: GroupRepo;
-    private avatars: { [key: number]: IAvatar } = {};
+    private avatars: { [key: string]: IAvatar } = {};
     private broadcaster: Broadcaster;
+    private throttleBroadcastList: any[] = [];
+    private readonly throttleBroadcastExecute: any = undefined;
 
     public constructor() {
         this.fileManager = FileManager.getInstance();
@@ -45,6 +48,7 @@ export default class AvatarService {
         this.userRepo = UserRepo.getInstance();
         this.groupRepo = GroupRepo.getInstance();
         this.broadcaster = Broadcaster.getInstance();
+        this.throttleBroadcastExecute = throttle(this.broadcastThrottledList, 255);
     }
 
     /* Get avatar picture */
@@ -82,16 +86,23 @@ export default class AvatarService {
     /* Reset retries */
     public resetRetries(id: string) {
         if (this.avatars.hasOwnProperty(id)) {
-            this.avatars[id].retires = 0;
+            this.avatars[id].retries = 0;
         }
     }
 
     /* Remove image */
-    public remove(id: string, fileId: string) {
+    public remove(id: string, fileId?: string) {
         if (this.avatars.hasOwnProperty(id)) {
+            if (!fileId) {
+                fileId = this.avatars[id].fileId;
+            }
             delete this.avatars[id];
         }
-        return this.fileRepo.remove(fileId);
+        if (fileId) {
+            return this.fileRepo.remove(fileId);
+        } else {
+            return Promise.resolve();
+        }
     }
 
     /* Get photo location */
@@ -134,6 +145,7 @@ export default class AvatarService {
                                     this.avatars[id].src = fileRes.data.size === 0 ? '' : URL.createObjectURL(fileRes.data);
                                     this.avatars[id].retries = 0;
                                     this.broadcastEvent('Avatar_SRC_Updated', {items: [{id, fileId}]});
+                                    this.throttleBroadcast([{id, fileId}]);
                                     resolve(this.avatars[id].src);
                                 } else {
                                     this.avatars[id].retries++;
@@ -166,7 +178,7 @@ export default class AvatarService {
                 this.fileRepo.get(fileId).then((fileRes) => {
                     if (fileRes) {
                         this.avatars[id].src = fileRes.data.size === 0 ? '' : URL.createObjectURL(fileRes.data);
-                        this.broadcastEvent('Avatar_SRC_Updated', {items: [{id, fileId}]});
+                        this.throttleBroadcast([{id, fileId}]);
                         resolve(this.avatars[id].src);
                     } else {
                         reject();
@@ -187,6 +199,24 @@ export default class AvatarService {
                 URL.revokeObjectURL(this.avatars[id].src);
             }
         }
+    }
+
+    private throttleBroadcast(idPairs: any[]) {
+        if (idPairs.length > 0) {
+            this.throttleBroadcastList.push(...idPairs);
+            this.throttleBroadcastList = uniqWith(this.throttleBroadcastList, (i1, i2) => i1.id === i2 && i1.fileId === i2.fileId);
+        }
+        setTimeout(() => {
+            this.throttleBroadcastExecute();
+        }, 50);
+    }
+
+    private broadcastThrottledList = () => {
+        if (this.throttleBroadcastList.length === 0) {
+            return;
+        }
+        this.broadcastEvent('Avatar_SRC_Updated', {items: this.throttleBroadcastList});
+        this.throttleBroadcastList = [];
     }
 
     /* Broadcast global event */

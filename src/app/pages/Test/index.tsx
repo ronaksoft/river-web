@@ -12,10 +12,11 @@ import {random, range} from 'lodash';
 import AutoSizer from "react-virtualized-auto-sizer";
 // @ts-ignore
 import pic from "../../../asset/image/about/river.png";
-
-import './style.scss';
 import KKWindow from "../../services/kkwindow/kkwindow";
 import {scrollFunc} from "../../services/kkwindow/utils";
+
+import './style.scss';
+
 
 interface IProps {
     match?: any;

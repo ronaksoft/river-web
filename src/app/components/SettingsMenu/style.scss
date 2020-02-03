@@ -816,6 +816,10 @@
         background-size: 200px;
       }
 
+      &.bg-15 {
+        background-image: url(../../../asset/image/pattern.png);
+      }
+
       &.bubble-2 {
         &:after, &:before {
           border-radius: 20px;
@@ -1533,6 +1537,10 @@ html[theme="dark-blue"] {
 
         &.bg-14 {
           background-image: url(../../../asset/image/bgl/topography.svg);
+        }
+
+        &.bg-15 {
+          background-image: url(../../../asset/image/pattern.png);
         }
       }
 

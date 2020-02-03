@@ -146,6 +146,7 @@ import LabelDialog from "../../components/LabelDialog";
 import {ILabel} from "../../repository/label/interface";
 
 import './style.scss';
+import AvatarService from "../../services/avatarService";
 
 export let notifyOptions: any[] = [];
 const C_MAX_UPDATE_DIFF = 2000;
@@ -242,11 +243,12 @@ class Chat extends React.Component<IProps, IState> {
     private peer: InputPeer | null = null;
     private messageSelectable: boolean = false;
     private messageSelectedIds: { [key: number]: number } = {};
-    private isConnecting: boolean = false;
+    private isConnecting: boolean = true;
     private isOnline: boolean = navigator.onLine === undefined ? true : navigator.onLine;
     private isUpdating: boolean = false;
     private shrunk: boolean = false;
     private isMobileBrowser = isMobile();
+    private avatarService: AvatarService;
 
     constructor(props: IProps) {
         super(props);
@@ -291,6 +293,7 @@ class Chat extends React.Component<IProps, IState> {
         this.newMessageLoadThrottle = throttle(this.newMessageLoad, 300);
         this.cachedMessageService = CachedMessageService.getInstance();
         this.cachedFileService = CachedFileService.getInstance();
+        this.avatarService = AvatarService.getInstance();
         const audioPlayer = AudioPlayer.getInstance();
         audioPlayer.setErrorFn(this.audioPlayerErrorHandler);
         audioPlayer.setUpdateDurationFn(this.audioPlayerUpdateDurationHandler);
@@ -1336,7 +1339,13 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         // @ts-ignore
-        this.userRepo.importBulk(data);
+        this.userRepo.importBulk(false, data.map((u: IUser) => {
+            if (u.photo === undefined) {
+                u.remove_photo = true;
+                this.avatarService.remove(u.id || '');
+            }
+            return u;
+        }));
     }
 
     /* Update user photo handler */
@@ -2545,15 +2554,11 @@ class Chat extends React.Component<IProps, IState> {
             this.dialogsSort(res, (dialogs) => {
                 if (data.counters) {
                     data.ids.forEach((id: string) => {
-                        // window.console.debug('dialogDBUpdated data.id:', id);
                         if (this.dialogMap.hasOwnProperty(id) && dialogs[this.dialogMap[id]]) {
-                            // window.console.debug('dialogDBUpdated peerId:', dialogs[this.dialogMap[id]].peerid);
                             const maxReadInbox = dialogs[this.dialogMap[id]].readinboxmaxid || 0;
-                            // window.console.debug('dialogDBUpdated maxReadInbox:', maxReadInbox);
                             const dialog = cloneDeep(this.getDialogById(id));
                             if (dialog) {
                                 this.messageRepo.getUnreadCount(id, maxReadInbox, dialog ? (dialog.topmessageid || 0) : 0).then((count) => {
-                                    // window.console.debug('dialogDBUpdated getUnreadCount:', count);
                                     this.updateDialogsCounter(id, {
                                         mentionCounter: count.mention,
                                         unreadCounter: count.message,

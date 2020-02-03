@@ -297,6 +297,14 @@ html[bg="14"] {
   }
 }
 
+html[bg="15"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/pattern.png);
+    background-size: 200px;
+  }
+}
+
 html[theme="dark"][bg="21"],
 html[theme="dark-night"][bg="21"],
 html[theme="dark-blue"][bg="21"] {

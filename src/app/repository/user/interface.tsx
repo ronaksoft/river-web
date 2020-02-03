@@ -14,9 +14,9 @@ interface IUser extends User.AsObject {
     category?: string;
     clientid?: string;
     is_contact?: number;
-    phone?: string;
     status_last_modified?: number;
     is_bot_started?: boolean;
+    remove_photo?: boolean;
 }
 
 interface IParticipant extends IUser {

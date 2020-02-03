@@ -45,9 +45,10 @@
     margin: -8px 0 8px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 
-    button {
+    .peer-media-tab-item {
+      white-space: nowrap;
+      flex-basis: unset;
       min-width: 75px;
-
       > span > span {
         padding: 6px;
       }
@@ -119,6 +120,9 @@
           font-size: 6px;
           text-transform: uppercase;
           color: #2D9CDB;
+          max-width: 23px;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         svg {
