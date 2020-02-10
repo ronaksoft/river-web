@@ -14,7 +14,6 @@ import SDK from '../../services/sdk';
 import UserRepo from '../user';
 import MessageRepo from '../message';
 import {IMessage} from '../message/interface';
-import UpdateManager from '../../services/sdk/server/updateManager';
 import {DexieDialogDB} from '../../services/db/dexie/dialog';
 import GroupRepo from '../group';
 import {getMessageTitle} from '../../components/Dialog/utils';
@@ -42,10 +41,8 @@ export default class DialogRepo {
     private lazyMap: { [key: number]: IDialog } = {};
     private readonly updateThrottle: any = null;
     private insertToDbTimeout: any = null;
-    private updateManager: UpdateManager;
 
     public constructor() {
-        this.updateManager = UpdateManager.getInstance();
         this.dbService = DB.getInstance();
         this.db = this.dbService.getDB();
         this.sdk = SDK.getInstance();
@@ -312,13 +309,11 @@ export default class DialogRepo {
             dialogs.push(cloneDeep(this.lazyMap[key]));
         });
         if (dialogs.length === 0) {
-            this.updateManager.flushLastUpdateId();
             this.lazyMap = {};
             return Promise.resolve();
         }
         this.lazyMap = {};
         return this.upsert(dialogs).then((info) => {
-            this.updateManager.flushLastUpdateId();
             return info;
         });
     }

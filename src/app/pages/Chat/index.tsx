@@ -33,7 +33,6 @@ import NewMessage from '../../components/NewMessage';
 import * as core_types_pb from '../../services/sdk/messages/chat.core.types_pb';
 import {
     FileLocation,
-    Group,
     InputFile,
     InputFileLocation,
     InputPeer,
@@ -44,17 +43,15 @@ import {
     PeerNotifySettings,
     PeerType,
     TypingAction,
-    User,
-    UserStatus
 } from '../../services/sdk/messages/chat.core.types_pb';
 import {IConnInfo} from '../../services/sdk/interface';
 import {IDialog} from '../../repository/dialog/interface';
-import UpdateManager from '../../services/sdk/server/updateManager';
+import UpdateManager from '../../services/sdk/updateManager';
 import {C_ERR, C_ERR_ITEM, C_MSG} from '../../services/sdk/const';
 import {
     UpdateDialogPinned,
     UpdateDraftMessage,
-    UpdateDraftMessageCleared, UpdateGroupParticipantAdd,
+    UpdateDraftMessageCleared,
     UpdateGroupPhoto, UpdateLabelDeleted, UpdateLabelItemsAdded, UpdateLabelItemsRemoved, UpdateLabelSet,
     UpdateMessageEdited,
     UpdateMessageID,
@@ -62,13 +59,12 @@ import {
     UpdateNotifySettings,
     UpdateReadHistoryInbox,
     UpdateReadHistoryOutbox,
-    UpdateReadMessagesContents, UpdateUserBlocked,
+    UpdateReadMessagesContents,
     UpdateUsername,
     UpdateUserPhoto,
     UpdateUserTyping,
 } from '../../services/sdk/messages/chat.api.updates_pb';
 import UserName from '../../components/UserName';
-import SyncManager, {C_SYNC_UPDATE} from '../../services/sdk/syncManager';
 import UserRepo from '../../repository/user';
 import MainRepo from '../../repository';
 import {C_MSG_MODE} from '../../components/ChatInput/consts';
@@ -143,13 +139,10 @@ import Landscape from "../../components/SVG";
 import {isMobile} from "../../services/utilities/localize";
 import LabelRepo from "../../repository/label";
 import LabelDialog from "../../components/LabelDialog";
-import {ILabel} from "../../repository/label/interface";
 
 import './style.scss';
-import AvatarService from "../../services/avatarService";
 
 export let notifyOptions: any[] = [];
-const C_MAX_UPDATE_DIFF = 2000;
 
 interface IProps {
     history?: any;
@@ -193,7 +186,6 @@ class Chat extends React.Component<IProps, IState> {
     private isLoading: boolean = false;
     private sdk: SDK;
     private updateManager: UpdateManager;
-    private syncManager: SyncManager;
     private connInfo: IConnInfo;
     private eventReferences: any[] = [];
     private readonly dialogsSortThrottle: any = null;
@@ -248,7 +240,6 @@ class Chat extends React.Component<IProps, IState> {
     private isUpdating: boolean = false;
     private shrunk: boolean = false;
     private isMobileBrowser = isMobile();
-    private avatarService: AvatarService;
 
     constructor(props: IProps) {
         super(props);
@@ -279,7 +270,6 @@ class Chat extends React.Component<IProps, IState> {
         this.mainRepo = MainRepo.getInstance();
         this.labelRepo = LabelRepo.getInstance();
         this.updateManager = UpdateManager.getInstance();
-        this.syncManager = SyncManager.getInstance();
         this.dialogsSortThrottle = throttle(this.dialogsSort, 256);
         this.isInChat = (document.visibilityState === 'visible');
         this.isMobileView = (window.innerWidth < 600);
@@ -293,7 +283,6 @@ class Chat extends React.Component<IProps, IState> {
         this.newMessageLoadThrottle = throttle(this.newMessageLoad, 300);
         this.cachedMessageService = CachedMessageService.getInstance();
         this.cachedFileService = CachedFileService.getInstance();
-        this.avatarService = AvatarService.getInstance();
         const audioPlayer = AudioPlayer.getInstance();
         audioPlayer.setErrorFn(this.audioPlayerErrorHandler);
         audioPlayer.setUpdateDurationFn(this.audioPlayerUpdateDurationHandler);
@@ -354,9 +343,6 @@ class Chat extends React.Component<IProps, IState> {
         const peer = this.getPeerByDialogId(this.selectedDialogId);
         this.setChatParams(this.selectedDialogId, peer, false, {});
 
-        // Update: Out of sync (internal)
-        this.eventReferences.push(this.updateManager.listen(C_MSG.OutOfSync, this.outOfSyncHandler));
-
         // Update: New Message Received
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateNewMessage, this.updateNewMessageHandler));
 
@@ -390,12 +376,6 @@ class Chat extends React.Component<IProps, IState> {
         // Update: Content Read
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateReadMessagesContents, this.updateContentReadHandler));
 
-        // Update: Users
-        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUsers, this.updateUserHandler));
-
-        // Update: Groups
-        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateGroups, this.updateGroupHandler));
-
         // Update: User Photo
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUserPhoto, this.updateUserPhotoHandler));
 
@@ -414,12 +394,6 @@ class Chat extends React.Component<IProps, IState> {
         // Update: dialog draft message cleared
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateDraftMessageCleared, this.updateDraftMessageClearedHandler));
 
-        // Update: group participant added
-        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateGroupParticipantAdd, this.updateGroupParticipantAddHandler));
-
-        // Update: group participant deleted
-        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateGroupParticipantDeleted, this.updateGroupParticipantDeletedHandler));
-
         // Update: label set
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateLabelSet, this.updateLabelSetHandler));
 
@@ -432,13 +406,11 @@ class Chat extends React.Component<IProps, IState> {
         // Update: label items removed
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateLabelItemsRemoved, this.updateLabelItemsRemovedHandler));
 
-        // Update: label items removed
-        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateUserBlocked, this.updateUserBlockedHandler));
-
-        // Sync: MessageId
-        this.eventReferences.push(this.syncManager.listen(C_SYNC_UPDATE.MessageId, this.updateMessageIDHandler));
+        // Update: sync status
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateManagerStatus, this.updateManagerStatusHandler));
 
         // TODO: add timestamp to pending message
+
 
         // Electron events
         this.eventReferences.push(this.electronService.listen(C_ELECTRON_SUBJECT.Setting, this.electronSettingsHandler));
@@ -927,41 +899,9 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    /* Out of sync handler */
-    private outOfSyncHandler = () => {
-        if (this.isUpdating) {
-            return;
-        }
-        window.console.debug('%c getDifference!', 'color: pink');
-        this.canSync().then(() => {
-            this.updateManager.disable();
-            this.setAppStatus({
-                isUpdating: true,
-            });
-        }).catch(() => {
-            this.updateManager.enable();
-            if (this.isUpdating) {
-                this.setAppStatus({
-                    isUpdating: false,
-                });
-            }
-        });
-    }
-
     /* Update new message handler */
     private updateNewMessageHandler = (data: UpdateNewMessage.AsObject) => {
-        if (this.isUpdating) {
-            return;
-        }
         const message: IMessage = data.message;
-        this.messageRepo.lazyUpsert([data.message]);
-        this.userRepo.importBulk(false, [data.sender].map((o: IUser) => {
-            if (data.message && o.id && data.message.senderid === o.id) {
-                o.status = UserStatus.USERSTATUSONLINE;
-                o.status_last_modified = message.createdon || 0;
-            }
-            return o;
-        }));
         let force = false;
         if (data.message.peerid === this.selectedDialogId && this.messageRef) {
             // Check if Top Message exits
@@ -1048,11 +988,6 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Update drop message */
     private updateMessageDropHandler = (data: UpdateNewMessage.AsObject) => {
-        if (this.isUpdating) {
-            return;
-        }
-        this.messageRepo.lazyUpsert([data.message]);
-        this.userRepo.importBulk(false, [data.sender]);
         if (data.message) {
             this.checkPendingMessage(data.message.id || 0);
             this.updateDialogs(data.message, data.accesshash || '0');
@@ -1064,10 +999,6 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Update message edit */
     private updateMessageEditHandler = (data: UpdateMessageEdited.AsObject) => {
-        if (this.isUpdating) {
-            return;
-        }
-        this.messageRepo.lazyUpsert([data.message]);
         const dialog = this.getDialogById(data.message.peerid || '');
         if (dialog) {
             if (dialog.topmessageid === data.message.id) {
@@ -1150,9 +1081,6 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Update read history inbox handler */
     private updateReadInboxHandler = (data: UpdateReadHistoryInbox.AsObject) => {
-        if (this.isUpdating) {
-            return;
-        }
         const peerId = data.peer.id || '';
         const dialog = this.getDialogById(peerId);
         if (!dialog) {
@@ -1184,13 +1112,6 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Update read history outbox handler */
     private updateReadOutboxHandler = (data: UpdateReadHistoryOutbox.AsObject) => {
-        if (this.isUpdating) {
-            return;
-        }
-        this.userRepo.importBulk(false, [{
-            id: data.peer.id,
-            status: UserStatus.USERSTATUSONLINE,
-        }]);
         this.updateDialogsCounter(data.peer.id || '', {maxOutbox: data.maxid});
         if (this.messageRef && data.peer.id === this.selectedDialogId) {
             this.messageRef.setReadId(data.maxid || 0);
@@ -1200,11 +1121,14 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Update message delete handler */
     private updateMessageDeleteHandler = (data: UpdateMessagesDeleted.AsObject) => {
-        if (this.isUpdating || !data.peer) {
+        const peer = data.peer;
+        if (!peer) {
             return;
         }
-        const peer = data.peer;
-        this.messageRepo.removeMany(data.messageidsList).then(() => {
+        setTimeout(() => {
+            if (!peer) {
+                return;
+            }
             const dialogPeer = this.getDialogById(peer.id || '');
             if (dialogPeer) {
                 this.messageRepo.getUnreadCount(peer.id || '', dialogPeer ? (dialogPeer.readinboxmaxid || 0) : 0, dialogPeer ? (dialogPeer.topmessageid || 0) : 0).then((count) => {
@@ -1217,6 +1141,9 @@ class Chat extends React.Component<IProps, IState> {
 
             // Check if current dialog is visible
             data.messageidsList.sort().forEach((id) => {
+                if (!peer) {
+                    return;
+                }
                 // Update dialog list Top Message
                 const dialogIndex = findIndex(this.dialogs, {topmessageid: id});
                 let dialog: IDialog | null = null;
@@ -1236,83 +1163,70 @@ class Chat extends React.Component<IProps, IState> {
                         });
                     }
                 }
-                if (peer.id === this.selectedDialogId && this.messageRef) {
-                    // Update and broadcast changes in cache
-                    this.cachedMessageService.removeMessage(id);
+            });
+        }, 1000);
 
-                    const messages = this.messages;
-                    let updateView = false;
-                    const index = findLastIndex(messages, (o) => {
-                        return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
-                    });
-                    if (this.messageRef && index > -1) {
-                        updateView = true;
-                        // Delete visible message if possible
-                        this.messageRef.clear(index);
-                        messages.splice(index, 1);
-                        // Clear date indicator if possible
-                        const indexAlpha = index - 1;
-                        if (indexAlpha > -1 && messages.length > index) {
-                            // If date indicator were in current range boundaries
-                            if (messages[indexAlpha].messagetype === C_MESSAGE_TYPE.Date && messages[index].messagetype === C_MESSAGE_TYPE.Date) {
-                                this.messageRef.clear(indexAlpha);
-                                messages.splice(indexAlpha, 1);
-                            }
-                        } else if (indexAlpha > -1 && messages.length === index) {
-                            // If it was last message
-                            if (messages[indexAlpha].messagetype === C_MESSAGE_TYPE.Date) {
-                                this.messageRef.clear(indexAlpha);
-                                messages.splice(indexAlpha, 1);
-                            }
+        data.messageidsList.sort().forEach((id) => {
+            if (!peer) {
+                return;
+            }
+            if (peer.id === this.selectedDialogId && this.messageRef) {
+                // Update and broadcast changes in cache
+                this.cachedMessageService.removeMessage(id);
+
+                const messages = this.messages;
+                let updateView = false;
+                const index = findLastIndex(messages, (o) => {
+                    return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                });
+                if (this.messageRef && index > -1) {
+                    updateView = true;
+                    // Delete visible message if possible
+                    this.messageRef.clear(index);
+                    messages.splice(index, 1);
+                    // Clear date indicator if possible
+                    const indexAlpha = index - 1;
+                    if (indexAlpha > -1 && messages.length > index) {
+                        // If date indicator were in current range boundaries
+                        if (messages[indexAlpha].messagetype === C_MESSAGE_TYPE.Date && messages[index].messagetype === C_MESSAGE_TYPE.Date) {
+                            this.messageRef.clear(indexAlpha);
+                            messages.splice(indexAlpha, 1);
+                        }
+                    } else if (indexAlpha > -1 && messages.length === index) {
+                        // If it was last message
+                        if (messages[indexAlpha].messagetype === C_MESSAGE_TYPE.Date) {
+                            this.messageRef.clear(indexAlpha);
+                            messages.splice(indexAlpha, 1);
                         }
                     }
-                    // Update current message list if visible
-                    if (this.messageRef && updateView) {
-                        this.messageRef.forceUpdate(() => {
-                            if (this.messageRef) {
-                                this.messageRef.updateList();
-                            }
-                        });
-                    }
                 }
-            });
+                // Update current message list if visible
+                if (this.messageRef && updateView) {
+                    this.messageRef.forceUpdate(() => {
+                        if (this.messageRef) {
+                            this.messageRef.updateList();
+                        }
+                    });
+                }
+            }
         });
     }
 
     /* Update username handler */
     private updateUsernameHandler = (data: UpdateUsername.AsObject) => {
-        if (this.isUpdating) {
-            return;
-        }
-        this.userRepo.importBulk(false, [{
-            bio: data.bio,
-            firstname: data.firstname,
-            id: data.userid,
-            lastname: data.lastname,
-            phone: data.phone,
-            username: data.username,
-        }], true);
-        const connInfo = this.sdk.getConnInfo();
-        connInfo.Phone = data.phone;
-        this.sdk.setConnInfo(connInfo);
+        //
     }
 
     /* Update notify settings handler */
     private updateNotifySettingsHandler = (data: UpdateNotifySettings.AsObject) => {
-        if (this.isUpdating) {
-            return;
-        }
         this.updateDialogsNotifySettings(data.notifypeer.id || '', data.settings);
     }
 
     /* Update content read handler */
     private updateContentReadHandler = (data: UpdateReadMessagesContents.AsObject) => {
-        if (this.isUpdating) {
-            return;
-        }
         let updateView = false;
         const messages = this.messages;
-        const msgs: IMessage[] = data.messageidsList.map((id) => {
+        data.messageidsList.forEach((id) => {
             if (this.selectedDialogId === data.peer.id) {
                 const index = findIndex(messages, (o) => {
                     return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
@@ -1322,37 +1236,25 @@ class Chat extends React.Component<IProps, IState> {
                     updateView = true;
                 }
             }
-            return {
-                contentread: true,
-                id,
-            };
         });
-        this.messageRepo.lazyUpsert(msgs);
         if (updateView && this.messageRef) {
             this.messageRef.updateList();
         }
     }
 
-    /* Update user handler */
-    private updateUserHandler = (data: User[]) => {
-        if (this.isUpdating) {
-            return;
-        }
-        // @ts-ignore
-        this.userRepo.importBulk(false, data.map((u: IUser) => {
-            if (u.photo === undefined) {
-                u.remove_photo = true;
-                this.avatarService.remove(u.id || '');
-            }
-            return u;
-        }));
-    }
+    // /* Update user handler */
+    // private updateUserHandler = (data: User[]) => {
+    //     // @ts-ignore
+    //     data.forEach((u: IUser) => {
+    //         if (u.photo === undefined) {
+    //             u.remove_photo = true;
+    //             this.avatarService.remove(u.id || '');
+    //         }
+    //     });
+    // }
 
     /* Update user photo handler */
     private updateUserPhotoHandler = (data: UpdateUserPhoto.AsObject) => {
-        if (this.isUpdating) {
-            return;
-        }
         if (!data.photo) {
             this.userRepo.get(data.userid || '').then((res) => {
                 if (res && res.photo) {
@@ -1361,26 +1263,11 @@ class Chat extends React.Component<IProps, IState> {
                 }
             });
         }
-        this.userRepo.importBulk(false, [{
-            id: data.userid,
-            photo: data.photo,
-        }]);
     }
 
-    /* Update group handler */
-    private updateGroupHandler = (data: Group[]) => {
-        if (this.isUpdating) {
-            return;
-        }
-        // @ts-ignore
-        this.groupRepo.importBulk(data);
-    }
 
     /* Update group photo handler */
     private updateGroupPhotoHandler = (data: UpdateGroupPhoto.AsObject) => {
-        if (this.isUpdating) {
-            return;
-        }
         if (!data.photo) {
             this.groupRepo.get(data.groupid || '').then((res) => {
                 if (res && res.photo) {
@@ -1389,11 +1276,6 @@ class Chat extends React.Component<IProps, IState> {
                 }
             });
         }
-        this.groupRepo.importBulk([{
-            delete_photo: data.photo ? undefined : true,
-            id: data.groupid,
-            photo: data.photo,
-        }]);
     }
 
     /* Electron preferences click handler */
@@ -2202,12 +2084,12 @@ class Chat extends React.Component<IProps, IState> {
             this.dialogMap[id] = dialogs.length - 1;
         }
         this.dialogsSortThrottle(dialogs);
-        if (toUpdateDialog) {
-            this.dialogRepo.lazyUpsert([toUpdateDialog]);
-        }
+        // if (toUpdateDialog) {
+        //     this.dialogRepo.lazyUpsert([toUpdateDialog]);
+        // }
     }
 
-    private updateDialogsNotifySettings(peerId: string, settings: PeerNotifySettings.AsObject) {
+    private updateDialogsNotifySettings(peerId: string, settings: PeerNotifySettings.AsObject, force?: boolean) {
         if (!peerId || !this.dialogs) {
             return;
         }
@@ -2219,7 +2101,9 @@ class Chat extends React.Component<IProps, IState> {
             if (index > -1) {
                 this.dialogs[index].notifysettings = settings;
                 this.dialogsSortThrottle(this.dialogs);
-                this.dialogRepo.lazyUpsert([this.dialogs[index]]);
+                if (force) {
+                    this.dialogRepo.lazyUpsert([this.dialogs[index]]);
+                }
             }
         }
     }
@@ -2375,64 +2259,6 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private canSync(updateId?: number): Promise<any> {
-        const lastId = this.syncManager.getLastUpdateId();
-        return new Promise((resolve, reject) => {
-            const fn = (id: number) => {
-                if (id - lastId > C_MAX_UPDATE_DIFF) {
-                    reject({
-                        err: 'too_late',
-                    });
-                } else {
-                    if (id - lastId > 0) {
-                        resolve(lastId);
-                        this.syncThemAll(lastId + 1, 100);
-                    } else {
-                        reject({
-                            err: 'too_soon',
-                        });
-                    }
-                }
-            };
-            if (updateId) {
-                fn(updateId);
-            } else {
-                this.sdk.getUpdateState().then((res) => {
-                    // TODO: check
-                    fn(res.updateid || 0);
-                }).catch(reject);
-            }
-        });
-    }
-
-    private syncThemAll(lastId: number, limit: number) {
-        this.sdk.getUpdateDifference(lastId, limit).then((res) => {
-            this.syncManager.applyUpdate(res.toObject()).then((id) => {
-                this.syncThemAll(id, limit);
-            }).catch((err2) => {
-                this.updateManager.enable();
-                this.setAppStatus({
-                    isUpdating: false,
-                });
-                if (err2.code === -1) {
-                    this.canSync().then(() => {
-                        this.updateManager.disable();
-                        this.setAppStatus({
-                            isUpdating: true,
-                        });
-                    }).catch(() => {
-                        this.updateManager.enable();
-                        if (this.isUpdating) {
-                            this.setAppStatus({
-                                isUpdating: false,
-                            });
-                        }
-                    });
-                }
-            });
-        });
-    }
-
     private wasmInitHandler = () => {
         window.console.log('wasmInitHandler');
     }
@@ -2458,15 +2284,14 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private startSyncing(updateId?: number) {
-        const lastId = this.syncManager.getLastUpdateId();
+        const lastId = this.updateManager.getLastUpdateId();
         // Checks if it is the first time to sync
         if (lastId === 0) {
             this.snapshot();
             return;
         }
         // Normal syncing
-        this.canSync(updateId).then(() => {
-            this.updateManager.disable();
+        this.updateManager.canSync(updateId).then(() => {
             this.setAppStatus({
                 isUpdating: true,
             });
@@ -2509,7 +2334,7 @@ class Chat extends React.Component<IProps, IState> {
                     return o;
                 }));
                 this.dialogsSort(res.dialogs);
-                this.syncManager.setLastUpdateId(res.updateid || 0);
+                this.updateManager.setLastUpdateId(res.updateid || 0);
                 this.updateManager.enable();
                 this.setAppStatus({
                     isUpdating: false,
@@ -3137,20 +2962,9 @@ class Chat extends React.Component<IProps, IState> {
             this.dialogs.splice(index, 1);
             delete dialogMap[id];
             this.dialogsSort(this.dialogs);
-            this.dialogRepo.remove(id).then(() => {
-                if (this.selectedDialogId === id) {
-                    this.props.history.push('/chat/null');
-                }
-                this.updateManager.enable();
-                this.setAppStatus({
-                    isUpdating: false,
-                });
-            }).catch(() => {
-                this.updateManager.enable();
-                this.setAppStatus({
-                    isUpdating: false,
-                });
-            });
+            if (this.selectedDialogId === id) {
+                this.props.history.push('/chat/null');
+            }
         }
     }
 
@@ -3463,7 +3277,7 @@ class Chat extends React.Component<IProps, IState> {
                 break;
             case 'pin':
                 this.sdk.dialogTogglePin(peer, true).then(() => {
-                    this.pinDialog(peer.getId() || '', true);
+                    this.pinDialog(peer.getId() || '', true, true);
                 }).catch((err) => {
                     if (err.code === C_ERR.ErrCodeInternal && err.items === 'max pinned dialogs reached') {
                         if (this.props.enqueueSnackbar) {
@@ -3474,7 +3288,7 @@ class Chat extends React.Component<IProps, IState> {
                 break;
             case 'unpin':
                 this.sdk.dialogTogglePin(peer, false).then(() => {
-                    this.pinDialog(peer.getId() || '', false);
+                    this.pinDialog(peer.getId() || '', false, true);
                 });
                 break;
             case 'mute':
@@ -4473,17 +4287,11 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Update dialog pinned handler */
     private updateDialogPinnedHandler = (data: UpdateDialogPinned.AsObject) => {
-        if (this.isUpdating) {
-            return;
-        }
         this.pinDialog(data.peer.id || '', data.pinned);
     }
 
     /* Update dialog draft message handler */
     private updateDraftMessageHandler = (data: UpdateDraftMessage.AsObject) => {
-        if (this.isUpdating) {
-            return;
-        }
         this.updateDialogsCounter(data.message.peerid || '', {draft: data.message});
         if (this.chatInputRef && this.selectedDialogId === (data.message.peerid || '')) {
             this.chatInputRef.checkDraft();
@@ -4492,68 +4300,29 @@ class Chat extends React.Component<IProps, IState> {
 
     /* Update dialog draft message cleared handler */
     private updateDraftMessageClearedHandler = (data: UpdateDraftMessageCleared.AsObject) => {
-        if (this.isUpdating) {
-            return;
-        }
         this.updateDialogsCounter(data.peer.id || '', {draft: {}});
         if (this.chatInputRef && this.selectedDialogId === (data.peer.id || '')) {
             this.chatInputRef.checkDraft();
         }
     }
 
-    /* Update group participant added */
-    private updateGroupParticipantAddHandler = (data: UpdateGroupParticipantAdd.AsObject) => {
-        if (this.isUpdating) {
-            return;
-        }
-        this.groupRepo.importBulk([{
-            hasUpdate: true,
-            id: data.groupid,
-        }]);
-    }
-
-    /* Update group participant deleted */
-    private updateGroupParticipantDeletedHandler = (data: UpdateGroupParticipantAdd.AsObject) => {
-        if (this.isUpdating) {
-            return;
-        }
-        this.groupRepo.importBulk([{
-            hasUpdate: true,
-            id: data.groupid,
-        }]);
-    }
-
     /* Update label set */
     private updateLabelSetHandler = (data: UpdateLabelSet.AsObject) => {
-        this.labelRepo.importBulk(data.labelsList.map(o => {
-            delete o.count;
-            return o;
-        })).then(() => {
-            if (this.messageRef) {
-                this.messageRef.updateList();
-            }
-        });
+        // TODO:Check resolve
+        if (this.messageRef) {
+            this.messageRef.updateList();
+        }
     }
 
     /* Update label deleted */
     private updateLabelDeletedHandler = (data: UpdateLabelDeleted.AsObject) => {
-        this.labelRepo.removeMany(data.labelidsList).then(() => {
-            if (this.messageRef) {
-                this.messageRef.updateList();
-            }
-        });
+        if (this.messageRef) {
+            this.messageRef.updateList();
+        }
     }
 
     /* Update label items added */
     private updateLabelItemsAddedHandler = (data: UpdateLabelItemsAdded.AsObject) => {
-        const messageList: IMessage[] = [];
-        data.messageidsList.forEach((msgId) => {
-            messageList.push({
-                added_labels: data.labelidsList,
-                id: msgId,
-            });
-        });
-        this.messageRepo.lazyUpsert(messageList);
         if (data.peer.id === this.selectedDialogId) {
             data.messageidsList.forEach((id) => {
                 const index = findLastIndex(this.messages, {id});
@@ -4568,27 +4337,10 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageRef.updateList();
             }
         }
-        const labelList: ILabel[] = [];
-        data.labelidsList.forEach((id) => {
-            labelList.push({
-                id,
-                increase_counter: data.messageidsList.length,
-            });
-            this.labelRepo.insertInRange(id, data.peer.id || '', data.peer.type || 0, data.messageidsList);
-        });
-        this.labelRepo.upsert(labelList);
     }
 
     /* Update label items removed */
     private updateLabelItemsRemovedHandler = (data: UpdateLabelItemsRemoved.AsObject) => {
-        const messageList: IMessage[] = [];
-        data.messageidsList.forEach((msgId) => {
-            messageList.push({
-                id: msgId,
-                removed_labels: data.labelidsList,
-            });
-        });
-        this.messageRepo.lazyUpsert(messageList);
         if (data.peer.id === this.selectedDialogId) {
             data.messageidsList.forEach((id) => {
                 const index = findLastIndex(this.messages, {id});
@@ -4603,26 +4355,15 @@ class Chat extends React.Component<IProps, IState> {
                 this.messageRef.updateList();
             }
         }
-        const labelList: ILabel[] = [];
-        data.labelidsList.forEach((id) => {
-            labelList.push({
-                id,
-                increase_counter: -data.messageidsList.length,
-            });
-            this.labelRepo.removeFromRange(id, data.messageidsList);
+    }
+
+    private updateManagerStatusHandler = ({isUpdating}: {isUpdating: boolean}) => {
+        this.setAppStatus({
+            isUpdating,
         });
-        this.labelRepo.upsert(labelList);
     }
 
-    /* Update user blocked handler */
-    private updateUserBlockedHandler = (data: UpdateUserBlocked.AsObject) => {
-        this.userRepo.importBulk(false, [{
-            blocked: data.blocked,
-            id: data.userid,
-        }]);
-    }
-
-    private pinDialog(peerId: string, pinned?: boolean) {
+    private pinDialog(peerId: string, pinned: boolean | undefined, force?: boolean) {
         const dialogs = this.dialogs;
         const index = findIndex(dialogs, {peerid: peerId});
         if (index > -1) {
@@ -4640,7 +4381,9 @@ class Chat extends React.Component<IProps, IState> {
                 }
             }
             if (update) {
-                this.dialogRepo.lazyUpsert([dialogs[index]]);
+                if (force) {
+                    this.dialogRepo.lazyUpsert([dialogs[index]]);
+                }
                 this.dialogsSort(dialogs);
             }
         }
@@ -4786,7 +4529,7 @@ class Chat extends React.Component<IProps, IState> {
         settings.setFlags(0);
         settings.setSound('');
         this.sdk.setNotifySettings(peer, settings).then(() => {
-            this.updateDialogsNotifySettings(peer.getId() || '', settings.toObject());
+            this.updateDialogsNotifySettings(peer.getId() || '', settings.toObject(), true);
         });
     }
 

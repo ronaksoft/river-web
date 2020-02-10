@@ -12,9 +12,9 @@ import {Group, GroupParticipant, GroupPhoto} from '../../services/sdk/messages/c
 interface IGroup extends Group.AsObject {
     avatar?: string;
     participantList?: GroupParticipant.AsObject[];
-    delete_photo?: boolean;
     photogalleryList?: GroupPhoto.AsObject[];
     hasUpdate?: boolean;
+    remove_photo?: boolean;
 }
 
 // @ts-ignore

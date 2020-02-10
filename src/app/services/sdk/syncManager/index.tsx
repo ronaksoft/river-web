@@ -18,7 +18,6 @@ import {
     UpdateGroupParticipantDeleted, UpdateLabelDeleted, UpdateLabelItemsAdded, UpdateLabelItemsRemoved,
     UpdateLabelSet,
     UpdateMessageEdited,
-    UpdateMessageID,
     UpdateMessagesDeleted,
     UpdateNewMessage,
     UpdateNotifySettings,
@@ -34,7 +33,7 @@ import {IDialog} from '../../../repository/dialog/interface';
 import DialogRepo from '../../../repository/dialog';
 import MessageRepo from '../../../repository/message';
 import UserRepo from '../../../repository/user';
-import UpdateManager from '../server/updateManager';
+import UpdateManager from '../updateManager';
 import GroupRepo from '../../../repository/group';
 import {IGroup} from '../../../repository/group/interface';
 import {Group} from '../messages/chat.core.types_pb';
@@ -56,7 +55,6 @@ export const C_SYNC_UPDATE = {
     Dialog: 0x2,
     Group: 0x4,
     Message: 0x1,
-    MessageId: 0x5,
     User: 0x3,
 };
 
@@ -172,9 +170,6 @@ export default class SyncManager {
                         topmessageid: updateNewMessage.message.id,
                     });
                     users = this.updateUser(users, updateNewMessage.sender);
-                    break;
-                case C_MSG.UpdateMessageID:
-                    this.updateMessageId(UpdateMessageID.deserializeBinary(data).toObject());
                     break;
                 case C_MSG.UpdateReadHistoryInbox:
                     const updateReadHistoryInbox = UpdateReadHistoryInbox.deserializeBinary(data).toObject();
@@ -570,23 +565,6 @@ export default class SyncManager {
                 this.broadcastEvent('Group_Sync_Updated', {ids: keys});
             });
         }
-    }
-
-    private updateMessageId(messageId: UpdateMessageID.AsObject) {
-        this.callHandlers(C_SYNC_UPDATE.MessageId, messageId);
-    }
-
-    private callHandlers(update: number, data: any) {
-        if (!this.fnQueue[update]) {
-            return;
-        }
-        const keys = Object.keys(this.fnQueue[update]);
-        keys.forEach((key) => {
-            const fn = this.fnQueue[update][key];
-            if (fn) {
-                fn(data);
-            }
-        });
     }
 
     private broadcastEvent(name: string, data: any) {

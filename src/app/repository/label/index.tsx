@@ -207,10 +207,10 @@ export default class LabelRepo {
         });
     }
 
-    public insertInRange(labelId: number, peerid: string, peertype: number, msgIds: number[]) {
+    public insertInRange(labelId: number, peerid: string, peertype: number, msgIds: number[]): Promise<any> {
         const label = this.dbService.getLabel(labelId);
         if (!label) {
-            return;
+            return Promise.resolve();
         }
         const labelItems: ILabelItem[] = [];
         msgIds.forEach((id) => {
@@ -226,13 +226,13 @@ export default class LabelRepo {
         if (labelItems.length > 0) {
             return this.db.labelItems.bulkPut(labelItems);
         }
-        return Promise.reject();
+        return Promise.resolve();
     }
 
-    public removeFromRange(labelId: number, msgIds: number[]) {
+    public removeFromRange(labelId: number, msgIds: number[]): Promise<any> {
         const label = this.dbService.getLabel(labelId);
         if (!label) {
-            return;
+            return Promise.resolve();
         }
         const labelItems: any[] = [];
         msgIds.forEach((id) => {
@@ -246,7 +246,7 @@ export default class LabelRepo {
         if (labelItems.length > 0) {
             return this.db.labelItems.where('[lid+mid]').anyOf(labelItems).delete();
         }
-        return Promise.reject();
+        return Promise.resolve();
     }
 
     private insertManyLabelItem(labelId: number, messageList: IMessage[]) {

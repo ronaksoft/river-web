@@ -8,9 +8,13 @@
 */
 
 import {C_MSG} from '../const';
-import {Group, UpdateContainer, UpdateEnvelope, User} from '../messages/chat.core.types_pb';
 import {
-    UpdateDialogPinned,
+    UpdateContainer,
+    UpdateEnvelope,
+    UserStatus
+} from '../messages/chat.core.types_pb';
+import {
+    UpdateDialogPinned, UpdateDifference,
     UpdateDraftMessage, UpdateDraftMessageCleared, UpdateGroupParticipantAdd, UpdateGroupParticipantDeleted,
     UpdateGroupPhoto, UpdateLabelDeleted, UpdateLabelItemsAdded, UpdateLabelItemsRemoved, UpdateLabelSet,
     UpdateMessageEdited,
@@ -25,7 +29,7 @@ import {
     UpdateUserPhoto,
     UpdateUserTyping,
 } from '../messages/chat.api.updates_pb';
-import {throttle, uniq} from 'lodash';
+import {uniq, cloneDeep} from 'lodash';
 import MessageRepo from '../../../repository/message';
 import {base64ToU8a} from '../fileManager/http/utils';
 import {IDialog} from "../../../repository/dialog/interface";
@@ -36,30 +40,41 @@ import {getMessageTitle} from "../../../components/Dialog/utils";
 import {kMerge} from "../../utilities/kDash";
 import SDK from "../index";
 import {ILabel} from "../../../repository/label/interface";
-import {IRemoveDialog} from "../syncManager";
 import {IGroup} from "../../../repository/group/interface";
+import DialogRepo from "../../../repository/dialog";
+import UserRepo from "../../../repository/user";
+import GroupRepo from "../../../repository/group";
+import LabelRepo from "../../../repository/label";
+
+const C_MAX_UPDATE_DIFF = 2000;
+const C_DIFF_AMOUNT = 100;
 
 interface ILabelRange {
     labelId: number;
     peerid: string;
     peertype: number;
-    msgIds: number;
+    msgIds: number[];
     mode: 'add' | 'remove';
 }
 
 interface IClearDialog {
     maxId: number;
     peerId: string;
+    remove: boolean;
 }
 
-interface IRepoRef {
+interface ITransactionPayload {
     dialogs: { [key: string]: IDialog };
     messages: { [key: number]: IMessage };
     users: { [key: string]: IUser };
     groups: { [key: string]: IGroup };
     labels: { [key: number]: ILabel };
     clearDialogs: IClearDialog[];
-    labelRange: ILabelRange[];
+    labelRanges: ILabelRange[];
+    toCheckDialogIds: string[];
+    updateId: number;
+    flushDb: boolean;
+    live: boolean;
 }
 
 export default class UpdateManager {
@@ -75,9 +90,10 @@ export default class UpdateManager {
 
     // Flags and counters
     private isLive: boolean = true;
-    private readonly flushUpdateIdThrottle: any;
     private lastUpdateId: number = 0;
+    private internalUpdateId: number = 0;
     private userId: string = '';
+    private isDiffUpdating: boolean = false;
 
     // Listeners
     private listenerList: { [key: number]: { [key: string]: any } } = {};
@@ -93,10 +109,35 @@ export default class UpdateManager {
     private outOfSync: boolean = false;
     private outOfSyncTimeout: any = null;
 
+    // Transaction vars
+    private transactionList: ITransactionPayload[] = [];
+
+    // Repositories
+    private dialogRepo: DialogRepo | undefined;
+    private messageRepo: MessageRepo | undefined;
+    private userRepo: UserRepo | undefined;
+    private groupRepo: GroupRepo | undefined;
+    private labelRepo: LabelRepo | undefined;
+
+    // SDK
+    private sdk: SDK | undefined;
+
     public constructor() {
         window.console.debug('Update manager started');
         this.lastUpdateId = this.loadLastUpdateId();
-        this.flushUpdateIdThrottle = throttle(this.flushLastUpdateId, 128);
+        this.internalUpdateId = this.lastUpdateId;
+
+        setTimeout(() => {
+            // Initialize repositories
+            this.userRepo = UserRepo.getInstance();
+            this.groupRepo = GroupRepo.getInstance();
+            this.dialogRepo = DialogRepo.getInstance();
+            this.messageRepo = MessageRepo.getInstance();
+            this.labelRepo = LabelRepo.getInstance();
+
+            // Initialize SDK
+            this.sdk = SDK.getInstance();
+        }, 100);
     }
 
     /* Loads last update id form localStorage */
@@ -141,11 +182,11 @@ export default class UpdateManager {
         }
         const minId = data.minupdateid || 0;
         const maxId = data.maxupdateid || 0;
-        window.console.debug('on update, current:', this.lastUpdateId, 'min:', minId, 'max:', maxId);
-        if (!(minId === 0 && maxId === 0) && this.lastUpdateId > minId) {
+        window.console.debug('on update, current:', this.internalUpdateId, 'min:', minId, 'max:', maxId);
+        if (!(minId === 0 && maxId === 0) && this.internalUpdateId > minId) {
             return;
         }
-        if ((this.outOfSync || this.lastUpdateId + 1 !== minId) && !(minId === 0 && maxId === 0)) {
+        if ((this.outOfSync || this.internalUpdateId + 1 !== minId) && !(minId === 0 && maxId === 0)) {
             this.outOfSyncCheck(data);
             return;
         }
@@ -188,6 +229,98 @@ export default class UpdateManager {
         this.messageIdMap[messageId] = true;
     }
 
+    public canSync(updateId?: number): Promise<any> {
+        const lastId = this.getLastUpdateId();
+        return new Promise((resolve, reject) => {
+            const fn = (id: number) => {
+                if (id - lastId > C_MAX_UPDATE_DIFF) {
+                    reject({
+                        err: 'too_late',
+                    });
+                } else {
+                    if (id - lastId > 0) {
+                        resolve(lastId);
+                        this.startSyncing(lastId + 1, C_DIFF_AMOUNT);
+                    } else {
+                        reject({
+                            err: 'too_soon',
+                        });
+                    }
+                }
+            };
+            if (updateId) {
+                fn(updateId);
+            } else if (this.sdk) {
+                this.sdk.getUpdateState().then((res) => {
+                    // TODO: check
+                    fn(res.updateid || 0);
+                }).catch(reject);
+            }
+        });
+    }
+
+    private startSyncing(lastId: number, limit: number) {
+        if (!this.sdk) {
+            return;
+        }
+        this.sdk.getUpdateDifference(lastId, limit).then((res) => {
+            this.applyDiffUpdate(res.toObject()).then((id) => {
+                this.startSyncing(id, limit);
+            }).catch((err2) => {
+                this.enable();
+                this.isDiffUpdating = false;
+                this.callHandlers(C_MSG.UpdateManagerStatus, {
+                    isUpdating: false,
+                });
+                if (err2.code === -1) {
+                    this.canSync().then(() => {
+                        this.disable();
+                        this.isDiffUpdating = true;
+                        this.callHandlers(C_MSG.UpdateManagerStatus, {
+                            isUpdating: true,
+                        });
+                    }).catch(() => {
+                        this.enable();
+                        if (this.isDiffUpdating) {
+                            this.isDiffUpdating = false;
+                            this.callHandlers(C_MSG.UpdateManagerStatus, {
+                                isUpdating: false,
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    }
+
+    private applyDiffUpdate(data: UpdateDifference.AsObject): Promise<number> {
+        return new Promise((resolve, reject) => {
+            const more = data.more || false;
+            const lastUpdateId = more ? (data.maxupdateid || 0) : (data.currentupdateid || data.maxupdateid || 0);
+            this.processContainer({
+                groupsList: data.groupsList,
+                maxupdateid: lastUpdateId,
+                minupdateid: data.minupdateid,
+                updatesList: data.updatesList,
+                usersList: data.usersList,
+            }, false, () => {
+                if (more) {
+                    resolve(lastUpdateId + 1);
+                }
+            });
+            // this.updateMany(data.updatesList, data.groupsList, data.usersList, !more, () => {
+            //     if (more) {
+            //         resolve(lastUpdateId + 1);
+            //     }
+            // });
+            if (!more) {
+                reject({
+                    code: -1,
+                });
+            }
+        });
+    }
+
     private applyUpdates(data: UpdateContainer.AsObject) {
         const updates = data.updatesList.sort((a, b) => {
             if ((a.updateid || 0) < (b.updateid || 0)) {
@@ -215,27 +348,19 @@ export default class UpdateManager {
             try {
                 this.responseUpdateMessageID(update);
             } catch (e) {
-                // this.callHandlers(C_MSG.OutOfSync, {});
+                //
             }
         });
-        updates.forEach((update) => {
-            try {
-                this.response(update);
-            } catch (e) {
-                window.console.error(e);
-                this.callOutOfSync();
-                this.isLive = false;
-            }
-        });
-        if (this.isLive && data.maxupdateid) {
-            this.setLastUpdateId(data.maxupdateid);
-        }
-        if (data.usersList && data.usersList.length > 0) {
-            this.callHandlers(C_MSG.UpdateUsers, data.usersList);
-        }
-        if (data.groupsList && data.groupsList.length > 0) {
-            this.callHandlers(C_MSG.UpdateGroups, data.groupsList);
-        }
+        this.processContainer(data, true);
+        // updates.forEach((update) => {
+        //     try {
+        //         this.response(update);
+        //     } catch (e) {
+        //         window.console.error(e);
+        //         this.callOutOfSync();
+        //         this.isLive = false;
+        //     }
+        // });
     }
 
     /* Check out of sync message */
@@ -274,25 +399,58 @@ export default class UpdateManager {
         this.updateList = [];
         this.outOfSync = false;
         this.outOfSyncTimeout = null;
+        this.transactionList = [];
         this.callHandlers(C_MSG.OutOfSync, {});
     }
 
     private responseUpdateMessageID(update: UpdateEnvelope.AsObject) {
         // @ts-ignore
         const data: Uint8Array = update.update;
-        switch (update.constructor) {
-            case C_MSG.UpdateMessageID:
-                const updateMessageId = UpdateMessageID.deserializeBinary(data).toObject();
-                this.messageIdMap[updateMessageId.messageid || 0] = true;
-                this.callHandlers(C_MSG.UpdateMessageID, updateMessageId);
-                break;
+        if (update.constructor === C_MSG.UpdateMessageID) {
+            const updateMessageId = UpdateMessageID.deserializeBinary(data).toObject();
+            this.messageIdMap[updateMessageId.messageid || 0] = true;
+            this.callHandlers(C_MSG.UpdateMessageID, updateMessageId);
         }
     }
 
-    private response(repoRef: IRepoRef, update: UpdateEnvelope.AsObject) {
+    private processContainer(data: UpdateContainer.AsObject, live: boolean, doneFn?: any) {
+        const transaction: ITransactionPayload = {
+            clearDialogs: [],
+            dialogs: {},
+            flushDb: false,
+            groups: {},
+            labelRanges: [],
+            labels: {},
+            live,
+            messages: {},
+            toCheckDialogIds: [],
+            updateId: data.maxupdateid || 0,
+            users: {},
+        };
+        data.usersList.forEach((user) => {
+            this.mergeUser(transaction.users, user);
+        });
+        data.groupsList.forEach((group) => {
+            this.mergeGroup(transaction.groups, group);
+        });
+        data.updatesList.forEach((update) => {
+            this.process(transaction, update);
+        });
+        if (data.maxupdateid) {
+            this.internalUpdateId = data.maxupdateid;
+        }
+        if (doneFn) {
+            this.processTransaction(transaction, doneFn);
+        } else {
+            this.queueTransaction(transaction);
+        }
+    }
+
+    private process(transaction: ITransactionPayload, update: UpdateEnvelope.AsObject) {
         // @ts-ignore
         const data: Uint8Array = update.update;
         switch (update.constructor) {
+            /** System **/
             case C_MSG.UpdateUserTyping:
                 this.callHandlers(C_MSG.UpdateUserTyping, UpdateUserTyping.deserializeBinary(data).toObject());
                 break;
@@ -302,26 +460,28 @@ export default class UpdateManager {
             case C_MSG.UpdateAuthorizationReset:
                 this.callHandlers(C_MSG.UpdateAuthorizationReset, {});
                 break;
+            /** Messages **/
             case C_MSG.UpdateNewMessage:
                 const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
                 const message = MessageRepo.parseMessage(updateNewMessage.message, this.userId);
                 updateNewMessage.message = message;
                 this.callUpdateHandler(update.constructor, updateNewMessage);
-                // Update message
-                this.mergeMessage(repoRef.messages, message);
+                // Add message
+                this.mergeMessage(transaction.messages, message);
                 // Check [deleted dialog]/[clear history]
                 if (message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
-                    this.removeDialog(repoRef.dialogs, message.peerid || '');
+                    this.removeDialog(transaction.dialogs, message.peerid || '');
                     if (message.actiondata && message.actiondata.pb_delete) {
-                        repoRef.clearDialogs.push({
+                        transaction.clearDialogs.push({
                             maxId: message.actiondata.maxid || 0,
                             peerId: message.peerid || '',
+                            remove: message.actiondata.pb_delete || false,
                         });
                     }
                 }
                 // Update dialog
                 const messageTitle = getMessageTitle(message);
-                this.mergeDialog(repoRef.dialogs, {
+                this.mergeDialog(transaction.dialogs, {
                     accesshash: updateNewMessage.accesshash,
                     action_code: message.messageaction,
                     action_data: message.actiondata,
@@ -336,376 +496,245 @@ export default class UpdateManager {
                     sender_id: message.senderid,
                     topmessageid: message.id,
                 });
-                // TODO: Check user status
+                // Update user status
+                this.mergeUser(transaction.users, {
+                    id: updateNewMessage.sender.id,
+                    status: UserStatus.USERSTATUSONLINE,
+                    status_last_modified: message.createdon,
+                });
                 break;
             case C_MSG.UpdateMessageEdited:
                 const updateMessageEdited = UpdateMessageEdited.deserializeBinary(data).toObject();
                 updateMessageEdited.message = MessageRepo.parseMessage(updateMessageEdited.message, this.userId);
                 this.callUpdateHandler(update.constructor, updateMessageEdited);
                 // Update message
-                this.mergeMessage(repoRef.messages, updateMessageEdited.message);
+                this.mergeMessage(transaction.messages, updateMessageEdited.message);
+                // Update to check list
+                transaction.toCheckDialogIds.push(updateMessageEdited.message.peerid || '');
                 break;
             case C_MSG.UpdateMessagesDeleted:
                 const updateMessagesDeleted = UpdateMessagesDeleted.deserializeBinary(data).toObject();
                 this.callUpdateHandler(update.constructor, updateMessagesDeleted);
                 // Delete message(s)
                 updateMessagesDeleted.messageidsList.forEach((id) => {
-                    this.removeMessage(repoRef.messages, id);
+                    this.removeMessage(transaction.messages, id);
                 });
+                // Update to check list
+                if (updateMessagesDeleted.peer) {
+                    transaction.toCheckDialogIds.push(updateMessagesDeleted.peer.id || '');
+                }
                 break;
             case C_MSG.UpdateReadMessagesContents:
                 const updateReadMessagesContents = UpdateReadMessagesContents.deserializeBinary(data).toObject();
                 this.callUpdateHandler(update.constructor, updateReadMessagesContents);
                 // Set messages content read
                 updateReadMessagesContents.messageidsList.forEach((id) => {
-                    this.mergeMessage(repoRef.messages, {
+                    this.mergeMessage(transaction.messages, {
                         contentread: true,
                         id,
                     });
                 });
                 break;
-
+            /** Dialogs **/
             case C_MSG.UpdateReadHistoryInbox:
                 const updateReadHistoryInbox = UpdateReadHistoryInbox.deserializeBinary(data).toObject();
                 this.callUpdateHandler(update.constructor, updateReadHistoryInbox);
-
+                // Update dialog readinboxmaxid
+                this.mergeDialog(transaction.dialogs, {
+                    peerid: updateReadHistoryInbox.peer.id,
+                    readinboxmaxid: updateReadHistoryInbox.maxid,
+                });
                 break;
             case C_MSG.UpdateReadHistoryOutbox:
                 const updateReadHistoryOutbox = UpdateReadHistoryOutbox.deserializeBinary(data).toObject();
                 this.callUpdateHandler(update.constructor, updateReadHistoryOutbox);
-
-                break;
-
-            case C_MSG.UpdateUsername:
-                const updateUsername = UpdateUsername.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateUsername);
-
+                // Update dialog readoutboxmaxid
+                this.mergeDialog(transaction.dialogs, {
+                    peerid: updateReadHistoryOutbox.peer.id,
+                    readoutboxmaxid: updateReadHistoryOutbox.maxid
+                });
+                // Update user status
+                if (this.isLive) {
+                    this.mergeUser(transaction.users, {
+                        id: updateReadHistoryOutbox.peer.id,
+                        status: UserStatus.USERSTATUSONLINE,
+                    });
+                }
                 break;
             case C_MSG.UpdateNotifySettings:
                 const updateNotifySettings = UpdateNotifySettings.deserializeBinary(data).toObject();
                 this.callUpdateHandler(update.constructor, updateNotifySettings);
-
-                break;
-            case C_MSG.UpdateUserPhoto:
-                const updateUserPhoto = UpdateUserPhoto.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateUserPhoto);
-
-                break;
-            case C_MSG.UpdateGroupPhoto:
-                const updateGroupPhoto = UpdateGroupPhoto.deserializeBinary(data).toObject()
-                this.callUpdateHandler(update.constructor, updateGroupPhoto);
-
+                // Update dialog notification
+                this.mergeDialog(transaction.dialogs, {
+                    accesshash: updateNotifySettings.notifypeer.accesshash,
+                    notifysettings: updateNotifySettings.settings,
+                    peerid: updateNotifySettings.notifypeer.id,
+                });
                 break;
             case C_MSG.UpdateDialogPinned:
                 const updateDialogPinned = UpdateDialogPinned.deserializeBinary(data).toObject();
                 this.callUpdateHandler(update.constructor, updateDialogPinned);
-
+                // Update pinned dialog
+                this.mergeDialog(transaction.dialogs, {
+                    peerid: updateDialogPinned.peer.id,
+                    pinned: updateDialogPinned.pinned,
+                });
                 break;
             case C_MSG.UpdateDraftMessage:
                 const updateDraftMessage = UpdateDraftMessage.deserializeBinary(data).toObject();
                 this.callUpdateHandler(update.constructor, updateDraftMessage);
-
+                // Update dialog's draft
+                this.mergeDialog(transaction.dialogs, {
+                    draft: updateDraftMessage.message,
+                    peerid: updateDraftMessage.message.peerid,
+                });
                 break;
             case C_MSG.UpdateDraftMessageCleared:
                 const updateDraftMessageCleared = UpdateDraftMessageCleared.deserializeBinary(data).toObject();
                 this.callUpdateHandler(update.constructor, updateDraftMessageCleared);
-
+                // Remove dialog's draft
+                this.mergeDialog(transaction.dialogs, {
+                    draft: {},
+                    peerid: updateDraftMessageCleared.peer.id,
+                });
                 break;
-            case C_MSG.UpdateGroupParticipantAdd:
-                const updateGroupParticipantAdd = UpdateGroupParticipantAdd.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateGroupParticipantAdd);
-
+            /** Users **/
+            case C_MSG.UpdateUsername:
+                const updateUsername = UpdateUsername.deserializeBinary(data).toObject();
+                this.callUpdateHandler(update.constructor, updateUsername);
+                // Update user
+                this.mergeUser(transaction.users, {
+                    bio: updateUsername.bio,
+                    firstname: updateUsername.firstname,
+                    id: updateUsername.userid,
+                    lastname: updateUsername.lastname,
+                    phone: updateUsername.phone,
+                    username: updateUsername.username,
+                });
+                if (this.sdk) {
+                    const connInfo = this.sdk.getConnInfo();
+                    connInfo.Phone = updateUsername.phone;
+                    this.sdk.setConnInfo(connInfo);
+                }
                 break;
-            case C_MSG.UpdateGroupParticipantDeleted:
-                const updateGroupParticipantDeleted = UpdateGroupParticipantDeleted.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateGroupParticipantDeleted);
-
-                break;
-            case C_MSG.UpdateLabelSet:
-                const updateLabelSet = UpdateLabelSet.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateLabelSet);
-
-                break;
-            case C_MSG.UpdateLabelDeleted:
-                const updateLabelDeleted = UpdateLabelDeleted.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateLabelDeleted);
-
-                break;
-            case C_MSG.UpdateLabelItemsAdded:
-                const updateLabelItemsAdded = UpdateLabelItemsAdded.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateLabelItemsAdded);
-
-                break;
-            case C_MSG.UpdateLabelItemsRemoved:
-                const updateLabelItemsRemoved = UpdateLabelItemsRemoved.deserializeBinary(data).toObject();
-                this.callUpdateHandler(update.constructor, updateLabelItemsRemoved);
-
+            case C_MSG.UpdateUserPhoto:
+                const updateUserPhoto = UpdateUserPhoto.deserializeBinary(data).toObject();
+                this.callUpdateHandler(update.constructor, updateUserPhoto);
+                // Update user's photo
+                this.mergeUser(transaction.users, {
+                    id: updateUserPhoto.userid,
+                    photo: updateUserPhoto.photo,
+                    remove_photo: updateUserPhoto.photo === undefined,
+                });
                 break;
             case C_MSG.UpdateUserBlocked:
                 const updateUserBlocked = UpdateUserBlocked.deserializeBinary(data).toObject();
                 this.callUpdateHandler(update.constructor, updateUserBlocked);
-
+                // Update user block status
+                this.mergeUser(transaction.users, {
+                    blocked: updateUserBlocked.blocked,
+                    id: updateUserBlocked.userid,
+                });
+                break;
+            /** Groups **/
+            case C_MSG.UpdateGroupPhoto:
+                const updateGroupPhoto = UpdateGroupPhoto.deserializeBinary(data).toObject();
+                this.callUpdateHandler(update.constructor, updateGroupPhoto);
+                // Update group's photo
+                this.mergeGroup(transaction.groups, {
+                    id: updateGroupPhoto.groupid,
+                    photo: updateGroupPhoto.photo,
+                    remove_photo: updateGroupPhoto.photo === undefined,
+                });
+                break;
+            case C_MSG.UpdateGroupParticipantAdd:
+                const updateGroupParticipantAdd = UpdateGroupParticipantAdd.deserializeBinary(data).toObject();
+                this.callUpdateHandler(update.constructor, updateGroupParticipantAdd);
+                // Set groups's need updated flag
+                this.mergeGroup(transaction.groups, {
+                    hasUpdate: true,
+                    id: updateGroupParticipantAdd.groupid,
+                });
+                break;
+            case C_MSG.UpdateGroupParticipantDeleted:
+                const updateGroupParticipantDeleted = UpdateGroupParticipantDeleted.deserializeBinary(data).toObject();
+                this.callUpdateHandler(update.constructor, updateGroupParticipantDeleted);
+                // Set groups's need updated flag
+                this.mergeGroup(transaction.groups, {
+                    hasUpdate: true,
+                    id: updateGroupParticipantDeleted.groupid,
+                });
+                break;
+            /** Labels **/
+            case C_MSG.UpdateLabelSet:
+                const updateLabelSet = UpdateLabelSet.deserializeBinary(data).toObject();
+                this.callUpdateHandler(update.constructor, updateLabelSet);
+                // Add label
+                updateLabelSet.labelsList.forEach((label) => {
+                    this.mergeLabel(transaction.labels, label);
+                });
+                break;
+            case C_MSG.UpdateLabelDeleted:
+                const updateLabelDeleted = UpdateLabelDeleted.deserializeBinary(data).toObject();
+                this.callUpdateHandler(update.constructor, updateLabelDeleted);
+                // Remove label
+                updateLabelDeleted.labelidsList.forEach((id) => {
+                    this.removeLabel(transaction.labels, id);
+                });
+                break;
+            case C_MSG.UpdateLabelItemsAdded:
+                const updateLabelItemsAdded = UpdateLabelItemsAdded.deserializeBinary(data).toObject();
+                this.callUpdateHandler(update.constructor, updateLabelItemsAdded);
+                // Update message label list
+                updateLabelItemsAdded.messageidsList.forEach((id) => {
+                    this.mergeMessage(transaction.messages, {
+                        added_labels: uniq(updateLabelItemsAdded.labelidsList),
+                        id,
+                    });
+                });
+                // Update label list
+                updateLabelItemsAdded.labelidsList.forEach((id) => {
+                    this.mergeLabel(transaction.labels, {
+                        id,
+                        increase_counter: updateLabelItemsAdded.messageidsList.length,
+                    });
+                    transaction.labelRanges.push({
+                        labelId: id,
+                        mode: 'add',
+                        msgIds: updateLabelItemsAdded.messageidsList,
+                        peerid: updateLabelItemsAdded.peer.id || '',
+                        peertype: updateLabelItemsAdded.peer.type || 0,
+                    });
+                });
+                break;
+            case C_MSG.UpdateLabelItemsRemoved:
+                const updateLabelItemsRemoved = UpdateLabelItemsRemoved.deserializeBinary(data).toObject();
+                this.callUpdateHandler(update.constructor, updateLabelItemsRemoved);
+                // Update message label list
+                updateLabelItemsRemoved.messageidsList.forEach((id) => {
+                    this.mergeMessage(transaction.messages, {
+                        id,
+                        removed_labels: uniq(updateLabelItemsRemoved.labelidsList),
+                    });
+                });
+                // Update label list
+                updateLabelItemsRemoved.labelidsList.forEach((id) => {
+                    this.mergeLabel(transaction.labels, {
+                        id,
+                        increase_counter: -updateLabelItemsRemoved.messageidsList.length,
+                    });
+                    transaction.labelRanges.push({
+                        labelId: id,
+                        mode: 'remove',
+                        msgIds: updateLabelItemsRemoved.messageidsList,
+                        peerid: updateLabelItemsRemoved.peer.id || '',
+                        peertype: updateLabelItemsRemoved.peer.type || 0,
+                    });
+                });
                 break;
             default:
                 break;
         }
-    }
-
-    private updateMany(envelopes: UpdateEnvelope.AsObject[], groups: Group.AsObject[], updateUsers: User.AsObject[], lastOne: boolean, doneCb: any) {
-        let dialogs: { [key: number]: IDialog } = {};
-        const toRemoveDialogs: IRemoveDialog[] = [];
-        const messages: { [key: number]: IMessage } = {};
-        const toRemoveMessages: number[] = [];
-        const toCheckDialogs: string[] = [];
-        let users: { [key: string]: IUser } = {};
-        envelopes.forEach((envelope) => {
-            // @ts-ignore
-            const data: Uint8Array = envelope.update;
-            switch (envelope.constructor) {
-                case C_MSG.UpdateNewMessage: //
-                    const updateNewMessage = UpdateNewMessage.deserializeBinary(data).toObject();
-                    users[updateNewMessage.sender.id || '0'] = updateNewMessage.sender;
-                    const message = MessageRepo.parseMessage(updateNewMessage.message, this.updateManager.getUserId());
-                    messages[updateNewMessage.message.id || 0] = message;
-                    // Message Clear History
-                    if (message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
-                        toRemoveDialogs.push({
-                            maxId: message.actiondata.maxid || 0,
-                            peerId: message.peerid || '',
-                            remove: message.actiondata.pb_delete || false,
-                        });
-                    }
-                    const messageTitle = getMessageTitle(updateNewMessage.message);
-                    dialogs = this.updateDialog(dialogs, {
-                        accesshash: updateNewMessage.accesshash,
-                        action_code: updateNewMessage.message.messageaction,
-                        action_data: messages[updateNewMessage.message.id || 0].actiondata,
-                        last_update: updateNewMessage.message.createdon,
-                        peerid: updateNewMessage.message.peerid,
-                        peertype: updateNewMessage.message.peertype,
-                        preview: messageTitle.text,
-                        preview_icon: messageTitle.icon,
-                        preview_me: (this.updateManager.getUserId() === updateNewMessage.message.senderid),
-                        preview_rtl: messages[updateNewMessage.message.id || 0].rtl,
-                        saved_messages: (this.updateManager.getUserId() === updateNewMessage.message.peerid),
-                        sender_id: updateNewMessage.message.senderid,
-                        topmessageid: updateNewMessage.message.id,
-                    });
-                    users = this.updateUser(users, updateNewMessage.sender);
-                    break;
-                case C_MSG.UpdateMessageID: //
-                    this.updateMessageId(UpdateMessageID.deserializeBinary(data).toObject());
-                    break;
-                case C_MSG.UpdateReadHistoryInbox: //
-                    const updateReadHistoryInbox = UpdateReadHistoryInbox.deserializeBinary(data).toObject();
-                    dialogs = this.updateDialog(dialogs, {
-                        peerid: updateReadHistoryInbox.peer.id,
-                        readinboxmaxid: updateReadHistoryInbox.maxid,
-                    });
-                    break;
-                case C_MSG.UpdateReadHistoryOutbox: //
-                    const updateReadHistoryOutbox = UpdateReadHistoryOutbox.deserializeBinary(data).toObject();
-                    dialogs = this.updateDialog(dialogs, {
-                        peerid: updateReadHistoryOutbox.peer.id,
-                        readoutboxmaxid: updateReadHistoryOutbox.maxid
-                    });
-                    break;
-                case C_MSG.UpdateMessageEdited: //
-                    const updateMessageEdited = UpdateMessageEdited.deserializeBinary(data).toObject();
-                    messages[updateMessageEdited.message.id || 0] = MessageRepo.parseMessage(updateMessageEdited.message, this.updateManager.getUserId());
-                    if (toCheckDialogs.indexOf(updateMessageEdited.message.peerid || '') === -1) {
-                        toCheckDialogs.push(updateMessageEdited.message.peerid || '');
-                    }
-                    break;
-                case C_MSG.UpdateReadMessagesContents: //
-                    const updateReadMessagesContents = UpdateReadMessagesContents.deserializeBinary(data).toObject();
-                    updateReadMessagesContents.messageidsList.forEach((id) => {
-                        if (messages.hasOwnProperty(id || 0)) {
-                            messages[id || 0].contentread = true;
-                        } else {
-                            messages[id || 0] = {
-                                contentread: true,
-                                id,
-                            };
-                        }
-                    });
-                    break;
-                case C_MSG.UpdateMessagesDeleted: //
-                    const updateMessagesDeleted = UpdateMessagesDeleted.deserializeBinary(data).toObject();
-                    updateMessagesDeleted.messageidsList.forEach((id) => {
-                        if (messages.hasOwnProperty(id)) {
-                            delete messages[id || 0];
-                        }
-                        toRemoveMessages.push(id);
-                    });
-                    if (updateMessagesDeleted.peer && toCheckDialogs.indexOf(updateMessagesDeleted.peer.id || '') === -1) {
-                        toCheckDialogs.push(updateMessagesDeleted.peer.id || '');
-                    }
-                    break;
-                case C_MSG.UpdateUsername: //
-                    const updateUsername = UpdateUsername.deserializeBinary(data).toObject();
-                    if (users.hasOwnProperty(updateUsername.userid || '0')) {
-                        users[updateUsername.userid || 0] = kMerge(users[updateUsername.userid || '0'], {
-                            bio: updateUsername.bio,
-                            firstname: updateUsername.firstname,
-                            id: updateUsername.userid,
-                            lastname: updateUsername.lastname,
-                            phone: updateUsername.phone,
-                            username: updateUsername.username,
-                        });
-                    } else {
-                        users[updateUsername.userid || 0] = {
-                            bio: updateUsername.bio,
-                            firstname: updateUsername.firstname,
-                            id: updateUsername.userid,
-                            lastname: updateUsername.lastname,
-                            phone: updateUsername.phone,
-                            username: updateUsername.username,
-                        };
-                    }
-                    const connInfo = SDK.getInstance().getConnInfo();
-                    connInfo.Phone = updateUsername.phone;
-                    SDK.getInstance().setConnInfo(connInfo);
-                    break;
-                case C_MSG.UpdateNotifySettings: //
-                    const updateNotifySettings = UpdateNotifySettings.deserializeBinary(data).toObject();
-                    dialogs = this.updateDialog(dialogs, {
-                        accesshash: updateNotifySettings.notifypeer.accesshash,
-                        notifysettings: updateNotifySettings.settings,
-                        peerid: updateNotifySettings.notifypeer.id,
-                    });
-                    break;
-                case C_MSG.UpdateUserPhoto: //
-                    const updateUserPhoto = UpdateUserPhoto.deserializeBinary(data).toObject();
-                    if (users.hasOwnProperty(updateUserPhoto.userid || '0')) {
-                        users[updateUserPhoto.userid || 0] = kMerge(users[updateUserPhoto.userid || '0'], {
-                            id: updateUserPhoto.userid,
-                            photo: updateUserPhoto.photo,
-                        });
-                    }
-                    break;
-                case C_MSG.UpdateDialogPinned: //
-                    const updateDialogPinned = UpdateDialogPinned.deserializeBinary(data).toObject();
-                    dialogs = this.updateDialog(dialogs, {
-                        peerid: updateDialogPinned.peer.id,
-                        pinned: updateDialogPinned.pinned,
-                    });
-                    break;
-                case C_MSG.UpdateDraftMessage: //
-                    const updateDraftMessage = UpdateDraftMessage.deserializeBinary(data).toObject();
-                    dialogs = this.updateDialog(dialogs, {
-                        draft: updateDraftMessage.message,
-                        peerid: updateDraftMessage.message.peerid,
-                    });
-                    break;
-                case C_MSG.UpdateDraftMessageCleared: //
-                    const updateDraftMessageCleared = UpdateDraftMessageCleared.deserializeBinary(data).toObject();
-                    dialogs = this.updateDialog(dialogs, {
-                        draft: {},
-                        peerid: updateDraftMessageCleared.peer.id,
-                    });
-                    break;
-                case C_MSG.UpdateGroupParticipantAdd: //
-                    const updateGroupParticipantAdd = UpdateGroupParticipantAdd.deserializeBinary(data).toObject();
-                    this.groupRepo.importBulk([{
-                        hasUpdate: true,
-                        id: updateGroupParticipantAdd.groupid,
-                    }]);
-                    break;
-                case C_MSG.UpdateGroupParticipantDeleted: //
-                    const updateGroupParticipantDeleted = UpdateGroupParticipantDeleted.deserializeBinary(data).toObject();
-                    this.groupRepo.importBulk([{
-                        hasUpdate: true,
-                        id: updateGroupParticipantDeleted.groupid,
-                    }]);
-                    break;
-                case C_MSG.UpdateLabelSet: //
-                    const updateLabelSet = UpdateLabelSet.deserializeBinary(data).toObject();
-                    this.labelRepo.importBulk(updateLabelSet.labelsList.map(o => {
-                        delete o.count;
-                        return o;
-                    }));
-                    break;
-                case C_MSG.UpdateLabelDeleted: //
-                    const updateLabelDeleted = UpdateLabelDeleted.deserializeBinary(data).toObject();
-                    this.labelRepo.removeMany(updateLabelDeleted.labelidsList);
-                    break;
-                case C_MSG.UpdateLabelItemsAdded:
-                    const updateLabelItemsAdded = UpdateLabelItemsAdded.deserializeBinary(data).toObject();
-                    updateLabelItemsAdded.messageidsList.forEach((id) => {
-                        if (messages.hasOwnProperty(id || 0)) {
-                            messages[id || 0].added_labels = uniq([...(messages[id || 0].labelidsList || []), ...updateLabelItemsAdded.labelidsList]);
-                        } else {
-                            messages[id || 0] = {
-                                added_labels: uniq([...(messages[id || 0].labelidsList || []), ...updateLabelItemsAdded.labelidsList]),
-                                id,
-                            };
-                        }
-                    });
-                    updateLabelItemsAdded.labelidsList.forEach((id) => {
-                        this.labelRepo.insertInRange(id, updateLabelItemsAdded.peer.id || '', updateLabelItemsAdded.peer.type || 0, updateLabelItemsAdded.messageidsList);
-                    });
-                    const addLabelList: ILabel[] = [];
-                    updateLabelItemsAdded.labelidsList.forEach((id) => {
-                        addLabelList.push({
-                            id,
-                            increase_counter: updateLabelItemsAdded.messageidsList.length,
-                        });
-                        this.labelRepo.insertInRange(id, updateLabelItemsAdded.peer.id || '', updateLabelItemsAdded.peer.type || 0, updateLabelItemsAdded.messageidsList);
-                    });
-                    this.labelRepo.upsert(addLabelList);
-                    break;
-                case C_MSG.UpdateLabelItemsRemoved: //
-                    const updateLabelItemsRemoved = UpdateLabelItemsRemoved.deserializeBinary(data).toObject();
-                    updateLabelItemsRemoved.messageidsList.forEach((id) => {
-                        if (messages.hasOwnProperty(id || 0)) {
-                            messages[id || 0].removed_labels = uniq([...(messages[id || 0].labelidsList || []), ...updateLabelItemsRemoved.labelidsList]);
-                        } else {
-                            messages[id || 0] = {
-                                id,
-                                removed_labels: uniq([...(messages[id || 0].labelidsList || []), ...updateLabelItemsRemoved.labelidsList]),
-                            };
-                        }
-                    });
-                    updateLabelItemsRemoved.labelidsList.forEach((id) => {
-                        this.labelRepo.removeFromRange(id, updateLabelItemsAdded.messageidsList);
-                    });
-                    const removeLabelList: ILabel[] = [];
-                    updateLabelItemsRemoved.labelidsList.forEach((id) => {
-                        removeLabelList.push({
-                            id,
-                            increase_counter: -updateLabelItemsRemoved.messageidsList.length,
-                        });
-                        this.labelRepo.removeFromRange(id, updateLabelItemsRemoved.messageidsList);
-                    });
-                    this.labelRepo.upsert(removeLabelList);
-                    break;
-                case C_MSG.UpdateUserBlocked:
-                    const updateUserBlocked = UpdateUserBlocked.deserializeBinary(data).toObject();
-                    if (users.hasOwnProperty(updateUserBlocked.userid || '0')) {
-                        users[updateUserBlocked.userid || 0] = kMerge(users[updateUserBlocked.userid || '0'], {
-                            blocked: updateUserBlocked.blocked,
-                            id: updateUserBlocked.userid,
-                        });
-                    } else {
-                        users[updateUserBlocked.userid || 0] = {
-                            blocked: updateUserBlocked.blocked,
-                            id: updateUserBlocked.userid,
-                        };
-                    }
-                    break;
-                default:
-                    break;
-            }
-        });
-        this.updateUserDB(users, updateUsers);
-        this.updateGroupDB(groups);
-        this.updateMessageDB(messages, toRemoveMessages).then(() => {
-            this.updateDialogDB(dialogs, toRemoveDialogs, toCheckDialogs, lastOne, doneCb);
-        }).catch((err) => {
-            window.console.warn(err);
-            doneCb();
-        });
     }
 
     private mergeDialog(dialogs: { [key: string]: IDialog }, dialog: IDialog) {
@@ -736,6 +765,12 @@ export default class UpdateManager {
     private mergeMessage(messages: { [key: number]: IMessage }, message: IMessage) {
         const m = messages[message.id || 0];
         if (m) {
+            if (m.added_labels) {
+                m.added_labels = uniq([...(m.added_labels || []), ...(message.added_labels || [])]);
+            }
+            if (m.removed_labels) {
+                m.removed_labels = uniq([...(m.removed_labels || []), ...(message.removed_labels || [])]);
+            }
             messages[m.id || 0] = kMerge(m, message);
         } else {
             messages[message.id || 0] = message;
@@ -755,6 +790,7 @@ export default class UpdateManager {
         }
     }
 
+    // @ts-ignore
     private removeUser(users: { [key: string]: IUser }, id: string) {
         delete users[id];
     }
@@ -768,6 +804,7 @@ export default class UpdateManager {
         }
     }
 
+    // @ts-ignore
     private removeGroup(groups: { [key: string]: IUser }, id: string) {
         delete groups[id];
     }
@@ -782,6 +819,187 @@ export default class UpdateManager {
         } else {
             labels[label.id || 0] = label;
         }
+    }
+
+    private removeLabel(labels: { [key: number]: ILabel }, id: number) {
+        delete labels[id];
+    }
+
+    private queueTransaction(transaction: ITransactionPayload) {
+        this.transactionList.push(transaction);
+        this.applyTransactions();
+    }
+
+    private applyTransactions() {
+        const transaction = this.transactionList.shift();
+        if (transaction) {
+            this.processTransaction(transaction);
+        }
+    }
+
+    private processTransaction(transaction: ITransactionPayload, doneFn?: any) {
+        const promises: any[] = [];
+        // User list
+        const userList: IUser[] = [];
+        Object.keys(transaction.users).forEach((key) => {
+            userList.push(transaction.users[key]);
+        });
+        if (userList.length > 0 && this.userRepo) {
+            promises.push(this.userRepo.importBulk(false, userList));
+        }
+        // Group list
+        const groupList: IGroup[] = [];
+        Object.keys(transaction.groups).forEach((key) => {
+            groupList.push(transaction.groups[key]);
+        });
+        if (groupList.length > 0 && this.groupRepo) {
+            promises.push(this.groupRepo.importBulk(groupList));
+        }
+        // Label list
+        const labelList: ILabel[] = [];
+        Object.keys(transaction.labels).forEach((key) => {
+            labelList.push(transaction.labels[key]);
+        });
+        if (labelList.length > 0 && this.labelRepo) {
+            promises.push(this.labelRepo.importBulk(labelList));
+        }
+        // Message list
+        const messageList: IMessage[] = [];
+        Object.keys(transaction.messages).forEach((key) => {
+            messageList.push(transaction.messages[key]);
+        });
+        if (messageList.length > 0 && this.messageRepo) {
+            promises.push(this.messageRepo.importBulk(messageList));
+        }
+        // Dialog list (conditional)
+        if (transaction.toCheckDialogIds.length === 0) {
+            promises.push(this.applyDialogs(transaction.dialogs));
+        }
+        if (promises.length > 0) {
+            Promise.all(promises).then(() => {
+                this.processTransactionStep2(transaction, doneFn);
+            });
+        } else {
+            this.processTransactionStep2(transaction, doneFn);
+        }
+    }
+
+    private processTransactionStep2(transaction: ITransactionPayload, doneFn?: any) {
+        const promises: any[] = [];
+        if (transaction.clearDialogs.length > 0) {
+            promises.push(this.applyClearDialogs(transaction.clearDialogs));
+        }
+        if (transaction.labelRanges.length > 0) {
+            promises.push(this.applyLabelRange(transaction.labelRanges));
+        }
+        if (promises.length > 0) {
+            Promise.all(promises).then(() => {
+                this.processTransactionStep3(transaction, doneFn);
+            });
+        } else {
+            this.processTransactionStep3(transaction, doneFn);
+        }
+    }
+
+    private processTransactionStep3(transaction: ITransactionPayload, doneFn?: any) {
+        if (transaction.toCheckDialogIds.length > 0) {
+            const lastMessagePromise: any[] = [];
+            transaction.toCheckDialogIds.forEach((peerId) => {
+                if (this.messageRepo) {
+                    lastMessagePromise.push(this.messageRepo.getLastMessage(peerId));
+                }
+            });
+            Promise.all(lastMessagePromise).then((arr) => {
+                arr.forEach((msg) => {
+                    if (msg) {
+                        const messageTitle = getMessageTitle(msg);
+                        this.mergeDialog(transaction.dialogs, {
+                            action_code: msg.messageaction,
+                            action_data: msg.actiondata,
+                            force: true,
+                            last_update: (msg.editedon || 0) > 0 ? msg.editedon : msg.createdon,
+                            peerid: msg.peerid,
+                            peertype: msg.peertype,
+                            preview: messageTitle.text,
+                            preview_icon: messageTitle.icon,
+                            preview_me: (this.userId === msg.senderid),
+                            preview_rtl: msg.rtl,
+                            saved_messages: (this.userId === msg.peerid),
+                            sender_id: msg.senderid,
+                            topmessageid: msg.id,
+                        });
+                    }
+                });
+                this.applyDialogs(transaction.dialogs).then(() => {
+                    this.processTransactionStep4(transaction, doneFn);
+                });
+            });
+        } else {
+            this.applyDialogs(transaction.dialogs).then(() => {
+                this.processTransactionStep4(transaction, doneFn);
+            });
+        }
+    }
+
+    private processTransactionStep4(transaction: ITransactionPayload, doneFn?: any) {
+        if (transaction.updateId) {
+            this.setLastUpdateId(transaction.updateId);
+            this.flushLastUpdateId();
+            if (doneFn) {
+                doneFn();
+            }
+        }
+        if (!doneFn) {
+            this.applyTransactions();
+        }
+    }
+
+    private applyClearDialogs(list: IClearDialog[]) {
+        const promises: any[] = [];
+        list.forEach((item) => {
+            if (item.remove && this.dialogRepo) {
+                promises.push(this.dialogRepo.remove(item.peerId));
+            }
+            if (item.maxId > 0 && this.messageRepo) {
+                promises.push(this.messageRepo.clearHistory(item.peerId, item.maxId));
+            }
+        });
+        return Promise.all(promises);
+    }
+
+    private applyDialogs(dialogs: { [key: string]: IDialog }) {
+        const dialogList: IDialog[] = [];
+        Object.keys(dialogs).forEach((key) => {
+            dialogList.push(dialogs[key]);
+        });
+        if (dialogList.length > 0 && this.dialogRepo) {
+            return this.dialogRepo.importBulk(dialogList);
+        } else {
+            return Promise.resolve();
+        }
+    }
+
+    private applyLabelRange(list: ILabelRange[]) {
+        const newList = cloneDeep(list);
+        const fn = (resolve: any, reject: any) => {
+            const item = newList.shift();
+            if (item && this.labelRepo) {
+                if (item.mode === 'add') {
+                    this.labelRepo.insertInRange(item.labelId, item.peerid, item.peertype, item.msgIds).then(() => {
+                        fn(resolve, resolve);
+                    }).catch(reject);
+                } else {
+                    this.labelRepo.removeFromRange(item.labelId, item.msgIds).then(() => {
+                        fn(resolve, resolve);
+                    }).catch(reject);
+                }
+            } else {
+                resolve();
+            }
+        };
+        return new Promise((resolve, reject) => {
+            fn(resolve, reject);
+        });
     }
 
     private callUpdateHandler(eventConstructor: number, data: any) {

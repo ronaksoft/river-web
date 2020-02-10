@@ -9,7 +9,7 @@
 
 import {C_ERR, C_ERR_ITEM, C_MSG, C_MSG_NAME} from '../const';
 import Presenter from '../presenters';
-import UpdateManager from './updateManager';
+import UpdateManager from './../updateManager';
 import {Error as RiverError, InputPassword, MessageContainer, MessageEnvelope} from '../messages/chat.core.types_pb';
 import {throttle, cloneDeep} from 'lodash';
 import Socket from './socket';

@@ -13,7 +13,8 @@
     ],
     "no-bitwise": false,
     "no-var-requires": false,
-    "prefer-for-of": false
+    "prefer-for-of": false,
+    "jsdoc-format": false
   },
   "linterOptions": {
     "exclude": [

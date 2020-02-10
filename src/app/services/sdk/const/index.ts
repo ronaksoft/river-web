@@ -11,6 +11,7 @@
 // UpdateGroups: -2,
 // UpdateNewMessageDrop: -3,
 // UpdateUsers: -4,
+// UpdateManagerStatus: -5,
 /* tslint:disable-next-line */
 export const C_MSG = {
     AccountAuthorization: 275571966,
@@ -270,6 +271,7 @@ export const C_MSG = {
     UpdateLabelItemsAdded: 2216022057,
     UpdateLabelItemsRemoved: 830226827,
     UpdateLabelSet: 2353687359,
+    UpdateManagerStatus: -5,
     UpdateMessageEdited: 1825079988,
     UpdateMessageID: 2139063022,
     UpdateMessagesDeleted: 670568714,
