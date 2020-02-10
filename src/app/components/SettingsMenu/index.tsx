@@ -247,7 +247,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private readonly hasScrollbar: boolean = false;
     private readonly isMobile: boolean = false;
     private contactHasMore: boolean = false;
-    private switchClasses: any = {};
+    private readonly switchClasses: any = {};
 
     constructor(props: IProps) {
         super(props);

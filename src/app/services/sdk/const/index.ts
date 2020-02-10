@@ -7,10 +7,10 @@
     Copyright Ronak Software Group 2018
 */
 
-// OutOfSync: 23742374,
-// UpdateGroups: 1825234234,
-// UpdateNewMessageDrop: 342692518374,
-// UpdateUsers: 1825893475,
+// OutOfSync: -1,
+// UpdateGroups: -2,
+// UpdateNewMessageDrop: -3,
+// UpdateUsers: -4,
 /* tslint:disable-next-line */
 export const C_MSG = {
     AccountAuthorization: 275571966,
@@ -211,7 +211,7 @@ export const C_MSG = {
     MusicsRemove: 3940045807,
     MusicsSetStatus: 4026186002,
     MusicsUnFollow: 327524575,
-    OutOfSync: 23742374,
+    OutOfSync: -1,
     PasswordAlgorithmVer6A: 341860043,
     Peer: 47470215,
     PeerNotifySettings: 3475030132,
@@ -265,7 +265,7 @@ export const C_MSG = {
     UpdateGroupParticipantAdmin: 1813022164,
     UpdateGroupParticipantDeleted: 2489941844,
     UpdateGroupPhoto: 367193154,
-    UpdateGroups: 1825234234,
+    UpdateGroups: -2,
     UpdateLabelDeleted: 3702192307,
     UpdateLabelItemsAdded: 2216022057,
     UpdateLabelItemsRemoved: 830226827,
@@ -274,7 +274,7 @@ export const C_MSG = {
     UpdateMessageID: 2139063022,
     UpdateMessagesDeleted: 670568714,
     UpdateNewMessage: 3426925183,
-    UpdateNewMessageDrop: 342692518374,
+    UpdateNewMessageDrop: -3,
     UpdateNotifySettings: 3187524885,
     UpdateReadHistoryInbox: 1529128378,
     UpdateReadHistoryOutbox: 510866108,
@@ -286,7 +286,7 @@ export const C_MSG = {
     UpdateUserStatus: 2696747995,
     UpdateUserTyping: 178254060,
     UpdateUsername: 4290110589,
-    UpdateUsers: 1825893475,
+    UpdateUsers: -4,
     User: 765557111,
     UserMessage: 1677556362,
     UserPhoto: 1881347437,

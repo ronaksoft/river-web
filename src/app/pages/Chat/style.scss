@@ -445,6 +445,15 @@ html[theme="dark-blue"][bg="14"] {
   }
 }
 
+html[theme="dark"][bg="15"],
+html[theme="dark-night"][bg="15"],
+html[theme="dark-blue"][bg="15"] {
+  .container .column-center .conversation,
+  .container .column-center .start-messaging {
+    background-image: url(../../../asset/image/bgl/pattern.png);
+  }
+}
+
 @media screen and (max-height: 900px) {
   .wrapper {
     height: 100vh;

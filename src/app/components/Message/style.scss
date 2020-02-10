@@ -444,11 +444,18 @@
       animation-name: slideFromRight;
       text-align: right;
       margin-right: 10px;
+      //background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%);
+      //background-attachment: fixed;
 
       &.edited {
         min-width: 106px;
       }
     }
+
+    //.arrow:after {
+    //  background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%);
+    //  background-attachment: fixed;
+    //}
 
     &.has-error {
       .arrow {
