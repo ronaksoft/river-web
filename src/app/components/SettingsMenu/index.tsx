@@ -35,6 +35,7 @@ import {
     VerifiedUserRounded,
     BlockRounded,
     DeleteRounded,
+    NotificationsRounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import UserAvatar from '../UserAvatar';
@@ -73,7 +74,7 @@ import SettingsBackgroundModal, {ICustomBackground} from '../SettingsBackgroundM
 import FileRepo from '../../repository/file';
 import BackgroundService from '../../services/backgroundService';
 import Radio from '@material-ui/core/Radio';
-import DownloadManager, {IDownloadSettings} from '../../services/downloadManager';
+import SettingsConfigManager, {IDownloadSettings, INotificationSettings} from '../../services/settingsConfigManager';
 import SettingsStorageUsageModal from '../SettingsStorageUsageModal';
 import {Loading} from '../Loading';
 import i18n from '../../services/i18n';
@@ -92,6 +93,7 @@ import {FixedSizeList, ListOnItemsRenderedProps} from "react-window";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 import IsMobile from "../../services/isMobile";
+import AvatarService from "../../services/avatarService";
 
 import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -103,7 +105,7 @@ const listStyle: React.CSSProperties = {
     overflowY: 'visible',
 };
 
-export const C_VERSION = '0.29.19';
+export const C_VERSION = '0.30.0';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 export const C_AVATAR_SIZE = 640;
 
@@ -167,7 +169,7 @@ interface IPrivacy {
 
 interface IProps {
     onClose?: (e: any) => void;
-    onAction?: (cmd: 'logout') => void;
+    onAction?: (cmd: 'logout' | 'count_dialog') => void;
     onError?: (message: string) => void;
     onUpdateMessages?: (keep?: boolean) => void;
     onReloadDialog?: (peerIds: string[]) => void;
@@ -187,6 +189,7 @@ interface IState {
     fontSize: number;
     lastname: string;
     loading: boolean;
+    notificationValues: INotificationSettings;
     page: string;
     pageContent: string;
     pageSubContent: string;
@@ -233,7 +236,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private broadcaster: Broadcaster;
     private settingsBackgroundModalRef: SettingsBackgroundModal | undefined;
     private backgroundService: BackgroundService;
-    private downloadManger: DownloadManager;
+    private settingsConfigManger: SettingsConfigManager;
     private settingsStorageUsageModalRef: SettingsStorageUsageModal | undefined;
     private changePhoneModalRef: ChangePhoneModal | undefined;
     private twoStepVerificationModalRef: TwoStepVerificationModal | undefined;
@@ -248,6 +251,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     private readonly isMobile: boolean = false;
     private contactHasMore: boolean = false;
     private readonly switchClasses: any = {};
+    private avatarService: AvatarService;
 
     constructor(props: IProps) {
         super(props);
@@ -267,6 +271,9 @@ class SettingsMenu extends React.Component<IProps, IState> {
             fontSize: 2,
             lastname: '',
             loading: false,
+            notificationValues: {
+                count_muted: true,
+            },
             page: '1',
             pageContent: 'none',
             pageSubContent: 'none',
@@ -316,7 +323,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.documentViewerService = DocumentViewerService.getInstance();
         this.broadcaster = Broadcaster.getInstance();
         this.backgroundService = BackgroundService.getInstance();
-        this.downloadManger = DownloadManager.getInstance();
+        this.settingsConfigManger = SettingsConfigManager.getInstance();
 
         this.currentAuthID = this.sdk.getConnInfo().AuthID;
 
@@ -324,6 +331,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.hasScrollbar = getScrollbarWidth() > 0;
         this.rtl = localStorage.getItem('river.lang.dir') === 'rtl';
         this.isMobile = this.isMobile = IsMobile.isAny();
+        this.avatarService = AvatarService.getInstance();
 
         this.switchClasses = {
             checked: 'setting-switch-checked',
@@ -346,11 +354,12 @@ class SettingsMenu extends React.Component<IProps, IState> {
         }
         this.setState({
             fontSize: parseInt(localStorage.getItem('river.theme.font') || '2', 10),
+            notificationValues: this.settingsConfigManger.getNotificationSettings(),
             selectedBackground: bg,
             selectedBgType: bgType,
             selectedBubble: localStorage.getItem('river.theme.bubble') || '1',
             selectedTheme: localStorage.getItem('river.theme.color') || 'light',
-            storageValues: this.downloadManger.getDownloadSettings(),
+            storageValues: this.settingsConfigManger.getDownloadSettings(),
         });
         this.backgroundService.getBackground(C_CUSTOM_BG_ID).then((res) => {
             if (res) {
@@ -435,7 +444,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                     <div className="account-summary">
                                         <div className="account-profile"
                                              onClick={this.selectPageHandler('account')}>
-                                            <UserAvatar className="avatar" id={this.userId} noDetail={true}/>
+                                            <UserAvatar className="avatar" id={this.userId} noDetail={true}
+                                                        forceReload={true}/>
                                         </div>
                                         <div className="account-info"
                                              onClick={this.selectPageHandler('account')}>
@@ -474,6 +484,12 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                             <PaletteRounded/>
                                         </div>
                                         <div className="anchor-label">{i18n.t('settings.theme')}</div>
+                                    </div>
+                                    <div className="page-anchor" onClick={this.selectPageHandler('notification')}>
+                                        <div className="icon color-notification">
+                                            <NotificationsRounded/>
+                                        </div>
+                                        <div className="anchor-label">{i18n.t('settings.notification')}</div>
                                     </div>
                                     <div className="page-anchor"
                                          onClick={this.selectPageHandler('language')}>
@@ -667,7 +683,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                 >
                                     <div className="info">
                                         <div className="avatar" onClick={this.avatarMenuAnchorOpenHandler}>
-                                            {!uploadingPhoto && <UserAvatar id={user.id || ''} noDetail={true}/>}
+                                            {!uploadingPhoto &&
+                                            <UserAvatar id={user.id || ''} noDetail={true} forceReload={true}/>}
                                             {uploadingPhoto &&
                                             <img src={this.profileTempPhoto} className="avatar-image" alt="avatar"/>}
                                             <div className={'overlay ' + (uploadingPhoto ? 'show' : '')}>
@@ -964,6 +981,30 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                         })}
                                     </div>
                                 </Scrollbars>
+                            </div>
+                        </React.Fragment>}
+                        {Boolean(pageContent === 'notification') && <React.Fragment>
+                            <div className="menu-header">
+                                <IconButton
+                                    onClick={this.onPrevHandler}
+                                >
+                                    <KeyboardBackspaceRounded/>
+                                </IconButton>
+                                <label>{i18n.t('settings.notification')}</label>
+                            </div>
+                            <div className="menu-content">
+                                <div className="switch-item">
+                                    <div
+                                        className="switch-label">{i18n.t('settings.count_muted_dialogs')}</div>
+                                    <div className="switch">
+                                        <Switch
+                                            checked={this.state.notificationValues.count_muted}
+                                            color="default"
+                                            onChange={this.notificationMuteCountToggleHandler}
+                                            classes={this.switchClasses}
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </React.Fragment>}
                     </div>
@@ -1583,8 +1624,13 @@ class SettingsMenu extends React.Component<IProps, IState> {
             inputFile.setMd5checksum('');
             inputFile.setTotalparts(1);
             this.sdk.uploadProfilePicture(inputFile).then((res) => {
+                const {user} = this.state;
+                if (user) {
+                    user.photo = res;
+                }
                 this.setState({
                     uploadingPhoto: false,
+                    user,
                 });
             });
         }).catch(() => {
@@ -1671,7 +1717,23 @@ class SettingsMenu extends React.Component<IProps, IState> {
                 break;
             case 'remove':
                 this.sdk.removeProfilePicture().then(() => {
-                    //
+                    const {user} = this.state;
+                    if (user) {
+                        if (user.photo) {
+                            this.avatarService.remove(user.id || '', user.photo.photosmall.fileid);
+                            this.avatarService.remove(user.id || '', user.photo.photobig.fileid);
+                        }
+                        user.photo = undefined;
+                        this.profileTempPhoto = '';
+                        this.userRepo.importBulk(false, [{
+                            id: user.id,
+                            remove_photo: true,
+                        }]).then(() => {
+                            this.setState({
+                                user,
+                            });
+                        });
+                    }
                 });
                 break;
             case 'change':
@@ -1870,7 +1932,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                 }
             }
         }
-        this.downloadManger.setDownloadSettings(Object.assign({}, storageValues));
+        this.settingsConfigManger.setDownloadSettings(Object.assign({}, storageValues));
         this.setState({
             storageValues,
         });
@@ -2334,6 +2396,18 @@ class SettingsMenu extends React.Component<IProps, IState> {
                 loading: false,
             });
         });
+    }
+
+    private notificationMuteCountToggleHandler = (e: any, checked: boolean) => {
+        const {notificationValues} = this.state;
+        notificationValues.count_muted = checked;
+        this.settingsConfigManger.setNotificationSettings(Object.assign({}, notificationValues));
+        this.setState({
+            notificationValues,
+        });
+        if (this.props.onAction) {
+            this.props.onAction('count_dialog');
+        }
     }
 }
 

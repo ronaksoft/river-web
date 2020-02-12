@@ -47,7 +47,7 @@ interface IProps {
     onContextMenu: (cmd: string, dialog: IDialog) => void;
     onGroupCreate: (contacts: IUser[], title: string, fileId: string) => void;
     onReloadDialog: (peerIds: string[]) => void;
-    onSettingsAction: (cmd: 'logout') => void;
+    onSettingsAction: (cmd: 'logout' | 'count_dialog') => void;
     onSettingsClose: (e: any) => void;
     onUpdateMessages: (keep?: boolean) => void;
     onMenuShrunk: (shrunk: boolean) => void;

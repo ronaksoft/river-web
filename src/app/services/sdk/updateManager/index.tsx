@@ -49,6 +49,21 @@ import LabelRepo from "../../../repository/label";
 const C_MAX_UPDATE_DIFF = 2000;
 const C_DIFF_AMOUNT = 100;
 
+export interface IDialogDBUpdated {
+    counters: boolean;
+    ids: string[];
+}
+
+export interface IMessageDBUpdated {
+    ids: number[];
+    minIds: { [key: string]: number };
+    peerIds: string[];
+}
+
+interface IUpdateContainer extends UpdateContainer.AsObject {
+    lastOne?: boolean;
+}
+
 interface ILabelRange {
     labelId: number;
     peerid: string;
@@ -64,17 +79,19 @@ interface IClearDialog {
 }
 
 interface ITransactionPayload {
-    dialogs: { [key: string]: IDialog };
-    messages: { [key: number]: IMessage };
-    users: { [key: string]: IUser };
-    groups: { [key: string]: IGroup };
-    labels: { [key: number]: ILabel };
     clearDialogs: IClearDialog[];
+    dialogs: { [key: string]: IDialog };
+    flushDb: boolean;
+    groups: { [key: string]: IGroup };
     labelRanges: ILabelRange[];
+    labels: { [key: number]: ILabel };
+    lastOne?: boolean;
+    live: boolean;
+    messages: { [key: number]: IMessage };
+    removedMessages: number[];
     toCheckDialogIds: string[];
     updateId: number;
-    flushDb: boolean;
-    live: boolean;
+    users: { [key: string]: IUser };
 }
 
 export default class UpdateManager {
@@ -159,6 +176,7 @@ export default class UpdateManager {
 
     public setLastUpdateId(id: number) {
         this.lastUpdateId = id;
+        this.internalUpdateId = id;
     }
 
     public flushLastUpdateId = () => {
@@ -183,7 +201,14 @@ export default class UpdateManager {
         const minId = data.minupdateid || 0;
         const maxId = data.maxupdateid || 0;
         window.console.debug('on update, current:', this.internalUpdateId, 'min:', minId, 'max:', maxId);
-        if (!(minId === 0 && maxId === 0) && this.internalUpdateId > minId) {
+        if (minId === 0 && maxId === 0) {
+            this.processZeroContainer(data);
+            return;
+        } else if (this.internalUpdateId > minId) {
+            return;
+        }
+        if (minId === 0 && maxId === 0) {
+            this.processContainer(data, true);
             return;
         }
         if ((this.outOfSync || this.internalUpdateId + 1 !== minId) && !(minId === 0 && maxId === 0)) {
@@ -216,11 +241,11 @@ export default class UpdateManager {
         this.callHandlers(C_MSG.UpdateAuthorizationReset, {});
     }
 
-    public disable() {
+    public disableLiveUpdate() {
         this.isLive = false;
     }
 
-    public enable() {
+    public enableLiveUpdate() {
         this.isLive = true;
     }
 
@@ -267,20 +292,20 @@ export default class UpdateManager {
             this.applyDiffUpdate(res.toObject()).then((id) => {
                 this.startSyncing(id, limit);
             }).catch((err2) => {
-                this.enable();
+                this.enableLiveUpdate();
                 this.isDiffUpdating = false;
                 this.callHandlers(C_MSG.UpdateManagerStatus, {
                     isUpdating: false,
                 });
                 if (err2.code === -1) {
                     this.canSync().then(() => {
-                        this.disable();
+                        this.disableLiveUpdate();
                         this.isDiffUpdating = true;
                         this.callHandlers(C_MSG.UpdateManagerStatus, {
                             isUpdating: true,
                         });
                     }).catch(() => {
-                        this.enable();
+                        this.enableLiveUpdate();
                         if (this.isDiffUpdating) {
                             this.isDiffUpdating = false;
                             this.callHandlers(C_MSG.UpdateManagerStatus, {
@@ -299,6 +324,7 @@ export default class UpdateManager {
             const lastUpdateId = more ? (data.maxupdateid || 0) : (data.currentupdateid || data.maxupdateid || 0);
             this.processContainer({
                 groupsList: data.groupsList,
+                lastOne: !more,
                 maxupdateid: lastUpdateId,
                 minupdateid: data.minupdateid,
                 updatesList: data.updatesList,
@@ -306,18 +332,12 @@ export default class UpdateManager {
             }, false, () => {
                 if (more) {
                     resolve(lastUpdateId + 1);
+                } else {
+                    reject({
+                        code: -1,
+                    });
                 }
             });
-            // this.updateMany(data.updatesList, data.groupsList, data.usersList, !more, () => {
-            //     if (more) {
-            //         resolve(lastUpdateId + 1);
-            //     }
-            // });
-            if (!more) {
-                reject({
-                    code: -1,
-                });
-            }
         });
     }
 
@@ -352,15 +372,6 @@ export default class UpdateManager {
             }
         });
         this.processContainer(data, true);
-        // updates.forEach((update) => {
-        //     try {
-        //         this.response(update);
-        //     } catch (e) {
-        //         window.console.error(e);
-        //         this.callOutOfSync();
-        //         this.isLive = false;
-        //     }
-        // });
     }
 
     /* Check out of sync message */
@@ -377,7 +388,7 @@ export default class UpdateManager {
             this.outOfSync = false;
             return;
         }
-        if (this.updateList[0].minupdateid === (this.lastUpdateId + 1)) {
+        if (this.updateList[0].minupdateid === (this.internalUpdateId + 1)) {
             clearTimeout(this.outOfSyncTimeout);
             this.outOfSyncTimeout = null;
             const update = this.updateList.shift();
@@ -400,7 +411,11 @@ export default class UpdateManager {
         this.outOfSync = false;
         this.outOfSyncTimeout = null;
         this.transactionList = [];
-        this.callHandlers(C_MSG.OutOfSync, {});
+        this.canSync().then(() => {
+            this.disableLiveUpdate();
+        }).catch(() => {
+            this.enableLiveUpdate();
+        });
     }
 
     private responseUpdateMessageID(update: UpdateEnvelope.AsObject) {
@@ -413,7 +428,7 @@ export default class UpdateManager {
         }
     }
 
-    private processContainer(data: UpdateContainer.AsObject, live: boolean, doneFn?: any) {
+    private processContainer(data: IUpdateContainer, live: boolean, doneFn?: any) {
         const transaction: ITransactionPayload = {
             clearDialogs: [],
             dialogs: {},
@@ -421,8 +436,10 @@ export default class UpdateManager {
             groups: {},
             labelRanges: [],
             labels: {},
+            lastOne: data.lastOne || false,
             live,
             messages: {},
+            removedMessages: [],
             toCheckDialogIds: [],
             updateId: data.maxupdateid || 0,
             users: {},
@@ -436,7 +453,7 @@ export default class UpdateManager {
         data.updatesList.forEach((update) => {
             this.process(transaction, update);
         });
-        if (data.maxupdateid) {
+        if (this.isLive && data.maxupdateid) {
             this.internalUpdateId = data.maxupdateid;
         }
         if (doneFn) {
@@ -444,6 +461,20 @@ export default class UpdateManager {
         } else {
             this.queueTransaction(transaction);
         }
+    }
+
+    private processZeroContainer(data: UpdateContainer.AsObject) {
+        data.updatesList.forEach((update) => {
+            switch (update.constructor) {
+                /** System **/
+                case C_MSG.UpdateUserTyping:
+                    this.callHandlers(C_MSG.UpdateUserTyping, UpdateUserTyping.deserializeBinary(update.update as Uint8Array).toObject());
+                    break;
+                case C_MSG.UpdateAuthorizationReset:
+                    this.callHandlers(C_MSG.UpdateAuthorizationReset, {});
+                    break;
+            }
+        });
     }
 
     private process(transaction: ITransactionPayload, update: UpdateEnvelope.AsObject) {
@@ -518,6 +549,7 @@ export default class UpdateManager {
                 // Delete message(s)
                 updateMessagesDeleted.messageidsList.forEach((id) => {
                     this.removeMessage(transaction.messages, id);
+                    transaction.removedMessages.push(id);
                 });
                 // Update to check list
                 if (updateMessagesDeleted.peer) {
@@ -838,53 +870,68 @@ export default class UpdateManager {
     }
 
     private processTransaction(transaction: ITransactionPayload, doneFn?: any) {
-        const promises: any[] = [];
-        // User list
-        const userList: IUser[] = [];
-        Object.keys(transaction.users).forEach((key) => {
-            userList.push(transaction.users[key]);
-        });
-        if (userList.length > 0 && this.userRepo) {
-            promises.push(this.userRepo.importBulk(false, userList));
-        }
-        // Group list
-        const groupList: IGroup[] = [];
-        Object.keys(transaction.groups).forEach((key) => {
-            groupList.push(transaction.groups[key]);
-        });
-        if (groupList.length > 0 && this.groupRepo) {
-            promises.push(this.groupRepo.importBulk(groupList));
-        }
-        // Label list
-        const labelList: ILabel[] = [];
-        Object.keys(transaction.labels).forEach((key) => {
-            labelList.push(transaction.labels[key]);
-        });
-        if (labelList.length > 0 && this.labelRepo) {
-            promises.push(this.labelRepo.importBulk(labelList));
-        }
-        // Message list
-        const messageList: IMessage[] = [];
-        Object.keys(transaction.messages).forEach((key) => {
-            messageList.push(transaction.messages[key]);
-        });
-        if (messageList.length > 0 && this.messageRepo) {
-            promises.push(this.messageRepo.importBulk(messageList));
-        }
-        // Dialog list (conditional)
-        if (transaction.toCheckDialogIds.length === 0) {
-            promises.push(this.applyDialogs(transaction.dialogs));
-        }
-        if (promises.length > 0) {
-            Promise.all(promises).then(() => {
-                this.processTransactionStep2(transaction, doneFn);
+        return new Promise((transactionResolve) => {
+            const promises: any[] = [];
+            // User list
+            const userList: IUser[] = [];
+            Object.keys(transaction.users).forEach((key) => {
+                userList.push(transaction.users[key]);
             });
-        } else {
-            this.processTransactionStep2(transaction, doneFn);
-        }
+            if (userList.length > 0 && this.userRepo) {
+                promises.push(this.userRepo.importBulk(false, userList));
+            }
+            // Group list
+            const groupList: IGroup[] = [];
+            Object.keys(transaction.groups).forEach((key) => {
+                groupList.push(transaction.groups[key]);
+            });
+            if (groupList.length > 0 && this.groupRepo) {
+                promises.push(this.groupRepo.importBulk(groupList));
+            }
+            // Label list
+            const labelList: ILabel[] = [];
+            Object.keys(transaction.labels).forEach((key) => {
+                labelList.push(transaction.labels[key]);
+            });
+            if (labelList.length > 0 && this.labelRepo) {
+                promises.push(this.labelRepo.importBulk(labelList));
+            }
+            // Message list
+            if (Object.keys(transaction.messages).length > 0) {
+                promises.push(this.applyMessages(transaction.messages).then((res) => {
+                    if (!transaction.live) {
+                        this.callUpdateHandler(C_MSG.UpdateMessageDB, res);
+                    }
+                    return res;
+                }));
+            }
+            // Removed message list
+            if (transaction.removedMessages.length > 0 && this.messageRepo) {
+                promises.push(this.messageRepo.removeMany(transaction.removedMessages));
+            }
+            // Dialog list (conditional)
+            if (transaction.toCheckDialogIds.length === 0) {
+                promises.push(this.applyDialogs(transaction.dialogs).then((keys) => {
+                    if (!transaction.live) {
+                        this.callHandlers(C_MSG.UpdateDialogDB, {
+                            counters: transaction.lastOne,
+                            ids: keys,
+                        });
+                    }
+                    return keys;
+                }));
+            }
+            if (promises.length > 0) {
+                Promise.all(promises).then(() => {
+                    this.processTransactionStep2(transaction, transactionResolve, doneFn);
+                });
+            } else {
+                this.processTransactionStep2(transaction, transactionResolve, doneFn);
+            }
+        });
     }
 
-    private processTransactionStep2(transaction: ITransactionPayload, doneFn?: any) {
+    private processTransactionStep2(transaction: ITransactionPayload, transactionResolve: any, doneFn?: any) {
         const promises: any[] = [];
         if (transaction.clearDialogs.length > 0) {
             promises.push(this.applyClearDialogs(transaction.clearDialogs));
@@ -894,14 +941,14 @@ export default class UpdateManager {
         }
         if (promises.length > 0) {
             Promise.all(promises).then(() => {
-                this.processTransactionStep3(transaction, doneFn);
+                this.processTransactionStep3(transaction, transactionResolve, doneFn);
             });
         } else {
-            this.processTransactionStep3(transaction, doneFn);
+            this.processTransactionStep3(transaction, transactionResolve, doneFn);
         }
     }
 
-    private processTransactionStep3(transaction: ITransactionPayload, doneFn?: any) {
+    private processTransactionStep3(transaction: ITransactionPayload, transactionResolve: any, doneFn?: any) {
         if (transaction.toCheckDialogIds.length > 0) {
             const lastMessagePromise: any[] = [];
             transaction.toCheckDialogIds.forEach((peerId) => {
@@ -930,18 +977,20 @@ export default class UpdateManager {
                         });
                     }
                 });
-                this.applyDialogs(transaction.dialogs).then(() => {
-                    this.processTransactionStep4(transaction, doneFn);
+                this.applyDialogs(transaction.dialogs).then((keys) => {
+                    this.callHandlers(C_MSG.UpdateDialogDB, {
+                        counters: transaction.live ? true : transaction.lastOne,
+                        ids: keys
+                    });
+                    this.processTransactionStep4(transaction, transactionResolve, doneFn);
                 });
             });
         } else {
-            this.applyDialogs(transaction.dialogs).then(() => {
-                this.processTransactionStep4(transaction, doneFn);
-            });
+            this.processTransactionStep4(transaction, transactionResolve, doneFn);
         }
     }
 
-    private processTransactionStep4(transaction: ITransactionPayload, doneFn?: any) {
+    private processTransactionStep4(transaction: ITransactionPayload, transactionResolve: any, doneFn?: any) {
         if (transaction.updateId) {
             this.setLastUpdateId(transaction.updateId);
             this.flushLastUpdateId();
@@ -952,6 +1001,7 @@ export default class UpdateManager {
         if (!doneFn) {
             this.applyTransactions();
         }
+        transactionResolve();
     }
 
     private applyClearDialogs(list: IClearDialog[]) {
@@ -967,15 +1017,61 @@ export default class UpdateManager {
         return Promise.all(promises);
     }
 
-    private applyDialogs(dialogs: { [key: string]: IDialog }) {
+    private applyDialogs(dialogs: { [key: string]: IDialog }): Promise<string[]> {
         const dialogList: IDialog[] = [];
-        Object.keys(dialogs).forEach((key) => {
+        const keys = Object.keys(dialogs);
+        keys.forEach((key) => {
             dialogList.push(dialogs[key]);
         });
         if (dialogList.length > 0 && this.dialogRepo) {
-            return this.dialogRepo.importBulk(dialogList);
+            return this.dialogRepo.importBulk(dialogList).then(() => {
+                return keys;
+            });
         } else {
-            return Promise.resolve();
+            return Promise.resolve(keys);
+        }
+    }
+
+    private applyMessages(messages: { [key: number]: IMessage }): Promise<IMessageDBUpdated> {
+        const messageList: IMessage[] = [];
+        const keys: number[] = [];
+        const peerIds: string[] = [];
+        const minIdPerPeer: { [key: string]: number } = {};
+        // @ts-ignore
+        Object.keys(messages).forEach((key: number) => {
+            const message = messages[key];
+            if (!message.id) {
+                return;
+            }
+            messageList.push(message);
+            keys.push(message.id);
+            if (!peerIds[message.peerid || '']) {
+                peerIds.push(message.peerid || '');
+            }
+            if (message && message.id) {
+                if (minIdPerPeer.hasOwnProperty(message.peerid || '')) {
+                    minIdPerPeer[message.peerid || ''] = message.id;
+                } else {
+                    if (minIdPerPeer[message.peerid || ''] > message.id) {
+                        minIdPerPeer[message.peerid || ''] = message.id;
+                    }
+                }
+            }
+        });
+        if (messageList.length > 0 && this.messageRepo) {
+            return this.messageRepo.importBulk(messageList).then(() => {
+                return {
+                    ids: keys,
+                    minIds: minIdPerPeer,
+                    peerIds,
+                };
+            });
+        } else {
+            return Promise.resolve({
+                ids: keys,
+                minIds: minIdPerPeer,
+                peerIds,
+            });
         }
     }
 

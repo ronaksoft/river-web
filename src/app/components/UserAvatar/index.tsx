@@ -128,6 +128,7 @@ interface IProps {
     noDetail?: boolean;
     savedMessages?: boolean;
     onlineIndicator?: boolean;
+    forceReload?: boolean;
 }
 
 interface IState {
@@ -172,7 +173,7 @@ class UserAvatar extends React.Component<IProps, IState> {
     }
 
     public componentWillReceiveProps(newProps: IProps) {
-        if (!this.props.savedMessages && this.state.id !== newProps.id) {
+        if ((!this.props.savedMessages && this.state.id !== newProps.id) || this.props.forceReload) {
             this.tryTimeout = 0;
             clearTimeout(this.tryTimeout);
             clearTimeout(this.timeout);

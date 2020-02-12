@@ -17,7 +17,7 @@ import {CloseRounded, CloudDownloadRounded, InsertDriveFileRounded} from '@mater
 import {IFileProgress} from '../../services/sdk/fileManager';
 import ProgressBroadcaster from '../../services/progress';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
-import DownloadManager from '../../services/downloadManager';
+import SettingsConfigManager from '../../services/settingsConfigManager';
 import i18n from '../../services/i18n';
 
 import './style.scss';
@@ -170,7 +170,7 @@ class MessageFile extends React.PureComponent<IProps, IState> {
     private progressBroadcaster: ProgressBroadcaster;
     private fileSizeRef: any = null;
     private fileSize: number = 0;
-    private downloadManager: DownloadManager;
+    private settingsConfigManager: SettingsConfigManager;
     private readonly isMac: boolean = false;
 
     constructor(props: IProps) {
@@ -194,7 +194,7 @@ class MessageFile extends React.PureComponent<IProps, IState> {
         }
 
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
-        this.downloadManager = DownloadManager.getInstance();
+        this.settingsConfigManager = SettingsConfigManager.getInstance();
 
         this.isMac = navigator.platform.indexOf('Mac') > -1;
     }
@@ -393,7 +393,7 @@ class MessageFile extends React.PureComponent<IProps, IState> {
             } else {
                 const {peer} = this.props;
                 if (peer && message && !message.downloaded) {
-                    const ds = this.downloadManager.getDownloadSettings();
+                    const ds = this.settingsConfigManager.getDownloadSettings();
                     switch (peer.getType()) {
                         case PeerType.PEERUSER:
                             if (ds.chat_files) {

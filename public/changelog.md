@@ -1,3 +1,8 @@
+## 0.30.0
+* 🎉 Update Mechanism rewrote
+* Settings for notifications
+* Known bug fixed
+
 ## 0.29.19
 * Connecting status indicator improved
 * UserRepo performance improvements

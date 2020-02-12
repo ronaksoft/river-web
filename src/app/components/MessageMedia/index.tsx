@@ -25,7 +25,7 @@ import {IDocument} from '../../services/documentViewerService';
 import DocumentViewerService from '../../services/documentViewerService';
 import {getHumanReadableSize} from '../MessageFile';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
-import DownloadManager from '../../services/downloadManager';
+import SettingsConfigManager from '../../services/settingsConfigManager';
 
 import './style.scss';
 
@@ -243,7 +243,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     private mediaBigRef: any = null;
     private blurredImageEnable: boolean = false;
     private contentRead: boolean = false;
-    private downloadManager: DownloadManager;
+    private settingsConfigManager: SettingsConfigManager;
     private transitionTimeout: any = null;
 
     constructor(props: IProps) {
@@ -279,7 +279,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
 
         this.progressBroadcaster = ProgressBroadcaster.getInstance();
         this.documentViewerService = DocumentViewerService.getInstance();
-        this.downloadManager = DownloadManager.getInstance();
+        this.settingsConfigManager = SettingsConfigManager.getInstance();
     }
 
     public componentDidMount() {
@@ -561,7 +561,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
             } else {
                 const {peer} = this.props;
                 if (peer && message && !message.downloaded) {
-                    const ds = this.downloadManager.getDownloadSettings();
+                    const ds = this.settingsConfigManager.getDownloadSettings();
                     switch (peer.getType()) {
                         case PeerType.PEERUSER:
                             if ((message.messagetype === C_MESSAGE_TYPE.Picture && ds.chat_photos) || (message.messagetype === C_MESSAGE_TYPE.Video && ds.chat_videos)) {

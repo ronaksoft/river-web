@@ -12,6 +12,8 @@
 // UpdateNewMessageDrop: -3,
 // UpdateUsers: -4,
 // UpdateManagerStatus: -5,
+// UpdateDialogDB: -6,
+// UpdateMessageDB: -7,
 /* tslint:disable-next-line */
 export const C_MSG = {
     AccountAuthorization: 275571966,
@@ -253,6 +255,7 @@ export const C_MSG = {
     UpdateAccountPrivacy: 629173761,
     UpdateAuthorizationReset: 2359297647,
     UpdateContainer: 661712615,
+    UpdateDialogDB: -6,
     UpdateDialogPinned: 231538299,
     UpdateDialogPinnedReorder: 1567423539,
     UpdateDifference: 1742546619,
@@ -272,6 +275,7 @@ export const C_MSG = {
     UpdateLabelItemsRemoved: 830226827,
     UpdateLabelSet: 2353687359,
     UpdateManagerStatus: -5,
+    UpdateMessageDB: -7,
     UpdateMessageEdited: 1825079988,
     UpdateMessageID: 2139063022,
     UpdateMessagesDeleted: 670568714,

@@ -74,6 +74,7 @@ export default class Server {
     private readonly executeSendThrottledRequestThrottle: any;
     private lastActivityTime: number = 0;
     private cancelList: number[] = [];
+    private updateInterval: any = null;
 
     public constructor() {
         this.socket = Socket.getInstance();
@@ -111,7 +112,6 @@ export default class Server {
                 this.isConnected = false;
             });
 
-            this.updateThrottler();
             this.updateManager = UpdateManager.getInstance();
             let throttleInterval = 128;
             const tils = localStorage.getItem('river.debug.throttle_interval');
@@ -442,18 +442,24 @@ export default class Server {
     private update(bytes: any) {
         this.getLastActivityTime();
         this.updateQueue.push(bytes);
+        this.updateThrottler();
     }
 
     private updateThrottler() {
         this.dispatchUpdate();
-        setInterval(() => {
-            this.dispatchUpdate();
-        }, 10);
+        if (!this.updateInterval) {
+            this.updateInterval = setInterval(() => {
+                this.dispatchUpdate();
+            }, 5);
+        }
     }
 
     private dispatchUpdate() {
         if (this.updateQueue.length > 0 && this.updateManager) {
             this.updateManager.parseUpdate(this.updateQueue.shift());
+        } else {
+            clearInterval(this.updateInterval);
+            this.updateInterval = null;
         }
     }
 
@@ -511,7 +517,7 @@ export default class Server {
 
     private migrate2() {
         if (this.updateManager) {
-            this.updateManager.disable();
+            this.updateManager.disableLiveUpdate();
         }
         setTimeout(() => {
             MainRepo.getInstance().destroyDB().then(() => {

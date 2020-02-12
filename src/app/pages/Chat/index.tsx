@@ -46,7 +46,7 @@ import {
 } from '../../services/sdk/messages/chat.core.types_pb';
 import {IConnInfo} from '../../services/sdk/interface';
 import {IDialog} from '../../repository/dialog/interface';
-import UpdateManager from '../../services/sdk/updateManager';
+import UpdateManager, {IDialogDBUpdated, IMessageDBUpdated} from '../../services/sdk/updateManager';
 import {C_ERR, C_ERR_ITEM, C_MSG} from '../../services/sdk/const';
 import {
     UpdateDialogPinned,
@@ -114,7 +114,7 @@ import RTLDetector from '../../services/utilities/rtl_detector';
 import BackgroundService from '../../services/backgroundService';
 import {C_CUSTOM_BG} from '../../components/SettingsMenu/vars/theme';
 import SearchMessage from '../../components/SearchMessage';
-import DownloadManager from '../../services/downloadManager';
+import SettingsConfigManager from '../../services/settingsConfigManager';
 import * as Sentry from '@sentry/browser';
 import ForwardDialog from "../../components/ForwardDialog";
 import AboutDialog from "../../components/AboutModal";
@@ -141,6 +141,7 @@ import LabelRepo from "../../repository/label";
 import LabelDialog from "../../components/LabelDialog";
 
 import './style.scss';
+import AvatarService from "../../services/avatarService";
 
 export let notifyOptions: any[] = [];
 
@@ -207,7 +208,7 @@ class Chat extends React.Component<IProps, IState> {
     private newMessageFlag: boolean = false;
     private backgroundService: BackgroundService;
     private searchMessageRef: SearchMessage | undefined;
-    private downloadManager: DownloadManager;
+    private settingsConfigManager: SettingsConfigManager;
     private aboutDialogRef: AboutDialog | undefined;
     private labelDialogRef: LabelDialog | undefined;
     private dialogMap: { [key: string]: number } = {};
@@ -240,6 +241,7 @@ class Chat extends React.Component<IProps, IState> {
     private isUpdating: boolean = false;
     private shrunk: boolean = false;
     private isMobileBrowser = isMobile();
+    private avatarService: AvatarService;
 
     constructor(props: IProps) {
         super(props);
@@ -279,10 +281,11 @@ class Chat extends React.Component<IProps, IState> {
         this.rtlDetector = RTLDetector.getInstance();
         this.messageReadThrottle = throttle(this.readMessage, 256);
         this.backgroundService = BackgroundService.getInstance();
-        this.downloadManager = DownloadManager.getInstance();
+        this.settingsConfigManager = SettingsConfigManager.getInstance();
         this.newMessageLoadThrottle = throttle(this.newMessageLoad, 300);
         this.cachedMessageService = CachedMessageService.getInstance();
         this.cachedFileService = CachedFileService.getInstance();
+        this.avatarService = AvatarService.getInstance();
         const audioPlayer = AudioPlayer.getInstance();
         audioPlayer.setErrorFn(this.audioPlayerErrorHandler);
         audioPlayer.setUpdateDurationFn(this.audioPlayerUpdateDurationHandler);
@@ -321,7 +324,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
 
-        this.updateManager.enable();
+        this.updateManager.enableLiveUpdate();
 
         // Global event listeners
         window.addEventListener('focus', this.windowFocusHandler);
@@ -332,9 +335,6 @@ class Chat extends React.Component<IProps, IState> {
         window.addEventListener('wsClose', this.wsCloseHandler);
         window.addEventListener('fnStarted', this.fnStartedHandler);
         window.addEventListener('networkStatus', this.networkStatusHandler);
-        window.addEventListener('Dialog_Sync_Updated', this.dialogDBUpdatedHandler);
-        window.addEventListener('Message_Sync_Updated', this.messageDBUpdatedHandler);
-        window.addEventListener('Message_DB_Added', this.messageDBAddedHandler);
 
         // Get latest cached dialogs
         this.initDialogs();
@@ -408,6 +408,12 @@ class Chat extends React.Component<IProps, IState> {
 
         // Update: sync status
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateManagerStatus, this.updateManagerStatusHandler));
+
+        // Update: dialog db updated
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateDialogDB, this.updateDialogDBUpdatedHandler));
+
+        // Update: message db updated
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateMessageDB, this.updateMessageDBUpdatedHandler));
 
         // TODO: add timestamp to pending message
 
@@ -497,7 +503,7 @@ class Chat extends React.Component<IProps, IState> {
             }
         });
 
-        this.updateManager.disable();
+        this.updateManager.disableLiveUpdate();
 
         window.removeEventListener('focus', this.windowFocusHandler);
         window.removeEventListener('blur', this.windowBlurHandler);
@@ -506,9 +512,6 @@ class Chat extends React.Component<IProps, IState> {
         window.removeEventListener('wsOpen', this.wsOpenHandler);
         window.removeEventListener('fnStarted', this.fnStartedHandler);
         window.removeEventListener('networkStatus', this.networkStatusHandler);
-        window.removeEventListener('Dialog_Sync_Updated', this.dialogDBUpdatedHandler);
-        window.removeEventListener('Message_Sync_Updated', this.messageDBUpdatedHandler);
-        window.removeEventListener('Message_DB_Added', this.messageDBAddedHandler);
     }
 
     public render() {
@@ -1125,46 +1128,6 @@ class Chat extends React.Component<IProps, IState> {
         if (!peer) {
             return;
         }
-        setTimeout(() => {
-            if (!peer) {
-                return;
-            }
-            const dialogPeer = this.getDialogById(peer.id || '');
-            if (dialogPeer) {
-                this.messageRepo.getUnreadCount(peer.id || '', dialogPeer ? (dialogPeer.readinboxmaxid || 0) : 0, dialogPeer ? (dialogPeer.topmessageid || 0) : 0).then((count) => {
-                    this.updateDialogsCounter(peer.id || '', {
-                        mentionCounter: count.mention,
-                        unreadCounter: count.message
-                    });
-                });
-            }
-
-            // Check if current dialog is visible
-            data.messageidsList.sort().forEach((id) => {
-                if (!peer) {
-                    return;
-                }
-                // Update dialog list Top Message
-                const dialogIndex = findIndex(this.dialogs, {topmessageid: id});
-                let dialog: IDialog | null = null;
-                if (dialogIndex < 0) {
-                    dialog = this.getDialogById(peer.id || '');
-                }
-                if (dialogIndex > -1 || (dialog && dialog.topmessageid === id)) {
-                    const inputPeer = new InputPeer();
-                    inputPeer.setId(peer.id || '');
-                    inputPeer.setAccesshash(peer.accesshash || '0');
-                    inputPeer.setType(peer.type || 0);
-                    if (id > 1) {
-                        this.messageRepo.getManyCache({before: id, limit: 1}, inputPeer).then((res) => {
-                            if (res.messages.length > 0) {
-                                this.updateDialogs(res.messages[0], peer.accesshash || '0', true);
-                            }
-                        });
-                    }
-                }
-            });
-        }, 1000);
 
         data.messageidsList.sort().forEach((id) => {
             if (!peer) {
@@ -1258,6 +1221,8 @@ class Chat extends React.Component<IProps, IState> {
         if (!data.photo) {
             this.userRepo.get(data.userid || '').then((res) => {
                 if (res && res.photo) {
+                    this.avatarService.remove(data.userid || '', res.photo.photosmall.fileid);
+                    this.avatarService.remove(data.userid || '', res.photo.photobig.fileid);
                     this.fileRepo.remove(res.photo.photosmall.fileid || '');
                     this.fileRepo.remove(res.photo.photobig.fileid || '');
                 }
@@ -1271,6 +1236,8 @@ class Chat extends React.Component<IProps, IState> {
         if (!data.photo) {
             this.groupRepo.get(data.groupid || '').then((res) => {
                 if (res && res.photo) {
+                    this.avatarService.remove(data.groupid || '', res.photo.photosmall.fileid);
+                    this.avatarService.remove(data.groupid || '', res.photo.photobig.fileid);
                     this.fileRepo.remove(res.photo.photosmall.fileid || '');
                     this.fileRepo.remove(res.photo.photobig.fileid || '');
                 }
@@ -2237,7 +2204,11 @@ class Chat extends React.Component<IProps, IState> {
         let unreadCounter = 0;
         td.forEach((d) => {
             if (d && d.unreadcount && d.unreadcount > 0 && d.readinboxmaxid !== d.topmessageid && !d.preview_me) {
-                unreadCounter += d.unreadcount;
+                if (this.settingsConfigManager.getNotificationSettings().count_muted) {
+                    unreadCounter += d.unreadcount;
+                } else if (!isMuted(d.notifysettings)) {
+                    unreadCounter += d.unreadcount;
+                }
             }
         });
 
@@ -2292,6 +2263,7 @@ class Chat extends React.Component<IProps, IState> {
         }
         // Normal syncing
         this.updateManager.canSync(updateId).then(() => {
+            this.updateManager.disableLiveUpdate();
             this.setAppStatus({
                 isUpdating: true,
             });
@@ -2308,7 +2280,7 @@ class Chat extends React.Component<IProps, IState> {
         if (this.isUpdating) {
             return;
         }
-        this.updateManager.disable();
+        this.updateManager.disableLiveUpdate();
         this.setAppStatus({
             isUpdating: true,
         });
@@ -2335,7 +2307,7 @@ class Chat extends React.Component<IProps, IState> {
                 }));
                 this.dialogsSort(res.dialogs);
                 this.updateManager.setLastUpdateId(res.updateid || 0);
-                this.updateManager.enable();
+                this.updateManager.enableLiveUpdate();
                 this.setAppStatus({
                     isUpdating: false,
                 });
@@ -2345,7 +2317,7 @@ class Chat extends React.Component<IProps, IState> {
                     }
                 });
             }).catch(() => {
-                this.updateManager.enable();
+                this.updateManager.enableLiveUpdate();
                 this.setAppStatus({
                     isUpdating: false,
                 });
@@ -2373,8 +2345,7 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private dialogDBUpdatedHandler = (event: any) => {
-        const data = event.detail;
+    private updateDialogDBUpdatedHandler = (data: IDialogDBUpdated) => {
         this.dialogRepo.getManyCache({}).then((res) => {
             this.dialogsSort(res, (dialogs) => {
                 if (data.counters) {
@@ -2442,8 +2413,7 @@ class Chat extends React.Component<IProps, IState> {
         return maxId;
     }
 
-    private messageDBUpdatedHandler = (event: any) => {
-        const data = event.detail;
+    private updateMessageDBUpdatedHandler = (data: IMessageDBUpdated) => {
         if (data.ids) {
             data.ids.forEach((id: any) => {
                 if (typeof id === 'number') {
@@ -2457,9 +2427,9 @@ class Chat extends React.Component<IProps, IState> {
         if (!peer) {
             return;
         }
-        if (data.peerids && data.peerids.indexOf(this.selectedDialogId) > -1) {
+        if (data.peerIds && data.peerIds.indexOf(this.selectedDialogId) > -1) {
             // this.getMessagesByDialogId(this.selectedDialogId);
-            const after = data.minids[this.selectedDialogId] || this.getMaxId();
+            const after = data.minIds[this.selectedDialogId] || this.getMaxId();
             this.messageRepo.getManyCache({after, limit: 100, ignoreMax: true}, peer).then((res) => {
                 if (!this.messageRef) {
                     return;
@@ -2481,11 +2451,6 @@ class Chat extends React.Component<IProps, IState> {
                 });
             });
         }
-    }
-
-    /* Message Repo DB updated */
-    private messageDBAddedHandler = (event: any) => {
-        //
     }
 
     /* Notify on new message received */
@@ -2625,7 +2590,7 @@ class Chat extends React.Component<IProps, IState> {
                 window.console.log(err);
             });
         };
-        this.updateManager.disable();
+        this.updateManager.disableLiveUpdate();
         this.sdk.logout(this.connInfo.AuthID).then((res) => {
             wipe();
         }).catch(() => {
@@ -2943,16 +2908,19 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* SettingsMenu on update handler */
-    private settingActionHandler = (cmd: 'logout') => {
+    private settingActionHandler = (cmd: 'logout' | 'count_dialog') => {
         switch (cmd) {
             case 'logout':
                 this.bottomBarSelectHandler('logout')();
+                break;
+            case 'count_dialog':
+                this.dialogsSort(this.dialogs);
                 break;
         }
     }
 
     private dialogRemove = (id: string) => {
-        this.updateManager.disable();
+        this.updateManager.disableLiveUpdate();
         this.setAppStatus({
             isUpdating: true,
         });
@@ -3667,7 +3635,7 @@ class Chat extends React.Component<IProps, IState> {
                         }
                     }
                 }
-                if (msg.messagetype === C_MESSAGE_TYPE.File && this.downloadManager.getDownloadSettings().auto_save_files) {
+                if (msg.messagetype === C_MESSAGE_TYPE.File && this.settingsConfigManager.getDownloadSettings().auto_save_files) {
                     this.saveFile(msg);
                 }
             }).catch((err) => {

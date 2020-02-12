@@ -43,7 +43,7 @@ import {
     PhoneContact, PrivacyKey, PrivacyRule,
     PushTokenProvider,
     TypingAction,
-    User
+    User, UserPhoto
 } from './messages/chat.core.types_pb';
 import {
     InputMediaType, MessagesClearDraft,
@@ -510,9 +510,10 @@ export default class SDK {
         return this.server.send(C_MSG.AccountUpdateProfile, data.serializeBinary(), true);
     }
 
-    public uploadProfilePicture(file: InputFile): Promise<Bool.AsObject> {
+    public uploadProfilePicture(file: InputFile): Promise<UserPhoto.AsObject> {
         const data = new AccountUploadPhoto();
         data.setFile(file);
+        data.setReturnobject(true);
         return this.server.send(C_MSG.AccountUploadPhoto, data.serializeBinary(), true);
     }
 

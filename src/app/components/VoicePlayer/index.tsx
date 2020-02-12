@@ -16,7 +16,7 @@ import AudioPlayer, {C_INSTANT_AUDIO, IAudioEvent} from '../../services/audioPla
 import Broadcaster from '../../services/broadcaster';
 import {PeerType} from '../../services/sdk/messages/chat.core.types_pb';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
-import DownloadManager from '../../services/downloadManager';
+import SettingsConfigManager from '../../services/settingsConfigManager';
 
 import './style.scss';
 
@@ -71,7 +71,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
     private audioPlayer: AudioPlayer;
     private readSent: boolean = false;
     private broadcaster: Broadcaster;
-    private downloadManager: DownloadManager;
+    private settingsConfigManager: SettingsConfigManager;
     private objectUrlImages: string[] = [];
     private readonly lastId: number = 0;
 
@@ -90,7 +90,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
         }
 
         this.broadcaster = Broadcaster.getInstance();
-        this.downloadManager = DownloadManager.getInstance();
+        this.settingsConfigManager = SettingsConfigManager.getInstance();
 
         if (props.message) {
             this.lastId = props.message.id || 0;
@@ -177,7 +177,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
                 });
             } else {
                 if (message && !message.downloaded) {
-                    const ds = this.downloadManager.getDownloadSettings();
+                    const ds = this.settingsConfigManager.getDownloadSettings();
                     switch (message.peertype) {
                         case PeerType.PEERUSER:
                             if (message.messagetype === C_MESSAGE_TYPE.Voice && ds.chat_voices) {
