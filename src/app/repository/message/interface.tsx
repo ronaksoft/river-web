@@ -28,6 +28,7 @@ interface IMessage extends UserMessage.AsObject {
     added_labels?: number[];
     removed_labels?: number[];
     req_id?: number;
+    mark_as_sent?: boolean;
 }
 
 interface IPendingMessage {

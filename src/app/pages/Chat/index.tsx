@@ -1814,15 +1814,15 @@ class Chat extends React.Component<IProps, IState> {
         if (err && err.code === C_ERR.ErrCodeAlreadyExists && err.items === C_ERR_ITEM.ErrItemRandomID) {
             this.messageRepo.removePending(randomId);
             this.messageRepo.remove(id);
-            // const index = findIndex(this.messages, (o) => {
-            //     return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
-            // });
-            // if (index > -1) {
-            //     this.messages.splice(index, 1);
-            //     if (this.messageRef) {
-            //         this.messageRef.updateList();
-            //     }
-            // }
+            const index = findIndex(this.messages, (o) => {
+                return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+            });
+            if (index > -1) {
+                this.messages[index].mark_as_sent = true;
+                if (this.messageRef) {
+                    this.messageRef.updateList();
+                }
+            }
             return true;
         }
         return false;

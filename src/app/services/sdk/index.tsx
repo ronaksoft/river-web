@@ -255,26 +255,26 @@ export default class SDK {
     public contactImport(replace: boolean, contacts: PhoneContact.AsObject[]): Promise<ContactsImported.AsObject> {
         const data = new ContactsImport();
         const arr: PhoneContact[] = [];
-        contacts.forEach((cont) => {
+        contacts.forEach((cont, key) => {
             const contact = new PhoneContact();
             if (cont.clientid) {
-                contact.setClientid(cont.clientid);
+                contact.setClientid(cont.clientid || `${key}`);
             }
             if (cont.firstname) {
-                contact.setFirstname(cont.firstname);
+                contact.setFirstname(cont.firstname || '');
             }
             if (cont.lastname) {
-                contact.setLastname(cont.lastname);
+                contact.setLastname(cont.lastname || '');
             }
             if (cont.phone) {
                 if (cont.phone.indexOf('237400') !== 0) {
                     const phoneObj = parsePhoneNumberFromString(cont.phone, 'IR');
                     if (phoneObj) {
                         // @ts-ignore
-                        contact.setPhone(phoneObj.number);
+                        contact.setPhone(phoneObj.number || '');
                     }
                 } else {
-                    contact.setPhone(cont.phone);
+                    contact.setPhone(cont.phone || '');
                 }
             }
             arr.push(contact);

@@ -1,3 +1,6 @@
+## 0.30.2
+* RandomId handler added
+
 ## 0.30.1
 * Gradient added in theme
 * Settings updated

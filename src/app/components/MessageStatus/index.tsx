@@ -20,6 +20,7 @@ interface IProps {
     id?: number;
     labelIds?: number[];
     onDoubleClick?: (e: any) => void;
+    markAsSent?: boolean;
     readId?: number;
     status: boolean;
     time: number;
@@ -29,6 +30,7 @@ interface IState {
     editedTime: number;
     id: number;
     labelIds: number[];
+    markAsSent?: boolean;
     readId: number;
     status: boolean;
     time: number;
@@ -40,6 +42,7 @@ class MessageStatus extends React.Component<IProps, IState> {
             editedTime: newProps.editedTime || 0,
             id: newProps.id || 0,
             labelIds: newProps.labelIds || [],
+            markAsSent: newProps.markAsSent,
             readId: newProps.readId || 0,
             status: newProps.status,
         };
@@ -61,22 +64,22 @@ class MessageStatus extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const {id, readId, status, time, editedTime} = this.state;
+        const {id, readId, status, time, editedTime, markAsSent} = this.state;
         return (
             <div className={'message-status'} onClick={this.onClickHandler} onDoubleClick={this.onDoubleClickHandler}>
                 {this.getLabels()}
                 {editedTime > 0 && <span className="edited">{i18n.t("general.edited")}</span>}
                 <span className="time">{TimeUtility.TimeParse(time)}</span>
-                {this.getStatus(id, readId, status)}
+                {this.getStatus(id, readId, status, markAsSent)}
             </div>
         );
     }
 
-    private getStatus(id: number, readId: number, status: boolean) {
+    private getStatus(id: number, readId: number, status: boolean, markAsSent?: boolean) {
         if (id && status) {
-            if (id < 0) {
+            if (id < 0 && !markAsSent) {
                 return (<ScheduleRounded className="icon"/>);
-            } else if (id > 0 && readId >= id) {
+            } else if ((id > 0 && readId >= id) || markAsSent) {
                 return (<DoneAllRounded className="icon"/>);
             } else if (id > 0 && readId < id) {
                 return (<DoneRounded className="icon"/>);
