@@ -183,6 +183,26 @@ export const bubbles = [{
     title: 'settings.simplified'
 }];
 
+export const gradients = [{
+    id: '0',
+    title: 'settings.none'
+}, {
+    id: '1',
+    title: 'settings.morning'
+}, {
+    id: '2',
+    title: 'settings.venice'
+}, {
+    id: '3',
+    title: 'settings.paradise'
+}, {
+    id: '4',
+    title: 'settings.ocean'
+}, {
+    id: '5',
+    title: 'settings.rainbow'
+}];
+
 export const themes = [{
     id: 'light',
     title: 'settings.light'

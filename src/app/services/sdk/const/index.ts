@@ -14,6 +14,7 @@
 // UpdateManagerStatus: -5,
 // UpdateDialogDB: -6,
 // UpdateMessageDB: -7,
+// UpdateMessageDBRemoved: -8,
 /* tslint:disable-next-line */
 export const C_MSG = {
     AccountAuthorization: 275571966,
@@ -276,6 +277,7 @@ export const C_MSG = {
     UpdateLabelSet: 2353687359,
     UpdateManagerStatus: -5,
     UpdateMessageDB: -7,
+    UpdateMessageDBRemoved: -8,
     UpdateMessageEdited: 1825079988,
     UpdateMessageID: 2139063022,
     UpdateMessagesDeleted: 670568714,

@@ -36,6 +36,7 @@ import {
     BlockRounded,
     DeleteRounded,
     NotificationsRounded,
+    GradientRounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import UserAvatar from '../UserAvatar';
@@ -44,7 +45,16 @@ import UserRepo from '../../repository/user';
 import SDK from '../../services/sdk';
 import {cloneDeep, debounce, find, findIndex, isEqual} from 'lodash';
 import Scrollbars from 'react-custom-scrollbars';
-import {bgTypes, bubbles, C_CUSTOM_BG, privacyItems, privacyRuleItems, storageItems, themes} from './vars/theme';
+import {
+    bgTypes,
+    bubbles,
+    C_CUSTOM_BG,
+    gradients,
+    privacyItems,
+    privacyRuleItems,
+    storageItems,
+    themes
+} from './vars/theme';
 import {IUser} from '../../repository/user/interface';
 import {Link} from 'react-router-dom';
 import FileManager, {IFileProgress} from '../../services/sdk/fileManager';
@@ -105,7 +115,7 @@ const listStyle: React.CSSProperties = {
     overflowY: 'visible',
 };
 
-export const C_VERSION = '0.30.0';
+export const C_VERSION = '0.30.1';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 export const C_AVATAR_SIZE = 640;
 
@@ -204,6 +214,7 @@ interface IState {
     selectedBubble: string;
     selectedCustomBackground: string;
     selectedCustomBackgroundBlur: number;
+    selectedGradient: string;
     selectedLanguage: string;
     selectedTheme: string;
     sessions?: AccountAuthorization.AsObject[];
@@ -293,6 +304,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             selectedBubble: '1',
             selectedCustomBackground: localStorage.getItem('river.theme.bg.pic') || '-1',
             selectedCustomBackgroundBlur: parseInt(localStorage.getItem('river.theme.bg.blur') || '0', 10),
+            selectedGradient: localStorage.getItem('river.theme.gradient') || '0',
             selectedLanguage: localStorage.getItem('river.lang') || 'en',
             selectedTheme: localStorage.getItem('river.theme.color') || 'light',
             storageValues: {
@@ -593,7 +605,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                                 <div className="radio-title">{i18n.t(theme.title)}</div>
                                                             </div>
                                                             <div
-                                                                className={'item theme-' + theme.id + ' bubble-' + this.state.selectedBubble + ' bg-' + this.state.selectedBackground}/>
+                                                                className={`item theme-${theme.id} gradient-${this.state.selectedGradient} bubble-${this.state.selectedBubble} bg-${this.state.selectedBackground}`}/>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -623,7 +635,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                                     className="radio-title">{i18n.t(bubble.title)}</div>
                                                             </div>
                                                             <div
-                                                                className={'item bubble-' + bubble.id + ' theme-' + this.state.selectedTheme + ' bg-' + this.state.selectedBackground}/>
+                                                                className={`item bubble-${bubble.id} gradient-${this.state.selectedGradient} theme-${this.state.selectedTheme} bg-${this.state.selectedBackground}`}/>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -652,12 +664,42 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                                 <div className="radio-title">{i18n.t(types.title)}</div>
                                                             </div>
                                                             {Boolean(types.id !== '1') && <div
-                                                                className={'item bubble-' + this.state.selectedBubble + ' theme-' + this.state.selectedTheme + ' bg-' + this.state.selectedBackground}/>}
+                                                                className={`item bubble-${this.state.selectedBubble} gradient-${this.state.selectedGradient}  theme-${this.state.selectedTheme} bg-${this.state.selectedBackground}`}/>}
                                                             {Boolean(types.id === '1') && <div
-                                                                className={'item bubble-' + this.state.selectedBubble + ' theme-' + this.state.selectedTheme + ' bg-' + this.state.selectedBackground}>
+                                                                className={`item bubble-${this.state.selectedBubble} gradient-${this.state.selectedGradient} theme-${this.state.selectedTheme} bg-${this.state.selectedBackground}`}>
                                                                 {customBackgroundSrc &&
                                                                 <img src={customBackgroundSrc} alt="custom-bg"/>}
                                                             </div>}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="page-content">
+                                            <div className="page-anchor">
+                                                <div className="icon color-gradient">
+                                                    <GradientRounded/>
+                                                </div>
+                                                <div className="anchor-label">{i18n.t('settings.gradient')}</div>
+                                            </div>
+                                            <div className="page-content-inner">
+                                                <div
+                                                    className="theme-container"
+                                                >
+                                                    {gradients.map((gradient, index) => (
+                                                        <div key={index}
+                                                             className={'radio-item ' + (this.state.selectedGradient === gradient.id ? 'selected' : '')}
+                                                             onClick={this.selectGradientHandler(gradient.id)}
+                                                        >
+                                                            <div className="radio-label">
+                                                                <Radio color="primary"
+                                                                       className={'radio ' + (this.state.selectedGradient === gradient.id ? 'checked' : '')}
+                                                                       checked={(this.state.selectedGradient === gradient.id)}/>
+                                                                <div
+                                                                    className="radio-title">{i18n.t(gradient.title)}</div>
+                                                            </div>
+                                                            <div
+                                                                className={`item gradient-${gradient.id} bubble-${this.state.selectedBubble} theme-${this.state.selectedTheme} bg-${this.state.selectedBackground}`}/>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -865,6 +907,8 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                     autoHide={true}
                                 >
                                     <div>
+                                        <div
+                                            className="sub-page-header-alt">{i18n.t('settings.security')}</div>
                                         <div className="page-anchor anchor-padding-side"
                                              onClick={this.selectSubPageHandler('session')}>
                                             <div className="icon color-session">
@@ -993,9 +1037,11 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                 <label>{i18n.t('settings.notification')}</label>
                             </div>
                             <div className="menu-content">
-                                <div className="switch-item">
+                                <div
+                                    className="sub-page-header-alt">{i18n.t('settings.badge_counter')}</div>
+                                <div className="switch-item with-border">
                                     <div
-                                        className="switch-label">{i18n.t('settings.count_muted_dialogs')}</div>
+                                        className="switch-label">{i18n.t('settings.include_muted')}</div>
                                     <div className="switch">
                                         <Switch
                                             checked={this.state.notificationValues.count_muted}
@@ -1493,6 +1539,20 @@ class SettingsMenu extends React.Component<IProps, IState> {
             if (this.props.onUpdateMessages) {
                 this.props.onUpdateMessages();
             }
+            this.broadcastEvent('Theme_Changed', null);
+        });
+    }
+
+    private selectGradientHandler = (id: string) => (e: any) => {
+        this.setState({
+            selectedGradient: id,
+        }, () => {
+            const el = document.querySelector('html');
+            if (!el) {
+                return;
+            }
+            localStorage.setItem('river.theme.gradient', id);
+            el.setAttribute('gradient', id);
             this.userRepo.setBubbleMode(id);
             this.broadcastEvent('Theme_Changed', null);
         });

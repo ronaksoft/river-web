@@ -46,7 +46,7 @@ import {
 } from '../../services/sdk/messages/chat.core.types_pb';
 import {IConnInfo} from '../../services/sdk/interface';
 import {IDialog} from '../../repository/dialog/interface';
-import UpdateManager, {IDialogDBUpdated, IMessageDBUpdated} from '../../services/sdk/updateManager';
+import UpdateManager, {IDialogDBUpdated, IMessageDBRemoved, IMessageDBUpdated} from '../../services/sdk/updateManager';
 import {C_ERR, C_ERR_ITEM, C_MSG} from '../../services/sdk/const';
 import {
     UpdateDialogPinned,
@@ -139,9 +139,9 @@ import Landscape from "../../components/SVG";
 import {isMobile} from "../../services/utilities/localize";
 import LabelRepo from "../../repository/label";
 import LabelDialog from "../../components/LabelDialog";
+import AvatarService from "../../services/avatarService";
 
 import './style.scss';
-import AvatarService from "../../services/avatarService";
 
 export let notifyOptions: any[] = [];
 
@@ -414,6 +414,9 @@ class Chat extends React.Component<IProps, IState> {
 
         // Update: message db updated
         this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateMessageDB, this.updateMessageDBUpdatedHandler));
+
+        // Update: message db removed
+        this.eventReferences.push(this.updateManager.listen(C_MSG.UpdateMessageDBRemoved, this.updateMessageDBRemovedHandler));
 
         // TODO: add timestamp to pending message
 
@@ -1125,15 +1128,12 @@ class Chat extends React.Component<IProps, IState> {
     /* Update message delete handler */
     private updateMessageDeleteHandler = (data: UpdateMessagesDeleted.AsObject) => {
         const peer = data.peer;
-        if (!peer) {
+        if (!peer || peer.id !== this.selectedDialogId) {
             return;
         }
 
         data.messageidsList.sort().forEach((id) => {
-            if (!peer) {
-                return;
-            }
-            if (peer.id === this.selectedDialogId && this.messageRef) {
+            if (this.messageRef) {
                 // Update and broadcast changes in cache
                 this.cachedMessageService.removeMessage(id);
 
@@ -2415,12 +2415,8 @@ class Chat extends React.Component<IProps, IState> {
 
     private updateMessageDBUpdatedHandler = (data: IMessageDBUpdated) => {
         if (data.ids) {
-            data.ids.forEach((id: any) => {
-                if (typeof id === 'number') {
-                    this.checkPendingMessage(id, true);
-                } else {
-                    this.checkPendingMessage(parseInt(id, 10), true);
-                }
+            data.ids.forEach((id) => {
+                this.checkPendingMessage(id, true);
             });
         }
         const peer = this.peer;
@@ -2451,6 +2447,54 @@ class Chat extends React.Component<IProps, IState> {
                 });
             });
         }
+    }
+
+    private updateMessageDBRemovedHandler = (data: IMessageDBRemoved) => {
+        if (data.peerIds.indexOf(this.selectedDialogId) === -1) {
+            return;
+        }
+        data.listPeer[this.selectedDialogId].sort().forEach((id) => {
+            if (!this.messageRef) {
+                return;
+            }
+            // Update and broadcast changes in cache
+            this.cachedMessageService.removeMessage(id);
+
+            const messages = this.messages;
+            let updateView = false;
+            const index = findLastIndex(messages, (o) => {
+                return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+            });
+            if (index > -1) {
+                updateView = true;
+                // Delete visible message if possible
+                this.messageRef.clear(index);
+                messages.splice(index, 1);
+                // Clear date indicator if possible
+                const indexAlpha = index - 1;
+                if (indexAlpha > -1 && messages.length > index) {
+                    // If date indicator were in current range boundaries
+                    if (messages[indexAlpha].messagetype === C_MESSAGE_TYPE.Date && messages[index].messagetype === C_MESSAGE_TYPE.Date) {
+                        this.messageRef.clear(indexAlpha);
+                        messages.splice(indexAlpha, 1);
+                    }
+                } else if (indexAlpha > -1 && messages.length === index) {
+                    // If it was last message
+                    if (messages[indexAlpha].messagetype === C_MESSAGE_TYPE.Date) {
+                        this.messageRef.clear(indexAlpha);
+                        messages.splice(indexAlpha, 1);
+                    }
+                }
+            }
+            // Update current message list if visible
+            if (this.messageRef && updateView) {
+                this.messageRef.forceUpdate(() => {
+                    if (this.messageRef) {
+                        this.messageRef.updateList();
+                    }
+                });
+            }
+        });
     }
 
     /* Notify on new message received */
@@ -3101,6 +3145,13 @@ class Chat extends React.Component<IProps, IState> {
                 }
             });
             if (remoteMsgIds.length > 0) {
+                const listPeer: any = {};
+                listPeer[peer.getId() || ''] = remoteMsgIds;
+                this.updateMessageDBRemovedHandler({
+                    ids: remoteMsgIds,
+                    listPeer,
+                    peerIds: [peer.getId() || ''],
+                });
                 this.sdk.removeMessage(peer, remoteMsgIds, mode === 1).catch((err) => {
                     window.console.debug(err);
                 });
@@ -4325,7 +4376,7 @@ class Chat extends React.Component<IProps, IState> {
         }
     }
 
-    private updateManagerStatusHandler = ({isUpdating}: {isUpdating: boolean}) => {
+    private updateManagerStatusHandler = ({isUpdating}: { isUpdating: boolean }) => {
         this.setAppStatus({
             isUpdating,
         });

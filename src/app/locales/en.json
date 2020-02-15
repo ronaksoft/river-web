@@ -163,6 +163,7 @@
     "font_size": "Font Size",
     "bubble": "Bubble",
     "background": "Background",
+    "gradient": "Gradient",
     "account": "Account",
     "log_out": "Log Out",
     "terminate_all_other_sessions": "Terminate All Other Sessions",
@@ -196,6 +197,11 @@
     "pattern": "Pattern",
     "chat_background": "Chat Background",
     "customized_background": "Customized Background",
+    "morning": "Morning",
+    "venice": "Venice",
+    "paradise": "Paradise",
+    "ocean": "Ocean",
+    "rainbow": "Rainbow",
     "show_photo": "Show Photo",
     "remove_photo": "Remove Photo",
     "change_photo": "Change Photo",
@@ -212,6 +218,7 @@
     "scanning_files": "Scanning {0} files...",
     "files2": "files",
     "file": "file",
+    "security": "Security",
     "privacy": "Privacy",
     "privacy_call": "Call",
     "privacy_call_hint": "Who can call me?",
@@ -278,7 +285,8 @@
       "q9": "What time of the day were you born?",
       "q10": "What is your dream country/city you want to live after retirement?"
     },
-    "count_muted_dialogs": "Count muted dialogs"
+    "badge_counter": "Badge Counter",
+    "include_muted": "Include muted"
   },
   "contact": {
     "contacts": "Contacts",

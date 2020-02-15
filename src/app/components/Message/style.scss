@@ -1244,6 +1244,131 @@ html[bubble="5"] {
   }
 }
 
+html[gradient="1"]:not([bubble="5"]) {
+  .bubble-wrapper {
+    &.me {
+      .arrow:after {
+        background: var(--gradient-morning);
+        background-attachment: fixed;
+      }
+
+      .bubble {
+        background: var(--gradient-morning);
+        background-attachment: fixed;
+        color: #383633;
+
+        .message-status {
+          color: rgba(56, 54, 51, 0.85);
+        }
+
+        ._url, ._hashtag, ._mention {
+          color: #5a4502;
+        }
+      }
+    }
+  }
+}
+
+html[gradient="2"]:not([bubble="5"]) {
+  .bubble-wrapper {
+    &.me {
+      .arrow:after {
+        background: var(--gradient-venice);
+        background-attachment: fixed;
+      }
+
+      .bubble {
+        background: var(--gradient-venice);
+        background-attachment: fixed;
+        color: #fff;
+
+        .message-status {
+          color: rgba(255, 255, 255, 0.79);
+        }
+
+        ._url, ._hashtag, ._mention {
+          color: #0d4c2c;
+        }
+      }
+    }
+  }
+}
+
+html[gradient="3"]:not([bubble="5"]) {
+  .bubble-wrapper {
+    &.me {
+      .arrow:after {
+        background: var(--gradient-paradise);
+        background-attachment: fixed;
+      }
+
+      .bubble {
+        background: var(--gradient-paradise);
+        background-attachment: fixed;
+        color: #fff;
+
+        .message-status {
+          color: rgba(255, 255, 255, 0.79);
+        }
+
+        ._url, ._hashtag, ._mention {
+          color: #570f77;
+        }
+      }
+    }
+  }
+}
+
+html[gradient="4"]:not([bubble="5"]) {
+  .bubble-wrapper {
+    &.me {
+      .arrow:after {
+        background: var(--gradient-ocean);
+        background-attachment: fixed;
+      }
+
+      .bubble {
+        background: var(--gradient-ocean);
+        background-attachment: fixed;
+        color: #fff;
+
+        .message-status {
+          color: rgba(255, 255, 255, 0.79);
+        }
+
+        ._url, ._hashtag, ._mention {
+          color: #1ea3f9;
+        }
+      }
+    }
+  }
+}
+
+html[gradient="5"]:not([bubble="5"]) {
+  .bubble-wrapper {
+    &.me {
+      .arrow:after {
+        background: var(--gradient-rainbow);
+        background-attachment: fixed;
+      }
+
+      .bubble {
+        background: var(--gradient-rainbow);
+        background-attachment: fixed;
+        color: #b948a5;
+
+        .message-status {
+          color: rgba(129, 82, 22, 0.76);
+        }
+
+        ._url, ._hashtag, ._mention {
+          color: #1ea3f9;
+        }
+      }
+    }
+  }
+}
+
 //html[bubble="3"] {
 //  .bubble-wrapper {
 //    padding-bottom: 4px;

@@ -141,6 +141,7 @@ class App extends React.Component<{}, IState> {
             el.setAttribute('font', localStorage.getItem('river.theme.font') || '2');
             el.setAttribute('bg', localStorage.getItem('river.theme.bg') || '15');
             el.setAttribute('bubble', localStorage.getItem('river.theme.bubble') || '4');
+            el.setAttribute('gradient', localStorage.getItem('river.theme.gradient') || '0');
             el.setAttribute('direction', localStorage.getItem('river.lang.dir') || 'ltr');
         }
 

@@ -60,6 +60,12 @@ export interface IMessageDBUpdated {
     peerIds: string[];
 }
 
+export interface IMessageDBRemoved {
+    ids: number[];
+    listPeer: { [key: string]: number[] };
+    peerIds: string[];
+}
+
 interface IUpdateContainer extends UpdateContainer.AsObject {
     lastOne?: boolean;
 }
@@ -88,7 +94,7 @@ interface ITransactionPayload {
     lastOne?: boolean;
     live: boolean;
     messages: { [key: number]: IMessage };
-    removedMessages: number[];
+    removedMessages: { [key: string]: number[] };
     toCheckDialogIds: string[];
     updateId: number;
     users: { [key: string]: IUser };
@@ -439,7 +445,7 @@ export default class UpdateManager {
             lastOne: data.lastOne || false,
             live,
             messages: {},
-            removedMessages: [],
+            removedMessages: {},
             toCheckDialogIds: [],
             updateId: data.maxupdateid || 0,
             users: {},
@@ -549,7 +555,13 @@ export default class UpdateManager {
                 // Delete message(s)
                 updateMessagesDeleted.messageidsList.forEach((id) => {
                     this.removeMessage(transaction.messages, id);
-                    transaction.removedMessages.push(id);
+                    if (updateMessagesDeleted.peer) {
+                        if (!transaction.removedMessages.hasOwnProperty(updateMessagesDeleted.peer.id || '')) {
+                            transaction.removedMessages[updateMessagesDeleted.peer.id || ''] = [id];
+                        } else {
+                            transaction.removedMessages[updateMessagesDeleted.peer.id || ''].push(id);
+                        }
+                    }
                 });
                 // Update to check list
                 if (updateMessagesDeleted.peer) {
@@ -900,14 +912,19 @@ export default class UpdateManager {
             if (Object.keys(transaction.messages).length > 0) {
                 promises.push(this.applyMessages(transaction.messages).then((res) => {
                     if (!transaction.live) {
-                        this.callUpdateHandler(C_MSG.UpdateMessageDB, res);
+                        this.callHandlers(C_MSG.UpdateMessageDB, res);
                     }
                     return res;
                 }));
             }
             // Removed message list
-            if (transaction.removedMessages.length > 0 && this.messageRepo) {
-                promises.push(this.messageRepo.removeMany(transaction.removedMessages));
+            if (Object.keys(transaction.removedMessages).length > 0) {
+                promises.push(this.applyRemovedMessages(transaction.removedMessages).then((res) => {
+                    if (!transaction.live) {
+                        this.callHandlers(C_MSG.UpdateMessageDBRemoved, res);
+                    }
+                    return res;
+                }));
             }
             // Dialog list (conditional)
             if (transaction.toCheckDialogIds.length === 0) {
@@ -1070,6 +1087,29 @@ export default class UpdateManager {
             return Promise.resolve({
                 ids: keys,
                 minIds: minIdPerPeer,
+                peerIds,
+            });
+        }
+    }
+
+    private applyRemovedMessages(removedMessages: { [key: string]: number[] }): Promise<IMessageDBRemoved> {
+        const peerIds = Object.keys(removedMessages);
+        const ids: number[] = [];
+        peerIds.forEach((peerId) => {
+            ids.push(...removedMessages[peerId]);
+        });
+        if (ids.length > 0 && this.messageRepo) {
+            return this.messageRepo.removeMany(ids).then(() => {
+                return {
+                    ids,
+                    listPeer: removedMessages,
+                    peerIds,
+                };
+            });
+        } else {
+            return Promise.resolve({
+                ids,
+                listPeer: {},
                 peerIds,
             });
         }

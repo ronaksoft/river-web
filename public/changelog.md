@@ -1,3 +1,9 @@
+## 0.30.1
+* Gradient added in theme
+* Settings updated
+* UpdateManger fixed
+* Know bugs fixed
+
 ## 0.30.0
 * 🎉 Update Mechanism rewrote
 * Settings for notifications

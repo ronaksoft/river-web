@@ -159,6 +159,7 @@
     "font_size": "اندازه فونت",
     "bubble": "بابل",
     "background": "پس‌زمینه",
+    "gradient": "گرادیانت",
     "account": "حساب",
     "log_out": "خروج",
     "terminate_all_other_sessions": "حذف باقی نشست‌ها",
@@ -192,6 +193,11 @@
     "pattern": "نقش",
     "chat_background": "پس‌زمینه گفتگو",
     "customized_background": "سفارشی کردن پس‌زمینه",
+    "morning": "صبح",
+    "venice": "ونیز",
+    "paradise": "بهشت",
+    "ocean": "اقیانوس",
+    "rainbow": "رنگین‌کمان",
     "show_photo": "نمایش عکس",
     "remove_photo": "حذف عکس",
     "change_photo": "تغییر عکس",
@@ -208,6 +214,7 @@
     "scanning_files": "درحال اسکن {0} فایل...",
     "files2": "فایل",
     "file": "فایل",
+    "security": "امنیت",
     "privacy": "حریم خصوصی",
     "privacy_call": "تماس",
     "privacy_call_hint": "چه کسی می‌تواند با من تماس بگیرد؟",
@@ -274,7 +281,8 @@
       "q9": "چه ساعتی از روز بدنیا آمده اید؟",
       "q10": "کشور و یا شهری که علاقه مند هستید پس از بازنشستگی در آنجا زندگی کنید، چیست؟"
     },
-    "count_muted_dialogs": "شمارش دیالوگ‌های بی‌صدا"
+    "badge_counter": "نشانه شمارنده",
+    "include_muted": "شمارش بی‌صداها"
   },
   "contact": {
     "contacts": "مخاطب‌ها",

@@ -35,6 +35,7 @@ const SIZING_STYLE = [
 
 const computedStyleCache: any = {};
 
+const hiddenDiv = document.createElement('div');
 const hiddenTextarea = document.createElement('textarea');
 
 const forceHiddenStyles = (node: any) => {
@@ -52,8 +53,9 @@ export const measureNodeHeight = (
     minRows: number | null = null,
     maxRows: number | null = null,
 ) => {
-    if (hiddenTextarea.parentNode === null) {
-        document.body.appendChild(hiddenTextarea);
+    if (hiddenDiv.parentNode === null) {
+        document.body.appendChild(hiddenDiv);
+        hiddenDiv.appendChild(hiddenTextarea);
     }
 
     // Copy all CSS properties that have an impact on the height of the content in

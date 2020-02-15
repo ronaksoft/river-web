@@ -237,6 +237,10 @@
         background-color: #9C27B0;
       }
 
+      &.color-gradient {
+        background-color: #EB5757;
+      }
+
       &.color-language {
         background-color: #BB6BD9;
       }
@@ -434,6 +438,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
+    &.with-border {
+      border-top: 1px solid var(--light);
+      border-bottom: 1px solid var(--light);
+    }
 
     .switch-label {
       flex: 1;
@@ -911,6 +920,36 @@
           background: var(--dark-blue-accent-low) !important;
         }
       }
+
+      &.gradient-1 {
+        &:before {
+          background: var(--gradient-morning) !important;
+        }
+      }
+
+      &.gradient-2 {
+        &:before {
+          background: var(--gradient-venice) !important;
+        }
+      }
+
+      &.gradient-3 {
+        &:before {
+          background: var(--gradient-paradise) !important;
+        }
+      }
+
+      &.gradient-4 {
+        &:before {
+          background: var(--gradient-ocean) !important;
+        }
+      }
+
+      &.gradient-5 {
+        &:before {
+          background: var(--gradient-rainbow) !important;
+        }
+      }
     }
 
     .title-bar {
@@ -1368,6 +1407,10 @@ html[theme="dark-blue"] {
       svg {
         color: var(--white);
       }
+    }
+
+    .switch-item.with-border {
+      border-color: var(--dark-low-op50);
     }
 
     .page-anchor, .page-content {
