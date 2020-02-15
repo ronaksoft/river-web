@@ -1539,6 +1539,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             if (this.props.onUpdateMessages) {
                 this.props.onUpdateMessages();
             }
+            this.userRepo.setBubbleMode(id);
             this.broadcastEvent('Theme_Changed', null);
         });
     }
@@ -1553,7 +1554,6 @@ class SettingsMenu extends React.Component<IProps, IState> {
             }
             localStorage.setItem('river.theme.gradient', id);
             el.setAttribute('gradient', id);
-            this.userRepo.setBubbleMode(id);
             this.broadcastEvent('Theme_Changed', null);
         });
     }

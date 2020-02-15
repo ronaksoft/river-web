@@ -1355,14 +1355,14 @@ html[gradient="5"]:not([bubble="5"]) {
       .bubble {
         background: var(--gradient-rainbow);
         background-attachment: fixed;
-        color: #b948a5;
+        color: #fff;
 
         .message-status {
-          color: rgba(129, 82, 22, 0.76);
+          color: rgba(255, 255, 255, 0.79);
         }
 
         ._url, ._hashtag, ._mention {
-          color: #1ea3f9;
+          color: #1f133e;
         }
       }
     }
