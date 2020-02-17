@@ -60,3 +60,13 @@
     padding: 0;
   }
 }
+
+.user-deleted {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  height: 100%;
+  overflow: hidden;
+  background: linear-gradient(45deg, #3D3949, #6772A4);
+}

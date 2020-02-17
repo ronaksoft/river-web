@@ -76,13 +76,13 @@ export default class GroupRepo {
                             this.upsert([res]);
                             resolve(res);
                         } else {
-                            reject('none found');
+                            reject('not_found');
                         }
                     }).catch((err) => {
                         reject(err);
                     });
                 } else {
-                    reject('none found');
+                    reject('not_found');
                 }
             });
         });

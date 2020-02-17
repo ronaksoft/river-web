@@ -1,5 +1,7 @@
 ## 0.30.2
 * RandomId handler added
+* Deleted Account updated
+* Broadcast message compatibility
 
 ## 0.30.1
 * Gradient added in theme

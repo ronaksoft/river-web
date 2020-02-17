@@ -110,7 +110,7 @@ class UserDialog extends React.Component<IProps, IState> {
         });
     }
 
-    public openDialog(peer: InputPeer) {
+    public openDialog(peer: InputPeer, text?: string) {
         if (this.state.peer === peer) {
             return;
         }
@@ -127,7 +127,7 @@ class UserDialog extends React.Component<IProps, IState> {
             user: null,
             userDialogOpen: true,
         }, () => {
-            this.getUser();
+            this.getUser(text);
         });
     }
 
@@ -300,7 +300,7 @@ class UserDialog extends React.Component<IProps, IState> {
     }
 
     /* Gets the user from repository */
-    private getUser() {
+    private getUser(text?: string) {
         const {peer} = this.state;
         if (!peer) {
             return;
@@ -318,6 +318,22 @@ class UserDialog extends React.Component<IProps, IState> {
 
         this.userRepo.getFull(peer.getId() || '', fn).then((res) => {
             fn(res);
+        }).catch((err) => {
+            if (err === 'not_found' && text && text.indexOf('@') === 0) {
+                this.userRepo.contactSearch(text.substr(1)).then((userRes) => {
+                    if (userRes.length === 1) {
+                        const userPeer = new InputPeer();
+                        userPeer.setId(userRes[0].id || '');
+                        userPeer.setType(PeerType.PEERUSER);
+                        userPeer.setAccesshash(userRes[0].accesshash || '');
+                        this.setState({
+                            peer: userPeer,
+                        }, () => {
+                            this.getUser(text);
+                        });
+                    }
+                });
+            }
         });
 
         if ((peer.getAccesshash() || '').length > 0) {
@@ -498,8 +514,8 @@ class UserDialog extends React.Component<IProps, IState> {
         const peer = new InputPeer();
         peer.setId(peerId);
         peer.setType(PeerType.PEERUSER);
-        peer.setAccesshash(data.accesshash || '0');
-        this.openDialog(peer);
+        peer.setAccesshash(data.accesshash || '');
+        this.openDialog(peer, data.text);
     }
 
     /* Close dialog */

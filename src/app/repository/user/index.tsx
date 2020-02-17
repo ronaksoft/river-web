@@ -128,13 +128,13 @@ export default class UserRepo {
                             }
                             resolve(u);
                         } else {
-                            reject('none found');
+                            reject('not_found');
                         }
                     }).catch((err) => {
                         reject(err);
                     });
                 } else {
-                    reject('none found');
+                    reject('not_found');
                 }
             });
         });

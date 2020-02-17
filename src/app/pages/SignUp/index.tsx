@@ -38,10 +38,10 @@ import {modifyCode} from "./utils";
 import {AuthAuthorization} from "../../services/sdk/messages/chat.api.auth_pb";
 import {AccountPassword, SecurityQuestion} from "../../services/sdk/messages/chat.api.accounts_pb";
 import {extractPhoneNumber, faToEn} from "../../services/utilities/localize";
+import RecoveryQuestionModal from "../../components/RecoveryQuestionModal";
 
 import './tel-input.css';
 import './style.scss';
-import RecoveryQuestionModal from "../../components/RecoveryQuestionModal";
 
 function getChromeVersion() {
     const raw = window.navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./);

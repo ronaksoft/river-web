@@ -81,7 +81,7 @@ class MessageStatus extends React.Component<IProps, IState> {
                 return (<ScheduleRounded className="icon"/>);
             } else if ((id > 0 && readId >= id)) {
                 return (<DoneAllRounded className="icon"/>);
-            } else if (id > 0 && readId < id || markAsSent) {
+            } else if ((id > 0 && readId < id) || markAsSent) {
                 return (<DoneRounded className="icon"/>);
             } else {
                 return '';

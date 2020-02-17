@@ -17,6 +17,7 @@ import Broadcaster from '../../services/broadcaster';
 import icon from '../../../asset/image/icon.png';
 import {UserStatus} from "../../services/sdk/messages/chat.core.types_pb";
 import RiverTime from "../../services/utilities/river_time";
+import {DeletedUserLight} from "./svg";
 
 import './style.scss';
 
@@ -208,6 +209,12 @@ class UserAvatar extends React.Component<IProps, IState> {
             return (
                 <span className={'avatar-official ' + className}>
                     <img src={icon} alt="avatar"/>
+                </span>
+            );
+        } else if (user && user.deleted) {
+            return (
+                <span className={'user-deleted ' + className}>
+                    <DeletedUserLight/>
                 </span>
             );
         } else {

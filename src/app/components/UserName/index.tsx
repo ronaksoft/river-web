@@ -108,19 +108,19 @@ class UserName extends React.Component<IProps, IState> {
                 <span className={className}
                       style={style}
                       onClick={this.clickHandler}>{Boolean(this.props.hideBadge !== true) && <VerifiedUserRounded
-                    style={{color: '#27AE60'}}/>}{(user && user.id) ? (onlyFirstName ? prefix + user.firstname + postfix : `${prefix}${user.firstname} ${user.lastname}${postfix}`) : (defaultString || '')}</span>
+                    style={{color: '#27AE60'}}/>}{(user && user.id) ? (onlyFirstName ? prefix + user.firstname + postfix : `${prefix}${user.firstname} ${user.lastname}${postfix}`) : `${prefix}${defaultString}${postfix}`}</span>
             );
         } else if (this.props.username === true) {
             return (
                 <span className={className}
                       style={style}
-                      onClick={this.clickHandler}>{(user && user.id && user.username && user.username.length > 0) ? `${prefix}${user.username}${postfix}` : (defaultString || '')}</span>
+                      onClick={this.clickHandler}>{(user && user.id && user.username && user.username.length > 0) ? `${prefix}${user.username}${postfix}` : `${prefix}${defaultString}${postfix}`}</span>
             );
         } else {
             return (
                 <span className={className}
                       style={style}
-                      onClick={this.clickHandler}>{(user && user.id) ? (onlyFirstName ? prefix + user.firstname : `${prefix}${user.firstname} ${user.lastname}${postfix}`) : (defaultString || '')}</span>
+                      onClick={this.clickHandler}>{(user && user.id) ? (onlyFirstName ? prefix + user.firstname : `${prefix}${user.firstname} ${user.lastname}${postfix}`) : `${prefix}${defaultString}${postfix}`}</span>
             );
         }
     }
@@ -179,6 +179,7 @@ class UserName extends React.Component<IProps, IState> {
     /* Click on user handler */
     private clickHandler = (e: any) => {
         const {user} = this.state;
+        const {prefix, defaultString} = this.props;
         if (!user || this.props.noDetail === true) {
             return;
         }
@@ -186,6 +187,7 @@ class UserName extends React.Component<IProps, IState> {
         e.preventDefault();
         this.broadcastEvent('User_Dialog_Open', {
             id: user.id,
+            text: `${prefix}${defaultString}`,
         });
     }
 
