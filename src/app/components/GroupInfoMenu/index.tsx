@@ -213,7 +213,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                         >
                             <div>
                                 {group && <div className="info kk-card">
-                                    <div className="avatar" onClick={this.avatarMenuAnchorOpenHandler}>
+                                    <div className={'avatar' + (Boolean(group && group.photo) ? ' pointer-cursor' : '')} onClick={this.avatarMenuAnchorOpenHandler}>
                                         {!uploadingPhoto && <GroupAvatar id={group.id || ''}/>}
                                         {uploadingPhoto &&
                                         <img src={this.profileTempPhoto} className="avatar-image" alt="avatar"/>}

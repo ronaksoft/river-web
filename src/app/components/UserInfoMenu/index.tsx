@@ -174,7 +174,8 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                         >
                             <div>
                                 {user && <div className="info kk-card">
-                                    <div className="avatar" onClick={this.showAvatarHandler}>
+                                    <div className={'avatar' + (Boolean(user && user.photo) ? ' pointer-cursor' : '')}
+                                         onClick={this.showAvatarHandler}>
                                         <UserAvatar id={user.id || ''} noDetail={true}/>
                                     </div>
                                     <div className="line">
@@ -408,7 +409,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
             inputUser.setAccesshash(user.accesshash || '');
             inputUser.setUserid(user.id || '');
             this.sdk.contactAdd(inputUser, firstname, lastname, phone).then(() => {
-                this.userRepo.importBulk(true, [user],false, this.callerId);
+                this.userRepo.importBulk(true, [user], false, this.callerId);
                 user.lastname = lastname;
                 user.firstname = firstname;
                 this.setState({

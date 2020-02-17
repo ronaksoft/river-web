@@ -30,7 +30,10 @@
         border-radius: 50%;
         display: inline-block;
         font-size: 75px;
-        cursor: pointer;
+
+        &.pointer-cursor {
+          cursor: pointer;
+        }
       }
 
       .line {

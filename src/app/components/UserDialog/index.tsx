@@ -148,7 +148,7 @@ class UserDialog extends React.Component<IProps, IState> {
             >
                 <div className="user-info-menu">
                     {user && <div className="info kk-card">
-                        <div className="avatar" onClick={this.showAvatarHandler}>
+                        <div className={'avatar' + (Boolean(user && user.photo)? ' pointer-cursor' : '')} onClick={this.showAvatarHandler}>
                             <UserAvatar id={user.id || ''} noDetail={true}/>
                         </div>
                         <div className="line">

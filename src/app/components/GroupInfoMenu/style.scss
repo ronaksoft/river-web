@@ -85,6 +85,10 @@
       display: inline-block;
       font-size: 75px;
 
+      &.pointer-cursor {
+        cursor: pointer;
+      }
+
       .avatar-image {
         height: 200px;
         width: 200px;
