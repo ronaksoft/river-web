@@ -70,6 +70,12 @@
     }
   }
 
+  .setting-switch-checked {
+    .setting-switch-thumb {
+      color: var(--river-light);
+    }
+  }
+
   .info {
     display: flex;
     justify-content: center;
@@ -210,6 +216,9 @@
     .value {
       width: 50px;
       text-align: right;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
 
       &.switch {
         width: 80px;
@@ -545,6 +554,18 @@ html[theme="dark-night"],
 html[theme="dark-blue"] {
   .group-info-menu {
     background-color: var(--dark-high);
+
+    .setting-switch {
+      .setting-switch-thumb {
+        color: var(--grey);
+      }
+
+      .setting-switch-checked {
+        .setting-switch-thumb {
+          color: var(--river);
+        }
+      }
+    }
 
     .menu-header {
       background-color: var(--dark-medium);

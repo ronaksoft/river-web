@@ -113,7 +113,7 @@ export const measureNodeHeight = (
         height = Math.min(maxHeight, height);
     }
 
-    const rowCount = Math.floor(height / singleRowHeight);
+    const rowCount = Math.floor(height / singleRowHeight + 0.5);
 
     return {height, minHeight, maxHeight, rowCount, valueRowCount};
 };

@@ -1,3 +1,7 @@
+## 0.30.4
+* TextInput bug fixed
+* Performance improvements
+
 ## 0.30.3
 * Themes updated
 * AvatarService updated

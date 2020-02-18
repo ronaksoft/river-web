@@ -213,7 +213,8 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                         >
                             <div>
                                 {group && <div className="info kk-card">
-                                    <div className={'avatar' + (Boolean(group && group.photo) ? ' pointer-cursor' : '')} onClick={this.avatarMenuAnchorOpenHandler}>
+                                    <div className={'avatar' + (Boolean(group && group.photo) ? ' pointer-cursor' : '')}
+                                         onClick={this.avatarMenuAnchorOpenHandler}>
                                         {!uploadingPhoto && <GroupAvatar id={group.id || ''} forceReload={true}/>}
                                         {uploadingPhoto &&
                                         <img src={this.profileTempPhoto} className="avatar-image" alt="avatar"/>}
@@ -296,6 +297,13 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                                 className="admin-switch"
                                                 color="default"
                                                 onChange={this.toggleAdminsHandler}
+                                                classes={{
+                                                    checked: 'setting-switch-checked',
+                                                    root: 'setting-switch',
+                                                    switchBase: 'setting-switch-base',
+                                                    thumb: 'setting-switch-thumb',
+                                                    track: 'setting-switch-track',
+                                                }}
                                             />
                                         </div>
                                     </div>}
@@ -319,7 +327,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                                                 <span
                                                     className="username">{participant.username ? participant.username : i18n.t('general.no_username')}</span>
                                                 {isAdmin && <div className="more"
-                                                     onClick={this.moreOpenHandler(participant)}>
+                                                                 onClick={this.moreOpenHandler(participant)}>
                                                     <MoreVert/>
                                                 </div>}
                                             </div>

@@ -109,6 +109,7 @@ import {
     LabelsGet, LabelsListItems, LabelsRemoveFromMessage
 } from "./messages/chat.api.labels_pb";
 import {StartBot} from "./messages/bot.api_pb";
+import UniqueId from "../uniqueId";
 
 export default class SDK {
     public static getInstance() {
@@ -258,7 +259,9 @@ export default class SDK {
         contacts.forEach((cont, key) => {
             const contact = new PhoneContact();
             if (cont.clientid) {
-                contact.setClientid(cont.clientid || `${key}`);
+                contact.setClientid(cont.clientid || `${UniqueId.getRandomId()}`);
+            } else {
+                contact.setClientid(String(UniqueId.getRandomId()));
             }
             if (cont.firstname) {
                 contact.setFirstname(cont.firstname || '');
