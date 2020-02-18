@@ -214,7 +214,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                             <div>
                                 {group && <div className="info kk-card">
                                     <div className={'avatar' + (Boolean(group && group.photo) ? ' pointer-cursor' : '')} onClick={this.avatarMenuAnchorOpenHandler}>
-                                        {!uploadingPhoto && <GroupAvatar id={group.id || ''}/>}
+                                        {!uploadingPhoto && <GroupAvatar id={group.id || ''} forceReload={true}/>}
                                         {uploadingPhoto &&
                                         <img src={this.profileTempPhoto} className="avatar-image" alt="avatar"/>}
                                         {hasAccess &&
@@ -850,6 +850,9 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
                 this.setState({
                     uploadingPhoto: false,
                 });
+                setTimeout(() => {
+                    this.getGroup();
+                }, 100);
             });
         }).catch(() => {
             this.progressBroadcaster.remove(id);
@@ -922,6 +925,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
 
     /* Decides what content the participants' "more" menu must have */
     private avatarContextMenuItem() {
+        const {group} = this.state;
         const menuItems: Array<{ cmd: 'show' | 'remove' | 'change', title: string }> = [{
             cmd: 'show',
             title: i18n.t('settings.show_photo'),
@@ -932,7 +936,9 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             cmd: 'change',
             title: i18n.t('settings.change_photo'),
         }];
-        return menuItems.map((item, index) => {
+        return menuItems.filter((item) => {
+            return (item.cmd === 'change') || ((item.cmd === 'show' || item.cmd === 'remove') && (group && group.photo && group.photo.photosmall && group.photo.photosmall.fileid !== '0'));
+        }).map((item, index) => {
             return (<MenuItem key={index} onClick={this.avatarMoreCmdHandler(item.cmd)}
                               className="context-item">{item.title}</MenuItem>);
         });

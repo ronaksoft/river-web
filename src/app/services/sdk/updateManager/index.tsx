@@ -55,6 +55,7 @@ export interface IDialogDBUpdated {
 }
 
 export interface IMessageDBUpdated {
+    editedIds: number[];
     ids: number[];
     minIds: { [key: string]: number };
     peerIds: string[];
@@ -87,6 +88,7 @@ interface IClearDialog {
 interface ITransactionPayload {
     clearDialogs: IClearDialog[];
     dialogs: { [key: string]: IDialog };
+    editedMessageIds: number[];
     flushDb: boolean;
     groups: { [key: string]: IGroup };
     labelRanges: ILabelRange[];
@@ -438,6 +440,7 @@ export default class UpdateManager {
         const transaction: ITransactionPayload = {
             clearDialogs: [],
             dialogs: {},
+            editedMessageIds: [],
             flushDb: false,
             groups: {},
             labelRanges: [],
@@ -546,6 +549,8 @@ export default class UpdateManager {
                 this.callUpdateHandler(update.constructor, updateMessageEdited);
                 // Update message
                 this.mergeMessage(transaction.messages, updateMessageEdited.message);
+                // Update edited message list
+                transaction.editedMessageIds.push(updateMessageEdited.message.id || 0);
                 // Update to check list
                 transaction.toCheckDialogIds.push(updateMessageEdited.message.peerid || '');
                 break;
@@ -910,7 +915,7 @@ export default class UpdateManager {
             }
             // Message list
             if (Object.keys(transaction.messages).length > 0) {
-                promises.push(this.applyMessages(transaction.messages).then((res) => {
+                promises.push(this.applyMessages(transaction.messages, transaction.editedMessageIds).then((res) => {
                     if (!transaction.live) {
                         this.callHandlers(C_MSG.UpdateMessageDB, res);
                     }
@@ -1049,7 +1054,7 @@ export default class UpdateManager {
         }
     }
 
-    private applyMessages(messages: { [key: number]: IMessage }): Promise<IMessageDBUpdated> {
+    private applyMessages(messages: { [key: number]: IMessage }, editedMessageIds: number[]): Promise<IMessageDBUpdated> {
         const messageList: IMessage[] = [];
         const keys: number[] = [];
         const peerIds: string[] = [];
@@ -1078,6 +1083,7 @@ export default class UpdateManager {
         if (messageList.length > 0 && this.messageRepo) {
             return this.messageRepo.importBulk(messageList).then(() => {
                 return {
+                    editedIds: uniq(editedMessageIds),
                     ids: keys,
                     minIds: minIdPerPeer,
                     peerIds,
@@ -1085,6 +1091,7 @@ export default class UpdateManager {
             });
         } else {
             return Promise.resolve({
+                editedIds: uniq(editedMessageIds),
                 ids: keys,
                 minIds: minIdPerPeer,
                 peerIds,

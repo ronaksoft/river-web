@@ -124,7 +124,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
         zoom: 1,
     };
     private lastAnchorType?: 'message' | 'shared_media' | 'shared_media_full';
-    private inControls: boolean = false;
+    private preventClose: boolean = false;
     private firstTimeLoad: boolean = true;
     private sdk: SDK;
     private userRepo: UserRepo;
@@ -132,6 +132,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     private userId: string = '';
     private hasAccess: boolean = false;
     private isTransitioning: boolean = false;
+    private removeTooltipTimeout: any = null;
 
     constructor(props: IProps) {
         super(props);
@@ -168,6 +169,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
         window.removeEventListener('keydown', this.windowKeyDownHandler, true);
         window.removeEventListener('mousemove', this.mediaDocumentMouseMoveHandler);
         window.removeEventListener('mouseup', this.mediaDocumentMouseUpHandler);
+        if (this.removeTooltipTimeout) {
+            clearTimeout(this.removeTooltipTimeout);
+        }
     }
 
     public render() {
@@ -390,8 +394,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
             });
         }
         return (
-            <div className="document-viewer-controls" onMouseEnter={this.controlMouseEnterHandler}
-                 onMouseLeave={this.controlMouseLeaveHandler}>
+            <div className="document-viewer-controls">
                 <div className="controls">
                     <div className="item" onClick={this.openContextMenuHandler}>
                         <MoreVertRounded/>
@@ -452,22 +455,13 @@ class DocumentViewer extends React.Component<IProps, IState> {
         );
     }
 
-    private controlMouseEnterHandler = () => {
-        this.inControls = true;
-    }
-
-    private controlMouseLeaveHandler = () => {
-        this.inControls = false;
-    }
-
     private initCaption() {
         const {doc} = this.state;
         if (!doc || doc.items.length === 0 || ((doc.items[0].caption || '').length === 0 && !doc.items[0].userId)) {
             return '';
         }
         return (
-            <div className="document-viewer-caption" onMouseEnter={this.controlMouseEnterHandler}
-                 onMouseLeave={this.controlMouseLeaveHandler}>
+            <div className="document-viewer-caption" onClick={this.preventClosing}>
                 <div className="caption-wrapper">
                     {Boolean((doc.items[0].caption || '').length !== 0) &&
                     <div className={'caption ' + (doc.items[0].rtl ? 'rtl' : 'ltr')}>{doc.items[0].caption}</div>}
@@ -634,7 +628,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
     }
 
     private dialogCloseHandler = (force?: boolean) => (e?: any) => {
-        if (this.inControls && force !== true) {
+        if ((this.preventClose && force !== true) || this.state.confirmDialogOpen) {
             return;
         }
         const closeDialog = () => {
@@ -824,6 +818,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
     /* Document transform handler */
     private transformHandler = (cmd: string) => (e: any) => {
+        this.preventClosing();
         switch (cmd) {
             case 'zoom-in':
                 this.mediaTransform.zoom += 0.15;
@@ -940,6 +935,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
     /* Open context menu handler */
     private openContextMenuHandler = (e: any) => {
+        this.preventClosing();
         this.setState({
             contextMenuAnchorEl: e.currentTarget,
         });
@@ -954,6 +950,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
     /* Context menu action handler */
     private contextMenuActionHandler = (cmd: string) => (e: any) => {
+        this.preventClosing();
         this.contextMenuCloseHandler();
         const {doc} = this.state;
         switch (cmd) {
@@ -1043,9 +1040,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
             maxWidth = 800;
         }
         return (
-            <div className="document-viewer-slide-show" style={{width: `${maxWidth}px`}}
-                 onMouseEnter={this.controlMouseEnterHandler}
-                 onMouseLeave={this.controlMouseLeaveHandler}>
+            <div className="document-viewer-slide-show" style={{width: `${maxWidth}px`}} onClick={this.preventClosing}>
                 <Scrollbars
                     autoHide={true}
                     hideTracksWhenNotNeeded={true}
@@ -1058,7 +1053,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                         {galleryList.map((gallery, key) => {
                             if (this.hasAccess) {
                                 return (
-                                    <Tooltip key={gallery.photoid || key} interactive={true} enterDelay={500}
+                                    <Tooltip key={gallery.photoid || key} interactive={true} enterDelay={300}
                                              leaveDelay={200}
                                              title={<span className="document-viewer-slide-show-remove"
                                                           onClick={this.confirmRemovePhotoHandler(key)}>{i18n.t('general.remove')}</span>}>
@@ -1083,8 +1078,20 @@ class DocumentViewer extends React.Component<IProps, IState> {
         );
     }
 
+    private preventClosing = () => {
+        this.preventClose = true;
+        if (this.removeTooltipTimeout) {
+            clearTimeout(this.removeTooltipTimeout);
+        }
+        this.removeTooltipTimeout = setTimeout(() => {
+            this.preventClose = false;
+            this.removeTooltipTimeout = null;
+        }, 200);
+    }
+
     /* Gallery select gallery by index */
     private selectGalleryIndexHandler = (index: number) => (e: any) => {
+        this.preventClosing();
         const {galleryList, gallerySelect} = this.state;
         if (index < 0) {
             return;
@@ -1130,6 +1137,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
     /* Confirm dialog close handler */
     private confirmDialogCloseHandler = () => {
+        this.preventClosing();
         this.setState({
             confirmDialogIndex: -1,
             confirmDialogOpen: false,
@@ -1138,11 +1146,11 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
     /* Confirm remove photo handler */
     private confirmRemovePhotoHandler = (index: number) => (e: any) => {
+        this.preventClosing();
         this.setState({
             confirmDialogIndex: index,
             confirmDialogOpen: true,
         });
-        this.inControls = false;
     }
 
     /* Remove photo handler */
@@ -1246,6 +1254,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
 
     /* Open message handler */
     private openMessageHandler = () => {
+        this.preventClosing();
         const {doc} = this.state;
         if (this.props.onJumpOnMessage && doc && doc.type !== 'avatar' && doc.items.length > 0) {
             this.props.onJumpOnMessage(doc.items[0].id || 0);

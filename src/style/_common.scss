@@ -77,9 +77,9 @@
   --red: #cc0000;
 
   --gradient-morning: radial-gradient(circle farthest-corner at 10% 20%, rgba(228, 118, 0, 1) 0%, rgba(247, 189, 2, 1) 90%);
-  --gradient-venice: linear-gradient(110.7deg, rgb(7, 123, 121) 6.3%, rgb(15, 150, 123) 90.6%);
-  --gradient-paradise: linear-gradient(0deg, rgba(250, 156, 245, 1) 1.6%, rgba(182, 76, 233, 1) 98.2%);
-  --gradient-ocean: radial-gradient(circle farthest-corner at 0.2% 0.3%, rgba(3, 144, 232, 1) 0%, rgba(2, 97, 156, 1) 89.9%);
+  --gradient-venice: linear-gradient(-20deg, #d558c8 0%, #24d292 100%);
+  --gradient-paradise: linear-gradient(to top, #c71d6f 0%, #d09693 100%);
+  --gradient-ocean: linear-gradient(to top, #30cfd0 0%, #330867 100%);
   --gradient-rainbow: linear-gradient(7deg, rgba(255, 85, 85, 1) 0.1%, rgba(85, 85, 255, 1) 100%);
 }
 

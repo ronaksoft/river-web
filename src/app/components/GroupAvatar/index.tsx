@@ -20,6 +20,7 @@ import Broadcaster from '../../services/broadcaster';
 interface IProps {
     className?: string;
     id: string;
+    forceReload?: boolean;
 }
 
 interface IState {
@@ -59,7 +60,7 @@ class GroupAvatar extends React.Component<IProps, IState> {
     }
 
     public componentWillReceiveProps(newProps: IProps) {
-        if (this.state.id !== newProps.id) {
+        if (this.state.id !== newProps.id || this.props.forceReload) {
             this.tryTimeout = 0;
             clearTimeout(this.tryTimeout);
             this.setState({
@@ -163,8 +164,8 @@ class GroupAvatar extends React.Component<IProps, IState> {
                     photo,
                 });
             }
-        }).catch(() => {
-            //
+        }).catch((err) => {
+            window.console.log('group avatar err:', err);
         });
     }
 

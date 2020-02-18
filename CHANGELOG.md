@@ -1,3 +1,8 @@
+## 0.30.3
+* Themes updated
+* AvatarService updated
+* Known bugs fixed
+
 ## 0.30.2
 * RandomId handler added
 * Deleted Account updated

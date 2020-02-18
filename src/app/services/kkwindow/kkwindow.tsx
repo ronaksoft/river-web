@@ -500,7 +500,7 @@ class KKWindow extends React.Component<IProps, IState> {
 
     private fitListToBottom() {
         if (this.containerRef) {
-            const gap = this.props.height - this.cellMeasurer.getTotalHeight();
+            const gap = (this.props.height - 11) - this.cellMeasurer.getTotalHeight();
             this.smallerThanContainer = gap > 0;
             if (gap > 0) {
                 this.paddingTop = `${gap}px`;

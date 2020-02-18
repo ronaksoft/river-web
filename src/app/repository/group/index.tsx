@@ -9,7 +9,7 @@
 
 import DB from '../../services/db/user';
 import {IGroup} from './interface';
-import {differenceBy, find, uniqBy} from 'lodash';
+import {differenceBy, find, throttle, uniq, uniqBy} from 'lodash';
 import {DexieUserDB} from '../../services/db/dexie/user';
 import Broadcaster from '../../services/broadcaster';
 import {kMerge} from "../../services/utilities/kDash";
@@ -31,12 +31,15 @@ export default class GroupRepo {
     private db: DexieUserDB;
     private broadcaster: Broadcaster;
     private sdk: SDK;
+    private throttleBroadcastList: string[] = [];
+    private readonly throttleBroadcastExecute: any = undefined;
 
     private constructor() {
         this.dbService = DB.getInstance();
         this.db = this.dbService.getDB();
         this.broadcaster = Broadcaster.getInstance();
         this.sdk = SDK.getInstance();
+        this.throttleBroadcastExecute = throttle(this.broadcastThrottledList, 255);
     }
 
     public create(group: IGroup) {
@@ -131,13 +134,13 @@ export default class GroupRepo {
             });
             return this.createMany(list);
         }).then((res) => {
-            this.broadcastEvent('Group_DB_Updated', {ids, callerId});
+            if (callerId) {
+                this.broadcastEvent('Group_DB_Updated', {ids, callerId});
+            } else {
+                this.throttleBroadcast(ids);
+            }
             return res;
         });
-    }
-
-    private broadcastEvent(name: string, data: any) {
-        this.broadcaster.publish(name, data);
     }
 
     private mergeCheck(group: IGroup, newGroup: IGroup): IGroup {
@@ -148,5 +151,27 @@ export default class GroupRepo {
             d.photo = undefined;
         }
         return d;
+    }
+
+    private throttleBroadcast(ids: string[]) {
+        if (ids.length > 0) {
+            this.throttleBroadcastList.push(...ids);
+            this.throttleBroadcastList = uniq(this.throttleBroadcastList);
+        }
+        setTimeout(() => {
+            this.throttleBroadcastExecute();
+        }, 50);
+    }
+
+    private broadcastThrottledList = () => {
+        if (this.throttleBroadcastList.length === 0) {
+            return;
+        }
+        this.broadcastEvent('Group_DB_Updated', {ids: this.throttleBroadcastList});
+        this.throttleBroadcastList = [];
+    }
+
+    private broadcastEvent(name: string, data: any) {
+        this.broadcaster.publish(name, data);
     }
 }

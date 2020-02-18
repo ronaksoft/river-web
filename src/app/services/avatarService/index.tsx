@@ -18,6 +18,7 @@ import {throttle, uniqWith} from "lodash";
 interface IAvatar {
     fileId: string;
     retries: number;
+    retryRemote?: boolean;
     src: string;
 }
 
@@ -52,7 +53,7 @@ export default class AvatarService {
     }
 
     /* Get avatar picture */
-    public getAvatar(id: string, fileId: string): Promise<string> {
+    public getAvatar(id: string, fileId: string, retires?: number): Promise<string> {
         return new Promise((resolve, reject) => {
             if (this.avatars.hasOwnProperty(id)) {
                 if (this.avatars[id].retries > C_MAX_RETRY) {
@@ -76,9 +77,34 @@ export default class AvatarService {
                     this.getRemoteFile(id, fileId).then((res) => {
                         resolve(res);
                     }).catch(() => {
-                        reject();
+                        remoteRetryFn();
                     });
                 });
+                const remoteRetryFn = () => {
+                    if (this.avatars.hasOwnProperty(id)) {
+                        // Retry remote server
+                        if (!retires) {
+                            retires = 1;
+                        } else {
+                            retires++;
+                        }
+                        if (retires <= C_MAX_RETRY || !this.avatars[id].retryRemote) {
+                            this.avatars[id].retryRemote = true;
+                            setTimeout(() => {
+                                this.getAvatar(id, fileId, retires).then((getAvatarRes) => {
+                                    resolve(getAvatarRes);
+                                }).catch(() => {
+                                    remoteRetryFn();
+                                });
+                            }, 255 * retires);
+                        } else {
+                            this.remove(id, fileId);
+                            reject('not found');
+                        }
+                    } else {
+                        reject('not found');
+                    }
+                };
             }
         });
     }

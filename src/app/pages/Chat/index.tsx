@@ -2446,6 +2446,23 @@ class Chat extends React.Component<IProps, IState> {
                     }
                 });
             });
+            if (data.editedIds.length > 0) {
+                this.messageRepo.getIn(data.editedIds, false).then((res) => {
+                    let shouldUpdate = false;
+                    res.forEach((msg) => {
+                        const index = findLastIndex(this.messages, (o) => {
+                            return o.id === msg.id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
+                        });
+                        if (index > -1) {
+                            shouldUpdate = true;
+                            this.messages[index] = msg;
+                        }
+                    });
+                    if (shouldUpdate && this.messageRef) {
+                        this.messageRef.updateList();
+                    }
+                });
+            }
         }
     }
 
