@@ -108,8 +108,8 @@ import {
     LabelsEdit,
     LabelsGet, LabelsListItems, LabelsRemoveFromMessage
 } from "./messages/chat.api.labels_pb";
-import {StartBot} from "./messages/bot.api_pb";
 import UniqueId from "../uniqueId";
+import {BotStart} from "./messages/bot.api_pb";
 
 export default class SDK {
     public static getInstance() {
@@ -754,11 +754,11 @@ export default class SDK {
     }
 
     public botStart(inputPeer: InputPeer, randomId: number): Promise<Bool.AsObject> {
-        const data = new StartBot();
+        const data = new BotStart();
         data.setBot(inputPeer);
         data.setRandomid(randomId);
         data.setStartparam("");
-        return this.server.send(C_MSG.StartBot, data.serializeBinary(), true);
+        return this.server.send(C_MSG.BotStart, data.serializeBinary(), true);
     }
 
     public accountChangeNumber(phone: string, phoneCode: string, phoneHash: string, inputPassword?: InputPassword): Promise<User.AsObject> {

@@ -99,7 +99,7 @@ export const getMessageTitle = (message: IMessage): { text: string, icon: number
                                     messageIcon.icon = C_MESSAGE_ICON.File;
                                     messageIcon.text = i18n.t('message.file');
                                 }
-                            } else if (messageMediaDocument.doc.attributesList[i].type === DocumentAttributeType.ATTRIBUTEANIMATED) {
+                            } else if (messageMediaDocument.doc.attributesList[i].type === DocumentAttributeType.ATTRIBUTETYPEANIMATED) {
                                 messageIcon.icon = C_MESSAGE_ICON.GIF;
                                 messageIcon.text = i18n.t('message.gif');
                             }

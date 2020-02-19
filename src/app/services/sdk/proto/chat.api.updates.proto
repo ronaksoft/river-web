@@ -1,6 +1,7 @@
 syntax = "proto2";
 package msg;
 import "chat.core.types.proto";
+import "chat.core.message.medias.proto";
 
 // UpdateGetState
 // @Function
@@ -269,4 +270,13 @@ message UpdateUserBlocked {
     required int64 UpdateID = 101;
     required int64 UserID = 1 [jstype = JS_STRING];
     required bool Blocked = 2;
+}
+
+// UpdateMessagePoll
+message UpdateMessagePoll {
+    required int32 UCount = 100;
+    required int64 UpdateID = 101;
+    required int64 PollID = 1;
+    optional MediaPoll Poll = 2;
+    required PollResults Results = 3;
 }

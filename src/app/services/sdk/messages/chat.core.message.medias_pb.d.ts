@@ -255,71 +255,25 @@ export namespace Document {
   }
 }
 
-export class InputMediaUploadedPhoto extends jspb.Message {
-  hasCaption(): boolean;
-  clearCaption(): void;
-  getCaption(): string | undefined;
-  setCaption(value: string): void;
-
-  clearStickersList(): void;
-  getStickersList(): Array<chat_core_types_pb.InputDocument>;
-  setStickersList(value: Array<chat_core_types_pb.InputDocument>): void;
-  addStickers(value?: chat_core_types_pb.InputDocument, index?: number): chat_core_types_pb.InputDocument;
-
-  hasFile(): boolean;
-  clearFile(): void;
-  getFile(): chat_core_types_pb.InputFile;
-  setFile(value?: chat_core_types_pb.InputFile): void;
-
-  clearAttributesList(): void;
-  getAttributesList(): Array<DocumentAttribute>;
-  setAttributesList(value: Array<DocumentAttribute>): void;
-  addAttributes(value?: DocumentAttribute, index?: number): DocumentAttribute;
+export class InputMediaPoll extends jspb.Message {
+  hasPoll(): boolean;
+  clearPoll(): void;
+  getPoll(): MediaPoll;
+  setPoll(value?: MediaPoll): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): InputMediaUploadedPhoto.AsObject;
-  static toObject(includeInstance: boolean, msg: InputMediaUploadedPhoto): InputMediaUploadedPhoto.AsObject;
+  toObject(includeInstance?: boolean): InputMediaPoll.AsObject;
+  static toObject(includeInstance: boolean, msg: InputMediaPoll): InputMediaPoll.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: InputMediaUploadedPhoto, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): InputMediaUploadedPhoto;
-  static deserializeBinaryFromReader(message: InputMediaUploadedPhoto, reader: jspb.BinaryReader): InputMediaUploadedPhoto;
+  static serializeBinaryToWriter(message: InputMediaPoll, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): InputMediaPoll;
+  static deserializeBinaryFromReader(message: InputMediaPoll, reader: jspb.BinaryReader): InputMediaPoll;
 }
 
-export namespace InputMediaUploadedPhoto {
+export namespace InputMediaPoll {
   export type AsObject = {
-    caption?: string,
-    stickersList: Array<chat_core_types_pb.InputDocument.AsObject>,
-    file: chat_core_types_pb.InputFile.AsObject,
-    attributesList: Array<DocumentAttribute.AsObject>,
-  }
-}
-
-export class InputMediaPhoto extends jspb.Message {
-  hasCaption(): boolean;
-  clearCaption(): void;
-  getCaption(): string | undefined;
-  setCaption(value: string): void;
-
-  hasPhoto(): boolean;
-  clearPhoto(): void;
-  getPhoto(): chat_core_types_pb.InputDocument;
-  setPhoto(value?: chat_core_types_pb.InputDocument): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): InputMediaPhoto.AsObject;
-  static toObject(includeInstance: boolean, msg: InputMediaPhoto): InputMediaPhoto.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: InputMediaPhoto, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): InputMediaPhoto;
-  static deserializeBinaryFromReader(message: InputMediaPhoto, reader: jspb.BinaryReader): InputMediaPhoto;
-}
-
-export namespace InputMediaPhoto {
-  export type AsObject = {
-    caption?: string,
-    photo: chat_core_types_pb.InputDocument.AsObject,
+    poll: MediaPoll.AsObject,
   }
 }
 
@@ -471,18 +425,176 @@ export namespace InputMediaGeoLocation {
   }
 }
 
-export class MediaPhoto extends jspb.Message {
+export class MediaPoll extends jspb.Message {
+  hasId(): boolean;
+  clearId(): void;
+  getId(): number | undefined;
+  setId(value: number): void;
+
+  hasClosed(): boolean;
+  clearClosed(): void;
+  getClosed(): boolean | undefined;
+  setClosed(value: boolean): void;
+
+  hasPublicvoters(): boolean;
+  clearPublicvoters(): void;
+  getPublicvoters(): boolean | undefined;
+  setPublicvoters(value: boolean): void;
+
+  hasMultichoice(): boolean;
+  clearMultichoice(): void;
+  getMultichoice(): boolean | undefined;
+  setMultichoice(value: boolean): void;
+
+  hasQuiz(): boolean;
+  clearQuiz(): void;
+  getQuiz(): boolean | undefined;
+  setQuiz(value: boolean): void;
+
+  hasQuestion(): boolean;
+  clearQuestion(): void;
+  getQuestion(): string | undefined;
+  setQuestion(value: string): void;
+
+  clearAnswersList(): void;
+  getAnswersList(): Array<PollAnswer>;
+  setAnswersList(value: Array<PollAnswer>): void;
+  addAnswers(value?: PollAnswer, index?: number): PollAnswer;
+
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): MediaPhoto.AsObject;
-  static toObject(includeInstance: boolean, msg: MediaPhoto): MediaPhoto.AsObject;
+  toObject(includeInstance?: boolean): MediaPoll.AsObject;
+  static toObject(includeInstance: boolean, msg: MediaPoll): MediaPoll.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: MediaPhoto, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): MediaPhoto;
-  static deserializeBinaryFromReader(message: MediaPhoto, reader: jspb.BinaryReader): MediaPhoto;
+  static serializeBinaryToWriter(message: MediaPoll, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MediaPoll;
+  static deserializeBinaryFromReader(message: MediaPoll, reader: jspb.BinaryReader): MediaPoll;
 }
 
-export namespace MediaPhoto {
+export namespace MediaPoll {
+  export type AsObject = {
+    id?: number,
+    closed?: boolean,
+    publicvoters?: boolean,
+    multichoice?: boolean,
+    quiz?: boolean,
+    question?: string,
+    answersList: Array<PollAnswer.AsObject>,
+  }
+}
+
+export class PollAnswer extends jspb.Message {
+  hasText(): boolean;
+  clearText(): void;
+  getText(): string | undefined;
+  setText(value: string): void;
+
+  hasOption(): boolean;
+  clearOption(): void;
+  getOption(): Uint8Array | string;
+  getOption_asU8(): Uint8Array;
+  getOption_asB64(): string;
+  setOption(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PollAnswer.AsObject;
+  static toObject(includeInstance: boolean, msg: PollAnswer): PollAnswer.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PollAnswer, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PollAnswer;
+  static deserializeBinaryFromReader(message: PollAnswer, reader: jspb.BinaryReader): PollAnswer;
+}
+
+export namespace PollAnswer {
+  export type AsObject = {
+    text?: string,
+    option: Uint8Array | string,
+  }
+}
+
+export class PollResults extends jspb.Message {
+  clearResultsList(): void;
+  getResultsList(): Array<PollAnswerVoters>;
+  setResultsList(value: Array<PollAnswerVoters>): void;
+  addResults(value?: PollAnswerVoters, index?: number): PollAnswerVoters;
+
+  hasTotalvoters(): boolean;
+  clearTotalvoters(): void;
+  getTotalvoters(): number | undefined;
+  setTotalvoters(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PollResults.AsObject;
+  static toObject(includeInstance: boolean, msg: PollResults): PollResults.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PollResults, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PollResults;
+  static deserializeBinaryFromReader(message: PollResults, reader: jspb.BinaryReader): PollResults;
+}
+
+export namespace PollResults {
+  export type AsObject = {
+    resultsList: Array<PollAnswerVoters.AsObject>,
+    totalvoters?: number,
+  }
+}
+
+export class PollAnswerVoters extends jspb.Message {
+  hasChosen(): boolean;
+  clearChosen(): void;
+  getChosen(): boolean | undefined;
+  setChosen(value: boolean): void;
+
+  hasCorrect(): boolean;
+  clearCorrect(): void;
+  getCorrect(): boolean | undefined;
+  setCorrect(value: boolean): void;
+
+  hasOption(): boolean;
+  clearOption(): void;
+  getOption(): Uint8Array | string;
+  getOption_asU8(): Uint8Array;
+  getOption_asB64(): string;
+  setOption(value: Uint8Array | string): void;
+
+  hasVoters(): boolean;
+  clearVoters(): void;
+  getVoters(): number | undefined;
+  setVoters(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PollAnswerVoters.AsObject;
+  static toObject(includeInstance: boolean, msg: PollAnswerVoters): PollAnswerVoters.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PollAnswerVoters, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PollAnswerVoters;
+  static deserializeBinaryFromReader(message: PollAnswerVoters, reader: jspb.BinaryReader): PollAnswerVoters;
+}
+
+export namespace PollAnswerVoters {
+  export type AsObject = {
+    chosen?: boolean,
+    correct?: boolean,
+    option: Uint8Array | string,
+    voters?: number,
+  }
+}
+
+export class MediaInvoice extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MediaInvoice.AsObject;
+  static toObject(includeInstance: boolean, msg: MediaInvoice): MediaInvoice.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MediaInvoice, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MediaInvoice;
+  static deserializeBinaryFromReader(message: MediaInvoice, reader: jspb.BinaryReader): MediaInvoice;
+}
+
+export namespace MediaInvoice {
   export type AsObject = {
   }
 }
@@ -611,7 +723,7 @@ export enum DocumentAttributeType {
   ATTRIBUTETYPEVIDEO = 2,
   ATTRIBUTETYPEPHOTO = 3,
   ATTRIBUTETYPEFILE = 4,
-  ATTRIBUTEANIMATED = 5,
+  ATTRIBUTETYPEANIMATED = 5,
   ATTRIBUTERESERVED1 = 6,
   ATTRIBUTERESERVED2 = 7,
   ATTRIBUTERESERVED3 = 8,

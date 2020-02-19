@@ -35,3 +35,19 @@ export const C_MESSAGE_ACTION = {
     MessageActionNope: 0x00,
     MessageActionScreenShot: 0x09,
 };
+
+export const C_REPLY_ACTION = {
+    ReplyInlineMarkup: 2436413989,
+    ReplyKeyboardMarkup: 3207405102,
+};
+
+export const C_BUTTON_ACTION = {
+    Button: 1034594571,
+    ButtonBuy: 2992465437,
+    ButtonCallback: 4007711268,
+    ButtonRequestGeoLocation: 323515934,
+    ButtonRequestPhone: 630958494,
+    ButtonSwitchInline: 3842667878,
+    ButtonUrl: 2309530052,
+    ButtonUrlAuth: 2344836100,
+};

@@ -832,7 +832,8 @@ proto.msg.AuthBotRegister.prototype.toObject = function(opt_includeInstance) {
 proto.msg.AuthBotRegister.toObject = function(includeInstance, msg) {
   var f, obj = {
     name: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    username: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+    username: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+    ownerid: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -877,6 +878,10 @@ proto.msg.AuthBotRegister.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setUsername(value);
       break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setOwnerid(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -917,6 +922,13 @@ proto.msg.AuthBotRegister.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeString(
       2,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeInt64(
+      3,
       f
     );
   }
@@ -992,6 +1004,42 @@ proto.msg.AuthBotRegister.prototype.clearUsername = function() {
  */
 proto.msg.AuthBotRegister.prototype.hasUsername = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * required int64 OwnerID = 3;
+ * @return {number}
+ */
+proto.msg.AuthBotRegister.prototype.getOwnerid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.msg.AuthBotRegister} returns this
+ */
+proto.msg.AuthBotRegister.prototype.setOwnerid = function(value) {
+  return jspb.Message.setField(this, 3, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.AuthBotRegister} returns this
+ */
+proto.msg.AuthBotRegister.prototype.clearOwnerid = function() {
+  return jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.AuthBotRegister.prototype.hasOwnerid = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 

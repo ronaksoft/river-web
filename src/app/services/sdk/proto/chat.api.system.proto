@@ -40,6 +40,38 @@ message SystemGetInfo {
 message SystemGetSalts {
 }
 
+// SystemGetConfig
+// @Function
+// @Returns: SystemConfig
+message SystemGetConfig {
+}
+
+// SystemConfig
+message SystemConfig {
+    required bool TestMode = 1;
+    required bool PhoneCallEnabled = 2;
+    required int64 ExpireOn = 3;
+    required int32 GroupMaxSize = 4;
+    required int32 ForwardedMaxCount = 5;
+    required int32 OnlineUpdatePeriodMs = 6; // The client should update its online status every N milliseconds
+    required int32 EditTimeLimit = 7;
+    required int32 RevokeTimeLimit = 8;
+    required int32 PinnedDialogsMaxCount = 9;
+    required int32 UrlPrefix = 10;
+    required int32 MessageMaxLength = 11;
+    required int32 CaptionMaxLength = 12;
+    repeated DataCenter DCs = 13;
+}
+
+// DataCenter
+message DataCenter {
+    required string IP = 1;
+    required int32 Port = 2;
+    required bool Http = 3;
+    required bool Websocket = 4;
+    required bool Quic = 5;
+
+}
 // SystemSalts
 message SystemSalts {
     repeated int64 Salts = 1;

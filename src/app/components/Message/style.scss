@@ -286,6 +286,10 @@
     }
   }
 
+  .message-container {
+
+  }
+
   .bubble {
     position: relative;
     font-size: 14px;
@@ -366,6 +370,7 @@
       ._url {
         color: var(--light-mention);
         display: inline-block;
+        cursor: pointer;
       }
 
       ._hashtag {
@@ -412,13 +417,15 @@
 
     justify-content: flex-start;
 
+    .message-container {
+      text-align: left;
+      margin-left: 44px;
+    }
+
     .bubble {
       color: var(--black-text);
       background-color: var(--message-chat);
       align-self: flex-start;
-      animation-name: slideFromLeft;
-      text-align: left;
-      margin-left: 44px;
 
       &.edited {
         min-width: 80px;
@@ -437,13 +444,16 @@
 
     justify-content: flex-end;
 
+    .message-container {
+      text-align: right;
+      margin-right: 10px;
+    }
+
     .bubble {
       color: var(--black-text);
       background-color: var(--green);
       align-self: flex-end;
       animation-name: slideFromRight;
-      text-align: right;
-      margin-right: 10px;
       //background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%);
       //background-attachment: fixed;
 
@@ -462,7 +472,7 @@
         right: 14px;
       }
 
-      .bubble {
+      .message-container {
         margin-right: 24px;
       }
     }
@@ -639,14 +649,15 @@
       left: 0;
     }
 
-    .bubble {
+    .message-container {
       margin-left: 10px;
     }
   }
 
   .selectable {
     .bubble-wrapper {
-      .bubble {
+
+      .message-container {
         margin-left: 36px;
       }
 
@@ -1213,10 +1224,13 @@ html[bubble="5"] {
 
     align-items: flex-start;
 
+    .message-container {
+      margin-left: 44px !important;
+    }
+
     .bubble {
       background-color: transparent !important;
       box-shadow: none;
-      margin-left: 44px !important;
 
       .inner {
         &.emoji_1, &.emoji_2 {

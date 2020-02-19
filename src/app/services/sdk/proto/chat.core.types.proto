@@ -183,6 +183,7 @@ message Bot {
     required int64 ID = 1 [jstype = JS_STRING];
     required string Name = 2;
     required string Username = 3;
+    optional string Bio = 4;
 }
 
 // BotCommands
@@ -214,10 +215,16 @@ message ContactUser {
 // MediaType
 enum MediaType {
     MediaTypeEmpty = 0;
-    MediaTypePhoto = 1;
+    MediaTypePoll = 1;
     MediaTypeDocument = 2;
     MediaTypeContact = 3;
     MediaTypeGeoLocation = 4;
+    MediaTypeInvoice = 5;
+    MediaTypeReserved1 = 6;
+    MediaTypeReserved2 = 7;
+    MediaTypeReserved3 = 8;
+    MediaTypeReserved4 = 9;
+    MediaTypeReserved5 = 10;
 }
 
 // UserMessage
@@ -265,9 +272,9 @@ enum MessageEntityType {
     MessageEntityTypeMention = 2;
     MessageEntityTypeUrl = 3;
     MessageEntityTypeEmail = 4;
-    MessageEntityTypeHashtag = 5;
-    MessageEntityTypeReserved1 = 6;
-    MessageEntityTypeReserved2 = 7;
+    MessageEntityTypeHashTag = 5;
+    MessageEntityTypeCode = 6;
+    MessageEntityTypeBotCommand = 7;
     MessageEntityTypeReserved3 = 8;
     MessageEntityTypeReserved4 = 9;
     MessageEntityTypeReserved5 = 10;

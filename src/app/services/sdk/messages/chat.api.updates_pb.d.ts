@@ -4,6 +4,7 @@
 
 import * as jspb from "google-protobuf";
 import * as chat_core_types_pb from "./chat.core.types_pb";
+import * as chat_core_message_medias_pb from "./chat.core.message.medias_pb";
 
 export class UpdateGetState extends jspb.Message {
   serializeBinary(): Uint8Array;
@@ -1322,6 +1323,52 @@ export namespace UpdateUserBlocked {
     updateid?: number,
     userid?: string,
     blocked?: boolean,
+  }
+}
+
+export class UpdateMessagePoll extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  hasPollid(): boolean;
+  clearPollid(): void;
+  getPollid(): number | undefined;
+  setPollid(value: number): void;
+
+  hasPoll(): boolean;
+  clearPoll(): void;
+  getPoll(): chat_core_message_medias_pb.MediaPoll | undefined;
+  setPoll(value?: chat_core_message_medias_pb.MediaPoll): void;
+
+  hasResults(): boolean;
+  clearResults(): void;
+  getResults(): chat_core_message_medias_pb.PollResults;
+  setResults(value?: chat_core_message_medias_pb.PollResults): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateMessagePoll.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateMessagePoll): UpdateMessagePoll.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateMessagePoll, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateMessagePoll;
+  static deserializeBinaryFromReader(message: UpdateMessagePoll, reader: jspb.BinaryReader): UpdateMessagePoll;
+}
+
+export namespace UpdateMessagePoll {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+    pollid?: number,
+    poll?: chat_core_message_medias_pb.MediaPoll.AsObject,
+    results: chat_core_message_medias_pb.PollResults.AsObject,
   }
 }
 

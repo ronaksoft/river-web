@@ -22,6 +22,7 @@
     "elec-dist-linux": "npx build --x64 --linux --c.mac.identity=null --c.extraMetadata.main=public/electron.js -p always"
   },
   "dependencies": {
+    "@firebase/app": "^0.5.4",
     "@material-ui/core": "^4.9.0",
     "@material-ui/icons": "^4.2.1",
     "@material-ui/lab": "3.0.0-alpha.30",
@@ -43,7 +44,7 @@
     "file-saver": "^2.0.2",
     "fine-uploader": "^5.16.2",
     "fine-uploader-wrappers": "^1.0.1",
-    "firebase": "^6.4.0",
+    "firebase": "^7.8.2",
     "glur": "^1.1.2",
     "google-protobuf": "^3.10.0",
     "int64-buffer": "^0.99.1007",

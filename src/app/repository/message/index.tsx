@@ -16,11 +16,11 @@ import RTLDetector from '../../services/utilities/rtl_detector';
 import {InputPeer, MediaType, MessageEntityType, UserMessage} from '../../services/sdk/messages/chat.core.types_pb';
 import Dexie from 'dexie';
 import {DexieMessageDB} from '../../services/db/dexie/message';
-import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from './consts';
+import {C_BUTTON_ACTION, C_MESSAGE_ACTION, C_MESSAGE_TYPE, C_REPLY_ACTION} from './consts';
 import GroupRepo from '../group';
 import {
     DocumentAttribute, DocumentAttributeAudio, DocumentAttributeFile, DocumentAttributePhoto, DocumentAttributeType,
-    DocumentAttributeVideo, MediaContact, MediaDocument, MediaGeoLocation, MediaPhoto,
+    DocumentAttributeVideo, MediaContact, MediaDocument, MediaGeoLocation,
 } from '../../services/sdk/messages/chat.core.message.medias_pb';
 import {
     MessageActionClearHistory, MessageActionContactRegistered, MessageActionGroupAddUser, MessageActionGroupCreated,
@@ -31,6 +31,18 @@ import {C_MEDIA_TYPE} from '../media/interface';
 import {kMerge} from "../../services/utilities/kDash";
 import {emojiLevel} from "../../services/utilities/emoji";
 import FileRepo from "../file";
+import {
+    Button,
+    ButtonBuy,
+    ButtonCallback,
+    ButtonRequestGeoLocation,
+    ButtonRequestPhone,
+    ButtonSwitchInline,
+    ButtonUrl,
+    ButtonUrlAuth,
+    ReplyInlineMarkup,
+    ReplyKeyboardMarkup
+} from "../../services/sdk/messages/chat.core.message.markups_pb";
 
 interface IMessageBundlePromise {
     reject: any;
@@ -56,6 +68,51 @@ export const getMediaDocument = (msg: IMessage) => {
 };
 
 export default class MessageRepo {
+    public static parseButton(replyInline: ReplyInlineMarkup.AsObject) {
+        replyInline.rowsList.forEach((r1, i) => {
+            r1.buttonsList.forEach((r2, j) => {
+                // @ts-ignore
+                const data: Uint8Array = r2.data;
+                switch (replyInline.rowsList[i].buttonsList[j].constructor) {
+                    case C_BUTTON_ACTION.Button:
+                        // @ts-ignore
+                        replyInline.rowsList[i].buttonsList[j].buttondata = Button.deserializeBinary(data).toObject();
+                        break;
+                    case C_BUTTON_ACTION.ButtonBuy:
+                        // @ts-ignore
+                        replyInline.rowsList[i].buttonsList[j].buttondata = ButtonBuy.deserializeBinary(data).toObject();
+                        break;
+                    case C_BUTTON_ACTION.ButtonCallback:
+                        // @ts-ignore
+                        replyInline.rowsList[i].buttonsList[j].buttondata = ButtonCallback.deserializeBinary(data).toObject();
+                        break;
+                    case C_BUTTON_ACTION.ButtonRequestGeoLocation:
+                        // @ts-ignore
+                        replyInline.rowsList[i].buttonsList[j].buttondata = ButtonRequestGeoLocation.deserializeBinary(data).toObject();
+                        break;
+                    case C_BUTTON_ACTION.ButtonRequestPhone:
+                        // @ts-ignore
+                        replyInline.rowsList[i].buttonsList[j].buttondata = ButtonRequestPhone.deserializeBinary(data).toObject();
+                        break;
+                    case C_BUTTON_ACTION.ButtonSwitchInline:
+                        // @ts-ignore
+                        replyInline.rowsList[i].buttonsList[j].buttondata = ButtonSwitchInline.deserializeBinary(data).toObject();
+                        break;
+                    case C_BUTTON_ACTION.ButtonUrl:
+                        // @ts-ignore
+                        replyInline.rowsList[i].buttonsList[j].buttondata = ButtonUrl.deserializeBinary(data).toObject();
+                        break;
+                    case C_BUTTON_ACTION.ButtonUrlAuth:
+                        // @ts-ignore
+                        replyInline.rowsList[i].buttonsList[j].buttondata = ButtonUrlAuth.deserializeBinary(data).toObject();
+                        break;
+                }
+                delete r2.data;
+            });
+        });
+        return replyInline;
+    }
+
     public static parseAttributes(attrs: DocumentAttribute.AsObject[], flags: { type: number }) {
         flags.type = C_MESSAGE_TYPE.Normal;
         const attrOut: any[] = [];
@@ -70,7 +127,6 @@ export default class MessageRepo {
                     } else {
                         flags.type = C_MESSAGE_TYPE.Audio;
                     }
-                    delete attr.data;
                     break;
                 case DocumentAttributeType.ATTRIBUTETYPEFILE:
                     // @ts-ignore
@@ -78,21 +134,19 @@ export default class MessageRepo {
                     if (flags.type === C_MESSAGE_TYPE.Normal) {
                         flags.type = C_MESSAGE_TYPE.File;
                     }
-                    delete attr.data;
                     break;
                 case DocumentAttributeType.ATTRIBUTETYPEPHOTO:
                     // @ts-ignore
                     attrOut.push(DocumentAttributePhoto.deserializeBinary(attr.data).toObject());
                     flags.type = C_MESSAGE_TYPE.Picture;
-                    delete attr.data;
                     break;
                 case DocumentAttributeType.ATTRIBUTETYPEVIDEO:
                     // @ts-ignore
                     attrOut.push(DocumentAttributeVideo.deserializeBinary(attr.data).toObject());
                     flags.type = C_MESSAGE_TYPE.Video;
-                    delete attr.data;
                     break;
             }
+            delete attr.data;
         });
         return attrOut;
     }
@@ -109,9 +163,6 @@ export default class MessageRepo {
             const mediaData: Uint8Array = msg.media;
             switch (msg.mediatype) {
                 case MediaType.MEDIATYPEEMPTY:
-                    break;
-                case MediaType.MEDIATYPEPHOTO:
-                    out.mediadata = MediaPhoto.deserializeBinary(mediaData).toObject();
                     break;
                 case MediaType.MEDIATYPEDOCUMENT:
                     out.mediadata = MediaDocument.deserializeBinary(mediaData).toObject();
@@ -182,6 +233,19 @@ export default class MessageRepo {
                     break;
             }
             delete out.messageactiondata;
+        }
+        if (msg.replymarkupdata) {
+            // @ts-ignore
+            const replyData: Uint8Array = msg.replymarkupdata;
+            switch (msg.replymarkup) {
+                case C_REPLY_ACTION.ReplyInlineMarkup:
+                    out.replydata = this.parseButton(ReplyInlineMarkup.deserializeBinary(replyData).toObject());
+                    break;
+                case C_REPLY_ACTION.ReplyKeyboardMarkup:
+                    out.replydata = this.parseButton(ReplyKeyboardMarkup.deserializeBinary(replyData).toObject());
+                    break;
+            }
+            delete out.replymarkupdata;
         }
         let msgType: number = 0;
         switch (out.messagetype) {

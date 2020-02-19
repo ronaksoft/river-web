@@ -18,7 +18,7 @@ enum DocumentAttributeType {
     AttributeTypeVideo = 2;
     AttributeTypePhoto = 3;
     AttributeTypeFile = 4;
-    AttributeAnimated = 5;
+    AttributeTypeAnimated = 5;
     AttributeReserved1 = 6;
     AttributeReserved2 = 7;
     AttributeReserved3 = 8;
@@ -87,18 +87,9 @@ message Document {
     optional string MD5Checksum = 10;
 }
 
-// InputMediaUploadedPhoto
-message InputMediaUploadedPhoto {
-    required string Caption = 1;
-    repeated InputDocument Stickers = 2;
-    required InputFile File = 3;
-    repeated DocumentAttribute Attributes = 4;
-}
-
-// InputMediaPhoto
-message InputMediaPhoto {
-    required string Caption = 1;
-    required InputDocument Photo = 2;
+// InputMediaPoll
+message InputMediaPoll {
+    required MediaPoll Poll = 1;
 }
 
 // InputMediaContact
@@ -131,8 +122,40 @@ message InputMediaGeoLocation {
     required float Long = 2;
 }
 
-// MediaPhoto
-message MediaPhoto {
+// MediaPoll
+message MediaPoll {
+    required int64 ID = 1;
+    optional bool Closed = 2;
+    optional bool PublicVoters = 3;
+    optional bool MultiChoice = 4;
+    optional bool Quiz = 5;
+    required string Question = 6;
+    repeated PollAnswer Answers = 7;
+}
+
+// PollAnswer
+message PollAnswer {
+    required string Text = 1;
+    required bytes Option = 2;
+}
+
+// PollResults
+message PollResults {
+    repeated PollAnswerVoters Results = 1;
+    required int64 TotalVoters = 2;
+}
+
+// PollAnswerVoters
+message PollAnswerVoters {
+    required bool Chosen = 1; // Whether User has chosen this answer
+    required bool Correct = 2; // For Quiz Polls
+    required bytes Option = 3;
+    required int64 Voters = 4; // Number of voters chosen this option
+
+}
+
+// MediaInvoice
+message MediaInvoice {
 
 }
 

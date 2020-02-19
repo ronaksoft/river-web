@@ -26,6 +26,7 @@ export default class NotificationService {
         try {
             this.app = firebase.initializeApp({
                 apiKey: "AIzaSyAxXaCNUveWAy2fxxv824mFe1n53sLUSL4",
+                appId: "river.im",
                 authDomain: "river-chat.firebaseapp.com",
                 databaseURL: "https://river-chat.firebaseio.com",
                 messagingSenderId: "1012919192766",

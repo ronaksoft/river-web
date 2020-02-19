@@ -21,6 +21,7 @@ message AuthRegister {
 message AuthBotRegister {
     required string Name = 1;
     required string Username = 2;
+    required int64 OwnerID = 3;
 }
 
 // AuthLogin

@@ -113,6 +113,162 @@ export namespace SystemGetSalts {
   }
 }
 
+export class SystemGetConfig extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SystemGetConfig.AsObject;
+  static toObject(includeInstance: boolean, msg: SystemGetConfig): SystemGetConfig.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: SystemGetConfig, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SystemGetConfig;
+  static deserializeBinaryFromReader(message: SystemGetConfig, reader: jspb.BinaryReader): SystemGetConfig;
+}
+
+export namespace SystemGetConfig {
+  export type AsObject = {
+  }
+}
+
+export class SystemConfig extends jspb.Message {
+  hasTestmode(): boolean;
+  clearTestmode(): void;
+  getTestmode(): boolean | undefined;
+  setTestmode(value: boolean): void;
+
+  hasPhonecallenabled(): boolean;
+  clearPhonecallenabled(): void;
+  getPhonecallenabled(): boolean | undefined;
+  setPhonecallenabled(value: boolean): void;
+
+  hasExpireon(): boolean;
+  clearExpireon(): void;
+  getExpireon(): number | undefined;
+  setExpireon(value: number): void;
+
+  hasGroupmaxsize(): boolean;
+  clearGroupmaxsize(): void;
+  getGroupmaxsize(): number | undefined;
+  setGroupmaxsize(value: number): void;
+
+  hasForwardedmaxcount(): boolean;
+  clearForwardedmaxcount(): void;
+  getForwardedmaxcount(): number | undefined;
+  setForwardedmaxcount(value: number): void;
+
+  hasOnlineupdateperiodms(): boolean;
+  clearOnlineupdateperiodms(): void;
+  getOnlineupdateperiodms(): number | undefined;
+  setOnlineupdateperiodms(value: number): void;
+
+  hasEdittimelimit(): boolean;
+  clearEdittimelimit(): void;
+  getEdittimelimit(): number | undefined;
+  setEdittimelimit(value: number): void;
+
+  hasRevoketimelimit(): boolean;
+  clearRevoketimelimit(): void;
+  getRevoketimelimit(): number | undefined;
+  setRevoketimelimit(value: number): void;
+
+  hasPinneddialogsmaxcount(): boolean;
+  clearPinneddialogsmaxcount(): void;
+  getPinneddialogsmaxcount(): number | undefined;
+  setPinneddialogsmaxcount(value: number): void;
+
+  hasUrlprefix(): boolean;
+  clearUrlprefix(): void;
+  getUrlprefix(): number | undefined;
+  setUrlprefix(value: number): void;
+
+  hasMessagemaxlength(): boolean;
+  clearMessagemaxlength(): void;
+  getMessagemaxlength(): number | undefined;
+  setMessagemaxlength(value: number): void;
+
+  hasCaptionmaxlength(): boolean;
+  clearCaptionmaxlength(): void;
+  getCaptionmaxlength(): number | undefined;
+  setCaptionmaxlength(value: number): void;
+
+  clearDcsList(): void;
+  getDcsList(): Array<DataCenter>;
+  setDcsList(value: Array<DataCenter>): void;
+  addDcs(value?: DataCenter, index?: number): DataCenter;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SystemConfig.AsObject;
+  static toObject(includeInstance: boolean, msg: SystemConfig): SystemConfig.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: SystemConfig, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SystemConfig;
+  static deserializeBinaryFromReader(message: SystemConfig, reader: jspb.BinaryReader): SystemConfig;
+}
+
+export namespace SystemConfig {
+  export type AsObject = {
+    testmode?: boolean,
+    phonecallenabled?: boolean,
+    expireon?: number,
+    groupmaxsize?: number,
+    forwardedmaxcount?: number,
+    onlineupdateperiodms?: number,
+    edittimelimit?: number,
+    revoketimelimit?: number,
+    pinneddialogsmaxcount?: number,
+    urlprefix?: number,
+    messagemaxlength?: number,
+    captionmaxlength?: number,
+    dcsList: Array<DataCenter.AsObject>,
+  }
+}
+
+export class DataCenter extends jspb.Message {
+  hasIp(): boolean;
+  clearIp(): void;
+  getIp(): string | undefined;
+  setIp(value: string): void;
+
+  hasPort(): boolean;
+  clearPort(): void;
+  getPort(): number | undefined;
+  setPort(value: number): void;
+
+  hasHttp(): boolean;
+  clearHttp(): void;
+  getHttp(): boolean | undefined;
+  setHttp(value: boolean): void;
+
+  hasWebsocket(): boolean;
+  clearWebsocket(): void;
+  getWebsocket(): boolean | undefined;
+  setWebsocket(value: boolean): void;
+
+  hasQuic(): boolean;
+  clearQuic(): void;
+  getQuic(): boolean | undefined;
+  setQuic(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): DataCenter.AsObject;
+  static toObject(includeInstance: boolean, msg: DataCenter): DataCenter.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: DataCenter, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): DataCenter;
+  static deserializeBinaryFromReader(message: DataCenter, reader: jspb.BinaryReader): DataCenter;
+}
+
+export namespace DataCenter {
+  export type AsObject = {
+    ip?: string,
+    port?: number,
+    http?: boolean,
+    websocket?: boolean,
+    quic?: boolean,
+  }
+}
+
 export class SystemSalts extends jspb.Message {
   clearSaltsList(): void;
   getSaltsList(): Array<number>;

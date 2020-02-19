@@ -68,6 +68,11 @@ export class AuthBotRegister extends jspb.Message {
   getUsername(): string | undefined;
   setUsername(value: string): void;
 
+  hasOwnerid(): boolean;
+  clearOwnerid(): void;
+  getOwnerid(): number | undefined;
+  setOwnerid(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AuthBotRegister.AsObject;
   static toObject(includeInstance: boolean, msg: AuthBotRegister): AuthBotRegister.AsObject;
@@ -82,6 +87,7 @@ export namespace AuthBotRegister {
   export type AsObject = {
     name?: string,
     username?: string,
+    ownerid?: number,
   }
 }
 

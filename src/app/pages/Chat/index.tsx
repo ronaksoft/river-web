@@ -570,6 +570,7 @@ class Chat extends React.Component<IProps, IState> {
                                          onAttachmentAction={this.messageAttachmentActionHandler}
                                          onRendered={this.messageRenderedHandler}
                                          onDrop={this.messageDropHandler}
+                                         onBotCommand={this.messageBotCommandHandler}
                                 />
                                 <MoveDown key="move-down" ref={this.moveDownRefHandler}
                                           onClick={this.moveDownClickHandler}/>
@@ -2883,6 +2884,11 @@ class Chat extends React.Component<IProps, IState> {
         if (this.chatInputRef) {
             this.chatInputRef.openUploader(files);
         }
+    }
+
+    /* Message on bot command handler */
+    private messageBotCommandHandler = (cmd: string) => {
+        this.chatInputTextMessageHandler(cmd);
     }
 
     /* Message on last message handler */

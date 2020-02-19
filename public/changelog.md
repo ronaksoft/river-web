@@ -1,3 +1,6 @@
+## 0.30.5
+* Bot view implemented
+
 ## 0.30.4
 * TextInput bug fixed
 * Performance improvements

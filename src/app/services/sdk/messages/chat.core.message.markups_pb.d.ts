@@ -5,34 +5,6 @@
 import * as jspb from "google-protobuf";
 import * as chat_core_types_pb from "./chat.core.types_pb";
 
-export class ReplyKeyboardForceReply extends jspb.Message {
-  hasSingleuse(): boolean;
-  clearSingleuse(): void;
-  getSingleuse(): boolean | undefined;
-  setSingleuse(value: boolean): void;
-
-  hasSelective(): boolean;
-  clearSelective(): void;
-  getSelective(): boolean | undefined;
-  setSelective(value: boolean): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): ReplyKeyboardForceReply.AsObject;
-  static toObject(includeInstance: boolean, msg: ReplyKeyboardForceReply): ReplyKeyboardForceReply.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: ReplyKeyboardForceReply, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): ReplyKeyboardForceReply;
-  static deserializeBinaryFromReader(message: ReplyKeyboardForceReply, reader: jspb.BinaryReader): ReplyKeyboardForceReply;
-}
-
-export namespace ReplyKeyboardForceReply {
-  export type AsObject = {
-    singleuse?: boolean,
-    selective?: boolean,
-  }
-}
-
 export class ReplyKeyboardMarkup extends jspb.Message {
   hasSingleuse(): boolean;
   clearSingleuse(): void;

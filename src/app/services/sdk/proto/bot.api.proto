@@ -5,31 +5,62 @@ package msg;
 import "chat.core.types.proto";
 
 service BotProxy {
-    rpc ServeBotRequest (stream MessageEnvelope) returns (stream MessageEnvelope) {}
+    rpc ServeBotRequest (stream MessageEnvelope) returns (stream MessageEnvelope) {
+    }
 }
 
-message StartBot {
+// BotStart
+// @Function
+// @Return: Bool
+message BotStart {
     required InputPeer Bot = 1;
     required int64 RandomID = 2;
     required string StartParam = 3;
-}
-
-// BotIsStarted
-// @Function
-// @Return: Bool
-message BotIsStarted {
-    required InputPeer Bot = 1;
-    required int64 RandomID = 2;
 }
 
 // BotSetInfo
 // @Function
 // @Return: Bool
 message BotSetInfo {
-    required int64       BotID       = 1;
-    required int64       RandomID    = 2;
-    required int64       Owner       = 3;
+    required int64 BotID = 1;
+    required int64 RandomID = 2;
+    required int64 Owner = 3;
     repeated BotCommands BotCommands = 4;
-    required string      Description = 5;
+    required string Description = 5;
 }
 
+// BotGet
+// @Function
+// @Return: BotInfo
+message BotGet {
+    required int64 UserID = 1 [jstype = JS_STRING];
+    optional int32 Limit = 2;
+}
+
+// BotSendMessage
+// @Function
+// @Return: Bool
+message BotSendMessage {
+    required int64 RandomID = 1;
+    required InputPeer Peer = 2;
+    required string Body = 5;
+    optional int64 ReplyTo = 6;
+    optional bool ClearDraft = 7;
+    repeated MessageEntity Entities = 8;
+    optional int64 ReplyMarkup = 9;
+    optional bytes ReplyMarkupData = 10;
+}
+
+// BotsMany
+message BotsMany {
+    repeated BotInfo Bots = 1;
+}
+
+// BotUpdateProfile
+// @Function
+// @Return: Bool
+message BotUpdateProfile {
+    required int64  BotID = 1;
+    required string Name = 2;
+    optional string Bio = 4;
+}

@@ -29,6 +29,7 @@ interface IMessage extends UserMessage.AsObject {
     removed_labels?: number[];
     req_id?: number;
     mark_as_sent?: boolean;
+    replydata?: any;
 }
 
 interface IPendingMessage {
@@ -44,5 +45,10 @@ interface IMessageWithCount {
     messages: IMessage[];
 }
 
+interface IMessageBotCol {
+    constructor?: number;
+    buttondata?: any;
+}
+
 // @ts-ignore
-export {IMessage, IPendingMessage, IMessageWithCount};
+export {IMessage, IPendingMessage, IMessageWithCount, IMessageBotCol};

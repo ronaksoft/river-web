@@ -14,7 +14,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {
-    GroupPhoto, InputFileLocation, InputPeer, MediaType, MessageEntityType, PeerType,
+    GroupPhoto, InputFileLocation, InputPeer, MediaType, MessageEntity, MessageEntityType, PeerType,
 } from '../../services/sdk/messages/chat.core.types_pb';
 import {clone, findLastIndex} from 'lodash';
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from '../../repository/message/consts';
@@ -48,6 +48,7 @@ import animateScrollTo from "animated-scroll-to";
 import Landscape from "../SVG";
 
 import './style.scss';
+import MessageBot from "../MessageBot";
 
 
 interface IProps {
@@ -61,6 +62,7 @@ interface IProps {
     onSelectedIdsChange: (selectedIds: { [key: number]: number }) => void;
     onDrop: (files: File[]) => void;
     onRendered?: scrollFunc;
+    onBotCommand?: (cmd: string, params?: any) => void;
     showDate: (timestamp: number | null) => void;
     showNewMessage?: (visible: boolean) => void;
     isMobileView: boolean;
@@ -86,7 +88,10 @@ export const messageKey = (id: number, type: number) => {
 export const highlightMessage = (id: number) => {
     const el = document.querySelector(`.bubble-wrapper .bubble.b_${id}`);
     if (el) {
-        const parentEl = el.parentElement;
+        let parentEl = el.parentElement;
+        if (parentEl) {
+            parentEl = parentEl.parentElement;
+        }
         if (parentEl) {
             parentEl.classList.add('highlight');
             setTimeout(() => {
@@ -804,32 +809,35 @@ class Message extends React.Component<IProps, IState> {
                             {Boolean(message.avatar && message.senderid) && (<div className="arrow"/>)}
                             {Boolean(message.me && message.error) &&
                             <span className="error" onClick={this.contextMenuHandler(index)}><ErrorRounded/></span>}
-                            <div ref={parenElRefHandler}
-                                 className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '') + ((message.messagetype === C_MESSAGE_TYPE.Video || message.messagetype === C_MESSAGE_TYPE.Picture) ? ' media-message' : '')}
-                                 onContextMenu={this.messageContextMenuHandler(index)}>
-                                {Boolean((peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me) || (this.isSimplified && message.avatar)) &&
-                                <UserName className="name" uniqueColor={true} id={message.senderid || ''}
-                                          hideBadge={true} noDetail={this.state.selectable}
-                                          onLoad={userNameLoadHandler}/>}
-                                {Boolean(message.replyto && message.replyto !== 0 && message.deleted_reply !== true) &&
-                                <MessagePreview message={message} peer={peer}
-                                                onDoubleClick={this.moreCmdHandler('reply', index)}
-                                                onClick={this.props.onJumpToMessage}
-                                                disableClick={this.state.selectable}
-                                />}
-                                {Boolean(message.fwdsenderid && message.fwdsenderid !== '0') &&
-                                <MessageForwarded message={message} peer={peer}
-                                                  onDoubleClick={this.moreCmdHandler('reply', index)}/>}
-                                <div className="bubble-body" onClick={bubbleClickHandler}>
-                                    {this.renderMessageBody(message, peer, messageMedia, parentEl, measureFn)}
-                                    <MessageStatus status={message.me || false} id={message.id} readId={readId}
-                                                   time={message.createdon || 0} editedTime={message.editedon || 0}
-                                                   labelIds={message.labelidsList} markAsSent={message.mark_as_sent}
-                                                   onDoubleClick={this.moreCmdHandler('reply', index)}/>
+                            <div className="message-container">
+                                <div ref={parenElRefHandler}
+                                     className={'bubble b_' + message.id + ((message.editedon || 0) > 0 ? ' edited' : '') + ((message.messagetype === C_MESSAGE_TYPE.Video || message.messagetype === C_MESSAGE_TYPE.Picture) ? ' media-message' : '')}
+                                     onContextMenu={this.messageContextMenuHandler(index)}>
+                                    {Boolean((peer && peer.getType() === PeerType.PEERGROUP && message.avatar && !message.me) || (this.isSimplified && message.avatar)) &&
+                                    <UserName className="name" uniqueColor={true} id={message.senderid || ''}
+                                              hideBadge={true} noDetail={this.state.selectable}
+                                              onLoad={userNameLoadHandler}/>}
+                                    {Boolean(message.replyto && message.replyto !== 0 && message.deleted_reply !== true) &&
+                                    <MessagePreview message={message} peer={peer}
+                                                    onDoubleClick={this.moreCmdHandler('reply', index)}
+                                                    onClick={this.props.onJumpToMessage}
+                                                    disableClick={this.state.selectable}
+                                    />}
+                                    {Boolean(message.fwdsenderid && message.fwdsenderid !== '0') &&
+                                    <MessageForwarded message={message} peer={peer}
+                                                      onDoubleClick={this.moreCmdHandler('reply', index)}/>}
+                                    <div className="bubble-body" onClick={bubbleClickHandler}>
+                                        {this.renderMessageBody(message, peer, messageMedia, parentEl, measureFn)}
+                                        <MessageStatus status={message.me || false} id={message.id} readId={readId}
+                                                       time={message.createdon || 0} editedTime={message.editedon || 0}
+                                                       labelIds={message.labelidsList} markAsSent={message.mark_as_sent}
+                                                       onDoubleClick={this.moreCmdHandler('reply', index)}/>
+                                    </div>
+                                    <div className="more" onClick={bubbleClickHandler}>
+                                        <MoreVert onClick={this.contextMenuHandler(index)}/>
+                                    </div>
                                 </div>
-                                <div className="more" onClick={bubbleClickHandler}>
-                                    <MoreVert onClick={this.contextMenuHandler(index)}/>
-                                </div>
+                                {Boolean(message.replydata) && <MessageBot message={message} peer={peer}/>}
                             </div>
                         </div>
                     );
@@ -1170,6 +1178,9 @@ class Message extends React.Component<IProps, IState> {
                                 <a key={i} href={url} target="_blank" rel="noopener noreferrer"
                                    className="_url">{elem.str}</a>);
                         }
+                    case MessageEntityType.MESSAGEENTITYTYPEBOTCOMMAND:
+                        return (<span key={i} className="_url"
+                                      onClick={this.botCommandHandler(elem.str || '')}>{elem.str}</span>);
                     default:
                         return (<span key={i}>{elem.str}</span>);
                 }
@@ -1371,6 +1382,21 @@ class Message extends React.Component<IProps, IState> {
     private copy() {
         if (document.execCommand) {
             document.execCommand('Copy');
+        }
+    }
+
+    private botCommandHandler = (cmd: string) => () => {
+        if (this.props.onBotCommand) {
+            const entities: MessageEntity[] = [];
+            const entity = new MessageEntity();
+            entity.setOffset(0);
+            entity.setLength(cmd.length);
+            entity.setType(MessageEntityType.MESSAGEENTITYTYPEBOTCOMMAND);
+            entity.setUserid('');
+            entities.push(entity);
+            this.props.onBotCommand(cmd, {
+                entities,
+            });
         }
     }
 }

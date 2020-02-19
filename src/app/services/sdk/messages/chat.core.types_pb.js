@@ -6461,7 +6461,8 @@ proto.msg.Bot.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
     name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    username: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f
+    username: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
+    bio: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -6510,6 +6511,10 @@ proto.msg.Bot.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setUsername(value);
       break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setBio(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -6557,6 +6562,13 @@ proto.msg.Bot.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeString(
       3,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 4));
+  if (f != null) {
+    writer.writeString(
+      4,
       f
     );
   }
@@ -6668,6 +6680,42 @@ proto.msg.Bot.prototype.clearUsername = function() {
  */
 proto.msg.Bot.prototype.hasUsername = function() {
   return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional string Bio = 4;
+ * @return {string}
+ */
+proto.msg.Bot.prototype.getBio = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.msg.Bot} returns this
+ */
+proto.msg.Bot.prototype.setBio = function(value) {
+  return jspb.Message.setField(this, 4, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.Bot} returns this
+ */
+proto.msg.Bot.prototype.clearBio = function() {
+  return jspb.Message.setField(this, 4, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.Bot.prototype.hasBio = function() {
+  return jspb.Message.getField(this, 4) != null;
 };
 
 
@@ -13448,10 +13496,16 @@ proto.msg.UserStatus = {
  */
 proto.msg.MediaType = {
   MEDIATYPEEMPTY: 0,
-  MEDIATYPEPHOTO: 1,
+  MEDIATYPEPOLL: 1,
   MEDIATYPEDOCUMENT: 2,
   MEDIATYPECONTACT: 3,
-  MEDIATYPEGEOLOCATION: 4
+  MEDIATYPEGEOLOCATION: 4,
+  MEDIATYPEINVOICE: 5,
+  MEDIATYPERESERVED1: 6,
+  MEDIATYPERESERVED2: 7,
+  MEDIATYPERESERVED3: 8,
+  MEDIATYPERESERVED4: 9,
+  MEDIATYPERESERVED5: 10
 };
 
 /**
@@ -13464,8 +13518,8 @@ proto.msg.MessageEntityType = {
   MESSAGEENTITYTYPEURL: 3,
   MESSAGEENTITYTYPEEMAIL: 4,
   MESSAGEENTITYTYPEHASHTAG: 5,
-  MESSAGEENTITYTYPERESERVED1: 6,
-  MESSAGEENTITYTYPERESERVED2: 7,
+  MESSAGEENTITYTYPECODE: 6,
+  MESSAGEENTITYTYPEBOTCOMMAND: 7,
   MESSAGEENTITYTYPERESERVED3: 8,
   MESSAGEENTITYTYPERESERVED4: 9,
   MESSAGEENTITYTYPERESERVED5: 10,

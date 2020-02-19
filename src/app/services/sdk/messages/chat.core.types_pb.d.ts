@@ -764,6 +764,11 @@ export class Bot extends jspb.Message {
   getUsername(): string | undefined;
   setUsername(value: string): void;
 
+  hasBio(): boolean;
+  clearBio(): void;
+  getBio(): string | undefined;
+  setBio(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Bot.AsObject;
   static toObject(includeInstance: boolean, msg: Bot): Bot.AsObject;
@@ -779,6 +784,7 @@ export namespace Bot {
     id?: string,
     name?: string,
     username?: string,
+    bio?: string,
   }
 }
 
@@ -1700,10 +1706,16 @@ export enum UserStatus {
 
 export enum MediaType {
   MEDIATYPEEMPTY = 0,
-  MEDIATYPEPHOTO = 1,
+  MEDIATYPEPOLL = 1,
   MEDIATYPEDOCUMENT = 2,
   MEDIATYPECONTACT = 3,
   MEDIATYPEGEOLOCATION = 4,
+  MEDIATYPEINVOICE = 5,
+  MEDIATYPERESERVED1 = 6,
+  MEDIATYPERESERVED2 = 7,
+  MEDIATYPERESERVED3 = 8,
+  MEDIATYPERESERVED4 = 9,
+  MEDIATYPERESERVED5 = 10,
 }
 
 export enum MessageEntityType {
@@ -1713,8 +1725,8 @@ export enum MessageEntityType {
   MESSAGEENTITYTYPEURL = 3,
   MESSAGEENTITYTYPEEMAIL = 4,
   MESSAGEENTITYTYPEHASHTAG = 5,
-  MESSAGEENTITYTYPERESERVED1 = 6,
-  MESSAGEENTITYTYPERESERVED2 = 7,
+  MESSAGEENTITYTYPECODE = 6,
+  MESSAGEENTITYTYPEBOTCOMMAND = 7,
   MESSAGEENTITYTYPERESERVED3 = 8,
   MESSAGEENTITYTYPERESERVED4 = 9,
   MESSAGEENTITYTYPERESERVED5 = 10,

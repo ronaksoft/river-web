@@ -693,6 +693,70 @@ export namespace MessagesSendScreenShotNotification {
   }
 }
 
+export class MessagesSendVote extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): chat_core_types_pb.InputPeer;
+  setPeer(value?: chat_core_types_pb.InputPeer): void;
+
+  hasMessageid(): boolean;
+  clearMessageid(): void;
+  getMessageid(): number | undefined;
+  setMessageid(value: number): void;
+
+  clearOptionsList(): void;
+  getOptionsList(): Array<Uint8Array | string>;
+  getOptionsList_asU8(): Array<Uint8Array>;
+  getOptionsList_asB64(): Array<string>;
+  setOptionsList(value: Array<Uint8Array | string>): void;
+  addOptions(value: Uint8Array | string, index?: number): Uint8Array | string;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessagesSendVote.AsObject;
+  static toObject(includeInstance: boolean, msg: MessagesSendVote): MessagesSendVote.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessagesSendVote, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessagesSendVote;
+  static deserializeBinaryFromReader(message: MessagesSendVote, reader: jspb.BinaryReader): MessagesSendVote;
+}
+
+export namespace MessagesSendVote {
+  export type AsObject = {
+    peer: chat_core_types_pb.InputPeer.AsObject,
+    messageid?: number,
+    optionsList: Array<Uint8Array | string>,
+  }
+}
+
+export class MessagesGetPollResults extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): chat_core_types_pb.InputPeer;
+  setPeer(value?: chat_core_types_pb.InputPeer): void;
+
+  hasMessageid(): boolean;
+  clearMessageid(): void;
+  getMessageid(): number | undefined;
+  setMessageid(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): MessagesGetPollResults.AsObject;
+  static toObject(includeInstance: boolean, msg: MessagesGetPollResults): MessagesGetPollResults.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: MessagesGetPollResults, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): MessagesGetPollResults;
+  static deserializeBinaryFromReader(message: MessagesGetPollResults, reader: jspb.BinaryReader): MessagesGetPollResults;
+}
+
+export namespace MessagesGetPollResults {
+  export type AsObject = {
+    peer: chat_core_types_pb.InputPeer.AsObject,
+    messageid?: number,
+  }
+}
+
 export class MessagesDialogs extends jspb.Message {
   clearDialogsList(): void;
   getDialogsList(): Array<chat_core_types_pb.Dialog>;
@@ -821,16 +885,19 @@ export namespace MessagesMany {
 
 export enum InputMediaType {
   INPUTMEDIATYPEEMPTY = 0,
-  INPUTMEDIATYPEUPLOADEDPHOTO = 1,
-  INPUTMEDIATYPEPHOTO = 2,
+  INPUTMEDIATYPEINVOICE = 1,
+  INPUTMEDIATYPEPOLL = 2,
   INPUTMEDIATYPECONTACT = 3,
   INPUTMEDIATYPEUPLOADEDDOCUMENT = 4,
   INPUTMEDIATYPEDOCUMENT = 5,
   INPUTMEDIATYPEGEOLOCATION = 6,
-  RESERVED1 = 10,
-  RESERVED2 = 11,
-  RESERVED3 = 12,
-  RESERVED4 = 13,
-  RESERVED5 = 14,
+  INPUTMEDIATYPERESERVED1 = 7,
+  INPUTMEDIATYPERESERVED2 = 8,
+  INPUTMEDIATYPERESERVED3 = 9,
+  INPUTMEDIATYPERESERVED4 = 10,
+  INPUTMEDIATYPERESERVED5 = 11,
+  INPUTMEDIATYPERESERVED6 = 12,
+  INPUTMEDIATYPERESERVED7 = 13,
+  INPUTMEDIATYPERESERVED8 = 14,
 }
 
