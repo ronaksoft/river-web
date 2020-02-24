@@ -129,7 +129,7 @@
         background-color: #fff !important;
         min-height: 32px;
         width: 100%;
-        max-height: 120px;
+        max-height: 370px;
         z-index: 10;
         padding: 6px;
 
@@ -154,20 +154,13 @@
               overflow: hidden !important;
               line-height: 1.1em;
 
-              &._2-line {
-                height: 2.4em !important;
+              @for $i from 2 through 12 {
+                &._#{$i}-line {
+                  height: #{1.1 * ($i + 0.2)}em !important;
+                }
               }
 
-              &._3-line {
-                height: 3.5em !important;
-              }
-
-              &._4-line {
-                height: 4.7em !important;
-              }
-
-              &._5-line {
-                height: 5.9em !important;
+              &._12-line {
                 overflow: auto !important;
               }
 
@@ -186,6 +179,13 @@
         height: 32px;
         transform: translateY(-50%);
         z-index: 11;
+        &.is-bot {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-direction: row;
+          width: 50px;
+        }
 
         .icon {
           position: relative;
@@ -414,6 +414,10 @@
         }
       }
     }
+  }
+
+  .bot-keyboard {
+    height: 50px;
   }
 
   .actions {

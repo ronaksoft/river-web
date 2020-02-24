@@ -10,7 +10,7 @@
 import * as React from 'react';
 import {Picker} from 'emoji-mart';
 import PopUpMenu from '../PopUpMenu';
-import {cloneDeep, sortBy, throttle} from 'lodash';
+import {cloneDeep, sortBy, throttle, range} from 'lodash';
 import {
     AttachFileRounded,
     ClearRounded,
@@ -22,6 +22,7 @@ import {
     SendRounded,
     SentimentSatisfiedRounded,
     StopRounded,
+    ViewModuleRounded,
 } from '@material-ui/icons';
 import {IconButton} from '@material-ui/core';
 import UserAvatar from '../UserAvatar';
@@ -75,6 +76,8 @@ import UniqueId from "../../services/uniqueId";
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.scss';
+import {ReplyKeyboardMarkup} from "../../services/sdk/messages/chat.core.message.markups_pb";
+import BotLayout from "../BotLayout";
 
 const limit = 9;
 const emojiKey = 'emoji-mart.frequently';
@@ -117,8 +120,10 @@ interface IProps {
 }
 
 interface IState {
+    botKeyboard: boolean;
     disableAuthority: number;
     emojiAnchorEl: any;
+    isBot: boolean;
     mediaInputMode: 'media' | 'music' | 'contact' | 'location' | 'file' | 'none';
     peer: InputPeer | null;
     previewMessage: IMessage | null;
@@ -145,7 +150,7 @@ const defaultMentionInputStyle = {
     input: {
         border: 'none',
         height: '20px',
-        maxHeight: '100px',
+        maxHeight: '350px',
         minHeight: '20px',
         outline: 'none',
         overflow: 'auto',
@@ -154,6 +159,8 @@ const defaultMentionInputStyle = {
 };
 
 export const C_TYPING_INTERVAL = 5000;
+
+const textBoxClasses: string[] = range(1, 13).map(o => `_${o}-line`);
 
 class ChatInput extends React.Component<IProps, IState> {
     private mentionContainer: any = null;
@@ -211,6 +218,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private isMobileBrowser = isMobile();
     private callerId: number = UniqueId.getRandomId();
     private selectMediaRef: SelectMedia | undefined;
+    private botKeyboard: ReplyKeyboardMarkup.AsObject | undefined;
 
     constructor(props: IProps) {
         super(props);
@@ -218,8 +226,10 @@ class ChatInput extends React.Component<IProps, IState> {
         this.userRepo = UserRepo.getInstance();
 
         this.state = {
+            botKeyboard: false,
             disableAuthority: 0x0,
             emojiAnchorEl: null,
+            isBot: true,
             mediaInputMode: 'none',
             peer: props.peer,
             previewMessage: props.previewMessage || null,
@@ -446,10 +456,17 @@ class ChatInput extends React.Component<IProps, IState> {
         }
     }
 
+    public setBotKeyboard(data: ReplyKeyboardMarkup.AsObject | undefined) {
+        this.botKeyboard = data;
+        if (this.state.botKeyboard) {
+            this.forceUpdate();
+        }
+    }
+
     public render() {
         const {
             previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable,
-            disableAuthority, textareaValue, voiceMode, user
+            disableAuthority, textareaValue, voiceMode, user, isBot, botKeyboard,
         } = this.state;
 
         if (!selectable && disableAuthority !== 0x0) {
@@ -505,90 +522,100 @@ class ChatInput extends React.Component<IProps, IState> {
                         </div>
                     </div>}
                     <div ref={this.mentionContainerRefHandler} className="suggestion-list-container"/>
-                    {Boolean(!selectable) &&
-                    <div ref={this.inputsRefHandler} className={`inputs mode-${this.inputsMode}`}>
-                        <div className="user">
-                            <UserAvatar id={this.props.userId || ''} className="user-avatar"/>
-                        </div>
-                        <div className={'input ' + (this.state.rtl ? 'rtl' : 'ltr')}>
-                            <div className="textarea-container">
-                                <MentionsInput value={textareaValue}
-                                               onChange={this.handleChange}
-                                               inputRef={this.textareaRefHandler}
-                                               onKeyUp={this.inputKeyUpHandler}
-                                               onKeyDown={this.inputKeyDownHandler}
-                                               allowSpaceInQuery={true}
-                                               className="mention"
-                                               placeholder={this.isMobileView ? i18n.t('input.type') : i18n.t('input.type_your_message_here')}
-                                               style={defaultMentionInputStyle}
-                                               suggestionsPortalHost={this.mentionContainer}
-                                               spellCheck={true}
-                                               onFocus={this.props.onFocus}
-                                >
-                                    <Mention
-                                        trigger="@"
-                                        type="mention"
-                                        data={this.searchMention}
-                                        className="mention-item"
-                                        renderSuggestion={this.renderMentionSuggestion}
-                                    />
-                                    <Mention
-                                        trigger=":"
-                                        type="emoji"
-                                        data={this.searchEmoji}
-                                        renderSuggestion={this.renderEmojiSuggestion}
-                                        style={{border: 'none'}}
-                                        onAdd={this.emojiAddHandler}
-                                    />
-                                </MentionsInput>
+                    {Boolean(!selectable) && <>
+                        <div ref={this.inputsRefHandler} className={`inputs mode-${this.inputsMode}`}>
+                            <div className="user">
+                                <UserAvatar id={this.props.userId || ''} className="user-avatar"/>
                             </div>
-                            <div className="emoji-wrapper">
-                                <span className="icon" onClick={this.emojiHandleClick}>
+                            <div className={'input ' + (this.state.rtl ? 'rtl' : 'ltr')}>
+                                <div className="textarea-container">
+                                    <MentionsInput value={textareaValue}
+                                                   onChange={this.handleChange}
+                                                   inputRef={this.textareaRefHandler}
+                                                   onKeyUp={this.inputKeyUpHandler}
+                                                   onKeyDown={this.inputKeyDownHandler}
+                                                   allowSpaceInQuery={true}
+                                                   className="mention"
+                                                   placeholder={this.isMobileView ? i18n.t('input.type') : i18n.t('input.type_your_message_here')}
+                                                   style={defaultMentionInputStyle}
+                                                   suggestionsPortalHost={this.mentionContainer}
+                                                   spellCheck={true}
+                                                   onFocus={this.props.onFocus}
+                                    >
+                                        <Mention
+                                            trigger="@"
+                                            type="mention"
+                                            data={this.searchMention}
+                                            className="mention-item"
+                                            renderSuggestion={this.renderMentionSuggestion}
+                                        />
+                                        <Mention
+                                            trigger=":"
+                                            type="emoji"
+                                            data={this.searchEmoji}
+                                            renderSuggestion={this.renderEmojiSuggestion}
+                                            style={{border: 'none'}}
+                                            onAdd={this.emojiAddHandler}
+                                        />
+                                    </MentionsInput>
+                                </div>
+                                <div className={'emoji-wrapper' + (isBot ? ' is-bot' : '')}>
+                                    {isBot && <span className="icon" onClick={this.toggleBotKeyboardHandler}>
+                                    <ViewModuleRounded/>
+                                </span>}
+                                    <span className="icon" onClick={this.emojiHandleClick}>
                                     <SentimentSatisfiedRounded/>
                                 </span>
-                                <PopUpMenu anchorEl={this.state.emojiAnchorEl} onClose={this.emojiHandleClose}>
-                                    <Picker custom={[]} onSelect={this.emojiSelect} native={true} showPreview={false}/>
-                                </PopUpMenu>
+                                    <PopUpMenu anchorEl={this.state.emojiAnchorEl} onClose={this.emojiHandleClose}>
+                                        <Picker custom={[]} onSelect={this.emojiSelect} native={true}
+                                                showPreview={false}/>
+                                    </PopUpMenu>
+                                </div>
+                            </div>
+                            <div className="voice-recorder">
+                                {Boolean(this.inputsMode === 'voice' && voiceMode !== 'play') && <React.Fragment>
+                                    <div className="timer">
+                                        <span className="bulb"/>
+                                        <span ref={this.timerRefHandler}>00:00</span>
+                                    </div>
+                                    <div className="preview">
+                                        <canvas ref={this.canvasRefHandler}/>
+                                    </div>
+                                    <div className="cancel"
+                                         onClick={this.voiceCancelHandler}>{i18n.t('general.cancel')}</div>
+                                </React.Fragment>}
+                                {Boolean(this.inputsMode === 'voice' && voiceMode === 'play') && <React.Fragment>
+                                    <div className="play-remove" onClick={this.voiceCancelHandler}>
+                                        <DeleteRounded/>
+                                    </div>
+                                    <VoicePlayer ref={this.voicePlayerRefHandler} className="play-frame"
+                                                 maxValue={255.0}/>
+                                </React.Fragment>}
+                            </div>
+                            <div className="input-actions">
+                                <div className="icon voice" onMouseDown={this.voiceMouseDownHandler}
+                                     onMouseUp={this.voiceMouseUpHandler} onMouseEnter={this.voiceMouseEnterHandler}
+                                     onMouseLeave={this.voiceMouseLeaveHandler} onClick={this.voiceMouseClickHandler}>
+                                    {this.getVoiceIcon()}
+                                    <div className={'lock-wrapper' + (this.state.voiceMode === 'lock' ? ' show' : '')}>
+                                        <LockRounded/>
+                                    </div>
+                                </div>
+                                <div className="icon attachment" onClick={this.openSelectMediaHandler}>
+                                    <AttachFileRounded/>
+                                    <SelectMedia ref={this.selectMediaRefHandler} onClose={this.selectMediaCloseHandler}
+                                                 onAction={this.selectMediaActionHandler}/>
+                                </div>
+                                <div className="icon send" onClick={this.submitMessage}>
+                                    <SendRounded/>
+                                </div>
                             </div>
                         </div>
-                        <div className="voice-recorder">
-                            {Boolean(this.inputsMode === 'voice' && voiceMode !== 'play') && <React.Fragment>
-                                <div className="timer">
-                                    <span className="bulb"/>
-                                    <span ref={this.timerRefHandler}>00:00</span>
-                                </div>
-                                <div className="preview">
-                                    <canvas ref={this.canvasRefHandler}/>
-                                </div>
-                                <div className="cancel"
-                                     onClick={this.voiceCancelHandler}>{i18n.t('general.cancel')}</div>
-                            </React.Fragment>}
-                            {Boolean(this.inputsMode === 'voice' && voiceMode === 'play') && <React.Fragment>
-                                <div className="play-remove" onClick={this.voiceCancelHandler}>
-                                    <DeleteRounded/>
-                                </div>
-                                <VoicePlayer ref={this.voicePlayerRefHandler} className="play-frame" maxValue={255.0}/>
-                            </React.Fragment>}
-                        </div>
-                        <div className="input-actions">
-                            <div className="icon voice" onMouseDown={this.voiceMouseDownHandler}
-                                 onMouseUp={this.voiceMouseUpHandler} onMouseEnter={this.voiceMouseEnterHandler}
-                                 onMouseLeave={this.voiceMouseLeaveHandler} onClick={this.voiceMouseClickHandler}>
-                                {this.getVoiceIcon()}
-                                <div className={'lock-wrapper' + (this.state.voiceMode === 'lock' ? ' show' : '')}>
-                                    <LockRounded/>
-                                </div>
-                            </div>
-                            <div className="icon attachment" onClick={this.openSelectMediaHandler}>
-                                <AttachFileRounded/>
-                                <SelectMedia ref={this.selectMediaRefHandler} onClose={this.selectMediaCloseHandler}
-                                             onAction={this.selectMediaActionHandler}/>
-                            </div>
-                            <div className="icon send" onClick={this.submitMessage}>
-                                <SendRounded/>
-                            </div>
-                        </div>
-                    </div>}
+                        {botKeyboard && <div className="bot-keyboard">
+                            <BotLayout rows={(this.botKeyboard ? this.botKeyboard.rowsList : undefined)}
+                                       prefix="keyboard-bot"/>
+                        </div>}
+                    </>}
                     {Boolean(selectable && !previewMessage) && <div className="actions">
                         <div className="left-action">
                             <Tooltip
@@ -979,7 +1006,7 @@ class ChatInput extends React.Component<IProps, IState> {
             return;
         }
         let lines = 1;
-        const nodeInfo = measureNodeHeight(this.textarea, 12, false, 1, 5);
+        const nodeInfo = measureNodeHeight(this.textarea, 12312, false, 1, 12);
         if (nodeInfo) {
             lines = nodeInfo.rowCount;
         } else {
@@ -988,11 +1015,11 @@ class ChatInput extends React.Component<IProps, IState> {
         if (lines < 1) {
             lines = 1;
         }
-        if (lines > 5) {
-            lines = 5;
+        if (lines > 12) {
+            lines = 12;
         }
         if (this.textarea && this.lastLines !== lines) {
-            this.textarea.classList.remove('_1-line', '_2-line', '_3-line', '_4-line', '_5-line');
+            this.textarea.classList.remove(...textBoxClasses);
             this.textarea.classList.add(`_${lines}-line`);
             this.lastLines = lines;
         }
@@ -1974,6 +2001,12 @@ class ChatInput extends React.Component<IProps, IState> {
 
     private selectMediaRefHandler = (ref: any) => {
         this.selectMediaRef = ref;
+    }
+
+    private toggleBotKeyboardHandler = () => {
+        this.setState({
+            botKeyboard: !this.state.botKeyboard,
+        });
     }
 
     // /* Is voice started */

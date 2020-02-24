@@ -8,15 +8,11 @@
 */
 
 import * as React from 'react';
-import {IMessage, IMessageBotCol} from '../../repository/message/interface';
+import {IMessage} from '../../repository/message/interface';
 import {InputPeer} from '../../services/sdk/messages/chat.core.types_pb';
-import {C_BUTTON_ACTION, C_REPLY_ACTION} from "../../repository/message/consts";
-import {
-    Button, ButtonBuy, ButtonCallback, ButtonRequestGeoLocation, ButtonRequestPhone, ButtonSwitchInline,
-    ButtonUrl, ButtonUrlAuth,
-    ReplyInlineMarkup,
-    ReplyKeyboardMarkup
-} from "../../services/sdk/messages/chat.core.message.markups_pb";
+import {C_REPLY_ACTION} from "../../repository/message/consts";
+import {ReplyInlineMarkup,} from "../../services/sdk/messages/chat.core.message.markups_pb";
+import BotLayout from "../BotLayout";
 
 import './style.scss';
 
@@ -30,7 +26,6 @@ interface IState {
 }
 
 class MessageBot extends React.PureComponent<IProps, IState> {
-
     constructor(props: IProps) {
         super(props);
 
@@ -47,70 +42,10 @@ class MessageBot extends React.PureComponent<IProps, IState> {
         if (message.replymarkup === C_REPLY_ACTION.ReplyInlineMarkup) {
             const replyInlineMarkup: ReplyInlineMarkup.AsObject = message.replydata;
             return (
-                <div className="message-bot">
-                    {replyInlineMarkup.rowsList.map((row, i) => {
-                        return (
-                            <div key={i} className="message-row">
-                                {row.buttonsList.map((col: IMessageBotCol, j) => {
-                                    return (<div key={j} className="message-col">
-                                        {this.getButton(col)}
-                                    </div>);
-                                })}
-                            </div>
-                        );
-                    })}
-                </div>
-            );
-        } else if (message.replymarkup === C_REPLY_ACTION.ReplyKeyboardMarkup) {
-            const replyKeyboardMarkup: ReplyKeyboardMarkup.AsObject = message.replydata;
-            return (
-                <div className="message-bot">
-                    {replyKeyboardMarkup.rowsList.map((row, i) => {
-                        return (
-                            <div key={i} className="message-row">
-                                {row.buttonsList.map((col: IMessageBotCol, j) => {
-                                    return (<div key={j} className="message-col">
-                                        {this.getButton(col)}
-                                    </div>);
-                                })}
-                            </div>
-                        );
-                    })}
-                </div>
+                <BotLayout rows={replyInlineMarkup.rowsList} prefix="message-bot"/>
             );
         }
         return '';
-    }
-
-    private getButton(col: IMessageBotCol) {
-        switch (col.constructor) {
-            case C_BUTTON_ACTION.Button:
-                const button: Button.AsObject = col.buttondata;
-                return (<div className="bot-button">{button.text}</div>);
-            case C_BUTTON_ACTION.ButtonUrl:
-                const buttonUrl: ButtonUrl.AsObject = col.buttondata;
-                return (<div className="bot-button">{buttonUrl.text}</div>);
-            case C_BUTTON_ACTION.ButtonUrlAuth:
-                const buttonUrlAuth: ButtonUrlAuth.AsObject = col.buttondata;
-                return (<div className="bot-button">{buttonUrlAuth.text}</div>);
-            case C_BUTTON_ACTION.ButtonSwitchInline:
-                const buttonSwitchInline: ButtonSwitchInline.AsObject = col.buttondata;
-                return (<div className="bot-button">{buttonSwitchInline.text}</div>);
-            case C_BUTTON_ACTION.ButtonRequestPhone:
-                const buttonRequestPhone: ButtonRequestPhone.AsObject = col.buttondata;
-                return (<div className="bot-button">{buttonRequestPhone.text}</div>);
-            case C_BUTTON_ACTION.ButtonRequestGeoLocation:
-                const buttonRequestGeoLocation: ButtonRequestGeoLocation.AsObject = col.buttondata;
-                return (<div className="bot-button">{buttonRequestGeoLocation.text}</div>);
-            case C_BUTTON_ACTION.ButtonCallback:
-                const buttonCallback: ButtonCallback.AsObject = col.buttondata;
-                return (<div className="bot-button">{buttonCallback.text}</div>);
-            case C_BUTTON_ACTION.ButtonBuy:
-                const buttonBuy: ButtonBuy.AsObject = col.buttondata;
-                return (<div className="bot-button">{buttonBuy.text}</div>);
-            default:
-                return '';
-        }
     }
 }
 

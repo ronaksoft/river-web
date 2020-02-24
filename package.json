@@ -15,7 +15,7 @@
     "eject": "react-scripts eject",
     "elec2": "electron --inspect=5858 .",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder -mwl",
+    "dist": "electron-builder -w",
     "elec-dist": "npx build --x64 --macos --win --linux --c.mac.identity=null --c.extraMetadata.main=public/electron.js -p always",
     "elec-dist-mac": "electron-builder -m",
     "elec-dist-win": "electron-builder -w",
@@ -147,7 +147,10 @@
     "win": {
       "target": "nsis",
       "icon": "assets/icon.png",
-      "artifactName": "${name}-win-${version}.${ext}"
+      "artifactName": "${name}-win-${version}.${ext}",
+      "arch": [
+        "ia32"
+      ]
     },
     "linux": {
       "icon": "assets/icon.png",
