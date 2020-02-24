@@ -23,6 +23,7 @@ import {
     SentimentSatisfiedRounded,
     StopRounded,
     ViewModuleRounded,
+    KeyboardRounded,
 } from '@material-ui/icons';
 import {IconButton} from '@material-ui/core';
 import UserAvatar from '../UserAvatar';
@@ -229,7 +230,7 @@ class ChatInput extends React.Component<IProps, IState> {
             botKeyboard: false,
             disableAuthority: 0x0,
             emojiAnchorEl: null,
-            isBot: true,
+            isBot: false,
             mediaInputMode: 'none',
             peer: props.peer,
             previewMessage: props.previewMessage || null,
@@ -456,17 +457,23 @@ class ChatInput extends React.Component<IProps, IState> {
         }
     }
 
-    public setBotKeyboard(data: ReplyKeyboardMarkup.AsObject | undefined) {
+    public setBot(isBot: boolean, data: ReplyKeyboardMarkup.AsObject | undefined) {
         this.botKeyboard = data;
         if (this.state.botKeyboard) {
-            this.forceUpdate();
+            this.setState({
+                isBot,
+            });
+        } else if (this.state.isBot !== isBot) {
+            this.setState({
+                isBot,
+            });
         }
     }
 
     public render() {
         const {
             previewMessage, previewMessageMode, previewMessageHeight, selectable, selectableDisable,
-            disableAuthority, textareaValue, voiceMode, user, isBot, botKeyboard,
+            disableAuthority, textareaValue, voiceMode, user, botKeyboard,
         } = this.state;
 
         if (!selectable && disableAuthority !== 0x0) {
@@ -485,8 +492,9 @@ class ChatInput extends React.Component<IProps, IState> {
             return (<div className="input-placeholder" onClick={this.unblockHandler}>
                 <span className="btn">{i18n.t('general.unblock')}</span></div>);
         } else {
+            const isBot = this.state.isBot && Boolean(this.botKeyboard);
             return (
-                <div className="write">
+                <div className="chat-input">
                     <input ref={this.fileInputRefHandler} type="file" style={{display: 'none'}}
                            onChange={this.fileChangeHandler} multiple={true} accept={this.getFileType()}/>
                     <MediaPreview ref={this.mediaPreviewRefHandler} accept={this.getFileType()}
@@ -527,7 +535,7 @@ class ChatInput extends React.Component<IProps, IState> {
                             <div className="user">
                                 <UserAvatar id={this.props.userId || ''} className="user-avatar"/>
                             </div>
-                            <div className={'input ' + (this.state.rtl ? 'rtl' : 'ltr')}>
+                            <div className={'input' + (this.state.rtl ? ' rtl' : ' ltr') + (isBot? ' is-bot': '')}>
                                 <div className="textarea-container">
                                     <MentionsInput value={textareaValue}
                                                    onChange={this.handleChange}
@@ -561,7 +569,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                 </div>
                                 <div className={'emoji-wrapper' + (isBot ? ' is-bot' : '')}>
                                     {isBot && <span className="icon" onClick={this.toggleBotKeyboardHandler}>
-                                    <ViewModuleRounded/>
+                                        {botKeyboard ? <KeyboardRounded/> : <ViewModuleRounded/>}
                                 </span>}
                                     <span className="icon" onClick={this.emojiHandleClick}>
                                     <SentimentSatisfiedRounded/>
@@ -611,7 +619,7 @@ class ChatInput extends React.Component<IProps, IState> {
                                 </div>
                             </div>
                         </div>
-                        {botKeyboard && <div className="bot-keyboard">
+                        {isBot && botKeyboard && <div className="bot-keyboard">
                             <BotLayout rows={(this.botKeyboard ? this.botKeyboard.rowsList : undefined)}
                                        prefix="keyboard-bot"/>
                         </div>}
@@ -925,9 +933,9 @@ class ChatInput extends React.Component<IProps, IState> {
 
     private animatePreviewMessage() {
         setTimeout(() => {
-            const el = document.querySelector('.write .previews .preview-message-wrapper');
+            const el = document.querySelector('.chat-input .previews .preview-message-wrapper');
             if (el && this.state.previewMessage) {
-                const targetEl = document.querySelector('.write .previews');
+                const targetEl = document.querySelector('.chat-input .previews');
                 if (targetEl) {
                     this.setState({
                         previewMessageHeight: (el.clientHeight + 8)
@@ -1429,7 +1437,7 @@ class ChatInput extends React.Component<IProps, IState> {
 
     /* Window resize handler */
     private windowResizeHandler = () => {
-        const el = document.querySelector('.write .inputs .voice-recorder .preview, .write .inputs .voice-recorder .play-preview');
+        const el = document.querySelector('.chat-input .inputs .voice-recorder .preview, .chat-input .inputs .voice-recorder .play-preview');
         if (el) {
             this.canvasConfig.height = el.clientHeight - 4;
             this.canvasConfig.width = el.clientWidth;

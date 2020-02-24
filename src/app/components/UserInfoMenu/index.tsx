@@ -256,8 +256,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                         </div>
                                     </div>}
                                     {Boolean(!edit && user && user.isbot && !user.is_bot_started) &&
-                                    <Button color="secondary" variant="outlined"
-                                            fullWidth={true}
+                                    <Button color="secondary" fullWidth={true}
                                             onClick={this.startBotHandler}>{i18n.t('bot.start_bot')}</Button>}
                                     {Boolean(!edit && user) && <Button key="block" color="secondary" fullWidth={true}
                                                                        onClick={this.blockUserHandler(user)}>

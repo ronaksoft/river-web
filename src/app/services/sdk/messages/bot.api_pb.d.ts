@@ -179,28 +179,6 @@ export namespace BotSendMessage {
   }
 }
 
-export class BotsMany extends jspb.Message {
-  clearBotsList(): void;
-  getBotsList(): Array<chat_core_types_pb.BotInfo>;
-  setBotsList(value: Array<chat_core_types_pb.BotInfo>): void;
-  addBots(value?: chat_core_types_pb.BotInfo, index?: number): chat_core_types_pb.BotInfo;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): BotsMany.AsObject;
-  static toObject(includeInstance: boolean, msg: BotsMany): BotsMany.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: BotsMany, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): BotsMany;
-  static deserializeBinaryFromReader(message: BotsMany, reader: jspb.BinaryReader): BotsMany;
-}
-
-export namespace BotsMany {
-  export type AsObject = {
-    botsList: Array<chat_core_types_pb.BotInfo.AsObject>,
-  }
-}
-
 export class BotUpdateProfile extends jspb.Message {
   hasBotid(): boolean;
   clearBotid(): void;
@@ -232,6 +210,138 @@ export namespace BotUpdateProfile {
     botid?: number,
     name?: string,
     bio?: string,
+  }
+}
+
+export class BotSetCallbackAnswer extends jspb.Message {
+  hasQueryid(): boolean;
+  clearQueryid(): void;
+  getQueryid(): number | undefined;
+  setQueryid(value: number): void;
+
+  hasUrl(): boolean;
+  clearUrl(): void;
+  getUrl(): string | undefined;
+  setUrl(value: string): void;
+
+  hasMessage(): boolean;
+  clearMessage(): void;
+  getMessage(): string | undefined;
+  setMessage(value: string): void;
+
+  hasCachetime(): boolean;
+  clearCachetime(): void;
+  getCachetime(): number | undefined;
+  setCachetime(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BotSetCallbackAnswer.AsObject;
+  static toObject(includeInstance: boolean, msg: BotSetCallbackAnswer): BotSetCallbackAnswer.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BotSetCallbackAnswer, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BotSetCallbackAnswer;
+  static deserializeBinaryFromReader(message: BotSetCallbackAnswer, reader: jspb.BinaryReader): BotSetCallbackAnswer;
+}
+
+export namespace BotSetCallbackAnswer {
+  export type AsObject = {
+    queryid?: number,
+    url?: string,
+    message?: string,
+    cachetime?: number,
+  }
+}
+
+export class BotGetCallbackAnswer extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): chat_core_types_pb.InputPeer;
+  setPeer(value?: chat_core_types_pb.InputPeer): void;
+
+  hasMessageid(): boolean;
+  clearMessageid(): void;
+  getMessageid(): number | undefined;
+  setMessageid(value: number): void;
+
+  hasData(): boolean;
+  clearData(): void;
+  getData(): Uint8Array | string;
+  getData_asU8(): Uint8Array;
+  getData_asB64(): string;
+  setData(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BotGetCallbackAnswer.AsObject;
+  static toObject(includeInstance: boolean, msg: BotGetCallbackAnswer): BotGetCallbackAnswer.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BotGetCallbackAnswer, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BotGetCallbackAnswer;
+  static deserializeBinaryFromReader(message: BotGetCallbackAnswer, reader: jspb.BinaryReader): BotGetCallbackAnswer;
+}
+
+export namespace BotGetCallbackAnswer {
+  export type AsObject = {
+    peer: chat_core_types_pb.InputPeer.AsObject,
+    messageid?: number,
+    data: Uint8Array | string,
+  }
+}
+
+export class BotCallbackAnswer extends jspb.Message {
+  hasUrl(): boolean;
+  clearUrl(): void;
+  getUrl(): string | undefined;
+  setUrl(value: string): void;
+
+  hasMessage(): boolean;
+  clearMessage(): void;
+  getMessage(): string | undefined;
+  setMessage(value: string): void;
+
+  hasCachetime(): boolean;
+  clearCachetime(): void;
+  getCachetime(): number | undefined;
+  setCachetime(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BotCallbackAnswer.AsObject;
+  static toObject(includeInstance: boolean, msg: BotCallbackAnswer): BotCallbackAnswer.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BotCallbackAnswer, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BotCallbackAnswer;
+  static deserializeBinaryFromReader(message: BotCallbackAnswer, reader: jspb.BinaryReader): BotCallbackAnswer;
+}
+
+export namespace BotCallbackAnswer {
+  export type AsObject = {
+    url?: string,
+    message?: string,
+    cachetime?: number,
+  }
+}
+
+export class BotsMany extends jspb.Message {
+  clearBotsList(): void;
+  getBotsList(): Array<chat_core_types_pb.BotInfo>;
+  setBotsList(value: Array<chat_core_types_pb.BotInfo>): void;
+  addBots(value?: chat_core_types_pb.BotInfo, index?: number): chat_core_types_pb.BotInfo;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BotsMany.AsObject;
+  static toObject(includeInstance: boolean, msg: BotsMany): BotsMany.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BotsMany, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BotsMany;
+  static deserializeBinaryFromReader(message: BotsMany, reader: jspb.BinaryReader): BotsMany;
+}
+
+export namespace BotsMany {
+  export type AsObject = {
+    botsList: Array<chat_core_types_pb.BotInfo.AsObject>,
   }
 }
 

@@ -280,3 +280,24 @@ message UpdateMessagePoll {
     optional MediaPoll Poll = 2;
     required PollResults Results = 3;
 }
+
+// UpdateBotCallbackQuery
+message UpdateBotCallbackQuery {
+    required int32 UCount = 100;
+    required int64 UpdateID = 101;
+    required int64 QueryID = 1;
+    required int64 UserID = 2;
+    required Peer Peer = 3;
+    optional int64 MessageID = 4;
+    optional bytes Data = 5;
+}
+
+// UpdateBotInlineCallbackQuery
+message UpdateBotInlineCallbackQuery {
+    required int32 UCount = 100;
+    required int64 UpdateID = 101;
+    required int64 QueryID = 1;
+    required int64 UserID = 2;
+    optional int64 MessageID = 3;
+    optional bytes Data = 4;
+}

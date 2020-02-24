@@ -1372,3 +1372,117 @@ export namespace UpdateMessagePoll {
   }
 }
 
+export class UpdateBotCallbackQuery extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  hasQueryid(): boolean;
+  clearQueryid(): void;
+  getQueryid(): number | undefined;
+  setQueryid(value: number): void;
+
+  hasUserid(): boolean;
+  clearUserid(): void;
+  getUserid(): number | undefined;
+  setUserid(value: number): void;
+
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): chat_core_types_pb.Peer;
+  setPeer(value?: chat_core_types_pb.Peer): void;
+
+  hasMessageid(): boolean;
+  clearMessageid(): void;
+  getMessageid(): number | undefined;
+  setMessageid(value: number): void;
+
+  hasData(): boolean;
+  clearData(): void;
+  getData(): Uint8Array | string;
+  getData_asU8(): Uint8Array;
+  getData_asB64(): string;
+  setData(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateBotCallbackQuery.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateBotCallbackQuery): UpdateBotCallbackQuery.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateBotCallbackQuery, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateBotCallbackQuery;
+  static deserializeBinaryFromReader(message: UpdateBotCallbackQuery, reader: jspb.BinaryReader): UpdateBotCallbackQuery;
+}
+
+export namespace UpdateBotCallbackQuery {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+    queryid?: number,
+    userid?: number,
+    peer: chat_core_types_pb.Peer.AsObject,
+    messageid?: number,
+    data: Uint8Array | string,
+  }
+}
+
+export class UpdateBotInlineCallbackQuery extends jspb.Message {
+  hasUcount(): boolean;
+  clearUcount(): void;
+  getUcount(): number | undefined;
+  setUcount(value: number): void;
+
+  hasUpdateid(): boolean;
+  clearUpdateid(): void;
+  getUpdateid(): number | undefined;
+  setUpdateid(value: number): void;
+
+  hasQueryid(): boolean;
+  clearQueryid(): void;
+  getQueryid(): number | undefined;
+  setQueryid(value: number): void;
+
+  hasUserid(): boolean;
+  clearUserid(): void;
+  getUserid(): number | undefined;
+  setUserid(value: number): void;
+
+  hasMessageid(): boolean;
+  clearMessageid(): void;
+  getMessageid(): number | undefined;
+  setMessageid(value: number): void;
+
+  hasData(): boolean;
+  clearData(): void;
+  getData(): Uint8Array | string;
+  getData_asU8(): Uint8Array;
+  getData_asB64(): string;
+  setData(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateBotInlineCallbackQuery.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateBotInlineCallbackQuery): UpdateBotInlineCallbackQuery.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdateBotInlineCallbackQuery, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateBotInlineCallbackQuery;
+  static deserializeBinaryFromReader(message: UpdateBotInlineCallbackQuery, reader: jspb.BinaryReader): UpdateBotInlineCallbackQuery;
+}
+
+export namespace UpdateBotInlineCallbackQuery {
+  export type AsObject = {
+    ucount?: number,
+    updateid?: number,
+    queryid?: number,
+    userid?: number,
+    messageid?: number,
+    data: Uint8Array | string,
+  }
+}
+

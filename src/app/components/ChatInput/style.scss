@@ -8,7 +8,7 @@
 */
 @import '../../../style/mixin';
 
-.write {
+.chat-input {
   position: relative;
   border: 1px solid var(--light);
   border-width: 1px 1px 1px 0;
@@ -172,6 +172,14 @@
         }
       }
 
+      &.is-bot {
+        .textarea-container .mention .mention__control {
+          textarea {
+            padding-right: 50px;
+          }
+        }
+      }
+
       .emoji-wrapper {
         position: absolute;
         right: 6px;
@@ -179,6 +187,7 @@
         height: 32px;
         transform: translateY(-50%);
         z-index: 11;
+
         &.is-bot {
           display: flex;
           align-items: center;
@@ -417,7 +426,38 @@
   }
 
   .bot-keyboard {
-    height: 50px;
+
+    .keyboard-bot {
+      padding: 0 6px 4px;
+      display: flex;
+      width: 100%;
+
+      .keyboard-bot-row {
+        display: flex;
+        flex-direction: row;
+        flex: 1;
+
+        .keyboard-bot-col {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+
+          .bot-button {
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: 5px;
+            padding: 2px 0 0;
+            font-size: 12px;
+            min-height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 4px;
+            color: var(--grey-low);
+            cursor: pointer;
+          }
+        }
+      }
+    }
   }
 
   .actions {
@@ -591,7 +631,7 @@
 }
 
 html[direction="rtl"] {
-  .write {
+  .chat-input {
     border-width: 1px 0 1px 1px;
 
     .actions .right-action {
@@ -614,7 +654,7 @@ html[direction="rtl"] {
 html[theme="dark"],
 html[theme="dark-night"],
 html[theme="dark-blue"] {
-  .write {
+  .chat-input {
     border: 1px solid var(--dark-medium);
     background-color: var(--dark-medium);
 
@@ -739,7 +779,7 @@ html[theme="dark-blue"] {
 }
 
 html[theme="dark-blue"] {
-  .write {
+  .chat-input {
     border: 1px solid var(--dark-blue-medium);
     background-color: var(--dark-blue-medium);
 
@@ -805,36 +845,36 @@ html[theme="dark-blue"] {
 }
 
 html[font="1"] {
-  .write .inputs .input .textarea-container,
-  .write .inputs .input .textarea-container textarea {
+  .chat-input .inputs .input .textarea-container,
+  .chat-input .inputs .input .textarea-container textarea {
     font-size: 12px !important;
   }
 }
 
 html[font="2"] {
-  .write .inputs .input .textarea-container,
-  .write .inputs .input .textarea-container textarea {
+  .chat-input .inputs .input .textarea-container,
+  .chat-input .inputs .input .textarea-container textarea {
     font-size: 14px !important;
   }
 }
 
 html[font="3"] {
-  .write .inputs .input .textarea-container,
-  .write .inputs .input .textarea-container textarea {
+  .chat-input .inputs .input .textarea-container,
+  .chat-input .inputs .input .textarea-container textarea {
     font-size: 16px !important;
   }
 }
 
 html[font="4"] {
-  .write .inputs .input .textarea-container,
-  .write .inputs .input .textarea-container textarea {
+  .chat-input .inputs .input .textarea-container,
+  .chat-input .inputs .input .textarea-container textarea {
     font-size: 18px !important;
   }
 }
 
 html[font="5"] {
-  .write .inputs .input .textarea-container,
-  .write .inputs .input .textarea-container textarea {
+  .chat-input .inputs .input .textarea-container,
+  .chat-input .inputs .input .textarea-container textarea {
     font-size: 20px !important;
   }
 }
@@ -842,7 +882,7 @@ html[font="5"] {
 html {
   .mobile-view {
     .column-center {
-      .write {
+      .chat-input {
         .inputs {
           .input {
             .textarea-container {

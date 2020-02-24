@@ -46,16 +46,16 @@ import KKWindow from "../../services/kkwindow/kkwindow";
 import {scrollFunc} from "../../services/kkwindow/utils";
 import animateScrollTo from "animated-scroll-to";
 import Landscape from "../SVG";
-
-import './style.scss';
 import MessageBot from "../MessageBot";
 
+import './style.scss';
 
 interface IProps {
     onContextMenu: (cmd: string, id: IMessage) => void;
     onAttachmentAction?: (cmd: 'cancel' | 'cancel_download' | 'download' | 'view' | 'open' | 'read' | 'preview', message: IMessage) => void;
     onJumpToMessage: (id: number, e: any) => void;
     onLastMessage: (message: IMessage | null) => void;
+    onLastIncomingMessage: (message: IMessage | null) => void;
     onLoadMoreAfter?: (start: number, end: number) => any;
     onLoadMoreBefore?: () => any;
     onSelectableChange: (selectable: boolean) => void;
@@ -66,6 +66,7 @@ interface IProps {
     showDate: (timestamp: number | null) => void;
     showNewMessage?: (visible: boolean) => void;
     isMobileView: boolean;
+    userId?: string;
 }
 
 interface IState {
@@ -285,7 +286,7 @@ class Message extends React.Component<IProps, IState> {
         this.topMessageId = topMessageId;
     }
 
-    public setMessages(items: IMessage[], callback?: () => void, noForceUpdate?: boolean) {
+    public setMessages(items: IMessage[], callback?: () => void, ignoreLastUpdates?: boolean) {
         const fn = () => {
             this.newMessageIndex = findLastIndex(this.state.items, {messagetype: C_MESSAGE_TYPE.NewMessage});
         };
@@ -299,10 +300,13 @@ class Message extends React.Component<IProps, IState> {
                 moreAnchorPos: null,
                 moreIndex: -1,
             }, () => {
-                if (this.state.items.length > 0) {
-                    this.props.onLastMessage(this.state.items[this.state.items.length - 1]);
-                } else {
-                    this.props.onLastMessage(null);
+                if (ignoreLastUpdates !== true) {
+                    if (this.state.items.length > 0) {
+                        this.props.onLastMessage(this.state.items[this.state.items.length - 1]);
+                    } else {
+                        this.props.onLastMessage(null);
+                    }
+                    this.getLastIncomingMessage(this.state.items);
                 }
                 if (callback) {
                     callback();
@@ -310,18 +314,19 @@ class Message extends React.Component<IProps, IState> {
             });
             this.listCount = items.length;
         } else if (this.state.items === items && this.listCount !== items.length) {
+            window.console.log('case #2', ignoreLastUpdates);
             fn();
             this.checkEnd(items);
             this.listCount = items.length;
-            if (this.state.items.length > 0) {
-                this.props.onLastMessage(this.state.items[this.state.items.length - 1]);
-            } else {
-                this.props.onLastMessage(null);
+            if (ignoreLastUpdates !== true) {
+                if (this.state.items.length > 0) {
+                    this.props.onLastMessage(this.state.items[this.state.items.length - 1]);
+                } else {
+                    this.props.onLastMessage(null);
+                }
+                this.getLastIncomingMessage(this.state.items);
             }
             this.forceUpdate();
-            if (this.list && noForceUpdate !== true) {
-                // this.list.forceUpdate();
-            }
             if (callback) {
                 callback();
             }
@@ -1397,6 +1402,15 @@ class Message extends React.Component<IProps, IState> {
             this.props.onBotCommand(cmd, {
                 entities,
             });
+        }
+    }
+
+    private getLastIncomingMessage(items: IMessage[]) {
+        const index = findLastIndex(items, o => o.senderid !== this.props.userId);
+        if (index > -1) {
+            this.props.onLastIncomingMessage(items[index]);
+        } else {
+            this.props.onLastIncomingMessage(null);
         }
     }
 }

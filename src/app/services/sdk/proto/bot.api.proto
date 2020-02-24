@@ -51,11 +51,6 @@ message BotSendMessage {
     optional bytes ReplyMarkupData = 10;
 }
 
-// BotsMany
-message BotsMany {
-    repeated BotInfo Bots = 1;
-}
-
 // BotUpdateProfile
 // @Function
 // @Return: Bool
@@ -64,3 +59,36 @@ message BotUpdateProfile {
     required string Name = 2;
     optional string Bio = 4;
 }
+
+// BotSetCallbackAnswer
+// @Function
+// @Returns: Bool
+message BotSetCallbackAnswer {
+    required int64 QueryID = 1;
+    optional string Url = 2;        // URL to open
+    optional string Message = 3;    // Alert to show
+    required int32 CacheTime = 4;   // For how long should this answer be cached (in seconds) [Default is  300]
+}
+
+// BotGetCallbackAnswer
+// @Function
+// @Returns: BotCallbackAnswer
+message BotGetCallbackAnswer {
+    required InputPeer Peer = 1;
+    optional int64 MessageID = 2;       // ID of the Message if button is the inline keyboard
+    required bytes Data = 3;            // Callback data
+}
+
+// BotCallbackAnswer
+message BotCallbackAnswer {
+    optional string Url = 1;        // URL to open
+    optional string Message = 2;    // Alert to show
+    required int32 CacheTime = 3;   // For how long should this answer be cached (in seconds)
+}
+
+// BotsMany
+message BotsMany {
+    repeated BotInfo Bots = 1;
+}
+
+
