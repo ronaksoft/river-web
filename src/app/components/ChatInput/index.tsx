@@ -79,6 +79,7 @@ import 'emoji-mart/css/emoji-mart.css';
 import './style.scss';
 import {ReplyKeyboardMarkup} from "../../services/sdk/messages/chat.core.message.markups_pb";
 import BotLayout from "../BotLayout";
+import Scrollbars from "react-custom-scrollbars";
 
 const limit = 9;
 const emojiKey = 'emoji-mart.frequently';
@@ -113,6 +114,7 @@ interface IProps {
     onTyping?: (typing: TypingAction) => void;
     onVoiceSend: (item: IMediaItem, {mode, message}: any | undefined) => void;
     onVoiceStateChange?: (state: 'lock' | 'down' | 'up' | 'play') => void;
+    onBotButtonAction?: (cmd: number, data: any) => void;
     peer: InputPeer | null;
     previewMessage?: IMessage;
     previewMessageMode?: number;
@@ -391,13 +393,15 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     public focus() {
-        if (!this.textarea) {
-            return;
-        }
-        this.textarea.focus();
-        if (this.textarea.value) {
-            this.textarea.setSelectionRange(this.textarea.value.length, this.textarea.value.length);
-        }
+        setTimeout(() => {
+            if (!this.textarea) {
+                return;
+            }
+            this.textarea.focus();
+            if (this.textarea.value) {
+                this.textarea.setSelectionRange(this.textarea.value.length, this.textarea.value.length);
+            }
+        }, 100);
     }
 
     public openUploader(files: File[]) {
@@ -458,15 +462,22 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     public setBot(isBot: boolean, data: ReplyKeyboardMarkup.AsObject | undefined) {
+        const lastKeyboard = this.botKeyboard;
         this.botKeyboard = data;
+        let check = false;
         if (this.state.botKeyboard) {
             this.setState({
                 isBot,
             });
+            check = true;
         } else if (this.state.isBot !== isBot) {
             this.setState({
                 isBot,
             });
+            check = true;
+        }
+        if (!check && lastKeyboard !== data) {
+            this.forceUpdate();
         }
     }
 
@@ -535,7 +546,7 @@ class ChatInput extends React.Component<IProps, IState> {
                             <div className="user">
                                 <UserAvatar id={this.props.userId || ''} className="user-avatar"/>
                             </div>
-                            <div className={'input' + (this.state.rtl ? ' rtl' : ' ltr') + (isBot? ' is-bot': '')}>
+                            <div className={'input' + (this.state.rtl ? ' rtl' : ' ltr') + (isBot ? ' is-bot' : '')}>
                                 <div className="textarea-container">
                                     <MentionsInput value={textareaValue}
                                                    onChange={this.handleChange}
@@ -620,8 +631,7 @@ class ChatInput extends React.Component<IProps, IState> {
                             </div>
                         </div>
                         {isBot && botKeyboard && <div className="bot-keyboard">
-                            <BotLayout rows={(this.botKeyboard ? this.botKeyboard.rowsList : undefined)}
-                                       prefix="keyboard-bot"/>
+                            {this.renderBotKeyboard()}
                         </div>}
                     </>}
                     {Boolean(selectable && !previewMessage) && <div className="actions">
@@ -2015,6 +2025,26 @@ class ChatInput extends React.Component<IProps, IState> {
         this.setState({
             botKeyboard: !this.state.botKeyboard,
         });
+    }
+
+    private renderBotKeyboard() {
+        if (!this.botKeyboard) {
+            return '';
+        }
+        let height = this.botKeyboard.rowsList.length * 32 + 4;
+        if (height > 110) {
+            height = 110;
+            return (<div style={{height: `${height}px`}}>
+                <Scrollbars
+                    hideTracksWhenNotNeeded={false}
+                    universal={true}>
+                    <BotLayout rows={(this.botKeyboard ? this.botKeyboard.rowsList : undefined)}
+                               prefix="keyboard-bot" onAction={this.props.onBotButtonAction}/>
+                </Scrollbars>
+            </div>);
+        }
+        return (<BotLayout rows={(this.botKeyboard ? this.botKeyboard.rowsList : undefined)}
+                           prefix="keyboard-bot" onAction={this.props.onBotButtonAction}/>);
     }
 
     // /* Is voice started */

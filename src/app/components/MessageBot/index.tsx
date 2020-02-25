@@ -16,37 +16,18 @@ import BotLayout from "../BotLayout";
 
 import './style.scss';
 
-interface IProps {
-    message: IMessage;
-    peer: InputPeer | null;
-}
-
-interface IState {
-    fileName: string;
-}
-
-class MessageBot extends React.PureComponent<IProps, IState> {
-    constructor(props: IProps) {
-        super(props);
-
-        this.state = {
-            fileName: '',
-        };
-    }
-
-    public render() {
-        const {message} = this.props;
-        if (!message.replydata) {
-            return '';
+export default function MessageBot({message, peer, onAction}: { message: IMessage, peer: InputPeer | null, onAction?: (cmd: number, data: any, msgId?: number) => void }) {
+    const actionHandler = (cmd: number, data: any) => {
+        if (onAction) {
+            onAction(cmd, data, message.id || 0);
         }
-        if (message.replymarkup === C_REPLY_ACTION.ReplyInlineMarkup) {
-            const replyInlineMarkup: ReplyInlineMarkup.AsObject = message.replydata;
-            return (
-                <BotLayout rows={replyInlineMarkup.rowsList} prefix="message-bot"/>
-            );
-        }
-        return '';
-    }
-}
+    };
 
-export default MessageBot;
+    if (message.replymarkup === C_REPLY_ACTION.ReplyInlineMarkup) {
+        const replyInlineMarkup: ReplyInlineMarkup.AsObject = message.replydata;
+        return (
+            <BotLayout rows={replyInlineMarkup.rowsList} prefix="message-bot" onAction={actionHandler}/>
+        );
+    }
+    return <div/>;
+}

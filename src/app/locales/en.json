@@ -57,7 +57,9 @@
     "block": "Block",
     "unblock": "Unblock",
     "none": "None",
-    "recover": "Recover"
+    "recover": "Recover",
+    "ok": "OK",
+    "bot_alert": "Bot Message"
   },
   "chat": {
     "search": "Search",

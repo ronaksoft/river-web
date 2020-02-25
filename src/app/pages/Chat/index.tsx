@@ -69,7 +69,7 @@ import UserRepo from '../../repository/user';
 import MainRepo from '../../repository';
 import {C_MSG_MODE} from '../../components/ChatInput/consts';
 import TimeUtility from '../../services/utilities/time';
-import {C_MESSAGE_ACTION, C_MESSAGE_TYPE, C_REPLY_ACTION} from '../../repository/message/consts';
+import {C_BUTTON_ACTION, C_MESSAGE_ACTION, C_MESSAGE_TYPE, C_REPLY_ACTION} from '../../repository/message/consts';
 import PopUpDate from '../../components/PopUpDate';
 import GroupRepo from '../../repository/group';
 import GroupName from '../../components/GroupName';
@@ -140,6 +140,7 @@ import {isMobile} from "../../services/utilities/localize";
 import LabelRepo from "../../repository/label";
 import LabelDialog from "../../components/LabelDialog";
 import AvatarService from "../../services/avatarService";
+import {ButtonCallback} from "../../services/sdk/messages/chat.core.message.markups_pb";
 
 import './style.scss';
 
@@ -153,8 +154,9 @@ interface IProps {
 }
 
 interface IState {
+    botAlertMessage: string;
     chatMoreAnchorEl: any;
-    confirmDialogMode: 'none' | 'logout' | 'remove_message' | 'remove_message_revoke' | 'remove_message_pending' | 'delete_exit_group' | 'delete_user' | 'cancel_recording';
+    confirmDialogMode: 'none' | 'logout' | 'remove_message' | 'remove_message_revoke' | 'remove_message_pending' | 'delete_exit_group' | 'delete_user' | 'cancel_recording' | 'bot_alert';
     confirmDialogOpen: boolean;
     forwardRecipientDialogOpen: boolean;
     iframeActive: boolean;
@@ -250,6 +252,7 @@ class Chat extends React.Component<IProps, IState> {
         this.iframeService = IframeService.getInstance();
 
         this.state = {
+            botAlertMessage: '',
             chatMoreAnchorEl: null,
             confirmDialogMode: 'none',
             confirmDialogOpen: false,
@@ -581,6 +584,7 @@ class Chat extends React.Component<IProps, IState> {
                                          onRendered={this.messageRenderedHandler}
                                          onDrop={this.messageDropHandler}
                                          onBotCommand={this.messageBotCommandHandler}
+                                         onBotButtonAction={this.messageBotButtonActionHandler}
                                          userId={this.connInfo.UserID}
                                 />
                                 <MoveDown key="move-down" ref={this.moveDownRefHandler}
@@ -599,6 +603,7 @@ class Chat extends React.Component<IProps, IState> {
                                        getDialog={this.chatInputGetDialogHandler}
                                        onClearDraft={this.updateDraftMessageClearedHandler}
                                        onFocus={this.chatInputFocusHandler}
+                                       onBotButtonAction={this.messageBotButtonActionHandler}
                                        peer={this.peer}
                                        userId={this.connInfo.UserID}
                             />
@@ -632,6 +637,17 @@ class Chat extends React.Component<IProps, IState> {
                         paper: 'confirm-dialog-paper'
                     }}
                 >
+                    {Boolean(confirmDialogMode === 'bot_alert') && <div>
+                        <DialogTitle>{i18n.t('general.bot_alert')}</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>{this.state.botAlertMessage}</DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={this.confirmDialogCloseHandler} color="primary">
+                                {i18n.t('general.ok')}
+                            </Button>
+                        </DialogActions>
+                    </div>}
                     {Boolean(confirmDialogMode === 'logout') && <div>
                         <DialogTitle>{i18n.t('chat.logout_dialog.title')}</DialogTitle>
                         <DialogContent>
@@ -2903,6 +2919,49 @@ class Chat extends React.Component<IProps, IState> {
     /* Message on bot command handler */
     private messageBotCommandHandler = (cmd: string) => {
         this.chatInputTextMessageHandler(cmd);
+    }
+
+    /* Message on bot button click handler */
+    private messageBotButtonActionHandler = (cmd: number, data: any, msgId?: number) => {
+        if (!this.peer) {
+            return;
+        }
+        switch (cmd) {
+           /* case C_BUTTON_ACTION.Button:
+                const button: Button.AsObject = data;
+            case C_BUTTON_ACTION.ButtonUrl:
+                const buttonUrl: ButtonUrl.AsObject = data;
+            case C_BUTTON_ACTION.ButtonUrlAuth:
+                const buttonUrlAuth: ButtonUrlAuth.AsObject = data;
+            case C_BUTTON_ACTION.ButtonSwitchInline:
+                const buttonSwitchInline: ButtonSwitchInline.AsObject = data;
+            case C_BUTTON_ACTION.ButtonRequestPhone:
+                const buttonRequestPhone: ButtonRequestPhone.AsObject = data;
+            case C_BUTTON_ACTION.ButtonRequestGeoLocation:
+                const buttonRequestGeoLocation: ButtonRequestGeoLocation.AsObject = data;
+            case C_BUTTON_ACTION.ButtonBuy:
+                const buttonBuy: ButtonBuy.AsObject = data;*/
+            case C_BUTTON_ACTION.ButtonCallback:
+                const buttonCallback: ButtonCallback.AsObject = data;
+                this.sdk.botGetCallbackAnswer(this.peer, buttonCallback.data, msgId).then((res) => {
+                    if ((res.message || '').length > 0) {
+                        this.setState({
+                            botAlertMessage: res.message || '',
+                            confirmDialogMode: 'bot_alert',
+                            confirmDialogOpen: true,
+                        });
+                    }
+                    if ((res.url || '').length > 0) {
+                        if (ElectronService.isElectron()) {
+                            ElectronService.openExternal(res.url || '');
+                        } else {
+                            const win: any = window.open(res.url || '', '_blank');
+                            win.focus();
+                        }
+                    }
+                });
+                break;
+        }
     }
 
     /* Message on last message handler */

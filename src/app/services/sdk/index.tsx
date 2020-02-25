@@ -109,7 +109,7 @@ import {
     LabelsGet, LabelsListItems, LabelsRemoveFromMessage
 } from "./messages/chat.api.labels_pb";
 import UniqueId from "../uniqueId";
-import {BotStart} from "./messages/bot.api_pb";
+import {BotCallbackAnswer, BotGetCallbackAnswer, BotStart} from "./messages/bot.api_pb";
 
 export default class SDK {
     public static getInstance() {
@@ -753,14 +753,6 @@ export default class SDK {
         return this.server.send(C_MSG.ContactsAdd, data.serializeBinary(), true);
     }
 
-    public botStart(inputPeer: InputPeer, randomId: number): Promise<Bool.AsObject> {
-        const data = new BotStart();
-        data.setBot(inputPeer);
-        data.setRandomid(randomId);
-        data.setStartparam("");
-        return this.server.send(C_MSG.BotStart, data.serializeBinary(), true);
-    }
-
     public accountChangeNumber(phone: string, phoneCode: string, phoneHash: string, inputPassword?: InputPassword): Promise<User.AsObject> {
         const data = new AccountChangePhone();
         data.setPhone(phone);
@@ -829,6 +821,24 @@ export default class SDK {
         const data = new ContactsUnblock();
         data.setUser(inputUser);
         return this.server.send(C_MSG.ContactsUnblock, data.serializeBinary(), true);
+    }
+
+    public botStart(inputPeer: InputPeer, randomId: number): Promise<Bool.AsObject> {
+        const data = new BotStart();
+        data.setBot(inputPeer);
+        data.setRandomid(randomId);
+        data.setStartparam("");
+        return this.server.send(C_MSG.BotStart, data.serializeBinary(), true);
+    }
+
+    public botGetCallbackAnswer(inputPeer: InputPeer, payload: any, msgId?: number): Promise<BotCallbackAnswer.AsObject> {
+        const data = new BotGetCallbackAnswer();
+        data.setPeer(inputPeer);
+        data.setData(payload);
+        if (msgId) {
+            data.setMessageid(msgId);
+        }
+        return this.server.send(C_MSG.BotGetCallbackAnswer, data.serializeBinary(), true);
     }
 
     public genSrpHash(password: string, algorithm: number, algorithmData: Uint8Array): Promise<Uint8Array> {

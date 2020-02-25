@@ -1,3 +1,8 @@
+## 0.30.6
+* 🎉 New Bot system
+* Minor improvements
+* Known bugs fixed
+
 ## 0.30.5
 * Bot view implemented
 

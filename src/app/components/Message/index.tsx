@@ -17,7 +17,7 @@ import {
     GroupPhoto, InputFileLocation, InputPeer, MediaType, MessageEntity, MessageEntityType, PeerType,
 } from '../../services/sdk/messages/chat.core.types_pb';
 import {clone, findLastIndex} from 'lodash';
-import {C_MESSAGE_ACTION, C_MESSAGE_TYPE} from '../../repository/message/consts';
+import {C_MESSAGE_ACTION, C_MESSAGE_TYPE, C_REPLY_ACTION} from '../../repository/message/consts';
 import TimeUtility from '../../services/utilities/time';
 import UserAvatar from '../UserAvatar';
 import MessagePreview from '../MessagePreview';
@@ -63,6 +63,7 @@ interface IProps {
     onDrop: (files: File[]) => void;
     onRendered?: scrollFunc;
     onBotCommand?: (cmd: string, params?: any) => void;
+    onBotButtonAction?: (cmd: number, data: any, msgId?: number) => void;
     showDate: (timestamp: number | null) => void;
     showNewMessage?: (visible: boolean) => void;
     isMobileView: boolean;
@@ -294,27 +295,26 @@ class Message extends React.Component<IProps, IState> {
         if (this.state.items !== items) {
             fn();
             this.checkEnd(items);
+            if (ignoreLastUpdates !== true) {
+                if (items.length > 0) {
+                    this.props.onLastMessage(items[items.length - 1]);
+                } else {
+                    this.props.onLastMessage(null);
+                }
+                this.getLastIncomingMessage(items);
+            }
             this.setState({
                 items,
                 moreAnchorEl: null,
                 moreAnchorPos: null,
                 moreIndex: -1,
             }, () => {
-                if (ignoreLastUpdates !== true) {
-                    if (this.state.items.length > 0) {
-                        this.props.onLastMessage(this.state.items[this.state.items.length - 1]);
-                    } else {
-                        this.props.onLastMessage(null);
-                    }
-                    this.getLastIncomingMessage(this.state.items);
-                }
                 if (callback) {
                     callback();
                 }
             });
             this.listCount = items.length;
         } else if (this.state.items === items && this.listCount !== items.length) {
-            window.console.log('case #2', ignoreLastUpdates);
             fn();
             this.checkEnd(items);
             this.listCount = items.length;
@@ -842,7 +842,8 @@ class Message extends React.Component<IProps, IState> {
                                         <MoreVert onClick={this.contextMenuHandler(index)}/>
                                     </div>
                                 </div>
-                                {Boolean(message.replydata) && <MessageBot message={message} peer={peer}/>}
+                                {Boolean(message.replymarkup === C_REPLY_ACTION.ReplyInlineMarkup && message.replydata) &&
+                                <MessageBot message={message} peer={peer} onAction={this.props.onBotButtonAction}/>}
                             </div>
                         </div>
                     );

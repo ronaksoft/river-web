@@ -12,6 +12,7 @@
   display: flex;
   width: 100%;
   min-width: 100px;
+  flex-direction: column;
 
   .message-bot-row {
     display: flex;
@@ -34,6 +35,10 @@
         justify-content: center;
         margin: 2px;
         cursor: pointer;
+
+        &.no-pointer {
+          cursor: default;
+        }
       }
     }
   }

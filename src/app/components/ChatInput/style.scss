@@ -175,7 +175,7 @@
       &.is-bot {
         .textarea-container .mention .mention__control {
           textarea {
-            padding-right: 50px;
+            padding-right: 54px;
           }
         }
       }
@@ -193,7 +193,7 @@
           align-items: center;
           justify-content: space-between;
           flex-direction: row;
-          width: 50px;
+          width: 54px;
         }
 
         .icon {
@@ -426,11 +426,13 @@
   }
 
   .bot-keyboard {
+    max-height: 110px;
 
     .keyboard-bot {
       padding: 0 6px 4px;
       display: flex;
       width: 100%;
+      flex-direction: column;
 
       .keyboard-bot-row {
         display: flex;
@@ -454,6 +456,10 @@
             margin: 4px;
             color: var(--grey-low);
             cursor: pointer;
+
+            &.no-pointer {
+              cursor: default;
+            }
           }
         }
       }
@@ -720,6 +726,11 @@ html[theme="dark-blue"] {
           }
         }
       }
+    }
+
+    .bot-keyboard .keyboard-bot .keyboard-bot-row .keyboard-bot-col .bot-button {
+      background-color: rgba(255, 255, 255, 0.05);
+      color: var(--grey);
     }
 
     .actions {

@@ -21,6 +21,7 @@ import {AccountAuthorizations, AccountPassword, AccountPrivacyRules} from '../me
 import {SystemInfo, SystemSalts, SystemServerTime} from '../messages/chat.api.system_pb';
 import {UsersMany} from '../messages/chat.api.users_pb';
 import {LabelItems} from "../messages/chat.api.labels_pb";
+import {BotCallbackAnswer} from "../messages/bot.api_pb";
 
 export default class Presenter {
     public static getMessage(constructor: number, data: Uint8Array): any {
@@ -89,6 +90,8 @@ export default class Presenter {
                 return BlockedContactsMany.deserializeBinary(data);
             case C_MSG.UserPhoto:
                 return UserPhoto.deserializeBinary(data);
+            case C_MSG.BotCallbackAnswer:
+                return BotCallbackAnswer.deserializeBinary(data);
             default:
                 return null;
         }
