@@ -45,7 +45,7 @@ import Broadcaster from "../../services/broadcaster";
 import './style.scss';
 
 interface IProps {
-    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
+    onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'start_bot', messageId: number) => void;
     onClose: (e: any) => void;
     peer: InputPeer | null;
 }
@@ -255,12 +255,6 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                             <div className="inner">{user.bio}</div>
                                         </div>
                                     </div>}
-                                    {Boolean(!edit && user && user.isbot && !user.is_bot_started) &&
-                                    <Button color="secondary" fullWidth={true}
-                                            onClick={this.startBotHandler}>{i18n.t('bot.start_bot')}</Button>}
-                                    {Boolean(!edit && user) && <Button key="block" color="secondary" fullWidth={true}
-                                                                       onClick={this.blockUserHandler(user)}>
-                                        {(user && user.blocked) ? i18n.t('general.unblock') : i18n.t('general.block')}</Button>}
                                     {Boolean(edit && user && ((user.firstname !== firstname || user.lastname !== lastname) || !isInContact)) &&
                                     <div className="actions-bar">
                                         <div className="add-action" onClick={this.confirmChangesHandler}>
@@ -271,6 +265,12 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                     <div className="add-as-contact" onClick={this.addAsContactHandler}>
                                         <AddRounded/> {i18n.t('peer_info.add_as_contact')}
                                     </div>}
+                                    {Boolean(!edit && user) && <Button key="block" color="secondary" fullWidth={true}
+                                                                       onClick={this.blockUserHandler(user)}>
+                                        {(user && user.blocked) ? i18n.t('general.unblock') : i18n.t('general.block')}</Button>}
+                                    {Boolean(!edit && user && user.isbot && !user.is_bot_started) &&
+                                    <Button color="secondary" fullWidth={true}
+                                            onClick={this.startBotHandler}>{i18n.t('bot.start_bot')}</Button>}
                                 </div>}
                                 {dialog && <div className="kk-card notify-settings">
                                     <div className="label">{i18n.t('peer_info.mute')}</div>
@@ -348,7 +348,13 @@ class UserInfoMenu extends React.Component<IProps, IState> {
             return;
         }
 
+        let isBotStarted: boolean = false;
         const fn = (user: IUser) => {
+            if (user.is_bot_started !== undefined) {
+                isBotStarted = user.is_bot_started;
+            } else {
+                user.is_bot_started = isBotStarted;
+            }
             this.setState({
                 firstname: user.firstname || '',
                 isInContact: (user.is_contact === 1),
@@ -575,21 +581,10 @@ class UserInfoMenu extends React.Component<IProps, IState> {
     /* Start bot handler */
     private startBotHandler = () => {
         const {user} = this.state;
-        if (!user) {
+        if (!user || !this.props.onAction) {
             return;
         }
-        const randomId = UniqueId.getRandomId();
-        const inputPeer = new InputPeer();
-        inputPeer.setAccesshash(user.accesshash || '');
-        inputPeer.setId(user.id || '');
-        inputPeer.setType(PeerType.PEERUSER);
-        this.sdk.botStart(inputPeer, randomId).then(() => {
-            user.is_bot_started = true;
-            this.userRepo.importBulk(false, [user], false, this.callerId);
-            this.setState({
-                user,
-            });
-        });
+        this.props.onAction('start_bot', 0);
     }
 
     /* Block user handler */

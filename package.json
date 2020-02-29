@@ -1,6 +1,6 @@
 {
   "name": "river",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "private": true,
   "description": "River chat",
   "author": "Hamidreza KK <hamidrezakks@gmail.com>",
@@ -15,7 +15,7 @@
     "eject": "react-scripts eject",
     "elec2": "electron --inspect=5858 .",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder -w",
+    "dist": "electron-builder -mwl",
     "elec-dist": "npx build --x64 --macos --win --linux --c.mac.identity=null --c.extraMetadata.main=public/electron.js -p always",
     "elec-dist-mac": "electron-builder -m",
     "elec-dist-win": "electron-builder -w",
@@ -107,7 +107,7 @@
     "@types/react-window": "^1.8.1",
     "@types/shortid": "^0.0.29",
     "@types/xregexp": "^3.0.29",
-    "electron": "^8.0.1",
+    "electron": "^8.0.2",
     "electron-builder": "^22.3.2",
     "electron-devtools-installer": "^2.2.4",
     "glob": "^7.1.6",
@@ -147,10 +147,7 @@
     "win": {
       "target": "nsis",
       "icon": "assets/icon.png",
-      "artifactName": "${name}-win-${version}.${ext}",
-      "arch": [
-        "ia32"
-      ]
+      "artifactName": "${name}-win-${version}.${ext}"
     },
     "linux": {
       "icon": "assets/icon.png",

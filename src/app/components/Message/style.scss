@@ -1244,9 +1244,14 @@ html[bubble="5"] {
     }
 
     &:not(.media):not(.media_caption) {
-      .bubble {
+      .message-container {
         max-width: calc(100% - 50px);
         width: calc(100% - 50px);
+
+        .bubble {
+          width: 100%;
+          max-width: 100%;
+        }
       }
     }
 

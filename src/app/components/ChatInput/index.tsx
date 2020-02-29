@@ -272,6 +272,7 @@ class ChatInput extends React.Component<IProps, IState> {
 
     public componentDidMount() {
         this.eventReferences.push(this.broadcaster.listen('Group_DB_Updated', this.checkAuthority));
+        this.eventReferences.push(this.broadcaster.listen('User_DB_Updated', this.checkAuthority));
         this.eventReferences.push(this.broadcaster.listen('Theme_Changed', this.windowResizeHandler));
         this.eventReferences.push(this.broadcaster.listen('User_DB_Updated', this.getUser));
         window.addEventListener('mouseup', this.windowMouseUp);
@@ -496,6 +497,11 @@ class ChatInput extends React.Component<IProps, IState> {
                 </div>);
             } else if (disableAuthority === 0x2) {
                 return (<div className="input-placeholder">{i18n.t('input.group_is_deactivated')}</div>);
+            } else if (disableAuthority === 0x3) {
+                return (<div className="input-placeholder">
+                    <span className="btn"
+                          onClick={this.props.onAction('start_bot')}>{i18n.t('bot.start_bot')}</span>
+                </div>);
             } else {
                 return '';
             }
@@ -965,7 +971,7 @@ class ChatInput extends React.Component<IProps, IState> {
 
     /* Check authority for composing message and etc. */
     private checkAuthority = (data?: any) => {
-        const {peer} = this.state;
+        const {peer, user} = this.state;
         if (!peer) {
             return;
         }
@@ -995,9 +1001,15 @@ class ChatInput extends React.Component<IProps, IState> {
                 }
             });
         } else {
-            this.setState({
-                disableAuthority: 0x0,
-            });
+            if (user && user.isbot && !user.is_bot_started) {
+                this.setState({
+                    disableAuthority: 0x3,
+                });
+            } else {
+                this.setState({
+                    disableAuthority: 0x0,
+                });
+            }
         }
     }
 

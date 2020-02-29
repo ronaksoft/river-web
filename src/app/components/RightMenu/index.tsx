@@ -17,7 +17,7 @@ import './style.scss';
 interface IProps {
     onChange: (shrink: boolean) => void;
     onDeleteAndExitGroup?: () => void;
-    onMessageAttachmentAction: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
+    onMessageAttachmentAction: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'start_bot', messageId: number) => void;
 }
 
 interface IState {

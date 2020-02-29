@@ -44,6 +44,7 @@ import './style.scss';
 
 interface IProps {
     onClose?: () => void;
+    onAction: (cmd: string, user?: IUser) => void;
 }
 
 interface IState {
@@ -148,7 +149,8 @@ class UserDialog extends React.Component<IProps, IState> {
             >
                 <div className="user-info-menu">
                     {user && <div className="info kk-card">
-                        <div className={'avatar' + (Boolean(user && user.photo)? ' pointer-cursor' : '')} onClick={this.showAvatarHandler}>
+                        <div className={'avatar' + (Boolean(user && user.photo) ? ' pointer-cursor' : '')}
+                             onClick={this.showAvatarHandler}>
                             <UserAvatar id={user.id || ''} noDetail={true}/>
                         </div>
                         <div className="line">
@@ -228,12 +230,10 @@ class UserDialog extends React.Component<IProps, IState> {
                                 <div className="inner">{user.bio}</div>
                             </div>
                         </div>}
-                        {Boolean(!edit && user && user.isbot && !user.is_bot_started) &&
-                        <Button key="start" color="secondary" fullWidth={true}
-                                onClick={this.startBotHandler}>{i18n.t('bot.start_bot')}</Button>}
-                        {Boolean(!edit && user) && <Button key="block" color="secondary" fullWidth={true}
-                                                           onClick={this.blockUserHandler(user)}>
-                            {(user && user.blocked) ? i18n.t('general.unblock') : i18n.t('general.block')}</Button>}
+                        {Boolean(!isInContact && !edit) &&
+                        <div className="add-as-contact" onClick={this.addAsContactHandler}>
+                            <AddRounded/> {i18n.t('peer_info.add_as_contact')}
+                        </div>}
                         {Boolean(edit && user && ((user.firstname !== firstname || user.lastname !== lastname) || !isInContact)) &&
                         <div className="actions-bar">
                             <div className="add-action" onClick={this.confirmChangesHandler}>
@@ -243,10 +243,12 @@ class UserDialog extends React.Component<IProps, IState> {
                         {Boolean(edit) && <div className="actions-bar cancel" onClick={this.cancelHandler}>
                             {i18n.t('general.cancel')}
                         </div>}
-                        {Boolean(!isInContact && !edit) &&
-                        <div className="add-as-contact" onClick={this.addAsContactHandler}>
-                            <AddRounded/> {i18n.t('peer_info.add_as_contact')}
-                        </div>}
+                        {Boolean(!edit && user) && <Button key="block" color="secondary" fullWidth={true}
+                                                           onClick={this.blockUserHandler(user)}>
+                            {(user && user.blocked) ? i18n.t('general.unblock') : i18n.t('general.block')}</Button>}
+                        {Boolean(!edit && user && user.isbot && !user.is_bot_started) &&
+                        <Button key="start" color="secondary" fullWidth={true}
+                                onClick={this.startBotHandler}>{i18n.t('bot.start_bot')}</Button>}
                     </div>}
                     {notifySetting && <div className="kk-card notify-settings">
                         <div className="label">{i18n.t('peer_info.mute')}</div>
@@ -306,7 +308,13 @@ class UserDialog extends React.Component<IProps, IState> {
             return;
         }
 
+        let isBotStarted: boolean = false;
         const fn = (user: IUser) => {
+            if (user.is_bot_started !== undefined) {
+                isBotStarted = user.is_bot_started;
+            } else {
+                user.is_bot_started = isBotStarted;
+            }
             this.setState({
                 firstname: user.firstname || '',
                 isInContact: (user.is_contact === 1),
@@ -569,18 +577,7 @@ class UserDialog extends React.Component<IProps, IState> {
         if (!user) {
             return;
         }
-        const randomId = UniqueId.getRandomId();
-        const inputPeer = new InputPeer();
-        inputPeer.setAccesshash(user.accesshash || '');
-        inputPeer.setId(user.id || '');
-        inputPeer.setType(PeerType.PEERUSER);
-        this.sdk.botStart(inputPeer, randomId).then(() => {
-            user.is_bot_started = true;
-            this.userRepo.importBulk(false, [user]);
-            this.setState({
-                user,
-            });
-        });
+        this.props.onAction('start_bot', user);
     }
 
     /* Block user handler */

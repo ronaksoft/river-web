@@ -1,3 +1,6 @@
+## 0.30.7
+* Bot improvements
+
 ## 0.30.6
 * 🎉 New Bot system
 * Minor improvements

@@ -492,7 +492,7 @@ class Chat extends React.Component<IProps, IState> {
                 this.setChatView(true);
             }
             const peer = this.getPeerByDialogId(selectedId);
-            this.isBot = peer.user ? (peer.user.isbot || false)  : false;
+            this.isBot = peer.user ? (peer.user.isbot || false) : false;
             this.setLoading(true);
             const tempSelectedDialogId = this.selectedDialogId;
             this.setChatParams(selectedId, peer.peer, false, {});
@@ -757,7 +757,7 @@ class Chat extends React.Component<IProps, IState> {
                 <ForwardDialog key="forward-dialog" ref={this.forwardDialogRefHandler}
                                onDone={this.forwardDialogDoneHandler}
                                onClose={this.forwardDialogCloseHandler}/>
-                <UserDialog key="user-dialog" ref={this.userDialogRefHandler}/>
+                <UserDialog key="user-dialog" ref={this.userDialogRefHandler} onAction={this.userDialogActionHandler}/>
                 <DocumentViewer key="document-viewer" onAction={this.messageAttachmentActionHandler}
                                 onJumpOnMessage={this.documentViewerJumpOnMessageHandler}/>
                 <AboutDialog key="about-dialog" ref={this.aboutDialogRefHandler}/>
@@ -923,7 +923,7 @@ class Chat extends React.Component<IProps, IState> {
                 if (selectedId !== 'null') {
                     this.setLeftMenu('chat');
                     const peer = this.getPeerByDialogId(selectedId);
-                    this.isBot = peer.user ? (peer.user.isbot || false)  : false;
+                    this.isBot = peer.user ? (peer.user.isbot || false) : false;
                     this.setChatParams(selectedId, peer.peer);
                     requestAnimationFrame(() => {
                         this.getMessagesByDialogId(selectedId, true, selectedMessageId);
@@ -1966,7 +1966,7 @@ class Chat extends React.Component<IProps, IState> {
         });
     }
 
-    private getPeerByDialogId(id: string): {peer:InputPeer | null, user?: IUser} {
+    private getPeerByDialogId(id: string): { peer: InputPeer | null, user?: IUser } {
         let user: IUser | undefined;
         const contactPeer = new InputPeer();
         const dialog = this.getDialogById(id);
@@ -2927,20 +2927,20 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         switch (cmd) {
-           /* case C_BUTTON_ACTION.Button:
-                const button: Button.AsObject = data;
-            case C_BUTTON_ACTION.ButtonUrl:
-                const buttonUrl: ButtonUrl.AsObject = data;
-            case C_BUTTON_ACTION.ButtonUrlAuth:
-                const buttonUrlAuth: ButtonUrlAuth.AsObject = data;
-            case C_BUTTON_ACTION.ButtonSwitchInline:
-                const buttonSwitchInline: ButtonSwitchInline.AsObject = data;
-            case C_BUTTON_ACTION.ButtonRequestPhone:
-                const buttonRequestPhone: ButtonRequestPhone.AsObject = data;
-            case C_BUTTON_ACTION.ButtonRequestGeoLocation:
-                const buttonRequestGeoLocation: ButtonRequestGeoLocation.AsObject = data;
-            case C_BUTTON_ACTION.ButtonBuy:
-                const buttonBuy: ButtonBuy.AsObject = data;*/
+            /* case C_BUTTON_ACTION.Button:
+                 const button: Button.AsObject = data;
+             case C_BUTTON_ACTION.ButtonUrl:
+                 const buttonUrl: ButtonUrl.AsObject = data;
+             case C_BUTTON_ACTION.ButtonUrlAuth:
+                 const buttonUrlAuth: ButtonUrlAuth.AsObject = data;
+             case C_BUTTON_ACTION.ButtonSwitchInline:
+                 const buttonSwitchInline: ButtonSwitchInline.AsObject = data;
+             case C_BUTTON_ACTION.ButtonRequestPhone:
+                 const buttonRequestPhone: ButtonRequestPhone.AsObject = data;
+             case C_BUTTON_ACTION.ButtonRequestGeoLocation:
+                 const buttonRequestGeoLocation: ButtonRequestGeoLocation.AsObject = data;
+             case C_BUTTON_ACTION.ButtonBuy:
+                 const buttonBuy: ButtonBuy.AsObject = data;*/
             case C_BUTTON_ACTION.ButtonCallback:
                 const buttonCallback: ButtonCallback.AsObject = data;
                 this.sdk.botGetCallbackAnswer(this.peer, buttonCallback.data, msgId).then((res) => {
@@ -2984,7 +2984,7 @@ class Chat extends React.Component<IProps, IState> {
             if (message && message.replymarkup === C_REPLY_ACTION.ReplyKeyboardMarkup) {
                 this.chatInputRef.setBot(this.isBot, message.replydata);
             } else {
-                this.chatInputRef.setBot(this.isBot,undefined);
+                this.chatInputRef.setBot(this.isBot, undefined);
             }
         }
     }
@@ -3190,6 +3190,12 @@ class Chat extends React.Component<IProps, IState> {
                 break;
             case 'edit':
                 this.setChatInputParams(C_MSG_MODE.Edit, message);
+                break;
+            case 'start_bot':
+                const user = this.userRepo.getInstant(peer.getId() || '');
+                if (user) {
+                    this.startBot(user);
+                }
                 break;
             default:
                 break;
@@ -3664,7 +3670,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Attachment action handler */
-    private messageAttachmentActionHandler = (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'read' | 'save_as' | 'preview', message: IMessage | number, fileId?: string) => {
+    private messageAttachmentActionHandler = (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'read' | 'save_as' | 'preview' | 'start_bot', message: IMessage | number, fileId?: string) => {
         const execute = (msg: IMessage) => {
             switch (cmd) {
                 case 'cancel':
@@ -3697,10 +3703,18 @@ class Chat extends React.Component<IProps, IState> {
                         });
                     }
                     break;
+                case 'start_bot':
+                    if (this.peer) {
+                        const user = this.userRepo.getInstant(this.peer.getId() || '');
+                        if (user) {
+                            this.startBot(user);
+                        }
+                    }
+                    break;
             }
         };
         if (typeof message === 'number') {
-            if (message === 0 && (cmd === 'save_as')) {
+            if ((message === 0 && cmd === 'save_as') || cmd === 'start_bot') {
                 execute({});
             } else {
                 this.messageRepo.get(message).then((msg) => {
@@ -4801,6 +4815,24 @@ class Chat extends React.Component<IProps, IState> {
             if (this.messageRef) {
                 this.messageRef.updateList();
             }
+        });
+    }
+
+    private userDialogActionHandler = (cmd: string, user?: IUser) => {
+        if (user && cmd === 'start_bot') {
+            this.startBot(user);
+        }
+    }
+
+    private startBot = (user: IUser) => {
+        const randomId = UniqueId.getRandomId();
+        const inputPeer = new InputPeer();
+        inputPeer.setAccesshash(user.accesshash || '');
+        inputPeer.setId(user.id || '');
+        inputPeer.setType(PeerType.PEERUSER);
+        this.sdk.botStart(inputPeer, randomId).then(() => {
+            user.is_bot_started = true;
+            this.userRepo.importBulk(false, [user]);
         });
     }
 }
