@@ -19,7 +19,7 @@ import {
 import SDK from '../../services/sdk';
 import GroupAvatar from '../GroupAvatar';
 import {IGroup} from '../../repository/group/interface';
-import GroupRepo from '../../repository/group';
+import GroupRepo, {GroupDBUpdated} from '../../repository/group';
 import TimeUtility from '../../services/utilities/time';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -161,7 +161,7 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        this.eventReferences.push(this.broadcaster.listen('Group_DB_Updated', this.getGroup));
+        this.eventReferences.push(this.broadcaster.listen(GroupDBUpdated, this.getGroup));
         this.getGroup();
     }
 

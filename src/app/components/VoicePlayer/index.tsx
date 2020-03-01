@@ -17,6 +17,8 @@ import Broadcaster from '../../services/broadcaster';
 import {PeerType} from '../../services/sdk/messages/chat.core.types_pb';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 import SettingsConfigManager from '../../services/settingsConfigManager';
+import {ThemeChanged} from "../SettingsMenu";
+import {EventMouseUp} from "../../services/events";
 
 import './style.scss';
 
@@ -98,8 +100,8 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
     }
 
     public componentDidMount() {
-        window.addEventListener('mouseup', this.windowMouseUpHandler);
-        this.eventReferences.push(this.broadcaster.listen('Theme_Changed', this.themeChangedHandler));
+        window.addEventListener(EventMouseUp, this.windowMouseUpHandler);
+        this.eventReferences.push(this.broadcaster.listen(ThemeChanged, this.themeChangedHandler));
         if (this.props.message && (this.props.message.id || 0) > 0) {
             this.eventReferences.push(this.audioPlayer.listen(this.props.message.id || 0, this.audioPlayerHandler));
         }
@@ -122,7 +124,7 @@ class VoicePlayer extends React.PureComponent<IProps, IState> {
     public componentWillUnmount() {
         this.removeAllListeners();
         this.revokeUrlImages();
-        window.removeEventListener('mouseup', this.windowMouseUpHandler);
+        window.removeEventListener(EventMouseUp, this.windowMouseUpHandler);
     }
 
     /* Set voice metadata and file */

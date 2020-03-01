@@ -9,11 +9,12 @@
 
 import * as React from 'react';
 import {IUser} from '../../repository/user/interface';
-import UserRepo from '../../repository/user';
+import UserRepo, {UserDBUpdated} from '../../repository/user';
 import {GetUniqueColor, TextColors} from '../UserAvatar';
 import {VerifiedUserRounded} from '@material-ui/icons';
 import Broadcaster from '../../services/broadcaster';
 import i18n from '../../services/i18n';
+import {ThemeChanged} from "../SettingsMenu";
 
 interface IProps {
     className?: string;
@@ -64,8 +65,8 @@ class UserName extends React.Component<IProps, IState> {
 
     public componentDidMount() {
         this.getUser();
-        this.eventReferences.push(this.broadcaster.listen('User_DB_Updated', this.getUser));
-        this.eventReferences.push(this.broadcaster.listen('Theme_Changed', this.themeChangeHandler));
+        this.eventReferences.push(this.broadcaster.listen(UserDBUpdated, this.getUser));
+        this.eventReferences.push(this.broadcaster.listen(ThemeChanged, this.themeChangeHandler));
     }
 
     public componentWillReceiveProps(newProps: IProps) {

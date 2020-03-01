@@ -47,6 +47,8 @@ import {scrollFunc} from "../../services/kkwindow/utils";
 import animateScrollTo from "animated-scroll-to";
 import Landscape from "../SVG";
 import MessageBot from "../MessageBot";
+import {ThemeChanged} from "../SettingsMenu";
+import {EventMouseUp, EventResize} from "../../services/events";
 
 import './style.scss';
 
@@ -254,9 +256,9 @@ class Message extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        this.eventReferences.push(this.broadcaster.listen('Theme_Changed', this.themeChangeHandler));
-        window.addEventListener('mouseup', this.dragLeaveHandler, true);
-        window.addEventListener('resize', this.windowResizeHandler);
+        this.eventReferences.push(this.broadcaster.listen(ThemeChanged, this.themeChangeHandler));
+        window.addEventListener(EventMouseUp, this.dragLeaveHandler, true);
+        window.addEventListener(EventResize, this.windowResizeHandler);
     }
 
     public setPeer(peer: InputPeer | null) {
@@ -343,8 +345,8 @@ class Message extends React.Component<IProps, IState> {
                 canceller();
             }
         });
-        window.removeEventListener('mouseup', this.dragLeaveHandler, true);
-        window.removeEventListener('resize', this.windowResizeHandler);
+        window.removeEventListener(EventMouseUp, this.dragLeaveHandler, true);
+        window.removeEventListener(EventResize, this.windowResizeHandler);
     }
 
     public setLoading(loading: boolean, overlay?: boolean) {

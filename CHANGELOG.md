@@ -1,3 +1,7 @@
+## 0.30.8
+* WebAssembly updated
+* Code refactoring
+
 ## 0.30.7
 * Bot improvements
 * Combination of last incoming message and view port data in bot keyboard

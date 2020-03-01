@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import {IGroup} from '../../repository/group/interface';
-import GroupRepo from '../../repository/group';
+import GroupRepo, {GroupDBUpdated} from '../../repository/group';
 import {GroupRounded} from '@material-ui/icons';
 import Broadcaster from '../../services/broadcaster';
 
@@ -52,7 +52,7 @@ class GroupName extends React.Component<IProps, IState> {
 
     public componentDidMount() {
         this.getGroup();
-        this.eventReferences.push(this.broadcaster.listen('Group_DB_Updated', this.getGroup));
+        this.eventReferences.push(this.broadcaster.listen(GroupDBUpdated, this.getGroup));
     }
 
     public componentWillReceiveProps(newProps: IProps) {

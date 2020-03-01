@@ -16,6 +16,8 @@ import {kMerge} from "../../services/utilities/kDash";
 import {InputPeer, PeerType} from "../../services/sdk/messages/chat.core.types_pb";
 import SDK from "../../services/sdk";
 
+export const GroupDBUpdated = 'Group_DB_Updated';
+
 export default class GroupRepo {
     public static getInstance() {
         if (!this.instance) {
@@ -135,7 +137,7 @@ export default class GroupRepo {
             return this.createMany(list);
         }).then((res) => {
             if (callerId) {
-                this.broadcastEvent('Group_DB_Updated', {ids, callerId});
+                this.broadcastEvent(GroupDBUpdated, {ids, callerId});
             } else {
                 this.throttleBroadcast(ids);
             }
@@ -167,7 +169,7 @@ export default class GroupRepo {
         if (this.throttleBroadcastList.length === 0) {
             return;
         }
-        this.broadcastEvent('Group_DB_Updated', {ids: this.throttleBroadcastList});
+        this.broadcastEvent(GroupDBUpdated, {ids: this.throttleBroadcastList});
         this.throttleBroadcastList = [];
     }
 

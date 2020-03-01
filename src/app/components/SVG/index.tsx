@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Broadcaster from "../../services/broadcaster";
+import {ThemeChanged} from "../SettingsMenu";
 
 interface IState {
     dark: boolean;
@@ -20,7 +21,7 @@ class Landscape extends React.Component<any, IState> {
     }
 
     public componentDidMount() {
-        this.eventReferences.push(this.broadcaster.listen('Theme_Changed', this.themeChangeHandler));
+        this.eventReferences.push(this.broadcaster.listen(ThemeChanged, this.themeChangeHandler));
     }
 
     public componentWillUnmount() {

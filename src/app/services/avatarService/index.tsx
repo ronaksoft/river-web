@@ -24,6 +24,8 @@ interface IAvatar {
 
 const C_MAX_RETRY = 3;
 
+export const AvatarSrcUpdated = 'Avatar_SRC_Updated';
+
 export default class AvatarService {
     public static getInstance() {
         if (!this.instance) {
@@ -170,7 +172,7 @@ export default class AvatarService {
                                     this.avatars[id].fileId = fileId;
                                     this.avatars[id].src = fileRes.data.size === 0 ? '' : URL.createObjectURL(fileRes.data);
                                     this.avatars[id].retries = 0;
-                                    this.broadcastEvent('Avatar_SRC_Updated', {items: [{id, fileId}]});
+                                    this.broadcastEvent(AvatarSrcUpdated, {items: [{id, fileId}]});
                                     this.throttleBroadcast([{id, fileId}]);
                                     resolve(this.avatars[id].src);
                                 } else {
@@ -241,7 +243,7 @@ export default class AvatarService {
         if (this.throttleBroadcastList.length === 0) {
             return;
         }
-        this.broadcastEvent('Avatar_SRC_Updated', {items: this.throttleBroadcastList});
+        this.broadcastEvent(AvatarSrcUpdated, {items: this.throttleBroadcastList});
         this.throttleBroadcastList = [];
     }
 

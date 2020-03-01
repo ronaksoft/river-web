@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import {IUser} from '../../repository/user/interface';
-import UserRepo from '../../repository/user';
+import UserRepo, {UserDBUpdated} from '../../repository/user';
 import {BookmarkRounded} from '@material-ui/icons';
 import AvatarService from '../../services/avatarService';
 import {find} from 'lodash';
@@ -168,7 +168,7 @@ class UserAvatar extends React.Component<IProps, IState> {
     public componentDidMount() {
         if (!this.props.savedMessages) {
             this.getUser();
-            this.eventReferences.push(this.broadcaster.listen('User_DB_Updated', this.getUser));
+            this.eventReferences.push(this.broadcaster.listen(UserDBUpdated, this.getUser));
             this.eventReferences.push(this.broadcaster.listen('Avatar_SRC_Updated', this.getUserPhoto));
         }
     }

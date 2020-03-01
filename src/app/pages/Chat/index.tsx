@@ -141,6 +141,10 @@ import LabelRepo from "../../repository/label";
 import LabelDialog from "../../components/LabelDialog";
 import AvatarService from "../../services/avatarService";
 import {ButtonCallback} from "../../services/sdk/messages/chat.core.message.markups_pb";
+import {
+    EventBlur, EventFocus, EventMouseWheel, EventNetworkStatus, EventWasmInit, EventWasmStarted,
+    EventWebSocketClose, EventWebSocketOpen
+} from "../../services/events";
 
 import './style.scss';
 
@@ -331,14 +335,14 @@ class Chat extends React.Component<IProps, IState> {
         this.updateManager.enableLiveUpdate();
 
         // Global event listeners
-        window.addEventListener('focus', this.windowFocusHandler);
-        window.addEventListener('blur', this.windowBlurHandler);
-        window.addEventListener('mousewheel', this.windowMouseWheelHandler);
-        window.addEventListener('wasmInit', this.wasmInitHandler);
-        window.addEventListener('wsOpen', this.wsOpenHandler);
-        window.addEventListener('wsClose', this.wsCloseHandler);
-        window.addEventListener('fnStarted', this.fnStartedHandler);
-        window.addEventListener('networkStatus', this.networkStatusHandler);
+        window.addEventListener(EventFocus, this.windowFocusHandler);
+        window.addEventListener(EventBlur, this.windowBlurHandler);
+        window.addEventListener(EventMouseWheel, this.windowMouseWheelHandler);
+        window.addEventListener(EventWasmInit, this.wasmInitHandler);
+        window.addEventListener(EventWasmStarted, this.fnStartedHandler);
+        window.addEventListener(EventWebSocketOpen, this.wsOpenHandler);
+        window.addEventListener(EventWebSocketClose, this.wsCloseHandler);
+        window.addEventListener(EventNetworkStatus, this.networkStatusHandler);
 
         // Get latest cached dialogs
         this.initDialogs();
@@ -520,13 +524,14 @@ class Chat extends React.Component<IProps, IState> {
 
         this.updateManager.disableLiveUpdate();
 
-        window.removeEventListener('focus', this.windowFocusHandler);
-        window.removeEventListener('blur', this.windowBlurHandler);
-        window.removeEventListener('mousewheel', this.windowMouseWheelHandler);
-        window.removeEventListener('wasmInit', this.wasmInitHandler);
-        window.removeEventListener('wsOpen', this.wsOpenHandler);
-        window.removeEventListener('fnStarted', this.fnStartedHandler);
-        window.removeEventListener('networkStatus', this.networkStatusHandler);
+        window.removeEventListener(EventFocus, this.windowFocusHandler);
+        window.removeEventListener(EventBlur, this.windowBlurHandler);
+        window.removeEventListener(EventMouseWheel, this.windowMouseWheelHandler);
+        window.removeEventListener(EventWasmInit, this.wasmInitHandler);
+        window.removeEventListener(EventWasmStarted, this.fnStartedHandler);
+        window.removeEventListener(EventWebSocketOpen, this.wsOpenHandler);
+        window.removeEventListener(EventWebSocketClose, this.wsCloseHandler);
+        window.removeEventListener(EventNetworkStatus, this.networkStatusHandler);
     }
 
     public render() {

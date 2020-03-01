@@ -108,6 +108,8 @@ import AvatarService from "../../services/avatarService";
 import './style.scss';
 import 'react-image-crop/dist/ReactCrop.css';
 
+export const ThemeChanged = 'Theme_Changed';
+
 const C_BLOCKED_USER_LIST_LIMIT = 50;
 
 const listStyle: React.CSSProperties = {
@@ -115,7 +117,7 @@ const listStyle: React.CSSProperties = {
     overflowY: 'visible',
 };
 
-export const C_VERSION = '0.30.7';
+export const C_VERSION = '0.30.8';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 export const C_AVATAR_SIZE = 640;
 
@@ -1284,7 +1286,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         }
         el.setAttribute('theme', this.state.selectedTheme);
         localStorage.setItem('river.theme.color', this.state.selectedTheme);
-        this.broadcastEvent('Theme_Changed', null);
+        this.broadcastEvent(ThemeChanged, null);
     }
 
     /* Increase font size handler */
@@ -1540,7 +1542,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
                 this.props.onUpdateMessages();
             }
             this.userRepo.setBubbleMode(id);
-            this.broadcastEvent('Theme_Changed', null);
+            this.broadcastEvent(ThemeChanged, null);
         });
     }
 
@@ -1554,7 +1556,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             }
             localStorage.setItem('river.theme.gradient', id);
             el.setAttribute('gradient', id);
-            this.broadcastEvent('Theme_Changed', null);
+            this.broadcastEvent(ThemeChanged, null);
         });
     }
 

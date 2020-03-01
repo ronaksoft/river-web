@@ -21,7 +21,7 @@ import {
 import SDK from '../../services/sdk';
 import UserAvatar from '../UserAvatar';
 import TextField from '@material-ui/core/TextField/TextField';
-import UserRepo from '../../repository/user';
+import UserRepo, {UserDBUpdated} from '../../repository/user';
 import UniqueId from '../../services/uniqueId';
 import DialogRepo from '../../repository/dialog';
 import {IDialog} from '../../repository/dialog/interface';
@@ -122,13 +122,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
 
     public componentDidMount() {
         this.getUser();
-        this.eventReferences.push(this.broadcaster.listen('User_DB_Updated', this.getUser));
-        //
-        // this.sdk.getServerSalts().then((res) => {
-        //     window.console.log(res);
-        // }).catch((err) => {
-        //     window.console.log(err);
-        // });
+        this.eventReferences.push(this.broadcaster.listen(UserDBUpdated, this.getUser));
     }
 
     public componentWillReceiveProps(newProps: IProps) {

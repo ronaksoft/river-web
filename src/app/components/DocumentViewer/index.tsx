@@ -44,6 +44,7 @@ import TimeUtility from "../../services/utilities/time";
 import {Swipeable, EventData} from "react-swipeable";
 import {C_AVATAR_SIZE} from "../SettingsMenu";
 import Scrollbars from "react-custom-scrollbars";
+import {EventKeyDown, EventMouseMove, EventMouseUp} from "../../services/events";
 
 import './style.scss';
 
@@ -160,15 +161,15 @@ class DocumentViewer extends React.Component<IProps, IState> {
     public componentDidMount() {
         this.userId = this.userRepo.getCurrentUserId();
         this.documentViewerService.setDocumentReady(this.documentReadyHandler);
-        window.addEventListener('keydown', this.windowKeyDownHandler, true);
-        window.addEventListener('mousemove', this.mediaDocumentMouseMoveHandler);
-        window.addEventListener('mouseup', this.mediaDocumentMouseUpHandler);
+        window.addEventListener(EventKeyDown, this.windowKeyDownHandler, true);
+        window.addEventListener(EventMouseMove, this.mediaDocumentMouseMoveHandler);
+        window.addEventListener(EventMouseUp, this.mediaDocumentMouseUpHandler);
     }
 
     public componentWillUnmount() {
-        window.removeEventListener('keydown', this.windowKeyDownHandler, true);
-        window.removeEventListener('mousemove', this.mediaDocumentMouseMoveHandler);
-        window.removeEventListener('mouseup', this.mediaDocumentMouseUpHandler);
+        window.removeEventListener(EventKeyDown, this.windowKeyDownHandler, true);
+        window.removeEventListener(EventMouseMove, this.mediaDocumentMouseMoveHandler);
+        window.removeEventListener(EventMouseUp, this.mediaDocumentMouseUpHandler);
         if (this.removeTooltipTimeout) {
             clearTimeout(this.removeTooltipTimeout);
         }

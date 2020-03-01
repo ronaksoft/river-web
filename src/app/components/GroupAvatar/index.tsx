@@ -8,7 +8,7 @@
 */
 
 import * as React from 'react';
-import GroupRepo from '../../repository/group';
+import GroupRepo, {GroupDBUpdated} from '../../repository/group';
 import {IGroup} from '../../repository/group/interface';
 import {TextAvatar} from '../UserAvatar';
 import AvatarService from '../../services/avatarService';
@@ -55,7 +55,7 @@ class GroupAvatar extends React.Component<IProps, IState> {
 
     public componentDidMount() {
         this.getGroup();
-        this.eventReferences.push(this.broadcaster.listen('Group_DB_Updated', this.getGroup));
+        this.eventReferences.push(this.broadcaster.listen(GroupDBUpdated, this.getGroup));
         this.eventReferences.push(this.broadcaster.listen('Avatar_SRC_Updated', this.getGroupPhoto));
     }
 

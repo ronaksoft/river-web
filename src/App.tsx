@@ -28,6 +28,7 @@ import Server from "./app/services/sdk/server";
 import {SnackbarProvider} from 'notistack';
 // @ts-ignore
 import md from 'markdown-it';
+import {EventBeforeUnload, EventBlur, EventDragOver, EventDrop, EventFocus, EventMessage} from "./app/services/events";
 
 import './App.scss';
 
@@ -116,11 +117,11 @@ class App extends React.Component<{}, IState> {
     }
 
     public componentDidMount() {
-        document.addEventListener('drop', (e) => e.preventDefault(), false);
-        document.addEventListener('dragover', (e) => e.preventDefault(), false);
-        window.addEventListener('focus', this.windowFocusHandler);
-        window.addEventListener('blur', this.windowBlurHandler);
-        window.addEventListener('beforeunload', this.windowBeforeUnloadHandler);
+        document.addEventListener(EventDrop, (e) => e.preventDefault(), false);
+        document.addEventListener(EventDragOver, (e) => e.preventDefault(), false);
+        window.addEventListener(EventFocus, this.windowFocusHandler);
+        window.addEventListener(EventBlur, this.windowBlurHandler);
+        window.addEventListener(EventBeforeUnload, this.windowBeforeUnloadHandler);
         window.addEventListener('authErrorEvent', (event: any) => {
             this.setState({
                 alertOpen: true,
@@ -161,17 +162,18 @@ class App extends React.Component<{}, IState> {
         });
 
         if (this.broadcastChannel) {
-            this.broadcastChannel.addEventListener('message', this.channelMessageHandler);
+            this.broadcastChannel.addEventListener(EventMessage, this.channelMessageHandler);
             this.sendSessionMessage('loaded', {version: C_VERSION});
         }
     }
 
     public componentWillUnmount() {
-        window.removeEventListener('focus', this.windowFocusHandler);
-        window.removeEventListener('blur', this.windowBlurHandler);
+        window.removeEventListener(EventFocus, this.windowFocusHandler);
+        window.removeEventListener(EventBlur, this.windowBlurHandler);
+        window.removeEventListener(EventBeforeUnload, this.windowBeforeUnloadHandler);
 
         if (this.broadcastChannel) {
-            this.broadcastChannel.removeEventListener('message', this.channelMessageHandler);
+            this.broadcastChannel.removeEventListener(EventMessage, this.channelMessageHandler);
             this.broadcastChannel.close();
         }
     }

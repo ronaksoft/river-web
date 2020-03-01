@@ -10,8 +10,8 @@
 import * as React from 'react';
 import TimeUtility from '../../services/utilities/time';
 import RiverTime from '../../services/utilities/river_time';
-import UserRepo from '../../repository/user';
-import GroupRepo from '../../repository/group';
+import UserRepo, {UserDBUpdated} from '../../repository/user';
+import GroupRepo, {GroupDBUpdated} from '../../repository/group';
 import {IUser} from '../../repository/user/interface';
 import {UserStatus} from '../../services/sdk/messages/chat.core.types_pb';
 import Broadcaster from '../../services/broadcaster';
@@ -63,8 +63,8 @@ class LastSeen extends React.Component<IProps, IState> {
     public componentDidMount() {
         this.runInterval();
         this.getData();
-        this.eventReferences.push(this.broadcaster.listen('User_DB_Updated', this.getUser));
-        this.eventReferences.push(this.broadcaster.listen('Group_DB_Updated', this.getGroup));
+        this.eventReferences.push(this.broadcaster.listen(UserDBUpdated, this.getUser));
+        this.eventReferences.push(this.broadcaster.listen(GroupDBUpdated, this.getGroup));
     }
 
     public componentWillReceiveProps(newProps: IProps) {

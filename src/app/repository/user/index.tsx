@@ -22,6 +22,8 @@ import Broadcaster from '../../services/broadcaster';
 import {kMerge} from "../../services/utilities/kDash";
 import {C_ERR, C_ERR_ITEM} from "../../services/sdk/const";
 
+export const UserDBUpdated = 'User_DB_Updated';
+
 export const getContactsCrc = (users: IUser[]) => {
     const ids = users.map((user) => {
         const space = '                    ';
@@ -213,7 +215,7 @@ export default class UserRepo {
             return this.createMany(list);
         }).then((res) => {
             if (callerId) {
-                this.broadcastEvent('User_DB_Updated', {ids, callerId});
+                this.broadcastEvent(UserDBUpdated, {ids, callerId});
             } else {
                 this.throttleBroadcast(ids);
             }
@@ -350,7 +352,7 @@ export default class UserRepo {
         if (this.throttleBroadcastList.length === 0) {
             return;
         }
-        this.broadcastEvent('User_DB_Updated', {ids: this.throttleBroadcastList});
+        this.broadcastEvent(UserDBUpdated, {ids: this.throttleBroadcastList});
         this.throttleBroadcastList = [];
     }
 

@@ -1,3 +1,7 @@
+## 0.30.8
+* WebAssembly updated
+* Code refactoring
+
 ## 0.30.7
 * Bot improvements
 

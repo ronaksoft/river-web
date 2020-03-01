@@ -43,10 +43,10 @@ import {
     PeerType,
     TypingAction,
 } from '../../services/sdk/messages/chat.core.types_pb';
-import GroupRepo from '../../repository/group';
+import GroupRepo, {GroupDBUpdated} from '../../repository/group';
 // @ts-ignore
 import {Mention, MentionsInput} from 'react-mentions';
-import UserRepo from '../../repository/user';
+import UserRepo, {UserDBUpdated} from '../../repository/user';
 import SDK from '../../services/sdk';
 import {IUser} from '../../repository/user/interface';
 import {IGroup} from '../../repository/group/interface';
@@ -74,12 +74,14 @@ import {UpdateDraftMessageCleared} from "../../services/sdk/messages/chat.api.up
 import {emojiList} from "./emojis";
 import {isMobile} from "../../services/utilities/localize";
 import UniqueId from "../../services/uniqueId";
-
-import 'emoji-mart/css/emoji-mart.css';
-import './style.scss';
 import {ReplyKeyboardMarkup} from "../../services/sdk/messages/chat.core.message.markups_pb";
 import BotLayout from "../BotLayout";
 import Scrollbars from "react-custom-scrollbars";
+import {ThemeChanged} from "../SettingsMenu";
+
+import 'emoji-mart/css/emoji-mart.css';
+import './style.scss';
+import {EventKeyUp, EventMouseUp, EventPaste, EventResize} from "../../services/events";
 
 const limit = 9;
 const emojiKey = 'emoji-mart.frequently';
@@ -277,14 +279,14 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        this.eventReferences.push(this.broadcaster.listen('Group_DB_Updated', this.checkAuthority));
-        this.eventReferences.push(this.broadcaster.listen('User_DB_Updated', this.checkAuthority));
-        this.eventReferences.push(this.broadcaster.listen('Theme_Changed', this.windowResizeHandler));
-        this.eventReferences.push(this.broadcaster.listen('User_DB_Updated', this.getUser));
-        window.addEventListener('mouseup', this.windowMouseUp);
-        window.addEventListener('keyup', this.windowKeyUp);
-        window.addEventListener('resize', this.windowResizeHandler);
-        window.addEventListener('paste', this.windowPasteHandler);
+        this.eventReferences.push(this.broadcaster.listen(GroupDBUpdated, this.checkAuthority));
+        this.eventReferences.push(this.broadcaster.listen(UserDBUpdated, this.checkAuthority));
+        this.eventReferences.push(this.broadcaster.listen(ThemeChanged, this.windowResizeHandler));
+        this.eventReferences.push(this.broadcaster.listen(UserDBUpdated, this.getUser));
+        window.addEventListener(EventMouseUp, this.windowMouseUp);
+        window.addEventListener(EventKeyUp, this.windowKeyUp);
+        window.addEventListener(EventResize, this.windowResizeHandler);
+        window.addEventListener(EventPaste, this.windowPasteHandler);
         this.initDraft(null, this.props.peer, 0, null);
     }
 
@@ -387,10 +389,10 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     public componentWillUnmount() {
-        window.removeEventListener('mouseup', this.windowMouseUp);
-        window.removeEventListener('keyup', this.windowKeyUp);
-        window.removeEventListener('resize', this.windowResizeHandler);
-        window.removeEventListener('paste', this.windowPasteHandler);
+        window.removeEventListener(EventMouseUp, this.windowMouseUp);
+        window.removeEventListener(EventKeyUp, this.windowKeyUp);
+        window.removeEventListener(EventResize, this.windowResizeHandler);
+        window.removeEventListener(EventPaste, this.windowPasteHandler);
         this.eventReferences.forEach((canceller) => {
             if (typeof canceller === 'function') {
                 canceller();
