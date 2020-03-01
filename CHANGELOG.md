@@ -1,5 +1,6 @@
 ## 0.30.7
 * Bot improvements
+* Last incoming message and view port data merged in bot keyboard
 
 ## 0.30.6
 * 🎉 New Bot system

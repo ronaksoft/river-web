@@ -835,6 +835,13 @@ export default class MessageRepo {
         });
     }
 
+    public getLastIncomingMessage(peerId: string): Promise<IMessage | undefined> {
+        return this.db.messages.where('[peerid+id]')
+            .between([peerId, Dexie.minKey], [peerId, Dexie.maxKey], true, true).filter((item) => {
+            return (item.messagetype !== C_MESSAGE_TYPE.Hole && item.messagetype !== C_MESSAGE_TYPE.End && (item.id || 0) > 0 && item.senderid !== this.userId);
+        }).reverse().first();
+    }
+
     public clearHistory(peerId: string, messageId: number): Promise<any> {
         return this.db.messages.where('[peerid+id]').between([peerId, Dexie.minKey], [peerId, messageId], true, true).delete();
     }

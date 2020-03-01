@@ -2982,7 +2982,15 @@ class Chat extends React.Component<IProps, IState> {
     private messageLastIncomingMessageHandler = (message: IMessage | null) => {
         if (this.chatInputRef) {
             if (message && message.replymarkup === C_REPLY_ACTION.ReplyKeyboardMarkup) {
-                this.chatInputRef.setBot(this.isBot, message.replydata);
+                this.chatInputRef.setBot(this.isBot, {
+                    layout: message.replydata,
+                    msgId: message.id || 0,
+                });
+            } else if (message) {
+                this.chatInputRef.setBot(this.isBot, {
+                    layout: undefined,
+                    msgId: message.id || 0,
+                });
             } else {
                 this.chatInputRef.setBot(this.isBot, undefined);
             }

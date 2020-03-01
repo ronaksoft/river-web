@@ -510,13 +510,19 @@ export default class UpdateManager {
                 this.mergeMessage(transaction.messages, message);
                 // Check [deleted dialog]/[clear history]
                 if (message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
-                    this.removeDialog(transaction.dialogs, message.peerid || '');
-                    if (message.actiondata && message.actiondata.pb_delete) {
-                        transaction.clearDialogs.push({
-                            maxId: message.actiondata.maxid || 0,
-                            peerId: message.peerid || '',
-                            remove: message.actiondata.pb_delete || false,
+                    transaction.clearDialogs.push({
+                        maxId: message.actiondata.maxid || 0,
+                        peerId: message.peerid || '',
+                        remove: message.actiondata.pb_delete || false,
+                    });
+                    if (transaction.users.hasOwnProperty(message.peerid || '') && transaction.users[message.peerid || ''].isbot) {
+                        this.mergeUser(transaction.users, {
+                            id: message.peerid || '',
+                            is_bot_started: false,
                         });
+                    }
+                    if (message.actiondata && message.actiondata.pb_delete) {
+                        this.removeDialog(transaction.dialogs, message.peerid || '');
                     }
                 }
                 // Update dialog
