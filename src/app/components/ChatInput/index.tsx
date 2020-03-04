@@ -539,7 +539,7 @@ class ChatInput extends React.Component<IProps, IState> {
             return (<div className="input-placeholder" onClick={this.unblockHandler}>
                 <span className="btn">{i18n.t('general.unblock')}</span></div>);
         } else {
-            const isBot = this.state.isBot && Boolean(this.botKeyboard);
+            const isBot = this.state.isBot && this.botKeyboard && Boolean(this.botKeyboard.layout);
             return (
                 <div className="chat-input">
                     <input ref={this.fileInputRefHandler} type="file" style={{display: 'none'}}

@@ -2285,7 +2285,7 @@ class Chat extends React.Component<IProps, IState> {
             } else {
                 setTimeout(() => {
                     this.startSyncing(res.updateid || 0);
-                }, 1000);
+                }, 2000);
             }
         });
     }
@@ -2948,6 +2948,7 @@ class Chat extends React.Component<IProps, IState> {
                  const buttonBuy: ButtonBuy.AsObject = data;*/
             case C_BUTTON_ACTION.ButtonCallback:
                 const buttonCallback: ButtonCallback.AsObject = data;
+                window.console.log(buttonCallback);
                 this.sdk.botGetCallbackAnswer(this.peer, buttonCallback.data, msgId).then((res) => {
                     if ((res.message || '').length > 0) {
                         this.setState({
