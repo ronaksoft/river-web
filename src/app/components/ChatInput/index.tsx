@@ -489,6 +489,9 @@ class ChatInput extends React.Component<IProps, IState> {
         }
         if ((this.botKeyboard && data && this.botKeyboard.msgId < data.msgId) || !this.botKeyboard) {
             const lastKeyboard = this.botKeyboard;
+            if (!this.state.botKeyboard && lastKeyboard && data && lastKeyboard.msgId !== data.msgId) {
+                this.toggleBotKeyboardHandler();
+            }
             this.botKeyboard = data;
             let check = false;
             if (this.state.botKeyboard) {
@@ -618,7 +621,6 @@ class ChatInput extends React.Component<IProps, IState> {
                                             data={this.searchBotCommandHandler}
                                             renderSuggestion={this.renderBotCommandSuggestion}
                                             style={{border: 'none'}}
-                                            onAdd={this.botCommandAddHandler}
                                         />
                                     </MentionsInput>
                                 </div>
@@ -2072,11 +2074,6 @@ class ChatInput extends React.Component<IProps, IState> {
                 <div className="name">{a.desc}</div>
             </div>
         </div>);
-    }
-
-    /* Inline Bot command add handler */
-    private botCommandAddHandler = (d: string) => {
-        //
     }
 
     /* Window paste handler */

@@ -58,7 +58,7 @@
     "none": "انتخاب کنید",
     "recover": "بازیابی",
     "ok": "باشه",
-    "bot_alert": "پیام بات"
+    "send": "ارسال"
   },
   "chat": {
     "search": "جستجو",
@@ -411,6 +411,9 @@
     "max_label_warning": "شما نمی‌توانید بیش از ۲۰ برچسب ایجاد نمایید"
   },
   "bot": {
-    "start_bot": "فعال کردن Bot"
+    "start_bot": "فعال کردن Bot",
+    "alert": "Bot اعلان",
+    "bot_wants_your_phone": "شماره تلفن شما را می‌خواهد",
+    "bot_wants_your_location": "مختصات جغرافیایی شما را می‌خواهد"
   }
 }

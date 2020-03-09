@@ -1,3 +1,6 @@
+## 0.30.10
+* Bot final touches
+
 ## 0.30.9
 * Bot updated
 * Inline commands added

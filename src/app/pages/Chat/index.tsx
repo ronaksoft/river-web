@@ -162,7 +162,7 @@ interface IProps {
 interface IState {
     botAlertMessage: string;
     chatMoreAnchorEl: any;
-    confirmDialogMode: 'none' | 'logout' | 'remove_message' | 'remove_message_revoke' | 'remove_message_pending' | 'delete_exit_group' | 'delete_user' | 'cancel_recording' | 'bot_alert';
+    confirmDialogMode: 'none' | 'logout' | 'remove_message' | 'remove_message_revoke' | 'remove_message_pending' | 'delete_exit_group' | 'delete_user' | 'cancel_recording' | 'bot_alert' | 'bot_send_phone' | 'bot_send_location';
     confirmDialogOpen: boolean;
     forwardRecipientDialogOpen: boolean;
     iframeActive: boolean;
@@ -644,8 +644,8 @@ class Chat extends React.Component<IProps, IState> {
                         paper: 'confirm-dialog-paper'
                     }}
                 >
-                    {Boolean(confirmDialogMode === 'bot_alert') && <div>
-                        <DialogTitle>{i18n.t('general.bot_alert')}</DialogTitle>
+                    {Boolean(confirmDialogMode === 'bot_alert') && <>
+                        <DialogTitle>{i18n.t('bot.alert')}</DialogTitle>
                         <DialogContent>
                             <DialogContentText>{this.state.botAlertMessage}</DialogContentText>
                         </DialogContent>
@@ -654,8 +654,8 @@ class Chat extends React.Component<IProps, IState> {
                                 {i18n.t('general.ok')}
                             </Button>
                         </DialogActions>
-                    </div>}
-                    {Boolean(confirmDialogMode === 'logout') && <div>
+                    </>}
+                    {Boolean(confirmDialogMode === 'logout') && <>
                         <DialogTitle>{i18n.t('chat.logout_dialog.title')}</DialogTitle>
                         <DialogContent>
                             <DialogContentText>
@@ -672,9 +672,9 @@ class Chat extends React.Component<IProps, IState> {
                                 {i18n.t('general.agree')}
                             </Button>
                         </DialogActions>
-                    </div>}
+                    </>}
                     {Boolean(confirmDialogMode === 'remove_message' || confirmDialogMode === 'remove_message_revoke' || confirmDialogMode === 'remove_message_pending') &&
-                    <div>
+                    <>
                         <DialogTitle>{i18n.t('chat.remove_message_dialog.title')}</DialogTitle>
                         <DialogContent>
                             <DialogContentText>
@@ -701,9 +701,8 @@ class Chat extends React.Component<IProps, IState> {
                                 {i18n.t('chat.remove_message_dialog.remove_all_pending')}
                             </Button>}
                         </DialogActions>
-                    </div>}
-                    {Boolean(confirmDialogMode === 'delete_exit_group') &&
-                    <div>
+                    </>}
+                    {Boolean(confirmDialogMode === 'delete_exit_group') && <>
                         <DialogTitle>{i18n.t('chat.exit_group_dialog.title')}</DialogTitle>
                         <DialogContent>
                             <DialogContentText>
@@ -720,9 +719,8 @@ class Chat extends React.Component<IProps, IState> {
                                 {i18n.t('general.agree')}
                             </Button>
                         </DialogActions>
-                    </div>}
-                    {Boolean(confirmDialogMode === 'delete_user') &&
-                    <div>
+                    </>}
+                    {Boolean(confirmDialogMode === 'delete_user') && <>
                         <DialogTitle>{i18n.t('chat.delete_dialog.title')}</DialogTitle>
                         <DialogContent>
                             <DialogContentText>
@@ -742,9 +740,8 @@ class Chat extends React.Component<IProps, IState> {
                                 {i18n.t('general.agree')}
                             </Button>
                         </DialogActions>
-                    </div>}
-                    {Boolean(confirmDialogMode === 'cancel_recording') &&
-                    <div>
+                    </>}
+                    {Boolean(confirmDialogMode === 'cancel_recording') && <>
                         <DialogTitle>{i18n.t('chat.cancel_recording_dialog.title')}</DialogTitle>
                         <DialogContent>
                             <DialogContentText>
@@ -759,7 +756,39 @@ class Chat extends React.Component<IProps, IState> {
                                 {i18n.t('general.yes')}
                             </Button>
                         </DialogActions>
-                    </div>}
+                    </>}
+                    {Boolean(confirmDialogMode === 'bot_send_phone') && <>
+                        <DialogTitle>{i18n.t('bot.alert')}</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>
+                                <UserName id={this.selectedDialogId || ''}/> {i18n.t('bot.bot_wants_your_phone')}
+                            </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={this.confirmDialogCloseHandler} color="secondary">
+                                {i18n.t('general.cancel')}
+                            </Button>
+                            <Button onClick={this.botSendPhoneHandler} color="primary" autoFocus={true}>
+                                {i18n.t('general.send')}
+                            </Button>
+                        </DialogActions>
+                    </>}
+                    {Boolean(confirmDialogMode === 'bot_send_location') && <>
+                        <DialogTitle>{i18n.t('bot.alert')}</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>
+                                <UserName id={this.selectedDialogId || ''}/> {i18n.t('bot.bot_wants_your_location')}
+                            </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={this.confirmDialogCloseHandler} color="secondary">
+                                {i18n.t('general.cancel')}
+                            </Button>
+                            <Button onClick={this.botSendLocationHandler} color="primary" autoFocus={true}>
+                                {i18n.t('general.send')}
+                            </Button>
+                        </DialogActions>
+                    </>}
                 </OverlayDialog>
                 <ForwardDialog key="forward-dialog" ref={this.forwardDialogRefHandler}
                                onDone={this.forwardDialogDoneHandler}
@@ -1001,7 +1030,7 @@ class Chat extends React.Component<IProps, IState> {
             this.messageRepo.clearHistory(message.peerid || '', message.actiondata.maxid).then(() => {
                 if (message.peerid === this.selectedDialogId && this.messages.length > 1 && this.messageRef) {
                     this.messageRef.clearAll();
-                    this.messages.splice(0, this.messages.length - 1);
+                    this.messages.splice(0, this.messages.length - (message.actiondata.pb_delete ? 0 : 1));
                     this.messageRef.setMessages(this.messages);
                     this.messageRef.updateList();
                 }
@@ -2947,23 +2976,16 @@ class Chat extends React.Component<IProps, IState> {
             //     const buttonSwitchInline: ButtonSwitchInline.AsObject = data;
             //     break;
             case C_BUTTON_ACTION.ButtonRequestPhone:
-                this.chatInputContactSelectHandler([{
-                    firstname: this.connInfo.FirstName || '',
-                    id: this.connInfo.UserID || '',
-                    lastname: this.connInfo.LastName || '',
-                    phone: this.connInfo.Phone || '',
-                }]);
+                this.setState({
+                    confirmDialogMode: 'bot_send_phone',
+                    confirmDialogOpen: true,
+                });
                 break;
             case C_BUTTON_ACTION.ButtonRequestGeoLocation:
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition((pos) => {
-                        this.chatInputMapSelectHandler({
-                            caption: '',
-                            lat: pos.coords.latitude,
-                            long: pos.coords.longitude,
-                        });
-                    }, this.geoLocationErrorHandler);
-                }
+                this.setState({
+                    confirmDialogMode: 'bot_send_location',
+                    confirmDialogOpen: true,
+                });
                 break;
             // case C_BUTTON_ACTION.ButtonBuy:
             //     const buttonBuy: ButtonBuy.AsObject = data;
@@ -2995,6 +3017,27 @@ class Chat extends React.Component<IProps, IState> {
                 const win: any = window.open(link, '_blank');
                 win.focus();
             }
+        }
+    }
+
+    private botSendPhoneHandler = () => {
+        this.chatInputContactSelectHandler([{
+            firstname: this.connInfo.FirstName || '',
+            id: this.connInfo.UserID || '',
+            lastname: this.connInfo.LastName || '',
+            phone: this.connInfo.Phone || '',
+        }]);
+    }
+
+    private botSendLocationHandler = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((pos) => {
+                this.chatInputMapSelectHandler({
+                    caption: '',
+                    lat: pos.coords.latitude,
+                    long: pos.coords.longitude,
+                });
+            }, this.geoLocationErrorHandler);
         }
     }
 

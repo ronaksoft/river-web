@@ -59,7 +59,7 @@
     "none": "None",
     "recover": "Recover",
     "ok": "OK",
-    "bot_alert": "Bot Message"
+    "send": "Send"
   },
   "chat": {
     "search": "Search",
@@ -416,6 +416,9 @@
     "max_label_warning": "You can't add more than 20 labels"
   },
   "bot": {
-    "start_bot": "Start Bot"
+    "start_bot": "Start Bot",
+    "alert": "Bot Alert",
+    "bot_wants_your_phone": "wants your phone",
+    "bot_wants_your_location": "wants your location"
   }
 }
