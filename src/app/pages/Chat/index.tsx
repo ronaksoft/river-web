@@ -3021,6 +3021,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private botSendPhoneHandler = () => {
+        this.confirmDialogCloseHandler();
         this.chatInputContactSelectHandler([{
             firstname: this.connInfo.FirstName || '',
             id: this.connInfo.UserID || '',
@@ -3030,6 +3031,7 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private botSendLocationHandler = () => {
+        this.confirmDialogCloseHandler();
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((pos) => {
                 this.chatInputMapSelectHandler({
