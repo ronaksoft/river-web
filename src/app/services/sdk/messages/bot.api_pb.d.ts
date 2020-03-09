@@ -39,6 +39,28 @@ export namespace BotStart {
   }
 }
 
+export class BotRecall extends jspb.Message {
+  hasVersion(): boolean;
+  clearVersion(): void;
+  getVersion(): number | undefined;
+  setVersion(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BotRecall.AsObject;
+  static toObject(includeInstance: boolean, msg: BotRecall): BotRecall.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BotRecall, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BotRecall;
+  static deserializeBinaryFromReader(message: BotRecall, reader: jspb.BinaryReader): BotRecall;
+}
+
+export namespace BotRecall {
+  export type AsObject = {
+    version?: number,
+  }
+}
+
 export class BotSetInfo extends jspb.Message {
   hasBotid(): boolean;
   clearBotid(): void;
@@ -289,6 +311,34 @@ export namespace BotGetCallbackAnswer {
   }
 }
 
+export class BotRecalled extends jspb.Message {
+  hasId(): boolean;
+  clearId(): void;
+  getId(): number | undefined;
+  setId(value: number): void;
+
+  hasUsername(): boolean;
+  clearUsername(): void;
+  getUsername(): string | undefined;
+  setUsername(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BotRecalled.AsObject;
+  static toObject(includeInstance: boolean, msg: BotRecalled): BotRecalled.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BotRecalled, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BotRecalled;
+  static deserializeBinaryFromReader(message: BotRecalled, reader: jspb.BinaryReader): BotRecalled;
+}
+
+export namespace BotRecalled {
+  export type AsObject = {
+    id?: number,
+    username?: string,
+  }
+}
+
 export class BotCallbackAnswer extends jspb.Message {
   hasUrl(): boolean;
   clearUrl(): void;
@@ -342,6 +392,50 @@ export class BotsMany extends jspb.Message {
 export namespace BotsMany {
   export type AsObject = {
     botsList: Array<chat_core_types_pb.BotInfo.AsObject>,
+  }
+}
+
+export class BotGetCommands extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): chat_core_types_pb.InputPeer;
+  setPeer(value?: chat_core_types_pb.InputPeer): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BotGetCommands.AsObject;
+  static toObject(includeInstance: boolean, msg: BotGetCommands): BotGetCommands.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BotGetCommands, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BotGetCommands;
+  static deserializeBinaryFromReader(message: BotGetCommands, reader: jspb.BinaryReader): BotGetCommands;
+}
+
+export namespace BotGetCommands {
+  export type AsObject = {
+    peer: chat_core_types_pb.InputPeer.AsObject,
+  }
+}
+
+export class BotCommandsMany extends jspb.Message {
+  clearCommandsList(): void;
+  getCommandsList(): Array<chat_core_types_pb.BotCommands>;
+  setCommandsList(value: Array<chat_core_types_pb.BotCommands>): void;
+  addCommands(value?: chat_core_types_pb.BotCommands, index?: number): chat_core_types_pb.BotCommands;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BotCommandsMany.AsObject;
+  static toObject(includeInstance: boolean, msg: BotCommandsMany): BotCommandsMany.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BotCommandsMany, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BotCommandsMany;
+  static deserializeBinaryFromReader(message: BotCommandsMany, reader: jspb.BinaryReader): BotCommandsMany;
+}
+
+export namespace BotCommandsMany {
+  export type AsObject = {
+    commandsList: Array<chat_core_types_pb.BotCommands.AsObject>,
   }
 }
 

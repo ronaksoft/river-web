@@ -718,6 +718,11 @@ export class User extends jspb.Message {
   getBlocked(): boolean | undefined;
   setBlocked(value: boolean): void;
 
+  hasBotinfo(): boolean;
+  clearBotinfo(): void;
+  getBotinfo(): BotInfo | undefined;
+  setBotinfo(value?: BotInfo): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): User.AsObject;
   static toObject(includeInstance: boolean, msg: User): User.AsObject;
@@ -745,6 +750,7 @@ export namespace User {
     isbot?: boolean,
     deleted?: boolean,
     blocked?: boolean,
+    botinfo?: BotInfo.AsObject,
   }
 }
 

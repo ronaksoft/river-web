@@ -218,6 +218,11 @@ export class GroupsUploadPhoto extends jspb.Message {
   getFile(): chat_core_types_pb.InputFile;
   setFile(value?: chat_core_types_pb.InputFile): void;
 
+  hasReturnobject(): boolean;
+  clearReturnobject(): void;
+  getReturnobject(): boolean | undefined;
+  setReturnobject(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GroupsUploadPhoto.AsObject;
   static toObject(includeInstance: boolean, msg: GroupsUploadPhoto): GroupsUploadPhoto.AsObject;
@@ -232,6 +237,7 @@ export namespace GroupsUploadPhoto {
   export type AsObject = {
     groupid?: string,
     file: chat_core_types_pb.InputFile.AsObject,
+    returnobject?: boolean,
   }
 }
 

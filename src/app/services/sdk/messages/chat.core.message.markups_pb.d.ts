@@ -67,6 +67,28 @@ export namespace ReplyInlineMarkup {
   }
 }
 
+export class ReplyKeyboardHide extends jspb.Message {
+  hasSelective(): boolean;
+  clearSelective(): void;
+  getSelective(): boolean | undefined;
+  setSelective(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ReplyKeyboardHide.AsObject;
+  static toObject(includeInstance: boolean, msg: ReplyKeyboardHide): ReplyKeyboardHide.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ReplyKeyboardHide, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ReplyKeyboardHide;
+  static deserializeBinaryFromReader(message: ReplyKeyboardHide, reader: jspb.BinaryReader): ReplyKeyboardHide;
+}
+
+export namespace ReplyKeyboardHide {
+  export type AsObject = {
+    selective?: boolean,
+  }
+}
+
 export class KeyboardButtonRow extends jspb.Message {
   clearButtonsList(): void;
   getButtonsList(): Array<KeyboardButtonEnvelope>;
@@ -296,92 +318,6 @@ export class ButtonBuy extends jspb.Message {
 export namespace ButtonBuy {
   export type AsObject = {
     text?: string,
-  }
-}
-
-export class ButtonUrlAuth extends jspb.Message {
-  hasText(): boolean;
-  clearText(): void;
-  getText(): string | undefined;
-  setText(value: string): void;
-
-  hasFwdtext(): boolean;
-  clearFwdtext(): void;
-  getFwdtext(): string | undefined;
-  setFwdtext(value: string): void;
-
-  hasUrl(): boolean;
-  clearUrl(): void;
-  getUrl(): string | undefined;
-  setUrl(value: string): void;
-
-  hasButtonid(): boolean;
-  clearButtonid(): void;
-  getButtonid(): number | undefined;
-  setButtonid(value: number): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): ButtonUrlAuth.AsObject;
-  static toObject(includeInstance: boolean, msg: ButtonUrlAuth): ButtonUrlAuth.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: ButtonUrlAuth, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): ButtonUrlAuth;
-  static deserializeBinaryFromReader(message: ButtonUrlAuth, reader: jspb.BinaryReader): ButtonUrlAuth;
-}
-
-export namespace ButtonUrlAuth {
-  export type AsObject = {
-    text?: string,
-    fwdtext?: string,
-    url?: string,
-    buttonid?: number,
-  }
-}
-
-export class InputButtonUrlAuth extends jspb.Message {
-  hasText(): boolean;
-  clearText(): void;
-  getText(): string | undefined;
-  setText(value: string): void;
-
-  hasFwdtext(): boolean;
-  clearFwdtext(): void;
-  getFwdtext(): string | undefined;
-  setFwdtext(value: string): void;
-
-  hasUrl(): boolean;
-  clearUrl(): void;
-  getUrl(): string | undefined;
-  setUrl(value: string): void;
-
-  hasRequestwriteaccess(): boolean;
-  clearRequestwriteaccess(): void;
-  getRequestwriteaccess(): boolean | undefined;
-  setRequestwriteaccess(value: boolean): void;
-
-  hasBot(): boolean;
-  clearBot(): void;
-  getBot(): chat_core_types_pb.InputUser;
-  setBot(value?: chat_core_types_pb.InputUser): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): InputButtonUrlAuth.AsObject;
-  static toObject(includeInstance: boolean, msg: InputButtonUrlAuth): InputButtonUrlAuth.AsObject;
-  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: InputButtonUrlAuth, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): InputButtonUrlAuth;
-  static deserializeBinaryFromReader(message: InputButtonUrlAuth, reader: jspb.BinaryReader): InputButtonUrlAuth;
-}
-
-export namespace InputButtonUrlAuth {
-  export type AsObject = {
-    text?: string,
-    fwdtext?: string,
-    url?: string,
-    requestwriteaccess?: boolean,
-    bot: chat_core_types_pb.InputUser.AsObject,
   }
 }
 

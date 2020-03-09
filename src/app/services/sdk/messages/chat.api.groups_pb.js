@@ -1709,7 +1709,8 @@ proto.msg.GroupsUploadPhoto.prototype.toObject = function(opt_includeInstance) {
 proto.msg.GroupsUploadPhoto.toObject = function(includeInstance, msg) {
   var f, obj = {
     groupid: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    file: (f = msg.getFile()) && chat_core_types_pb.InputFile.toObject(includeInstance, f)
+    file: (f = msg.getFile()) && chat_core_types_pb.InputFile.toObject(includeInstance, f),
+    returnobject: (f = jspb.Message.getBooleanField(msg, 3)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -1755,6 +1756,10 @@ proto.msg.GroupsUploadPhoto.deserializeBinaryFromReader = function(msg, reader) 
       reader.readMessage(value,chat_core_types_pb.InputFile.deserializeBinaryFromReader);
       msg.setFile(value);
       break;
+    case 3:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setReturnobject(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1797,6 +1802,13 @@ proto.msg.GroupsUploadPhoto.serializeBinaryToWriter = function(message, writer) 
       2,
       f,
       chat_core_types_pb.InputFile.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeBool(
+      3,
+      f
     );
   }
 };
@@ -1872,6 +1884,42 @@ proto.msg.GroupsUploadPhoto.prototype.clearFile = function() {
  */
 proto.msg.GroupsUploadPhoto.prototype.hasFile = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional bool ReturnObject = 3;
+ * @return {boolean}
+ */
+proto.msg.GroupsUploadPhoto.prototype.getReturnobject = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 3, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.msg.GroupsUploadPhoto} returns this
+ */
+proto.msg.GroupsUploadPhoto.prototype.setReturnobject = function(value) {
+  return jspb.Message.setField(this, 3, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.GroupsUploadPhoto} returns this
+ */
+proto.msg.GroupsUploadPhoto.prototype.clearReturnobject = function() {
+  return jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.GroupsUploadPhoto.prototype.hasReturnobject = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 

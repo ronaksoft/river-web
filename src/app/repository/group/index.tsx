@@ -78,6 +78,7 @@ export default class GroupRepo {
                     input.setAccesshash('0');
                     this.sdk.groupGetFull(input).then((res) => {
                         if (res) {
+                            res = kMerge(group, res);
                             this.upsert([res]);
                             resolve(res);
                         } else {

@@ -2,7 +2,6 @@ import React from "react";
 import {
     Button, ButtonBuy, ButtonCallback, ButtonRequestGeoLocation, ButtonRequestPhone, ButtonSwitchInline,
     ButtonUrl,
-    ButtonUrlAuth,
     KeyboardButtonRow
 } from "../../services/sdk/messages/chat.core.message.markups_pb";
 import {IMessageBotCol} from "../../repository/message/interface";
@@ -24,10 +23,6 @@ export default function BotLayout({rows, prefix, onAction}: { rows: KeyboardButt
                 const buttonUrl: ButtonUrl.AsObject = col.buttondata;
                 return (<div className="bot-button bot-button-url"
                              onClick={clickHandler(col.constructor, col.buttondata)}><span>{buttonUrl.text}</span></div>);
-            case C_BUTTON_ACTION.ButtonUrlAuth:
-                const buttonUrlAuth: ButtonUrlAuth.AsObject = col.buttondata;
-                return (<div className="bot-button bot-button-url-auth"
-                             onClick={clickHandler(col.constructor, col.buttondata)}><span>{buttonUrlAuth.text}</span></div>);
             case C_BUTTON_ACTION.ButtonSwitchInline:
                 const buttonSwitchInline: ButtonSwitchInline.AsObject = col.buttondata;
                 return (<div className="bot-button bot-button-switch-inline"

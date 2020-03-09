@@ -39,7 +39,6 @@ import {
     ButtonRequestPhone,
     ButtonSwitchInline,
     ButtonUrl,
-    ButtonUrlAuth,
     ReplyInlineMarkup,
     ReplyKeyboardMarkup
 } from "../../services/sdk/messages/chat.core.message.markups_pb";
@@ -101,10 +100,6 @@ export default class MessageRepo {
                     case C_BUTTON_ACTION.ButtonUrl:
                         // @ts-ignore
                         replyInline.rowsList[i].buttonsList[j].buttondata = ButtonUrl.deserializeBinary(data).toObject();
-                        break;
-                    case C_BUTTON_ACTION.ButtonUrlAuth:
-                        // @ts-ignore
-                        replyInline.rowsList[i].buttonsList[j].buttondata = ButtonUrlAuth.deserializeBinary(data).toObject();
                         break;
                 }
                 delete r2.data;

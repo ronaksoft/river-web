@@ -5646,7 +5646,8 @@ proto.msg.User.toObject = function(includeInstance, msg) {
     proto.msg.UserPhoto.toObject, includeInstance),
     isbot: (f = jspb.Message.getBooleanField(msg, 13)) == null ? undefined : f,
     deleted: (f = jspb.Message.getBooleanField(msg, 14)) == null ? undefined : f,
-    blocked: (f = jspb.Message.getBooleanField(msg, 15)) == null ? undefined : f
+    blocked: (f = jspb.Message.getBooleanField(msg, 15)) == null ? undefined : f,
+    botinfo: (f = msg.getBotinfo()) && proto.msg.BotInfo.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -5744,6 +5745,11 @@ proto.msg.User.deserializeBinaryFromReader = function(msg, reader) {
     case 15:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setBlocked(value);
+      break;
+    case 16:
+      var value = new proto.msg.BotInfo;
+      reader.readMessage(value,proto.msg.BotInfo.deserializeBinaryFromReader);
+      msg.setBotinfo(value);
       break;
     default:
       reader.skipField();
@@ -5879,6 +5885,14 @@ proto.msg.User.serializeBinaryToWriter = function(message, writer) {
     writer.writeBool(
       15,
       f
+    );
+  }
+  f = message.getBotinfo();
+  if (f != null) {
+    writer.writeMessage(
+      16,
+      f,
+      proto.msg.BotInfo.serializeBinaryToWriter
     );
   }
 };
@@ -6424,6 +6438,43 @@ proto.msg.User.prototype.clearBlocked = function() {
  */
 proto.msg.User.prototype.hasBlocked = function() {
   return jspb.Message.getField(this, 15) != null;
+};
+
+
+/**
+ * optional BotInfo BotInfo = 16;
+ * @return {?proto.msg.BotInfo}
+ */
+proto.msg.User.prototype.getBotinfo = function() {
+  return /** @type{?proto.msg.BotInfo} */ (
+    jspb.Message.getWrapperField(this, proto.msg.BotInfo, 16));
+};
+
+
+/**
+ * @param {?proto.msg.BotInfo|undefined} value
+ * @return {!proto.msg.User} returns this
+*/
+proto.msg.User.prototype.setBotinfo = function(value) {
+  return jspb.Message.setWrapperField(this, 16, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.msg.User} returns this
+ */
+proto.msg.User.prototype.clearBotinfo = function() {
+  return this.setBotinfo(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.User.prototype.hasBotinfo = function() {
+  return jspb.Message.getField(this, 16) != null;
 };
 
 

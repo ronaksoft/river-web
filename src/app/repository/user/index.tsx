@@ -121,13 +121,14 @@ export default class UserRepo {
                     input.setAccesshash(user.accesshash || '');
                     this.sdk.getUserFull([input]).then((res) => {
                         this.upsert(false, res.usersList, false, callerId);
-                        const u = find(res.usersList, {id});
+                        let u = find(res.usersList, {id});
                         if (u) {
                             // @ts-ignore
                             u.is_contact = user.is_contact;
                             if (user.phone && user.phone.length > 0) {
                                 u.phone = user.phone;
                             }
+                            u = kMerge(user, u);
                             resolve(u);
                         } else {
                             reject('not_found');

@@ -342,13 +342,7 @@ class UserInfoMenu extends React.Component<IProps, IState> {
             return;
         }
 
-        let isBotStarted: boolean = false;
         const fn = (user: IUser) => {
-            if (user.is_bot_started !== undefined) {
-                isBotStarted = user.is_bot_started;
-            } else {
-                user.is_bot_started = isBotStarted;
-            }
             this.setState({
                 firstname: user.firstname || '',
                 isInContact: (user.is_contact === 1),

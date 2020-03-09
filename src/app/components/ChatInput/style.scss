@@ -59,6 +59,35 @@
               padding-top: 3px;
             }
 
+            .bot-command-display {
+              height: 20px;
+              font-size: 13px;
+              margin-right: 8px;
+              display: flex;
+              align-items: center;
+
+              .command-container {
+                display: inline-flex;
+                background-color: rgba(0, 0, 0, 0.06);
+                border-radius: 3px;
+                overflow: hidden;
+
+                .command {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  padding: 2px 5px 0;
+                  background-color: var(--river-light);
+                  color: var(--white);
+                }
+
+                .command-name {
+                  padding: 3px;
+                  color: var(--grey-low);
+                }
+              }
+            }
+
             .info {
               flex: 1;
               display: flex;
@@ -676,6 +705,24 @@ html[theme="dark-blue"] {
 
       .inner.focused {
         background-color: var(--dark-high);
+      }
+
+      .bot-command-display {
+
+        background-color: rgba(255, 255, 255, 0.06);
+        color: var(--grey);
+
+        .command-container {
+          background-color: rgba(255, 255, 255, 0.06);
+
+          .command {
+            background-color: var(--river-dark);
+          }
+
+          .command-name {
+            color: var(--grey);
+          }
+        }
       }
     }
 

@@ -600,17 +600,25 @@ class ChatInput extends React.Component<IProps, IState> {
                                         <Mention
                                             trigger="@"
                                             type="mention"
-                                            data={this.searchMention}
+                                            data={this.searchMentionHandler}
                                             className="mention-item"
                                             renderSuggestion={this.renderMentionSuggestion}
                                         />
                                         <Mention
                                             trigger=":"
                                             type="emoji"
-                                            data={this.searchEmoji}
+                                            data={this.searchEmojiHandler}
                                             renderSuggestion={this.renderEmojiSuggestion}
                                             style={{border: 'none'}}
                                             onAdd={this.emojiAddHandler}
+                                        />
+                                        <Mention
+                                            trigger="/"
+                                            type="emoji"
+                                            data={this.searchBotCommandHandler}
+                                            renderSuggestion={this.renderBotCommandSuggestion}
+                                            style={{border: 'none'}}
+                                            onAdd={this.botCommandAddHandler}
                                         />
                                     </MentionsInput>
                                 </div>
@@ -1095,7 +1103,7 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     /* Search mention in group */
-    private searchMention = (keyword: string, callback: any) => {
+    private searchMentionHandler = (keyword: string, callback: any) => {
         const {peer} = this.state;
         if (!peer) {
             callback([]);
@@ -1182,13 +1190,22 @@ class ChatInput extends React.Component<IProps, IState> {
         const entities: MessageEntity[] = [];
         if (this.mentions.length > 0) {
             this.mentions.filter((m) => {
-                return m.id.indexOf(':') === -1;
+                return m.id.indexOf(':') === -1 && m.id.indexOf('/') === -1;
             }).forEach((mention) => {
                 const entity = new MessageEntity();
                 entity.setOffset(mention.plainTextIndex);
                 entity.setLength(mention.display.length);
                 entity.setType(MessageEntityType.MESSAGEENTITYTYPEMENTION);
                 entity.setUserid(mention.id);
+                entities.push(entity);
+            });
+            this.mentions.filter((c) => {
+                return c.id.indexOf('/') === 0;
+            }).forEach((command) => {
+                const entity = new MessageEntity();
+                entity.setOffset(command.plainTextIndex);
+                entity.setLength(command.display.length);
+                entity.setType(MessageEntityType.MESSAGEENTITYTYPEBOTCOMMAND);
                 entities.push(entity);
             });
         }
@@ -1933,7 +1950,7 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     /* Search emoji */
-    private searchEmoji = (keyword: string, callback: any) => {
+    private searchEmojiHandler = (keyword: string, callback: any) => {
         const emojis: any[] = [];
         keyword = keyword.toLowerCase();
         if (keyword && keyword !== '') {
@@ -1990,22 +2007,6 @@ class ChatInput extends React.Component<IProps, IState> {
         </div>);
     }
 
-    /* Window paste handler */
-    private windowPasteHandler = (e: any) => {
-        if (e.clipboardData && e.clipboardData.items) {
-            const files: any[] = [];
-            for (let i = 0; i < e.clipboardData.items.length; i++) {
-                const item = e.clipboardData.items[i];
-                if (item.kind === 'file') {
-                    files.push(item.getAsFile());
-                }
-            }
-            if (files.length > 0) {
-                this.openUploader(files);
-            }
-        }
-    }
-
     /* Inline emoji add handler */
     private emojiAddHandler = (d: string) => {
         d = d.substr(1);
@@ -2022,6 +2023,75 @@ class ChatInput extends React.Component<IProps, IState> {
             const item: any = {};
             item[d] = 1;
             localStorage.setItem(emojiKey, JSON.stringify(item));
+        }
+    }
+
+    /* Search bot command */
+    private searchBotCommandHandler = (keyword: string, callback: any) => {
+        const {isBot, user} = this.state;
+        if (!isBot || !user) {
+            callback([]);
+            return;
+        }
+        const fn = (u: IUser) => {
+            if (u && u.botinfo && u.botinfo.botcommandsList.length > 0) {
+                const reg = new RegExp(keyword, "i");
+                callback(u.botinfo.botcommandsList.filter(o => {
+                    return reg.test(o.command || '');
+                }).slice(0, 7).map((c, i) => {
+                    return {
+                        desc: c.description,
+                        display: (c.command || '').substr(1),
+                        id: c.command,
+                        index: i
+                    };
+                }));
+            } else {
+                callback([]);
+            }
+        };
+        if (user && user.botinfo) {
+            fn(user);
+        } else {
+            this.userRepo.getFull(user.id || '').then((res) => {
+                fn(res);
+            });
+        }
+        return;
+    }
+
+    /* Bot command suggestion renderer */
+    private renderBotCommandSuggestion = (a: any, b: any, c: any, d: any, focused: any) => {
+        return (<div className={'inner ' + (focused ? 'focused' : '')}>
+            <div className="bot-command-display">
+                <div className="command-container">
+                    <span className="command">/</span><span className="command-name">{a.display}</span>
+                </div>
+            </div>
+            <div className="info">
+                <div className="name">{a.desc}</div>
+            </div>
+        </div>);
+    }
+
+    /* Inline Bot command add handler */
+    private botCommandAddHandler = (d: string) => {
+        //
+    }
+
+    /* Window paste handler */
+    private windowPasteHandler = (e: any) => {
+        if (e.clipboardData && e.clipboardData.items) {
+            const files: any[] = [];
+            for (let i = 0; i < e.clipboardData.items.length; i++) {
+                const item = e.clipboardData.items[i];
+                if (item.kind === 'file') {
+                    files.push(item.getAsFile());
+                }
+            }
+            if (files.length > 0) {
+                this.openUploader(files);
+            }
         }
     }
 

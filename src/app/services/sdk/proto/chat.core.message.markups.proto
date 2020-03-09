@@ -11,6 +11,7 @@ import "chat.core.types.proto";
     Copyright Ronak Software Group 2018
 */
 
+// ReplyKeyboardMarkup
 message ReplyKeyboardMarkup {
     // Requests clients to hide the keyboard as soon as it's been used.
     // The keyboard will still be available, but clients will automatically display the usual letter-keyboard
@@ -30,62 +31,80 @@ message ReplyKeyboardMarkup {
     repeated KeyboardButtonRow Rows = 4;
 }
 
+// ReplyInlineMarkup
 message ReplyInlineMarkup {
     repeated KeyboardButtonRow Rows = 1;
 }
 
+// ReplyKeyboardHide
+message ReplyKeyboardHide {
+    // Use this flag if you want to remove the keyboard for specific users only. Targets:
+    // 1) users that are @mentioned in the text of the Message object;
+    // 2) if the bot's message is a reply (has reply_to_message_id), sender of the original message.
+    required bool Selective = 1;
+}
+
+
+
+// Keyboard Buttons
+
+// KeyboardButtonRow
+// This is a list of buttons
 message KeyboardButtonRow {
     repeated KeyboardButtonEnvelope Buttons = 1;
 }
 
+// KeyboardButtonEnvelope
+// This is an envelope for buttons
 message KeyboardButtonEnvelope {
     required int64 Constructor = 1;
     optional bytes Data = 2;
 }
 
+// Button
+// This button do nothing and is just showing a text
 message Button {
     required string Text = 1;
 }
 
+// ButtonUrl
+// Client must open the url
 message ButtonUrl {
     required string Text = 1;
     required string Url = 2;
 }
 
+// ButtonCallback
+// Client must use BotGetCallbackQuery to get a CallbackAnswer from the bot
 message ButtonCallback {
     required string Text = 1;
     optional bytes Data = 2;
 }
 
+// ButtonRequestPhone
+// Button to request a user's phone number
 message ButtonRequestPhone {
     required string Text = 1;
 }
 
+// ButtonRequestGeoLocation
+// Button to request a user's geolocation
 message ButtonRequestGeoLocation {
     required string Text = 1;
 }
 
+// ButtonSwitchInline
+// Button to force a user to switch to inline mode Pressing the button will prompt the user
+// to select one of their chats, open that chat and insert the bot‘s username and the
+// specified inline query in the input field.
 message ButtonSwitchInline {
     required string Text = 1;
     required string Query = 2;
     optional bool SamePeer = 3;
 }
 
+// ButtonBuy
+// Button to buy a product
 message ButtonBuy {
     required string Text = 1;
-}
-
-message ButtonUrlAuth {
-    required string Text = 1;
-    optional string FwdText = 2;
-    required string Url = 3;
-    required int32 ButtonID = 4;
-}
-
-message InputButtonUrlAuth {
-    required string Text = 1;
-    optional string FwdText = 2;
-    required string Url = 3;
-    optional bool RequestWriteAccess = 4;
-    required InputUser Bot = 5;
 }

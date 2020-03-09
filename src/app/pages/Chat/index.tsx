@@ -140,7 +140,9 @@ import {isMobile} from "../../services/utilities/localize";
 import LabelRepo from "../../repository/label";
 import LabelDialog from "../../components/LabelDialog";
 import AvatarService from "../../services/avatarService";
-import {ButtonCallback} from "../../services/sdk/messages/chat.core.message.markups_pb";
+import {
+    ButtonCallback, ButtonUrl,
+} from "../../services/sdk/messages/chat.core.message.markups_pb";
 import {
     EventBlur, EventFocus, EventMouseWheel, EventNetworkStatus, EventWasmInit, EventWasmStarted,
     EventWebSocketClose, EventWebSocketOpen
@@ -1000,6 +1002,8 @@ class Chat extends React.Component<IProps, IState> {
                 if (message.peerid === this.selectedDialogId && this.messages.length > 1 && this.messageRef) {
                     this.messageRef.clearAll();
                     this.messages.splice(0, this.messages.length - 1);
+                    this.messageRef.setMessages(this.messages);
+                    this.messageRef.updateList();
                 }
                 this.updateDialogsCounter(message.peerid || '', {
                     mentionCounter: 0,
@@ -2922,8 +2926,8 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Message on bot command handler */
-    private messageBotCommandHandler = (cmd: string) => {
-        this.chatInputTextMessageHandler(cmd);
+    private messageBotCommandHandler = (cmd: string, params?: any) => {
+        this.chatInputTextMessageHandler(cmd, params);
     }
 
     /* Message on bot button click handler */
@@ -2932,23 +2936,40 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         switch (cmd) {
-            /* case C_BUTTON_ACTION.Button:
-                 const button: Button.AsObject = data;
-             case C_BUTTON_ACTION.ButtonUrl:
-                 const buttonUrl: ButtonUrl.AsObject = data;
-             case C_BUTTON_ACTION.ButtonUrlAuth:
-                 const buttonUrlAuth: ButtonUrlAuth.AsObject = data;
-             case C_BUTTON_ACTION.ButtonSwitchInline:
-                 const buttonSwitchInline: ButtonSwitchInline.AsObject = data;
-             case C_BUTTON_ACTION.ButtonRequestPhone:
-                 const buttonRequestPhone: ButtonRequestPhone.AsObject = data;
-             case C_BUTTON_ACTION.ButtonRequestGeoLocation:
-                 const buttonRequestGeoLocation: ButtonRequestGeoLocation.AsObject = data;
-             case C_BUTTON_ACTION.ButtonBuy:
-                 const buttonBuy: ButtonBuy.AsObject = data;*/
+            // case C_BUTTON_ACTION.Button:
+            //      const button: BotButton.AsObject = data;
+            //     break;
+            case C_BUTTON_ACTION.ButtonUrl:
+                const buttonUrl: ButtonUrl.AsObject = data;
+                this.openLink(buttonUrl.url || '');
+                break;
+            // case C_BUTTON_ACTION.ButtonSwitchInline:
+            //     const buttonSwitchInline: ButtonSwitchInline.AsObject = data;
+            //     break;
+            case C_BUTTON_ACTION.ButtonRequestPhone:
+                this.chatInputContactSelectHandler([{
+                    firstname: this.connInfo.FirstName || '',
+                    id: this.connInfo.UserID || '',
+                    lastname: this.connInfo.LastName || '',
+                    phone: this.connInfo.Phone || '',
+                }]);
+                break;
+            case C_BUTTON_ACTION.ButtonRequestGeoLocation:
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition((pos) => {
+                        this.chatInputMapSelectHandler({
+                            caption: '',
+                            lat: pos.coords.latitude,
+                            long: pos.coords.longitude,
+                        });
+                    }, this.geoLocationErrorHandler);
+                }
+                break;
+            // case C_BUTTON_ACTION.ButtonBuy:
+            //     const buttonBuy: ButtonBuy.AsObject = data;
+            //     break;
             case C_BUTTON_ACTION.ButtonCallback:
                 const buttonCallback: ButtonCallback.AsObject = data;
-                window.console.log(buttonCallback);
                 this.sdk.botGetCallbackAnswer(this.peer, buttonCallback.data, msgId).then((res) => {
                     if ((res.message || '').length > 0) {
                         this.setState({
@@ -2957,15 +2978,42 @@ class Chat extends React.Component<IProps, IState> {
                             confirmDialogOpen: true,
                         });
                     }
-                    if ((res.url || '').length > 0) {
-                        if (ElectronService.isElectron()) {
-                            ElectronService.openExternal(res.url || '');
-                        } else {
-                            const win: any = window.open(res.url || '', '_blank');
-                            win.focus();
-                        }
-                    }
+                    this.openLink(res.url || '');
                 });
+                break;
+        }
+    }
+
+    private openLink(link: string) {
+        if (link.length > 0) {
+            if (link.indexOf('http://') === -1 && link.indexOf('https://') === -1) {
+                link = '//' + link;
+            }
+            if (ElectronService.isElectron()) {
+                ElectronService.openExternal(link);
+            } else {
+                const win: any = window.open(link, '_blank');
+                win.focus();
+            }
+        }
+    }
+
+    private geoLocationErrorHandler(error: any) {
+        if (!this.props.enqueueSnackbar) {
+            return;
+        }
+        switch (error.code) {
+            case error.PERMISSION_DENIED:
+                this.props.enqueueSnackbar('User denied the request for Geolocation.');
+                break;
+            case error.POSITION_UNAVAILABLE:
+                this.props.enqueueSnackbar('Location information is unavailable.');
+                break;
+            case error.TIMEOUT:
+                this.props.enqueueSnackbar('The request to get user location timed out.');
+                break;
+            case error.UNKNOWN_ERROR:
+                this.props.enqueueSnackbar('An unknown error occurred.');
                 break;
         }
     }
@@ -3085,10 +3133,10 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private dialogRemove = (id: string) => {
-        this.updateManager.disableLiveUpdate();
-        this.setAppStatus({
-            isUpdating: true,
-        });
+        // this.updateManager.disableLiveUpdate();
+        // this.setAppStatus({
+        //     isUpdating: true,
+        // });
         if (id) {
             const dialogMap = this.dialogMap;
             const index = this.dialogMap[id];
@@ -4392,6 +4440,14 @@ class Chat extends React.Component<IProps, IState> {
             const dialog = this.getDialogById(dialogId);
             if (dialog && dialog.topmessageid) {
                 this.sdk.clearMessage(inputPeer, dialog.topmessageid, true);
+            }
+        }).catch((err) => {
+            if (err.code === C_ERR.ErrCodeUnavailable && err.items === C_ERR_ITEM.ErrItemMember) {
+                const dialog = this.getDialogById(dialogId);
+                if (dialog) {
+                    this.dialogRepo.remove(dialogId);
+                    this.messageRepo.clearHistory(dialogId, dialog.topmessageid || 0);
+                }
             }
         });
         this.confirmDialogCloseHandler();

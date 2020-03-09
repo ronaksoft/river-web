@@ -87,5 +87,9 @@ html[theme="dark-blue"] {
     .online {
       color: var(--dark-mention) !important;
     }
+
+    .try-again-container .try-again {
+      color: var(--grey-low);
+    }
   }
 }

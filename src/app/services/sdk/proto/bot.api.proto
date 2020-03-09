@@ -10,7 +10,7 @@ service BotProxy {
 }
 
 // BotStart
-// @Function
+// @Function (Client)
 // @Return: Bool
 message BotStart {
     required InputPeer Bot = 1;
@@ -18,8 +18,15 @@ message BotStart {
     required string StartParam = 3;
 }
 
+// BotRecall
+// @Function (BotOnly)
+// @Return: BotRecalled
+message BotRecall {
+    required int32 Version = 1;
+}
+
 // BotSetInfo
-// @Function
+// @Function (BotOnly)
 // @Return: Bool
 message BotSetInfo {
     required int64 BotID = 1;
@@ -30,7 +37,7 @@ message BotSetInfo {
 }
 
 // BotGet
-// @Function
+// @Function (BotOnly)
 // @Return: BotInfo
 message BotGet {
     required int64 UserID = 1 [jstype = JS_STRING];
@@ -38,7 +45,7 @@ message BotGet {
 }
 
 // BotSendMessage
-// @Function
+// @Function (BotOnly)
 // @Return: Bool
 message BotSendMessage {
     required int64 RandomID = 1;
@@ -52,38 +59,44 @@ message BotSendMessage {
 }
 
 // BotUpdateProfile
-// @Function
+// @Function (BotOnly)
 // @Return: Bool
 message BotUpdateProfile {
-    required int64  BotID = 1;
+    required int64 BotID = 1;
     required string Name = 2;
     optional string Bio = 4;
 }
 
 // BotSetCallbackAnswer
-// @Function
+// @Function (BotOnly)
 // @Returns: Bool
 message BotSetCallbackAnswer {
     required int64 QueryID = 1;
-    optional string Url = 2;        // URL to open
-    optional string Message = 3;    // Alert to show
-    required int32 CacheTime = 4;   // For how long should this answer be cached (in seconds) [Default is  300]
+    optional string Url = 2; // URL to open
+    optional string Message = 3; // Alert to show
+    required int32 CacheTime = 4; // For how long should this answer be cached (in seconds) [Default is  300]
 }
 
 // BotGetCallbackAnswer
-// @Function
+// @Function (Client)
 // @Returns: BotCallbackAnswer
 message BotGetCallbackAnswer {
     required InputPeer Peer = 1;
-    optional int64 MessageID = 2;       // ID of the Message if button is the inline keyboard
-    required bytes Data = 3;            // Callback data
+    optional int64 MessageID = 2; // ID of the Message if button is the inline keyboard
+    required bytes Data = 3; // Callback data
+}
+
+// BotRecalled
+message BotRecalled {
+    required int64 ID = 1;
+    required string Username = 2;
 }
 
 // BotCallbackAnswer
 message BotCallbackAnswer {
-    optional string Url = 1;        // URL to open
-    optional string Message = 2;    // Alert to show
-    required int32 CacheTime = 3;   // For how long should this answer be cached (in seconds)
+    optional string Url = 1; // URL to open
+    optional string Message = 2; // Alert to show
+    required int32 CacheTime = 3; // For how long should this answer be cached (in seconds)
 }
 
 // BotsMany
@@ -91,4 +104,14 @@ message BotsMany {
     repeated BotInfo Bots = 1;
 }
 
+// BotGetCommands
+// @Function
+// @Return: BotCommandsMany
+message BotGetCommands {
+    required InputPeer Peer = 1;
+}
 
+// BotCommandsMany
+message BotCommandsMany {
+    repeated BotCommands Commands = 1;
+}

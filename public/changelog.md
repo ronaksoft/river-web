@@ -1,3 +1,8 @@
+## 0.30.9
+* Bot updated
+* Inline commands added
+* Known bugs fixed
+
 ## 0.30.8
 * WebAssembly updated
 * Code refactoring

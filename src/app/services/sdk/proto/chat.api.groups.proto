@@ -65,6 +65,7 @@ message GroupsUpdateAdmin {
 message GroupsUploadPhoto {
     required int64 GroupID = 1 [jstype = JS_STRING];
     required InputFile File = 2;
+    optional bool ReturnObject = 3;
 }
 
 // GroupsRemovePhoto
