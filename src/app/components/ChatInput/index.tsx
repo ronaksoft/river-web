@@ -264,9 +264,6 @@ class ChatInput extends React.Component<IProps, IState> {
         this.sdk = SDK.getInstance();
         this.riverTime = RiverTime.getInstance();
 
-        window.console.log(this.state.user);
-        window.console.log(this.state.peer);
-
         // @ts-ignore
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -310,7 +307,6 @@ class ChatInput extends React.Component<IProps, IState> {
             });
             if (peer.getType() === PeerType.PEERUSER && !user) {
                 this.userRepo.get(peer.getId() || '').then((res) => {
-                    window.console.log(res);
                     this.setState({
                         user: res,
                     });
@@ -2132,7 +2128,6 @@ class ChatInput extends React.Component<IProps, IState> {
             return;
         }
         this.userRepo.get(user.id || '').then((res) => {
-            window.console.log(res);
             this.setState({
                 user: res,
             });
