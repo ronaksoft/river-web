@@ -264,7 +264,8 @@ class ChatInput extends React.Component<IProps, IState> {
         this.sdk = SDK.getInstance();
         this.riverTime = RiverTime.getInstance();
 
-        this.checkAuthority();
+        window.console.log(this.state.user);
+        window.console.log(this.state.peer);
 
         // @ts-ignore
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -287,6 +288,7 @@ class ChatInput extends React.Component<IProps, IState> {
         window.addEventListener(EventKeyUp, this.windowKeyUp);
         window.addEventListener(EventResize, this.windowResizeHandler);
         window.addEventListener(EventPaste, this.windowPasteHandler);
+        this.checkAuthority();
         this.initDraft(null, this.props.peer, 0, null);
     }
 
@@ -300,6 +302,7 @@ class ChatInput extends React.Component<IProps, IState> {
             }
             const user = peer.getType() === PeerType.PEERUSER ? this.userRepo.getInstant(peer.getId() || '') : null;
             this.setState({
+                disableAuthority: 0x0,
                 peer,
                 user,
             }, () => {
@@ -307,6 +310,7 @@ class ChatInput extends React.Component<IProps, IState> {
             });
             if (peer.getType() === PeerType.PEERUSER && !user) {
                 this.userRepo.get(peer.getId() || '').then((res) => {
+                    window.console.log(res);
                     this.setState({
                         user: res,
                     });
@@ -315,6 +319,11 @@ class ChatInput extends React.Component<IProps, IState> {
             if (this.state.selectable) {
                 this.props.onBulkAction('close')();
             }
+        } else if (this.state.peer !== peer) {
+            this.setState({
+                peer: null,
+                user: null,
+            });
         }
     }
 
@@ -2123,6 +2132,7 @@ class ChatInput extends React.Component<IProps, IState> {
             return;
         }
         this.userRepo.get(user.id || '').then((res) => {
+            window.console.log(res);
             this.setState({
                 user: res,
             });
