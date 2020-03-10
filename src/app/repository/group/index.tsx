@@ -15,6 +15,7 @@ import Broadcaster from '../../services/broadcaster';
 import {kMerge} from "../../services/utilities/kDash";
 import {InputPeer, PeerType} from "../../services/sdk/messages/chat.core.types_pb";
 import SDK from "../../services/sdk";
+import RiverTime from "../../services/utilities/river_time";
 
 export const GroupDBUpdated = 'Group_DB_Updated';
 
@@ -33,6 +34,7 @@ export default class GroupRepo {
     private db: DexieUserDB;
     private broadcaster: Broadcaster;
     private sdk: SDK;
+    private riverTime: RiverTime;
     private throttleBroadcastList: string[] = [];
     private readonly throttleBroadcastExecute: any = undefined;
 
@@ -42,6 +44,7 @@ export default class GroupRepo {
         this.broadcaster = Broadcaster.getInstance();
         this.sdk = SDK.getInstance();
         this.throttleBroadcastExecute = throttle(this.broadcastThrottledList, 255);
+        this.riverTime = RiverTime.getInstance();
     }
 
     public create(group: IGroup) {
@@ -65,22 +68,30 @@ export default class GroupRepo {
         });
     }
 
-    public getFull(id: string, cacheCB?: (gs: IGroup) => void): Promise<IGroup> {
+    public getFull(id: string, cacheCB?: (gs: IGroup) => void, checkLastUpdate?: boolean): Promise<IGroup> {
         return new Promise<IGroup>((resolve, reject) => {
             this.get(id).then((group) => {
                 if (group) {
                     if (cacheCB) {
                         cacheCB(group);
                     }
+                    if (checkLastUpdate && (this.riverTime.now() - (group.last_updated || 0)) > 60) {
+                        resolve(group);
+                        return;
+                    }
                     const input: InputPeer = new InputPeer();
                     input.setType(PeerType.PEERGROUP);
                     input.setId(id);
                     input.setAccesshash('0');
                     this.sdk.groupGetFull(input).then((res) => {
-                        if (res) {
-                            res = kMerge(group, res);
-                            this.upsert([res]);
-                            resolve(res);
+                        let g: IGroup | undefined = res.group;
+                        g.participantList = res.participantsList;
+                        g.photogalleryList = res.photogalleryList;
+                        if (g) {
+                            g = kMerge(group, g);
+                            g.last_updated = this.riverTime.now();
+                            this.upsert([g]);
+                            resolve(g);
                         } else {
                             reject('not_found');
                         }

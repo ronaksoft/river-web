@@ -17,6 +17,7 @@ interface IUser extends User.AsObject {
     status_last_modified?: number;
     is_bot_started?: boolean;
     remove_photo?: boolean;
+    last_updated?: number;
 }
 
 interface IParticipant extends IUser {

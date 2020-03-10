@@ -15,6 +15,7 @@ interface IGroup extends Group.AsObject {
     photogalleryList?: GroupPhoto.AsObject[];
     hasUpdate?: boolean;
     remove_photo?: boolean;
+    last_updated?: number;
 }
 
 // @ts-ignore

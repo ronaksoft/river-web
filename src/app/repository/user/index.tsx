@@ -59,6 +59,7 @@ export default class UserRepo {
     private db: DexieUserDB;
     private sdk: SDK;
     private lastContactTimestamp: number = 0;
+    private riverTime: RiverTime;
     private broadcaster: Broadcaster;
     private bubbleMode: string = localStorage.getItem('river.theme.bubble') || '4';
     private throttleBroadcastList: string[] = [];
@@ -70,6 +71,7 @@ export default class UserRepo {
         this.sdk = SDK.getInstance();
         this.broadcaster = Broadcaster.getInstance();
         this.throttleBroadcastExecute = throttle(this.broadcastThrottledList, 255);
+        this.riverTime = RiverTime.getInstance();
     }
 
     public getBubbleMode() {
@@ -109,26 +111,30 @@ export default class UserRepo {
         return this.db.users.where('id').anyOf(ids).offset(skip || 0).limit(limit).toArray();
     }
 
-    public getFull(id: string, cacheCB?: (us: IUser) => void, callerId?: number): Promise<IUser> {
+    public getFull(id: string, cacheCB?: (us: IUser) => void, callerId?: number, checkLastUpdate?: boolean): Promise<IUser> {
         return new Promise<IUser>((resolve, reject) => {
             this.get(id).then((user) => {
                 if (user) {
                     if (cacheCB) {
                         cacheCB(user);
                     }
+                    if (checkLastUpdate && (this.riverTime.now() - (user.last_updated || 0)) > 60) {
+                        resolve(user);
+                        return;
+                    }
                     const input: InputUser = new InputUser();
                     input.setUserid(user.id || '');
                     input.setAccesshash(user.accesshash || '');
                     this.sdk.getUserFull([input]).then((res) => {
-                        this.upsert(false, res.usersList, false, callerId);
-                        let u = find(res.usersList, {id});
+                        let u: IUser | undefined = find(res.usersList, {id});
                         if (u) {
-                            // @ts-ignore
                             u.is_contact = user.is_contact;
                             if (user.phone && user.phone.length > 0) {
                                 u.phone = user.phone;
                             }
                             u = kMerge(user, u);
+                            u.last_updated = this.riverTime.now();
+                            this.upsert(false, [u], false, callerId);
                             resolve(u);
                         } else {
                             reject('not_found');

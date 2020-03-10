@@ -1,3 +1,7 @@
+## 0.30.11
+* Improvements
+* Known bugs fixed
+
 ## 0.30.10
 * Bot final touches
 

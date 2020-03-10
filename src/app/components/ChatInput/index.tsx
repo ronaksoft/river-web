@@ -61,7 +61,7 @@ import XRegExp from 'xregexp';
 import SelectMedia from '../SelectMedia';
 import MediaPreview, {IMediaItem} from '../Uploader';
 import ContactPicker from '../ContactPicker';
-import {C_MESSAGE_TYPE, C_REPLY_ACTION} from '../../repository/message/consts';
+import {C_MESSAGE_ACTION, C_MESSAGE_TYPE, C_REPLY_ACTION} from '../../repository/message/consts';
 import RiverTime from '../../services/utilities/river_time';
 import Broadcaster from '../../services/broadcaster';
 import MapPicker, {IGeoItem} from '../MapPicker';
@@ -78,10 +78,10 @@ import {ReplyKeyboardMarkup} from "../../services/sdk/messages/chat.core.message
 import BotLayout from "../BotLayout";
 import Scrollbars from "react-custom-scrollbars";
 import {ThemeChanged} from "../SettingsMenu";
+import {EventKeyUp, EventMouseUp, EventPaste, EventResize} from "../../services/events";
 
 import 'emoji-mart/css/emoji-mart.css';
 import './style.scss';
-import {EventKeyUp, EventMouseUp, EventPaste, EventResize} from "../../services/events";
 
 const limit = 9;
 const emojiKey = 'emoji-mart.frequently';
@@ -437,6 +437,9 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     public setLastMessage(message: IMessage | null) {
+        if (message && this.lastMessage && this.lastMessage.id !== message.id) {
+            this.checkAuthority();
+        }
         this.lastMessage = message;
     }
 
@@ -533,7 +536,7 @@ class ChatInput extends React.Component<IProps, IState> {
             } else if (disableAuthority === 0x3) {
                 return (<div className="input-placeholder">
                     <span className="btn"
-                          onClick={this.props.onAction('start_bot')}>{i18n.t('bot.start_bot')}</span>
+                          onClick={this.startBotHandler}>{i18n.t('bot.start_bot')}</span>
                 </div>);
             } else {
                 return '';
@@ -1041,7 +1044,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 }
             });
         } else {
-            if (user && user.isbot && !user.is_bot_started) {
+            if ((user && user.isbot && !user.is_bot_started) && (!this.lastMessage || (this.lastMessage && this.lastMessage.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory))) {
                 this.setState({
                     disableAuthority: 0x3,
                 });
@@ -2055,7 +2058,7 @@ class ChatInput extends React.Component<IProps, IState> {
         if (user && user.botinfo) {
             fn(user);
         } else {
-            this.userRepo.getFull(user.id || '').then((res) => {
+            this.userRepo.getFull(user.id || '', undefined, undefined, true).then((res) => {
                 fn(res);
             });
         }
@@ -2128,6 +2131,19 @@ class ChatInput extends React.Component<IProps, IState> {
 
     private selectMediaRefHandler = (ref: any) => {
         this.selectMediaRef = ref;
+    }
+
+    private startBotHandler = () => {
+        this.props.onAction('start_bot')();
+        const {user} = this.state;
+        if (user) {
+            user.is_bot_started = true;
+            this.setState({
+               user,
+            }, () => {
+                this.checkAuthority();
+            });
+        }
     }
 
     private toggleBotKeyboardHandler = () => {

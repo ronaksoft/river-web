@@ -140,9 +140,7 @@ import {isMobile} from "../../services/utilities/localize";
 import LabelRepo from "../../repository/label";
 import LabelDialog from "../../components/LabelDialog";
 import AvatarService from "../../services/avatarService";
-import {
-    ButtonCallback, ButtonUrl,
-} from "../../services/sdk/messages/chat.core.message.markups_pb";
+import {ButtonCallback, ButtonUrl} from "../../services/sdk/messages/chat.core.message.markups_pb";
 import {
     EventBlur, EventFocus, EventMouseWheel, EventNetworkStatus, EventWasmInit, EventWasmStarted,
     EventWebSocketClose, EventWebSocketOpen
