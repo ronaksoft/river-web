@@ -361,6 +361,9 @@ class ChatInput extends React.Component<IProps, IState> {
             }
         });
         if (peer && this.state.peer !== peer) {
+            this.firstLoad = true;
+            this.botKeyboard = undefined;
+            this.preventMessageSend = false;
             if (this.state.voiceMode === 'lock' || this.state.voiceMode === 'down') {
                 this.voiceCancelHandler();
             }
@@ -381,6 +384,11 @@ class ChatInput extends React.Component<IProps, IState> {
             if (this.state.selectable) {
                 this.props.onBulkAction('close')();
             }
+        } else if (this.state.peer !== peer) {
+            this.setState({
+                peer: null,
+                user: null,
+            });
         }
     }
 
@@ -480,10 +488,10 @@ class ChatInput extends React.Component<IProps, IState> {
         }
     }
 
-    public setBot(isBot: boolean, data: IKeyboardLayout | undefined) {
-        if (this.firstLoad && this.state.peer) {
+    public setBot(peer: InputPeer | null, isBot: boolean, data: IKeyboardLayout | undefined) {
+        if (this.firstLoad && peer) {
             this.firstLoad = false;
-            this.messageRepo.getLastIncomingMessage(this.state.peer.getId() || '').then((msg) => {
+            this.messageRepo.getLastIncomingMessage(peer.getId() || '').then((msg) => {
                 if (msg) {
                     if ((!this.botKeyboard || (this.botKeyboard && this.botKeyboard.msgId < (msg.id || 0))) && msg.replymarkup === C_REPLY_ACTION.ReplyKeyboardMarkup) {
                         this.botKeyboard = {
@@ -2049,11 +2057,13 @@ class ChatInput extends React.Component<IProps, IState> {
                 callback(u.botinfo.botcommandsList.filter(o => {
                     return reg.test(o.command || '');
                 }).slice(0, 7).map((c, i) => {
+                    const command = (c.command || '').indexOf('/') === 0 ? (c.command || '') : `/${(c.command || '')}`;
                     return {
                         desc: c.description,
-                        display: (c.command || '').substr(1),
-                        id: c.command,
-                        index: i
+                        display: command,
+                        id: command,
+                        index: i,
+                        listDisplay: command.substr(1)
                     };
                 }));
             } else {
@@ -2075,7 +2085,7 @@ class ChatInput extends React.Component<IProps, IState> {
         return (<div className={'inner ' + (focused ? 'focused' : '')}>
             <div className="bot-command-display">
                 <div className="command-container">
-                    <span className="command">/</span><span className="command-name">{a.display}</span>
+                    <span className="command">/</span><span className="command-name">{a.listDisplay}</span>
                 </div>
             </div>
             <div className="info">

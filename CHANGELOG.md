@@ -1,3 +1,6 @@
+## 0.30.12
+* Known bugs fixed
+
 ## 0.30.11
 * Collection TTL for full models
 * Bot start bug fixed
