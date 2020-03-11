@@ -1870,7 +1870,7 @@ class Chat extends React.Component<IProps, IState> {
             this.messageLoadMoreBeforeHandler(gapNumber);
         }
         // this.isLoading = true;
-        this.setScrollMode('none');
+        this.setScrollMode('end');
         this.messageRef.setMessages(this.messages);
         this.messageRepo.lazyUpsert([message]);
         this.newMessageLoadThrottle();
