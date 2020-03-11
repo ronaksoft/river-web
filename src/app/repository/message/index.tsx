@@ -39,7 +39,7 @@ import {
     ButtonRequestPhone,
     ButtonSwitchInline,
     ButtonUrl,
-    ReplyInlineMarkup,
+    ReplyInlineMarkup, ReplyKeyboardForceReply, ReplyKeyboardHide,
     ReplyKeyboardMarkup
 } from "../../services/sdk/messages/chat.core.message.markups_pb";
 
@@ -238,6 +238,12 @@ export default class MessageRepo {
                     break;
                 case C_REPLY_ACTION.ReplyKeyboardMarkup:
                     out.replydata = this.parseButton(ReplyKeyboardMarkup.deserializeBinary(replyData).toObject());
+                    break;
+                case C_REPLY_ACTION.ReplyKeyboardHide:
+                    out.replydata = ReplyKeyboardHide.deserializeBinary(replyData).toObject();
+                    break;
+                case C_REPLY_ACTION.ReplyKeyboardForceReply:
+                    out.replydata = ReplyKeyboardForceReply.deserializeBinary(replyData).toObject();
                     break;
             }
             delete out.replymarkupdata;

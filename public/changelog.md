@@ -1,3 +1,7 @@
+## 0.30.13
+* Update manager bug fixed
+* ReplyKeyboardForceReply added
+
 ## 0.30.12
 * Known bugs fixed
 

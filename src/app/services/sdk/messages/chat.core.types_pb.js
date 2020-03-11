@@ -5647,7 +5647,8 @@ proto.msg.User.toObject = function(includeInstance, msg) {
     isbot: (f = jspb.Message.getBooleanField(msg, 13)) == null ? undefined : f,
     deleted: (f = jspb.Message.getBooleanField(msg, 14)) == null ? undefined : f,
     blocked: (f = jspb.Message.getBooleanField(msg, 15)) == null ? undefined : f,
-    botinfo: (f = msg.getBotinfo()) && proto.msg.BotInfo.toObject(includeInstance, f)
+    botinfo: (f = msg.getBotinfo()) && proto.msg.BotInfo.toObject(includeInstance, f),
+    official: (f = jspb.Message.getBooleanField(msg, 17)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -5750,6 +5751,10 @@ proto.msg.User.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.msg.BotInfo;
       reader.readMessage(value,proto.msg.BotInfo.deserializeBinaryFromReader);
       msg.setBotinfo(value);
+      break;
+    case 17:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setOfficial(value);
       break;
     default:
       reader.skipField();
@@ -5893,6 +5898,13 @@ proto.msg.User.serializeBinaryToWriter = function(message, writer) {
       16,
       f,
       proto.msg.BotInfo.serializeBinaryToWriter
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 17));
+  if (f != null) {
+    writer.writeBool(
+      17,
+      f
     );
   }
 };
@@ -6475,6 +6487,42 @@ proto.msg.User.prototype.clearBotinfo = function() {
  */
 proto.msg.User.prototype.hasBotinfo = function() {
   return jspb.Message.getField(this, 16) != null;
+};
+
+
+/**
+ * optional bool Official = 17;
+ * @return {boolean}
+ */
+proto.msg.User.prototype.getOfficial = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 17, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.msg.User} returns this
+ */
+proto.msg.User.prototype.setOfficial = function(value) {
+  return jspb.Message.setField(this, 17, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.msg.User} returns this
+ */
+proto.msg.User.prototype.clearOfficial = function() {
+  return jspb.Message.setField(this, 17, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.User.prototype.hasOfficial = function() {
+  return jspb.Message.getField(this, 17) != null;
 };
 
 

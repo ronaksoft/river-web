@@ -177,6 +177,7 @@ message User {
     optional bool Deleted = 14;
     optional bool Blocked = 15;
     optional BotInfo BotInfo = 16;
+    optional bool Official = 17;
 }
 
 // Bot

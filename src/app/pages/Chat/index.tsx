@@ -3064,7 +3064,8 @@ class Chat extends React.Component<IProps, IState> {
     /* Message on last message handler */
     private messageLastMessageHandler = (message: IMessage | null) => {
         if (this.chatInputRef && message) {
-            this.chatInputRef.setLastMessage(message);
+            const dialog = message.replymarkup ? this.getDialogById(this.selectedDialogId) : null;
+            this.chatInputRef.setLastMessage(message, dialog ? ((dialog.topmessageid || 0) <= (message.id || 0)) : false);
         }
         if (this.conversationRef) {
             if (!message && !this.conversationRef.classList.contains('no-result')) {
@@ -3080,12 +3081,14 @@ class Chat extends React.Component<IProps, IState> {
         if (this.chatInputRef) {
             if (message && message.replymarkup === C_REPLY_ACTION.ReplyKeyboardMarkup) {
                 this.chatInputRef.setBot(this.peer, this.isBot, {
-                    layout: message.replydata,
+                    data: message.replydata || 0,
+                    mode: message.replymarkup,
                     msgId: message.id || 0,
                 });
             } else if (message) {
                 this.chatInputRef.setBot(this.peer, this.isBot, {
-                    layout: undefined,
+                    data: undefined,
+                    mode: message.replymarkup || 0,
                     msgId: message.id || 0,
                 });
             } else {
@@ -3300,6 +3303,11 @@ class Chat extends React.Component<IProps, IState> {
                 const user = this.userRepo.getInstant(peer.getId() || '');
                 if (user) {
                     this.startBot(user);
+                }
+                break;
+            case 'reply':
+                if (message) {
+                    this.messageContextMenuHandler('reply', message);
                 }
                 break;
             default:

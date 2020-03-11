@@ -184,7 +184,9 @@ export default class UpdateManager {
 
     public setLastUpdateId(id: number) {
         this.lastUpdateId = id;
-        this.internalUpdateId = id;
+        if (id >= this.internalUpdateId) {
+            this.internalUpdateId = id;
+        }
     }
 
     public flushLastUpdateId = () => {
@@ -202,28 +204,36 @@ export default class UpdateManager {
     }
 
     public parseUpdate(bytes: string) {
-        const data = UpdateContainer.deserializeBinary(base64ToU8a(bytes)).toObject();
-        if (!this.isLive) {
-            return;
+        try {
+            const data = UpdateContainer.deserializeBinary(base64ToU8a(bytes)).toObject();
+            if (!this.isLive) {
+                return;
+            }
+            const minId = data.minupdateid || 0;
+            const maxId = data.maxupdateid || 0;
+            window.console.debug('on update, current:', this.internalUpdateId, 'min:', minId, 'max:', maxId);
+            if (minId === 0 && maxId === 0) {
+                this.processZeroContainer(data);
+                return;
+            } else if (this.internalUpdateId > minId) {
+                return;
+            }
+            if (minId === 0 && maxId === 0) {
+                this.processContainer(data, true);
+                return;
+            }
+            if ((this.outOfSync || this.internalUpdateId + 1 !== minId)) {
+                this.outOfSyncCheck(data);
+                return;
+            }
+            if (this.isLive && data.maxupdateid) {
+                this.internalUpdateId = data.maxupdateid;
+            }
+            this.applyUpdates(data);
+        } catch (e) {
+            window.console.debug(e);
+            this.callOutOfSync();
         }
-        const minId = data.minupdateid || 0;
-        const maxId = data.maxupdateid || 0;
-        window.console.debug('on update, current:', this.internalUpdateId, 'min:', minId, 'max:', maxId);
-        if (minId === 0 && maxId === 0) {
-            this.processZeroContainer(data);
-            return;
-        } else if (this.internalUpdateId > minId) {
-            return;
-        }
-        if (minId === 0 && maxId === 0) {
-            this.processContainer(data, true);
-            return;
-        }
-        if ((this.outOfSync || this.internalUpdateId + 1 !== minId) && !(minId === 0 && maxId === 0)) {
-            this.outOfSyncCheck(data);
-            return;
-        }
-        this.applyUpdates(data);
     }
 
     public idleHandler() {
@@ -462,9 +472,6 @@ export default class UpdateManager {
         data.updatesList.forEach((update) => {
             this.process(transaction, update);
         });
-        if (this.isLive && data.maxupdateid) {
-            this.internalUpdateId = data.maxupdateid;
-        }
         if (doneFn) {
             this.processTransaction(transaction, doneFn);
         } else {

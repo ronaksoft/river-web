@@ -74,7 +74,7 @@ import {UpdateDraftMessageCleared} from "../../services/sdk/messages/chat.api.up
 import {emojiList} from "./emojis";
 import {isMobile} from "../../services/utilities/localize";
 import UniqueId from "../../services/uniqueId";
-import {ReplyKeyboardMarkup} from "../../services/sdk/messages/chat.core.message.markups_pb";
+import {ReplyKeyboardForceReply, ReplyKeyboardMarkup} from "../../services/sdk/messages/chat.core.message.markups_pb";
 import BotLayout from "../BotLayout";
 import Scrollbars from "react-custom-scrollbars";
 import {ThemeChanged} from "../SettingsMenu";
@@ -167,8 +167,9 @@ export const C_TYPING_INTERVAL = 5000;
 
 const textBoxClasses: string[] = range(1, 13).map(o => `_${o}-line`);
 
-interface IKeyboardLayout {
-    layout: ReplyKeyboardMarkup.AsObject | undefined;
+interface IKeyboardBotData {
+    data: ReplyKeyboardMarkup.AsObject | ReplyKeyboardForceReply.AsObject | undefined;
+    mode: number;
     msgId: number;
 }
 
@@ -228,7 +229,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private isMobileBrowser = isMobile();
     private callerId: number = UniqueId.getRandomId();
     private selectMediaRef: SelectMedia | undefined;
-    private botKeyboard: IKeyboardLayout | undefined;
+    private botKeyboard: IKeyboardBotData | undefined;
     private firstLoad: boolean = true;
 
     constructor(props: IProps) {
@@ -449,9 +450,14 @@ class ChatInput extends React.Component<IProps, IState> {
         }
     }
 
-    public setLastMessage(message: IMessage | null) {
+    public setLastMessage(message: IMessage | null, isLastMessage?: boolean) {
         if (message && this.lastMessage && this.lastMessage.id !== message.id) {
             this.checkAuthority();
+        }
+        if (isLastMessage && this.state.isBot && message && message.replymarkup === C_REPLY_ACTION.ReplyKeyboardForceReply) {
+            if (!this.state.previewMessage || (this.state.previewMessageMode === C_MSG_MODE.Reply && this.state.previewMessage.id !== message.id)) {
+                this.props.onAction('reply', message)();
+            }
         }
         this.lastMessage = message;
     }
@@ -488,22 +494,23 @@ class ChatInput extends React.Component<IProps, IState> {
         }
     }
 
-    public setBot(peer: InputPeer | null, isBot: boolean, data: IKeyboardLayout | undefined) {
+    public setBot(peer: InputPeer | null, isBot: boolean, data: IKeyboardBotData | undefined) {
         if (this.firstLoad && peer) {
             this.firstLoad = false;
             this.messageRepo.getLastIncomingMessage(peer.getId() || '').then((msg) => {
                 if (msg) {
                     if ((!this.botKeyboard || (this.botKeyboard && this.botKeyboard.msgId < (msg.id || 0))) && msg.replymarkup === C_REPLY_ACTION.ReplyKeyboardMarkup) {
                         this.botKeyboard = {
-                            layout: msg.replydata,
-                            msgId: msg.id || 0
+                            data: msg.replydata,
+                            mode: C_REPLY_ACTION.ReplyKeyboardMarkup,
+                            msgId: msg.id || 0,
                         };
                         this.forceUpdate();
                     }
                 }
             });
         }
-        if ((this.botKeyboard && data && this.botKeyboard.msgId < data.msgId) || !this.botKeyboard) {
+        if ((data && data.mode === C_REPLY_ACTION.ReplyKeyboardMarkup) && ((this.botKeyboard && this.botKeyboard.msgId < data.msgId) || !this.botKeyboard)) {
             const lastKeyboard = this.botKeyboard;
             if (!this.state.botKeyboard && lastKeyboard && data && lastKeyboard.msgId !== data.msgId) {
                 this.toggleBotKeyboardHandler();
@@ -558,7 +565,7 @@ class ChatInput extends React.Component<IProps, IState> {
             return (<div className="input-placeholder" onClick={this.unblockHandler}>
                 <span className="btn">{i18n.t('general.unblock')}</span></div>);
         } else {
-            const isBot = this.state.isBot && this.botKeyboard && Boolean(this.botKeyboard.layout);
+            const isBot = this.state.isBot && this.botKeyboard && Boolean(this.botKeyboard.data);
             return (
                 <div className="chat-input">
                     <input ref={this.fileInputRefHandler} type="file" style={{display: 'none'}}
@@ -2154,7 +2161,7 @@ class ChatInput extends React.Component<IProps, IState> {
         if (user) {
             user.is_bot_started = true;
             this.setState({
-               user,
+                user,
             }, () => {
                 this.checkAuthority();
             });
@@ -2168,22 +2175,23 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     private renderBotKeyboard() {
-        if (!this.botKeyboard || !this.botKeyboard.layout) {
+        if (!this.botKeyboard || !this.botKeyboard.data || this.botKeyboard.mode !== C_REPLY_ACTION.ReplyKeyboardMarkup) {
             return '';
         }
-        let height = this.botKeyboard.layout.rowsList.length * 32 + 4;
+        const layout = this.botKeyboard.data as ReplyKeyboardMarkup.AsObject;
+        let height = layout.rowsList.length * 32 + 4;
         if (height > 110) {
             height = 110;
             return (<div style={{height: `${height}px`}}>
                 <Scrollbars
                     hideTracksWhenNotNeeded={false}
                     universal={true}>
-                    <BotLayout rows={(this.botKeyboard ? this.botKeyboard.layout.rowsList : undefined)}
+                    <BotLayout rows={layout.rowsList}
                                prefix="keyboard-bot" onAction={this.props.onBotButtonAction}/>
                 </Scrollbars>
             </div>);
         }
-        return (<BotLayout rows={(this.botKeyboard ? this.botKeyboard.layout.rowsList : undefined)}
+        return (<BotLayout rows={layout.rowsList}
                            prefix="keyboard-bot" onAction={this.props.onBotButtonAction}/>);
     }
 

@@ -38,6 +38,8 @@ export const C_MESSAGE_ACTION = {
 
 export const C_REPLY_ACTION = {
     ReplyInlineMarkup: 2436413989,
+    ReplyKeyboardForceReply: 258469686,
+    ReplyKeyboardHide: 3134153306,
     ReplyKeyboardMarkup: 3207405102,
 };
 
