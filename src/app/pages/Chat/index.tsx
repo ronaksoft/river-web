@@ -2470,7 +2470,7 @@ class Chat extends React.Component<IProps, IState> {
     private getMaxId() {
         let maxId: number = 0;
         for (let i = this.messages.length - 1, cnt = 0; i >= 0 && cnt < 100; i--, cnt++) {
-            if (this.messages[i].id && maxId < (this.messages[i].id || 0)) {
+            if (this.messages[i] && this.messages[i].id && maxId < (this.messages[i].id || 0)) {
                 maxId = this.messages[i].id || 0;
             }
         }
