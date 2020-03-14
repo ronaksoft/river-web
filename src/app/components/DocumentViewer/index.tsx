@@ -390,6 +390,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
         }];
         if (doc.type === 'avatar' && this.hasAccess) {
             contextMenuItems.push({
+                cmd: 'set_as_avatar',
+                title: i18n.t('settings.set_as_avatar'),
+            }, {
                 cmd: 'remove_photo',
                 title: i18n.t('settings.remove_photo'),
             });
@@ -970,6 +973,9 @@ class DocumentViewer extends React.Component<IProps, IState> {
                     confirmDialogOpen: true,
                 });
                 break;
+            case 'set_as_avatar':
+                this.updatePhotoHandler(this.state.gallerySelect);
+                break;
             default:
                 break;
         }
@@ -1056,8 +1062,10 @@ class DocumentViewer extends React.Component<IProps, IState> {
                                 return (
                                     <Tooltip key={gallery.photoid || key} interactive={true} enterDelay={300}
                                              leaveDelay={200}
-                                             title={<span className="document-viewer-slide-show-remove"
-                                                          onClick={this.confirmRemovePhotoHandler(key)}>{i18n.t('general.remove')}</span>}>
+                                             title={<div className="document-viewer-slide-tooltip-container">
+                                                 <span className="document-viewer-slide-show-item"
+                                                       onClick={this.confirmRemovePhotoHandler(key)}>{i18n.t('general.remove')}</span>
+                                             </div>}>
                                         <div className={'slide' + (gallerySelect === key ? ' selected' : '')}
                                              onClick={this.selectGalleryIndexHandler(key)}>
 
@@ -1152,6 +1160,58 @@ class DocumentViewer extends React.Component<IProps, IState> {
             confirmDialogIndex: index,
             confirmDialogOpen: true,
         });
+    }
+
+    /* Update photo handler */
+    private updatePhotoHandler = (index: number) => {
+        const {galleryList, gallerySelect, doc} = this.state;
+        if (!doc || !doc.peer || !galleryList[index]) {
+            return;
+        }
+        const asPicture = galleryList[index];
+        const fn = (group: boolean) => {
+            galleryList.splice(index, 1);
+            let offset = 0;
+            if (index < gallerySelect) {
+                offset = -1;
+            }
+            if (index === 0 && galleryList.length > 0) {
+                doc.items[0].fileLocation = galleryList[0].photobig;
+                doc.items[0].thumbFileLocation = galleryList[0].photosmall;
+            }
+            galleryList.unshift(asPicture);
+            if (doc.peer) {
+                const id = doc.peer.getId() || '';
+                if (group) {
+                    this.groupRepo.upsert([{
+                        id,
+                        photogalleryList: galleryList,
+                    }]);
+                } else {
+                    this.userRepo.upsert(false, [{
+                        id,
+                        photogalleryList: galleryList,
+                    }]);
+                }
+            }
+            this.setState({
+                doc,
+                galleryList,
+                gallerySelect: gallerySelect + offset,
+            });
+        };
+        switch (doc.peer.getType()) {
+            case PeerType.PEERUSER:
+                this.sdk.updateProfilePicture(galleryList[index].photoid || '0').then(() => {
+                    fn(false);
+                });
+                break;
+            case PeerType.PEERGROUP:
+                this.sdk.groupUpdatePicture(doc.peer.getId() || '', galleryList[index].photoid || '0').then(() => {
+                    fn(true);
+                });
+                break;
+        }
     }
 
     /* Remove photo handler */

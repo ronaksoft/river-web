@@ -34,7 +34,7 @@ import {
 import {
     Bool, Dialog,
     Group,
-    GroupFull,
+    GroupFull, GroupPhoto,
     InputFile, InputPassword,
     InputPeer,
     InputUser, Label, LabelsMany,
@@ -81,7 +81,7 @@ import {
     AccountSetLang,
     AccountSetNotifySettings,
     AccountSetPrivacy,
-    AccountUpdatePasswordSettings,
+    AccountUpdatePasswordSettings, AccountUpdatePhoto,
     AccountUpdateProfile,
     AccountUpdateUsername,
     AccountUploadPhoto, SecurityAnswer,
@@ -94,7 +94,7 @@ import {
     GroupsEditTitle,
     GroupsGetFull, GroupsRemovePhoto,
     GroupsToggleAdmins,
-    GroupsUpdateAdmin,
+    GroupsUpdateAdmin, GroupsUpdatePhoto,
     GroupsUploadPhoto
 } from './messages/chat.api.groups_pb';
 import {UsersGet, UsersGetFull, UsersMany} from './messages/chat.api.users_pb';
@@ -520,6 +520,12 @@ export default class SDK {
         return this.server.send(C_MSG.AccountUploadPhoto, data.serializeBinary(), true);
     }
 
+    public updateProfilePicture(id: string): Promise<Bool.AsObject> {
+        const data = new AccountUpdatePhoto();
+        data.setPhotoid(id);
+        return this.server.send(C_MSG.AccountUpdatePhoto, data.serializeBinary(), true);
+    }
+
     public removeProfilePicture(id?: string): Promise<Bool.AsObject> {
         const data = new AccountRemovePhoto();
         data.setPhotoid(id || '0');
@@ -601,11 +607,19 @@ export default class SDK {
         return this.server.send(C_MSG.GroupsToggleAdmins, data.serializeBinary(), true);
     }
 
-    public groupUploadPicture(groupId: string, file: InputFile): Promise<Bool.AsObject> {
+    public groupUploadPicture(groupId: string, file: InputFile): Promise<GroupPhoto.AsObject> {
         const data = new GroupsUploadPhoto();
         data.setGroupid(groupId);
         data.setFile(file);
+        data.setReturnobject(true);
         return this.server.send(C_MSG.GroupsUploadPhoto, data.serializeBinary(), true);
+    }
+
+    public groupUpdatePicture(groupId: string, id?: string): Promise<Bool.AsObject> {
+        const data = new GroupsUpdatePhoto();
+        data.setGroupid(groupId);
+        data.setPhotoid(id || '0');
+        return this.server.send(C_MSG.GroupsUpdatePhoto, data.serializeBinary(), true);
     }
 
     public groupRemovePicture(groupId: string, id?: string): Promise<Bool.AsObject> {

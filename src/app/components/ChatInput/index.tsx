@@ -651,11 +651,11 @@ class ChatInput extends React.Component<IProps, IState> {
                                     {isBot && <span className="icon" onClick={this.toggleBotKeyboardHandler}>
                                         {botKeyboard ? <KeyboardRounded/> : <ViewModuleRounded/>}
                                 </span>}
-                                    <span className="icon" onClick={this.emojiHandleClick}>
+                                    <span className="icon" onClick={this.emojiClickHandler}>
                                     <SentimentSatisfiedRounded/>
                                 </span>
                                     <PopUpMenu anchorEl={this.state.emojiAnchorEl} onClose={this.emojiHandleClose}>
-                                        <Picker custom={[]} onSelect={this.emojiSelect} native={true}
+                                        <Picker custom={[]} onSelect={this.emojiSelectHandler} native={true}
                                                 showPreview={false}/>
                                     </PopUpMenu>
                                 </div>
@@ -922,7 +922,7 @@ class ChatInput extends React.Component<IProps, IState> {
         }
     }
 
-    private emojiHandleClick = (event: any) => {
+    private emojiClickHandler = (event: any) => {
         event.stopPropagation();
         event.preventDefault();
         this.setState({
@@ -930,13 +930,10 @@ class ChatInput extends React.Component<IProps, IState> {
         });
     }
 
-    private emojiSelect = (data: any) => {
-        this.setState({
-            textareaValue: this.state.textareaValue + data.native,
-        }, () => {
-            this.computeLines();
-            this.focus();
-        });
+    private emojiSelectHandler = (data: any) => {
+        this.insertAtCursor(data.native);
+        this.computeLines();
+        this.focus();
     }
 
     private emojiHandleClose = () => {
@@ -2202,29 +2199,36 @@ class ChatInput extends React.Component<IProps, IState> {
     //     });
     // }
 
-    // /* Insert at selection */
-    // private insertAtCursor(text: string) {
-    //     const textVal = this.state.textareaValue;
-    //     // IE support
-    //     // @ts-ignore
-    //     if (document.selection) {
-    //         this.textarea.focus();
-    //         // @ts-ignore
-    //         const sel: any = document.selection.createRange();
-    //         sel.text = text;
-    //         return sel.text;
-    //     }
-    //     // @ts-ignore
-    //     else if (myField.selectionStart || myField.selectionStart === 0) {
-    //         const startPos = this.textarea.selectionStart;
-    //         const endPos = this.textarea.selectionEnd;
-    //         return textVal.substring(0, startPos)
-    //             + text
-    //             + textVal.substring(endPos, textVal.length);
-    //     } else {
-    //         textVal += myValue;
-    //     }
-    // }
+    /* Insert at selection */
+    private insertAtCursor(text: string) {
+        if (!this.textarea) {
+            return;
+        }
+        let textVal = this.textarea.value;
+        // IE support
+        // @ts-ignore
+        if (document.selection) {
+            this.textarea.focus();
+            // @ts-ignore
+            const sel: any = document.selection.createRange();
+            sel.text = text;
+            textVal = sel.text;
+        }
+        // @ts-ignore
+        else if (this.textarea.selectionStart || this.textarea.selectionStart === 0) {
+            const startPos = this.textarea.selectionStart;
+            const endPos = this.textarea.selectionEnd;
+            textVal = textVal.substring(0, startPos)
+                + text
+                + textVal.substring(endPos, textVal.length);
+        } else {
+            textVal += text;
+        }
+        this.textarea.value = textVal;
+        this.setState({
+            textareaValue: textVal,
+        });
+    }
 }
 
 export default ChatInput;

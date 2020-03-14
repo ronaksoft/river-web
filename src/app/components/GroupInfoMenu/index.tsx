@@ -855,6 +855,13 @@ class GroupInfoMenu extends React.Component<IProps, IState> {
             inputFile.setMd5checksum('');
             inputFile.setTotalparts(1);
             this.sdk.groupUploadPicture(group.id || '', inputFile).then((res) => {
+                if (group) {
+                    group.photo = res;
+                }
+                this.setState({
+                    group,
+                    uploadingPhoto: false,
+                });
                 this.setState({
                     uploadingPhoto: false,
                 });

@@ -463,6 +463,8 @@
   }
 }
 
-.document-viewer-slide-show-remove {
-  cursor: pointer;
+.document-viewer-slide-tooltip-container {
+  .document-viewer-slide-show-item {
+    cursor: pointer;
+  }
 }

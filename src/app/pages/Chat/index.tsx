@@ -1362,13 +1362,13 @@ class Chat extends React.Component<IProps, IState> {
             before = beforeMsg + 1;
         } else {
             if (dialog) {
-                if ((dialog.scroll_pos || -1) !== -1) {
-                    before = dialog.scroll_pos || 0;
-                } else if ((dialog.unreadcount || 0) > 1) {
+                if ((dialog.unreadcount || 0) > 1) {
                     const tBefore = Math.max((dialog.readinboxmaxid || 0), (dialog.readoutboxmaxid || 0));
                     if (tBefore > 0) {
                         before = tBefore + 1;
                     }
+                } else if ((dialog.scroll_pos || -1) !== -1) {
+                    before = dialog.scroll_pos || 1000000000;
                 }
             }
         }

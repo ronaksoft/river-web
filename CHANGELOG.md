@@ -1,3 +1,12 @@
+## 0.30.14
+* Scroll Position patched
+* Bot layout updated
+* Set as avatar added
+* Group Photo API updated
+* Insert at cursor added
+* Minimum answers for recovery questions modified
+* Know bugs fixed
+
 ## 0.30.13
 * Update manager bug fixed
 * ReplyKeyboardForceReply added

@@ -65,7 +65,7 @@ class RecoveryQuestionModal extends React.Component<IProps, IState> {
         if (questionOptions.length === 0) {
             for (let i = 0; i < 10; i++) {
                 questionOptions.push({
-                    label: i18n.t(`settings.recovery.q${i+1}`),
+                    label: i18n.t(`settings.recovery.q${i + 1}`),
                     value: i,
                 });
             }
@@ -174,7 +174,7 @@ class RecoveryQuestionModal extends React.Component<IProps, IState> {
                         </Button>
                         <Button color="secondary" autoFocus={true} onClick={this.submitHandler}
                                 disabled={this.isInvalid()}>
-                            {answer?i18n.t('general.recover') :i18n.t('general.submit')}
+                            {answer ? i18n.t('general.recover') : i18n.t('general.submit')}
                         </Button>
                     </DialogActions>
                 </div>
@@ -224,7 +224,7 @@ class RecoveryQuestionModal extends React.Component<IProps, IState> {
     }
 
     private isInvalid = () => {
-        const {questions} = this.state;
+        const {questions, answer} = this.state;
         let cnt = 0;
         questions.forEach((q) => {
             if (q.id !== -1) {
@@ -234,7 +234,7 @@ class RecoveryQuestionModal extends React.Component<IProps, IState> {
                 cnt++;
             }
         });
-        return cnt < 6;
+        return answer ? (cnt < 4) : (cnt < 6);
     }
 }
 
