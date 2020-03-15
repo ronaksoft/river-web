@@ -42,8 +42,8 @@ class ImageEditor extends React.Component<IProps, IState> {
         height: number,
         width: number,
     } = {
-        cssHeight: 500,
-        cssWidth: 500,
+        cssHeight: 568,
+        cssWidth: 568,
         height: 600,
         width: 600,
     };
@@ -65,15 +65,15 @@ class ImageEditor extends React.Component<IProps, IState> {
         const w = window.screen.width;
         if (w <= 640) {
             this.size = {
-                cssHeight: h - 150,
-                cssWidth: w - 100,
+                cssHeight: h - 82,
+                cssWidth: w - 32,
                 height: h,
                 width: w,
             };
         } else {
             this.size = {
-                cssHeight: 500,
-                cssWidth: 500,
+                cssHeight: 568,
+                cssWidth: 568,
                 height: 600,
                 width: 600,
             };

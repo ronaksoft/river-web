@@ -24,13 +24,57 @@
     }
   }
 
-  .tui-image-editor-container .tui-image-editor-main {
-    top: 6px;
+  .tui-image-editor-container {
+    .tui-image-editor-main {
+      top: 6px;
 
-    &.tui-image-editor-menu-filter .tui-image-editor-submenu {
-      transform: scale(0.65) translate(-24%, 31%);
+      &.tui-image-editor-menu-filter .tui-image-editor-submenu {
+        transform: scale(0.65) translate(-24%, 31%);
+      }
+    }
+
+    .color-picker-control {
+      padding: 8px;
+      background-color: var(--dark-high);
+
+      .triangle {
+        border-top-color: var(--dark-high);
+      }
+
+      div.tui-colorpicker-clearfix {
+        background-color: var(--dark-low);
+        border-color: var(--dark-medium);
+      }
+
+      .tui-colorpicker-clearfix {
+        display: flex;
+        flex-wrap: wrap;
+        width: auto;
+
+        li {
+          margin: 0 1px;
+        }
+
+        .tui-colorpicker-palette-hex {
+          width: auto;
+          flex: 1;
+          background-color: var(--dark-low);
+          color: var(--white);
+        }
+      }
+
+      .tui-colorpicker-palette-button {
+        height: 16px;
+        width: 16px;
+        cursor: pointer;
+      }
+
+      .tui-colorpicker-palette-preview {
+        font-size: 0;
+      }
     }
   }
+
 
   .image-editor-dialog-footer {
     position: relative;

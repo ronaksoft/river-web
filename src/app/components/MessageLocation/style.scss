@@ -10,6 +10,7 @@
 
 .message-location {
   padding: 0;
+
   .location-content {
     position: relative;
     min-height: 120px;
@@ -20,12 +21,14 @@
     align-items: center;
     justify-content: center;
     background-color: rgba(255, 255, 255, 0.2);
+
     img {
       height: 120px;
       width: 250px;
       object-position: center 40%;
       object-fit: cover;
     }
+
     svg {
       position: absolute;
       top: 50%;

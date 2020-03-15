@@ -10,7 +10,7 @@
 import * as React from 'react';
 import {
     KeyboardArrowLeftRounded, KeyboardArrowRightRounded, MoreVertRounded, RotateLeftRounded, RotateRightRounded,
-    ZoomInRounded, ZoomOutRounded, CropFreeRounded, EmailOutlined, PlayArrowRounded,
+    ZoomInRounded, ZoomOutRounded, CropFreeRounded, VisibilityOutlined, PlayArrowRounded,
 } from '@material-ui/icons';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import DocumentViewService, {IDocument} from '../../services/documentViewerService';
@@ -419,7 +419,7 @@ class DocumentViewer extends React.Component<IProps, IState> {
                         <CropFreeRounded/>
                     </div>
                     {Boolean(doc.type !== 'avatar') && <div className="item" onClick={this.openMessageHandler}>
-                        <EmailOutlined/>
+                        <VisibilityOutlined/>
                     </div>}
                 </div>
                 <Menu

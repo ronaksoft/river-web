@@ -76,7 +76,7 @@
 
   --red: #cc0000;
 
-  --gradient-morning: radial-gradient(circle farthest-corner at 10% 20%, rgba(228, 118, 0, 1) 0%, rgba(247, 189, 2, 1) 90%);
+  --gradient-morning: linear-gradient(315deg, #2a2a72 0%, #009ffd 74%);
   --gradient-venice: linear-gradient(-20deg, #d558c8 0%, #24d292 100%);
   --gradient-paradise: linear-gradient(to top, #c71d6f 0%, #d09693 100%);
   --gradient-ocean: linear-gradient(to top, #30cfd0 0%, #330867 100%);
