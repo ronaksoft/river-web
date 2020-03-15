@@ -601,6 +601,10 @@ html[theme="dark-blue"] {
       .attachment-preview-container .attachment-details-container .attachment-action {
         bottom: 0;
       }
+
+      .attachment-preview-container .uploader-dropzone .slider-attachment .slide .image-actions {
+        opacity: 1;
+      }
     }
   }
 }

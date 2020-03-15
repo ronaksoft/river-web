@@ -11,8 +11,8 @@ import * as React from 'react';
 import Dropzone, {FileWithPreview} from 'react-dropzone';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import {
-    AddRounded, CancelRounded, CheckRounded, CropRounded, PlayCircleFilledRounded, ConfirmationNumberRounded,
-    InsertDriveFileRounded, MusicNoteRounded, CloseRounded,
+    AddRounded, CancelRounded, CheckRounded, PlayCircleFilledRounded, ConfirmationNumberRounded,
+    InsertDriveFileRounded, MusicNoteRounded, CloseRounded, BrushRounded,
 } from '@material-ui/icons';
 import Scrollbars from 'react-custom-scrollbars';
 import TextField from '@material-ui/core/TextField/TextField';
@@ -21,10 +21,11 @@ import readAndCompressImage from 'browser-image-resizer';
 import {getFileExtension, getHumanReadableSize} from '../MessageFile';
 import * as MusicMetadata from 'music-metadata-browser';
 import IconButton from '@material-ui/core/IconButton/IconButton';
-import Cropper, {IDimension} from '../Cropper';
+import {IDimension} from '../Cropper';
 import i18n from '../../services/i18n';
 import RTLDetector from "../../services/utilities/rtl_detector";
 import {throttle} from 'lodash';
+import ImageEditor from "../ImageEditor";
 
 import './style.scss';
 
@@ -84,7 +85,7 @@ class MediaPreview extends React.Component<IProps, IState> {
     private imageRef: any;
     private imageActionRef: any;
     private previewRefs: string[][] = [];
-    private cropperRef: Cropper | undefined;
+    private imageEditorRef: ImageEditor | undefined;
     private rtl: boolean = localStorage.getItem('river.lang') === 'fa' || false;
     private rtlDetector: RTLDetector;
     private readonly rtlDetectorThrottle: any;
@@ -143,7 +144,7 @@ class MediaPreview extends React.Component<IProps, IState> {
                 }}
             >
                 {Boolean(items.length > 0 && items[selected].mediaType === 'image') &&
-                <Cropper ref={this.cropperRefHandler} onImageReady={this.cropperImageReadyHandler}/>}
+                <ImageEditor ref={this.imageEditorRefHandler} onImageReady={this.imageEditorImageReadyHandler}/>}
                 <div className="uploader-container">
                     {loading && <div className="uploader-loader">
                         <span>{i18n.t('uploader.converting')}</span>
@@ -173,8 +174,8 @@ class MediaPreview extends React.Component<IProps, IState> {
                                                 <img ref={this.imageRefHandler} className="front"
                                                      src={items[selected].preview} alt="preview"/>
                                                 <div ref={this.imageActionRefHandler} className="image-actions">
-                                                    <CropRounded
-                                                        onClick={this.cropHandler(items[selected].preview)}/>
+                                                    <BrushRounded
+                                                        onClick={this.editImageHandler(items[selected].preview)}/>
                                                 </div>
                                             </React.Fragment>}
                                             {Boolean(items[selected].mediaType === 'video') &&
@@ -691,20 +692,20 @@ class MediaPreview extends React.Component<IProps, IState> {
         }
     }
 
-    /* Cropper ref handler */
-    private cropperRefHandler = (ref: any) => {
-        this.cropperRef = ref;
+    /* ImageEditor ref handler */
+    private imageEditorRefHandler = (ref: any) => {
+        this.imageEditorRef = ref;
     }
 
-    /* Crop handler */
-    private cropHandler = (url: string | undefined) => (e: any) => {
-        if (this.cropperRef && url) {
-            this.cropperRef.openFile(url);
+    /* Edit image handler */
+    private editImageHandler = (url: string | undefined) => (e: any) => {
+        if (this.imageEditorRef && url) {
+            this.imageEditorRef.openFile(url);
         }
     }
 
-    /* Cropper image ready handler */
-    private cropperImageReadyHandler = (blob: Blob, dimension: IDimension) => {
+    /* ImageEditor image ready handler */
+    private imageEditorImageReadyHandler = (blob: Blob, dimension: IDimension) => {
         const {items, selected} = this.state;
         const file = new File([blob], `cropped_file_${Date.now()}`, {type: blob.type, lastModified: Date.now()});
         const preview = URL.createObjectURL(blob);
@@ -722,6 +723,8 @@ class MediaPreview extends React.Component<IProps, IState> {
         this.previewRefs[selected].push(preview);
         this.setState({
             items,
+        }, () => {
+            this.setImageActionSize();
         });
     }
 

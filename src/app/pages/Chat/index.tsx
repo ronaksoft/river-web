@@ -140,7 +140,7 @@ import {isMobile} from "../../services/utilities/localize";
 import LabelRepo from "../../repository/label";
 import LabelDialog from "../../components/LabelDialog";
 import AvatarService from "../../services/avatarService";
-import {ButtonCallback, ButtonUrl} from "../../services/sdk/messages/chat.core.message.markups_pb";
+import {ButtonCallback, ButtonUrl, Button as BotButton} from "../../services/sdk/messages/chat.core.message.markups_pb";
 import {
     EventBlur, EventFocus, EventMouseWheel, EventNetworkStatus, EventWasmInit, EventWasmStarted,
     EventWebSocketClose, EventWebSocketOpen
@@ -290,7 +290,7 @@ class Chat extends React.Component<IProps, IState> {
         this.messageReadThrottle = throttle(this.readMessage, 256);
         this.backgroundService = BackgroundService.getInstance();
         this.settingsConfigManager = SettingsConfigManager.getInstance();
-        this.newMessageLoadThrottle = throttle(this.newMessageLoad, 300);
+        this.newMessageLoadThrottle = throttle(this.newMessageLoad, 128);
         this.cachedMessageService = CachedMessageService.getInstance();
         this.cachedFileService = CachedFileService.getInstance();
         this.avatarService = AvatarService.getInstance();
@@ -1870,7 +1870,7 @@ class Chat extends React.Component<IProps, IState> {
             this.messageLoadMoreBeforeHandler(gapNumber);
         }
         // this.isLoading = true;
-        this.setScrollMode('end');
+        this.setScrollMode('none');
         this.messageRef.setMessages(this.messages);
         this.messageRepo.lazyUpsert([message]);
         this.newMessageLoadThrottle();
@@ -2963,9 +2963,10 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         switch (cmd) {
-            // case C_BUTTON_ACTION.Button:
-            //      const button: BotButton.AsObject = data;
-            //     break;
+            case C_BUTTON_ACTION.Button:
+                const button: BotButton.AsObject = data;
+                this.chatInputTextMessageHandler(button.text || '');
+                break;
             case C_BUTTON_ACTION.ButtonUrl:
                 const buttonUrl: ButtonUrl.AsObject = data;
                 this.openLink(buttonUrl.url || '');
@@ -4729,10 +4730,11 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private newMessageLoad = () => {
-        // Force update messages
-        if (this.messageRef) {
-            this.messageRef.animateToEnd();
-        }
+        setTimeout(() => {
+            if (this.messageRef) {
+                this.messageRef.animateToEnd();
+            }
+        }, 20);
     }
 
     private downloadThumbnail = (message: IMessage) => {
@@ -4954,6 +4956,16 @@ class Chat extends React.Component<IProps, IState> {
         this.sdk.botStart(inputPeer, randomId).then(() => {
             user.is_bot_started = true;
             this.userRepo.importBulk(false, [user]);
+            const entities: MessageEntity[] = [];
+            const entity = new MessageEntity();
+            entity.setOffset(0);
+            entity.setLength(6);
+            entity.setType(MessageEntityType.MESSAGEENTITYTYPEBOTCOMMAND);
+            entity.setUserid('');
+            entities.push(entity);
+            this.chatInputTextMessageHandler('/start', {
+                entities,
+            });
         });
     }
 }

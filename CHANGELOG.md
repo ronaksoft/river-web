@@ -1,3 +1,8 @@
+## 0.31.0
+* 🎉 Introducing the new image editor thanks to `NHN`
+* Bot updated
+* Known bugs fixed and improvements
+
 ## 0.30.14
 * Scroll Position patched
 * Bot layout updated

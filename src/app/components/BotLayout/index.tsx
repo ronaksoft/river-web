@@ -18,31 +18,38 @@ export default function BotLayout({rows, prefix, onAction}: { rows: KeyboardButt
         switch (col.constructor) {
             case C_BUTTON_ACTION.Button:
                 const button: Button.AsObject = col.buttondata;
-                return (<div className="bot-button no-pointer"><span>{button.text}</span></div>);
+                return (<div className="bot-button" onClick={clickHandler(col.constructor, col.buttondata)}>
+                    <span>{button.text}</span></div>);
             case C_BUTTON_ACTION.ButtonUrl:
                 const buttonUrl: ButtonUrl.AsObject = col.buttondata;
                 return (<div className="bot-button bot-button-url"
-                             onClick={clickHandler(col.constructor, col.buttondata)}><span>{buttonUrl.text}</span></div>);
+                             onClick={clickHandler(col.constructor, col.buttondata)}><span>{buttonUrl.text}</span>
+                </div>);
             case C_BUTTON_ACTION.ButtonSwitchInline:
                 const buttonSwitchInline: ButtonSwitchInline.AsObject = col.buttondata;
                 return (<div className="bot-button bot-button-switch-inline"
-                             onClick={clickHandler(col.constructor, col.buttondata)}><span>{buttonSwitchInline.text}</span></div>);
+                             onClick={clickHandler(col.constructor, col.buttondata)}>
+                    <span>{buttonSwitchInline.text}</span></div>);
             case C_BUTTON_ACTION.ButtonRequestPhone:
                 const buttonRequestPhone: ButtonRequestPhone.AsObject = col.buttondata;
                 return (<div className="bot-button bot-button-request-phone"
-                             onClick={clickHandler(col.constructor, col.buttondata)}><span>{buttonRequestPhone.text}</span></div>);
+                             onClick={clickHandler(col.constructor, col.buttondata)}>
+                    <span>{buttonRequestPhone.text}</span></div>);
             case C_BUTTON_ACTION.ButtonRequestGeoLocation:
                 const buttonRequestGeoLocation: ButtonRequestGeoLocation.AsObject = col.buttondata;
                 return (<div className="bot-button bot-button-request-geo-location"
-                             onClick={clickHandler(col.constructor, col.buttondata)}><span>{buttonRequestGeoLocation.text}</span></div>);
+                             onClick={clickHandler(col.constructor, col.buttondata)}>
+                    <span>{buttonRequestGeoLocation.text}</span></div>);
             case C_BUTTON_ACTION.ButtonCallback:
                 const buttonCallback: ButtonCallback.AsObject = col.buttondata;
                 return (<div className="bot-button bot-button-callback"
-                             onClick={clickHandler(col.constructor, col.buttondata)}><span>{buttonCallback.text}</span></div>);
+                             onClick={clickHandler(col.constructor, col.buttondata)}><span>{buttonCallback.text}</span>
+                </div>);
             case C_BUTTON_ACTION.ButtonBuy:
                 const buttonBuy: ButtonBuy.AsObject = col.buttondata;
                 return (<div className="bot-button bot-button-buy"
-                             onClick={clickHandler(col.constructor, col.buttondata)}><span>{buttonBuy.text}</span></div>);
+                             onClick={clickHandler(col.constructor, col.buttondata)}><span>{buttonBuy.text}</span>
+                </div>);
             default:
                 return '';
         }
