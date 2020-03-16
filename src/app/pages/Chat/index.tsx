@@ -1363,6 +1363,7 @@ class Chat extends React.Component<IProps, IState> {
         } else {
             if (dialog) {
                 if ((dialog.unreadcount || 0) > 1) {
+                    this.updateDialogsCounter(this.selectedDialogId, {scrollPos: -1});
                     const tBefore = Math.max((dialog.readinboxmaxid || 0), (dialog.readoutboxmaxid || 0));
                     if (tBefore > 0) {
                         before = tBefore + 1;
