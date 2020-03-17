@@ -3,6 +3,7 @@
 * Audio message UI updated
 * `PreviewMessage` UI updated
 * `MoveDown` visibility bug fixed
+* Focus bug fixed
 
 ## 0.31.0
 * 🎉 Introducing the new image editor thanks to `NHN`

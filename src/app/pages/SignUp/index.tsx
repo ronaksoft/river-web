@@ -39,6 +39,7 @@ import {AuthAuthorization} from "../../services/sdk/messages/chat.api.auth_pb";
 import {AccountPassword, SecurityQuestion} from "../../services/sdk/messages/chat.api.accounts_pb";
 import {extractPhoneNumber, faToEn} from "../../services/utilities/localize";
 import RecoveryQuestionModal from "../../components/RecoveryQuestionModal";
+import {EventFocus, EventWasmInit, EventWebSocketOpen} from "../../services/events";
 
 import './tel-input.css';
 import './style.scss';
@@ -145,8 +146,9 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        window.addEventListener('wasmInit', this.wasmInitHandler);
-        window.addEventListener('wsOpen', this.wsOpenHandler);
+        window.addEventListener(EventWasmInit, this.wasmInitHandler);
+        window.addEventListener(EventWebSocketOpen, this.wsOpenHandler);
+        window.addEventListener(EventFocus, this.windowFocusHandler);
         this.sdk.loadConnInfo();
         if (this.sdk.getConnInfo().AuthID === '0' && this.props.match.params.mode !== 'workspace') {
             this.props.history.push('/loading');
@@ -179,8 +181,9 @@ class SignUp extends React.Component<IProps, IState> {
     }
 
     public componentWillUnmount() {
-        window.removeEventListener('wasmInit', this.wasmInitHandler);
-        window.removeEventListener('wsOpen', this.wsOpenHandler);
+        window.removeEventListener(EventWasmInit, this.wasmInitHandler);
+        window.removeEventListener(EventWebSocketOpen, this.wsOpenHandler);
+        window.removeEventListener(EventFocus, this.windowFocusHandler);
         clearInterval(this.countdownInterval);
         this.eventReferences.forEach((canceller) => {
             if (typeof canceller === 'function') {
@@ -247,7 +250,7 @@ class SignUp extends React.Component<IProps, IState> {
                                 <IntlTelInput preferredCountries={[]} defaultCountry={'ir'} value={this.state.phone}
                                               inputClassName="f-phone"
                                               disabled={this.state.loading || step === 'code' || step === 'password'}
-                                              autoHideDialCode={false} onPhoneNumberChange={this.handleOnChange}
+                                              autoHideDialCode={false} onPhoneNumberChange={this.phoneChangeHandler}
                                               onKeyDown={this.sendCodeKeyDownHandler} nationalMode={false}
                                               fieldId="input-phone"/>}
                                 {step === 'password' &&
@@ -301,7 +304,8 @@ class SignUp extends React.Component<IProps, IState> {
                                         />
                                         <span className="focus-input"/>
                                     </div>
-                                    {Boolean(accountPassword && accountPassword.getQuestionsList().length > 0) && <div className="input-wrapper">
+                                    {Boolean(accountPassword && accountPassword.getQuestionsList().length > 0) &&
+                                    <div className="input-wrapper">
                                         <Button color="secondary" fullWidth={true} onClick={this.recoverPasswordHandler}
                                         >{i18n.t('settings.2fa.recover_password')}</Button>
                                     </div>}
@@ -429,7 +433,7 @@ class SignUp extends React.Component<IProps, IState> {
         });
     }
 
-    private handleOnChange = (e: any, value: any) => {
+    private phoneChangeHandler = (e: any, value: any) => {
         let phone = faToEn(value);
         let focus = false;
         if (phone.indexOf('09') === 0) {
@@ -706,7 +710,6 @@ class SignUp extends React.Component<IProps, IState> {
     private recoverPasswordHandler = () => {
         const {accountPassword} = this.state;
         if (accountPassword && this.recoveryQuestionModalRef) {
-            window.console.log(accountPassword.toObject());
             this.recoveryQuestionModalRef.openDialog(accountPassword.toObject().questionsList.map(o => {
                     return {
                         answer: '',
@@ -840,12 +843,20 @@ class SignUp extends React.Component<IProps, IState> {
             this.sdk.systemGetInfo().then((res) => {
                 this.setState({
                     workspaceInfo: res,
+                }, () => {
+                    this.focus('f-phone');
                 });
                 if (res.storageurl && res.storageurl.length > 0) {
                     localStorage.setItem('river.workspace_url_file', res.storageurl || '');
                     FileManager.getInstance().setUrl(res.storageurl);
                 }
             });
+        }
+    }
+
+    private windowFocusHandler = () => {
+        if (this.state.step === 'phone') {
+            this.focus('f-phone');
         }
     }
 
@@ -878,6 +889,7 @@ class SignUp extends React.Component<IProps, IState> {
         if (el) {
             el.onkeydown = this.sendCodeKeyDownHandler;
         }
+        this.focus('f-phone');
     }
 
     private qrCodeDialogOpenHandler = () => {
