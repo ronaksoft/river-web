@@ -1069,6 +1069,9 @@ class ChatInput extends React.Component<IProps, IState> {
                 this.setState({
                     disableAuthority: 0x0,
                 });
+                if (user && user.isbot && !user.is_bot_started) {
+                    this.updateBotStatus(true);
+                }
             }
         }
     }
@@ -2162,6 +2165,14 @@ class ChatInput extends React.Component<IProps, IState> {
             }, () => {
                 this.checkAuthority();
             });
+        }
+    }
+
+    private updateBotStatus(started: boolean) {
+        const {user} = this.state;
+        if (user) {
+            user.is_bot_started = started;
+            this.userRepo.upsert(false, [user]);
         }
     }
 
