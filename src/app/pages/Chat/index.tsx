@@ -2218,11 +2218,8 @@ class Chat extends React.Component<IProps, IState> {
                 }
             }
             if (this.selectedDialogId === peerId) {
-                if (unreadCounter === 0 && this.scrollInfo) {
-                    this.setEndOfMessage(this.messages.length - this.scrollInfo.end <= 1);
-                    if (this.endOfMessage && this.moveDownRef) {
-                        this.moveDownRef.setVisible(false);
-                    }
+                if (unreadCounter === 0 && this.endOfMessage && this.moveDownRef) {
+                    this.moveDownRef.setVisible(false);
                 } else if (unreadCounter && this.endOfMessage && this.moveDownRef) {
                     this.moveDownRef.setVisible(true);
                 }
@@ -2927,7 +2924,7 @@ class Chat extends React.Component<IProps, IState> {
      * We use it for scroll event in message list */
     private messageRenderedHandler: scrollFunc = ({start, end, overscanStart, overscanEnd}) => {
         const messages = this.messages;
-        const diff = messages.length - end;
+        const diff = (messages.length - end) - 1;
         this.scrollInfo = {start, end, overscanStart, overscanEnd};
         this.setEndOfMessage(diff <= 1);
         // if (this.isLoading) {

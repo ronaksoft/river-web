@@ -2,6 +2,7 @@
 * Mention and reply bug fixed
 * Audio message UI updated
 * `PreviewMessage` UI updated
+* `MoveDown` visibility bug fixed
 
 ## 0.31.0
 * 🎉 Introducing the new image editor thanks to `NHN`
