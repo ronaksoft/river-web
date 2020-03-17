@@ -29,6 +29,8 @@
       .mention__suggestions__list {
         white-space: nowrap;
         text-align: left;
+        max-height: 182px;
+        overflow-y: auto;
 
         .mention__suggestions__item {
           font-size: 12px;

@@ -1151,7 +1151,7 @@ class ChatInput extends React.Component<IProps, IState> {
                         username: participant.username,
                     });
                 }
-                if (users.length >= 7) {
+                if (users.length >= 32) {
                     break;
                 }
             }
@@ -2060,7 +2060,7 @@ class ChatInput extends React.Component<IProps, IState> {
                 const reg = new RegExp(keyword, "i");
                 callback(u.botinfo.botcommandsList.filter(o => {
                     return reg.test(o.command || '');
-                }).slice(0, 7).map((c, i) => {
+                }).map((c, i) => {
                     const command = (c.command || '').indexOf('/') === 0 ? (c.command || '') : `/${(c.command || '')}`;
                     return {
                         desc: c.description,
