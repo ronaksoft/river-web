@@ -37,6 +37,7 @@ import {
     DeleteRounded,
     NotificationsRounded,
     GradientRounded,
+    SyncDisabledRounded,
 } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import UserAvatar from '../UserAvatar';
@@ -191,6 +192,7 @@ interface IProps {
 interface IState {
     avatarMenuAnchorEl: any;
     bio: string;
+    confirmDialogMode: '' | 'terminate_session' | 'remove_synced_contacts';
     confirmDialogOpen: boolean;
     confirmDialogSelectedId: string;
     contactList: IUser[];
@@ -275,6 +277,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.state = {
             avatarMenuAnchorEl: null,
             bio: '',
+            confirmDialogMode: '',
             confirmDialogOpen: false,
             confirmDialogSelectedId: '',
             contactList: [],
@@ -418,7 +421,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         const {
             avatarMenuAnchorEl, page, pageContent, pageSubContent, user, editProfile, editUsername, bio, firstname,
             lastname, phone, username, usernameAvailable, usernameValid, uploadingPhoto, sessions,
-            confirmDialogOpen, customBackgroundSrc, loading, privacy, passwordMode,
+            confirmDialogMode, confirmDialogOpen, customBackgroundSrc, loading, privacy, passwordMode,
         } = this.state;
         return (
             <div className="setting-menu">
@@ -954,6 +957,15 @@ class SettingsMenu extends React.Component<IProps, IState> {
                                                 </div>
                                             );
                                         })}
+                                        <div className="sub-page-header-alt">{i18n.t('settings.contacts')}</div>
+                                        <div className="page-anchor anchor-padding-side"
+                                             onClick={this.removeSyncedContactsConfirmHandler}>
+                                            <div className="icon color-contacts">
+                                                <SyncDisabledRounded/>
+                                            </div>
+                                            <div
+                                                className="anchor-label">{i18n.t('settings.remove_synced_contacts')}</div>
+                                        </div>
                                     </div>
                                 </Scrollbars>
                             </div>
@@ -1232,15 +1244,28 @@ class SettingsMenu extends React.Component<IProps, IState> {
                         paper: 'confirm-dialog-paper'
                     }}
                 >
-                    <DialogTitle>{this.state.confirmDialogSelectedId === '0' ? i18n.t('settings.terminate_all_other_sessions') : i18n.t('settings.terminate_session')}</DialogTitle>
-                    <DialogActions>
-                        <Button onClick={this.confirmDialogCloseHandler} color="secondary">
-                            {i18n.t('general.disagree')}
-                        </Button>
-                        <Button onClick={this.terminateSessionHandler} color="primary" autoFocus={true}>
-                            {i18n.t('general.agree')}
-                        </Button>
-                    </DialogActions>
+                    {Boolean(confirmDialogMode === 'terminate_session') && <>
+                        <DialogTitle>{this.state.confirmDialogSelectedId === '0' ? i18n.t('settings.terminate_all_other_sessions') : i18n.t('settings.terminate_session')}</DialogTitle>
+                        <DialogActions>
+                            <Button onClick={this.confirmDialogCloseHandler} color="secondary">
+                                {i18n.t('general.disagree')}
+                            </Button>
+                            <Button onClick={this.terminateSessionHandler} color="primary" autoFocus={true}>
+                                {i18n.t('general.agree')}
+                            </Button>
+                        </DialogActions>
+                    </>}
+                    {Boolean(confirmDialogMode === 'remove_synced_contacts') && <>
+                        <DialogTitle>{i18n.t('settings.remove_synced_contacts')}?</DialogTitle>
+                        <DialogActions>
+                            <Button onClick={this.confirmDialogCloseHandler} color="secondary">
+                                {i18n.t('general.cancel')}
+                            </Button>
+                            <Button onClick={this.removeSyncedContactsHandler} color="primary" autoFocus={true}>
+                                {i18n.t('general.yes')}
+                            </Button>
+                        </DialogActions>
+                    </>}
                 </OverlayDialog>
             </div>
         );
@@ -1909,6 +1934,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             return;
         }
         this.setState({
+            confirmDialogMode: 'terminate_session',
             confirmDialogOpen: true,
             confirmDialogSelectedId: id
         });
@@ -2470,6 +2496,23 @@ class SettingsMenu extends React.Component<IProps, IState> {
         if (this.props.onAction) {
             this.props.onAction('count_dialog');
         }
+    }
+
+    /* Open confirm dialog for remove synced contacts */
+    private removeSyncedContactsConfirmHandler = (e: any) => {
+        this.setState({
+            confirmDialogMode: 'remove_synced_contacts',
+            confirmDialogOpen: true,
+        });
+    }
+
+    /* Remove synced contacts handler */
+    private removeSyncedContactsHandler = () => {
+        this.sdk.deleteAllContacts().then(() => {
+            if (this.props.onError) {
+                this.props.onError(i18n.t('settings.synced_contacts_removed_successfully'));
+            }
+        });
     }
 }
 

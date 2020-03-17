@@ -25,7 +25,7 @@ import {IConnInfo} from './interface';
 import {
     BlockedContactsMany,
     ContactsAdd, ContactsBlock,
-    ContactsDelete,
+    ContactsDelete, ContactsDeleteAll,
     ContactsGet, ContactsGetBlocked,
     ContactsImport,
     ContactsImported,
@@ -290,7 +290,7 @@ export default class SDK {
     public getContacts(crc?: number): Promise<ContactsMany.AsObject> {
         const data = new ContactsGet();
         data.setCrc32hash(crc || 0);
-        return this.server.send(C_MSG.ContactsGet, data.serializeBinary(), false, {
+        return this.server.send(C_MSG.ContactsGet, data.serializeBinary(), true, {
             retry: 2,
             retryErrors: [{
                 code: C_ERR.ErrCodeInternal,
@@ -302,7 +302,12 @@ export default class SDK {
     public removeContact(contactIds: string[]): Promise<Bool.AsObject> {
         const data = new ContactsDelete();
         data.setUseridsList(contactIds);
-        return this.server.send(C_MSG.ContactsDelete, data.serializeBinary(), false);
+        return this.server.send(C_MSG.ContactsDelete, data.serializeBinary(), true);
+    }
+
+    public deleteAllContacts() {
+        const data = new ContactsDeleteAll();
+        return this.server.send(C_MSG.ContactsDeleteAll, data.serializeBinary(), true);
     }
 
     public getDialogs(skip: number, limit: number): Promise<MessagesDialogs.AsObject> {

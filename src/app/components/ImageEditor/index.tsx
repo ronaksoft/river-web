@@ -11,7 +11,7 @@ import * as React from 'react';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 // @ts-ignore
 import ToastImageEditor from '@toast-ui/react-image-editor';
-import {CheckRounded, CloseRounded} from "@material-ui/icons";
+import {CheckRounded, CloseRounded, FullscreenRounded, FullscreenExitRounded} from "@material-ui/icons";
 
 import 'tui-image-editor/dist/tui-image-editor.css';
 import './style.scss';
@@ -28,7 +28,9 @@ interface IProps {
 
 interface IState {
     className?: string;
+    disable: boolean;
     file?: string | null;
+    fullscreen: boolean;
     loading: boolean;
     open: boolean;
 }
@@ -53,7 +55,9 @@ class ImageEditor extends React.Component<IProps, IState> {
 
         this.state = {
             className: props.className || '',
+            disable: false,
             file: '',
+            fullscreen: false,
             loading: false,
             open: false,
         };
@@ -61,41 +65,28 @@ class ImageEditor extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        const h = window.screen.height;
-        const w = window.screen.width;
-        if (w <= 640) {
-            this.size = {
-                cssHeight: h - 82,
-                cssWidth: w - 32,
-                height: h,
-                width: w,
-            };
-        } else {
-            this.size = {
-                cssHeight: 568,
-                cssWidth: 568,
-                height: 600,
-                width: 600,
-            };
-        }
+        this.setLayoutSize();
     }
 
     /* Open file dialog */
     public openFile(url: string) {
+        this.setLayoutSize();
         this.setState({
+            disable: false,
             file: url,
+            fullscreen: false,
             loading: false,
             open: true,
         });
     }
 
     public render() {
-        const {open, file, loading} = this.state;
+        const {disable, open, file, loading, fullscreen} = this.state;
         return (
             <Dialog
                 open={open}
                 onClose={this.dialogCloseHandler}
-                className="image-editor-dialog"
+                className={'image-editor-dialog' + (fullscreen ? ' fullscreen' : '')}
                 classes={{
                     paper: 'image-editor-dialog-paper'
                 }}
@@ -110,8 +101,11 @@ class ImageEditor extends React.Component<IProps, IState> {
                     <div className="picture-action cancel" onClick={this.dialogCloseHandler}>
                         <CloseRounded/>
                     </div>
+                    <div className="picture-action maximize" onClick={this.fullscreenToggleHandler}>
+                        {fullscreen ? <FullscreenExitRounded/> : <FullscreenRounded/>}
+                    </div>
                 </div>
-                <ToastImageEditor
+                {Boolean(open && !disable) && <ToastImageEditor
                     ref={this.imageEditorRefHandler}
                     includeUI={{
                         loadImage: {
@@ -132,7 +126,7 @@ class ImageEditor extends React.Component<IProps, IState> {
                         rotatingPointOffset: 70
                     }}
                     usageStatistics={true}
-                />
+                />}
             </Dialog>
         );
     }
@@ -140,7 +134,9 @@ class ImageEditor extends React.Component<IProps, IState> {
     /* Dialog close handler */
     private dialogCloseHandler = () => {
         this.setState({
+            disable: false,
             file: null,
+            fullscreen: false,
             loading: false,
             open: false,
         });
@@ -173,6 +169,38 @@ class ImageEditor extends React.Component<IProps, IState> {
                 URL.revokeObjectURL(url);
                 this.dialogCloseHandler();
             });
+    }
+
+    private fullscreenToggleHandler = () => {
+        this.setLayoutSize(!this.state.fullscreen);
+        this.setState({
+            disable: true,
+            fullscreen: !this.state.fullscreen,
+        }, () => {
+            this.setState({
+                disable: false,
+            });
+        });
+    }
+
+    private setLayoutSize(fullscreen?: boolean) {
+        const h = window.innerHeight;
+        const w = window.innerWidth;
+        if (w <= 640 || fullscreen) {
+            this.size = {
+                cssHeight: h - 82,
+                cssWidth: w - 32,
+                height: h,
+                width: w,
+            };
+        } else {
+            this.size = {
+                cssHeight: 568,
+                cssWidth: 568,
+                height: 600,
+                width: 600,
+            };
+        }
     }
 }
 

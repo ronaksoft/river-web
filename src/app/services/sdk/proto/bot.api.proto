@@ -3,6 +3,7 @@ syntax = "proto2";
 package msg;
 
 import "chat.core.types.proto";
+import "chat.api.messages.proto";
 
 service BotProxy {
     rpc ServeBotRequest (stream MessageEnvelope) returns (stream MessageEnvelope) {
@@ -46,7 +47,7 @@ message BotGet {
 
 // BotSendMessage
 // @Function (BotOnly)
-// @Return: Bool
+// @Return: UserMessage
 message BotSendMessage {
     required int64 RandomID = 1;
     required InputPeer Peer = 2;
@@ -56,6 +57,40 @@ message BotSendMessage {
     repeated MessageEntity Entities = 8;
     optional int64 ReplyMarkup = 9;
     optional bytes ReplyMarkupData = 10;
+}
+
+// BotEditMessage
+// @Function (BotOnly)
+// @Return: UserMessage
+message BotEditMessage {
+    required int64 RandomID = 1;
+    required InputPeer Peer = 2;
+    required string Body = 3;
+    required int64 MessageID = 4;
+    repeated MessageEntity Entities = 5;
+    optional int64 ReplyMarkup = 6;
+    optional bytes ReplyMarkupData = 7;
+}
+
+// BotSendMedia
+// @Function (BotOnly)
+// @Return: UserMessage
+message BotSendMedia {
+    required int64 RandomID = 1;
+    required InputPeer Peer = 2;
+    required InputMediaType MediaType = 3;
+    required bytes MediaData = 4;
+    optional int64 ReplyTo = 5;
+}
+
+// BotSaveFilePart
+// @Function (BotOnly)
+// @Returns: Bool
+message BotSaveFilePart {
+    required int64 FileID = 1 [jstype = JS_STRING];
+    required int32 PartID = 2;
+    required int32 TotalParts = 3;
+    required bytes Bytes = 4;
 }
 
 // BotUpdateProfile

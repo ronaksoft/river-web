@@ -4,6 +4,9 @@
 * `PreviewMessage` UI updated
 * `MoveDown` visibility bug fixed
 * Focus bug fixed
+* SDK updated
+* Remove synced contacts implemented
+* Now you can maximize image editor
 
 ## 0.31.0
 * 🎉 Introducing the new image editor thanks to `NHN`

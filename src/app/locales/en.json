@@ -240,6 +240,9 @@
     "privacy_no_one": "Nobody",
     "privacy_always_share_with": "Always share with",
     "privacy_never_share_with": "Never share with",
+    "contacts": "Contacts",
+    "remove_synced_contacts": "Remove synced contacts",
+    "synced_contacts_removed_successfully": "Synced contacts removed successfully",
     "change_phone_number": {
       "title": "Change phone number",
       "text": "You can change your River number here. Your Account and all your cloud data - messages, media, contacts etc. will be moved to the new number.",

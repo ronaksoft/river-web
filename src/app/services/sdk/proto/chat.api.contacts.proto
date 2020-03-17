@@ -35,6 +35,12 @@ message ContactsDelete {
     repeated int64 UserIDs = 1 [jstype = JS_STRING];
 }
 
+// ContactsDeleteAll
+// @Function: ContactsDeleteAll
+// @Return: Bool
+message ContactsDeleteAll {
+}
+
 // ContactsBlock
 // @Function
 // @Return: Bool

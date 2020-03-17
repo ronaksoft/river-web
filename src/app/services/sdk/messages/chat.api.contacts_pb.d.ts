@@ -117,6 +117,22 @@ export namespace ContactsDelete {
   }
 }
 
+export class ContactsDeleteAll extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ContactsDeleteAll.AsObject;
+  static toObject(includeInstance: boolean, msg: ContactsDeleteAll): ContactsDeleteAll.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ContactsDeleteAll, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ContactsDeleteAll;
+  static deserializeBinaryFromReader(message: ContactsDeleteAll, reader: jspb.BinaryReader): ContactsDeleteAll;
+}
+
+export namespace ContactsDeleteAll {
+  export type AsObject = {
+  }
+}
+
 export class ContactsBlock extends jspb.Message {
   hasUser(): boolean;
   clearUser(): void;
