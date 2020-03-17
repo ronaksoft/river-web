@@ -19,6 +19,7 @@ import {getMediaInfo, IMediaInfo} from '../MessageMedia';
 import AudioPlayer, {IAudioEvent} from '../../services/audioPlayer';
 
 import './style.scss';
+import CachedPhoto from "../CachedPhoto";
 
 interface IProps {
     message: IMessage;
@@ -117,9 +118,12 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
             return (
                 <DownloadProgress className="audio-item-action" id={message.id || 0}
                                   fileSize={info.size} onComplete={this.downloadCompleteHandler}
-                                  onAction={this.downloadProgressActionHandler}/>);
+                                  onAction={this.downloadProgressActionHandler}
+                                  thumbFile={info.thumbFile}
+                />);
         } else {
-            return (<div className="audio-item-action">
+            return (<div className={'audio-item-action' + (info.thumbFile && info.thumbFile.fileid !== '' ? ' has-cover' : '')}>
+                <CachedPhoto className="audio-thumbnail" fileLocation={info.thumbFile}/>
                 <div className="audio-action" onClick={this.audioActionClickHandler(message.id || 0)}>
                     {!playing && <PlayArrowRounded/>}
                     {playing && <PauseRounded/>}

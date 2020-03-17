@@ -228,12 +228,24 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
         switch (previewMessage.messagetype) {
             case C_MESSAGE_TYPE.Picture:
             case C_MESSAGE_TYPE.Video:
-                const info = getMediaInfo(previewMessage);
+                const pictureInfo = getMediaInfo(previewMessage);
                 return (
                     <div className="preview-thumbnail">
-                        <CachedPhoto key="reply-thumbnail" className="thumbnail" fileLocation={info.thumbFile}/>
+                        <CachedPhoto key="reply-thumbnail" className="thumbnail" fileLocation={pictureInfo.thumbFile}/>
                     </div>
                 );
+            case C_MESSAGE_TYPE.Audio:
+                const audioInfo = getMediaInfo(previewMessage);
+                if (audioInfo.thumbFile && audioInfo.thumbFile.fileid !== '') {
+                    return (
+                        <div className="preview-thumbnail">
+                            <CachedPhoto key="reply-thumbnail" className="thumbnail"
+                                         fileLocation={audioInfo.thumbFile}/>
+                        </div>
+                    );
+                } else {
+                    return '';
+                }
             default:
                 return '';
         }

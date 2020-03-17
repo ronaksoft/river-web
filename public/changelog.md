@@ -1,3 +1,8 @@
+## 0.31.1
+* Mention and reply bug fixed
+* Audio message UI updated
+* `PreviewMessage` UI updated
+
 ## 0.31.0
 * 🎉 Introducing the new image editor thanks to `NHN`
 * Bot updated

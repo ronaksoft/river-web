@@ -12,8 +12,10 @@ import {CloseRounded, CloudDownloadRounded} from '@material-ui/icons';
 import ProgressBroadcaster from '../../services/progress';
 import {IFileProgress} from '../../services/sdk/fileManager';
 import {getHumanReadableSize} from '../MessageFile';
+import {FileLocation} from "../../services/sdk/messages/chat.core.types_pb";
 
 import './style.scss';
+import CachedPhoto from "../CachedPhoto";
 
 interface IProps {
     className?: string;
@@ -22,6 +24,7 @@ interface IProps {
     onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', messageId: number) => void;
     onComplete?: (id: number) => void;
     hideSizeIndicator?: boolean;
+    thumbFile?: FileLocation.AsObject;
 }
 
 interface IState {
@@ -70,11 +73,13 @@ class DownloadProgress extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
+        const {thumbFile} = this.props;
         const {className, fileState} = this.state;
         return (
             <div className={`download-progress-container ${className}`}>
                 {Boolean(this.props.hideSizeIndicator !== true) &&
                 <div className="media-size" ref={this.mediaSizeRefHandler}>0 KB</div>}
+                {thumbFile && thumbFile.fileid !== '' && <CachedPhoto className="download-progress-audio-thumbnail" fileLocation={thumbFile}/>}
                 <div className="media-action">
                     {Boolean(fileState === 'download') &&
                     <CloudDownloadRounded onClick={this.downloadFileHandler}/>}

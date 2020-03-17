@@ -1275,7 +1275,7 @@ class ChatInput extends React.Component<IProps, IState> {
     private initOldDraft(oldPeer: InputPeer, mode: number, message: IMessage | null) {
         const oldPeerObj = oldPeer.toObject();
         const draftMessage: DraftMessage.AsObject = {
-            body: this.state.textareaValue,
+            body: this.textarea ? this.textarea.value : '',
             date: this.riverTime.now(),
             entitiesList: message ? message.entitiesList : undefined,
             peerid: oldPeerObj.id || '',

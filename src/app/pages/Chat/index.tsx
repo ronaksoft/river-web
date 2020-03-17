@@ -4851,7 +4851,7 @@ class Chat extends React.Component<IProps, IState> {
 
     private setChatInputParams(mode: number, message?: IMessage) {
         if (this.chatInputRef) {
-            this.chatInputRef.setParams(null, mode, message);
+            this.chatInputRef.setParams(this.peer, mode, message);
         }
     }
 

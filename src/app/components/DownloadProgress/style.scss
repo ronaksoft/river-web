@@ -9,6 +9,23 @@
 @import '../../../style/mixin';
 
 .download-progress-container {
+  .download-progress-audio-thumbnail {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: 36px;
+    width: 36px;
+    overflow: hidden;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+
+    img {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+    }
+  }
+
   .media-action {
     position: absolute;
     top: 50%;
@@ -18,8 +35,9 @@
     transform: translate(-50%, -50%);
     border-radius: 50%;
     z-index: 910;
-    background-color: rgba(0, 0, 0, 0.32);
+    background-color: rgba(0, 0, 0, 0.37);
     cursor: pointer;
+
     .progress {
       position: absolute;
       top: 2px;
@@ -31,12 +49,14 @@
       animation-duration: 3s;
       animation-iteration-count: infinite;
       animation-timing-function: linear;
+
       svg {
         position: absolute;
         top: 0;
         left: 0;
         height: 32px;
         width: 32px;
+
         circle {
           fill: transparent;
           stroke: var(--white);
@@ -46,6 +66,7 @@
         }
       }
     }
+
     > svg {
       position: absolute;
       top: 50%;
@@ -56,6 +77,7 @@
       transform: translate(-50%, -50%);
     }
   }
+
   .media-size {
     position: absolute;
     top: calc(50% + 30px);
@@ -71,12 +93,4 @@
     transform: translate(-50%, -50%);
     z-index: 920;
   }
-}
-
-html[theme="dark"] {
-
-}
-
-html[theme="dark-blue"] {
-
 }
