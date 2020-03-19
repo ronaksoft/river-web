@@ -7,6 +7,7 @@ import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 interface IProps {
     className?: string;
     height: number;
+    estimatedHeight?: number;
     width: number;
     count: number;
     renderer: (index: number) => any;
@@ -205,7 +206,7 @@ class KKWindow extends React.Component<IProps, IState> {
         const scrollTop = this.cellMeasurer.getOffset(index - 1);
         if (scrollTop !== -1) {
             if (offset === -1) {
-                offset = -(this.props.height - this.cellMeasurer.getHeight(index)) / 2;
+                offset = -(this.getHeight() - this.cellMeasurer.getHeight(index)) / 2;
             }
             this.containerRef.scrollTo({
                 behavior: 'smooth',
@@ -342,7 +343,7 @@ class KKWindow extends React.Component<IProps, IState> {
             return;
         }
         const scrollTop = e.target.scrollTop;
-        this.cellMeasurer.scrollHandler(this.props.height, scrollTop);
+        this.cellMeasurer.scrollHandler(this.getHeight(), scrollTop);
         if (this.loadMoreReady && this.loadBeforeTriggered >= 1 && this.loadBeforeTriggered <= 3 && scrollTop < C_TRY_SCROLL_TOP) {
             this.loadBeforeTimeout = setTimeout(() => {
                 this.tryLoadBefore();
@@ -370,7 +371,7 @@ class KKWindow extends React.Component<IProps, IState> {
         }
         if (!this.scrollbar.noScroll) {
             let top = (this.containerRef.scrollTop / this.containerRef.scrollHeight) * 100;
-            const height = (this.props.height / this.containerRef.scrollHeight) * 100;
+            const height = (this.getHeight() / this.containerRef.scrollHeight) * 100;
             if (top + height > 100) {
                 top = 100 - height;
             }
@@ -397,7 +398,7 @@ class KKWindow extends React.Component<IProps, IState> {
         }
         const rect = this.scrollThumbRef.getBoundingClientRect();
         const top = rect.top + rect.height / 2;
-        const diff = Math.min(Math.max(Math.abs(top - e.pageY), 100), this.props.height - 20);
+        const diff = Math.min(Math.max(Math.abs(top - e.pageY), 100), this.getHeight() - 20);
         if (top > e.pageY) {
             this.containerRef.scrollTop = this.containerRef.scrollTop - diff;
         } else {
@@ -419,7 +420,7 @@ class KKWindow extends React.Component<IProps, IState> {
 
         this.scrollbar.dragged = true;
         this.scrollbar.clickPos = e.pageY;
-        this.scrollbar.clickTop = (this.containerRef.scrollTop / this.containerRef.scrollHeight) * this.props.height;
+        this.scrollbar.clickTop = (this.containerRef.scrollTop / this.containerRef.scrollHeight) * this.getHeight();
         this.scrollbar.clickScrollTop = this.containerRef.scrollTop;
         this.setupDragging();
     }
@@ -428,14 +429,15 @@ class KKWindow extends React.Component<IProps, IState> {
         if (!this.scrollThumbRef || !this.containerRef || !this.scrollbar.dragged) {
             return;
         }
+        const height = this.getHeight();
         const offset = e.pageY - this.scrollbar.clickPos;
-        this.containerRef.scrollTop = this.scrollbar.clickScrollTop + offset * (this.containerRef.scrollHeight / this.props.height);
+        this.containerRef.scrollTop = this.scrollbar.clickScrollTop + offset * (this.containerRef.scrollHeight / height);
         let top = this.scrollbar.clickTop + offset;
         if (top < 0) {
             top = 0;
         }
-        if (top > (this.props.height - this.scrollThumbRef.clientHeight)) {
-            top = this.props.height - this.scrollThumbRef.clientHeight;
+        if (top > (height - this.scrollThumbRef.clientHeight)) {
+            top = height - this.scrollThumbRef.clientHeight;
         }
         this.scrollThumbRef.style.top = `${top}px`;
     }
@@ -469,8 +471,9 @@ class KKWindow extends React.Component<IProps, IState> {
         if (this.props.onUpdate) {
             this.props.onUpdate();
         }
+        const height = this.getHeight();
         if (this.containerRef) {
-            this.scrollbar.noScroll = (this.props.height >= this.cellMeasurer.getTotalHeight());
+            this.scrollbar.noScroll = (height >= this.cellMeasurer.getTotalHeight());
             if (!this.scrollbar.noScroll) {
                 this.containerRef.style.paddingTop = '0';
                 setTimeout(() => {
@@ -484,9 +487,9 @@ class KKWindow extends React.Component<IProps, IState> {
         }
         if (this.containerRef) {
             if (this.scrollMode === 'end') {
-                this.cellMeasurer.scrollHandler(this.props.height, this.containerRef.scrollTop, true);
+                this.cellMeasurer.scrollHandler(height, this.containerRef.scrollTop, true);
                 this.loadAfterTriggered = true;
-                this.containerRef.scrollTop = this.containerRef.scrollHeight - this.props.height;
+                this.containerRef.scrollTop = this.containerRef.scrollHeight - height;
             } else if (this.scrollMode === 'stay') {
                 //
             } else if (this.scrollMode === 'top') {
@@ -500,7 +503,7 @@ class KKWindow extends React.Component<IProps, IState> {
 
     private fitListToBottom() {
         if (this.containerRef) {
-            const gap = (this.props.height - 11) - this.cellMeasurer.getTotalHeight();
+            const gap = (this.getHeight() - 11) - this.cellMeasurer.getTotalHeight();
             this.smallerThanContainer = gap > 0;
             if (gap > 0) {
                 this.paddingTop = `${gap}px`;
@@ -570,6 +573,14 @@ class KKWindow extends React.Component<IProps, IState> {
                 }, 500);
             }
         }
+    }
+
+    private getHeight() {
+        const {height} = this.props;
+        if (height < 100) {
+            return this.props.estimatedHeight || height;
+        }
+        return height;
     }
 }
 

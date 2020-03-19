@@ -118,7 +118,7 @@ const listStyle: React.CSSProperties = {
     overflowY: 'visible',
 };
 
-export const C_VERSION = '0.31.1';
+export const C_VERSION = '0.31.2';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 export const C_AVATAR_SIZE = 640;
 

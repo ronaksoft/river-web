@@ -1,3 +1,8 @@
+## 0.31.2
+* KKWindow updated
+* Know bugs fixed
+* More logs
+
 ## 0.31.1
 * Mention and reply bug fixed
 * Audio message UI updated

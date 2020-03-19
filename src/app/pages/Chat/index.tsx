@@ -1482,7 +1482,7 @@ class Chat extends React.Component<IProps, IState> {
             return;
         }
         const after = this.getMaxId();
-        if (((dialog.topmessageid || 0) <= after && (dialog.unreadcount || 0) === 0) || after === 0) {
+        if (((dialog.topmessageid || 0) <= after && (dialog.unreadcount || 0) === 0) || after === -1) {
             return;
         }
 
@@ -2436,13 +2436,13 @@ class Chat extends React.Component<IProps, IState> {
     private getValidAfter(offset?: number): number {
         const messages = this.messages;
         let after = 0;
-        let tries = 1;
+        let tries = 10;
         if (offset && offset > 0) {
             tries = messages.length - offset;
         }
         if (messages.length > 0) {
             if (!messages[messages.length - tries]) {
-                return 0;
+                return -1;
             }
             // Check if it is not pending message
             after = messages[messages.length - tries].id || 0;
@@ -2452,7 +2452,7 @@ class Chat extends React.Component<IProps, IState> {
                     while (true) {
                         tries++;
                         if (!messages[messages.length - tries]) {
-                            return 0;
+                            return -1;
                         }
                         after = messages[messages.length - tries].id || 0;
                         if (after > 0 || tries >= messages.length) {
@@ -2466,14 +2466,17 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private getMaxId() {
-        let maxId: number = 0;
+        let maxId: number = -1;
         for (let i = this.messages.length - 1, cnt = 0; i >= 0 && cnt < 100; i--, cnt++) {
             if (this.messages[i] && this.messages[i].id && maxId < (this.messages[i].id || 0)) {
                 maxId = this.messages[i].id || 0;
             }
         }
-        if (maxId < 0) {
+        if (maxId <= 0) {
             maxId = this.getValidAfter();
+        }
+        if (maxId === -1) {
+            window.console.debug(`%c bad max id, last message id:${this.messages.length > 0 ? this.messages[this.messages.length - 1].id : ''}`, 'color: #cc0000;');
         }
         return maxId;
     }
@@ -2491,6 +2494,9 @@ class Chat extends React.Component<IProps, IState> {
         if (data.peerIds && data.peerIds.indexOf(this.selectedDialogId) > -1) {
             // this.getMessagesByDialogId(this.selectedDialogId);
             const after = data.minIds[this.selectedDialogId] || this.getMaxId();
+            if (after === -1) {
+                return;
+            }
             this.messageRepo.getManyCache({after, limit: 100, ignoreMax: true}, peer).then((res) => {
                 if (!this.messageRef) {
                     return;
@@ -2758,10 +2764,10 @@ class Chat extends React.Component<IProps, IState> {
         }
         const peerId = inputPeer.getId() || '';
         const dialog = this.getDialogById(peerId);
-        if (msgId < 0 && this.selectedDialogId === peerId) {
+        if (msgId <= 0 && this.selectedDialogId === peerId) {
             msgId = this.getValidAfter(endIndex);
         }
-        if (dialog) {
+        if (dialog && msgId > 0) {
             if (showMoveDown !== undefined && this.moveDownRef) {
                 if (showMoveDown || (dialog.unreadcount || 0) > 0) {
                     this.moveDownRef.setVisible(true);

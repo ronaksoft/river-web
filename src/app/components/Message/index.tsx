@@ -180,6 +180,7 @@ class Message extends React.Component<IProps, IState> {
     private newMessageIndex: number = -1;
     // @ts-ignore
     private hasEnd: boolean = false;
+    private estimatedHeight = window.innerHeight - 98;
 
     constructor(props: IProps) {
         super(props);
@@ -496,7 +497,9 @@ class Message extends React.Component<IProps, IState> {
     public render() {
         const {items, moreAnchorEl, moreAnchorPos, selectable, loadingOverlay} = this.state;
         return (
-            <AutoSizer>
+            <AutoSizer
+                defaultHeight={this.estimatedHeight}
+            >
                 {({width, height}: any) => (
                     <div className="main-messages">
                         <div
@@ -509,6 +512,7 @@ class Message extends React.Component<IProps, IState> {
                                 containerRef={this.containerRefHandler}
                                 className="chat active-chat"
                                 height={height}
+                                estimatedHeight={this.estimatedHeight}
                                 width={width}
                                 count={items.length}
                                 overscan={30}
