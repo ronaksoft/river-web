@@ -147,19 +147,21 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
     public setPeer(peer: InputPeer | null) {
         this.peer = peer;
         if (peer && peer.getType() === PeerType.PEERGROUP) {
+            this.setState({
+                appliedSelectedLabelIds: [],
+                appliedSelectedUserIds: [],
+                searchUserActive: true,
+                userList: [],
+            });
+            this.userMap = {};
             this.getGroupMemberList();
-            if (!this.state.searchUserActive) {
-                this.setState({
-                    searchUserActive: true,
-                });
-            }
         } else {
-            if (this.state.searchUserActive) {
-                this.setState({
-                    searchUserActive: false,
-                    userList: [],
-                });
-            }
+            this.setState({
+                appliedSelectedLabelIds: [],
+                appliedSelectedUserIds: [],
+                searchUserActive: false,
+                userList: [],
+            });
         }
     }
 

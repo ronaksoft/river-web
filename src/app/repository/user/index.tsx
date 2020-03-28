@@ -118,7 +118,7 @@ export default class UserRepo {
                     if (cacheCB) {
                         cacheCB(user);
                     }
-                    if (checkLastUpdate && (this.riverTime.now() - (user.last_updated || 0)) > 60) {
+                    if (checkLastUpdate && user.last_updated && (this.riverTime.now() - (user.last_updated || 0)) > 60) {
                         resolve(user);
                         return;
                     }
