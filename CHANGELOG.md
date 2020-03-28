@@ -1,3 +1,6 @@
+## 0.31.5
+* Known bugs fixed
+
 ## 0.31.4
 * Notification updated
 * More logs added
