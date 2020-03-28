@@ -2429,7 +2429,73 @@ class Chat extends React.Component<IProps, IState> {
                         }
                     });
                 }
+                if (!this.isInChat) {
+                    data.ids.forEach((id: string) => {
+                        const msgIds = data.incomingIds[id];
+                        if (msgIds.length > 0) {
+                            const dialog = this.getDialogById(id);
+                            if (dialog && this.canNotify(id, dialog)) {
+                                const ids = msgIds.filter(o => (dialog && o > (dialog.readoutboxmaxid || 0)));
+                                if (ids.length > 0) {
+                                    if (dialog.peertype === PeerType.PEERUSER) {
+                                        this.notifyUser(id, ids);
+                                    } else if (dialog.peertype === PeerType.PEERGROUP) {
+                                        this.notifyGroup(id, ids);
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
             });
+        });
+    }
+
+    private notifyUser(peerId: string, ids: number[]) {
+        window.console.log('notifyUser', peerId, ids);
+        const user = this.userRepo.getInstant(peerId);
+        if (user) {
+            if (ids.length === 1) {
+                this.messageRepo.get(ids[0]).then((message) => {
+                    if (message) {
+                        const messageTitle = getMessageTitle(message);
+                        this.notify(
+                            `New message from ${user.firstname} ${user.lastname}`,
+                            messageTitle.text, message.peerid || 'null');
+                    }
+                });
+            } else {
+                this.notify(`${ids.length} new messages from ${user.firstname} ${user.lastname}`, '', peerId);
+            }
+        }
+    }
+
+    private notifyGroup(peerId: string, ids: number[]) {
+        window.console.log('notifyGroup', peerId, ids);
+        this.groupRepo.get(peerId).then((group) => {
+            if (group) {
+                if (ids.length === 1) {
+                    this.messageRepo.get(ids[0]).then((message) => {
+                        if (message) {
+                            const user = this.userRepo.getInstant(message.senderid || '0');
+                            if (user) {
+                                const messageTitle = getMessageTitle(message);
+                                if (message.mention_me) {
+                                    this.notify(
+                                        `${user.firstname} ${user.lastname} mentioned you in ${group.title}`,
+                                        messageTitle.text, peerId);
+                                } else {
+                                    this.notify(
+                                        `New message from ${user.firstname} ${user.lastname} in ${group.title}`,
+                                        messageTitle.text, peerId);
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    this.notify(`${ids.length} new messages in ${group.title}`, '', peerId);
+                }
+            }
         });
     }
 
@@ -3392,11 +3458,11 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Check if can notify user */
-    private canNotify(peerId: string) {
+    private canNotify(peerId: string, d?: IDialog) {
         if (!peerId) {
             return;
         }
-        const dialog = this.getDialogById(peerId);
+        const dialog = d || this.getDialogById(peerId);
         if (dialog) {
             return !isMuted(dialog.notifysettings);
         }

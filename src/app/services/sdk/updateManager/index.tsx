@@ -52,6 +52,7 @@ const C_DIFF_AMOUNT = 100;
 export interface IDialogDBUpdated {
     counters: boolean;
     ids: string[];
+    incomingIds: { [key: string]: number[] };
 }
 
 export interface IMessageDBUpdated {
@@ -91,6 +92,7 @@ interface ITransactionPayload {
     editedMessageIds: number[];
     flushDb: boolean;
     groups: { [key: string]: IGroup };
+    incomingIds: { [key: string]: number[] };
     labelRanges: ILabelRange[];
     labels: { [key: number]: ILabel };
     lastOne?: boolean;
@@ -310,6 +312,7 @@ export default class UpdateManager {
             this.applyDiffUpdate(res.toObject()).then((id) => {
                 this.startSyncing(id, limit);
             }).catch((err2) => {
+                window.console.warn(err2);
                 this.enableLiveUpdate();
                 this.isDiffUpdating = false;
                 this.callHandlers(C_MSG.UpdateManagerStatus, {
@@ -453,6 +456,7 @@ export default class UpdateManager {
             editedMessageIds: [],
             flushDb: false,
             groups: {},
+            incomingIds: {},
             labelRanges: [],
             labels: {},
             lastOne: data.lastOne || false,
@@ -514,7 +518,7 @@ export default class UpdateManager {
                 updateNewMessage.message = message;
                 this.callUpdateHandler(update.constructor, updateNewMessage);
                 // Add message
-                this.mergeMessage(transaction.messages, message);
+                this.mergeMessage(transaction.messages, transaction.incomingIds, message);
                 // Check [deleted dialog]/[clear history]
                 if (message.messageaction === C_MESSAGE_ACTION.MessageActionClearHistory) {
                     transaction.clearDialogs.push({
@@ -561,7 +565,7 @@ export default class UpdateManager {
                 updateMessageEdited.message = MessageRepo.parseMessage(updateMessageEdited.message, this.userId);
                 this.callUpdateHandler(update.constructor, updateMessageEdited);
                 // Update message
-                this.mergeMessage(transaction.messages, updateMessageEdited.message);
+                this.mergeMessage(transaction.messages, undefined, updateMessageEdited.message);
                 // Update edited message list
                 transaction.editedMessageIds.push(updateMessageEdited.message.id || 0);
                 // Update to check list
@@ -591,7 +595,7 @@ export default class UpdateManager {
                 this.callUpdateHandler(update.constructor, updateReadMessagesContents);
                 // Set messages content read
                 updateReadMessagesContents.messageidsList.forEach((id) => {
-                    this.mergeMessage(transaction.messages, {
+                    this.mergeMessage(transaction.messages, undefined, {
                         contentread: true,
                         id,
                     });
@@ -749,7 +753,7 @@ export default class UpdateManager {
                 this.callUpdateHandler(update.constructor, updateLabelItemsAdded);
                 // Update message label list
                 updateLabelItemsAdded.messageidsList.forEach((id) => {
-                    this.mergeMessage(transaction.messages, {
+                    this.mergeMessage(transaction.messages, undefined, {
                         added_labels: uniq(updateLabelItemsAdded.labelidsList),
                         id,
                     });
@@ -774,7 +778,7 @@ export default class UpdateManager {
                 this.callUpdateHandler(update.constructor, updateLabelItemsRemoved);
                 // Update message label list
                 updateLabelItemsRemoved.messageidsList.forEach((id) => {
-                    this.mergeMessage(transaction.messages, {
+                    this.mergeMessage(transaction.messages, undefined, {
                         id,
                         removed_labels: uniq(updateLabelItemsRemoved.labelidsList),
                     });
@@ -824,7 +828,7 @@ export default class UpdateManager {
         delete dialogs[peerId];
     }
 
-    private mergeMessage(messages: { [key: number]: IMessage }, message: IMessage) {
+    private mergeMessage(messages: { [key: number]: IMessage }, incomingIds: { [key: string]: number[] } | undefined, message: IMessage) {
         const m = messages[message.id || 0];
         if (m) {
             if (m.added_labels) {
@@ -836,6 +840,12 @@ export default class UpdateManager {
             messages[m.id || 0] = kMerge(m, message);
         } else {
             messages[message.id || 0] = message;
+        }
+        if (incomingIds && !message.me) {
+            if (!incomingIds.hasOwnProperty(message.peerid || '')) {
+                incomingIds[message.peerid || ''] = [];
+            }
+            incomingIds[message.peerid || ''].push(message.id || 0);
         }
     }
 
@@ -951,6 +961,7 @@ export default class UpdateManager {
                         this.callHandlers(C_MSG.UpdateDialogDB, {
                             counters: transaction.lastOne,
                             ids: keys,
+                            incomingIds: transaction.incomingIds,
                         });
                     }
                     return keys;
@@ -1015,7 +1026,8 @@ export default class UpdateManager {
                 this.applyDialogs(transaction.dialogs).then((keys) => {
                     this.callHandlers(C_MSG.UpdateDialogDB, {
                         counters: transaction.live ? true : transaction.lastOne,
-                        ids: keys
+                        ids: keys,
+                        incomingIds: transaction.incomingIds,
                     });
                     this.processTransactionStep4(transaction, transactionResolve, doneFn);
                 });
@@ -1160,11 +1172,15 @@ export default class UpdateManager {
 
     private callUpdateHandler(eventConstructor: number, data: any) {
         if (this.isLive) {
-            if (eventConstructor === C_MSG.UpdateNewMessage && this.messageIdMap.hasOwnProperty(data.message.id || 0)) {
-                this.callHandlers(C_MSG.UpdateNewMessageDrop, data);
-                delete this.messageIdMap[data.message.id || 0];
-            } else {
-                this.callHandlers(eventConstructor, data);
+            try {
+                if (eventConstructor === C_MSG.UpdateNewMessage && this.messageIdMap.hasOwnProperty(data.message.id || 0)) {
+                    this.callHandlers(C_MSG.UpdateNewMessageDrop, data);
+                    delete this.messageIdMap[data.message.id || 0];
+                } else {
+                    this.callHandlers(eventConstructor, data);
+                }
+            } catch (e) {
+                window.console.warn(e);
             }
         }
     }

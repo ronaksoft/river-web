@@ -1,3 +1,6 @@
+## 0.31.4
+* Notification updated
+
 ## 0.31.3
 * Search by sender implemented in groups
 * Minor improvements
