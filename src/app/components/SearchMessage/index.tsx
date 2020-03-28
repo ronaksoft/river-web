@@ -360,7 +360,13 @@ class SearchMessage extends React.PureComponent<IProps, IState> {
         if (!peer) {
             return;
         }
-        this.messageRepo.search(peer.getId() || '', {keyword: this.text, limit: searchLimit, before}).then((res) => {
+        this.messageRepo.search(peer.getId() || '', {
+            before,
+            keyword: this.text,
+            labelIds: this.state.appliedSelectedLabelIds,
+            limit: searchLimit,
+            senderIds: this.state.appliedSelectedUserIds,
+        }).then((res) => {
             if (res.length > 0) {
                 items.push.apply(items, res);
                 this.setState({
