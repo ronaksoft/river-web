@@ -40,7 +40,7 @@
       }
     }
 
-    .search-label {
+    .search-filter {
       position: absolute;
       top: 50%;
       right: 4px;
@@ -86,6 +86,13 @@
             align-items: center;
             justify-content: center;
 
+            .chip-avatar {
+              margin: 0;
+              padding: 0;
+              height: 16px;
+              width: 16px;
+            }
+
             svg {
               height: 15px;
               width: 15px;
@@ -129,7 +136,7 @@ html[direction="rtl"] {
         padding: 0 6px 0 0;
         direction: rtl;
 
-        .search-label {
+        .search-filter {
           right: auto;
           left: 4px;
         }
@@ -154,7 +161,7 @@ html[theme="dark-night"] {
     .search-box {
       border-color: var(--dark-low-op50);
 
-      .search-action, .search-label {
+      .search-action, .search-filter {
         button svg {
           color: var(--light);
         }
@@ -189,7 +196,7 @@ html[theme="dark-blue"] {
     .search-box {
       border-color: var(--dark-blue-low-op50);
 
-      .search-action, .search-label {
+      .search-action, .search-filter {
         button svg {
           color: var(--dark-blue-mention);
         }

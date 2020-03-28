@@ -3415,7 +3415,7 @@ class Chat extends React.Component<IProps, IState> {
         const index = findIndex(this.messages, (o) => {
             return o.id === id && o.messagetype !== C_MESSAGE_TYPE.Date && o.messagetype !== C_MESSAGE_TYPE.NewMessage;
         });
-        if (index > 0) {
+        if (index > -1) {
             if (this.messageRef.list) {
                 this.messageRef.list.scrollToItem(index, -1);
                 setTimeout(() => {
@@ -3423,7 +3423,7 @@ class Chat extends React.Component<IProps, IState> {
                     if (typeof text === 'string' && text !== '') {
                         highlightMessageText(id, text);
                     }
-                }, 100);
+                }, Math.abs(this.scrollInfo.end - index) < 20 ? 100 : 1500);
             }
         } else {
             this.setLoading(true, true);

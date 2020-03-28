@@ -1,0 +1,146 @@
+/*
+    Creation Time: 2020 - March - 28
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2020
+*/
+@import '../../../style/mixin';
+
+.search-user-popover {
+  position: absolute;
+  right: 6px;
+  left: 6px;
+  top: calc(100% - 1px);
+  height: 0;
+  z-index: 10000;
+
+  .search-user-container {
+    display: flex;
+    padding: 2px 0 2px;
+    min-width: 100px;
+    flex-direction: column;
+    background-color: var(--header-color);
+    border-radius: 0 0 3px 3px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+
+    .search-user-list {
+      max-height: 100px;
+      width: 100%;
+
+      .user-item {
+        padding: 0 6px;
+        display: flex;
+        height: 28px;
+        cursor: pointer;
+        border-bottom: 1px solid var(--glass-dark-low);
+
+        &:hover {
+          background-color: var(--dark-hover-light);
+        }
+
+        &:last-child {
+          border-bottom-color: transparent;
+        }
+
+        &.selected {
+          opacity: 1;
+        }
+
+        .user-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 28px;
+          width: 28px;
+          margin: 0 6px 0 0;
+
+          .popover-user-avatar {
+            height: 22px;
+            width: 22px;
+            border-radius: 50%;
+          }
+        }
+
+        .user-name {
+          display: flex;
+          flex: 1;
+          align-items: center;
+          justify-content: flex-start;
+          height: 100%;
+          font-size: 13px;
+        }
+      }
+    }
+
+    .search-user {
+      padding: 6px 0 0;
+    }
+  }
+}
+
+html[direction="rtl"] {
+  .search-user-popover {
+    .search-user-container {
+      .search-user-list {
+        .user-item {
+          .user-icon {
+            margin: 0 0 0 6px;
+          }
+
+          .user-name {
+            justify-content: flex-start;
+          }
+        }
+      }
+    }
+  }
+}
+
+html[theme="dark"],
+html[theme="dark-night"] {
+  .search-user-popover {
+    .search-user-container {
+      background-color: var(--dark-medium);
+
+      .search-user-list {
+        .user-item {
+          .user-name {
+            color: var(--white);
+          }
+        }
+      }
+
+      .search-user {
+        button[disabled] {
+          border-color: var(--dark-hover-light);
+          color: var(--dark-hover-light);
+        }
+      }
+    }
+  }
+}
+
+html[theme="dark-blue"] {
+  .search-user-popover {
+    .search-user-container {
+      background-color: var(--dark-blue-medium);
+
+      .search-user-list {
+        .user-item {
+          .user-name {
+            color: var(--white);
+          }
+        }
+      }
+
+      .search-user {
+        button[disabled] {
+          border-color: var(--dark-hover-light);
+          color: var(--dark-hover-light);
+        }
+      }
+    }
+  }
+}

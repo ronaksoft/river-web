@@ -1,3 +1,7 @@
+## 0.31.3
+* Search by sender implemented in groups
+* Minor improvements
+
 ## 0.31.2
 * KKWindow updated
 * Know bugs fixed

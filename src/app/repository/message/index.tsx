@@ -644,7 +644,7 @@ export default class MessageRepo {
     }
 
     // Search message bodies
-    public search(peerId: string, {keyword, labelIds, before, after, limit}: { keyword: string, labelIds?: number[], before?: number, after?: number, limit?: number }) {
+    public search(peerId: string, {keyword, labelIds, senderIds, before, after, limit}: { keyword: string, labelIds?: number[], senderIds?: string[], before?: number, after?: number, limit?: number }) {
         let mode = 0x0;
         if (before !== null && before !== undefined) {
             mode = mode | 0x1;
@@ -676,12 +676,15 @@ export default class MessageRepo {
         if (mode !== 0x2) {
             pipe2 = pipe2.reverse();
         }
-        if (keyword.length > 0 || (labelIds && labelIds.length > 0)) {
+        if (keyword.length > 0 || (labelIds && labelIds.length > 0) || (senderIds && senderIds.length > 0)) {
             const reg = new RegExp(keyword || '', 'i');
             pipe2 = pipe2.filter((item: IMessage) => {
                 if (item.messagetype !== C_MESSAGE_TYPE.Hole && item.messagetype !== C_MESSAGE_TYPE.End && item.temp !== true && (item.id || 0) > 0) {
                     let isMatched = false;
                     if (labelIds && labelIds.length && item.labelidsList && item.labelidsList.length && difference(labelIds, item.labelidsList).length === 0) {
+                        isMatched = true;
+                    }
+                    if (senderIds && senderIds.length && senderIds.indexOf(item.senderid || '0') > -1) {
                         isMatched = true;
                     }
                     if (keyword.length > 0) {
