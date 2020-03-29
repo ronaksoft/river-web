@@ -264,15 +264,20 @@ class VideoFrameSelector extends React.Component<IProps, IState> {
             video.onloadeddata = () => {
                 this.canvas = document.createElement('canvas');
                 let sampleTime = 0;
-                const frames: IFrame[] = [];
+                let index = 0;
+                const {frames} = this.state;
                 const fn = () => {
                     if (sampleTime <= video.duration) {
                         this.getFrame(sampleTime).then((res) => {
-                            frames.push({
+                            frames[index] = {
                                 time: sampleTime,
                                 url: res.url,
-                            });
+                            };
+                            index++;
                             sampleTime += step;
+                            this.setState({
+                                frames,
+                            });
                             fn();
                         });
                     } else {
