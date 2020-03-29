@@ -386,6 +386,62 @@ export namespace BotUpdateProfile {
   }
 }
 
+export class BotUpdatePhoto extends jspb.Message {
+  hasFile(): boolean;
+  clearFile(): void;
+  getFile(): chat_core_types_pb.InputFileLocation | undefined;
+  setFile(value?: chat_core_types_pb.InputFileLocation): void;
+
+  hasBotid(): boolean;
+  clearBotid(): void;
+  getBotid(): number | undefined;
+  setBotid(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BotUpdatePhoto.AsObject;
+  static toObject(includeInstance: boolean, msg: BotUpdatePhoto): BotUpdatePhoto.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BotUpdatePhoto, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BotUpdatePhoto;
+  static deserializeBinaryFromReader(message: BotUpdatePhoto, reader: jspb.BinaryReader): BotUpdatePhoto;
+}
+
+export namespace BotUpdatePhoto {
+  export type AsObject = {
+    file?: chat_core_types_pb.InputFileLocation.AsObject,
+    botid?: number,
+  }
+}
+
+export class BotRevokeToken extends jspb.Message {
+  hasBotid(): boolean;
+  clearBotid(): void;
+  getBotid(): number | undefined;
+  setBotid(value: number): void;
+
+  hasGetnew(): boolean;
+  clearGetnew(): void;
+  getGetnew(): boolean | undefined;
+  setGetnew(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BotRevokeToken.AsObject;
+  static toObject(includeInstance: boolean, msg: BotRevokeToken): BotRevokeToken.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BotRevokeToken, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BotRevokeToken;
+  static deserializeBinaryFromReader(message: BotRevokeToken, reader: jspb.BinaryReader): BotRevokeToken;
+}
+
+export namespace BotRevokeToken {
+  export type AsObject = {
+    botid?: number,
+    getnew?: boolean,
+  }
+}
+
 export class BotSetCallbackAnswer extends jspb.Message {
   hasQueryid(): boolean;
   clearQueryid(): void;
@@ -459,6 +515,30 @@ export namespace BotGetCallbackAnswer {
     peer: chat_core_types_pb.InputPeer.AsObject,
     messageid?: number,
     data: Uint8Array | string,
+  }
+}
+
+export class BotToken extends jspb.Message {
+  hasToken(): boolean;
+  clearToken(): void;
+  getToken(): Uint8Array | string;
+  getToken_asU8(): Uint8Array;
+  getToken_asB64(): string;
+  setToken(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BotToken.AsObject;
+  static toObject(includeInstance: boolean, msg: BotToken): BotToken.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BotToken, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BotToken;
+  static deserializeBinaryFromReader(message: BotToken, reader: jspb.BinaryReader): BotToken;
+}
+
+export namespace BotToken {
+  export type AsObject = {
+    token: Uint8Array | string,
   }
 }
 

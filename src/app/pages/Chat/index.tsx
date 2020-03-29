@@ -2432,7 +2432,7 @@ class Chat extends React.Component<IProps, IState> {
                 if (!this.isInChat) {
                     data.ids.forEach((id: string) => {
                         const msgIds = data.incomingIds[id];
-                        if (msgIds.length > 0) {
+                        if (msgIds && msgIds.length > 0) {
                             const dialog = this.getDialogById(id);
                             if (dialog && this.canNotify(id, dialog)) {
                                 const ids = msgIds.filter(o => (dialog && o > (dialog.readoutboxmaxid || 0)));
@@ -4222,18 +4222,18 @@ class Chat extends React.Component<IProps, IState> {
         switch (type) {
             case 'file':
             case 'voice':
-                uploadPromises.push(this.fileManager.sendFile(fileIds[0], mediaItem.file, (progress) => {
+                uploadPromises.push(this.fileManager.sendFile(fileIds[0], mediaItem.file, false, (progress) => {
                     this.progressBroadcaster.publish(id, progress);
                 }));
                 break;
             case 'image':
             case 'video':
             case 'audio':
-                uploadPromises.push(this.fileManager.sendFile(fileIds[0], mediaItem.file, (progress) => {
+                uploadPromises.push(this.fileManager.sendFile(fileIds[0], mediaItem.file, false, (progress) => {
                     this.progressBroadcaster.publish(id, progress);
                 }));
                 if (mediaItem.thumb) {
-                    uploadPromises.push(this.fileManager.sendFile(fileIds[1], mediaItem.thumb.file));
+                    uploadPromises.push(this.fileManager.sendFile(fileIds[1], mediaItem.thumb.file, false));
                 }
                 break;
         }

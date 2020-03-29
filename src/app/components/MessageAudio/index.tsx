@@ -20,11 +20,15 @@ import AudioPlayer, {IAudioEvent} from '../../services/audioPlayer';
 
 import './style.scss';
 import CachedPhoto from "../CachedPhoto";
+import {renderBody} from "../Message";
+import ElectronService from "../../services/electron";
 
 interface IProps {
+    measureFn: any;
     message: IMessage;
     peer: InputPeer | null;
     onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open', message: IMessage) => void;
+    onBodyAction: (cmd: string, text: string) => void;
 }
 
 interface IState {
@@ -39,6 +43,7 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
     private eventReferences: any[] = [];
     private downloaded: boolean = false;
     private audioPlayer: AudioPlayer;
+    private isElectron: boolean = ElectronService.isElectron();
 
     constructor(props: IProps) {
         super(props);
@@ -106,7 +111,9 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
                     </div>
                 </div>
                 {Boolean(mediaInfo.caption.length > 0) &&
-                <div className={'audio-caption ' + (message.rtl ? 'rtl' : 'ltr')}>{mediaInfo.caption}</div>}
+                <div
+                    className={'audio-caption ' + (message.rtl ? 'rtl' : 'ltr')}
+                >{renderBody(mediaInfo.caption, mediaInfo.entityList, this.isElectron, this.props.onBodyAction, this.props.measureFn)}</div>}
             </div>
         );
     }
@@ -122,7 +129,8 @@ class MessageAudio extends React.PureComponent<IProps, IState> {
                                   thumbFile={info.thumbFile}
                 />);
         } else {
-            return (<div className={'audio-item-action' + (info.thumbFile && info.thumbFile.fileid !== '' ? ' has-cover' : '')}>
+            return (<div
+                className={'audio-item-action' + (info.thumbFile && info.thumbFile.fileid !== '' ? ' has-cover' : '')}>
                 <CachedPhoto className="audio-thumbnail" fileLocation={info.thumbFile}/>
                 <div className="audio-action" onClick={this.audioActionClickHandler(message.id || 0)}>
                     {!playing && <PlayArrowRounded/>}

@@ -237,7 +237,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.msg.InputMediaDocument = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.msg.InputMediaDocument.repeatedFields_, null);
 };
 goog.inherits(proto.msg.InputMediaDocument, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -384,7 +384,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.msg.MediaDocument = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.msg.MediaDocument.repeatedFields_, null);
 };
 goog.inherits(proto.msg.MediaDocument, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -2769,7 +2769,7 @@ proto.msg.InputMediaContact.prototype.hasVcard = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.msg.InputMediaUploadedDocument.repeatedFields_ = [5,6];
+proto.msg.InputMediaUploadedDocument.repeatedFields_ = [5,6,7];
 
 
 
@@ -2809,7 +2809,9 @@ proto.msg.InputMediaUploadedDocument.toObject = function(includeInstance, msg) {
     stickersList: jspb.Message.toObjectList(msg.getStickersList(),
     chat_core_types_pb.InputDocument.toObject, includeInstance),
     attributesList: jspb.Message.toObjectList(msg.getAttributesList(),
-    proto.msg.DocumentAttribute.toObject, includeInstance)
+    proto.msg.DocumentAttribute.toObject, includeInstance),
+    entitiesList: jspb.Message.toObjectList(msg.getEntitiesList(),
+    chat_core_types_pb.MessageEntity.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -2873,6 +2875,11 @@ proto.msg.InputMediaUploadedDocument.deserializeBinaryFromReader = function(msg,
       var value = new proto.msg.DocumentAttribute;
       reader.readMessage(value,proto.msg.DocumentAttribute.deserializeBinaryFromReader);
       msg.addAttributes(value);
+      break;
+    case 7:
+      var value = new chat_core_types_pb.MessageEntity;
+      reader.readMessage(value,chat_core_types_pb.MessageEntity.deserializeBinaryFromReader);
+      msg.addEntities(value);
       break;
     default:
       reader.skipField();
@@ -2947,6 +2954,14 @@ proto.msg.InputMediaUploadedDocument.serializeBinaryToWriter = function(message,
       6,
       f,
       proto.msg.DocumentAttribute.serializeBinaryToWriter
+    );
+  }
+  f = message.getEntitiesList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      7,
+      f,
+      chat_core_types_pb.MessageEntity.serializeBinaryToWriter
     );
   }
 };
@@ -3174,6 +3189,51 @@ proto.msg.InputMediaUploadedDocument.prototype.clearAttributesList = function() 
 };
 
 
+/**
+ * repeated MessageEntity Entities = 7;
+ * @return {!Array<!proto.msg.MessageEntity>}
+ */
+proto.msg.InputMediaUploadedDocument.prototype.getEntitiesList = function() {
+  return /** @type{!Array<!proto.msg.MessageEntity>} */ (
+    jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.MessageEntity, 7));
+};
+
+
+/**
+ * @param {!Array<!proto.msg.MessageEntity>} value
+ * @return {!proto.msg.InputMediaUploadedDocument} returns this
+*/
+proto.msg.InputMediaUploadedDocument.prototype.setEntitiesList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 7, value);
+};
+
+
+/**
+ * @param {!proto.msg.MessageEntity=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.msg.MessageEntity}
+ */
+proto.msg.InputMediaUploadedDocument.prototype.addEntities = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 7, opt_value, proto.msg.MessageEntity, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.msg.InputMediaUploadedDocument} returns this
+ */
+proto.msg.InputMediaUploadedDocument.prototype.clearEntitiesList = function() {
+  return this.setEntitiesList([]);
+};
+
+
+
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.msg.InputMediaDocument.repeatedFields_ = [3];
 
 
 
@@ -3207,7 +3267,9 @@ proto.msg.InputMediaDocument.prototype.toObject = function(opt_includeInstance) 
 proto.msg.InputMediaDocument.toObject = function(includeInstance, msg) {
   var f, obj = {
     caption: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    document: (f = msg.getDocument()) && chat_core_types_pb.InputDocument.toObject(includeInstance, f)
+    document: (f = msg.getDocument()) && chat_core_types_pb.InputDocument.toObject(includeInstance, f),
+    entitiesList: jspb.Message.toObjectList(msg.getEntitiesList(),
+    chat_core_types_pb.MessageEntity.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -3253,6 +3315,11 @@ proto.msg.InputMediaDocument.deserializeBinaryFromReader = function(msg, reader)
       reader.readMessage(value,chat_core_types_pb.InputDocument.deserializeBinaryFromReader);
       msg.setDocument(value);
       break;
+    case 3:
+      var value = new chat_core_types_pb.MessageEntity;
+      reader.readMessage(value,chat_core_types_pb.MessageEntity.deserializeBinaryFromReader);
+      msg.addEntities(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -3295,6 +3362,14 @@ proto.msg.InputMediaDocument.serializeBinaryToWriter = function(message, writer)
       2,
       f,
       chat_core_types_pb.InputDocument.serializeBinaryToWriter
+    );
+  }
+  f = message.getEntitiesList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      3,
+      f,
+      chat_core_types_pb.MessageEntity.serializeBinaryToWriter
     );
   }
 };
@@ -3370,6 +3445,44 @@ proto.msg.InputMediaDocument.prototype.clearDocument = function() {
  */
 proto.msg.InputMediaDocument.prototype.hasDocument = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * repeated MessageEntity Entities = 3;
+ * @return {!Array<!proto.msg.MessageEntity>}
+ */
+proto.msg.InputMediaDocument.prototype.getEntitiesList = function() {
+  return /** @type{!Array<!proto.msg.MessageEntity>} */ (
+    jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.MessageEntity, 3));
+};
+
+
+/**
+ * @param {!Array<!proto.msg.MessageEntity>} value
+ * @return {!proto.msg.InputMediaDocument} returns this
+*/
+proto.msg.InputMediaDocument.prototype.setEntitiesList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 3, value);
+};
+
+
+/**
+ * @param {!proto.msg.MessageEntity=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.msg.MessageEntity}
+ */
+proto.msg.InputMediaDocument.prototype.addEntities = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.msg.MessageEntity, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.msg.InputMediaDocument} returns this
+ */
+proto.msg.InputMediaDocument.prototype.clearEntitiesList = function() {
+  return this.setEntitiesList([]);
 };
 
 
@@ -4863,6 +4976,13 @@ proto.msg.MediaInvoice.serializeBinaryToWriter = function(message, writer) {
 
 
 
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.msg.MediaDocument.repeatedFields_ = [4];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -4896,7 +5016,9 @@ proto.msg.MediaDocument.toObject = function(includeInstance, msg) {
   var f, obj = {
     caption: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
     ttlinseconds: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    doc: (f = msg.getDoc()) && proto.msg.Document.toObject(includeInstance, f)
+    doc: (f = msg.getDoc()) && proto.msg.Document.toObject(includeInstance, f),
+    entitiesList: jspb.Message.toObjectList(msg.getEntitiesList(),
+    chat_core_types_pb.MessageEntity.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -4945,6 +5067,11 @@ proto.msg.MediaDocument.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.msg.Document;
       reader.readMessage(value,proto.msg.Document.deserializeBinaryFromReader);
       msg.setDoc(value);
+      break;
+    case 4:
+      var value = new chat_core_types_pb.MessageEntity;
+      reader.readMessage(value,chat_core_types_pb.MessageEntity.deserializeBinaryFromReader);
+      msg.addEntities(value);
       break;
     default:
       reader.skipField();
@@ -4995,6 +5122,14 @@ proto.msg.MediaDocument.serializeBinaryToWriter = function(message, writer) {
       3,
       f,
       proto.msg.Document.serializeBinaryToWriter
+    );
+  }
+  f = message.getEntitiesList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      4,
+      f,
+      chat_core_types_pb.MessageEntity.serializeBinaryToWriter
     );
   }
 };
@@ -5106,6 +5241,44 @@ proto.msg.MediaDocument.prototype.clearDoc = function() {
  */
 proto.msg.MediaDocument.prototype.hasDoc = function() {
   return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * repeated MessageEntity Entities = 4;
+ * @return {!Array<!proto.msg.MessageEntity>}
+ */
+proto.msg.MediaDocument.prototype.getEntitiesList = function() {
+  return /** @type{!Array<!proto.msg.MessageEntity>} */ (
+    jspb.Message.getRepeatedWrapperField(this, chat_core_types_pb.MessageEntity, 4));
+};
+
+
+/**
+ * @param {!Array<!proto.msg.MessageEntity>} value
+ * @return {!proto.msg.MediaDocument} returns this
+*/
+proto.msg.MediaDocument.prototype.setEntitiesList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 4, value);
+};
+
+
+/**
+ * @param {!proto.msg.MessageEntity=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.msg.MessageEntity}
+ */
+proto.msg.MediaDocument.prototype.addEntities = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.msg.MessageEntity, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.msg.MediaDocument} returns this
+ */
+proto.msg.MediaDocument.prototype.clearEntitiesList = function() {
+  return this.setEntitiesList([]);
 };
 
 

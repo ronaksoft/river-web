@@ -52,6 +52,104 @@ import {EventMouseUp, EventResize} from "../../services/events";
 
 import './style.scss';
 
+/* Modify URL */
+export const modifyURL = (url: string) => {
+    if (url.indexOf('http://') > -1 || url.indexOf('https://') > -1) {
+        return url;
+    } else {
+        return `//${url}`;
+    }
+};
+
+/* Render body based on entities */
+export const renderBody = (body: string, entityList: MessageEntity.AsObject[] | undefined, isElectron: boolean, onAction: (cmd: string, text: string) => void, measureFn?: any) => {
+    if (!entityList || entityList.length === 0) {
+        return body;
+    } else {
+        const sortedEntities = clone(entityList);
+        // Sort fragments from entities
+        sortedEntities.sort((i1, i2) => {
+            if (i1.offset === undefined || i2.offset === undefined) {
+                return 0;
+            }
+            return i1.offset - i2.offset;
+        });
+        const elems: any[] = [];
+        const bodyLen = body.length - 1;
+        // Put fragments in order
+        sortedEntities.forEach((entity, i) => {
+            if (i === 0 && entity.offset !== 0) {
+                elems.push({
+                    str: body.substr(0, entity.offset),
+                    type: -1,
+                });
+            }
+            if (i > 0 && i < bodyLen && ((sortedEntities[i - 1].offset || 0) + (sortedEntities[i - 1].length || 0)) !== (entity.offset || 0)) {
+                elems.push({
+                    str: body.substr((sortedEntities[i - 1].offset || 0) + (sortedEntities[i - 1].length || 0), (entity.offset || 0) - ((sortedEntities[i - 1].offset || 0) + (sortedEntities[i - 1].length || 0))),
+                    type: -1,
+                });
+            }
+            elems.push({
+                str: body.substr(entity.offset || 0, (entity.length || 0)),
+                type: entity.type,
+                userId: entity.userid,
+            });
+            if (i === (sortedEntities.length - 1) && (bodyLen) !== (entity.offset || 0) + (entity.length || 0)) {
+                elems.push({
+                    str: body.substr((entity.offset || 0) + (entity.length || 0)),
+                    type: -1,
+                });
+            }
+        });
+        const openExternalLinkHandler = (url: string) => (e: any) => {
+            e.preventDefault();
+            onAction('open_external_link', url);
+        };
+        const botCommandHandler = (text: string) => (e: any) => {
+            onAction('bot_command', text);
+        };
+        const render = elems.map((elem, i) => {
+            switch (elem.type) {
+                case MessageEntityType.MESSAGEENTITYTYPEMENTION:
+                    if (elem.str.indexOf('@') === 0) {
+                        return (
+                            <UserName key={i} className="_mention" id={elem.userId} username={true} prefix="@"
+                                      unsafe={true} defaultString={elem.str.substr(1)} onLoad={measureFn}/>);
+                    } else {
+                        return (<UserName key={i} className="_mention" id={elem.userId} unsafe={true}
+                                          defaultString={elem.str} onLoad={measureFn}/>);
+                    }
+                case MessageEntityType.MESSAGEENTITYTYPEBOLD:
+                    return (<span key={i} className="_bold">{elem.str}</span>);
+                case MessageEntityType.MESSAGEENTITYTYPEITALIC:
+                    return (<span key={i} className="_italic">{elem.str}</span>);
+                case MessageEntityType.MESSAGEENTITYTYPEEMAIL:
+                    return (<span key={i} className="_mail">{elem.str}</span>);
+                case MessageEntityType.MESSAGEENTITYTYPEHASHTAG:
+                    return (<span key={i} className="_hashtag">{elem.str}</span>);
+                case MessageEntityType.MESSAGEENTITYTYPEURL:
+                    const url = modifyURL(elem.str);
+                    if (isElectron) {
+                        return (
+                            <a key={i} href={url} onClick={openExternalLinkHandler(url)}
+                               className="_url">{elem.str}</a>);
+                    } else {
+                        return (
+                            <a key={i} href={url} target="_blank" rel="noopener noreferrer"
+                               className="_url">{elem.str}</a>);
+                    }
+                case MessageEntityType.MESSAGEENTITYTYPEBOTCOMMAND:
+                    return (<span key={i} className="_url"
+                                  onClick={botCommandHandler(elem.str || '')}>{elem.str}</span>);
+                default:
+                    return (<span key={i}>{elem.str}</span>);
+            }
+        });
+        return render;
+    }
+};
+
 interface IProps {
     onContextMenu: (cmd: string, id: IMessage) => void;
     onAttachmentAction?: (cmd: 'cancel' | 'cancel_download' | 'download' | 'view' | 'open' | 'read' | 'preview', message: IMessage) => void;
@@ -1118,98 +1216,6 @@ class Message extends React.Component<IProps, IState> {
         });
     }
 
-    /* Render body based on entities */
-    private renderBody(message: IMessage, measureFn?: any) {
-        if (!message.entitiesList || message.entitiesList.length === 0) {
-            return message.body;
-        } else {
-            const sortedEntities = clone(message.entitiesList);
-            // Sort fragments from entities
-            sortedEntities.sort((i1, i2) => {
-                if (i1.offset === undefined || i2.offset === undefined) {
-                    return 0;
-                }
-                return i1.offset - i2.offset;
-            });
-            const elems: any[] = [];
-            const body = message.body || '';
-            const bodyLen = body.length - 1;
-            // Put fragments in order
-            sortedEntities.forEach((entity, i) => {
-                if (i === 0 && entity.offset !== 0) {
-                    elems.push({
-                        str: body.substr(0, entity.offset),
-                        type: -1,
-                    });
-                }
-                if (i > 0 && i < bodyLen && ((sortedEntities[i - 1].offset || 0) + (sortedEntities[i - 1].length || 0)) !== (entity.offset || 0)) {
-                    elems.push({
-                        str: body.substr((sortedEntities[i - 1].offset || 0) + (sortedEntities[i - 1].length || 0), (entity.offset || 0) - ((sortedEntities[i - 1].offset || 0) + (sortedEntities[i - 1].length || 0))),
-                        type: -1,
-                    });
-                }
-                elems.push({
-                    str: body.substr(entity.offset || 0, (entity.length || 0)),
-                    type: entity.type,
-                    userId: entity.userid,
-                });
-                if (i === (sortedEntities.length - 1) && (bodyLen) !== (entity.offset || 0) + (entity.length || 0)) {
-                    elems.push({
-                        str: body.substr((entity.offset || 0) + (entity.length || 0)),
-                        type: -1,
-                    });
-                }
-            });
-            const render = elems.map((elem, i) => {
-                switch (elem.type) {
-                    case MessageEntityType.MESSAGEENTITYTYPEMENTION:
-                        if (elem.str.indexOf('@') === 0) {
-                            return (
-                                <UserName key={i} className="_mention" id={elem.userId} username={true} prefix="@"
-                                          unsafe={true} defaultString={elem.str.substr(1)} onLoad={measureFn}/>);
-                        } else {
-                            return (<UserName key={i} className="_mention" id={elem.userId} unsafe={true}
-                                              defaultString={elem.str} onLoad={measureFn}/>);
-                        }
-                    case MessageEntityType.MESSAGEENTITYTYPEBOLD:
-                        return (<span key={i} className="_bold">{elem.str}</span>);
-                    case MessageEntityType.MESSAGEENTITYTYPEITALIC:
-                        return (<span key={i} className="_italic">{elem.str}</span>);
-                    case MessageEntityType.MESSAGEENTITYTYPEEMAIL:
-                        return (<span key={i} className="_mail">{elem.str}</span>);
-                    case MessageEntityType.MESSAGEENTITYTYPEHASHTAG:
-                        return (<span key={i} className="_hashtag">{elem.str}</span>);
-                    case MessageEntityType.MESSAGEENTITYTYPEURL:
-                        const url = this.modifyURL(elem.str);
-                        if (this.isElectron) {
-                            return (
-                                <a key={i} href={url} onClick={this.openExternalLink(url)}
-                                   className="_url">{elem.str}</a>);
-                        } else {
-                            return (
-                                <a key={i} href={url} target="_blank" rel="noopener noreferrer"
-                                   className="_url">{elem.str}</a>);
-                        }
-                    case MessageEntityType.MESSAGEENTITYTYPEBOTCOMMAND:
-                        return (<span key={i} className="_url"
-                                      onClick={this.botCommandHandler(elem.str || '')}>{elem.str}</span>);
-                    default:
-                        return (<span key={i}>{elem.str}</span>);
-                }
-            });
-            return render;
-        }
-    }
-
-    /* Modify URL */
-    private modifyURL(url: string) {
-        if (url.indexOf('http://') > -1 || url.indexOf('https://') > -1) {
-            return url;
-        } else {
-            return `//${url}`;
-        }
-    }
-
     /* Message body renderer */
     private renderMessageBody(message: IMessage, peer: InputPeer | null, messageMedia: any, parentEl: any, measureFn?: any) {
         const refBindHandler = (ref: any) => {
@@ -1222,7 +1228,8 @@ class Message extends React.Component<IProps, IState> {
                                           onAction={this.props.onAttachmentAction}/>);
                 case C_MESSAGE_TYPE.Audio:
                     return (<MessageAudio key={message.id} message={message} peer={peer}
-                                          onAction={this.props.onAttachmentAction}/>);
+                                          onAction={this.props.onAttachmentAction} measureFn={measureFn}
+                                          onBodyAction={this.bodyActionHandler}/>);
                 case C_MESSAGE_TYPE.File:
                     return (<MessageFile key={message.id} message={message} peer={peer}
                                          onAction={this.props.onAttachmentAction}/>);
@@ -1231,7 +1238,7 @@ class Message extends React.Component<IProps, IState> {
                 case C_MESSAGE_TYPE.Picture:
                 case C_MESSAGE_TYPE.Video:
                     return (<MessageMedia key={message.id} ref={refBindHandler} message={message} peer={peer}
-                                          onAction={this.props.onAttachmentAction}
+                                          onAction={this.props.onAttachmentAction} onBodyAction={this.bodyActionHandler}
                                           parentEl={parentEl} measureFn={measureFn}/>);
                 case C_MESSAGE_TYPE.Location:
                     return (<MessageLocation ref={refBindHandler} message={message} peer={peer}/>);
@@ -1245,7 +1252,7 @@ class Message extends React.Component<IProps, IState> {
             }
             return (
                 <div className={'inner ' + (message.rtl ? 'rtl' : 'ltr') + emojiClass}
-                     onDoubleClick={this.doubleClickHandler}>{this.renderBody(message, measureFn)}</div>
+                     onDoubleClick={this.doubleClickHandler}>{renderBody(message.body || '', message.entitiesList, this.isElectron, this.bodyActionHandler, measureFn)}</div>
             );
         }
     }
@@ -1345,11 +1352,6 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
-    private openExternalLink = (url: string) => (e: any) => {
-        e.preventDefault();
-        ElectronService.openExternal(url);
-    }
-
     private openAvatar = (photo: GroupPhoto.AsObject) => (e: any) => {
         const doc: IDocument = {
             items: [{
@@ -1397,27 +1399,34 @@ class Message extends React.Component<IProps, IState> {
         }
     }
 
-    private botCommandHandler = (cmd: string) => () => {
-        if (this.props.onBotCommand) {
-            const entities: MessageEntity[] = [];
-            const entity = new MessageEntity();
-            entity.setOffset(0);
-            entity.setLength(cmd.length);
-            entity.setType(MessageEntityType.MESSAGEENTITYTYPEBOTCOMMAND);
-            entity.setUserid('');
-            entities.push(entity);
-            this.props.onBotCommand(cmd, {
-                entities,
-            });
-        }
-    }
-
     private getLastIncomingMessage(items: IMessage[]) {
         const index = findLastIndex(items, o => o.senderid !== this.props.userId);
         if (index > -1) {
             this.props.onLastIncomingMessage(items[index]);
         } else {
             this.props.onLastIncomingMessage(null);
+        }
+    }
+
+    private bodyActionHandler = (cmd: string, text: string) => {
+        switch (cmd) {
+            case 'open_external_link':
+                ElectronService.openExternal(text);
+                break;
+            case 'bot_command':
+                if (this.props.onBotCommand) {
+                    const entities: MessageEntity[] = [];
+                    const entity = new MessageEntity();
+                    entity.setOffset(0);
+                    entity.setLength(cmd.length);
+                    entity.setType(MessageEntityType.MESSAGEENTITYTYPEBOTCOMMAND);
+                    entity.setUserid('0');
+                    entities.push(entity);
+                    this.props.onBotCommand(cmd, {
+                        entities,
+                    });
+                }
+                break;
         }
     }
 }

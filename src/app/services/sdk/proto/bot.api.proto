@@ -102,6 +102,22 @@ message BotUpdateProfile {
     optional string Bio = 4;
 }
 
+// BotUpdatePhoto
+// @Function (BotOnly)
+// @Returns: Bool
+message BotUpdatePhoto {
+    optional InputFileLocation File = 1;
+    required int64 BotID = 2;
+}
+
+// BotRevokeToken
+// @Function (BotOnly)
+// @Returns: BotToken
+message BotRevokeToken {
+    required int64 BotID = 1;
+    required bool GetNew = 2;
+}
+
 // BotSetCallbackAnswer
 // @Function (BotOnly)
 // @Returns: Bool
@@ -119,6 +135,11 @@ message BotGetCallbackAnswer {
     required InputPeer Peer = 1;
     optional int64 MessageID = 2; // ID of the Message if button is the inline keyboard
     required bytes Data = 3; // Callback data
+}
+
+// BotToken
+message BotToken {
+    required bytes Token = 1;
 }
 
 // BotRecalled

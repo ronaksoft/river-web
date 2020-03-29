@@ -348,6 +348,11 @@ export class InputMediaUploadedDocument extends jspb.Message {
   setAttributesList(value: Array<DocumentAttribute>): void;
   addAttributes(value?: DocumentAttribute, index?: number): DocumentAttribute;
 
+  clearEntitiesList(): void;
+  getEntitiesList(): Array<chat_core_types_pb.MessageEntity>;
+  setEntitiesList(value: Array<chat_core_types_pb.MessageEntity>): void;
+  addEntities(value?: chat_core_types_pb.MessageEntity, index?: number): chat_core_types_pb.MessageEntity;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): InputMediaUploadedDocument.AsObject;
   static toObject(includeInstance: boolean, msg: InputMediaUploadedDocument): InputMediaUploadedDocument.AsObject;
@@ -366,6 +371,7 @@ export namespace InputMediaUploadedDocument {
     caption?: string,
     stickersList: Array<chat_core_types_pb.InputDocument.AsObject>,
     attributesList: Array<DocumentAttribute.AsObject>,
+    entitiesList: Array<chat_core_types_pb.MessageEntity.AsObject>,
   }
 }
 
@@ -379,6 +385,11 @@ export class InputMediaDocument extends jspb.Message {
   clearDocument(): void;
   getDocument(): chat_core_types_pb.InputDocument;
   setDocument(value?: chat_core_types_pb.InputDocument): void;
+
+  clearEntitiesList(): void;
+  getEntitiesList(): Array<chat_core_types_pb.MessageEntity>;
+  setEntitiesList(value: Array<chat_core_types_pb.MessageEntity>): void;
+  addEntities(value?: chat_core_types_pb.MessageEntity, index?: number): chat_core_types_pb.MessageEntity;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): InputMediaDocument.AsObject;
@@ -394,6 +405,7 @@ export namespace InputMediaDocument {
   export type AsObject = {
     caption?: string,
     document: chat_core_types_pb.InputDocument.AsObject,
+    entitiesList: Array<chat_core_types_pb.MessageEntity.AsObject>,
   }
 }
 
@@ -615,6 +627,11 @@ export class MediaDocument extends jspb.Message {
   getDoc(): Document;
   setDoc(value?: Document): void;
 
+  clearEntitiesList(): void;
+  getEntitiesList(): Array<chat_core_types_pb.MessageEntity>;
+  setEntitiesList(value: Array<chat_core_types_pb.MessageEntity>): void;
+  addEntities(value?: chat_core_types_pb.MessageEntity, index?: number): chat_core_types_pb.MessageEntity;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MediaDocument.AsObject;
   static toObject(includeInstance: boolean, msg: MediaDocument): MediaDocument.AsObject;
@@ -630,6 +647,7 @@ export namespace MediaDocument {
     caption?: string,
     ttlinseconds?: number,
     doc: Document.AsObject,
+    entitiesList: Array<chat_core_types_pb.MessageEntity.AsObject>,
   }
 }
 

@@ -245,3 +245,76 @@ html[bubble="4"] {
     bottom: 4px;
   }
 }
+
+html[gradient="1"], html[gradient="2"], html[gradient="3"], html[gradient="4"], html[gradient="5"] {
+  .me {
+    .message-label {
+      .circle-label {
+        position: relative;
+        border-color: transparent !important;
+        background-attachment: fixed;
+
+        &:after {
+          position: absolute;
+          border-radius: 50%;
+          content: '';
+          top: 0;
+          left: 0;
+          height: 8px;
+          width: 8px;
+          background-color: inherit;
+        }
+      }
+    }
+  }
+}
+
+html[gradient="1"] {
+  .me {
+    .message-label {
+      .circle-label {
+        background-image: var(--gradient-morning);
+      }
+    }
+  }
+}
+
+html[gradient="2"] {
+  .me {
+    .message-label {
+      .circle-label {
+        background-image: var(--gradient-venice);
+      }
+    }
+  }
+}
+
+html[gradient="3"] {
+  .me {
+    .message-label {
+      .circle-label {
+        background-image: var(--gradient-paradise);
+      }
+    }
+  }
+}
+
+html[gradient="4"] {
+  .me {
+    .message-label {
+      .circle-label {
+        background-image: var(--gradient-ocean);
+      }
+    }
+  }
+}
+
+html[gradient="5"] {
+  .me {
+    .message-label {
+      .circle-label {
+        background-image: var(--gradient-rainbow);
+      }
+    }
+  }
+}

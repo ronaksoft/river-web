@@ -18,7 +18,15 @@ message FileSavePart {
 message FileGet {
     required InputFileLocation Location = 1;
     required int32 Offset = 2;
-    required int32 Limit =3;
+    required int32 Limit = 3;
+}
+
+// FileGetBySha256
+// @Function
+// @Return: FileLocation
+message FileGetBySha256 {
+    required bytes Sha256 = 1;
+    required int32 FileSize = 2;
 }
 
 // File

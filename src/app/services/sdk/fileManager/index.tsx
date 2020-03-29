@@ -21,6 +21,7 @@ import {isProd} from "../../../../App";
 import IframeService from "../../iframe";
 import {isMobile} from "../../utilities/localize";
 import Presenter from "../presenters";
+import SDK from "../index";
 
 export interface IFileProgress {
     active?: boolean;
@@ -123,6 +124,7 @@ export default class FileManager {
     private fileBundle: IFileBundle[] = [];
     private reqId: number = 0;
     private readonly fileGetManyThrottle: any = null;
+    private sdk: SDK;
 
     public constructor() {
         if (localStorage.getItem('river.conn.info')) {
@@ -138,6 +140,7 @@ export default class FileManager {
         }
         this.fileRepo = FileRepo.getInstance();
         this.fileGetManyThrottle = throttle(this.downloadMany, 100);
+        this.sdk = SDK.getInstance();
     }
 
     public setUrl(url: string) {
@@ -147,7 +150,7 @@ export default class FileManager {
     }
 
     /* Send the whole file */
-    public sendFile(id: string, blob: Blob, onProgress?: (e: IFileProgress) => void) {
+    public sendFile(id: string, blob: Blob, ignoreShaCheck: boolean, onProgress?: (e: IFileProgress) => void) {
         let internalResolve: any = null;
         let internalReject: any = null;
 
@@ -156,28 +159,47 @@ export default class FileManager {
             internalReject = rej;
         });
 
-        this.chunkBlob(blob).then((chunks) => {
-            const saveFileToDBPromises: any[] = [];
-            saveFileToDBPromises.push(md5FromBlob(blob));
-            chunks.forEach((chunk, index) => {
-                const temp: ITempFile = {
-                    data: chunk,
-                    id,
-                    part: index + 1,
-                };
-                saveFileToDBPromises.push(this.fileRepo.setTemp(temp));
-            });
+        const fn = () => {
+            this.chunkBlob(blob).then((chunks) => {
+                const saveFileToDBPromises: any[] = [];
+                saveFileToDBPromises.push(md5FromBlob(blob));
+                chunks.forEach((chunk, index) => {
+                    const temp: ITempFile = {
+                        data: chunk,
+                        id,
+                        part: index + 1,
+                    };
+                    saveFileToDBPromises.push(this.fileRepo.setTemp(temp));
+                });
 
-            Promise.all(saveFileToDBPromises).then((arr) => {
-                this.prepareUploadTransfer(id, arr.length === 0 ? '' : arr[0], chunks, blob.size, internalResolve, internalReject, onProgress);
+                Promise.all(saveFileToDBPromises).then((arr) => {
+                    this.prepareUploadTransfer(id, arr.length === 0 ? '' : arr[0], chunks, blob.size, internalResolve, internalReject, onProgress);
 
-                if (this.httpWorkers[0] && this.httpWorkers[0].isReady()) {
-                    this.startUploadQueue();
-                }
-            }).catch((err) => {
-                window.console.log(err);
+                    if (this.httpWorkers[0] && this.httpWorkers[0].isReady()) {
+                        this.startUploadQueue();
+                    }
+                }).catch((err) => {
+                    window.console.log(err);
+                });
             });
-        });
+        };
+
+        if (false && !ignoreShaCheck && crypto && crypto.subtle && crypto.subtle.digest) {
+            const reader = new FileReader();
+            reader.readAsArrayBuffer(blob);
+            reader.onloadend = () => {
+                crypto.subtle.digest('SHA-256', reader.result as ArrayBuffer).then((sha256) => {
+                    const ui8Sha256 = new Uint8Array(sha256);
+                    this.sdk.getFileBySha256(ui8Sha256, blob.size).then((fileLocation) => {
+                        internalResolve(fileLocation);
+                    }).catch(() => {
+                       fn();
+                    });
+                });
+            };
+        } else {
+            fn();
+        }
 
         return promise;
     }

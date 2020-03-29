@@ -111,32 +111,41 @@ html[theme="dark-blue"] {
 }
 
 html[gradient="1"]:not([bubble="5"]) {
-  .message-contact .contact-phone {
-    color: #e0a453 !important;
+  .me {
+    .message-contact .contact-phone {
+      color: #e0a453 !important;
+    }
   }
 }
 
 html[gradient="2"]:not([bubble="5"]) {
-  .message-contact .contact-phone {
-    color: #0d4c2c !important;
+  .me {
+    .message-contact .contact-phone {
+      color: #0d4c2c !important;
+    }
   }
 }
 
 html[gradient="3"]:not([bubble="5"]) {
-  .message-contact .contact-phone {
-    color: #570f77 !important;
+  .me {
+    .message-contact .contact-phone {
+      color: #570f77 !important;
+    }
   }
 }
 
 html[gradient="4"]:not([bubble="5"]) {
-  .message-contact .contact-phone {
-    color: #ffed00 !important;
+  .me {
+    .message-contact .contact-phone {
+      color: #ffed00 !important;
+    }
   }
 }
 
 html[gradient="5"]:not([bubble="5"]) {
-  .message-contact .contact-phone {
-    color: #1f133e !important;
-
+  .me {
+    .message-contact .contact-phone {
+      color: #1f133e !important;
+    }
   }
 }

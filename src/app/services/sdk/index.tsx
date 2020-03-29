@@ -32,7 +32,7 @@ import {
     ContactsMany, ContactsSearch, ContactsUnblock
 } from './messages/chat.api.contacts_pb';
 import {
-    Bool, Dialog,
+    Bool, Dialog, FileLocation,
     Group,
     GroupFull, GroupPhoto,
     InputFile, InputPassword,
@@ -110,6 +110,7 @@ import {
 } from "./messages/chat.api.labels_pb";
 import UniqueId from "../uniqueId";
 import {BotCallbackAnswer, BotGetCallbackAnswer, BotStart} from "./messages/bot.api_pb";
+import {FileGetBySha256} from "./messages/chat.api.files_pb";
 
 export default class SDK {
     public static getInstance() {
@@ -871,6 +872,16 @@ export default class SDK {
     public getServerSalts(): Promise<SystemSalts.AsObject> {
         const data = new SystemGetSalts();
         return this.server.send(C_MSG.SystemGetSalts, data.serializeBinary(), true);
+    }
+
+    public getFileBySha256(sha256: Uint8Array, size: number): Promise<FileLocation.AsObject> {
+        const data = new FileGetBySha256();
+        data.setSha256(sha256);
+        data.setFilesize(size);
+        return this.server.send(C_MSG.FileGetBySha256, data.serializeBinary(), true, {
+            retry: 2,
+            retryWait: 500,
+        });
     }
 
     public startNetWork() {

@@ -1,3 +1,8 @@
+## 0.31.6
+* UI improvements
+* Entity support for captions
+* Known bug fixed
+
 ## 0.31.5
 * Known bugs fixed
 

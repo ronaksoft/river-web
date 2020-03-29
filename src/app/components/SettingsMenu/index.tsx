@@ -118,7 +118,7 @@ const listStyle: React.CSSProperties = {
     overflowY: 'visible',
 };
 
-export const C_VERSION = '0.31.5';
+export const C_VERSION = '0.31.6';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 export const C_AVATAR_SIZE = 640;
 
@@ -1297,7 +1297,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
     /* Dark mode change handler */
     private nightModeHandler = (e: any) => {
         this.setState({
-            selectedTheme: e.currentTarget.checked ? 'dark' : 'light',
+            selectedTheme: e.currentTarget.checked ? 'dark-night' : 'light',
         }, () => {
             this.applyTheme();
         });
@@ -1698,7 +1698,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.setState({
             uploadingPhoto: true,
         });
-        this.fileManager.sendFile(this.fileId, blob, (progress) => {
+        this.fileManager.sendFile(this.fileId, blob, true, (progress) => {
             this.progressBroadcaster.publish(id, progress);
         }).then(() => {
             this.progressBroadcaster.remove(id);

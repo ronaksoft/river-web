@@ -81,6 +81,36 @@ export namespace FileGet {
   }
 }
 
+export class FileGetBySha256 extends jspb.Message {
+  hasSha256(): boolean;
+  clearSha256(): void;
+  getSha256(): Uint8Array | string;
+  getSha256_asU8(): Uint8Array;
+  getSha256_asB64(): string;
+  setSha256(value: Uint8Array | string): void;
+
+  hasFilesize(): boolean;
+  clearFilesize(): void;
+  getFilesize(): number | undefined;
+  setFilesize(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): FileGetBySha256.AsObject;
+  static toObject(includeInstance: boolean, msg: FileGetBySha256): FileGetBySha256.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: FileGetBySha256, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): FileGetBySha256;
+  static deserializeBinaryFromReader(message: FileGetBySha256, reader: jspb.BinaryReader): FileGetBySha256;
+}
+
+export namespace FileGetBySha256 {
+  export type AsObject = {
+    sha256: Uint8Array | string,
+    filesize?: number,
+  }
+}
+
 export class File extends jspb.Message {
   hasType(): boolean;
   clearType(): void;

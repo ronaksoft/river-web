@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import {IMessage} from '../../repository/message/interface';
-import {FileLocation, InputPeer, PeerType} from '../../services/sdk/messages/chat.core.types_pb';
+import {FileLocation, InputPeer, MessageEntity, PeerType} from '../../services/sdk/messages/chat.core.types_pb';
 import {
     DocumentAttributeAudio,
     DocumentAttributeFile,
@@ -28,6 +28,8 @@ import {C_MESSAGE_TYPE} from '../../repository/message/consts';
 import SettingsConfigManager from '../../services/settingsConfigManager';
 
 import './style.scss';
+import {renderBody} from "../Message";
+import ElectronService from "../../services/electron";
 
 const C_MAX_HEIGHT = 256;
 const C_MIN_HEIGHT = 86;
@@ -41,6 +43,7 @@ export interface IMediaInfo {
     album?: string;
     caption: string;
     duration?: number;
+    entityList?: MessageEntity.AsObject[];
     file: FileLocation.AsObject;
     fileName: string;
     hasRelation: boolean;
@@ -101,6 +104,9 @@ export const getMediaInfo = (message: IMessage): IMediaInfo => {
     }
     if ((message.replyto && message.deleted_reply !== true) || (message.fwdsenderid && message.fwdsenderid !== '0')) {
         info.hasRelation = true;
+    }
+    if (messageMediaDocument.entitiesList) {
+        info.entityList = messageMediaDocument.entitiesList;
     }
     if (!message.attributes) {
         return info;
@@ -210,6 +216,7 @@ interface IProps {
     measureFn: any;
     message: IMessage;
     onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'read', message: IMessage) => void;
+    onBodyAction: (cmd: string, text: string) => void;
     parentEl: any;
     peer: InputPeer | null;
 }
@@ -245,6 +252,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     private contentRead: boolean = false;
     private settingsConfigManager: SettingsConfigManager;
     private transitionTimeout: any = null;
+    private isElectron: boolean = ElectronService.isElectron();
 
     constructor(props: IProps) {
         super(props);
@@ -420,7 +428,7 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
                 <div className={'media-caption ' + (message.rtl ? 'rtl' : 'ltr')}
                      style={{minWidth: this.pictureContentSize.width, maxWidth: this.pictureContentSize.maxWidth}}
                      onClick={this.captionClickHandler}
-                >{info.caption}</div>}
+                >{renderBody(info.caption, info.entityList, this.isElectron, this.props.onBodyAction, this.props.measureFn)}</div>}
             </div>
         );
     }
@@ -594,7 +602,6 @@ class MessageMedia extends React.PureComponent<IProps, IState> {
     /* CachedPhoto onLoad handler */
     private cachedPhotoLoadHandler = (force?: boolean) => {
         if (this.props.measureFn && (this.pictureContentSize.nHeight < 10 || force === true)) {
-            window.console.log('cachedPhotoLoadHandler', this.pictureContentSize.nHeight, force);
             this.props.measureFn();
         }
     }

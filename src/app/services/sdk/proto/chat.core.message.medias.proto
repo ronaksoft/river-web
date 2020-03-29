@@ -108,12 +108,14 @@ message InputMediaUploadedDocument {
     required string Caption = 4;
     repeated InputDocument Stickers = 5;
     repeated DocumentAttribute Attributes = 6;
+    repeated MessageEntity Entities = 7;
 }
 
 // InputMediaDocument
 message InputMediaDocument {
     required string Caption = 1;
     required InputDocument Document = 2;
+    repeated MessageEntity Entities = 3;
 }
 
 // InputMediaGeoLocation
@@ -164,6 +166,7 @@ message MediaDocument {
     required string Caption = 1;
     required int32 TTLinSeconds = 2; // Seconds
     required Document Doc = 3;
+    repeated MessageEntity Entities = 4;
 }
 
 // MediaContact
