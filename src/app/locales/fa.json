@@ -401,7 +401,9 @@
     "add_media": "افزودن رسانه",
     "write_a_caption": "عنوانی بنویسید...",
     "map_caption": "عنوانی بنویسید (به عنوان پاسخ ارسال خواهد شد)",
-    "share_location": "اشتراک نقشه"
+    "share_location": "اشتراک نقشه",
+    "edit_photo": "اصلاح تصویر",
+    "select_video_frame": "انتخاب فریم ویدئو"
   },
   "label": {
     "labels": "برچسب‌ها",

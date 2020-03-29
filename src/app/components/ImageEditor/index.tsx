@@ -12,6 +12,7 @@ import Dialog from '@material-ui/core/Dialog/Dialog';
 // @ts-ignore
 import ToastImageEditor from '@toast-ui/react-image-editor';
 import {CheckRounded, CloseRounded, FullscreenRounded, FullscreenExitRounded} from "@material-ui/icons";
+import i18n from '../../services/i18n';
 
 import 'tui-image-editor/dist/tui-image-editor.css';
 import './style.scss';
@@ -91,9 +92,7 @@ class ImageEditor extends React.Component<IProps, IState> {
                     paper: 'image-editor-dialog-paper'
                 }}
             >
-                <div className="image-editor-dialog-header">
-                    Edit Picture
-                </div>
+                <div className="image-editor-dialog-header">{i18n.t('uploader.edit_photo')}</div>
                 <div className="image-editor-dialog-footer">
                     <div className={'picture-action' + (loading ? ' disabled' : '')} onClick={this.doneHandler}>
                         <CheckRounded/>

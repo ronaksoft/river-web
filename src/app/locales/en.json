@@ -405,7 +405,9 @@
     "add_media": "Add Media",
     "write_a_caption": "Write a Caption...",
     "map_caption": "Write a caption (would be sent as a reply)",
-    "share_location": "Share Location"
+    "share_location": "Share Location",
+    "edit_photo": "Edit Photo",
+    "select_video_frame": "Select Video Frame"
   },
   "label": {
     "labels": "Labels",

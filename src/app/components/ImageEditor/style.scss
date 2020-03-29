@@ -79,6 +79,25 @@
     }
   }
 
+  .tui-image-editor-main {
+    &.tui-image-editor-menu-crop,
+    &.tui-image-editor-menu-flip,
+    &.tui-image-editor-menu-rotate,
+    &.tui-image-editor-menu-draw,
+    &.tui-image-editor-menu-shape,
+    &.tui-image-editor-menu-icon,
+    &.tui-image-editor-menu-mask {
+      .tui-image-editor-wrap {
+        bottom: 150px !important;
+      }
+    }
+
+    &.tui-image-editor-menu-filter {
+      .tui-image-editor-wrap {
+        bottom: 98px !important;
+      }
+    }
+  }
 
   .image-editor-dialog-footer {
     position: relative;

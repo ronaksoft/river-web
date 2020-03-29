@@ -1,7 +1,11 @@
+## 0.31.7
+* Now you can select preview frame on uploading videos
+* Known bugs fixed
+
 ## 0.31.6
 * UI improvements
 * Entity support for captions
-* Known bug fixed
+* Known bugs fixed
 
 ## 0.31.5
 * Known bugs fixed

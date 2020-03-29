@@ -4233,7 +4233,7 @@ class Chat extends React.Component<IProps, IState> {
                     this.progressBroadcaster.publish(id, progress);
                 }));
                 if (mediaItem.thumb) {
-                    uploadPromises.push(this.fileManager.sendFile(fileIds[1], mediaItem.thumb.file, false));
+                    uploadPromises.push(this.fileManager.sendFile(fileIds[1], mediaItem.thumb.file, true));
                 }
                 break;
         }

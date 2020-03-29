@@ -12,7 +12,7 @@ import Dropzone, {FileWithPreview} from 'react-dropzone';
 import Dialog from '@material-ui/core/Dialog/Dialog';
 import {
     AddRounded, CancelRounded, CheckRounded, PlayCircleFilledRounded, ConfirmationNumberRounded,
-    InsertDriveFileRounded, MusicNoteRounded, CloseRounded, BrushRounded,
+    InsertDriveFileRounded, MusicNoteRounded, CloseRounded, BrushRounded, CropLandscapeRounded,
 } from '@material-ui/icons';
 import Scrollbars from 'react-custom-scrollbars';
 import TextField from '@material-ui/core/TextField/TextField';
@@ -26,6 +26,7 @@ import i18n from '../../services/i18n';
 import RTLDetector from "../../services/utilities/rtl_detector";
 import {throttle} from 'lodash';
 import ImageEditor from "../ImageEditor";
+import VideoFrameSelector from "../VideoFrameSelector";
 
 import './style.scss';
 
@@ -86,6 +87,7 @@ class MediaPreview extends React.Component<IProps, IState> {
     private imageActionRef: any;
     private previewRefs: string[][] = [];
     private imageEditorRef: ImageEditor | undefined;
+    private videoFrameSelectorRef: VideoFrameSelector | undefined;
     private rtl: boolean = localStorage.getItem('river.lang') === 'fa' || false;
     private rtlDetector: RTLDetector;
     private readonly rtlDetectorThrottle: any;
@@ -145,6 +147,8 @@ class MediaPreview extends React.Component<IProps, IState> {
             >
                 {Boolean(items.length > 0 && items[selected].mediaType === 'image') &&
                 <ImageEditor ref={this.imageEditorRefHandler} onImageReady={this.imageEditorImageReadyHandler}/>}
+                {Boolean(items.length > 0 && items[selected].mediaType === 'video') &&
+                <VideoFrameSelector ref={this.videoFrameSelectorRefHandler} onDone={this.videoFrameSelectorDoneHandler}/>}
                 <div className="uploader-container">
                     {loading && <div className="uploader-loader">
                         <span>{i18n.t('uploader.converting')}</span>
@@ -176,6 +180,12 @@ class MediaPreview extends React.Component<IProps, IState> {
                                                 <div ref={this.imageActionRefHandler} className="image-actions">
                                                     <BrushRounded
                                                         onClick={this.editImageHandler(items[selected].preview)}/>
+                                                </div>
+                                            </React.Fragment>}
+                                            {Boolean(items[selected].mediaType === 'video') && <React.Fragment>
+                                                <div ref={this.imageActionRefHandler} className="image-actions">
+                                                    <CropLandscapeRounded
+                                                        onClick={this.chooseFrameHandler(items[selected].preview)}/>
                                                 </div>
                                             </React.Fragment>}
                                             {Boolean(items[selected].mediaType === 'video') &&
@@ -562,7 +572,7 @@ class MediaPreview extends React.Component<IProps, IState> {
                 this.imageActionRef.style.height = `${this.imageRef.clientHeight}px`;
                 this.imageActionRef.style.width = `${this.imageRef.clientWidth}px`;
             }
-        }, 50);
+        }, (this.state.items[this.state.selected] && this.state.items[this.state.selected].mediaType === 'video') ? 1000 : 50);
     }
 
     /* Get type by mime */
@@ -740,6 +750,31 @@ class MediaPreview extends React.Component<IProps, IState> {
                 items,
             });
         }
+    }
+
+    /* Choose video frame handler */
+    private chooseFrameHandler = (url: string | undefined) => (e: any) => {
+        if (this.videoFrameSelectorRef && url) {
+            this.videoFrameSelectorRef.openFile(url);
+        }
+    }
+
+    /* VideoFrameSelector ref handler */
+    private videoFrameSelectorRefHandler = (ref: any) => {
+        this.videoFrameSelectorRef = ref;
+    }
+
+    /* VideoFrameSelector done handler */
+    private videoFrameSelectorDoneHandler = (blob: Blob, url: string) => {
+        const {items, selected} = this.state;
+        items[selected].tempThumb = new File([blob], `frame_${Date.now()}`, {type: blob.type, lastModified: Date.now()});;
+        items[selected].videoThumb = url;
+        if (items[selected].videoThumb) {
+            this.previewRefs[selected].push(items[selected].videoThumb || '');
+        }
+        this.setState({
+            items,
+        });
     }
 }
 

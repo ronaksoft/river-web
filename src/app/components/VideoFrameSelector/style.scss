@@ -1,0 +1,187 @@
+/*
+    Creation Time: 2020 - March - 15
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2020
+*/
+
+.video-frame-selector-dialog {
+  .video-frame-selector-dialog-header {
+    background-color: #151515;
+    color: var(--white);
+    padding: 12px 16px;
+  }
+
+  .video-frame-selector-dialog-paper {
+    background-color: #1e1e1e;
+  }
+
+  .video-frame-selector-dialog-footer {
+    position: relative;
+    background-color: #151515;
+    height: 0;
+
+    .picture-action {
+      position: absolute;
+      height: 48px;
+      width: 48px;
+      top: -24px;
+      right: 24px;
+      border-radius: 50%;
+      background-color: var(--river);
+      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 1000;
+      transform: scale(0.8);
+      transition: 0.1s transform;
+
+      &:hover {
+        transform: scale(1);
+      }
+
+      &.disabled {
+        background-color: var(--grey-low);
+        cursor: default;
+      }
+
+      &.cancel {
+        background-color: var(--dark-high);
+        height: 36px;
+        width: 36px;
+        top: -18px;
+        right: 70px;
+      }
+
+      &.maximize {
+        background-color: var(--dark-high);
+        height: 36px;
+        width: 36px;
+        top: -18px;
+        right: 106px;
+      }
+
+      svg {
+        color: var(--light);
+        font-size: 30px;
+      }
+    }
+  }
+
+  .video-frame-selector-dialog-container {
+    overflow: hidden;
+
+    .video-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: calc(100% - 122px);
+    }
+
+    &.loading {
+      .video-container {
+        opacity: 0;
+      }
+    }
+
+    .video-slider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 48px;
+
+      .slider-container {
+        flex: 1;
+      }
+
+      .slider-time {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        color: var(--light);
+        font-size: 11px;
+        user-select: none;
+      }
+    }
+
+    .frame-container {
+      height: 64px;
+      margin: 0 0 12px;
+
+      .frame-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 0 4px;
+
+        .frame-item {
+          position: relative;
+          height: 64px;
+          margin: 0 0 0 6px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          border: 1px solid var(--dark-medium);
+          transition: 0.2s border, 0.2s opacity;
+          opacity: 0.6;
+          border-radius: 2px;
+
+          &.selected {
+            border-color: var(--river);
+            opacity: 1;
+          }
+
+          .inner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--light);
+            height: 62px;
+
+            img {
+              height: 100%;
+              width: 100%;
+              object-fit: cover;
+              border-radius: 1px;
+            }
+          }
+
+          .frame-time {
+            top: 4px;
+            left: 4px;
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 14px;
+            font-size: 10px;
+            background-color: rgba(0, 0, 0, 0.32);
+            padding: 1px 2px 0;
+            border-radius: 4px;
+            color: var(--white);
+            white-space: nowrap;
+            user-select: none;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .video-frame-selector-dialog {
+    .video-frame-selector-dialog-paper {
+      width: 100vw;
+      height: 100vh;
+      max-width: 100vw;
+      max-height: 100vh;
+      margin: 0;
+    }
+  }
+}
