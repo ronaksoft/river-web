@@ -763,12 +763,14 @@ export default class MessageRepo {
     public upsert(msgs: IMessage[], callerId?: number): Promise<any> {
         const peerIdMap: { [key: string]: number[] } = {};
         const ids = msgs.map((msg) => {
+            this.trimMessage(msg);
             return msg.id || '';
         });
         return this.db.messages.where('id').anyOf(ids).toArray().then((result) => {
             const createItems: IMessage[] = differenceBy(msgs, result, 'id');
             const updateItems: IMessage[] = result;
             updateItems.map((msg: IMessage) => {
+                this.trimMessage(msg);
                 const t = find(msgs, {id: msg.id});
                 if (t && t.temp === true && msg.temp === false) {
                     const d = this.mergeCheck(msg, t);
@@ -781,6 +783,7 @@ export default class MessageRepo {
                 }
             });
             createItems.forEach((msg) => {
+                this.trimMessage(msg);
                 if (msg.peerid) {
                     if (!peerIdMap.hasOwnProperty(msg.peerid)) {
                         peerIdMap[msg.peerid] = [];
@@ -1089,5 +1092,11 @@ export default class MessageRepo {
             detail: data,
         });
         window.dispatchEvent(event);
+    }
+
+    private trimMessage(msg: IMessage) {
+        if (msg) {
+            delete msg.avatar;
+        }
     }
 }
