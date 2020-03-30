@@ -24,6 +24,7 @@ interface IProps {
     readId?: number;
     status: boolean;
     time: number;
+    forceDoubleTick: boolean;
 }
 
 interface IState {
@@ -79,7 +80,7 @@ class MessageStatus extends React.Component<IProps, IState> {
         if (id && status) {
             if (id < 0 && !markAsSent) {
                 return (<ScheduleRounded className="icon"/>);
-            } else if ((id > 0 && readId >= id)) {
+            } else if ((id > 0 && readId >= id) || this.props.forceDoubleTick) {
                 return (<DoneAllRounded className="icon"/>);
             } else if ((id > 0 && readId < id) || markAsSent) {
                 return (<DoneRounded className="icon"/>);

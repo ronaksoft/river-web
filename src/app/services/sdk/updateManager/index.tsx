@@ -46,7 +46,7 @@ import UserRepo from "../../../repository/user";
 import GroupRepo from "../../../repository/group";
 import LabelRepo from "../../../repository/label";
 
-const C_MAX_UPDATE_DIFF = 2000;
+const C_MAX_UPDATE_DIFF = 5000;
 const C_DIFF_AMOUNT = 100;
 
 export interface IDialogDBUpdated {

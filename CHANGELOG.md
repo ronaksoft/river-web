@@ -1,3 +1,6 @@
+## 0.31.8
+* Double tick in saved messages
+
 ## 0.31.7
 * Now you can select preview frame on uploading videos
 * Known bugs fixed

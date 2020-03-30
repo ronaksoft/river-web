@@ -279,6 +279,7 @@ class Message extends React.Component<IProps, IState> {
     // @ts-ignore
     private hasEnd: boolean = false;
     private estimatedHeight = window.innerHeight - 98;
+    private savedMessages: boolean = false;
 
     constructor(props: IProps) {
         super(props);
@@ -363,6 +364,7 @@ class Message extends React.Component<IProps, IState> {
     public setPeer(peer: InputPeer | null) {
         if (this.peer !== peer) {
             this.peer = peer;
+            this.savedMessages = Boolean(peer && this.props.userId === peer.getId());
         }
     }
 
@@ -940,7 +942,9 @@ class Message extends React.Component<IProps, IState> {
                                         <MessageStatus status={message.me || false} id={message.id} readId={readId}
                                                        time={message.createdon || 0} editedTime={message.editedon || 0}
                                                        labelIds={message.labelidsList} markAsSent={message.mark_as_sent}
-                                                       onDoubleClick={this.moreCmdHandler('reply', index)}/>
+                                                       onDoubleClick={this.moreCmdHandler('reply', index)}
+                                                       forceDoubleTick={this.savedMessages}
+                                        />
                                     </div>
                                     <div className="more" onClick={bubbleClickHandler}>
                                         <MoreVert onClick={this.contextMenuHandler(index)}/>
