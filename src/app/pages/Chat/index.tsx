@@ -147,6 +147,7 @@ import {
 } from "../../services/events";
 
 import './style.scss';
+import Smoother from "../../services/utilities/smoother";
 
 export let notifyOptions: any[] = [];
 
@@ -249,6 +250,7 @@ class Chat extends React.Component<IProps, IState> {
     private isMobileBrowser = isMobile();
     private avatarService: AvatarService;
     private isBot: boolean = false;
+    private smoother: Smoother;
 
     constructor(props: IProps) {
         super(props);
@@ -297,6 +299,7 @@ class Chat extends React.Component<IProps, IState> {
         const audioPlayer = AudioPlayer.getInstance();
         audioPlayer.setErrorFn(this.audioPlayerErrorHandler);
         audioPlayer.setUpdateDurationFn(this.audioPlayerUpdateDurationHandler);
+        this.smoother = new Smoother(2000, this.updateFunctionHandler);
 
         if (isProd) {
             Sentry.configureScope((scope) => {
@@ -826,7 +829,8 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     private getConnectionStatus() {
-        if (this.isConnecting) {
+        const showIsConnecting = this.smoother.getState(this.isConnecting);
+        if (this.isConnecting && showIsConnecting) {
             return (<span>{i18n.t('status.connecting')}</span>);
         } else if (this.isUpdating) {
             return (<span>{i18n.t('status.updating')}</span>);
@@ -5037,6 +5041,10 @@ class Chat extends React.Component<IProps, IState> {
                 entities,
             });
         });
+    }
+
+    private updateFunctionHandler = () => {
+        this.forceUpdate();
     }
 }
 

@@ -1,5 +1,6 @@
 ## 0.31.8
 * Double tick in saved messages
+* Status indicator optimized
 
 ## 0.31.7
 * Now you can select preview frame on uploading videos

@@ -49,7 +49,7 @@ export default class Socket {
     private fnCallback: any = null;
     private fnUpdate: any = null;
     private fnError: any = null;
-    private readonly testUrl: string = '';
+    private testUrl: string = '';
     private lastSendTime: number = 0;
     private lastReceiveTime: number = 0;
     private online: boolean = navigator.onLine === undefined ? true : navigator.onLine;
@@ -261,6 +261,7 @@ export default class Socket {
 
         this.tryCounter++;
 
+        this.testUrl = localStorage.getItem('river.workspace_url') || '';
         if (this.testUrl.length > 0) {
             this.socket = new WebSocket(`ws://${this.testUrl}`);
         } else if (window.location.protocol === 'https:' && !ElectronService.isElectron()) {

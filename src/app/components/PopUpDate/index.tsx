@@ -36,6 +36,12 @@ class PopUpDate extends React.PureComponent<IProps, IState> {
         this.lastTimestamp = 0;
     }
 
+    public componentWillUnmount() {
+        if (this.popUpDateTimeout) {
+            clearTimeout(this.popUpDateTimeout);
+        }
+    }
+
     public updateDate(timestamp: number | null) {
         if (this.lastTimestamp !== timestamp) {
             this.setState({

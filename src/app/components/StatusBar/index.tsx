@@ -17,6 +17,7 @@ import i18n from "../../services/i18n";
 import Socket from "../../services/sdk/server/socket";
 
 import './style.scss';
+import Smoother from "../../services/utilities/smoother";
 
 interface IProps {
     currentUserId: string;
@@ -49,6 +50,7 @@ class StatusBar extends React.Component<IProps, IState> {
     }
 
     private disableClick: boolean = false;
+    private smoother: Smoother;
 
     constructor(props: IProps) {
         super(props);
@@ -61,6 +63,12 @@ class StatusBar extends React.Component<IProps, IState> {
             peer: null,
             selectedDialogId: props.selectedDialogId,
         };
+
+        this.smoother = new Smoother(2000, this.updateFunctionHandler);
+    }
+
+    public componentWillUnmount() {
+        this.smoother.destroy();
     }
 
     public setIsTypingList(isTypingList: { [key: string]: { [key: string]: { fn: any, action: TypingAction } } }) {
@@ -83,16 +91,17 @@ class StatusBar extends React.Component<IProps, IState> {
                           youPlaceholder={i18n.t('general.saved_messages')} noDetail={true}/>}
                 {isGroup &&
                 <GroupName id={selectedDialogId} className="name"/>}
-                {!savedMessages && this.getChatStatus()}
+                {this.getChatStatus(savedMessages)}
             </span>
         );
     }
 
-    private getChatStatus() {
-        const {selectedDialogId, peer} = this.state;
+    private getChatStatus(hideStatus: boolean) {
+        const {selectedDialogId, peer, isConnecting} = this.state;
         if (!peer) {
             return '';
         }
+        const showIsConnecting = this.smoother.getState(isConnecting);
         let typingList: { [key: string]: { fn: any, action: TypingAction } } = {};
         let ids: number = 0;
         if (this.state.isTypingList.hasOwnProperty(selectedDialogId)) {
@@ -101,15 +110,17 @@ class StatusBar extends React.Component<IProps, IState> {
         }
         if (!this.state.isOnline) {
             return (<span>{i18n.t('status.waiting_for_network')}</span>);
-        } else if (this.state.isConnecting) {
+        } else if (isConnecting && showIsConnecting) {
             return (<span className="try-again-container"><span>{i18n.t('status.connecting')}</span><span
                 className="try-again" onClick={this.tryAgainHandler}>{i18n.t('status.try_again')}</span></span>);
         } else if (this.state.isUpdating) {
             return (<span>{i18n.t('status.updating')}</span>);
         } else if (ids > 0) {
             return (isTypingRender(typingList, peer.getType() || PeerType.PEERUSER));
-        } else {
+        } else if (!hideStatus) {
             return (<LastSeen id={selectedDialogId} withLastSeen={true}/>);
+        } else {
+            return null;
         }
     }
 
@@ -128,6 +139,10 @@ class StatusBar extends React.Component<IProps, IState> {
         e.stopPropagation();
         e.preventDefault();
         Socket.getInstance().tryAgain();
+    }
+
+    private updateFunctionHandler = () => {
+        this.forceUpdate();
     }
 }
 
