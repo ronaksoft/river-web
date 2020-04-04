@@ -594,6 +594,7 @@ class Chat extends React.Component<IProps, IState> {
                                          onBotCommand={this.messageBotCommandHandler}
                                          onBotButtonAction={this.messageBotButtonActionHandler}
                                          userId={this.connInfo.UserID}
+                                         isBot={this.isBot}
                                 />
                                 <MoveDown key="move-down" ref={this.moveDownRefHandler}
                                           onClick={this.moveDownClickHandler}/>

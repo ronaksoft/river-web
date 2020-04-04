@@ -168,6 +168,7 @@ interface IProps {
     showNewMessage?: (visible: boolean) => void;
     isMobileView: boolean;
     userId?: string;
+    isBot: boolean;
 }
 
 interface IState {
@@ -943,7 +944,7 @@ class Message extends React.Component<IProps, IState> {
                                                        time={message.createdon || 0} editedTime={message.editedon || 0}
                                                        labelIds={message.labelidsList} markAsSent={message.mark_as_sent}
                                                        onDoubleClick={this.moreCmdHandler('reply', index)}
-                                                       forceDoubleTick={this.savedMessages}
+                                                       forceDoubleTick={this.props.isBot || this.savedMessages}
                                         />
                                     </div>
                                     <div className="more" onClick={bubbleClickHandler}>
@@ -1236,7 +1237,8 @@ class Message extends React.Component<IProps, IState> {
                                           onBodyAction={this.bodyActionHandler}/>);
                 case C_MESSAGE_TYPE.File:
                     return (<MessageFile key={message.id} message={message} peer={peer}
-                                         onAction={this.props.onAttachmentAction}/>);
+                                         onAction={this.props.onAttachmentAction} measureFn={measureFn}
+                                         onBodyAction={this.bodyActionHandler}/>);
                 case C_MESSAGE_TYPE.Contact:
                     return (<MessageContact message={message} peer={peer} onAction={this.props.onAttachmentAction}/>);
                 case C_MESSAGE_TYPE.Picture:
