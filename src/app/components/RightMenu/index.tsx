@@ -54,11 +54,17 @@ class RightMenu extends React.PureComponent<IProps, IState> {
                 });
             } else {
                 shrink = false;
+                this.setState({
+                    rightMenu: false,
+                });
             }
         } else {
             if (!force) {
                 this.ref.classList.remove('active');
                 shrink = false;
+                this.setState({
+                    rightMenu: false,
+                });
             } else {
                 this.ref.classList.add('active');
                 shrink = true;

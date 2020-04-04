@@ -160,7 +160,7 @@ class DialogMessage extends React.Component<IProps, IState> {
         const forceDoubleTick = peerId === this.userId || this.state.isBot;
         if (id < 0) {
             return (<ScheduleRounded className="icon"/>);
-        } else if (id > 0 && readId >= id || forceDoubleTick) {
+        } else if ((id > 0 && readId >= id) || forceDoubleTick) {
             return (<DoneAllRounded className="icon"/>);
         } else if (id > 0 && readId < id) {
             return (<DoneRounded className="icon"/>);
