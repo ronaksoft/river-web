@@ -1,7 +1,12 @@
-## 0.31.9
-* Double tick for bots
+## 0.32.0
+* 🎉 Introducing the new `CodeViewer`
+* Now you can use \```your code\``` for sending codes with style
+* File Sha256 hash check
+* Thumbnail for file messages
+* Double tick for bots and saved messages
 * Official badge support
-* Message entity for files' caption
+* Message entity for file message caption
+* Bug fix and performance enhancements
 
 ## 0.31.8
 * Double tick in saved messages
