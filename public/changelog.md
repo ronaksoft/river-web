@@ -1,4 +1,5 @@
 ## 0.32.1
+* Bot icon added
 * Minor improvements
 
 ## 0.32.0

@@ -11,7 +11,7 @@ import * as React from 'react';
 import {IUser} from '../../repository/user/interface';
 import UserRepo, {UserDBUpdated} from '../../repository/user';
 import {GetUniqueColor, TextColors} from '../UserAvatar';
-import {VerifiedUserRounded} from '@material-ui/icons';
+import {VerifiedUserRounded, MemoryRounded} from '@material-ui/icons';
 import Broadcaster from '../../services/broadcaster';
 import i18n from '../../services/i18n';
 import {ThemeChanged} from "../SettingsMenu";
@@ -31,6 +31,7 @@ interface IProps {
     you?: boolean;
     youPlaceholder?: string;
     onLoad?: () => void;
+    noIcon?: boolean;
 }
 
 interface IState {
@@ -113,7 +114,8 @@ class UserName extends React.Component<IProps, IState> {
                       style={style}
                       onClick={this.clickHandler}>{Boolean(this.props.hideBadge !== true && user.official) &&
                 <VerifiedUserRounded
-                    style={{color: '#27AE60'}}/>}{(user.id && user.username && user.username.length > 0) ? `${prefix}${user.username}${postfix}` : `${prefix}${defaultString}${postfix}`}</span>
+                    style={{color: '#27AE60'}}/>}{Boolean(this.props.noIcon !== true && user.isbot) &&
+                <MemoryRounded/>}{(user.id && user.username && user.username.length > 0) ? `${prefix}${user.username}${postfix}` : `${prefix}${defaultString}${postfix}`}</span>
             );
         } else {
             return (
@@ -121,7 +123,8 @@ class UserName extends React.Component<IProps, IState> {
                       style={style}
                       onClick={this.clickHandler}>{Boolean(this.props.hideBadge !== true && user.official) &&
                 <VerifiedUserRounded
-                    style={{color: '#27AE60'}}/>}{(user.id) ? (onlyFirstName ? prefix + user.firstname : `${prefix}${user.firstname} ${user.lastname}${postfix}`) : `${prefix}${defaultString}${postfix}`}</span>
+                    style={{color: '#27AE60'}}/>}{Boolean(this.props.noIcon !== true && user.isbot) &&
+                <MemoryRounded/>}{(user.id) ? (onlyFirstName ? prefix + user.firstname : `${prefix}${user.firstname} ${user.lastname}${postfix}`) : `${prefix}${defaultString}${postfix}`}</span>
             );
         }
     }
