@@ -1,0 +1,267 @@
+/*
+    Creation Time: 2020 - April - 04
+    Created by:  (hamidrezakk)
+    Maintainers:
+       1.  HamidrezaKK (hamidrezakks@gmail.com)
+    Auditor: HamidrezaKK
+    Copyright Ronak Software Group 2020
+*/
+
+code {
+  direction: ltr;
+  display: block;
+
+  table tr {
+    td:first-child {
+      border-right: 1px solid #555;
+      padding-right: 2px;
+      text-align: right;
+    }
+
+    td:last-child {
+      padding-left: 6px;
+    }
+  }
+}
+
+html[theme=""],
+html[theme="light"] {
+  /*
+  github.com style (c) Vasily Polovnyov <vast@whiteants.net>
+  */
+  code {
+    color: #333;
+
+    table tr {
+      td:first-child {
+        border-color: #333;
+      }
+    }
+
+    .hljs {
+      display: block;
+      overflow-x: auto;
+      padding: 0.5em;
+      color: #333;
+      background: #f8f8f8;
+    }
+
+    .hljs-comment,
+    .hljs-quote {
+      color: #998;
+      font-style: italic;
+    }
+
+    .hljs-keyword,
+    .hljs-selector-tag,
+    .hljs-subst {
+      color: #333;
+      font-weight: bold;
+    }
+
+    .hljs-number,
+    .hljs-literal,
+    .hljs-variable,
+    .hljs-template-variable,
+    .hljs-tag .hljs-attr {
+      color: #008080;
+    }
+
+    .hljs-string,
+    .hljs-doctag {
+      color: #d14;
+    }
+
+    .hljs-title,
+    .hljs-section,
+    .hljs-selector-id {
+      color: #900;
+      font-weight: bold;
+    }
+
+    .hljs-subst {
+      font-weight: normal;
+    }
+
+    .hljs-type,
+    .hljs-class .hljs-title {
+      color: #458;
+      font-weight: bold;
+    }
+
+    .hljs-tag,
+    .hljs-name,
+    .hljs-attribute {
+      color: #000080;
+      font-weight: normal;
+    }
+
+    .hljs-regexp,
+    .hljs-link {
+      color: #009926;
+    }
+
+    .hljs-symbol,
+    .hljs-bullet {
+      color: #990073;
+    }
+
+    .hljs-built_in,
+    .hljs-builtin-name {
+      color: #0086b3;
+    }
+
+    .hljs-meta {
+      color: #999;
+      font-weight: bold;
+    }
+
+    .hljs-deletion {
+      background: #fdd;
+    }
+
+    .hljs-addition {
+      background: #dfd;
+    }
+
+    .hljs-emphasis {
+      font-style: italic;
+    }
+
+    .hljs-strong {
+      font-weight: bold;
+    }
+  }
+}
+
+html[theme="dark"],
+html[theme="dark-night"],
+html[theme="dark-blue"] {
+  /*
+Dracula Theme v1.2.0
+https://github.com/zenorocha/dracula-theme
+Copyright 2015, All rights reserved
+Code licensed under the MIT license
+http://zenorocha.mit-license.org
+@author Éverton Ribeiro <nuxlli@gmail.com>
+@author Zeno Rocha <hi@zenorocha.com>
+*/
+  code {
+    direction: ltr;
+    display: block;
+    color: var(--light);
+
+    table tr {
+      td:first-child {
+        border-color: var(--grey);
+      }
+    }
+
+    /* Tomorrow Night Theme */
+    /* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+    /* Original theme - https://github.com/chriskempson/tomorrow-theme */
+    /* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+
+    /* Tomorrow Comment */
+    .hljs-comment,
+    .hljs-quote {
+      color: #969896;
+    }
+
+    /* Tomorrow Red */
+    .hljs-variable,
+    .hljs-template-variable,
+    .hljs-tag,
+    .hljs-name,
+    .hljs-selector-id,
+    .hljs-selector-class,
+    .hljs-regexp,
+    .hljs-deletion {
+      color: #cc6666;
+    }
+
+    /* Tomorrow Orange */
+    .hljs-number,
+    .hljs-built_in,
+    .hljs-builtin-name,
+    .hljs-literal,
+    .hljs-type,
+    .hljs-params,
+    .hljs-meta,
+    .hljs-link {
+      color: #de935f;
+    }
+
+    /* Tomorrow Yellow */
+    .hljs-attribute {
+      color: #f0c674;
+    }
+
+    /* Tomorrow Green */
+    .hljs-string,
+    .hljs-symbol,
+    .hljs-bullet,
+    .hljs-addition {
+      color: #b5bd68;
+    }
+
+    /* Tomorrow Blue */
+    .hljs-title,
+    .hljs-section {
+      color: #81a2be;
+    }
+
+    /* Tomorrow Purple */
+    .hljs-keyword,
+    .hljs-selector-tag {
+      color: #b294bb;
+    }
+
+    .hljs {
+      display: block;
+      overflow-x: auto;
+      background: #1d1f21;
+      color: #c5c8c6;
+      padding: 0.5em;
+    }
+
+    .hljs-emphasis {
+      font-style: italic;
+    }
+
+    .hljs-strong {
+      font-weight: bold;
+    }
+  }
+}
+
+@for $i from 1 through 5 {
+  html[theme=""],
+  html[theme="light"] {
+    &[gradient="#{$i}"]:not([bubble="5"]) {
+      .me {
+        code {
+          padding: 4px;
+          background: rgba(255, 255, 255, 0.53);
+          border-radius: 3px;
+        }
+      }
+    }
+  }
+}
+
+@for $i from 1 through 5 {
+  html[theme="dark"],
+  html[theme="dark-night"],
+  html[theme="dark-blue"] {
+    &[gradient="#{$i}"]:not([bubble="5"]) {
+      .me {
+        code {
+          padding: 4px;
+          background: rgba(40, 42, 54, 0.67);
+          border-radius: 3px;
+        }
+      }
+    }
+  }
+}
