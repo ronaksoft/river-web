@@ -29,6 +29,7 @@ import {localize} from '../../services/utilities/localize';
 import sdk from '../../services/sdk';
 import {Link} from "react-router-dom";
 import LabelRepo from "../../repository/label";
+import {IUser} from "../../repository/user/interface";
 
 import './style.scss';
 
@@ -44,6 +45,7 @@ interface IProps {
 
 interface IState {
     dialog: IDialog;
+    isBot: boolean;
     isTyping: { [key: string]: { fn: any, action: TypingAction } };
     selectedId: string;
 }
@@ -60,6 +62,7 @@ class DialogMessage extends React.Component<IProps, IState> {
 
         this.state = {
             dialog: props.dialog,
+            isBot: false,
             isTyping: props.isTyping,
             selectedId: props.selectedId,
         };
@@ -71,6 +74,7 @@ class DialogMessage extends React.Component<IProps, IState> {
         if (this.state.dialog !== newProps.dialog || this.lastUpdate !== newProps.dialog.last_update || !isEqual(this.notifySetting, newProps.dialog.notifysettings)) {
             this.setState({
                 dialog: newProps.dialog,
+                isBot: false,
                 isTyping: newProps.isTyping,
             });
             this.lastUpdate = newProps.dialog.last_update;
@@ -114,12 +118,12 @@ class DialogMessage extends React.Component<IProps, IState> {
                             {muted && <div className="muted-wrapper"><NotificationsOffRounded/></div>}
                             {Boolean(dialog.peertype === PeerType.PEERUSER || dialog.peertype === PeerType.PEERSELF) &&
                             <UserName className="name" id={dialog.peerid || ''} noDetail={true}
-                                      you={dialog.saved_messages}
+                                      you={dialog.saved_messages} onLoad={this.userNameLoadHandler}
                                       youPlaceholder="Saved Messages"/>}
                             {Boolean(dialog.peertype === PeerType.PEERGROUP) &&
                             <GroupName className="name" id={dialog.peerid || ''}/>}
-                            {dialog.preview_me && dialog.peerid !== this.userId && <span
-                                className="status">{this.getStatus(dialog.topmessageid || 0, dialog.readoutboxmaxid || 0)}</span>}
+                            {dialog.preview_me && <span
+                                className="status">{this.getStatus(dialog.topmessageid || 0, dialog.readoutboxmaxid || 0, dialog.peerid || '')}</span>}
                             {dialog.last_update && <LiveDate className="time" time={dialog.last_update || 0}/>}
                         </div>
                         {Boolean(ids.length === 0) && <span
@@ -152,10 +156,11 @@ class DialogMessage extends React.Component<IProps, IState> {
         );
     }
 
-    private getStatus(id: number, readId: number) {
+    private getStatus(id: number, readId: number, peerId: string) {
+        const forceDoubleTick = peerId === this.userId || this.state.isBot;
         if (id < 0) {
             return (<ScheduleRounded className="icon"/>);
-        } else if (id > 0 && readId >= id) {
+        } else if (id > 0 && readId >= id || forceDoubleTick) {
             return (<DoneAllRounded className="icon"/>);
         } else if (id > 0 && readId < id) {
             return (<DoneRounded className="icon"/>);
@@ -212,7 +217,8 @@ class DialogMessage extends React.Component<IProps, IState> {
             return (
                 <span className="preview-message">
                     {Boolean(dialog.peertype === PeerType.PEERGROUP && dialog.sender_id) && <span className="sender">
-                    <UserName id={dialog.sender_id || ''} onlyFirstName={true} you={true} noDetail={true} postfix=":"/>&nbsp;</span>}
+                    <UserName id={dialog.sender_id || ''} onlyFirstName={true} you={true} noDetail={true}
+                              postfix=":"/>&nbsp;</span>}
                     {this.getIcon(dialog.preview_icon)}<span
                     className="preview-inner">{dialog.preview}</span>
                 </span>
@@ -299,6 +305,14 @@ class DialogMessage extends React.Component<IProps, IState> {
             default:
                 return (<span className="preview-message">{this.getIcon(dialog.preview_icon)}<span
                     className="preview-inner">{dialog.preview}</span></span>);
+        }
+    }
+
+    private userNameLoadHandler = (user?: IUser) => {
+        if (user) {
+            this.setState({
+                isBot: user.isbot || false,
+            });
         }
     }
 }

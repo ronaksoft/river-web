@@ -30,7 +30,7 @@ interface IProps {
     username?: boolean;
     you?: boolean;
     youPlaceholder?: string;
-    onLoad?: () => void;
+    onLoad?: (user?: IUser) => void;
     noIcon?: boolean;
 }
 
@@ -146,7 +146,7 @@ class UserName extends React.Component<IProps, IState> {
                 },
             }, () => {
                 if (this.props.onLoad) {
-                    this.props.onLoad();
+                    this.props.onLoad(this.state.user);
                 }
             });
             return;
@@ -161,7 +161,7 @@ class UserName extends React.Component<IProps, IState> {
                     user,
                 }, () => {
                     if (this.props.onLoad) {
-                        this.props.onLoad();
+                        this.props.onLoad(this.state.user);
                     }
                 });
             } else {
