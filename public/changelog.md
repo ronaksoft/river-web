@@ -1,3 +1,8 @@
+## 0.31.9
+* Double tick for bots
+* Official badge support
+* Message entity for files' caption
+
 ## 0.31.8
 * Double tick in saved messages
 * Status indicator optimized
