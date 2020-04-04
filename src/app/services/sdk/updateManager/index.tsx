@@ -760,10 +760,10 @@ export default class UpdateManager {
                 });
                 // Update label list
                 updateLabelItemsAdded.labelidsList.forEach((id) => {
-                    this.mergeLabel(transaction.labels, {
-                        id,
-                        increase_counter: updateLabelItemsAdded.messageidsList.length,
-                    });
+                    // this.mergeLabel(transaction.labels, {
+                    //     id,
+                    //     increase_counter: updateLabelItemsAdded.messageidsList.length,
+                    // });
                     transaction.labelRanges.push({
                         labelId: id,
                         mode: 'add',
@@ -771,6 +771,10 @@ export default class UpdateManager {
                         peerid: updateLabelItemsAdded.peer.id || '',
                         peertype: updateLabelItemsAdded.peer.type || 0,
                     });
+                });
+                // Add label
+                updateLabelItemsAdded.labelsList.forEach((label) => {
+                    this.mergeLabel(transaction.labels, label);
                 });
                 break;
             case C_MSG.UpdateLabelItemsRemoved:
@@ -785,10 +789,10 @@ export default class UpdateManager {
                 });
                 // Update label list
                 updateLabelItemsRemoved.labelidsList.forEach((id) => {
-                    this.mergeLabel(transaction.labels, {
-                        id,
-                        increase_counter: -updateLabelItemsRemoved.messageidsList.length,
-                    });
+                    // this.mergeLabel(transaction.labels, {
+                    //     id,
+                    //     increase_counter: -updateLabelItemsRemoved.messageidsList.length,
+                    // });
                     transaction.labelRanges.push({
                         labelId: id,
                         mode: 'remove',
@@ -796,6 +800,10 @@ export default class UpdateManager {
                         peerid: updateLabelItemsRemoved.peer.id || '',
                         peertype: updateLabelItemsRemoved.peer.type || 0,
                     });
+                });
+                // Add label
+                updateLabelItemsRemoved.labelsList.forEach((label) => {
+                    this.mergeLabel(transaction.labels, label);
                 });
                 break;
             default:
