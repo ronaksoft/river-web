@@ -9,7 +9,13 @@
 
 import * as React from 'react';
 import {IUser} from '../../repository/user/interface';
-import {AddRounded, CheckRounded, CloseRounded, EditRounded, KeyboardBackspaceRounded} from '@material-ui/icons';
+import {
+    AddRounded,
+    CheckRounded,
+    CloseRounded,
+    EditRounded,
+    KeyboardBackspaceRounded, VerifiedUserRounded,
+} from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import {
     InputPeer,
@@ -175,7 +181,8 @@ class UserInfoMenu extends React.Component<IProps, IState> {
                                     <div className="line">
                                         {!edit && <div className="form-control">
                                             <label>{i18n.t('general.first_name')}</label>
-                                            <div className="inner">{user.firstname}</div>
+                                            <div className="inner">{user && user.official &&
+                                            <VerifiedUserRounded style={{color: '#27AE60'}}/>}{user.firstname}</div>
                                             {isInContact && <div className="action">
                                                 <IconButton
                                                     onClick={this.onEditHandler}

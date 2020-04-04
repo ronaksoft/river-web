@@ -193,6 +193,11 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+
+      svg {
+        font-size: 20px;
+        margin: 0 3px 0 0;
+      }
     }
 
     .action {

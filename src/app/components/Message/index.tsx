@@ -116,10 +116,11 @@ export const renderBody = (body: string, entityList: MessageEntity.AsObject[] | 
                     if (elem.str.indexOf('@') === 0) {
                         return (
                             <UserName key={i} className="_mention" id={elem.userId} username={true} prefix="@"
-                                      unsafe={true} defaultString={elem.str.substr(1)} onLoad={measureFn}/>);
+                                      noIcon={true} hideBadge={true} unsafe={true}
+                                      defaultString={elem.str.substr(1)} onLoad={measureFn}/>);
                     } else {
-                        return (<UserName key={i} className="_mention" id={elem.userId} unsafe={true}
-                                          defaultString={elem.str} onLoad={measureFn}/>);
+                        return (<UserName key={i} className="_mention" id={elem.userId} unsafe={true} noIcon={true}
+                                          hideBadge={true} defaultString={elem.str} onLoad={measureFn}/>);
                     }
                 case MessageEntityType.MESSAGEENTITYTYPEBOLD:
                     return (<span key={i} className="_bold">{elem.str}</span>);
