@@ -228,6 +228,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
         switch (previewMessage.messagetype) {
             case C_MESSAGE_TYPE.Picture:
             case C_MESSAGE_TYPE.Video:
+            case C_MESSAGE_TYPE.File:
                 const pictureInfo = getMediaInfo(previewMessage);
                 return (
                     <div className="preview-thumbnail">

@@ -1,3 +1,6 @@
+## 0.32.1
+* Minor improvements
+
 ## 0.32.0
 * 🎉 Introducing the new `CodeViewer`
 * Now you can use \```your code\``` for sending codes with style
