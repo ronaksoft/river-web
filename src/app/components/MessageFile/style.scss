@@ -139,6 +139,80 @@
       text-align: left;
     }
   }
+
+  &.has-thumbnail {
+    .file-content {
+      min-height: 64px;
+
+      .file-info {
+        padding-top: 0;
+        padding-left: 14px;
+      }
+
+      .file-action {
+        margin: 0 9px;
+        background-color: rgba(0, 0, 0, 0.30);
+        transform: scale(1.2);
+
+        .extension {
+          color: var(--dark-accent-low);
+          text-shadow: 0 0 1px rgba(255, 255, 255, 0.4);
+        }
+
+        svg {
+          color: var(--light);
+        }
+
+        &:hover {
+          svg {
+            color: var(--light);
+          }
+        }
+
+        .progress {
+          svg {
+            circle {
+              stroke: var(--light);
+            }
+          }
+        }
+      }
+
+      .file-thumbnail {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        height: 64px;
+        width: 64px;
+        overflow: hidden;
+        border-radius: 7px;
+
+        &:after {
+          position: absolute;
+          content: '';
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        img {
+          height: 100%;
+          width: 100%;
+          object-fit: cover;
+        }
+      }
+    }
+
+    .file-caption {
+      padding-top: 6px;
+    }
+
+    &.no-caption {
+      margin-bottom: -15px;
+    }
+  }
 }
 
 html[theme="dark"],
@@ -244,6 +318,26 @@ html[gradient="5"]:not([bubble="5"]) {
   .me {
     .message-file .file-download {
       color: #1f133e !important;
+    }
+  }
+}
+
+html[bubble="1"] {
+  .message-file {
+    &.has-thumbnail {
+      .file-thumbnail {
+        border-radius: 3px;
+      }
+    }
+  }
+}
+
+html[bubble="2"] {
+  .message-file {
+    &.has-thumbnail {
+      .file-thumbnail {
+        border-radius: 18px;
+      }
     }
   }
 }

@@ -391,6 +391,16 @@ export class InputMediaDocument extends jspb.Message {
   setEntitiesList(value: Array<chat_core_types_pb.MessageEntity>): void;
   addEntities(value?: chat_core_types_pb.MessageEntity, index?: number): chat_core_types_pb.MessageEntity;
 
+  hasThumbnail(): boolean;
+  clearThumbnail(): void;
+  getThumbnail(): chat_core_types_pb.InputFile | undefined;
+  setThumbnail(value?: chat_core_types_pb.InputFile): void;
+
+  clearAttributesList(): void;
+  getAttributesList(): Array<DocumentAttribute>;
+  setAttributesList(value: Array<DocumentAttribute>): void;
+  addAttributes(value?: DocumentAttribute, index?: number): DocumentAttribute;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): InputMediaDocument.AsObject;
   static toObject(includeInstance: boolean, msg: InputMediaDocument): InputMediaDocument.AsObject;
@@ -406,6 +416,8 @@ export namespace InputMediaDocument {
     caption?: string,
     document: chat_core_types_pb.InputDocument.AsObject,
     entitiesList: Array<chat_core_types_pb.MessageEntity.AsObject>,
+    thumbnail?: chat_core_types_pb.InputFile.AsObject,
+    attributesList: Array<DocumentAttribute.AsObject>,
   }
 }
 

@@ -51,6 +51,7 @@ import {ThemeChanged} from "../SettingsMenu";
 import {EventMouseUp, EventResize} from "../../services/events";
 
 import './style.scss';
+import CodeViewer from "../CodeViewer";
 
 /* Modify URL */
 export const modifyURL = (url: string) => {
@@ -142,6 +143,8 @@ export const renderBody = (body: string, entityList: MessageEntity.AsObject[] | 
                 case MessageEntityType.MESSAGEENTITYTYPEBOTCOMMAND:
                     return (<span key={i} className="_url"
                                   onClick={botCommandHandler(elem.str || '')}>{elem.str}</span>);
+                case MessageEntityType.MESSAGEENTITYTYPECODE:
+                    return (<CodeViewer snippet={elem.str || ''} onDone={measureFn}/>);
                 default:
                     return (<span key={i}>{elem.str}</span>);
             }

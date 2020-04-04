@@ -3233,7 +3233,7 @@ proto.msg.InputMediaUploadedDocument.prototype.clearEntitiesList = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.msg.InputMediaDocument.repeatedFields_ = [3];
+proto.msg.InputMediaDocument.repeatedFields_ = [3,5];
 
 
 
@@ -3269,7 +3269,10 @@ proto.msg.InputMediaDocument.toObject = function(includeInstance, msg) {
     caption: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
     document: (f = msg.getDocument()) && chat_core_types_pb.InputDocument.toObject(includeInstance, f),
     entitiesList: jspb.Message.toObjectList(msg.getEntitiesList(),
-    chat_core_types_pb.MessageEntity.toObject, includeInstance)
+    chat_core_types_pb.MessageEntity.toObject, includeInstance),
+    thumbnail: (f = msg.getThumbnail()) && chat_core_types_pb.InputFile.toObject(includeInstance, f),
+    attributesList: jspb.Message.toObjectList(msg.getAttributesList(),
+    proto.msg.DocumentAttribute.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -3319,6 +3322,16 @@ proto.msg.InputMediaDocument.deserializeBinaryFromReader = function(msg, reader)
       var value = new chat_core_types_pb.MessageEntity;
       reader.readMessage(value,chat_core_types_pb.MessageEntity.deserializeBinaryFromReader);
       msg.addEntities(value);
+      break;
+    case 4:
+      var value = new chat_core_types_pb.InputFile;
+      reader.readMessage(value,chat_core_types_pb.InputFile.deserializeBinaryFromReader);
+      msg.setThumbnail(value);
+      break;
+    case 5:
+      var value = new proto.msg.DocumentAttribute;
+      reader.readMessage(value,proto.msg.DocumentAttribute.deserializeBinaryFromReader);
+      msg.addAttributes(value);
       break;
     default:
       reader.skipField();
@@ -3370,6 +3383,22 @@ proto.msg.InputMediaDocument.serializeBinaryToWriter = function(message, writer)
       3,
       f,
       chat_core_types_pb.MessageEntity.serializeBinaryToWriter
+    );
+  }
+  f = message.getThumbnail();
+  if (f != null) {
+    writer.writeMessage(
+      4,
+      f,
+      chat_core_types_pb.InputFile.serializeBinaryToWriter
+    );
+  }
+  f = message.getAttributesList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      5,
+      f,
+      proto.msg.DocumentAttribute.serializeBinaryToWriter
     );
   }
 };
@@ -3483,6 +3512,81 @@ proto.msg.InputMediaDocument.prototype.addEntities = function(opt_value, opt_ind
  */
 proto.msg.InputMediaDocument.prototype.clearEntitiesList = function() {
   return this.setEntitiesList([]);
+};
+
+
+/**
+ * optional InputFile Thumbnail = 4;
+ * @return {?proto.msg.InputFile}
+ */
+proto.msg.InputMediaDocument.prototype.getThumbnail = function() {
+  return /** @type{?proto.msg.InputFile} */ (
+    jspb.Message.getWrapperField(this, chat_core_types_pb.InputFile, 4));
+};
+
+
+/**
+ * @param {?proto.msg.InputFile|undefined} value
+ * @return {!proto.msg.InputMediaDocument} returns this
+*/
+proto.msg.InputMediaDocument.prototype.setThumbnail = function(value) {
+  return jspb.Message.setWrapperField(this, 4, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.msg.InputMediaDocument} returns this
+ */
+proto.msg.InputMediaDocument.prototype.clearThumbnail = function() {
+  return this.setThumbnail(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.msg.InputMediaDocument.prototype.hasThumbnail = function() {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * repeated DocumentAttribute Attributes = 5;
+ * @return {!Array<!proto.msg.DocumentAttribute>}
+ */
+proto.msg.InputMediaDocument.prototype.getAttributesList = function() {
+  return /** @type{!Array<!proto.msg.DocumentAttribute>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.msg.DocumentAttribute, 5));
+};
+
+
+/**
+ * @param {!Array<!proto.msg.DocumentAttribute>} value
+ * @return {!proto.msg.InputMediaDocument} returns this
+*/
+proto.msg.InputMediaDocument.prototype.setAttributesList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 5, value);
+};
+
+
+/**
+ * @param {!proto.msg.DocumentAttribute=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.msg.DocumentAttribute}
+ */
+proto.msg.InputMediaDocument.prototype.addAttributes = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 5, opt_value, proto.msg.DocumentAttribute, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.msg.InputMediaDocument} returns this
+ */
+proto.msg.InputMediaDocument.prototype.clearAttributesList = function() {
+  return this.setAttributesList([]);
 };
 
 

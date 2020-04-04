@@ -316,7 +316,7 @@ class NewGroupMenu extends React.Component<IProps, IState> {
                 reject();
                 return;
             }
-            this.fileManager.sendFile(this.fileId, this.photoBlob, true,(progress) => {
+            this.fileManager.sendFile(this.fileId, this.photoBlob,(progress) => {
                 this.progressBroadcaster.publish(id, progress);
             }).then(() => {
                 this.progressBroadcaster.remove(id);

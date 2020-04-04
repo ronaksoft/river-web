@@ -137,6 +137,15 @@ message BotGetCallbackAnswer {
     required bytes Data = 3; // Callback data
 }
 
+
+// BotDeleteMessage
+// @Function (BotOnly)
+// @Returns: Bool
+message BotDeleteMessage {
+    required InputPeer Peer = 1;
+    repeated int64 MessageIDs = 2;
+}
+
 // BotToken
 message BotToken {
     required bytes Token = 1;

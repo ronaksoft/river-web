@@ -116,6 +116,8 @@ message InputMediaDocument {
     required string Caption = 1;
     required InputDocument Document = 2;
     repeated MessageEntity Entities = 3;
+    optional InputFile Thumbnail = 4;
+    repeated DocumentAttribute Attributes = 5;
 }
 
 // InputMediaGeoLocation

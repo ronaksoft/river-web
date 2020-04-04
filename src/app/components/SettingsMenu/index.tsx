@@ -1698,7 +1698,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
         this.setState({
             uploadingPhoto: true,
         });
-        this.fileManager.sendFile(this.fileId, blob, true, (progress) => {
+        this.fileManager.sendFile(this.fileId, blob, (progress) => {
             this.progressBroadcaster.publish(id, progress);
         }).then(() => {
             this.progressBroadcaster.remove(id);

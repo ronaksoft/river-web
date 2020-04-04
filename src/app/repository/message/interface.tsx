@@ -8,6 +8,7 @@
 */
 
 import {UserMessage} from '../../services/sdk/messages/chat.core.types_pb';
+import {InputMediaType} from "../../services/sdk/messages/chat.api.messages_pb";
 
 interface IMessage extends UserMessage.AsObject {
     actiondata?: any;
@@ -37,6 +38,7 @@ interface IPendingMessage {
     message_id: number;
     file_ids?: string[];
     data?: any;
+    type?: InputMediaType;
 }
 
 interface IMessageWithCount {

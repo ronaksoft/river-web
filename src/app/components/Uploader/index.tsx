@@ -30,6 +30,8 @@ import VideoFrameSelector from "../VideoFrameSelector";
 
 import './style.scss';
 
+const thumbnailReadyMIMEs = 'image/png,image/jpeg,image/jpg,image/gif,image/webp,video/webm,video/mp4,audio/mp4,audio/ogg,audio/mp3'.split(',');
+
 interface IMediaThumb {
     file: Blob;
     fileType: string;
@@ -125,6 +127,8 @@ class MediaPreview extends React.Component<IProps, IState> {
             if (!isFile) {
                 this.initMedias();
                 this.setImageActionSize();
+            } else {
+                this.initMedias(true);
             }
         });
     }
@@ -316,6 +320,8 @@ class MediaPreview extends React.Component<IProps, IState> {
             if (!this.state.isFile) {
                 this.initMedias();
                 this.setImageActionSize();
+            } else {
+                this.initMedias(true);
             }
         });
     }
@@ -355,10 +361,15 @@ class MediaPreview extends React.Component<IProps, IState> {
     }
 
     /* Get media metadata and preview not exist */
-    private initMedias() {
+    private initMedias(checkFormat?: boolean) {
         const {items} = this.state;
         items.map((item, index) => {
             item.mediaType = this.getTypeByMime(item.type);
+            if (checkFormat && thumbnailReadyMIMEs.indexOf(item.type) === -1) {
+                return item;
+            } else if (checkFormat) {
+                item.ready = false;
+            }
             if (!this.previewRefs[index]) {
                 this.previewRefs[index] = [];
             }
@@ -663,6 +674,12 @@ class MediaPreview extends React.Component<IProps, IState> {
                         fileType: items[i].type,
                         mediaType: 'file',
                         name: items[i].name,
+                        thumb: dist[i * 2 + 1] ? {
+                            file: dist[i * 2 + 1],
+                            fileType: 'image/jpeg',
+                            height: Math.round(items[i].height || 0),
+                            width: Math.round(items[i].width || 0),
+                        } : undefined,
                     });
                 }
                 this.props.onDone(output);

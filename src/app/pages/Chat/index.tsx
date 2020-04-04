@@ -32,7 +32,7 @@ import SDK from '../../services/sdk/index';
 import NewMessage from '../../components/NewMessage';
 import * as core_types_pb from '../../services/sdk/messages/chat.core.types_pb';
 import {
-    FileLocation,
+    FileLocation, InputDocument,
     InputFile,
     InputFileLocation,
     InputPeer,
@@ -93,7 +93,7 @@ import {
     DocumentAttributePhoto,
     DocumentAttributeType,
     DocumentAttributeVideo,
-    InputMediaContact,
+    InputMediaContact, InputMediaDocument,
     InputMediaGeoLocation,
     InputMediaUploadedDocument,
     MediaDocument,
@@ -3670,14 +3670,14 @@ class Chat extends React.Component<IProps, IState> {
     }
 
     /* Resend media message */
-    private resendMediaMessage(randomId: number, message: IMessage, fileIds: string[], data: any) {
+    private resendMediaMessage(randomId: number, message: IMessage, fileIds: string[], data: any, inputMediaType?: InputMediaType) {
         const peer = this.peer;
         if (peer === null) {
             return;
         }
 
         const fn = () => {
-            this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, message.replyto).then((res) => {
+            this.sdk.sendMediaMessage(randomId, peer, inputMediaType || InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, message.replyto).then((res) => {
                 // For double checking update message id
                 this.updateManager.setMessageId(res.messageid || 0);
                 this.modifyPendingMessage({
@@ -3848,7 +3848,7 @@ class Chat extends React.Component<IProps, IState> {
                     }
                 }
                 if (res.file_ids && res.file_ids.length > 0 && message.mediatype !== MediaType.MEDIATYPEEMPTY && message.messagetype !== 0 && message.messagetype !== C_MESSAGE_TYPE.Normal) {
-                    this.resendMediaMessage(res.id, message, res.file_ids, res.data);
+                    this.resendMediaMessage(res.id, message, res.file_ids, res.data, res.type);
                 } else if (message.messagetype === 0 || message.messagetype === C_MESSAGE_TYPE.Normal) {
                     this.resendTextMessage(res.id, message);
                 }
@@ -4019,17 +4019,21 @@ class Chat extends React.Component<IProps, IState> {
 
     /* ChatInput send voice handler */
     private chatInputVoiceHandler = (item: IMediaItem, param?: any) => {
-        this.sendMediaMessage('voice', item, param);
+        this.sendMediaMessage('voice', item, null, param);
     }
 
     /* ChatInput media select handler */
     private chatInputMediaSelectHandler = (items: IMediaItem[], param?: any) => {
         items.forEach((item) => {
-            this.sendMediaMessage(item.mediaType, item, param);
+            this.fileManager.getFileLocationBySha256(item.file).then((fileLocation) => {
+                this.sendMediaMessage(item.mediaType, item, fileLocation, param);
+            }).catch(() => {
+                this.sendMediaMessage(item.mediaType, item, null, param);
+            });
         });
     }
 
-    private sendMediaMessage(type: 'image' | 'video' | 'file' | 'voice' | 'audio' | 'none', mediaItem: IMediaItem, param?: any) {
+    private sendMediaMessage(type: 'image' | 'video' | 'file' | 'voice' | 'audio' | 'none', mediaItem: IMediaItem, sha256FileLocation: FileLocation.AsObject | null, param?: any) {
         if (type === 'none') {
             return;
         }
@@ -4055,12 +4059,23 @@ class Chat extends React.Component<IProps, IState> {
         inputFile.setMd5checksum('');
         inputFile.setTotalparts(1);
 
-        const mediaData = new InputMediaUploadedDocument();
-        mediaData.setCaption(mediaItem.caption || '');
-        mediaData.setMimetype(mediaItem.fileType);
-        mediaData.setStickersList([]);
-        mediaData.setAttributesList(attributesList);
-        mediaData.setFile(inputFile);
+        const inputMediaUploadedDocument = new InputMediaUploadedDocument();
+        const inputMediaDocument = new InputMediaDocument();
+        if (sha256FileLocation) {
+            inputMediaDocument.setCaption(mediaItem.caption || '');
+            inputMediaDocument.setAttributesList(attributesList);
+            const inputDocument = new InputDocument();
+            inputDocument.setAccesshash(sha256FileLocation.accesshash || '0');
+            inputDocument.setClusterid(sha256FileLocation.clusterid || 0);
+            inputDocument.setId(sha256FileLocation.fileid || '0');
+            inputMediaDocument.setDocument(inputDocument);
+        } else {
+            inputMediaUploadedDocument.setCaption(mediaItem.caption || '');
+            inputMediaUploadedDocument.setMimetype(mediaItem.fileType);
+            inputMediaUploadedDocument.setStickersList([]);
+            inputMediaUploadedDocument.setAttributesList(attributesList);
+            inputMediaUploadedDocument.setFile(inputFile);
+        }
 
         const tempDocument = new Document();
         tempDocument.setAccesshash('');
@@ -4166,6 +4181,7 @@ class Chat extends React.Component<IProps, IState> {
             case 'image':
             case 'video':
             case 'audio':
+            case 'file':
                 if (mediaItem.thumb) {
                     fileIds.push(String(UniqueId.getRandomId()));
 
@@ -4181,7 +4197,11 @@ class Chat extends React.Component<IProps, IState> {
                     tempThumbInputFile.setFileid(fileIds[1]);
 
                     tempDocument.setThumbnail(tempThumbInputFile);
-                    mediaData.setThumbnail(inputThumbFile);
+                    if (sha256FileLocation) {
+                        inputMediaDocument.setThumbnail(inputThumbFile);
+                    } else {
+                        inputMediaUploadedDocument.setThumbnail(inputThumbFile);
+                    }
                 }
                 break;
         }
@@ -4213,32 +4233,52 @@ class Chat extends React.Component<IProps, IState> {
 
         this.pushMessage(message);
 
-        let data = mediaData.serializeBinary();
+        let data = sha256FileLocation ? inputMediaDocument.serializeBinary() : inputMediaUploadedDocument.serializeBinary();
 
         const uploadPromises: any[] = [];
 
+        const inputMediaType = sha256FileLocation ? InputMediaType.INPUTMEDIATYPEDOCUMENT : InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT
         this.messageRepo.addPending({
             data,
             file_ids: fileIds,
             id: randomId,
             message_id: id,
+            type: inputMediaType,
         });
 
         switch (type) {
             case 'file':
             case 'voice':
-                uploadPromises.push(this.fileManager.sendFile(fileIds[0], mediaItem.file, false, (progress) => {
-                    this.progressBroadcaster.publish(id, progress);
-                }));
-                break;
             case 'image':
             case 'video':
             case 'audio':
-                uploadPromises.push(this.fileManager.sendFile(fileIds[0], mediaItem.file, false, (progress) => {
-                    this.progressBroadcaster.publish(id, progress);
-                }));
+                if (sha256FileLocation) {
+                    uploadPromises.push(new Promise((resolve) => {
+                        this.progressBroadcaster.publish(id, {
+                            download: 10,
+                            progress: 1,
+                            state: 'complete',
+                            totalDownload: 10,
+                            totalUpload: 10,
+                            upload: 10,
+                        });
+                        resolve('');
+                    }));
+                } else {
+                    uploadPromises.push(this.fileManager.sendFile(fileIds[0], mediaItem.file, (progress) => {
+                        this.progressBroadcaster.publish(id, progress);
+                    }));
+                }
+                break;
+        }
+
+        switch (type) {
+            case 'image':
+            case 'video':
+            case 'audio':
+            case 'file':
                 if (mediaItem.thumb) {
-                    uploadPromises.push(this.fileManager.sendFile(fileIds[1], mediaItem.thumb.file, true));
+                    uploadPromises.push(this.fileManager.sendFile(fileIds[1], mediaItem.thumb.file));
                 }
                 break;
         }
@@ -4247,18 +4287,19 @@ class Chat extends React.Component<IProps, IState> {
         Promise.all(uploadPromises).then((arr) => {
             this.onTyping(TypingAction.TYPINGACTIONCANCEL, peer);
             this.progressBroadcaster.remove(id);
-            if (arr.length !== 0) {
+            if (!sha256FileLocation && arr.length !== 0) {
                 inputFile.setMd5checksum(arr[0]);
-                mediaData.setFile(inputFile);
-                data = mediaData.serializeBinary();
+                inputMediaUploadedDocument.setFile(inputFile);
+                data = inputMediaUploadedDocument.serializeBinary();
                 this.messageRepo.addPending({
                     data,
                     file_ids: fileIds,
                     id: randomId,
                     message_id: id,
+                    type: inputMediaType,
                 });
             }
-            this.sdk.sendMediaMessage(randomId, peer, InputMediaType.INPUTMEDIATYPEUPLOADEDDOCUMENT, data, replyTo).then((res) => {
+            this.sdk.sendMediaMessage(randomId, peer, inputMediaType, data, replyTo).then((res) => {
                 // For double checking update message id
                 this.updateManager.setMessageId(res.messageid || 0);
                 this.modifyPendingMessage({

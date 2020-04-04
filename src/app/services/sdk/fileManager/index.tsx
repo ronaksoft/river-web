@@ -10,7 +10,7 @@
 import Http from './http';
 import {C_MSG} from '../const';
 import {File, FileGet, FileSavePart} from '../messages/chat.api.files_pb';
-import {Bool, MessageContainer, MessageEnvelope} from '../messages/chat.core.types_pb';
+import {Bool, FileLocation, MessageContainer, MessageEnvelope} from '../messages/chat.core.types_pb';
 import FileRepo, {md5FromBlob} from '../../../repository/file';
 import {ITempFile} from '../../../repository/file/interface';
 import {C_FILE_ERR_CODE, C_FILE_ERR_NAME} from './const/const';
@@ -149,8 +149,29 @@ export default class FileManager {
         });
     }
 
+    public getFileLocationBySha256(blob: Blob): Promise<FileLocation.AsObject> {
+        if (crypto && crypto.subtle && crypto.subtle.digest) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsArrayBuffer(blob);
+                reader.onloadend = () => {
+                    crypto.subtle.digest('SHA-256', reader.result as ArrayBuffer).then((sha256) => {
+                        const ui8Sha256 = new Uint8Array(sha256);
+                        this.sdk.getFileBySha256(ui8Sha256, blob.size).then((fileLocation) => {
+                            resolve(fileLocation);
+                        }).catch((err: any) => {
+                            reject(err);
+                        });
+                    });
+                };
+            });
+        } else {
+            return Promise.reject('sha256 is not supported');
+        }
+    }
+
     /* Send the whole file */
-    public sendFile(id: string, blob: Blob, ignoreShaCheck: boolean, onProgress?: (e: IFileProgress) => void) {
+    public sendFile(id: string, blob: Blob, onProgress?: (e: IFileProgress) => void) {
         let internalResolve: any = null;
         let internalReject: any = null;
 
@@ -159,47 +180,28 @@ export default class FileManager {
             internalReject = rej;
         });
 
-        const fn = () => {
-            this.chunkBlob(blob).then((chunks) => {
-                const saveFileToDBPromises: any[] = [];
-                saveFileToDBPromises.push(md5FromBlob(blob));
-                chunks.forEach((chunk, index) => {
-                    const temp: ITempFile = {
-                        data: chunk,
-                        id,
-                        part: index + 1,
-                    };
-                    saveFileToDBPromises.push(this.fileRepo.setTemp(temp));
-                });
-
-                Promise.all(saveFileToDBPromises).then((arr) => {
-                    this.prepareUploadTransfer(id, arr.length === 0 ? '' : arr[0], chunks, blob.size, internalResolve, internalReject, onProgress);
-
-                    if (this.httpWorkers[0] && this.httpWorkers[0].isReady()) {
-                        this.startUploadQueue();
-                    }
-                }).catch((err) => {
-                    window.console.log(err);
-                });
+        this.chunkBlob(blob).then((chunks) => {
+            const saveFileToDBPromises: any[] = [];
+            saveFileToDBPromises.push(md5FromBlob(blob));
+            chunks.forEach((chunk, index) => {
+                const temp: ITempFile = {
+                    data: chunk,
+                    id,
+                    part: index + 1,
+                };
+                saveFileToDBPromises.push(this.fileRepo.setTemp(temp));
             });
-        };
 
-        if (false && !ignoreShaCheck && crypto && crypto.subtle && crypto.subtle.digest) {
-            const reader = new FileReader();
-            reader.readAsArrayBuffer(blob);
-            reader.onloadend = () => {
-                crypto.subtle.digest('SHA-256', reader.result as ArrayBuffer).then((sha256) => {
-                    const ui8Sha256 = new Uint8Array(sha256);
-                    this.sdk.getFileBySha256(ui8Sha256, blob.size).then((fileLocation) => {
-                        internalResolve(fileLocation);
-                    }).catch(() => {
-                       fn();
-                    });
-                });
-            };
-        } else {
-            fn();
-        }
+            Promise.all(saveFileToDBPromises).then((arr) => {
+                this.prepareUploadTransfer(id, arr.length === 0 ? '' : arr[0], chunks, blob.size, internalResolve, internalReject, onProgress);
+
+                if (this.httpWorkers[0] && this.httpWorkers[0].isReady()) {
+                    this.startUploadQueue();
+                }
+            }).catch((err) => {
+                window.console.log(err);
+            });
+        });
 
         return promise;
     }

@@ -92,13 +92,29 @@ const mentionize = (text: string, sortedEntities: Array<{ offset: number, length
         if (i1.offset === undefined || i2.offset === undefined) {
             return 0;
         }
-        return i1.offset - i2.offset;
+        return i2.offset - i1.offset;
     });
     const fn = (t1: string, t2: string, s: number, e: number) => {
         return t1.substr(0, s) + t2 + t1.substr(s + e, t1.length);
     };
     sortedEntities.forEach((en) => {
         text = fn(text, `@[${text.substr(en.offset, en.length)}](${en.val})`, en.offset, en.length);
+    });
+    return text;
+};
+
+const codeBacktick = (text: string, sortedEntities: Array<{ offset: number, length: number, val: string }>) => {
+    sortedEntities.sort((i1, i2) => {
+        if (i1.offset === undefined || i2.offset === undefined) {
+            return 0;
+        }
+        return i2.offset - i1.offset;
+    });
+    const fn = (t1: string, t2: string, s: number, e: number) => {
+        return t1.substr(0, s) + t2 + t1.substr(s + e, t1.length);
+    };
+    sortedEntities.forEach((en) => {
+        text = fn(text, '```'+text.substr(en.offset, en.length)+'```', en.offset, en.length);
     });
     return text;
 };
@@ -763,6 +779,15 @@ class ChatInput extends React.Component<IProps, IState> {
                 };
             }));
         }
+        if (entities.some(o => o.type === MessageEntityType.MESSAGEENTITYTYPECODE)) {
+            text = codeBacktick(text, entities.filter(o => o.type === MessageEntityType.MESSAGEENTITYTYPECODE).map(o => {
+                return {
+                    length: o.length || 0,
+                    offset: o.offset || 0,
+                    val: o.userid || '',
+                };
+            }));
+        }
         return text;
     }
 
@@ -798,9 +823,8 @@ class ChatInput extends React.Component<IProps, IState> {
 
     private submitMessage = () => {
         const {previewMessage, previewMessageMode} = this.state;
-        const text = this.textarea.value || '';
         if (this.props.onMessage) {
-            const entities = this.generateEntities();
+            const {entities, text} = this.generateEntities();
             if (previewMessageMode === C_MSG_MODE.Normal) {
                 this.removeDraft(true).finally(() => {
                     this.props.onMessage(text, {
@@ -836,8 +860,8 @@ class ChatInput extends React.Component<IProps, IState> {
 
     private inputKeyUpHandler = (e: any) => {
         const {previewMessage, previewMessageMode} = this.state;
-        const text = e.target.value;
-        this.rtlDetectorThrottle(text);
+        const textVal = e.target.value;
+        this.rtlDetectorThrottle(textVal);
         let cancelTyping = false;
         if (e.key === 'Enter' && !e.shiftKey) {
             cancelTyping = true;
@@ -846,7 +870,7 @@ class ChatInput extends React.Component<IProps, IState> {
                     return;
                 }
                 if (this.props.onMessage) {
-                    const entities = this.generateEntities();
+                    const {entities, text} = this.generateEntities();
                     if (previewMessageMode === C_MSG_MODE.Normal) {
                         this.removeDraft(true).finally(() => {
                             this.props.onMessage(text, {
@@ -886,7 +910,7 @@ class ChatInput extends React.Component<IProps, IState> {
         if (this.state.previewMessageMode !== C_MSG_MODE.Edit) {
             if (cancelTyping) {
                 this.setTyping(TypingAction.TYPINGACTIONCANCEL);
-            } else if (text.length > 0) {
+            } else if (textVal.length > 0) {
                 this.setTyping(TypingAction.TYPINGACTIONTYPING);
             }
         }
@@ -1143,6 +1167,7 @@ class ChatInput extends React.Component<IProps, IState> {
             const users: any[] = [];
             const reg = new RegExp(word, "i");
             const userId = this.sdk.getConnInfo().UserID;
+            let exactMatchIndex: number = -1;
             for (const [i, participant] of participants.entries()) {
                 if (userId !== participant.userid &&
                     (reg.test(`${participant.firstname} ${participant.lastname}`) ||
@@ -1153,10 +1178,18 @@ class ChatInput extends React.Component<IProps, IState> {
                         index: i,
                         username: participant.username,
                     });
+                    if (word === participant.username) {
+                        exactMatchIndex = users.length - 1;
+                    }
                 }
                 if (users.length >= 32) {
                     break;
                 }
+            }
+            if (users.length > 1 && exactMatchIndex > 0) {
+                const hold = users[exactMatchIndex];
+                users[exactMatchIndex] = users[0];
+                users[0] = hold;
             }
             callback(users);
         };
@@ -1211,7 +1244,11 @@ class ChatInput extends React.Component<IProps, IState> {
     }
 
     /* Generate entities for message */
-    private generateEntities(): MessageEntity[] | null {
+    private generateEntities(): { entities: MessageEntity[] | null, text: string } {
+        if (!this.textarea) {
+            return {entities: null, text: ''};
+        }
+        let text = this.textarea.value;
         const entities: MessageEntity[] = [];
         if (this.mentions.length > 0) {
             this.mentions.filter((m) => {
@@ -1234,26 +1271,56 @@ class ChatInput extends React.Component<IProps, IState> {
                 entities.push(entity);
             });
         }
-        if (this.textarea) {
-            XRegExp.forEach(this.textarea.value, /\bhttps?:\/\/\S+/, (match) => {
-                const entity = new MessageEntity();
-                entity.setOffset(match.index);
-                entity.setLength(match[0].length);
-                entity.setType(MessageEntityType.MESSAGEENTITYTYPEURL);
-                entity.setUserid('');
-                entities.push(entity);
+        // Code extractor
+        const removeRange = (str: string, from: number, len: number) => {
+            return str.substring(0, from) + str.substring(from + len);
+        };
+        const codeResult: any[] = [];
+        const codeReg = XRegExp('```([\\s\\S]*?)```');
+        XRegExp.forEach(text, codeReg, (match, index) => {
+            const start = match.index - (6 * index);
+            const len = match[1].length;
+            text = removeRange(text, start, 3);
+            text = removeRange(text, start + len, 3);
+            const entity = new MessageEntity();
+            entity.setOffset(start);
+            entity.setLength(len);
+            entity.setType(MessageEntityType.MESSAGEENTITYTYPECODE);
+            entity.setUserid('');
+            entities.push(entity);
+            codeResult.push({
+                len,
+                start,
             });
-            const hashTagReg = XRegExp('#[\\p{L}_]+');
-            XRegExp.forEach(this.textarea.value, hashTagReg, (match) => {
-                const entity = new MessageEntity();
-                entity.setOffset(match.index);
-                entity.setLength(match[0].length);
-                entity.setType(MessageEntityType.MESSAGEENTITYTYPEHASHTAG);
-                entity.setUserid('');
-                entities.push(entity);
+        });
+        // Make sure code stays un touched
+        const underlineRange = (str: string, from: number, len: number) => {
+            return str.substring(0, from) + range(len).map(o => '_') + str.substring(from + len);
+        };
+        let underlineText = text;
+        if (codeResult.length > 0) {
+            codeResult.forEach((r) => {
+                underlineText = underlineRange(underlineText, r.start, r.len);
             });
         }
-        return entities;
+        XRegExp.forEach(underlineText, /\bhttps?:\/\/\S+/, (match) => {
+            const entity = new MessageEntity();
+            entity.setOffset(match.index);
+            entity.setLength(match[0].length);
+            entity.setType(MessageEntityType.MESSAGEENTITYTYPEURL);
+            entity.setUserid('');
+            entities.push(entity);
+        });
+        const hashTagReg = XRegExp('#[\\p{L}_]+');
+        XRegExp.forEach(underlineText, hashTagReg, (match) => {
+            const entity = new MessageEntity();
+            entity.setOffset(match.index);
+            entity.setLength(match[0].length);
+            entity.setType(MessageEntityType.MESSAGEENTITYTYPEHASHTAG);
+            entity.setUserid('');
+            entities.push(entity);
+        });
+        return {entities, text};
     }
 
     /* Checks draft for save and restore */

@@ -23,6 +23,7 @@ import {renderBody} from "../Message";
 import ElectronService from "../../services/electron";
 
 import './style.scss';
+import CachedPhoto from "../CachedPhoto";
 
 /* Get human readable size */
 export const getHumanReadableSize = (size: number) => {
@@ -265,9 +266,12 @@ class MessageFile extends React.PureComponent<IProps, IState> {
 
     public render() {
         const {info, fileState, message} = this.state;
+        const thumbFile = info.thumbFile && info.thumbFile.fileid !== '' ? info.thumbFile : null;
         return (
-            <div className="message-file">
+            <div
+                className={'message-file' + (thumbFile ? ' has-thumbnail' : '') + (info.caption.length === 0 ? ' no-caption' : '')}>
                 <div className="file-content">
+                    {thumbFile && <CachedPhoto className="file-thumbnail" fileLocation={thumbFile}/>}
                     <div className="file-action">
                         {Boolean(fileState === 'view' || fileState === 'open') &&
                         <Tooltip

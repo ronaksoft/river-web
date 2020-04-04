@@ -518,6 +518,34 @@ export namespace BotGetCallbackAnswer {
   }
 }
 
+export class BotDeleteMessage extends jspb.Message {
+  hasPeer(): boolean;
+  clearPeer(): void;
+  getPeer(): chat_core_types_pb.InputPeer;
+  setPeer(value?: chat_core_types_pb.InputPeer): void;
+
+  clearMessageidsList(): void;
+  getMessageidsList(): Array<number>;
+  setMessageidsList(value: Array<number>): void;
+  addMessageids(value: number, index?: number): number;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): BotDeleteMessage.AsObject;
+  static toObject(includeInstance: boolean, msg: BotDeleteMessage): BotDeleteMessage.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: BotDeleteMessage, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): BotDeleteMessage;
+  static deserializeBinaryFromReader(message: BotDeleteMessage, reader: jspb.BinaryReader): BotDeleteMessage;
+}
+
+export namespace BotDeleteMessage {
+  export type AsObject = {
+    peer: chat_core_types_pb.InputPeer.AsObject,
+    messageidsList: Array<number>,
+  }
+}
+
 export class BotToken extends jspb.Message {
   hasToken(): boolean;
   clearToken(): void;
