@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import {IMessage} from '../../repository/message/interface';
-import {InputPeer, PeerType} from '../../services/sdk/messages/chat.core.types_pb';
+import {FileLocation, InputPeer, MessageEntity, PeerType} from '../../services/sdk/messages/chat.core.types_pb';
 import {
     DocumentAttributeFile, DocumentAttributeType, MediaDocument,
 } from '../../services/sdk/messages/chat.core.message.medias_pb';
@@ -19,6 +19,8 @@ import ProgressBroadcaster from '../../services/progress';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 import SettingsConfigManager from '../../services/settingsConfigManager';
 import i18n from '../../services/i18n';
+import {renderBody} from "../Message";
+import ElectronService from "../../services/electron";
 
 import './style.scss';
 
@@ -35,6 +37,15 @@ export const getHumanReadableSize = (size: number) => {
     }
 };
 
+interface IFileInfo {
+    name: string;
+    caption: string;
+    size: number;
+    type: string;
+    entityList?: MessageEntity.AsObject[];
+    thumbFile?: FileLocation.AsObject;
+}
+
 export const getFileInfo = (message: IMessage): IFileInfo => {
     const info: IFileInfo = {
         caption: '',
@@ -46,6 +57,16 @@ export const getFileInfo = (message: IMessage): IFileInfo => {
     info.caption = messageMediaDocument.caption || '';
     info.size = messageMediaDocument.doc.filesize || 0;
     info.type = messageMediaDocument.doc.mimetype || '';
+    if (messageMediaDocument.doc.thumbnail) {
+        info.thumbFile = {
+            accesshash: messageMediaDocument.doc.thumbnail.accesshash,
+            clusterid: messageMediaDocument.doc.thumbnail.clusterid,
+            fileid: messageMediaDocument.doc.thumbnail.fileid,
+        };
+    }
+    if (messageMediaDocument.entitiesList) {
+        info.entityList = messageMediaDocument.entitiesList;
+    }
     if (!message.attributes) {
         return info;
     }
@@ -140,24 +161,17 @@ export const getFileExtension = (type: string, name?: string) => {
 };
 
 interface IProps {
+    measureFn: any;
     message: IMessage;
     peer: InputPeer | null;
     onAction?: (cmd: 'cancel' | 'download' | 'cancel_download' | 'view' | 'open' | 'preview', message: IMessage) => void;
+    onBodyAction: (cmd: string, text: string) => void;
 }
 
 interface IState {
-    caption: string;
-    fileName: string;
     fileState: 'download' | 'view' | 'progress' | 'open';
+    info: IFileInfo;
     message: IMessage;
-    type: string;
-}
-
-interface IFileInfo {
-    name: string;
-    caption: string;
-    size: number;
-    type: string;
 }
 
 class MessageFile extends React.PureComponent<IProps, IState> {
@@ -172,6 +186,7 @@ class MessageFile extends React.PureComponent<IProps, IState> {
     private fileSize: number = 0;
     private settingsConfigManager: SettingsConfigManager;
     private readonly isMac: boolean = false;
+    private isElectron: boolean = ElectronService.isElectron();
 
     constructor(props: IProps) {
         super(props);
@@ -180,11 +195,9 @@ class MessageFile extends React.PureComponent<IProps, IState> {
         this.fileSize = info.size;
 
         this.state = {
-            caption: info.caption,
-            fileName: info.name,
             fileState: this.getFileState(props.message),
+            info,
             message: props.message,
-            type: info.type,
         };
 
         if (props.message) {
@@ -217,11 +230,9 @@ class MessageFile extends React.PureComponent<IProps, IState> {
             this.fileSize = info.size;
             this.displayFileSize(0);
             this.setState({
-                caption: info.caption,
-                fileName: info.name,
                 fileState: this.getFileState(newProps.message),
+                info,
                 message: newProps.message,
-                type: info.type,
             }, () => {
                 this.initProgress();
             });
@@ -253,7 +264,7 @@ class MessageFile extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const {caption, type, fileName, fileState, message} = this.state;
+        const {info, fileState, message} = this.state;
         return (
             <div className="message-file">
                 <div className="file-content">
@@ -266,7 +277,7 @@ class MessageFile extends React.PureComponent<IProps, IState> {
                         >
                             <div onClick={this.previewFileHandler}>
                                 <InsertDriveFileRounded/>
-                                <span className="extension">{getFileExtension(type)}</span>
+                                <span className="extension">{getFileExtension(info.type)}</span>
                             </div>
                         </Tooltip>}
                         {Boolean(fileState === 'download') &&
@@ -281,7 +292,7 @@ class MessageFile extends React.PureComponent<IProps, IState> {
                         </React.Fragment>}
                     </div>
                     <div className="file-info">
-                        <div className="file-name">{fileName}</div>
+                        <div className="file-name">{info.name}</div>
                         <div className="file-row">
                             <div className="file-size" ref={this.fileSizeRefHandler}>0 KB</div>
                             {Boolean(fileState === 'view') &&
@@ -293,8 +304,10 @@ class MessageFile extends React.PureComponent<IProps, IState> {
                         </div>
                     </div>
                 </div>
-                {Boolean(caption.length > 0) &&
-                <div className={'file-caption ' + (message.rtl ? 'rtl' : 'ltr')}>{caption}</div>}
+                {Boolean(info.caption.length > 0) &&
+                <div className={'file-caption ' + (message.rtl ? 'rtl' : 'ltr')}>
+                    {renderBody(info.caption, info.entityList, this.isElectron, this.props.onBodyAction, this.props.measureFn)}
+                </div>}
             </div>
         );
     }
