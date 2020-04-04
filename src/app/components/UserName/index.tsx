@@ -97,6 +97,9 @@ class UserName extends React.Component<IProps, IState> {
         prefix = prefix || '';
         postfix = postfix || '';
         const {user, className} = this.state;
+        if (!user) {
+            return (<span className={className} onClick={this.clickHandler}/>);
+        }
         const style = {
             color: 'auto',
             cursor: 'pointer',
@@ -104,24 +107,21 @@ class UserName extends React.Component<IProps, IState> {
         if (this.props.uniqueColor === true && this.state.forceColor) {
             style.color = GetUniqueColor(`${user.firstname}${user.lastname}`, TextColors);
         }
-        if (this.props.id === '2374') {
+        if (this.props.username === true) {
             return (
                 <span className={className}
                       style={style}
-                      onClick={this.clickHandler}>{Boolean(this.props.hideBadge !== true) && <VerifiedUserRounded
-                    style={{color: '#27AE60'}}/>}{(user && user.id) ? (onlyFirstName ? prefix + user.firstname + postfix : `${prefix}${user.firstname} ${user.lastname}${postfix}`) : `${prefix}${defaultString}${postfix}`}</span>
-            );
-        } else if (this.props.username === true) {
-            return (
-                <span className={className}
-                      style={style}
-                      onClick={this.clickHandler}>{(user && user.id && user.username && user.username.length > 0) ? `${prefix}${user.username}${postfix}` : `${prefix}${defaultString}${postfix}`}</span>
+                      onClick={this.clickHandler}>{Boolean(this.props.hideBadge !== true && user.official) &&
+                <VerifiedUserRounded
+                    style={{color: '#27AE60'}}/>}{(user.id && user.username && user.username.length > 0) ? `${prefix}${user.username}${postfix}` : `${prefix}${defaultString}${postfix}`}</span>
             );
         } else {
             return (
                 <span className={className}
                       style={style}
-                      onClick={this.clickHandler}>{(user && user.id) ? (onlyFirstName ? prefix + user.firstname : `${prefix}${user.firstname} ${user.lastname}${postfix}`) : `${prefix}${defaultString}${postfix}`}</span>
+                      onClick={this.clickHandler}>{Boolean(this.props.hideBadge !== true && user.official) &&
+                <VerifiedUserRounded
+                    style={{color: '#27AE60'}}/>}{(user.id) ? (onlyFirstName ? prefix + user.firstname : `${prefix}${user.firstname} ${user.lastname}${postfix}`) : `${prefix}${defaultString}${postfix}`}</span>
             );
         }
     }
