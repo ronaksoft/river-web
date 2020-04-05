@@ -1,3 +1,7 @@
+## 0.32.2
+* MessageEntity improvements
+* Known bugs fixed
+
 ## 0.32.1
 * Bot icon added
 * Minor improvements

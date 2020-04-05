@@ -121,6 +121,14 @@
       }
     }
   }
+
+  &.has-thumbnail {
+    .preview-message {
+      border-bottom-left-radius: 0 !important;
+      border-top-left-radius: 0 !important;
+      padding-left: 6px !important;
+    }
+  }
 }
 
 .media-message {

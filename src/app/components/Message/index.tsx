@@ -16,7 +16,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import {
     GroupPhoto, InputFileLocation, InputPeer, MediaType, MessageEntity, MessageEntityType, PeerType,
 } from '../../services/sdk/messages/chat.core.types_pb';
-import {clone, findLastIndex} from 'lodash';
+import {findLastIndex} from 'lodash';
 import {C_MESSAGE_ACTION, C_MESSAGE_TYPE, C_REPLY_ACTION} from '../../repository/message/consts';
 import TimeUtility from '../../services/utilities/time';
 import UserAvatar from '../UserAvatar';
@@ -49,9 +49,10 @@ import Landscape from "../SVG";
 import MessageBot from "../MessageBot";
 import {ThemeChanged} from "../SettingsMenu";
 import {EventMouseUp, EventResize} from "../../services/events";
+import CodeViewer from "../CodeViewer";
+import {spanMessageEntities} from "../../services/utilities/entity";
 
 import './style.scss';
-import CodeViewer from "../CodeViewer";
 
 /* Modify URL */
 export const modifyURL = (url: string) => {
@@ -67,42 +68,7 @@ export const renderBody = (body: string, entityList: MessageEntity.AsObject[] | 
     if (!entityList || entityList.length === 0) {
         return body;
     } else {
-        const sortedEntities = clone(entityList);
-        // Sort fragments from entities
-        sortedEntities.sort((i1, i2) => {
-            if (i1.offset === undefined || i2.offset === undefined) {
-                return 0;
-            }
-            return i1.offset - i2.offset;
-        });
-        const elems: any[] = [];
-        const bodyLen = body.length - 1;
-        // Put fragments in order
-        sortedEntities.forEach((entity, i) => {
-            if (i === 0 && entity.offset !== 0) {
-                elems.push({
-                    str: body.substr(0, entity.offset),
-                    type: -1,
-                });
-            }
-            if (i > 0 && i < bodyLen && ((sortedEntities[i - 1].offset || 0) + (sortedEntities[i - 1].length || 0)) !== (entity.offset || 0)) {
-                elems.push({
-                    str: body.substr((sortedEntities[i - 1].offset || 0) + (sortedEntities[i - 1].length || 0), (entity.offset || 0) - ((sortedEntities[i - 1].offset || 0) + (sortedEntities[i - 1].length || 0))),
-                    type: -1,
-                });
-            }
-            elems.push({
-                str: body.substr(entity.offset || 0, (entity.length || 0)),
-                type: entity.type,
-                userId: entity.userid,
-            });
-            if (i === (sortedEntities.length - 1) && (bodyLen) !== (entity.offset || 0) + (entity.length || 0)) {
-                elems.push({
-                    str: body.substr((entity.offset || 0) + (entity.length || 0)),
-                    type: -1,
-                });
-            }
-        });
+        const elems = spanMessageEntities(body, entityList);
         const openExternalLinkHandler = (url: string) => (e: any) => {
             e.preventDefault();
             onAction('open_external_link', url);
@@ -110,44 +76,55 @@ export const renderBody = (body: string, entityList: MessageEntity.AsObject[] | 
         const botCommandHandler = (text: string) => (e: any) => {
             onAction('bot_command', text);
         };
+        const classMap = {
+            [MessageEntityType.MESSAGEENTITYTYPEBOLD]: '_bold',
+            [MessageEntityType.MESSAGEENTITYTYPEITALIC]: '_italic',
+            [MessageEntityType.MESSAGEENTITYTYPEEMAIL]: '_mail',
+            [MessageEntityType.MESSAGEENTITYTYPEHASHTAG]: '_hashtag',
+        };
         const render = elems.map((elem, i) => {
-            switch (elem.type) {
-                case MessageEntityType.MESSAGEENTITYTYPEMENTION:
-                    if (elem.str.indexOf('@') === 0) {
-                        return (
-                            <UserName key={i} className="_mention" id={elem.userId} username={true} prefix="@"
-                                      noIcon={true} hideBadge={true} unsafe={true}
-                                      defaultString={elem.str.substr(1)} onLoad={measureFn}/>);
-                    } else {
-                        return (<UserName key={i} className="_mention" id={elem.userId} unsafe={true} noIcon={true}
-                                          hideBadge={true} defaultString={elem.str} onLoad={measureFn}/>);
-                    }
-                case MessageEntityType.MESSAGEENTITYTYPEBOLD:
-                    return (<span key={i} className="_bold">{elem.str}</span>);
-                case MessageEntityType.MESSAGEENTITYTYPEITALIC:
-                    return (<span key={i} className="_italic">{elem.str}</span>);
-                case MessageEntityType.MESSAGEENTITYTYPEEMAIL:
-                    return (<span key={i} className="_mail">{elem.str}</span>);
-                case MessageEntityType.MESSAGEENTITYTYPEHASHTAG:
-                    return (<span key={i} className="_hashtag">{elem.str}</span>);
-                case MessageEntityType.MESSAGEENTITYTYPEURL:
-                    const url = modifyURL(elem.str);
-                    if (isElectron) {
-                        return (
-                            <a key={i} href={url} onClick={openExternalLinkHandler(url)}
-                               className="_url">{elem.str}</a>);
-                    } else {
-                        return (
-                            <a key={i} href={url} target="_blank" rel="noopener noreferrer"
-                               className="_url">{elem.str}</a>);
-                    }
-                case MessageEntityType.MESSAGEENTITYTYPEBOTCOMMAND:
-                    return (<span key={i} className="_url"
-                                  onClick={botCommandHandler(elem.str || '')}>{elem.str}</span>);
-                case MessageEntityType.MESSAGEENTITYTYPECODE:
-                    return (<CodeViewer snippet={elem.str || ''} onDone={measureFn}/>);
-                default:
-                    return (<span key={i}>{elem.str}</span>);
+            if (elem.type !== undefined) {
+                switch (elem.type) {
+                    case MessageEntityType.MESSAGEENTITYTYPEMENTION:
+                        if (elem.str.indexOf('@') === 0) {
+                            return (
+                                <UserName key={i} className="_mention" id={elem.userId} username={true} prefix="@"
+                                          noIcon={true} hideBadge={true} unsafe={true}
+                                          defaultString={elem.str.substr(1)} onLoad={measureFn}/>);
+                        } else {
+                            return (<UserName key={i} className="_mention" id={elem.userId} unsafe={true} noIcon={true}
+                                              hideBadge={true} defaultString={elem.str} onLoad={measureFn}/>);
+                        }
+                    case MessageEntityType.MESSAGEENTITYTYPEBOLD:
+                        return (<span key={i} className="_bold">{elem.str}</span>);
+                    case MessageEntityType.MESSAGEENTITYTYPEITALIC:
+                        return (<span key={i} className="_italic">{elem.str}</span>);
+                    case MessageEntityType.MESSAGEENTITYTYPEEMAIL:
+                        return (<span key={i} className="_mail">{elem.str}</span>);
+                    case MessageEntityType.MESSAGEENTITYTYPEHASHTAG:
+                        return (<span key={i} className="_hashtag">{elem.str}</span>);
+                    case MessageEntityType.MESSAGEENTITYTYPEURL:
+                        const url = modifyURL(elem.str);
+                        if (isElectron) {
+                            return (
+                                <a key={i} href={url} onClick={openExternalLinkHandler(url)}
+                                   className="_url">{elem.str}</a>);
+                        } else {
+                            return (
+                                <a key={i} href={url} target="_blank" rel="noopener noreferrer"
+                                   className="_url">{elem.str}</a>);
+                        }
+                    case MessageEntityType.MESSAGEENTITYTYPEBOTCOMMAND:
+                        return (<span key={i} className="_url"
+                                      onClick={botCommandHandler(elem.str || '')}>{elem.str}</span>);
+                    case MessageEntityType.MESSAGEENTITYTYPECODE:
+                        return (<CodeViewer snippet={elem.str || ''} onDone={measureFn}/>);
+                    default:
+                        return (<span key={i}>{elem.str}</span>);
+                }
+            } else {
+                return (
+                    <span key={i} className={elem.types.map((o: string) => classMap[o]).join(' ')}>{elem.str}</span>);
             }
         });
         return render;

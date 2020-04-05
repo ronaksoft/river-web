@@ -14,7 +14,7 @@ import MessageRepo from '../../repository/message';
 import {InputPeer} from '../../services/sdk/messages/chat.core.types_pb';
 import {getMessageTitle} from '../Dialog/utils';
 import {C_MESSAGE_TYPE} from '../../repository/message/consts';
-import {getMediaInfo} from '../MessageMedia';
+import {getMediaInfo, IMediaInfo} from '../MessageMedia';
 import CachedPhoto from '../CachedPhoto';
 import CachedMessageService, {ICachedMessageServiceBroadcastItemData} from '../../services/cachedMessageService';
 import i18n from '../../services/i18n';
@@ -139,12 +139,15 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
                 </div>
             </div>);
         }
+        const mediaInfo = getMediaInfo(previewMessage);
         return (
-            <div className="message-preview" onDoubleClick={this.props.onDoubleClick} onClick={this.clickHandler}>
+            <div
+                className={'message-preview' + (mediaInfo.thumbFile && mediaInfo.thumbFile.fileid !== '' ? ' has-thumbnail' : '')}
+                onDoubleClick={this.props.onDoubleClick} onClick={this.clickHandler}>
                 <div className="preview-container">
                     <div className={'preview-message-wrapper ' + this.getPreviewCN(previewMessage)}>
                         <span className="preview-bar"/>
-                        {this.getThumbnail()}
+                        {this.getThumbnail(mediaInfo)}
                         <div className="preview-message">
                             <div className="preview-message-user">
                                 <UserName id={previewMessage.senderid || ''} you={true}/>
@@ -220,7 +223,7 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
         }
     }
 
-    private getThumbnail() {
+    private getThumbnail(mediaInfo: IMediaInfo) {
         const {previewMessage} = this.state;
         if (!previewMessage) {
             return '';
@@ -229,19 +232,17 @@ class MessagePreview extends React.PureComponent<IProps, IState> {
             case C_MESSAGE_TYPE.Picture:
             case C_MESSAGE_TYPE.Video:
             case C_MESSAGE_TYPE.File:
-                const pictureInfo = getMediaInfo(previewMessage);
                 return (
                     <div className="preview-thumbnail">
-                        <CachedPhoto key="reply-thumbnail" className="thumbnail" fileLocation={pictureInfo.thumbFile}/>
+                        <CachedPhoto key="reply-thumbnail" className="thumbnail" fileLocation={mediaInfo.thumbFile}/>
                     </div>
                 );
             case C_MESSAGE_TYPE.Audio:
-                const audioInfo = getMediaInfo(previewMessage);
-                if (audioInfo.thumbFile && audioInfo.thumbFile.fileid !== '') {
+                if (mediaInfo.thumbFile && mediaInfo.thumbFile.fileid !== '') {
                     return (
                         <div className="preview-thumbnail">
                             <CachedPhoto key="reply-thumbnail" className="thumbnail"
-                                         fileLocation={audioInfo.thumbFile}/>
+                                         fileLocation={mediaInfo.thumbFile}/>
                         </div>
                     );
                 } else {

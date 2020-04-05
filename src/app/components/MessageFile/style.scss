@@ -141,6 +141,8 @@
   }
 
   &.has-thumbnail {
+    position: relative;
+
     .file-content {
       min-height: 64px;
 
@@ -180,8 +182,8 @@
 
       .file-thumbnail {
         position: absolute;
-        top: 2px;
-        left: 2px;
+        top: -1px;
+        left: -1px;
         height: 64px;
         width: 64px;
         overflow: hidden;
