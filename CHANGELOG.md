@@ -1,3 +1,6 @@
+## 0.32.3
+* Known bugs fixed
+
 ## 0.32.2
 * MessageEntity improvements
 * Known bugs fixed

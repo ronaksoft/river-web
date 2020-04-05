@@ -1,4 +1,4 @@
-import {clone, uniq} from 'lodash';
+import {clone, uniq, orderBy} from 'lodash';
 import {MessageEntity} from "../sdk/messages/chat.core.types_pb";
 
 export interface ITypedRange {
@@ -15,34 +15,29 @@ const intersectRange = (r1: ITypedRange, r2: ITypedRange): ITypedRange[] | null 
     const otherEnd = r2.end;
     const isZeroLength = (start === end);
     const isOtherZeroLength = (otherStart === otherEnd);
-    const types = uniq([...r1.types, ...r2.types]);
-
     if (isZeroLength || isOtherZeroLength) {
         return null;
     }
 
+    const types = uniq([...r1.types, ...r2.types]);
+
+    // start 5 otherStart 6 end 12 otherEnd 16
     // Non zero-length ranges
     if ((start <= otherStart) && (otherStart < end) && (end < otherEnd)) {
         if (start !== otherStart) {
-            return [{start, end: otherStart - 1, types: r1.types}, {start: otherStart, end, types}];
+            return [{start, end: otherStart, types: r1.types}, {start: otherStart, end, types}, {start: end, end: otherEnd, types: r2.types}];
         } else {
-            return [{start: otherStart, end, types}];
-        }
-    } else if ((otherStart < start) && (start < otherEnd) && (otherEnd <= end)) {
-        if (end !== otherEnd) {
-            return [{start, end: otherEnd, types}, {start: otherEnd + 1, end, types: r2.types}];
-        } else {
-            return [{start, end: otherEnd, types}];
+            return [{start: otherStart, end, types}, {start: end, end: otherEnd, types: r2.types}];
         }
     } else if ((start <= otherStart) && (otherStart <= otherEnd) && (otherEnd <= end)) {
         if (start === otherStart && end === otherEnd) {
             return [{start: otherStart, end: otherEnd, types}];
         } else if (start === otherStart && end !== otherEnd) {
-            return [{start: otherStart, end: otherEnd, types}, {start: otherEnd + 1, end, types: r2.types}];
+            return [{start: otherStart, end: otherEnd, types}, {start: otherEnd, end, types: r2.types}];
         } else if (start !== otherStart && end === otherEnd) {
-            return [{start, end: otherStart - 1, types: r1.types}, {start: otherStart, end: otherEnd, types}];
+            return [{start, end: otherStart, types: r1.types}, {start: otherStart, end: otherEnd, types}];
         } else {
-            return [{start, end: otherStart - 1, types: r1.types}, {start: otherStart, end: otherEnd, types}, {start: otherEnd + 1, end, types: r2.types}];
+            return [{start, end: otherStart, types: r1.types}, {start: otherStart, end: otherEnd, types}, {start: otherEnd, end, types: r2.types}];
         }
     }
 
@@ -54,10 +49,9 @@ const extractRanges = (ranges: ITypedRange[]): ITypedRange[] => {
         const overlap = intersectRange(ranges[i - 1], ranges[i]);
         if (overlap) {
             ranges.splice(i - 1, 2, ...overlap);
-            i += overlap.length;
-        } else {
-            i++;
+            ranges = orderBy(ranges, ['start']);
         }
+        i++;
     }
     return ranges;
 };
@@ -65,12 +59,7 @@ const extractRanges = (ranges: ITypedRange[]): ITypedRange[] => {
 export const spanMessageEntities = (body: string, entityList: any[]): any[] => {
     let sortedEntities = clone(entityList);
     // Sort fragments from entities
-    sortedEntities.sort((i1, i2) => {
-        if (i1.offset === undefined || i2.offset === undefined) {
-            return 0;
-        }
-        return i1.offset - i2.offset;
-    });
+    sortedEntities = orderBy(sortedEntities, ['offset'], ['asc']);
     const elems: any[] = [];
     const bodyLen = body.length - 1;
     sortedEntities = extractRanges(sortedEntities.map((se: MessageEntity.AsObject) => {

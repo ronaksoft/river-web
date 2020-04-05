@@ -1320,6 +1320,20 @@ class ChatInput extends React.Component<IProps, IState> {
             entity.setUserid('');
             entities.push(entity);
         });
+        // const fn = (f: number, l: number, e: any) => {
+        //     const entity = new MessageEntity();
+        //     entity.setOffset(f);
+        //     entity.setLength(l);
+        //     entity.setType(e);
+        //     entity.setUserid('');
+        //     entities.push(entity);
+        // };
+        //
+        // fn(5, 7, MessageEntityType.MESSAGEENTITYTYPEBOLD);
+        // fn(6, 10, MessageEntityType.MESSAGEENTITYTYPEITALIC);
+        // fn(7, 3, MessageEntityType.MESSAGEENTITYTYPEHASHTAG);
+        // fn(10, 5, MessageEntityType.MESSAGEENTITYTYPEEMAIL);
+        //  text = "hi this is kk and nice to meet you";
         return {entities, text};
     }
 
