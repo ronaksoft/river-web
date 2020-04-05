@@ -3,6 +3,7 @@ const {app, BrowserWindow, shell, ipcMain, Menu, systemPreferences, nativeTheme}
 const isDev = require('electron-is-dev');
 const {download} = require('electron-dl');
 const contextMenu = require('electron-context-menu');
+const unusedFilename = require('unused-filename');
 const fs = require('fs');
 const Store = require('electron-store');
 const store = new Store();
@@ -221,11 +222,16 @@ ipcMain.on('fnCall', (e, arg) => {
         case 'download':
             try {
                 const savePath = `${app.getPath('downloads')}/${arg.data.fileName}`;
-                console.log(savePath);
+                const filePath = unusedFilename.sync(savePath);
+                let fileName = arg.data.fileName;
+                try {
+                    fileName = filePath.split('/').pop();
+                } catch (e) {
+                    fileName = arg.data.fileName;
+                }
                 download(BrowserWindow.getFocusedWindow(), arg.data.url, {
-                    filename: arg.data.fileName,
+                    filename: fileName,
                     openFolderWhenDone: true,
-                    saveAs: fs.existsSync(savePath),
                 })
                     .then((dl) => {
                         callReact('fnCallback', {

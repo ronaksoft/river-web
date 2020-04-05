@@ -145,9 +145,9 @@ import {
     EventBlur, EventFocus, EventMouseWheel, EventNetworkStatus, EventWasmInit, EventWasmStarted,
     EventWebSocketClose, EventWebSocketOpen
 } from "../../services/events";
+import Smoother from "../../services/utilities/smoother";
 
 import './style.scss';
-import Smoother from "../../services/utilities/smoother";
 
 export let notifyOptions: any[] = [];
 
@@ -4531,7 +4531,8 @@ class Chat extends React.Component<IProps, IState> {
         if (fileInfo.name.length === 0) {
             fileInfo.name = `downloaded_${this.riverTime.now()}`;
         }
-        const objectUrl = URL.createObjectURL(blob);
+        const file = new File([blob], fileInfo.name, {type: blob.type});
+        const objectUrl = URL.createObjectURL(file);
         this.electronService.download(objectUrl, fileInfo.name).then((res) => {
             message.saved = true;
             message.saved_path = res.path;

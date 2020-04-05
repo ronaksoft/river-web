@@ -41,6 +41,21 @@ export default class ElectronService {
         return window.isElectron || false;
     }
 
+    public static electronVersion() {
+        if (!ElectronService.isElectron()) {
+            return null;
+        }
+        const arr = window.navigator.userAgent.split(' ').filter(o => /electron/i.test(o));
+        if (arr.length> 0) {
+            try {
+                return arr[0].split('/')[1];
+            } catch (e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
     public static openExternal(url: string) {
         // @ts-ignore
         return window.electronShell.openExternal(url);

@@ -105,7 +105,8 @@
       "title": "نسخه جدید",
       "body": "نسخه‌ی جدید در دسترس هست",
       "update": "بروزرسانی",
-      "changelog": "تغییرات"
+      "changelog": "تغییرات",
+      "download_desktop_version": "دانلود نسخه {0} دسکتاپ"
     }
   },
   "peer_info": {

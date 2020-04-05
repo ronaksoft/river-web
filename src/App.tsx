@@ -23,24 +23,28 @@ import * as Sentry from '@sentry/browser';
 import I18n from "./app/services/i18n";
 import IframeService, {C_IFRAME_SUBJECT} from "./app/services/iframe";
 import UniqueId from "./app/services/uniqueId";
-import {C_VERSION} from "./app/components/SettingsMenu";
+import {C_ELECTRON_VERSION, C_VERSION} from "./app/components/SettingsMenu";
 import Server from "./app/services/sdk/server";
 import {SnackbarProvider} from 'notistack';
 // @ts-ignore
 import md from 'markdown-it';
 import {EventBeforeUnload, EventBlur, EventDragOver, EventDrop, EventFocus, EventMessage} from "./app/services/events";
+import ElectronService from "./app/services/electron";
 
 import './App.scss';
 
 export const isProd = (!process || !process.env || process.env.NODE_ENV !== 'development');
 if (isProd) {
     Sentry.init({
-        dsn: "https://ec65e55c384f43f2ac2ed7c66e319b1a@sentry.ronaksoftware.com/4"
+        dsn: "https://ec65e55c384f43f2ac2ed7c66e319b1a@sentry.ronaksoftware.com/4",
+        ignoreErrors: [
+            /Non-Error/g
+        ]
     });
 }
 
 const theme = createMuiTheme({
-    direction: localStorage.getItem('river.lang.dir') === 'rtl'? 'rtl' : 'ltr',
+    direction: localStorage.getItem('river.lang.dir') === 'rtl' ? 'rtl' : 'ltr',
     palette: {
         primary: {
             contrastText: '#FFF',
@@ -60,6 +64,7 @@ interface IState {
     errorMessage: string;
     hasUpdate: boolean;
     updateContent: string;
+    desktopDownloadLink: string;
 }
 
 I18n.init({
@@ -72,7 +77,7 @@ I18n.init({
 
 class App extends React.Component<{}, IState> {
     private mainRepo: MainRepo;
-    private readonly isElectron: boolean = false;
+    private readonly isElectron: boolean = ElectronService.isElectron();
     private iframeService: IframeService;
     private readonly broadcastChannel: BroadcastChannel | undefined;
     private readonly sessionId: number = 0;
@@ -85,17 +90,13 @@ class App extends React.Component<{}, IState> {
         this.state = {
             alertOpen: false,
             clearingSiteData: false,
+            desktopDownloadLink: '',
             errorMessage: `You are receiving "Auth Error", do you like to clear all site data?`,
             hasUpdate: false,
             updateContent: '',
         };
 
         this.mainRepo = MainRepo.getInstance();
-
-        // @ts-ignore
-        if (window.isElectron) {
-            this.isElectron = true;
-        }
 
         this.iframeService = IframeService.getInstance();
 
@@ -183,11 +184,13 @@ class App extends React.Component<{}, IState> {
             return res.text();
         }).then((text) => {
             this.setState({
+                desktopDownloadLink: this.getDesktopLink(),
                 hasUpdate: true,
                 updateContent: md().render(text),
             });
         }).catch(() => {
             this.setState({
+                desktopDownloadLink: this.getDesktopLink(),
                 hasUpdate: true,
                 updateContent: '',
             });
@@ -199,7 +202,7 @@ class App extends React.Component<{}, IState> {
     }
 
     public render() {
-        const {alertOpen, clearingSiteData, errorMessage, hasUpdate, updateContent} = this.state;
+        const {alertOpen, clearingSiteData, errorMessage, hasUpdate, updateContent, desktopDownloadLink} = this.state;
         return (
             <div className={'App' + (this.isElectron ? ' is-electron' : '')}>
                 <MuiThemeProvider theme={theme}>
@@ -255,6 +258,10 @@ class App extends React.Component<{}, IState> {
                             <Button onClick={this.updateDialogAcceptHandler} color="primary" autoFocus={true}>
                                 {I18n.t('chat.update_dialog.update')}
                             </Button>
+                            {Boolean(desktopDownloadLink !== '') &&
+                            <Button color="primary" onClick={this.downloadDesktopHandler(desktopDownloadLink)}>
+                                {I18n.tf('chat.update_dialog.download_desktop_version', '7.2.1')}
+                            </Button>}
                         </DialogActions>
                     </Dialog>
                 </MuiThemeProvider>
@@ -362,6 +369,48 @@ class App extends React.Component<{}, IState> {
 
     private updateDialogAcceptHandler = () => {
         window.location.reload();
+    }
+
+    private getDesktopLink() {
+        if (!this.isElectron) {
+            return '';
+        }
+        if (ElectronService.electronVersion() === C_ELECTRON_VERSION) {
+            return '';
+        }
+        const userAgent = window.navigator.userAgent;
+        const platform = window.navigator.platform;
+        const macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'];
+        const windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'];
+        const iosPlatforms = ['iPhone', 'iPad', 'iPod'];
+        let os = null;
+
+        if (macosPlatforms.indexOf(platform) !== -1) {
+            os = 'mac';
+        } else if (iosPlatforms.indexOf(platform) !== -1) {
+            os = 'ios';
+        } else if (windowsPlatforms.indexOf(platform) !== -1) {
+            os = 'windows';
+        } else if (/Android/.test(userAgent)) {
+            os = 'android';
+        } else if (!os && /Linux/.test(platform)) {
+            os = 'linux';
+        }
+
+        switch (os) {
+            case 'mac':
+                return 'https://drive.ronaksoft.com/latest_direct/River/MacOS';
+            case 'windows':
+                return 'https://drive.ronaksoft.com/latest_direct/River/Windows';
+            case 'linux':
+                return 'https://drive.ronaksoft.com/latest_direct/River/Linux';
+        }
+        return '';
+    }
+
+    private downloadDesktopHandler = (link: string) => () => {
+        ElectronService.openExternal(link);
+        this.updateDialogCloseHandler();
     }
 }
 
