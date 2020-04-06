@@ -14,7 +14,6 @@ import IntlTelInput from 'react-intl-tel-input';
 import {CloseRounded, DoneRounded, RefreshRounded} from '@material-ui/icons';
 import {C_ERR, C_ERR_ITEM, C_MSG} from '../../services/sdk/const';
 import RiverLogo from '../../components/RiverLogo';
-import NotificationService from '../../services/notification';
 import {C_VERSION, languageList} from '../../components/SettingsMenu';
 import TextField from '@material-ui/core/TextField';
 import {TimerRounded, ArrowForwardRounded, CropFreeRounded, LanguageRounded} from '@material-ui/icons';
@@ -93,7 +92,6 @@ interface IState {
 
 class SignUp extends React.Component<IProps, IState> {
     private sdk: SDK;
-    private notification: NotificationService;
     private countdownInterval: any = null;
     private workspaceManager: WorkspaceManger;
     private qrCanvasRef: any = null;
@@ -141,7 +139,6 @@ class SignUp extends React.Component<IProps, IState> {
             workspaceInfo: {},
         };
         this.sdk = SDK.getInstance();
-        this.notification = NotificationService.getInstance();
         this.workspaceManager = WorkspaceManger.getInstance();
     }
 
@@ -631,11 +628,11 @@ class SignUp extends React.Component<IProps, IState> {
         });
         this.props.history.push('/chat/null');
         this.dispatchWSOpenEvent();
-        this.notification.initToken().then((token) => {
-            this.sdk.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
-        }).catch(() => {
-            this.sdk.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1');
-        });
+        // this.notification.initToken().then((token) => {
+        //     this.sdk.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
+        // }).catch(() => {
+        this.sdk.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1');
+        // });
     }
 
     private resendCodeHandler = () => {
@@ -771,11 +768,11 @@ class SignUp extends React.Component<IProps, IState> {
             });
             this.props.history.push('/chat/null');
             this.dispatchWSOpenEvent();
-            this.notification.initToken().then((token) => {
-                this.sdk.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
-            }).catch(() => {
+            // this.notification.initToken().then((token) => {
+            //     this.sdk.registerDevice(token, 0, C_VERSION, C_CLIENT, 'en', '1');
+            // }).catch(() => {
                 this.sdk.registerDevice('', 0, C_VERSION, C_CLIENT, 'en', '1');
-            });
+            // });
         }).catch((err) => {
             this.setState({
                 loading: false,
