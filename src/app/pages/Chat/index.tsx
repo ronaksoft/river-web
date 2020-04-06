@@ -14,7 +14,7 @@ import Message, {highlightMessage, highlightMessageText} from '../../components/
 import MessageRepo, {getMediaDocument} from '../../repository/message/index';
 import DialogRepo from '../../repository/dialog/index';
 import UniqueId from '../../services/uniqueId/index';
-import ChatInput, {C_TYPING_INTERVAL} from '../../components/ChatInput/index';
+import ChatInput, {C_TYPING_INTERVAL, C_TYPING_INTERVAL_OFFSET} from '../../components/ChatInput/index';
 import {
     clone,
     cloneDeep,
@@ -1119,7 +1119,7 @@ class Chat extends React.Component<IProps, IState> {
                         }
                     }
                 }
-            }, C_TYPING_INTERVAL + 1000);
+            }, C_TYPING_INTERVAL + C_TYPING_INTERVAL_OFFSET);
             if (!isTypingList.hasOwnProperty(data.peerid || '')) {
                 isTypingList[data.peerid || ''] = {};
                 isTypingList[data.peerid || ''][data.userid || 0] = {

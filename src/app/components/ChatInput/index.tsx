@@ -114,7 +114,7 @@ const codeBacktick = (text: string, sortedEntities: Array<{ offset: number, leng
         return t1.substr(0, s) + t2 + t1.substr(s + e, t1.length);
     };
     sortedEntities.forEach((en) => {
-        text = fn(text, '```'+text.substr(en.offset, en.length)+'```', en.offset, en.length);
+        text = fn(text, '```' + text.substr(en.offset, en.length) + '```', en.offset, en.length);
     });
     return text;
 };
@@ -180,6 +180,7 @@ const defaultMentionInputStyle = {
 };
 
 export const C_TYPING_INTERVAL = 5000;
+export const C_TYPING_INTERVAL_OFFSET = 2500;
 
 const textBoxClasses: string[] = range(1, 13).map(o => `_${o}-line`);
 
