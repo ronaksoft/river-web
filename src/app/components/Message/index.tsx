@@ -1405,11 +1405,11 @@ class Message extends React.Component<IProps, IState> {
                     const entities: MessageEntity[] = [];
                     const entity = new MessageEntity();
                     entity.setOffset(0);
-                    entity.setLength(cmd.length);
+                    entity.setLength(text.length);
                     entity.setType(MessageEntityType.MESSAGEENTITYTYPEBOTCOMMAND);
                     entity.setUserid('0');
                     entities.push(entity);
-                    this.props.onBotCommand(cmd, {
+                    this.props.onBotCommand(text, {
                         entities,
                     });
                 }

@@ -1,4 +1,5 @@
 ## 0.32.4
+* Bot command bug fixed
 * Minor improvements
 
 ## 0.32.3
