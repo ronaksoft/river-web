@@ -770,7 +770,7 @@ html[theme="dark"],
 html[theme="dark-night"],
 html[theme="dark-blue"] {
   .chat {
-    border-color: var(--dark-low);
+    border-color: transparent;
 
     .chat-placeholder .placeholder-label {
       color: var(--white);
@@ -871,7 +871,7 @@ html[theme="dark-blue"] {
 
 html[theme="dark-night"] {
   .chat {
-    border-color: var(--dark-night-low);
+    border-color: transparent;
   }
 
   .bubble-wrapper {

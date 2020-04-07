@@ -312,14 +312,15 @@ class UserDialog extends React.Component<IProps, IState> {
         const fn = (user: IUser) => {
             this.setState({
                 firstname: user.firstname || '',
-                isInContact: (user.is_contact === 1),
+                isInContact: Boolean(user.is_contact),
                 lastname: user.lastname || '',
+                phone: user.phone || '',
                 sendMessageEnable: Boolean(user.accesshash && user.accesshash.length > 0),
                 user,
             });
         };
 
-        this.userRepo.getFull(peer.getId() || '', fn).then((res) => {
+        this.userRepo.getFull(peer.getId() || '', fn, undefined, true).then((res) => {
             fn(res);
         }).catch((err) => {
             if (err === 'not_found' && text && text.indexOf('@') === 0) {

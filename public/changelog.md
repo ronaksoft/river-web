@@ -1,3 +1,7 @@
+## 0.32.5
+* Global search added in contacts menu
+* Minor improvements
+
 ## 0.32.4
 * Bot command bug fixed
 * Minor improvements

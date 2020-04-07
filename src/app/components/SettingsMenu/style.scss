@@ -8,7 +8,7 @@
 */
 @import '../../../style/mixin';
 
-.setting-menu {
+.settings-menu {
   height: 100%;
 
   .page-container {
@@ -1211,7 +1211,7 @@
 }
 
 html[direction="rtl"] {
-  .setting-menu {
+  .settings-menu {
     direction: rtl;
     text-align: right;
 
@@ -1390,7 +1390,7 @@ html[direction="rtl"] {
 html[theme="dark"],
 html[theme="dark-night"],
 html[theme="dark-blue"] {
-  .setting-menu {
+  .settings-menu {
     .setting-switch {
       .setting-switch-thumb {
         color: var(--grey);
@@ -1618,7 +1618,7 @@ html[theme="dark-blue"] {
 }
 
 html[theme="dark-night"] {
-  .setting-menu {
+  .settings-menu {
     .menu-header {
       background-color: var(--dark-night-medium);
       border-color: var(--dark-night-low-op50);
@@ -1670,13 +1670,17 @@ html[theme="dark-night"] {
 }
 
 html[theme="dark-blue"] {
-  .setting-menu {
+  .settings-menu {
     .menu-header {
       background-color: var(--dark-blue-medium);
       border-color: var(--dark-blue-low-op50);
     }
 
     .sub-page-header, .sub-page-header-alt {
+      border-color: var(--dark-blue-low-op50);
+    }
+
+    .page-anchor, .page-content {
       border-color: var(--dark-blue-low-op50);
     }
 

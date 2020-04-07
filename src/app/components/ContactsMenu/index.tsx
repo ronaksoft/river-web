@@ -90,7 +90,7 @@ class ContactMenus extends React.Component<IProps, IState> {
                 <div className="contact-box">
                     <ContactList ref={this.contactListRefHandler} className="contacts-menu" mode="link"
                                  noRowsRenderer={this.noRowsRenderer} disableCheckSelected={true}
-                                 onContextMenuAction={this.contextMenuActionHandler}/>
+                                 onContextMenuAction={this.contextMenuActionHandler} globalSearch={true}/>
                 </div>
                 <SettingsModal open={newContactDialogOpen} title={i18n.t('contact.new_contact')}
                                icon={<PersonAddRounded/>}

@@ -303,7 +303,8 @@
     "create_a_new_group": "گروه جدید",
     "group_settings": "تنظیمات گروه",
     "group_title": "عنوان گروه",
-    "is_not_on_river_yet": "{1}هنوز عضو ریور نشده است!"
+    "is_not_on_river_yet": "{1}هنوز عضو ریور نشده است!",
+    "global_search": "جستجو کلی"
   },
   "media": {
     "photo_video": "تصویر و ویدو",

@@ -118,7 +118,7 @@ const listStyle: React.CSSProperties = {
     overflowY: 'visible',
 };
 
-export const C_VERSION = '0.32.4';
+export const C_VERSION = '0.32.5';
 export const C_ELECTRON_VERSION = '7.2.1';
 export const C_CUSTOM_BG_ID = 'river_custom_bg';
 export const C_AVATAR_SIZE = 640;
@@ -425,7 +425,7 @@ class SettingsMenu extends React.Component<IProps, IState> {
             confirmDialogMode, confirmDialogOpen, customBackgroundSrc, loading, privacy, passwordMode,
         } = this.state;
         return (
-            <div className="setting-menu">
+            <div className="settings-menu">
                 <DevTools ref={this.devToolsRefHandler}/>
                 <AvatarCropper ref={this.cropperRefHandler} onImageReady={this.croppedImageReadyHandler}
                                width={C_AVATAR_SIZE}/>

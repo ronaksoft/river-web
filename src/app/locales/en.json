@@ -307,7 +307,8 @@
     "create_a_new_group": "Create a New Group",
     "group_settings": "Group Settings",
     "group_title": "Group title",
-    "is_not_on_river_yet": "{0} is not on River yet!"
+    "is_not_on_river_yet": "{0} is not on River yet!",
+    "global_search": "Global Search"
   },
   "media": {
     "photo_video": "Photo & Video",
