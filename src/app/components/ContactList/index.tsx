@@ -30,6 +30,7 @@ import IsMobile from "../../services/isMobile";
 import getScrollbarWidth from "../../services/utilities/scrollbar_width";
 import animateScrollTo from "animated-scroll-to";
 import {Loading} from '../Loading';
+import SearchRepo from "../../repository/search";
 
 import './style.scss';
 
@@ -42,10 +43,12 @@ interface IProps {
     noRowsRenderer?: () => JSX.Element;
     onChange?: (contacts: IUser[]) => void;
     onContextMenuAction?: (cmd: string, contact: IUser) => void;
+    globalSearch?: boolean;
 }
 
 interface IState {
     contacts: IUser[];
+    globalUsers: IUser[];
     hiddenContacts: IUser[];
     loading: boolean;
     moreAnchorPos: any;
@@ -102,6 +105,7 @@ class ContactList extends React.Component<IProps, IState> {
     private contactsRes: IUser[] = [];
     private list: VariableSizeList | undefined;
     private userRepo: UserRepo;
+    private searchRepo: SearchRepo;
     private readonly searchDebounce: any;
     private defaultContact: IUser[] = [];
     private readonly isMobile: boolean = false;
@@ -113,6 +117,7 @@ class ContactList extends React.Component<IProps, IState> {
 
         this.state = {
             contacts: [],
+            globalUsers: [],
             hiddenContacts: (props.hiddenContacts || []).map((o) => {
                 // @ts-ignore
                 return {...o, id: o.userid};
@@ -130,6 +135,7 @@ class ContactList extends React.Component<IProps, IState> {
         this.rtl = localStorage.getItem('river.lang.dir') === 'rtl';
 
         this.userRepo = UserRepo.getInstance();
+        this.searchRepo = SearchRepo.getInstance();
         this.searchDebounce = debounce(this.search, 512);
     }
 
@@ -235,8 +241,8 @@ class ContactList extends React.Component<IProps, IState> {
     }
 
     private getWrapper() {
-        const {contacts, loading} = this.state;
-        if (contacts.length === 0) {
+        const {contacts, globalUsers, loading} = this.state;
+        if ((contacts.length + globalUsers.length) === 0) {
             if (loading) {
                 return (<div className="contact-container">
                     <Loading/>
@@ -252,7 +258,7 @@ class ContactList extends React.Component<IProps, IState> {
                             <VariableSizeList
                                 ref={this.refHandler}
                                 itemSize={this.getHeight}
-                                itemCount={contacts.length}
+                                itemCount={contacts.length + (globalUsers.length ? globalUsers.length + 1 : 0)}
                                 overscanCount={32}
                                 width={width}
                                 height={height}
@@ -283,7 +289,7 @@ class ContactList extends React.Component<IProps, IState> {
                                 <VariableSizeList
                                     ref={this.refHandler}
                                     itemSize={this.getHeight}
-                                    itemCount={contacts.length}
+                                    itemCount={contacts.length + (globalUsers.length ? globalUsers.length + 1 : 0)}
                                     overscanCount={32}
                                     width={width}
                                     height={height}
@@ -323,48 +329,74 @@ class ContactList extends React.Component<IProps, IState> {
 
     /* Row renderer for list */
     private rowRender = ({index, key, parent, style}: any): any => {
-        const contact = this.state.contacts[index];
-        if (contact.category) {
-            return (<div style={style} key={`${index}-${contact.category}`}
-                         className="category-item">{contact.category}</div>);
-        } else {
-            if (this.props.mode === 'chip') {
-                return (
-                    <div style={style} key={contact.id || ''} className="contact-item"
-                         onClick={this.addMemberHandler(contact)}>
-                    <span className="avatar">
-                        <UserAvatar id={contact.id || ''}/>
-                    </span>
-                        <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>
-                        <span
-                            className="phone">{contact.phone ? contact.phone : ((contact.username !== '') ? contact.username : i18n.t('contact.no_phone'))}</span>
-                        {Boolean(this.props.onContextMenuAction) &&
-                        <div className="more" onClick={this.contextMenuOpenHandler(index)}>
-                            <MoreVert/>
-                        </div>}
-                    </div>
-                );
+        if (this.state.contacts.length > index) {
+            const contact = this.state.contacts[index];
+            if (contact.category) {
+                return (<div style={style} key={`${index}-${contact.category}`}
+                             className="category-item">{contact.category}</div>);
             } else {
-                return (
-                    <div style={style} key={contact.id || ''} className="contact-item">
-                        <Link to={`/chat/${contact.id}`}>
+                if (this.props.mode === 'chip') {
+                    return (
+                        <div style={style} key={contact.id || ''} className="contact-item"
+                             onClick={this.addMemberHandler(contact)}>
                             <span className="avatar">
                                 <UserAvatar id={contact.id || ''}/>
                             </span>
-                            <span className="name">
-                                <span className="inner">{`${contact.firstname} ${contact.lastname}`}</span>
-                                <LastSeen className="last-seen" id={contact.id || ''}/>
-                            </span>
+                            <span className="name">{`${contact.firstname} ${contact.lastname}`}</span>
                             <span
                                 className="phone">{contact.phone ? contact.phone : ((contact.username !== '') ? contact.username : i18n.t('contact.no_phone'))}</span>
                             {Boolean(this.props.onContextMenuAction) &&
                             <div className="more" onClick={this.contextMenuOpenHandler(index)}>
                                 <MoreVert/>
                             </div>}
-                        </Link>
-                    </div>
-                );
+                        </div>
+                    );
+                } else {
+                    return (
+                        <div style={style} key={contact.id || ''} className="contact-item">
+                            <Link to={`/chat/${contact.id}`}>
+                                <span className="avatar">
+                                    <UserAvatar id={contact.id || ''}/>
+                                </span>
+                                <span className="name">
+                                    <span className="inner">{`${contact.firstname} ${contact.lastname}`}</span>
+                                    <LastSeen className="last-seen" id={contact.id || ''}/>
+                                </span>
+                                <span
+                                    className="phone">{contact.phone ? contact.phone : ((contact.username !== '') ? contact.username : i18n.t('contact.no_phone'))}</span>
+                                {Boolean(this.props.onContextMenuAction) &&
+                                <div className="more" onClick={this.contextMenuOpenHandler(index)}>
+                                    <MoreVert/>
+                                </div>}
+                            </Link>
+                        </div>
+                    );
+                }
             }
+        } else if (this.state.contacts.length === index) {
+            return (
+                <div style={style} key={index} className="contact-separator">{i18n.t('contact.global_search')}</div>);
+        } else {
+            const contact = this.state.globalUsers[index - (this.state.contacts.length + 1)];
+            return (
+                <div style={style} key={contact.id || ''} className="contact-item">
+                    <Link to={`/chat/${contact.id}`}>
+                        <span className="avatar">
+                            <UserAvatar id={contact.id || ''}/>
+                        </span>
+                        <span className="name">
+                            <span className="inner">{`${contact.firstname} ${contact.lastname}`}</span>
+                            <LastSeen className="last-seen" id={contact.id || ''}/>
+                        </span>
+                        <span
+                            className="phone">{contact.phone ? contact.phone : ((contact.username !== '') ? contact.username : i18n.t('contact.no_phone'))}</span>
+                        {Boolean(this.props.onContextMenuAction) &&
+                        <div className="more" onClick={this.contextMenuOpenHandler(index)}>
+                            <MoreVert/>
+                        </div>}
+                    </Link>
+                </div>
+            );
         }
     }
 
@@ -431,6 +463,20 @@ class ContactList extends React.Component<IProps, IState> {
                 contacts: categorizeContact(this.getTrimmedList(this.state.selectedContacts)),
             });
         });
+        if (this.props.globalSearch && text.length > 0) {
+            this.searchRepo.globalSearch(text, this.contactsRes, (users) => {
+                if (this.list) {
+                    this.list.resetAfterIndex(this.state.contacts.length, false);
+                }
+                this.setState({
+                    globalUsers: users,
+                });
+            });
+        } else if (this.state.globalUsers.length !== 0) {
+            this.setState({
+                globalUsers: [],
+            });
+        }
     }
 
     /* Add member to selectedContacts */
@@ -486,9 +532,15 @@ class ContactList extends React.Component<IProps, IState> {
 
     /* Get dynamic height */
     private getHeight = (index: number): number => {
-        const contact = this.state.contacts[index];
-        if (contact.category) {
-            return 40;
+        if (this.state.contacts.length > index) {
+            const contact = this.state.contacts[index];
+            if (contact.category) {
+                return 40;
+            } else {
+                return 64;
+            }
+        } else if (this.state.contacts.length === index) {
+            return 24;
         } else {
             return 64;
         }

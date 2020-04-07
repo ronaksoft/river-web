@@ -171,6 +171,15 @@
         }
       }
 
+      .contact-separator {
+        text-align: left;
+        padding: 0 12px;
+        line-height: 24px;
+        background-color: var(--header-color);
+        font-size: 13px;
+        color: var(--grey-low);
+      }
+
       .category-item {
         color: var(--river);
         font-size: 24px;
@@ -256,6 +265,11 @@ html[theme="dark-night"] {
             }
           }
         }
+
+        .contact-separator {
+          background-color: var(--dark-low);
+          color: var(--grey);
+        }
       }
     }
   }
@@ -293,6 +307,21 @@ html[theme="dark-blue"] {
             }
           }
         }
+
+        .contact-separator {
+          background-color: var(--dark-blue-low);
+          color: var(--grey);
+        }
+      }
+    }
+  }
+}
+
+html[direction="rtl"] {
+  .contact-list {
+    .contact-list-container {
+      .contact-separator {
+        text-align: right;
       }
     }
   }
