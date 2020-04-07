@@ -13,6 +13,7 @@ import UserRepo from '../user';
 import GroupRepo from '../group';
 import {IUser} from '../user/interface';
 import MessageRepo from "../message";
+import {differenceBy, uniqBy} from "lodash";
 
 export default class SearchRepo {
     public static getInstance() {
@@ -123,5 +124,34 @@ export default class SearchRepo {
 
     public searchUsername(username: string) {
         return this.userRepo.contactSearch(username);
+    }
+
+    public globalSearch(keyword: string, ignoreUsers: IUser[], callback: (users: IUser[]) => void) {
+        const limit = 128;
+        const skip = 0;
+        let users: IUser[] = [];
+        this.userRepo.getManyCache(false, {limit, keyword}).then((userRes) => {
+            const ids: { [key: string]: IUser } = {};
+            userRes.forEach((item: IUser) => {
+                if (!ids.hasOwnProperty(item.id || '')) {
+                    ids[item.id || ''] = item;
+                }
+            });
+            return this.dialogRepo.findInArray(Object.keys(ids), skip, limit).then((res) => {
+                return res.map((d) => {
+                    return ids[d.peerid || ''] || null;
+                }).filter(o => o !== null);
+            });
+        }).then((res) => {
+            fn(res);
+        });
+        this.searchUsername(keyword).then((res) => {
+            fn(res);
+        });
+        const fn = (us: IUser[]) => {
+            users = uniqBy([...users, ...us], 'id');
+            users = differenceBy(users, ignoreUsers, 'id');
+            callback(users);
+        };
     }
 }

@@ -75,7 +75,7 @@ export default class GroupRepo {
                     if (cacheCB) {
                         cacheCB(group);
                     }
-                    if (checkLastUpdate && group.last_updated && (this.riverTime.now() - (group.last_updated || 0)) > 60) {
+                    if (checkLastUpdate && group.last_updated && (this.riverTime.now() - (group.last_updated || 0)) < 60) {
                         resolve(group);
                         return;
                     }

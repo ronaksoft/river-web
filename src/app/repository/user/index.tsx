@@ -19,7 +19,7 @@ import CRC from 'js-crc/build/crc.min';
 import {InputUser, User, UserStatus} from '../../services/sdk/messages/chat.core.types_pb';
 import RiverTime from '../../services/utilities/river_time';
 import Broadcaster from '../../services/broadcaster';
-import {kMerge} from "../../services/utilities/kDash";
+import {kMerge, kUserMerge} from "../../services/utilities/kDash";
 import {C_ERR, C_ERR_ITEM} from "../../services/sdk/const";
 
 export const UserDBUpdated = 'User_DB_Updated';
@@ -118,7 +118,7 @@ export default class UserRepo {
                     if (cacheCB) {
                         cacheCB(user);
                     }
-                    if (checkLastUpdate && user.last_updated && (this.riverTime.now() - (user.last_updated || 0)) > 60) {
+                    if (checkLastUpdate && user.last_updated && (this.riverTime.now() - (user.last_updated || 0)) < 60) {
                         resolve(user);
                         return;
                     }
@@ -132,7 +132,7 @@ export default class UserRepo {
                             if (user.phone && user.phone.length > 0) {
                                 u.phone = user.phone;
                             }
-                            u = kMerge(user, u);
+                            u = kUserMerge(user, u);
                             u.last_updated = this.riverTime.now();
                             this.upsert(false, [u], false, callerId);
                             resolve(u);
@@ -195,7 +195,9 @@ export default class UserRepo {
 
     public upsert(isContact: boolean, users: IUser[], force?: boolean, callerId?: number): Promise<any> {
         const ids = users.map((user) => {
-            user.is_contact = isContact ? 1 : 0;
+            if (isContact) {
+                user.is_contact = 1;
+            }
             return user.id || '';
         });
         if (users.length === 0) {
