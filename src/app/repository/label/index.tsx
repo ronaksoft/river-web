@@ -169,7 +169,7 @@ export default class LabelRepo {
         return this.sdk.labelList(id, min || 0, max || 0, limit || 0).then((remoteRes) => {
             remoteRes.messagesList = MessageRepo.parseMessageMany(remoteRes.messagesList, this.userRepo.getCurrentUserId());
             this.insertManyLabelItem(id, remoteRes.messagesList);
-            this.messageRepo.lazyUpsert(remoteRes.messagesList, true);
+            this.messageRepo.insertDiscrete(remoteRes.messagesList);
             this.userRepo.importBulk(false, remoteRes.usersList);
             this.groupRepo.importBulk(remoteRes.groupsList);
             return remoteRes.messagesList;

@@ -677,7 +677,7 @@ class Dialog extends React.PureComponent<IProps, IState> {
         this.searchRepo.searchAllMessages({
             keyword,
             labelIds: appliedSelectedLabelIds
-        }, {includeTemp: true}).then((res) => {
+        }, {}).then((res) => {
             const searchMessageItems: IDialog[] = res.map((msg) => {
                 const messageTitle = getMessageTitle(msg);
                 return {

@@ -337,6 +337,11 @@ class Chat extends React.Component<IProps, IState> {
 
         this.updateManager.enableLiveUpdate();
 
+        // this.messageRepo.upsert([{
+        //     id: 39397,
+        //     temp: true,
+        // }]);
+
         // Global event listeners
         window.addEventListener(EventFocus, this.windowFocusHandler);
         window.addEventListener(EventBlur, this.windowBlurHandler);

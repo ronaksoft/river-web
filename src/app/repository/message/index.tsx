@@ -9,7 +9,7 @@
 
 import MessageDB from '../../services/db/message';
 import {IMessage, IMessageWithCount, IPendingMessage} from './interface';
-import {cloneDeep, differenceBy, find, throttle, findIndex, uniq, difference} from 'lodash';
+import {cloneDeep, differenceBy, find, throttle, findIndex, uniq, difference, groupBy} from 'lodash';
 import SDK from '../../services/sdk';
 import UserRepo from '../user';
 import RTLDetector from '../../services/utilities/rtl_detector';
@@ -502,7 +502,7 @@ export default class MessageRepo {
             pipe2 = pipe2.reverse();
         }
         pipe2 = pipe2.filter((item: IMessage) => {
-            return item.temp !== true && (item.id || 0) > 0;
+            return (item.id || 0) > 0;
         });
         return pipe2.limit(limit + (ignoreMax ? 1 : 2)).toArray().then((res) => {
             const cacheMsgs: IMessage[] = [];
@@ -571,7 +571,7 @@ export default class MessageRepo {
     public getLastMessage(peerId: string) {
         return this.db.messages.where('[peerid+id]').between([peerId, Dexie.minKey], [peerId, Dexie.maxKey], true, true)
             .filter((item: IMessage) => {
-                return item.temp !== true && (item.id || 0) > 0 && item.messagetype !== C_MESSAGE_TYPE.Hole;
+                return (item.id || 0) > 0 && item.messagetype !== C_MESSAGE_TYPE.Hole;
             }).last();
     }
 
@@ -679,7 +679,7 @@ export default class MessageRepo {
         if (keyword.length > 0 || (labelIds && labelIds.length > 0) || (senderIds && senderIds.length > 0)) {
             const reg = new RegExp(keyword || '', 'i');
             pipe2 = pipe2.filter((item: IMessage) => {
-                if (item.messagetype !== C_MESSAGE_TYPE.Hole && item.messagetype !== C_MESSAGE_TYPE.End && item.temp !== true && (item.id || 0) > 0) {
+                if (item.messagetype !== C_MESSAGE_TYPE.Hole && item.messagetype !== C_MESSAGE_TYPE.End && (item.id || 0) > 0) {
                     let isMatched = false;
                     if (labelIds && labelIds.length && item.labelidsList && item.labelidsList.length && difference(labelIds, item.labelidsList).length === 0) {
                         isMatched = true;
@@ -705,7 +705,7 @@ export default class MessageRepo {
         return pipe2.limit(limit || 32).toArray();
     }
 
-    public searchAll({keyword, labelIds}: { keyword?: string, labelIds?: number[] }, {after, limit, includeTemp}: { after?: number, limit?: number, includeTemp?: boolean }) {
+    public searchAll({keyword, labelIds}: { keyword?: string, labelIds?: number[] }, {after, limit}: { after?: number, limit?: number}) {
         const pipe = this.db.messages;
         let pipe2: Dexie.Collection<IMessage, number>;
         if (after) {
@@ -717,7 +717,7 @@ export default class MessageRepo {
         if (term.length > 0 || (labelIds && labelIds.length > 0)) {
             const reg = new RegExp(term, 'i');
             pipe2 = pipe2.filter((item: IMessage) => {
-                if (item.messagetype !== C_MESSAGE_TYPE.Hole && item.messagetype !== C_MESSAGE_TYPE.End && ((item.temp !== true && !includeTemp) || includeTemp) && (item.id || 0) > 0) {
+                if (item.messagetype !== C_MESSAGE_TYPE.Hole && item.messagetype !== C_MESSAGE_TYPE.End && (item.id || 0) > 0) {
                     let isMatched = false;
                     if (labelIds && labelIds.length && item.labelidsList && item.labelidsList.length && difference(labelIds, item.labelidsList).length === 0) {
                         isMatched = true;
@@ -742,7 +742,6 @@ export default class MessageRepo {
 
     public transform(msgs: IMessage[]) {
         return msgs.map((msg) => {
-            msg.temp = false;
             return msg;
         });
     }
@@ -774,7 +773,7 @@ export default class MessageRepo {
                 const t = find(msgs, {id: msg.id});
                 if (t && t.temp === true && msg.temp === false) {
                     const d = this.mergeCheck(msg, t);
-                    d.temp = false;
+                    // d.temp = false;
                     return d;
                 } else if (t) {
                     return this.mergeCheck(msg, t);
@@ -827,11 +826,10 @@ export default class MessageRepo {
             let mention = 0;
             this.db.messages.where('[peerid+id]')
                 .between([peerId, minId + 1], [peerId, topMessageId], true, true).filter((item) => {
-                if (item.temp !== true && item.me !== true && ((item.id || 0) >= minId) && item.mention_me === true) {
+                if (item.me !== true && ((item.id || 0) >= minId) && item.mention_me === true) {
                     mention += 1;
                 }
-                return Boolean(
-                    item.temp !== true && item.me !== true && ((item.id || 0) >= minId) && item.peerid === peerId &&
+                return Boolean(item.me !== true && ((item.id || 0) >= minId) && item.peerid === peerId &&
                     (item.messagetype !== C_MESSAGE_TYPE.Gap && item.messagetype !== C_MESSAGE_TYPE.Hole && item.messagetype !== C_MESSAGE_TYPE.End && item.messagetype !== C_MESSAGE_TYPE.Date && item.messagetype !== C_MESSAGE_TYPE.NewMessage));
             }).count().then((count) => {
                 resolve({
@@ -845,8 +843,8 @@ export default class MessageRepo {
     public getLastIncomingMessage(peerId: string): Promise<IMessage | undefined> {
         return this.db.messages.where('[peerid+id]')
             .between([peerId, Dexie.minKey], [peerId, Dexie.maxKey], true, true).filter((item) => {
-            return (item.messagetype !== C_MESSAGE_TYPE.Hole && item.messagetype !== C_MESSAGE_TYPE.End && (item.id || 0) > 0 && item.senderid !== this.userId);
-        }).reverse().first();
+                return (item.messagetype !== C_MESSAGE_TYPE.Hole && item.messagetype !== C_MESSAGE_TYPE.End && (item.id || 0) > 0 && item.senderid !== this.userId);
+            }).reverse().first();
     }
 
     public clearHistory(peerId: string, messageId: number): Promise<any> {
@@ -860,23 +858,56 @@ export default class MessageRepo {
         // this.insertToDb();
     }
 
-    public lazyUpsert(messages: IMessage[], temp?: boolean) {
+    public lazyUpsert(messages: IMessage[]) {
         if (this.userId === '0' || this.userId === '') {
             this.loadConnInfo();
         }
         // Start
         const msgs = cloneDeep(messages);
-        msgs.forEach((message) => {
-            message.temp = (temp === true);
-        });
         return this.upsert(msgs);
-        // End
-        // Disabling debouncer
-        // cloneDeep(messages).forEach((message) => {
-        //     this.updateMap(message, temp);
-        // });
-        // this.updateThrottle();
-        // return Promise.resolve();
+    }
+
+    public insertDiscrete(messages: IMessage[]) {
+        const peerGroups = groupBy(messages, (o => o.peerid || ''));
+        const peerIds = Object.keys(peerGroups);
+        const edgeIds: any[] = [];
+        const holeIds: { [key: number]: { lower: boolean, peerId: string } } = {};
+        peerIds.forEach((peerId) => {
+            peerGroups[peerId].forEach((msg) => {
+                const id = msg.id || 0;
+                if (id > 1) {
+                    edgeIds.push([peerId, id - 1]);
+                    holeIds[id - 1] = {lower: true, peerId};
+                }
+                edgeIds.push([peerId, id + 1]);
+                holeIds[id + 1] = {lower: false, peerId};
+            });
+        });
+        return this.db.messages.where('[peerid+id]').anyOf(edgeIds).toArray().then((msgs) => {
+            const holes: IMessage[] = [];
+            msgs.forEach((msg) => {
+                const id = msg.id || 0;
+                if (holeIds.hasOwnProperty(id)) {
+                    delete holeIds[id];
+                }
+            });
+            for (const [id, data] of Object.entries(holeIds)) {
+                holes.push({
+                    id: parseInt(id, 10) + (data.lower ? 0.5 : -0.5),
+                    messagetype: C_MESSAGE_TYPE.Hole,
+                    peerid: data.peerId,
+                });
+            }
+            return this.db.messages.bulkPut(holes);
+        });
+    }
+
+    // Get all temp messages
+    // For migration purposes
+    public getAllTemps() {
+        return this.db.messages.filter((item) => {
+            return (item.temp === true);
+        }).toArray();
     }
 
     public insertHole(peerId: string, id: number, asc: boolean) {
@@ -908,21 +939,6 @@ export default class MessageRepo {
         };
         return fn;
     }
-
-    /*private updateMap = (message: IMessage, temp?: boolean) => {
-        message.temp = (temp === true);
-        if (this.lazyMap.hasOwnProperty(message.id || 0)) {
-            const t = this.lazyMap[message.id || 0];
-            if (t && t.temp === false && temp) {
-                this.lazyMap[message.id || 0] = this.mergeCheck(message, t);
-                this.lazyMap[message.id || 0].temp = false;
-            } else {
-                this.lazyMap[message.id || 0] = this.mergeCheck(message, t);
-            }
-        } else {
-            this.lazyMap[message.id || 0] = message;
-        }
-    }*/
 
     private insertToDb = () => {
         const messages: IMessage[] = [];
@@ -1045,7 +1061,7 @@ export default class MessageRepo {
                         promise.reject();
                     });
                 });
-                this.lazyUpsert(messages, true);
+                this.insertDiscrete(messages);
                 this.userRepo.importBulk(false, res.usersList);
                 this.groupRepo.importBulk(res.groupsList);
             }).catch((err) => {

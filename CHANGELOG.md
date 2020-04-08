@@ -1,3 +1,7 @@
+## 0.32.6
+* DB update to version 4 (new discrete message mechanism)
+* Known bugs fixed
+
 ## 0.32.5
 * Global search added in contacts menu
 * Minor improvements

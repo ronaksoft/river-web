@@ -15,6 +15,7 @@ import {throttle, cloneDeep} from 'lodash';
 import Socket from './socket';
 import {base64ToU8a, uint8ToBase64} from '../fileManager/http/utils';
 import MainRepo from "../../../repository";
+import MessageRepo from "../../../repository/message";
 
 const C_IDLE_TIME = 300;
 const C_TIMEOUT = 20000;
@@ -466,18 +467,17 @@ export default class Server {
     private shouldMigrate() {
         const v = localStorage.getItem('river.version');
         if (v === null) {
-            return 1;
+            return 4;
         }
         const pv = JSON.parse(v);
         switch (pv.v) {
             default:
             case 0:
-                return pv.v;
             case 1:
-                return pv.v;
             case 2:
-                return pv.v;
             case 3:
+                return pv.v;
+            case 4:
                 return false;
         }
     }
@@ -491,6 +491,9 @@ export default class Server {
             case 1:
             case 2:
                 this.migrate2();
+                return;
+            case 3:
+                this.migrate3();
                 return;
         }
     }
@@ -530,6 +533,27 @@ export default class Server {
                 }, 100);
             });
         }, 1000);
+    }
+
+    private migrate3() {
+        setTimeout(() => {
+            const messageRepo = MessageRepo.getInstance();
+            messageRepo.getAllTemps().then((msgs) => {
+                msgs.map((msg) => {
+                    msg.temp = false;
+                    return msg;
+                });
+                const promises: any[] = [];
+                promises.push(messageRepo.upsert(msgs));
+                promises.push(messageRepo.insertDiscrete(msgs));
+                Promise.all(promises).then(() => {
+                    localStorage.setItem('river.version', JSON.stringify({
+                        v: 4,
+                    }));
+                    window.location.reload();
+                });
+            });
+        }, 100);
     }
 
     private getTime() {
