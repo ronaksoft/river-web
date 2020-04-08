@@ -467,6 +467,9 @@ export default class Server {
     private shouldMigrate() {
         const v = localStorage.getItem('river.version');
         if (v === null) {
+            localStorage.setItem('river.version', JSON.stringify({
+                v: 4,
+            }));
             return 4;
         }
         const pv = JSON.parse(v);
