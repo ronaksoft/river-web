@@ -119,7 +119,6 @@ export default function useCellMeasurer({items}: { items: any[] }) {
             visibility: "hidden"
         };
 
-    window.console.log(itemSize);
     return {
         innerRef,
         itemCount: items.length,
