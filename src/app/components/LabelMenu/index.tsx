@@ -158,6 +158,7 @@ class LabelMenu extends React.Component<IProps, IState> {
                         </div>
                         <div className="label-search">
                             <TextField fullWidth={true}
+                                       label={i18n.t('contact.search')}
                                        className="title-edit"
                                        type="text"
                                        inputProps={{
@@ -639,6 +640,7 @@ class LabelMenu extends React.Component<IProps, IState> {
     }
 
     private getLabelList(after?: number) {
+        window.console.trace();
         const {label, labelLoading} = this.state;
         if (!label || labelLoading) {
             return;
@@ -663,6 +665,7 @@ class LabelMenu extends React.Component<IProps, IState> {
                 });
             }, 110);
         }).then((res) => {
+            window.console.log(res, after);
             const labelItems: IDialog[] = this.transformMessage(res.messageList);
             this.labelHasMore = res.labelCount === C_LABEL_LIST_LIMIT;
             if (!after) {

@@ -869,20 +869,21 @@ export default class MessageRepo {
 
     public insertDiscrete(messages: IMessage[]) {
         const peerGroups = groupBy(messages, (o => o.peerid || ''));
-        const peerIds = Object.keys(peerGroups);
         const edgeIds: any[] = [];
         const holeIds: { [key: number]: { lower: boolean, peerId: string } } = {};
-        peerIds.forEach((peerId) => {
-            peerGroups[peerId].forEach((msg) => {
+        for (const [peerId, msgs] of Object.entries(peerGroups)) {
+            msgs.sort().forEach((msg, index) => {
                 const id = msg.id || 0;
-                if (id > 1) {
+                if (id > 1 && (index === 0 || (index > 0 && ((msgs[index - 1].id || 0) + 1) !== msg.id))) {
                     edgeIds.push([peerId, id - 1]);
                     holeIds[id - 1] = {lower: true, peerId};
                 }
-                edgeIds.push([peerId, id + 1]);
-                holeIds[id + 1] = {lower: false, peerId};
+                if ((msgs.length - 1 === index) || (msgs.length - 1 > index && ((msgs[index + 1].id || 0) - 1) !== msg.id)) {
+                    edgeIds.push([peerId, id + 1]);
+                    holeIds[id + 1] = {lower: false, peerId};
+                }
             });
-        });
+        }
         return this.db.messages.where('[peerid+id]').anyOf(edgeIds).toArray().then((msgs) => {
             const holes: IMessage[] = [];
             msgs.forEach((msg) => {
@@ -898,7 +899,7 @@ export default class MessageRepo {
                     peerid: data.peerId,
                 });
             }
-            return this.db.messages.bulkPut(holes);
+            return this.db.messages.bulkPut([...messages, ...holes]);
         });
     }
 

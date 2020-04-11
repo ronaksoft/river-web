@@ -1,3 +1,6 @@
+## 0.32.7
+* Known bugs fixed
+
 ## 0.32.6
 * DB update to version 4 (new discrete message mechanism)
 * Known bugs fixed
