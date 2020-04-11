@@ -350,43 +350,53 @@ export default class Server {
         if (!this.messageListeners[reqId]) {
             return;
         }
-        const res = Presenter.getMessage(constructor, base64ToU8a(data));
-        if (constructor === C_MSG.Error) {
-            window.console.error(C_MSG_NAME[constructor], reqId, res.toObject());
-        }
-        if (res) {
+        try {
+            const res = Presenter.getMessage(constructor, base64ToU8a(data));
             if (constructor === C_MSG.Error) {
-                const resData = res.toObject();
-                if (this.checkRetry(reqId, resData)) {
-                    if (this.messageListeners[reqId].reject) {
-                        let isLogout = false;
-                        if (this.messageListeners[reqId] && this.messageListeners[reqId].request && this.messageListeners[reqId].request.constructor === C_MSG.AuthLogout) {
-                            isLogout = true;
-                        }
-                        if (resData.code === C_ERR.ErrCodeUnavailable && resData.items === C_ERR_ITEM.ErrItemUserID && !isLogout) {
-                            if (this.updateManager) {
-                                this.updateManager.forceLogOut();
+                window.console.error(C_MSG_NAME[constructor], reqId, res.toObject());
+            }
+            if (res) {
+                if (constructor === C_MSG.Error) {
+                    const resData = res.toObject();
+                    if (this.checkRetry(reqId, resData)) {
+                        if (this.messageListeners[reqId].reject) {
+                            let isLogout = false;
+                            if (this.messageListeners[reqId] && this.messageListeners[reqId].request && this.messageListeners[reqId].request.constructor === C_MSG.AuthLogout) {
+                                isLogout = true;
                             }
+                            if (resData.code === C_ERR.ErrCodeUnavailable && resData.items === C_ERR_ITEM.ErrItemUserID && !isLogout) {
+                                if (this.updateManager) {
+                                    this.updateManager.forceLogOut();
+                                }
+                            } else {
+                                this.messageListeners[reqId].reject(resData);
+                            }
+                        }
+                    }
+                } else if (constructor === C_MSG.UpdateDifference) {
+                    if (this.messageListeners[reqId].resolve) {
+                        this.messageListeners[reqId].resolve(res);
+                    }
+                } else {
+                    if (this.messageListeners[reqId].resolve) {
+                        if (constructor === C_MSG.AccountPassword) {
+                            this.messageListeners[reqId].resolve(res);
                         } else {
-                            this.messageListeners[reqId].reject(resData);
+                            this.messageListeners[reqId].resolve(res.toObject());
                         }
                     }
                 }
-            } else if (constructor === C_MSG.UpdateDifference) {
-                if (this.messageListeners[reqId].resolve) {
-                    this.messageListeners[reqId].resolve(res);
-                }
-            } else {
-                if (this.messageListeners[reqId].resolve) {
-                    if (constructor === C_MSG.AccountPassword) {
-                        this.messageListeners[reqId].resolve(res);
-                    } else {
-                        this.messageListeners[reqId].resolve(res.toObject());
-                    }
+                clearTimeout(this.messageListeners[reqId].request.timeout);
+                this.cleanQueue(reqId);
+            }
+        } catch (e) {
+            window.console.warn(e, `reqId: ${reqId}`);
+            if (this.messageListeners[reqId] && this.messageListeners[reqId].request) {
+                const req = Presenter.getMessage(this.messageListeners[reqId].request.constructor, this.messageListeners[reqId].request.data);
+                if (req) {
+                    window.console.warn(`${C_MSG_NAME[this.messageListeners[reqId].request.constructor]} payload`, req.toObject());
                 }
             }
-            clearTimeout(this.messageListeners[reqId].request.timeout);
-            this.cleanQueue(reqId);
         }
     }
 

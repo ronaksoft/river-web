@@ -19,16 +19,22 @@ import {
     MessageContainer,
     UserPhoto
 } from '../messages/chat.core.types_pb';
-import {MessagesDialogs, MessagesMany, MessagesSent} from '../messages/chat.api.messages_pb';
+import {MessagesDialogs, MessagesGetDialogs, MessagesMany, MessagesSent} from '../messages/chat.api.messages_pb';
 import {Dialog, Group, GroupFull, PeerNotifySettings, User} from '../messages/chat.core.types_pb';
 import {
-    UpdateDifference, UpdateNewMessage, UpdateReadHistoryInbox, UpdateReadHistoryOutbox, UpdateState, UpdateUserTyping,
+    UpdateDifference,
+    UpdateGetDifference,
+    UpdateNewMessage,
+    UpdateReadHistoryInbox,
+    UpdateReadHistoryOutbox,
+    UpdateState,
+    UpdateUserTyping,
 } from '../messages/chat.api.updates_pb';
 import {File} from '../messages/chat.api.files_pb';
 import {AccountAuthorizations, AccountPassword, AccountPrivacyRules} from '../messages/chat.api.accounts_pb';
 import {SystemInfo, SystemSalts, SystemServerTime} from '../messages/chat.api.system_pb';
 import {UsersMany} from '../messages/chat.api.users_pb';
-import {LabelItems} from "../messages/chat.api.labels_pb";
+import {LabelItems, LabelsListItems} from "../messages/chat.api.labels_pb";
 import {BotCallbackAnswer} from "../messages/bot.api_pb";
 
 export default class Presenter {
@@ -102,6 +108,12 @@ export default class Presenter {
                 return BotCallbackAnswer.deserializeBinary(data);
             case C_MSG.FileLocation:
                 return FileLocation.deserializeBinary(data);
+            case C_MSG.UpdateGetDifference:
+                return UpdateGetDifference.deserializeBinary(data);
+            case C_MSG.LabelsListItems:
+                return LabelsListItems.deserializeBinary(data);
+            case C_MSG.MessagesGetDialogs:
+                return MessagesGetDialogs.deserializeBinary(data);
             default:
                 return null;
         }

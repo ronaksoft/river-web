@@ -153,7 +153,6 @@ export default class LabelRepo {
             pipe2 = pipe.between([id, Dexie.minKey], [id, Dexie.maxKey], true, true);
         }
         return pipe2.limit(limit || 100).reverse().toArray().then((res) => {
-            window.console.log(res);
             const ids = res.map((item) => {
                 return item.mid || 0;
             });
