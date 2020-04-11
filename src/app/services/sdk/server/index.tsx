@@ -16,6 +16,8 @@ import Socket from './socket';
 import {base64ToU8a, uint8ToBase64} from '../fileManager/http/utils';
 import MainRepo from "../../../repository";
 import MessageRepo from "../../../repository/message";
+import * as Sentry from "@sentry/browser";
+import {isProd} from "../../../../App";
 
 const C_IDLE_TIME = 300;
 const C_TIMEOUT = 20000;
@@ -392,9 +394,15 @@ export default class Server {
         } catch (e) {
             window.console.warn(e, `reqId: ${reqId}`);
             if (this.messageListeners[reqId] && this.messageListeners[reqId].request) {
+                if (isProd) {
+                    Sentry.captureMessage(`Assertion failed req: ${C_MSG_NAME[this.messageListeners[reqId].request.constructor]}, res: ${C_MSG_NAME[constructor]}`, Sentry.Severity.Warning);
+                }
                 const req = Presenter.getMessage(this.messageListeners[reqId].request.constructor, this.messageListeners[reqId].request.data);
                 if (req) {
                     window.console.warn(`${C_MSG_NAME[this.messageListeners[reqId].request.constructor]} payload`, req.toObject());
+                    if (isProd) {
+                        Sentry.captureMessage(`Assertion failed ${e.toString()} | ${C_MSG_NAME[this.messageListeners[reqId].request.constructor]} payload: ${req.toObject().toString()}`, Sentry.Severity.Warning);
+                    }
                 }
             }
         }
