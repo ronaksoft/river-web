@@ -27,6 +27,7 @@ interface IDocumentItem {
     width?: number;
     userId?: string;
     createdon?: number;
+    snippet?: string;
 }
 
 export interface IDocument {
@@ -36,7 +37,7 @@ export interface IDocument {
     rect?: ClientRect;
     peer?: InputPeer;
     photoId?: string;
-    type: 'avatar' | 'picture' | 'video' | 'location';
+    type: 'avatar' | 'picture' | 'video' | 'video_stream' | 'location' | 'code';
 }
 
 export default class DocumentViewerService {

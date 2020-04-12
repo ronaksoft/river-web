@@ -34,6 +34,13 @@ export interface IFileProgress {
     upload: number;
 }
 
+export interface IFileBuffer {
+    buffer?: ArrayBuffer;
+    cache: boolean;
+    completed: boolean;
+    part: number;
+}
+
 interface IChunkUpdate {
     download: number;
     downloadSize: number;
@@ -56,12 +63,15 @@ interface IReceiveChunk {
 }
 
 interface IChunksInfo {
+    bufferCurrentPart: number;
+    bufferedParts: number[];
     completed: boolean;
     doneParts: number;
     fileLocation?: core_types_pb.InputFileLocation;
     interval: any;
     md5: string;
     mimeType?: string;
+    onBuffer?: (e: IFileBuffer) => void;
     onProgress?: (e: IFileProgress) => void;
     pipelines: number;
     receiveChunks: IReceiveChunk[];
@@ -87,6 +97,22 @@ interface IFileBundle {
     req: FileGet;
     reqId: number;
 }
+
+export const convertBlobToArrayBuffer = (blob: Blob): Promise<ArrayBuffer> => {
+    // @ts-ignore
+    if (blob.arrayBuffer) {
+        // @ts-ignore
+        return blob.arrayBuffer();
+    } else {
+        return new Promise((resolve) => {
+            const fileReader = new FileReader();
+            fileReader.onload = () => {
+                resolve(fileReader.result as ArrayBuffer);
+            };
+            fileReader.readAsArrayBuffer(blob);
+        });
+    }
+};
 
 const C_FILE_SERVER_HTTP_WORKER_NUM = 1;
 const C_MAX_UPLOAD_QUEUE_SIZE = 2;
@@ -246,6 +272,58 @@ export default class FileManager {
                         upload: 10,
                     });
                 }
+                internalResolve();
+            } else {
+                download();
+            }
+        }).catch(() => {
+            download();
+        });
+
+        return promise;
+    }
+
+    /* Download stream file */
+    public downloadStreamFile(location: core_types_pb.InputFileLocation, md5: string, size: number, mimeType: string, onBuffer: (e: IFileBuffer) => void, onProgress?: (e: IFileProgress) => void) {
+        if (this.fileDownloadQueue.hasOwnProperty(location.getFileid() || '')) {
+            return Promise.reject({
+                code: C_FILE_ERR_CODE.ALREADY_IN_QUEUE,
+                message: C_FILE_ERR_NAME[C_FILE_ERR_CODE.ALREADY_IN_QUEUE],
+            });
+        }
+        let internalResolve: any = null;
+        let internalReject: any = null;
+
+        const promise = new Promise((res, rej) => {
+            internalResolve = res;
+            internalReject = rej;
+        });
+
+        const download = () => {
+            this.prepareDownloadTransfer(location, md5, size, mimeType, internalResolve, internalReject, () => {
+                if (this.httpWorkers[0] && this.httpWorkers[0].isReady()) {
+                    this.startDownloadQueue();
+                }
+            }, onProgress, onBuffer);
+        };
+
+        this.fileRepo.get(location.getFileid() || '').then((res) => {
+            if (res) {
+                if (onProgress) {
+                    onProgress({
+                        download: 10,
+                        progress: 1,
+                        state: 'complete',
+                        totalDownload: 10,
+                        totalUpload: 10,
+                        upload: 10,
+                    });
+                }
+                onBuffer({
+                    cache: true,
+                    completed: true,
+                    part: 0,
+                });
                 internalResolve();
             } else {
                 download();
@@ -509,7 +587,7 @@ export default class FileManager {
                     };
                     if (chunkInfo.fileLocation) {
                         this.fileDownloadQueue[id].pipelines++;
-                        this.download(chunkInfo.fileLocation, chunk.part, chunk.offset, chunk.limit, cancelHandler, uploadProgress, downloadProgress).then((res) => {
+                        this.download(chunkInfo.fileLocation, chunk.part, chunk.offset, chunk.limit, cancelHandler, uploadProgress, downloadProgress, chunkInfo.onBuffer !== undefined).then((res) => {
                             if (chunk.limit !== 0 && chunk.limit !== res && chunkInfo.fileLocation && isProd) {
                                 Sentry.captureMessage(`Files' size are not match, offset: ${chunk.offset}, limit: ${chunk.limit}, size: ${res}, parts: ${chunk.part}/${chunkInfo.totalParts}, location: ${JSON.stringify(chunkInfo.fileLocation.toObject())}`, Sentry.Severity.Warning);
                             }
@@ -649,11 +727,15 @@ export default class FileManager {
     }
 
     /* Download parts */
-    private download(fileLocation: core_types_pb.InputFileLocation, part: number, offset: number, limit: number, cancel: any, onUploadProgress?: (e: any) => void, onDownloadProgress?: (e: any) => void): Promise<number> {
+    private download(fileLocation: core_types_pb.InputFileLocation, part: number, offset: number, limit: number, cancel: any, onUploadProgress: (e: any) => void, onDownloadProgress: (e: any) => void, useBuffer: boolean): Promise<number> {
         return this.receiveFileChunk(fileLocation, offset, limit, cancel, onUploadProgress, onDownloadProgress).then((res) => {
+            const id = fileLocation.getFileid() || '';
+            if (useBuffer) {
+                this.dispatchBuffer(id, part, res.getBytes_asU8().buffer);
+            }
             return this.fileRepo.setTemp({
                 data: new Blob([res.getBytes_asU8()]),
-                id: fileLocation.getFileid() || '',
+                id,
                 modifiedtime: res.getModifiedtime(),
                 part,
                 type: res.getType(),
@@ -745,6 +827,8 @@ export default class FileManager {
             return;
         }
         this.fileUploadQueue[id] = {
+            bufferCurrentPart: 0,
+            bufferedParts: [],
             completed: false,
             doneParts: 0,
             interval: null,
@@ -787,15 +871,17 @@ export default class FileManager {
     }
 
     /* Prepare download transfer */
-    private prepareDownloadTransfer(file: core_types_pb.InputFileLocation, md5: string, size: number, mimeType: string, resolve: any, reject: any, doneCallback: () => void, onProgress?: (e: IFileProgress) => void) {
+    private prepareDownloadTransfer(file: core_types_pb.InputFileLocation, md5: string, size: number, mimeType: string, resolve: any, reject: any, doneCallback: () => void, onProgress: ((e: IFileProgress) => void) | undefined, onBuffer?: (e: IFileBuffer) => void) {
         const id = file.getFileid() || '';
         if (this.fileDownloadQueue.hasOwnProperty(id)) {
             this.fileDownloadQueue[id].onProgress = onProgress;
+            this.fileDownloadQueue[id].onBuffer = onBuffer;
             this.fileDownloadQueue[id].reject = reject;
             this.fileDownloadQueue[id].resolve = resolve;
             return;
         }
-        const totalParts = (size === 0) ? 1 : Math.ceil(size / C_DOWNLOAD_CHUNK_SIZE);
+        const chunkSize = C_DOWNLOAD_CHUNK_SIZE;
+        const totalParts = (size === 0) ? 1 : Math.ceil(size / chunkSize);
         const chunks: IReceiveChunk[] = [];
         const updates: IChunkUpdate[] = [];
         if (size === 0) {
@@ -814,14 +900,14 @@ export default class FileManager {
             });
         } else {
             for (let i = 0; i < totalParts; i++) {
-                let limit = C_DOWNLOAD_CHUNK_SIZE;
+                let limit = chunkSize;
                 if (i === (totalParts - 1)) {
-                    limit = (size - ((totalParts - 1) * C_DOWNLOAD_CHUNK_SIZE));
+                    limit = (size - ((totalParts - 1) * chunkSize));
                 }
                 chunks.push({
                     cancel: null,
                     limit,
-                    offset: i * C_DOWNLOAD_CHUNK_SIZE,
+                    offset: i * chunkSize,
                     part: i + 1,
                 });
 
@@ -834,12 +920,15 @@ export default class FileManager {
             }
         }
         this.fileDownloadQueue[id] = {
+            bufferCurrentPart: 0,
+            bufferedParts: [],
             completed: false,
             doneParts: 0,
             fileLocation: file,
             interval: null,
             md5,
             mimeType,
+            onBuffer,
             onProgress,
             pipelines: 0,
             receiveChunks: chunks,
@@ -863,6 +952,9 @@ export default class FileManager {
                         uploadSize: 100,
                     };
                     this.fileDownloadQueue[id].doneParts++;
+                    if (this.fileDownloadQueue[id].onBuffer !== undefined) {
+                        this.fileDownloadQueue[id].bufferedParts.push(temp.part);
+                    }
                 }
             });
             if (size === 0) {
@@ -873,6 +965,9 @@ export default class FileManager {
                 if (this.downloadQueue.indexOf(id) === -1) {
                     this.downloadQueue.push(id);
                 }
+            }
+            if (this.fileDownloadQueue[id].onBuffer !== undefined && res.length > 0) {
+                this.dispatchBuffer(id, res[res.length - 1].part);
             }
             doneCallback();
         }).catch(() => {
@@ -1048,5 +1143,84 @@ export default class FileManager {
                 }
             }
         }, 110);
+    }
+
+    private dispatchBuffer(id: string, part: number, buffer?: ArrayBuffer) {
+        return new Promise((resolve) => {
+            if (this.fileDownloadQueue.hasOwnProperty(id)) {
+                const fileInfo = this.fileDownloadQueue[id];
+                if (buffer && fileInfo.bufferCurrentPart + 1 === part) {
+                    if (fileInfo.onBuffer) {
+                        fileInfo.onBuffer({
+                            buffer,
+                            cache: false,
+                            completed: (fileInfo.totalParts === part),
+                            part,
+                        });
+                    }
+                    if (this.fileDownloadQueue.hasOwnProperty(id)) {
+                        this.fileDownloadQueue[id].bufferCurrentPart = part;
+                    }
+                    resolve(part);
+                } else {
+                    fileInfo.bufferedParts.sort();
+                    const index = fileInfo.bufferedParts.indexOf(fileInfo.bufferCurrentPart);
+                    if (index > -1) {
+                        const fromPart = fileInfo.bufferedParts[index];
+                        let toPart: number = 0;
+                        for (let i = index + 1; i++; i < fileInfo.bufferedParts.length) {
+                            if (fileInfo.bufferedParts[i - 1] + 1 !== fileInfo.bufferedParts[i]) {
+                                toPart = fileInfo.bufferedParts[i - 1];
+                                break;
+                            }
+                        }
+                        if (toPart !== 0 && fromPart !== toPart) {
+                            this.dispatchBufferFromTempFiles(id, fromPart + 1, toPart, toPart === part ? buffer : undefined);
+                        }
+                        if (this.fileDownloadQueue.hasOwnProperty(id)) {
+                            this.fileDownloadQueue[id].bufferCurrentPart = toPart;
+                        }
+                        resolve(toPart);
+                    } else {
+                        resolve(0);
+                    }
+                }
+            } else {
+                resolve(0);
+            }
+        });
+    }
+
+    private dispatchBufferFromTempFiles(id: string, from: number, to: number, buffer?: ArrayBuffer) {
+        if (!this.fileDownloadQueue.hasOwnProperty(id)) {
+            return;
+        }
+        const fileInfo = this.fileDownloadQueue[id];
+        if (buffer !== undefined) {
+            to = to - 1;
+            this.fileRepo.getTempsRangeById(id, from, to).then((res) => {
+                const promises: any[] = [];
+                res.forEach((item) => {
+                    promises.push(convertBlobToArrayBuffer(item.data));
+                });
+                Promise.all(promises).then((buffers) => {
+                    if (buffer !== undefined) {
+                        buffers.push(buffer);
+                    }
+                    let part = from;
+                    buffers.forEach((buff) => {
+                        if (fileInfo.onBuffer) {
+                            fileInfo.onBuffer({
+                                buffer: buff,
+                                cache: false,
+                                completed: fileInfo.totalParts === part,
+                                part,
+                            });
+                        }
+                        part++;
+                    });
+                });
+            });
+        }
     }
 }

@@ -70,6 +70,10 @@ export default class FileRepo {
         return this.db.temps.where('[id+part]').between([id, Dexie.minKey], [id, Dexie.maxKey], true, true).toArray();
     }
 
+    public getTempsRangeById(id: string, from: number, to: number): Promise<ITempFile[]> {
+        return this.db.temps.where('[id+part]').between([id, from], [id, to], true, true).toArray();
+    }
+
     public removeTempsById(id: string) {
         return this.db.temps.where('[id+part]').between([id, Dexie.minKey], [id, Dexie.maxKey], true, true).delete();
     }
